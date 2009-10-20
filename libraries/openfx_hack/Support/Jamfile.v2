@@ -1,0 +1,35 @@
+###############################################################################
+## Main BJam makefile for OpenFX Support
+## author Nicolas Rondaud
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements	
+				<include>include
+				<include>../include
+  				<threading>multi 
+  				<link>static
+	: usage-requirements
+				<include>include
+				<include>../include
+    : build-dir $(DIST)/bin/openFX/Support
+    ;
+
+###############################################################################
+# tuttle library
+###############################################################################
+lib Support : 
+				[ glob Library/*.cpp ]
+				;
+
+###############################################################################
+# Automatic install
+###############################################################################
+install dist_src	
+	:	Support
+	:	<variant>debug:<location>$(DIST)/lib/openFX/Support/debug
+		<variant>release:<location>$(DIST)/lib/openFX/Support/release
+	;

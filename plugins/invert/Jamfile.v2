@@ -1,0 +1,47 @@
+###############################################################################
+## Main BJam makefile for TuttleOFX Invert Plugin
+## author Nicolas Rondaud
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements	
+				<include>src
+				<include>../_common
+  				<threading>multi 
+  				<os>NT:<define>_WINDOWS
+    : build-dir $(DIST)/bin/plugins/invert
+    ;
+
+###############################################################################
+# Dependencies
+###############################################################################
+if [ os.name ] = NT	
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX 
+	{	alias opengl : ; }
+else if [ os.name ] = MACOSX 
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
+
+###############################################################################
+# Product 
+###############################################################################
+plugin invert : 
+				[ glob src/*.cpp ]
+				/supportlib
+				opengl
+				;
+
+###############################################################################
+# Automatic install
+###############################################################################
+alias install : install-plug ;
+install install-plug
+	:	invert
+	:	<os>NT:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Linux
+	;
+

@@ -1,0 +1,47 @@
+###############################################################################
+## Main BJam makefile for OpenFX HostSupport
+## author Nicolas Rondaud
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements	
+				<include>include
+				<include>expat-2.0.1/lib
+				<include>../include
+  				<threading>multi 
+  				<link>static
+	: usage-requirements
+				<include>include
+				<include>expat-2.0.1/lib
+				<include>../include
+    : build-dir $(DIST)/bin/openFX/HostSupport
+    ;
+
+use-project /Suppportlib 	: ../Support ;
+
+###############################################################################
+# tuttle library
+###############################################################################
+lib HostSupport : 
+				[ glob src/*.cpp ]
+				/Suppportlib/<link>static
+				:
+				<os>NT:<define>_CRTDBG_MAP_ALLOC
+				<os>NT:<define>WIN32
+				<os>NT:<define>WINDOWS
+				<os>NT:<define>COMPILED_FROM_DSP
+				<os>NT:<define>XML_STATIC
+				<os>LINUX:<define>UNIX
+				;
+
+###############################################################################
+# Automatic install
+###############################################################################
+install dist_src	
+	:	HostSupport
+	:	<variant>debug:<location>$(DIST)/lib/openFX/HostSupport/debug
+		<variant>release:<location>$(DIST)/lib/openFX/HostSupport/release
+	;

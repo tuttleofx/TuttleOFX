@@ -1,0 +1,46 @@
+###############################################################################
+## Main BJam makefile for Tuttle library
+## author Nicolas Rondaud
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements	
+				<include>src
+  				<threading>multi 
+	: usage-requirements
+				<include>src
+    : build-dir $(DIST)/bin/tuttle
+    ;
+
+use-project /hostsupportlib 	: ../openfx_hack/HostSupport ;
+
+###############################################################################
+# tuttle library
+###############################################################################
+alias headers : [ glob-tree *.hpp ] ;
+
+lib tuttle : 
+				[ glob src/tuttle/*.cpp ]
+				/boost/system
+				/boost/filesystem
+				/hostsupportlib
+				;
+
+###############################################################################
+# Automatic install
+###############################################################################
+install dist_src	
+	:	tuttle
+		/boost/system
+		/boost/filesystem
+	:	<variant>debug:<location>$(DIST)/lib/tuttle/debug
+		<variant>release:<location>$(DIST)/lib/tuttle/release
+	;
+
+install dist_include
+	:	headers
+	:	<location>$(DIST)/include/tuttle
+	;

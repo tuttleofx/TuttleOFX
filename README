@@ -1,0 +1,17 @@
+
+TuttleOFX version 1.0.0
+
+Tested compilers
+
+     * Linux:
+          + GCC 4.1.2 on OpenSUSE 10.3
+     * Windows:
+          + Visual C++ 8.0 SP1 on Windows XP.
+          + GCC-MINGW 3.4.5 on Windows XP.
+
+More information 
+
+	Check TuttleOFX website for more information. 
+	The "Getting Started" section is a good place to start.
+
+		http://sites.google.com/site/tuttleofx

@@ -1,0 +1,30 @@
+###############################################################################
+## Main BJam makefile for TuttleOFX Plugins
+## author Nicolas Rondaud
+###############################################################################
+import type ;
+
+###############################################################################
+# Registering plugin files as shared library
+# Plugins will be *.ofx files under windows and linux
+###############################################################################
+if ! [ type.registered PLUGIN ] 
+{
+	type.register PLUGIN : : SHARED_LIB ;
+	type.set-generated-target-suffix PLUGIN : : ofx ;
+	type.set-generated-target-prefix PLUGIN :  : "" ;
+}
+
+###############################################################################
+# Common dependencies
+###############################################################################
+use-project /supportlib 	: ../libraries/openfx_hack/Support ;
+
+###############################################################################
+# Build all plugins
+###############################################################################
+for local l in [ glob * : _* ]
+{
+   build-project $(l) ;
+}
+
