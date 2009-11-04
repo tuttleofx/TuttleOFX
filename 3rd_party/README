@@ -1,0 +1,3 @@
+This folder is intented to receive third party libraries
+/boost : unzipped boost sources ( http://sourceforge.net/projects/boost/files/ )
+/expat : unzipped expat sources ( needed by original OpenFx Host Implementation )
