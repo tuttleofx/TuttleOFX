@@ -24,6 +24,7 @@ alias headers : [ glob-tree *.hpp ] ;
 
 lib tuttle : 
 				[ glob src/tuttle/*.cpp ]
+				[ glob src/tuttle/graph/*.cpp ]
 				/boost/system
 				/boost/filesystem
 				/hostsupportlib

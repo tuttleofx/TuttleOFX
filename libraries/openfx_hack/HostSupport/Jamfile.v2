@@ -9,13 +9,13 @@
 project
     : requirements	
 				<include>include
-				<include>expat-2.0.1/lib
+				<include>../../../3rd_party/expat/lib
 				<include>../include
   				<threading>multi 
   				<link>static
 	: usage-requirements
 				<include>include
-				<include>expat-2.0.1/lib
+				<include>../../../3rd_party/expat/lib
 				<include>../include
     : build-dir $(DIST)/bin/openFX/HostSupport
     ;
