@@ -1,6 +1,6 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Invert Plugin
-## author Nicolas Rondaud
+## Main BJam makefile for TuttleOFX pngReader Plugin
+## author Eloi Du Bois
 ###############################################################################
 import os ;
 
@@ -8,41 +8,46 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>src
-				<include>../_common
-  				<threading>multi 
-  				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/invert
+    : requirements
+        <include>src
+        <include>../_common
+        <include>../../libraries/tuttle/src/
+        <threading>multi
+        <os>NT:<define>_WINDOWS
+    : build-dir $(DIST)/bin/plugins/pngReader
     ;
+
+use-project /png 	: ../../3rdParty/libpng ;
 
 ###############################################################################
 # Dependencies
 ###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+if [ os.name ] = NT
+	{ lib opengl32 ; alias opengl : opengl32 ; }
 else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
+	{ alias opengl : ; }
 else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
+	{ alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin invert : 
-    [ glob src/*.cpp ]
-    /supportlib
-    /tuttlelib//tuttle/<link>static
-    opengl
-    ;
+plugin pngReader : 
+        [ glob src/*.cpp ]
+        /boost/filesystem/<link>static
+        /tuttlelib//tuttle/<link>static
+        /supportlib
+        /png
+        opengl
+        ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	invert
-	:	<os>NT:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Linux
+	:	pngReader
+	:	<os>NT:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/Linux
 	;
 

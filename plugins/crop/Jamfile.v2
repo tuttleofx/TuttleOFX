@@ -1,6 +1,6 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Invert Plugin
-## author Nicolas Rondaud
+## Main BJam makefile for TuttleOFX crop Plugin
+## author Eloi Du Bois
 ###############################################################################
 import os ;
 
@@ -13,7 +13,7 @@ project
 				<include>../_common
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/invert
+    : build-dir $(DIST)/bin/plugins/crop
     ;
 
 ###############################################################################
@@ -29,7 +29,7 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 # Product 
 ###############################################################################
-plugin invert : 
+plugin crop : 
     [ glob src/*.cpp ]
     /supportlib
     /tuttlelib//tuttle/<link>static
@@ -41,8 +41,8 @@ plugin invert :
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	invert
-	:	<os>NT:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Linux
+	:	crop
+	:	<os>NT:<location>$(DIST)/plugins/crop.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/crop.ofx.bundle/Contents/Linux
 	;
 

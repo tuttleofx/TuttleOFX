@@ -1,6 +1,6 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Invert Plugin
-## author Nicolas Rondaud
+## Main BJam makefile for TuttleOFX pngWriter Plugin
+## author Eloi Du Bois
 ###############################################################################
 import os ;
 
@@ -9,12 +9,15 @@ import os ;
 ###############################################################################
 project
     : requirements	
-				<include>src
-				<include>../_common
-  				<threading>multi 
-  				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/invert
+        <include>src
+        <include>../_common
+        <include>../../libraries/tuttle/src/
+        <threading>multi
+        <os>NT:<define>_WINDOWS
+    : build-dir $(DIST)/bin/plugins/pngWriter
     ;
+
+use-project /png 	: ../../3rdParty/libpng ;
 
 ###############################################################################
 # Dependencies
@@ -29,20 +32,21 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 # Product 
 ###############################################################################
-plugin invert : 
-    [ glob src/*.cpp ]
-    /supportlib
-    /tuttlelib//tuttle/<link>static
-    opengl
-    ;
+plugin pngWriter : 
+        [ glob src/*.cpp ]
+        /boost/filesystem/<link>static
+        /tuttlelib//tuttle/<link>static
+        /supportlib
+        /png
+        opengl
+        ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	invert
-	:	<os>NT:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Linux
+	:	pngWriter
+	:	<os>NT:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/Linux
 	;
-

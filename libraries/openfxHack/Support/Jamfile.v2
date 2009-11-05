@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for Tuttle library
+## Main BJam makefile for OpenFX Support
 ## author Nicolas Rondaud
 ###############################################################################
 
@@ -8,42 +8,29 @@
 ###############################################################################
 project
     : requirements	
-				<include>src
+				<include>include
+				<include>../include
   				<threading>multi 
+  				<link>static
 	: usage-requirements
-				<include>src
-    : build-dir $(DIST)/bin/tuttle
+				<include>include
+				<include>../include
+    : build-dir $(DIST)/bin/openFX/Support
     ;
-
-use-project /hostsupportlib 	: ../openfxHack/HostSupport ;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
-alias headers : [ glob-tree *.hpp ] ;
-
-lib tuttle : 
-                [ glob src/tuttle/*.cpp ]
-                [ glob src/tuttle/host/ofx/*.cpp ]
-                [ glob src/tuttle/plugin/*.cpp ]
-                [ glob src/tuttle/graph/*.cpp ]
-                /boost/system
-                /boost/filesystem
-                /hostsupportlib
-                ;
+lib Support :
+        [ glob Library/*.cpp ]
+        /boost/system
+        ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-install dist_src
-	:	tuttle
-		/boost/system
-		/boost/filesystem
-	:	<variant>debug:<location>$(DIST)/lib/tuttle/debug
-		<variant>release:<location>$(DIST)/lib/tuttle/release
-	;
-
-install dist_include
-	:	headers
-	:	<location>$(DIST)/include/tuttle
+install dist_src	
+	:	Support
+	:	<variant>debug:<location>$(DIST)/lib/openFX/Support/debug
+		<variant>release:<location>$(DIST)/lib/openFX/Support/release
 	;

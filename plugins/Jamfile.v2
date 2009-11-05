@@ -18,7 +18,8 @@ if ! [ type.registered PLUGIN ]
 ###############################################################################
 # Common dependencies
 ###############################################################################
-use-project /supportlib 	: ../libraries/openfx_hack/Support ;
+use-project /supportlib 	: ../libraries/openfxHack/Support ;
+use-project /tuttlelib : ../libraries/tuttle ;
 
 ###############################################################################
 # Build all plugins
