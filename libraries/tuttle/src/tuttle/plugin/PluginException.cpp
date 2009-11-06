@@ -1,5 +1,5 @@
 #include "PluginException.hpp"
-#include <cstdio>
+#include <stdio.h>
 
 std::string stringify(double x)
 {
@@ -21,7 +21,7 @@ PluginException::PluginException( const char* format, ... )
 #ifndef __GNUC__
     size_t n = _snprintf(NULL, 0, format);
 #else
-    int n = std::snprintf(NULL, 0, format);
+    int n = snprintf(NULL, 0, format);
 #endif
     if (n > 0) {
         char *message = new char[n];
@@ -30,7 +30,7 @@ PluginException::PluginException( const char* format, ... )
         #ifndef __GNUC__
             vsprintf_s(message, n, format, ap);
         #else
-            std::vsprintf(message, format, ap);
+            vsprintf(message, format, ap);
         #endif
         va_end(ap);
         _err = message;

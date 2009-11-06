@@ -47,11 +47,9 @@ namespace OFX {
 	namespace Host {
 
 		namespace Param {
-
 			//
 			// Base
 			//
-
 			Base::Base( const std::string &name, const std::string& paramType )
 			: Attribute( name, kOfxTypeParameter )
 			, _paramType( paramType )
@@ -60,7 +58,7 @@ namespace OFX {
 			}
 
 			Base::Base( const std::string &name, const std::string &paramType, const Property::Set &properties )
-			: Attribute( name, kOfxTypeParameter )
+			: Attribute( name, kOfxTypeParameter, properties )
 			, _paramType( paramType )
 			{
 				assert( _paramType.c_str( ) );

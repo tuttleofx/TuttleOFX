@@ -35,6 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 #ifndef WINDOWS
 #define OFX_EXCEPTION_SPEC throw (OFX::Host::Property::Exception)
@@ -408,7 +409,7 @@ namespace OFX {
         Set *_chainedSet;
 
         /// hide assignment
-        void operator=(const Set &);
+        void operator=(const Set & s) { std::cout << "ok" << std::endl; _props = s._props; _chainedSet = s._chainedSet; }
 
         /// set a particular property
         template<class T> void setProperty(const std::string &property, int index, const typename T::Type &value);

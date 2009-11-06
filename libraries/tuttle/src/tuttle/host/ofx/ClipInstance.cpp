@@ -163,6 +163,7 @@ void Image::copy( D_VIEW & dst, S_VIEW & src, const OfxPointI & dstCorner,
          dst.height( ) >= ( count.y - dstCorner.y ) ) {
         S_VIEW subSrc = subimage_view( src, srcCorner.x, srcCorner.y, count.x, count.y );
         D_VIEW subDst = subimage_view( dst, dstCorner.x, dstCorner.y, count.x, count.y );
+        copy_and_convert_pixels(subSrc, subDst);
     }
 }
 

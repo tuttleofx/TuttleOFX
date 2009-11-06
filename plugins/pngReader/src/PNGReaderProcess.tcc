@@ -3,6 +3,7 @@
 #include "tuttle/plugin/Progress.hpp"
 #include "tuttle/plugin/PluginException.hpp"
 
+#include <cassert>
 #include <cmath>
 #include <vector>
 #include <ofxsImageEffect.h>
@@ -17,6 +18,7 @@
 namespace tuttle {
 
 using namespace boost::gil;
+namespace bfs = boost::filesystem;
 
 typedef any_image < boost::mpl::vector
                     < rgba8_image_t, rgba16_image_t, rgba32f_image_t,
@@ -29,6 +31,7 @@ PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin &instance )
 _plugin( instance )
 {
     _filepath = instance.fetchStringParam( "Input filename" );
+    assert(_filepath != NULL);
 }
 
 template<class View>
@@ -39,22 +42,25 @@ void PNGReaderProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         std::string sFilepath;
         // Fetch output image
         _filepath->getValue(sFilepath);
-        point2<ptrdiff_t> pngDims = png_read_dimensions(sFilepath);
-        double par = _plugin.getDstClip( )->getPixelAspectRatio();
-        OfxRectD reqRect = { 0, 0, pngDims.x * par, pngDims.y };
-        boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time, reqRect ) );
-        OfxRectI bounds = dst->getBounds();
-        if( !dst.get( ) )
-            throw( ImageNotReadyException( ) );
-        // Build destination view
-        this->_dstView = interleaved_view( std::abs(bounds.x2 - bounds.x1), std::abs(bounds.y2 - bounds.y1),
-                                           static_cast<value_t*>(dst->getPixelData()),
-                                           dst->getRowBytes() );
+        if (bfs::exists(sFilepath)) {
+            point2<ptrdiff_t> pngDims = png_read_dimensions(sFilepath);
+            double par = _plugin.getDstClip( )->getPixelAspectRatio();
+            OfxRectD reqRect = { 0, 0, pngDims.x * par, pngDims.y };
+            boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time, reqRect ) );
+            OfxRectI bounds = dst->getBounds();
+            if( !dst.get( ) )
+                throw( ImageNotReadyException( ) );
+            // Build destination view
+            this->_dstView = interleaved_view( std::abs(bounds.x2 - bounds.x1), std::abs(bounds.y2 - bounds.y1),
+                                               static_cast<value_t*>(dst->getPixelData()),
+                                               dst->getRowBytes() );
 
-        // Set the render window
-        this->setRenderWindow( args.renderWindow );
-        // Call the base class process member
-        this->process();
+            // Set the render window
+            this->setRenderWindow( args.renderWindow );
+            // Call the base class process member
+            this->process();
+        } else
+            throw( PluginException( "Unable to open : %s", sFilepath.c_str() ) );
     }
     catch( PluginException e )
     {

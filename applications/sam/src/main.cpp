@@ -126,8 +126,8 @@ int main( int argc, char **argv )
 				StringInstance *dstFileParam = dynamic_cast<StringInstance*> ( vPluginsInst[2]->getParams( )["Output filename"] );
 				if( srcFileParam && dstFileParam )
 				{
-					srcFileParam->set( "source.png" );
-					dstFileParam->set( "output.png" );
+					srcFileParam->set( "c:/Temp/input.png" );
+					dstFileParam->set( "c:/Temp/output.png" );
 					vPluginsInst[0]->paramInstanceChangedAction( srcFileParam->getName( ), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 					vPluginsInst[2]->paramInstanceChangedAction( dstFileParam->getName( ), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 				}
@@ -161,9 +161,9 @@ int main( int argc, char **argv )
 					// The render window is in pixel coordinates and is expected to to be the generator output roi.
 					// ie: render scale and a PAR of not 1
 					OfxRectI renderWindow = { int(regionOfInterest.x1 / par ),
-											 int(regionOfInterest.y1 ),
-											 int(regionOfInterest.x2 / par ),
-											 int(regionOfInterest.y2 ) };
+                                                                  int(regionOfInterest.y1 ),
+                                                                  int(regionOfInterest.x2 / par ),
+                                                                  int(regionOfInterest.y2 ) };
 
 					// Generates & propagates
 					for( instIter = vPluginsInst.begin( ); instIter != ( vPluginsInst.end( ) - 1 ); ++instIter )
@@ -177,8 +177,8 @@ int main( int argc, char **argv )
 						if( inputClip && outputClip )
 						{
 							regionOfInterest = tuttle::intersection( regionOfInterest, tuttle::intersection( outputClip->getRegionOfDefinition( frame ), rois[inputClip] ) );
-							COUT_VAR4( regionOfInterest.x1, regionOfInterest.y1, regionOfInterest.x2, regionOfInterest.y2 );
-							tuttle::Image* outImg = static_cast<tuttle::Image*> ( outputClip->getImage( frame, &regionOfInterest ) );
+
+                                                        tuttle::Image* outImg = static_cast<tuttle::Image*> ( outputClip->getImage( frame, &regionOfInterest ) );
 							OfxRectD reqRegion = { ( regionOfInterest.x1 / outputClip->getAspectRatio( ) ) * inputClip->getAspectRatio( ),
 												  regionOfInterest.y1,
 												  ( regionOfInterest.x2 / outputClip->getAspectRatio( ) ) * inputClip->getAspectRatio( ),
@@ -197,8 +197,6 @@ int main( int argc, char **argv )
 						renderWindow.x2 = (int) std::ceil( regionOfInterest.x2 / par );
 						renderWindow.y1 = int( regionOfInterest.y1 );
 						renderWindow.y2 = int( regionOfInterest.y2 );
-
-						COUT_VAR4( renderWindow.x1, renderWindow.x2, renderWindow.y1, renderWindow.y2 );
 					}
 					( *instIter )->renderAction( t, kOfxImageFieldBoth, renderWindow, renderScale );
 				}

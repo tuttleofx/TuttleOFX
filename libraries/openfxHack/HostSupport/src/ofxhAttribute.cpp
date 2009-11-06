@@ -72,7 +72,6 @@ namespace OFX {
 		{
 			return _properties;
 		}
-
 	} // Host
 
 } // OFX
