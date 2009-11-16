@@ -264,7 +264,7 @@ namespace OFX {
 			, _value( pt._value )
 			, _defaultValue( pt._defaultValue ) { }
 
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( disable : 4181 )
 #endif
 			/// get one value
@@ -281,7 +281,7 @@ namespace OFX {
 					return getValueRaw( index );
 				}
 			}
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( default : 4181 )
 #endif
 			// get multiple values
@@ -317,7 +317,7 @@ namespace OFX {
 				}
 			}
 
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( disable : 4181 )
 #endif
 			/// get one value, without going through the getHook
@@ -331,7 +331,7 @@ namespace OFX {
 				}
 				return _value[index];
 			}
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( default : 4181 )
 #endif      
 			// get multiple values, without going through the getHook

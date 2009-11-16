@@ -59,7 +59,7 @@ namespace OFX {
       OFX::Host::ImageEffect::Host *gImageEffectHost;
 
       /// ctor
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( disable : 4355 )
 #endif
       ImageEffectPlugin::ImageEffectPlugin(PluginCache &pc, PluginBinary *pb, int pi, OfxPlugin *pl)
@@ -90,7 +90,7 @@ namespace OFX {
         _baseDescriptor = gImageEffectHost->makeDescriptor(this);
       }
 
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( default : 4355 )
 #endif
 

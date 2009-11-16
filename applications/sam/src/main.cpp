@@ -1,27 +1,27 @@
 // custom host
 #include "tuttle/common/utils/global.hpp"
-#include "tuttle/host/ofx/HostDescriptor.hpp"
-#include "tuttle/host/ofx/EffectInstance.hpp"
-#include "tuttle/host/ofx/ClipInstance.hpp"
-#include "tuttle/host/ofx/ParamInstance.hpp"
-
 #include "tuttle/common/math/RectOp.hpp"
+
+#include "core/HostDescriptor.hpp"
+#include "core/EffectInstance.hpp"
+#include "core/ClipInstance.hpp"
+#include "core/ParamInstance.hpp"
 
 // ofx
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhClip.h"
-#include "ofxhParam.h"
-#include "ofxhMemory.h"
-#include "ofxhImageEffect.h"
-#include "ofxhPluginAPICache.h"
-#include "ofxhPluginCache.h"
-#include "ofxhHost.h"
-#include "ofxhImageEffectAPI.h"
+#include "ofx/ofxhBinary.h"
+#include "ofx/ofxhPropertySuite.h"
+#include "ofx/ofxhClip.h"
+#include "ofx/ofxhParam.h"
+#include "ofx/ofxhMemory.h"
+#include "ofx/ofxhImageEffect.h"
+#include "ofx/ofxhPluginAPICache.h"
+#include "ofx/ofxhPluginCache.h"
+#include "ofx/ofxhHost.h"
+#include "ofx/ofxhImageEffectAPI.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -85,23 +85,25 @@ int main( int argc, char **argv )
 
         if( pluginR && pluginI && pluginW )
         {
+
             std::vector< boost::shared_ptr< tuttle::EffectInstance > > vPluginsInst;
             OFX::Host::ImageEffect::Instance* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
             tuttle::EffectInstance* inst = dynamic_cast< tuttle::EffectInstance* > ( ofxinst );
             if( inst )
-                    vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
+                vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
 
             inst = dynamic_cast<tuttle::EffectInstance*> ( pluginI->createInstance( kOfxImageEffectContextFilter, NULL ) );
             if( inst )
-                    vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
+                vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
 
             inst = dynamic_cast<tuttle::EffectInstance*> ( pluginW->createInstance( kOfxImageEffectContextGeneral, NULL ) );
             if( inst )
-                    vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
+                vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
 
             // Initialize variables
             if( vPluginsInst.size( ) > 0 )
             {
+
                 // current render scale of 1
                 OfxPointD renderScale = { 1.0, 1.0 };
                 std::vector< boost::shared_ptr<tuttle::EffectInstance> >::iterator instIter;

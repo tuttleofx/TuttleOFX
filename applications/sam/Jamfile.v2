@@ -7,11 +7,11 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>src
-  				<threading>multi 
-	: usage-requirements
-				<include>src
+    : requirements
+        <include>src
+        <threading>multi
+    : usage-requirements
+        <include>src
     : build-dir $(DIST)/bin/sam
     ;
 
@@ -23,25 +23,25 @@ use-project /tuttlelib : ../../libraries/tuttle ;
 alias headers : [ glob-tree *.hpp ] ;
 
 exe sam : 
-				[ glob src/*.cpp ]
-				/boost/system
-				/boost/filesystem
-				/tuttlelib//tuttle/<link>static
-				;
+    [ glob src/*.cpp ]
+    /boost/system
+    /boost/filesystem
+    /tuttlelib//tuttle/<link>static
+    ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 install dist_src	
-	:	sam
-		/boost/system
-		/boost/filesystem
-		/tuttlelib//tuttle/<link>static
-	:	<variant>debug:<location>$(DIST)/applications/sam/debug
-		<variant>release:<location>$(DIST)/dist/applications/sam/release
+	: sam
+            /boost/system
+            /boost/filesystem
+            /tuttlelib//tuttle/<link>static
+	: <variant>debug:<location>$(DIST)/applications/sam/debug
+            <variant>release:<location>$(DIST)/dist/applications/sam/release
 	;
 
 install dist_include
-	:	headers
-	:	<location>$(DIST)/include/sam
+	: headers
+	: <location>$(DIST)/include/sam
 	;

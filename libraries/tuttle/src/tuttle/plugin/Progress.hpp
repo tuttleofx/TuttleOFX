@@ -19,7 +19,6 @@
 namespace tuttle {
 namespace ofx {
 
-
 class Progress
 {
 #ifndef WITHOUT_OFX

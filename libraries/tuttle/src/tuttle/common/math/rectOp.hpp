@@ -2,8 +2,7 @@
 #define	_RECTOP_HPP
 
 #include "minmax.hpp"
-
-#include <ofxCore.h>
+#include "ofxCore.h"
 #include <boost/gil/utilities.hpp>
 
 namespace tuttle {

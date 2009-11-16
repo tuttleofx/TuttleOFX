@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SOFX_CLIP_INSTANCE_H
 
 #include "EffectInstance.hpp"
-#include "ofxhImageEffect.h"
-#include "ofxhImage.h"
+#include "ofx/ofxhImageEffect.h"
+#include "ofx/ofxhImage.h"
 #include <stdint.h>
 
 #define SOFXCLIPLENGTH 1

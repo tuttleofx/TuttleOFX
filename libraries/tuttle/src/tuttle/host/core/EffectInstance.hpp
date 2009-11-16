@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SOFX_EFFECT_INSTANCE_H
 #define SOFX_EFFECT_INSTANCE_H
 
-#include "ofxhImageEffect.h"
+#include "ofx/ofxhImageEffect.h"
 
 #include <cassert>
 

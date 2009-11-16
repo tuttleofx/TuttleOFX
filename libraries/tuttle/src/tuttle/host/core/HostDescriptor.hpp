@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef SOFX_HOST_DESCRIPTOR_H
 #define SOFX_HOST_DESCRIPTOR_H
 
-#include "ofxhImageEffect.h"
+#include "ofx/ofxhImageEffect.h"
 
 namespace tuttle {
 

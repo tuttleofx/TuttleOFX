@@ -20,11 +20,6 @@ namespace tuttle {
 
 using namespace boost::gil;
 
-typedef any_image < boost::mpl::vector
-                    < rgba8_image_t, rgba16_image_t, rgba32f_image_t,
-                      rgb8_image_t,  rgb16_image_t,  rgb32f_image_t >
-                  > any_image_t;
-
 template<class View>
 PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin &instance )
 : tuttle::ofx::ImageGilProcessor<View>( instance )

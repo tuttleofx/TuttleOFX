@@ -46,7 +46,7 @@ namespace tuttle {
  * @def   INFOS
  * @brief contient les infos : nom de fichier, numero de ligne, nom de fonction
 **/
-#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << boost::detail::BOOST_CURRENT_FUNCTION
+#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << BOOST_CURRENT_FUNCTION
 
 
 /**

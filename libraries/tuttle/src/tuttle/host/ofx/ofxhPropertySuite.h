@@ -30,7 +30,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <ofxhUtilities.h>
+#include "ofxhUtilities.h"
 
 #include <string>
 #include <vector>
@@ -361,7 +361,7 @@ namespace OFX {
         // get multiple values
         void getValueN(APIType *value, int count) const OFX_EXCEPTION_SPEC;
 
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( disable : 4181 )	
 #endif		
         /// get one value
@@ -370,7 +370,7 @@ namespace OFX {
         /// get one value, without going through the getHook
         const ReturnType getValueRaw(int index=0) const OFX_EXCEPTION_SPEC;
 
-#ifdef WINDOWS
+#if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( default : 4181 )	
 #endif				
         // get multiple values, without going through the getHook

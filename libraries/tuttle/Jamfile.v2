@@ -7,15 +7,22 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>src
-  				<threading>multi 
+    : requirements
+        <include>src
+        <include>src/tuttle/host
+        <include>../openfxHack/include
+        <include>../../3rdParty/expat/lib
+        <threading>multi 
 	: usage-requirements
-				<include>src
+        <include>src
+        <include>src/tuttle/host
+        <include>../openfxHack/include
+        <include>../../3rdParty/expat/lib
     : build-dir $(DIST)/bin/tuttle
     ;
 
-use-project /hostsupportlib 	: ../openfxHack/HostSupport ;
+use-project /expat 	: ../../3rdParty/expat ;
+use-project /ofxPluginSupport 	: ../openfxHack/Support ;
 
 ###############################################################################
 # tuttle library
@@ -23,25 +30,27 @@ use-project /hostsupportlib 	: ../openfxHack/HostSupport ;
 alias headers : [ glob-tree *.hpp ] ;
 
 lib tuttle : 
-                [ glob src/tuttle/*.cpp ]
-                [ glob src/tuttle/host/ofx/*.cpp ]
-                [ glob src/tuttle/plugin/*.cpp ]
-                [ glob src/tuttle/graph/*.cpp ]
-                /boost/system
-                /boost/filesystem
-                /hostsupportlib
-                ;
+    [ glob src/tuttle/*.cpp ]
+    [ glob src/tuttle/host/core/*.cpp ]
+    [ glob src/tuttle/host/graph/*.cpp ]
+    [ glob src/tuttle/host/ofx/*.cpp ]
+    [ glob src/tuttle/plugin/*.cpp ]
+    /boost/system
+    /boost/filesystem
+    /ofxPluginSupport/<link>static
+    /expat/<link>static
+    ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 install dist_src
-	:	tuttle
-		/boost/system
-		/boost/filesystem
-	:	<variant>debug:<location>$(DIST)/lib/tuttle/debug
-		<variant>release:<location>$(DIST)/lib/tuttle/release
-	;
+    : tuttle
+      /boost/system
+      /boost/filesystem
+    : <variant>debug:<location>$(DIST)/lib/tuttle/debug
+      <variant>release:<location>$(DIST)/lib/tuttle/release
+    ;
 
 install dist_include
 	:	headers

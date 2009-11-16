@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SOFX_PARAM_INSTANCE_HPP
 
 #include <iostream>
-#include "ofxhParam.h"
+#include "ofx/ofxhParam.h"
 
 namespace tuttle {
 

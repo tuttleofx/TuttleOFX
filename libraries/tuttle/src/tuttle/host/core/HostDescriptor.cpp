@@ -36,16 +36,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhClip.h"
-#include "ofxhParam.h"
-#include "ofxhMemory.h"
-#include "ofxhImageEffect.h"
-#include "ofxhPluginAPICache.h"
-#include "ofxhPluginCache.h"
-#include "ofxhHost.h"
-#include "ofxhImageEffectAPI.h"
+#include "ofx/ofxhBinary.h"
+#include "ofx/ofxhPropertySuite.h"
+#include "ofx/ofxhClip.h"
+#include "ofx/ofxhParam.h"
+#include "ofx/ofxhMemory.h"
+#include "ofx/ofxhImageEffect.h"
+#include "ofx/ofxhPluginAPICache.h"
+#include "ofx/ofxhPluginCache.h"
+#include "ofx/ofxhHost.h"
+#include "ofx/ofxhImageEffectAPI.h"
 
 // my host
 #include "HostDescriptor.hpp"
