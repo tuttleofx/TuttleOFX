@@ -1,0 +1,34 @@
+###############################################################################
+## Main BJam makefile for libdpx library
+## author Eloi Du Bois
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements	
+        <include>src/include
+        <threading>multi
+        <link>static
+    : usage-requirements
+        <include>src/include
+    : build-dir $(DIST)/lib/bin/dpx
+    ;
+
+###############################################################################
+# libpng library
+###############################################################################
+alias headers : [ glob-tree *.hpp ] ;
+
+lib dpx : 
+        [ glob src/*.cpp ]
+        /boost/system/<link>static
+        /boost/filesystem/<link>static
+        ;
+
+install dist_src	
+	:	dpx
+	:	<variant>debug:<location>$(DIST)/lib/dpx/debug
+		<variant>release:<location>$(DIST)/lib/dpx/release
+	;
