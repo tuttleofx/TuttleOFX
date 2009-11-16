@@ -32,8 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <time.h>
 #include <cstring>
 
-#include <tuttle/utils/global.hpp>
-
 // ofx
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
@@ -59,12 +57,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // boost
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/gil/extension/io/png_io.hpp>
-#include <boost/gil/extension/io/png_dynamic_io.hpp>
 
 // utilities
 #include <stdint.h>
-#include "gilGlobals.hpp"
+#include "tuttle/common/utils/global.hpp"
+#include "tuttle/common/image/gilGlobals.hpp"
 
 /// @todo TUTTLE_TODO : clean using namespace...
 using namespace OFX::Host;
@@ -72,463 +69,453 @@ using namespace OFX::Host::ImageEffect;
 using namespace boost::gil;
 
 namespace tuttle {
+    Image::Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime time )
+    : OFX::Host::ImageEffect::Image( clip ) /// this ctor will set basic props on the image
+    , _data( NULL )
+    {
+        size_t memlen = 0;
+        size_t rowlen = 0;
+        _ncomp = 0;
+        // Set rod in canonical & pixel coord.
+        OfxRectI ibounds;
+        double par = clip.getPixelAspectRatio( );
+        ibounds.x1 = int(bounds.x1 / par );
+        ibounds.x2 = int(bounds.x2 / par );
+        ibounds.y1 = int(bounds.y1 );
+        ibounds.y2 = int(bounds.y2 );
 
-	Image::Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime time )
-	: OFX::Host::ImageEffect::Image( clip ) /// this ctor will set basic props on the image
-	, _data( NULL )
-	{
-		size_t memlen = 0;
-		size_t rowlen = 0;
-		_ncomp = 0;
-		// Set rod in canonical & pixel coord.
-		OfxRectI ibounds;
-		double par = clip.getPixelAspectRatio( );
-		ibounds.x1 = int(bounds.x1 / par );
-		ibounds.x2 = int(bounds.x2 / par );
-		ibounds.y1 = int(bounds.y1 );
-		ibounds.y2 = int(bounds.y2 );
+        OfxPointI dimensions = { ibounds.x2 - ibounds.x1, ibounds.y2 - ibounds.y1 };
 
-		OfxPointI dimensions = { ibounds.x2 - ibounds.x1, ibounds.y2 - ibounds.y1 };
+        if( clip.getComponents( ) == kOfxImageComponentRGBA )
+        {
+            _ncomp = 4;
+        }
+        else if( clip.getComponents( ) == kOfxImageComponentAlpha )
+        {
+            _ncomp = 1;
+        }
 
-		if( clip.getComponents( ) == kOfxImageComponentRGBA )
-		{
-			_ncomp = 4;
-		}
-		else if( clip.getComponents( ) == kOfxImageComponentAlpha )
-		{
-			_ncomp = 1;
-		}
+        // make some memory according to the bit depth
+        if( clip.getPixelDepth( ) == kOfxBitDepthByte )
+        {
+            memlen = _ncomp * dimensions.x * dimensions.y;
+            rowlen = _ncomp * dimensions.x;
+        }
+        else if( clip.getPixelDepth( ) == kOfxBitDepthShort )
+        {
+            memlen = _ncomp * dimensions.x * dimensions.y * sizeof (uint16_t );
+            rowlen = _ncomp * dimensions.x * sizeof (uint16_t );
+        }
+        else if( clip.getPixelDepth( ) == kOfxBitDepthFloat )
+        {
+            memlen = int(_ncomp * dimensions.x * dimensions.y * sizeof (float) );
+            rowlen = int(_ncomp * dimensions.x * sizeof (float) );
+        }
 
-		// make some memory according to the bit depth
-		if( clip.getPixelDepth( ) == kOfxBitDepthByte )
-		{
-			memlen = _ncomp * dimensions.x * dimensions.y;
-			rowlen = _ncomp * dimensions.x;
-		}
-		else if( clip.getPixelDepth( ) == kOfxBitDepthShort )
-		{
-			memlen = _ncomp * dimensions.x * dimensions.y * sizeof (uint16_t );
-			rowlen = _ncomp * dimensions.x * sizeof (uint16_t );
-		}
-		else if( clip.getPixelDepth( ) == kOfxBitDepthFloat )
-		{
-			memlen = int(_ncomp * dimensions.x * dimensions.y * sizeof (float) );
-			rowlen = int(_ncomp * dimensions.x * sizeof (float) );
-		}
+        _data = new uint8_t[memlen];
+        // now blank it
+        memset( _data, 0, memlen );
 
-		_data = new uint8_t[memlen];
-		// now blank it
-		memset( _data, 0, memlen );
+        // render scale x and y of 1.0
+        setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 0 );
+        setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 1 );
 
-		// render scale x and y of 1.0
-		setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 0 );
-		setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 1 );
+        // data ptr
+        setPointerProperty( kOfxImagePropData, _data );
 
-		// data ptr
-		setPointerProperty( kOfxImagePropData, _data );
+        // bounds and rod
+        setIntProperty( kOfxImagePropBounds, ibounds.x1, 0 );
+        setIntProperty( kOfxImagePropBounds, ibounds.y1, 1 );
+        setIntProperty( kOfxImagePropBounds, ibounds.x2, 2 );
+        setIntProperty( kOfxImagePropBounds, ibounds.y2, 3 );
 
-		// bounds and rod
-		setIntProperty( kOfxImagePropBounds, ibounds.x1, 0 );
-		setIntProperty( kOfxImagePropBounds, ibounds.y1, 1 );
-		setIntProperty( kOfxImagePropBounds, ibounds.x2, 2 );
-		setIntProperty( kOfxImagePropBounds, ibounds.y2, 3 );
+        setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.x1, 0 );
+        setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.y1, 1 );
+        setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.x2, 2 );
+        setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.y2, 3 );
 
-		setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.x1, 0 );
-		setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.y1, 1 );
-		setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.x2, 2 );
-		setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.y2, 3 );
+        // row bytes
+        setIntProperty( kOfxImagePropRowBytes, rowlen );
+    }
 
-		// row bytes
-		setIntProperty( kOfxImagePropRowBytes, rowlen );
-	}
+    uint8_t* Image::pixel( int x, int y ) const
+    {
+        OfxRectI bounds = getBounds( );
+        if( ( x >= bounds.x1 ) && ( x < bounds.x2 ) && ( y >= bounds.y1 ) && ( y < bounds.y2 ) )
+        {
+            int rowBytes = getIntProperty( kOfxImagePropRowBytes );
+            int offset = ( y = bounds.y1 ) * rowBytes + ( x - bounds.x1 ) * _ncomp;
+            return &( _data[offset] );
+        }
+        return 0;
+    }
 
-	uint8_t* Image::pixel( int x, int y ) const
-	{
-		OfxRectI bounds = getBounds( );
-		if( ( x >= bounds.x1 ) && ( x < bounds.x2 ) && ( y >= bounds.y1 ) && ( y < bounds.y2 ) )
-		{
-			int rowBytes = getIntProperty( kOfxImagePropRowBytes );
-			int offset = ( y = bounds.y1 ) * rowBytes + ( x - bounds.x1 ) * _ncomp;
-			return &( _data[offset] );
-		}
-		return 0;
-	}
+    template < class VIEW_T >
+    VIEW_T Image::gilViewFromImage( Image *img )
+    {
+        OfxRectI bounds = img->getBounds( );
+        typedef typename VIEW_T::value_type value_t;
+        return interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
+                                 std::abs( bounds.y2 - bounds.y1 ),
+                                 (value_t*) ( img->getPixelData( ) ),
+                                 img->getRowBytes( ) );
+    }
 
-	template < class VIEW_T >
-	VIEW_T Image::gilViewFromImage( Image *img )
-	{
-		OfxRectI bounds = img->getBounds( );
-		typedef typename VIEW_T::value_type value_t;
-		return interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
-								 std::abs( bounds.y2 - bounds.y1 ),
-								 (value_t*) ( img->getPixelData( ) ),
-								 img->getRowBytes( ) );
-	}
+    // @todo: put this in gilGlobals.hpp
 
-	// @todo: put this in gilGlobals.hpp
+    template < class D_VIEW, class S_VIEW >
+    void Image::copy( D_VIEW & dst, S_VIEW & src, const OfxPointI & dstCorner,
+                      const OfxPointI & srcCorner, const OfxPointI & count )
+    {
+        if( src.width( ) >= ( count.x - srcCorner.x ) &&
+            src.height( ) >= ( count.y - srcCorner.y ) &&
+            dst.width( ) >= ( count.x - dstCorner.x ) &&
+            dst.height( ) >= ( count.y - dstCorner.y ) )
+            {
+                S_VIEW subSrc = subimage_view( src, srcCorner.x, srcCorner.y, count.x, count.y );
+                D_VIEW subDst = subimage_view( dst, dstCorner.x, dstCorner.y, count.x, count.y );
+                copy_and_convert_pixels( subSrc, subDst );
+            }
+    }
 
-	template < class D_VIEW, class S_VIEW >
-	void Image::copy( D_VIEW & dst, S_VIEW & src, const OfxPointI & dstCorner,
-					  const OfxPointI & srcCorner, const OfxPointI & count )
-	{
-		static int i = 0;
-		if( src.width( ) >= ( count.x - srcCorner.x ) &&
-			src.height( ) >= ( count.y - srcCorner.y ) &&
-			dst.width( ) >= ( count.x - dstCorner.x ) &&
-			dst.height( ) >= ( count.y - dstCorner.y ) )
-		{
-			S_VIEW subSrc = subimage_view( src, srcCorner.x, srcCorner.y, count.x, count.y );
-			D_VIEW subDst = subimage_view( dst, dstCorner.x, dstCorner.y, count.x, count.y );
-			char buffer[256];
-			sprintf( buffer, "/tmp/%d.png", i );
-			png_write_view( buffer, clamp<rgb8_pixel_t > ( src ) );
-			copy_and_convert_pixels( subSrc, subDst );
-		}
-		i++;
-	}
+    /// Copy from gil image view to Image
 
-	/// Copy from gil image view to Image
+    template < class S_VIEW >
+    void Image::copy( Image *dst, S_VIEW & src, const OfxPointI & dstCorner,
+                      const OfxPointI & srcCorner, const OfxPointI & count )
+    {
+        // Create destination
+        switch( dst->getComponentsType( ) )
+        {
+            case ePixelComponentRGBA:
+                switch( dst->getBitDepth( ) )
+                {
+                    case eBitDepthUByte:
+                    {
+                        rgba8_view_t dView = gilViewFromImage<rgba8_view_t > ( dst );
+                        Image::copy( dView, src, dstCorner, srcCorner, count );
+                        break;
+                    }
+                    case eBitDepthUShort:
+                    {
+                        rgba16_view_t dView = gilViewFromImage<rgba16_view_t > ( dst );
+                        Image::copy( dView, src, dstCorner, srcCorner, count );
+                        break;
+                    }
+                    case eBitDepthFloat:
+                    {
+                        rgba32f_view_t dView = gilViewFromImage<rgba32f_view_t > ( dst );
+                        Image::copy( dView, src, dstCorner, srcCorner, count );
+                        break;
+                    }
+                    default:
+                    break;
+                }
+            break;
+            case ePixelComponentAlpha:
+            switch( dst->getBitDepth( ) )
+            {
+                case eBitDepthUByte:
+                {
+                    gray8_view_t dView = gilViewFromImage<gray8_view_t > ( dst );
+                    Image::copy( dView, src, dstCorner, srcCorner, count );
+                    break;
+                }
+                case eBitDepthUShort:
+                {
+                    gray16_view_t dView = gilViewFromImage<gray16_view_t > ( dst );
+                    Image::copy( dView, src, dstCorner, srcCorner, count );
+                    break;
+                }
+                case eBitDepthFloat:
+                {
+                    gray32f_view_t dView = gilViewFromImage<gray32f_view_t > ( dst );
+                    Image::copy( dView, src, dstCorner, srcCorner, count );
+                    break;
+                }
+                default:
+                break;
+            }
+            break;
+            default:
+            break;
+        }
+    }
 
-	template < class S_VIEW >
-	void Image::copy( Image *dst, S_VIEW & src, const OfxPointI & dstCorner,
-					  const OfxPointI & srcCorner, const OfxPointI & count )
-	{
-		// Create destination
-		switch( dst->getComponentsType( ) )
-		{
-			case ePixelComponentRGBA:
-				switch( dst->getBitDepth( ) )
-				{
-					case eBitDepthUByte:
-					{
-						rgba8_view_t dView = gilViewFromImage<rgba8_view_t > ( dst );
-						Image::copy( dView, src, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthUShort:
-					{
-						rgba16_view_t dView = gilViewFromImage<rgba16_view_t > ( dst );
-						;
-						Image::copy( dView, src, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthFloat:
-					{
-						rgba32f_view_t dView = gilViewFromImage<rgba32f_view_t > ( dst );
-						;
-						Image::copy( dView, src, dstCorner, srcCorner, count );
-						break;
-					}
-					default:
-						break;
-				}
-				break;
-			case ePixelComponentAlpha:
-				switch( dst->getBitDepth( ) )
-				{
-					case eBitDepthUByte:
-					{
-						gray8_view_t dView = gilViewFromImage<gray8_view_t > ( dst );
-						Image::copy( dView, src, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthUShort:
-					{
-						gray16_view_t dView = gilViewFromImage<gray16_view_t > ( dst );
-						Image::copy( dView, src, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthFloat:
-					{
-						gray32f_view_t dView = gilViewFromImage<gray32f_view_t > ( dst );
-						Image::copy( dView, src, dstCorner, srcCorner, count );
-						break;
-					}
-					default:
-						break;
-				}
-				break;
-			default:
-				break;
-		}
-	}
+    /// Copy from Image to Image
+    void Image::copy( Image *dst, Image *src, const OfxPointI & dstCorner,
+                      const OfxPointI & srcCorner, const OfxPointI & count )
+    {
+        switch( src->getComponentsType( ) )
+        {
+        case ePixelComponentRGBA:
+            switch( src->getBitDepth( ) )
+            {
+                case eBitDepthUByte:
+                {
+                    rgba8_view_t sView = gilViewFromImage<rgba8_view_t > ( src );
+                    Image::copy( dst, sView, dstCorner, srcCorner, count );
+                    break;
+                }
+                case eBitDepthUShort:
+                {
+                    rgba16_view_t sView = gilViewFromImage<rgba16_view_t > ( src );
+                    Image::copy( dst, sView, dstCorner, srcCorner, count );
+                    break;
+                }
+                case eBitDepthFloat:
+                {
+                    rgba32f_view_t sView = gilViewFromImage<rgba32f_view_t > ( src );
+                    Image::copy( dst, sView, dstCorner, srcCorner, count );
+                    break;
+                }
+                default:
+                break;
+            }
+            break;
+        case ePixelComponentAlpha:
+            switch( src->getBitDepth( ) )
+            {
+                case eBitDepthUByte:
+                {
+                    gray8_view_t sView = gilViewFromImage<gray8_view_t > ( src );
+                    Image::copy( dst, sView, dstCorner, srcCorner, count );
+                    break;
+                }
+                case eBitDepthUShort:
+                {
+                    gray16_view_t sView = gilViewFromImage<gray16_view_t > ( src );
+                    Image::copy( dst, sView, dstCorner, srcCorner, count );
+                    break;
+                }
+                case eBitDepthFloat:
+                {
+                    gray32f_view_t sView = gilViewFromImage<gray32f_view_t > ( src );
+                    Image::copy( dst, sView, dstCorner, srcCorner, count );
+                    break;
+                }
+                default:
+                break;
+                }
+            break;
+            default:
+            break;
+        }
+    }
 
-	/// Copy from Image to Image
+    Image::~Image( )
+    {
+        delete [] _data;
+    }
 
-	void Image::copy( Image *dst, Image *src, const OfxPointI & dstCorner,
-					  const OfxPointI & srcCorner, const OfxPointI & count )
-	{
-		switch( src->getComponentsType( ) )
-		{
-			case ePixelComponentRGBA:
-				switch( src->getBitDepth( ) )
-				{
-					case eBitDepthUByte:
-					{
-						rgba8_view_t sView = gilViewFromImage<rgba8_view_t > ( src );
-						Image::copy( dst, sView, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthUShort:
-					{
-						rgba16_view_t sView = gilViewFromImage<rgba16_view_t > ( src );
-						Image::copy( dst, sView, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthFloat:
-					{
-						rgba32f_view_t sView = gilViewFromImage<rgba32f_view_t > ( src );
-						Image::copy( dst, sView, dstCorner, srcCorner, count );
-						break;
-					}
-					default:
-						break;
-				}
-				break;
-			case ePixelComponentAlpha:
-				switch( src->getBitDepth( ) )
-				{
-					case eBitDepthUByte:
-					{
-						gray8_view_t sView = gilViewFromImage<gray8_view_t > ( src );
-						Image::copy( dst, sView, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthUShort:
-					{
-						gray16_view_t sView = gilViewFromImage<gray16_view_t > ( src );
-						Image::copy( dst, sView, dstCorner, srcCorner, count );
-						break;
-					}
-					case eBitDepthFloat:
-					{
-						gray32f_view_t sView = gilViewFromImage<gray32f_view_t > ( src );
-						Image::copy( dst, sView, dstCorner, srcCorner, count );
-						break;
-					}
-					default:
-						break;
-				}
-				break;
-			default:
-				break;
-		}
-	}
+    ClipImgInstance::ClipImgInstance( EffectInstance* effect, OFX::Host::Attribute::ClipImageDescriptor *desc )
+    : OFX::Host::Attribute::ClipImageInstance( effect, *desc )
+    , _effect( effect )
+    , _inputImage( NULL )
+    , _outputImage( NULL )
+    {
+        _frameRange = _effect->getEffectFrameRange( );
+    }
 
-	Image::~Image( )
-	{
-		delete [] _data;
-	}
+    ClipImgInstance::~ClipImgInstance( )
+    {
+        if( _inputImage )
+            _inputImage->releaseReference( );
+        if( _outputImage )
+            _outputImage->releaseReference( );
+    }
 
-	ClipImgInstance::ClipImgInstance( EffectInstance* effect, OFX::Host::Attribute::ClipImageDescriptor *desc )
-	: OFX::Host::Attribute::ClipImageInstance( effect, *desc )
-	, _effect( effect )
-	, _inputImage( NULL )
-	, _outputImage( NULL )
-	{
-		_frameRange = _effect->getEffectFrameRange( );
-	}
+    /// Return the rod on the clip cannoical coords!
 
-	ClipImgInstance::~ClipImgInstance( )
-	{
-		if( _inputImage )
-			_inputImage->releaseReference( );
-		if( _outputImage )
-			_outputImage->releaseReference( );
-	}
+    OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
+    {
+        OfxRectD rod;
+        OfxPointD renderScale;
 
-	/// Return the rod on the clip cannoical coords!
+        // Rule: default is project size
+        _effect->getProjectOffset( rod.x1, rod.y1 );
+        _effect->getProjectSize( rod.x2, rod.y2 );
+        _effect->getRenderScaleRecursive( renderScale.x, renderScale.y );
 
-	OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
-	{
-		OfxRectD rod;
-		OfxPointD renderScale;
+        /* @OFX_TODO: Tres etrange: ca bug avec les plugins du commerce: debordement de pile.
+        Property::PropSpec inStuff[] = {
+                { kOfxPropTime, Property::eDouble, 1, true, "0" },
+                { kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
+                { 0 }
+        };
 
-		// Rule: default is project size
-		_effect->getProjectOffset( rod.x1, rod.y1 );
-		_effect->getProjectSize( rod.x2, rod.y2 );
-		_effect->getRenderScaleRecursive( renderScale.x, renderScale.y );
+        Property::PropSpec outStuff[] = {
+                { kOfxImageEffectPropRegionOfDefinition, Property::eDouble, 4, false, "0" },
+                { 0 }
+        };
 
-		/* @OFX_TODO: Tres etrange: ca bug avec les plugins du commerce: debordement de pile.
-		Property::PropSpec inStuff[] = {
-			{ kOfxPropTime, Property::eDouble, 1, true, "0" },
-			{ kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
-			{ 0 }
-		};
+        Property::Set inArgs(inStuff);
+        Property::Set outArgs(outStuff);
 
-		Property::PropSpec outStuff[] = {
-			{ kOfxImageEffectPropRegionOfDefinition, Property::eDouble, 4, false, "0" },
-			{ 0 }
-		};
+        inArgs.setDoubleProperty(kOfxPropTime,time);
 
-		Property::Set inArgs(inStuff);
-		Property::Set outArgs(outStuff);
+        inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
 
-		inArgs.setDoubleProperty(kOfxPropTime,time);
+        OfxStatus stat = _effect->mainEntry(kOfxImageEffectActionGetRegionOfDefinition,
+                                                                                _effect->getHandle(), &inArgs, &outArgs);
 
-		inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
+        if(stat == kOfxStatOK)
+                outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
+         */
+        return rod;
+    }
 
-		OfxStatus stat = _effect->mainEntry(kOfxImageEffectActionGetRegionOfDefinition,
-											_effect->getHandle(), &inArgs, &outArgs);
+    /// Get the Raw Unmapped Pixel Depth from the host.
 
-		if(stat == kOfxStatOK)
-			outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
-		 */
-		return rod;
-	}
+    const std::string &ClipImgInstance::getUnmappedBitDepth( ) const
+    {
+        static const std::string v( _effect->getProjectBitDepth( ) );
+        return v;
+    }
 
-	/// Get the Raw Unmapped Pixel Depth from the host.
+    /// Get the Raw Unmapped Components from the host.
 
-	const std::string &ClipImgInstance::getUnmappedBitDepth( ) const
-	{
-		static const std::string v( _effect->getProjectBitDepth( ) );
-		return v;
-	}
+    const std::string &ClipImgInstance::getUnmappedComponents( ) const
+    {
+        static const std::string v( _effect->getProjectPixelComponentsType( ) );
+        return v;
+    }
 
-	/// Get the Raw Unmapped Components from the host.
+    // PreMultiplication -
+    //
+    //  kOfxImageOpaque - the image is opaque and so has no premultiplication state
+    //  kOfxImagePreMultiplied - the image is premultiplied by it's alpha
+    //  kOfxImageUnPreMultiplied - the image is unpremultiplied
 
-	const std::string &ClipImgInstance::getUnmappedComponents( ) const
-	{
-		static const std::string v( _effect->getProjectPixelComponentsType( ) );
-		return v;
-	}
+    const std::string &ClipImgInstance::getPremult( ) const
+    {
+        return _effect->getOutputPreMultiplication( );
+    }
 
-	// PreMultiplication -
-	//
-	//  kOfxImageOpaque - the image is opaque and so has no premultiplication state
-	//  kOfxImagePreMultiplied - the image is premultiplied by it's alpha
-	//  kOfxImageUnPreMultiplied - the image is unpremultiplied
+    // Frame Rate -
 
-	const std::string &ClipImgInstance::getPremult( ) const
-	{
-		return _effect->getOutputPreMultiplication( );
-	}
+    double ClipImgInstance::getFrameRate( ) const
+    {
+        /// our clip is pretending to be progressive PAL SD by default
+        double val = _effect->getFrameRate( );
 
-	// Frame Rate -
+        return val;
+    }
 
-	double ClipImgInstance::getFrameRate( ) const
-	{
-		/// our clip is pretending to be progressive PAL SD by default
-		double val = _effect->getFrameRate( );
+    // Frame Range (startFrame, endFrame) -
+    //
+    //  The frame range over which a clip has images.
 
-		return val;
-	}
+    void ClipImgInstance::getFrameRange( double &startFrame, double &endFrame ) const
+    {
+        startFrame = 0.0;
+        endFrame = 1.0;
+    }
 
-	// Frame Range (startFrame, endFrame) -
-	//
-	//  The frame range over which a clip has images.
+    /// Field Order - Which spatial field occurs temporally first in a frame.
+    /// \returns
+    ///  - kOfxImageFieldNone - the clip material is unfielded
+    ///  - kOfxImageFieldLower - the clip material is fielded, with image rows 0,2,4.... occuring first in a frame
+    ///  - kOfxImageFieldUpper - the clip material is fielded, with image rows line 1,3,5.... occuring first in a frame
 
-	void ClipImgInstance::getFrameRange( double &startFrame, double &endFrame ) const
-	{
-		startFrame = 0.0;
-		endFrame = 1.0;
-	}
+    const std::string &ClipImgInstance::getFieldOrder( ) const
+    {
+        /// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
+        static const std::string v( kOfxImageFieldNone );
+        return v;
+    }
 
-	/// Field Order - Which spatial field occurs temporally first in a frame.
-	/// \returns
-	///  - kOfxImageFieldNone - the clip material is unfielded
-	///  - kOfxImageFieldLower - the clip material is fielded, with image rows 0,2,4.... occuring first in a frame
-	///  - kOfxImageFieldUpper - the clip material is fielded, with image rows line 1,3,5.... occuring first in a frame
+    // Connected -
+    //
+    //  Says whether the clip is actually connected at the moment.
 
-	const std::string &ClipImgInstance::getFieldOrder( ) const
-	{
-		/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
-		static const std::string v( kOfxImageFieldNone );
-		return v;
-	}
+    bool ClipImgInstance::getConnected( ) const
+    {
+        return true;
+    }
 
-	// Connected -
-	//
-	//  Says whether the clip is actually connected at the moment.
+    // Unmapped Frame Rate -
+    //
+    //  The unmaped frame range over which an output clip has images.
 
-	bool ClipImgInstance::getConnected( ) const
-	{
-		return true;
-	}
+    double ClipImgInstance::getUnmappedFrameRate( ) const
+    {
+        return _effect->getFrameRate( );
+    }
 
-	// Unmapped Frame Rate -
-	//
-	//  The unmaped frame range over which an output clip has images.
+    // Unmapped Frame Range -
+    //
+    //  The unmaped frame range over which an output clip has images.
+    // this is applicable only to hosts and plugins that allow a plugin to change frame rates
 
-	double ClipImgInstance::getUnmappedFrameRate( ) const
-	{
-		return _effect->getFrameRate( );
-	}
+    void ClipImgInstance::getUnmappedFrameRange( double &unmappedStartFrame, double &unmappedEndFrame ) const
+    {
+        unmappedStartFrame = 0;
+        unmappedEndFrame = 1;
+    }
 
-	// Unmapped Frame Range -
-	//
-	//  The unmaped frame range over which an output clip has images.
-	// this is applicable only to hosts and plugins that allow a plugin to change frame rates
+    // Continuous Samples -
+    //
+    //  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
+    //  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
 
-	void ClipImgInstance::getUnmappedFrameRange( double &unmappedStartFrame, double &unmappedEndFrame ) const
-	{
-		unmappedStartFrame = 0;
-		unmappedEndFrame = 1;
-	}
+    bool ClipImgInstance::getContinuousSamples( ) const
+    {
+        return false;
+    }
 
-	// Continuous Samples -
-	//
-	//  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
-	//  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
+    /// override this to fill in the image at the given time.
+    /// The bounds of the image on the image plane should be
+    /// 'appropriate', typically the value returned in getRegionsOfInterest
+    /// on the effect instance. Outside a render call, the optionalBounds should
+    /// be 'appropriate' for the.
+    /// If bounds is not null, fetch the indicated section of the canonical image plane.
 
-	bool ClipImgInstance::getContinuousSamples( ) const
-	{
-		return false;
-	}
+    OFX::Host::ImageEffect::Image* ClipImgInstance::getImage( OfxTime time, OfxRectD *optionalBounds )
+    {
+        OfxRectD bounds;
+        if( optionalBounds )
+        {
+            bounds.x1 = optionalBounds->x1;
+            bounds.y1 = optionalBounds->y1;
+            bounds.x2 = optionalBounds->x2;
+            bounds.y2 = optionalBounds->y2;
+        }
+        else
+            bounds = getRegionOfDefinition( time );
 
-	/// override this to fill in the image at the given time.
-	/// The bounds of the image on the image plane should be
-	/// 'appropriate', typically the value returned in getRegionsOfInterest
-	/// on the effect instance. Outside a render call, the optionalBounds should
-	/// be 'appropriate' for the.
-	/// If bounds is not null, fetch the indicated section of the canonical image plane.
+        if( isOutput( ) )
+        {
+            if( !_outputImage )
+            {
+                    // make a new ref counted image
+                    _outputImage = new Image( *this, bounds, time );
+            }
 
-	OFX::Host::ImageEffect::Image* ClipImgInstance::getImage( OfxTime time, OfxRectD *optionalBounds )
-	{
-		OfxRectD bounds;
-		if( optionalBounds )
-		{
-			bounds.x1 = optionalBounds->x1;
-			bounds.y1 = optionalBounds->y1;
-			bounds.x2 = optionalBounds->x2;
-			bounds.y2 = optionalBounds->y2;
-		}
-		else
-			bounds = getRegionOfDefinition( time );
+            // add another reference to the member image for this fetch
+            // as we have a ref count of 1 due to construction, this will
+            // cause the output image never to delete by the plugin
+            // when it releases the image
+            _outputImage->addReference( );
 
-		if( isOutput( ) )
-		{
-			if( !_outputImage )
-			{
-				// make a new ref counted image
-				_outputImage = new Image( *this, bounds, time );
-			}
+            return _outputImage;
+        }
+        else
+        {
+            if( !_inputImage )
+            {
+                    // make a new ref counted image
+                    _inputImage = new Image( *this, bounds, time );
+            }
 
-			// add another reference to the member image for this fetch
-			// as we have a ref count of 1 due to construction, this will
-			// cause the output image never to delete by the plugin
-			// when it releases the image
-			_outputImage->addReference( );
+            // add another reference to the member image for this fetch
+            // as we have a ref count of 1 due to construction, this will
+            // cause the output image never to delete by the plugin
+            // when it releases the image
+            _inputImage->addReference( );
 
-			return _outputImage;
-		}
-		else
-		{
-			if( !_inputImage )
-			{
-				// make a new ref counted image
-				_inputImage = new Image( *this, bounds, time );
-			}
-
-			// add another reference to the member image for this fetch
-			// as we have a ref count of 1 due to construction, this will
-			// cause the output image never to delete by the plugin
-			// when it releases the image
-			_inputImage->addReference( );
-
-			return _inputImage;
-		}
-	}
-
+            return _inputImage;
+        }
+    }
 }
 

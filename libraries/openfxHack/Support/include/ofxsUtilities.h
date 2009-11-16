@@ -2,13 +2,13 @@
 #define _ofxsUtilities_h_
 
 #include <iostream>
-
+//@tuttle todo: utiliser tuttle/utils/globals.hpp
 
 /**
  * @def   INFOS
  * @brief contient les infos : nom de fichier, numero de ligne, nom de fonction
 **/
-#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << __PRETTY_FUNCTION__
+#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " /*<< __PRETTY_FUNCTION__*/
 
 
 /**

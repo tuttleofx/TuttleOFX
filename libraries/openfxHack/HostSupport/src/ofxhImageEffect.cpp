@@ -454,7 +454,7 @@ namespace OFX {
 
 			int Instance::getDimension( const std::string &name ) const OFX_EXCEPTION_SPEC
 			{
-				printf( "failing in %s with name=%s\n", __PRETTY_FUNCTION__, name.c_str( ) );
+				fprintf( stderr, "failing in %s with name=%s\n", "__PRETTY_FUNCTION__", name.c_str( ) );
 				throw Property::Exception( kOfxStatErrMissingHostFeature );
 			}
 
@@ -465,14 +465,14 @@ namespace OFX {
 
 			void Instance::notify( const std::string &name, bool singleValue, int indexOrN ) OFX_EXCEPTION_SPEC
 			{
-				printf( "failing in %s\n", __PRETTY_FUNCTION__ );
+				fprintf( stderr, "failing in %s\n", "__PRETTY_FUNCTION__" );
 			}
 
 			// don't know what to do
 
 			void Instance::reset( const std::string &name ) OFX_EXCEPTION_SPEC
 			{
-				printf( "failing in %s\n", __PRETTY_FUNCTION__ );
+				fprintf( stderr, "failing in %s\n", "__PRETTY_FUNCTION__" );
 				throw Property::Exception( kOfxStatErrMissingHostFeature );
 			}
 

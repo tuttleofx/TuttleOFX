@@ -13,9 +13,6 @@
 // Needed for MinGW:
 #ifndef _MSC_VER
 #define SHGFP_TYPE_CURRENT 0
-#endif
-
-#ifndef _MSC_VER
 #define strcpy_s(dst, dst_length, src) strcpy(dst, src)
 #define strcat_s(dst, dst_length, src) strcat(dst, src)
 #endif
@@ -24,6 +21,7 @@
 // Assert that need to be everywhere
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/current_function.hpp>
 
 namespace boost {
     template<class T> class scoped_ptr;
@@ -48,7 +46,7 @@ namespace tuttle {
  * @def   INFOS
  * @brief contient les infos : nom de fichier, numero de ligne, nom de fonction
 **/
-#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << __PRETTY_FUNCTION__
+#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << boost::detail::BOOST_CURRENT_FUNCTION
 
 
 /**

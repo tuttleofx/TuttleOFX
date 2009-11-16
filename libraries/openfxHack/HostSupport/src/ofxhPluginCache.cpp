@@ -53,6 +53,7 @@
 #include "ofxhHost.h"
 #include "ofxhXml.h"
 #include "ofxhUtilities.h"
+#include "tuttle/common/utils/global.hpp"
 
 #if defined (__linux__)
 
@@ -166,17 +167,17 @@ const TCHAR *getStdOFXPluginPath(const std::string &hostId = "Plugins")
   static TCHAR buffer[MAX_PATH];
   static int gotIt = 0;
   if(!gotIt) {
-    gotIt = 1;	   
+    gotIt = 1;
     SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES_COMMON, NULL, SHGFP_TYPE_CURRENT, buffer);
-    strcat_s(buffer, MAX_PATH, __T("\\OFX\\Plugins"));
+    strcat_s(buffer, MAX_PATH, _T("\\OFX\\Plugins"));
   }
-  return buffer;	   
+  return buffer;
 }
 #endif
 
 std::string OFXGetEnv(const char* e)
 {
-#ifdef WINDOWS
+#if !defined(__GNUC__) && defined(WINDOWS)
   size_t requiredSize;
   getenv_s(&requiredSize, 0, 0, e);
   std::vector<char> buffer(requiredSize);

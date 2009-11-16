@@ -234,13 +234,12 @@ namespace OFX {
         /// make a parameter, with the given type and name
         explicit ParamInstance( ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance );
 
+        /// grab a handle on the parameter for passing to the C API
+        OfxParamHandle getParamHandle( ) const
+        {
+                return (OfxParamHandle )this;
+        }
 
-		/// grab a handle on the parameter for passing to the C API
-		OfxParamHandle getParamHandle( ) const
-		{
-			return (OfxParamHandle )this;
-		}
-		
         //        OfxStatus instanceChangedAction(std::string why,
         //                                        OfxTime     time,
         //                                        double      renderScaleX,
@@ -406,6 +405,7 @@ namespace OFX {
                     BaseType *v = va_arg( arg, BaseType* );
                     st  |= _controls[i]->derive( time, *v );
                 }
+                return st;
             }
 
             /// implementation of var args function
@@ -416,6 +416,7 @@ namespace OFX {
                     assert( v );
                     st |= _controls[i]->integrate( time1, time2, *v );
                 }
+                return st;
             }
       };
 
@@ -429,7 +430,7 @@ namespace OFX {
         void addChildren( ParamInstance * children );
 
         Property::Set &getParamSetProps() {
-            _paramSetInstance->getParamSetProps();
+            return _paramSetInstance->getParamSetProps();
         }
 
         /// The inheriting plugin instance needs to set this up to deal with
@@ -439,18 +440,18 @@ namespace OFX {
         }
 
         virtual ParamInstance* newParam(const std::string& name, ParamDescriptor& Descriptor, ParamInstanceSet * setInstance) {
-            _paramSetInstance->newParam( name, Descriptor, setInstance );
+            return _paramSetInstance->newParam( name, Descriptor, setInstance );
         }
 
         /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
         virtual OfxStatus editBegin(const std::string& name) {
-            _paramSetInstance->editBegin( name );
+            return _paramSetInstance->editBegin( name );
         }
 
 
         /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditEnd
         virtual OfxStatus editEnd() {
-            _paramSetInstance->editEnd();
+            return _paramSetInstance->editEnd();
         }
       };
 

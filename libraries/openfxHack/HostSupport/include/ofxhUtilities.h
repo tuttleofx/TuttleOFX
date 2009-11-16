@@ -35,12 +35,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
 
+#ifndef __PRETTY_FUNCTION__
+    #ifndef __GNUC__
+        #define __PRETTY_FUNCTION__ __FUNCDNAME__
+    #endif
+#endif
+
 
 /**
  * @def   INFOS
  * @brief contient les infos : nom de fichier, numero de ligne, nom de fonction
 **/
-#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << __PRETTY_FUNCTION__
+#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " /*<< __PRETTY_FUNCTION__*/
 
 
 /**

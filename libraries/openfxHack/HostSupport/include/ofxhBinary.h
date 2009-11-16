@@ -32,6 +32,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <iostream>
 
+#ifndef WINDOWS
+    #if ( defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__) || defined(__TOS_WIN__) || defined(__WIN32__) )
+        #define WINDOWS
+    #endif
+#endif
+
 #if defined(WIN32) || defined(WIN64)
 #define I386
 #elif defined(__linux__)
