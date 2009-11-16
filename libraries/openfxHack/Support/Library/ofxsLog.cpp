@@ -49,7 +49,7 @@ The log file is written to using printf style functions, rather than via c++ ios
 #include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace OFX {
   namespace Log {

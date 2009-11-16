@@ -31,6 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "ofxCore.h"
+#include "ofxAttribute.h"
+#include "ofxClip.h"
 #include "ofxParam.h"
 #include "ofxInteract.h"
 #include "ofxMessage.h"
@@ -104,9 +106,6 @@ typedef struct OfxImageMemoryStruct *OfxImageMemoryHandle;
 
 /** @brief Used as a value for ::kOfxPropType on image effect instance handles  */
 #define kOfxTypeImageEffectInstance "OfxTypeImageEffectInstance"
-
-/** @brief Used as a value for ::kOfxPropType on image effect clips */
-#define kOfxTypeClip "OfxTypeClip"
 
 /** @brief Used as a value for ::kOfxPropType on image effect images */
 #define kOfxTypeImage "OfxTypeImage"
@@ -922,10 +921,10 @@ This will be in \ref PixelCoordinates
 /*@}*/
 
 /** @brief String that is the name of the standard OFX output clip */
-#define kOfxImageEffectOutputClipName "Output"
+#define kOfxImageEffectOutputClipName kOfxOutputAttributeName
 
 /** @brief String that is the name of the standard OFX single source input clip */
-#define kOfxImageEffectSimpleSourceClipName "Source"
+#define kOfxImageEffectSimpleSourceClipName kOfxSimpleSourceAttributeName
 
 /** @brief String that is the name of the 'from' clip in the OFX transition context */
 #define kOfxImageEffectTransitionSourceFromClipName "SourceFrom"

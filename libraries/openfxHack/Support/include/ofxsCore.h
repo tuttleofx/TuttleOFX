@@ -109,6 +109,43 @@ of the direct OFX objects and any library side only functions.
 #include OFX_CLIENT_EXCEPTION_HEADER
 #endif
 
+inline bool operator==( const OfxRangeI& a, const OfxRangeI& b )
+{
+    if( a.min == b.min &&
+        a.max == b.max )
+        return true;
+    return false;
+}
+inline bool operator!=( const OfxRangeI& a, const OfxRangeI& b ) { return !(a==b); }
+
+inline bool operator==( const OfxRangeD& a, const OfxRangeD& b )
+{
+    if( a.min == b.min &&
+        a.max == b.max )
+        return true;
+    return false;
+}
+inline bool operator!=( const OfxRangeD& a, const OfxRangeD& b ) { return !(a==b); }
+
+inline bool operator==( const OfxPointI& a, const OfxPointI& b )
+{
+    if( a.x == b.x &&
+        a.y == b.y )
+        return true;
+    return false;
+}
+inline bool operator!=( const OfxPointI& a, const OfxPointI& b ) { return !(a==b); }
+
+inline bool operator==( const OfxPointD& a, const OfxPointD& b )
+{
+    if( a.x == b.x &&
+        a.y == b.y )
+        return true;
+    return false;
+}
+inline bool operator!=( const OfxPointD& a, const OfxPointD& b ) { return !(a==b); }
+
+
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC(CLASS) \
   CLASS &operator=(const CLASS &v1) {assert(false); return *this;}	\
@@ -136,7 +173,7 @@ namespace OFX {
   };
 
   /** @brief maps a status to a string for debugging purposes, note a c-str for printf */
-  char * mapStatusToString(OfxStatus stat);
+  const std::string mapStatusToString(const OfxStatus stat);
 
   /** @brief namespace for OFX support lib exceptions, all derive from std::exception, calling it */
   namespace Exception {
@@ -152,7 +189,7 @@ namespace OFX {
       operator OfxStatus() {return _status;}
 
       /** @brief reimplemented from std::exception */
-      virtual const char * what () const throw () {return mapStatusToString(_status);}
+      virtual const char * what () const throw () {return mapStatusToString(_status).c_str();}
 
     };
 
@@ -276,6 +313,10 @@ namespace OFX {
     /** @brief return the handle for this property set */
     OfxPropertySetHandle propSetHandle(void) {return _propHandle;}
 
+    inline int  propGetDimension(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
+      OFX::Exception::PropertyUnknownToHost,
+      OFX::Exception::PropertyValueIllegalToHost,
+      OFX::Exception::Suite);
     int  propGetDimension(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc, 
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 
@@ -329,7 +370,7 @@ namespace OFX {
 
 
     /// get a pointer property
-    void       *propGetPointer(const char* property, int idx, bool throwOnFailure = true) const throw(std::bad_alloc, 
+    void       *propGetPointer(const char* property, int idx, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 
       OFX::Exception::Suite);
@@ -352,7 +393,14 @@ namespace OFX {
       OFX::Exception::Suite);
 
     /// get a string property with index 0
-    void* propGetPointer(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc, 
+    void* propGetPointer(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
+      OFX::Exception::PropertyUnknownToHost,
+      OFX::Exception::PropertyValueIllegalToHost,
+      OFX::Exception::Suite)
+    {
+        return propGetPointer(property.c_str(), throwOnFailure);
+    }
+    void* propGetPointer(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 
       OFX::Exception::Suite)
@@ -361,7 +409,14 @@ namespace OFX {
     }
 
     /// get a string property with index 0
-    std::string propGetString(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc, 
+    inline std::string propGetString(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
+      OFX::Exception::PropertyUnknownToHost,
+      OFX::Exception::PropertyValueIllegalToHost,
+      OFX::Exception::Suite)
+    {
+        return propGetString(property.c_str(), throwOnFailure);
+    }
+    std::string propGetString(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 
       OFX::Exception::Suite)
@@ -370,7 +425,14 @@ namespace OFX {
     }
 
     /// get a double property with index 0
-    double propGetDouble(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc, 
+    inline double propGetDouble(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
+      OFX::Exception::PropertyUnknownToHost,
+      OFX::Exception::PropertyValueIllegalToHost,
+      OFX::Exception::Suite)
+    {
+        return propGetDouble(property.c_str(), throwOnFailure);
+    }
+    double propGetDouble(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 
       OFX::Exception::Suite)
@@ -379,6 +441,13 @@ namespace OFX {
     }
 
     /// get an int property with index 0
+    inline int propGetInt(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
+      OFX::Exception::PropertyUnknownToHost,
+      OFX::Exception::PropertyValueIllegalToHost,
+      OFX::Exception::Suite)
+    {
+      return propGetInt(property.c_str(), throwOnFailure);
+    }
     int propGetInt(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc, 
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 

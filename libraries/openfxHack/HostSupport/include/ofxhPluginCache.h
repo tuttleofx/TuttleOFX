@@ -180,7 +180,7 @@ namespace OFX {
       virtual ~Plugin() {
       }
 
-      virtual APICache::PluginAPICacheI &getApiHandler() = 0;
+      virtual APICache::PluginAPICacheI& getApiHandler() = 0;
 
       bool trumps(Plugin *other) {
         int myMajor = getVersionMajor();

@@ -46,112 +46,74 @@ namespace OFX {
 
 	namespace Host {
 
-		namespace Param {
-			//
-			// Base
-			//
-			Base::Base( const std::string &name, const std::string& paramType )
-			: Attribute( name, kOfxTypeParameter )
-			, _paramType( paramType )
+		namespace Attribute {
+
+			ParamAccessor::ParamAccessor()
 			{
-				assert( _paramType.c_str( ) );
 			}
 
-			Base::Base( const std::string &name, const std::string &paramType, const Property::Set &properties )
-			: Attribute( name, kOfxTypeParameter, properties )
-			, _paramType( paramType )
+			ParamAccessor::~ParamAccessor( ) { }
+
+
+			const std::string &ParamAccessor::getParamType( ) const
 			{
-				assert( _paramType.c_str( ) );
+				return getProperties().getStringProperty( kOfxParamPropType );
 			}
 
-			Base::~Base( ) { }
-
-			/// grab a handle on the parameter for passing to the C API
-			OfxParamHandle Base::getHandle( ) const
+			const std::string &ParamAccessor::getParentName( ) const
 			{
-				return (OfxParamHandle )this;
+				return getProperties().getStringProperty( kOfxParamPropParent );
 			}
 
-			/// grab a handle on the properties of this parameter for the C api
-			OfxPropertySetHandle Base::getPropHandle( ) const
+			const std::string &ParamAccessor::getScriptName( ) const
 			{
-				return _properties.getHandle( );
+				return getProperties().getStringProperty( kOfxParamPropScriptName );
 			}
 
-			const std::string &Base::getParamType( ) const
+			const std::string &ParamAccessor::getHint( ) const
 			{
-				return _paramType;
+				return getProperties().getStringProperty( kOfxParamPropHint, 0 );
 			}
 
-			const std::string &Base::getName( ) const
+			const std::string &ParamAccessor::getDoubleType( ) const
 			{
-				return _name;
+				return getProperties().getStringProperty( kOfxParamPropDoubleType, 0 );
+			}
+			
+			const std::string &ParamAccessor::getCacheInvalidation( ) const
+			{
+				return getProperties().getStringProperty( kOfxParamPropCacheInvalidation, 0 );
 			}
 
-			const std::string &Base::getParentName( ) const
+			bool ParamAccessor::getEnabled( ) const
 			{
-				return _properties.getStringProperty( kOfxParamPropParent );
+				return getProperties().getIntProperty( kOfxParamPropEnabled, 0 ) != 0;
 			}
 
-			const std::string &Base::getScriptName( ) const
+			bool ParamAccessor::getSecret( ) const
 			{
-				return _properties.getStringProperty( kOfxParamPropScriptName );
+				return getProperties().getIntProperty( kOfxParamPropSecret, 0 ) != 0;
 			}
 
-			const std::string &Base::getLabel( ) const
+			bool ParamAccessor::getEvaluateOnChange( ) const
 			{
-				return _properties.getStringProperty( kOfxPropLabel );
+				return getProperties().getIntProperty( kOfxParamPropEvaluateOnChange, 0 ) != 0;
 			}
 
-			const std::string &Base::getLongLabel( ) const
+			bool ParamAccessor::getCanUndo( ) const
 			{
-				return _properties.getStringProperty( kOfxPropLongLabel );
-			}
-
-			const std::string &Base::getShortLabel( ) const
-			{
-				return _properties.getStringProperty( kOfxPropShortLabel );
-			}
-
-			const std::string &Base::getDoubleType( ) const
-			{
-				return _properties.getStringProperty( kOfxParamPropDoubleType, 0 );
-			}
-
-			const std::string &Base::getHint( ) const
-			{
-				return _properties.getStringProperty( kOfxParamPropHint, 0 );
-			}
-
-			bool Base::getEnabled( ) const
-			{
-				return _properties.getIntProperty( kOfxParamPropEnabled, 0 ) != 0;
-			}
-
-			bool Base::getSecret( ) const
-			{
-				return _properties.getIntProperty( kOfxParamPropSecret, 0 ) != 0;
-			}
-
-			bool Base::getEvaluateOnChange( ) const
-			{
-				return _properties.getIntProperty( kOfxParamPropEvaluateOnChange, 0 ) != 0;
-			}
-
-			bool Base::getCanUndo( ) const
-			{
-				if( _properties.fetchProperty( kOfxParamPropCanUndo ) )
+				if( getProperties().fetchProperty( kOfxParamPropCanUndo ) )
 				{
-					return _properties.getIntProperty( kOfxParamPropCanUndo ) != 0;
+					return getProperties().getIntProperty( kOfxParamPropCanUndo ) != 0;
 				}
 				return false;
 			}
 
-			bool Base::getCanAnimate( ) const
+			bool ParamAccessor::getCanAnimate( ) const
 			{
-				if( _properties.fetchProperty( kOfxParamPropAnimates ) )
+				if( getProperties().fetchProperty( kOfxParamPropAnimates ) )
 				{
-					return _properties.getIntProperty( kOfxParamPropAnimates ) != 0;
+					return getProperties().getIntProperty( kOfxParamPropAnimates ) != 0;
 				}
 				return false;
 			}
@@ -238,36 +200,43 @@ namespace OFX {
 				return false;
 			}
 
-			/// make a parameter, with the given type and name
-
-			Descriptor::Descriptor( const std::string &type,
-									const std::string &name ) : Base( name, type )
+			/**
+			 * @brief make a parameter, with the given type and name
+			 */
+			ParamDescriptor::ParamDescriptor( const std::string &type, const std::string &name )
+			: Attribute::AttributeDescriptor( Property::Set() )
 			{
 				const char *ctype = type.c_str( );
 				const char *cname = name.c_str( );
 
-				Property::PropSpec universalProps[] = {
+				static const Property::PropSpec paramDescriptorProps[] = {
 					{ kOfxPropType, Property::eString, 1, true, kOfxTypeParameter },
 					{ kOfxParamPropSecret, Property::eInt, 1, false, "0" },
 					{ kOfxParamPropHint, Property::eString, 1, false, "" },
-					{ kOfxParamPropScriptName, Property::eString, 1, false, cname },
 					{ kOfxParamPropParent, Property::eString, 1, false, "" },
 					{ kOfxParamPropEnabled, Property::eInt, 1, false, "1" },
 					{ kOfxParamPropDataPtr, Property::ePointer, 1, false, 0 },
-					{ kOfxParamPropType, Property::eString, 1, true, ctype },
-					{ kOfxPropName, Property::eString, 1, false, cname },
-					{ kOfxPropLabel, Property::eString, 1, false, cname },
-					{ kOfxPropShortLabel, Property::eString, 1, false, cname },
-					{ kOfxPropLongLabel, Property::eString, 1, false, cname },
 					{ 0 }
 				};
 
-				_properties.addProperties( universalProps );
+				const Property::PropSpec dynamicParamDescriptorProps[] = {
+					{ kOfxParamPropType, Property::eString, 1, true, ctype },
+					{ kOfxParamPropScriptName, Property::eString, 1, false, cname }, ///< @todo TUTTLE_TODO : common property for all Attributes
+					{ 0 }
+				};
+
+				getEditableProperties().addProperties( paramDescriptorProps );
+				getEditableProperties().addProperties( dynamicParamDescriptorProps );
+
+				setAllNames( name );
+				
+				getEditableProperties().setStringProperty( kOfxParamPropType, type );
+				assert( ctype );
 			}
 
 			/// make a parameter, with the given type and name
 
-			void Descriptor::addStandardParamProps( const std::string &type )
+			void ParamDescriptor::addStandardParamProps( const std::string &type )
 			{
 				Property::TypeEnum propType = Property::eString;
 				int propDim = 1;
@@ -302,7 +271,7 @@ namespace OFX {
 
 				if( type == kOfxParamTypeString )
 				{
-					_properties.addProperties( allString );
+					getEditableProperties().addProperties( allString );
 				}
 
 				if( isDoubleParam( type ) || isIntParam( type ) || isColourParam( type ) )
@@ -317,23 +286,23 @@ namespace OFX {
 
 				if( type == kOfxParamTypeChoice )
 				{
-					_properties.addProperties( allChoice );
+					getEditableProperties().addProperties( allChoice );
 				}
 
 				if( type == kOfxParamTypeCustom )
 				{
-					_properties.addProperties( allCustom );
+					getEditableProperties().addProperties( allCustom );
 				}
 
 				if( type == kOfxParamTypePage )
 				{
-					_properties.addProperties( allPage );
+					getEditableProperties().addProperties( allPage );
 				}
 			}
 
 			/// add standard properties to a params that can take an interact
 
-			void Descriptor::addInteractParamProps( const std::string &type )
+			void ParamDescriptor::addInteractParamProps( const std::string &type )
 			{
 				static Property::PropSpec allButGroupPageProps[] = {
 					{ kOfxParamPropInteractV1, Property::ePointer, 1, false, 0 },
@@ -344,12 +313,12 @@ namespace OFX {
 					{ 0 }
 				};
 
-				_properties.addProperties( allButGroupPageProps );
+				getEditableProperties().addProperties( allButGroupPageProps );
 			}
 
 			/// add standard properties to a value holding param
 
-			void Descriptor::addValueParamProps( const std::string &type, Property::TypeEnum valueType, int dim )
+			void ParamDescriptor::addValueParamProps( const std::string &type, Property::TypeEnum valueType, int dim )
 			{
 				static Property::PropSpec invariantProps[] = {
 					{ kOfxParamPropAnimates, Property::eInt, 1, false, "1" },
@@ -368,13 +337,13 @@ namespace OFX {
 					{ 0 }
 				};
 
-				_properties.addProperties( invariantProps );
-				_properties.addProperties( variantProps );
+				getEditableProperties().addProperties( invariantProps );
+				getEditableProperties().addProperties( variantProps );
 			}
 
 			/// add standard properties to a value holding param
 
-			void Descriptor::addNumericParamProps( const std::string &type, Property::TypeEnum valueType, int dim )
+			void ParamDescriptor::addNumericParamProps( const std::string &type, Property::TypeEnum valueType, int dim )
 			{
 				static std::string dbl_minstr, dbl_maxstr, int_minstr, int_maxstr;
 				bool doneOne = false;
@@ -402,7 +371,7 @@ namespace OFX {
 					{ 0 }
 				};
 
-				_properties.addProperties( allNumeric );
+				getEditableProperties().addProperties( allNumeric );
 
 				/// if any double or a colour
 				if( valueType == Property::eDouble )
@@ -412,7 +381,7 @@ namespace OFX {
 						{ kOfxParamPropDigits, Property::eInt, 1, false, "2" },
 						{ 0 }
 					};
-					_properties.addProperties( allDouble );
+					getEditableProperties().addProperties( allDouble );
 				}
 
 				/// if a double param type
@@ -422,7 +391,7 @@ namespace OFX {
 						{ kOfxParamPropDoubleType, Property::eString, 1, false, kOfxParamDoubleTypePlain },
 						{ 0 }
 					};
-					_properties.addProperties( allDouble );
+					getEditableProperties().addProperties( allDouble );
 
 					if( dim == 1 )
 					{
@@ -431,7 +400,7 @@ namespace OFX {
 							{ 0 }
 						};
 
-						_properties.addProperties( allDouble1D );
+						getEditableProperties().addProperties( allDouble1D );
 					}
 				}
 
@@ -443,12 +412,12 @@ namespace OFX {
 						{ 0 },
 					};
 
-					_properties.addProperties( all2D3D );
-					_properties.setStringProperty( kOfxParamPropDimensionLabel, "X", 0 );
-					_properties.setStringProperty( kOfxParamPropDimensionLabel, "Y", 1 );
+					getEditableProperties().addProperties( all2D3D );
+					getEditableProperties().setStringProperty( kOfxParamPropDimensionLabel, "X", 0 );
+					getEditableProperties().setStringProperty( kOfxParamPropDimensionLabel, "Y", 1 );
 					if( dim == 3 )
 					{
-						_properties.setStringProperty( kOfxParamPropDimensionLabel, "Z", 2 );
+						getEditableProperties().setStringProperty( kOfxParamPropDimensionLabel, "Z", 2 );
 					}
 				}
 
@@ -460,48 +429,48 @@ namespace OFX {
 						{ 0 },
 					};
 
-					_properties.addProperties( allColor );
-					_properties.setStringProperty( kOfxParamPropDimensionLabel, "R", 0 );
-					_properties.setStringProperty( kOfxParamPropDimensionLabel, "G", 1 );
-					_properties.setStringProperty( kOfxParamPropDimensionLabel, "B", 2 );
+					getEditableProperties().addProperties( allColor );
+					getEditableProperties().setStringProperty( kOfxParamPropDimensionLabel, "R", 0 );
+					getEditableProperties().setStringProperty( kOfxParamPropDimensionLabel, "G", 1 );
+					getEditableProperties().setStringProperty( kOfxParamPropDimensionLabel, "B", 2 );
 					if( dim == 4 )
 					{
-						_properties.setStringProperty( kOfxParamPropDimensionLabel, "A", 3 );
+						getEditableProperties().setStringProperty( kOfxParamPropDimensionLabel, "A", 3 );
 					}
 				}
 			}
 
-			BaseSet::~BaseSet( ) { }
+			ParamAccessorSet::~ParamAccessorSet( ) { }
 
 			/// obtain a handle on this set for passing to the C api
 
-			SetDescriptor::SetDescriptor( ) { }
+			ParamDescriptorSet::ParamDescriptorSet( ) { }
 
 			/// obtain a handle on this set for passing to the C api
 
-			OfxParamSetHandle BaseSet::getParamSetHandle( ) const
+			OfxParamSetHandle ParamAccessorSet::getParamSetHandle( ) const
 			{
 				return (OfxParamSetHandle )this;
 			}
 
-			SetDescriptor::~SetDescriptor( ) { }
+			ParamDescriptorSet::~ParamDescriptorSet( ) { }
 
-			const std::map<std::string, Descriptor*> &SetDescriptor::getParams( ) const
+			const std::map<std::string, ParamDescriptor*> &ParamDescriptorSet::getParams( ) const
 			{
 				return _paramMap;
 			}
 
-			std::map<std::string, Descriptor*> &SetDescriptor::getParams( )
+			std::map<std::string, ParamDescriptor*> &ParamDescriptorSet::getParams( )
 			{
 				return _paramMap;
 			}
 
-			const std::list<Descriptor*> &SetDescriptor::getParamList( ) const
+			const std::list<ParamDescriptor*> &ParamDescriptorSet::getParamList( ) const
 			{
 				return _paramList;
 			}
 
-			void SetDescriptor::addParam( const std::string &name, Descriptor *p )
+			void ParamDescriptorSet::addParam( const std::string &name, ParamDescriptor *p )
 			{
 				_paramList.push_back( p );
 				_paramMap[name] = p;
@@ -509,13 +478,13 @@ namespace OFX {
 
 			/// define a param on this effect
 
-			Descriptor *SetDescriptor::paramDefine( const char *paramType,
+			ParamDescriptor *ParamDescriptorSet::paramDefine( const char *paramType,
 													const char *name )
 			{
 				if( !isStandardType( paramType ) )
 					return NULL; /// << EEK! This is bad.
 
-				Descriptor *desc = new Descriptor( paramType, name );
+				ParamDescriptor *desc = new ParamDescriptor( paramType, name );
 				desc->addStandardParamProps( paramType );
 				addParam( name, desc );
 				return desc;
@@ -527,86 +496,88 @@ namespace OFX {
 			//
 			/// the description of a plugin parameter
 
-			Instance::~Instance( ) { }
+			ParamInstance::~ParamInstance( ) { }
 
 			/// make a parameter, with the given type and name
 
-			Instance::Instance( Descriptor& descriptor, Param::SetInstance & setInstance )
-			: Base( descriptor.getName( ), descriptor.getParamType( ), descriptor.getProperties( ) )
+			ParamInstance::ParamInstance( ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance )
+			: Attribute::AttributeInstance( descriptor )
 			, _paramSetInstance( &setInstance )
 			, _parentInstance( 0 )
 			{
 				// parameter has to be owned by paramSet
 				setInstance.addParam( descriptor.getName( ), this );
 
-				_properties.addNotifyHook( kOfxParamPropEnabled, this );
-				_properties.addNotifyHook( kOfxParamPropSecret, this );
-				_properties.addNotifyHook( kOfxPropLabel, this );
-				_properties.addNotifyHook( kOfxParamPropDisplayMin, this );
-				_properties.addNotifyHook( kOfxParamPropDisplayMax, this );
+				getProperties().addNotifyHook( kOfxParamPropEnabled, this );
+				getProperties().addNotifyHook( kOfxParamPropSecret, this );
+				getProperties().addNotifyHook( kOfxPropLabel, this );
+				getProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
+				getProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
 			}
 
 			// callback which should set enabled state as appropriate
 
-			void Instance::setEnabled( ) { }
+			void ParamInstance::setEnabled( ) { }
 
 			// callback which should set secret state as appropriate
 
-			void Instance::setSecret( ) { }
+			void ParamInstance::setSecret( ) { }
 
 			// callback which should update label
 
-			void Instance::setLabel( ) { }
+			void ParamInstance::setLabel( ) { }
 
 			/// callback which should set
 
-			void Instance::setDisplayRange( ) { }
+			void ParamInstance::setDisplayRange( ) { }
 
 			/// get a value, implemented by instances to deconstruct var args
 
-			OfxStatus Instance::getV( va_list arg )
+			OfxStatus ParamInstance::getV( va_list arg )
 			{
+				COUT_WITHINFOS("ParamInstance getValue failed !");
+				COUT("(paramName:" << getName() << ")");
 				return kOfxStatErrUnsupported;
 			}
 
 			/// get a value, implemented by instances to deconstruct var args
 
-			OfxStatus Instance::getV( OfxTime time, va_list arg )
+			OfxStatus ParamInstance::getV( OfxTime time, va_list arg )
 			{
 				return kOfxStatErrUnsupported;
 			}
 
 			/// set a value, implemented by instances to deconstruct var args
 
-			OfxStatus Instance::setV( va_list arg )
+			OfxStatus ParamInstance::setV( va_list arg )
 			{
 				return kOfxStatErrUnsupported;
 			}
 
 			/// key a value, implemented by instances to deconstruct var args
 
-			OfxStatus Instance::setV( OfxTime time, va_list arg )
+			OfxStatus ParamInstance::setV( OfxTime time, va_list arg )
 			{
 				return kOfxStatErrUnsupported;
 			}
 
 			/// derive a value, implemented by instances to deconstruct var args
 
-			OfxStatus Instance::deriveV( OfxTime time, va_list arg )
+			OfxStatus ParamInstance::deriveV( OfxTime time, va_list arg )
 			{
 				return kOfxStatErrUnsupported;
 			}
 
 			/// integrate a value, implemented by instances to deconstruct var args
 
-			OfxStatus Instance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+			OfxStatus ParamInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 			{
 				return kOfxStatErrUnsupported;
 			}
 
 			/// overridden from Property::NotifyHook
 
-			void Instance::notify( const std::string &name, bool single, int num ) OFX_EXCEPTION_SPEC
+			void ParamInstance::notify( const std::string &name, bool single, int num ) OFX_EXCEPTION_SPEC
 			{
 				if( name == kOfxPropLabel )
 				{
@@ -628,24 +599,24 @@ namespace OFX {
 
 			// copy one parameter to another
 
-			OfxStatus Instance::copy( const Instance &instance, OfxTime offset )
+			OfxStatus ParamInstance::copy( const ParamInstance &instance, OfxTime offset )
 			{
 				return kOfxStatErrMissingHostFeature;
 			}
 
 			// copy one parameter to another, with a range
 
-			OfxStatus Instance::copy( const Instance &instance, OfxTime offset, OfxRangeD range )
+			OfxStatus ParamInstance::copy( const ParamInstance &instance, OfxTime offset, OfxRangeD range )
 			{
 				return kOfxStatErrMissingHostFeature;
 			}
 
-			void Instance::setParentInstance( Instance* instance )
+			void ParamInstance::setParentInstance( ParamInstance* instance )
 			{
 				_parentInstance = instance;
 			}
 
-			Instance* Instance::getParentInstance( )
+			ParamInstance* ParamInstance::getParentInstance( )
 			{
 				return _parentInstance;
 			}
@@ -681,11 +652,11 @@ namespace OFX {
 
 			/// setChildrens have to clone each source instance recursively
 
-			void GroupInstance::setChildrens( const SetInstance * childrens )
+			void ParamGroupInstance::setChildrens( const ParamInstanceSet * childrens )
 			{
-				std::list<Instance*> srcList = childrens->getParamList( );
+				std::list<ParamInstance*> srcList = childrens->getParamList( );
 				// iterate the params and delete them
-				std::list<Instance*>::iterator it;
+				std::list<ParamInstance*>::iterator it;
 				for( it = _paramList.begin( ); it != _paramList.end( ); ++it )
 				{
 					if( *it )
@@ -699,32 +670,32 @@ namespace OFX {
 				}
 			}
 
-			void GroupInstance::addChildren( Instance * children )
+			void ParamGroupInstance::addChildren( ParamInstance * children )
 			{
 				children->setParamSetInstance( this );
 				_paramList.push_back( children );
 			}
 
-			SetInstance *GroupInstance::getChildrens( ) const
+			ParamInstanceSet *ParamGroupInstance::getChildrens( ) const
 			{
-				return (SetInstance * )this;
+				return (ParamInstanceSet * )this;
 			}
 
 			//
 			// Page Instance
 			//
 
-			const std::map<int, Param::Instance*> &PageInstance::getChildren( ) const
+			const std::map<int, Attribute::ParamInstance*> &ParamPageInstance::getChildren( ) const
 			{
 				// HACK!!!! this really should be done with a notify hook so we don't force
 				// _children to be mutable
 				if( _children.size( ) == 0 )
 				{
-					int nChildren = _properties.getDimension( kOfxParamPropPageChild );
+					int nChildren = getProperties().getDimension( kOfxParamPropPageChild );
 					for( int i = 0; i < nChildren; i++ )
 					{
-						std::string childName = _properties.getStringProperty( kOfxParamPropPageChild, i );
-						Param::Instance* child = _paramSetInstance->getParam( childName );
+						std::string childName = getProperties().getStringProperty( kOfxParamPropPageChild, i );
+						Attribute::ParamInstance* child = _paramSetInstance->getParam( childName );
 						if( child )
 							_children[i] = child;
 					}
@@ -737,7 +708,7 @@ namespace OFX {
 			//
 			/// implementation of var args function
 
-			OfxStatus ChoiceInstance::getV( va_list arg )
+			OfxStatus ParamChoiceInstance::getV( va_list arg )
 			{
 				int *value = va_arg( arg, int* );
 				return get( *value );
@@ -745,7 +716,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus ChoiceInstance::getV( OfxTime time, va_list arg )
+			OfxStatus ParamChoiceInstance::getV( OfxTime time, va_list arg )
 			{
 				int *value = va_arg( arg, int* );
 				return get( time, *value );
@@ -753,7 +724,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus ChoiceInstance::setV( va_list arg )
+			OfxStatus ParamChoiceInstance::setV( va_list arg )
 			{
 				int value = va_arg( arg, int );
 				return set( value );
@@ -761,7 +732,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus ChoiceInstance::setV( OfxTime time, va_list arg )
+			OfxStatus ParamChoiceInstance::setV( OfxTime time, va_list arg )
 			{
 				int value = va_arg( arg, int );
 				return set( time, value );
@@ -771,19 +742,19 @@ namespace OFX {
 			// IntegerInstance
 			//
 
-			OfxStatus IntegerInstance::derive( OfxTime time, int& )
+			OfxStatus ParamIntegerInstance::derive( OfxTime time, int& )
 			{
 				return kOfxStatErrUnsupported;
 			}
 
-			OfxStatus IntegerInstance::integrate( OfxTime time1, OfxTime time2, int& )
+			OfxStatus ParamIntegerInstance::integrate( OfxTime time1, OfxTime time2, int& )
 			{
 				return kOfxStatErrUnsupported;
 			}
 
 			/// implementation of var args function
 
-			OfxStatus IntegerInstance::getV( va_list arg )
+			OfxStatus ParamIntegerInstance::getV( va_list arg )
 			{
 				int *value = va_arg( arg, int* );
 				return get( *value );
@@ -791,7 +762,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus IntegerInstance::getV( OfxTime time, va_list arg )
+			OfxStatus ParamIntegerInstance::getV( OfxTime time, va_list arg )
 			{
 				int *value = va_arg( arg, int* );
 				return get( time, *value );
@@ -799,7 +770,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus IntegerInstance::setV( va_list arg )
+			OfxStatus ParamIntegerInstance::setV( va_list arg )
 			{
 				int value = va_arg( arg, int );
 				return set( value );
@@ -807,7 +778,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus IntegerInstance::setV( OfxTime time, va_list arg )
+			OfxStatus ParamIntegerInstance::setV( OfxTime time, va_list arg )
 			{
 				int value = va_arg( arg, int );
 				return set( time, value );
@@ -815,7 +786,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus IntegerInstance::deriveV( OfxTime time, va_list arg )
+			OfxStatus ParamIntegerInstance::deriveV( OfxTime time, va_list arg )
 			{
 				int *value = va_arg( arg, int* );
 				return derive( time, *value );
@@ -823,7 +794,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus IntegerInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+			OfxStatus ParamIntegerInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 			{
 				int *value = va_arg( arg, int* );
 				return integrate( time1, time2, *value );
@@ -834,7 +805,7 @@ namespace OFX {
 			//
 			/// implementation of var args function
 
-			OfxStatus DoubleInstance::getV( va_list arg )
+			OfxStatus ParamDoubleInstance::getV( va_list arg )
 			{
 				double *value = va_arg( arg, double* );
 				return get( *value );
@@ -842,7 +813,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus DoubleInstance::getV( OfxTime time, va_list arg )
+			OfxStatus ParamDoubleInstance::getV( OfxTime time, va_list arg )
 			{
 				double *value = va_arg( arg, double* );
 				return get( time, *value );
@@ -850,7 +821,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus DoubleInstance::setV( va_list arg )
+			OfxStatus ParamDoubleInstance::setV( va_list arg )
 			{
 				double value = va_arg( arg, double );
 				return set( value );
@@ -858,7 +829,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus DoubleInstance::setV( OfxTime time, va_list arg )
+			OfxStatus ParamDoubleInstance::setV( OfxTime time, va_list arg )
 			{
 				double value = va_arg( arg, double );
 				return set( time, value );
@@ -866,7 +837,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus DoubleInstance::deriveV( OfxTime time, va_list arg )
+			OfxStatus ParamDoubleInstance::deriveV( OfxTime time, va_list arg )
 			{
 				double *value = va_arg( arg, double* );
 				return derive( time, *value );
@@ -874,7 +845,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus DoubleInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+			OfxStatus ParamDoubleInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 			{
 				double *value = va_arg( arg, double* );
 				return integrate( time1, time2, *value );
@@ -885,7 +856,7 @@ namespace OFX {
 			//
 			/// implementation of var args function
 
-			OfxStatus BooleanInstance::getV( va_list arg )
+			OfxStatus ParamBooleanInstance::getV( va_list arg )
 			{
 				bool v;
 				OfxStatus stat = get( v );
@@ -897,7 +868,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus BooleanInstance::getV( OfxTime time, va_list arg )
+			OfxStatus ParamBooleanInstance::getV( OfxTime time, va_list arg )
 			{
 				bool v;
 				OfxStatus stat = get( time, v );
@@ -909,7 +880,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus BooleanInstance::setV( va_list arg )
+			OfxStatus ParamBooleanInstance::setV( va_list arg )
 			{
 				bool value = va_arg( arg, int ) != 0;
 				return set( value );
@@ -917,7 +888,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus BooleanInstance::setV( OfxTime time, va_list arg )
+			OfxStatus ParamBooleanInstance::setV( OfxTime time, va_list arg )
 			{
 				bool value = va_arg( arg, int ) != 0;
 				return set( time, value );
@@ -926,10 +897,9 @@ namespace OFX {
 			////////////////////////////////////////////////////////////////////////////////
 			// string param
 
-			OfxStatus StringInstance::getV( va_list arg )
+			OfxStatus ParamStringInstance::getV( va_list arg )
 			{
 				const char **value = va_arg( arg, const char ** );
-
 				OfxStatus stat = get( _returnValue ); // I so don't like this, temp storage should be delegated to the implementation
 				*value = _returnValue.c_str( );
 				return stat;
@@ -937,7 +907,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus StringInstance::getV( OfxTime time, va_list arg )
+			OfxStatus ParamStringInstance::getV( OfxTime time, va_list arg )
 			{
 				const char **value = va_arg( arg, const char ** );
 
@@ -948,7 +918,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus StringInstance::setV( va_list arg )
+			OfxStatus ParamStringInstance::setV( va_list arg )
 			{
 				char *value = va_arg( arg, char* );
 				return set( value );
@@ -956,7 +926,7 @@ namespace OFX {
 
 			/// implementation of var args function
 
-			OfxStatus StringInstance::setV( OfxTime time, va_list arg )
+			OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 			{
 				char *value = va_arg( arg, char* );
 				return set( time, value );
@@ -968,14 +938,14 @@ namespace OFX {
 
 			/// ctor
 
-			SetInstance::SetInstance( ) { }
+			ParamInstanceSet::ParamInstanceSet( ) { }
 
 			/// dtor.
 
-			SetInstance::~SetInstance( )
+			ParamInstanceSet::~ParamInstanceSet( )
 			{
 				// iterate the params and delete them
-				std::list<Instance *>::iterator i;
+				std::list<ParamInstance *>::iterator i;
 				for( i = _paramList.begin( ); i != _paramList.end( ); ++i )
 				{
 					if( *i )
@@ -983,27 +953,27 @@ namespace OFX {
 				}
 			}
 
-			inline const std::map<std::string, Instance*> &SetInstance::getParams( ) const
+			inline const std::map<std::string, ParamInstance*> &ParamInstanceSet::getParams( ) const
 			{
 				return _params;
 			}
 
-			inline std::map<std::string, Instance*> &SetInstance::getParams( )
+			inline std::map<std::string, ParamInstance*> &ParamInstanceSet::getParams( )
 			{
 				return _params;
 			}
 
-			inline const std::list<Instance*> &SetInstance::getParamList( ) const
+			inline const std::list<ParamInstance*> &ParamInstanceSet::getParamList( ) const
 			{
 				return _paramList;
 			}
 
-			inline std::list<Instance*> &SetInstance::getParamList( )
+			inline std::list<ParamInstance*> &ParamInstanceSet::getParamList( )
 			{
 				return _paramList;
 			}
 
-			OfxStatus SetInstance::addParam( const std::string& name, Instance* instance )
+			OfxStatus ParamInstanceSet::addParam( const std::string& name, ParamInstance* instance )
 			{
 				if( _params.find( name ) == _params.end( ) )
 				{
@@ -1024,14 +994,14 @@ namespace OFX {
 										  const char *name,
 										  OfxPropertySetHandle *propertySet )
 			{
-				SetDescriptor *paramSetDescriptor = reinterpret_cast<SetDescriptor*> ( paramSet );
+				ParamDescriptorSet *paramSetDescriptor = reinterpret_cast<ParamDescriptorSet*> ( paramSet );
 
 				if( !paramSetDescriptor )
 				{
 					return kOfxStatErrBadHandle;
 				}
 
-				Descriptor *desc = paramSetDescriptor->paramDefine( paramType, name );
+				ParamDescriptor *desc = paramSetDescriptor->paramDefine( paramType, name );
 
 				if( desc )
 				{
@@ -1048,25 +1018,25 @@ namespace OFX {
 											 OfxPropertySetHandle *propertySet )
 			{
 
-				BaseSet *baseSet = reinterpret_cast<BaseSet*> ( paramSet );
+				ParamAccessorSet *baseSet = reinterpret_cast<ParamAccessorSet*> ( paramSet );
 
 				if( !baseSet )
 				{
 					return kOfxStatErrBadHandle;
 				}
 
-				SetInstance *setInstance = dynamic_cast<SetInstance*> ( baseSet );
+				ParamInstanceSet *setInstance = dynamic_cast<ParamInstanceSet*> ( baseSet );
 
 				if( setInstance )
 				{
-					const std::map<std::string, Instance*>& params = setInstance->getParams( );
-					std::map<std::string, Instance*>::const_iterator it = params.find( name );
+					const std::map<std::string, ParamInstance*>& params = setInstance->getParams( );
+					std::map<std::string, ParamInstance*>::const_iterator it = params.find( name );
 
 					// if we can't find it return an error...
 					if( it == params.end( ) ) return kOfxStatErrUnknown;
 
 					// get the param
-					*param = ( it->second )->getHandle( );
+					*param = ( it->second )->getParamHandle( );
 
 					// get the param property set
 					if( propertySet )
@@ -1075,18 +1045,18 @@ namespace OFX {
 					return kOfxStatOK;
 				}
 
-				SetDescriptor *setDescriptor = dynamic_cast<SetDescriptor*> ( baseSet );
+				ParamDescriptorSet *setDescriptor = dynamic_cast<ParamDescriptorSet*> ( baseSet );
 
 				if( setDescriptor )
 				{
-					const std::map<std::string, Descriptor*>& params = setDescriptor->getParams( );
-					std::map<std::string, Descriptor*>::const_iterator it = params.find( name );
+					const std::map<std::string, ParamDescriptor*>& params = setDescriptor->getParams( );
+					std::map<std::string, ParamDescriptor*>::const_iterator it = params.find( name );
 
 					// if we can't find it return an error...
 					if( it == params.end( ) ) return kOfxStatErrUnknown;
 
 					// get the param
-					*param = ( it->second )->getHandle( );
+					*param = ( it->second )->getParamHandle( );
 
 					// get the param property set
 					if( propertySet )
@@ -1101,7 +1071,7 @@ namespace OFX {
 			static OfxStatus paramSetGetPropertySet( OfxParamSetHandle paramSet,
 													 OfxPropertySetHandle *propHandle )
 			{
-				BaseSet *baseSet = reinterpret_cast<BaseSet*> ( paramSet );
+				ParamAccessorSet *baseSet = reinterpret_cast<ParamAccessorSet*> ( paramSet );
 
 				if( baseSet )
 				{
@@ -1114,7 +1084,7 @@ namespace OFX {
 			static OfxStatus paramGetPropertySet( OfxParamHandle param,
 												  OfxPropertySetHandle *propHandle )
 			{
-				Param::Instance *paramInstance = reinterpret_cast<Param::Instance*> ( param );
+				Attribute::ParamInstance *paramInstance = reinterpret_cast<Attribute::ParamInstance*> ( param );
 
 				if( paramInstance && paramInstance->verifyMagic( ) )
 				{
@@ -1129,11 +1099,11 @@ namespace OFX {
 
 			/// get the current param value
 
-			static OfxStatus paramGetValue( OfxParamHandle paramHandle,
-											... )
+			static OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 			{
-				Instance *paramInstance = reinterpret_cast<Instance*> ( paramHandle );
-				if( !paramInstance || !paramInstance->verifyMagic( ) ) return kOfxStatErrBadHandle;
+				ParamInstance *paramInstance = reinterpret_cast<ParamInstance*> ( paramHandle );
+				if( !paramInstance || !paramInstance->verifyMagic( ) )
+					return kOfxStatErrBadHandle;
 
 				va_list ap;
 				va_start( ap, paramHandle );
@@ -1144,6 +1114,7 @@ namespace OFX {
 					stat = paramInstance->getV( ap );
 				} catch( ... )
 				{
+					COUT("Exception in paramGetValue.");
 				}
 
 				va_end( ap );
@@ -1157,7 +1128,7 @@ namespace OFX {
 												  OfxTime time,
 												  ... )
 			{
-				Instance *paramInstance = reinterpret_cast<Instance*> ( paramHandle );
+				ParamInstance *paramInstance = reinterpret_cast<ParamInstance*> ( paramHandle );
 				if( !paramInstance || !paramInstance->verifyMagic( ) ) return kOfxStatErrBadHandle;
 
 				va_list ap;
@@ -1182,7 +1153,7 @@ namespace OFX {
 												 OfxTime time,
 												 ... )
 			{
-				Instance *paramInstance = reinterpret_cast<Instance*> ( paramHandle );
+				ParamInstance *paramInstance = reinterpret_cast<ParamInstance*> ( paramHandle );
 				if( !paramInstance || !paramInstance->verifyMagic( ) ) return kOfxStatErrBadHandle;
 
 				va_list ap;
@@ -1205,7 +1176,7 @@ namespace OFX {
 											   OfxTime time1, OfxTime time2,
 											   ... )
 			{
-				Instance *paramInstance = reinterpret_cast<Instance*> ( paramHandle );
+				ParamInstance *paramInstance = reinterpret_cast<ParamInstance*> ( paramHandle );
 				if( !paramInstance || !paramInstance->verifyMagic( ) ) return kOfxStatErrBadHandle;
 
 				va_list ap;
@@ -1229,7 +1200,7 @@ namespace OFX {
 			static OfxStatus paramSetValue( OfxParamHandle paramHandle,
 											... )
 			{
-				Instance *paramInstance = reinterpret_cast<Instance*> ( paramHandle );
+				ParamInstance *paramInstance = reinterpret_cast<ParamInstance*> ( paramHandle );
 				if( !paramInstance || !paramInstance->verifyMagic( ) ) return kOfxStatErrBadHandle;
 				va_list ap;
 				va_start( ap, paramHandle );
@@ -1262,7 +1233,7 @@ namespace OFX {
 												  OfxTime time, // time in frames
 												  ... )
 			{
-				Instance *paramInstance = reinterpret_cast<Instance*> ( paramHandle );
+				ParamInstance *paramInstance = reinterpret_cast<ParamInstance*> ( paramHandle );
 				if( !paramInstance || !paramInstance->verifyMagic( ) ) return kOfxStatErrBadHandle;
 
 				va_list ap;
@@ -1289,7 +1260,7 @@ namespace OFX {
 			static OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
 											  unsigned int *numberOfKeys )
 			{
-				Param::Instance *pInstance = reinterpret_cast<Param::Instance*> ( paramHandle );
+				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1305,7 +1276,7 @@ namespace OFX {
 											  unsigned int nthKey,
 											  OfxTime *time )
 			{
-				Param::Instance *pInstance = reinterpret_cast<Param::Instance*> ( paramHandle );
+				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1322,7 +1293,7 @@ namespace OFX {
 											   int direction,
 											   int *index )
 			{
-				Param::Instance *pInstance = reinterpret_cast<Param::Instance*> ( paramHandle );
+				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1337,7 +1308,7 @@ namespace OFX {
 			static OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
 											 OfxTime time )
 			{
-				Param::Instance *pInstance = reinterpret_cast<Param::Instance*> ( paramHandle );
+				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1351,7 +1322,7 @@ namespace OFX {
 
 			static OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 			{
-				Param::Instance *pInstance = reinterpret_cast<Param::Instance*> ( paramHandle );
+				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1367,8 +1338,8 @@ namespace OFX {
 										OfxParamHandle paramFrom,
 										OfxTime dstOffset, OfxRangeD *frameRange )
 			{
-				Instance *paramInstanceTo = reinterpret_cast<Instance*> ( paramTo );
-				Instance *paramInstanceFrom = reinterpret_cast<Instance*> ( paramFrom );
+				ParamInstance *paramInstanceTo = reinterpret_cast<ParamInstance*> ( paramTo );
+				ParamInstance *paramInstanceFrom = reinterpret_cast<ParamInstance*> ( paramFrom );
 
 				if( !paramInstanceTo || !paramInstanceTo->verifyMagic( ) ) return kOfxStatErrBadHandle;
 				if( !paramInstanceFrom || !paramInstanceFrom->verifyMagic( ) ) return kOfxStatErrBadHandle;
@@ -1381,14 +1352,14 @@ namespace OFX {
 
 			static OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char *name )
 			{
-				SetInstance *setInstance = reinterpret_cast<SetInstance*> ( paramSet );
+				ParamInstanceSet *setInstance = reinterpret_cast<ParamInstanceSet*> ( paramSet );
 				if( !setInstance ) return kOfxStatErrBadHandle;
 				return setInstance->editBegin( std::string( name ) );
 			}
 
 			static OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
 			{
-				SetInstance *setInstance = reinterpret_cast<SetInstance*> ( paramSet );
+				ParamInstanceSet *setInstance = reinterpret_cast<ParamInstanceSet*> ( paramSet );
 				if( !setInstance ) return kOfxStatErrBadHandle;
 				return setInstance->editEnd( );
 			}

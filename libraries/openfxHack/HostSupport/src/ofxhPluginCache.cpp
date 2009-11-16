@@ -53,7 +53,6 @@
 #include "ofxhHost.h"
 #include "ofxhXml.h"
 #include "ofxhUtilities.h"
-#include "tuttle/common/utils/global.hpp"
 
 #if defined (__linux__)
 
@@ -89,8 +88,8 @@ static const char *getArchStr()
 #endif
 #define DIRSEP "\\"
 
-#include <shlobj.h>
-#include <tchar.h>
+#include "shlobj.h"
+#include "tchar.h"
 #endif
 
 OFX::Host::PluginCache* OFX::Host::PluginCache::gPluginCachePtr = 0;
@@ -167,9 +166,9 @@ const TCHAR *getStdOFXPluginPath(const std::string &hostId = "Plugins")
   static TCHAR buffer[MAX_PATH];
   static int gotIt = 0;
   if(!gotIt) {
-    gotIt = 1;
+    gotIt = 1;	   
     SHGetFolderPath(NULL, CSIDL_PROGRAM_FILES_COMMON, NULL, SHGFP_TYPE_CURRENT, buffer);
-    strcat_s(buffer, MAX_PATH, _T("\\OFX\\Plugins"));
+    strcat_s(buffer, MAX_PATH, __T("\\OFX\\Plugins"));
   }
   return buffer;	   
 }
@@ -177,7 +176,7 @@ const TCHAR *getStdOFXPluginPath(const std::string &hostId = "Plugins")
 
 std::string OFXGetEnv(const char* e)
 {
-#if !defined(__GNUC__) && defined(WINDOWS)
+#ifdef WINDOWS
   size_t requiredSize;
   getenv_s(&requiredSize, 0, 0, e);
   std::vector<char> buffer(requiredSize);

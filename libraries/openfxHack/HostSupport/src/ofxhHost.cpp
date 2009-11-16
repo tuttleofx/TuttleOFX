@@ -110,6 +110,8 @@ namespace OFX {
       _properties.setPointerProperty(kOfxHostSupportHostPointer,this);
     }
 
+	Host::~Host(){}
+
     OfxHost *Host::getHandle() {
       return &_host;
     }

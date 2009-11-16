@@ -49,15 +49,15 @@ eg OFX::IntParamDescriptor and those representing instances eg, OFX::IntParamIns
 each represent the actions that can be carried out on those particular OFX objects.
 
  */
-#include "ofxsCore.h"
-#include "ofxInteract.h"
 
-#include <boost/scoped_ptr.hpp>
+#include "ofxsCore.h"
+#include <memory>
+#include <iostream>
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC(CLASS) \
-  CLASS &operator=(const CLASS &v1) {assert(false); return *this;}	\
-  CLASS(const CLASS &v) {assert(false); } 
+  CLASS &operator=(const CLASS &) {assert(false); return *this;}	\
+  CLASS(const CLASS &) {assert(false); } 
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries.
  */
@@ -89,10 +89,10 @@ namespace OFX {
     class ValueParam;
     class IntParam;
     class Int2DParam;
-    class Int3DParam;    
+    class Int3DParam;
     class DoubleParam;
     class Double2DParam;
-    class Double3DParam;    
+    class Double3DParam;
     class RGBAParam;
     class RGBParam;
     class StringParam;
@@ -234,8 +234,7 @@ namespace OFX {
         ValueParamDescriptor(const std::string &name, ParamTypeEnum type, OfxPropertySetHandle props);
 
         friend class ParamSetDescriptor;
-        // Need boost because of forward declaration
-        boost::scoped_ptr<ParamInteractDescriptor> _interact;
+        std::auto_ptr<ParamInteractDescriptor> _interact;
     public :
         /** @brief dtor */
         ~ValueParamDescriptor();
@@ -416,7 +415,7 @@ namespace OFX {
         /** @brief set the display min and max, default is to be the same as the range param */
         void setDisplayRange(double min, double max);
     };
-  
+
     ////////////////////////////////////////////////////////////////////////////////
     /** @brief Wraps up a 2D double param */
     class Double2DParamDescriptor : public BaseDoubleParamDescriptor {
@@ -648,7 +647,6 @@ namespace OFX {
         defineParamDescriptor(const std::string &name, ParamTypeEnum paramType, T * &paramPtr)
         {
             paramPtr = NULL;
-
             // have we made it already in this param set and is it of the correct type
             if(ParamDescriptor *param  = findPreviouslyDefinedParam(name)) {
                 if(param->getType() == paramType) {
@@ -750,10 +748,10 @@ namespace OFX {
     class Param {
     protected :
         // don't ever use these!
-        Param &operator=(const Param &v1) {assert(false); return *this;} 
+        Param &operator=(const Param &) {assert(false); return *this;} 
         Param(const Param &v) : _paramSet(v._paramSet) {assert(false); } 
         Param(void) {assert(false);}
-    
+
     protected :
         std::string    _paramName;
         ParamTypeEnum  _paramType;
@@ -771,7 +769,7 @@ namespace OFX {
 
         /** @brief get name */
         const std::string &getName(void) const;
-    
+
         /** @brief, set the label properties in a plugin */
         void setLabels(const std::string &label, const std::string &shortLabel, const std::string &longLabel);
 
@@ -1144,8 +1142,11 @@ namespace OFX {
         void setDisplayRange(double minX, double minY,
                             double maxX, double maxY);
 
-        /** @brief het the default value */
+        /** @brief get the default value */
         void getDefault(double &x, double &y);
+        
+        /** @brief get the default value */
+        inline OfxPointD getDefault(){ OfxPointD v; getDefault(v.x, v.y); return v; }
 
         /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
         void getRange(double &minX, double &minY,
@@ -1158,14 +1159,23 @@ namespace OFX {
         /** @brief get value */
         void getValue(double &x, double &y);
 
+        /** @brief get value */
+        inline OfxPointD getValue(){ OfxPointD v; getValue(v.x, v.y); return v; }
+
         /** @brief get the value at a time */
         void getValueAtTime(double t, double &x, double &y);
 
         /** @brief set value */
         void setValue(double x, double y);
 
+        /** @brief set value */
+        inline void setValue( const OfxPointD& p ){ setValue(p.x, p.y); }
+
         /** @brief set the value at a time, implicitly adds a keyframe */
         void setValueAtTime(double t, double x, double y);
+        
+        /** @brief set the value at a time, implicitly adds a keyframe */
+        inline void setValueAtTime( double t, const OfxPointD& p ){ setValueAtTime(t, p.x, p.y); }
 
         /** @brief differentiate the param */
         void differentiate(double t, double &x, double &y);
@@ -1370,6 +1380,9 @@ namespace OFX {
         /** @brief get value */
         void getValue(int &v);
 
+        /** @brief get value */
+        inline int getValue(){ int v; getValue(v); return v; }
+
         /** @brief get the value at a time */
         void getValueAtTime(double t, int &v);
 
@@ -1477,8 +1490,14 @@ namespace OFX {
         /** @brief get value */
         void getValue(std::string &v);
 
+        /** @brief get value */
+        inline std::string getValue(){ std::string v; getValue(v); return v; }
+
         /** @brief get the value at a time */
         void getValueAtTime(double t, std::string &v);
+
+        /** @brief get the value at a time */
+        inline std::string getValueAtTime(double t){ std::string v; getValueAtTime(t,v); return v; }
 
         /** @brief set value */
         void setValue(const std::string &v);

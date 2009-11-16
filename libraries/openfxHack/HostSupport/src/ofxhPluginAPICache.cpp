@@ -148,8 +148,8 @@ namespace OFX
       {
         std::string indent_prefix(indent, ' ');
 
-        for (Property::PropertyMap::const_iterator i = set.getProperties().begin();
-             i != set.getProperties().end();
+        for (Property::PropertyMap::const_iterator i = set.getMap().begin();
+             i != set.getMap().end();
              i++)
           {
             Property::Property *prop = i->second;

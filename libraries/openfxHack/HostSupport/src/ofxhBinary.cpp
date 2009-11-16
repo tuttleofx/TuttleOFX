@@ -29,7 +29,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ofxhBinary.h"
 
-using namespace OFX;
+namespace OFX {
+namespace Host {
 
 Binary::Binary(const std::string &binaryPath): _binaryPath(binaryPath), _invalid(false), _dlHandle(0), _users(0)
 {
@@ -99,7 +100,7 @@ void *Binary::findSymbol(const std::string &symbol) {
 #if defined(UNIX)
     return dlsym(_dlHandle, symbol.c_str());
 #elif defined (WINDOWS)
-    return (void*)GetProcAddress(_dlHandle, symbol.c_str());
+    return GetProcAddress(_dlHandle, symbol.c_str());
 #endif
   } else {
     return 0;
@@ -126,4 +127,5 @@ void Binary::unref()
   }
 }
 
-
+}
+}

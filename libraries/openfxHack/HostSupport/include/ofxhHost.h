@@ -47,8 +47,8 @@ namespace OFX {
     class Plugin;
    
     /// a param descriptor 
-    namespace Param {
-      class Descriptor;
+    namespace Attribute {
+      class ParamDescriptor;
     }
     
     /// Base class for all objects passed to a plugin by the 'setHost' function 
@@ -60,7 +60,7 @@ namespace OFX {
 
     public:
       Host();
-      virtual ~Host() {}
+      virtual ~Host()=0;
 
       
       /// get the props on this host
@@ -76,7 +76,7 @@ namespace OFX {
       OfxHost *getHandle();
 
       /// override this to handle do post-construction initialisation on a Param::Descriptor
-      virtual void initDescriptor(Param::Descriptor *) { }
+      virtual void initDescriptor(Attribute::ParamDescriptor *) { }
 
       /// is my magic number valid?
       bool verifyMagic() { return true; }

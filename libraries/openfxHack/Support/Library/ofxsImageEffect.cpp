@@ -103,6 +103,30 @@ namespace OFX {
     throw std::invalid_argument(s);
   }
 
+  /** @brief map a std::string to a context */
+  const std::string mapContextEnumToStr(const ContextEnum& s) throw(std::invalid_argument)
+  {
+	  switch( s )
+	  {
+		  case eContextGenerator:
+			  return kOfxImageEffectContextGenerator;
+		  case eContextFilter:
+			  return kOfxImageEffectContextFilter;
+		  case eContextTransition:
+			  return kOfxImageEffectContextTransition;
+		  case eContextPaint:
+			  return kOfxImageEffectContextPaint;
+		  case eContextGeneral:
+			  return kOfxImageEffectContextGeneral;
+		  case eContextRetimer:
+			  return kOfxImageEffectContextRetimer;
+		  case eContextNone:
+			  return "ContextNone...";
+	  }
+    OFX::Log::error( true, "Unknown image effect context enum '%d'", (int)s );
+    throw std::invalid_argument("Unknown image effect context enum.");
+  }
+
   const char* mapToMessageTypeEnum(OFX::Message::MessageTypeEnum type)
   {
     if(type == OFX::Message::eMessageFatal)
@@ -265,9 +289,13 @@ namespace OFX {
     case ePixelComponentRGBA :
       _clipProps.propSetString(kOfxImageEffectPropSupportedComponents, kOfxImageComponentRGBA, n);
       break;
-
     case ePixelComponentAlpha :
       _clipProps.propSetString(kOfxImageEffectPropSupportedComponents, kOfxImageComponentAlpha, n);
+      break;
+    case ePixelComponentCustom:
+      break;
+    case ePixelComponentNone:
+      _clipProps.propSetString(kOfxImageEffectPropSupportedComponents, kOfxImageComponentNone, n);
       break;
     }
   }
@@ -378,6 +406,8 @@ namespace OFX {
     case eContextRetimer :
       _effectProps.propSetString(kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextRetimer, n);
       break;
+    case eContextNone :
+      break;
     }
   }
 
@@ -402,6 +432,12 @@ namespace OFX {
       break;
     case eBitDepthFloat :
       _effectProps.propSetString(kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthFloat  , n);
+      break;
+    case eBitDepthNone:
+      _effectProps.propSetString(kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthNone  , n);
+      break;
+    case eBitDepthCustom:
+      // what the good way ?
       break;
     }
   }
@@ -490,16 +526,19 @@ namespace OFX {
     // no, so make it
     OfxPropertySetHandle propSet;
     OfxStatus stat = OFX::Private::gEffectSuite->clipDefine(_effectHandle, name.c_str(), &propSet);
+    if (stat == kOfxStatOK) {
+        ClipDescriptor *clip = new ClipDescriptor(name, propSet);
 
-    ClipDescriptor *clip = new ClipDescriptor(name, propSet);
+        _definedClips[name] = clip;
+        _clipComponentsPropNames[name] = std::string("OfxImageClipPropComponents_") + name;
+        _clipDepthPropNames[name] = std::string("OfxImageClipPropDepth_") + name;
+        _clipPARPropNames[name] = std::string("OfxImageClipPropPAR_") + name;
+        _clipROIPropNames[name] = std::string("OfxImageClipPropRoI_") + name;
+        _clipFrameRangePropNames[name] = std::string("OfxImageClipPropFrameRange_") + name;
 
-    _definedClips[name] = clip;
-    _clipComponentsPropNames[name] = std::string("OfxImageClipPropComponents_") + name;
-    _clipDepthPropNames[name] = std::string("OfxImageClipPropDepth_") + name;
-    _clipPARPropNames[name] = std::string("OfxImageClipPropPAR_") + name;
-    _clipROIPropNames[name] = std::string("OfxImageClipPropRoI_") + name;
-    _clipFrameRangePropNames[name] = std::string("OfxImageClipPropFrameRange_") + name;
-    return clip;
+        return clip;
+    } else
+        return NULL;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -525,9 +564,10 @@ namespace OFX {
     _pixelBytes = 0;
     switch(_pixelComponents) 
     {
-    case ePixelComponentRGBA  : _pixelBytes = 4; break;
-    case ePixelComponentAlpha : _pixelBytes = 1; break;
+    case ePixelComponentRGBA   : _pixelBytes = 4; break;
+    case ePixelComponentAlpha  : _pixelBytes = 1; break;
     case ePixelComponentCustom : _pixelBytes = 0; break;
+    case ePixelComponentNone   : _pixelBytes = 0; break;
     }
 
     switch(_pixelDepth) 
@@ -535,6 +575,8 @@ namespace OFX {
     case eBitDepthUByte  : _pixelBytes *= 1; break;
     case eBitDepthUShort : _pixelBytes *= 2; break;
     case eBitDepthFloat  : _pixelBytes *= 4; break;
+    case eBitDepthCustom : /* what the good way ? */ break;
+    case eBitDepthNone   : _pixelBytes = 0; break;
     }
 
     str = _imageProps.propGetString(kOfxImageEffectPropPreMultiplication);
@@ -591,7 +633,7 @@ namespace OFX {
 
     char *pix = (char *) (((char *) _pixelData) + (y - _bounds.y1) * _rowBytes);
     pix += (x - _bounds.x1) * _pixelBytes;
-    return (void *) pix;   
+    return (void *) pix;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -863,6 +905,8 @@ namespace OFX {
   /** @brief the context this effect was instantiate in */
   ContextEnum ImageEffect::getContext(void) const
   {
+	  //tmp fab
+	  std::cout << "tmp fab... getContext enum:" << (int)_context << " str:" << mapContextEnumToStr(_context) << std::endl;
     return _context;
   }
 
@@ -1186,6 +1230,11 @@ namespace OFX {
     case ePixelComponentAlpha : 
       outArgs_.propSetString(propName.c_str(), kOfxImageComponentAlpha); 
       break;
+    case ePixelComponentCustom:
+      break;
+    case ePixelComponentNone:
+      outArgs_.propSetString(propName.c_str(), kOfxImageComponentNone);
+      break;
     }
   }
 
@@ -1205,6 +1254,12 @@ namespace OFX {
       break;
     case eBitDepthFloat : 
       outArgs_.propSetString(propName.c_str(), kOfxBitDepthFloat); 
+      break;
+    case eBitDepthNone:
+      outArgs_.propSetString(propName.c_str(), kOfxBitDepthNone);
+      break;
+    case eBitDepthCustom:
+      // what the good way ?
       break;
     }
   }
@@ -1262,9 +1317,12 @@ namespace OFX {
     doneSomething_ = true;
     switch(v) 
     {
-    case eFieldNone : outArgs_.propSetString(kOfxImageClipPropFieldOrder, kOfxImageFieldNone, 0, false); break;
+    case eFieldNone  : outArgs_.propSetString(kOfxImageClipPropFieldOrder, kOfxImageFieldNone, 0, false); break;
     case eFieldLower : outArgs_.propSetString(kOfxImageClipPropFieldOrder, kOfxImageFieldLower, 0, false); break;
     case eFieldUpper : outArgs_.propSetString(kOfxImageClipPropFieldOrder, kOfxImageFieldUpper, 0, false); break;
+    case eFieldBoth  : outArgs_.propSetString(kOfxImageClipPropFieldOrder, kOfxImageFieldBoth, 0, false); break;
+    // kOfxImageFieldSingle ?
+    // kOfxImageFieldDoubled ?
     }
   }
 
@@ -1289,7 +1347,7 @@ namespace OFX {
   /** @brief dtor */
   ImageMemory::~ImageMemory()
   {
-    OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryFree(_handle);
+    /*OfxStatus stat = */OFX::Private::gEffectSuite->imageMemoryFree(_handle);
     // ignore status code for exception purposes
   }
 
@@ -1307,7 +1365,7 @@ namespace OFX {
   /** @brief unlock the memory */
   void ImageMemory::unlock(void)
   {
-    OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryUnlock(_handle);
+    /*OfxStatus stat = */OFX::Private::gEffectSuite->imageMemoryUnlock(_handle);
   }
 
 
@@ -1378,7 +1436,7 @@ namespace OFX {
     {
       gLoadCount++;  
 
-      OfxStatus status = kOfxStatOK;
+      //OfxStatus status = kOfxStatOK;
 
       // fetch the suites
       OFX::Log::error(gHost == 0, "Host pointer has not been set.");
@@ -1467,10 +1525,15 @@ namespace OFX {
       // fetch the instance data out of the properties
       instance = (ImageEffect *) props.propGetPointer(kOfxPropInstanceData);
 
-      OFX::Log::error(instance == 0, "Instance data handle in effect instance properties is NULL!");
+      OFX::Log::error(instance == NULL, "Instance data handle in effect instance properties is NULL!");
 
-      // need to throw something here
-
+	  if( instance == NULL )
+	  {
+		  // need to throw something here
+		  std::cerr << "Can't retrieve ImageEffecy pointeur from ofxImageEffectHandle. (property: "<<kOfxPropInstanceData<< " is NULL)." << std::endl;
+		  std::cerr << "The plugin will crash..." << std::endl;
+		  // OFX_TODO Exception !!!!!!!!!
+	  }
       // and dance to the music
       return instance;
     }
@@ -1647,8 +1710,8 @@ namespace OFX {
       public :
         /** @brief ctor */
         ActualROISetter(OFX::PropertySet &args, const std::map<std::string, std::string>& clipROIPropNames) 
-          : outArgs_(args)
-          , doneSomething_(false) 
+          : doneSomething_(false)
+          , outArgs_(args)
           , clipROIPropNames_(clipROIPropNames)
         { }
 
@@ -1894,7 +1957,6 @@ namespace OFX {
       OFX::Log::indent();
       OfxStatus stat = kOfxStatReplyDefault;
       try {
-
         OfxPlugInfoMap::iterator it = plugInfoMap.find(plugname);
         if(it==plugInfoMap.end())
           throw;
@@ -1922,7 +1984,6 @@ namespace OFX {
           // got here, must be good
           stat = kOfxStatOK;
         }
-
         // figure the actions
         else if (action == kOfxActionUnload) {
           checkMainHandles(actionRaw, handleRaw, inArgsRaw, outArgsRaw, true, true, true);
@@ -1989,7 +2050,7 @@ namespace OFX {
           ContextEnum context = mapToContextEnum(str);
 
           // make the image effect instance for this context
-          ImageEffect *instance = factory->createInstance(handle, context);
+          /*ImageEffect *instance = */factory->createInstance(handle, context);
 
           // validate the plugin handle's properties
           OFX::Validation::validatePluginInstanceProperties(fetchEffectProps(handle));
@@ -2091,7 +2152,7 @@ namespace OFX {
             stat = kOfxStatOK;
 
           // fetch our pointer out of the props on the handle
-          ImageEffect *instance = retrieveImageEffectPointer(handle);
+          /*ImageEffect *instance = */retrieveImageEffectPointer(handle);
 
         }
         else if(action == kOfxActionBeginInstanceChanged) {
@@ -2139,43 +2200,45 @@ namespace OFX {
       }
 
       // catch suite exceptions
-      catch (OFX::Exception::Suite &ex)
+      catch (OFX::Exception::Suite &e)
       {
         std::cout << "Caught OFX::Exception::Suite" << std::endl;
-        stat = ex.status();
+        stat = e.status();
       }
 
       // catch host inadequate exceptions
-      catch (OFX::Exception::HostInadequate)
+      catch (OFX::Exception::HostInadequate& e)
       {
-        std::cout << "Caught OFX::Exception::HostInadequate" << std::endl;
+        std::cout << "Caught OFX::Exception::HostInadequate (" << e.what() << ")" << std::endl;
         stat = kOfxStatErrMissingHostFeature;
       }
 
       // catch exception due to a property being unknown to the host, implies something wrong with host if not caught further down
-      catch (OFX::Exception::PropertyUnknownToHost)
+      catch (OFX::Exception::PropertyUnknownToHost& e)
       {
-        std::cout << "Caught OFX::Exception::PropertyUnknownToHost" << std::endl;
+        std::cout << "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" << std::endl;
         stat = kOfxStatErrMissingHostFeature;
       }
 
       // catch memory
-      catch (std::bad_alloc)
+      catch (std::bad_alloc& e)
       {
+        std::cout << "Caught std::bad_alloc (" << e.what() << ")" << std::endl;
         stat = kOfxStatErrMemory;
       }
 
       // catch a custom client exception, if defined
 #ifdef OFX_CLIENT_EXCEPTION_TYPE
-      catch (OFX_CLIENT_EXCEPTION_TYPE &ex)
+      catch (OFX_CLIENT_EXCEPTION_TYPE &e)
       {
-        stat = OFX_CLIENT_EXCEPTION_HANDLER(ex, plugname);
+        std::cout << "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" << std::endl;
+        stat = OFX_CLIENT_EXCEPTION_HANDLER(e, plugname);
       }
 #endif
       // Catch anything else, unknown
       catch (...)
       {
-        std::cout << "Caught Unknown exception" << std::endl;
+        std::cout << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
         stat = kOfxStatFailed;
       }
 

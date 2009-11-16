@@ -32,13 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <iostream>
 
-#ifndef WINDOWS
-    #if ( defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__) || defined(__TOS_WIN__) || defined(__WIN32__) )
-        #define WINDOWS
-    #endif
-#endif
-
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(WIN32) || defined(WIN64)
 #define I386
 #elif defined(__linux__)
 #ifndef UNIX
@@ -68,8 +62,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <sys/stat.h>
 
-namespace OFX 
-{
+namespace OFX {
+namespace Host {
 
   /// class representing a DLL/Shared Object/etc
   class Binary {
@@ -126,6 +120,8 @@ namespace OFX
     /// returns null pointer if not found, or if the library is not loaded.
     void *findSymbol(const std::string &symbol);
   };
+
+}
 }
 
 #endif

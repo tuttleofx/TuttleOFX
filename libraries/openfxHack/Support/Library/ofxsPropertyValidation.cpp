@@ -49,11 +49,11 @@ This file contains headers for classes that are used to validate property sets a
 // #define  kOfxsDisableValidation
 
 // disable validation if not a debug build
-#ifndef DEBUG
-#define  kOfxsDisableValidation
-#endif
+//#ifndef DEBUG
+//#define  kOfxsDisableValidation
+//#endif
 
-#define kOfxsDisableValidation
+//#define kOfxsDisableValidation
 /** @brief OFX namespace
 */
 namespace OFX {
@@ -141,7 +141,7 @@ namespace OFX {
       // see if it exists by fetching the dimension, 
 
       try {
-        int hostDimension = propSet.propGetDimension(_name);
+        int hostDimension = propSet.propGetDimension(_name.c_str());
         _exists = true;  
 
         if(_dimension != -1) // -1 implies variable dimension
@@ -150,10 +150,10 @@ namespace OFX {
         if(hostDimension > 0) {
           switch(_ilk) 
           {
-          case OFX::ePointer : { void *vP = propSet.propGetPointer(_name); }break;
-          case OFX::eInt :     { int vI = propSet.propGetInt(_name); } break;
-          case OFX::eString  : { std::string vS = propSet.propGetString(_name); } break;
-          case OFX::eDouble  : { double vD = propSet.propGetDouble(_name); } break;
+          case OFX::ePointer : { /*void *vP = */propSet.propGetPointer(_name); }break;
+          case OFX::eInt :     { /*int vI = */propSet.propGetInt(_name); } break;
+          case OFX::eString  : { /*std::string vS = */propSet.propGetString(_name); } break;
+          case OFX::eDouble  : { /*double vD = */propSet.propGetDouble(_name); } break;
           }
         }
 

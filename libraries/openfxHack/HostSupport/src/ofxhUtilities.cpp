@@ -55,5 +55,29 @@ namespace OFX {
       return s2; // oooh this might be bad dad.
     }
   }
+  
+	const std::string mapStatusToString(const OfxStatus stat)
+	{
+		switch(stat)
+		{
+		case kOfxStatOK             : return "kOfxStatOK";
+		case kOfxStatFailed         : return "kOfxStatFailed";
+		case kOfxStatErrFatal       : return "kOfxStatErrFatal";
+		case kOfxStatErrUnknown     : return "kOfxStatErrUnknown";
+		case kOfxStatErrMissingHostFeature : return "kOfxStatErrMissingHostFeature";
+		case kOfxStatErrUnsupported : return "kOfxStatErrUnsupported";
+		case kOfxStatErrExists      : return "kOfxStatErrExists";
+		case kOfxStatErrFormat      : return "kOfxStatErrFormat";
+		case kOfxStatErrMemory      : return "kOfxStatErrMemory";
+		case kOfxStatErrBadHandle   : return "kOfxStatErrBadHandle";
+		case kOfxStatErrBadIndex    : return "kOfxStatErrBadIndex";
+		case kOfxStatErrValue       : return "kOfxStatErrValue";
+		case kOfxStatReplyYes       : return "kOfxStatReplyYes";
+		case kOfxStatReplyNo        : return "kOfxStatReplyNo";
+		case kOfxStatReplyDefault   : return "kOfxStatReplyDefault";
+		case kOfxStatErrImageFormat : return "kOfxStatErrImageFormat";
+		}
+		return "UNKNOWN STATUS CODE";
+	}
 
 }

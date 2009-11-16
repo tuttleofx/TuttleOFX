@@ -143,7 +143,7 @@ namespace OFX {
 
       void ImageEffectPlugin::saveXML(std::ostream &os) 
       {
-        APICache::propertySetXMLWrite(os, getDescriptor().getProps(), 6);
+        APICache::propertySetXMLWrite(os, getDescriptor().getProperties(), 6);
       }
 
       const std::set<std::string> &ImageEffectPlugin::getContexts() const {
@@ -151,7 +151,7 @@ namespace OFX {
           return _knownContexts;
         }
         else {
-          const OFX::Host::Property::Set &eProps = getDescriptor().getProps();
+          const OFX::Host::Property::Set &eProps = getDescriptor().getProperties();
           int size = eProps.getDimension(kOfxImageEffectPropSupportedContexts);
           for (int j=0;j<size;j++) {
             std::string context = eProps.getStringProperty(kOfxImageEffectPropSupportedContexts, j);
@@ -329,7 +329,7 @@ namespace OFX {
         for (std::vector<ImageEffectPlugin *>::iterator i=_plugins.begin();i!=_plugins.end();i++) {
           ImageEffectPlugin *p = *i;
 
-          if (p->getDescriptor().getProps().getStringProperty(kOfxPropLabel) != label) {
+          if (p->getDescriptor().getProperties().getStringProperty(kOfxPropLabel) != label) {
             continue;
           }
 
@@ -385,8 +385,8 @@ namespace OFX {
           return;
         }
 
-        ImageEffect::Descriptor &e = p->getDescriptor();
-        Property::Set &eProps = e.getProps();
+        const ImageEffect::Descriptor &e = p->getDescriptor();
+        const Property::Set &eProps = e.getProperties();
 
         int size = eProps.getDimension(kOfxImageEffectPropSupportedContexts);
 
@@ -419,50 +419,7 @@ namespace OFX {
         if (el == "param" && _currentContext) {
           std::string pname = map["name"];
           std::string ptype = map["type"];
-/*
-          Descriptor *tmp;
-          if ( ptype == kOfxParamTypeRGB ) {
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".r_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".g_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".b_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-          } else if ( ptype == kOfxParamTypeRGBA ) {
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".r_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".g_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".b_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".a_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-          } else if ( ptype == kOfxParamTypeDouble2D ) {
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".x_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".y_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-          } else if ( ptype == kOfxParamTypeDouble3D ) {
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".x_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".y_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeDouble, (pname + ".z_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-          } else if ( ptype == kOfxParamTypeInteger2D ) {
-              tmp = _currentContext->paramDefine( kOfxParamTypeInteger, (pname + ".x_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeInteger, (pname + ".y_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-          } else if ( ptype == kOfxParamTypeInteger3D ) {
-              tmp = _currentContext->paramDefine( kOfxParamTypeInteger, (pname + ".x_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeInteger, (pname + ".y_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-              tmp = _currentContext->paramDefine( kOfxParamTypeInteger, (pname + ".z_").c_str() );
-              tmp->getProps().setStringProperty(kOfxParamPropParent, pname);
-          }
-*/
+
           _currentParam = _currentContext->paramDefine(ptype.c_str(), pname.c_str());
           return;
         }
@@ -470,23 +427,23 @@ namespace OFX {
         if (el == "clip" && _currentContext) {
           std::string cname = map["name"];
 
-          _currentClip = new ClipDescriptor(cname);
+          _currentClip = new Attribute::ClipImageDescriptor(cname);
           _currentContext->addClip(cname, _currentClip);
           return;
         }
 
         if (_currentContext && _currentParam) {
-          APICache::propertySetXMLRead(el, map, _currentParam->getProperties(), _currentProp);
+          APICache::propertySetXMLRead(el, map, _currentParam->getEditableProperties(), _currentProp);
           return;
         }
 
         if (_currentContext && _currentClip) {
-          APICache::propertySetXMLRead(el, map, _currentClip->getProps(), _currentProp);
+          APICache::propertySetXMLRead(el, map, _currentClip->getEditableProperties(), _currentProp);
           return;
         }
 
         if (!_currentContext && !_currentParam) {
-          APICache::propertySetXMLRead(el, map, _currentPlugin->getDescriptor().getProps(), _currentProp);
+          APICache::propertySetXMLRead(el, map, _currentPlugin->getDescriptor().getEditableProperties(), _currentProp);
           return;
         }
 
@@ -579,8 +536,8 @@ namespace OFX {
             std::cout << "\t* " << *it2 << std::endl;
           const Descriptor& d =  it->second->getDescriptor();
           std::cout << "Inputs:" << std::endl;
-          const std::map<std::string, ClipDescriptor*>& inputs = d.getClips();
-          for (std::map<std::string, ClipDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2)
+          const std::map<std::string, Attribute::ClipImageDescriptor*>& inputs = d.getClips();
+          for (std::map<std::string, Attribute::ClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2)
             std::cout << "\t\t* " << it2->first << std::endl;
           std::cout << "________________________________________________________________________________" << std::endl;
         }

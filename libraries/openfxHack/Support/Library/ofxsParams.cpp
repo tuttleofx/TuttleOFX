@@ -36,8 +36,9 @@ England
 
 /** @brief This file contains code that skins the ofx param suite */
 
-#include "./ofxsSupportPrivate.h"
-#include <string.h>
+#include "ofxsSupportPrivate.h"
+#include "ofxsUtilities.h"
+#include <cstring>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {  
@@ -941,10 +942,10 @@ namespace OFX {
   ////////////////////////////////////////////////////////////////////////////////
   /** @brief Base class for all param instances */
   Param::Param(const ParamSet *paramSet, const std::string &name, ParamTypeEnum type, OfxParamHandle handle)
-    : _paramSet(paramSet)
-    , _paramName(name)
+    : _paramName(name)
     , _paramType(type)
     , _paramHandle(handle)      
+    , _paramSet(paramSet)
   {
     // fetch our property handle
     OfxPropertySetHandle propHandle;
@@ -2537,13 +2538,13 @@ namespace OFX {
   /// open an undoblock
   void ParamSet::beginEditBlock(const std::string &name)
   {
-    OfxStatus stat = OFX::Private::gParamSuite->paramEditBegin(_paramSetHandle, name.c_str());
+    /*OfxStatus stat = */OFX::Private::gParamSuite->paramEditBegin(_paramSetHandle, name.c_str());
   }
 
   /// close an undoblock
   void ParamSet::endEditBlock()
   {
-    OfxStatus stat = OFX::Private::gParamSuite->paramEditEnd(_paramSetHandle);
+    /*OfxStatus stat = */OFX::Private::gParamSuite->paramEditEnd(_paramSetHandle);
   }
 
 };

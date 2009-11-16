@@ -47,7 +47,7 @@ Contains the core OFX architectural struct and function definitions. For more de
  * This macro is to be used before any symbol that is to be
  * exported from a plug-in. This is OS/compiler dependent.
  */
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(WIN32) || defined(WIN64)
 	#define OfxExport extern __declspec(dllexport)
 #else
 	#define OfxExport extern
@@ -399,6 +399,7 @@ typedef struct OfxPointD {
   double x, y;
 } OfxPointD;
 
+
 /** @brief Used to flag infinite rects. Set minimums to this to indicate infinite
 
 This is effectively INT_MAX. 
@@ -438,42 +439,8 @@ Infinite regions are flagged by setting
 
  */
 typedef struct OfxRectD {
-  double x1, y1, x2, y2;
+    double x1, y1, x2, y2;
 } OfxRectD;
-
-
-/** @brief Defines an 8 bit per component RGB pixel
-
-Should migrate this to the ofxCore.h in a v1.1
-*/
-typedef struct OfxRGBColourB {
-  unsigned char r, g, b;
-} OfxRGBColourB;
-
-/** @brief Defines a 16 bit per component RGB pixel
-
-Should migrate this to the ofxCore.h in a v1.1
-*/
-typedef struct OfxRGBColourS {
-  unsigned short r, g, b;
-} OfxRGBColourS;
-
-/** @brief Defines a floating point component RGB pixel
-
-Should migrate this to the ofxCore.h in a v1.1
-*/
-typedef struct OfxRGBColourF {
-  float r, g, b;
-} OfxRGBColourF;
-
-/** @brief Defines a double precision floating point component RGB pixel
-
-Should migrate this to the ofxCore.h in a v1.1
-*/
-typedef struct OfxRGBColourD {
-  double r, g, b;
-} OfxRGBColourD;
-
 
 /** @brief Defines an 8 bit per component RGBA pixel */
 typedef struct OfxRGBAColourB {
@@ -496,6 +463,53 @@ typedef struct OfxRGBAColourD {
   double r, g, b, a;
 }OfxRGBAColourD;
 
+/** @brief Defines an 8 bit per component RGB pixel
+
+Should migrate this to the ofxCore.h in a v1.1
+*/
+struct OfxRGBColourB {
+  unsigned char r, g, b;
+};
+
+/** @brief Defines a 16 bit per component RGB pixel
+
+Should migrate this to the ofxCore.h in a v1.1
+*/
+struct OfxRGBColourS {
+  unsigned short r, g, b;
+};
+
+/** @brief Defines a floating point component RGB pixel
+
+Should migrate this to the ofxCore.h in a v1.1
+*/
+struct OfxRGBColourF {
+  float r, g, b;
+};
+
+/** @brief Defines a double precision floating point component RGB pixel
+
+Should migrate this to the ofxCore.h in a v1.1
+*/
+struct OfxRGBColourD {
+  double r, g, b;
+};
+
+/** @brief Defines an integer 3D point
+
+Should migrate this to the ofxCore.h in a v1.1
+*/
+struct Ofx3DPointI {
+  int x, y, z;
+};
+
+/** @brief Defines a double precision 3D point
+
+Should migrate this to the ofxCore.h in a v1.1
+*/
+struct Ofx3DPointD {
+  double x, y, z;
+};
 
 /** @brief Defines an 8 bit per component YUVA pixel */
 typedef struct OfxYUVAColourB {
@@ -512,19 +526,6 @@ typedef struct OfxYUVAColourF {
   float y, u, v, a;
 }OfxYUVAColourF;
 
-
-/** @brief Defines an integer 3D point
-
-*/
-typedef struct Ofx3DPointI {
-  int x, y, z;
-} Ofx3DPointI;
-
-/** @brief Defines a double precision 3D point
-*/
-typedef struct Ofx3DPointD {
-  double x, y, z;
-} Ofx3DPointD;
 
 /** @brief String used to label unset bitdepths */
 #define kOfxBitDepthNone "OfxBitDepthNone"

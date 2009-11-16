@@ -1,4 +1,3 @@
-
 /*
 Software License :
 
@@ -44,7 +43,7 @@ namespace OFX {
 
   namespace Host {
 
-    namespace Param {
+    namespace Attribute {
 
       /// fetch the param suite
       void *GetSuite(int version);
@@ -52,13 +51,13 @@ namespace OFX {
       /// is this a standard BaseType
       bool isStandardType(const std::string &BaseType);
 
-      class Instance;
-      class SetInstance;
+      class ParamInstance;
+      class ParamInstanceSet;
 
       /// base class to the param set instance and param set descriptor
-      class BaseSet {
+      class ParamAccessorSet {
       public:
-        virtual ~BaseSet();
+        virtual ~ParamAccessorSet();
 
         /// obtain a handle on this set for passing to the C api
         OfxParamSetHandle getParamSetHandle() const;
@@ -70,44 +69,30 @@ namespace OFX {
       };
 
       /// base class for all params
-      class Base : public Attribute {
-
-      private:
-        Base();
-      protected:
-        std::string   _paramType;
+      class ParamAccessor : virtual public Attribute::AttributeAccessor {
       public:
-        Base(const std::string &name, const std::string &paramType);
-        Base(const std::string &name, const std::string &paramType, const Property::Set &properties);
-        virtual ~Base();
+        ParamAccessor();
+//        ParamAccessor( const ParamAccessor& other );
+        virtual ~ParamAccessor()=0;
 
         /// grab a handle on the parameter for passing to the C API
-        OfxParamHandle getHandle() const;
+        virtual OfxParamHandle getParamHandle() const = 0;
 
         virtual bool verifyMagic() { return true; }
 
-        /// grab a handle on the properties of this parameter for the C api
-        OfxPropertySetHandle getPropHandle() const;
-
         const std::string &getParamType() const;
-
-        const std::string &getName() const;
 
         const std::string &getParentName() const;
 
-        const std::string &getLabel() const;
+        /// @todo TUTTLE_TODO : common to all attributes
+		const std::string &getScriptName() const;
 
-        const std::string &getShortLabel() const;
-
-        const std::string &getLongLabel() const;
-
-        const std::string &getScriptName() const;
+        /// @todo TUTTLE_TODO : common to all attributes
+        const std::string &getHint() const;
 
         const std::string &getDoubleType() const;
 
         const std::string &getCacheInvalidation() const;
-
-        const std::string &getHint() const;
 
         bool getEnabled() const;
 
@@ -121,13 +106,19 @@ namespace OFX {
       };
 
       /// the Descriptor of a plugin parameter
-      class Descriptor : public Base {
-        Descriptor();
+      class ParamDescriptor : virtual public ParamAccessor, public Attribute::AttributeDescriptor {
+        ParamDescriptor();
 
       public:
         /// make a parameter, with the given type and name
-        Descriptor(const std::string &type, const std::string &name);
+        ParamDescriptor(const std::string &type, const std::string &name);
 
+		/// grab a handle on the parameter for passing to the C API
+		OfxParamHandle getParamHandle( ) const
+		{
+			return (OfxParamHandle )this;
+		}
+		
         /// add standard param props, will call the below
         void addStandardParamProps(const std::string &type);
 
@@ -146,32 +137,32 @@ namespace OFX {
       /// As we are the owning object we delete the params inside ourselves. It was tempting
       /// to make params autoref objects and have shared ownership with the client code
       /// but that adds complexity for no strong gain.
-      class SetInstance : public BaseSet {
+      class ParamInstanceSet : public ParamAccessorSet {
       protected:
-        std::map<std::string, Instance*> _params;        ///< params by name
-        std::list<Instance *>            _paramList;     ///< params list
+        std::map<std::string, ParamInstance*> _params;        ///< params by name
+        std::list<ParamInstance *>            _paramList;     ///< params list
 
       public :
         /// ctor
         ///
         /// The propery set being passed in belongs to the owning
         /// plugin instance.
-        explicit SetInstance();
+        explicit ParamInstanceSet();
 
         /// dtor.
-        virtual ~SetInstance();
+        virtual ~ParamInstanceSet();
 
         /// get the params
-        inline const std::map<std::string, Instance*> &getParams() const;
-        inline std::map<std::string, Instance*> &getParams();
+        inline const std::map<std::string, ParamInstance*> &getParams() const;
+        inline std::map<std::string, ParamInstance*> &getParams();
 
         /// get the params
-        inline const std::list<Instance*> &getParamList() const;
-        inline std::list<Instance*> &getParamList();
+        inline const std::list<ParamInstance*> &getParamList() const;
+        inline std::list<ParamInstance*> &getParamList();
 
         // get the param
-        Instance* getParam(std::string name) {
-          std::map<std::string,Instance*>::iterator it = _params.find(name);
+        ParamInstance* getParam(std::string name) {
+          std::map<std::string,ParamInstance*>::iterator it = _params.find(name);
           if(it!=_params.end())
             return it->second;
           else
@@ -180,15 +171,15 @@ namespace OFX {
 
         /// The inheriting plugin instance needs to set this up to deal with
         /// plug-ins changing their own values.
-        virtual void paramChangedByPlugin(Param::Instance *param) = 0;
+        virtual void paramChangedByPlugin(Attribute::ParamInstance *param) = 0;
 
         /// add a param
-        virtual OfxStatus addParam(const std::string& name, Instance* instance);
+        virtual OfxStatus addParam(const std::string& name, ParamInstance* instance);
 
         /// make a parameter instance
         ///
         /// Client host code needs to implement this
-        virtual Instance* newParam(const std::string& name, Descriptor& Descriptor, SetInstance * setInstance) = 0;
+        virtual ParamInstance* newParam(const std::string& name, ParamDescriptor& Descriptor, ParamInstanceSet * setInstance) = 0;
 
         /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
         ///
@@ -202,65 +193,72 @@ namespace OFX {
       };
 
       /// a set of parameters
-      class SetDescriptor : public BaseSet {
-        std::map<std::string, Descriptor*> _paramMap;
-        std::list<Descriptor *> _paramList;
+      class ParamDescriptorSet : public ParamAccessorSet {
+        std::map<std::string, ParamDescriptor*> _paramMap;
+        std::list<ParamDescriptor *> _paramList;
         
         /// CC doesn't exist
-        SetDescriptor(const SetDescriptor &);
+        ParamDescriptorSet(const ParamDescriptorSet &);
 
       public:
         /// default ctor
-        SetDescriptor();
+        ParamDescriptorSet();
 
         /// dtor
-        virtual ~SetDescriptor();
+        virtual ~ParamDescriptorSet();
 
         /// get the map of params
-        const std::map<std::string, Descriptor*> &getParams() const;
-        std::map<std::string, Descriptor*> &getParams();
+        const std::map<std::string, ParamDescriptor*> &getParams() const;
+        std::map<std::string, ParamDescriptor*> &getParams();
 
         /// get the list of params
-        const std::list<Descriptor *> &getParamList() const;
+        const std::list<ParamDescriptor *> &getParamList() const;
 
         /// define a param
-        virtual Descriptor *paramDefine(const char *paramType,
+        virtual ParamDescriptor *paramDefine(const char *paramType,
                                         const char *name);
 
         /// add a param in
-        virtual void addParam(const std::string &name, Descriptor *p);
+        virtual void addParam(const std::string &name, ParamDescriptor *p);
       };
 
-      /// the description of a plugin parameter
-      class Instance : public Base, private Property::NotifyHook {
-        Instance();  
+      /// plugin parameter instance
+      class ParamInstance : virtual public ParamAccessor, public Attribute::AttributeInstance, private Property::NotifyHook {
+        ParamInstance();
       protected:
-        SetInstance*  _paramSetInstance;
-        Instance*     _parentInstance;
+        ParamInstanceSet*  _paramSetInstance;
+        ParamInstance*     _parentInstance;
       public:
-        virtual ~Instance();
+        virtual ~ParamInstance();
 
         /// make a parameter, with the given type and name
-        explicit Instance( Descriptor& descriptor, Param::SetInstance & setInstance );
+        explicit ParamInstance( ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance );
 
+
+		/// grab a handle on the parameter for passing to the C API
+		OfxParamHandle getParamHandle( ) const
+		{
+			return (OfxParamHandle )this;
+		}
+		
         //        OfxStatus instanceChangedAction(std::string why,
         //                                        OfxTime     time,
         //                                        double      renderScaleX,
         //                                        double      renderScaleY);
 
         // get the param instance
-        OFX::Host::Param::SetInstance* getParamSetInstance() { return _paramSetInstance; }
-        void setParamSetInstance( OFX::Host::Param::SetInstance *instance ) { _paramSetInstance = instance; }
+        OFX::Host::Attribute::ParamInstanceSet* getParamSetInstance() { return _paramSetInstance; }
+        void setParamSetInstance( OFX::Host::Attribute::ParamInstanceSet *instance ) { _paramSetInstance = instance; }
 
         // set/get parent instance
-        void setParentInstance( Instance* instance );
-        Instance* getParentInstance();
+        void setParentInstance( ParamInstance* instance );
+        ParamInstance* getParentInstance();
 
         // copy one parameter to another
-        virtual OfxStatus copy( const Instance &instance, OfxTime offset );
+        virtual OfxStatus copy( const ParamInstance &instance, OfxTime offset );
 
         // copy one parameter to another, with a range
-        virtual OfxStatus copy( const Instance &instance, OfxTime offset, OfxRangeD range );
+        virtual OfxStatus copy( const ParamInstance &instance, OfxTime offset, OfxRangeD range );
 
         // callback which should set enabled state as appropriate
         virtual void setEnabled();
@@ -315,14 +313,14 @@ namespace OFX {
       };
 
       template <class T, int DIM>
-      class MultiDimParam : public Instance, public KeyframeParam  {
+      class MultiDimParam : public ParamInstance, public KeyframeParam  {
 	  public:
             typedef T Type;
             typedef typename T::BaseType BaseType;
           protected:
             std::vector<T*> _controls;
           public:
-            MultiDimParam(Descriptor& descriptor, Param::SetInstance & setInstance): Instance(descriptor, setInstance) {
+            MultiDimParam(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance): ParamInstance(descriptor, setInstance) {
             }
 
             virtual ~MultiDimParam() {
@@ -408,7 +406,6 @@ namespace OFX {
                     BaseType *v = va_arg( arg, BaseType* );
                     st  |= _controls[i]->derive( time, *v );
                 }
-                return st;
             }
 
             /// implementation of var args function
@@ -419,57 +416,56 @@ namespace OFX {
                     assert( v );
                     st |= _controls[i]->integrate( time1, time2, *v );
                 }
-                return st;
             }
       };
 
-      class GroupInstance : public Instance, public SetInstance {
+      class ParamGroupInstance : public ParamInstance, public ParamInstanceSet {
       public:
-        GroupInstance( Descriptor& descriptor, Param::SetInstance & setInstance ) : Instance(descriptor, setInstance) {}
+        ParamGroupInstance( ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance ) : ParamInstance(descriptor, setInstance) {}
 
         /// setChildrens have to clone each source instance recursively
-        void setChildrens( const Param::SetInstance * childrens );
-        Param::SetInstance *getChildrens() const;
-        void addChildren( Instance * children );
+        void setChildrens( const Attribute::ParamInstanceSet * childrens );
+        Attribute::ParamInstanceSet *getChildrens() const;
+        void addChildren( ParamInstance * children );
 
         Property::Set &getParamSetProps() {
-            return _paramSetInstance->getParamSetProps();
+            _paramSetInstance->getParamSetProps();
         }
 
         /// The inheriting plugin instance needs to set this up to deal with
         /// plug-ins changing their own values.
-        virtual void paramChangedByPlugin(Param::Instance *param) {
+        virtual void paramChangedByPlugin(Attribute::ParamInstance *param) {
             _paramSetInstance->paramChangedByPlugin( param );
         }
 
-        virtual Instance* newParam(const std::string& name, Descriptor& Descriptor, SetInstance * setInstance) {
-            return _paramSetInstance->newParam( name, Descriptor, setInstance );
+        virtual ParamInstance* newParam(const std::string& name, ParamDescriptor& Descriptor, ParamInstanceSet * setInstance) {
+            _paramSetInstance->newParam( name, Descriptor, setInstance );
         }
 
         /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
         virtual OfxStatus editBegin(const std::string& name) {
-            return _paramSetInstance->editBegin( name );
+            _paramSetInstance->editBegin( name );
         }
 
 
         /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditEnd
         virtual OfxStatus editEnd() {
-            return _paramSetInstance->editEnd();
+            _paramSetInstance->editEnd();
         }
       };
 
-      class PageInstance : public Instance {
+      class ParamPageInstance : public ParamInstance {
       public:
-        PageInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : Instance(descriptor, setInstance) {}
-        const std::map<int,Param::Instance*> &getChildren() const;
+        ParamPageInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        const std::map<int,Attribute::ParamInstance*> &getChildren() const;
       protected :
-        mutable std::map<int,Param::Instance*> _children; // if set in a notify hook, this need not be mutable
+        mutable std::map<int,Attribute::ParamInstance*> _children; // if set in a notify hook, this need not be mutable
       };
 
-      class IntegerInstance : public Instance, public KeyframeParam {
+      class ParamIntegerInstance : public ParamInstance, public KeyframeParam {
       public:
         typedef int BaseType;
-        IntegerInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : Instance(descriptor, setInstance) {}
+        ParamIntegerInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these 
         virtual OfxStatus get(int&) = 0;
@@ -500,9 +496,9 @@ namespace OFX {
         virtual OfxStatus integrateV(OfxTime time1, OfxTime time2, va_list arg);
       };
 
-      class ChoiceInstance : public Instance, public KeyframeParam {
+      class ParamChoiceInstance : public ParamInstance, public KeyframeParam {
       public:
-        ChoiceInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : Instance(descriptor, setInstance) {}
+        ParamChoiceInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these 
         virtual OfxStatus get(int&) = 0;
@@ -523,10 +519,10 @@ namespace OFX {
         virtual OfxStatus setV(OfxTime time, va_list arg);
       };
 
-      class DoubleInstance : public Instance, public KeyframeParam {
+      class ParamDoubleInstance : public ParamInstance, public KeyframeParam {
       public:
         typedef double BaseType;
-        DoubleInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : Instance(descriptor, setInstance) {}
+        ParamDoubleInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these 
         virtual OfxStatus get(double&) = 0;
@@ -555,10 +551,10 @@ namespace OFX {
         virtual OfxStatus integrateV(OfxTime time1, OfxTime time2, va_list arg);
       };
 
-      class BooleanInstance : public Instance, public KeyframeParam {
+      class ParamBooleanInstance : public ParamInstance, public KeyframeParam {
       public:
         typedef bool BaseType;
-        BooleanInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : Instance(descriptor, setInstance) {}
+        ParamBooleanInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these
         virtual OfxStatus get(bool&) = 0;
@@ -579,11 +575,11 @@ namespace OFX {
         virtual OfxStatus setV(OfxTime time, va_list arg);
       };
 
-      class StringInstance : public Instance, public KeyframeParam {
+      class ParamStringInstance : public ParamInstance, public KeyframeParam {
         std::string _returnValue; ///< location to hold temporary return value. Should delegate this to implementation!!!
       public:
         typedef std::string BaseType;
-        StringInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : Instance(descriptor, setInstance) {}
+        ParamStringInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         virtual OfxStatus get(std::string &) = 0;
         virtual OfxStatus get(OfxTime time, std::string &) = 0;
@@ -603,14 +599,14 @@ namespace OFX {
         virtual OfxStatus setV(OfxTime time, va_list arg);
       };
 
-      class CustomInstance : public StringInstance {
+      class ParamCustomInstance : public ParamStringInstance {
       public:
-        CustomInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : StringInstance(descriptor, setInstance) {}
+        ParamCustomInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamStringInstance(descriptor, setInstance) {}
       };
 
-      class PushbuttonInstance : public Instance, public KeyframeParam {
+      class ParamPushbuttonInstance : public ParamInstance, public KeyframeParam {
       public:
-        PushbuttonInstance(Descriptor& descriptor, Param::SetInstance & setInstance) : Instance(descriptor, setInstance) {}
+        ParamPushbuttonInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
       };
     }
   }

@@ -35,6 +35,7 @@ England
 */
 
 #include "ofxsSupportPrivate.h"
+#include <iostream>
 
 namespace OFX {
 

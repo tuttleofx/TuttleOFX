@@ -57,7 +57,7 @@ namespace OFX {
 
         // this comes off Descriptor's property set after a describe
         // context independent
-        Descriptor *_baseDescriptor; /// NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
+        Descriptor *_baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
         /// map to store contexts in
         std::map<std::string, Descriptor *> _contexts;
@@ -84,17 +84,17 @@ namespace OFX {
 
         virtual ~ImageEffectPlugin();
 
-        /// return the API handler this plugin was constructed by
+        /// @return the API handler this plugin was constructed by
         APICache::PluginAPICacheI &getApiHandler();
 
 
-        /// get the base image effect descriptor
+        /// @brief get the base image effect descriptor
         Descriptor &getDescriptor();
 
-        /// get the base image effect descriptor, const version
+        /// @brief get the base image effect descriptor, const version
         const Descriptor &getDescriptor() const;
 
-        /// get the image effect descriptor for the context
+        /// @brief get the image effect descriptor for the context
         Descriptor *getContext(const std::string &context);
 
         void addContext(const std::string &context);
@@ -108,8 +108,10 @@ namespace OFX {
 
         void unload();
 
-        /// this is called to make an instance of the effect
-        /// the client data ptr is what is passed back to the client creation function
+        /**
+		 * @brief this is called to make an instance of the effect
+         *  the client data ptr is what is passed back to the client creation function
+		 */
         ImageEffect::Instance* createInstance(const std::string &context, void *clientDataPtr);
 
       };
@@ -167,8 +169,8 @@ namespace OFX {
         Property::Property *_currentProp;
         
         Descriptor *_currentContext;
-        Param::Descriptor *_currentParam;
-        ClipDescriptor *_currentClip;
+        Attribute::ParamDescriptor *_currentParam;
+        Attribute::ClipImageDescriptor *_currentClip;
 
         /// pointer to our image effect host
         OFX::Host::ImageEffect::Host* _host;

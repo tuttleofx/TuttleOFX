@@ -30,6 +30,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <ofxhUtilities.h>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -88,6 +90,11 @@ namespace OFX {
         {
           return _stat;
         }
+        // TUTTLE_TODO : mapStatusEnumToStr... in tuttle common
+        const std::string getStatusStr()
+        {
+          return mapStatusToString( _stat );
+        }
       };
 
       /// type of a property
@@ -98,6 +105,23 @@ namespace OFX {
         eString = 2,
         ePointer = 3
       };
+
+	  inline const std::string mapTypeEnumToString( const TypeEnum& e )
+	  {
+		  switch( e )
+		  {
+			  case eNone:
+				  return "eNone";
+			  case eInt:
+				  return "eInt";
+			  case eDouble:
+				  return "eDouble";
+			  case eString:
+				  return "eString";
+			  case ePointer:
+				  return "ePointer";
+		  }
+	  }
 
       /// type holder, for integers, used to template up int properties
       struct IntValue { 
@@ -391,10 +415,11 @@ namespace OFX {
       typedef std::map<std::string, Property *> PropertyMap;
 
 
-      //................................................................................
-      /// Class that holds a set of properties and manipulates them
-      /// The 'fetch' methods return a property object.
-      /// The 'get' methods return a property value
+      /**
+       * Class that holds a set of properties and manipulates them
+       * The 'fetch' methods return a property object.
+       * The 'get' methods return a property value
+	   */
       class Set {
       private :
         static const int kMagic = 0x12082007; ///< magic number for property sets, and Connie's birthday :-)
@@ -407,9 +432,6 @@ namespace OFX {
         /// these are searched on a get if not found 
         /// on a local search
         Set *_chainedSet;
-
-        /// hide assignment
-        void operator=(const Set & s) { std::cout << "ok" << std::endl; _props = s._props; _chainedSet = s._chainedSet; }
 
         /// set a particular property
         template<class T> void setProperty(const std::string &property, int index, const typename T::Type &value);
@@ -432,7 +454,8 @@ namespace OFX {
       public :
         /// take an array of of PropSpecs (which must be terminated with an entry in which
         /// ->name is null), and turn these into a Set
-        explicit Set(const PropSpec *);
+        explicit Set(const PropSpec spec[]);
+//        explicit Set(const std::vector<const PropSpec*>& multipleSpec);
 
         /// deep copies the property set
         explicit Set(const Set &);
@@ -443,8 +466,31 @@ namespace OFX {
         /// destructor
         virtual ~Set();
 
+
+        /// dump to cout
+        void cout() const
+        {
+			COUT_INFOS;
+			for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();
+			       it != itEnd;
+			       ++it )
+			 {
+				 Property* prop = it->second;
+				 COUT( "[" << it->first << "]: " << mapTypeEnumToString( prop->getType() ) );
+				 for( int i=0; i<prop->getDimension(); ++i )
+				 {
+					COUT( " - " << prop->getStringValue(i) );
+				 }
+			 }
+        }
+
+        /// hide assignment
+        void operator=(const Set &);
+
         /// adds a bunch of properties from PropSpec
         void addProperties(const PropSpec *);
+
+        inline Set& operator+(const PropSpec *p) { addProperties(p); return *this; }
         
         /// add one new property
         void createProperty(const PropSpec &s);
@@ -456,7 +502,7 @@ namespace OFX {
         void setChainedSet(Set *s) {_chainedSet = s;}
 
         /// grab the internal properties map
-        const PropertyMap &getProperties() const
+        const PropertyMap &getMap() const
         {
           return _props;
         }

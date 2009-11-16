@@ -53,8 +53,8 @@ of the direct OFX objects and any library side only functions.
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC(CLASS) \
-  CLASS &operator=(const CLASS &v1) {assert(false); return *this;}	\
-  CLASS(const CLASS &v) {assert(false); } 
+  CLASS &operator=(const CLASS &) {assert(false); return *this;}	\
+  CLASS(const CLASS &) {assert(false); } 
 
 namespace OFX
 {
@@ -133,6 +133,7 @@ namespace OFX {
   class PluginFactory
   {
   public:
+    virtual ~PluginFactory(){}
     virtual void load() {}
     virtual void unload() {}
     virtual void describe(OFX::ImageEffectDescriptor &desc) = 0;
@@ -180,6 +181,7 @@ namespace OFX {
   public:
     PluginFactoryHelper(const std::string& id, unsigned int maj, unsigned int min): FactoryMainEntryHelper<FACTORY>(id, maj, min)
     {}
+    virtual ~PluginFactoryHelper() {}
     OfxPluginEntryPoint* getMainEntry() { return FactoryMainEntryHelper<FACTORY>::mainEntry; }
     const std::string& getID() const { return FactoryMainEntryHelper<FACTORY>::getHelperID(); }
     const std::string& getUID() const { return FactoryMainEntryHelper<FACTORY>::getHelperUID(); }
@@ -192,6 +194,7 @@ namespace OFX {
   { \
   public: \
   CLASS(const std::string& id, unsigned int verMaj, unsigned int verMin):OFX::PluginFactoryHelper<CLASS>(id, verMaj, verMin){} \
+  virtual ~CLASS(){} \
   virtual void load() LOADFUNCDEF ;\
   virtual void unload() UNLOADFUNCDEF ;\
   virtual void describe(OFX::ImageEffectDescriptor &desc); \
@@ -658,6 +661,7 @@ namespace OFX {
   public :
     /** @brief function to set the RoI of a clip, pass in the clip to set the RoI of, and the RoI itself */
     virtual void setRegionOfInterest(const Clip &clip, const OfxRectD &RoI) = 0;
+    virtual ~RegionOfInterestSetter() { }
   };
 
   /** @brief POD struct to pass arguments into @ref OFX::ImageEffect::getFramesNeeded */
@@ -673,6 +677,7 @@ namespace OFX {
   public :
     /** @brief function to set the frames needed on a clip, the range is min <= time <= max */
     virtual void setFramesNeeded(const Clip &clip, const OfxRangeD &range) = 0;
+    virtual ~FramesNeededSetter() { }
   };
 
   /** @brief Class used to set the clip preferences of the effect.
