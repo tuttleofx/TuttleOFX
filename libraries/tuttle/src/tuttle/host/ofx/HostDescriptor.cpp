@@ -53,7 +53,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ClipInstance.hpp"
 
 namespace tuttle
-{ 
+{
+
   Host::Host()
   {
     // set host properties... TODO
@@ -150,4 +151,5 @@ namespace tuttle
       return kOfxStatOK;
     }
   }
+
 }

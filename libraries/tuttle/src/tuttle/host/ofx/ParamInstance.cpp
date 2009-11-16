@@ -59,9 +59,9 @@ namespace tuttle {
 //
 StringInstance::StringInstance( EffectInstance* effect,
                                 const std::string& name,
-                                OFX::Host::Param::Descriptor& descriptor,
-                                OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::StringInstance( descriptor, setInstance )
+                                OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::ParamStringInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -70,7 +70,7 @@ StringInstance::StringInstance( EffectInstance* effect,
 
 const std::string & StringInstance::getDefault() const
 {
-    return _descriptor.getProperties().getStringProperty( kOfxParamPropDefault );
+    return _descriptor.getProps().getStringProperty( kOfxParamPropDefault );
 }
 
 OfxStatus StringInstance::get( std::string& v )
@@ -102,9 +102,9 @@ OfxStatus StringInstance::set( OfxTime time, const char* v )
 //
 IntegerInstance::IntegerInstance( EffectInstance* effect,
                                   const std::string& name,
-                                  OFX::Host::Param::Descriptor& descriptor,
-                                  OFX::Host::Param::SetInstance & setInstance)
-: OFX::Host::Param::IntegerInstance( descriptor, setInstance )
+                                  OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                  OFX::Host::Attribute::ParamInstanceSet & setInstance)
+: OFX::Host::Attribute::ParamIntegerInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -113,7 +113,7 @@ IntegerInstance::IntegerInstance( EffectInstance* effect,
 
 int IntegerInstance::getDefault() const
 {
-    return _descriptor.getProperties().getIntProperty( kOfxParamPropDefault );
+    return _descriptor.getProps().getIntProperty( kOfxParamPropDefault );
 }
 
 OfxStatus IntegerInstance::get( int& v )
@@ -145,9 +145,9 @@ OfxStatus IntegerInstance::set( OfxTime time, int v )
 //
 DoubleInstance::DoubleInstance( EffectInstance* effect,
                                 const std::string& name,
-                                OFX::Host::Param::Descriptor& descriptor,
-                                OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::DoubleInstance( descriptor, setInstance )
+                                OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::ParamDoubleInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -156,7 +156,7 @@ DoubleInstance::DoubleInstance( EffectInstance* effect,
 
 double DoubleInstance::getDefault() const
 {
-    return _descriptor.getProperties().getDoubleProperty( kOfxParamPropDefault );
+    return _descriptor.getProps().getDoubleProperty( kOfxParamPropDefault );
 }
 
 OfxStatus DoubleInstance::get( double& v )
@@ -198,9 +198,9 @@ OfxStatus DoubleInstance::integrate( OfxTime time1, OfxTime time2, double& )
 //
 BooleanInstance::BooleanInstance( EffectInstance* effect,
                                   const std::string& name,
-                                  OFX::Host::Param::Descriptor& descriptor,
-                                  OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::BooleanInstance( descriptor, setInstance )
+                                  OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                  OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::ParamBooleanInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -209,7 +209,7 @@ BooleanInstance::BooleanInstance( EffectInstance* effect,
 
 bool BooleanInstance::getDefault() const
 {
-    return static_cast<bool>(_descriptor.getProperties().getIntProperty( kOfxParamPropDefault ));
+    return static_cast<bool>(_descriptor.getProps().getIntProperty( kOfxParamPropDefault ));
 }
 
 OfxStatus BooleanInstance::get( bool& v )
@@ -241,9 +241,9 @@ OfxStatus BooleanInstance::set( OfxTime time, bool v )
 //
 ChoiceInstance::ChoiceInstance( EffectInstance* effect,
                                 const std::string& name,
-                                OFX::Host::Param::Descriptor& descriptor,
-                                OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::ChoiceInstance( descriptor, setInstance )
+                                OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::ParamChoiceInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -252,7 +252,7 @@ ChoiceInstance::ChoiceInstance( EffectInstance* effect,
 
 int ChoiceInstance::getDefault() const
 {
-    return _descriptor.getProperties().getIntProperty( kOfxParamPropDefault );
+    return _descriptor.getProps().getIntProperty( kOfxParamPropDefault );
 }
 
 OfxStatus ChoiceInstance::get( int& v )
@@ -284,9 +284,9 @@ OfxStatus ChoiceInstance::set( OfxTime time, int v )
 //
 RGBAInstance::RGBAInstance( EffectInstance* effect,
                             const std::string& name,
-                            OFX::Host::Param::Descriptor& descriptor,
-                            OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::MultiDimParam<DoubleInstance, 4>( descriptor, setInstance )
+                            OFX::Host::Attribute::ParamDescriptor& descriptor,
+                            OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 4>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -301,7 +301,7 @@ RGBAInstance::RGBAInstance( EffectInstance* effect,
 OfxRGBAColourD RGBAInstance::getDefault() const
 {
     OfxRGBAColourD color;
-    _descriptor.getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 4 );
+    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &color.r, 4 );
     return color;
 }
 
@@ -346,9 +346,9 @@ OfxStatus RGBAInstance::set( OfxTime time, double r, double g, double b, double 
 //
 RGBInstance::RGBInstance( EffectInstance* effect,
                           const std::string& name,
-                          OFX::Host::Param::Descriptor& descriptor,
-                          OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
+                          OFX::Host::Attribute::ParamDescriptor& descriptor,
+                          OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -361,7 +361,7 @@ RGBInstance::RGBInstance( EffectInstance* effect,
 OfxRGBColourD RGBInstance::getDefault() const
 {
     OfxRGBColourD color;
-    _descriptor.getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 3 );
+    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &color.r, 3 );
     return color;
 }
 
@@ -402,9 +402,9 @@ OfxStatus RGBInstance::set( OfxTime time, double r, double g, double b )
 //
 Double2DInstance::Double2DInstance( EffectInstance* effect,
                                     const std::string& name,
-                                    OFX::Host::Param::Descriptor& descriptor,
-                                    OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::MultiDimParam<DoubleInstance, 2>( descriptor, setInstance )
+                                    OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                    OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 2>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -416,7 +416,7 @@ Double2DInstance::Double2DInstance( EffectInstance* effect,
 OfxPointD Double2DInstance::getDefault() const
 {
     OfxPointD point;
-    _descriptor.getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 2 );
+    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &point.x, 2 );
     return point;
 }
 
@@ -453,9 +453,9 @@ OfxStatus Double2DInstance::set( OfxTime time, double x, double y )
 //
 Integer2DInstance::Integer2DInstance( EffectInstance* effect,
                                       const std::string& name,
-                                      OFX::Host::Param::Descriptor& descriptor,
-                                      OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::MultiDimParam<IntegerInstance, 2>( descriptor, setInstance )
+                                      OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                      OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::MultiDimParam<IntegerInstance, 2>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -467,7 +467,7 @@ Integer2DInstance::Integer2DInstance( EffectInstance* effect,
 OfxPointI Integer2DInstance::getDefault() const
 {
     OfxPointI point;
-    _descriptor.getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 2 );
+    _descriptor.getProps().getIntPropertyN( kOfxParamPropDefault, &point.x, 2 );
     return point;
 }
 
@@ -504,9 +504,9 @@ OfxStatus Integer2DInstance::set( OfxTime time, int x, int y )
 //
 Integer3DInstance::Integer3DInstance( EffectInstance* effect,
                                       const std::string& name,
-                                      OFX::Host::Param::Descriptor& descriptor,
-                                      OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::MultiDimParam<IntegerInstance, 3>( descriptor, setInstance )
+                                      OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                      OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::MultiDimParam<IntegerInstance, 3>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -519,7 +519,7 @@ Integer3DInstance::Integer3DInstance( EffectInstance* effect,
 Ofx3DPointI Integer3DInstance::getDefault() const
 {
     Ofx3DPointI point;
-    _descriptor.getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 3 );
+    _descriptor.getProps().getIntPropertyN( kOfxParamPropDefault, &point.x, 3 );
     return point;
 }
 
@@ -559,9 +559,9 @@ OfxStatus Integer3DInstance::set( OfxTime time, int x, int y, int z )
 //
 Double3DInstance::Double3DInstance( EffectInstance* effect,
                                     const std::string& name,
-                                    OFX::Host::Param::Descriptor& descriptor,
-                                    OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
+                                    OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                    OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -574,7 +574,7 @@ Double3DInstance::Double3DInstance( EffectInstance* effect,
 Ofx3DPointD Double3DInstance::getDefault() const
 {
     Ofx3DPointD point;
-    _descriptor.getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 3 );
+    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &point.x, 3 );
     return point;
 }
 
@@ -614,9 +614,9 @@ OfxStatus Double3DInstance::set( OfxTime time, double x, double y, double z )
 //
 PushbuttonInstance::PushbuttonInstance( EffectInstance* effect,
                                         const std::string& name,
-                                        OFX::Host::Param::Descriptor& descriptor,
-                                        OFX::Host::Param::SetInstance & setInstance )
-: OFX::Host::Param::PushbuttonInstance( descriptor, setInstance )
+                                        OFX::Host::Attribute::ParamDescriptor& descriptor,
+                                        OFX::Host::Attribute::ParamInstanceSet & setInstance )
+: OFX::Host::Attribute::ParamPushbuttonInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {

@@ -33,27 +33,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace tuttle {
 
-  /// a host combines several things...
-  ///    - a factory to create a new instance of your plugin
-  ///      - it also gets to filter some calls during in the
-  ///        API to check for validity and perform custom
-  ///        operations (eg: add extra properties).
-  ///    - it provides a description of the host application
-  ///      which is passed back to the plugin.
+  /** a host combines several things...
+   *    - a factory to create a new instance of your plugin
+   *      - it also gets to filter some calls during in the
+   *         API to check for validity and perform custom
+   *         operations (eg: add extra properties).
+   *     - it provides a description of the host application
+   *       which is passed back to the plugin.
+   */
   class Host : public OFX::Host::ImageEffect::Host
   {
   public:    
     Host();
 
-    /// Create a new instance of an image effect plug-in.
-    ///
-    /// It is called by ImageEffectPlugin::createInstance which the
-    /// client code calls when it wants to make a new instance.
-    /// 
-    ///   \arg clientData - the clientData passed into the ImageEffectPlugin::createInstance
-    ///   \arg plugin - the plugin being created
-    ///   \arg desc - the descriptor for that plugin
-    ///   \arg context - the context to be created in
+    /** Create a new instance of an image effect plug-in.
+     *
+     *  It is called by ImageEffectPlugin::createInstance which the
+     *  client code calls when it wants to make a new instance.
+     *  
+     *  @arg clientData - the clientData passed into the ImageEffectPlugin::createInstance
+     *  @arg plugin - the plugin being created
+     *  @arg desc - the descriptor for that plugin
+     *  @arg context - the context to be created in
+	 */
     virtual OFX::Host::ImageEffect::Instance* newInstance(void* clientData,
                                                           OFX::Host::ImageEffect::ImageEffectPlugin* plugin,
                                                           OFX::Host::ImageEffect::Descriptor& desc,

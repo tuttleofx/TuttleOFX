@@ -57,8 +57,8 @@ namespace tuttle {
     virtual const std::string &getDefaultOutputFielding() const;
     
     /// make a clip
-    OFX::Host::ImageEffect::ClipInstance* newClipInstance(OFX::Host::ImageEffect::Instance* plugin,
-                                                          OFX::Host::ImageEffect::ClipDescriptor* descriptor,
+    OFX::Host::Attribute::ClipImageInstance* newClipInstance(OFX::Host::ImageEffect::Instance* plugin,
+                                                          OFX::Host::Attribute::ClipImageDescriptor* descriptor,
                                                           int index);
 
     
@@ -125,7 +125,7 @@ namespace tuttle {
     /// make a parameter instance
     ///
     /// Client host code needs to implement this
-    virtual OFX::Host::Param::Instance* newParam(const std::string& name, OFX::Host::Param::Descriptor& Descriptor, SetInstance *setInstance);
+    virtual OFX::Host::Attribute::ParamInstance* newParam(const std::string& name, OFX::Host::Attribute::ParamDescriptor& Descriptor, ParamInstanceSet *setInstance);
     
     /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
     ///

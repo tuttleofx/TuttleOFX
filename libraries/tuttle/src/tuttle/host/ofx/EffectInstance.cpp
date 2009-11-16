@@ -72,12 +72,12 @@ namespace tuttle {
         std::cout << "Description:" << this->getLongLabel() << std::endl;
         std::cout << "Context:" << this->_context << std::endl;
         std::cout << "Clips:" << std::endl;
-        for (std::map<std::string, OFX::Host::ImageEffect::ClipInstance*>::const_iterator it = this->_clips.begin(); it != this->_clips.end(); ++it)
+        for (std::map<std::string, OFX::Host::Attribute::ClipImageInstance*>::const_iterator it = this->_clips.begin(); it != this->_clips.end(); ++it)
         {
             std::cout << "\t\t* " << it->first << std::endl;
         }
         std::cout << "Params:" << std::endl;
-        for (std::list<OFX::Host::Param::Instance*>::const_iterator it = this->_paramList.begin(); it != this->_paramList.end(); ++it)
+        for (std::list<OFX::Host::Attribute::ParamInstance*>::const_iterator it = this->_paramList.begin(); it != this->_paramList.end(); ++it)
         {
             std::cout << "\t\t* " << (*it)->getLabel() << std::endl;
         }
@@ -86,11 +86,11 @@ namespace tuttle {
     }
 
     // get a new clip instance
-    OFX::Host::ImageEffect::ClipInstance* EffectInstance::newClipInstance(OFX::Host::ImageEffect::Instance* plugin,
-                                                                          OFX::Host::ImageEffect::ClipDescriptor* descriptor,
+    OFX::Host::Attribute::ClipImageInstance* EffectInstance::newClipInstance(OFX::Host::ImageEffect::Instance* plugin,
+                                                                          OFX::Host::Attribute::ClipImageDescriptor* descriptor,
                                                                           int index)
     {
-        return new ClipInstance(this,descriptor);
+        return new ClipImgInstance(this,descriptor);
     }
 
 
@@ -179,7 +179,7 @@ namespace tuttle {
     }
 
     // make a parameter instance
-    OFX::Host::Param::Instance* EffectInstance::newParam(const std::string& name, OFX::Host::Param::Descriptor& descriptor, OFX::Host::Param::SetInstance * setInstance)
+    OFX::Host::Attribute::ParamInstance* EffectInstance::newParam(const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet * setInstance)
     {
         if(descriptor.getParamType()==kOfxParamTypeString)
           return new StringInstance(this, name, descriptor, *setInstance);
@@ -202,9 +202,9 @@ namespace tuttle {
         else if(descriptor.getParamType()==kOfxParamTypePushButton)
           return new PushbuttonInstance(this, name, descriptor, *setInstance);
         else if(descriptor.getParamType()==kOfxParamTypeGroup)
-          return new OFX::Host::Param::GroupInstance(descriptor, *setInstance);
+          return new OFX::Host::Attribute::ParamGroupInstance(descriptor, *setInstance);
         else if(descriptor.getParamType()==kOfxParamTypePage)
-          return new OFX::Host::Param::PageInstance(descriptor, *setInstance);
+          return new OFX::Host::Attribute::ParamPageInstance(descriptor, *setInstance);
         else
           return 0;
     }
@@ -266,6 +266,6 @@ namespace tuttle {
                                                 OfxPointD   renderScale) {
         _frameRange.x = startFrame;
         _frameRange.y = endFrame;
-        return Instance::beginRenderAction(startFrame, endFrame, step, interactive, renderScale);
+        Instance::beginRenderAction(startFrame, endFrame, step, interactive, renderScale);
     }
 }
