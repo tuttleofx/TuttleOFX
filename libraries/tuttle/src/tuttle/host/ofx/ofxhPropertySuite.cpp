@@ -243,8 +243,7 @@ namespace Property {
 																	 APIType defaultValue )
 			: Property( name, T::typeCode, dimension )
 			{
-
-				if( dimension )
+				if( dimension != _value.size() )
 				{
 					_value.resize( dimension );
 					_defaultValue.resize( dimension );
@@ -252,7 +251,7 @@ namespace Property {
 
 				if( dimension )
 				{
-					for( int i = 0; i < dimension; i++ )
+					for( int i = 0; i < dimension; ++i )
 					{
 						_defaultValue[i] = defaultValue;
 						_value[i] = defaultValue;
