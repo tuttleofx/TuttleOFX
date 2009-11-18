@@ -21,19 +21,19 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace OFX {
+namespace tuttle {
+
+mDeclarePluginFactory(CropPluginFactory, {}, {});
 
 static const bool   kSupportTiles           = true;
 static const bool   kSupportTemporalAccess  = false;
 
-
-mDeclarePluginFactory(CropPluginFactory, {}, {});
+using namespace OFX;
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
 void
 CropPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {

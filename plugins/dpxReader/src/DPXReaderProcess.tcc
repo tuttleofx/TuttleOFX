@@ -19,7 +19,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-namespace OFX {
+namespace tuttle {
 
 using namespace boost::gil;
 namespace bfs = boost::filesystem;

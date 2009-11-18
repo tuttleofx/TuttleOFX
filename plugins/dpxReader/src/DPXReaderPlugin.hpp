@@ -7,7 +7,7 @@
 
 namespace bgil = boost::gil;
 
-namespace OFX {
+namespace tuttle {
 
 /**
  * @brief Class used to denoise with partial derivated equations

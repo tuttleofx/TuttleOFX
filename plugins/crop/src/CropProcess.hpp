@@ -19,7 +19,7 @@
 #include <boost/scoped_ptr.hpp>
 
 
-namespace OFX {
+namespace tuttle {
 
 /**
  * @brief Base class

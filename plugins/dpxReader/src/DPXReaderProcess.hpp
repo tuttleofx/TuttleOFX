@@ -13,7 +13,7 @@
 #include <boost/filesystem/fstream.hpp>
 
 
-namespace OFX {
+namespace tuttle {
 
 
 /**

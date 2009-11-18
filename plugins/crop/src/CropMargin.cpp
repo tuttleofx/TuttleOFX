@@ -7,7 +7,7 @@
 #include <ofxsInteract.h>
 #include <boost/gil/gil_all.hpp>
 
-namespace OFX {
+namespace tuttle {
 
 bool CropMargin::draw( const OFX::DrawArgs &args )
 {

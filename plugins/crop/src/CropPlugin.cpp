@@ -14,7 +14,7 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/math/special_functions/round.hpp>
 
-namespace OFX {
+namespace tuttle {
 using namespace boost::math;
 using namespace boost::gil;
 const static std::string kCropHelpString = "<b>image volet</b> is used to add bands to an image (e.g 16/9 bands).  <br />";

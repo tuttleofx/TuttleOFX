@@ -8,7 +8,7 @@
 #include <ofxsInteract.h>
 #include <boost/gil/gil_all.hpp>
 
-namespace OFX {
+namespace tuttle {
 
 class CropMargin : public OFX::OverlayInteract
 {

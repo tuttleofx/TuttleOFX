@@ -22,7 +22,7 @@
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
 
-namespace OFX {
+namespace tuttle {
 
 using namespace boost::gil;
 
