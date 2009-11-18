@@ -5,15 +5,15 @@
  * @date    01/10/09 12:01
  *
  */
-#ifndef INVERT_PROCESS_HPP
-#define INVERT_PROCESS_HPP
+#ifndef _TUTTLE_PLUGIN_INVERTPROCESS_HPP_
+#define _TUTTLE_PLUGIN_INVERTPROCESS_HPP_
 
 #include "InvertPlugin.hpp"
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -22,13 +22,15 @@
 
 
 namespace tuttle {
+namespace plugin {
+namespace invert {
 
 /**
  * @brief Base class
  *
  */
 template<class View>
-class InvertProcess : public tuttle::ofx::ImageGilProcessor<View>, public tuttle::ofx::Progress
+class InvertProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
 {
     typedef typename View::value_type value_t;
 protected :
@@ -46,7 +48,9 @@ public :
 };
 
 }
+}
+}
 
 #include "InvertProcess.tcc"
 
-#endif  // INVERT_PROCESS_HPP
+#endif

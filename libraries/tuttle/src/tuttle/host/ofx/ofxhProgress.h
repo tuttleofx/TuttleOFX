@@ -1,4 +1,3 @@
-
 /*
 Software License :
 
@@ -33,8 +32,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ofxProgress.h"
 
-namespace OFX {
-  namespace Host {
+namespace tuttle {
+  namespace host {
+  namespace ofx {
     namespace Progress {
       
       /// Things that display progress derive from this ABC and implement the following
@@ -54,8 +54,9 @@ namespace OFX {
         virtual bool progressUpdate(double t) = 0;        
       };
 
-    } // namespace progress
-  } // namespace Host
-} // namespace OFX
+}
+}
+}
+}
 
 #endif

@@ -39,11 +39,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhClip.h"
 #include "ofxhImageEffect.h"
 
-namespace OFX {
-
-	namespace Host {
-
-		namespace ImageEffect {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace imageEffect {
 
 			static Property::PropSpec imageStuffs[] = {
 				{ kOfxPropType, Property::eString, 1, false, kOfxTypeImage },
@@ -67,7 +66,7 @@ namespace OFX {
 
 			/// called during ctor to get bits from the clip props into ours
 
-			void Image::getClipBits( Attribute::ClipInstance& instance )
+			void Image::getClipBits( attribute::ClipInstance& instance )
 			{
 				const Property::Set& clipProperties = instance.getProps( );
 
@@ -91,7 +90,7 @@ namespace OFX {
 
 			/// make an image from a clip instance
 
-			Image::Image( Attribute::ClipInstance& instance )
+			Image::Image( attribute::ClipInstance& instance )
 			: Property::Set( imageStuffs )
 			, _referenceCount( 1 )
 			{
@@ -100,7 +99,7 @@ namespace OFX {
 
 			// construction based on clip instance
 
-			Image::Image( Attribute::ClipInstance& instance,
+			Image::Image( attribute::ClipInstance& instance,
 						  double renderScaleX,
 						  double renderScaleY,
 						  void* data,
@@ -197,8 +196,7 @@ namespace OFX {
 					delete this;
 			}
 
-		} // ImageEffect
-
-	} // Host
-
-} // OFX
+}
+}
+}
+}

@@ -14,6 +14,8 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace invert {
 
 using namespace boost::gil;
 const static std::string kInvertHelpString = "<b>Image inverter</b> is used to invert components of an image.  <br />";
@@ -118,4 +120,6 @@ void InvertPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
     }
 }
 
+}
+}
 }

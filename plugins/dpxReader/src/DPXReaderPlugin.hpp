@@ -7,7 +7,7 @@
 
 namespace bgil = boost::gil;
 
-namespace tuttle {
+namespace OFX {
 
 /**
  * @brief Class used to denoise with partial derivated equations
@@ -18,7 +18,7 @@ class DPXReaderPlugin : public OFX::ImageEffect
 public:
     DPXReaderPlugin( OfxImageEffectHandle handle );
     OFX::Clip *getDstClip( ) const;
-    tuttle::io::DpxImage & getDpxImg() { return _dpxImg; }
+    OFX::io::DpxImage & getDpxImg() { return _dpxImg; }
 
 public:
     virtual void render( const OFX::RenderArguments &args );
@@ -28,7 +28,7 @@ public:
     void getClipPreferences(OFX::ClipPreferencesSetter &clipPreferences);
 protected:
     bgil::point2<ptrdiff_t>    _imageDims;       ///< Image file dimensions
-    tuttle::io::DpxImage _dpxImg;          ///< Dpx image reader
+    OFX::io::DpxImage _dpxImg;          ///< Dpx image reader
     OFX::StringParam    *_filepath;
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip           *_dstClip;       ///< Destination image clip
@@ -37,3 +37,4 @@ protected:
 }
 
 #endif
+

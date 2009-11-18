@@ -41,11 +41,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhImageEffect.h"
 #include "ofxhInteract.h"
 
-namespace OFX {
-
-  namespace Host {
-
-    namespace Interact {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace Interact {
 
       //
       // descriptor
@@ -413,9 +412,7 @@ namespace OFX {
         return NULL;
       }
 
-
-    } // Interact
-
-  } // Host
-
-} // OFX
+}
+}
+}
+}

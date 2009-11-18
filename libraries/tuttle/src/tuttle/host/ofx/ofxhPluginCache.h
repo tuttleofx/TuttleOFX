@@ -1,6 +1,3 @@
-#ifndef OFX_PLUGIN_CACHE_H
-#define OFX_PLUGIN_CACHE_H
-
 /*
 Software License :
 
@@ -29,6 +26,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef OFX_PLUGIN_CACHE_H
+#define OFX_PLUGIN_CACHE_H
 
 #include <string>
 #include <vector>
@@ -45,11 +44,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhPluginAPICache.h"
 #include "ofxhBinary.h"
 
-namespace OFX {
+namespace tuttle {
+  namespace host {
+  namespace ofx {
 
-  namespace Host {
-
-    class Host;
+    class AbstractHost;
 
     // forward delcarations
     class PluginDesc;   
@@ -298,7 +297,7 @@ namespace OFX {
       OfxPlugin *_op;
 
     public:
-      PluginHandle(Plugin *p, OFX::Host::Host *_host);
+      PluginHandle(Plugin *p, tuttle::host::ofx::AbstractHost *_host);
       virtual ~PluginHandle();
 
       OfxPlugin *getOfxPlugin() {
@@ -312,19 +311,17 @@ namespace OFX {
     
     /// for later 
     struct PluginCacheSupportedApi {
-      std::string api;
-      int minVersion;
-      int maxVersion;
-      APICache::PluginAPICacheI *handler;
+      APICache::PluginAPICacheI& _handler;
 
-      PluginCacheSupportedApi(std::string _api, int _minVersion, int _maxVersion, APICache::PluginAPICacheI *_handler) :
-        api(_api), minVersion(_minVersion), maxVersion(_maxVersion), handler(_handler)
+      PluginCacheSupportedApi( APICache::PluginAPICacheI& handler )
+	  : _handler(handler)
       {
       }
       
-      bool matches(std::string _api, int _version) const
+      bool matches( std::string api, int version ) const
       {
-        if (_api == api && _version >= minVersion && _version <= maxVersion) {
+        if( api == _handler._apiName && version >= _handler._apiVersionMin && version <= _handler._apiVersionMax )
+		{
           return true;
         }
         return false;
@@ -334,7 +331,7 @@ namespace OFX {
     /// Where we keep our plugins.    
     class PluginCache {
     protected :
-      OFX::Host::Property::PropSpec* _hostSpec;
+      tuttle::host::ofx::Property::PropSpec* _hostSpec;
 
       std::list<std::string>    _pluginPath;  ///< list of directories to look in
       std::set<std::string>     _nonrecursePath; ///< list of directories to look in (non-recursively)
@@ -421,8 +418,9 @@ namespace OFX {
       void elementEndCallback(void *userData, const XML_Char *name);
 
       /// register an API cache handler
-      void registerAPICache(const std::string &api, int min, int max, APICache::PluginAPICacheI *apiCache) {
-        _apiHandlers.push_back(PluginCacheSupportedApi(api, min, max, apiCache));
+      void registerAPICache( APICache::PluginAPICacheI& apiCache )
+	  {
+        _apiHandlers.push_back(PluginCacheSupportedApi(apiCache));
       }
       
       /// find the API cache handler for the given api/apiverson
@@ -434,6 +432,7 @@ namespace OFX {
       }
     };
 
+  }
   }
 }
 

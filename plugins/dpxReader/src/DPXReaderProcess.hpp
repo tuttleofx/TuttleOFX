@@ -1,10 +1,10 @@
 #ifndef DPX_READER_PROCESS_HPP
 #define DPX_READER_PROCESS_HPP
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include "OFX/common/utils/global.hpp"
+#include "OFX/plugin/ImageGilProcessor.hpp"
+#include "OFX/plugin/Progress.hpp"
+#include "OFX/plugin/PluginException.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -13,7 +13,7 @@
 #include <boost/filesystem/fstream.hpp>
 
 
-namespace tuttle {
+namespace OFX {
 
 
 /**
@@ -21,7 +21,7 @@ namespace tuttle {
  *
  */
 template<class View>
-class DPXReaderProcess : public tuttle::ofx::ImageGilProcessor<View>, public tuttle::ofx::Progress
+class DPXReaderProcess : public OFX::ofx::ImageGilProcessor<View>, public OFX::ofx::Progress
 {
     typedef typename View::value_type value_t;
 protected :

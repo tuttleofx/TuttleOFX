@@ -48,31 +48,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhImageEffectAPI.h"
 #include "ofxhXml.h"
 
+#include <tuttle/host/core/Core.hpp>
+
 // Disable the "this pointer used in base member initialiser list" warning in Windows
-namespace OFX {
-
-  namespace Host {
-
-    namespace ImageEffect {
-
-      /// our global host bobject, set when the cache is created
-      OFX::Host::ImageEffect::Host *gImageEffectHost;
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace imageEffect {
 
       /// ctor
 #if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( disable : 4355 )
 #endif
-      ImageEffectPlugin::ImageEffectPlugin(PluginCache &pc, PluginBinary *pb, int pi, OfxPlugin *pl)
+      ImageEffectPlugin::ImageEffectPlugin(ImageEffectPluginCache &pc, PluginBinary *pb, int pi, OfxPlugin *pl)
         : Plugin(pb, pi, pl)
         , _pc(pc)
         , _baseDescriptor(NULL)
         , _madeKnownContexts(false)
         , _pluginHandle(0)
       {
-        _baseDescriptor = gImageEffectHost->makeDescriptor(this);
+        _baseDescriptor =core::Core::instance().getHost().makeDescriptor(this);
       }
 
-      ImageEffectPlugin::ImageEffectPlugin(PluginCache &pc,
+      ImageEffectPlugin::ImageEffectPlugin(ImageEffectPluginCache &pc,
                                            PluginBinary *pb,
                                            int pi,
                                            const std::string &api,
@@ -87,7 +85,7 @@ namespace OFX {
         , _madeKnownContexts(false)
         , _pluginHandle(0)
       {        
-        _baseDescriptor = gImageEffectHost->makeDescriptor(this);
+        _baseDescriptor = core::Core::instance().getHost().makeDescriptor(this);
       }
 
 #if defined(WINDOWS) && !defined(__GNUC__)
@@ -151,7 +149,7 @@ namespace OFX {
           return _knownContexts;
         }
         else {
-          const OFX::Host::Property::Set &eProps = getDescriptor().getProperties();
+          const tuttle::host::ofx::Property::Set &eProps = getDescriptor().getProperties();
           int size = eProps.getDimension(kOfxImageEffectPropSupportedContexts);
           for (int j=0;j<size;j++) {
             std::string context = eProps.getStringProperty(kOfxImageEffectPropSupportedContexts, j);
@@ -164,7 +162,7 @@ namespace OFX {
       PluginHandle *ImageEffectPlugin::getPluginHandle() 
       {
         if(!_pluginHandle.get()) {
-          _pluginHandle.reset(new OFX::Host::PluginHandle(this, _pc.getHost())); 
+          _pluginHandle.reset(new tuttle::host::ofx::PluginHandle(this, _pc.getHost()));
 
           OfxPlugin *op = _pluginHandle->getOfxPlugin();
 
@@ -221,15 +219,15 @@ namespace OFX {
 
         //        printf("doing context description.\n");
 
-        OFX::Host::Property::PropSpec inargspec[] = {
-          { kOfxImageEffectPropContext, OFX::Host::Property::eString, 1, true, context.c_str() },
+        tuttle::host::ofx::Property::PropSpec inargspec[] = {
+          { kOfxImageEffectPropContext, tuttle::host::ofx::Property::eString, 1, true, context.c_str() },
           { 0 }
         };
         
-        OFX::Host::Property::Set inarg(inargspec);
+        tuttle::host::ofx::Property::Set inarg(inargspec);
 
         PluginHandle *ph = getPluginHandle();
-        std::auto_ptr<ImageEffect::Descriptor> newContext( gImageEffectHost->makeDescriptor(getDescriptor(), this));
+        std::auto_ptr<tuttle::host::ofx::imageEffect::Descriptor> newContext( core::Core::instance().getHost().makeDescriptor(getDescriptor(), this));
 
         int rval = ph->getOfxPlugin()->mainEntry(kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0);
         
@@ -243,7 +241,7 @@ namespace OFX {
         return 0;
       }
 
-      ImageEffect::Instance* ImageEffectPlugin::createInstance(const std::string &context, void *clientData)
+      imageEffect::Instance* ImageEffectPlugin::createInstance(const std::string &context, void *clientData)
       {          
 
         /// todo - we need to make sure action:load is called, then action:describe again
@@ -256,7 +254,7 @@ namespace OFX {
             COUT( "The plugin doesn't support the context " << context << "." );
             return 0;
         }
-        ImageEffect::Instance *instance = gImageEffectHost->newInstance(clientData,
+        imageEffect::Instance *instance = core::Core::instance().getHost().newInstance(clientData,
                                                                         this,
                                                                         *desc,
                                                                         context);
@@ -270,7 +268,7 @@ namespace OFX {
         }
       }
 
-      PluginCache::PluginCache(OFX::Host::ImageEffect::Host &host) 
+      ImageEffectPluginCache::ImageEffectPluginCache(tuttle::host::ofx::imageEffect::ImageEffectHost &host)
         : PluginAPICacheI(kOfxImageEffectPluginApi, 1, 1)
         , _currentPlugin(0)
         , _currentProp(0)
@@ -279,20 +277,22 @@ namespace OFX {
         , _currentClip(0)
         , _host(&host)
       {
-        gImageEffectHost = &host;
       }
 
-      PluginCache::~PluginCache() {}       
+      ImageEffectPluginCache::~ImageEffectPluginCache() {}
 
       /// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
       /// pick the highest found version.
-      ImageEffectPlugin *PluginCache::getPluginById(const std::string &id, int vermaj, int vermin)
+      ImageEffectPlugin *ImageEffectPluginCache::getPluginById(const std::string &id, int vermaj, int vermin)
       {
+		  COUT_WITHINFOS( "on cherche : " << id );
         // return the highest version one, which fits the pattern provided
         ImageEffectPlugin *sofar = 0;
 
-        for (std::vector<ImageEffectPlugin *>::iterator i=_plugins.begin();i!=_plugins.end();i++) {
+        for( std::vector<ImageEffectPlugin *>::iterator i=_plugins.begin(); i!=_plugins.end(); ++i )
+		{
           ImageEffectPlugin *p = *i;
+		  COUT( "imageEffectPlugin: " << p->getRawIdentifier() );
 
           if (p->getIdentifier() != id) {
             continue;
@@ -310,23 +310,23 @@ namespace OFX {
             sofar = p;
           }
         }
-
+		COUT( "sofar: " << (int)sofar );
         return sofar;
       }
 
-      /// whether we support this plugin.  
-      bool PluginCache::pluginSupported(OFX::Host::Plugin *p, std::string &reason) const {
-        return gImageEffectHost->pluginSupported(dynamic_cast<OFX::Host::ImageEffect::ImageEffectPlugin *>(p), reason);
+      /// whether we support this plugin.
+      bool ImageEffectPluginCache::pluginSupported( tuttle::host::ofx::Plugin *p, std::string &reason ) const {
+        return core::Core::instance().getHost().pluginSupported(dynamic_cast<tuttle::host::ofx::imageEffect::ImageEffectPlugin *>(p), reason);
       }
 
       /// get the plugin by label.  vermaj and vermin can be specified.  if they are not it will
       /// pick the highest found version.
-      ImageEffectPlugin *PluginCache::getPluginByLabel(const std::string &label, int vermaj, int vermin)
+      ImageEffectPlugin *ImageEffectPluginCache::getPluginByLabel(const std::string &label, int vermaj, int vermin)
       {
         // return the highest version one, which fits the pattern provided
         ImageEffectPlugin *sofar = 0;
 
-        for (std::vector<ImageEffectPlugin *>::iterator i=_plugins.begin();i!=_plugins.end();i++) {
+        for (std::vector<ImageEffectPlugin *>::iterator i=_plugins.begin();i!=_plugins.end();++i) {
           ImageEffectPlugin *p = *i;
 
           if (p->getDescriptor().getProperties().getStringProperty(kOfxPropLabel) != label) {
@@ -349,18 +349,18 @@ namespace OFX {
         return sofar;
       }
 
-      const std::vector<ImageEffectPlugin *>& PluginCache::getPlugins() const
+      const std::vector<ImageEffectPlugin *>& ImageEffectPluginCache::getPlugins() const
       {
         return _plugins;
       }
 
-      const std::map<std::string, ImageEffectPlugin *>& PluginCache::getPluginsByID() const
+      const std::map<std::string, ImageEffectPlugin *>& ImageEffectPluginCache::getPluginsByID() const
       {
         return _pluginsByID;
       }
 
       /// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
-      void PluginCache::loadFromPlugin(Plugin *op) const {
+      void ImageEffectPluginCache::loadFromPlugin(Plugin *op) const {
         std::string msg = "loading ";
         msg += op->getRawIdentifier();
 
@@ -373,24 +373,24 @@ namespace OFX {
 
         int rval = plug->mainEntry(kOfxActionLoad, 0, 0, 0);
 
-        if (rval != 0 && rval != 14) {
+        if (rval != kOfxStatOK && rval != kOfxStatReplyDefault) {
           std::cerr << "load failed on plugin " << op->getIdentifier() << std::endl;          
           return;
         }
 
         rval = plug->mainEntry(kOfxActionDescribe, p->getDescriptor().getHandle(), 0, 0);
 
-        if (rval != 0 && rval != 14) {
+        if (rval != kOfxStatOK && rval != kOfxStatReplyDefault) {
           std::cerr << "describe failed on plugin " << op->getIdentifier() << std::endl;          
           return;
         }
 
-        const ImageEffect::Descriptor &e = p->getDescriptor();
+        const imageEffect::Descriptor &e = p->getDescriptor();
         const Property::Set &eProps = e.getProperties();
 
         int size = eProps.getDimension(kOfxImageEffectPropSupportedContexts);
 
-        for (int j=0;j<size;j++) {
+        for (int j=0;j<size;++j) {
           std::string context = eProps.getStringProperty(kOfxImageEffectPropSupportedContexts, j);
           p->addContext(context);
         }
@@ -399,19 +399,19 @@ namespace OFX {
       }      
 
       /// handler for preparing to read in a chunk of XML from the cache, set up context to do this
-      void PluginCache::beginXmlParsing(Plugin *p) {
+      void ImageEffectPluginCache::beginXmlParsing(Plugin *p) {
         _currentPlugin = dynamic_cast<ImageEffectPlugin*>(p);
       }
 
       /// XML handler : element begins (everything is stored in elements and attributes)       
-      void PluginCache::xmlElementBegin(const std::string &el, std::map<std::string, std::string> map) 
+      void ImageEffectPluginCache::xmlElementBegin(const std::string &el, std::map<std::string, std::string> map)
       {
         if (el == "apiproperties") {
           return;
         }
 
         if (el == "context") {
-          _currentContext = gImageEffectHost->makeDescriptor(_currentPlugin->getBinary()->getBundlePath(), _currentPlugin);
+          _currentContext = core::Core::instance().getHost().makeDescriptor(_currentPlugin->getBinary()->getBundlePath(), _currentPlugin);
           _currentPlugin->addContext(map["name"], _currentContext);
           return;
         }
@@ -427,7 +427,7 @@ namespace OFX {
         if (el == "clip" && _currentContext) {
           std::string cname = map["name"];
 
-          _currentClip = new Attribute::ClipImageDescriptor(cname);
+          _currentClip = new attribute::ClipImageDescriptor(cname);
           _currentContext->addClip(cname, _currentClip);
           return;
         }
@@ -451,10 +451,10 @@ namespace OFX {
         assert(false);
       }
 
-      void PluginCache::xmlCharacterHandler(const std::string &) {
+      void ImageEffectPluginCache::xmlCharacterHandler(const std::string &) {
       }
 
-      void PluginCache::xmlElementEnd(const std::string &el) {
+      void ImageEffectPluginCache::xmlElementEnd(const std::string &el) {
         if (el == "param") {
           _currentParam = 0;
         }
@@ -464,16 +464,16 @@ namespace OFX {
         }
       }
 
-      void PluginCache::endXmlParsing() {
+      void ImageEffectPluginCache::endXmlParsing() {
         _currentPlugin = 0;
       }
 
-      void PluginCache::saveXML(Plugin *ip, std::ostream &os) const {
+      void ImageEffectPluginCache::saveXML(Plugin *ip, std::ostream &os) const {
         ImageEffectPlugin *p = dynamic_cast<ImageEffectPlugin*>(ip);
         p->saveXML(os);
       }
 
-      void PluginCache::confirmPlugin(Plugin *p) {
+      void ImageEffectPluginCache::confirmPlugin(Plugin *p) {
         ImageEffectPlugin *plugin = dynamic_cast<ImageEffectPlugin*>(p);
         _plugins.push_back(plugin);
 
@@ -498,27 +498,27 @@ namespace OFX {
         }
       }
 
-      Plugin *PluginCache::newPlugin(PluginBinary *pb,
+      Plugin *ImageEffectPluginCache::newPlugin(PluginBinary *pb,
         int pi,
         OfxPlugin *pl) {
           ImageEffectPlugin *plugin = new ImageEffectPlugin(*this, pb, pi, pl);
           return plugin;
       }
 
-      Plugin *PluginCache::newPlugin(PluginBinary *pb,
+      Plugin *ImageEffectPluginCache::newPlugin(PluginBinary *pb,
         int pi,
         const std::string &api,
         int apiVersion,
         const std::string &pluginId,
         const std::string &rawId,
         int pluginMajorVersion,
-        int pluginMinorVersion) 
+        int pluginMinorVersion)
       {
         ImageEffectPlugin *plugin = new ImageEffectPlugin(*this, pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion);
         return plugin;
       }
 
-      void PluginCache::dumpToStdOut()
+      void ImageEffectPluginCache::dumpToStdOut()
       {
         if (_pluginsByID.empty())
           std::cout << "No Plug-ins Found." << std::endl;
@@ -536,16 +536,15 @@ namespace OFX {
             std::cout << "\t* " << *it2 << std::endl;
           const Descriptor& d =  it->second->getDescriptor();
           std::cout << "Inputs:" << std::endl;
-          const std::map<std::string, Attribute::ClipImageDescriptor*>& inputs = d.getClips();
-          for (std::map<std::string, Attribute::ClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2)
+          const std::map<std::string, attribute::ClipImageDescriptor*>& inputs = d.getClips();
+          for (std::map<std::string, attribute::ClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2)
             std::cout << "\t\t* " << it2->first << std::endl;
           std::cout << "________________________________________________________________________________" << std::endl;
         }
       }
 
-    } // ImageEffect
-      
-  } // Host
-
-} // OFX
+}
+}
+}
+}
 

@@ -27,18 +27,19 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFX_IMAGE_H
-#define OFX_IMAGE_H
+#ifndef OFXH_IMAGE_H
+#define OFXH_IMAGE_H
 
 #include "ofxImageEffect.h"
 #include "ofxhUtilities.h"
 #include "ofxhPropertySuite.h"
 
-namespace OFX {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace imageEffect {
 
-namespace Host {
 
-namespace ImageEffect {
 // forward declarations
 class Image;
 class Instance;
@@ -81,7 +82,7 @@ class Image : public Property::Set
 {
 protected:
 	/// called during ctors to get bits from the clip props into ours
-	void getClipBits( Attribute::ClipInstance& instance );
+	void getClipBits( attribute::ClipInstance& instance );
 	int _referenceCount; ///< reference count on this image
 
 public:
@@ -93,7 +94,7 @@ public:
 
 	/// construct from a clip instance, but leave the
 	/// filling it to the calling code via the propery set
-	explicit Image( Attribute::ClipInstance& instance );
+	explicit Image( attribute::ClipInstance& instance );
 
 	// Render Scale (renderScaleX,renderScaleY) -
 	//
@@ -135,7 +136,7 @@ public:
 	// and re-evaluate the cached information.
 
 	// construction based on clip instance
-	Image( Attribute::ClipInstance& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
+	Image( attribute::ClipInstance& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
 		 double renderScaleX,
 		 double renderScaleY,
 		 void* data,
@@ -175,10 +176,9 @@ public:
 	}
 };
 
-} // ImageEffect
-
-} // Host
-
-} // OFX
+}
+}
+}
+}
 
 #endif // OFX_CLIP_H

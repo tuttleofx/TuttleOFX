@@ -26,22 +26,27 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef SOFX_HOST_DESCRIPTOR_H
-#define SOFX_HOST_DESCRIPTOR_H
+#ifndef _TUTTLE_HOST_DESCRIPTOR_H
+#define _TUTTLE_HOST_DESCRIPTOR_H
 
-#include "ofx/ofxhImageEffect.h"
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/core/EffectInstance.hpp>
 
 namespace tuttle {
+namespace host {
+namespace core {
 
-  /** a host combines several things...
-   *    - a factory to create a new instance of your plugin
-   *      - it also gets to filter some calls during in the
-   *         API to check for validity and perform custom
-   *         operations (eg: add extra properties).
-   *     - it provides a description of the host application
-   *       which is passed back to the plugin.
-   */
-  class Host : public OFX::Host::ImageEffect::Host
+/** a host combines several things...
+ *    - a factory to create a new instance of your plugin
+ *      - it also gets to filter some calls during in the
+ *         API to check for validity and perform custom
+ *         operations (eg: add extra properties).
+ *     - it provides a description of the host application
+ *       which is passed back to the plugin.
+ *
+ * @todo how to support multiple APIs...
+ */
+  class Host : public tuttle::host::ofx::imageEffect::ImageEffectHost
   {
   public:    
     Host();
@@ -56,21 +61,21 @@ namespace tuttle {
      *  @arg desc - the descriptor for that plugin
      *  @arg context - the context to be created in
 	 */
-    virtual OFX::Host::ImageEffect::Instance* newInstance(void* clientData,
-                                                          OFX::Host::ImageEffect::ImageEffectPlugin* plugin,
-                                                          OFX::Host::ImageEffect::Descriptor& desc,
+    virtual tuttle::host::core::EffectInstance* newInstance(void* clientData,
+                                                          tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
+                                                          tuttle::host::ofx::imageEffect::Descriptor& desc,
                                                           const std::string& context);
 
     /// Override this to create a descriptor, this makes the 'root' descriptor
-    virtual OFX::Host::ImageEffect::Descriptor *makeDescriptor(OFX::Host::ImageEffect::ImageEffectPlugin* plugin);
+    virtual tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin);
 
     /// used to construct a context description, rootContext is the main context
-    virtual OFX::Host::ImageEffect::Descriptor *makeDescriptor(const OFX::Host::ImageEffect::Descriptor &rootContext, 
-                                                               OFX::Host::ImageEffect::ImageEffectPlugin *plug);        
+    virtual tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(const tuttle::host::ofx::imageEffect::Descriptor &rootContext,
+                                                               tuttle::host::ofx::imageEffect::ImageEffectPlugin *plug);
 
     /// used to construct populate the cache
-    virtual OFX::Host::ImageEffect::Descriptor *makeDescriptor(const std::string &bundlePath, 
-                                                               OFX::Host::ImageEffect::ImageEffectPlugin *plug);
+    virtual tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(const std::string &bundlePath,
+                                                               tuttle::host::ofx::imageEffect::ImageEffectPlugin *plug);
 
     /// vmessage
     virtual OfxStatus vmessage(const char* type,
@@ -84,5 +89,7 @@ namespace tuttle {
   extern Host gOfxHost;
 
 }
+}
+}
 
-#endif // SOFX_HOST_DESCRIPTOR_H
+#endif

@@ -1,6 +1,3 @@
-#ifndef OFX_PLUGIN_API_CACHE
-#define OFX_PLUGIN_API_CACHE
-
 /*
 Software License :
 
@@ -29,6 +26,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef OFX_PLUGIN_API_CACHE
+#define OFX_PLUGIN_API_CACHE
 
 #include <string>
 #include <iostream>
@@ -37,29 +36,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ofxhPropertySuite.h"
 
-namespace OFX
-{
-  namespace Host {
+namespace tuttle {
+  namespace host {
+  namespace ofx {
     class Plugin;
     class PluginBinary;
     class PluginCache;
 
-    namespace ImageEffect {
+    namespace imageEffect {
       class ImageEffectDescriptor;
     }
-  }
+}
+}
 }
 
-namespace OFX
-{
-  namespace Host
-  {
-    namespace APICache {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace APICache {
 
       /// this acts as an interface for the Plugin Cache, handling api-specific cacheing
       class PluginAPICacheI
       {
-      protected:
+      public:
         std::string _apiName;
         int _apiVersionMin, _apiVersionMax;
       public:
@@ -92,8 +91,6 @@ namespace OFX
         virtual void confirmPlugin(Plugin *) = 0;
 
         virtual bool pluginSupported(Plugin *, std::string &reason) const = 0;
-
-        void registerInCache(OFX::Host::PluginCache &pluginCache);
       };
       
       /// helper function to build a property set from XML. Really should be a member of the property set!!!
@@ -105,7 +102,10 @@ namespace OFX
       /// helper function to write a single property from a set to XML. Really should be a member of the property set!!!
       void propertyXMLWrite(std::ostream &o, const Property::Set &set, const std::string &name, int indent=0);
 
-    }
-  }
 }
+}
+}
+}
+
 #endif
+

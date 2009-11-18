@@ -1,27 +1,27 @@
 // custom host
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/common/math/RectOp.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/math/rectOp.hpp>
 
-#include "core/HostDescriptor.hpp"
-#include "core/EffectInstance.hpp"
-#include "core/ClipInstance.hpp"
-#include "core/ParamInstance.hpp"
+#include <tuttle/host/core/HostDescriptor.hpp>
+#include <tuttle/host/core/EffectInstance.hpp>
+#include <tuttle/host/core/ClipInstance.hpp>
+#include <tuttle/host/core/ParamInstance.hpp>
 
 // ofx
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffectAPI.h"
+#include <tuttle/host/ofx/ofxhBinary.h>
+#include <tuttle/host/ofx/ofxhPropertySuite.h>
+#include <tuttle/host/ofx/ofxhClip.h>
+#include <tuttle/host/ofx/ofxhParam.h>
+#include <tuttle/host/ofx/ofxhMemory.h>
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/ofxhPluginAPICache.h>
+#include <tuttle/host/ofx/ofxhPluginCache.h>
+#include <tuttle/host/ofx/ofxhHost.h>
+#include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 #include <boost/shared_ptr.hpp>
 
@@ -34,7 +34,6 @@
 #include <boost/filesystem.hpp>
 
 using namespace boost::filesystem;
-using namespace tuttle;
 
 int main( int argc, char **argv )
 {
@@ -51,54 +50,53 @@ int main( int argc, char **argv )
         #endif
 #endif
         // set the version label in the global cache
-        OFX::Host::PluginCache::getPluginCache( )->setCacheVersion( "tuttleV1" );
+        tuttle::host::ofx::PluginCache::getPluginCache( )->setCacheVersion( "tuttleV1" );
 
         // create our derived image effect host which provides
         // a factory to make plugin instances and acts
         // as a description of the host application
-        tuttle::Host myHost;
+        tuttle::host::core::Host myHost;
 
         // make an image effect plugin cache. This is what knows about
         // all the plugins.
-        OFX::Host::ImageEffect::PluginCache imageEffectPluginCache( myHost );
+        tuttle::host::ofx::imageEffect::ImageEffectPluginCache imageEffectPluginCache( myHost );
 
         // register the image effect cache with the global plugin cache
-        imageEffectPluginCache.registerInCache( *OFX::Host::PluginCache::getPluginCache( ) );
+		tuttle::host::ofx::PluginCache::getPluginCache( )->registerAPICache( imageEffectPluginCache );
 
         // try to read an old cache
         std::ifstream ifs( "tuttlePluginCache.xml" );
-        OFX::Host::PluginCache::getPluginCache( )->readCache( ifs );
-        OFX::Host::PluginCache::getPluginCache( )->scanPluginFiles( );
+        tuttle::host::ofx::PluginCache::getPluginCache( )->readCache( ifs );
+        tuttle::host::ofx::PluginCache::getPluginCache( )->scanPluginFiles( );
         ifs.close( );
 
         /// flush out the current cache
         std::ofstream of( "tuttlePluginCache.xml" );
-        OFX::Host::PluginCache::getPluginCache( )->writePluginCache( of );
+        tuttle::host::ofx::PluginCache::getPluginCache( )->writePluginCache( of );
         of.close( );
 
         // get some plugins examples
-        OFX::Host::ImageEffect::ImageEffectPlugin* pluginR = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.pngreader" );
-        OFX::Host::ImageEffect::ImageEffectPlugin* pluginI = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.invert" );
-        OFX::Host::ImageEffect::ImageEffectPlugin* pluginW = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.pngwriter" );
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.pngreader" );
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.invert" );
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.pngwriter" );
 
         imageEffectPluginCache.dumpToStdOut( );
 
         if( pluginR && pluginI && pluginW )
         {
-
-            std::vector< boost::shared_ptr< tuttle::EffectInstance > > vPluginsInst;
-            OFX::Host::ImageEffect::Instance* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
-            tuttle::EffectInstance* inst = dynamic_cast< tuttle::EffectInstance* > ( ofxinst );
+            std::vector< boost::shared_ptr< tuttle::host::core::EffectInstance > > vPluginsInst;
+            tuttle::host::ofx::imageEffect::Instance* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
+            tuttle::host::core::EffectInstance* inst = dynamic_cast< tuttle::host::core::EffectInstance* > ( ofxinst );
             if( inst )
-                vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
+                vPluginsInst.push_back( boost::shared_ptr< tuttle::host::core::EffectInstance > ( inst ) );
 
-            inst = dynamic_cast<tuttle::EffectInstance*> ( pluginI->createInstance( kOfxImageEffectContextFilter, NULL ) );
+            inst = dynamic_cast<tuttle::host::core::EffectInstance*> ( pluginI->createInstance( kOfxImageEffectContextFilter, NULL ) );
             if( inst )
-                vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
+                vPluginsInst.push_back( boost::shared_ptr< tuttle::host::core::EffectInstance > ( inst ) );
 
-            inst = dynamic_cast<tuttle::EffectInstance*> ( pluginW->createInstance( kOfxImageEffectContextGeneral, NULL ) );
+            inst = dynamic_cast<tuttle::host::core::EffectInstance*> ( pluginW->createInstance( kOfxImageEffectContextGeneral, NULL ) );
             if( inst )
-                vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
+                vPluginsInst.push_back( boost::shared_ptr< tuttle::host::core::EffectInstance > ( inst ) );
 
             // Initialize variables
             if( vPluginsInst.size( ) > 0 )
@@ -106,7 +104,7 @@ int main( int argc, char **argv )
 
                 // current render scale of 1
                 OfxPointD renderScale = { 1.0, 1.0 };
-                std::vector< boost::shared_ptr<tuttle::EffectInstance> >::iterator instIter;
+                std::vector< boost::shared_ptr<tuttle::host::core::EffectInstance> >::iterator instIter;
                 for( instIter = vPluginsInst.begin( ); instIter != vPluginsInst.end( ); ++instIter )
                 {
                     // now we need to call the create instance action. Only call this once you have initialised all the params
@@ -120,11 +118,11 @@ int main( int argc, char **argv )
 
                     ( *instIter )->dumpToStdOut( );
                 }
-                tuttle::ClipImgInstance *outputClip, *inputClip;
+                tuttle::host::core::ClipImgInstance *outputClip, *inputClip;
 
                 // Setup parameters
-                StringInstance *srcFileParam = dynamic_cast<StringInstance*> ( vPluginsInst[0]->getParams( )["Input filename"] );
-                StringInstance *dstFileParam = dynamic_cast<StringInstance*> ( vPluginsInst[2]->getParams( )["Output filename"] );
+                tuttle::host::core::StringInstance *srcFileParam = dynamic_cast<tuttle::host::core::StringInstance*> ( vPluginsInst[0]->getParams( )["Input filename"] );
+                tuttle::host::core::StringInstance *dstFileParam = dynamic_cast<tuttle::host::core::StringInstance*> ( vPluginsInst[2]->getParams( )["Output filename"] );
                 if( srcFileParam && dstFileParam )
                 {
                     srcFileParam->set( "input.png" );
@@ -147,13 +145,13 @@ int main( int argc, char **argv )
                     // the regions of interest for each input clip are returned in a std::map
                     // on a real host, these will be the regions of each input clip that the
                     // effect needs to render a given frame (clipped to the RoD).
-                    std::map<OFX::Host::Attribute::ClipImageInstance *, OfxRectD> rois;
+                    std::map<tuttle::host::ofx::attribute::ClipImageInstance *, OfxRectD> rois;
                     OfxRectD defaultRoi;
                     memset( &defaultRoi, 0, sizeof (OfxRectD ) );
                     vPluginsInst[0]->getRegionOfInterestAction( frame, renderScale, defaultRoi, rois );
 
                     // get the output clip
-                    outputClip = dynamic_cast<tuttle::ClipImgInstance *> ( vPluginsInst[0]->getClip( kOfxImageEffectOutputClipName ) );
+                    outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance *> ( vPluginsInst[0]->getClip( kOfxImageEffectOutputClipName ) );
                     /// RoI is in canonical coords,
                     OfxRectD regionOfInterest = rois[outputClip];
 
@@ -171,26 +169,26 @@ int main( int argc, char **argv )
                     {
                         ( *( instIter + 1 ) )->getRegionOfInterestAction( frame, renderScale, regionOfInterest, rois );
                         // get the output clip
-                        outputClip = dynamic_cast<tuttle::ClipImgInstance *> ( ( *instIter )->getClip( kOfxImageEffectOutputClipName ) );
+                        outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance *> ( ( *instIter )->getClip( kOfxImageEffectOutputClipName ) );
                         // get next input
-                        inputClip = dynamic_cast<tuttle::ClipImgInstance *> ( ( *( instIter + 1 ) )->getClip( kOfxImageEffectSimpleSourceClipName ) );
+                        inputClip = dynamic_cast<tuttle::host::core::ClipImgInstance *> ( ( *( instIter + 1 ) )->getClip( kOfxImageEffectSimpleSourceClipName ) );
                         ( *instIter )->renderAction( t, kOfxImageFieldBoth, renderWindow, renderScale );
                         if( inputClip && outputClip )
                         {
                             regionOfInterest = tuttle::intersection( regionOfInterest, tuttle::intersection( outputClip->getRegionOfDefinition( frame ), rois[inputClip] ) );
 
-                            tuttle::Image* outImg = static_cast<tuttle::Image*> ( outputClip->getImage( frame, &regionOfInterest ) );
+                            tuttle::host::core::Image* outImg = static_cast<tuttle::host::core::Image*> ( outputClip->getImage( frame, &regionOfInterest ) );
                             OfxRectD reqRegion = { ( regionOfInterest.x1 / outputClip->getPixelAspectRatio( ) ) * inputClip->getPixelAspectRatio( ),
                                                    regionOfInterest.y1,
                                                    ( regionOfInterest.x2 / outputClip->getPixelAspectRatio( ) ) * inputClip->getPixelAspectRatio( ),
                                                    regionOfInterest.y2 };
-                            tuttle::Image* inImg = static_cast<tuttle::Image*> ( inputClip->getImage( frame, &reqRegion ) );
+                            tuttle::host::core::Image* inImg = static_cast<tuttle::host::core::Image*> ( inputClip->getImage( frame, &reqRegion ) );
 
                             OfxRectI bounds = inImg->getBounds( );
                             OfxPointI sCorner = { 0, 0 };
                             OfxPointI dCorner = { 0, 0 };
                             OfxPointI count = { bounds.x2 - bounds.x1, bounds.y2 - bounds.y1 };
-                            tuttle::Image::copy( inImg, outImg, dCorner, sCorner, count );
+                            tuttle::host::core::Image::copy( inImg, outImg, dCorner, sCorner, count );
                         }
 
                         // recompute render window
@@ -214,7 +212,7 @@ int main( int argc, char **argv )
             COUT( "Plugin loading error" );
         }
 
-        OFX::Host::PluginCache::clearPluginCache( );
+        tuttle::host::ofx::PluginCache::clearPluginCache( );
     } catch( std::exception e )
     {
         std::cout << "Exception : main de tuttle..." << std::endl;

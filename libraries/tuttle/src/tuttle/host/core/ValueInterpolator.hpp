@@ -5,6 +5,9 @@
 
 #include <ofxCore.h>
 
+namespace tuttle {
+namespace host {
+
 template<typename T>
 struct TimeValue {
     OfxTime time;
@@ -47,4 +50,8 @@ class ValueInterpolator {
         virtual ~ValueInterpolator() { };
 };
 
-#endif //VALUE_INTERPOLATOR_HPP
+}
+}
+
+#endif
+

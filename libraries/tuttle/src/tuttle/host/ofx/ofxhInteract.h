@@ -28,14 +28,13 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef OFX_INTERACT_H
-#define OFX_INTERACT_H
+#ifndef OFXH_INTERACT_H
+#define OFXH_INTERACT_H
 
-namespace OFX {
-
-  namespace Host {
-
-    namespace Interact {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace Interact {
       
       /// fetch a versioned suite for our interact
       void *GetSuite(int version);
@@ -286,10 +285,9 @@ namespace OFX {
                                           const OfxPointD &renderScale);
       };
 
-    } // Interact 
+}
+}
+}
+}
 
-  } // Host
-
-} // OFX
-
-#endif // OFX_INTERACT_H
+#endif

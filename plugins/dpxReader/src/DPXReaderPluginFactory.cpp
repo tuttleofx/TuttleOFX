@@ -5,9 +5,9 @@
  */
 
 #include "DPXReaderPlugin.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <string>
 #include <iostream>
@@ -18,10 +18,11 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
+namespace OFX {
 
 static const bool   kSupportTiles                 = false;
 
+using namespace OFX;
 
 mDeclarePluginFactory(DPXReaderPluginFactory, {}, {});
 
@@ -29,14 +30,13 @@ mDeclarePluginFactory(DPXReaderPluginFactory, {}, {});
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
 void
 DPXReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
     // basic labels
     desc.setLabels("DPXReaderHd3d", "DPXReaderHd3d",
                    "DPX File reader Hd3d");
-    desc.setPluginGrouping("tuttle");
+    desc.setPluginGrouping("OFX");
 
     // add the supported contexts, only filter at the moment
     desc.addSupportedContext(eContextGenerator);
@@ -93,13 +93,13 @@ DPXReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
 
 }
 
-namespace OFX 
+namespace OFX
 {
     namespace Plugin 
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::DPXReaderPluginFactory p("fr.hd3d.tuttle.dpxreader", 1, 0);
+            static OFX::DPXReaderPluginFactory p("fr.hd3d.tuttle.dpxreader", 1, 0);
             ids.push_back(&p);
         }
     }

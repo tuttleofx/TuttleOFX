@@ -31,20 +31,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fstream>
 
 // ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 // ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffectAPI.h"
+#include <tuttle/host/ofx/ofxhBinary.h>
+#include <tuttle/host/ofx/ofxhPropertySuite.h>
+#include <tuttle/host/ofx/ofxhClip.h>
+#include <tuttle/host/ofx/ofxhParam.h>
+#include <tuttle/host/ofx/ofxhMemory.h>
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/ofxhPluginAPICache.h>
+#include <tuttle/host/ofx/ofxhPluginCache.h>
+#include <tuttle/host/ofx/ofxhHost.h>
+#include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 // my host
 #include "HostDescriptor.hpp"
@@ -53,15 +53,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ParamInstance.hpp"
 
 namespace tuttle {
+namespace host {
+namespace core {
 
 //
 // StringInstance
 //
 StringInstance::StringInstance( EffectInstance* effect,
                                 const std::string& name,
-                                OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::ParamStringInstance( descriptor, setInstance )
+                                tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::ParamStringInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -102,9 +104,9 @@ OfxStatus StringInstance::set( OfxTime time, const char* v )
 //
 IntegerInstance::IntegerInstance( EffectInstance* effect,
                                   const std::string& name,
-                                  OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                  OFX::Host::Attribute::ParamInstanceSet & setInstance)
-: OFX::Host::Attribute::ParamIntegerInstance( descriptor, setInstance )
+                                  tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                  tuttle::host::ofx::attribute::ParamInstanceSet & setInstance)
+: tuttle::host::ofx::attribute::ParamIntegerInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -145,9 +147,9 @@ OfxStatus IntegerInstance::set( OfxTime time, int v )
 //
 DoubleInstance::DoubleInstance( EffectInstance* effect,
                                 const std::string& name,
-                                OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::ParamDoubleInstance( descriptor, setInstance )
+                                tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::ParamDoubleInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -198,9 +200,9 @@ OfxStatus DoubleInstance::integrate( OfxTime time1, OfxTime time2, double& )
 //
 BooleanInstance::BooleanInstance( EffectInstance* effect,
                                   const std::string& name,
-                                  OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                  OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::ParamBooleanInstance( descriptor, setInstance )
+                                  tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                  tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::ParamBooleanInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -241,9 +243,9 @@ OfxStatus BooleanInstance::set( OfxTime time, bool v )
 //
 ChoiceInstance::ChoiceInstance( EffectInstance* effect,
                                 const std::string& name,
-                                OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::ParamChoiceInstance( descriptor, setInstance )
+                                tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::ParamChoiceInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -284,9 +286,9 @@ OfxStatus ChoiceInstance::set( OfxTime time, int v )
 //
 RGBAInstance::RGBAInstance( EffectInstance* effect,
                             const std::string& name,
-                            OFX::Host::Attribute::ParamDescriptor& descriptor,
-                            OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 4>( descriptor, setInstance )
+                            tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                            tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 4>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -346,9 +348,9 @@ OfxStatus RGBAInstance::set( OfxTime time, double r, double g, double b, double 
 //
 RGBInstance::RGBInstance( EffectInstance* effect,
                           const std::string& name,
-                          OFX::Host::Attribute::ParamDescriptor& descriptor,
-                          OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
+                          tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                          tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -402,9 +404,9 @@ OfxStatus RGBInstance::set( OfxTime time, double r, double g, double b )
 //
 Double2DInstance::Double2DInstance( EffectInstance* effect,
                                     const std::string& name,
-                                    OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                    OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 2>( descriptor, setInstance )
+                                    tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                    tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 2>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -453,9 +455,9 @@ OfxStatus Double2DInstance::set( OfxTime time, double x, double y )
 //
 Integer2DInstance::Integer2DInstance( EffectInstance* effect,
                                       const std::string& name,
-                                      OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                      OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::MultiDimParam<IntegerInstance, 2>( descriptor, setInstance )
+                                      tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                      tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::MultiDimParam<IntegerInstance, 2>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -504,9 +506,9 @@ OfxStatus Integer2DInstance::set( OfxTime time, int x, int y )
 //
 Integer3DInstance::Integer3DInstance( EffectInstance* effect,
                                       const std::string& name,
-                                      OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                      OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::MultiDimParam<IntegerInstance, 3>( descriptor, setInstance )
+                                      tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                      tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::MultiDimParam<IntegerInstance, 3>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -559,9 +561,9 @@ OfxStatus Integer3DInstance::set( OfxTime time, int x, int y, int z )
 //
 Double3DInstance::Double3DInstance( EffectInstance* effect,
                                     const std::string& name,
-                                    OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                    OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
+                                    tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                    tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
@@ -614,12 +616,14 @@ OfxStatus Double3DInstance::set( OfxTime time, double x, double y, double z )
 //
 PushbuttonInstance::PushbuttonInstance( EffectInstance* effect,
                                         const std::string& name,
-                                        OFX::Host::Attribute::ParamDescriptor& descriptor,
-                                        OFX::Host::Attribute::ParamInstanceSet & setInstance )
-: OFX::Host::Attribute::ParamPushbuttonInstance( descriptor, setInstance )
+                                        tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
+                                        tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
+: tuttle::host::ofx::attribute::ParamPushbuttonInstance( descriptor, setInstance )
 , _effect( effect )
 , _descriptor( descriptor )
 {
 }
 
+}
+}
 }

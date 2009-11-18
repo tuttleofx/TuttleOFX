@@ -38,9 +38,10 @@
 #include <iostream>
 #include <string.h>
 
-namespace OFX {
-	namespace Host {
-		namespace Property {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace Property {
 
 			/// type holder, for integers
 			int IntValue::kEmpty = 0;
@@ -773,21 +774,21 @@ namespace OFX {
 
 			int Set::getIntPropertyRaw( const std::string &property, int index ) const
 			{
-				return getPropertyRaw<OFX::Host::Property::IntValue > ( property, index );
+				return getPropertyRaw<tuttle::host::ofx::Property::IntValue > ( property, index );
 			}
 
 			/// get a particular double property
 
 			double Set::getDoublePropertyRaw( const std::string &property, int index ) const
 			{
-				return getPropertyRaw<OFX::Host::Property::DoubleValue > ( property, index );
+				return getPropertyRaw<tuttle::host::ofx::Property::DoubleValue > ( property, index );
 			}
 
 			/// get a particular double property
 
 			void *Set::getPointerPropertyRaw( const std::string &property, int index ) const
 			{
-				return getPropertyRaw<OFX::Host::Property::PointerValue > ( property, index );
+				return getPropertyRaw<tuttle::host::ofx::Property::PointerValue > ( property, index );
 			}
 
 			/// get a particular double property
@@ -806,88 +807,84 @@ namespace OFX {
 
 			int Set::getIntProperty( const std::string &property, int index ) const
 			{
-				return getProperty<OFX::Host::Property::IntValue > ( property, index );
+				return getProperty<tuttle::host::ofx::Property::IntValue > ( property, index );
 			}
 
 			/// get the value of a particular double property
 
 			void Set::getIntPropertyN( const std::string &property, int *v, int N ) const
 			{
-				return getPropertyN<OFX::Host::Property::IntValue > ( property, N, v );
+				return getPropertyN<tuttle::host::ofx::Property::IntValue > ( property, N, v );
 			}
 
 			/// get a particular double property
 
 			double Set::getDoubleProperty( const std::string &property, int index ) const
 			{
-				return getProperty<OFX::Host::Property::DoubleValue > ( property, index );
+				return getProperty<tuttle::host::ofx::Property::DoubleValue > ( property, index );
 			}
 
 			/// get the value of a particular double property
 
 			void Set::getDoublePropertyN( const std::string &property, double *v, int N ) const
 			{
-				return getPropertyN<OFX::Host::Property::DoubleValue > ( property, N, v );
+				return getPropertyN<tuttle::host::ofx::Property::DoubleValue > ( property, N, v );
 			}
 
 			/// get a particular double property
 
 			void *Set::getPointerProperty( const std::string &property, int index ) const
 			{
-				return getProperty<OFX::Host::Property::PointerValue > ( property, index );
+				return getProperty<tuttle::host::ofx::Property::PointerValue > ( property, index );
 			}
 
 			/// get a particular double property
 
 			const std::string &Set::getStringProperty( const std::string &property, int index ) const
 			{
-				return getProperty<OFX::Host::Property::StringValue > ( property, index );
+				return getProperty<tuttle::host::ofx::Property::StringValue > ( property, index );
 			}
 
 			/// set a particular string property
 
 			void Set::setStringProperty( const std::string &property, const std::string &value, int index )
 			{
-				setProperty<OFX::Host::Property::StringValue > ( property, index, value );
+				setProperty<tuttle::host::ofx::Property::StringValue > ( property, index, value );
 			}
 
 			/// get a particular int property
 
 			void Set::setIntProperty( const std::string &property, int v, int index )
 			{
-				setProperty<OFX::Host::Property::IntValue > ( property, index, v );
+				setProperty<tuttle::host::ofx::Property::IntValue > ( property, index, v );
 			}
 
 			/// get a particular double property
 
 			void Set::setIntPropertyN( const std::string &property, const int *v, int N )
 			{
-				setPropertyN<OFX::Host::Property::IntValue > ( property, N, v );
+				setPropertyN<tuttle::host::ofx::Property::IntValue > ( property, N, v );
 			}
 
 			/// get a particular double property
 
 			void Set::setDoubleProperty( const std::string &property, double v, int index )
 			{
-				setProperty<OFX::Host::Property::DoubleValue > ( property, index, v );
+				setProperty<tuttle::host::ofx::Property::DoubleValue > ( property, index, v );
 			}
 
 			/// get a particular double property
 
 			void Set::setDoublePropertyN( const std::string &property, const double *v, int N )
 			{
-				setPropertyN<OFX::Host::Property::DoubleValue > ( property, N, v );
+				setPropertyN<tuttle::host::ofx::Property::DoubleValue > ( property, N, v );
 			}
 
 			/// get a particular double property
 
 			void Set::setPointerProperty( const std::string &property, void *v, int index )
 			{
-				if( strcmp(property.c_str(), kOfxPropInstanceData)==0 )
-				{
-					std::cout << "tmp fab... setPointerProperty( kOfxPropInstanceData v=" << (int)v << " index=" << index << ")" << std::endl;
-				}
-				setProperty<OFX::Host::Property::PointerValue > ( property, index, v );
+				setProperty<tuttle::host::ofx::Property::PointerValue > ( property, index, v );
 			}
 
 			/// get the dimension of a particular property
@@ -1114,6 +1111,7 @@ namespace OFX {
 				return NULL;
 			}
 
-		}
-	}
+}
+}
+}
 }

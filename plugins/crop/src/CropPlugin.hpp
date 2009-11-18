@@ -12,7 +12,7 @@
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
+namespace OFX {
 
 static const std::string kParamUp           = "Up";
 static const std::string kParamDown         = "Down";

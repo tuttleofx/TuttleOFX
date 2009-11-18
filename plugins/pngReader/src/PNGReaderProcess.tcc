@@ -1,7 +1,7 @@
-#include "tuttle/common/image/gilGlobals.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <cassert>
 #include <cmath>
@@ -16,6 +16,8 @@
 #include <boost/filesystem/fstream.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace png {
 
 using namespace boost::gil;
 namespace bfs = boost::filesystem;
@@ -27,7 +29,7 @@ typedef any_image < boost::mpl::vector
 
 template<class View>
 PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin &instance )
-: tuttle::ofx::ImageGilProcessor<View>( instance ), tuttle::ofx::Progress( instance ),
+: tuttle::plugin::ImageGilProcessor<View>( instance ), tuttle::plugin::Progress( instance ),
 _plugin( instance )
 {
     _filepath = instance.fetchStringParam( "Input filename" );
@@ -110,4 +112,6 @@ View& PNGReaderProcess<View>::readImage( View &dst, std::string & filepath ) thr
     return dst;
 }
 
+}
+}
 }

@@ -42,9 +42,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <limits.h>
 #include <stdarg.h>
 
-namespace OFX {
-	namespace Host {
-		namespace Attribute {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace attribute {
 			
 			AttributeAccessor::AttributeAccessor()
 			{
@@ -81,6 +82,7 @@ namespace OFX {
 
 			AttributeInstance::~AttributeInstance(){}
 
-		} // Attribute
-	} // Host
-} // OFX
+}
+}
+}
+}

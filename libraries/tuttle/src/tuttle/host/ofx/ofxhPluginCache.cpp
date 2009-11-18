@@ -38,7 +38,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "expat.h"
+#include <expat.h>
 
 // ofx
 #include "ofxCore.h"
@@ -54,6 +54,12 @@
 #include "ofxhXml.h"
 #include "ofxhUtilities.h"
 #include "tuttle/common/utils/global.hpp"
+
+
+namespace tuttle {
+namespace host {
+namespace ofx {
+
 
 #if defined (__linux__)
 
@@ -93,12 +99,11 @@ static const char *getArchStr()
 #include "tchar.h"
 #endif
 
-OFX::Host::PluginCache* OFX::Host::PluginCache::gPluginCachePtr = 0;
+PluginCache* tuttle::host::ofx::PluginCache::gPluginCachePtr = 0;
 
 // Define this to enable ofx plugin cache debug messages.
 //#define CACHE_DEBUG
 
-using namespace OFX::Host;
 
 
 /// try to open the plugin bundle object and query it for plugins
@@ -142,7 +147,7 @@ PluginBinary::~PluginBinary() {
   }
 }
 
-PluginHandle::PluginHandle(Plugin *p, OFX::Host::Host *host) : _p(p) 
+PluginHandle::PluginHandle(Plugin *p, tuttle::host::ofx::AbstractHost *host) : _p(p)
 {
   _b = p->getBinary();
   _b->_binary.ref();
@@ -194,39 +199,19 @@ std::string OFXGetEnv(const char* e)
   return "";
 }
 
-PluginCache* PluginCache::getPluginCache()
-{
-  if(!gPluginCachePtr)
-    gPluginCachePtr = new PluginCache();
-  return gPluginCachePtr;
-}
 
-void PluginCache::clearPluginCache()
+PluginCache::PluginCache()
+: _xmlCurrentBinary(0)
+, _xmlCurrentPlugin(0)
+, _ignoreCache(false)
+, _cacheVersion("")
+, _dirty(false)
+, _enablePluginSeek(true)
 {
-  delete gPluginCachePtr;
-  gPluginCachePtr = 0;
-}
-
-PluginCache::~PluginCache()
-{
-  for(std::list<PluginBinary *>::iterator it=_binaries.begin(); it != _binaries.end(); ++it) {
-    delete (*it);
-  }
-  _binaries.clear();
-}
-
-PluginCache::PluginCache() : _xmlCurrentBinary(0), _xmlCurrentPlugin(0) {
-  
-  _cacheVersion = "";
-  _ignoreCache = false;
-  _dirty = false;
-  _enablePluginSeek = true;
-  
   std::string s = OFXGetEnv("OFX_PLUGIN_PATH");
   
-    
-  while (s.length()) {
-      
+  while (s.length())
+  {
     int spos = int(s.find_first_of(DIRLIST_SEP_CHARS));
     
     std::string path;
@@ -254,6 +239,28 @@ PluginCache::PluginCache() : _xmlCurrentBinary(0), _xmlCurrentPlugin(0) {
   _pluginPath.push_back("/Library/OFX/Plugins");
 #endif
 }
+
+PluginCache::~PluginCache()
+{
+  for(std::list<PluginBinary *>::iterator it=_binaries.begin(); it != _binaries.end(); ++it) {
+    delete (*it);
+  }
+  _binaries.clear();
+}
+
+PluginCache* PluginCache::getPluginCache()
+{
+  if(!gPluginCachePtr)
+    gPluginCachePtr = new PluginCache();
+  return gPluginCachePtr;
+}
+
+void PluginCache::clearPluginCache()
+{
+  delete gPluginCachePtr;
+  gPluginCachePtr = 0;
+}
+
 
 void PluginCache::setPluginHostPath(const std::string &hostId) {
 #if defined(WINDOWS)
@@ -488,8 +495,8 @@ void PluginCache::elementBeginCallback(void *userData, const XML_Char *name, con
     
     std::string fname = attmap["path"];
     std::string bname = attmap["bundle_path"];
-    time_t mtime = OFX::Host::Property::stringToInt(attmap["mtime"]);
-    size_t size = OFX::Host::Property::stringToInt(attmap["size"]);
+    time_t mtime = tuttle::host::ofx::Property::stringToInt(attmap["mtime"]);
+    size_t size = tuttle::host::ofx::Property::stringToInt(attmap["size"]);
     
     _xmlCurrentBinary = new PluginBinary(fname, bname, mtime, size);
     _binaries.push_back(_xmlCurrentBinary);
@@ -513,10 +520,10 @@ void PluginCache::elementBeginCallback(void *userData, const XML_Char *name, con
       identifier[i] = tolower(identifier[i]);
     }
     
-    int idx = OFX::Host::Property::stringToInt(attmap["index"]);
-    int api_version = OFX::Host::Property::stringToInt(attmap["api_version"]);
-    int major_version = OFX::Host::Property::stringToInt(attmap["major_version"]);
-    int minor_version = OFX::Host::Property::stringToInt(attmap["minor_version"]);
+    int idx = tuttle::host::ofx::Property::stringToInt(attmap["index"]);
+    int api_version = tuttle::host::ofx::Property::stringToInt(attmap["api_version"]);
+    int major_version = tuttle::host::ofx::Property::stringToInt(attmap["major_version"]);
+    int minor_version = tuttle::host::ofx::Property::stringToInt(attmap["minor_version"]);
     
     APICache::PluginAPICacheI *apiCache = findApiHandler(api, api_version);
     if (apiCache) {
@@ -645,13 +652,17 @@ void PluginCache::writePluginCache(std::ostream &os) const {
 }
 
 
-APICache::PluginAPICacheI *PluginCache::findApiHandler(const std::string &api, int version) {
+APICache::PluginAPICacheI* PluginCache::findApiHandler(const std::string &api, int version) {
   std::list<PluginCacheSupportedApi>::iterator i = _apiHandlers.begin();
   while (i != _apiHandlers.end()) {
     if (i->matches(api, version)) {
-      return i->handler;
+      return &( i->_handler );
     }
-    i++;
+    ++i;
   }
   return 0;
+}
+
+}
+}
 }

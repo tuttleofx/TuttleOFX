@@ -8,9 +8,9 @@
 
 #include "CropPlugin.hpp"
 #include "CropMargin.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <string>
 #include <iostream>
@@ -21,7 +21,7 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
+namespace OFX {
 
 static const bool   kSupportTiles           = true;
 static const bool   kSupportTemporalAccess  = false;
@@ -136,13 +136,13 @@ CropPluginFactory::createInstance(OfxImageEffectHandle handle,
 
 }
 
-namespace OFX 
+namespace OFX
 {
     namespace Plugin 
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::CropPluginFactory p("fr.hd3d.tuttle.volet", 1, 0);
+            static OFX::CropPluginFactory p("fr.hd3d.tuttle.volet", 1, 0);
             ids.push_back(&p);
         }
     }

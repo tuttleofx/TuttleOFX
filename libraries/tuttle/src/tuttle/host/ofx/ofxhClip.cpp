@@ -39,11 +39,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhClip.h"
 #include "ofxhImageEffect.h"
 
-namespace OFX {
+namespace tuttle {
 
-	namespace Host {
+	namespace host {
+	namespace ofx {
 
-		namespace Attribute {
+		namespace attribute {
 
 			////////////////////////////////////////////////////////////////////////////////
 			// props to clips descriptors and instances
@@ -54,7 +55,7 @@ namespace OFX {
 			}
 
 			ClipAccessor::ClipAccessor( const ClipAccessor &v )
-			: Attribute::AttributeAccessor(v)
+			: attribute::AttributeAccessor(v)
 			{
 				//TUTTLE_TODO : switch this function in private
 				COUT_WITHINFOS( "This copy contructor should never be called." );
@@ -76,7 +77,7 @@ namespace OFX {
 			 * descriptor
 			 */
 			ClipDescriptor::ClipDescriptor( const Property::Set& properties )
-			: Attribute::AttributeDescriptor( properties )
+			: attribute::AttributeDescriptor( properties )
 			{
 				/// properties common to the desciptor and instance
 				/// the desc and set them, the instance cannot
@@ -96,7 +97,7 @@ namespace OFX {
 			// instance
 
 			ClipInstance::ClipInstance( const ClipDescriptor& desc )
-			: Attribute::AttributeInstance( desc )
+			: attribute::AttributeInstance( desc )
 			{
 				/// extra properties for the instance, these are fetched from the host
 				/// via a get hook and some virtuals
@@ -144,8 +145,7 @@ namespace OFX {
 				}*/
 			}
 
-		} // Clip
-
-	} // Host
-
-} // OFX
+		}
+	}
+	}
+}

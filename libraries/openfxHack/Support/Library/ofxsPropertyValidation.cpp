@@ -145,7 +145,7 @@ namespace OFX {
         _exists = true;  
 
         if(_dimension != -1) // -1 implies variable dimension
-          OFX::Log::error(hostDimension != _dimension, "Host reports property '%s' has dimension %d, it should be %d;", _name.c_str(), hostDimension, _dimension); 
+          OFX::Log::error(hostDimension != _dimension, "Host reports property '%s' has dimension %d, it should be %d;", _name.c_str(), hostDimension, _dimension);
         // check type by getting the first element, the property getting will print any failure messages to the log
         if(hostDimension > 0) {
           switch(_ilk) 
@@ -160,7 +160,7 @@ namespace OFX {
         // check the defaults are OK, if there are any
         int nDefs = _defaultValue.size();
         if(checkDefaults && nDefs > 0) {
-          OFX::Log::error(hostDimension != nDefs, "Host reports default dimension of '%s' as %d, which is different to the default dimension size of %d;", 
+          OFX::Log::error(hostDimension != nDefs, "Host reports default dimension of '%s' as %d, which is different to the default dimension size of %d;",
             _name.c_str(), hostDimension, nDefs);
 
           int N = hostDimension < nDefs ? hostDimension : nDefs;

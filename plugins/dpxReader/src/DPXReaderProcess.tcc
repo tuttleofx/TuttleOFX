@@ -1,7 +1,7 @@
-#include "tuttle/common/image/gilGlobals.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include "OFX/common/image/gilGlobals.hpp"
+#include "OFX/plugin/ImageGilProcessor.hpp"
+#include "OFX/plugin/Progress.hpp"
+#include "OFX/plugin/PluginException.hpp"
 #include "DPXReaderPlugin.hpp"
 
 #include <cassert>
@@ -19,14 +19,14 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-namespace tuttle {
+namespace OFX {
 
 using namespace boost::gil;
 namespace bfs = boost::filesystem;
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin &instance )
-: tuttle::ofx::ImageGilProcessor<View>( instance ), tuttle::ofx::Progress( instance ),
+: OFX::ofx::ImageGilProcessor<View>( instance ), OFX::ofx::Progress( instance ),
 _plugin( instance )
 {
     _filepath = instance.fetchStringParam( "Input filename" );

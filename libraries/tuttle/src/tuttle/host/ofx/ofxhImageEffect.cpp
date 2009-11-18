@@ -44,15 +44,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhImageEffectAPI.h"
 #include "ofxhUtilities.h"
 
+#include <tuttle/host/core/Core.hpp>
+
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
 
-namespace OFX {
-
-	namespace Host {
-
-		namespace ImageEffect {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace imageEffect {
 
 			/// properties common on an effect and a descriptor
 			static Property::PropSpec effectDescriptorStuff[] = {
@@ -252,7 +253,7 @@ namespace OFX {
 			, _plugin( plug )
 			{
 				_properties.setStringProperty( kOfxPluginPropFilePath, plug->getBinary( )->getBundlePath( ) );
-				gImageEffectHost->initDescriptor( this );
+				tuttle::host::core::Core::instance().getHost().initDescriptor( this );
 			}
 
 			Descriptor::Descriptor( const Descriptor &other, Plugin *plug )
@@ -260,7 +261,7 @@ namespace OFX {
 			, _plugin( plug )
 			{
 				_properties.setStringProperty( kOfxPluginPropFilePath, plug->getBinary( )->getBundlePath( ) );
-				gImageEffectHost->initDescriptor( this );
+				tuttle::host::core::Core::instance().getHost().initDescriptor( this );
 			}
 
 			Descriptor::Descriptor( const std::string &bundlePath, Plugin *plug )
@@ -268,12 +269,12 @@ namespace OFX {
 			, _plugin( plug )
 			{
 				_properties.setStringProperty( kOfxPluginPropFilePath, bundlePath );
-				gImageEffectHost->initDescriptor( this );
+				tuttle::host::core::Core::instance().getHost().initDescriptor( this );
 			}
 
 			Descriptor::~Descriptor( )
 			{
-				for( std::map<std::string, Attribute::ClipImageDescriptor*>::iterator it = _clips.begin( ); it != _clips.end( ); ++it )
+				for( std::map<std::string, attribute::ClipImageDescriptor*>::iterator it = _clips.begin( ); it != _clips.end( ); ++it )
 					delete it->second;
 				_clips.clear( );
 			}
@@ -281,9 +282,9 @@ namespace OFX {
 
 			/// create a new clip and add this to the clip map
 
-			Attribute::ClipImageDescriptor *Descriptor::defineClip( const std::string &name )
+			attribute::ClipImageDescriptor *Descriptor::defineClip( const std::string &name )
 			{
-				Attribute::ClipImageDescriptor *c = new Attribute::ClipImageDescriptor( name );
+				attribute::ClipImageDescriptor *c = new attribute::ClipImageDescriptor( name );
 				_clips[name] = c;
 				_clipsByOrder.push_back( c );
 				return c;
@@ -312,12 +313,12 @@ namespace OFX {
 
 			/// get the clips
 
-			const std::map<std::string, Attribute::ClipImageDescriptor*> &Descriptor::getClips( ) const
+			const std::map<std::string, attribute::ClipImageDescriptor*> &Descriptor::getClips( ) const
 			{
 				return _clips;
 			}
 
-			void Descriptor::addClip( const std::string &name, Attribute::ClipImageDescriptor *clip )
+			void Descriptor::addClip( const std::string &name, attribute::ClipImageDescriptor *clip )
 			{
 				_clips[name] = clip;
 				_clipsByOrder.push_back( clip );
@@ -397,31 +398,31 @@ namespace OFX {
 
 			OfxStatus Instance::populate( )
 			{
-				const std::vector<Attribute::ClipImageDescriptor*>& clips = _descriptor->getClipsByOrder( );
+				const std::vector<attribute::ClipImageDescriptor*>& clips = _descriptor->getClipsByOrder( );
 
 				int counter = 0;
-				for( std::vector<Attribute::ClipImageDescriptor*>::const_iterator it = clips.begin( );
+				for( std::vector<attribute::ClipImageDescriptor*>::const_iterator it = clips.begin( );
 					 it != clips.end( ); ++it, ++counter )
 				{
 					const std::string &name = ( *it )->getName( );
 					// foreach clip descriptor make a clip instance
-					Attribute::ClipImageInstance* instance = newClipInstance( this, *it, counter );
+					attribute::ClipImageInstance* instance = newClipInstance( this, *it, counter );
 					if( !instance ) return kOfxStatFailed;
 
 					_clips[name] = instance;
 				}
 
-				const std::list<Attribute::ParamDescriptor*>& map = _descriptor->getParamList( );
+				const std::list<attribute::ParamDescriptor*>& map = _descriptor->getParamList( );
 
-				std::map<std::string, Attribute::ParamInstance*> parameters;
+				std::map<std::string, attribute::ParamInstance*> parameters;
 
 				// Create parameters on their own groups
-				for( std::list<Attribute::ParamDescriptor*>::const_iterator it = map.begin( );
+				for( std::list<attribute::ParamDescriptor*>::const_iterator it = map.begin( );
 					 it != map.end( ); ++it )
 				{
 					// SetInstance where the childrens param instances will be added
-					Attribute::ParamInstanceSet *setInstance = this;
-					Attribute::ParamDescriptor* descriptor = ( *it );
+					attribute::ParamInstanceSet *setInstance = this;
+					attribute::ParamDescriptor* descriptor = ( *it );
 
 					// get the param descriptor
 					if( !descriptor )
@@ -433,7 +434,7 @@ namespace OFX {
 
 					if( parentName != "" )
 					{
-						Attribute::ParamGroupInstance *parentGroup = dynamic_cast<Attribute::ParamGroupInstance*> ( parameters[parentName] );
+						attribute::ParamGroupInstance *parentGroup = dynamic_cast<attribute::ParamGroupInstance*> ( parameters[parentName] );
 						if( parentGroup )
 						{
 							setInstance = parentGroup->getChildrens( );
@@ -443,7 +444,7 @@ namespace OFX {
 						setInstance = this;
 
 					// get a param instance from a param descriptor. Param::Instance is automaticaly added into the setInstance provided.
-					Attribute::ParamInstance* instance = newParam( name, *descriptor, setInstance );
+					attribute::ParamInstance* instance = newParam( name, *descriptor, setInstance );
 					parameters[name] = instance;
 				}
 
@@ -565,7 +566,7 @@ namespace OFX {
 				}
 
 				/// clobber my clips
-				std::map<std::string, Attribute::ClipImageInstance*>::iterator i;
+				std::map<std::string, attribute::ClipImageInstance*>::iterator i;
 				for( i = _clips.begin( ); i != _clips.end( ); ++i )
 				{
 					if( i->second )
@@ -590,7 +591,7 @@ namespace OFX {
 
 			bool Instance::checkClipConnectionStatus( ) const
 			{
-				std::map<std::string, Attribute::ClipImageInstance*>::const_iterator i;
+				std::map<std::string, attribute::ClipImageInstance*>::const_iterator i;
 				for( i = _clips.begin( ); i != _clips.end( ); ++i )
 				{
 					if( !i->second->isOptional( ) && !i->second->getConnected( ) )
@@ -676,15 +677,15 @@ namespace OFX {
 
 			// get the nth clip, in order of declaration
 
-			Attribute::ClipImageInstance* Instance::getNthClip( int index )
+			attribute::ClipImageInstance* Instance::getNthClip( int index )
 			{
 				const std::string name = _descriptor->getClipsByOrder( )[index]->getName( );
 				return _clips[name];
 			}
 
-			Attribute::ClipImageInstance* Instance::getClip( const std::string& name )
+			attribute::ClipImageInstance* Instance::getClip( const std::string& name )
 			{
-				std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.find( name );
+				std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.find( name );
 				if( it != _clips.end( ) )
 				{
 					return it->second;
@@ -730,7 +731,7 @@ namespace OFX {
 															OfxTime time,
 															OfxPointD renderScale )
 			{
-				Attribute::ParamInstance* param = getParam( paramName );
+				attribute::ParamInstance* param = getParam( paramName );
 
 				if( isClipPreferencesSlaveParam( paramName ) )
 					_clipPrefsDirty = true;
@@ -765,7 +766,7 @@ namespace OFX {
 														   OfxPointD renderScale )
 			{
 				_clipPrefsDirty = true;
-				std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.find( clipName );
+				std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.find( clipName );
 				if( it != _clips.end( ) )
 					return (it->second )->instanceChangedAction( why, time, renderScale );
 				else
@@ -908,7 +909,7 @@ namespace OFX {
 						 _context == kOfxImageEffectContextPaint )
 				{
 					// filter and paint default to the input clip
-					Attribute::ClipImageInstance *clip = getClip( kOfxImageEffectSimpleSourceClipName );
+					attribute::ClipImageInstance *clip = getClip( kOfxImageEffectSimpleSourceClipName );
 					if( clip )
 					{
 						rod = clip->getRegionOfDefinition( time );
@@ -917,8 +918,8 @@ namespace OFX {
 				else if( _context == kOfxImageEffectContextTransition )
 				{
 					// transition is the union of the two clips
-					Attribute::ClipImageInstance *clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
-					Attribute::ClipImageInstance *clipTo = getClip( kOfxImageEffectTransitionSourceToClipName );
+					attribute::ClipImageInstance *clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
+					attribute::ClipImageInstance *clipTo = getClip( kOfxImageEffectTransitionSourceToClipName );
 					if( clipFrom && clipTo )
 					{
 						rod = clipFrom->getRegionOfDefinition( time );
@@ -929,11 +930,11 @@ namespace OFX {
 				{
 					// general context is the union of all the non optional clips
 					bool gotOne = false;
-					for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+					for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 						 it != _clips.end( );
 						 it++ )
 					{
-						Attribute::ClipImageInstance *clip = it->second;
+						attribute::ClipImageInstance *clip = it->second;
 						if( !clip->isOutput( ) && !clip->isOptional( ) )
 						{
 							if( !gotOne )
@@ -955,10 +956,10 @@ namespace OFX {
 				else if( _context == kOfxImageEffectContextRetimer )
 				{
 					// retimer
-					Attribute::ClipImageInstance *clip = getClip( kOfxImageEffectSimpleSourceClipName );
+					attribute::ClipImageInstance *clip = getClip( kOfxImageEffectSimpleSourceClipName );
 					if( clip )
 					{
-						Attribute::ParamDoubleInstance *param = dynamic_cast<Attribute::ParamDoubleInstance *> ( getParam( kOfxImageEffectRetimerParamName ) );
+						attribute::ParamDoubleInstance *param = dynamic_cast<attribute::ParamDoubleInstance *> ( getParam( kOfxImageEffectRetimerParamName ) );
 						if( param )
 						{
 							rod = clip->getRegionOfDefinition( floor( time ) );
@@ -1017,7 +1018,7 @@ namespace OFX {
 			OfxStatus Instance::getRegionOfInterestAction( OfxTime time,
 														   OfxPointD renderScale,
 														   const OfxRectD &roi,
-														   std::map<Attribute::ClipImageInstance *, OfxRectD>& rois )
+														   std::map<attribute::ClipImageInstance *, OfxRectD>& rois )
 			{
 				OfxStatus stat = kOfxStatReplyDefault;
 
@@ -1027,7 +1028,7 @@ namespace OFX {
 				if( !supportsTiles( ) )
 				{
 					/// No tiling support on the effect at all. So set the roi of each input clip to be the RoD of that clip.
-					for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+					for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 						 it != _clips.end( );
 						 it++ )
 					{
@@ -1055,7 +1056,7 @@ namespace OFX {
 					inArgs.setDoublePropertyN( kOfxImageEffectPropRegionOfInterest, &roi.x1, 4 );
 
 					Property::Set outArgs;
-					for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+					for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 						 it != _clips.end( );
 						 it++ )
 					{
@@ -1083,7 +1084,7 @@ namespace OFX {
 									  &outArgs );
 
 					/// set the thing up
-					for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+					for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 						 it != _clips.end( );
 						 it++ )
 					{
@@ -1134,7 +1135,7 @@ namespace OFX {
 					inArgs.setDoubleProperty( kOfxPropTime, time );
 
 
-					for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+					for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 						 it != _clips.end( );
 						 it++ )
 					{
@@ -1165,11 +1166,11 @@ namespace OFX {
 				defaultRange.min =
 					defaultRange.max = time;
 
-				for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+				for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 					 it != _clips.end( );
 					 it++ )
 				{
-					Attribute::ClipImageInstance *clip = it->second;
+					attribute::ClipImageInstance *clip = it->second;
 
 					if( !clip->isOutput( ) )
 					{
@@ -1273,7 +1274,7 @@ namespace OFX {
 			bool Instance::canCurrentlyHandleMultipleClipDepths( ) const
 			{
 				/// does the host support 'em
-				bool hostSupports = gImageEffectHost->getProperties( ).getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
+				bool hostSupports = tuttle::host::core::Core::instance().getHost().getProperties( ).getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
 				;
 
 				/// does the plug-in support 'em
@@ -1311,11 +1312,11 @@ namespace OFX {
 				std::string mostComponents = kOfxImageComponentNone;
 				double frameRate = 0;
 				std::string premult = kOfxImageOpaque;
-				for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+				for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 					 it != _clips.end( );
 					 it++ )
 				{
-					Attribute::ClipImageInstance *clip = it->second;
+					attribute::ClipImageInstance *clip = it->second;
 
 					// If not output clip
 					if( !clip->isOutput( ) )
@@ -1351,11 +1352,11 @@ namespace OFX {
 				deepestBitDepth = bestSupportedDepth( deepestBitDepth );
 
 				/// now add the clip gubbins to the out args
-				for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+				for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 					 it != _clips.end( );
 					 ++it )
 				{
-					Attribute::ClipImageInstance *clip = it->second;
+					attribute::ClipImageInstance *clip = it->second;
 					std::string comp, depth;
 
 					std::string rawComp = clip->getUnmappedComponents( );
@@ -1419,11 +1420,11 @@ namespace OFX {
 				outArgs.setDoubleProperty( kOfxImageEffectPropFrameRate, _outputFrameRate );
 
 				/// now add the clip gubbins to the out args
-				for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+				for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 					 it != _clips.end( );
 					 it++ )
 				{
-					Attribute::ClipImageInstance *clip = it->second;
+					attribute::ClipImageInstance *clip = it->second;
 
 					std::string componentParamName = "OfxImageClipPropComponents_" + it->first;
 					std::string depthParamName = "OfxImageClipPropDepth_" + it->first;
@@ -1445,12 +1446,12 @@ namespace OFX {
 			void Instance::setupClipInstancePreferences( Property::Set &outArgs )
 			{
 
-				for( std::map<std::string, Attribute::ClipImageInstance*>::iterator it = _clips.begin( );
+				for( std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.begin( );
 					 it != _clips.end( );
 					 it++ )
 				{
 
-					Attribute::ClipImageInstance *clip = it->second;
+					attribute::ClipImageInstance *clip = it->second;
 
 					// Properties setup
 					std::string componentParamName = "OfxImageClipPropComponents_" + it->first;
@@ -1590,7 +1591,7 @@ namespace OFX {
 
 			/// implemented for Param::SetInstance
 
-			void Instance::paramChangedByPlugin( Attribute::ParamInstance *param )
+			void Instance::paramChangedByPlugin( attribute::ParamInstance *param )
 			{
 				double frame = getFrameRecursive( );
 				OfxPointD renderScale;
@@ -1623,14 +1624,14 @@ namespace OFX {
 			static OfxStatus getParamSet( OfxImageEffectHandle h1,
 										  OfxParamSetHandle *h2 )
 			{
-				ImageEffect::Base *effectBase = reinterpret_cast<ImageEffect::Base*> ( h1 );
+				imageEffect::Base *effectBase = reinterpret_cast<imageEffect::Base*> ( h1 );
 
 				if( !effectBase || !effectBase->verifyMagic( ) )
 				{
 					return kOfxStatErrBadHandle;
 				}
 
-				ImageEffect::Descriptor *effectDescriptor = dynamic_cast<ImageEffect::Descriptor*> ( effectBase );
+				imageEffect::Descriptor *effectDescriptor = dynamic_cast<imageEffect::Descriptor*> ( effectBase );
 
 				if( effectDescriptor )
 				{
@@ -1638,7 +1639,7 @@ namespace OFX {
 					return kOfxStatOK;
 				}
 
-				ImageEffect::Instance *effectInstance = dynamic_cast<ImageEffect::Instance*> ( effectBase );
+				imageEffect::Instance *effectInstance = dynamic_cast<imageEffect::Instance*> ( effectBase );
 
 				if( effectInstance )
 				{
@@ -1653,18 +1654,18 @@ namespace OFX {
 										 const char *name,
 										 OfxPropertySetHandle *h2 )
 			{
-				ImageEffect::Base *effectBase = reinterpret_cast<ImageEffect::Base*> ( h1 );
+				imageEffect::Base *effectBase = reinterpret_cast<imageEffect::Base*> ( h1 );
 
 				if( !effectBase || !effectBase->verifyMagic( ) )
 				{
 					return kOfxStatErrBadHandle;
 				}
 
-				ImageEffect::Descriptor *effectDescriptor = dynamic_cast<ImageEffect::Descriptor*> ( effectBase );
+				imageEffect::Descriptor *effectDescriptor = dynamic_cast<imageEffect::Descriptor*> ( effectBase );
 
 				if( effectDescriptor )
 				{
-					Attribute::ClipImageDescriptor *clip = effectDescriptor->defineClip( name );
+					attribute::ClipImageDescriptor *clip = effectDescriptor->defineClip( name );
 					*h2 = clip->getPropHandle( );
 					return kOfxStatOK;
 				}
@@ -1675,7 +1676,7 @@ namespace OFX {
 			static OfxStatus clipGetPropertySet( OfxImageClipHandle clip,
 												 OfxPropertySetHandle *propHandle )
 			{
-				Attribute::ClipImageInstance *clipInstance = reinterpret_cast<Attribute::ClipImageInstance*> ( clip );
+				attribute::ClipImageInstance *clipInstance = reinterpret_cast<attribute::ClipImageInstance*> ( clip );
 
 				if( !clipInstance || !clipInstance->verifyMagic( ) )
 				{
@@ -1696,7 +1697,7 @@ namespace OFX {
 										   OfxRectD *h2,
 										   OfxPropertySetHandle *h3 )
 			{
-				Attribute::ClipImageInstance *clipInstance = reinterpret_cast<Attribute::ClipImageInstance*> ( h1 );
+				attribute::ClipImageInstance *clipInstance = reinterpret_cast<attribute::ClipImageInstance*> ( h1 );
 
 				if( !clipInstance || !clipInstance->verifyMagic( ) )
 				{
@@ -1746,18 +1747,18 @@ namespace OFX {
 											OfxImageClipHandle *clip,
 											OfxPropertySetHandle *propertySet )
 			{
-				ImageEffect::Base *effectBase = reinterpret_cast<ImageEffect::Base*> ( imageEffect );
+				imageEffect::Base *effectBase = reinterpret_cast<imageEffect::Base*> ( imageEffect );
 
 				if( !effectBase || !effectBase->verifyMagic( ) )
 				{
 					return kOfxStatErrBadHandle;
 				}
 
-				ImageEffect::Instance *effectInstance = reinterpret_cast<ImageEffect::Instance*> ( effectBase );
+				imageEffect::Instance *effectInstance = reinterpret_cast<imageEffect::Instance*> ( effectBase );
 
 				if( effectInstance )
 				{
-					Attribute::ClipImageInstance* instance = effectInstance->getClip( name );
+					attribute::ClipImageInstance* instance = effectInstance->getClip( name );
 					*clip = instance->getOfxImageClipHandle( );
 					if( propertySet )
 						*propertySet = instance->getPropHandle( );
@@ -1771,7 +1772,7 @@ namespace OFX {
 														OfxTime time,
 														OfxRectD *bounds )
 			{
-				Attribute::ClipImageInstance *clipInstance = reinterpret_cast<Attribute::ClipImageInstance*> ( clip );
+				attribute::ClipImageInstance *clipInstance = reinterpret_cast<attribute::ClipImageInstance*> ( clip );
 
 				if( !clipInstance || !clipInstance->verifyMagic( ) )
 				{
@@ -1791,14 +1792,14 @@ namespace OFX {
 
 			static int abort( OfxImageEffectHandle imageEffect )
 			{
-				ImageEffect::Base *effectBase = reinterpret_cast<ImageEffect::Base*> ( imageEffect );
+				imageEffect::Base *effectBase = reinterpret_cast<imageEffect::Base*> ( imageEffect );
 
 				if( !effectBase || !effectBase->verifyMagic( ) )
 				{
 					return kOfxStatErrBadHandle;
 				}
 
-				ImageEffect::Instance *effectInstance = dynamic_cast<ImageEffect::Instance*> ( effectBase );
+				imageEffect::Instance *effectInstance = dynamic_cast<imageEffect::Instance*> ( effectBase );
 
 				if( effectInstance )
 					return effectInstance->abort( );
@@ -1810,8 +1811,8 @@ namespace OFX {
 											   size_t nBytes,
 											   OfxImageMemoryHandle *memoryHandle )
 			{
-				ImageEffect::Base *effectBase = reinterpret_cast<ImageEffect::Base*> ( instanceHandle );
-				ImageEffect::Instance *effectInstance = reinterpret_cast<ImageEffect::Instance*> ( effectBase );
+				imageEffect::Base *effectBase = reinterpret_cast<imageEffect::Base*> ( instanceHandle );
+				imageEffect::Instance *effectInstance = reinterpret_cast<imageEffect::Instance*> ( effectBase );
 				Memory::Instance* memory;
 
 				if( effectInstance )
@@ -1897,7 +1898,7 @@ namespace OFX {
 
 			static OfxStatus message( void *handle, const char *type, const char *id, const char *format, ... )
 			{
-				ImageEffect::Instance *effectInstance = reinterpret_cast<ImageEffect::Instance*> ( handle );
+				imageEffect::Instance *effectInstance = reinterpret_cast<imageEffect::Instance*> ( handle );
 				if( effectInstance )
 				{
 					va_list args;
@@ -1924,7 +1925,7 @@ namespace OFX {
 			////////////////////////////////////////////////////////////////////////////////
 			/// make an overlay interact for an image effect
 
-			OverlayInteract::OverlayInteract( ImageEffect::Instance &effect, int bitDepthPerComponent, bool hasAlpha )
+			OverlayInteract::OverlayInteract( imageEffect::Instance &effect, int bitDepthPerComponent, bool hasAlpha )
 			: Interact::Instance( effect.getOverlayDescriptor( bitDepthPerComponent, hasAlpha ),
 								  (void *) ( effect.getHandle( ) ) )
 			, _instance( effect ) { }
@@ -2120,7 +2121,7 @@ namespace OFX {
 
 			/// ctor
 
-			Host::Host( )
+			ImageEffectHost::ImageEffectHost( )
 			{
 				/// add the properties for an image effect host, derived classs to set most of them
 				_properties.addProperties( hostStuffs );
@@ -2128,20 +2129,20 @@ namespace OFX {
 
 			/// optionally over-ridden function to register the creation of a new descriptor in the host app
 
-			void Host::initDescriptor( Descriptor* desc ) { }
+			void ImageEffectHost::initDescriptor( Descriptor* desc ) { }
 
 			/// Use this in any dialogue etc... showing progress
 
-			void Host::loadingStatus( const std::string & ) { }
+			void ImageEffectHost::loadingStatus( const std::string & ) { }
 
-			bool Host::pluginSupported( ImageEffectPlugin *plugin, std::string &reason ) const
+			bool ImageEffectHost::pluginSupported( ImageEffectPlugin *plugin, std::string &reason ) const
 			{
 				return true;
 			}
 
 			/// our suite fetcher
 
-			void *Host::fetchSuite( const char *suiteName, int suiteVersion )
+			void *ImageEffectHost::fetchSuite( const char *suiteName, int suiteVersion )
 			{
 				if( strcmp( suiteName, kOfxImageEffectSuite ) == 0 )
 				{
@@ -2153,7 +2154,7 @@ namespace OFX {
 					//else TUTTLE_TODO : move to ofx::host::Host
 				else if( strcmp( suiteName, kOfxParameterSuite ) == 0 )
 				{
-					return Attribute::GetSuite( suiteVersion );
+					return attribute::GetSuite( suiteVersion );
 				}
 				else if( strcmp( suiteName, kOfxMessageSuite ) == 0 )
 				{
@@ -2188,11 +2189,10 @@ namespace OFX {
 						return NULL;
 				}
 				else /// otherwise just grab the base class one, which is props and memory
-					return OFX::Host::Host::fetchSuite( suiteName, suiteVersion );
+					return tuttle::host::ofx::AbstractHost::fetchSuite( suiteName, suiteVersion );
 			}
 
-		} // ImageEffect
-
-	} // Host
-
-} // OFX
+}
+}
+}
+}

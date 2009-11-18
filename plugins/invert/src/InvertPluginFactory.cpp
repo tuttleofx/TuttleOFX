@@ -7,9 +7,9 @@
  */
 
 #include "InvertPlugin.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <string>
 #include <iostream>
@@ -21,6 +21,8 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace invert {
 
 static const bool   kSupportTiles                 = false;
 
@@ -95,14 +97,16 @@ OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle hand
 }
 
 }
+}
+}
 
-namespace OFX 
+namespace OFX
 {
     namespace Plugin 
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::InvertPluginFactory p("fr.hd3d.tuttle.invert", 1, 0);
+            static tuttle::plugin::invert::InvertPluginFactory p("fr.hd3d.tuttle.invert", 1, 0);
             ids.push_back(&p);
         }
     }

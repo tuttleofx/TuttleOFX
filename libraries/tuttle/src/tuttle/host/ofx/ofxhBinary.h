@@ -1,6 +1,3 @@
-#ifndef OFX_BINARY_H
-#define OFX_BINARY_H
-
 /*
 Software License :
 
@@ -29,6 +26,9 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef OFXH_BINARY_H
+#define OFXH_BINARY_H
+
 #include <string>
 #include <iostream>
 
@@ -68,8 +68,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <sys/stat.h>
 
-namespace OFX {
-namespace Host {
+namespace tuttle {
+namespace host {
+namespace ofx {
 
   /// class representing a DLL/Shared Object/etc
   class Binary {
@@ -127,6 +128,7 @@ namespace Host {
     void *findSymbol(const std::string &symbol);
   };
 
+}
 }
 }
 

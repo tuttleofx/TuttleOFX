@@ -107,7 +107,7 @@ namespace OFX {
     {
       if(ptr)
         // note we are ignore errors, this could be bad, but we don't throw on a destruction
-        OFX::Private::gMemorySuite->memoryFree(ptr);            
+        OFX::Private::gMemorySuite->memoryFree(ptr);
     }
 
   };

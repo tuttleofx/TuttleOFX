@@ -5,6 +5,8 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace png {
 using namespace boost::gil;
 
 static const std::string kInputFilename = "Output filename";
@@ -35,6 +37,8 @@ protected:
     bool                     _bRenderOnce;    ///< Avoid multiple useless writing
 };
 
+}
+}
 }
 
 #endif

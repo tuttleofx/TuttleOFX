@@ -49,7 +49,7 @@ public:
     /**
      * @brief destroy the unique instance of Singleton<T> class
      */
-    static void Destroy( )
+    static void destroy( )
     {
         delete inst;
         inst = NULL;

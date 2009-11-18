@@ -35,22 +35,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhUtilities.h"
 #include "ofxhPropertySuite.h"
 
-namespace OFX {
+namespace tuttle {
 
-namespace Host {
+namespace host {
+namespace ofx {
 
-namespace ImageEffect {
+namespace imageEffect {
 class Instance;
 }
 
-namespace Attribute {
+namespace attribute {
 
 /**
  * Base to both descriptor and instance it
  * is used to basically fetch common properties
  * by function name
  */
-class ClipAccessor : virtual public Attribute::AttributeAccessor
+class ClipAccessor : virtual public attribute::AttributeAccessor
 {
 public:
     /// @brief base ctor, for a descriptor
@@ -74,7 +75,7 @@ public:
  * a clip descriptor
  */
 class ClipDescriptor : virtual public ClipAccessor
-                             , public Attribute::AttributeDescriptor
+                             , public attribute::AttributeDescriptor
 {
 public:
     /// constructor
@@ -86,7 +87,7 @@ public:
  * a clip instance
  */
 class ClipInstance : virtual public ClipAccessor
-                          , public Attribute::AttributeInstance
+                          , public attribute::AttributeInstance
                           , protected Property::GetHook
                           , protected Property::NotifyHook
 {
@@ -116,10 +117,9 @@ public:
     virtual bool getConnected( ) const = 0;
 };
 
-} // Clip
+}
+}
+}
+}
 
-} // Host
-
-} // OFX
-
-#endif // OFX_CLIP_H
+#endif

@@ -7,9 +7,9 @@
 #include <boost/filesystem.hpp>
 
 using namespace boost::filesystem;
-using namespace tuttle::io;
+using namespace OFX::io;
 
-namespace tuttle {
+namespace OFX {
 
 using namespace boost::gil;
 const static std::string kDpxReaderHelpString = "<b>DPX Reader</b> file reader.  <br />";

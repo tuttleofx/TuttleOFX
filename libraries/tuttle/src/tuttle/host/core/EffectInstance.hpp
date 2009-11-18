@@ -27,22 +27,24 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef SOFX_EFFECT_INSTANCE_H
-#define SOFX_EFFECT_INSTANCE_H
+#ifndef TUTTLE_EFFECT_INSTANCE_H
+#define TUTTLE_EFFECT_INSTANCE_H
 
-#include "ofx/ofxhImageEffect.h"
+#include <tuttle/host/ofx/ofxhImageEffect.h>
 
 #include <cassert>
 
 namespace tuttle {
+namespace host {
+namespace core {
 
   // class definition
-  class EffectInstance : public OFX::Host::ImageEffect::Instance {
+  class EffectInstance : public tuttle::host::ofx::imageEffect::Instance {
   protected:
       OfxPointD _frameRange;
   public:
-    EffectInstance(OFX::Host::ImageEffect::ImageEffectPlugin* plugin,
-                     OFX::Host::ImageEffect::Descriptor& desc,
+    EffectInstance(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
+                     tuttle::host::ofx::imageEffect::Descriptor& desc,
                      const std::string& context);
 	void dumpToStdOut();
     ////////////////////////////////////////////////////////////////////////////////
@@ -57,8 +59,8 @@ namespace tuttle {
     virtual const std::string &getDefaultOutputFielding() const;
     
     /// make a clip
-    OFX::Host::Attribute::ClipImageInstance* newClipInstance(OFX::Host::ImageEffect::Instance* plugin,
-                                                          OFX::Host::Attribute::ClipImageDescriptor* descriptor,
+    tuttle::host::ofx::attribute::ClipImageInstance* newClipInstance(tuttle::host::ofx::imageEffect::Instance* plugin,
+                                                          tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor,
                                                           int index);
 
     
@@ -125,7 +127,7 @@ namespace tuttle {
     /// make a parameter instance
     ///
     /// Client host code needs to implement this
-    virtual OFX::Host::Attribute::ParamInstance* newParam(const std::string& name, OFX::Host::Attribute::ParamDescriptor& Descriptor, ParamInstanceSet *setInstance);
+    virtual tuttle::host::ofx::attribute::ParamInstance* newParam(const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& Descriptor, ParamInstanceSet *setInstance);
     
     /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
     ///
@@ -183,5 +185,7 @@ namespace tuttle {
   };
 
 }
+}
+}
 
-#endif // SOFX_EFFECT_INSTANCE_H
+#endif

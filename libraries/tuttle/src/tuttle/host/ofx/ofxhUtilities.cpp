@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxCore.h"
 #include "ofxhUtilities.h"
 
-namespace OFX {
+namespace tuttle {
 
   /// get me deepest bit depth 
   std::string FindDeepestBitDepth(const std::string &s1, const std::string &s2)

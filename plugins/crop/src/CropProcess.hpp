@@ -8,10 +8,10 @@
 #ifndef VOLET_PROCESS_HPP
 #define VOLET_PROCESS_HPP
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include "OFX/common/utils/global.hpp"
+#include "OFX/plugin/ImageGilProcessor.hpp"
+#include "OFX/plugin/Progress.hpp"
+#include "OFX/plugin/PluginException.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -19,14 +19,14 @@
 #include <boost/scoped_ptr.hpp>
 
 
-namespace tuttle {
+namespace OFX {
 
 /**
  * @brief Base class
  *
  */
 template<class View>
-class CropProcess : public tuttle::ofx::ImageGilProcessor<View>, public tuttle::ofx::Progress
+class CropProcess : public OFX::ofx::ImageGilProcessor<View>, public OFX::ofx::Progress
 {
     typedef typename View::value_type value_t;
 protected :

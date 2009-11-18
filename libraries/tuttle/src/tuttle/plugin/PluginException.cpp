@@ -1,6 +1,10 @@
 #include "PluginException.hpp"
 #include <stdio.h>
 
+namespace tuttle {
+namespace plugin {
+
+
 std::string stringify(double x)
 {
     std::ostringstream o;
@@ -71,3 +75,5 @@ const char * PluginException::what()  const throw ()
     return _err.c_str();
 }
 
+}
+}

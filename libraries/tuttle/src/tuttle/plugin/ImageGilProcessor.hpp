@@ -5,17 +5,16 @@
  * @date   2009/05/29
  */
 
-#ifndef _IMAGEGILPROCESSOR_HPP
-#define	_IMAGEGILPROCESSOR_HPP
+#ifndef _TUTTLE_PLUGIN_IMAGEGILPROCESSOR_HPP
+#define	_TUTTLE_PLUGIN_IMAGEGILPROCESSOR_HPP
 
 #include "ofxsImageEffect.h"
 #include "ofxsMultiThread.h"
 
 #include <cstdlib>
 
-
 namespace tuttle {
-namespace ofx {
+namespace plugin {
 
 /// @brief Base class to process images with
 
@@ -94,7 +93,8 @@ void ImageGilProcessor<View>::process( void )
     postProcess( );
 }
 
-}} // end namespaces
+}
+}
 
 #endif	/* _IMAGEGILPROCESSOR_HPP */
 

@@ -1,6 +1,3 @@
-#ifndef OFX_PROPERTY_SUITE_H
-#define OFX_PROPERTY_SUITE_H
-
 /*
 Software License :
 
@@ -29,6 +26,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef OFXH_PROPERTY_SUITE_H
+#define OFXH_PROPERTY_SUITE_H
 
 #include "ofxhUtilities.h"
 
@@ -40,14 +39,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 
 #ifndef WINDOWS
-#define OFX_EXCEPTION_SPEC throw (OFX::Host::Property::Exception)
+#define OFX_EXCEPTION_SPEC throw (tuttle::host::ofx::Property::Exception)
 #else
 #define OFX_EXCEPTION_SPEC 
 #endif
 
-namespace OFX {
-  namespace Host {
-    namespace Property {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace Property {
+
       /// simple function to turn a thing into a std string
       template<class T> inline std::string castToString(T i) {
         std::ostringstream o;
@@ -613,8 +614,10 @@ namespace OFX {
       
       /// return the OFX function suite that manages properties
       void *GetSuite(int version);
-    }
-  }
+
+}
+}
+}
 }
 
 #endif

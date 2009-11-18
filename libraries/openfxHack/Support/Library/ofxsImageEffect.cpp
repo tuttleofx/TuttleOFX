@@ -756,7 +756,7 @@ namespace OFX {
     FieldEnum e;
     try {
       e = mapStrToFieldEnum(str);
-      OFX::Log::error(e != eFieldNone && e != eFieldLower && e != eFieldUpper, 
+      OFX::Log::error(e != eFieldNone && e != eFieldLower && e != eFieldUpper,
         "Field order '%s' reported on a clip %s is invalid, it must be none, lower or upper.", str.c_str(), _clipName.c_str());
     }
     // gone wrong ?
@@ -905,8 +905,7 @@ namespace OFX {
   /** @brief the context this effect was instantiate in */
   ContextEnum ImageEffect::getContext(void) const
   {
-	  //tmp fab
-	  std::cout << "tmp fab... getContext enum:" << (int)_context << " str:" << mapContextEnumToStr(_context) << std::endl;
+    //std::cout << "debug... getContext enum:" << (int)_context << " str:" << mapContextEnumToStr(_context) << std::endl;
     return _context;
   }
 
@@ -1709,7 +1708,7 @@ namespace OFX {
         const char* _plugname;
       public :
         /** @brief ctor */
-        ActualROISetter(OFX::PropertySet &args, const std::map<std::string, std::string>& clipROIPropNames) 
+        ActualROISetter(OFX::PropertySet &args, const std::map<std::string, std::string>& clipROIPropNames)
           : doneSomething_(false)
           , outArgs_(args)
           , clipROIPropNames_(clipROIPropNames)
@@ -1777,7 +1776,7 @@ namespace OFX {
         const std::map<std::string, std::string>& _clipFrameRangePropNames;
       public :
         /** @brief ctor */
-        ActualSetter(OFX::PropertySet &args, const std::map<std::string, std::string>& clipFrameRangePropNames) 
+        ActualSetter(OFX::PropertySet &args, const std::map<std::string, std::string>& clipFrameRangePropNames)
           : outArgs_(args), _clipFrameRangePropNames(clipFrameRangePropNames) 
         { }
 
@@ -1976,7 +1975,7 @@ namespace OFX {
         // figure the actions
         if (action == kOfxActionLoad) {
           // call the support load function, param-less
-          OFX::Private::loadAction(); 
+          OFX::Private::loadAction();
 
           // call the plugin side load action, param-less
           factory->load();
@@ -1992,7 +1991,7 @@ namespace OFX {
           factory->unload();
 
           // call the support unload function, param-less
-          OFX::Private::unloadAction(plugname); 
+          OFX::Private::unloadAction(plugname);
 
           // got here, must be good
           stat = kOfxStatOK;

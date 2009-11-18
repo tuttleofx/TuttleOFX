@@ -6,12 +6,12 @@
  *
  */
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/common/math/rectOp.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
-#include "tuttle/common/image/gilGlobals.hpp"
+#include "OFX/common/utils/global.hpp"
+#include "OFX/common/math/rectOp.hpp"
+#include "OFX/plugin/ImageGilProcessor.hpp"
+#include "OFX/plugin/Progress.hpp"
+#include "OFX/plugin/PluginException.hpp"
+#include "OFX/common/image/gilGlobals.hpp"
 
 #include <cmath>
 #include <vector>
@@ -22,14 +22,14 @@
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
 
-namespace tuttle {
+namespace OFX {
 
 using namespace boost::gil;
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin &instance )
-: tuttle::ofx::ImageGilProcessor<View>( instance )
-, tuttle::ofx::Progress( instance )
+: OFX::ofx::ImageGilProcessor<View>( instance )
+, OFX::ofx::Progress( instance )
 , _plugin( instance )
 {
     _upBand     = instance.fetchIntParam( kParamUp );

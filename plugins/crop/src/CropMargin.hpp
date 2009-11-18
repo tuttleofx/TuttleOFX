@@ -2,13 +2,13 @@
 #define VOLET_MARGIN_HPP
 
 
-#include "tuttle/common/utils/global.hpp"
+#include <tuttle/common/utils/global.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
 #include <boost/gil/gil_all.hpp>
 
-namespace tuttle {
+namespace OFX {
 
 class CropMargin : public OFX::OverlayInteract
 {
