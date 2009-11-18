@@ -5,12 +5,18 @@
  *      Author: Nicolas Rondaud
  */
 
-#include <tuttle/hostTuttle.hpp>
-#include <ofxhHost.h>
+#include "hostTuttle.hpp"
+#include <tuttle/host/ofx/ofxhHost.h>
 
-using namespace tuttle;
+namespace tuttle {
+namespace host {
+namespace core {
 
 HostTuttle::HostTuttle()
 	: p(".")
 {
+}
+
+}
+}
 }
