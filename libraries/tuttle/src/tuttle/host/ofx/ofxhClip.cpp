@@ -73,6 +73,22 @@ namespace tuttle {
 				return getProperties().getIntProperty( kOfxImageClipPropOptional ) != 0;
 			}
 
+                        /**
+                         * descriptor
+                         */
+                        ClipDescriptor::ClipDescriptor( )
+                        : attribute::AttributeDescriptor( )
+                        {
+                                /// properties common to the desciptor and instance
+                                /// the desc and set them, the instance cannot
+                                static const Property::PropSpec clipDescriptorStuffs[] = {
+                                        { kOfxPropType, Property::eString, 1, true, kOfxTypeClip },
+                                        { kOfxImageClipPropOptional, Property::eInt, 1, false, "0" },
+                                        { 0 },
+                                };
+                                getEditableProperties().addProperties( clipDescriptorStuffs );
+                        }
+
 			/**
 			 * descriptor
 			 */

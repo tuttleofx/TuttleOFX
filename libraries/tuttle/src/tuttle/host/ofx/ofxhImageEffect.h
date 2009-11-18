@@ -370,7 +370,7 @@ namespace tuttle {
                                     Property::Set *inArgs,
                                     Property::Set *outArgs);
 
-        int upperGetDimension(const std::string &name);
+        size_t upperGetDimension(const std::string &name);
 
         /// overridden from Property::Notify
         virtual void notify(const std::string &name, bool singleValue, int indexOrN) OFX_EXCEPTION_SPEC;
@@ -385,7 +385,7 @@ namespace tuttle {
         virtual void reset(const std::string &name) OFX_EXCEPTION_SPEC;
 
         //// overridden from gethook
-        virtual int getDimension(const std::string &name)  const OFX_EXCEPTION_SPEC;
+        virtual size_t getDimension(const std::string &name)  const OFX_EXCEPTION_SPEC;
 
         //
         // live parameters

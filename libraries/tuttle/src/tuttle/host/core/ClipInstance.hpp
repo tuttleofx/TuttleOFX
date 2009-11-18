@@ -53,7 +53,7 @@ protected:
 	uint8_t *_data; // where we are keeping our image data
 public:
 	explicit Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime t );
-	~Image( );
+        virtual ~Image( );
 
 	uint8_t *getPixelData( )
 	{

@@ -105,7 +105,7 @@ namespace attribute {
 				 * descriptor
 				 */
 				ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
-				: attribute::ClipDescriptor( Property::Set() )
+                                : tuttle::host::ofx::attribute::ClipDescriptor( )
 				{
 					/// properties common to the desciptor and instance
 					/// the desc and set them, the instance cannot

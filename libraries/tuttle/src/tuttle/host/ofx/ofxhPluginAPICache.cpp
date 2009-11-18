@@ -117,7 +117,7 @@ namespace APICache {
             << XML::attribute("dimension", prop->getFixedDimension()) 
             << ">\n";
           
-          for (int i=0;i<prop->getDimension();i++) {
+          for (size_t i=0;i<prop->getDimension();i++) {
             o << indent << "  <value " 
               << XML::attribute("index", i)
               << XML::attribute("value", prop->getStringValue(i)) 

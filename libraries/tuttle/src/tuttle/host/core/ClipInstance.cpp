@@ -136,6 +136,11 @@ namespace core {
         setIntProperty( kOfxImagePropRowBytes, rowlen );
     }
 
+    Image::~Image( )
+    {
+        delete [] _data;
+    }
+
     uint8_t* Image::pixel( int x, int y ) const
     {
         OfxRectI bounds = getBounds( );
@@ -160,7 +165,6 @@ namespace core {
     }
 
     // @todo: put this in gilGlobals.hpp
-
     template < class D_VIEW, class S_VIEW >
     void Image::copy( D_VIEW & dst, S_VIEW & src, const OfxPointI & dstCorner,
                       const OfxPointI & srcCorner, const OfxPointI & count )
@@ -177,7 +181,6 @@ namespace core {
     }
 
     /// Copy from gil image view to Image
-
     template < class S_VIEW >
     void Image::copy( Image *dst, S_VIEW & src, const OfxPointI & dstCorner,
                       const OfxPointI & srcCorner, const OfxPointI & count )
@@ -301,11 +304,6 @@ namespace core {
         }
     }
 
-    Image::~Image( )
-    {
-        delete [] _data;
-    }
-
     ClipImgInstance::ClipImgInstance( EffectInstance* effect, tuttle::host::ofx::attribute::ClipImageDescriptor *desc )
     : tuttle::host::ofx::attribute::ClipImageInstance( effect, *desc )
     , _effect( effect )
@@ -318,13 +316,14 @@ namespace core {
     ClipImgInstance::~ClipImgInstance( )
     {
         if( _inputImage )
-            _inputImage->releaseReference( );
+            if (_inputImage->releaseReference( ))
+                delete _inputImage;
         if( _outputImage )
-            _outputImage->releaseReference( );
+            if ( _outputImage->releaseReference( ) )
+                delete _outputImage;
     }
 
     /// Return the rod on the clip cannoical coords!
-
     OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
     {
         OfxRectD rod;

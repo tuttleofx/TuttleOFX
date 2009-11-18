@@ -119,6 +119,8 @@ int main( int argc, char **argv )
                     ( *instIter )->dumpToStdOut( );
                 }
                 tuttle::host::core::ClipImgInstance *outputClip, *inputClip;
+                tuttle::host::core::Image* inImg;
+                tuttle::host::core::Image* outImg;
 
                 // Setup parameters
                 tuttle::host::core::StringInstance *srcFileParam = dynamic_cast<tuttle::host::core::StringInstance*> ( vPluginsInst[0]->getParams( )["Input filename"] );
@@ -177,18 +179,18 @@ int main( int argc, char **argv )
                         {
                             regionOfInterest = tuttle::intersection( regionOfInterest, tuttle::intersection( outputClip->getRegionOfDefinition( frame ), rois[inputClip] ) );
 
-                            tuttle::host::core::Image* outImg = static_cast<tuttle::host::core::Image*> ( outputClip->getImage( frame, &regionOfInterest ) );
-                            OfxRectD reqRegion = { ( regionOfInterest.x1 / outputClip->getPixelAspectRatio( ) ) * inputClip->getPixelAspectRatio( ),
-                                                   regionOfInterest.y1,
-                                                   ( regionOfInterest.x2 / outputClip->getPixelAspectRatio( ) ) * inputClip->getPixelAspectRatio( ),
-                                                   regionOfInterest.y2 };
-                            tuttle::host::core::Image* inImg = static_cast<tuttle::host::core::Image*> ( inputClip->getImage( frame, &reqRegion ) );
+                            outImg = static_cast<tuttle::host::core::Image*> ( outputClip->getImage( frame, &regionOfInterest ) );
+                            OfxRectD reqRegion = { ( regionOfInterest.x1 / outputClip->getPixelAspectRatio( ) ) * inputClip->getPixelAspectRatio( ), regionOfInterest.y1,
+                                                   ( regionOfInterest.x2 / outputClip->getPixelAspectRatio( ) ) * inputClip->getPixelAspectRatio( ), regionOfInterest.y2 };
+                            inImg  = static_cast<tuttle::host::core::Image*> ( inputClip->getImage( frame, &reqRegion ) );
 
                             OfxRectI bounds = inImg->getBounds( );
                             OfxPointI sCorner = { 0, 0 };
                             OfxPointI dCorner = { 0, 0 };
                             OfxPointI count = { bounds.x2 - bounds.x1, bounds.y2 - bounds.y1 };
                             tuttle::host::core::Image::copy( inImg, outImg, dCorner, sCorner, count );
+                            outImg->releaseReference();
+                            inImg->releaseReference();
                         }
 
                         // recompute render window

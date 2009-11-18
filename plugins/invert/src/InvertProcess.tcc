@@ -75,7 +75,6 @@ void InvertProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         if( !dst.get( ) )
             throw( ImageNotReadyException( ) );
         OfxRectI dBounds = dst->getBounds();
-        COUT_VAR4(dBounds.x1, dBounds.y1, dBounds.x2, dBounds.y2);
         OFX::BitDepthEnum dstBitDepth = dst->getPixelDepth( );
         OFX::PixelComponentEnum dstComponents = dst->getPixelComponents( );
 

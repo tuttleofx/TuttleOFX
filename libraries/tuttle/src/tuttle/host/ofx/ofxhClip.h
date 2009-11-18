@@ -79,7 +79,8 @@ class ClipDescriptor : virtual public ClipAccessor
 {
 public:
     /// constructor
-    ClipDescriptor( const Property::Set& );
+    ClipDescriptor( );
+    ClipDescriptor( const tuttle::host::ofx::Property::Set& );
     ~ClipDescriptor()=0;
 };
 

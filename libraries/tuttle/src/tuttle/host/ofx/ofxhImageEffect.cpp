@@ -453,13 +453,13 @@ namespace imageEffect {
 
 			// do nothing
 
-			int Instance::getDimension( const std::string &name ) const OFX_EXCEPTION_SPEC
+                        size_t Instance::getDimension( const std::string &name ) const OFX_EXCEPTION_SPEC
 			{
 				fprintf( stderr, "failing in %s with name=%s\n", "__PRETTY_FUNCTION__", name.c_str( ) );
 				throw Property::Exception( kOfxStatErrMissingHostFeature );
 			}
 
-			int Instance::upperGetDimension( const std::string &name )
+                        size_t Instance::upperGetDimension( const std::string &name )
 			{
 				return _properties.getDimension( name );
 			}
@@ -1735,7 +1735,8 @@ namespace imageEffect {
 				if( image )
 				{
 					// clip::image has a virtual destructor for derived classes
-					image->releaseReference( );
+                                        if ( image->releaseReference( ) )
+                                            delete image;
 					return kOfxStatOK;
 				}
 				else

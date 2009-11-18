@@ -172,7 +172,7 @@ namespace Property {
 
 			/// override this to fetch the dimension size.
 
-			int GetHook::getDimension( const std::string &name ) const OFX_EXCEPTION_SPEC
+                        size_t GetHook::getDimension( const std::string &name ) const OFX_EXCEPTION_SPEC
 			{
 #ifdef DEBUG
 				std::cout << "Calling un-overriden GetHook::getDimension!!!! " << std::endl;
@@ -190,9 +190,9 @@ namespace Property {
 			}
 
 			Property::Property( const std::string &name,
-								TypeEnum type,
-								int dimension,
-								bool pluginReadOnly )
+                                            TypeEnum type,
+                                            size_t dimension,
+                                            bool pluginReadOnly )
 			: _name( name )
 			, _type( type )
 			, _dimension( dimension )
@@ -238,9 +238,9 @@ namespace Property {
 			}
 
 			template<class T> PropertyTemplate<T>::PropertyTemplate( const std::string &name,
-																	 int dimension,
-																	 bool pluginReadOnly,
-																	 APIType defaultValue )
+                                                                                 size_t dimension,
+                                                                                 bool pluginReadOnly,
+                                                                                 APIType defaultValue )
 			: Property( name, T::typeCode, dimension )
 			{
 				if( dimension != _value.size() )
@@ -251,7 +251,7 @@ namespace Property {
 
 				if( dimension )
 				{
-					for( int i = 0; i < dimension; ++i )
+                                        for( size_t i = 0; i < dimension; ++i )
 					{
 						_defaultValue[i] = defaultValue;
 						_value[i] = defaultValue;
@@ -391,7 +391,7 @@ namespace Property {
 
 			/// get the dimension of the property
 
-			template <class T> int PropertyTemplate<T>::getDimension( ) const OFX_EXCEPTION_SPEC
+                        template <class T> size_t PropertyTemplate<T>::getDimension( ) const OFX_EXCEPTION_SPEC
 			{
 				if( _dimension != 0 )
 				{
@@ -574,7 +574,7 @@ namespace Property {
 					return;
 				}
 
-				switch( spec.type )
+                                switch( spec.type )
 				{
 					case eInt:
 						_props[spec.name] = new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atoi( spec.defaultValue ) : 0 );
@@ -888,7 +888,7 @@ namespace Property {
 
 			/// get the dimension of a particular property
 
-			int Set::getDimension( const std::string &property ) const
+                        size_t Set::getDimension( const std::string &property ) const
 			{
 				Property *prop = 0;
 				if( fetchTypedProperty( property, prop, true ) )

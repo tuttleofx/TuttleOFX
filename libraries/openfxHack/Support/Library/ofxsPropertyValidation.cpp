@@ -103,9 +103,9 @@ namespace OFX {
     /** @brief PropertyDescription var-args constructor */
     PropertyDescription::PropertyDescription(char *name, OFX::PropertyTypeEnum ilk, int dimension, ...)
       : _name(name)
+      , _exists(false) // only set when we have validated it
       , _dimension(dimension)
       , _ilk(ilk)
-      , _exists(false) // only set when we have validated it
     {      
       // go through the var args to extract defaults to check against and values to set to
       va_list argp;
@@ -230,7 +230,7 @@ namespace OFX {
       va_list argp;
       va_start(argp, setName);
 
-      bool going = true;
+//      bool going = true;
       while(1) {
         // get a pointer 
         PropertyDescription *descs = (PropertyDescription *) va_arg(argp, PropertyDescription *);
@@ -1142,6 +1142,8 @@ namespace OFX {
         break;
       case ePushButtonParam :
         gPushButtonParamPropSet.validate(paramProps, checkDefaults);
+        break;
+      default:
         break;
       }
 #endif

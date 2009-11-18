@@ -208,7 +208,7 @@ namespace Property {
         virtual void getPointerPropertyN(const std::string &name, void **values, int count) const OFX_EXCEPTION_SPEC;
 
         /// override this to fetch the dimension size.
-        virtual int getDimension(const std::string &name) const OFX_EXCEPTION_SPEC;
+        virtual size_t getDimension(const std::string &name) const OFX_EXCEPTION_SPEC;
 
         /// override this to handle a reset(). 
         virtual void reset(const std::string &name) OFX_EXCEPTION_SPEC;
@@ -237,7 +237,7 @@ namespace Property {
       protected :
         std::string  _name;                     ///< name of this property
         TypeEnum     _type;                     ///< type of this property
-        int          _dimension;                ///< the fixed dimension of this property 
+        size_t       _dimension;                ///< the fixed dimension of this property
         bool         _pluginReadOnly;           ///< set is forbidden through suite: value may still change between get() calls
         std::vector<NotifyHook *> _notifyHooks; ///< hooks to call whenever the property is set
         GetHook                  *_getHook;     ///< if we are not storing props locally, they are stored via fetching from here
@@ -247,7 +247,7 @@ namespace Property {
         /// ctor
         Property(const std::string &name,
                  TypeEnum type,
-                 int dimension = 1,
+                 size_t dimension = 1,
                  bool pluginReadOnly=false);
             
         /// copy ctor
@@ -295,10 +295,10 @@ namespace Property {
         void notify(bool single, int indexOrN);
 
         // get the current dimension of this property
-        virtual int getDimension() const = 0;
+        virtual size_t getDimension() const = 0;
 
         /// get the fixed dimension of this property
-        int getFixedDimension() const {
+        size_t getFixedDimension() const {
           return _dimension;
         }
 
@@ -339,7 +339,7 @@ namespace Property {
       public :
         /// constructor
         PropertyTemplate(const std::string &name,
-                         int dimension,
+                         size_t dimension,
                          bool pluginReadOnly,
                          APIType defaultValue);
 
@@ -387,7 +387,7 @@ namespace Property {
         void reset() OFX_EXCEPTION_SPEC;
         
         /// get the size of the vector
-        int getDimension() const OFX_EXCEPTION_SPEC;
+        size_t getDimension() const OFX_EXCEPTION_SPEC;
         
         /// return the value as a string
         inline std::string getStringValue(int idx) {
@@ -455,18 +455,17 @@ namespace Property {
       public :
         /// take an array of of PropSpecs (which must be terminated with an entry in which
         /// ->name is null), and turn these into a Set
-        explicit Set(const PropSpec spec[]);
+        Set(const PropSpec spec[]);
 //        explicit Set(const std::vector<const PropSpec*>& multipleSpec);
 
         /// deep copies the property set
-        explicit Set(const Set &);
+        Set(const Set &);
 
         /// empty ctor
-        explicit Set();
+        Set();
 
         /// destructor
         virtual ~Set();
-
 
         /// dump to cout
         void cout() const
@@ -478,7 +477,7 @@ namespace Property {
 			 {
 				 Property* prop = it->second;
 				 COUT( "[" << it->first << "]: " << mapTypeEnumToString( prop->getType() ) );
-				 for( int i=0; i<prop->getDimension(); ++i )
+                                 for( size_t i=0; i<prop->getDimension(); ++i )
 				 {
 					COUT( " - " << prop->getStringValue(i) );
 				 }
@@ -593,7 +592,7 @@ namespace Property {
 
 
         /// get the dimension of a particular property
-        int getDimension(const std::string &property) const;
+        size_t getDimension(const std::string &property) const;
 
         /// is the given string one of the values of a multi-dimensional string prop
         /// this returns a non negative index if it is found, otherwise, -1

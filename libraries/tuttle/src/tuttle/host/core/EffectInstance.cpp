@@ -65,8 +65,6 @@ namespace core {
     }
 
     // class member function implementation
-
-
     void EffectInstance::dumpToStdOut()
     {
         std::cout << "________________________________________________________________________________" << std::endl;
@@ -94,7 +92,6 @@ namespace core {
     {
         return new ClipImgInstance(this,descriptor);
     }
-
 
     /// get default output fielding. This is passed into the clip prefs action
     /// and  might be mapped (if the host allows such a thing)

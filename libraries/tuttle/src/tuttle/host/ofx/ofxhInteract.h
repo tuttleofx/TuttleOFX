@@ -160,7 +160,7 @@ namespace Interact {
         virtual void getSlaveToParam(std::vector<std::string>& params) const;
 
         // do nothing
-        virtual int  getDimension(const std::string &name) const OFX_EXCEPTION_SPEC;
+        virtual size_t  getDimension(const std::string &name) const OFX_EXCEPTION_SPEC;
         
         // don't know what to do
         virtual void reset(const std::string &name) OFX_EXCEPTION_SPEC;

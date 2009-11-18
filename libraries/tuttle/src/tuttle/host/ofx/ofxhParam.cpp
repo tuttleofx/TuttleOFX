@@ -452,7 +452,11 @@ namespace attribute {
 				return (OfxParamSetHandle )this;
 			}
 
-			ParamDescriptorSet::~ParamDescriptorSet( ) { }
+                        ParamDescriptorSet::~ParamDescriptorSet( ) {
+                            for(std::list<ParamDescriptor *>::iterator it = _paramList.begin(); it != _paramList.end(); ++it) {
+                                delete (*it);
+                            }
+                        }
 
 			const std::map<std::string, ParamDescriptor*> &ParamDescriptorSet::getParams( ) const
 			{

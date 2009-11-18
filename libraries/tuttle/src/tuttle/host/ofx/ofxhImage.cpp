@@ -188,12 +188,10 @@ namespace imageEffect {
 			Image::~Image( ) { }
 
 			// release the reference
-
-			void Image::releaseReference( )
+                        bool Image::releaseReference( )
 			{
-				_referenceCount -= 1;
-				if( _referenceCount <= 0 )
-					delete this;
+                            --_referenceCount;
+                            return _referenceCount <= 0;
 			}
 
 }

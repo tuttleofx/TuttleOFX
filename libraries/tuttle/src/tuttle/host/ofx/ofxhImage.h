@@ -150,7 +150,7 @@ public:
 
 	OfxPropertySetHandle getPropHandle( ) const
 	{
-		return Property::Set::getHandle( );
+            return Property::Set::getHandle( );
 	}
 
 	/// get the bounds of the pixels in memory
@@ -166,13 +166,13 @@ public:
 	PixelComponentEnum getComponentsType( ) const;
 
 	/// release the reference count, which, if zero, deletes this
-	void releaseReference( );
+        bool releaseReference( );
 
 	/// add a reference to this image
 
 	void addReference( )
 	{
-		++_referenceCount;
+            ++_referenceCount;
 	}
 };
 

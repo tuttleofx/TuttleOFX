@@ -106,16 +106,14 @@ namespace core {
   tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(const tuttle::host::ofx::imageEffect::Descriptor &rootContext,
                                                            tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin)
   {
-    tuttle::host::ofx::imageEffect::Descriptor *desc = new tuttle::host::ofx::imageEffect::Descriptor(rootContext, plugin);
-    return desc;
+    return new tuttle::host::ofx::imageEffect::Descriptor(rootContext, plugin);
   }
 
   /// used to construct populate the cache
   tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(const std::string &bundlePath,
                                                            tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin)
   {
-    tuttle::host::ofx::imageEffect::Descriptor *desc = new tuttle::host::ofx::imageEffect::Descriptor(bundlePath, plugin);
-    return desc;
+    return new tuttle::host::ofx::imageEffect::Descriptor(bundlePath, plugin);
   }
 
   /// message

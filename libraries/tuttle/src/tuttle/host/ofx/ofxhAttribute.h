@@ -155,6 +155,7 @@ public:
 class AttributeDescriptor : virtual public AttributeAccessor
 {
 public:
+        AttributeDescriptor( );
 	AttributeDescriptor( const Property::Set& properties );
 	virtual ~AttributeDescriptor( ) = 0;
 protected:

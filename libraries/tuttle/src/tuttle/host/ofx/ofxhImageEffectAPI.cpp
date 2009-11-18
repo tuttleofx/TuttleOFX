@@ -102,6 +102,7 @@ namespace imageEffect {
           OfxPlugin *op = _pluginHandle->getOfxPlugin();
           op->mainEntry(kOfxActionUnload, 0, 0, 0);
         }
+        delete _baseDescriptor;
       }
 
       APICache::PluginAPICacheI &ImageEffectPlugin::getApiHandler()
@@ -285,14 +286,12 @@ namespace imageEffect {
       /// pick the highest found version.
       ImageEffectPlugin *ImageEffectPluginCache::getPluginById(const std::string &id, int vermaj, int vermin)
       {
-		  COUT_WITHINFOS( "on cherche : " << id );
         // return the highest version one, which fits the pattern provided
         ImageEffectPlugin *sofar = 0;
 
         for( std::vector<ImageEffectPlugin *>::iterator i=_plugins.begin(); i!=_plugins.end(); ++i )
 		{
           ImageEffectPlugin *p = *i;
-		  COUT( "imageEffectPlugin: " << p->getRawIdentifier() );
 
           if (p->getIdentifier() != id) {
             continue;
@@ -310,7 +309,6 @@ namespace imageEffect {
             sofar = p;
           }
         }
-		COUT( "sofar: " << (int)sofar );
         return sofar;
       }
 
