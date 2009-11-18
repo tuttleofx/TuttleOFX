@@ -18,7 +18,7 @@ class DPXReaderPlugin : public OFX::ImageEffect
 public:
     DPXReaderPlugin( OfxImageEffectHandle handle );
     OFX::Clip *getDstClip( ) const;
-    OFX::io::DpxImage & getDpxImg() { return _dpxImg; }
+    tuttle::io::DpxImage & getDpxImg() { return _dpxImg; }
 
 public:
     virtual void render( const OFX::RenderArguments &args );
@@ -28,7 +28,7 @@ public:
     void getClipPreferences(OFX::ClipPreferencesSetter &clipPreferences);
 protected:
     bgil::point2<ptrdiff_t>    _imageDims;       ///< Image file dimensions
-    OFX::io::DpxImage _dpxImg;          ///< Dpx image reader
+    tuttle::io::DpxImage _dpxImg;          ///< Dpx image reader
     OFX::StringParam    *_filepath;
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip           *_dstClip;       ///< Destination image clip

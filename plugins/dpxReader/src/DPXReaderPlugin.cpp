@@ -7,7 +7,7 @@
 #include <boost/filesystem.hpp>
 
 using namespace boost::filesystem;
-using namespace OFX::io;
+using namespace tuttle::io;
 
 namespace tuttle {
 

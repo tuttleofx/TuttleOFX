@@ -1,8 +1,9 @@
-#include "OFX/common/image/gilGlobals.hpp"
-#include "OFX/plugin/ImageGilProcessor.hpp"
-#include "OFX/plugin/Progress.hpp"
-#include "OFX/plugin/PluginException.hpp"
 #include "DPXReaderPlugin.hpp"
+
+#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <cassert>
 #include <cmath>
@@ -26,7 +27,7 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin &instance )
-: OFX::ofx::ImageGilProcessor<View>( instance ), OFX::ofx::Progress( instance ),
+: tuttle::plugin::ImageGilProcessor<View>( instance ), tuttle::plugin::Progress( instance ),
 _plugin( instance )
 {
     _filepath = instance.fetchStringParam( "Input filename" );
@@ -52,7 +53,7 @@ void DPXReaderProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
             boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time, reqRect ) );
             OfxRectI bounds = dst->getBounds();
             if( !dst.get( ) )
-                throw( ImageNotReadyException( ) );
+                throw( tuttle::plugin::ImageNotReadyException( ) );
             // Build destination view
             this->_dstView = interleaved_view( std::abs(bounds.x2 - bounds.x1), std::abs(bounds.y2 - bounds.y1),
                                                static_cast<value_t*>(dst->getPixelData()),
@@ -63,9 +64,9 @@ void DPXReaderProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
             // Call the base class process member
             this->process();
         } else
-            throw( PluginException( "Unable to open : %s", sFilepath.c_str() ) );
+            throw( tuttle::plugin::PluginException( "Unable to open : %s", sFilepath.c_str() ) );
     }
-    catch( PluginException e )
+    catch( tuttle::plugin::PluginException e )
     {
         COUT_EXCEPTION( e );
     }
@@ -86,7 +87,7 @@ void DPXReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
         this->_filepath->getValue( filepath );
         readImage( this->_dstView, filepath );
     }
-    catch( PluginException err )
+    catch( tuttle::plugin::PluginException err )
     {
         COUT_EXCEPTION( err );
     }
@@ -105,7 +106,7 @@ void DPXReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
  * @return Result view of the blurring process
  */
 template<class View>
-View& DPXReaderProcess<View>::readImage( View &dst, std::string & filepath ) throw(PluginException )
+View& DPXReaderProcess<View>::readImage( View &dst, std::string & filepath ) throw(tuttle::plugin::PluginException )
 {
     using namespace std;
     using namespace boost;

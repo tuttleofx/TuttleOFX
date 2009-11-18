@@ -142,7 +142,7 @@ namespace OFX
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static OFX::CropPluginFactory p("fr.hd3d.tuttle.volet", 1, 0);
+            static tuttle::CropPluginFactory p("fr.hd3d.tuttle.volet", 1, 0);
             ids.push_back(&p);
         }
     }
