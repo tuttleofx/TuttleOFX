@@ -41,7 +41,7 @@ England
 #include <cstring>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
-namespace OFX {  
+namespace OFX {
 
   /** @brief dummy page positioning parameter to be passed to @ref OFX::PageParamDescriptor::addChild */
   DummyParamDescriptor PageParamDescriptor::gSkipRow(kOfxParamPageSkipRow);

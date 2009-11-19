@@ -2,7 +2,6 @@
 #define _ofxsUtilities_h_
 
 #include <iostream>
-//@tuttle todo: utiliser tuttle/utils/globals.hpp
 
 /**
  * @def   INFOS

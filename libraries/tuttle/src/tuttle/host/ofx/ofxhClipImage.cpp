@@ -40,11 +40,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhClip.h"
 #include "ofxhImageEffect.h"
 
-namespace OFX {
-
-	namespace Host {
-
-		namespace Attribute {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace attribute {
 
 				////////////////////////////////////////////////////////////////////////////////
 				// props to clips descriptors and instances
@@ -106,7 +105,7 @@ namespace OFX {
 				 * descriptor
 				 */
 				ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
-				: Attribute::ClipDescriptor( Property::Set() )
+                                : tuttle::host::ofx::attribute::ClipDescriptor( )
 				{
 					/// properties common to the desciptor and instance
 					/// the desc and set them, the instance cannot
@@ -126,8 +125,8 @@ namespace OFX {
 				/**
 				 * clip clipimage instance
 				 */
-				ClipImageInstance::ClipImageInstance( ImageEffect::Instance* effectInstance, const Attribute::ClipImageDescriptor& desc )
-				: Attribute::ClipInstance( desc )
+				ClipImageInstance::ClipImageInstance( imageEffect::Instance* effectInstance, const attribute::ClipImageDescriptor& desc )
+				: attribute::ClipInstance( desc )
 				, _effectInstance( effectInstance )
 //				, _pixelDepth( kOfxBitDepthNone )
 //				, _components( kOfxImageComponentNone )
@@ -218,8 +217,7 @@ namespace OFX {
 					return none;
 				}
 
-		} // Attribute
-
-	} // Host
-
-} // OFX
+}
+}
+}
+}

@@ -20,9 +20,12 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace png {
+
+using namespace OFX;
 
 static const bool   kSupportTiles                 = false;
-
 
 mDeclarePluginFactory(PNGReaderPluginFactory, {}, {});
 
@@ -30,9 +33,7 @@ mDeclarePluginFactory(PNGReaderPluginFactory, {}, {});
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
-void
-PNGReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void PNGReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
     // basic labels
     desc.setLabels("PNGReaderHd3d", "PNGReaderHd3d",
@@ -62,8 +63,7 @@ PNGReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
+void PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
                                           OFX::ContextEnum context)
 {
     // Create the mandated output clip
@@ -88,22 +88,23 @@ PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect*
-PNGReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
+OFX::ImageEffect* PNGReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
                                        OFX::ContextEnum context)
 {
     return new PNGReaderPlugin(handle);
 }
 
 }
+}
+}
 
-namespace OFX 
+namespace OFX
 {
     namespace Plugin 
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::PNGReaderPluginFactory p("fr.hd3d.tuttle.pngreader", 1, 0);
+            static tuttle::plugin::png::PNGReaderPluginFactory p("fr.hd3d.tuttle.pngreader", 1, 0);
             ids.push_back(&p);
         }
     }

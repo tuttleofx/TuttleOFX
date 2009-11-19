@@ -1,10 +1,10 @@
 #ifndef DPX_READER_PROCESS_HPP
 #define DPX_READER_PROCESS_HPP
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -21,7 +21,7 @@ namespace tuttle {
  *
  */
 template<class View>
-class DPXReaderProcess : public tuttle::ofx::ImageGilProcessor<View>, public tuttle::ofx::Progress
+class DPXReaderProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
 {
     typedef typename View::value_type value_t;
 protected :
@@ -37,7 +37,7 @@ public :
     void multiThreadProcessImages(OfxRectI procWindow);
 
     //
-    View& readImage( View &dst, std::string & filepath ) throw(PluginException);
+    View& readImage( View &dst, std::string & filepath ) throw(tuttle::plugin::PluginException);
 };
 
 }

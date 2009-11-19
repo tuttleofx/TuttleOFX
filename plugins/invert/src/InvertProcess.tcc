@@ -6,11 +6,11 @@
  *
  */
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
-#include "tuttle/common/image/gilGlobals.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/common/image/gilGlobals.hpp>
 
 #include <cmath>
 #include <vector>
@@ -19,6 +19,8 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace invert {
 
 struct inverter
 {
@@ -46,8 +48,8 @@ using namespace boost::gil;
 
 template<class View>
 InvertProcess<View>::InvertProcess( InvertPlugin &instance )
-: tuttle::ofx::ImageGilProcessor<View>( instance )
-, tuttle::ofx::Progress( instance )
+: tuttle::plugin::ImageGilProcessor<View>( instance )
+, tuttle::plugin::Progress( instance )
 , _plugin( instance )
 {
 }
@@ -73,7 +75,6 @@ void InvertProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         if( !dst.get( ) )
             throw( ImageNotReadyException( ) );
         OfxRectI dBounds = dst->getBounds();
-        COUT_VAR4(dBounds.x1, dBounds.y1, dBounds.x2, dBounds.y2);
         OFX::BitDepthEnum dstBitDepth = dst->getPixelDepth( );
         OFX::PixelComponentEnum dstComponents = dst->getPixelComponents( );
 
@@ -119,4 +120,6 @@ void InvertProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
     }
 }
 
+}
+}
 }

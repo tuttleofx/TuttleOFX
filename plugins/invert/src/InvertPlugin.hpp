@@ -6,12 +6,14 @@
  *
  */
 
-#ifndef INVERT_PLUGIN_H
-#define INVERT_PLUGIN_H
+#ifndef _TUTTLE_PLUGIN_INVERTPLUGIN_HPP_
+#define _TUTTLE_PLUGIN_INVERTPLUGIN_HPP_
 
 #include <ofxsImageEffect.h>
 
 namespace tuttle {
+namespace plugin {
+namespace invert {
 
 /**
  * @brief
@@ -35,5 +37,7 @@ protected:
 };
 
 }
+}
+}
 
-#endif  // INVERT_PLUGIN_H
+#endif

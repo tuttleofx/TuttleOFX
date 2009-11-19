@@ -39,21 +39,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
 #include "ofxhImageEffect.h"
+#include "ofxhPluginCache.h"
 #include "ofxhHost.h"
 
-namespace OFX {
-  
-  namespace Host {
-    
-    namespace ImageEffect {
+namespace tuttle {
+  namespace host {
+  namespace ofx {
+    namespace imageEffect {
 
-      class PluginCache;
+      class ImageEffectPluginCache;
 
       /// subclass of Plugin representing an ImageEffect plugin.  used to store API-specific
       /// data
       class ImageEffectPlugin : public Plugin {
 
-        PluginCache &_pc;
+        ImageEffectPluginCache &_pc;
 
         // this comes off Descriptor's property set after a describe
         // context independent
@@ -70,9 +70,9 @@ namespace OFX {
         void addContextInternal(const std::string &context) const;
 
       public:
-			  ImageEffectPlugin(PluginCache &pc, PluginBinary *pb, int pi, OfxPlugin *pl);
+			  ImageEffectPlugin(ImageEffectPluginCache &pc, PluginBinary *pb, int pi, OfxPlugin *pl);
 
-        ImageEffectPlugin(PluginCache &pc,
+        ImageEffectPlugin(ImageEffectPluginCache &pc,
                           PluginBinary *pb,
                           int pi,
                           const std::string &api,
@@ -112,7 +112,7 @@ namespace OFX {
 		 * @brief this is called to make an instance of the effect
          *  the client data ptr is what is passed back to the client creation function
 		 */
-        ImageEffect::Instance* createInstance(const std::string &context, void *clientDataPtr);
+        imageEffect::Instance* createInstance(const std::string &context, void *clientDataPtr);
 
       };
 
@@ -150,7 +150,7 @@ namespace OFX {
       };
 
       /// implementation of the specific Image Effect handler API cache.
-      class PluginCache : public APICache::PluginAPICacheI {
+      class ImageEffectPluginCache : public APICache::PluginAPICacheI {
       public:      
 
       private:
@@ -169,15 +169,15 @@ namespace OFX {
         Property::Property *_currentProp;
         
         Descriptor *_currentContext;
-        Attribute::ParamDescriptor *_currentParam;
-        Attribute::ClipImageDescriptor *_currentClip;
+        attribute::ParamDescriptor *_currentParam;
+        attribute::ClipImageDescriptor *_currentClip;
 
         /// pointer to our image effect host
-        OFX::Host::ImageEffect::Host* _host;
+        tuttle::host::ofx::imageEffect::ImageEffectHost* _host;
 
       public:  
-        explicit PluginCache(OFX::Host::ImageEffect::Host &host);
-        virtual ~PluginCache();        
+        explicit ImageEffectPluginCache(tuttle::host::ofx::imageEffect::ImageEffectHost &host);
+        virtual ~ImageEffectPluginCache();
 
         /// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
         /// pick the highest found version.
@@ -187,7 +187,7 @@ namespace OFX {
         /// pick the highest found version.
         ImageEffectPlugin *getPluginByLabel(const std::string &label, int vermaj=-1, int vermin=-1);
 
-        OFX::Host::ImageEffect::Host *getHost() {
+        tuttle::host::ofx::imageEffect::ImageEffectHost *getHost() {
           return _host;
         }
 
@@ -236,11 +236,10 @@ namespace OFX {
 
         void dumpToStdOut();
       };
-    
-    } // ImageEffect
 
-  } // Host
-
-} // OFX
+}
+}
+}
+}
 
 #endif

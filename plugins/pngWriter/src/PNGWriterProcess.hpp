@@ -1,10 +1,10 @@
 #ifndef PNG_WRITER_PROCESS_HPP
 #define PNG_WRITER_PROCESS_HPP
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -14,6 +14,8 @@
 
 
 namespace tuttle {
+namespace plugin {
+namespace png {
 
 
 /**
@@ -21,7 +23,7 @@ namespace tuttle {
  *
  */
 template<class View>
-class PNGWriterProcess : public tuttle::ofx::ImageGilProcessor<View>, public tuttle::ofx::Progress
+class PNGWriterProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
 {
     typedef typename View::value_type value_t;
 protected :
@@ -39,9 +41,11 @@ public :
     void multiThreadProcessImages(OfxRectI procWindow);
 
     //
-    static void writeImage( View & src, std::string & filepath ) throw(PluginException);
+    static void writeImage( View & src, std::string & filepath ) throw(tuttle::plugin::PluginException);
 };
 
+}
+}
 }
 
 #include "PNGWriterProcess.tcc"

@@ -49,16 +49,10 @@
 #include "ofxhImageEffectAPI.h"
 #include "ofxhXml.h"
 
-namespace OFX
-{
-  namespace Host
-  {
-    namespace APICache
-    {
-      void PluginAPICacheI::registerInCache(OFX::Host::PluginCache &pluginCache) {
-        pluginCache.registerAPICache(_apiName, _apiVersionMin, _apiVersionMax, this);
-      }      
-
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace APICache {
       void propertySetXMLRead(const std::string &el,
                               std::map<std::string, std::string> map,
                               Property::Set &set,
@@ -123,7 +117,7 @@ namespace OFX
             << XML::attribute("dimension", prop->getFixedDimension()) 
             << ">\n";
           
-          for (int i=0;i<prop->getDimension();i++) {
+          for (size_t i=0;i<prop->getDimension();i++) {
             o << indent << "  <value " 
               << XML::attribute("index", i)
               << XML::attribute("value", prop->getStringValue(i)) 
@@ -157,6 +151,7 @@ namespace OFX
           }
       }
 
-    }
-  }
+}
+}
+}
 }

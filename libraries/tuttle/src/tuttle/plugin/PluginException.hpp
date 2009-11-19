@@ -4,8 +4,8 @@
  * Author: edubois
  */
 
-#ifndef PLUGIN_EXCEPTION_HPP
-#define PLUGIN_EXCEPTION_HPP
+#ifndef _TUTTLE_PLUGIN_EXCEPTION_HPP
+#define _TUTTLE_PLUGIN_EXCEPTION_HPP
 
 // Include standard C++ headers.
 #include <cstdarg>
@@ -15,6 +15,9 @@
 #include <sstream>
 #include <string>
 #include <stdexcept>
+
+namespace tuttle {
+namespace plugin {
 
 class BadConversion : public std::runtime_error
 {
@@ -150,5 +153,7 @@ public:
     };
 };
 
+}
+}
 
-#endif //PLUGIN_EXCEPTION_HPP
+#endif

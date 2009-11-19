@@ -29,6 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef OFXH_PARAM_H
 #define OFXH_PARAM_H
+
 #include "ofxhPropertySuite.h"
 #include "ofxhAttribute.h"
 #include "ofxCore.h"
@@ -39,11 +40,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstdarg>
 #include <cassert>
 
-namespace OFX {
-
-  namespace Host {
-
-    namespace Attribute {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace attribute {
 
       /// fetch the param suite
       void *GetSuite(int version);
@@ -69,7 +69,7 @@ namespace OFX {
       };
 
       /// base class for all params
-      class ParamAccessor : virtual public Attribute::AttributeAccessor {
+      class ParamAccessor : virtual public attribute::AttributeAccessor {
       public:
         ParamAccessor();
 //        ParamAccessor( const ParamAccessor& other );
@@ -106,7 +106,7 @@ namespace OFX {
       };
 
       /// the Descriptor of a plugin parameter
-      class ParamDescriptor : virtual public ParamAccessor, public Attribute::AttributeDescriptor {
+      class ParamDescriptor : virtual public ParamAccessor, public attribute::AttributeDescriptor {
         ParamDescriptor();
 
       public:
@@ -171,7 +171,7 @@ namespace OFX {
 
         /// The inheriting plugin instance needs to set this up to deal with
         /// plug-ins changing their own values.
-        virtual void paramChangedByPlugin(Attribute::ParamInstance *param) = 0;
+        virtual void paramChangedByPlugin(attribute::ParamInstance *param) = 0;
 
         /// add a param
         virtual OfxStatus addParam(const std::string& name, ParamInstance* instance);
@@ -223,7 +223,7 @@ namespace OFX {
       };
 
       /// plugin parameter instance
-      class ParamInstance : public Attribute::AttributeInstance, virtual public ParamAccessor, private Property::NotifyHook {
+      class ParamInstance : virtual public ParamAccessor, public attribute::AttributeInstance, private Property::NotifyHook {
         ParamInstance();
       protected:
         ParamInstanceSet*  _paramSetInstance;
@@ -232,7 +232,7 @@ namespace OFX {
         virtual ~ParamInstance();
 
         /// make a parameter, with the given type and name
-        explicit ParamInstance( ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance );
+        explicit ParamInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance );
 
         /// grab a handle on the parameter for passing to the C API
         OfxParamHandle getParamHandle( ) const
@@ -246,8 +246,8 @@ namespace OFX {
         //                                        double      renderScaleY);
 
         // get the param instance
-        OFX::Host::Attribute::ParamInstanceSet* getParamSetInstance() { return _paramSetInstance; }
-        void setParamSetInstance( OFX::Host::Attribute::ParamInstanceSet *instance ) { _paramSetInstance = instance; }
+        tuttle::host::ofx::attribute::ParamInstanceSet* getParamSetInstance() { return _paramSetInstance; }
+        void setParamSetInstance( tuttle::host::ofx::attribute::ParamInstanceSet *instance ) { _paramSetInstance = instance; }
 
         // set/get parent instance
         void setParentInstance( ParamInstance* instance );
@@ -319,7 +319,7 @@ namespace OFX {
           protected:
             std::vector<T*> _controls;
           public:
-            MultiDimParam(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance): ParamInstance(descriptor, setInstance) {
+            MultiDimParam(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance): ParamInstance(descriptor, setInstance) {
             }
 
             virtual ~MultiDimParam() {
@@ -422,11 +422,11 @@ namespace OFX {
 
       class ParamGroupInstance : public ParamInstance, public ParamInstanceSet {
       public:
-        ParamGroupInstance( ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance ) : ParamInstance(descriptor, setInstance) {}
+        ParamGroupInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance ) : ParamInstance(descriptor, setInstance) {}
 
         /// setChildrens have to clone each source instance recursively
-        void setChildrens( const Attribute::ParamInstanceSet * childrens );
-        Attribute::ParamInstanceSet *getChildrens() const;
+        void setChildrens( const attribute::ParamInstanceSet * childrens );
+        attribute::ParamInstanceSet *getChildrens() const;
         void addChildren( ParamInstance * children );
 
         Property::Set &getParamSetProps() {
@@ -435,7 +435,7 @@ namespace OFX {
 
         /// The inheriting plugin instance needs to set this up to deal with
         /// plug-ins changing their own values.
-        virtual void paramChangedByPlugin(Attribute::ParamInstance *param) {
+        virtual void paramChangedByPlugin(attribute::ParamInstance *param) {
             _paramSetInstance->paramChangedByPlugin( param );
         }
 
@@ -457,16 +457,16 @@ namespace OFX {
 
       class ParamPageInstance : public ParamInstance {
       public:
-        ParamPageInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
-        const std::map<int,Attribute::ParamInstance*> &getChildren() const;
+        ParamPageInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        const std::map<int,attribute::ParamInstance*> &getChildren() const;
       protected :
-        mutable std::map<int,Attribute::ParamInstance*> _children; // if set in a notify hook, this need not be mutable
+        mutable std::map<int,attribute::ParamInstance*> _children; // if set in a notify hook, this need not be mutable
       };
 
       class ParamIntegerInstance : public ParamInstance, public KeyframeParam {
       public:
         typedef int BaseType;
-        ParamIntegerInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        ParamIntegerInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these 
         virtual OfxStatus get(int&) = 0;
@@ -499,7 +499,7 @@ namespace OFX {
 
       class ParamChoiceInstance : public ParamInstance, public KeyframeParam {
       public:
-        ParamChoiceInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        ParamChoiceInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these 
         virtual OfxStatus get(int&) = 0;
@@ -523,7 +523,7 @@ namespace OFX {
       class ParamDoubleInstance : public ParamInstance, public KeyframeParam {
       public:
         typedef double BaseType;
-        ParamDoubleInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        ParamDoubleInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these 
         virtual OfxStatus get(double&) = 0;
@@ -555,7 +555,7 @@ namespace OFX {
       class ParamBooleanInstance : public ParamInstance, public KeyframeParam {
       public:
         typedef bool BaseType;
-        ParamBooleanInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        ParamBooleanInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         // Deriving implementatation needs to overide these
         virtual OfxStatus get(bool&) = 0;
@@ -580,7 +580,7 @@ namespace OFX {
         std::string _returnValue; ///< location to hold temporary return value. Should delegate this to implementation!!!
       public:
         typedef std::string BaseType;
-        ParamStringInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        ParamStringInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
 
         virtual OfxStatus get(std::string &) = 0;
         virtual OfxStatus get(OfxTime time, std::string &) = 0;
@@ -602,15 +602,17 @@ namespace OFX {
 
       class ParamCustomInstance : public ParamStringInstance {
       public:
-        ParamCustomInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamStringInstance(descriptor, setInstance) {}
+        ParamCustomInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamStringInstance(descriptor, setInstance) {}
       };
 
       class ParamPushbuttonInstance : public ParamInstance, public KeyframeParam {
       public:
-        ParamPushbuttonInstance(ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        ParamPushbuttonInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
       };
-    }
-  }
+
+}
+}
+}
 }
 
-#endif // OFXH_PARAM_H
+#endif

@@ -37,9 +37,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <cassert>
 
-namespace OFX {
-namespace Host {
-namespace Attribute {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace attribute {
 
 class AttributeAccessor
 {
@@ -154,6 +155,7 @@ public:
 class AttributeDescriptor : virtual public AttributeAccessor
 {
 public:
+        AttributeDescriptor( );
 	AttributeDescriptor( const Property::Set& properties );
 	virtual ~AttributeDescriptor( ) = 0;
 protected:
@@ -208,6 +210,7 @@ public:
 	}
 };
 
+}
 }
 }
 }

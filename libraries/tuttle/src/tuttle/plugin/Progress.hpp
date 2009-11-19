@@ -4,10 +4,10 @@
  * @author Eloi Du Bois.
  * @date   2009/06/15
  */
-#ifndef PROGRESS_HPP
-#define PROGRESS_HPP
+#ifndef _TUTTLE_PLUGIN_PROGRESS_HPP
+#define _TUTTLE_PLUGIN_PROGRESS_HPP
 
-#include "../common/utils/global.hpp"
+#include <tuttle/common/utils/global.hpp>
 
 #ifndef WITHOUT_OFX
 #include "PluginException.hpp"
@@ -17,7 +17,7 @@
 #endif
 
 namespace tuttle {
-namespace ofx {
+namespace plugin {
 
 class Progress
 {
@@ -45,6 +45,7 @@ public:
 };
 
 
-}}
+}
+}
 
 #endif // PROGRESS_HPP

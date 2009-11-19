@@ -42,11 +42,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <limits.h>
 #include <stdarg.h>
 
-namespace OFX {
-
-	namespace Host {
-
-		namespace Attribute {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace attribute {
 
 			ParamAccessor::ParamAccessor()
 			{
@@ -204,7 +203,7 @@ namespace OFX {
 			 * @brief make a parameter, with the given type and name
 			 */
 			ParamDescriptor::ParamDescriptor( const std::string &type, const std::string &name )
-			: Attribute::AttributeDescriptor( Property::Set() )
+			: attribute::AttributeDescriptor( Property::Set() )
 			{
 				const char *ctype = type.c_str( );
 				const char *cname = name.c_str( );
@@ -453,7 +452,11 @@ namespace OFX {
 				return (OfxParamSetHandle )this;
 			}
 
-			ParamDescriptorSet::~ParamDescriptorSet( ) { }
+                        ParamDescriptorSet::~ParamDescriptorSet( ) {
+                            for(std::list<ParamDescriptor *>::iterator it = _paramList.begin(); it != _paramList.end(); ++it) {
+                                delete (*it);
+                            }
+                        }
 
 			const std::map<std::string, ParamDescriptor*> &ParamDescriptorSet::getParams( ) const
 			{
@@ -500,8 +503,8 @@ namespace OFX {
 
 			/// make a parameter, with the given type and name
 
-			ParamInstance::ParamInstance( ParamDescriptor& descriptor, Attribute::ParamInstanceSet & setInstance )
-			: Attribute::AttributeInstance( descriptor )
+			ParamInstance::ParamInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance )
+			: attribute::AttributeInstance( descriptor )
 			, _paramSetInstance( &setInstance )
 			, _parentInstance( 0 )
 			{
@@ -685,7 +688,7 @@ namespace OFX {
 			// Page Instance
 			//
 
-			const std::map<int, Attribute::ParamInstance*> &ParamPageInstance::getChildren( ) const
+			const std::map<int, attribute::ParamInstance*> &ParamPageInstance::getChildren( ) const
 			{
 				// HACK!!!! this really should be done with a notify hook so we don't force
 				// _children to be mutable
@@ -695,7 +698,7 @@ namespace OFX {
 					for( int i = 0; i < nChildren; i++ )
 					{
 						std::string childName = getProperties().getStringProperty( kOfxParamPropPageChild, i );
-						Attribute::ParamInstance* child = _paramSetInstance->getParam( childName );
+						attribute::ParamInstance* child = _paramSetInstance->getParam( childName );
 						if( child )
 							_children[i] = child;
 					}
@@ -1086,7 +1089,7 @@ namespace OFX {
 			static OfxStatus paramGetPropertySet( OfxParamHandle param,
 												  OfxPropertySetHandle *propHandle )
 			{
-				Attribute::ParamInstance *paramInstance = reinterpret_cast<Attribute::ParamInstance*> ( param );
+				attribute::ParamInstance *paramInstance = reinterpret_cast<attribute::ParamInstance*> ( param );
 
 				if( paramInstance && paramInstance->verifyMagic( ) )
 				{
@@ -1262,7 +1265,7 @@ namespace OFX {
 			static OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
 											  unsigned int *numberOfKeys )
 			{
-				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
+				attribute::ParamInstance *pInstance = reinterpret_cast<attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1278,7 +1281,7 @@ namespace OFX {
 											  unsigned int nthKey,
 											  OfxTime *time )
 			{
-				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
+				attribute::ParamInstance *pInstance = reinterpret_cast<attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1295,7 +1298,7 @@ namespace OFX {
 											   int direction,
 											   int *index )
 			{
-				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
+				attribute::ParamInstance *pInstance = reinterpret_cast<attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1310,7 +1313,7 @@ namespace OFX {
 			static OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
 											 OfxTime time )
 			{
-				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
+				attribute::ParamInstance *pInstance = reinterpret_cast<attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1324,7 +1327,7 @@ namespace OFX {
 
 			static OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 			{
-				Attribute::ParamInstance *pInstance = reinterpret_cast<Attribute::ParamInstance*> ( paramHandle );
+				attribute::ParamInstance *pInstance = reinterpret_cast<attribute::ParamInstance*> ( paramHandle );
 
 				if( !pInstance || !pInstance->verifyMagic( ) )
 				{
@@ -1394,8 +1397,7 @@ namespace OFX {
 				return NULL;
 			}
 
-		} // Param
-
-	} // Host
-
-} // OFX
+}
+}
+}
+}

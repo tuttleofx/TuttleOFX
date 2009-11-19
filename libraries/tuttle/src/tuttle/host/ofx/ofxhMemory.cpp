@@ -36,11 +36,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // ofx host
 #include "ofxhMemory.h"
 
-namespace OFX {
-
-  namespace Host {
-
-    namespace Memory {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace Memory {
 
       Instance::Instance() : _ptr(0), _locked(false) {}
 
@@ -80,9 +79,8 @@ namespace OFX {
         _locked = false;
       }
 
-    } // Memory
-
-  } // Host
-
-} // OFX
+}
+}
+}
+}
 

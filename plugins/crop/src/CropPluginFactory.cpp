@@ -8,9 +8,9 @@
 
 #include "CropPlugin.hpp"
 #include "CropMargin.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <string>
 #include <iostream>
@@ -23,17 +23,17 @@
 
 namespace tuttle {
 
+mDeclarePluginFactory(CropPluginFactory, {}, {});
+
 static const bool   kSupportTiles           = true;
 static const bool   kSupportTemporalAccess  = false;
 
-
-mDeclarePluginFactory(CropPluginFactory, {}, {});
+using namespace OFX;
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
 void
 CropPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
@@ -136,7 +136,7 @@ CropPluginFactory::createInstance(OfxImageEffectHandle handle,
 
 }
 
-namespace OFX 
+namespace OFX
 {
     namespace Plugin 
     {

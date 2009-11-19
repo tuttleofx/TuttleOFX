@@ -1,10 +1,10 @@
 #ifndef PNG_READER_PROCESS_HPP
 #define PNG_READER_PROCESS_HPP
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -14,6 +14,8 @@
 
 
 namespace tuttle {
+namespace plugin {
+namespace png {
 
 
 /**
@@ -21,7 +23,7 @@ namespace tuttle {
  *
  */
 template<class View>
-class PNGReaderProcess : public tuttle::ofx::ImageGilProcessor<View>, public tuttle::ofx::Progress
+class PNGReaderProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
 {
     typedef typename View::value_type value_t;
 protected :
@@ -41,6 +43,8 @@ public :
     View& readImage( View &dst, std::string & filepath ) throw(PluginException);
 };
 
+}
+}
 }
 
 #include "PNGReaderProcess.tcc"

@@ -45,19 +45,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-namespace OFX {
-
-  namespace Host {
+namespace tuttle {
+  namespace host {
+  namespace ofx {
 
     // forward declare    
     class Plugin;
 
-  namespace Attribute {
+  namespace attribute {
               class ClipDescriptor;
               class ClipInstance;
       }
   
-    namespace ImageEffect {
+    namespace imageEffect {
 
       // forward declare
       class ImageEffectPlugin;
@@ -66,9 +66,9 @@ namespace OFX {
       class Descriptor;
 
       /// An image effect host, passed to the setHost function of all image effect plugins
-      class Host : public OFX::Host::Host {
+      class ImageEffectHost : public tuttle::host::ofx::AbstractHost {
       public :
-        Host();
+        ImageEffectHost();
 
         /// fetch a suite
         virtual void *fetchSuite(const char *suiteName, int suiteVersion);
@@ -111,9 +111,6 @@ namespace OFX {
         /// created.
         virtual void initDescriptor(Descriptor* desc);
       };
-
-      /// our global host object, set when the plugin cache is created
-      extern Host *gImageEffectHost;
 
       ////////////////////////////////////////////////////////////////////////////////
       /// base class to both effect descriptors and instances
@@ -192,7 +189,7 @@ namespace OFX {
       /// an image effect plugin descriptor
       class Descriptor 
         : public Base
-        , public Attribute::ParamDescriptorSet {
+        , public attribute::ParamDescriptorSet {
       private :
         // private CC
         Descriptor(const Descriptor &other)
@@ -202,8 +199,8 @@ namespace OFX {
 
       protected:
         Plugin                                 *_plugin;       ///< the plugin I belong to
-        std::map<std::string, Attribute::ClipImageDescriptor*>  _clips;        ///< clips descriptors by name
-        std::vector<Attribute::ClipImageDescriptor*>            _clipsByOrder; ///< clip descriptors in order of declaration
+        std::map<std::string, attribute::ClipImageDescriptor*>  _clips;        ///< clips descriptors by name
+        std::vector<attribute::ClipImageDescriptor*>            _clipsByOrder; ///< clip descriptors in order of declaration
         mutable Interact::Descriptor            _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description
         int _built;
 
@@ -227,16 +224,16 @@ namespace OFX {
         Plugin *getPlugin() const {return _plugin;}
 
         /// create a new clip and add this to the clip map
-        virtual Attribute::ClipImageDescriptor *defineClip(const std::string &name);
+        virtual attribute::ClipImageDescriptor *defineClip(const std::string &name);
 
         /// get the clips
-        const std::map<std::string, Attribute::ClipImageDescriptor*> &getClips() const;
+        const std::map<std::string, attribute::ClipImageDescriptor*> &getClips() const;
 
         /// add a new clip
-        void addClip(const std::string &name, Attribute::ClipImageDescriptor *clip);
+        void addClip(const std::string &name, attribute::ClipImageDescriptor *clip);
 
         /// get the clips in order of construction
-        const std::vector<Attribute::ClipImageDescriptor*> &getClipsByOrder()
+        const std::vector<attribute::ClipImageDescriptor*> &getClipsByOrder()
         {
           return _clipsByOrder;
         }
@@ -248,23 +245,23 @@ namespace OFX {
       };
 
       /// a map used to specify needed frame ranges on set of clips
-      typedef std::map<Attribute::ClipImageInstance *, std::vector<OfxRangeD> > RangeMap;
+      typedef std::map<attribute::ClipImageInstance *, std::vector<OfxRangeD> > RangeMap;
 
       /// an image effect plugin instance.
       ///
       /// Client code needs to filling the pure virtuals in this.
       class Instance : public Base,
-                       public Attribute::ParamInstanceSet,
+                       public attribute::ParamInstanceSet,
                        public Progress::ProgressI,
                        public TimeLine::TimeLineI,
                        private Property::NotifyHook, 
                        private Property::GetHook
       {
       protected:
-        OFX::Host::ImageEffect::ImageEffectPlugin    *_plugin;
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin    *_plugin;
         std::string                                   _context;
         Descriptor                                   *_descriptor;
-        std::map<std::string, Attribute::ClipImageInstance*>          _clips;
+        std::map<std::string, attribute::ClipImageInstance*>          _clips;
         bool                                          _interactive;
         bool                                          _created;
         bool                                          _clipPrefsDirty; ///< do we need to re-run the clip prefs action
@@ -287,13 +284,13 @@ namespace OFX {
         virtual Property::Set &getParamSetProps();
 
         /// implemented for Param::SetInstance
-        virtual void paramChangedByPlugin(Attribute::ParamInstance *param);
+        virtual void paramChangedByPlugin(attribute::ParamInstance *param);
 
         /// get the descriptor for this instance
         const Descriptor &getDescriptor() const {return *_descriptor;}
 
         /// return the plugin this instance was created with
-        OFX::Host::ImageEffect::ImageEffectPlugin*getPlugin() const { return _plugin; }
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* getPlugin() const { return _plugin; }
 
         /// return the context this instance was created with
         const std::string &getContext() const { return _context; }
@@ -322,7 +319,7 @@ namespace OFX {
         OfxStatus populate();
 
         /// get the nth clip, in order of declaration
-        Attribute::ClipImageInstance* getNthClip(int index);
+        attribute::ClipImageInstance* getNthClip(int index);
 
         /// get the nth clip, in order of declaration
         int getNClips() const
@@ -345,7 +342,7 @@ namespace OFX {
         bool isFrameVarying() const {return _frameVarying;}
 
         /// pure virtuals that must  be overriden
-        virtual Attribute::ClipImageInstance* getClip(const std::string& name);
+        virtual attribute::ClipImageInstance* getClip(const std::string& name);
 
         /// override this to make processing abort, return 1 to abort processing
         virtual int abort();
@@ -357,8 +354,8 @@ namespace OFX {
         Memory::Instance* imageMemoryAlloc(size_t nBytes);
 
         /// make a clip
-        virtual OFX::Host::Attribute::ClipImageInstance* newClipInstance(ImageEffect::Instance* plugin,
-                                              OFX::Host::Attribute::ClipImageDescriptor* descriptor,
+        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipInstance(imageEffect::Instance* plugin,
+                                              tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor,
                                               int index) = 0;
 
         virtual OfxStatus vmessage(const char* type,
@@ -373,7 +370,7 @@ namespace OFX {
                                     Property::Set *inArgs,
                                     Property::Set *outArgs);
 
-        int upperGetDimension(const std::string &name);
+        size_t upperGetDimension(const std::string &name);
 
         /// overridden from Property::Notify
         virtual void notify(const std::string &name, bool singleValue, int indexOrN) OFX_EXCEPTION_SPEC;
@@ -388,7 +385,7 @@ namespace OFX {
         virtual void reset(const std::string &name) OFX_EXCEPTION_SPEC;
 
         //// overridden from gethook
-        virtual int getDimension(const std::string &name)  const OFX_EXCEPTION_SPEC;
+        virtual size_t getDimension(const std::string &name)  const OFX_EXCEPTION_SPEC;
 
         //
         // live parameters
@@ -536,7 +533,7 @@ namespace OFX {
         virtual OfxStatus getRegionOfInterestAction(OfxTime  time,
                                                     OfxPointD   renderScale,
                                                     const OfxRectD &roi,
-                                                    std::map<Attribute::ClipImageInstance *, OfxRectD> &rois);
+                                                    std::map<attribute::ClipImageInstance *, OfxRectD> &rois);
 
         // get frames needed to render the given frame
         virtual OfxStatus getFrameNeededAction(OfxTime time, 
@@ -617,18 +614,16 @@ namespace OFX {
       class OverlayInteract : public Interact::Instance {
       protected :
         /// our image effect instance
-        ImageEffect::Instance &_instance;
+        imageEffect::Instance &_instance;
 
       public    :
         /// ctor this calls Instance->getOverlayDescriptor to get the descriptor
-        OverlayInteract(ImageEffect::Instance &v, int bitDepthPerComponent = 8, bool hasAlpha = false);
+        OverlayInteract(imageEffect::Instance &v, int bitDepthPerComponent = 8, bool hasAlpha = false);
       };
 
+}
+}
+}
+}
 
-    } // namespace ImageEffect
-
-  } // namespace Host
-
-} // namespace OFX
-
-#endif // OFX_IMAGE_EFFECT_H
+#endif

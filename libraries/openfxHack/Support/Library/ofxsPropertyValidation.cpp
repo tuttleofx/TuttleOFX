@@ -104,9 +104,9 @@ namespace OFX {
     /** @brief PropertyDescription var-args constructor */
     PropertyDescription::PropertyDescription(const char *name, OFX::PropertyTypeEnum ilk, int dimension, ...)
       : _name(name)
+      , _exists(false) // only set when we have validated it
       , _dimension(dimension)
       , _ilk(ilk)
-      , _exists(false) // only set when we have validated it
     {      
       // go through the var args to extract defaults to check against and values to set to
       va_list argp;
@@ -146,7 +146,7 @@ namespace OFX {
         _exists = true;  
 
         if(_dimension != -1) // -1 implies variable dimension
-          OFX::Log::error(hostDimension != _dimension, "Host reports property '%s' has dimension %d, it should be %d;", _name.c_str(), hostDimension, _dimension); 
+          OFX::Log::error(hostDimension != _dimension, "Host reports property '%s' has dimension %d, it should be %d;", _name.c_str(), hostDimension, _dimension);
         // check type by getting the first element, the property getting will print any failure messages to the log
 
         if(hostDimension > 0) {
@@ -162,7 +162,7 @@ namespace OFX {
         // check the defaults are OK, if there are any
         int nDefs = _defaultValue.size();
         if(checkDefaults && nDefs > 0) {
-          OFX::Log::error(hostDimension != nDefs, "Host reports default dimension of '%s' as %d, which is different to the default dimension size of %d;", 
+          OFX::Log::error(hostDimension != nDefs, "Host reports default dimension of '%s' as %d, which is different to the default dimension size of %d;",
             _name.c_str(), hostDimension, nDefs);
 
           int N = hostDimension < nDefs ? hostDimension : nDefs;
@@ -232,7 +232,7 @@ namespace OFX {
       va_list argp;
       va_start(argp, setName);
 
-      bool going = true;
+//      bool going = true;
       while(1) {
         // get a pointer 
         PropertyDescription *descs = (PropertyDescription *) va_arg(argp, PropertyDescription *);
@@ -1145,6 +1145,8 @@ namespace OFX {
         break;
       case ePushButtonParam :
         gPushButtonParamPropSet.validate(paramProps, checkDefaults);
+        break;
+      default:
         break;
       }
 #endif

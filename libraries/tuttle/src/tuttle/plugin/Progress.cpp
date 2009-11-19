@@ -5,7 +5,7 @@
 #endif
 
 namespace tuttle {
-namespace ofx {
+namespace plugin {
 
 /**
  * @brief Start the algorithm progress bar.
@@ -80,4 +80,6 @@ Progress& Progress::operator=( const Progress& p )
 }
 #endif
 
-}}
+}
+}
+

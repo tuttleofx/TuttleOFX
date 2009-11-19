@@ -1,7 +1,7 @@
-#include "tuttle/common/image/gilGlobals.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <cmath>
 #include <vector>
@@ -17,13 +17,15 @@
 #include "PNGWriterPlugin.hpp"
 
 namespace tuttle {
+namespace plugin {
+namespace png {
 
 using namespace boost::gil;
 
 template<class View>
 PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin &instance )
-: tuttle::ofx::ImageGilProcessor<View>( instance )
-, tuttle::ofx::Progress( instance )
+: tuttle::plugin::ImageGilProcessor<View>( instance )
+, tuttle::plugin::Progress( instance )
 , _plugin( instance )
 {
     _filepath = instance.fetchStringParam( kInputFilename );
@@ -37,7 +39,7 @@ void PNGWriterProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         // Fetch input image
         boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip( )->fetchImage( args.time ) );
         if( !src.get( ) )
-            throw( ImageNotReadyException( ) );
+            throw( tuttle::plugin::ImageNotReadyException( ) );
         OfxRectI sBounds = src->getBounds();
 
         // Build destination view
@@ -47,7 +49,7 @@ void PNGWriterProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
 
         boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time ) );
         if( !dst.get( ) )
-            throw( ImageNotReadyException( ) );
+            throw( tuttle::plugin::ImageNotReadyException( ) );
         OfxRectI dBounds = dst->getBounds( );
 
         // Build destination view
@@ -60,7 +62,7 @@ void PNGWriterProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         // Call the base class process member
         this->process();
     }
-    catch( PluginException e )
+    catch( tuttle::plugin::PluginException e )
     {
         COUT_EXCEPTION( e );
     }
@@ -82,7 +84,7 @@ void PNGWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
         writeImage( _srcView, filepath );
         copy_pixels( _srcView, _dstView );
     }
-    catch( PluginException err )
+    catch( tuttle::plugin::PluginException err )
     {
         COUT_EXCEPTION( err );
     }
@@ -101,10 +103,12 @@ void PNGWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
  * @return Result view of the blurring process
  */
 template<class View>
-void PNGWriterProcess<View>::writeImage( View & src, std::string & filepath ) throw( PluginException )
+void PNGWriterProcess<View>::writeImage( View & src, std::string & filepath ) throw( tuttle::plugin::PluginException )
 {
     View flippedView = flipped_up_down_view( src );
     png_write_view( filepath, clamp<rgb8_pixel_t>( flippedView ) );
 }
 
+}
+}
 }

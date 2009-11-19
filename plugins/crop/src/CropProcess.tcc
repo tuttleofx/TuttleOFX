@@ -6,12 +6,12 @@
  *
  */
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/common/math/rectOp.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
-#include "tuttle/common/image/gilGlobals.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/common/image/gilGlobals.hpp>
 
 #include <cmath>
 #include <vector>
@@ -28,8 +28,8 @@ using namespace boost::gil;
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin &instance )
-: tuttle::ofx::ImageGilProcessor<View>( instance )
-, tuttle::ofx::Progress( instance )
+: tuttle::plugin::ImageGilProcessor<View>( instance )
+, tuttle::plugin::Progress( instance )
 , _plugin( instance )
 {
     _upBand     = instance.fetchIntParam( kParamUp );
@@ -60,7 +60,7 @@ void CropProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         point2<int> srcImgCorner = point2<int>( static_cast<int>( - _srcBounds.x1 ),
                                                 static_cast<int>( - _srcBounds.y1 ) );
         if( !src.get( ) )
-            throw( ImageNotReadyException( ) );
+            throw( tuttle::plugin::ImageNotReadyException( ) );
         OFX::BitDepthEnum srcBitDepth = src->getPixelDepth( );
         OFX::PixelComponentEnum srcComponents = src->getPixelComponents( );
         typename image_from_view<View>::type imResized;
@@ -100,7 +100,7 @@ void CropProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         // DESTINATION
         boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time ) );
         if( !dst.get( ) )
-            throw( ImageNotReadyException( ) );
+            throw( tuttle::plugin::ImageNotReadyException( ) );
         OfxRectI dstImgRod = dst->getRegionOfDefinition( );
         OfxRectI dstImgBounds = dst->getBounds();
         OfxRectD dstClipROD = _plugin.getDstClip( )->getRegionOfDefinition( args.time );
@@ -118,7 +118,7 @@ void CropProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         // Make sure bit depths are same
         if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
         {
-            throw(BitDepthMismatchException( ) );
+            throw(tuttle::plugin::BitDepthMismatchException( ) );
         }
 
         // Build destination view
@@ -140,7 +140,7 @@ void CropProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         progressEnd( );
         COUT("/Crop setup");
     }
-    catch( PluginException e )
+    catch( tuttle::plugin::PluginException e )
     {
         COUT_EXCEPTION( e );
     }

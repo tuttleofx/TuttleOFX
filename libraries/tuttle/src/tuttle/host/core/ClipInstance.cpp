@@ -33,21 +33,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstring>
 
 // ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 // ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhImageEffectAPI.h"
+#include <tuttle/host/ofx/ofxhBinary.h>
+#include <tuttle/host/ofx/ofxhPropertySuite.h>
+#include <tuttle/host/ofx/ofxhClip.h>
+#include <tuttle/host/ofx/ofxhParam.h>
+#include <tuttle/host/ofx/ofxhMemory.h>
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/ofxhPluginAPICache.h>
+#include <tuttle/host/ofx/ofxhPluginCache.h>
+#include <tuttle/host/ofx/ofxhHost.h>
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 // my host
 #include "HostDescriptor.hpp"
@@ -70,8 +70,11 @@ using namespace boost::gil;
 using namespace boost;
 
 namespace tuttle {
+namespace host {
+namespace core {
+	
     Image::Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime time )
-    : OFX::Host::ImageEffect::Image( clip ) /// this ctor will set basic props on the image
+    : tuttle::host::ofx::imageEffect::Image( clip ) /// this ctor will set basic props on the image
     , _data( NULL )
     {
         size_t memlen = 0;
@@ -139,6 +142,11 @@ namespace tuttle {
         setIntProperty( kOfxImagePropRowBytes, rowlen );
     }
 
+    Image::~Image( )
+    {
+        delete [] _data;
+    }
+
     uint8_t* Image::pixel( int x, int y ) const
     {
         OfxRectI bounds = getBounds( );
@@ -163,7 +171,6 @@ namespace tuttle {
     }
 
     // @todo: put this in gilGlobals.hpp
-
     template < class D_VIEW, class S_VIEW >
     void Image::copy( D_VIEW & dst, S_VIEW & src, const OfxPointI & dstCorner,
                       const OfxPointI & srcCorner, const OfxPointI & count )
@@ -180,7 +187,6 @@ namespace tuttle {
     }
 
     /// Copy from gil image view to Image
-
     template < class S_VIEW >
     void Image::copy( Image *dst, S_VIEW & src, const OfxPointI & dstCorner,
                       const OfxPointI & srcCorner, const OfxPointI & count )
@@ -188,22 +194,22 @@ namespace tuttle {
         // Create destination
         switch( dst->getComponentsType( ) )
         {
-            case ePixelComponentRGBA:
+			case ofx::imageEffect::ePixelComponentRGBA:
                 switch( dst->getBitDepth( ) )
                 {
-                    case eBitDepthUByte:
+                    case ofx::imageEffect::eBitDepthUByte:
                     {
                         rgba8_view_t dView = gilViewFromImage<rgba8_view_t > ( dst );
                         Image::copy( dView, src, dstCorner, srcCorner, count );
                         break;
                     }
-                    case eBitDepthUShort:
+                    case ofx::imageEffect::eBitDepthUShort:
                     {
                         rgba16_view_t dView = gilViewFromImage<rgba16_view_t > ( dst );
                         Image::copy( dView, src, dstCorner, srcCorner, count );
                         break;
                     }
-                    case eBitDepthFloat:
+                    case ofx::imageEffect::eBitDepthFloat:
                     {
                         rgba32f_view_t dView = gilViewFromImage<rgba32f_view_t > ( dst );
                         Image::copy( dView, src, dstCorner, srcCorner, count );
@@ -213,22 +219,22 @@ namespace tuttle {
                     break;
                 }
             break;
-            case ePixelComponentAlpha:
+            case ofx::imageEffect::ePixelComponentAlpha:
             switch( dst->getBitDepth( ) )
             {
-                case eBitDepthUByte:
+                case ofx::imageEffect::eBitDepthUByte:
                 {
                     gray8_view_t dView = gilViewFromImage<gray8_view_t > ( dst );
                     Image::copy( dView, src, dstCorner, srcCorner, count );
                     break;
                 }
-                case eBitDepthUShort:
+                case ofx::imageEffect::eBitDepthUShort:
                 {
                     gray16_view_t dView = gilViewFromImage<gray16_view_t > ( dst );
                     Image::copy( dView, src, dstCorner, srcCorner, count );
                     break;
                 }
-                case eBitDepthFloat:
+                case ofx::imageEffect::eBitDepthFloat:
                 {
                     gray32f_view_t dView = gilViewFromImage<gray32f_view_t > ( dst );
                     Image::copy( dView, src, dstCorner, srcCorner, count );
@@ -249,22 +255,22 @@ namespace tuttle {
     {
         switch( src->getComponentsType( ) )
         {
-        case ePixelComponentRGBA:
+        case ofx::imageEffect::ePixelComponentRGBA:
             switch( src->getBitDepth( ) )
             {
-                case eBitDepthUByte:
+                case ofx::imageEffect::eBitDepthUByte:
                 {
                     rgba8_view_t sView = gilViewFromImage<rgba8_view_t > ( src );
                     Image::copy( dst, sView, dstCorner, srcCorner, count );
                     break;
                 }
-                case eBitDepthUShort:
+                case ofx::imageEffect::eBitDepthUShort:
                 {
                     rgba16_view_t sView = gilViewFromImage<rgba16_view_t > ( src );
                     Image::copy( dst, sView, dstCorner, srcCorner, count );
                     break;
                 }
-                case eBitDepthFloat:
+                case ofx::imageEffect::eBitDepthFloat:
                 {
                     rgba32f_view_t sView = gilViewFromImage<rgba32f_view_t > ( src );
                     Image::copy( dst, sView, dstCorner, srcCorner, count );
@@ -274,22 +280,22 @@ namespace tuttle {
                 break;
             }
             break;
-        case ePixelComponentAlpha:
+        case ofx::imageEffect::ePixelComponentAlpha:
             switch( src->getBitDepth( ) )
             {
-                case eBitDepthUByte:
+                case ofx::imageEffect::eBitDepthUByte:
                 {
                     gray8_view_t sView = gilViewFromImage<gray8_view_t > ( src );
                     Image::copy( dst, sView, dstCorner, srcCorner, count );
                     break;
                 }
-                case eBitDepthUShort:
+                case ofx::imageEffect::eBitDepthUShort:
                 {
                     gray16_view_t sView = gilViewFromImage<gray16_view_t > ( src );
                     Image::copy( dst, sView, dstCorner, srcCorner, count );
                     break;
                 }
-                case eBitDepthFloat:
+                case ofx::imageEffect::eBitDepthFloat:
                 {
                     gray32f_view_t sView = gilViewFromImage<gray32f_view_t > ( src );
                     Image::copy( dst, sView, dstCorner, srcCorner, count );
@@ -304,13 +310,8 @@ namespace tuttle {
         }
     }
 
-    Image::~Image( )
-    {
-        delete [] _data;
-    }
-
-    ClipImgInstance::ClipImgInstance( EffectInstance* effect, OFX::Host::Attribute::ClipImageDescriptor *desc )
-    : OFX::Host::Attribute::ClipImageInstance( effect, *desc )
+    ClipImgInstance::ClipImgInstance( EffectInstance* effect, tuttle::host::ofx::attribute::ClipImageDescriptor *desc )
+    : tuttle::host::ofx::attribute::ClipImageInstance( effect, *desc )
     , _effect( effect )
     , _inputImage( NULL )
     , _outputImage( NULL )
@@ -321,13 +322,14 @@ namespace tuttle {
     ClipImgInstance::~ClipImgInstance( )
     {
         if( _inputImage )
-            _inputImage->releaseReference( );
+            if (_inputImage->releaseReference( ))
+                delete _inputImage;
         if( _outputImage )
-            _outputImage->releaseReference( );
+            if ( _outputImage->releaseReference( ) )
+                delete _outputImage;
     }
 
     /// Return the rod on the clip cannoical coords!
-
     OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
     {
         OfxRectD rod;
@@ -472,7 +474,7 @@ namespace tuttle {
     /// be 'appropriate' for the.
     /// If bounds is not null, fetch the indicated section of the canonical image plane.
 
-    OFX::Host::ImageEffect::Image* ClipImgInstance::getImage( OfxTime time, OfxRectD *optionalBounds )
+    tuttle::host::ofx::imageEffect::Image* ClipImgInstance::getImage( OfxTime time, OfxRectD *optionalBounds )
     {
         OfxRectD bounds;
         if( optionalBounds )
@@ -518,5 +520,8 @@ namespace tuttle {
             return _inputImage;
         }
     }
+
+}
+}
 }
 

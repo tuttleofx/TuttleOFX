@@ -6,6 +6,8 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace png {
 
 using namespace boost::gil;
 const static std::string kPngReaderHelpString = "<b>PNG Reader</b> file reader.  <br />";
@@ -119,4 +121,6 @@ void PNGWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
     }
 }
 
+}
+}
 }

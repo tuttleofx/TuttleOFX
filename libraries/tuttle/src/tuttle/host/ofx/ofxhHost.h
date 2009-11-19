@@ -1,6 +1,3 @@
-#ifndef OFX_HOST_H
-#define OFX_HOST_H
-
 /*
 Software License :
 
@@ -29,6 +26,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef OFXH_HOST_H
+#define OFXH_HOST_H
 
 #include <map>
 #include <string>
@@ -39,28 +38,28 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxTimeLine.h"
 #include "ofxhPropertySuite.h"
 
-namespace OFX {
-
-  namespace Host {
+namespace tuttle {
+namespace host {
+namespace ofx {
 
     /// a plugin what we use
     class Plugin;
    
     /// a param descriptor 
-    namespace Attribute {
+    namespace attribute {
       class ParamDescriptor;
     }
     
     /// Base class for all objects passed to a plugin by the 'setHost' function 
     /// passed back by any plug-in.
-    class Host {
+    class AbstractHost {
     protected :
       OfxHost       _host;
       Property::Set _properties;
 
     public:
-      Host();
-      virtual ~Host()=0;
+      AbstractHost();
+      virtual ~AbstractHost()=0;
 
       
       /// get the props on this host
@@ -76,7 +75,7 @@ namespace OFX {
       OfxHost *getHandle();
 
       /// override this to handle do post-construction initialisation on a Param::Descriptor
-      virtual void initDescriptor(Attribute::ParamDescriptor *) { }
+      virtual void initDescriptor(attribute::ParamDescriptor *) { }
 
       /// is my magic number valid?
       bool verifyMagic() { return true; }
@@ -89,7 +88,8 @@ namespace OFX {
       
     };
     
-  }
+}
+}
 }
 
 #endif

@@ -36,21 +36,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhUtilities.h"
 #include "ofxhPropertySuite.h"
 
-namespace OFX {
+namespace tuttle {
 
-namespace Host {
+namespace host {
+namespace ofx {
 
-namespace ImageEffect {
+namespace imageEffect {
 class Instance;
 }
-namespace Attribute {
+namespace attribute {
 
 /**
  *  Base to both descriptor and instance it
  * is used to basically fetch common properties
  * by function name
  */
-class ClipImageAccessor : virtual public Attribute::ClipAccessor
+class ClipImageAccessor : virtual public attribute::ClipAccessor
 {
 public:
 	/// @brief base ctor, for a descriptor
@@ -85,7 +86,7 @@ public:
  * a clip image descriptor
  */
 class ClipImageDescriptor : virtual public ClipImageAccessor
-                             , public Attribute::ClipDescriptor
+                             , public attribute::ClipDescriptor
 {
 public:
 	/// constructor
@@ -103,13 +104,13 @@ public:
  * a clip image instance
  */
 class ClipImageInstance : virtual public ClipImageAccessor
-                          , public Attribute::ClipInstance
+                          , public attribute::ClipInstance
 {
 protected:
-	ImageEffect::Instance* _effectInstance; ///< image effect instance
+	imageEffect::Instance* _effectInstance; ///< image effect instance
 
 public:
-	ClipImageInstance( ImageEffect::Instance* effectInstance, const Attribute::ClipImageDescriptor& desc );
+	ClipImageInstance( imageEffect::Instance* effectInstance, const attribute::ClipImageDescriptor& desc );
 	virtual ~ClipImageInstance(){}
 
 	/**
@@ -263,7 +264,7 @@ public:
 	 *  be 'appropriate' for the.
 	 *  If bounds is not null, fetch the indicated section of the canonical image plane.
 	 */
-	virtual OFX::Host::ImageEffect::Image* getImage( OfxTime time, OfxRectD *optionalBounds = NULL ) = 0;
+	virtual tuttle::host::ofx::imageEffect::Image* getImage( OfxTime time, OfxRectD *optionalBounds = NULL ) = 0;
 
 	/// override this to return the rod on the clip
 	virtual OfxRectD getRegionOfDefinition( OfxTime time ) const = 0;
@@ -274,10 +275,9 @@ public:
 	virtual const std::string &findSupportedComp( const std::string &s ) const;
 };
 
-} // Attribute
-
-} // Host
-
-} // OFX
+}
+}
+}
+}
 
 #endif // OFX_CLIP_H

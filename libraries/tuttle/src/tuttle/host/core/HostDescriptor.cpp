@@ -32,28 +32,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cstring>
 
 // ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 // ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffectAPI.h"
+#include <tuttle/host/ofx/ofxhBinary.h>
+#include <tuttle/host/ofx/ofxhPropertySuite.h>
+#include <tuttle/host/ofx/ofxhClip.h>
+#include <tuttle/host/ofx/ofxhParam.h>
+#include <tuttle/host/ofx/ofxhMemory.h>
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/ofxhPluginAPICache.h>
+#include <tuttle/host/ofx/ofxhPluginCache.h>
+#include <tuttle/host/ofx/ofxhHost.h>
+#include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 // my host
 #include "HostDescriptor.hpp"
 #include "EffectInstance.hpp"
 #include "ClipInstance.hpp"
 
-namespace tuttle
-{
+namespace tuttle {
+namespace host {
+namespace core {
 
   Host::Host()
   {
@@ -86,35 +87,33 @@ namespace tuttle
     _properties.setIntProperty(kOfxParamHostPropPageRowColumnCount, 0, 1 );
   }
 
-  OFX::Host::ImageEffect::Instance* Host::newInstance(void* clientData,
-                                                      OFX::Host::ImageEffect::ImageEffectPlugin* plugin,
-                                                      OFX::Host::ImageEffect::Descriptor& desc,
+  tuttle::host::core::EffectInstance* Host::newInstance(void* clientData,
+                                                      tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
+                                                      tuttle::host::ofx::imageEffect::Descriptor& desc,
                                                       const std::string& context)
   {
-    return new tuttle::EffectInstance(plugin, desc, context);
+    return new tuttle::host::core::EffectInstance(plugin, desc, context);
   }
 
   /// Override this to create a descriptor, this makes the 'root' descriptor
-  OFX::Host::ImageEffect::Descriptor *Host::makeDescriptor(OFX::Host::ImageEffect::ImageEffectPlugin* plugin)
+  tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin)
   {
-    OFX::Host::ImageEffect::Descriptor *desc = new OFX::Host::ImageEffect::Descriptor(plugin);
+    tuttle::host::ofx::imageEffect::Descriptor *desc = new tuttle::host::ofx::imageEffect::Descriptor(plugin);
     return desc;
   }
 
   /// used to construct a context description, rootContext is the main context
-  OFX::Host::ImageEffect::Descriptor *Host::makeDescriptor(const OFX::Host::ImageEffect::Descriptor &rootContext, 
-                                                           OFX::Host::ImageEffect::ImageEffectPlugin *plugin)
+  tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(const tuttle::host::ofx::imageEffect::Descriptor &rootContext,
+                                                           tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin)
   {
-    OFX::Host::ImageEffect::Descriptor *desc = new OFX::Host::ImageEffect::Descriptor(rootContext, plugin);
-    return desc;
+    return new tuttle::host::ofx::imageEffect::Descriptor(rootContext, plugin);
   }
 
   /// used to construct populate the cache
-  OFX::Host::ImageEffect::Descriptor *Host::makeDescriptor(const std::string &bundlePath, 
-                                                           OFX::Host::ImageEffect::ImageEffectPlugin *plugin)
+  tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(const std::string &bundlePath,
+                                                           tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin)
   {
-    OFX::Host::ImageEffect::Descriptor *desc = new OFX::Host::ImageEffect::Descriptor(bundlePath, plugin);
-    return desc;
+    return new tuttle::host::ofx::imageEffect::Descriptor(bundlePath, plugin);
   }
 
   /// message
@@ -152,4 +151,6 @@ namespace tuttle
     }
   }
 
+}
+}
 }

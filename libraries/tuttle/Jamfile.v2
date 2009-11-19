@@ -43,7 +43,6 @@ lib tuttle :
     [ glob src/tuttle/host/core/*.cpp ]
     [ glob src/tuttle/host/graph/*.cpp ]
     [ glob src/tuttle/host/ofx/*.cpp ]
-    [ glob src/tuttle/plugin/*.cpp ]
     /boost/system
     /boost/filesystem
     /ofxPluginSupport/<link>static

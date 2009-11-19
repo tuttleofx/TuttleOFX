@@ -31,20 +31,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fstream>
 
 // ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 // ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffectAPI.h"
+#include <tuttle/host/ofx/ofxhBinary.h>
+#include <tuttle/host/ofx/ofxhPropertySuite.h>
+#include <tuttle/host/ofx/ofxhClip.h>
+#include <tuttle/host/ofx/ofxhParam.h>
+#include <tuttle/host/ofx/ofxhMemory.h>
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/ofxhPluginAPICache.h>
+#include <tuttle/host/ofx/ofxhPluginCache.h>
+#include <tuttle/host/ofx/ofxhHost.h>
+#include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 // my host
 #include "HostDescriptor.hpp"
@@ -52,19 +52,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ClipInstance.hpp"
 #include "ParamInstance.hpp"
 
-using namespace OFX;
-// my host support code
 namespace tuttle {
-    EffectInstance::EffectInstance(OFX::Host::ImageEffect::ImageEffectPlugin* plugin,
-                                     OFX::Host::ImageEffect::Descriptor& desc,
+namespace host {
+namespace core {
+
+// my host support code
+    EffectInstance::EffectInstance(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
+                                     tuttle::host::ofx::imageEffect::Descriptor& desc,
                                      const std::string& context)
-                                     : OFX::Host::ImageEffect::Instance(plugin,desc,context,false)
+                                     : tuttle::host::ofx::imageEffect::Instance(plugin,desc,context,false)
     {
     }
 
     // class member function implementation
-
-
     void EffectInstance::dumpToStdOut()
     {
         std::cout << "________________________________________________________________________________" << std::endl;
@@ -72,12 +72,12 @@ namespace tuttle {
         std::cout << "Description:" << this->getLongLabel() << std::endl;
         std::cout << "Context:" << this->_context << std::endl;
         std::cout << "Clips:" << std::endl;
-        for (std::map<std::string, OFX::Host::Attribute::ClipImageInstance*>::const_iterator it = this->_clips.begin(); it != this->_clips.end(); ++it)
+        for (std::map<std::string, tuttle::host::ofx::attribute::ClipImageInstance*>::const_iterator it = this->_clips.begin(); it != this->_clips.end(); ++it)
         {
             std::cout << "\t\t* " << it->first << std::endl;
         }
         std::cout << "Params:" << std::endl;
-        for (std::list<OFX::Host::Attribute::ParamInstance*>::const_iterator it = this->_paramList.begin(); it != this->_paramList.end(); ++it)
+        for (std::list<tuttle::host::ofx::attribute::ParamInstance*>::const_iterator it = this->_paramList.begin(); it != this->_paramList.end(); ++it)
         {
             std::cout << "\t\t* " << (*it)->getLabel() << std::endl;
         }
@@ -86,13 +86,12 @@ namespace tuttle {
     }
 
     // get a new clip instance
-    OFX::Host::Attribute::ClipImageInstance* EffectInstance::newClipInstance(OFX::Host::ImageEffect::Instance* plugin,
-                                                                          OFX::Host::Attribute::ClipImageDescriptor* descriptor,
+    tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipInstance(tuttle::host::ofx::imageEffect::Instance* plugin,
+                                                                          tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor,
                                                                           int index)
     {
         return new ClipImgInstance(this,descriptor);
     }
-
 
     /// get default output fielding. This is passed into the clip prefs action
     /// and  might be mapped (if the host allows such a thing)
@@ -179,7 +178,7 @@ namespace tuttle {
     }
 
     // make a parameter instance
-    OFX::Host::Attribute::ParamInstance* EffectInstance::newParam(const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet * setInstance)
+    tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam(const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet * setInstance)
     {
         if(descriptor.getParamType()==kOfxParamTypeString)
           return new StringInstance(this, name, descriptor, *setInstance);
@@ -202,9 +201,9 @@ namespace tuttle {
         else if(descriptor.getParamType()==kOfxParamTypePushButton)
           return new PushbuttonInstance(this, name, descriptor, *setInstance);
         else if(descriptor.getParamType()==kOfxParamTypeGroup)
-          return new OFX::Host::Attribute::ParamGroupInstance(descriptor, *setInstance);
+          return new tuttle::host::ofx::attribute::ParamGroupInstance(descriptor, *setInstance);
         else if(descriptor.getParamType()==kOfxParamTypePage)
-          return new OFX::Host::Attribute::ParamPageInstance(descriptor, *setInstance);
+          return new tuttle::host::ofx::attribute::ParamPageInstance(descriptor, *setInstance);
         else
           return 0;
     }
@@ -268,4 +267,7 @@ namespace tuttle {
         _frameRange.y = endFrame;
         return Instance::beginRenderAction(startFrame, endFrame, step, interactive, renderScale);
     }
+
+}
+}
 }

@@ -9,6 +9,8 @@
 using namespace boost::filesystem;
 
 namespace tuttle {
+namespace plugin {
+namespace png {
 
 using namespace boost::gil;
 const static std::string kPngReaderHelpString = "<b>PNG Reader</b> file reader.  <br />";
@@ -147,4 +149,6 @@ PNGReaderPlugin::getClipPreferences(OFX::ClipPreferencesSetter &clipPreferences)
     clipPreferences.setPixelAspectRatio(*_dstClip, 720.0 / 720.0);
 }
 
+}
+}
 }

@@ -5,6 +5,10 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace png {
+
+
 using namespace boost::gil;
 
 /**
@@ -30,6 +34,8 @@ protected:
     OFX::Clip           *_dstClip;       ///< Destination image clip
 };
 
+}
+}
 }
 
 #endif

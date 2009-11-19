@@ -29,8 +29,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ofxhBinary.h"
 
-namespace OFX {
-namespace Host {
+namespace tuttle {
+namespace host {
+namespace ofx {
 
 Binary::Binary(const std::string &binaryPath): _binaryPath(binaryPath), _invalid(false), _dlHandle(0), _users(0)
 {
@@ -127,5 +128,6 @@ void Binary::unref()
   }
 }
 
+}
 }
 }

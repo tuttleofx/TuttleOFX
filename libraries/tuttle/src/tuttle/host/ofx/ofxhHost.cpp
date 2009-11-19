@@ -42,13 +42,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 typedef OfxPlugin* (*OfxGetPluginType)(int);
 
-namespace OFX {
-  
-  namespace Host {
+namespace tuttle {
+namespace host {
+namespace ofx {
 
-    ////////////////////////////////////////////////////////////////////////////////
-    /// simple memory suite 
-    namespace Memory {
+////////////////////////////////////////////////////////////////////////////////
+/// simple memory suite 
+namespace Memory {
       static OfxStatus memoryAlloc(void *handle, size_t bytes, void **data)
       {
         *data = malloc(bytes);
@@ -69,14 +69,14 @@ namespace OFX {
         memoryAlloc,
         memoryFree
       };
-    }
-
-  }
-
+}
+}
+}
 }
 
-namespace OFX {
-  namespace Host {
+namespace tuttle {
+namespace host {
+namespace ofx {
     /// our own internal property for storing away our private pointer to our host descriptor
 #define kOfxHostSupportHostPointer "sf.openfx.net.OfxHostSupportHostPointer"
 
@@ -92,7 +92,7 @@ namespace OFX {
     {      
       Property::Set* properties = reinterpret_cast<Property::Set*>(hostProps);
       
-      Host* host = (Host*)properties->getPointerProperty(kOfxHostSupportHostPointer);
+      AbstractHost* host = (AbstractHost*)properties->getPointerProperty(kOfxHostSupportHostPointer);
       
       if(host)
         return host->fetchSuite(suiteName,suiteVersion);
@@ -101,22 +101,22 @@ namespace OFX {
     }
 
     // Base Host
-    Host::Host() : _properties(hostStuffs) 
+    AbstractHost::AbstractHost() : _properties(hostStuffs)
     {
       _host.host = _properties.getHandle();
-      _host.fetchSuite = OFX::Host::fetchSuite;
+      _host.fetchSuite = tuttle::host::ofx::fetchSuite;
 
       // record the host descriptor in the propert set
       _properties.setPointerProperty(kOfxHostSupportHostPointer,this);
     }
 
-	Host::~Host(){}
+	AbstractHost::~AbstractHost(){}
 
-    OfxHost *Host::getHandle() {
+    OfxHost *AbstractHost::getHandle() {
       return &_host;
     }
 
-    void *Host::fetchSuite(const char *suiteName, int suiteVersion)
+    void *AbstractHost::fetchSuite(const char *suiteName, int suiteVersion)
     {
       if (strcmp(suiteName, kOfxPropertySuite)==0  && suiteVersion == 1) {
         return Property::GetSuite(suiteVersion);
@@ -129,6 +129,8 @@ namespace OFX {
       return NULL;
     }
 
-  } // Host
+}
+}
+}
 
-} // OFX 
+

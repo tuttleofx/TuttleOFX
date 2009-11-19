@@ -27,8 +27,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SOFX_CLIP_INSTANCE_H
-#define SOFX_CLIP_INSTANCE_H
+#ifndef TUTTLE_CLIP_INSTANCE_H
+#define TUTTLE_CLIP_INSTANCE_H
 
 #include "EffectInstance.hpp"
 #include "ofx/ofxhImageEffect.h"
@@ -38,20 +38,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SOFXCLIPLENGTH 1
 
 namespace tuttle {
+namespace host {
+namespace core {
 
 // foward
 class ClipImgInstance;
 
 /// make an image up
 
-class Image : public OFX::Host::ImageEffect::Image
+class Image : public tuttle::host::ofx::imageEffect::Image
 {
 protected:
 	size_t _ncomp; // number of components
 	boost::uint8_t *_data; // where we are keeping our image data
 public:
 	explicit Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime t );
-	~Image( );
+        virtual ~Image( );
 
 	boost::uint8_t *getPixelData( )
 	{
@@ -71,7 +73,7 @@ private:
 					 const OfxPointI & srcCorner, const OfxPointI & count );
 };
 
-class ClipImgInstance : public OFX::Host::Attribute::ClipImageInstance
+class ClipImgInstance : public tuttle::host::ofx::attribute::ClipImageInstance
 {
 protected:
 	EffectInstance *_effect;
@@ -80,7 +82,7 @@ protected:
 	Image *_outputImage; ///< output clip image @OFX_TODO: variables dependantes du rendu, ne peuvent rester la (ProcessableNode)
 	OfxPointD _frameRange; ///< get frame range
 public:
-	ClipImgInstance( EffectInstance* effect, OFX::Host::Attribute::ClipImageDescriptor* desc );
+	ClipImgInstance( EffectInstance* effect, tuttle::host::ofx::attribute::ClipImageDescriptor* desc );
 
 	virtual ~ClipImgInstance( );
 
@@ -162,11 +164,14 @@ public:
 	/// on the effect instance. Outside a render call, the optionalBounds should
 	/// be 'appropriate' for the.
 	/// If bounds is not null, fetch the indicated section of the canonical image plane.
-	virtual OFX::Host::ImageEffect::Image* getImage( OfxTime time, OfxRectD *optionalBounds = NULL );
+	virtual tuttle::host::ofx::imageEffect::Image* getImage( OfxTime time, OfxRectD *optionalBounds = NULL );
 
 	/// override this to return the rod on the clip
 	virtual OfxRectD getRegionOfDefinition( OfxTime time ) const;
 };
+
+}
+}
 }
 
-#endif // SOFX_CLIP_INSTANCE_H
+#endif

@@ -5,9 +5,9 @@
  */
 
 #include "PNGWriterPlugin.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <string>
 #include <iostream>
@@ -19,6 +19,10 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace png {
+
+using namespace OFX;
 
 static const bool kSupportTiles     = false;
 
@@ -28,9 +32,7 @@ mDeclarePluginFactory(PNGWriterPluginFactory, {}, {});
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
-void
-PNGWriterPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void PNGWriterPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
     // basic labels
     desc.setLabels("PNGWriterHd3d", "PNGWriterHd3d",
@@ -61,8 +63,7 @@ PNGWriterPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-PNGWriterPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
+void PNGWriterPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
                                           OFX::ContextEnum context)
 {
     ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -91,22 +92,23 @@ PNGWriterPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect*
-PNGWriterPluginFactory::createInstance(OfxImageEffectHandle handle,
+OFX::ImageEffect* PNGWriterPluginFactory::createInstance(OfxImageEffectHandle handle,
                                             OFX::ContextEnum context)
 {
     return new PNGWriterPlugin(handle);
 }
 
 }
+}
+}
 
-namespace OFX 
+namespace OFX
 {
     namespace Plugin 
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::PNGWriterPluginFactory p("fr.hd3d.tuttle.pngwriter", 1, 0);
+            static tuttle::plugin::png::PNGWriterPluginFactory p("fr.hd3d.tuttle.pngwriter", 1, 0);
             ids.push_back(&p);
         }
     }

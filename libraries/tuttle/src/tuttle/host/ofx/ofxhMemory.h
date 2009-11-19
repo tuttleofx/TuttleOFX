@@ -28,14 +28,13 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef OFX_MEMORY_H
-#define OFX_MEMORY_H
+#ifndef OFXH_MEMORY_H
+#define OFXH_MEMORY_H
 
-namespace OFX {
-
-  namespace Host {
-
-    namespace Memory {
+namespace tuttle {
+namespace host {
+namespace ofx {
+namespace Memory {
 
       class Instance {
       public:
@@ -56,10 +55,9 @@ namespace OFX {
         bool    _locked;
       };
 
-    } // Memory
+}
+}
+}
+}
 
-  } // Host
-
-} // OFX
-
-#endif // OFX_MEMORY_H
+#endif

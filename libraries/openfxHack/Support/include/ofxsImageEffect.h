@@ -69,7 +69,8 @@ namespace OFX
 }
 
 
-/** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries.
+/**
+ * @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries.
 */
 namespace OFX {
   /** forward class declarations */
@@ -173,7 +174,7 @@ namespace OFX {
     unsigned int _maj;
     unsigned int _min;
   };
-  template<class T> std::string OFX::FactoryMainEntryHelper<T>::_uid; 
+  template<class T> std::string OFX::FactoryMainEntryHelper<T>::_uid;
 
   template<class FACTORY>
   class PluginFactoryHelper : public FactoryMainEntryHelper<FACTORY>, public PluginFactory
@@ -691,7 +692,7 @@ namespace OFX {
     const StringStringMap& clipPARPropNames_;
     const std::string& extractValueForName(const StringStringMap& m, const std::string& name);
   public :
-    ClipPreferencesSetter( OFX::PropertySet props, 
+    ClipPreferencesSetter( OFX::PropertySet props,
       const StringStringMap& depthPropNames,
       const StringStringMap& componentPropNames,
       const StringStringMap& PARPropNames) 
