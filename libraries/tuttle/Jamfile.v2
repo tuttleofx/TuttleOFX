@@ -13,12 +13,14 @@ project
         <include>src/tuttle/host
         <include>../openfxHack/include
         <include>../../3rdParty/expat/lib
+        <define>CINTERFACE
         <threading>multi 
 	: usage-requirements
         <include>src
         <include>src/tuttle/host
         <include>../openfxHack/include
         <include>../../3rdParty/expat/lib
+        <define>CINTERFACE
     : build-dir $(DIST)/bin/tuttle
     ;
 
@@ -40,6 +42,7 @@ else {
 
 lib tuttle : 
     [ glob src/tuttle/*.cpp ]
+    [ glob src/tuttle/plugin/*.cpp ]
     [ glob src/tuttle/host/core/*.cpp ]
     [ glob src/tuttle/host/graph/*.cpp ]
     [ glob src/tuttle/host/ofx/*.cpp ]

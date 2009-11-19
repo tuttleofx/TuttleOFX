@@ -22,6 +22,8 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace crop {
 
 mDeclarePluginFactory(CropPluginFactory, {}, {});
 
@@ -135,6 +137,8 @@ CropPluginFactory::createInstance(OfxImageEffectHandle handle,
 }
 
 }
+}
+}
 
 namespace OFX
 {
@@ -142,7 +146,7 @@ namespace OFX
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::CropPluginFactory p("fr.hd3d.tuttle.volet", 1, 0);
+            static tuttle::plugin::crop::CropPluginFactory p("fr.hd3d.tuttle.volet", 1, 0);
             ids.push_back(&p);
         }
     }

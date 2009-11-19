@@ -67,7 +67,7 @@ namespace imageEffect {
         , _madeKnownContexts(false)
         , _pluginHandle(0)
       {
-        _baseDescriptor =core::Core::instance().getHost().makeDescriptor(this);
+        _baseDescriptor = core::Core::instance().getHost().makeDescriptor(this);
       }
 
       ImageEffectPlugin::ImageEffectPlugin(ImageEffectPluginCache &pc,
@@ -260,10 +260,8 @@ namespace imageEffect {
                 return 0;
             }
 
-            ImageEffect::Instance *instance = gImageEffectHost->newInstance(clientData,
-                                                                            this,
-                                                                            *desc,
-                                                                            context);
+            tuttle::host::ofx::imageEffect::Instance *instance =
+                    core::Core::instance().getHost().newInstance(clientData, this, *desc, context);
             if (instance)
                 instance->populate();
 

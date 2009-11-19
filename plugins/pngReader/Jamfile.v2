@@ -35,7 +35,7 @@ else if [ os.name ] = MACOSX
 plugin pngReader : 
         [ glob src/*.cpp ]
         /boost/filesystem/<link>static
-        /tuttlelib//tuttle/<link>static
+        /tuttlelib/<link>static
         /supportlib
         /png
         opengl

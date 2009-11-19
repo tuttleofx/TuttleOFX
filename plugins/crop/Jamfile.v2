@@ -9,10 +9,10 @@ import os ;
 ###############################################################################
 project
     : requirements	
-				<include>src
-				<include>../_common
-  				<threading>multi 
-  				<os>NT:<define>_WINDOWS
+        <include>src
+        <include>../_common
+        <threading>multi
+        <os>NT:<define>_WINDOWS
     : build-dir $(DIST)/bin/plugins/crop
     ;
 
@@ -31,8 +31,8 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 plugin crop : 
     [ glob src/*.cpp ]
+    /tuttlelib/<link>static
     /supportlib
-    /tuttlelib//tuttle/<link>static
     opengl
     ;
 

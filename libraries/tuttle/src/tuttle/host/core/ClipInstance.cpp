@@ -64,15 +64,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tuttle/common/image/gilGlobals.hpp"
 
 /// @todo TUTTLE_TODO : clean using namespace...
-using namespace OFX::Host;
-using namespace OFX::Host::ImageEffect;
+using namespace tuttle::host;
+using namespace tuttle::host::ofx::imageEffect;
 using namespace boost::gil;
 using namespace boost;
 
 namespace tuttle {
 namespace host {
 namespace core {
-	
     Image::Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime time )
     : tuttle::host::ofx::imageEffect::Image( clip ) /// this ctor will set basic props on the image
     , _data( NULL )

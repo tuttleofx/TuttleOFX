@@ -53,7 +53,6 @@
 #include "ofxhHost.h"
 #include "ofxhXml.h"
 #include "ofxhUtilities.h"
-#include "tuttle/common/utils/global.hpp"
 
 
 namespace tuttle {
@@ -95,8 +94,9 @@ static const char *getArchStr()
 #endif
 #define DIRSEP "\\"
 
-#include "shlobj.h"
-#include "tchar.h"
+// CINTERFACE needs to be declared if compiling with VC++
+#include <shlobj.h>
+#include <tchar.h>
 #endif
 
 PluginCache* tuttle::host::ofx::PluginCache::gPluginCachePtr = 0;
@@ -111,31 +111,28 @@ void PluginBinary::loadPluginInfo(PluginCache *cache) {
   _fileModificationTime = _binary.getTime();
   _fileSize = _binary.getSize();
   _binaryChanged = false;
-  
+
   _binary.load();
-  
+
   int (*getNo)(void) = (int(*)()) _binary.findSymbol("OfxGetNumberOfPlugins");
   OfxPlugin* (*getPlug)(int) = (OfxPlugin*(*)(int)) _binary.findSymbol("OfxGetPlugin");
-  
+
   if (getNo == 0 || getPlug == 0) {
-    
     _binary.setInvalid(true);
-    
   } else {
     int pluginCount = (*getNo)();
-    
+
     _plugins.reserve(pluginCount);
-    
+
     for (int i=0;i<pluginCount;i++) {
       OfxPlugin *plug = (*getPlug)(i);
-      
+
       APICache::PluginAPICacheI *api = cache->findApiHandler(plug->pluginApi, plug->apiVersion);
       assert(api);
-      
+
       _plugins.push_back(api->newPlugin(this, i, plug));
     }
   }
-  
   _binary.unload();
 }
 
@@ -592,25 +589,25 @@ void PluginCache::readCache(std::istream &ifs) {
   XML_Parser xP = XML_ParserCreate(NULL);
   XML_SetElementHandler(xP, elementBeginHandler, elementEndHandler);
   XML_SetCharacterDataHandler(xP, elementCharHandler);
-  
+
   while (ifs.good()) {
     char buf[1001] = {0};
     ifs.read(buf, 1000);
-    
+
     if (buf[0] == 0) {
       XML_Parse(xP, "", 0, XML_TRUE);
       break;
     }
-    
+
     int p = XML_Parse(xP, buf, int(strlen(buf)), XML_FALSE);
-    
+
     if (p == XML_STATUS_ERROR) {
       std::cout << "xml error : " << XML_GetErrorCode(xP) << std::endl;
       /// XXX: do something here
       break;
     }
   }
-  
+
   XML_ParserFree(xP);
 }
 
@@ -656,7 +653,7 @@ APICache::PluginAPICacheI* PluginCache::findApiHandler(const std::string &api, i
   std::list<PluginCacheSupportedApi>::iterator i = _apiHandlers.begin();
   while (i != _apiHandlers.end()) {
     if (i->matches(api, version)) {
-      return &( i->_handler );
+      return i->_handler;
     }
     ++i;
   }

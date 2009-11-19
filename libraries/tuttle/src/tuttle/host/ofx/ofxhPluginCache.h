@@ -311,16 +311,16 @@ namespace tuttle {
     
     /// for later 
     struct PluginCacheSupportedApi {
-      APICache::PluginAPICacheI& _handler;
+      APICache::PluginAPICacheI * _handler;
 
-      PluginCacheSupportedApi( APICache::PluginAPICacheI& handler )
+      PluginCacheSupportedApi( APICache::PluginAPICacheI * handler )
 	  : _handler(handler)
       {
       }
       
       bool matches( std::string api, int version ) const
       {
-        if( api == _handler._apiName && version >= _handler._apiVersionMin && version <= _handler._apiVersionMax )
+        if( api == _handler->_apiName && version >= _handler->_apiVersionMin && version <= _handler->_apiVersionMax )
 		{
           return true;
         }
@@ -420,7 +420,7 @@ namespace tuttle {
       /// register an API cache handler
       void registerAPICache( APICache::PluginAPICacheI& apiCache )
 	  {
-        _apiHandlers.push_back(PluginCacheSupportedApi(apiCache));
+        _apiHandlers.push_back(PluginCacheSupportedApi(&apiCache));
       }
       
       /// find the API cache handler for the given api/apiverson

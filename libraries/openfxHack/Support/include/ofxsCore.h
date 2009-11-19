@@ -313,7 +313,7 @@ namespace OFX {
     /** @brief return the handle for this property set */
     OfxPropertySetHandle propSetHandle(void) {return _propHandle;}
 
-    inline int  propGetDimension(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
+    inline int propGetDimension(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost,
       OFX::Exception::PropertyValueIllegalToHost,
       OFX::Exception::Suite) {

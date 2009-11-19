@@ -20,10 +20,13 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-namespace tuttle {
 
 using namespace boost::gil;
 namespace bfs = boost::filesystem;
+
+namespace tuttle {
+namespace plugin {
+namespace dpx {
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin &instance )
@@ -133,4 +136,6 @@ View& DPXReaderProcess<View>::readImage( View &dst, std::string & filepath ) thr
     return dst;
 }
 
+}
+}
 }

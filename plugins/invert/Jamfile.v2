@@ -31,8 +31,8 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 plugin invert : 
     [ glob src/*.cpp ]
+    /tuttlelib/<link>static
     /supportlib
-    /tuttlelib//tuttle/<link>static
     opengl
     ;
 

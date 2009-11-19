@@ -9,6 +9,8 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace crop {
 
 class CropMargin : public OFX::OverlayInteract
 {
@@ -36,6 +38,8 @@ public:
     }
 };
 
+}
+}
 }
 
 #endif

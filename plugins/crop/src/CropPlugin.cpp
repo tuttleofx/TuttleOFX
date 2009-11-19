@@ -15,6 +15,9 @@
 #include <boost/math/special_functions/round.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace crop {
+
 using namespace boost::math;
 using namespace boost::gil;
 const static std::string kCropHelpString = "<b>image volet</b> is used to add bands to an image (e.g 16/9 bands).  <br />";
@@ -200,4 +203,6 @@ OfxRectD CropPlugin::getCropRect( ) {
     return rect;
 }
 
+}
+}
 }

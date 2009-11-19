@@ -8,6 +8,8 @@
 namespace bgil = boost::gil;
 
 namespace tuttle {
+namespace plugin {
+namespace dpx {
 
 /**
  * @brief Class used to denoise with partial derivated equations
@@ -34,6 +36,8 @@ protected:
     OFX::Clip           *_dstClip;       ///< Destination image clip
 };
 
+}
+}
 }
 
 #endif

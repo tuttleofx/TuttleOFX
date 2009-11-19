@@ -8,6 +8,8 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace crop {
 
 bool CropMargin::draw( const OFX::DrawArgs &args )
 {
@@ -48,4 +50,6 @@ bool CropMargin::draw( const OFX::DrawArgs &args )
     return true;
 }
 
+}
+}
 }

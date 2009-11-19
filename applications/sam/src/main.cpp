@@ -86,10 +86,10 @@ int main( int argc, char **argv )
 
         if( pluginR && pluginI && pluginW )
         {
-            std::vector< boost::shared_ptr< tuttle::EffectInstance > > vPluginsInst;
-            OFX::Host::ImageEffect::Instance* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
+            std::vector< boost::shared_ptr< tuttle::host::core::EffectInstance > > vPluginsInst;
+            tuttle::host::ofx::imageEffect::Instance* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
 
-            tuttle::EffectInstance* inst = dynamic_cast< tuttle::EffectInstance* > ( ofxinst );
+            tuttle::host::core::EffectInstance* inst = dynamic_cast< tuttle::host::core::EffectInstance* > ( ofxinst );
             if( inst )
                 vPluginsInst.push_back( boost::shared_ptr< tuttle::host::core::EffectInstance > ( inst ) );
 

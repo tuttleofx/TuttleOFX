@@ -14,6 +14,8 @@
 
 
 namespace tuttle {
+namespace plugin {
+namespace dpx {
 
 
 /**
@@ -40,6 +42,8 @@ public :
     View& readImage( View &dst, std::string & filepath ) throw(tuttle::plugin::PluginException);
 };
 
+}
+}
 }
 
 #include "DPXReaderProcess.tcc"

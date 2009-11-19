@@ -41,10 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhMemory.h"
 #include "ofxhInteract.h"
 
-#if defined(WIN32) || defined(WIN64)
-#define __PRETTY_FUNCTION__ __FUNCSIG__
-#endif
-
 namespace tuttle {
   namespace host {
   namespace ofx {

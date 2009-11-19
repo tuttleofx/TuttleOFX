@@ -20,6 +20,8 @@
 
 
 namespace tuttle {
+namespace plugin {
+namespace crop {
 
 /**
  * @brief Base class
@@ -56,6 +58,8 @@ private:
     OfxRectD getCrop( ) const;
 };
 
+}
+}
 }
 
 #include "CropProcess.tcc"

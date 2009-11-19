@@ -87,13 +87,6 @@ namespace OFX {
   PropertySet::~PropertySet() {}
 
   /** @brief, returns the dimension of the given property from this property set */
-  inline int PropertySet::propGetDimension(const std::string & property, bool throwOnFailure) const throw(std::bad_alloc,
-    OFX::Exception::PropertyUnknownToHost,
-    OFX::Exception::PropertyValueIllegalToHost,
-    OFX::Exception::Suite) {
-      return propGetDimension(property.c_str(), throwOnFailure);
-  }
-
   int PropertySet::propGetDimension(const char* property, bool throwOnFailure) const throw(std::bad_alloc,
     OFX::Exception::PropertyUnknownToHost,
     OFX::Exception::PropertyValueIllegalToHost,

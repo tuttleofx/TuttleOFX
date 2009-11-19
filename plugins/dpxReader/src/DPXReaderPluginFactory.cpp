@@ -19,6 +19,8 @@
 #include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace dpx {
 
 static const bool   kSupportTiles                 = false;
 
@@ -92,6 +94,8 @@ DPXReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
 }
 
 }
+}
+}
 
 namespace OFX
 {
@@ -99,7 +103,7 @@ namespace OFX
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static OFX::DPXReaderPluginFactory p("fr.hd3d.tuttle.dpxreader", 1, 0);
+            static tuttle::plugin::dpx::DPXReaderPluginFactory p("fr.hd3d.tuttle.dpxreader", 1, 0);
             ids.push_back(&p);
         }
     }

@@ -6,7 +6,9 @@
 #ifndef WINDOWS
     #if ( defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__) || defined(__TOS_WIN__) || defined(__WIN32__) )
         #define WINDOWS
-        #include "windows/windows.h"
+        #ifndef __GNUC__
+            #include "windows/windows.h"
+        #endif
     #endif
 #endif
 

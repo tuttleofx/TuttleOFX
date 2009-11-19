@@ -13,6 +13,8 @@
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
+namespace plugin {
+namespace crop {
 
 static const std::string kParamUp           = "Up";
 static const std::string kParamDown         = "Down";
@@ -52,6 +54,8 @@ protected:
 
 };
 
+}
+}
 }
 
 #endif  // VOLET_PLUGIN_H

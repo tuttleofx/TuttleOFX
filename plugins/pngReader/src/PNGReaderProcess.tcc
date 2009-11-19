@@ -15,6 +15,7 @@
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 #include <boost/filesystem/fstream.hpp>
 
+
 namespace tuttle {
 namespace plugin {
 namespace png {

@@ -22,9 +22,11 @@
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
 
-namespace tuttle {
-
 using namespace boost::gil;
+
+namespace tuttle {
+namespace plugin {
+namespace crop {
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin &instance )
@@ -44,7 +46,6 @@ void CropProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
 {
     try
     {
-        COUT("Crop setup");
         // SOURCE
         boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip( )->fetchImage( args.time ) );
         _renderScale = src->getRenderScale( );
@@ -138,7 +139,6 @@ void CropProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
         // Call the base class process member
         this->process( );
         progressEnd( );
-        COUT("/Crop setup");
     }
     catch( tuttle::plugin::PluginException e )
     {
@@ -260,4 +260,6 @@ void CropProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
     }
 }
 
+}
+}
 }
