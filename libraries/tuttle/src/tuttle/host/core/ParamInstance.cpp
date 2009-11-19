@@ -45,6 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofx/ofxhPluginCache.h"
 #include "ofx/ofxhHost.h"
 #include "ofx/ofxhImageEffectAPI.h"
+#include "ofx/ofxhAttribute.h"
 
 // my host
 #include "HostDescriptor.hpp"
@@ -63,14 +64,13 @@ StringInstance::StringInstance( EffectInstance* effect,
                                 OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::ParamStringInstance( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
 {
     _value = getDefault();
 }
 
 const std::string & StringInstance::getDefault() const
 {
-    return _descriptor.getProps().getStringProperty( kOfxParamPropDefault );
+    return getProperties().getStringProperty( kOfxParamPropDefault );
 }
 
 OfxStatus StringInstance::get( std::string& v )
@@ -106,14 +106,13 @@ IntegerInstance::IntegerInstance( EffectInstance* effect,
                                   OFX::Host::Attribute::ParamInstanceSet & setInstance)
 : OFX::Host::Attribute::ParamIntegerInstance( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
 {
     _value = getDefault();
 }
 
 int IntegerInstance::getDefault() const
 {
-    return _descriptor.getProps().getIntProperty( kOfxParamPropDefault );
+    return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
 OfxStatus IntegerInstance::get( int& v )
@@ -149,14 +148,14 @@ DoubleInstance::DoubleInstance( EffectInstance* effect,
                                 OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::ParamDoubleInstance( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _value = getDefault();
 }
 
 double DoubleInstance::getDefault() const
 {
-    return _descriptor.getProps().getDoubleProperty( kOfxParamPropDefault );
+    return getProperties().getDoubleProperty( kOfxParamPropDefault );
 }
 
 OfxStatus DoubleInstance::get( double& v )
@@ -202,14 +201,14 @@ BooleanInstance::BooleanInstance( EffectInstance* effect,
                                   OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::ParamBooleanInstance( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _value = getDefault();
 }
 
 bool BooleanInstance::getDefault() const
 {
-    return static_cast<bool>(_descriptor.getProps().getIntProperty( kOfxParamPropDefault ));
+    return static_cast<bool>(getProperties().getIntProperty( kOfxParamPropDefault ));
 }
 
 OfxStatus BooleanInstance::get( bool& v )
@@ -245,14 +244,14 @@ ChoiceInstance::ChoiceInstance( EffectInstance* effect,
                                 OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::ParamChoiceInstance( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _value = getDefault();
 }
 
 int ChoiceInstance::getDefault() const
 {
-    return _descriptor.getProps().getIntProperty( kOfxParamPropDefault );
+    return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
 OfxStatus ChoiceInstance::get( int& v )
@@ -288,7 +287,7 @@ RGBAInstance::RGBAInstance( EffectInstance* effect,
                             OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::MultiDimParam<DoubleInstance, 4>( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _controls.push_back( new DoubleInstance(effect, name+".r_", descriptor, setInstance) );
     _controls.push_back( new DoubleInstance(effect, name+".g_", descriptor, setInstance) );
@@ -301,7 +300,7 @@ RGBAInstance::RGBAInstance( EffectInstance* effect,
 OfxRGBAColourD RGBAInstance::getDefault() const
 {
     OfxRGBAColourD color;
-    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &color.r, 4 );
+    getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 4 );
     return color;
 }
 
@@ -350,7 +349,7 @@ RGBInstance::RGBInstance( EffectInstance* effect,
                           OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _controls.push_back( new DoubleInstance(effect, name+".r_", descriptor, setInstance) );
     _controls.push_back( new DoubleInstance(effect, name+".g_", descriptor, setInstance) );
@@ -361,7 +360,7 @@ RGBInstance::RGBInstance( EffectInstance* effect,
 OfxRGBColourD RGBInstance::getDefault() const
 {
     OfxRGBColourD color;
-    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &color.r, 3 );
+    getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 3 );
     return color;
 }
 
@@ -406,7 +405,7 @@ Double2DInstance::Double2DInstance( EffectInstance* effect,
                                     OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::MultiDimParam<DoubleInstance, 2>( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _controls.push_back( new DoubleInstance(effect, name+".x_", descriptor, setInstance) );
     _controls.push_back( new DoubleInstance(effect, name+".y_", descriptor, setInstance) );
@@ -416,7 +415,7 @@ Double2DInstance::Double2DInstance( EffectInstance* effect,
 OfxPointD Double2DInstance::getDefault() const
 {
     OfxPointD point;
-    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &point.x, 2 );
+    getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 2 );
     return point;
 }
 
@@ -457,7 +456,7 @@ Integer2DInstance::Integer2DInstance( EffectInstance* effect,
                                       OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::MultiDimParam<IntegerInstance, 2>( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _controls.push_back( new IntegerInstance(effect, name+".x_", descriptor, setInstance) );
     _controls.push_back( new IntegerInstance(effect, name+".y_", descriptor, setInstance) );
@@ -467,7 +466,7 @@ Integer2DInstance::Integer2DInstance( EffectInstance* effect,
 OfxPointI Integer2DInstance::getDefault() const
 {
     OfxPointI point;
-    _descriptor.getProps().getIntPropertyN( kOfxParamPropDefault, &point.x, 2 );
+    getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 2 );
     return point;
 }
 
@@ -508,7 +507,7 @@ Integer3DInstance::Integer3DInstance( EffectInstance* effect,
                                       OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::MultiDimParam<IntegerInstance, 3>( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _controls.push_back( new IntegerInstance(effect, name+".x_", descriptor, setInstance) );
     _controls.push_back( new IntegerInstance(effect, name+".y_", descriptor, setInstance) );
@@ -519,7 +518,7 @@ Integer3DInstance::Integer3DInstance( EffectInstance* effect,
 Ofx3DPointI Integer3DInstance::getDefault() const
 {
     Ofx3DPointI point;
-    _descriptor.getProps().getIntPropertyN( kOfxParamPropDefault, &point.x, 3 );
+    getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 3 );
     return point;
 }
 
@@ -563,7 +562,7 @@ Double3DInstance::Double3DInstance( EffectInstance* effect,
                                     OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
     _controls.push_back( new DoubleInstance(effect, name+".x_", descriptor, setInstance) );
     _controls.push_back( new DoubleInstance(effect, name+".y_", descriptor, setInstance) );
@@ -574,7 +573,7 @@ Double3DInstance::Double3DInstance( EffectInstance* effect,
 Ofx3DPointD Double3DInstance::getDefault() const
 {
     Ofx3DPointD point;
-    _descriptor.getProps().getDoublePropertyN( kOfxParamPropDefault, &point.x, 3 );
+    getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 3 );
     return point;
 }
 
@@ -618,7 +617,7 @@ PushbuttonInstance::PushbuttonInstance( EffectInstance* effect,
                                         OFX::Host::Attribute::ParamInstanceSet & setInstance )
 : OFX::Host::Attribute::ParamPushbuttonInstance( descriptor, setInstance )
 , _effect( effect )
-, _descriptor( descriptor )
+
 {
 }
 

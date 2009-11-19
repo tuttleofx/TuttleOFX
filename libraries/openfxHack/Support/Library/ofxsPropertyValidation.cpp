@@ -42,6 +42,7 @@ This file contains headers for classes that are used to validate property sets a
 
 #include "ofxsSupportPrivate.h"
 #include <stdarg.h>
+#include <cassert>
 
 /** @brief Null pointer definition */
 #define NULLPTR ((void *)(0))
@@ -101,7 +102,7 @@ namespace OFX {
 
 
     /** @brief PropertyDescription var-args constructor */
-    PropertyDescription::PropertyDescription(char *name, OFX::PropertyTypeEnum ilk, int dimension, ...)
+    PropertyDescription::PropertyDescription(const char *name, OFX::PropertyTypeEnum ilk, int dimension, ...)
       : _name(name)
       , _dimension(dimension)
       , _ilk(ilk)
@@ -147,13 +148,14 @@ namespace OFX {
         if(_dimension != -1) // -1 implies variable dimension
           OFX::Log::error(hostDimension != _dimension, "Host reports property '%s' has dimension %d, it should be %d;", _name.c_str(), hostDimension, _dimension); 
         // check type by getting the first element, the property getting will print any failure messages to the log
+
         if(hostDimension > 0) {
           switch(_ilk) 
           {
-          case OFX::ePointer : { /*void *vP = */propSet.propGetPointer(_name); }break;
-          case OFX::eInt :     { /*int vI = */propSet.propGetInt(_name); } break;
-          case OFX::eString  : { /*std::string vS = */propSet.propGetString(_name); } break;
-          case OFX::eDouble  : { /*double vD = */propSet.propGetDouble(_name); } break;
+          case OFX::ePointer : { void *vP = propSet.propGetPointer(_name); }break;
+          case OFX::eInt :     { int vI = propSet.propGetInt(_name); } break;
+          case OFX::eString  : { std::string vS = propSet.propGetString(_name); } break;
+          case OFX::eDouble  : { double vD = propSet.propGetDouble(_name); } break;
           }
         }
 
@@ -222,7 +224,7 @@ namespace OFX {
     Passed in as a zero terminated pairs of (PropertyDescription *descArray, int nDescriptions)
 
     */
-    PropertySetDescription::PropertySetDescription(char *setName, ...) // PropertyDescription *v, int nV)
+    PropertySetDescription::PropertySetDescription(const char *setName, ...) // PropertyDescription *v, int nV)
       : _setName(setName)
     {
 
@@ -262,8 +264,8 @@ namespace OFX {
 
     /** @brief Add more properties into the property vector */
     void
-      PropertySetDescription::addProperty(PropertyDescription *desc,
-      bool deleteOnDestruction)
+      PropertySetDescription::addProperty( PropertyDescription *desc,
+                                           bool deleteOnDestruction )
     {
       _descriptions.push_back(desc);
       if(deleteOnDestruction)
@@ -272,9 +274,9 @@ namespace OFX {
 
     /** @brief Validate all the properties in the set */
     void
-      PropertySetDescription::validate(PropertySet &propSet, 
-      bool checkDefaults,
-      bool logOrdinaryMessages)
+      PropertySetDescription::validate( OFX::PropertySet &propSet,
+                                        bool checkDefaults,
+                                        bool logOrdinaryMessages )
     {
       OFX::Log::print("START validating properties of %s.", _setName.c_str());
       OFX::Log::indent();
@@ -284,15 +286,16 @@ namespace OFX {
 
       // check each property in the description
       int n = _descriptions.size();
-      for(int i = 0; i < n; i++) 
-        _descriptions[i]->validate(checkDefaults, propSet);
+      for(int i = 0; i < n; i++)  {
+          assert(_descriptions[i]);
+          _descriptions[i]->validate(checkDefaults, propSet);
+      }
 
       if(!logOrdinaryMessages) PropertySet::propEnableLogging();
 
       OFX::Log::outdent();
       OFX::Log::print("STOP property validation of %s.", _setName.c_str());
     }
-
 
     /** @brief A list of properties that all hosts must have, and will be validated against. None of these has a default, but they must exist. */
     static PropertyDescription gHostProps[ ] =
@@ -1091,7 +1094,7 @@ namespace OFX {
     /** @brief Validates parameter properties */
     void
       validateParameterProperties(ParamTypeEnum paramType, 
-      OFX::PropertySet paramProps,
+      OFX::PropertySet & paramProps,
       bool checkDefaults)
     {
 #ifndef kOfxsDisableValidation

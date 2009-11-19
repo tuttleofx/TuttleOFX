@@ -990,9 +990,9 @@ namespace OFX {
 			// Suite functions below
 
 			static OfxStatus paramDefine( OfxParamSetHandle paramSet,
-										  const char *paramType,
-										  const char *name,
-										  OfxPropertySetHandle *propertySet )
+                                                      const char *paramType,
+                                                      const char *name,
+                                                      OfxPropertySetHandle *propertySet )
 			{
 				ParamDescriptorSet *paramSetDescriptor = reinterpret_cast<ParamDescriptorSet*> ( paramSet );
 
@@ -1010,6 +1010,8 @@ namespace OFX {
 				}
 				else
 					return kOfxStatErrUnsupported;
+
+                                return kOfxStatOK;
 			}
 
 			static OfxStatus paramGetHandle( OfxParamSetHandle paramSet,

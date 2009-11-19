@@ -158,8 +158,8 @@ namespace OFX {
 				}
 
 				OfxStatus ClipImageInstance::instanceChangedAction( std::string why,
-															   OfxTime time,
-															   OfxPointD renderScale )
+                                                                                    OfxTime time,
+                                                                                    OfxPointD renderScale )
 				{
 					Property::PropSpec stuff[] = {
 						{ kOfxPropType, Property::eString, 1, true, kOfxTypeClip },

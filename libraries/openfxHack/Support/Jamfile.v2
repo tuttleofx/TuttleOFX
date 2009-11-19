@@ -18,13 +18,14 @@ project
     : build-dir $(DIST)/bin/openFX/Support
     ;
 
+
 ###############################################################################
 # tuttle library
 ###############################################################################
 lib Support :
-        [ glob Library/*.cpp ]
-        /boost/system
-        ;
+    [ glob Library/*.cpp ]
+    /boost/system
+    ;
 
 ###############################################################################
 # Automatic install

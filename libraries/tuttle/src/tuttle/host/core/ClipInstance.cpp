@@ -57,9 +57,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // boost
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/cstdint.hpp>
 
 // utilities
-#include <stdint.h>
 #include "tuttle/common/utils/global.hpp"
 #include "tuttle/common/image/gilGlobals.hpp"
 
@@ -67,6 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace OFX::Host;
 using namespace OFX::Host::ImageEffect;
 using namespace boost::gil;
+using namespace boost;
 
 namespace tuttle {
     Image::Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime time )

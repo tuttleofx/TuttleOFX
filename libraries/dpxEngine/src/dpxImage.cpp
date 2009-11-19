@@ -10,6 +10,7 @@
 #include <boost/filesystem/path.hpp>
 using namespace boost::filesystem;
 using namespace tuttle::utils;
+using namespace boost;
 
 namespace tuttle {
 namespace io {

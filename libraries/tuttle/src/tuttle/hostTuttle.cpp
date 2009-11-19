@@ -6,7 +6,7 @@
  */
 
 #include <tuttle/hostTuttle.hpp>
-#include <ofxhHost.h>
+#include "ofx/ofxhHost.h"
 
 using namespace tuttle;
 

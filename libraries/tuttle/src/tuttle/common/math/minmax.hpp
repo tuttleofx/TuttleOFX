@@ -8,10 +8,32 @@
 #include <cmath>
 #include <algorithm>
 
-namespace tuttle {
 
-using std::min;
-using std::max;
+#ifndef _MSC_VER
+    using std::min;
+    using std::max;
+#else
+    #undef min
+    #undef max
+
+    namespace tuttle {
+
+    template<typename T>
+    inline T min( const T& a, const T& b )
+    {
+        return std::_cpp_min( a, b );
+    }
+    template<typename T>
+    inline T max( const T& a, const T& b )
+    {
+        return std::_cpp_max( a, b );
+    }
+
+    }
+#endif
+
+
+namespace tuttle {
 
 template<typename T>
 inline T min( const T& a, const T& b, const T& c )
@@ -35,8 +57,6 @@ inline T max( const T& a, const T& b, const T& c, const T& d )
 }
 
 }
-
-
 
 #endif	/* TUTTLE_MATH_HPP */
 

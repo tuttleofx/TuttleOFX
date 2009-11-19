@@ -250,7 +250,7 @@ namespace OFX {
     protected :
       std::string _what;
     public :
-      HostInadequate(char *what) : _what(what) {}
+      HostInadequate(const char *what) : _what(what) {}
       virtual ~HostInadequate() throw() {}
 
       /** @brief reimplemented from std::exception */
@@ -316,7 +316,10 @@ namespace OFX {
     inline int  propGetDimension(const std::string & property, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost,
       OFX::Exception::PropertyValueIllegalToHost,
-      OFX::Exception::Suite);
+      OFX::Exception::Suite) {
+        return propGetDimension(property.c_str(), throwOnFailure);
+    }
+
     int  propGetDimension(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc, 
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 
@@ -400,6 +403,7 @@ namespace OFX {
     {
         return propGetPointer(property.c_str(), throwOnFailure);
     }
+
     void* propGetPointer(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 
@@ -416,6 +420,7 @@ namespace OFX {
     {
         return propGetString(property.c_str(), throwOnFailure);
     }
+
     std::string propGetString(const char* property, bool throwOnFailure = true) const throw(std::bad_alloc,
       OFX::Exception::PropertyUnknownToHost, 
       OFX::Exception::PropertyValueIllegalToHost, 

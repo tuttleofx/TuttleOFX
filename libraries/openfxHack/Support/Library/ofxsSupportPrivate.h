@@ -168,7 +168,7 @@ namespace OFX {
 
     public :
       /** @brief var args constructor that is use to describe properties */
-      PropertyDescription(char *name, OFX::PropertyTypeEnum ilk, int dimension, ...);
+      PropertyDescription(const char *name, OFX::PropertyTypeEnum ilk, int dimension, ...);
 
       /** @brief Die! Die! Die! */
       virtual ~PropertyDescription(void) {}
@@ -195,7 +195,7 @@ namespace OFX {
       The varargs zero terminated are made from pairs of PropertyDescription * and ints indicating the number of properties pointed to.
       These are to come from static arrays and need not be deleted
       */
-      PropertySetDescription(char *setName, ...);// [PropertyDescription *v, int nSetToThese]
+      PropertySetDescription(const char *setName, ...);// [PropertyDescription *v, int nSetToThese]
 
       /** @brief destructor */
       virtual ~PropertySetDescription();
@@ -204,7 +204,7 @@ namespace OFX {
       void addProperty(PropertyDescription *desc, bool deleteOnDestruction = true);
 
       /** @brief See if all properties exist and have the correct dimensions */
-      void validate(PropertySet &propSet, bool checkDefaults = true, bool logOrdinaryMessages = false); 
+      void validate(OFX::PropertySet &propSet, bool checkDefaults = true, bool logOrdinaryMessages = false);
     };
 
 
@@ -239,7 +239,7 @@ namespace OFX {
     /** @brief Validates parameter properties */
     void
       validateParameterProperties(ParamTypeEnum paramType, 
-      OFX::PropertySet paramProps,
+      OFX::PropertySet & paramProps,
       bool checkDefaults);
 
     /** @brief initialises the validation code, call this in on load */

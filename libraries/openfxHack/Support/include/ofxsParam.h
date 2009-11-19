@@ -660,7 +660,7 @@ namespace OFX {
                 // ok define one and add it in
                 OfxPropertySetHandle props;
                 defineRawParam(name, paramType, props);
-    
+
                 // make out support descriptor class
                 paramPtr = new T(name, props);
 

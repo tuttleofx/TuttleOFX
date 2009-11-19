@@ -230,9 +230,10 @@ namespace OFX {
 
         PluginHandle *ph = getPluginHandle();
         std::auto_ptr<ImageEffect::Descriptor> newContext( gImageEffectHost->makeDescriptor(getDescriptor(), this));
+        int rval = kOfxStatFailed;
+        if (ph->getOfxPlugin())
+            rval = ph->getOfxPlugin()->mainEntry(kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0);
 
-        int rval = ph->getOfxPlugin()->mainEntry(kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0);
-        
         if (rval == kOfxStatOK || rval == kOfxStatReplyDefault)
         {
             COUT_INFOS;
@@ -240,28 +241,37 @@ namespace OFX {
           return _contexts[context];
         }
         COUT_INFOS;
+
         return 0;
       }
 
       ImageEffect::Instance* ImageEffectPlugin::createInstance(const std::string &context, void *clientData)
       {          
 
+
         /// todo - we need to make sure action:load is called, then action:describe again
         /// (not because we are expecting the results to change, but because plugin
         /// might get confused otherwise), then a describe_in_context
         getPluginHandle();
-        Descriptor *desc = getContext(context);
-        if (!desc)
-        {
-            COUT( "The plugin doesn't support the context " << context << "." );
-            return 0;
+        if(_pluginHandle.get()) {
+            Descriptor *desc = getContext(context);
+            if (!desc)
+            {
+                COUT( "The plugin doesn't support the context " << context << "." );
+                return 0;
+            }
+
+            ImageEffect::Instance *instance = gImageEffectHost->newInstance(clientData,
+                                                                            this,
+                                                                            *desc,
+                                                                            context);
+            if (instance)
+                instance->populate();
+
+            return instance;
         }
-        ImageEffect::Instance *instance = gImageEffectHost->newInstance(clientData,
-                                                                        this,
-                                                                        *desc,
-                                                                        context);
-        instance->populate();
-        return instance;
+
+        return NULL;
       }
 
       void ImageEffectPlugin::unload() {

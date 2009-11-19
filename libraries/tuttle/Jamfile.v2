@@ -2,6 +2,7 @@
 ## Main BJam makefile for Tuttle library
 ## author Nicolas Rondaud
 ###############################################################################
+import os ;
 
 ###############################################################################
 # Global project requirements
@@ -27,7 +28,15 @@ use-project /ofxPluginSupport 	: ../openfxHack/Support ;
 ###############################################################################
 # tuttle library
 ###############################################################################
-alias headers : [ glob-tree *.hpp ] ;
+alias headers : [ glob-tree *.hpp ] [ glob-tree *.h ] ;
+
+if [ os.name ] = NT {
+    lib shell32 ;
+    alias nt_libs : shell32 ;
+}
+else {
+    alias nt_libs : ;
+}
 
 lib tuttle : 
     [ glob src/tuttle/*.cpp ]
@@ -39,6 +48,7 @@ lib tuttle :
     /boost/filesystem
     /ofxPluginSupport/<link>static
     /expat/<link>static
+    nt_libs
     ;
 
 ###############################################################################
@@ -46,8 +56,6 @@ lib tuttle :
 ###############################################################################
 install dist_src
     : tuttle
-      /boost/system
-      /boost/filesystem
     : <variant>debug:<location>$(DIST)/lib/tuttle/debug
       <variant>release:<location>$(DIST)/lib/tuttle/release
     ;

@@ -106,7 +106,7 @@ namespace OFX
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::PNGWriterPluginFactory p("fr.hd3d.tuttle.pngWriter", 1, 0);
+            static tuttle::PNGWriterPluginFactory p("fr.hd3d.tuttle.pngwriter", 1, 0);
             ids.push_back(&p);
         }
     }

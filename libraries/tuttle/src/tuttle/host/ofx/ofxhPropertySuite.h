@@ -248,7 +248,7 @@ namespace OFX {
                  TypeEnum type,
                  int dimension = 1,
                  bool pluginReadOnly=false);
-            
+
         /// copy ctor
         Property(const Property &other);
 
@@ -256,7 +256,7 @@ namespace OFX {
         virtual ~Property()
         {
         }
-        
+
         /// is it read only?
         bool getPluginReadOnly() const {return _pluginReadOnly; }
 
@@ -283,13 +283,13 @@ namespace OFX {
         {
           _notifyHooks.push_back(hook);
         }
-        
+
         /// set the get hook
         void setGetHook(GetHook *hook)
         {
           _getHook = hook;
         }
-        
+
         /// call notify on the contained notify hooks
         void notify(bool single, int indexOrN);
 
@@ -313,7 +313,7 @@ namespace OFX {
         // get a string representing the value of this property at element nth
         virtual std::string getStringValue(int nth) = 0;
       };
-      
+
       /// this represents a generic property.
       /// template parameter T is the type descriptor of the
       /// type of property to model.  the class holds an internal _value vector which can be used
@@ -327,7 +327,7 @@ namespace OFX {
         typedef typename T::Type Type; 
         typedef typename T::ReturnType ReturnType; 
         typedef typename T::APIType APIType;
-        
+
       protected :
         /// this is the present value of the property
         std::vector<Type> _value;
@@ -419,7 +419,7 @@ namespace OFX {
        * Class that holds a set of properties and manipulates them
        * The 'fetch' methods return a property object.
        * The 'get' methods return a property value
-	   */
+       */
       class Set {
       private :
         static const int kMagic = 0x12082007; ///< magic number for property sets, and Connie's birthday :-)

@@ -40,6 +40,7 @@ England
 #include <algorithm> // for find
 #include <iostream>
 #include <sstream>
+#include <string.h>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
@@ -1957,6 +1958,8 @@ namespace OFX {
       OFX::Log::indent();
       OfxStatus stat = kOfxStatReplyDefault;
       try {
+        // turn the action into a std::string
+        std::string action(actionRaw);
         OfxPlugInfoMap::iterator it = plugInfoMap.find(plugname);
         if(it==plugInfoMap.end())
           throw;
@@ -1969,9 +1972,6 @@ namespace OFX {
         // Turn the arguments into wrapper objects to make our lives easier
         OFX::PropertySet inArgs(inArgsRaw);
         OFX::PropertySet outArgs(outArgsRaw);
-
-        // turn the action into a std::string
-        std::string action(actionRaw);
 
         // figure the actions
         if (action == kOfxActionLoad) {
@@ -2257,7 +2257,7 @@ namespace OFX {
   }; // namespace Private
 
   /** @brief Fetch's a suite from the host and logs errors */
-  void * fetchSuite(char *suiteName, int suiteVersion, bool optional)
+  void * fetchSuite(const char *suiteName, int suiteVersion, bool optional)
   {
     void *suite = Private::gHost->fetchSuite(Private::gHost->host, suiteName, suiteVersion);
     if(suite==0)

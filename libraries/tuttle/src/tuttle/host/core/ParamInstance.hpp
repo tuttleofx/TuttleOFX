@@ -38,7 +38,7 @@ class PushbuttonInstance : public OFX::Host::Attribute::ParamPushbuttonInstance
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
 public:
     PushbuttonInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
 };
@@ -47,7 +47,6 @@ class StringInstance : public OFX::Host::Attribute::ParamStringInstance
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
     std::string _value; /// @todo link de parametres
 public:
     StringInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -62,7 +61,6 @@ class IntegerInstance : public OFX::Host::Attribute::ParamIntegerInstance
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
     int _value; /// @todo link de parametres
 public:
     IntegerInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance);
@@ -77,7 +75,6 @@ class DoubleInstance : public OFX::Host::Attribute::ParamDoubleInstance
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
     double _value;
 public:
     DoubleInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -94,7 +91,7 @@ class BooleanInstance : public OFX::Host::Attribute::ParamBooleanInstance
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     bool _value;
 public:
     BooleanInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -109,7 +106,7 @@ class ChoiceInstance : public OFX::Host::Attribute::ParamChoiceInstance
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     int _value;
 public:
     ChoiceInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -124,7 +121,7 @@ class RGBAInstance : public OFX::Host::Attribute::MultiDimParam<DoubleInstance, 
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     OfxRGBAColourD _value;
 public:
     RGBAInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -139,7 +136,7 @@ class RGBInstance : public OFX::Host::Attribute::MultiDimParam<DoubleInstance, 3
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     OfxRGBColourD _value;
 public:
     RGBInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -154,7 +151,7 @@ class Double2DInstance : public OFX::Host::Attribute::MultiDimParam<DoubleInstan
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     OfxPointD _value;
 public:
     Double2DInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -169,7 +166,7 @@ class Integer2DInstance : public OFX::Host::Attribute:: MultiDimParam<IntegerIns
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     OfxPointI _value;
 public:
     Integer2DInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -184,7 +181,7 @@ class Integer3DInstance : public OFX::Host::Attribute::MultiDimParam<IntegerInst
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     Ofx3DPointI _value;
 public:
     Integer3DInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );
@@ -199,7 +196,7 @@ class Double3DInstance : public OFX::Host::Attribute::MultiDimParam<DoubleInstan
 {
 protected:
     EffectInstance* _effect;
-    OFX::Host::Attribute::ParamDescriptor& _descriptor;
+
     Ofx3DPointD _value;
 public:
     Double3DInstance( EffectInstance* effect, const std::string& name, OFX::Host::Attribute::ParamDescriptor& descriptor, OFX::Host::Attribute::ParamInstanceSet & setInstance );

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <cmath>
+#include <cassert>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -67,15 +68,18 @@ PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
 {
     // Create the mandated output clip
     ClipDescriptor *dstClip = desc.defineClip("Output");
+    assert(dstClip);
     dstClip->addSupportedComponent(ePixelComponentRGBA);
     dstClip->addSupportedComponent(ePixelComponentAlpha);
     dstClip->setSupportsTiles(kSupportTiles);
 
     // Controls
     StringParamDescriptor *filename = desc.defineStringParam("Input filename");
+    assert(filename);
     filename->setScriptName("filename");
     filename->setStringType(eStringTypeFilePath);
     filename->setCacheInvalidation(eCacheInvalidateValueAll);
+
 }
 
 /**
@@ -86,7 +90,7 @@ PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  */
 OFX::ImageEffect*
 PNGReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
-                                            OFX::ContextEnum context)
+                                       OFX::ContextEnum context)
 {
     return new PNGReaderPlugin(handle);
 }
@@ -99,7 +103,7 @@ namespace OFX
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::PNGReaderPluginFactory p("fr.hd3d.tuttle.pngReader", 1, 0);
+            static tuttle::PNGReaderPluginFactory p("fr.hd3d.tuttle.pngreader", 1, 0);
             ids.push_back(&p);
         }
     }

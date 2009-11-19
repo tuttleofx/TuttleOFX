@@ -266,6 +266,6 @@ namespace tuttle {
                                                 OfxPointD   renderScale) {
         _frameRange.x = startFrame;
         _frameRange.y = endFrame;
-        Instance::beginRenderAction(startFrame, endFrame, step, interactive, renderScale);
+        return Instance::beginRenderAction(startFrame, endFrame, step, interactive, renderScale);
     }
 }

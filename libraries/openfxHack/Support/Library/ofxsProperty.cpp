@@ -87,12 +87,6 @@ namespace OFX {
   PropertySet::~PropertySet() {}
 
   /** @brief, returns the dimension of the given property from this property set */
-  inline int PropertySet::propGetDimension(const std::string & property, bool throwOnFailure) const throw(std::bad_alloc,
-    OFX::Exception::PropertyUnknownToHost,
-    OFX::Exception::PropertyValueIllegalToHost,
-    OFX::Exception::Suite) {
-      propGetDimension(property.c_str(), throwOnFailure);
-  }
   int PropertySet::propGetDimension(const char* property, bool throwOnFailure) const throw(std::bad_alloc,
     OFX::Exception::PropertyUnknownToHost, 
     OFX::Exception::PropertyValueIllegalToHost,
@@ -214,17 +208,17 @@ namespace OFX {
     OFX::Exception::PropertyValueIllegalToHost,
     OFX::Exception::Suite)
   {
-    assert(_propHandle != 0);
-    char *value = "";
-    OfxStatus stat = gPropSuite->propGetString(_propHandle, property, idx, &value);
-    OFX::Log::error(stat != kOfxStatOK, "Failed on getting string property %s[%d], host returned status %s;", 
-      property, idx, mapStatusToString(stat).c_str());
-    if(throwOnFailure)
-      throwPropertyException(stat, property);
+    assert( _propHandle != 0 );
+    char *value = NULL;
+    OfxStatus stat = gPropSuite->propGetString( _propHandle, property, idx, &value );
+    OFX::Log::error( stat != kOfxStatOK, "Failed on getting string property %s[%d], host returned status %s;",
+                     property, idx, mapStatusToString(stat).c_str() );
+    if( throwOnFailure )
+      throwPropertyException( stat, property );
 
-    if(_gPropLogging > 0) Log::print("Retrieved string property %s[%d], was given %s.",  property, idx, value);
+    if( _gPropLogging > 0 ) Log::print( "Retrieved string property %s[%d], was given %s.", property, idx, value );
 
-    return std::string(value);
+    return std::string( value );
   }
 
   /** @brief Get single double property */

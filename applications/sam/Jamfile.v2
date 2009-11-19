@@ -15,6 +15,7 @@ project
     : build-dir $(DIST)/bin/sam
     ;
 
+use-project /expat 	: ../../3rdParty/expat ;
 use-project /tuttlelib : ../../libraries/tuttle ;
 
 ###############################################################################
@@ -26,7 +27,8 @@ exe sam :
     [ glob src/*.cpp ]
     /boost/system
     /boost/filesystem
-    /tuttlelib//tuttle/<link>static
+    /tuttlelib/<link>static
+    /expat/<link>static
     ;
 
 ###############################################################################
@@ -36,7 +38,6 @@ install dist_src
 	: sam
             /boost/system
             /boost/filesystem
-            /tuttlelib//tuttle/<link>static
 	: <variant>debug:<location>$(DIST)/applications/sam/debug
             <variant>release:<location>$(DIST)/dist/applications/sam/release
 	;

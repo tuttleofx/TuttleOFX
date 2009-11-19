@@ -190,19 +190,19 @@ protected:
 
 protected:
 
-	void setProperties( const Property::Set& properties )
+	virtual void setProperties( const Property::Set& properties )
 	{
 		_properties = properties;
 		assert( getAttributeType( ).c_str( ) );
 	}
 public:
 
-	const Property::Set& getProperties( ) const
+	virtual const Property::Set& getProperties( ) const
 	{
 		return _properties;
 	}
 
-	Property::Set& getEditableProperties( )
+	virtual Property::Set& getEditableProperties( )
 	{
 		return _properties;
 	}

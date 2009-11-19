@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "EffectInstance.hpp"
 #include "ofx/ofxhImageEffect.h"
 #include "ofx/ofxhImage.h"
-#include <stdint.h>
+#include <boost/cstdint.hpp>
 
 #define SOFXCLIPLENGTH 1
 
@@ -48,16 +48,16 @@ class Image : public OFX::Host::ImageEffect::Image
 {
 protected:
 	size_t _ncomp; // number of components
-	uint8_t *_data; // where we are keeping our image data
+	boost::uint8_t *_data; // where we are keeping our image data
 public:
 	explicit Image( ClipImgInstance &clip, const OfxRectD & bounds, OfxTime t );
 	~Image( );
 
-	uint8_t *getPixelData( )
+	boost::uint8_t *getPixelData( )
 	{
 		return _data;
 	}
-	uint8_t *pixel( int x, int y ) const;
+	boost::uint8_t *pixel( int x, int y ) const;
 	static void copy( Image *dst, Image *src, const OfxPointI & dstCorner,
 					 const OfxPointI & srcCorner, const OfxPointI & count );
 	template < class VIEW_T >

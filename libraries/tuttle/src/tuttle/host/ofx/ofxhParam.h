@@ -196,7 +196,7 @@ namespace OFX {
       class ParamDescriptorSet : public ParamAccessorSet {
         std::map<std::string, ParamDescriptor*> _paramMap;
         std::list<ParamDescriptor *> _paramList;
-        
+
         /// CC doesn't exist
         ParamDescriptorSet(const ParamDescriptorSet &);
 
@@ -216,14 +216,14 @@ namespace OFX {
 
         /// define a param
         virtual ParamDescriptor *paramDefine(const char *paramType,
-                                        const char *name);
+                                             const char *name);
 
         /// add a param in
         virtual void addParam(const std::string &name, ParamDescriptor *p);
       };
 
       /// plugin parameter instance
-      class ParamInstance : virtual public ParamAccessor, public Attribute::AttributeInstance, private Property::NotifyHook {
+      class ParamInstance : public Attribute::AttributeInstance, virtual public ParamAccessor, private Property::NotifyHook {
         ParamInstance();
       protected:
         ParamInstanceSet*  _paramSetInstance;
@@ -237,7 +237,7 @@ namespace OFX {
         /// grab a handle on the parameter for passing to the C API
         OfxParamHandle getParamHandle( ) const
         {
-                return (OfxParamHandle )this;
+            return (OfxParamHandle )this;
         }
 
         //        OfxStatus instanceChangedAction(std::string why,

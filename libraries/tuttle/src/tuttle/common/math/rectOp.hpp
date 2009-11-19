@@ -1,6 +1,7 @@
 #ifndef _RECTOP_HPP
 #define	_RECTOP_HPP
-
+#include <cmath>
+#include <algorithm>
 #include "minmax.hpp"
 #include "ofxCore.h"
 #include <boost/gil/utilities.hpp>
@@ -21,6 +22,8 @@ OfxRectD boundingBox( const P& a, const P& b, const P& c, const P& d )
 template<class R>
 R intersection( const R& a, const R& b )
 {
+    using std::min;
+    using std::max;
     R bb;
     bb.x1 = max( a.x1, b.x1 );
     bb.x2 = max(bb.x1, min( a.x2, b.x2 ));

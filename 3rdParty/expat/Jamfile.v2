@@ -8,13 +8,15 @@
 ###############################################################################
 project
     : requirements	
-				<include>lib
-  				<threading>multi 
-                <define>COMPILED_FROM_DSP
-  				<link>static
-	: usage-requirements
-				<include>lib
-    : build-dir $(DIST)/lib/bin
+        <include>lib
+        <threading>multi 
+        <define>COMPILED_FROM_DSP
+        <define>XML_STATIC
+        <link>static
+    : usage-requirements
+        <include>lib
+        <define>XML_STATIC
+    : build-dir $(DIST)/lib/expat
     ;
 
 ###############################################################################
@@ -23,11 +25,11 @@ project
 alias headers : [ glob-tree *.h ] ;
 
 lib expat : 
-				[ glob lib/*.c ]
-				;
+    [ glob lib/*.c ]
+    ;
 
 
-install dist_src	
+install dist_src
 	:	expat
 	:	<variant>debug:<location>$(DIST)/lib/expat/debug
 		<variant>release:<location>$(DIST)/lib/expat/release

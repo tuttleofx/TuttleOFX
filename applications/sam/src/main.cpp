@@ -85,9 +85,9 @@ int main( int argc, char **argv )
 
         if( pluginR && pluginI && pluginW )
         {
-
             std::vector< boost::shared_ptr< tuttle::EffectInstance > > vPluginsInst;
             OFX::Host::ImageEffect::Instance* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
+
             tuttle::EffectInstance* inst = dynamic_cast< tuttle::EffectInstance* > ( ofxinst );
             if( inst )
                 vPluginsInst.push_back( boost::shared_ptr< tuttle::EffectInstance > ( inst ) );
@@ -103,7 +103,6 @@ int main( int argc, char **argv )
             // Initialize variables
             if( vPluginsInst.size( ) > 0 )
             {
-
                 // current render scale of 1
                 OfxPointD renderScale = { 1.0, 1.0 };
                 std::vector< boost::shared_ptr<tuttle::EffectInstance> >::iterator instIter;
@@ -208,6 +207,7 @@ int main( int argc, char **argv )
                     ( *instIter )->endRenderAction( 0, numFramesToRender, 1.0, false, renderScale );
                 }
             }
+
         }
         else
         {
@@ -221,6 +221,6 @@ int main( int argc, char **argv )
         std::cout << e.what( ) << std::endl;
     }
 
-    COUT_INFOS;
+//    COUT_INFOS;
     return 0;
 }

@@ -629,29 +629,28 @@ namespace OFX {
 			: _magic( kMagic )
 			, _chainedSet( NULL )
 			{
-				bool failed = false;
+                            bool failed = false;
+                            for( std::map<std::string, Property *>::const_iterator i = other._props.begin( );
+                                 i != other._props.end( ); ++i )
+                            {
+                                Property *copyProp = i->second->deepCopy( );
+                                if( !copyProp )
+                                {
+                                    failed = true;
+                                    break;
+                                }
+                                _props[i->first] = copyProp;
+                            }
 
-				for( std::map<std::string, Property *>::const_iterator i = other._props.begin( );
-					 i != other._props.end( );
-					 ++i )
-				{
-					Property *copyProp = i->second->deepCopy( );
-					if( !copyProp )
-					{
-						failed = true;
-						break;
-					}
-					_props[i->first] = copyProp;
-				}
-
-				if( failed )
-					for( std::map<std::string, Property *>::iterator j = _props.begin( );
-						 j != _props.end( );
-						 ++j )
-					{
-						delete j->second;
-					}
-
+                            if( failed )
+                            {
+                                COUT_ERROR( "Properties copy failed." );
+                                for( std::map<std::string, Property *>::iterator j = _props.begin( );
+                                     j != _props.end( ); ++j )
+                                {
+                                    delete j->second;
+                                }
+                            }
 			}
 
 			Set::~Set( )
@@ -906,7 +905,7 @@ namespace OFX {
 			/// this returns a non negative index if it is found, otherwise, -1
 
 			int Set::findStringPropValueIndex( const std::string &propName,
-											   const std::string &propValue ) const
+                                                           const std::string &propValue ) const
 			{
 				String *prop = fetchStringProperty( propName, true );
 
@@ -925,9 +924,9 @@ namespace OFX {
 			/// static functions for the suite
 
 			template<class T> static OfxStatus propSet( OfxPropertySetHandle properties,
-														const char *property,
-														int index,
-														typename T::APIType value )
+                                                                    const char *property,
+                                                                    int index,
+                                                                    typename T::APIType value )
 			{
 #ifdef DEBUG
 				std::cout << "propSet - " << properties << " " << property << "[" << index << "] = " << value << " \n";
@@ -959,9 +958,9 @@ namespace OFX {
 			/// static functions for the suite
 
 			template<class T> static OfxStatus propSetN( OfxPropertySetHandle properties,
-														 const char *property,
-														 int count,
-														 typename T::APIType *values )
+                                                                     const char *property,
+                                                                     int count,
+                                                                     typename T::APIType *values )
 			{
 #ifdef DEBUG
 				std::cout << "propSetN - " << properties << " " << property << " \n";
@@ -988,9 +987,9 @@ namespace OFX {
 			/// static functions for the suite
 
 			template<class T> static OfxStatus propGet( OfxPropertySetHandle properties,
-														const char *property,
-														int index,
-														typename T::APITypeConstless *value )
+                                                                    const char *property,
+                                                                    int index,
+                                                                    typename T::APITypeConstless *value )
 			{
 #ifdef DEBUG
 				std::cout << "propGet - " << properties << " " << property << " = ...";
@@ -1025,9 +1024,9 @@ namespace OFX {
 			/// static functions for the suite
 
 			template<class T> static OfxStatus propGetN( OfxPropertySetHandle properties,
-														 const char *property,
-														 int count,
-														 typename T::APITypeConstless *values )
+                                                                     const char *property,
+                                                                     int count,
+                                                                     typename T::APITypeConstless *values )
 			{
 				try
 				{
@@ -1085,24 +1084,24 @@ namespace OFX {
 
 			/// the actual suite that is passed across the API to manage properties
 			struct OfxPropertySuiteV1 gSuite = {
-												propSet<PointerValue>,
-												propSet<StringValue>,
-												propSet<DoubleValue>,
-												propSet<IntValue>,
-												propSetN<PointerValue>,
-												propSetN<StringValue>,
-												propSetN<DoubleValue>,
-												propSetN<IntValue>,
-												propGet<PointerValue>,
-												propGet<StringValue>,
-												propGet<DoubleValue>,
-												propGet<IntValue>,
-												propGetN<PointerValue>,
-												propGetN<StringValue>,
-												propGetN<DoubleValue>,
-												propGetN<IntValue>,
-												propReset,
-												propGetDimension
+                            propSet<PointerValue>,
+                            propSet<StringValue>,
+                            propSet<DoubleValue>,
+                            propSet<IntValue>,
+                            propSetN<PointerValue>,
+                            propSetN<StringValue>,
+                            propSetN<DoubleValue>,
+                            propSetN<IntValue>,
+                            propGet<PointerValue>,
+                            propGet<StringValue>,
+                            propGet<DoubleValue>,
+                            propGet<IntValue>,
+                            propGetN<PointerValue>,
+                            propGetN<StringValue>,
+                            propGetN<DoubleValue>,
+                            propGetN<IntValue>,
+                            propReset,
+                            propGetDimension
 			};
 
 			/// return the OFX function suite that manages properties

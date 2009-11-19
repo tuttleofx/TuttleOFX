@@ -127,7 +127,7 @@ namespace OFX {
   {
     // validate the properities on this descriptor
     if(type != eDummyParam)
-      OFX::Validation::validateParameterProperties(type, props, true); 
+      OFX::Validation::validateParameterProperties( type, _paramProps, true );
   }
 
   ParamDescriptor::~ParamDescriptor()
