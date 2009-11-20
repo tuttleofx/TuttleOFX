@@ -9,6 +9,7 @@
 project
     : requirements	
         <include>src/include
+        <include>../tuttle/src/
         <threading>multi
         <link>static
     : usage-requirements

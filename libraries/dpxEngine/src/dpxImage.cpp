@@ -85,59 +85,59 @@ void DpxImage::readHeader(ifstream & f) {
         //
         // "BIG ENDIAN"
         //
-        gen->magic_num				=	swapEndian<unsigned long>(gen->magic_num);
-        gen->offset                             =	swapEndian<unsigned long>(gen->offset);
-        gen->file_size				=	swapEndian<unsigned long>(gen->file_size);
-        gen->ditto_key				=	swapEndian<unsigned long>(1);
-        gen->gen_hdr_size			=	swapEndian<unsigned long>(gen->gen_hdr_size);
-        gen->ind_hdr_size			=	swapEndian<unsigned long>(gen->ind_hdr_size);
-        gen->user_data_size			=	swapEndian<unsigned long>(gen->user_data_size);
-        gen->key					=	swapEndian<unsigned long>(gen->key);
+        gen->magic_num      =	swapEndian<unsigned long>(gen->magic_num);
+        gen->offset         =	swapEndian<unsigned long>(gen->offset);
+        gen->file_size      =	swapEndian<unsigned long>(gen->file_size);
+        gen->ditto_key      =	swapEndian<unsigned long>(1);
+        gen->gen_hdr_size   =	swapEndian<unsigned long>(gen->gen_hdr_size);
+        gen->ind_hdr_size   =	swapEndian<unsigned long>(gen->ind_hdr_size);
+        gen->user_data_size =	swapEndian<unsigned long>(gen->user_data_size);
+        gen->key            =	swapEndian<unsigned long>(gen->key);
 
         // ...image information
         imgif = &(_header._imageInfo);
-        imgif->orientation          =	swapEndian<short>(imgif->orientation);
-        imgif->element_number       =	swapEndian<short>(imgif->element_number);
-        imgif->pixelsPerLine        =	swapEndian<unsigned long>(imgif->pixelsPerLine);
-        imgif->linesPerImageEle     =	swapEndian<unsigned long>(imgif->linesPerImageEle);
+        imgif->orientation      = swapEndian<short>(imgif->orientation);
+        imgif->element_number   = swapEndian<short>(imgif->element_number);
+        imgif->pixelsPerLine    = swapEndian<unsigned long>(imgif->pixelsPerLine);
+        imgif->linesPerImageEle = swapEndian<unsigned long>(imgif->linesPerImageEle);
         for (int i=0; i<8; i++)
         {
-                imgif->image_element[i].data_sign			=	swapEndian<unsigned long>(imgif->image_element[i].data_sign);
-                imgif->image_element[i].ref_low_data		=	swapEndian<unsigned long>(imgif->image_element[i].ref_low_data);
-                imgif->image_element[i].ref_low_quantity	=	swapEndian<float>(imgif->image_element[i].ref_low_quantity);
-                imgif->image_element[i].ref_high_data		=	swapEndian<unsigned long>(imgif->image_element[i].ref_high_data);
-                imgif->image_element[i].ref_high_quantity	=	swapEndian<float>(imgif->image_element[i].ref_high_quantity);
-                imgif->image_element[i].packing				=	swapEndian<short>(imgif->image_element[i].packing);
-                imgif->image_element[i].encoding			=	swapEndian<short>(imgif->image_element[i].encoding);
-                imgif->image_element[i].data_offset			=	swapEndian<unsigned long>(imgif->image_element[i].data_offset);
-                imgif->image_element[i].eol_padding			=	swapEndian<unsigned long>(imgif->image_element[i].eol_padding);
-                imgif->image_element[i].eo_image_padding	=	swapEndian<unsigned long>(imgif->image_element[i].eo_image_padding);
+                imgif->image_element[i].data_sign           = swapEndian<unsigned long>(imgif->image_element[i].data_sign);
+                imgif->image_element[i].ref_low_data        = swapEndian<unsigned long>(imgif->image_element[i].ref_low_data);
+                imgif->image_element[i].ref_low_quantity    = swapEndian<float>(imgif->image_element[i].ref_low_quantity);
+                imgif->image_element[i].ref_high_data       = swapEndian<unsigned long>(imgif->image_element[i].ref_high_data);
+                imgif->image_element[i].ref_high_quantity   = swapEndian<float>(imgif->image_element[i].ref_high_quantity);
+                imgif->image_element[i].packing             = swapEndian<short>(imgif->image_element[i].packing);
+                imgif->image_element[i].encoding            = swapEndian<short>(imgif->image_element[i].encoding);
+                imgif->image_element[i].data_offset         = swapEndian<unsigned long>(imgif->image_element[i].data_offset);
+                imgif->image_element[i].eol_padding         = swapEndian<unsigned long>(imgif->image_element[i].eol_padding);
+                imgif->image_element[i].eo_image_padding    = swapEndian<unsigned long>(imgif->image_element[i].eo_image_padding);
         }
 
         // ...file orientation
         imgor = &(_header._imageOrientation);
-        imgor->x_offset						=	swapEndian<unsigned long>(imgor->x_offset);
-        imgor->y_offset						=	swapEndian<unsigned long>(imgor->y_offset);
-        imgor->x_center						=	swapEndian<unsigned long>(imgor->x_center);
-        imgor->y_center						=	swapEndian<unsigned long>(imgor->y_center);
-        imgor->x_orig_size					=	swapEndian<unsigned long>(imgor->x_orig_size);
-        imgor->y_orig_size					=	swapEndian<unsigned long>(imgor->y_orig_size);
-        imgor->border[0]					=	swapEndian<short>(imgor->border[0]);
-        imgor->border[1]					=	swapEndian<short>(imgor->border[1]);
-        imgor->border[2]					=	swapEndian<short>(imgor->border[2]);
-        imgor->border[3]					=	swapEndian<short>(imgor->border[3]);
-        imgor->pixel_aspect[0]				=	swapEndian<unsigned long>(imgor->pixel_aspect[0]);
-        imgor->pixel_aspect[1]				=	swapEndian<unsigned long>(imgor->pixel_aspect[1]);
+        imgor->x_offset =   swapEndian<unsigned long>(imgor->x_offset);
+        imgor->y_offset =   swapEndian<unsigned long>(imgor->y_offset);
+        imgor->x_center =   swapEndian<unsigned long>(imgor->x_center);
+        imgor->y_center =   swapEndian<unsigned long>(imgor->y_center);
+        imgor->x_orig_size  =   swapEndian<unsigned long>(imgor->x_orig_size);
+        imgor->y_orig_size  =   swapEndian<unsigned long>(imgor->y_orig_size);
+        imgor->border[0]    =   swapEndian<short>(imgor->border[0]);
+        imgor->border[1]    =   swapEndian<short>(imgor->border[1]);
+        imgor->border[2]    =   swapEndian<short>(imgor->border[2]);
+        imgor->border[3]    =   swapEndian<short>(imgor->border[3]);
+        imgor->pixel_aspect[0]  =   swapEndian<unsigned long>(imgor->pixel_aspect[0]);
+        imgor->pixel_aspect[1]  =   swapEndian<unsigned long>(imgor->pixel_aspect[1]);
 
         // ...motion picture film _header
-        mp	=	&(_header._motionPicture);
-        mp->prefix							=	swapEndian<unsigned long>(mp->prefix);
-        mp->count							=	swapEndian<unsigned long>(mp->count);
-        mp->frame_position					=	swapEndian<unsigned long>(mp->frame_position);
-        mp->sequence_len					=	swapEndian<unsigned long>(mp->sequence_len);
-        mp->held_count						=	swapEndian<unsigned long>(mp->held_count);
-        mp->frame_rate						=	swapEndian<float>(mp->frame_rate);
-        mp->shutter_angle					=	swapEndian<float>(mp->shutter_angle);
+        mp                  =	&(_header._motionPicture);
+        mp->prefix          =	swapEndian<unsigned long>(mp->prefix);
+        mp->count           =	swapEndian<unsigned long>(mp->count);
+        mp->frame_position  =	swapEndian<unsigned long>(mp->frame_position);
+        mp->sequence_len    =	swapEndian<unsigned long>(mp->sequence_len);
+        mp->held_count      =	swapEndian<unsigned long>(mp->held_count);
+        mp->frame_rate      =	swapEndian<float>(mp->frame_rate);
+        mp->shutter_angle   =	swapEndian<float>(mp->shutter_angle);
 
         // ...television _header
         tv	=	&(_header._television);

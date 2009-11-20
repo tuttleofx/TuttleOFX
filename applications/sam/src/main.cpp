@@ -78,7 +78,7 @@ int main( int argc, char **argv )
         of.close( );
 
         // get some plugins examples
-        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.pngreader" );
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.dpxreader" );
         tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.invert" );
         tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.pngwriter" );
 
@@ -129,7 +129,7 @@ int main( int argc, char **argv )
                 tuttle::host::core::StringInstance *dstFileParam = dynamic_cast<tuttle::host::core::StringInstance*> ( vPluginsInst[2]->getParams( )["Output filename"] );
                 if( srcFileParam && dstFileParam )
                 {
-                    srcFileParam->set( "input.png" );
+                    srcFileParam->set( "input.dpx" );
                     dstFileParam->set( "output.png" );
                     vPluginsInst[0]->paramInstanceChangedAction( srcFileParam->getName( ), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
                     vPluginsInst[2]->paramInstanceChangedAction( dstFileParam->getName( ), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
