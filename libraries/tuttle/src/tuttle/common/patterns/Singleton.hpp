@@ -1,24 +1,17 @@
-/**
- * @brief Singleton class
- * @author Fabien Castan
- * @date 2007/01/30
- */
 #ifndef Singleton_HPP
 #define Singleton_HPP
 
 #include <cstdlib>
 
 /**
- * @class Singleton <de/utils/Singleton.hpp>
+ * @brief Singleton<ClassSingleton> Can transform a class into Singleton (by inheriting this class)
  *
- * @brief Singleton<ClassSingleton> Permet de transformer une classe en Singleton (en heritant de cette classe)
+ * @par Purpose
+ * Forcing (limit) the presence of a single instance of a class
  *
- * @par But du Singleton :
- * Forcer (limiter) la présence d'une seule instance d'une classe
- *
- * @par Utilisation :
- *	La classe T a mettre en Singleton, doit deriver de cette classe Singleton (:public Singleton<T>).
- *	La macro MAKE_SINGLETON(T) permet de mettre les elements necessaires (notamment les constructeurs).
+ * @par Usage
+ * The class T, to use as Singleton, must derive from this class (: public Singleton <T>).
+ * The macro MAKE_SINGLETON (T) create necessary elements (including constructors).
  */
 template <class T>
 class Singleton
@@ -32,7 +25,7 @@ private:
 
 protected:
     Singleton( ) { }
-    ~Singleton( ) { }
+    virtual ~Singleton( )=0;
 
 public:
     /**
@@ -56,7 +49,9 @@ public:
     }
 };
 
-template <class T> T* Singleton<T>::inst = NULL; //declaration de la variable statique
+template <class T> T* Singleton<T>::inst = NULL;
+
+template <class T> Singleton<T>::~Singleton(){}
 
 ///macro to implement singleton. Use it in derivated class declaration
 #define MAKE_SINGLETON(Class) \

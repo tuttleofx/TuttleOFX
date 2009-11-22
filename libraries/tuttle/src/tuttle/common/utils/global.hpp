@@ -2,17 +2,11 @@
 #define __TUTTLE_GLOBAL__
 
 ////////////////////////////////////////////////////////////////////////////////
-// Needed for windows compilation
-#ifndef WINDOWS
-    #if ( defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64) || defined(__WINDOWS__) || defined(__TOS_WIN__) || defined(__WIN32__) )
-        #define WINDOWS
-        #ifndef __GNUC__
-            #include "windows/windows.h"
-        #endif
-    #endif
-#endif
+// windows stuff
+#include "windows/windows.h"
 
-// Needed for MinGW:
+////////////////////////////////////////////////////////////////////////////////
+// Needed for MinGW
 #ifndef _MSC_VER
 #define SHGFP_TYPE_CURRENT 0
 #define strcpy_s(dst, dst_length, src) strcpy(dst, src)
@@ -30,7 +24,7 @@ namespace boost {
     template<class T> class shared_ptr;
     namespace gil {}
 }
-// Ce que l'on utilise de facon standard sans namespace
+// some standards things inside the project
 namespace tuttle {
     using boost::scoped_ptr;
     using boost::shared_ptr;
@@ -39,22 +33,19 @@ namespace tuttle {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Define functions to display infos in the console.
+// Define functions to display infos in the console
 #include <iostream>
-
-// @todo: translate in english.
 
 /**
  * @def   INFOS
- * @brief contient les infos : nom de fichier, numero de ligne, nom de fonction
+ * @brief informations : filename, line number, function name
 **/
 #define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << BOOST_CURRENT_FUNCTION
 
 
 /**
- * @def   COUT(...)
- * @param[in] ... : prend tous les parametres pour lesquel l'operator << est definit
- * @brief affichage sur la console uniquement en mode debug
+ * @param[in] ... : all parameters with an operator << defined
+ * @brief terminal display
 **/
 #define COUT(...)  std::cout << __VA_ARGS__ << std::endl
 
@@ -64,15 +55,13 @@ namespace tuttle {
 #define COUT_VAR4( a, b, c, d )  std::cout << #a << ": " << a << ", " << #b << ": " << b << ", " << #c << ": " << c << ", " << #d << ": " << d << std::endl
 
 /**
- * @def   COUT_INFOS_DEBUG
- * @brief affichage les infos : nom de fichier, numero de ligne, nom de fonction
+ * @brief terminal information display
 **/
 #define COUT_INFOS COUT(INFOS)
 
 /**
- * @def   COUT_INFOS_DEBUG(...)
- * @param[in] ... : prend tous les parametres pour lesquel l'operator << est definit
- * @brief affichage sur la console uniquement en mode debug (avec des infos : fichier, ligne, fonction)
+ * @param[in] ... : all parameters with an operator << defined
+ * @brief terminal information display
 **/
 #define COUT_WITHINFOS(...)  \
 	COUT_DEBUG( INFOS << \
@@ -100,7 +89,7 @@ namespace tuttle {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Les choses specifiques aux versions release/debug
+// Some specifics things to debug or release version
 #ifdef DEBUG
 #include "debug.hpp"
 #else
