@@ -47,9 +47,9 @@
 
 /** @page codingrules Coding rules
  * 
- * You can use the uncrustify.cfg file to reformat your code.
+ * Uncrustify ( http://uncrustify.sourceforge.net/ ) is used to standardize code format. Please use the uncrustify script at project root.
  * @code
- * uncrustify -c uncrustify.cfg -f yourfile -o yourfile
+ * ./uncrustify.sh
  * @endcode
  */
 
