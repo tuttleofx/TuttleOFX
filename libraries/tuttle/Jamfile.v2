@@ -1,4 +1,4 @@
-###############################################################################
+ ###############################################################################
 ## Main BJam makefile for Tuttle library
 ## author Nicolas Rondaud
 ###############################################################################
@@ -15,6 +15,7 @@ project
         <include>../../3rdParty/expat/lib
         <define>CINTERFACE
         <threading>multi 
+        <link>static
 	: usage-requirements
         <include>src
         <include>src/tuttle/host
@@ -40,26 +41,27 @@ else {
     alias nt_libs : ;
 }
 
-lib tuttle : 
-    [ glob src/tuttle/*.cpp ]
-    [ glob src/tuttle/plugin/*.cpp ]
-    [ glob src/tuttle/host/core/*.cpp ]
-    [ glob src/tuttle/host/graph/*.cpp ]
-    [ glob src/tuttle/host/ofx/*.cpp ]
+lib tuttlehost :
+    [ glob src/tuttle/host/*.cpp ]
+    [ glob src/tuttle/host/*/*.cpp ]
     /boost/system
     /boost/filesystem
-    /ofxPluginSupport/<link>static
     /expat/<link>static
     nt_libs
     ;
+
+lib tuttleplugin :
+    [ glob src/tuttle/plugin/*.cpp ]
+    /ofxPluginSupport/<link>static
+	;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 install dist_src
-    : tuttle
-    : <variant>debug:<location>$(DIST)/lib/tuttle/debug
-      <variant>release:<location>$(DIST)/lib/tuttle/release
+    : tuttlehost tuttleplugin
+    : <variant>debug:<location>$(DIST)/tuttle/debug/lib
+      <variant>release:<location>$(DIST)/tuttle/release/lib
     ;
 
 install dist_include

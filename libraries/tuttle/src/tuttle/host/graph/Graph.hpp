@@ -2,17 +2,21 @@
 #define _TUTTLE_GRAPH_HPP_
 
 #include <iostream>
-#include <vector>
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
-#include <boost/graph/graphviz.hpp>
+#include <boost/foreach.hpp>
 
-#include <boost/graph/visitors.hpp>
 #include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/copy.hpp>
+#include <boost/graph/dominator_tree.hpp>
+
+#include <tuttle/host/core/ProcessNode.hpp>
 
 // definition of basic boost::graph properties
 enum vertex_properties_t { vertex_properties };
@@ -22,47 +26,33 @@ namespace boost {
         BOOST_INSTALL_PROPERTY(edge, properties);
 }
 
-
-namespace tuttle {
-
-
-//visitor: cycle detector
-struct cycle_detector : public boost::dfs_visitor<>
-{
-	public:
-		cycle_detector( bool& has_cycle)
-			: _has_cycle(has_cycle) {}
-
-		template <class Edge, class Graph>
-		void back_edge(Edge, Graph&) {
-			_has_cycle = true;
-		}
-
-	protected:
-		bool& _has_cycle;
-};
+// include this file after the definition of basic boost::graph properties
+#include <tuttle/host/graph/Visitors.hpp>
 
 
-// Directed acyclic graph
-template < typename VERTEXPROPERTIES, typename EDGEPROPERTIES >
+namespace tuttle{
+	namespace host{
+		namespace graph{
+
+template < typename VERTEX, typename EDGE >
 class Graph
 {
 	public:
 
-		// Dag
+		// Directed acyclic graph
 		typedef boost::adjacency_list<
-			boost::setS,			// disallow parallel edges
-			boost::listS,			// vertex container
-			boost::bidirectionalS,	// directed graph
-			boost::property<vertex_properties_t, VERTEXPROPERTIES,
-				boost::property<boost::vertex_index_t, unsigned int> >,
-			boost::property<edge_properties_t, EDGEPROPERTIES>
+			boost::setS,				// disallow parallel edges
+			boost::listS,				// vertex container
+			boost::bidirectionalS,		// directed graph
+			boost::property<boost::vertex_index_t, int,
+					boost::property<vertex_properties_t, VERTEX> >,
+			boost::property<edge_properties_t, EDGE>
 		> GraphContainer;
 
 
 		// a bunch of graph-specific typedefs
-		typedef typename boost::graph_traits<GraphContainer>::vertex_descriptor Vertex;
-		typedef typename boost::graph_traits<GraphContainer>::edge_descriptor Edge;
+		typedef typename boost::graph_traits<GraphContainer>::vertex_descriptor VertexDescriptor;
+		typedef typename boost::graph_traits<GraphContainer>::edge_descriptor EdgeDescriptor;
 
 		typedef typename boost::graph_traits<GraphContainer>::vertex_iterator vertex_iter;
 		typedef typename boost::graph_traits<GraphContainer>::edge_iterator edge_iter;
@@ -78,156 +68,227 @@ class Graph
 
 
 		// constructors etc.
-		Graph()
+		Graph() : _count(0)
 		{}
 
-		Graph(const Graph& g)
-			: graph(g.graph)
-		{}
+		Graph(const Graph& g){
+			*this = g; ///< using operator=
+		}
 
 		virtual ~Graph()
-		{}
+		{
+			BOOST_FOREACH(core::ProcessNode* p, _processNodes)
+				delete p;
+			_processNodes.clear();
+		}
 
 
 		// structure modification methods
-		void Clear()
+		void clear()
 		{
-			graph.clear();
+			_graph.clear();
 		}
 
-		Vertex AddVertex(const VERTEXPROPERTIES& prop)
+		VertexDescriptor addVertex(const VERTEX& prop)
 		{
-			Vertex v = add_vertex(graph);
-			properties(v) = prop;
-
-			vertexCount++;
-			typename boost::property_map<GraphContainer, boost::vertex_index_t>::type param
-				= get(boost::vertex_index, graph);
-			param[v] = vertexCount;
+			VertexDescriptor v = add_vertex(_graph);
+			instance(v) = prop;
+			get(boost::vertex_index, _graph)[v] = _count++;
 
 			return v;
 		}
 
-		void RemoveVertex(const Vertex& v)
+		void removeVertex(const VertexDescriptor& v)
 		{
-			clear_vertex(v, graph);
-			remove_vertex(v, graph);
+			clear_vertex(v, _graph);
+			remove_vertex(v, _graph);
 		}
 
-		Edge AddEdge(const Vertex& v1, const Vertex& v2, const EDGEPROPERTIES& prop)
+		EdgeDescriptor addEdge(const VertexDescriptor& v1, const VertexDescriptor& v2, const EDGE& prop)
 		{
-			Edge addedEdge = add_edge(v1, v2, graph).first;
-			properties(addedEdge) = prop;
+			EdgeDescriptor addedEdge = add_edge(v1, v2, _graph).first;
+			instance(addedEdge) = prop;
+
+			if(has_cycle()){
+				throw std::invalid_argument("graph: cycle detected");
+			}
 
 			return addedEdge;
 		}
 
+		void addProcessNode(const core::ProcessNode& p)
+		{
+			_processNodes.push_back(p.clone());
+		}
+
+
 		// property access
-		VERTEXPROPERTIES& properties(const Vertex& v)
+		VERTEX& instance(const VertexDescriptor& v)
 		{
-			typename boost::property_map<GraphContainer, vertex_properties_t>::type param = get(vertex_properties, graph);
+			typename boost::property_map<GraphContainer, vertex_properties_t>::type param = get(vertex_properties, _graph);
 			return param[v];
 		}
 
-		const VERTEXPROPERTIES& properties(const Vertex& v) const
+		const VERTEX& instance(const VertexDescriptor& v) const
 		{
-			typename boost::property_map<GraphContainer, vertex_properties_t>::const_type param = get(vertex_properties, graph);
+			typename boost::property_map<GraphContainer, vertex_properties_t>::const_type param = get(vertex_properties, _graph);
 			return param[v];
 		}
 
-		EDGEPROPERTIES& properties(const Edge& v)
+		EDGE& instance(const EdgeDescriptor& v)
 		{
-			typename boost::property_map<GraphContainer, edge_properties_t>::type param = get(edge_properties, graph);
+			typename boost::property_map<GraphContainer, edge_properties_t>::type param = get(edge_properties, _graph);
 			return param[v];
 		}
 
-		const EDGEPROPERTIES& properties(const Edge& v) const
+		const EDGE& instance(const EdgeDescriptor& v) const
 		{
-			typename boost::property_map<GraphContainer, edge_properties_t>::const_type param = get(edge_properties, graph);
+			typename boost::property_map<GraphContainer, edge_properties_t>::const_type param = get(edge_properties, _graph);
 			return param[v];
 		}
 
 
-		// selectors and properties
+		// selectors
 		const GraphContainer& getGraph() const
 		{
-			return graph;
+			return _graph;
 		}
 
 		vertex_range_t getVertices() const
 		{
-			return vertices(graph);
+			return vertices(_graph);
 		}
 
-		adjacency_vertex_range_t getAdjacentVertices(const Vertex& v) const
+		adjacency_vertex_range_t getAdjacentVertices(const VertexDescriptor& v) const
 		{
-			return adjacent_vertices(v, graph);
+			return adjacent_vertices(v, _graph);
 		}
 
 		int getVertexCount() const
 		{
-			return num_vertices(graph);
+			return num_vertices(_graph);
 		}
 
 		int getEdgeCount() const
 		{
-			return num_edges(graph);
+			return num_edges(_graph);
 		}
 
-		int getVertexDegree(const Vertex& v) const
+		int getVertexDegree(const VertexDescriptor& v) const
 		{
-			return out_degree(v, graph);
+			return out_degree(v, _graph);
 		}
 
 
 		// operators
 		Graph& operator=(const Graph &g)
 		{
-			graph = g.graph;
+			if (this == &g) return *this;
+
+			// reset of existing data
+			BOOST_FOREACH(core::ProcessNode* p, _processNodes)
+				delete p;
+			_processNodes.clear();
+
+			// deep copy
+			boost::copy_graph(g._graph,_graph);
+			_count=g._count;
+			BOOST_FOREACH(core::ProcessNode* p, g._processNodes){
+				_processNodes.push_back(p->clone());
+			}
+
+			// relinking of processNode reference for each vertex
+			vertex_range_t vrange = getVertices();
+			for(vertex_iter it = vrange.first; it!=vrange.second;++it){
+				std::string processName = instance(*it).processNode()->name();
+				BOOST_FOREACH(core::ProcessNode* p, _processNodes){
+					if(processName.compare(p->name()) == 0){
+						instance(*it).setProcessNode(p);
+						break;
+					}
+				}
+			}
+
 			return *this;
 		}
 
 		bool has_cycle(){
+			// we use a depth first search visitor
 			bool has_cycle = false;
 			cycle_detector vis(has_cycle);
-			boost::depth_first_search(graph, visitor(vis));
-			std::cout << "The graph has a cycle? " << has_cycle << std::endl;
+			boost::depth_first_search(_graph, visitor(vis));
 			return has_cycle;
 		}
 
-
-		// tools
-		void exportAsDOT(const char * filename) const
-		{
-			std::map<std::string,std::string> graph_attr, vertex_attr, edge_attr;
-			graph_attr["size"] 			= "6,6";
-			graph_attr["rankdir"] 		= "LR";
-			graph_attr["ratio"] 		= "fill";
-			graph_attr["label"] 		= "TuttleOFX";
-  			vertex_attr["shape"] 		= "circle";
-  			vertex_attr["color"] 		= "dodgerblue4";
-  			vertex_attr["fontcolor"] 	= "dodgerblue4";
-  			edge_attr["style"] 			= "dashed";
-  			edge_attr["minlen"] 		= "1";
-  			edge_attr["color"] 			= "darkslategray";
-  			edge_attr["fontcolor"] 		= "darkslategray";
-
-			std::ofstream ofs(filename);
-			write_graphviz( ofs
-						  , graph
-						  , boost::make_label_writer(get(vertex_properties, graph))
-						  , boost::make_label_writer(get(edge_properties, graph))
-						  , boost::make_graph_attributes_writer(graph_attr, vertex_attr, edge_attr) );
+		void test_dfs(){
+			test_dfs_visitor vis;
+			boost::depth_first_search(_graph, visitor(vis));
 		}
 
+		void test_bfs(const VertexDescriptor& vroot){
+			test_bfs_visitor vis;
+			boost::breadth_first_search(_graph, vroot, visitor(vis));
+		}
+
+		void test_dominatorTree(){
+			typedef typename boost::property_map<GraphContainer, boost::vertex_index_t>::type IndexMap;
+			typedef typename std::vector<VertexDescriptor >::iterator VectorDescIter;
+			typedef typename boost::iterator_property_map<VectorDescIter, IndexMap > PredMap;
+
+			std::vector<VertexDescriptor> domTreePredVector;
+			IndexMap indexMap(get(boost::vertex_index, _graph));
+			vertex_iter uItr;
+			vertex_iter uEnd;
+			int j = 0;
+			for (boost::tie(uItr, uEnd) = vertices(_graph); uItr != uEnd; ++uItr, ++j)
+			{
+			  put(indexMap, *uItr, j);
+			}
+
+			// Lengauer-Tarjan dominator tree algorithm
+			domTreePredVector = std::vector<VertexDescriptor>(num_vertices(_graph), boost::graph_traits<GraphContainer>::null_vertex());
+			PredMap domTreePredMap =
+			  boost::make_iterator_property_map(domTreePredVector.begin(), indexMap);
+
+			boost::lengauer_tarjan_dominator_tree(_graph, vertex(0, _graph), domTreePredMap);
+
+
+			for (boost::tie(uItr, uEnd) = vertices(_graph); uItr != uEnd; ++uItr)
+				boost::clear_vertex(*uItr, _graph);
+
+			for (boost::tie(uItr, uEnd) = vertices(_graph); uItr != uEnd; ++uItr)
+			{
+				if (get(domTreePredMap, *uItr) != boost::graph_traits<GraphContainer>::null_vertex()){
+					add_edge(get(domTreePredMap, *uItr),*uItr,_graph);
+					//get(indexMap, *uItr) indice du vertex courant
+					//get(domTreePredMap, *uItr) descriptor du dominator
+					//get(indexMap, get(domTreePredMap, *uItr)) indice du dominator
+				}
+			}
+		}
+
+		std::vector<VertexDescriptor > leaves(){
+
+			std::vector<VertexDescriptor > vleaves;
+			vertex_range_t vrange = getVertices();
+			for(vertex_iter it = vrange.first; it!=vrange.second;++it)
+				if(out_degree(*it, _graph) == 0) vleaves.push_back(*it);
+
+			return vleaves;
+		}
+
+		//TODO: make private
+		std::vector<core::ProcessNode*> _processNodes;
 
 	protected:
 
-        GraphContainer graph;
-        unsigned int vertexCount;
+        GraphContainer _graph;
+        int _count;	// for vertex_index
+
 };
 
+} // namespace graph
+} // namespace host
 } // namespace tuttle
 
 #endif
-
