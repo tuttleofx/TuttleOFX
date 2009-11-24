@@ -956,26 +956,6 @@ namespace attribute {
 				}
 			}
 
-			inline const std::map<std::string, ParamInstance*> &ParamInstanceSet::getParams( ) const
-			{
-				return _params;
-			}
-
-			inline std::map<std::string, ParamInstance*> &ParamInstanceSet::getParams( )
-			{
-				return _params;
-			}
-
-			inline const std::list<ParamInstance*> &ParamInstanceSet::getParamList( ) const
-			{
-				return _paramList;
-			}
-
-			inline std::list<ParamInstance*> &ParamInstanceSet::getParamList( )
-			{
-				return _paramList;
-			}
-
 			OfxStatus ParamInstanceSet::addParam( const std::string& name, ParamInstance* instance )
 			{
 				if( _params.find( name ) == _params.end( ) )
@@ -1038,7 +1018,8 @@ namespace attribute {
 					std::map<std::string, ParamInstance*>::const_iterator it = params.find( name );
 
 					// if we can't find it return an error...
-					if( it == params.end( ) ) return kOfxStatErrUnknown;
+					if( it == params.end( ) )
+						return kOfxStatErrUnknown;
 
 					// get the param
 					*param = ( it->second )->getParamHandle( );
