@@ -1,41 +1,31 @@
-/**
- * @brief StaticSingleton class, header file
- * @author Fabien Castan
- * @date 2007/01/30
-*/
-
 #ifndef StaticSingleton_HPP
 #define StaticSingleton_HPP
 
-
 #include <cstdlib>
 
-
 /**
- * @class StaticSingleton <designPattern/StaticSingleton.hpp>
+ * @brief StaticSingleton<ClassStaticSingleton> Can transform a class into static Singleton (by inheriting this class)
  *
- * @brief StaticSingleton<ClassStaticSingleton> Permet de transformer une classe en StaticSingleton (en heritant de cette classe)
+ * @par Purpose
+ * Forcing (limit) the presence of a single instance of a class
  *
- * @par But du StaticSingleton :
- * Forcer (limiter) la présence d'une seule instance d'une classe
- *
- * @par Utilisation :
- *	La classe T a mettre en StaticSingleton, doit deriver de cette classe StaticSingleton (:public StaticSingleton<T>).
- *	La macro MAKE_StaticSingleton(T) permet de mettre les elements necessaires (notamment les constructeurs).
+ * @par Usage
+ * The class T, to use as static Singleton, must derive from this class (: public StaticSingleton <T>).
+ * The macro MAKE_StaticSingleton(T) create necessary elements (including constructors).
  */
 template <class T>
 class StaticSingleton
 {
 private:
-	static T inst; //instance de la classe
+	static T inst;
 
-	// personne ne peut les utiliser
+private:
 	StaticSingleton(const StaticSingleton &){}
 	StaticSingleton& operator=(const StaticSingleton&){}
 
 protected:
 	StaticSingleton(){}
-	~StaticSingleton(){}
+	~StaticSingleton()=0;
 
 public:
 
@@ -49,10 +39,11 @@ public:
 	}
 };
 
-template <class T> T StaticSingleton<T>::inst; //declaration de la variable statique
+template <class T> T StaticSingleton<T>::inst;
+template <class T> StaticSingleton<T>::~StaticSingleton(){}
 
 
-/// macro a placer dans la declaration de la classe
+///macro to implement StaticSingleton. Use it in derivated class declaration
 #define MAKE_StaticSingleton(Class) \
 	public : \
 		friend class StaticSingleton<Class>; \

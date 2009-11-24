@@ -1,46 +1,31 @@
 #ifndef __TUTTLE_DEBUG__
 #define __TUTTLE_DEBUG__
 
-//directives pre-processeur :
-//	# : prend ce qui suit comme une chaine de characteres
-//	## : concatener (ou devant __VA_ARGS__ pour indiquer qu'il peut etre vide)
-//	__FILE__ : nom du fichier
-//	__LINE__ : numero de la ligne
-//	__FUNCTION__ : nom de la fonction avec sa declaration
-//	__PRETTY_FUNCTION__ : juste le nom de la fonction
-//	__DATE__ : "Mmm dd yyyy" -> mois, jour, annee
+// pre-processeur directives :
+//	# : convert to string
+//	## : concatenate (or before __VA_ARGS__ to indicate that it may be empty)
+//	__FILE__ : filename
+//	__LINE__ : line number
+//	__FUNCTION__ : function declaration
+//	__PRETTY_FUNCTION__ : function name
+//	__DATE__ : "Mmm dd yyyy"
 //	__TIME__ : "hh:mm:ss"
 
 
 //_____________________________________________________________________________
-// Macros pour sortir sur la console uniquement en mode debug
+// Macros to output on terminal only in debug mode
 
 
-/**
- * @def   COUT_DEBUG(...) 
- * @param[in] ... : prend tous les parametres pour lesquel l'operator << est definit
- * @brief affichage sur la console uniquement en mode debug
-**/
+/// @see COUT
 #define COUT_DEBUG COUT
 
-/**
- * @def   COUT_INFOS_DEBUG
- * @brief affichage les infos : nom de fichier, numero de ligne, nom de fonction
-**/
+/// @see  COUT_INFOS
 #define COUT_INFOS_DEBUG COUT_INFOS
 
-/**
- * @def   COUT_INFOS_DEBUG(...) 
- * @param[in] ... : prend tous les parametres pour lesquel l'operator << est definit
- * @brief affichage sur la console uniquement en mode debug (avec des infos : fichier, ligne, fonction)
-**/
+/// @see  COUT_INFOS
 #define COUT_WITHINFOS_DEBUG COUT_WITHINFOS
 
-/**
- * @def   IF_DEBUG(...)
- * @param[in] ... : prend tous les parametres
- * @brief execute le code dans les parentheses de la macro uniquement en mode debug
-**/
+/// @see IF_DEBUG
 #define IF_DEBUG(...)  __VA_ARGS__
 
 

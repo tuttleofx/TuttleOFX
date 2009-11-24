@@ -6,28 +6,37 @@
 #include <cstring> // memset
 
 namespace tuttle {
-	namespace host {
-		namespace core {
+namespace host {
+namespace core {
 
-			void Core::preload( )
-			{
-				tuttle::host::ofx::PluginCache::getPluginCache( )->setCacheVersion( "tuttleV1" );
+Core::Core( )
+: _imageEffectPluginCache(_host)
+{
+	_pluginCache.setCacheVersion( "tuttleV1" );
 
-				// register the image effect cache with the global plugin cache
-				tuttle::host::ofx::PluginCache::getPluginCache( )->registerAPICache( _imageEffectPluginCache );
-
-				// try to read an old cache
-				std::ifstream ifs( "tuttlePluginCache.xml" );
-				tuttle::host::ofx::PluginCache::getPluginCache( )->readCache( ifs );
-				tuttle::host::ofx::PluginCache::getPluginCache( )->scanPluginFiles( );
-				ifs.close( );
-
-				/// flush out the current cache
-				std::ofstream of( "tuttlePluginCache.xml" );
-				tuttle::host::ofx::PluginCache::getPluginCache( )->writePluginCache( of );
-				of.close( );
-			}
-
-		}
-	}
+	// register the image effect cache with the global plugin cache
+	_pluginCache.registerAPICache( _imageEffectPluginCache );
 }
+
+Core::~Core( )
+{
+}
+
+void Core::preload( )
+{
+	// try to read an old cache
+	std::ifstream ifs( "tuttlePluginCache.xml" );
+	_pluginCache.readCache( ifs );
+	_pluginCache.scanPluginFiles( );
+	ifs.close( );
+
+	/// flush out the current cache
+	std::ofstream of( "tuttlePluginCache.xml" );
+	_pluginCache.writePluginCache( of );
+	of.close( );
+}
+
+}
+}
+}
+

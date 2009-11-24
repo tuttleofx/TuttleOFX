@@ -1,21 +1,14 @@
-/**
- * @brief    Manipuler un Fichier de facon global, un fichier de log, un log de debug.
- * @author   Fabien Castan
- * @date     2007/02/02
- */
-
 #ifndef _FileGlobal_HPP
 #define _FileGlobal_HPP
 
+#include <tuttle/common/patterns/Singleton.hpp>
 
-#include <iostream> //pour la sortie d'erreur
-#include <fstream> // pour la sortie dans un fichier
-#include <patterns/Singleton.hpp> // pour travailler sur la meme instance (pour la sortie dans un fichier commun)
+#include <iostream>
+#include <fstream>
 
 
 /**
- * @brief Permet de sortir des donnees dans un meme fichier, depuis n'importe ou.
- *        
+ * @brief Output datas in the same file from anywhere.
  **/
 class FileGlobal : public Singleton<FileGlobal>
 {
@@ -29,8 +22,8 @@ public:
 	std::ofstream _flux;
 
 public:
-	/// @param[in] fileName : nom du fichier a creer
-	/// @brief Creation du fichier
+	/// @param[in] fileName : file to create
+	/// @brief File creation
 	void openFile(std::string fileName)
 	{
 	#ifndef WINDOWS
@@ -44,7 +37,7 @@ public:
 		}
 	}
 	
-	/// @brief Fermeture du fichier
+	/// @brief File close
 	void closeFile(){ _flux.close(); }
 };
 
@@ -52,22 +45,19 @@ public:
 
 
 //______________________________________________________________________________
-// Macros pour sortir dans un fichier
+// Macros to output in global file
 
 /**
- * @def   FILENAME_DEBUG(FILENAME)
- * @param[in] FILENAME : prend une chaine de carateres
- * @brief specifie un nom de fichier, pour l'utilisation de FILE_DEBUG (uniquement en mode debug)
+ * @param[in] FILENAME : file name
+ * @brief Change the filename for the output
 **/
 #define FILEGLOBAL_FILENAME(FILENAME) \
 	if( FileGlobal::instance()._flux ){ FileGlobal::instance().closeFile();} \
 		FileGlobal::instance().openFile( FILENAME );
 
 /**
- * @def   FILE_DEBUG(...)
- * @param[in] ... : prend tous les parametres pour lesquel l'operator << est definit
- * @brief Affiche le texte dans le fichier de debuggage specifie par FILNAME_DEBUG (uniquement en mode debug).
-  *        Si aucun fichier n'a ete specifie, il cree le fichier "out.log"
+ * @param[in] ... : all parameters with an operator << defined
+ * @brief Output into the file define by FILEGLOBAL_FILENAME (if not specified, by default "out.log")
 **/
 #define FILEGLOBAL(...) \
 	if( ! FileGlobal::instance()._flux ){ FileGlobal::instance().openFile("out.log");} \
@@ -89,11 +79,10 @@ public:
         if( ! FileGlobal::instance()._flux ){ FileGlobal::instance().openFile("out.log");} \
 	FileGlobal::instance()._flux << #a << ": " << a <<", "<< #b << ": " << b <<", "<< #c << ": " << c <<", "<< #d << ": " << d << std::endl;
 
+
 /**
- * @def   FILE_INFO_DEBUG(...)
- * @param[in] ... : prend tous les parametres pour lesquel l'operator << est definit
- * @brief Affiche le texte dans le fichier de debuggage specifie par FILNAME_DEBUG (uniquement en mode debug).
-  *        Si aucun fichier n'a ete specifie, il cree le fichier "out.log"
+ * @param[in] ... : all parameters with an operator << defined
+ * @brief Output into the file define by FILEGLOBAL_FILENAME (if not specified, by default "out.log")
 **/
 #define FILEGLOBAL_INFO(...) \
 	if( ! FileGlobal::instance()._flux ){ FileGlobal::instance().openFile("out.log");} \
@@ -103,9 +92,6 @@ public:
 #define FILEGLOBAL_FUNCTION \
 	if( ! FileGlobal::instance()._flux ){ FileGlobal::instance().openFile("out.log");} \
 	FileGlobal::instance()._flux << INFO << std::endl;
-
-
-
 
 
 
