@@ -1,0 +1,27 @@
+
+/**
+ * @dir tuttle
+ * @brief Base directory of the project. All includes begins here.
+ */
+	/**
+	 * @dir tuttle/host
+	 * @brief Library for host
+	 */
+	/**
+	 * @dir tuttle/host/ofx
+	 * @brief OpenFX wrapping to communicate with C API
+	 */
+	/**
+	 * @dir tuttle/host/core
+	 * @brief All main class of the host
+	 */
+	/**
+	 * @dir tuttle/host/graph
+	 * @brief graph work
+	 */
+	/**
+	 * @dir tuttle/plugins
+	 * @brief Library for plugins
+	 */
+
+

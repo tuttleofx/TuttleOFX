@@ -387,6 +387,28 @@ namespace imageEffect {
 				}
 			}
 
+			// where is the good class to do that in std ?
+			template <typename T>
+			struct equals_ptrContent : public std::binary_function<T*,T*,bool>
+			{
+				bool operator()( const T* const a,  const T* const b )
+				{
+					return *a == *b;
+				}
+			};
+			/**
+			 * @todo check clip ? check hash ? etc.
+			 */
+			bool Instance::operator==( const Instance& other )
+			{
+				bool result;
+				result = std::equal( getParamList().begin(), getParamList().end(), other.getParamList().begin(), equals_ptrContent<ofx::attribute::ParamInstance>() );
+//				if( !result )
+//					return result;
+//				result = std::equal( getClipList().begin(), getClipList().end(), other.getClipList().begin() );
+				return result;
+			}
+
 			/// implemented for Param::SetDescriptor
 
 			Property::Set &Instance::getParamSetProps( )
