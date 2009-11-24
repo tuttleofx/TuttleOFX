@@ -16,6 +16,8 @@ Core::Core( )
 
 	// register the image effect cache with the global plugin cache
 	_pluginCache.registerAPICache( _imageEffectPluginCache );
+
+	//preload();
 }
 
 Core::~Core( )

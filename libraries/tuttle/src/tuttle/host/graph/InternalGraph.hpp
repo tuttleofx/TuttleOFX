@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_GRAPH_HPP_
-#define _TUTTLE_GRAPH_HPP_
+#ifndef _TUTTLE_INTERNALGRAPH_HPP_
+#define _TUTTLE_INTERNALGRAPH_HPP_
 
 #include <iostream>
 #include <algorithm>
@@ -35,7 +35,7 @@ namespace tuttle{
 		namespace graph{
 
 template < typename VERTEX, typename EDGE >
-class Graph
+class InternalGraph
 {
 	public:
 
@@ -68,14 +68,48 @@ class Graph
 
 
 		// constructors etc.
-		Graph() : _count(0)
+		InternalGraph() : _count(0)
 		{}
 
-		Graph(const Graph& g){
+		InternalGraph(const InternalGraph& g)
+		{
 			*this = g; ///< using operator=
 		}
 
-		virtual ~Graph()
+		// operators
+		InternalGraph& operator=(const InternalGraph &g)
+		{
+			if (this == &g)
+				return *this;
+
+			// reset of existing data
+			BOOST_FOREACH(core::ProcessNode* p, _processNodes)
+				delete p;
+			_processNodes.clear();
+
+			// deep copy
+			boost::copy_graph(g._graph,_graph);
+			_count=g._count;
+			BOOST_FOREACH(core::ProcessNode* p, g._processNodes){
+				_processNodes.push_back(p->clone());
+			}
+
+			// relinking of processNode reference for each vertex
+			vertex_range_t vrange = getVertices();
+			for(vertex_iter it = vrange.first; it!=vrange.second;++it){
+				std::string processName = instance(*it).processNode()->getName();
+				BOOST_FOREACH(core::ProcessNode* p, _processNodes){
+					if(processName.compare(p->getName()) == 0){
+						instance(*it).setProcessNode(p);
+						break;
+					}
+				}
+			}
+
+			return *this;
+		}
+
+		virtual ~InternalGraph()
 		{
 			BOOST_FOREACH(core::ProcessNode* p, _processNodes)
 				delete p;
@@ -177,39 +211,6 @@ class Graph
 		int getVertexDegree(const VertexDescriptor& v) const
 		{
 			return out_degree(v, _graph);
-		}
-
-
-		// operators
-		Graph& operator=(const Graph &g)
-		{
-			if (this == &g) return *this;
-
-			// reset of existing data
-			BOOST_FOREACH(core::ProcessNode* p, _processNodes)
-				delete p;
-			_processNodes.clear();
-
-			// deep copy
-			boost::copy_graph(g._graph,_graph);
-			_count=g._count;
-			BOOST_FOREACH(core::ProcessNode* p, g._processNodes){
-				_processNodes.push_back(p->clone());
-			}
-
-			// relinking of processNode reference for each vertex
-			vertex_range_t vrange = getVertices();
-			for(vertex_iter it = vrange.first; it!=vrange.second;++it){
-				std::string processName = instance(*it).processNode()->name();
-				BOOST_FOREACH(core::ProcessNode* p, _processNodes){
-					if(processName.compare(p->name()) == 0){
-						instance(*it).setProcessNode(p);
-						break;
-					}
-				}
-			}
-
-			return *this;
 		}
 
 		bool has_cycle(){

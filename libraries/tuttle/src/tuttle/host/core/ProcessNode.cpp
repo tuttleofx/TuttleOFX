@@ -4,11 +4,7 @@ namespace tuttle{
 	namespace host{
 		namespace core{
 
-std::ostream& operator<<(std::ostream& os, const ProcessNode& v)
-{
-	os << v.name() ;
-	return os;
-}
+ProcessNode::~ProcessNode(){}
 
 } // namespace core
 } // namespace host

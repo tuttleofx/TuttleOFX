@@ -1,8 +1,34 @@
-#include <iostream>
+// custom host
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/math/rectOp.hpp>
 
-#include <tuttle/host/graph/Graph.hpp>
-#include <tuttle/host/graph/Edge.hpp>
-#include <tuttle/host/graph/Vertex.hpp>
+#include <tuttle/host/core/HostDescriptor.hpp>
+#include <tuttle/host/core/EffectInstance.hpp>
+#include <tuttle/host/core/ClipInstance.hpp>
+#include <tuttle/host/core/ParamInstance.hpp>
+#include <tuttle/host/core/HostDescriptor.hpp>
+#include <tuttle/host/core/Core.hpp>
+#include <tuttle/host/core/EffectInstance.hpp>
+
+// ofx
+#include "ofxCore.h"
+#include "ofxImageEffect.h"
+
+// ofx host
+#include "ofx/ofxhBinary.h"
+#include "ofx/ofxhPropertySuite.h"
+#include "ofx/ofxhClip.h"
+#include "ofx/ofxhParam.h"
+#include "ofx/ofxhMemory.h"
+#include "ofx/ofxhImageEffect.h"
+#include "ofx/ofxhPluginAPICache.h"
+#include "ofx/ofxhPluginCache.h"
+#include "ofx/ofxhHost.h"
+#include "ofx/ofxhImageEffectAPI.h"
+
+#include <tuttle/host/core/Graph.hpp>
+
+#include <iostream>
 
 #define BOOST_TEST_MODULE "graph_tests"
 #include <boost/test/unit_test.hpp>
@@ -16,19 +42,23 @@ BOOST_AUTO_TEST_CASE( add_one_vertex ) {
 	using namespace std;
 	using namespace tuttle::host;
 	
-	typedef graph::Graph<graph::Vertex, graph::Edge> graph_t;
-	typedef graph_t::VertexDescriptor vDescriptor_t;
-	
-	graph_t graph;
-	
-	core::ProcessNode plugin01("plugin01");
-	graph.addProcessNode(plugin01);
-		
-	graph::Vertex A( "nodeA" , graph._processNodes[0], "0");
-	vDescriptor_t ADesc = graph.addVertex(A);
+	core::Core::instance().getPluginCache().addDirectoryToPath( "/Users/ntisitho/dev/workspace/tuttle/TuttleOFX/dist/plugins" );
+	//core::Core::instance().getPluginCache().scanPluginFiles();
+	core::Core::instance().preload();
 
-	BOOST_CHECK_EQUAL(graph.getVertexCount(), 1);
-	BOOST_CHECK_EQUAL(graph.instance(ADesc).name(), string("nodeA"));
+    tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
+
+	core::Graph g;
+	//BOOST_CHECK_NO_THROW(
+	core::EffectInstance* pluginR = g.createNode( "fr.hd3d.tuttle.invert" );
+
+	//graph.addProcessNode(*pluginR);
+		
+//	graph::Vertex A( "nodeA" , graph._processNodes[0], "0");
+//	vDescriptor_t ADesc = graph.addVertex(A);
+
+//	BOOST_CHECK_EQUAL(graph.getVertexCount(), 1);
+//	BOOST_CHECK_EQUAL(graph.instance(ADesc).name(), string("nodeA"));
 
 }
 

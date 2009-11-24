@@ -12,10 +12,13 @@ project
     : requirements	<define>BOOST_TEST_MAIN
 					<threading>multi
     ;
-    
+
+use-project /tuttle 	: ../.. ;
+
 alias dependencies
     : 
 		/boost//unit_test_framework
+		/tuttle//tuttlehost/<link>static
     ; 
 
 run   main.cpp dependencies ;
