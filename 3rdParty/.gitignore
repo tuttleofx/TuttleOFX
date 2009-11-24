@@ -1,5 +1,5 @@
 *
 !/.gitignore
 !/README
+!/init.sh
 !/expat/Jamfile.v2
-
