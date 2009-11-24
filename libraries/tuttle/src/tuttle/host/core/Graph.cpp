@@ -21,7 +21,7 @@ EffectInstance* Graph::createNode( const std::string& id ) throw(std::logic_erro
 		throw std::logic_error( "Plugin not found. plugInst" );
 	EffectInstance* node = dynamic_cast<EffectInstance*>(plugInst);
 	if( !node )
-		throw std::logic_error( "Plugin not found. node dynamic_cast de merde" );
+		throw std::logic_error( "Plugin not found." );
 
 	std::stringstream s;
 	s << node->getName() << ++_instanceCount[node->getName()];
