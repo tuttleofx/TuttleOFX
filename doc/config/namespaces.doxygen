@@ -1,0 +1,27 @@
+
+/**
+ * @namespace tuttle
+ * @brief     global namespace of the project
+ */
+	/**
+	 * @namespace tuttle::host
+	 * @brief     Library for host
+	 */
+	/**
+	 * @namespace tuttle::host::ofx
+	 * @brief     OpenFX wrapping to communicate with C API
+	 */
+	/**
+	 * @namespace tuttle::host::core
+	 * @brief     All main class of the host
+	 */
+	/**
+	 * @namespace tuttle::host::graph
+	 * @brief     graph work
+	 */
+	/**
+	 * @namespace tuttle::plugins
+	 * @brief     Library for plugins
+	 */
+
+
