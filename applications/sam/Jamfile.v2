@@ -23,12 +23,15 @@ use-project /tuttlelib : ../../libraries/tuttle ;
 ###############################################################################
 alias headers : [ glob-tree *.hpp ] ;
 
+lib dl ;
+
 exe sam : 
     [ glob src/*.cpp ]
     /boost/system
     /boost/filesystem
     /tuttlelib//tuttlehost/<link>static
     /expat/<link>static
+    dl
     ;
 
 ###############################################################################
