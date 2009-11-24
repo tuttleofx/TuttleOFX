@@ -18,7 +18,7 @@ if ! [ type.registered PLUGIN ]
 ###############################################################################
 # Common dependencies
 ###############################################################################
-use-project /supportlib 	: ../libraries/openfxHack/Support ;
+use-project /supportlib : ../libraries/openfxHack/Support ;
 use-project /tuttlelib : ../libraries/tuttle ;
 
 ###############################################################################

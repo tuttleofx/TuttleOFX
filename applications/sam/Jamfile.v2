@@ -29,7 +29,7 @@ exe sam :
     [ glob src/*.cpp ]
     /boost/system
     /boost/filesystem
-    /tuttlelib/<link>static
+    /tuttlelib//tuttlehost/<link>static
     /expat/<link>static
     dl
     ;
@@ -39,10 +39,10 @@ exe sam :
 ###############################################################################
 install dist_src	
 	: sam
-            /boost/system
-            /boost/filesystem
+      /boost/system
+      /boost/filesystem
 	: <variant>debug:<location>$(DIST)/applications/sam/debug
-            <variant>release:<location>$(DIST)/dist/applications/sam/release
+      <variant>release:<location>$(DIST)/dist/applications/sam/release
 	;
 
 install dist_include

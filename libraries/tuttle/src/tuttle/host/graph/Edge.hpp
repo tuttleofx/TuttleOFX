@@ -3,6 +3,10 @@
 
 #include <string>
 
+namespace tuttle{
+	namespace host{
+		namespace graph{
+
 class Edge
 {
 	public:
@@ -17,6 +21,14 @@ class Edge
 		virtual ~Edge()
 		{}
 
+		// operators
+		Edge& operator=(const Edge &e)
+		{
+			if (this == &e) return *this;
+			_name = e.name();
+			return *this;
+		}
+
 		const std::string& name() const	{ return _name; }
 		void setName(const std::string s) { _name = s; }
 
@@ -26,6 +38,9 @@ class Edge
 		std::string _name;
 };
 
+} // namespace graph
+} // namespace host
+} // namespace tuttle
 
 #endif
 

@@ -10,12 +10,12 @@ project
     : requirements	
         <include>lib
         <threading>multi 
-        <define>COMPILED_FROM_DSP
+        <os>NT:<define>COMPILED_FROM_DSP
+        <os>MACOSX:<define>HAVE_BCOPY
         <define>XML_STATIC
         <link>static
     : usage-requirements
         <include>lib
-        <define>XML_STATIC
     : build-dir $(DIST)/lib/expat
     ;
 
