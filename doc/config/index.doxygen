@@ -1,0 +1,60 @@
+/** @mainpage TuttleOfx
+ *
+ * @section intro Introduction
+ *
+ * Presentation TODO
+ *
+ * 
+ * @section indetails In details
+ *  - @subpage installation
+ *  - @subpage utilisation
+ *  - @subpage codingrules
+ *  - @subpage history
+ *
+ *
+ * @section developpers Developpers
+ *       - Eloi Du Bois
+ *       - Nicolas Rondaud
+ *       - Guillaume Chatelet
+ *       - Fabien Castan
+ *       - Alexandre Parent
+ */
+
+
+/** @page installation Installation
+ *
+ * 
+ * @section install_linux Installation on Linux
+ *
+ * - prerequis
+ *   You need to install :
+ *     - boost (>1.40)
+ *       - bjam (>x.x)
+ *
+ *
+ * @section install_doc Doxygen documentation installation
+ * ./doc/html/index.html
+ */
+
+
+/** @page utilisation Utilisation
+ * 
+ * You need to define an environment variable OFX_PLUGIN_PATH to found OpenFX plugins.
+ * 
+ * Compiled files are in the directory "dist"
+ *
+ */
+
+/** @page codingrules Coding rules
+ * 
+ * Uncrustify ( http://uncrustify.sourceforge.net/ ) is used to standardize code format. Please use the uncrustify script at project root.
+ * @code
+ * ./uncrustify.sh
+ * @endcode
+ */
+
+/** @page history history
+ * - november 2009 : begining of project
+ *
+ */
+

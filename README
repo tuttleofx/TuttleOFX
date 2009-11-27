@@ -1,6 +1,15 @@
 
 TuttleOFX version 1.0.0
 
+Get Ready
+=========
+
+Executing 3rdParty/init.sh script will bring all needed libraries, compile BJam and generate a bjam.sh script in this directory.
+bjam.sh can then be used to build TuttleOFX library :
+./bjam.sh /tuttle
+and command line tool
+./bjam.sh /sam
+
 Tested compilers
 
      * Linux:

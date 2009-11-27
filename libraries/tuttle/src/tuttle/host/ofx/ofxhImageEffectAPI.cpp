@@ -245,9 +245,7 @@ namespace imageEffect {
       }
 
       imageEffect::Instance* ImageEffectPlugin::createInstance(const std::string &context, void *clientData)
-      {          
-
-
+      {
         /// todo - we need to make sure action:load is called, then action:describe again
         /// (not because we are expecting the results to change, but because plugin
         /// might get confused otherwise), then a describe_in_context
@@ -262,12 +260,15 @@ namespace imageEffect {
 
             tuttle::host::ofx::imageEffect::Instance *instance =
                     core::Core::instance().getHost().newInstance(clientData, this, *desc, context);
-            if (instance)
-                instance->populate();
-
+            if (instance == NULL)
+            {
+                COUT( "newInstance failed." );
+            	return NULL;
+            }
+            instance->populate();
             return instance;
         }
-
+        COUT( "no pluginHandle." );
         return NULL;
       }
 

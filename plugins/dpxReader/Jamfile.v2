@@ -29,7 +29,7 @@ use-project /png 	: ../../3rdParty/libpng ;
 ###############################################################################
 plugin dpxReader : 
         [ glob src/*.cpp ]
-        /tuttlelib/<link>static
+        /tuttlelib//tuttleplugin/<link>static
         /png
         /supportlib
         /dpx

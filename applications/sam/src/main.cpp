@@ -1,13 +1,13 @@
 // custom host
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/common/math/RectOp.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/math/rectOp.hpp>
 
-
-#include "core/HostDescriptor.hpp"
-#include "core/EffectInstance.hpp"
-#include "core/ClipInstance.hpp"
-#include "core/ParamInstance.hpp"
-
+#include <tuttle/host/core/HostDescriptor.hpp>
+#include <tuttle/host/core/EffectInstance.hpp>
+#include <tuttle/host/core/ClipInstance.hpp>
+#include <tuttle/host/core/ParamInstance.hpp>
+#include <tuttle/host/core/HostDescriptor.hpp>
+#include <tuttle/host/core/Core.hpp>
 
 // ofx
 #include "ofxCore.h"
@@ -48,43 +48,14 @@ int main( int argc, char **argv )
         //std::string _components = kOfxImageComponentRGBA;
         const int numFramesToRender = SOFXCLIPLENGTH;
 
-#ifdef WINDOWS
-        #ifndef __GNUC__
-            _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-        #endif
-#endif
-        // set the version label in the global cache
-        tuttle::host::ofx::PluginCache::getPluginCache( )->setCacheVersion( "tuttleV1" );
-
-        // create our derived image effect host which provides
-        // a factory to make plugin instances and acts
-        // as a description of the host application
-        tuttle::host::core::Host myHost;
-
-        // make an image effect plugin cache. This is what knows about
-        // all the plugins.
-        tuttle::host::ofx::imageEffect::ImageEffectPluginCache imageEffectPluginCache( myHost );
-
-        // register the image effect cache with the global plugin cache
-		tuttle::host::ofx::PluginCache::getPluginCache( )->registerAPICache( imageEffectPluginCache );
-
-        // try to read an old cache
-        std::ifstream ifs( "tuttlePluginCache.xml" );
-        tuttle::host::ofx::PluginCache::getPluginCache( )->readCache( ifs );
-        tuttle::host::ofx::PluginCache::getPluginCache( )->scanPluginFiles( );
-        ifs.close( );
-
-        /// flush out the current cache
-        std::ofstream of( "tuttlePluginCache.xml" );
-        tuttle::host::ofx::PluginCache::getPluginCache( )->writePluginCache( of );
-        of.close( );
+        tuttle::host::core::Core::instance().preload();
 
         // get some plugins examples
-        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.dpxreader" );
-        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.invert" );
-        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = imageEffectPluginCache.getPluginById( "fr.hd3d.tuttle.pngwriter" );
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngreader" );
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
 
-        imageEffectPluginCache.dumpToStdOut( );
+        tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 
         if( pluginR && pluginI && pluginW )
         {
@@ -131,7 +102,7 @@ int main( int argc, char **argv )
                 tuttle::host::core::StringInstance *dstFileParam = dynamic_cast<tuttle::host::core::StringInstance*> ( vPluginsInst[2]->getParams( )["Output filename"] );
                 if( srcFileParam && dstFileParam )
                 {
-                    srcFileParam->set( "input.dpx" );
+                    srcFileParam->set( "input.png" );
                     dstFileParam->set( "output.png" );
                     vPluginsInst[0]->paramInstanceChangedAction( srcFileParam->getName( ), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
                     vPluginsInst[2]->paramInstanceChangedAction( dstFileParam->getName( ), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
@@ -219,7 +190,6 @@ int main( int argc, char **argv )
             COUT( "Plugin loading error" );
         }
 
-        tuttle::host::ofx::PluginCache::clearPluginCache( );
     } catch( std::exception e )
     {
         std::cout << "Exception : main de tuttle..." << std::endl;

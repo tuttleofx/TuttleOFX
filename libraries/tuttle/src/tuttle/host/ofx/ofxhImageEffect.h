@@ -135,6 +135,12 @@ namespace tuttle {
         const std::string &getLabel() const;
 
         /// name of the clip
+        const std::string &getName() const;
+
+		/// name of the clip
+		void setName( const std::string& name );
+
+        /// name of the clip
         const std::string &getLongLabel() const;
 
         /// is the given context supported
@@ -254,10 +260,11 @@ namespace tuttle {
                        private Property::GetHook
       {
       protected:
-        tuttle::host::ofx::imageEffect::ImageEffectPlugin    *_plugin;
+        tuttle::host::ofx::imageEffect::ImageEffectPlugin *_plugin;
         std::string                                   _context;
         Descriptor                                   *_descriptor;
-        std::map<std::string, attribute::ClipImageInstance*>          _clips;
+		/// @todo move in a attribute::ClipInstanceSet ?
+        std::map<std::string, attribute::ClipImageInstance*> _clips;
         bool                                          _interactive;
         bool                                          _created;
         bool                                          _clipPrefsDirty; ///< do we need to re-run the clip prefs action
@@ -275,6 +282,19 @@ namespace tuttle {
                  bool               interactive);
 
         virtual ~Instance();
+
+		bool operator==( const Instance& );
+
+
+		inline const std::map<std::string, attribute::ClipImageInstance*>& getClipList( ) const
+		{
+			return _clips;
+		}
+
+		inline std::map<std::string, attribute::ClipImageInstance*>& getClipList( )
+		{
+			return _clips;
+		}
 
         /// implemented for Param::SetInstance
         virtual Property::Set &getParamSetProps();

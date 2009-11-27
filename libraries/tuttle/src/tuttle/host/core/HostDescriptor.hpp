@@ -85,9 +85,6 @@ namespace core {
 
   };
 
-  // my ofx host object
-  extern Host gOfxHost;
-
 }
 }
 }

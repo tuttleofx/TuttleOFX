@@ -106,10 +106,10 @@ namespace imageEffect {
 				const std::string &s = _properties.getStringProperty( kOfxPropShortLabel );
 				if( s == "" )
 				{
-					const std::string &s2 = _properties.getStringProperty( kOfxPropLabel );
+					const std::string &s2 = getLabel();
 					if( s2 == "" )
 					{
-						return _properties.getStringProperty( kOfxPropName );
+						return getName();
 					}
 				}
 				return s;
@@ -122,9 +122,21 @@ namespace imageEffect {
 				const std::string &s = _properties.getStringProperty( kOfxPropLabel );
 				if( s == "" )
 				{
-					return _properties.getStringProperty( kOfxPropName );
+					return getName();
 				}
 				return s;
+			}
+
+			/// name of the clip
+			const std::string &Base::getName( ) const
+			{
+				return _properties.getStringProperty( kOfxPropName );
+			}
+
+			/// name of the clip
+			void Base::setName( const std::string& name )
+			{
+				_properties.setStringProperty( kOfxPropName, name );
 			}
 
 			/// name of the clip
@@ -134,10 +146,10 @@ namespace imageEffect {
 				const std::string &s = _properties.getStringProperty( kOfxPropLongLabel );
 				if( s == "" )
 				{
-					const std::string &s2 = _properties.getStringProperty( kOfxPropLabel );
+					const std::string &s2 = getLabel();
 					if( s2 == "" )
 					{
-						return _properties.getStringProperty( kOfxPropName );
+						return getName();
 					}
 				}
 				return s;
@@ -385,6 +397,28 @@ namespace imageEffect {
 					}
 					++i;
 				}
+			}
+
+			// where is the good class to do that in std ?
+			template <typename T>
+			struct equals_ptrContent : public std::binary_function<T*,T*,bool>
+			{
+				bool operator()( const T* const a,  const T* const b )
+				{
+					return *a == *b;
+				}
+			};
+			/**
+			 * @todo check clip ? check hash ? etc.
+			 */
+			bool Instance::operator==( const Instance& other )
+			{
+				bool result;
+				result = std::equal( getParamList().begin(), getParamList().end(), other.getParamList().begin(), equals_ptrContent<ofx::attribute::ParamInstance>() );
+//				if( !result )
+//					return result;
+//				result = std::equal( getClipList().begin(), getClipList().end(), other.getClipList().begin() );
+				return result;
 			}
 
 			/// implemented for Param::SetDescriptor

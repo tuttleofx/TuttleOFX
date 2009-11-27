@@ -152,13 +152,25 @@ namespace attribute {
         /// dtor.
         virtual ~ParamInstanceSet();
 
-        /// get the params
-        inline const std::map<std::string, ParamInstance*> &getParams() const;
-        inline std::map<std::string, ParamInstance*> &getParams();
+		const std::map<std::string, ParamInstance*>& getParams( ) const
+		{
+			return _params;
+		}
 
-        /// get the params
-        inline const std::list<ParamInstance*> &getParamList() const;
-        inline std::list<ParamInstance*> &getParamList();
+		std::map<std::string, ParamInstance*>& getParams( )
+		{
+			return _params;
+		}
+
+		const std::list<ParamInstance*>& getParamList( ) const
+		{
+			return _paramList;
+		}
+
+		std::list<ParamInstance*>& getParamList( )
+		{
+			return _paramList;
+		}
 
         // get the param
         ParamInstance* getParam(std::string name) {
@@ -234,6 +246,11 @@ namespace attribute {
         /// make a parameter, with the given type and name
         explicit ParamInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance );
 
+		/**
+		 * @todo check values...
+		 */
+		bool operator==(const ParamInstance& p) const { return true; }
+		
         /// grab a handle on the parameter for passing to the C API
         OfxParamHandle getParamHandle( ) const
         {
