@@ -1,12 +1,14 @@
 /**
- * @file InvertPluginFactory.cpp
- * @brief   Multithreaded image inverter
- * @author  Eloi Du Bois
- * @date    01/10/09 12:01
+ * @file %CLASSNAME%PluginFactory.cpp
+ * @brief
+ * @author
+ * @date    %DATE%
  *
  */
 
-#include "InvertPlugin.hpp"
+#include "%CLASSNAME%Plugin.hpp"
+#include "%CLASSNAME%Definitions.hpp"
+
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -20,14 +22,14 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace tuttle {
+namespace %NAMESPACE% {
 namespace plugin {
-namespace invert {
 
-static const bool   kSupportTiles   = true;
+static const bool   kSupportTiles                 = false;
+static const bool   kSupportTemporalClipAccess    = false;
 
 
-mDeclarePluginFactory(InvertPluginFactory, {}, {});
+mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -35,30 +37,30 @@ mDeclarePluginFactory(InvertPluginFactory, {}, {});
  */
 using namespace OFX;
 void
-InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+%CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     // basic labels
-    desc.setLabels("Invert", "Invert",
-                   "Image inverter");
-    desc.setPluginGrouping("project");
+    desc.setLabels( "%PLUGIN_LABEL%", "%PLUGIN_LABEL%",
+                    "%PLUGIN_LONG_LABEL%" );
+    desc.setPluginGrouping( "%PLUGIN_GROUP%" );
 
     // add the supported contexts, only filter at the moment
-    desc.addSupportedContext(eContextGeneral);
-    desc.addSupportedContext(eContextFilter);
+//    desc.addSupportedContext(eContextGenerator);
+    desc.addSupportedContext( eContextGeneral );
 
     // add supported pixel depths
-    desc.addSupportedBitDepth(eBitDepthUByte);
-    desc.addSupportedBitDepth(eBitDepthUShort);
-    desc.addSupportedBitDepth(eBitDepthFloat);
+    desc.addSupportedBitDepth( eBitDepthUByte );
+    desc.addSupportedBitDepth( eBitDepthUShort );
+    desc.addSupportedBitDepth( eBitDepthFloat );
 
     // set a few flags
-    desc.setSingleInstance(false);
-    desc.setHostFrameThreading(false);
-    desc.setSupportsMultiResolution(false);
-    desc.setSupportsTiles(kSupportTiles);
-    desc.setTemporalClipAccess(false);
-    desc.setRenderTwiceAlways(false);
-    desc.setSupportsMultipleClipPARs(false);
+    desc.setSingleInstance( false );
+    desc.setHostFrameThreading( false );
+    desc.setSupportsMultiResolution( false );
+    desc.setSupportsTiles( kSupportTiles );
+    desc.setTemporalClipAccess( kSupportTemporalClipAccess );
+    desc.setRenderTwiceAlways( false );
+    desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -67,8 +69,8 @@ InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in]        context    Application context
  */
 void
-InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
-                                          OFX::ContextEnum context)
+%CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
+                                             OFX::ContextEnum context )
 {
     OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( ePixelComponentRGBA );
@@ -81,7 +83,7 @@ InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
     dstClip->addSupportedComponent( ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
-    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( "Help" );
+    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( k%CLASSNAME%HelpButton );
     helpButton->setScriptName( "&Help" );
 }
 
@@ -91,22 +93,23 @@ InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context )
+OFX::ImageEffect*
+%CLASSNAME%PluginFactory::createInstance(OfxImageEffectHandle handle,
+                                            OFX::ContextEnum context)
 {
-    return new InvertPlugin( handle );
+    return new %CLASSNAME%Plugin(handle);
 }
 
 }
 }
-}
 
-namespace OFX
+namespace OFX 
 {
     namespace Plugin 
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::plugin::invert::InvertPluginFactory p("fr.hd3d.tuttle.invert", 1, 0);
+            static %NAMESPACE%::plugin::%CLASSNAME%PluginFactory p("fr.%COMPANY_NAME%.%PROJECT_NAME%.%L_CLASSNAME%", 1, 0);
             ids.push_back(&p);
         }
     }

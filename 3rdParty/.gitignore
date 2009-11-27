@@ -2,4 +2,6 @@
 !/.gitignore
 !/README
 !/expat/Jamfile.v2
+!/libpng/Jamfile.v2
+!/zlib/Jamfile.v2
 

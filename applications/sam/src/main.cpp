@@ -26,7 +26,8 @@
 #include "ofx/ofxhImageEffectAPI.h"
 
 #include <boost/shared_ptr.hpp>
-
+#include <boost/gil/gil_all.hpp>
+#include <boost/cstdint.hpp>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -36,7 +37,8 @@
 #include <boost/filesystem.hpp>
 
 using namespace boost::filesystem;
-
+using namespace boost::gil;
+using namespace boost;
 int main( int argc, char **argv )
 {
     try

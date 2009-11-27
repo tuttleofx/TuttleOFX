@@ -89,7 +89,6 @@ struct color_clamper_converter {
     }
 };
 
-//views_get_ccv_type
 template <typename DstP, typename S_VIEW> inline
 typename color_converted_view_type<S_VIEW, DstP, color_clamper_converter>::type clamp( const S_VIEW& sView )
 {

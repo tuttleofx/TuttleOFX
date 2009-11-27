@@ -1,15 +1,16 @@
 /**
- * @file InvertPluginFactory.cpp
- * @brief   Multithreaded image inverter
- * @author  Eloi Du Bois
+ * @file LutPluginFactory.cpp
+ * @brief
+ * @author
  * @date    01/10/09 12:01
  *
  */
 
-#include "InvertPlugin.hpp"
-#include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include "LutPlugin.hpp"
+#include "tuttle/plugin/ImageGilProcessor.hpp"
+#include "tuttle/plugin/Progress.hpp"
+#include "tuttle/plugin/PluginException.hpp"
+#include "LutDefinitions.hpp"
 
 #include <string>
 #include <iostream>
@@ -22,12 +23,11 @@
 
 namespace tuttle {
 namespace plugin {
-namespace invert {
+namespace lut {
 
-static const bool   kSupportTiles   = true;
+static const bool kSupportTiles = false;
 
-
-mDeclarePluginFactory(InvertPluginFactory, {}, {});
+mDeclarePluginFactory(LutPluginFactory, {}, {});
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -35,12 +35,11 @@ mDeclarePluginFactory(InvertPluginFactory, {}, {});
  */
 using namespace OFX;
 void
-InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+LutPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
     // basic labels
-    desc.setLabels("Invert", "Invert",
-                   "Image inverter");
-    desc.setPluginGrouping("project");
+    desc.setLabels("Lut", "Lut", "Image Luter");
+    desc.setPluginGrouping("tuttle");
 
     // add the supported contexts, only filter at the moment
     desc.addSupportedContext(eContextGeneral);
@@ -67,8 +66,7 @@ InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in]        context    Application context
  */
 void
-InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
-                                          OFX::ContextEnum context)
+LutPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc, OFX::ContextEnum context)
 {
     OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( ePixelComponentRGBA );
@@ -81,6 +79,12 @@ InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
     dstClip->addSupportedComponent( ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
+    // Controls
+    StringParamDescriptor *filename = desc.defineStringParam( kInputFilename );
+    filename->setScriptName( "filename" );
+    filename->setStringType( eStringTypeFilePath );
+    filename->setCacheInvalidation( eCacheInvalidateValueAll );
+
     OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( "Help" );
     helpButton->setScriptName( "&Help" );
 }
@@ -91,22 +95,22 @@ InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context )
+OFX::ImageEffect* LutPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context )
 {
-    return new InvertPlugin( handle );
+    return new LutPlugin( handle );
 }
 
 }
 }
 }
 
-namespace OFX
+namespace OFX 
 {
     namespace Plugin 
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::plugin::invert::InvertPluginFactory p("fr.hd3d.tuttle.invert", 1, 0);
+            static tuttle::plugin::lut::LutPluginFactory p("fr.hd3d.tuttle.lut", 1, 0);
             ids.push_back(&p);
         }
     }
