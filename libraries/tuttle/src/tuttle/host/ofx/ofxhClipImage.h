@@ -36,13 +36,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhUtilities.h"
 #include "ofxhPropertySuite.h"
 
-namespace tuttle {
+#include <vector>
+#include <map>
+#include <stdexcept>
 
+namespace tuttle {
 namespace host {
 namespace ofx {
 
 namespace imageEffect {
 class Instance;
+class Descriptor;
 }
 namespace attribute {
 
@@ -55,9 +59,9 @@ class ClipImageAccessor : virtual public attribute::ClipAccessor
 {
 public:
 	/// @brief base ctor, for a descriptor
-	ClipImageAccessor();
+	ClipImageAccessor( );
 
-	virtual ~ClipImageAccessor( )=0;
+	virtual ~ClipImageAccessor( ) = 0;
 
 	/// @return a std::vector of supported comp
 	const std::vector<std::string> &getSupportedComponents( ) const;
@@ -76,9 +80,9 @@ public:
 
 	/// @brief is the clip a nominal 'mask' clip
 	bool supportsTiles( ) const;
-	
-    /// get a handle on the clip descriptor/instance for the C api
-    virtual OfxImageClipHandle getOfxImageClipHandle( ) const = 0;
+
+	/// get a handle on the clip descriptor/instance for the C api
+	virtual OfxImageClipHandle getOfxImageClipHandle( ) const = 0;
 
 };
 
@@ -86,17 +90,19 @@ public:
  * a clip image descriptor
  */
 class ClipImageDescriptor : virtual public ClipImageAccessor
-                             , public attribute::ClipDescriptor
+, public attribute::ClipDescriptor
 {
 public:
 	/// constructor
 	ClipImageDescriptor( const std::string& name );
-	virtual ~ClipImageDescriptor(){}
+
+	virtual ~ClipImageDescriptor( ) { }
+
 	/** get a handle on the clip descriptor for the C api
 	 */
 	OfxImageClipHandle getOfxImageClipHandle( ) const
 	{
-		return (OfxImageClipHandle )this;
+		return(OfxImageClipHandle )this;
 	}
 };
 
@@ -104,21 +110,22 @@ public:
  * a clip image instance
  */
 class ClipImageInstance : virtual public ClipImageAccessor
-                          , public attribute::ClipInstance
+, public attribute::ClipInstance
 {
 protected:
-	imageEffect::Instance* _effectInstance; ///< image effect instance
+	imageEffect::Instance& _effectInstance; ///< image effect instance
 
 public:
-	ClipImageInstance( imageEffect::Instance* effectInstance, const attribute::ClipImageDescriptor& desc );
-	virtual ~ClipImageInstance(){}
+	ClipImageInstance( imageEffect::Instance& effectInstance, const attribute::ClipImageDescriptor& desc );
+
+	virtual ~ClipImageInstance( ) { }
 
 	/**
 	 * get a handle on the clip descriptor for the C api
 	 */
 	OfxImageClipHandle getOfxImageClipHandle( ) const
 	{
-		return (OfxImageClipHandle )this;
+		return(OfxImageClipHandle )this;
 	}
 
 	/// instance changed action
@@ -136,7 +143,7 @@ public:
 	 */
 	const std::string &getPixelDepth( ) const
 	{
-		return getProperties().getStringProperty(kOfxImageEffectPropPixelDepth);
+		return getProperties( ).getStringProperty( kOfxImageEffectPropPixelDepth );
 	}
 
 	/** set the current pixel depth
@@ -144,7 +151,7 @@ public:
 	 */
 	void setPixelDepth( const std::string &s )
 	{
-		getEditableProperties().setStringProperty( kOfxImageEffectPropPixelDepth, s );
+		getEditableProperties( ).setStringProperty( kOfxImageEffectPropPixelDepth, s );
 	}
 
 	/** Pixel Aspect Ratio
@@ -152,7 +159,7 @@ public:
 	 */
 	const double getPixelAspectRatio( ) const
 	{
-		return getProperties().getDoubleProperty(kOfxImagePropPixelAspectRatio);
+		return getProperties( ).getDoubleProperty( kOfxImagePropPixelAspectRatio );
 	}
 
 	/**
@@ -161,7 +168,7 @@ public:
 	 */
 	void setPixelAspectRatio( const double &s )
 	{
-		getEditableProperties().setDoubleProperty( kOfxImagePropPixelAspectRatio, s );
+		getEditableProperties( ).setDoubleProperty( kOfxImagePropPixelAspectRatio, s );
 	}
 
 	/** Components that can be fetched from this clip -
@@ -173,7 +180,7 @@ public:
 	 */
 	const std::string &getComponents( ) const
 	{
-		return getProperties().getStringProperty(kOfxImageEffectPropComponents);
+		return getProperties( ).getStringProperty( kOfxImageEffectPropComponents );
 	}
 
 	/**
@@ -182,7 +189,7 @@ public:
 	 */
 	void setComponents( const std::string &s )
 	{
-		getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, s );
+		getEditableProperties( ).setStringProperty( kOfxImageEffectPropComponents, s );
 	}
 
 	/** Get the Raw Unmapped Pixel Depth from the host for chromatic planes
@@ -275,9 +282,111 @@ public:
 	virtual const std::string &findSupportedComp( const std::string &s ) const;
 };
 
+class ClipImageInstanceSet //: public ClipAccessorSet
+{
+protected:
+	std::map<std::string, ClipImageInstance*> _clips; ///< clips by name
+	std::vector<ClipImageInstance *> _clipsByOrder; ///< clips list
+	bool _clipPrefsDirty; ///< do we need to re-run the clip prefs action
+
+public:
+	/// ctor
+	///
+	/// The propery set being passed in belongs to the owning
+	/// plugin instance.
+	explicit ClipImageInstanceSet( );
+
+	/// dtor.
+	virtual ~ClipImageInstanceSet( );
+
+	void populateClips( const imageEffect::Descriptor& descriptor ) throw(std::logic_error);
+
+	const std::map<std::string, ClipImageInstance*>& getClips( ) const
+	{
+		return _clips;
+	}
+
+	std::map<std::string, ClipImageInstance*>& getClips( )
+	{
+		return _clips;
+	}
+
+	const std::vector<ClipImageInstance*>& getClipsByOrder( ) const
+	{
+		return _clipsByOrder;
+	}
+
+	std::vector<ClipImageInstance*>& getClipsByOrder( )
+	{
+		return _clipsByOrder;
+	}
+
+	/**
+	 * get the clip
+	 */
+	ClipImageInstance* getClip( std::string name )
+	{
+		std::map<std::string, ClipImageInstance*>::iterator it = _clips.find( name );
+		if( it != _clips.end( ) )
+			return it->second;
+		else
+			return 0;
+	}
+
+	/**
+	 * add a clip
+	 */
+	OfxStatus addClip( const std::string& name, ClipImageInstance* instance )
+	{
+		if( _clips.find( name ) == _clips.end( ) )
+		{
+			_clips[name] = instance;
+			_clipsByOrder.push_back( instance );
+		}
+		else
+			return kOfxStatErrExists;
+
+		return kOfxStatOK;
+	}
+
+	/**
+	 * make a clip instance
+	 * 
+	 * Client host code needs to implement this
+	 */
+	virtual ClipImageInstance* newClipImage( ClipImageDescriptor& descriptor ) = 0;
+
+	/**
+	 * get the nth clip, in order of declaration
+	 */
+	ClipImageInstance* getNthClip( int index )
+	{
+		return _clipsByOrder[index];
+	}
+
+	/**
+	 * get the nth clip, in order of declaration
+	 */
+	int getNClips( ) const
+	{
+		return int(_clips.size( ) );
+	}
+
+	/**
+	 * are the clip preferences currently dirty
+	 */
+	bool areClipPrefsDirty( ) const
+	{
+		return _clipPrefsDirty;
+	}
+
+};
+
+
+
 }
 }
 }
 }
 
-#endif // OFX_CLIP_H
+#endif

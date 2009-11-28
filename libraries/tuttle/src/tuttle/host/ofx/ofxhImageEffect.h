@@ -27,8 +27,10 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef OFX_IMAGE_EFFECT_H
-#define OFX_IMAGE_EFFECT_H
+#ifndef _TUTTLE_HOST_OFX_IMAGEEFFECT_HPP_
+#define _TUTTLE_HOST_OFX_IMAGEEFFECT_HPP_
+
+#include <tuttle/host/core/Exception.hpp>
 
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
@@ -213,8 +215,11 @@ namespace tuttle {
         /// dtor
         virtual ~Descriptor();
 
-        /// implemented for Param::SetDescriptor
-        virtual Property::Set &getParamSetProps();
+        /// implemented for ParamDescriptorSet
+		Property::Set& getParamSetProps( )
+		{
+			return _properties;
+		}
 
         /// get the plugin I belong to
         Plugin *getPlugin() const {return _plugin;}
@@ -223,13 +228,22 @@ namespace tuttle {
         virtual attribute::ClipImageDescriptor *defineClip(const std::string &name);
 
         /// get the clips
-        const std::map<std::string, attribute::ClipImageDescriptor*> &getClips() const;
+		const std::map<std::string, attribute::ClipImageDescriptor*>& getClips( ) const
+		{
+			return _clips;
+		}
+
 
         /// add a new clip
         void addClip(const std::string &name, attribute::ClipImageDescriptor *clip);
 
         /// get the clips in order of construction
-        const std::vector<attribute::ClipImageDescriptor*> &getClipsByOrder()
+        const std::vector<attribute::ClipImageDescriptor*>& getClipsByOrder() const
+        {
+          return _clipsByOrder;
+        }
+        /// get the clips in order of construction
+        std::vector<attribute::ClipImageDescriptor*>& getClipsByOrder()
         {
           return _clipsByOrder;
         }
@@ -248,25 +262,23 @@ namespace tuttle {
       /// Client code needs to filling the pure virtuals in this.
       class Instance : public Base,
                        public attribute::ParamInstanceSet,
+                       public attribute::ClipImageInstanceSet,
                        public Progress::ProgressI,
                        public TimeLine::TimeLineI,
                        private Property::NotifyHook, 
                        private Property::GetHook
       {
       protected:
-        tuttle::host::ofx::imageEffect::ImageEffectPlugin *_plugin;
-        std::string                                   _context;
-        Descriptor                                   *_descriptor;
-		/// @todo move in a attribute::ClipInstanceSet ?
-        std::map<std::string, attribute::ClipImageInstance*> _clips;
-        bool                                          _interactive;
-        bool                                          _created;
-        bool                                          _clipPrefsDirty; ///< do we need to re-run the clip prefs action
-        bool                                          _continuousSamples; ///< set by clip prefs
-        bool                                          _frameVarying; ///< set by clip prefs
-        std::string                                   _outputPreMultiplication;  ///< set by clip prefs
-        std::string                                   _outputFielding;  ///< set by clip prefs
-        double                                        _outputFrameRate; ///< set by clip prefs
+        ImageEffectPlugin* _plugin;
+        std::string _context;
+        Descriptor* _descriptor;
+        bool _interactive;
+        bool _created;
+        bool _continuousSamples; ///< set by clip prefs
+        bool _frameVarying; ///< set by clip prefs
+        std::string _outputPreMultiplication;  ///< set by clip prefs
+        std::string _outputFielding;  ///< set by clip prefs
+        double _outputFrameRate; ///< set by clip prefs
 
       public:        
         /// constructor based on clip descriptor
@@ -275,20 +287,16 @@ namespace tuttle {
                  const std::string  &context,
                  bool               interactive);
 
+        /// called after construction to populate the various members
+        /// ideally should be called in the ctor, but it relies on
+        /// virtuals so has to be delayed until after the effect is
+        /// constructed
+        OfxStatus populate();
+        void populateParams( const imageEffect::Descriptor& descriptor ) throw(core::Exception);
+
         virtual ~Instance();
 
 		bool operator==( const Instance& );
-
-
-		inline const std::map<std::string, attribute::ClipImageInstance*>& getClipList( ) const
-		{
-			return _clips;
-		}
-
-		inline std::map<std::string, attribute::ClipImageInstance*>& getClipList( )
-		{
-			return _clips;
-		}
 
         /// implemented for Param::SetInstance
         virtual Property::Set &getParamSetProps();
@@ -321,25 +329,6 @@ namespace tuttle {
         /// get the output frame rate, as set in the clip prefences action.
         double getOutputFrameRate() const {return _outputFrameRate;}
 
-
-        /// called after construction to populate the various members
-        /// ideally should be called in the ctor, but it relies on 
-        /// virtuals so has to be delayed until after the effect is
-        /// constructed
-        OfxStatus populate();
-
-        /// get the nth clip, in order of declaration
-        attribute::ClipImageInstance* getNthClip(int index);
-
-        /// get the nth clip, in order of declaration
-        int getNClips() const
-        {
-          return int(_clips.size());
-        }
-
-        /// are the clip preferences currently dirty
-        bool areClipPrefsDirty() const {return _clipPrefsDirty;}
-
         /// are all the non optional clips connected
         bool checkClipConnectionStatus() const;
 
@@ -351,9 +340,6 @@ namespace tuttle {
         /// params and input images are exactly the same. eg: random noise generator
         bool isFrameVarying() const {return _frameVarying;}
 
-        /// pure virtuals that must  be overriden
-        virtual attribute::ClipImageInstance* getClip(const std::string& name);
-
         /// override this to make processing abort, return 1 to abort processing
         virtual int abort();
 
@@ -364,9 +350,7 @@ namespace tuttle {
         Memory::Instance* imageMemoryAlloc(size_t nBytes);
 
         /// make a clip
-        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipInstance(imageEffect::Instance* plugin,
-                                              tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor,
-                                              int index) = 0;
+//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;
 
         virtual OfxStatus vmessage(const char* type,
                                    const char* id,

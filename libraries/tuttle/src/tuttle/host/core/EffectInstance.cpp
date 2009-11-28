@@ -62,9 +62,9 @@ namespace core {
                                      const std::string& context)
                                      : tuttle::host::ofx::imageEffect::Instance(plugin,desc,context,false)
     {
+		populate();
     }
 
-    // class member function implementation
     void EffectInstance::dumpToStdOut()
     {
         std::cout << "________________________________________________________________________________" << std::endl;
@@ -86,11 +86,9 @@ namespace core {
     }
 
     // get a new clip instance
-    tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipInstance(tuttle::host::ofx::imageEffect::Instance* plugin,
-                                                                          tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor,
-                                                                          int index)
+    tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor )
     {
-        return new ClipImgInstance(this,descriptor);
+        return new ClipImgInstance(*this,descriptor);
     }
 
     /// get default output fielding. This is passed into the clip prefs action
@@ -178,34 +176,35 @@ namespace core {
     }
 
     // make a parameter instance
-    tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam(const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet * setInstance)
+    tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::host::ofx::attribute::ParamDescriptor& descriptor )
     {
+		std::string name = descriptor.getName();
         if(descriptor.getParamType()==kOfxParamTypeString)
-          return new StringInstance(this, name, descriptor, *setInstance);
+          return new StringInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeInteger)
-          return new IntegerInstance(this, name, descriptor, *setInstance);
+          return new IntegerInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeDouble)
-          return new DoubleInstance(this, name, descriptor, *setInstance);
+          return new DoubleInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeBoolean)
-          return new BooleanInstance(this, name, descriptor, *setInstance);
+          return new BooleanInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeChoice)
-          return new ChoiceInstance(this, name, descriptor, *setInstance);
+          return new ChoiceInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeRGBA)
-          return new RGBAInstance(this, name, descriptor, *setInstance);
+          return new RGBAInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeRGB)
-          return new RGBInstance(this, name, descriptor, *setInstance);
+          return new RGBInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeDouble2D)
-          return new Double2DInstance(this, name, descriptor, *setInstance);
+          return new Double2DInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeInteger2D)
-          return new Integer2DInstance(this, name, descriptor, *setInstance);
+          return new Integer2DInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypePushButton)
-          return new PushbuttonInstance(this, name, descriptor, *setInstance);
+          return new PushbuttonInstance(this, name, descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypeGroup)
-          return new tuttle::host::ofx::attribute::ParamGroupInstance(descriptor, *setInstance);
+          return new tuttle::host::ofx::attribute::ParamGroupInstance(descriptor, *this);
         else if(descriptor.getParamType()==kOfxParamTypePage)
-          return new tuttle::host::ofx::attribute::ParamPageInstance(descriptor, *setInstance);
+          return new tuttle::host::ofx::attribute::ParamPageInstance(descriptor, *this);
         else
-          return 0;
+          return NULL;
     }
 
     OfxStatus EffectInstance::editBegin(const std::string& name)

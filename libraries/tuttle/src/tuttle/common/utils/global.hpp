@@ -82,10 +82,10 @@ namespace tuttle {
 	std::endl << INFOS << \
 	std::endl << "\t" << __VA_ARGS__  << std::endl
 
-#define COUT_EXCEPTION(...)  \
+#define COUT_EXCEPTION(e)  \
 	std::cerr << "Exception:" << \
 	std::endl << INFOS << \
-	std::endl << "\t" << __VA_ARGS__  << std::endl
+	std::endl << "\t" << e.what() << std::endl
 
 
 ////////////////////////////////////////////////////////////////////////////////
