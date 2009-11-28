@@ -31,7 +31,7 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 plugin invert : 
     [ glob src/*.cpp ]
-    /tuttlelib/<link>static
+    /tuttlelib//tuttleplugin/<link>static
     /supportlib
     opengl
     ;
@@ -44,5 +44,6 @@ install install-plug
 	:	invert
 	:	<os>NT:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Win32
 		<os>LINUX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/MacOS
 	;
 

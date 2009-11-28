@@ -137,6 +137,12 @@ namespace tuttle {
         const std::string &getLabel() const;
 
         /// name of the clip
+        const std::string &getName() const;
+
+		/// name of the clip
+		void setName( const std::string& name );
+
+        /// name of the clip
         const std::string &getLongLabel() const;
 
         /// is the given context supported

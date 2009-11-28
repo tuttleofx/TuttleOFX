@@ -18,14 +18,15 @@ if ! [ type.registered PLUGIN ]
 ###############################################################################
 # Common dependencies
 ###############################################################################
-use-project /supportlib 	: ../libraries/openfxHack/Support ;
+use-project /supportlib : ../libraries/openfxHack/Support ;
 use-project /tuttlelib : ../libraries/tuttle ;
 
 ###############################################################################
 # Build all plugins
 ###############################################################################
-for local l in [ glob * : _* ]
-{
-   build-project $(l) ;
-}
+#for local l in [ glob * : _* ]
+#{
+#   build-project $(l) ;
+#}
 
+build-project invert ;

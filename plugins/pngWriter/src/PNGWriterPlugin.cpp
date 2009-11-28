@@ -1,3 +1,10 @@
+/**
+ * @file PNGWriterPlugin.cpp
+ * @brief PNG writer ofx plugin
+ * @author Eloi Du Bois
+ * @date    27/09/09 10:42
+ *
+ */
 #include "PNGWriterPlugin.hpp"
 #include "PNGWriterProcess.hpp"
 

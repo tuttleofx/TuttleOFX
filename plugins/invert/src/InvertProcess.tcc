@@ -112,7 +112,16 @@ void InvertProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
     try
     {
         // Invert pixels
-        transform_pixels( _srcView, this->_dstView, inverter() );
+        View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
+                                  procWindow.x2 - procWindow.x1,
+                                  procWindow.y2 - procWindow.y1 );
+        View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
+                                  procWindow.x2 - procWindow.x1,
+                                  procWindow.y2 - procWindow.y1 );
+
+        transform_pixels( src, dst, inverter() );
+        // @todo: check if this is necessary...
+        copy_and_convert_pixels( src, dst );
     }
     catch( PluginException err )
     {

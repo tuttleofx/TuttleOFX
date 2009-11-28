@@ -1,7 +1,7 @@
 /**
  * @file InvertPluginFactory.cpp
- * @brief
- * @author
+ * @brief   Multithreaded image inverter
+ * @author  Eloi Du Bois
  * @date    01/10/09 12:01
  *
  */
@@ -24,7 +24,7 @@ namespace tuttle {
 namespace plugin {
 namespace invert {
 
-static const bool   kSupportTiles                 = false;
+static const bool   kSupportTiles   = true;
 
 
 mDeclarePluginFactory(InvertPluginFactory, {}, {});

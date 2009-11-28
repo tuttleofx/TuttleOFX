@@ -139,15 +139,16 @@ typedef struct
 
 class DpxImage {
     private:
+        bool             _bigEndian;
         DpxHeader        _header;
         boost::uint8_t  *_data;
 
         void readHeader(fs::ifstream & f);
         enum EDPX_CompType { eCompTypeUnknown,
-                             eCompTypeR8G8B8, eCompTypeR8G8B8A8, eCompTypeA8B8G8R8,
+                             eCompTypeR8G8B8,    eCompTypeR8G8B8A8,     eCompTypeA8B8G8R8,
                              eCompTypeR10G10B10, eCompTypeR10G10B10A10, eCompTypeA10B10G10R10,
-                             eCompTypeR12G12B12, eCompTypeR12G12A12, eCompTypeA12B12G12R12,
-                             eCompTypeR16G16B16, eCompTypeR16G16A16, eCompTypeA16B16G16R16
+                             eCompTypeR12G12B12, eCompTypeR12G12B12A12, eCompTypeA12B12G12R12,
+                             eCompTypeR16G16B16, eCompTypeR16G16B16A16, eCompTypeA16B16G16R16
                            };
     public:
         DpxImage();
@@ -156,14 +157,73 @@ class DpxImage {
         void readHeader(const fs::path & filename);
         void write(const fs::path & filename);
 
-        const boost::uint32_t & width() const { return _header._imageInfo.pixelsPerLine; }
-        const boost::uint32_t & height() const { return _header._imageInfo.linesPerImageEle; }
+        inline const boost::uint32_t & width() const { return _header._imageInfo.pixelsPerLine; }
+        inline const boost::uint32_t & height() const { return _header._imageInfo.linesPerImageEle; }
+        inline const boost::uint16_t packing() const { return _header._imageInfo.image_element[0].packing; }
 
-        const EDPX_CompType getComponentsType() {
+        const size_t components() const {
+            switch(componentsType()) {
+                case eCompTypeR8G8B8:
+                case eCompTypeR10G10B10:
+                case eCompTypeR12G12B12:
+                case eCompTypeR16G16B16:
+                    return 3;
+                case eCompTypeR8G8B8A8:
+                case eCompTypeA8B8G8R8:
+                case eCompTypeR10G10B10A10:
+                case eCompTypeA10B10G10R10:
+                case eCompTypeR12G12B12A12:
+                case eCompTypeA12B12G12R12:
+                case eCompTypeR16G16B16A16:
+                case eCompTypeA16B16G16R16:
+                    return 4;
+                default:
+                    break;
+            }
+            return 0;
+        }
+        const size_t dataSize() const {
+            size_t sz = 0;
+            uint16_t packing = _header._imageInfo.image_element[0].packing;
+            switch(componentsType()) {
+                case eCompTypeR8G8B8:
+                    sz = sizeof(uint8_t) * 3 * width() * height();
+                    break;
+                case eCompTypeR10G10B10:
+                    // Packing means that pixel are packed on bytes
+                    if (packing)
+                        sz = sizeof(uint32_t) * width() * height();
+                    // Unpacked means that pixels are bit aligned
+                    else
+                        sz = std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
+                    break;
+                case eCompTypeR8G8B8A8:
+                case eCompTypeA8B8G8R8:
+                    sz = sizeof(uint8_t) * 4 * width() * height();
+                    break;
+                case eCompTypeR12G12B12:
+                case eCompTypeR16G16B16:
+                case eCompTypeR10G10B10A10:
+                case eCompTypeA10B10G10R10:
+                    sz = 5 * width() * height();
+                    break;
+                case eCompTypeR12G12B12A12:
+                case eCompTypeA12B12G12R12:
+                case eCompTypeR16G16B16A16:
+                case eCompTypeA16B16G16R16:
+                    sz = sizeof(uint64_t) * width() * height();
+                    break;
+                default:
+                    break;
+            }
+            return sz;
+        }
+
+        const EDPX_CompType componentsType() const {
             EDPX_CompType type = eCompTypeUnknown;
             unsigned int descriptor = _header._imageInfo.image_element[0].descriptor;
             unsigned int bitSize = _header._imageInfo.image_element[0].bit_size;
-            COUT_VAR(descriptor);
+
             if ( descriptor == 50 )
             {
                 if ( bitSize == 8 )
@@ -182,9 +242,9 @@ class DpxImage {
                 else if ( bitSize == 10 )
                     type = eCompTypeR10G10B10A10;
                 else if ( bitSize == 12 )
-                    type = eCompTypeR12G12A12;
+                    type = eCompTypeR12G12B12A12;
                 else if ( bitSize == 16 )
-                    type = eCompTypeR16G16A16;
+                    type = eCompTypeR16G16B16A16;
             }
             else if(descriptor == 52)
             {
@@ -200,7 +260,13 @@ class DpxImage {
             return type;
         }
 
-        const boost::uint8_t *getData() const { return _data; }
+        inline const boost::uint8_t *data() const {
+            return _data;
+        }
+
+        /// NEED TO BE DELETED BY CALLER
+        const boost::uint16_t *data16() const;
+
 };
 
 }  // namespace io

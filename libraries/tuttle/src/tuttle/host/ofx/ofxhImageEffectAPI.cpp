@@ -56,7 +56,6 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-/// ctor
 #if defined(WINDOWS) && !defined(__GNUC__)
 #pragma warning( disable : 4355 )
 #endif
@@ -82,7 +81,7 @@ ImageEffectPlugin::ImageEffectPlugin( ImageEffectPluginCache &pc,
 : Plugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
 , _pc( pc )
 , _baseDescriptor( NULL )
-, _pluginHandle( 0 )
+, _pluginHandle( NULL )
 {
 	_baseDescriptor = core::Core::instance( ).getHost( ).makeDescriptor( this );
 }
@@ -93,12 +92,12 @@ ImageEffectPlugin::ImageEffectPlugin( ImageEffectPluginCache &pc,
 
 ImageEffectPlugin::~ImageEffectPlugin( )
 {
-	for( std::map<std::string, Descriptor *>::iterator it = _contexts.begin( ); it != _contexts.end( ); ++it )
+	for( std::map<std::string, Descriptor *>::iterator it = _contexts.begin(); it != _contexts.end(); ++it )
 	{
 		delete it->second;
 	}
 	_contexts.clear( );
-	if( _pluginHandle.get( ) )
+	if( getPluginHandle() )
 	{
 		OfxPlugin *op = _pluginHandle->getOfxPlugin( );
 		op->mainEntry( kOfxActionUnload, 0, 0, 0 );
@@ -113,14 +112,12 @@ APICache::PluginAPICacheI &ImageEffectPlugin::getApiHandler( )
 
 
 /// get the image effect descriptor
-
 Descriptor &ImageEffectPlugin::getDescriptor( )
 {
 	return *_baseDescriptor;
 }
 
 /// get the image effect descriptor const version
-
 const Descriptor &ImageEffectPlugin::getDescriptor( ) const
 {
 	return *_baseDescriptor;
@@ -136,19 +133,13 @@ void ImageEffectPlugin::addContext( const std::string &context )
 {
 	_knownContexts.insert( context );
 }
-/*
-void ImageEffectPlugin::addContextInternal( const std::string &context ) const
-{
-	_knownContexts.insert( context );
-	_madeKnownContexts = true;
-}*/
 
 void ImageEffectPlugin::saveXML( std::ostream &os )
 {
 	APICache::propertySetXMLWrite( os, getDescriptor( ).getProperties( ), 6 );
 }
 
-const std::set<std::string> &ImageEffectPlugin::getContexts( ) const
+const std::set<std::string>& ImageEffectPlugin::getContexts( ) const
 {
 	return _knownContexts;
 }
@@ -234,8 +225,6 @@ Descriptor *ImageEffectPlugin::getDescriptorInContext( const std::string &contex
 
 Descriptor *ImageEffectPlugin::describeInContextAction( const std::string &context )
 {
-	//        printf("doing context description.\n");
-
 	tuttle::host::ofx::Property::PropSpec inargspec[] = {
 		{ kOfxImageEffectPropContext, tuttle::host::ofx::Property::eString, 1, true, context.c_str( ) },
 		{ 0 }
@@ -262,28 +251,30 @@ Descriptor *ImageEffectPlugin::describeInContextAction( const std::string &conte
 
 imageEffect::Instance* ImageEffectPlugin::createInstance( const std::string &context, void *clientData )
 {
-	/// todo - we need to make sure action:load is called, then action:describe again
-	/// (not because we are expecting the results to change, but because plugin
-	/// might get confused otherwise), then a describe_in_context
+	/**
+     * @todo - we need to make sure action:load is called, then action:describe again
+	 * (not because we are expecting the results to change, but because plugin
+	 * might get confused otherwise), then a describe_in_context
+     */
 	loadAndDescribeActions( );
 	if( getPluginHandle( ) == NULL )
 	{
 		COUT_ERROR( "imageEffectPlugin::createInstance, unexpected error." );
-		return NULL; // specific Exception
+		return NULL; // throw specific Exception
 	}
 	Descriptor *desc = getDescriptorInContext( context );
 	if( !desc )
 	{
 		COUT( "The plugin doesn't support the context " << context << "." );
-		return NULL; // specific Exception
+		return NULL; // throw specific Exception
 	}
 
-	return core::Core::instance( ).getHost( ).newInstance( clientData, this, *desc, context );
+	return core::Core::instance().getHost().newInstance( clientData, this, *desc, context );
 }
 
-void ImageEffectPlugin::unloadAction( )
+void ImageEffectPlugin::unloadAction()
 {
-	if( _pluginHandle.get( ) )
+	if( getPluginHandle() )
 	{
 		( *_pluginHandle )->mainEntry( kOfxActionUnload, 0, 0, 0 );
 	}
@@ -300,9 +291,10 @@ ImageEffectPluginCache::ImageEffectPluginCache( tuttle::host::ofx::imageEffect::
 
 ImageEffectPluginCache::~ImageEffectPluginCache( ) { }
 
-/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
-/// pick the highest found version.
-
+/**
+ * get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
+ * pick the highest found version.
+ */
 ImageEffectPlugin *ImageEffectPluginCache::getPluginById( const std::string &id, int vermaj, int vermin )
 {
 	// return the highest version one, which fits the pattern provided
@@ -336,15 +328,15 @@ ImageEffectPlugin *ImageEffectPluginCache::getPluginById( const std::string &id,
 }
 
 /// whether we support this plugin.
-
 bool ImageEffectPluginCache::pluginSupported( tuttle::host::ofx::Plugin *p, std::string &reason ) const
 {
 	return core::Core::instance( ).getHost( ).pluginSupported( dynamic_cast<tuttle::host::ofx::imageEffect::ImageEffectPlugin *> ( p ), reason );
 }
 
-/// get the plugin by label.  vermaj and vermin can be specified.  if they are not it will
-/// pick the highest found version.
-
+/**
+ * get the plugin by label. vermaj and vermin can be specified.  if they are not it will
+ * pick the highest found version.
+ */
 ImageEffectPlugin *ImageEffectPluginCache::getPluginByLabel( const std::string &label, int vermaj, int vermin )
 {
 	// return the highest version one, which fits the pattern provided
@@ -388,8 +380,10 @@ const std::map<std::string, ImageEffectPlugin *>& ImageEffectPluginCache::getPlu
 	return _pluginsByID;
 }
 
-/// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
-
+/**
+ * handle the case where the info needs filling in from the file.
+ * Runs the "describe" action on the plugin.
+ */
 void ImageEffectPluginCache::loadFromPlugin( Plugin *op ) const
 {
 	std::string msg = "loading ";
@@ -432,15 +426,17 @@ void ImageEffectPluginCache::loadFromPlugin( Plugin *op ) const
 	rval = plug->mainEntry( kOfxActionUnload, 0, 0, 0 );
 }
 
-/// handler for preparing to read in a chunk of XML from the cache, set up context to do this
-
+/**
+ * handler for preparing to read in a chunk of XML from the cache, set up context to do this
+ */
 void ImageEffectPluginCache::beginXmlParsing( Plugin *p )
 {
 	_currentPlugin = dynamic_cast<ImageEffectPlugin*> ( p );
 }
 
-/// XML handler : element begins (everything is stored in elements and attributes)
-
+/**
+ * XML handler : element begins (everything is stored in elements and attributes)
+ */
 void ImageEffectPluginCache::xmlElementBegin( const std::string &el, std::map<std::string, std::string> map )
 {
 	if( el == "apiproperties" )
@@ -510,7 +506,7 @@ void ImageEffectPluginCache::xmlElementEnd( const std::string &el )
 	}
 }
 
-void ImageEffectPluginCache::endXmlParsing( )
+void ImageEffectPluginCache::endXmlParsing()
 {
 	_currentPlugin = 0;
 }
@@ -544,7 +540,7 @@ void ImageEffectPluginCache::confirmPlugin( Plugin *p )
 	if( _pluginsByIDMajor.find( maj ) != _pluginsByIDMajor.end( ) )
 	{
 		ImageEffectPlugin *otherPlugin = _pluginsByIDMajor[maj];
-		if( plugin->getVersionMajor( ) != otherPlugin->getVersionMajor( ) || plugin->trumps( otherPlugin ) )
+		if( plugin->getVersionMajor() != otherPlugin->getVersionMajor() || plugin->trumps( otherPlugin ) )
 		{
 			_pluginsByIDMajor[maj] = plugin;
 		}
