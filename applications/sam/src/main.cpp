@@ -9,22 +9,6 @@
 #include <tuttle/host/core/HostDescriptor.hpp>
 #include <tuttle/host/core/Core.hpp>
 
-// ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-
-// ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffectAPI.h"
-
 #include <boost/shared_ptr.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/cstdint.hpp>

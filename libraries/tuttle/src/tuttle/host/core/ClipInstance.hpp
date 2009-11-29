@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TUTTLE_CLIP_INSTANCE_H
 
 #include "EffectInstance.hpp"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhImage.h"
+#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/ofxhImage.h>
 #include <boost/cstdint.hpp>
 
 #define SOFXCLIPLENGTH 1
