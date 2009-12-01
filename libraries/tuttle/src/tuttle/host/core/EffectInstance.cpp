@@ -86,7 +86,7 @@ void EffectInstance::dumpToStdOut() const
 }
 
 // get a new clip instance
-tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor ) const
+tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor )
 {
 	return new ClipImgInstance( *this, descriptor );
 }
@@ -180,7 +180,7 @@ const std::string EffectInstance::getProjectBitDepth() const
 }
 
 // make a parameter instance
-tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::host::ofx::attribute::ParamDescriptor& descriptor ) const
+tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::host::ofx::attribute::ParamDescriptor& descriptor )
 {
 	std::string name = descriptor.getName();
 

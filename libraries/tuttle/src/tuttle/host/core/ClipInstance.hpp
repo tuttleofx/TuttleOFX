@@ -86,7 +86,7 @@ protected:
 	OfxPointD _frameRange; ///< get frame range
 
 public:
-	ClipImgInstance( const EffectInstance& effect, tuttle::host::ofx::attribute::ClipImageDescriptor& desc );
+	ClipImgInstance( EffectInstance& effect, tuttle::host::ofx::attribute::ClipImageDescriptor& desc );
 
 	virtual ~ClipImgInstance();
 

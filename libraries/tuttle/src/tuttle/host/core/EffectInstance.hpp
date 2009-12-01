@@ -64,7 +64,7 @@ public:
 	const std::string& getDefaultOutputFielding() const;
 
 	/// make a clip
-	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor ) const;
+	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor );
 
 	/// vmessage
 	OfxStatus vmessage( const char* type,
@@ -125,7 +125,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	tuttle::host::ofx::attribute::ParamInstance* newParam( tuttle::host::ofx::attribute::ParamDescriptor& Descriptor ) const;
+	tuttle::host::ofx::attribute::ParamInstance* newParam( tuttle::host::ofx::attribute::ParamDescriptor& Descriptor );
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///

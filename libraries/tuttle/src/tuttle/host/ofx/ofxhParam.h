@@ -203,7 +203,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	virtual ParamInstance* newParam( ParamDescriptor& Descriptor ) const = 0;
+	virtual ParamInstance* newParam( ParamDescriptor& Descriptor ) = 0;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///
@@ -531,7 +531,7 @@ public:
 		_paramSetInstance->paramChangedByPlugin( param );
 	}
 
-	virtual ParamInstance* newParam( ParamDescriptor& descriptor ) const
+	virtual ParamInstance* newParam( ParamDescriptor& descriptor )
 	{
 		return _paramSetInstance->newParam( descriptor );
 	}
