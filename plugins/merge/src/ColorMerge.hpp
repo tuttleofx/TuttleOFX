@@ -22,12 +22,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include <functional>
-#include "gil_config.hpp"
-#include "color_convert.hpp"
-#include "channel_algorithm.hpp"
-#include "pixel.hpp"
-#include "metafunctions.hpp"
-#include "utilities.hpp"
+#include <boost/gil/gil_config.hpp>
+#include <boost/gil/color_convert.hpp>
+#include <boost/gil/channel_algorithm.hpp>
+#include <boost/gil/pixel.hpp>
+#include <boost/gil/metafunctions.hpp>
+#include <boost/gil/utilities.hpp>
 
 namespace boost { namespace gil {
 
@@ -53,7 +53,7 @@ struct channel_merging : public std::binary_function<SrcChannelAV,SrcChannelBV,D
     template <typename ItA,typename ItB>
     DstChannelV
     operator()(const ItA &itA,const ItA &itB,SrcChannelAV srcA, SrcChannelBV srcB) const {
-        return Functor<DstChannelV>::merge(itA, itB, srcA, srcB);
+        return Functor<DstChannelV>::merge(get_color(itA, alpha_t()), get_color(itB, alpha_t()), srcA, srcB);
     }
 };
 
@@ -187,7 +187,9 @@ F merge_pixels(const View1& src1, const View2& src2,const View3& dst, F fun) {
         typename View2::x_iterator srcIt2=src2.row_begin(y);
         typename View3::x_iterator dstIt=dst.row_begin(y);
         for (std::ptrdiff_t x=0; x<dst.width(); ++x)
-            fun(srcIt1[x],srcIt2[x],dstIt[x]);
+            // Compile time resolved
+//            if ( mpl::contains<typename color_space_type<Pixel>::type,alpha_t>() == mpl::true_ )
+                fun(srcIt1[x],srcIt2[x],dstIt[x]);
     }
     return fun;
 }

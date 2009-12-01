@@ -29,10 +29,11 @@ namespace merge {
 
 template <typename DstV>
 struct FunctorATop {
-    template <class ItA, class ItB, typename SrcAV, typename SrcBV>
-    static const DstV merge(const ItA & itA, const ItB & itB,
-                            const SrcAV & srcA, const SrcBV & srcB) {
-        return (DstV)(srcA + srcB);
+    template <class AlphaA, class AlphaB, typename SrcAV, typename SrcBV>
+    static const DstV merge(const AlphaA & a, const AlphaB & b,
+                            const SrcAV & A, const SrcBV & B) {
+        // Ab+B(1-a)
+        return (DstV)(A*b + B*(1-a));
     }
 };
 
@@ -40,6 +41,7 @@ template <typename DstV>
 struct FunctorPlus {
     template <typename SrcAV, typename SrcBV>
     static const DstV merge(const SrcAV & srcA, const SrcBV & srcB) {
+        // A + B
         return (DstV)(srcA + srcB);
     }
 };
@@ -130,8 +132,7 @@ void MergeProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
                                   procWindow.x2 - procWindow.x1,
                                   procWindow.y2 - procWindow.y1 );
 
-        copy_and_convert_pixels(srcA, dst);
-//        merge_pixels( srcA, srcB, dst, default_color_merging< FunctorPlus >() );
+        merge_pixels( srcA, srcB, dst, default_color_merging< FunctorPlus >() );
     }
     catch( PluginException err )
     {
