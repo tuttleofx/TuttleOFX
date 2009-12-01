@@ -22,96 +22,96 @@ namespace merge {
 using namespace boost::gil;
 
 MergePlugin::MergePlugin( OfxImageEffectHandle handle )
-: ImageEffect( handle )
+	: ImageEffect( handle )
 {
-    _srcClipA = fetchClip( kMergeSourceA );
-    _srcClipB = fetchClip( kMergeSourceB );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
-    assert(_srcClipA && _srcClipB && _dstClip);
+	_srcClipA = fetchClip( kMergeSourceA );
+	_srcClipB = fetchClip( kMergeSourceB );
+	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
+	assert( _srcClipA && _srcClipB && _dstClip );
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void MergePlugin::render( const OFX::RenderArguments &args )
+void MergePlugin::render( const OFX::RenderArguments& args )
 {
-    assert(_dstClip);
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+	assert( _dstClip );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents();
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                MergeProcess<rgba8_view_t> fred( *this );
-                fred.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                MergeProcess<rgba16_view_t> fred( *this );
-                fred.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                MergeProcess<rgba32f_view_t> fred( *this );
-                fred.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                MergeProcess<gray8_view_t> fred( *this );
-                fred.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                MergeProcess<gray16_view_t> fred( *this );
-                fred.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                MergeProcess<gray32f_view_t> fred( *this );
-                fred.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				MergeProcess<rgba8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				MergeProcess<rgba16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				MergeProcess<rgba32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				MergeProcess<gray8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				MergeProcess<gray16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				MergeProcess<gray32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
 }
 
-void MergePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-    if( paramName == kMergeHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kMergeHelpString );
-    }
+	if( paramName == kMergeHelpButton )
+	{
+		sendMessage( OFX::Message::eMessageMessage,
+		             "", // No XML resources
+		             kMergeHelpString );
+	}
 }
 
 }

@@ -25,10 +25,11 @@ namespace tuttle {
 namespace plugin {
 namespace crop {
 
-mDeclarePluginFactory(CropPluginFactory, {}, {});
+mDeclarePluginFactory( CropPluginFactory, {}, {}
+                       );
 
-static const bool   kSupportTiles           = true;
-static const bool   kSupportTemporalAccess  = false;
+static const bool kSupportTiles          = true;
+static const bool kSupportTemporalAccess = false;
 
 using namespace OFX;
 
@@ -36,33 +37,32 @@ using namespace OFX;
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void
-CropPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    // basic labels
-    desc.setLabels("Crop", "Crop",
-                   "image crop");
-    desc.setPluginGrouping("tuttle");
+	// basic labels
+	desc.setLabels( "Crop", "Crop",
+	                "image crop" );
+	desc.setPluginGrouping( "tuttle" );
 
-    // add the supported contexts, only filter at the moment
-    desc.addSupportedContext(eContextGeneral);
-    desc.addSupportedContext(eContextFilter);
+	// add the supported contexts, only filter at the moment
+	desc.addSupportedContext( eContextGeneral );
+	desc.addSupportedContext( eContextFilter );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth(eBitDepthUByte);
-    desc.addSupportedBitDepth(eBitDepthUShort);
-    desc.addSupportedBitDepth(eBitDepthFloat);
+	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthUByte );
+	desc.addSupportedBitDepth( eBitDepthUShort );
+	desc.addSupportedBitDepth( eBitDepthFloat );
 
-    // set a few flags
-    desc.setSingleInstance(false);
-    desc.setHostFrameThreading(false);
-    desc.setSupportsMultiResolution(false);
-    desc.setSupportsTiles(kSupportTiles);
-    desc.setTemporalClipAccess(false);
-    desc.setRenderTwiceAlways(false);
-    desc.setSupportsMultipleClipPARs(false);
+	// set a few flags
+	desc.setSingleInstance( false );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess( false );
+	desc.setRenderTwiceAlways( false );
+	desc.setSupportsMultipleClipPARs( false );
 
-    desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayDescriptor<CropMarginOverlay, CropMargin > ( ) );
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayDescriptor<CropMarginOverlay, CropMargin >() );
 }
 
 /**
@@ -70,57 +70,57 @@ CropPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-CropPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
-                                          OFX::ContextEnum context)
+void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                           OFX::ContextEnum            context )
 {
-    OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-    srcClip->addSupportedComponent( ePixelComponentRGBA );
-    srcClip->addSupportedComponent( ePixelComponentAlpha );
-    srcClip->setSupportsTiles( kSupportTiles );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-    // Create the mandated output clip
-    OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent( ePixelComponentRGBA );
-    dstClip->addSupportedComponent( ePixelComponentAlpha );
-    dstClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent( ePixelComponentRGBA );
+	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->setSupportsTiles( kSupportTiles );
 
-    OFX::ChoiceParamDescriptor *format = desc.defineChoiceParam( kParamFormats );
-    format->setScriptName( "formats" );
-    format->appendOption( "1 : 1,33 (4/3) bands" );
-    format->appendOption( "1 : 1,77 (16/9e) bands" );
-    format->appendOption( "1 : 1,85 bands" );
-    format->appendOption( "1 : 2,35 (Cinemascope) bands" );
-    format->appendOption( "1 : 2,40 bands" );
-    format->setDefault( 0 );
+	// Create the mandated output clip
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
 
-    OFX::BooleanParamDescriptor* shape = desc.defineBooleanParam( kParamDisplayRect );
-    shape->setDefault( false );
+	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormats );
+	format->setScriptName( "formats" );
+	format->appendOption( "1 : 1,33 (4/3) bands" );
+	format->appendOption( "1 : 1,77 (16/9e) bands" );
+	format->appendOption( "1 : 1,85 bands" );
+	format->appendOption( "1 : 2,35 (Cinemascope) bands" );
+	format->appendOption( "1 : 2,40 bands" );
+	format->setDefault( 0 );
 
-    OFX::BooleanParamDescriptor* anamorphic = desc.defineBooleanParam( kParamAnamorphic );
-    anamorphic->setLabels( "Anamorphic", "Anamorphic", "Anamorphic (stretch)" );
-    anamorphic->setDefault( false );
-    anamorphic->setIsSecret( true );
+	OFX::BooleanParamDescriptor* shape = desc.defineBooleanParam( kParamDisplayRect );
+	shape->setDefault( false );
 
-    OFX::GroupParamDescriptor *bandsGroup   = desc.defineGroupParam( "Bands sizes" );
-    OFX::IntParamDescriptor *upBand         = desc.defineIntParam( kParamUp );
-    upBand->setScriptName( "upBand" );
-    upBand->setParent( *bandsGroup );
+	OFX::BooleanParamDescriptor* anamorphic = desc.defineBooleanParam( kParamAnamorphic );
+	anamorphic->setLabels( "Anamorphic", "Anamorphic", "Anamorphic (stretch)" );
+	anamorphic->setDefault( false );
+	anamorphic->setIsSecret( true );
 
-    OFX::IntParamDescriptor *downBand   = desc.defineIntParam( kParamDown );
-    downBand->setScriptName( "downBand" );
-    downBand->setParent( *bandsGroup );
+	OFX::GroupParamDescriptor* bandsGroup = desc.defineGroupParam( "Bands sizes" );
+	OFX::IntParamDescriptor* upBand       = desc.defineIntParam( kParamUp );
+	upBand->setScriptName( "upBand" );
+	upBand->setParent( *bandsGroup );
 
-    OFX::IntParamDescriptor *leftBand   = desc.defineIntParam( kParamLeft );
-    leftBand->setScriptName( "leftBand" );
-    leftBand->setParent( *bandsGroup );
+	OFX::IntParamDescriptor* downBand = desc.defineIntParam( kParamDown );
+	downBand->setScriptName( "downBand" );
+	downBand->setParent( *bandsGroup );
 
-    OFX::IntParamDescriptor *rightBand  = desc.defineIntParam( kParamRight );
-    rightBand->setScriptName( "rightBand" );
-    rightBand->setParent( *bandsGroup );
+	OFX::IntParamDescriptor* leftBand = desc.defineIntParam( kParamLeft );
+	leftBand->setScriptName( "leftBand" );
+	leftBand->setParent( *bandsGroup );
 
-    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( "Help" );
-    helpButton->setScriptName( "&Help" );
+	OFX::IntParamDescriptor* rightBand = desc.defineIntParam( kParamRight );
+	rightBand->setScriptName( "rightBand" );
+	rightBand->setParent( *bandsGroup );
+
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );
+	helpButton->setScriptName( "&Help" );
 }
 
 /**
@@ -129,11 +129,10 @@ CropPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect*
-CropPluginFactory::createInstance(OfxImageEffectHandle handle,
-                                            OFX::ContextEnum context)
+OFX::ImageEffect* CropPluginFactory::createInstance( OfxImageEffectHandle handle,
+                                                     OFX::ContextEnum     context )
 {
-    return new CropPlugin(handle);
+	return new CropPlugin( handle );
 }
 
 }
@@ -142,12 +141,14 @@ CropPluginFactory::createInstance(OfxImageEffectHandle handle,
 
 namespace OFX
 {
-    namespace Plugin 
-    {
-        void getPluginIDs(OFX::PluginFactoryArray &ids)
-        {
-            static tuttle::plugin::crop::CropPluginFactory p("fr.hd3d.tuttle.volet", 1, 0);
-            ids.push_back(&p);
-        }
-    }
+namespace Plugin
+{
+void getPluginIDs( OFX::PluginFactoryArray& ids )
+{
+	static tuttle::plugin::crop::CropPluginFactory p( "fr.hd3d.tuttle.volet", 1, 0 );
+
+	ids.push_back( &p );
+}
+
+}
 }

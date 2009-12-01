@@ -15,7 +15,6 @@
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace png {
@@ -26,53 +25,56 @@ namespace bfs = boost::filesystem;
 typedef any_image < boost::mpl::vector
                     < rgba8_image_t, rgba16_image_t, rgba32f_image_t,
                       rgb8_image_t,  rgb16_image_t,  rgb32f_image_t >
-                  > any_image_t;
+                    > any_image_t;
 
 template<class View>
-PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin &instance )
-: tuttle::plugin::ImageGilProcessor<View>( instance ), tuttle::plugin::Progress( instance ),
-_plugin( instance )
+PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
+	: tuttle::plugin::ImageGilProcessor<View>( instance ),
+	tuttle::plugin::Progress( instance ),
+	_plugin( instance )
 {
-    _filepath = instance.fetchStringParam( "Input filename" );
-    assert(_filepath != NULL);
+	_filepath = instance.fetchStringParam( "Input filename" );
+	assert( _filepath != NULL );
 }
 
 template<class View>
-void PNGReaderProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
+void PNGReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 {
-    try
-    {
-        std::string sFilepath;
-        // Fetch output image
-        _filepath->getValue(sFilepath);
-        if (bfs::exists(sFilepath)) {
-            point2<ptrdiff_t> pngDims = png_read_dimensions(sFilepath);
-            double par = _plugin.getDstClip( )->getPixelAspectRatio();
-            OfxRectD reqRect = { 0, 0, pngDims.x * par, pngDims.y };
-            boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time, reqRect ) );
-            OfxRectI bounds = dst->getBounds();
-            if( !dst.get( ) )
-                throw( ImageNotReadyException( ) );
-            // Build destination view
-            this->_dstView = interleaved_view( std::abs(bounds.x2 - bounds.x1), std::abs(bounds.y2 - bounds.y1),
-                                               static_cast<value_t*>(dst->getPixelData()),
-                                               dst->getRowBytes() );
+	try
+	{
+		std::string sFilepath;
+		// Fetch output image
+		_filepath->getValue( sFilepath );
+		if( bfs::exists( sFilepath ) )
+		{
+			point2<ptrdiff_t> pngDims = png_read_dimensions( sFilepath );
+			double par                = _plugin.getDstClip()->getPixelAspectRatio();
+			OfxRectD reqRect          = { 0, 0, pngDims.x * par, pngDims.y };
+			boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
+			OfxRectI bounds = dst->getBounds();
+			if( !dst.get() )
+				throw( ImageNotReadyException() );
+			// Build destination view
+			this->_dstView = interleaved_view( std::abs( bounds.x2 - bounds.x1 ), std::abs( bounds.y2 - bounds.y1 ),
+			                                   static_cast<value_t*>( dst->getPixelData() ),
+			                                   dst->getRowBytes() );
 
-            // Set the render window
-            this->setRenderWindow( args.renderWindow );
-            // Call the base class process member
-            this->process();
-        } else
-            throw( PluginException( "Unable to open : %s", sFilepath.c_str() ) );
-    }
-    catch( PluginException e )
-    {
-        COUT_EXCEPTION( e );
-    }
+			// Set the render window
+			this->setRenderWindow( args.renderWindow );
+			// Call the base class process member
+			this->process();
+		}
+		else
+			throw( PluginException( "Unable to open : %s", sFilepath.c_str() ) );
+	}
+	catch( PluginException e )
+	{
+		COUT_EXCEPTION( e );
+	}
 }
 
 /**
- * @brief Function called by rendering thread each time 
+ * @brief Function called by rendering thread each time
  *        a process must be done.
  *
  * @param[in] procWindow  Processing window
@@ -80,27 +82,27 @@ void PNGReaderProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
 template<class View>
 void PNGReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 {
-    try
-    {
-        std::string filepath;
-        this->_filepath->getValue( filepath );
-        readImage( this->_dstView, filepath );
-    }
-    catch( PluginException err )
-    {
-        COUT_EXCEPTION( err );
-    }
+	try
+	{
+		std::string filepath;
+		this->_filepath->getValue( filepath );
+		readImage( this->_dstView, filepath );
+	}
+	catch( PluginException err )
+	{
+		COUT_EXCEPTION( err );
+	}
 }
 
 /*
-struct FunctorPlus {
-    template <typename DstV, typename SrcAV, typename SrcBV>
-    static DstV merge()(const SrcAV & srcA, const SrcBV & srcB) const {
-        return (DstV)(srcA + srcB);
-    }
-};
-
-*/
+ * struct FunctorPlus {
+ *  template <typename DstV, typename SrcAV, typename SrcBV>
+ *  static DstV merge()(const SrcAV & srcA, const SrcBV & srcB) const {
+ *      return (DstV)(srcA + srcB);
+ *  }
+ * };
+ *
+ */
 /**
  * @brief Function called to apply an anisotropic blur
  *
@@ -114,21 +116,22 @@ struct FunctorPlus {
  * @return Result view of the blurring process
  */
 template<class View>
-View& PNGReaderProcess<View>::readImage( View &dst, std::string & filepath ) throw(PluginException )
+View& PNGReaderProcess<View>::readImage( View& dst, std::string& filepath ) throw( PluginException )
 {
-    any_image_t anyImg;
-    png_read_image( filepath, anyImg );
-    copy_and_convert_pixels(subimage_view(flipped_up_down_view(view(anyImg)), 0, 0, dst.width(), dst.height()), dst);
-        // little test on merge to remove:
-/*        rgb8_image_t imgA, imgB;
-        png_read_image ("c:/temp/inputA.png", imgA);
-        png_read_image ("c:/temp/inputB.png", imgB);
-        rgb8_image_t imgC(imgA.width(), imgA.height());
-        rgb8_view_t srcA(view(imgA)), srcB(view(imgB)), dst(view(imgC));
-        transform_pixels(srcA, srcB, dst, default_color_merging<FunctorPlus>());
-        png_write_view ("c:/temp/merge.png", dst);
-*/
-    return dst;
+	any_image_t anyImg;
+
+	png_read_image( filepath, anyImg );
+	copy_and_convert_pixels( subimage_view( flipped_up_down_view( view( anyImg ) ), 0, 0, dst.width(), dst.height() ), dst );
+	// little test on merge to remove:
+	/*        rgb8_image_t imgA, imgB;
+	 *      png_read_image ("c:/temp/inputA.png", imgA);
+	 *      png_read_image ("c:/temp/inputB.png", imgB);
+	 *      rgb8_image_t imgC(imgA.width(), imgA.height());
+	 *      rgb8_view_t srcA(view(imgA)), srcB(view(imgB)), dst(view(imgC));
+	 *      transform_pixels(srcA, srcB, dst, default_color_merging<FunctorPlus>());
+	 *      png_write_view ("c:/temp/merge.png", dst);
+	 */
+	return dst;
 }
 
 }

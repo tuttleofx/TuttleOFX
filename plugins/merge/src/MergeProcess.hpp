@@ -8,7 +8,6 @@
 #ifndef MERGE_PROCESS_HPP
 #define MERGE_PROCESS_HPP
 
-
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -25,7 +24,6 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace merge {
@@ -35,22 +33,24 @@ namespace merge {
  *
  */
 template<class View>
-class MergeProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
+class MergeProcess : public tuttle::plugin::ImageGilProcessor<View>,
+	public tuttle::plugin::Progress
 {
-    typedef typename View::value_type value_t;
-protected :
-    MergePlugin&        _plugin;    ///< Rendering plugin
-    View                _srcViewA;  ///< Source view A
-    View                _srcViewB;  ///< Source view B
+typedef typename View::value_type value_t;
 
-public :
-    MergeProcess<View>(MergePlugin &instance);
+protected:
+	MergePlugin&        _plugin;    ///< Rendering plugin
+	View _srcViewA; ///< Source view A
+	View _srcViewB; ///< Source view B
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+public:
+	MergeProcess<View>( MergePlugin & instance );
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+	// set up and run a processor
+	void setupAndProcess( const OFX::RenderArguments& args );
+
+	// Do some processing
+	void multiThreadProcessImages( OfxRectI procWindow );
 };
 
 }

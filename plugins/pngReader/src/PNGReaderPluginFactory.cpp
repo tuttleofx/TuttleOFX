@@ -25,37 +25,38 @@ namespace png {
 
 using namespace OFX;
 
-static const bool   kSupportTiles                 = false;
+static const bool kSupportTiles = false;
 
-mDeclarePluginFactory(PNGReaderPluginFactory, {}, {});
+mDeclarePluginFactory( PNGReaderPluginFactory, {}, {}
+                       );
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void PNGReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    // basic labels
-    desc.setLabels("PNGReaderHd3d", "PNGReaderHd3d",
-                   "PNG File reader Hd3d");
-    desc.setPluginGrouping("tuttle");
+	// basic labels
+	desc.setLabels( "PNGReaderHd3d", "PNGReaderHd3d",
+	                "PNG File reader Hd3d" );
+	desc.setPluginGrouping( "tuttle" );
 
-    // add the supported contexts, only filter at the moment
-    desc.addSupportedContext(eContextGenerator);
+	// add the supported contexts, only filter at the moment
+	desc.addSupportedContext( eContextGenerator );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth(eBitDepthFloat);
-    desc.addSupportedBitDepth(eBitDepthUByte);
-    desc.addSupportedBitDepth(eBitDepthUShort);
+	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( eBitDepthUByte );
+	desc.addSupportedBitDepth( eBitDepthUShort );
 
-    // set a few flags
-    desc.setSingleInstance(false);
-    desc.setHostFrameThreading(false);
-    desc.setSupportsMultiResolution(false);
-    desc.setSupportsTiles(kSupportTiles);
-    desc.setTemporalClipAccess(false);
-    desc.setRenderTwiceAlways(false);
-    desc.setSupportsMultipleClipPARs(false);
+	// set a few flags
+	desc.setSingleInstance( false );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess( false );
+	desc.setRenderTwiceAlways( false );
+	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -63,22 +64,23 @@ void PNGReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
-                                          OFX::ContextEnum context)
+void PNGReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                OFX::ContextEnum            context )
 {
-    // Create the mandated output clip
-    ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    assert(dstClip);
-    dstClip->addSupportedComponent(ePixelComponentRGBA);
-    dstClip->addSupportedComponent(ePixelComponentAlpha);
-    dstClip->setSupportsTiles(kSupportTiles);
+	// Create the mandated output clip
+	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 
-    // Controls
-    StringParamDescriptor *filename = desc.defineStringParam("Input filename");
-    assert(filename);
-    filename->setScriptName("filename");
-    filename->setStringType(eStringTypeFilePath);
-    filename->setCacheInvalidation(eCacheInvalidateValueAll);
+	assert( dstClip );
+	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
+
+	// Controls
+	StringParamDescriptor* filename = desc.defineStringParam( "Input filename" );
+	assert( filename );
+	filename->setScriptName( "filename" );
+	filename->setStringType( eStringTypeFilePath );
+	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 }
 
@@ -88,10 +90,10 @@ void PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* PNGReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
-                                       OFX::ContextEnum context)
+OFX::ImageEffect* PNGReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
+                                                          OFX::ContextEnum     context )
 {
-    return new PNGReaderPlugin(handle);
+	return new PNGReaderPlugin( handle );
 }
 
 }
@@ -100,12 +102,14 @@ OFX::ImageEffect* PNGReaderPluginFactory::createInstance(OfxImageEffectHandle ha
 
 namespace OFX
 {
-    namespace Plugin 
-    {
-        void getPluginIDs(OFX::PluginFactoryArray &ids)
-        {
-            static tuttle::plugin::png::PNGReaderPluginFactory p("fr.hd3d.tuttle.pngreader", 1, 0);
-            ids.push_back(&p);
-        }
-    }
+namespace Plugin
+{
+void getPluginIDs( OFX::PluginFactoryArray& ids )
+{
+	static tuttle::plugin::png::PNGReaderPluginFactory p( "fr.hd3d.tuttle.pngreader", 1, 0 );
+
+	ids.push_back( &p );
+}
+
+}
 }

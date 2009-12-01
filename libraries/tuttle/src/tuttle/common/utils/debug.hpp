@@ -11,10 +11,8 @@
 //	__DATE__ : "Mmm dd yyyy"
 //	__TIME__ : "hh:mm:ss"
 
-
 //_____________________________________________________________________________
 // Macros to output on terminal only in debug mode
-
 
 /// @see COUT
 #define COUT_DEBUG COUT
@@ -26,11 +24,10 @@
 #define COUT_WITHINFOS_DEBUG COUT_WITHINFOS
 
 /// @see IF_DEBUG
-#define IF_DEBUG(...)  __VA_ARGS__
-
+#define IF_DEBUG(... )  __VA_ARGS__
 
 #ifdef WINDOWS
-#include "windows/MemoryLeaks.hpp"
+ #include "windows/MemoryLeaks.hpp"
 #endif
 
 #endif

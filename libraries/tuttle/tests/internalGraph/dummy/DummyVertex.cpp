@@ -1,9 +1,9 @@
 #include "DummyVertex.hpp"
 
-namespace tuttle{
-	namespace test{
+namespace tuttle {
+namespace test {
 
-std::ostream& operator<<(std::ostream& os, const DummyVertex& v)
+std::ostream& operator<<( std::ostream& os, const DummyVertex& v )
 {
 	os << v.name() ;
 	return os;

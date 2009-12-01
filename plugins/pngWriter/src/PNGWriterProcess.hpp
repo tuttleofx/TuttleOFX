@@ -12,36 +12,37 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace png {
-
 
 /**
  * @brief Base class for the denoising processor
  *
  */
 template<class View>
-class PNGWriterProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
+class PNGWriterProcess : public tuttle::plugin::ImageGilProcessor<View>,
+	public tuttle::plugin::Progress
 {
-    typedef typename View::value_type value_t;
-protected :
-    OFX::StringParam*   _filepath;      ///< File path
-    PNGWriterPlugin&    _plugin;        ///< Rendering plugin
-    View                _srcView;       ///< Input view
-    View                _dstView;       ///< Input view
-public :
-    PNGWriterProcess<View>(PNGWriterPlugin &instance);
+typedef typename View::value_type value_t;
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+protected:
+	OFX::StringParam*   _filepath;      ///< File path
+	PNGWriterPlugin&    _plugin;        ///< Rendering plugin
+	View _srcView;      ///< Input view
+	View _dstView;      ///< Input view
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+public:
+	PNGWriterProcess<View>( PNGWriterPlugin & instance );
 
-    //
-    static void writeImage( View & src, std::string & filepath ) throw(tuttle::plugin::PluginException);
+	// set up and run a processor
+	void setupAndProcess( const OFX::RenderArguments& args );
+
+	// Do some processing
+	void multiThreadProcessImages( OfxRectI procWindow );
+
+	//
+	static void writeImage( View& src, std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 
 }

@@ -20,7 +20,6 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace invert {
@@ -30,21 +29,23 @@ namespace invert {
  *
  */
 template<class View>
-class InvertProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
+class InvertProcess : public tuttle::plugin::ImageGilProcessor<View>,
+	public tuttle::plugin::Progress
 {
-    typedef typename View::value_type value_t;
-protected :
-    InvertPlugin&    _plugin;        ///< Rendering plugin
-    View                  _srcView;       ///< Source view
+typedef typename View::value_type value_t;
 
-public :
-    InvertProcess<View>(InvertPlugin &instance);
+protected:
+	InvertPlugin&    _plugin;        ///< Rendering plugin
+	View _srcView;      ///< Source view
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+public:
+	InvertProcess<View>( InvertPlugin & instance );
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+	// set up and run a processor
+	void setupAndProcess( const OFX::RenderArguments& args );
+
+	// Do some processing
+	void multiThreadProcessImages( OfxRectI procWindow );
 };
 
 }

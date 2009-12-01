@@ -24,29 +24,32 @@ namespace merge {
 class MergePlugin : public OFX::ImageEffect
 {
 public:
-    MergePlugin( OfxImageEffectHandle handle );
+	MergePlugin( OfxImageEffectHandle handle );
 
-    inline OFX::Clip *getSrcClipA( ) const {
-        return _srcClipA;
-    }
+	inline OFX::Clip* getSrcClipA() const
+	{
+		return _srcClipA;
+	}
 
-    inline OFX::Clip *getSrcClipB( ) const {
-        return _srcClipB;
-    }
+	inline OFX::Clip* getSrcClipB() const
+	{
+		return _srcClipB;
+	}
 
-    inline OFX::Clip *getDstClip( ) const {
-        return _dstClip;
-    }
+	inline OFX::Clip* getDstClip() const
+	{
+		return _dstClip;
+	}
 
 public:
-    virtual void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	virtual void render( const OFX::RenderArguments& args );
+	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip           *_srcClipA;      ///< Source image clip A
-    OFX::Clip           *_srcClipB;      ///< Source image clip B
-    OFX::Clip           *_dstClip;       ///< Destination image clip
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _srcClipA;     ///< Source image clip A
+	OFX::Clip* _srcClipB;     ///< Source image clip B
+	OFX::Clip* _dstClip;      ///< Destination image clip
 };
 
 }

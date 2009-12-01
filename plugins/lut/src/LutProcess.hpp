@@ -22,7 +22,6 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace lut {
@@ -32,30 +31,30 @@ namespace lut {
  *
  */
 template<class View>
-class LutProcess 
-: public tuttle::plugin::ImageGilProcessor<View>
-, public tuttle::plugin::Progress
+class LutProcess
+	: public tuttle::plugin::ImageGilProcessor<View>,
+	public tuttle::plugin::Progress
 {
-    typedef typename View::value_type value_t;
+typedef typename View::value_type value_t;
 
-protected :
-    Lut3D         _lut3D;         ///< Lut3D
-    LutReader     _reader;        ///< Reader
-    LutPlugin&    _plugin;        ///< Rendering plugin
-    View          _srcView;       ///< Source view
-    OFX::StringParam    *_sFilename;     ///< Filename
+protected:
+	Lut3D _lut3D;        ///< Lut3D
+	LutReader _reader;       ///< Reader
+	LutPlugin&    _plugin;        ///< Rendering plugin
+	View _srcView;      ///< Source view
+	OFX::StringParam* _sFilename;    ///< Filename
 
-public :
-    LutProcess<View>(LutPlugin &instance);
+public:
+	LutProcess<View>( LutPlugin & instance );
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+	// set up and run a processor
+	void setupAndProcess( const OFX::RenderArguments& args );
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+	// Do some processing
+	void multiThreadProcessImages( OfxRectI procWindow );
 
-    // Lut3D Transform
-    void applyLut(View & dst, View & src );
+	// Lut3D Transform
+	void applyLut( View& dst, View& src );
 };
 
 }

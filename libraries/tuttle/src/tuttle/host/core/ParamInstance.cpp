@@ -1,30 +1,30 @@
 /*
-Software License :
-
-Copyright (c) 2007, The Open Effects Association Ltd. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
+ * Software License :
+ *
+ * Copyright (c) 2007, The Open Effects Association Ltd. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
  * Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
+ *    this list of conditions and the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  * Neither the name The Open Effects Association Ltd, nor the names of its
-      contributors may be used to endorse or promote products derived from this
-      software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <iostream>
@@ -60,627 +60,632 @@ namespace core {
 //
 // StringInstance
 //
-StringInstance::StringInstance( EffectInstance* effect,
-                                const std::string& name,
-                                tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::ParamStringInstance( descriptor, setInstance )
-, _effect( effect )
+StringInstance::StringInstance( EffectInstance*                                 effect,
+                                const std::string&                              name,
+                                tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::ParamStringInstance( descriptor, setInstance ),
+	_effect( effect )
 {
-    _value = getDefault();
+	_value = getDefault();
 }
 
 StringInstance* StringInstance::clone() const
 {
-	return new StringInstance(*this);
+	return new StringInstance( *this );
 }
 
-const std::string & StringInstance::getDefault() const
+const std::string& StringInstance::getDefault() const
 {
-    return getProperties().getStringProperty( kOfxParamPropDefault );
+	return getProperties().getStringProperty( kOfxParamPropDefault );
 }
 
 OfxStatus StringInstance::get( std::string& v )
 {
-    v = _value;
-    return kOfxStatOK;
+	v = _value;
+	return kOfxStatOK;
 }
 
 OfxStatus StringInstance::get( OfxTime time, std::string& v )
 {
-    v = _value; ///< @todo: in time !
-    return kOfxStatOK;
+	v = _value; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 OfxStatus StringInstance::set( const char* v )
 {
-    _value = std::string(v);
-    return kOfxStatOK;
+	_value = std::string( v );
+	return kOfxStatOK;
 }
 
 OfxStatus StringInstance::set( OfxTime time, const char* v )
 {
-    _value = std::string(v); ///< @todo: in time !
-    return kOfxStatOK;
+	_value = std::string( v ); ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 //
 // IntegerInstance
 //
-IntegerInstance::IntegerInstance( EffectInstance* effect,
-                                  const std::string& name,
-                                  tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                  tuttle::host::ofx::attribute::ParamInstanceSet & setInstance)
-: tuttle::host::ofx::attribute::ParamIntegerInstance( descriptor, setInstance )
-, _effect( effect )
+IntegerInstance::IntegerInstance( EffectInstance*                                 effect,
+                                  const std::string&                              name,
+                                  tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                  tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::ParamIntegerInstance( descriptor, setInstance ),
+	_effect( effect )
 {
-    _value = getDefault();
+	_value = getDefault();
 }
 
 IntegerInstance* IntegerInstance::clone() const
 {
-	return new IntegerInstance(*this);
+	return new IntegerInstance( *this );
 }
 
 int IntegerInstance::getDefault() const
 {
-    return getProperties().getIntProperty( kOfxParamPropDefault );
+	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
 OfxStatus IntegerInstance::get( int& v )
 {
-    v = _value;
-    return kOfxStatOK;
+	v = _value;
+	return kOfxStatOK;
 }
 
 OfxStatus IntegerInstance::get( OfxTime time, int& v )
 {
-    v = _value; ///< @todo: in time !
-    return kOfxStatOK;
+	v = _value; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 OfxStatus IntegerInstance::set( int v )
 {
-    _value = v;
-    return kOfxStatOK;
+	_value = v;
+	return kOfxStatOK;
 }
 
 OfxStatus IntegerInstance::set( OfxTime time, int v )
 {
-    _value = v; ///< @todo: in time !
-    return kOfxStatOK;
+	_value = v; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 //
 // DoubleInstance
 //
-DoubleInstance::DoubleInstance( EffectInstance* effect,
-                                const std::string& name,
-                                tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::ParamDoubleInstance( descriptor, setInstance )
-, _effect( effect )
+DoubleInstance::DoubleInstance( EffectInstance*                                 effect,
+                                const std::string&                              name,
+                                tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::ParamDoubleInstance( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _value = getDefault();
+	_value = getDefault();
 }
 
 DoubleInstance* DoubleInstance::clone() const
 {
-	return new DoubleInstance(*this);
+	return new DoubleInstance( *this );
 }
 
 double DoubleInstance::getDefault() const
 {
-    return getProperties().getDoubleProperty( kOfxParamPropDefault );
+	return getProperties().getDoubleProperty( kOfxParamPropDefault );
 }
 
 OfxStatus DoubleInstance::get( double& v )
 {
-    v = _value;
-    return kOfxStatOK;
+	v = _value;
+	return kOfxStatOK;
 }
 
 OfxStatus DoubleInstance::get( OfxTime time, double& v )
 {
-    v = _value; ///< @todo: in time !
-    return kOfxStatOK;
+	v = _value; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 OfxStatus DoubleInstance::set( double v )
 {
-    _value = v;
-    return kOfxStatOK;
+	_value = v;
+	return kOfxStatOK;
 }
 
 OfxStatus DoubleInstance::set( OfxTime time, double v )
 {
-    _value = v; ///< @todo: in time !
-    return kOfxStatOK;
+	_value = v; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 OfxStatus DoubleInstance::derive( OfxTime time, double& )
 {
-    return kOfxStatErrMissingHostFeature;
+	return kOfxStatErrMissingHostFeature;
 }
 
 OfxStatus DoubleInstance::integrate( OfxTime time1, OfxTime time2, double& )
 {
-    return kOfxStatErrMissingHostFeature;
+	return kOfxStatErrMissingHostFeature;
 }
 
 //
 // BooleanInstance
 //
-BooleanInstance::BooleanInstance( EffectInstance* effect,
-                                  const std::string& name,
-                                  tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                  tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::ParamBooleanInstance( descriptor, setInstance )
-, _effect( effect )
+BooleanInstance::BooleanInstance( EffectInstance*                                 effect,
+                                  const std::string&                              name,
+                                  tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                  tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::ParamBooleanInstance( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _value = getDefault();
+	_value = getDefault();
 }
 
 BooleanInstance* BooleanInstance::clone() const
 {
-	return new BooleanInstance(*this);
+	return new BooleanInstance( *this );
 }
 
 bool BooleanInstance::getDefault() const
 {
-    return static_cast<bool>(getProperties().getIntProperty( kOfxParamPropDefault ));
+	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault ) );
 }
 
 OfxStatus BooleanInstance::get( bool& v )
 {
-    v = _value;
-    return kOfxStatOK;
+	v = _value;
+	return kOfxStatOK;
 }
 
 OfxStatus BooleanInstance::get( OfxTime time, bool& v )
 {
-    v = _value; ///< @todo: in time !
-    return kOfxStatOK;
+	v = _value; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 OfxStatus BooleanInstance::set( bool v )
 {
-    _value = v;
-    return kOfxStatOK;
+	_value = v;
+	return kOfxStatOK;
 }
 
 OfxStatus BooleanInstance::set( OfxTime time, bool v )
 {
-    _value = v; ///< @todo: in time !
-    return kOfxStatOK;
+	_value = v; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 //
 // ChoiceInteger
 //
-ChoiceInstance::ChoiceInstance( EffectInstance* effect,
-                                const std::string& name,
-                                tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::ParamChoiceInstance( descriptor, setInstance )
-, _effect( effect )
+ChoiceInstance::ChoiceInstance( EffectInstance*                                 effect,
+                                const std::string&                              name,
+                                tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::ParamChoiceInstance( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _value = getDefault();
+	_value = getDefault();
 }
 
 ChoiceInstance* ChoiceInstance::clone() const
 {
-	return new ChoiceInstance(*this);
+	return new ChoiceInstance( *this );
 }
 
 int ChoiceInstance::getDefault() const
 {
-    return getProperties().getIntProperty( kOfxParamPropDefault );
+	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
 OfxStatus ChoiceInstance::get( int& v )
 {
-    v = _value;
-    return kOfxStatOK;
+	v = _value;
+	return kOfxStatOK;
 }
 
 OfxStatus ChoiceInstance::get( OfxTime time, int& v )
 {
-    v = _value; ///< @todo: in time !
-    return kOfxStatOK;
+	v = _value; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 OfxStatus ChoiceInstance::set( int v )
 {
-    _value = v;
-    return kOfxStatOK;
+	_value = v;
+	return kOfxStatOK;
 }
 
 OfxStatus ChoiceInstance::set( OfxTime time, int v )
 {
-    _value = v; ///< @todo: in time !
-    return kOfxStatOK;
+	_value = v; ///< @todo: in time !
+	return kOfxStatOK;
 }
 
 //
 // RGBAInstance
 //
-RGBAInstance::RGBAInstance( EffectInstance* effect,
-                            const std::string& name,
-                            tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                            tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 4>( descriptor, setInstance )
-, _effect( effect )
+RGBAInstance::RGBAInstance( EffectInstance*                                 effect,
+                            const std::string&                              name,
+                            tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                            tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 4>( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _controls.push_back( new DoubleInstance(effect, name+".r_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".g_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".b_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".a_", descriptor, setInstance) );
+	_controls.push_back( new DoubleInstance( effect, name + ".r_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".g_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".b_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".a_", descriptor, setInstance ) );
 
-    _value = getDefault();
+	_value = getDefault();
 }
 
 RGBAInstance* RGBAInstance::clone() const
 {
-	return new RGBAInstance(*this);
+	return new RGBAInstance( *this );
 }
 
 OfxRGBAColourD RGBAInstance::getDefault() const
 {
-    OfxRGBAColourD color;
-    getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 4 );
-    return color;
+	OfxRGBAColourD color;
+
+	getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 4 );
+	return color;
 }
 
 OfxStatus RGBAInstance::get( double& r, double& g, double& b, double& a )
 {
-    r = _value.r;
-    g = _value.g;
-    b = _value.b;
-    a = _value.a;
-    return kOfxStatOK;
+	r = _value.r;
+	g = _value.g;
+	b = _value.b;
+	a = _value.a;
+	return kOfxStatOK;
 }
 
 OfxStatus RGBAInstance::get( OfxTime time, double& r, double& g, double& b, double& a )
 {
-    r = _value.r;
-    g = _value.g;
-    b = _value.b;
-    a = _value.a;
-    return kOfxStatOK;
+	r = _value.r;
+	g = _value.g;
+	b = _value.b;
+	a = _value.a;
+	return kOfxStatOK;
 }
 
 OfxStatus RGBAInstance::set( double r, double g, double b, double a )
 {
-    _value.r = r;
-    _value.g = g;
-    _value.b = b;
-    _value.a = a;
-    return kOfxStatOK;
+	_value.r = r;
+	_value.g = g;
+	_value.b = b;
+	_value.a = a;
+	return kOfxStatOK;
 }
 
 OfxStatus RGBAInstance::set( OfxTime time, double r, double g, double b, double a )
 {
-    _value.r = r;
-    _value.g = g;
-    _value.b = b;
-    _value.a = a;
-    return kOfxStatOK;
+	_value.r = r;
+	_value.g = g;
+	_value.b = b;
+	_value.a = a;
+	return kOfxStatOK;
 }
 
 //
 // RGBInstance
 //
-RGBInstance::RGBInstance( EffectInstance* effect,
-                          const std::string& name,
-                          tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                          tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
-, _effect( effect )
+RGBInstance::RGBInstance( EffectInstance*                                 effect,
+                          const std::string&                              name,
+                          tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                          tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _controls.push_back( new DoubleInstance(effect, name+".r_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".g_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".b_", descriptor, setInstance) );
-    _value = getDefault();
+	_controls.push_back( new DoubleInstance( effect, name + ".r_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".g_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".b_", descriptor, setInstance ) );
+	_value = getDefault();
 }
-
 
 RGBInstance* RGBInstance::clone() const
 {
-	return new RGBInstance(*this);
+	return new RGBInstance( *this );
 }
 
 OfxRGBColourD RGBInstance::getDefault() const
 {
-    OfxRGBColourD color;
-    getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 3 );
-    return color;
+	OfxRGBColourD color;
+
+	getProperties().getDoublePropertyN( kOfxParamPropDefault, &color.r, 3 );
+	return color;
 }
 
 OfxStatus RGBInstance::get( double& r, double& g, double& b )
 {
-    r = _value.r;
-    g = _value.g;
-    b = _value.b;
-    return kOfxStatOK;
+	r = _value.r;
+	g = _value.g;
+	b = _value.b;
+	return kOfxStatOK;
 }
 
 OfxStatus RGBInstance::get( OfxTime time, double& r, double& g, double& b )
 {
-    r = _value.r;
-    g = _value.g;
-    b = _value.b;
-    return kOfxStatOK;
+	r = _value.r;
+	g = _value.g;
+	b = _value.b;
+	return kOfxStatOK;
 }
 
 OfxStatus RGBInstance::set( double r, double g, double b )
 {
-    _value.r = r;
-    _value.g = g;
-    _value.b = b;
-    return kOfxStatOK;
+	_value.r = r;
+	_value.g = g;
+	_value.b = b;
+	return kOfxStatOK;
 }
 
 OfxStatus RGBInstance::set( OfxTime time, double r, double g, double b )
 {
-    _value.r = r;
-    _value.g = g;
-    _value.b = b;
-    return kOfxStatOK;
+	_value.r = r;
+	_value.g = g;
+	_value.b = b;
+	return kOfxStatOK;
 }
 
 //
 // Double2DInstance
 //
-Double2DInstance::Double2DInstance( EffectInstance* effect,
-                                    const std::string& name,
-                                    tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                    tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 2>( descriptor, setInstance )
-, _effect( effect )
+Double2DInstance::Double2DInstance( EffectInstance*                                 effect,
+                                    const std::string&                              name,
+                                    tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                    tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 2>( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _controls.push_back( new DoubleInstance(effect, name+".x_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".y_", descriptor, setInstance) );
-    _value = getDefault();
+	_controls.push_back( new DoubleInstance( effect, name + ".x_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".y_", descriptor, setInstance ) );
+	_value = getDefault();
 }
 
 Double2DInstance* Double2DInstance::clone() const
 {
-	return new Double2DInstance(*this);
+	return new Double2DInstance( *this );
 }
 
 OfxPointD Double2DInstance::getDefault() const
 {
-    OfxPointD point;
-    getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 2 );
-    return point;
+	OfxPointD point;
+
+	getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 2 );
+	return point;
 }
 
 OfxStatus Double2DInstance::get( double& x, double& y )
 {
-    x = _value.x;
-    y = _value.y;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	return kOfxStatOK;
 }
 
 OfxStatus Double2DInstance::get( OfxTime time, double& x, double& y )
 {
-    x = _value.x;
-    y = _value.y;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	return kOfxStatOK;
 }
 
 OfxStatus Double2DInstance::set( double x, double y )
 {
-    _value.x = x;
-    _value.y = y;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	return kOfxStatOK;
 }
 
 OfxStatus Double2DInstance::set( OfxTime time, double x, double y )
 {
-    _value.x = x;
-    _value.y = y;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	return kOfxStatOK;
 }
 
 //
 // Integer2DInstance
 //
-Integer2DInstance::Integer2DInstance( EffectInstance* effect,
-                                      const std::string& name,
-                                      tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                      tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::MultiDimParam<IntegerInstance, 2>( descriptor, setInstance )
-, _effect( effect )
+Integer2DInstance::Integer2DInstance( EffectInstance*                                 effect,
+                                      const std::string&                              name,
+                                      tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                      tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::MultiDimParam<IntegerInstance, 2>( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _controls.push_back( new IntegerInstance(effect, name+".x_", descriptor, setInstance) );
-    _controls.push_back( new IntegerInstance(effect, name+".y_", descriptor, setInstance) );
-    _value = getDefault();
+	_controls.push_back( new IntegerInstance( effect, name + ".x_", descriptor, setInstance ) );
+	_controls.push_back( new IntegerInstance( effect, name + ".y_", descriptor, setInstance ) );
+	_value = getDefault();
 }
 
 Integer2DInstance* Integer2DInstance::clone() const
 {
-	return new Integer2DInstance(*this);
+	return new Integer2DInstance( *this );
 }
 
 OfxPointI Integer2DInstance::getDefault() const
 {
-    OfxPointI point;
-    getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 2 );
-    return point;
+	OfxPointI point;
+
+	getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 2 );
+	return point;
 }
 
 OfxStatus Integer2DInstance::get( int& x, int& y )
 {
-    x = _value.x;
-    y = _value.y;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	return kOfxStatOK;
 }
 
 OfxStatus Integer2DInstance::get( OfxTime time, int& x, int& y )
 {
-    x = _value.x;
-    y = _value.y;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	return kOfxStatOK;
 }
 
 OfxStatus Integer2DInstance::set( int x, int y )
 {
-    _value.x = x;
-    _value.y = y;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	return kOfxStatOK;
 }
 
 OfxStatus Integer2DInstance::set( OfxTime time, int x, int y )
 {
-    _value.x = x;
-    _value.y = y;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	return kOfxStatOK;
 }
 
 //
 // Integer3DInstance
 //
-Integer3DInstance::Integer3DInstance( EffectInstance* effect,
-                                      const std::string& name,
-                                      tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                      tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::MultiDimParam<IntegerInstance, 3>( descriptor, setInstance )
-, _effect( effect )
+Integer3DInstance::Integer3DInstance( EffectInstance*                                 effect,
+                                      const std::string&                              name,
+                                      tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                      tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::MultiDimParam<IntegerInstance, 3>( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _controls.push_back( new IntegerInstance(effect, name+".x_", descriptor, setInstance) );
-    _controls.push_back( new IntegerInstance(effect, name+".y_", descriptor, setInstance) );
-    _controls.push_back( new IntegerInstance(effect, name+".z_", descriptor, setInstance) );
-    _value = getDefault();
+	_controls.push_back( new IntegerInstance( effect, name + ".x_", descriptor, setInstance ) );
+	_controls.push_back( new IntegerInstance( effect, name + ".y_", descriptor, setInstance ) );
+	_controls.push_back( new IntegerInstance( effect, name + ".z_", descriptor, setInstance ) );
+	_value = getDefault();
 }
 
 Integer3DInstance* Integer3DInstance::clone() const
 {
-	return new Integer3DInstance(*this);
+	return new Integer3DInstance( *this );
 }
 
 Ofx3DPointI Integer3DInstance::getDefault() const
 {
-    Ofx3DPointI point;
-    getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 3 );
-    return point;
+	Ofx3DPointI point;
+
+	getProperties().getIntPropertyN( kOfxParamPropDefault, &point.x, 3 );
+	return point;
 }
 
 OfxStatus Integer3DInstance::get( int& x, int& y, int& z )
 {
-    x = _value.x;
-    y = _value.y;
-    z = _value.z;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	z = _value.z;
+	return kOfxStatOK;
 }
 
 OfxStatus Integer3DInstance::get( OfxTime time, int& x, int& y, int& z )
 {
-    x = _value.x;
-    y = _value.y;
-    z = _value.z;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	z = _value.z;
+	return kOfxStatOK;
 }
 
 OfxStatus Integer3DInstance::set( int x, int y, int z )
 {
-    _value.x = x;
-    _value.y = y;
-    _value.z = z;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	_value.z = z;
+	return kOfxStatOK;
 }
 
 OfxStatus Integer3DInstance::set( OfxTime time, int x, int y, int z )
 {
-    _value.x = x;
-    _value.y = y;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	return kOfxStatOK;
 }
 
 //
 // Double3DInstance
 //
-Double3DInstance::Double3DInstance( EffectInstance* effect,
-                                    const std::string& name,
-                                    tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                    tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance )
-, _effect( effect )
+Double3DInstance::Double3DInstance( EffectInstance*                                 effect,
+                                    const std::string&                              name,
+                                    tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                    tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::MultiDimParam<DoubleInstance, 3>( descriptor, setInstance ),
+	_effect( effect )
 
 {
-    _controls.push_back( new DoubleInstance(effect, name+".x_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".y_", descriptor, setInstance) );
-    _controls.push_back( new DoubleInstance(effect, name+".z_", descriptor, setInstance) );
-    _value = getDefault();
+	_controls.push_back( new DoubleInstance( effect, name + ".x_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".y_", descriptor, setInstance ) );
+	_controls.push_back( new DoubleInstance( effect, name + ".z_", descriptor, setInstance ) );
+	_value = getDefault();
 }
 
 Double3DInstance* Double3DInstance::clone() const
 {
-	return new Double3DInstance(*this);
+	return new Double3DInstance( *this );
 }
 
 Ofx3DPointD Double3DInstance::getDefault() const
 {
-    Ofx3DPointD point;
-    getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 3 );
-    return point;
+	Ofx3DPointD point;
+
+	getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 3 );
+	return point;
 }
 
 OfxStatus Double3DInstance::get( double& x, double& y, double& z )
 {
-    x = _value.x;
-    y = _value.y;
-    z = _value.z;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	z = _value.z;
+	return kOfxStatOK;
 }
 
 OfxStatus Double3DInstance::get( OfxTime time, double& x, double& y, double& z )
 {
-    x = _value.x;
-    y = _value.y;
-    z = _value.z;
-    return kOfxStatOK;
+	x = _value.x;
+	y = _value.y;
+	z = _value.z;
+	return kOfxStatOK;
 }
 
 OfxStatus Double3DInstance::set( double x, double y, double z )
 {
-    _value.x = x;
-    _value.y = y;
-    _value.z = z;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	_value.z = z;
+	return kOfxStatOK;
 }
 
 OfxStatus Double3DInstance::set( OfxTime time, double x, double y, double z )
 {
-    _value.x = x;
-    _value.y = y;
-    return kOfxStatOK;
+	_value.x = x;
+	_value.y = y;
+	return kOfxStatOK;
 }
 
 //
 // PushbuttonInstance
 //
-PushbuttonInstance::PushbuttonInstance( EffectInstance* effect,
-                                        const std::string& name,
-                                        tuttle::host::ofx::attribute::ParamDescriptor& descriptor,
-                                        tuttle::host::ofx::attribute::ParamInstanceSet & setInstance )
-: tuttle::host::ofx::attribute::ParamPushbuttonInstance( descriptor, setInstance )
-, _effect( effect )
+PushbuttonInstance::PushbuttonInstance( EffectInstance*                                 effect,
+                                        const std::string&                              name,
+                                        tuttle::host::ofx::attribute::ParamDescriptor&  descriptor,
+                                        tuttle::host::ofx::attribute::ParamInstanceSet& setInstance )
+	: tuttle::host::ofx::attribute::ParamPushbuttonInstance( descriptor, setInstance ),
+	_effect( effect )
 
+{}
+
+PushbuttonInstance* PushbuttonInstance::clone() const
 {
-}
-
-PushbuttonInstance* PushbuttonInstance::clone() const {
-	return new PushbuttonInstance(*this);
+	return new PushbuttonInstance( *this );
 }
 
 }

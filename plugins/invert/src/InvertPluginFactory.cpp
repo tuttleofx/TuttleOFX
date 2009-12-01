@@ -26,38 +26,39 @@ namespace invert {
 
 using namespace OFX;
 
-static const bool   kSupportTiles   = true;
+static const bool kSupportTiles = true;
 
-mDeclarePluginFactory(InvertPluginFactory, {}, {});
+mDeclarePluginFactory( InvertPluginFactory, {}, {}
+                       );
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    // basic labels
-    desc.setLabels("Invert", "Image inverter",
-                   "Image inverter");
-    desc.setPluginGrouping("tuttle");
+	// basic labels
+	desc.setLabels( "Invert", "Image inverter",
+	                "Image inverter" );
+	desc.setPluginGrouping( "tuttle" );
 
-    // add the supported contexts, only filter at the moment
-    desc.addSupportedContext(eContextGeneral);
-    desc.addSupportedContext(eContextFilter);
+	// add the supported contexts, only filter at the moment
+	desc.addSupportedContext( eContextGeneral );
+	desc.addSupportedContext( eContextFilter );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth(eBitDepthUByte);
-    desc.addSupportedBitDepth(eBitDepthUShort);
-    desc.addSupportedBitDepth(eBitDepthFloat);
+	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthUByte );
+	desc.addSupportedBitDepth( eBitDepthUShort );
+	desc.addSupportedBitDepth( eBitDepthFloat );
 
-    // set a few flags
-    desc.setSingleInstance(false);
-    desc.setHostFrameThreading(false);
-    desc.setSupportsMultiResolution(false);
-    desc.setSupportsTiles(kSupportTiles);
-    desc.setTemporalClipAccess(false);
-    desc.setRenderTwiceAlways(false);
-    desc.setSupportsMultipleClipPARs(false);
+	// set a few flags
+	desc.setSingleInstance( false );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess( false );
+	desc.setRenderTwiceAlways( false );
+	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -65,21 +66,22 @@ void InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc, OFX::ContextEnum context)
+void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::ContextEnum context )
 {
-    OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-    srcClip->addSupportedComponent( ePixelComponentRGBA );
-    srcClip->addSupportedComponent( ePixelComponentAlpha );
-    srcClip->setSupportsTiles( kSupportTiles );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-    // Create the mandated output clip
-    OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent( ePixelComponentRGBA );
-    dstClip->addSupportedComponent( ePixelComponentAlpha );
-    dstClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent( ePixelComponentRGBA );
+	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->setSupportsTiles( kSupportTiles );
 
-    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( "Help" );
-    helpButton->setScriptName( "&Help" );
+	// Create the mandated output clip
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
+
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );
+	helpButton->setScriptName( "&Help" );
 }
 
 /**
@@ -90,7 +92,7 @@ void InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc, OF
  */
 OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context )
 {
-    return new InvertPlugin( handle );
+	return new InvertPlugin( handle );
 }
 
 }
@@ -99,12 +101,14 @@ OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle hand
 
 namespace OFX
 {
-    namespace Plugin 
-    {
-        void getPluginIDs(OFX::PluginFactoryArray &ids)
-        {
-            static tuttle::plugin::invert::InvertPluginFactory p("fr.hd3d.tuttle.invert", 1, 0);
-            ids.push_back(&p);
-        }
-    }
+namespace Plugin
+{
+void getPluginIDs( OFX::PluginFactoryArray& ids )
+{
+	static tuttle::plugin::invert::InvertPluginFactory p( "fr.hd3d.tuttle.invert", 1, 0 );
+
+	ids.push_back( &p );
+}
+
+}
 }

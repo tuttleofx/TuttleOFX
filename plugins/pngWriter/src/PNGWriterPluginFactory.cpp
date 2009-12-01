@@ -24,38 +24,39 @@ namespace png {
 
 using namespace OFX;
 
-static const bool kSupportTiles     = false;
+static const bool kSupportTiles = false;
 
-mDeclarePluginFactory(PNGWriterPluginFactory, {}, {});
+mDeclarePluginFactory( PNGWriterPluginFactory, {}, {}
+                       );
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void PNGWriterPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    // basic labels
-    desc.setLabels("PNGWriterHd3d", "PNGWriterHd3d",
-                   "PNG File writer Hd3d");
-    desc.setPluginGrouping("tuttle");
+	// basic labels
+	desc.setLabels( "PNGWriterHd3d", "PNGWriterHd3d",
+	                "PNG File writer Hd3d" );
+	desc.setPluginGrouping( "tuttle" );
 
-    // add the supported contexts, only filter at the moment
-//    desc.addSupportedContext(eContextGenerator);
-    desc.addSupportedContext(eContextGeneral);
+	// add the supported contexts, only filter at the moment
+	//    desc.addSupportedContext(eContextGenerator);
+	desc.addSupportedContext( eContextGeneral );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth(eBitDepthUByte);
-    desc.addSupportedBitDepth(eBitDepthUShort);
-    desc.addSupportedBitDepth(eBitDepthFloat);
+	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthUByte );
+	desc.addSupportedBitDepth( eBitDepthUShort );
+	desc.addSupportedBitDepth( eBitDepthFloat );
 
-    // set a few flags
-    desc.setSingleInstance(false);
-    desc.setHostFrameThreading(false);
-    desc.setSupportsMultiResolution(false);
-    desc.setSupportsTiles(kSupportTiles);
-    desc.setTemporalClipAccess(false);
-    desc.setRenderTwiceAlways(false);
-    desc.setSupportsMultipleClipPARs(false);
+	// set a few flags
+	desc.setSingleInstance( false );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess( false );
+	desc.setRenderTwiceAlways( false );
+	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -63,27 +64,28 @@ void PNGWriterPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void PNGWriterPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
-                                          OFX::ContextEnum context)
+void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                OFX::ContextEnum            context )
 {
-    ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-    srcClip->addSupportedComponent( ePixelComponentRGBA );
-    srcClip->addSupportedComponent( ePixelComponentAlpha );
-    srcClip->setSupportsTiles( kSupportTiles );
+	ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-    ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent( ePixelComponentRGBA );
-    dstClip->addSupportedComponent( ePixelComponentAlpha );
-    dstClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent( ePixelComponentRGBA );
+	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->setSupportsTiles( kSupportTiles );
 
-    // Controls
-    StringParamDescriptor *filename = desc.defineStringParam( kInputFilename );
-    filename->setScriptName( "filename" );
-    filename->setStringType( eStringTypeFilePath );
-    filename->setCacheInvalidation( eCacheInvalidateValueAll );
+	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
 
-    PushButtonParamDescriptor *renderButton = desc.definePushButtonParam( kRender );
-    renderButton->setScriptName( "renderButton" );
+	// Controls
+	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	filename->setScriptName( "filename" );
+	filename->setStringType( eStringTypeFilePath );
+	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+
+	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
+	renderButton->setScriptName( "renderButton" );
 }
 
 /**
@@ -92,10 +94,10 @@ void PNGWriterPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* PNGWriterPluginFactory::createInstance(OfxImageEffectHandle handle,
-                                            OFX::ContextEnum context)
+OFX::ImageEffect* PNGWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
+                                                          OFX::ContextEnum     context )
 {
-    return new PNGWriterPlugin(handle);
+	return new PNGWriterPlugin( handle );
 }
 
 }
@@ -104,12 +106,14 @@ OFX::ImageEffect* PNGWriterPluginFactory::createInstance(OfxImageEffectHandle ha
 
 namespace OFX
 {
-    namespace Plugin 
-    {
-        void getPluginIDs(OFX::PluginFactoryArray &ids)
-        {
-            static tuttle::plugin::png::PNGWriterPluginFactory p("fr.hd3d.tuttle.pngwriter", 1, 0);
-            ids.push_back(&p);
-        }
-    }
+namespace Plugin
+{
+void getPluginIDs( OFX::PluginFactoryArray& ids )
+{
+	static tuttle::plugin::png::PNGWriterPluginFactory p( "fr.hd3d.tuttle.pngwriter", 1, 0 );
+
+	ids.push_back( &p );
+}
+
+}
 }

@@ -1,4 +1,4 @@
 #include "Attribute.hpp"
 
-Attribute::~Attribute(){}
+Attribute::~Attribute() {}
 

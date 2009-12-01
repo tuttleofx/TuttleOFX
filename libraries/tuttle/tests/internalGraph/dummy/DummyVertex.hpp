@@ -6,40 +6,38 @@
 
 #include <tuttle/host/core/ProcessNode.hpp>
 
-namespace tuttle{
-	namespace test{
+namespace tuttle {
+namespace test {
 
 class DummyVertex
 {
-	public:
-		DummyVertex(){}
+public:
+	DummyVertex() {}
 
-		DummyVertex(const std::string& name)
-			: _name(name) {
-		}
+	DummyVertex( const std::string& name )
+		: _name( name ) {}
 
-		DummyVertex(DummyVertex& v)
-			: _name(v.name()){
-		}
+	DummyVertex( DummyVertex& v )
+		: _name( v.name() ) {}
 
-		virtual ~DummyVertex()
-		{}
+	virtual ~DummyVertex()
+	{}
 
-		// operators
-		DummyVertex& operator=(const DummyVertex &v)
-		{
-			if (this == &v) return *this;
-			_name = v.name();
+	// operators
+	DummyVertex& operator=( const DummyVertex& v )
+	{
+		if( this == &v )
 			return *this;
-		}
+		_name = v.name();
+		return *this;
+	}
 
-		const std::string& name() const	{ return _name; }
-		friend std::ostream& operator<<(std::ostream& os, const DummyVertex& v);
+	const std::string&           name() const { return _name; }
+	friend std::ostream& operator<<( std::ostream& os, const DummyVertex& v );
 
-	private:
-		std::string _name;
+private:
+	std::string _name;
 };
-
 
 } // namespace test
 } // namespace tuttle

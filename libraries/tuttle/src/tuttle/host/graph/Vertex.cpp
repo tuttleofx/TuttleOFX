@@ -1,10 +1,10 @@
 #include "Vertex.hpp"
 
-namespace tuttle{
-	namespace host{
-		namespace graph{
+namespace tuttle {
+namespace host {
+namespace graph {
 
-std::ostream& operator<<(std::ostream& os, const Vertex& v)
+std::ostream& operator<<( std::ostream& os, const Vertex& v )
 {
 	os << v.name() ;
 	return os;

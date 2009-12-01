@@ -19,9 +19,10 @@ class Core : public Singleton<Core>
 {
 public:
 	friend class Singleton<Core>;
+
 private:
-	Core( );
-	~Core( );
+	Core();
+	~Core();
 
 private:
 	core::Host _host;
@@ -30,17 +31,17 @@ private:
 	core::MemoryPool _memoryPool;
 
 public:
-	const ofx::PluginCache& getPluginCache() const { return _pluginCache; }
-	const Host& getHost() const { return _host; }
+	const ofx::PluginCache&                         getPluginCache() const            { return _pluginCache; }
+	const Host&                                     getHost() const                   { return _host; }
 	const ofx::imageEffect::ImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
-	const core::MemoryPool& getMemoryPool() const { return _memoryPool; }
+	const core::MemoryPool&                         getMemoryPool() const             { return _memoryPool; }
 
 public:
-	ofx::imageEffect::ImageEffectPlugin* getImageEffectPluginById(const std::string &id, int vermaj=-1, int vermin=-1)
+	ofx::imageEffect::ImageEffectPlugin* getImageEffectPluginById( const std::string& id, int vermaj = -1, int vermin = -1 )
 	{
 		return _imageEffectPluginCache.getPluginById( id, vermaj, vermin );
 	}
-	
+
 public:
 	void preload();
 

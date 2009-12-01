@@ -22,40 +22,40 @@ namespace tuttle {
 namespace plugin {
 namespace dpx {
 
-static const bool   kSupportTiles                 = false;
+static const bool kSupportTiles = false;
 
 using namespace OFX;
 
-mDeclarePluginFactory(DPXReaderPluginFactory, {}, {});
+mDeclarePluginFactory( DPXReaderPluginFactory, {}, {}
+                       );
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void
-DPXReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    // basic labels
-    desc.setLabels("DPXReaderHd3d", "DPXReaderHd3d",
-                   "DPX File reader Hd3d");
-    desc.setPluginGrouping("tuttle");
+	// basic labels
+	desc.setLabels( "DPXReaderHd3d", "DPXReaderHd3d",
+	                "DPX File reader Hd3d" );
+	desc.setPluginGrouping( "tuttle" );
 
-    // add the supported contexts, only filter at the moment
-    desc.addSupportedContext(eContextGenerator);
+	// add the supported contexts, only filter at the moment
+	desc.addSupportedContext( eContextGenerator );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth(eBitDepthFloat);
-    desc.addSupportedBitDepth(eBitDepthUByte);
-    desc.addSupportedBitDepth(eBitDepthUShort);
+	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( eBitDepthUByte );
+	desc.addSupportedBitDepth( eBitDepthUShort );
 
-    // set a few flags
-    desc.setSingleInstance(false);
-    desc.setHostFrameThreading(false);
-    desc.setSupportsMultiResolution(false);
-    desc.setSupportsTiles(kSupportTiles);
-    desc.setTemporalClipAccess(false);
-    desc.setRenderTwiceAlways(false);
-    desc.setSupportsMultipleClipPARs(false);
+	// set a few flags
+	desc.setSingleInstance( false );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess( false );
+	desc.setRenderTwiceAlways( false );
+	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -63,21 +63,21 @@ DPXReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-DPXReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
-                                          OFX::ContextEnum context)
+void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                OFX::ContextEnum            context )
 {
-    // Create the mandated output clip
-    ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent(ePixelComponentRGBA);
-    dstClip->addSupportedComponent(ePixelComponentAlpha);
-    dstClip->setSupportsTiles(kSupportTiles);
+	// Create the mandated output clip
+	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 
-    // Controls
-    StringParamDescriptor *filename = desc.defineStringParam("Input filename");
-    filename->setScriptName("filename");
-    filename->setStringType(eStringTypeFilePath);
-    filename->setCacheInvalidation(eCacheInvalidateValueAll);
+	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
+
+	// Controls
+	StringParamDescriptor* filename = desc.defineStringParam( "Input filename" );
+	filename->setScriptName( "filename" );
+	filename->setStringType( eStringTypeFilePath );
+	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 }
 
 /**
@@ -86,11 +86,10 @@ DPXReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect*
-DPXReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
-                                            OFX::ContextEnum context)
+OFX::ImageEffect* DPXReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
+                                                          OFX::ContextEnum     context )
 {
-    return new DPXReaderPlugin(handle);
+	return new DPXReaderPlugin( handle );
 }
 
 }
@@ -99,12 +98,14 @@ DPXReaderPluginFactory::createInstance(OfxImageEffectHandle handle,
 
 namespace OFX
 {
-    namespace Plugin 
-    {
-        void getPluginIDs(OFX::PluginFactoryArray &ids)
-        {
-            static tuttle::plugin::dpx::DPXReaderPluginFactory p("fr.hd3d.tuttle.dpxreader", 1, 0);
-            ids.push_back(&p);
-        }
-    }
+namespace Plugin
+{
+void getPluginIDs( OFX::PluginFactoryArray& ids )
+{
+	static tuttle::plugin::dpx::DPXReaderPluginFactory p( "fr.hd3d.tuttle.dpxreader", 1, 0 );
+
+	ids.push_back( &p );
+}
+
+}
 }

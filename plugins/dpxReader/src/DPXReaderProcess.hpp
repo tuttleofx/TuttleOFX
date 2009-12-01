@@ -12,34 +12,35 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace dpx {
-
 
 /**
  * @brief Base class for the denoising processor
  *
  */
 template<class View>
-class DPXReaderProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
+class DPXReaderProcess : public tuttle::plugin::ImageGilProcessor<View>,
+	public tuttle::plugin::Progress
 {
-    typedef typename View::value_type value_t;
-protected :
-    OFX::StringParam*   _filepath;      ///< File path
-    DPXReaderPlugin&    _plugin;        ///< Rendering plugin
-public :
-    DPXReaderProcess<View>(DPXReaderPlugin &instance);
+typedef typename View::value_type value_t;
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+protected:
+	OFX::StringParam*   _filepath;      ///< File path
+	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+public:
+	DPXReaderProcess<View>( DPXReaderPlugin & instance );
 
-    //
-    View& readImage( View &dst, std::string & filepath ) throw(tuttle::plugin::PluginException);
+	// set up and run a processor
+	void setupAndProcess( const OFX::RenderArguments& args );
+
+	// Do some processing
+	void multiThreadProcessImages( OfxRectI procWindow );
+
+	//
+	View& readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 
 }

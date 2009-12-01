@@ -1,30 +1,30 @@
 /*
-Software License :
-
-Copyright (c) 2007-2009, The Open Effects Association Ltd. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
+ * Software License :
+ *
+ * Copyright (c) 2007-2009, The Open Effects Association Ltd. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
  * Redistributions of source code must retain the above copyright notice,
-	  this list of conditions and the following disclaimer.
+ *    this list of conditions and the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice,
-	  this list of conditions and the following disclaimer in the documentation
-	  and/or other materials provided with the distribution.
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
  * Neither the name The Open Effects Association Ltd, nor the names of its
-	  contributors may be used to endorse or promote products derived from this
-	  software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <assert.h>
@@ -51,59 +51,60 @@ namespace attribute {
 /**
  * base ctor, for a descriptor
  */
-ClipImageAccessor::ClipImageAccessor( ) { }
+ClipImageAccessor::ClipImageAccessor() {}
 
-ClipImageAccessor::~ClipImageAccessor( ) { }
+ClipImageAccessor::~ClipImageAccessor() {}
 
 /** return a std::vector of supported comp
  */
-const std::vector<std::string> &ClipImageAccessor::getSupportedComponents( ) const
+const std::vector<std::string>& ClipImageAccessor::getSupportedComponents() const
 {
-	Property::String *p = getProperties( ).fetchStringProperty( kOfxImageEffectPropSupportedComponents );
+	Property::String* p = getProperties().fetchStringProperty( kOfxImageEffectPropSupportedComponents );
+
 	assert( p != NULL );
-	return p->getValues( );
+	return p->getValues();
 }
 
 /** is the given component supported
  */
-bool ClipImageAccessor::isSupportedComponent( const std::string &comp ) const
+bool ClipImageAccessor::isSupportedComponent( const std::string& comp ) const
 {
-	return getProperties( ).findStringPropValueIndex( kOfxImageEffectPropSupportedComponents, comp ) != -1;
+	return getProperties().findStringPropValueIndex( kOfxImageEffectPropSupportedComponents, comp ) != -1;
 }
 
 /** does the clip do random temporal access
  */
-bool ClipImageAccessor::temporalAccess( ) const
+bool ClipImageAccessor::temporalAccess() const
 {
-	return getProperties( ).getIntProperty( kOfxImageEffectPropTemporalClipAccess ) != 0;
+	return getProperties().getIntProperty( kOfxImageEffectPropTemporalClipAccess ) != 0;
 }
 
 /** is the clip a nominal 'mask' clip
  */
-bool ClipImageAccessor::isMask( ) const
+bool ClipImageAccessor::isMask() const
 {
-	return getProperties( ).getIntProperty( kOfxImageClipPropIsMask ) != 0;
+	return getProperties().getIntProperty( kOfxImageClipPropIsMask ) != 0;
 }
 
 /** how does this clip like fielded images to be presented to it
  */
-const std::string &ClipImageAccessor::getFieldExtraction( ) const
+const std::string& ClipImageAccessor::getFieldExtraction() const
 {
-	return getProperties( ).getStringProperty( kOfxImageClipPropFieldExtraction );
+	return getProperties().getStringProperty( kOfxImageClipPropFieldExtraction );
 }
 
 /** is the clip a nominal 'mask' clip
  */
-bool ClipImageAccessor::supportsTiles( ) const
+bool ClipImageAccessor::supportsTiles() const
 {
-	return getProperties( ).getIntProperty( kOfxImageEffectPropSupportsTiles ) != 0;
+	return getProperties().getIntProperty( kOfxImageEffectPropSupportsTiles ) != 0;
 }
 
 /**
  * descriptor
  */
 ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
-: tuttle::host::ofx::attribute::ClipDescriptor( )
+	: tuttle::host::ofx::attribute::ClipDescriptor()
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
@@ -116,6 +117,7 @@ ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
 		{ kOfxImageEffectPropSupportsTiles, Property::eInt, 1, false, "1" },
 		{ 0 },
 	};
+
 	_properties.addProperties( clipImageDescriptorStuffs );
 	_properties.setStringProperty( kOfxPropName, name );
 }
@@ -124,10 +126,10 @@ ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
  * clip clipimage instance
  */
 ClipImageInstance::ClipImageInstance( imageEffect::Instance& effectInstance, const attribute::ClipImageDescriptor& desc )
-: attribute::ClipInstance( desc )
-, _effectInstance( effectInstance )
-//				, _pixelDepth( kOfxBitDepthNone )
-//				, _components( kOfxImageComponentNone )
+	: attribute::ClipInstance( desc ),
+	_effectInstance( effectInstance )
+	//				, _pixelDepth( kOfxBitDepthNone )
+	//				, _components( kOfxImageComponentNone )
 {
 	//					_par = 1.0;
 	/**
@@ -155,13 +157,13 @@ ClipImageInstance::ClipImageInstance( imageEffect::Instance& effectInstance, con
 }
 
 OfxStatus ClipImageInstance::instanceChangedAction( std::string why,
-													OfxTime time,
-													OfxPointD renderScale )
+                                                    OfxTime     time,
+                                                    OfxPointD   renderScale )
 {
 	Property::PropSpec stuff[] = {
 		{ kOfxPropType, Property::eString, 1, true, kOfxTypeClip },
-		{ kOfxPropName, Property::eString, 1, true, getName( ).c_str( ) },
-		{ kOfxPropChangeReason, Property::eString, 1, true, why.c_str( ) },
+		{ kOfxPropName, Property::eString, 1, true, getName().c_str() },
+		{ kOfxPropChangeReason, Property::eString, 1, true, why.c_str() },
 		{ kOfxPropTime, Property::eDouble, 1, true, "0" },
 		{ kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
 		{ 0 }
@@ -173,12 +175,12 @@ OfxStatus ClipImageInstance::instanceChangedAction( std::string why,
 	inArgs.setDoubleProperty( kOfxPropTime, time );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
-	return _effectInstance.mainEntry( kOfxActionInstanceChanged, _effectInstance.getHandle( ), &inArgs, 0 );
+	return _effectInstance.mainEntry( kOfxActionInstanceChanged, _effectInstance.getHandle(), &inArgs, 0 );
 }
 
 /// given the colour component, find the nearest set of supported colour components
 
-const std::string &ClipImageInstance::findSupportedComp( const std::string &s ) const
+const std::string& ClipImageInstance::findSupportedComp( const std::string& s ) const
 {
 	static const std::string none( kOfxImageComponentNone );
 	static const std::string rgba( kOfxImageComponentRGBA );
@@ -203,53 +205,49 @@ const std::string &ClipImageInstance::findSupportedComp( const std::string &s ) 
 
 	/// wierd, must be some custom bit , if only one, choose that, otherwise no idea
 	/// how to map, you need to derive to do so.
-	const std::vector<std::string> &supportedComps = getSupportedComponents( );
-	if( supportedComps.size( ) == 1 )
+	const std::vector<std::string>& supportedComps = getSupportedComponents();
+	if( supportedComps.size() == 1 )
 		return supportedComps[0];
 
 	return none;
 }
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////////
 // ClipImageInstanceSet
 
-ClipImageInstanceSet::ClipImageInstanceSet( )
-: _clipPrefsDirty( true )
-{ }
+ClipImageInstanceSet::ClipImageInstanceSet()
+	: _clipPrefsDirty( true )
+{}
 
-ClipImageInstanceSet::~ClipImageInstanceSet( )
+ClipImageInstanceSet::~ClipImageInstanceSet()
 {
 	// iterate the clips and delete them
-	for( std::vector<ClipImageInstance *>::iterator i = _clipsByOrder.begin( ); i != _clipsByOrder.end( ); ++i )
+	for( std::vector<ClipImageInstance*>::iterator i = _clipsByOrder.begin(); i != _clipsByOrder.end(); ++i )
 	{
 		if( *i )
-			delete (*i );
+			delete ( *i );
 	}
 }
 
-void ClipImageInstanceSet::populateClips( const imageEffect::Descriptor& descriptor ) throw(std::logic_error)
+void ClipImageInstanceSet::populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error )
 {
-	const std::vector<attribute::ClipImageDescriptor*>& clips = descriptor.getClipsByOrder( );
+	const std::vector<attribute::ClipImageDescriptor*>& clips = descriptor.getClipsByOrder();
 
 	_clipsByOrder.reserve( clips.size() );
 	/// @todo tuttle_todo fab don't manipulate clip here, delegate to ClipInstanceSet
-	for( std::vector<attribute::ClipImageDescriptor*>::const_iterator it = clips.begin( ), itEnd = clips.end();
-		 it != itEnd; ++it )
+	for( std::vector<attribute::ClipImageDescriptor*>::const_iterator it = clips.begin(), itEnd = clips.end();
+	     it != itEnd; ++it )
 	{
-		const std::string &name = ( *it )->getName( );
+		const std::string& name = ( *it )->getName();
 		// foreach clip descriptor make a ClipImageInstance
 		attribute::ClipImageInstance* instance = newClipImage( **it ); //( this, *it, counter );
 		if( !instance )
-			 throw std::logic_error("Error on ClipImage creation.");
+			throw std::logic_error( "Error on ClipImage creation." );
 
 		_clipsByOrder.push_back( instance );
 		_clips[name] = instance;
 	}
 }
-
 
 }
 }

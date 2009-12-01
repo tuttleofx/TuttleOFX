@@ -20,36 +20,36 @@ private:
 	static T inst;
 
 private:
-	StaticSingleton(const StaticSingleton &){}
-	StaticSingleton& operator=(const StaticSingleton&){}
+	StaticSingleton( const StaticSingleton& ) {}
+	StaticSingleton& operator=( const StaticSingleton& ) {}
 
 protected:
-	StaticSingleton(){}
-	~StaticSingleton()=0;
+	StaticSingleton() {}
+	~StaticSingleton() = 0;
 
 public:
-
 	/**
 	 * @brief return the unique instance of StaticSingleton<T> class
 	 * @return T the unique instance of StaticSingleton<T> class
-	*/
+	 */
 	static T& instance()
 	{
 		return inst;
 	}
+
 };
 
-template <class T> T StaticSingleton<T>::inst;
-template <class T> StaticSingleton<T>::~StaticSingleton(){}
-
+template <class T>
+T StaticSingleton<T>::inst;
+template <class T>
+StaticSingleton<T>::~StaticSingleton() {}
 
 ///macro to implement StaticSingleton. Use it in derivated class declaration
-#define MAKE_StaticSingleton(Class) \
-	public : \
-		friend class StaticSingleton<Class>; \
-	private : \
-		Class(){} \
-		~Class(){}
-
+#define MAKE_StaticSingleton( Class ) \
+	public: \
+		friend class StaticSingleton < Class >; \
+	private: \
+		Class() {} \
+		~Class() {}
 
 #endif

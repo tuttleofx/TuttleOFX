@@ -9,8 +9,8 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-Core::Core( )
-: _imageEffectPluginCache(_host)
+Core::Core()
+	: _imageEffectPluginCache( _host )
 {
 	_pluginCache.setCacheVersion( "tuttleV1" );
 
@@ -20,22 +20,22 @@ Core::Core( )
 	//preload();
 }
 
-Core::~Core( )
-{
-}
+Core::~Core()
+{}
 
-void Core::preload( )
+void Core::preload()
 {
 	// try to read an old cache
 	std::ifstream ifs( "tuttlePluginCache.xml" );
+
 	_pluginCache.readCache( ifs );
-	_pluginCache.scanPluginFiles( );
-	ifs.close( );
+	_pluginCache.scanPluginFiles();
+	ifs.close();
 
 	/// flush out the current cache
 	std::ofstream of( "tuttlePluginCache.xml" );
 	_pluginCache.writePluginCache( of );
-	of.close( );
+	of.close();
 }
 
 }

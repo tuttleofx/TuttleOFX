@@ -5,10 +5,10 @@
 
 class Attribute
 {
-	public:
-		Attribute(){}
+public:
+	Attribute() {}
 
-		virtual ~Attribute()=0;
+	virtual ~Attribute() = 0;
 };
 
 #endif

@@ -1,7 +1,6 @@
 #ifndef VOLET_MARGIN_HPP
 #define VOLET_MARGIN_HPP
 
-
 #include <tuttle/common/utils/global.hpp>
 
 #include <ofxsImageEffect.h>
@@ -15,27 +14,27 @@ namespace crop {
 class CropMargin : public OFX::OverlayInteract
 {
 public:
+	CropMargin( OfxInteractHandle handle, OFX::ImageEffect* effect ) : OFX::OverlayInteract( handle )
+	{
+		_effect = effect;
+	}
 
-    CropMargin( OfxInteractHandle handle, OFX::ImageEffect *effect ) : OFX::OverlayInteract( handle )
-    {
-        _effect = effect;
-    }
-    virtual bool draw( const OFX::DrawArgs &args );
+	virtual bool draw( const OFX::DrawArgs& args );
 };
 
 class CropMarginOverlay : public OFX::EffectOverlayDescriptor
 {
 public:
+	OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect* effect )
+	{
+		return new CropMargin( handle, effect );
+	}
 
-    OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect *effect )
-    {
-        return new CropMargin( handle, effect );
-    }
+	OfxPluginEntryPoint* getMainEntry()
+	{
+		return NULL;
+	}
 
-    OfxPluginEntryPoint* getMainEntry( )
-    {
-        return NULL;
-    }
 };
 
 }
