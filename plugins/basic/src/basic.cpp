@@ -49,7 +49,7 @@
 #include "ofxsImageEffect.h"
 #include "ofxsMultiThread.h"
 
-#include "ofxsProcessing.h"
+#include <tuttle/plugin/ofxsProcessing.h>
 
 // //////////////////////////////////////////////////////////////////////////////
 // a dumb interact that just draw's a square you can drag
