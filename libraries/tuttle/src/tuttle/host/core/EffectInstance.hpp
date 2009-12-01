@@ -30,6 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef TUTTLE_EFFECT_INSTANCE_H
 #define TUTTLE_EFFECT_INSTANCE_H
 
+#include "ProcessNode.hpp"
 #include <tuttle/host/ofx/ofxhImageEffect.h>
 
 #include <cassert>
@@ -38,7 +39,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class EffectInstance : public tuttle::host::ofx::imageEffect::Instance
+class EffectInstance : public ProcessNode, public tuttle::host::ofx::imageEffect::Instance
 {
 protected:
 	OfxPointD _frameRange;
@@ -46,8 +47,15 @@ public:
 	EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
 					tuttle::host::ofx::imageEffect::Descriptor& desc,
 					const std::string& context );
-	void dumpToStdOut( );
 
+	/**
+	 * @todo a working clone...
+	 */
+	EffectInstance* clone() const { return new EffectInstance(_plugin, *_descriptor, _context); }
+
+	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }
+
+	void dumpToStdOut( );
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -58,9 +66,7 @@ public:
 	const std::string &getDefaultOutputFielding( ) const;
 
 	/// make a clip
-	tuttle::host::ofx::attribute::ClipImageInstance* newClipInstance( tuttle::host::ofx::imageEffect::Instance* plugin,
-																	  tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor,
-																	  int index );
+	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor );
 
 
 	/// vmessage
@@ -124,7 +130,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	tuttle::host::ofx::attribute::ParamInstance* newParam( const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& Descriptor, ParamInstanceSet *setInstance );
+	tuttle::host::ofx::attribute::ParamInstance* newParam( tuttle::host::ofx::attribute::ParamDescriptor& Descriptor );
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///

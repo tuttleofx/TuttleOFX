@@ -28,4 +28,3 @@ for local l in [ glob * : _* ]
 {
    build-project $(l) ;
 }
-

@@ -20,8 +20,8 @@ namespace invert {
 using namespace boost::gil;
 const static std::string kInvertHelpString = "<b>Image inverter</b> is used to invert components of an image.  <br />";
 
-InvertPlugin::InvertPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+InvertPlugin::InvertPlugin( OfxImageEffectHandle handle )
+: ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
@@ -115,8 +115,8 @@ void InvertPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
     if( paramName == "Help" )
     {
         sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kInvertHelpString );
+                                   "", // No XML resources
+                                   kInvertHelpString );
     }
 }
 

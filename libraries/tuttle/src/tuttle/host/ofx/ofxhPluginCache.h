@@ -418,9 +418,8 @@ public:
 		return _dirty;
 	}
 
-	/// add a file to the plugin path
-
-	void addFileToPath( const std::string &f, bool recurse = true )
+	/// add a directory to the plugin path
+	void addDirectoryToPath( const std::string &f, bool recurse = true )
 	{
 		_pluginPath.push_back( f );
 		if( !recurse )

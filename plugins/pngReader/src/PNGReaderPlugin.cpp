@@ -1,3 +1,10 @@
+/**
+ * @file PNGReaderPlugin.cpp
+ * @brief PNG reader ofx plugin
+ * @author Eloi Du Bois
+ * @date    27/09/09 10:42
+ *
+ */
 #include "PNGReaderPlugin.hpp"
 #include "PNGReaderProcess.hpp"
 

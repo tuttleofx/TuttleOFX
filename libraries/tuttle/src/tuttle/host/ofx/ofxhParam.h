@@ -57,10 +57,10 @@ namespace attribute {
       /// base class to the param set instance and param set descriptor
       class ParamAccessorSet {
       public:
-        virtual ~ParamAccessorSet();
+        virtual ~ParamAccessorSet()=0;
 
         /// obtain a handle on this set for passing to the C api
-        OfxParamSetHandle getParamSetHandle() const;
+        virtual OfxParamSetHandle getParamSetHandle() const =0;
 
         /// get the property handle that lives with the set
         /// The plugin descriptor/instance that derives from
@@ -152,6 +152,13 @@ namespace attribute {
         /// dtor.
         virtual ~ParamInstanceSet();
 
+		/// obtain a handle on this set for passing to the C api
+		OfxParamSetHandle getParamSetHandle( ) const
+		{
+			return (OfxParamSetHandle )this;
+		}
+
+
 		const std::map<std::string, ParamInstance*>& getParams( ) const
 		{
 			return _params;
@@ -191,7 +198,7 @@ namespace attribute {
         /// make a parameter instance
         ///
         /// Client host code needs to implement this
-        virtual ParamInstance* newParam(const std::string& name, ParamDescriptor& Descriptor, ParamInstanceSet * setInstance) = 0;
+        virtual ParamInstance* newParam( ParamDescriptor& Descriptor ) = 0;
 
         /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
         ///
@@ -218,7 +225,12 @@ namespace attribute {
 
         /// dtor
         virtual ~ParamDescriptorSet();
-
+		
+		/// obtain a handle on this set for passing to the C api
+		OfxParamSetHandle getParamSetHandle( ) const
+		{
+			return (OfxParamSetHandle )this;
+		}
         /// get the map of params
         const std::map<std::string, ParamDescriptor*> &getParams() const;
         std::map<std::string, ParamDescriptor*> &getParams();
@@ -444,6 +456,14 @@ namespace attribute {
         ParamGroupInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance ) : ParamInstance(descriptor, setInstance) {}
         virtual ParamGroupInstance* clone() const;
 
+		void deleteChildrens()
+		{
+			for( std::list<ParamInstance*>::iterator it = _paramList.begin( ); it != _paramList.end( ); ++it )
+			{
+				delete ( *it );
+			}
+			_paramList.clear( );
+		}
         /// setChildrens have to clone each source instance recursively
         void setChildrens( const attribute::ParamInstanceSet * childrens );
         attribute::ParamInstanceSet *getChildrens() const;
@@ -459,8 +479,8 @@ namespace attribute {
             _paramSetInstance->paramChangedByPlugin( param );
         }
 
-        virtual ParamInstance* newParam(const std::string& name, ParamDescriptor& Descriptor, ParamInstanceSet * setInstance) {
-            return _paramSetInstance->newParam( name, Descriptor, setInstance );
+        virtual ParamInstance* newParam( ParamDescriptor& descriptor ) {
+            return _paramSetInstance->newParam( descriptor );
         }
 
         /// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin

@@ -105,11 +105,11 @@ namespace tuttle {
     return r;
   }
 
+/** @brief maps status to a string */
+const std::string mapStatusToString(const OfxStatus& stat);
   
 }
 
-/** @brief maps status to a string */
-const std::string mapStatusToString(const OfxStatus stat);
 
 #endif
 

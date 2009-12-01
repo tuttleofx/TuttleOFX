@@ -49,5 +49,6 @@ install install-plug
 	:	pngReader
 	:	<os>NT:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/Win32
 		<os>LINUX:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/MacOS
 	;
 

@@ -90,13 +90,13 @@ namespace core {
   tuttle::host::core::EffectInstance* Host::newInstance(void* clientData,
                                                       tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
                                                       tuttle::host::ofx::imageEffect::Descriptor& desc,
-                                                      const std::string& context)
+                                                      const std::string& context) const
   {
     return new tuttle::host::core::EffectInstance(plugin, desc, context);
   }
 
   /// Override this to create a descriptor, this makes the 'root' descriptor
-  tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin)
+  tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin) const
   {
     tuttle::host::ofx::imageEffect::Descriptor *desc = new tuttle::host::ofx::imageEffect::Descriptor(plugin);
     return desc;
@@ -104,14 +104,14 @@ namespace core {
 
   /// used to construct a context description, rootContext is the main context
   tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(const tuttle::host::ofx::imageEffect::Descriptor &rootContext,
-                                                           tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin)
+                                                           tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin) const
   {
     return new tuttle::host::ofx::imageEffect::Descriptor(rootContext, plugin);
   }
 
   /// used to construct populate the cache
   tuttle::host::ofx::imageEffect::Descriptor *Host::makeDescriptor(const std::string &bundlePath,
-                                                           tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin)
+                                                           tuttle::host::ofx::imageEffect::ImageEffectPlugin *plugin) const
   {
     return new tuttle::host::ofx::imageEffect::Descriptor(bundlePath, plugin);
   }
@@ -120,7 +120,7 @@ namespace core {
   OfxStatus Host::vmessage(const char* type,
                            const char* id,
                            const char* format,
-                           va_list args)
+                           va_list args) const
   {
     bool isQuestion = false;
     const char *prefix = "Message : ";
