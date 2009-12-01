@@ -11,23 +11,8 @@
 #include <tuttle/host/core/EffectInstance.hpp>
 #include <tuttle/host/core/Graph.hpp>
 
-// ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-
-// ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffectAPI.h"
-
 #include <iostream>
+
 
 #define BOOST_TEST_MODULE "graph_tests"
 #include <boost/test/unit_test.hpp>

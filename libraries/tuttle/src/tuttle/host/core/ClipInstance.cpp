@@ -309,13 +309,13 @@ namespace core {
         }
     }
 
-    ClipImgInstance::ClipImgInstance( EffectInstance* effect, tuttle::host::ofx::attribute::ClipImageDescriptor *desc )
-    : tuttle::host::ofx::attribute::ClipImageInstance( effect, *desc )
+    ClipImgInstance::ClipImgInstance( EffectInstance& effect, tuttle::host::ofx::attribute::ClipImageDescriptor& desc )
+    : tuttle::host::ofx::attribute::ClipImageInstance( effect, desc )
     , _effect( effect )
     , _inputImage( NULL )
     , _outputImage( NULL )
     {
-        _frameRange = _effect->getEffectFrameRange( );
+        _frameRange = _effect.getEffectFrameRange( );
     }
 
     ClipImgInstance::~ClipImgInstance( )
@@ -335,9 +335,9 @@ namespace core {
         OfxPointD renderScale;
 
         // Rule: default is project size
-        _effect->getProjectOffset( rod.x1, rod.y1 );
-        _effect->getProjectSize( rod.x2, rod.y2 );
-        _effect->getRenderScaleRecursive( renderScale.x, renderScale.y );
+        _effect.getProjectOffset( rod.x1, rod.y1 );
+        _effect.getProjectSize( rod.x2, rod.y2 );
+        _effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
 
         /* @OFX_TODO: Tres etrange: ca bug avec les plugins du commerce: debordement de pile.
         Property::PropSpec inStuff[] = {
@@ -371,7 +371,7 @@ namespace core {
 
     const std::string &ClipImgInstance::getUnmappedBitDepth( ) const
     {
-        static const std::string v( _effect->getProjectBitDepth( ) );
+        static const std::string v( _effect.getProjectBitDepth( ) );
         return v;
     }
 
@@ -379,7 +379,7 @@ namespace core {
 
     const std::string &ClipImgInstance::getUnmappedComponents( ) const
     {
-        static const std::string v( _effect->getProjectPixelComponentsType( ) );
+        static const std::string v( _effect.getProjectPixelComponentsType( ) );
         return v;
     }
 
@@ -391,7 +391,7 @@ namespace core {
 
     const std::string &ClipImgInstance::getPremult( ) const
     {
-        return _effect->getOutputPreMultiplication( );
+        return _effect.getOutputPreMultiplication( );
     }
 
     // Frame Rate -
@@ -399,7 +399,7 @@ namespace core {
     double ClipImgInstance::getFrameRate( ) const
     {
         /// our clip is pretending to be progressive PAL SD by default
-        double val = _effect->getFrameRate( );
+        double val = _effect.getFrameRate( );
 
         return val;
     }
@@ -442,7 +442,7 @@ namespace core {
 
     double ClipImgInstance::getUnmappedFrameRate( ) const
     {
-        return _effect->getFrameRate( );
+        return _effect.getFrameRate( );
     }
 
     // Unmapped Frame Range -

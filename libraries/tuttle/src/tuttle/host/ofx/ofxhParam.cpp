@@ -445,13 +445,6 @@ namespace attribute {
 
 			ParamDescriptorSet::ParamDescriptorSet( ) { }
 
-			/// obtain a handle on this set for passing to the C api
-
-			OfxParamSetHandle ParamAccessorSet::getParamSetHandle( ) const
-			{
-				return (OfxParamSetHandle )this;
-			}
-
                         ParamDescriptorSet::~ParamDescriptorSet( ) {
                             for(std::list<ParamDescriptor *>::iterator it = _paramList.begin(); it != _paramList.end(); ++it) {
                                 delete (*it);
@@ -659,18 +652,13 @@ namespace attribute {
 			{
 				std::list<ParamInstance*> srcList = childrens->getParamList( );
 				// iterate the params and delete them
-				std::list<ParamInstance*>::iterator it;
-				for( it = _paramList.begin( ); it != _paramList.end( ); ++it )
-				{
-					if( *it )
-						delete ( *it );
-				}
-				_paramList.clear( );
-
-				for( it = srcList.begin( ); it != srcList.end( ); ++it )
-				{
-					//OFX_TODO:            _paramList.push_back( (*it)->clone(this) );
-				}
+				deleteChildrens();
+				
+				/// @todo use clone ?
+				//for( it = srcList.begin( ); it != srcList.end( ); ++it )
+				//{
+				//	_paramList.push_back( (*it)->clone(this) );
+				//}
 			}
 
 			void ParamGroupInstance::addChildren( ParamInstance * children )
@@ -936,11 +924,10 @@ namespace attribute {
 			}
 
 			//////////////////////////////////////////////////////////////////////////////////
-			// Param::SetInstance
+			// ParamInstanceSet
 			//
 
 			/// ctor
-
 			ParamInstanceSet::ParamInstanceSet( ) { }
 
 			/// dtor.

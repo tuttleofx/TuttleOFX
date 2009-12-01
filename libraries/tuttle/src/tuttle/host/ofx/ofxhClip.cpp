@@ -122,7 +122,7 @@ namespace tuttle {
 					{ 0 },
 				};
 
-				// this will a parameters that are needed in an Instance but not a Descriptor
+				// properties that are needed in an Instance but not a Descriptor
 				getEditableProperties().addProperties( clipInstanceStuffs );
 				initHook( clipInstanceStuffs );
 
@@ -141,6 +141,7 @@ namespace tuttle {
 
 			void ClipInstance::initHook( const Property::PropSpec* propSpec )
 			{
+				// no more GetHook on clip for the moment...
 				/*
 				int i = 0;
 				while( propSpec[i].name )
@@ -158,10 +159,11 @@ namespace tuttle {
 							break;
 					}
 					++i;
-				}*/
+				}
+				 */
 			}
 
-		}
-	}
-	}
+}
+}
+}
 }

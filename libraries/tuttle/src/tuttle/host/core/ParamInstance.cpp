@@ -45,7 +45,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tuttle/host/ofx/ofxhPluginCache.h>
 #include <tuttle/host/ofx/ofxhHost.h>
 #include <tuttle/host/ofx/ofxhImageEffectAPI.h>
-#include "ofx/ofxhAttribute.h"
+#include <tuttle/host/ofx/ofxhAttribute.h>
 
 // my host
 #include "HostDescriptor.hpp"

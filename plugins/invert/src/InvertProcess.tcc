@@ -28,7 +28,7 @@ struct inverter
     P operator( ) ( const P& p ) const
     {
         P p2;
-        // @TODO_OFX Improve this: Don't consider alpha
+        // @todo TODO_OFX Improve this: Don't consider alpha
         // http://stlab.adobe.com/gil/html/color__convert_8hpp-source.html
         // typedef typename channel_type<P2>::type T2;
         // channel_convert<T2>(alpha_or_max(src))
@@ -109,10 +109,18 @@ void InvertProcess<View>::setupAndProcess( const OFX::RenderArguments &args )
 template<class View>
 void InvertProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 {
+	COUT_INFOS;
     try
     {
         // Invert pixels
-        transform_pixels( _srcView, this->_dstView, inverter() );
+        View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
+                                  procWindow.x2 - procWindow.x1,
+                                  procWindow.y2 - procWindow.y1 );
+        View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
+                                  procWindow.x2 - procWindow.x1,
+                                  procWindow.y2 - procWindow.y1 );
+
+        transform_pixels( src, dst, inverter() );
     }
     catch( PluginException err )
     {
