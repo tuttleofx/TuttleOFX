@@ -50,9 +50,6 @@ public:
 	                tuttle::host::ofx::imageEffect::Descriptor&        desc,
 	                const std::string&                                 context );
 
-	/**
-	 * @todo a working clone...
-	 */
 	EffectInstance* clone() const { return new EffectInstance( _plugin, *_descriptor, _context ); }
 
 	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }

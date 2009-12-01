@@ -35,14 +35,12 @@ alias headers : [ glob-tree *.hpp ] [ glob-tree *.h ] ;
 
 if [ os.name ] = NT {
     lib shell32 ;
-    alias nt_libs : shell32 ;
+    lib nt_libs : shell32 ;
+    alias dl ;
+} else {
+    alias nt_libs ;
+    lib dl : : : <link>shared ;
 }
-else {
-    alias nt_libs : ;
-}
-
-lib dl : : <os>LINUX <link>shared ;
-alias dl ;
 
 lib tuttlehost :
     [ glob src/tuttle/host/*.cpp ]
@@ -51,7 +49,6 @@ lib tuttlehost :
     /boost/filesystem
     /expat/<link>static
     nt_libs
-    dl/<link>shared
     ;
 
 lib tuttleplugin :
