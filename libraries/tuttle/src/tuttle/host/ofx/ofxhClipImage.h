@@ -355,7 +355,7 @@ public:
 	 *
 	 * Client host code needs to implement this
 	 */
-	virtual ClipImageInstance* newClipImage( ClipImageDescriptor& descriptor ) = 0;
+	virtual ClipImageInstance* newClipImage( ClipImageDescriptor& descriptor ) const = 0;
 
 	/**
 	 * get the nth clip, in order of declaration

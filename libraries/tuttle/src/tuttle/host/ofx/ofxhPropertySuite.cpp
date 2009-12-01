@@ -35,6 +35,8 @@
 #include "ofxhBinary.h"
 #include "ofxhPropertySuite.h"
 
+#include <tuttle/common/utils/global.hpp>
+
 #include <iostream>
 #include <string.h>
 
@@ -110,7 +112,7 @@ void GetHook::getPropertyN<PointerValue>( const std::string& name, void** values
 
 const std::string& GetHook::getStringProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getStringProperty!!!! " << std::endl;
 	#endif
 	return StringValue::kEmpty;
@@ -120,7 +122,7 @@ const std::string& GetHook::getStringProperty( const std::string& name, int inde
 
 int GetHook::getIntProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getIntProperty!!!! " << std::endl;
 	#endif
 	return 0;
@@ -130,7 +132,7 @@ int GetHook::getIntProperty( const std::string& name, int index ) const OFX_EXCE
 
 double GetHook::getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getDoubleProperty!!!! " << std::endl;
 	#endif
 	return 0;
@@ -140,7 +142,7 @@ double GetHook::getDoubleProperty( const std::string& name, int index ) const OF
 
 void* GetHook::getPointerProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getPointerProperty!!!! " << std::endl;
 	#endif
 	return NULL;
@@ -150,7 +152,7 @@ void* GetHook::getPointerProperty( const std::string& name, int index ) const OF
 
 void GetHook::getDoublePropertyN( const std::string& name, double* values, int count ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getDoublePropertyN!!!! " << std::endl;
 	#endif
 	memset( values, 0, sizeof( double ) * count );
@@ -160,7 +162,7 @@ void GetHook::getDoublePropertyN( const std::string& name, double* values, int c
 
 void GetHook::getIntPropertyN( const std::string& name, int* values, int count ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getIntPropertyN!!!! " << std::endl;
 	#endif
 	memset( values, 0, sizeof( int ) * count );
@@ -170,7 +172,7 @@ void GetHook::getIntPropertyN( const std::string& name, int* values, int count )
 
 void GetHook::getPointerPropertyN( const std::string& name, void** values, int count ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getPointerPropertyN!!!! " << std::endl;
 	#endif
 	memset( values, 0, sizeof( void* ) * count );
@@ -180,7 +182,7 @@ void GetHook::getPointerPropertyN( const std::string& name, void** values, int c
 
 size_t GetHook::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::getDimension!!!! " << std::endl;
 	#endif
 	return 0;
@@ -190,7 +192,7 @@ size_t GetHook::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
 
 void GetHook::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "Calling un-overriden GetHook::reset!!!! " << std::endl;
 	#endif
 }
@@ -693,7 +695,6 @@ void Set::operator=( const Set& s )
 }
 
 /// set a particular property
-
 template<class T>
 void Set::setProperty( const std::string& property, int index, const typename T::Type& value )
 {
@@ -704,9 +705,15 @@ void Set::setProperty( const std::string& property, int index, const typename T:
 		{
 			prop->setValue( value, index );
 		}
+		else
+		{
+			COUT_ERROR("Set::setProperty - Property " << property << " not in the propertySet (value="<<value<<").");
+		}
 	}
-	catch(... )
-	{}
+	catch(...)
+	{
+		COUT_ERROR("Set::setProperty - Error on " << property << " property (value="<<value<<").");
+	}
 }
 
 /// set a particular property
@@ -955,7 +962,7 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
                           int                  index,
                           typename T::APIType  value )
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "propSet - " << properties << " " << property << "[" << index << "] = " << value << " \n";
 	#endif
 	try
@@ -966,7 +973,7 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
 		PropertyTemplate<T>* prop = 0;
 		if( !thisSet->fetchTypedProperty( property, prop, false ) )
 		{
-			#ifdef DEBUG
+			#ifdef DEBUG_PROPERTIES
 			std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
 			#endif
 			return kOfxStatErrUnknown;
@@ -975,7 +982,7 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
 	}
 	catch( Exception e )
 	{
-		#ifdef DEBUG
+		#ifdef DEBUG_PROPERTIES
 		std::cout << " returning status " << e.getStatus() << "\n";
 		#endif
 		return e.getStatus();
@@ -991,7 +998,7 @@ static OfxStatus propSetN( OfxPropertySetHandle properties,
                            int                  count,
                            typename T::APIType* values )
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "propSetN - " << properties << " " << property << " \n";
 	#endif
 
@@ -1022,7 +1029,7 @@ static OfxStatus propGet( OfxPropertySetHandle          properties,
                           int                           index,
                           typename T::APITypeConstless* value )
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_PROPERTIES
 	std::cout << "propGet - " << properties << " " << property << " = ...";
 	#endif
 
@@ -1038,14 +1045,14 @@ static OfxStatus propGet( OfxPropertySetHandle          properties,
 		}
 		*value = castAwayConst( castToAPIType( prop->getValue( index ) ) );
 
-		#ifdef DEBUG
+		#ifdef DEBUG_PROPERTIES
 		std::cout << *value << "\n";
 		#endif
 	}
 	catch( Exception e )
 	{
 
-		#ifdef DEBUG
+		#ifdef DEBUG_PROPERTIES
 		std::cout << "\n";
 		#endif
 		return e.getStatus();

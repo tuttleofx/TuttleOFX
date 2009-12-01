@@ -25,6 +25,10 @@ NodeID Graph::createNode( const std::string& id ) throw( std::logic_error )
 	if( !node )
 		throw std::logic_error( "Plugin not found." );
 
+	std::stringstream uniqueName;
+	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
+	node->setName( uniqueName.str() );
+
 	addToGraph( *node );
 
 	return _nodeCount++;
@@ -32,15 +36,9 @@ NodeID Graph::createNode( const std::string& id ) throw( std::logic_error )
 
 void Graph::addToGraph( EffectInstance& node )
 {
-	std::stringstream s;
-
-	s << node.getLabel() << ++_instanceCount[node.getLabel()];
-
-	//TODO: Fix this, do not work
-	node.setName( s.str() );
-
+	COUT( "Graph::createNode - getName: " << node.getName() );
 	//TODO: set the good attribute name
-	graph::Vertex v( s.str(), &node, std::string( "Attribute" ) );
+	graph::Vertex v( node.getName(), &node, std::string( "Attribute" ) );
 	_nodes[_nodeCount] = _graph.addVertex( v );
 }
 

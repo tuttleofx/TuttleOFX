@@ -59,6 +59,7 @@ namespace imageEffect {
 static Property::PropSpec effectDescriptorStuff[] = {
 	/* name                                 type                   dim. r/o default value */
 	{ kOfxPropType, Property::eString, 1, true, kOfxTypeImageEffect },
+	{ kOfxPropName, Property::eString, 1, false, "UNIQUE_NAME_NOT_SET" },
 	{ kOfxPropLabel, Property::eString, 1, false, "" },
 	{ kOfxPropShortLabel, Property::eString, 1, false, "" },
 	{ kOfxPropLongLabel, Property::eString, 1, false, "" },
@@ -326,6 +327,7 @@ void Descriptor::addClip( const std::string& name, attribute::ClipImageDescripto
 static const Property::PropSpec effectInstanceStuff[] = {
 	/* name                                 type                   dim.   r/o    default value */
 	{ kOfxPropType, Property::eString, 1, true, kOfxTypeImageEffectInstance },
+	{ kOfxPropName, Property::eString, 1, false, "UNIQUE_NAME_NOT_SET" },
 	{ kOfxImageEffectPropContext, Property::eString, 1, true, "" },
 	{ kOfxPropInstanceData, Property::ePointer, 1, false, NULL },
 	{ kOfxImageEffectPropProjectSize, Property::eDouble, 2, true, "0" },

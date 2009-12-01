@@ -365,7 +365,7 @@ public:
 	virtual OfxStatus vmessage( const char* type,
 	                            const char* id,
 	                            const char* format,
-	                            va_list     args ) = 0;
+	                            va_list     args ) const = 0;
 
 	/// call the effect entry point
 	virtual OfxStatus mainEntry( const char*    action,

@@ -65,7 +65,7 @@ EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugi
 	populate();
 }
 
-void EffectInstance::dumpToStdOut()
+void EffectInstance::dumpToStdOut() const
 {
 	std::cout << "________________________________________________________________________________" << std::endl;
 	std::cout << "Plug-in:" << this->getLabel() << std::endl;
@@ -86,7 +86,7 @@ void EffectInstance::dumpToStdOut()
 }
 
 // get a new clip instance
-tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor )
+tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor ) const
 {
 	return new ClipImgInstance( *this, descriptor );
 }
@@ -105,7 +105,7 @@ const std::string& EffectInstance::getDefaultOutputFielding() const
 OfxStatus EffectInstance::vmessage( const char* type,
                                     const char* id,
                                     const char* format,
-                                    va_list     args )
+                                    va_list     args ) const
 {
 	vprintf( format, args );
 	return kOfxStatOK;
@@ -180,7 +180,7 @@ const std::string EffectInstance::getProjectBitDepth() const
 }
 
 // make a parameter instance
-tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::host::ofx::attribute::ParamDescriptor& descriptor )
+tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::host::ofx::attribute::ParamDescriptor& descriptor ) const
 {
 	std::string name = descriptor.getName();
 

@@ -39,8 +39,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class EffectInstance : public ProcessNode,
-	public tuttle::host::ofx::imageEffect::Instance
+class EffectInstance : public ProcessNode, public tuttle::host::ofx::imageEffect::Instance
 {
 protected:
 	OfxPointD _frameRange;
@@ -57,7 +56,7 @@ public:
 
 	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }
 
-	void dumpToStdOut();
+	void dumpToStdOut() const;
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -68,13 +67,13 @@ public:
 	const std::string& getDefaultOutputFielding() const;
 
 	/// make a clip
-	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor );
+	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor ) const;
 
 	/// vmessage
 	OfxStatus vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
-	                    va_list     args );
+	                    va_list     args ) const;
 
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
@@ -129,7 +128,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	tuttle::host::ofx::attribute::ParamInstance* newParam( tuttle::host::ofx::attribute::ParamDescriptor& Descriptor );
+	tuttle::host::ofx::attribute::ParamInstance* newParam( tuttle::host::ofx::attribute::ParamDescriptor& Descriptor ) const;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///

@@ -313,7 +313,7 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	}
 }
 
-ClipImgInstance::ClipImgInstance( EffectInstance& effect, tuttle::host::ofx::attribute::ClipImageDescriptor& desc )
+ClipImgInstance::ClipImgInstance( const EffectInstance& effect, tuttle::host::ofx::attribute::ClipImageDescriptor& desc )
 	: tuttle::host::ofx::attribute::ClipImageInstance( effect, desc ),
 	_effect( effect ),
 	_inputImage( NULL ),
