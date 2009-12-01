@@ -37,7 +37,7 @@ void PNGWriterPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
     // basic labels
     desc.setLabels("PNGWriterHd3d", "PNGWriterHd3d",
                    "PNG File writer Hd3d");
-    desc.setPluginGrouping("hd3d");
+    desc.setPluginGrouping("tuttle");
 
     // add the supported contexts, only filter at the moment
 //    desc.addSupportedContext(eContextGenerator);
@@ -71,7 +71,7 @@ void PNGWriterPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
     srcClip->addSupportedComponent( ePixelComponentAlpha );
     srcClip->setSupportsTiles( kSupportTiles );
 
-    ClipDescriptor *dstClip = desc.defineClip( "Output" );
+    ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent( ePixelComponentRGBA );
     dstClip->addSupportedComponent( ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );

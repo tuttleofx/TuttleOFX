@@ -40,9 +40,9 @@ void
 CropPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
     // basic labels
-    desc.setLabels("volet", "volet",
-                   "image volet");
-    desc.setPluginGrouping("project");
+    desc.setLabels("Crop", "Crop",
+                   "image crop");
+    desc.setPluginGrouping("tuttle");
 
     // add the supported contexts, only filter at the moment
     desc.addSupportedContext(eContextGeneral);

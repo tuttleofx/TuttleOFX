@@ -10,13 +10,17 @@ bjam.sh can then be used to build TuttleOFX library :
 and command line tool
 ./bjam.sh /sam
 
+We have created a script to help you on making new plugins.
+run ./plugins/_new/plugGen.py 
+then fill needed informations.
+
 Tested compilers
 
      * Linux:
           + GCC 4.1.2 on OpenSUSE 10.3
      * Windows:
           + Visual C++ 8.0 SP1 on Windows XP.
-          + GCC-MINGW 3.4.5 on Windows XP.
+          + GCC-MINGW 3.4.5, 4.3.0 on Windows XP.
 
 More information 
 

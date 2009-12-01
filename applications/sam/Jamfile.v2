@@ -2,6 +2,7 @@
 ## Main BJam makefile for Sam command line tool
 ## author Nicolas Rondaud
 ###############################################################################
+import os ;
 
 ###############################################################################
 # Global project requirements
@@ -35,12 +36,12 @@ exe sam :
 # Automatic install
 ###############################################################################
 install dist_src	
-	: sam
-      /boost/system
-      /boost/filesystem
-	: <variant>debug:<location>$(DIST)/applications/sam/debug
-      <variant>release:<location>$(DIST)/dist/applications/sam/release
-	;
+    : sam
+        /boost/system
+        /boost/filesystem
+    : <variant>debug:<location>$(DIST)/applications/sam/debug
+        <variant>release:<location>$(DIST)/dist/applications/sam/release
+    ;
 
 install dist_include
 	: headers

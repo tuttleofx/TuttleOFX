@@ -47,10 +47,12 @@ Contains the core OFX architectural struct and function definitions. For more de
  * This macro is to be used before any symbol that is to be
  * exported from a plug-in. This is OS/compiler dependent.
  */
-#if defined(WIN32) || defined(WIN64)
-	#define OfxExport extern __declspec(dllexport)
+#ifdef _MSC_VER
+    #define OfxExport extern __declspec(dllexport)
+#elif defined(__GNUC__) // Add compilator definition here...
+    #define OfxExport extern
 #else
-	#define OfxExport extern
+    #error "OfxExport not defined for this compilator..."
 #endif
 
 /** @brief Blind data structure to manipulate sets of properties through */

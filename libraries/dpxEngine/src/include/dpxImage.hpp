@@ -144,13 +144,14 @@ class DpxImage {
         boost::uint8_t  *_data;
 
         void readHeader(fs::ifstream & f);
+
+    public:
         enum EDPX_CompType { eCompTypeUnknown,
                              eCompTypeR8G8B8,    eCompTypeR8G8B8A8,     eCompTypeA8B8G8R8,
                              eCompTypeR10G10B10, eCompTypeR10G10B10A10, eCompTypeA10B10G10R10,
                              eCompTypeR12G12B12, eCompTypeR12G12B12A12, eCompTypeA12B12G12R12,
                              eCompTypeR16G16B16, eCompTypeR16G16B16A16, eCompTypeA16B16G16R16
                            };
-    public:
         DpxImage();
         ~DpxImage();
         void read(const fs::path & filename);
@@ -184,22 +185,22 @@ class DpxImage {
         }
         const size_t dataSize() const {
             size_t sz = 0;
-            uint16_t packing = _header._imageInfo.image_element[0].packing;
+            boost::uint16_t packing = _header._imageInfo.image_element[0].packing;
             switch(componentsType()) {
                 case eCompTypeR8G8B8:
-                    sz = sizeof(uint8_t) * 3 * width() * height();
+                    sz = sizeof(boost::uint8_t) * 3 * width() * height();
                     break;
                 case eCompTypeR10G10B10:
                     // Packing means that pixel are packed on bytes
                     if (packing)
-                        sz = sizeof(uint32_t) * width() * height();
+                        sz = sizeof(boost::uint32_t) * width() * height();
                     // Unpacked means that pixels are bit aligned
                     else
-                        sz = std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
+                        sz = (size_t)std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
                     break;
                 case eCompTypeR8G8B8A8:
                 case eCompTypeA8B8G8R8:
-                    sz = sizeof(uint8_t) * 4 * width() * height();
+                    sz = sizeof(boost::uint8_t) * 4 * width() * height();
                     break;
                 case eCompTypeR12G12B12:
                 case eCompTypeR16G16B16:
@@ -211,7 +212,7 @@ class DpxImage {
                 case eCompTypeA12B12G12R12:
                 case eCompTypeR16G16B16A16:
                 case eCompTypeA16B16G16R16:
-                    sz = sizeof(uint64_t) * width() * height();
+                    sz = sizeof(boost::uint64_t) * width() * height();
                     break;
                 default:
                     break;

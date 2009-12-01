@@ -37,8 +37,9 @@ mDeclarePluginFactory(InvertPluginFactory, {}, {});
 void InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
     // basic labels
-    desc.setLabels("Invert", "Invert", "Image inverter");
-    desc.setPluginGrouping("project");
+    desc.setLabels("Invert", "Image inverter",
+                   "Image inverter");
+    desc.setPluginGrouping("tuttle");
 
     // add the supported contexts, only filter at the moment
     desc.addSupportedContext(eContextGeneral);

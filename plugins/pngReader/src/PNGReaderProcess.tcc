@@ -8,12 +8,12 @@
 #include <vector>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/gil/gil_all.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 
 namespace tuttle {
@@ -92,6 +92,15 @@ void PNGReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
     }
 }
 
+/*
+struct FunctorPlus {
+    template <typename DstV, typename SrcAV, typename SrcBV>
+    static DstV merge()(const SrcAV & srcA, const SrcBV & srcB) const {
+        return (DstV)(srcA + srcB);
+    }
+};
+
+*/
 /**
  * @brief Function called to apply an anisotropic blur
  *
@@ -110,6 +119,15 @@ View& PNGReaderProcess<View>::readImage( View &dst, std::string & filepath ) thr
     any_image_t anyImg;
     png_read_image( filepath, anyImg );
     copy_and_convert_pixels(subimage_view(flipped_up_down_view(view(anyImg)), 0, 0, dst.width(), dst.height()), dst);
+        // little test on merge to remove:
+/*        rgb8_image_t imgA, imgB;
+        png_read_image ("c:/temp/inputA.png", imgA);
+        png_read_image ("c:/temp/inputB.png", imgB);
+        rgb8_image_t imgC(imgA.width(), imgA.height());
+        rgb8_view_t srcA(view(imgA)), srcB(view(imgB)), dst(view(imgC));
+        transform_pixels(srcA, srcB, dst, default_color_merging<FunctorPlus>());
+        png_write_view ("c:/temp/merge.png", dst);
+*/
     return dst;
 }
 
