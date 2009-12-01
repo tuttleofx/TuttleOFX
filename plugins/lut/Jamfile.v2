@@ -33,6 +33,7 @@ plugin lut :
     [ glob src/*.cpp ]
     [ glob src/lutEngine/*.cpp ]
     /boost/filesystem/<link>static
+    /boost/regex/<link>static
     /tuttlelib//tuttleplugin/<link>static
     /supportlib
     opengl
