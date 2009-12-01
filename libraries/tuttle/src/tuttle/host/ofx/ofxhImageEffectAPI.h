@@ -235,7 +235,7 @@ namespace tuttle {
                           int pluginMajorVersion,
                           int pluginMinorVersion);
 
-        void dumpToStdOut();
+        void dumpToStdOut() const;
       };
 
 }

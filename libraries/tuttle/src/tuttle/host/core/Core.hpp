@@ -4,6 +4,7 @@
 #include "EffectInstance.hpp"
 
 #include <tuttle/host/core/HostDescriptor.hpp>
+#include <tuttle/host/core/MemoryPool.hpp>
 #include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 #include <tuttle/common/patterns/Singleton.hpp>
@@ -14,7 +15,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class Core : public Singleton<tuttle::host::core::Core>
+class Core : public Singleton<Core>
 {
 public:
 	friend class Singleton<Core>;
@@ -26,16 +27,18 @@ private:
 	core::Host _host;
 	ofx::imageEffect::ImageEffectPluginCache _imageEffectPluginCache;
 	ofx::PluginCache _pluginCache;
+	core::MemoryPool _memoryPool;
 
 public:
-	ofx::PluginCache& getPluginCache() { return _pluginCache; }
-	Host& getHost() { return _host; }
-	ofx::imageEffect::ImageEffectPluginCache& getImageEffectPluginCache() { return _imageEffectPluginCache; }
+	const ofx::PluginCache& getPluginCache() const { return _pluginCache; }
+	const Host& getHost() const { return _host; }
+	const ofx::imageEffect::ImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
+	const core::MemoryPool& getMemoryPool() const { return _memoryPool; }
 
 public:
 	ofx::imageEffect::ImageEffectPlugin* getImageEffectPluginById(const std::string &id, int vermaj=-1, int vermin=-1)
 	{
-		return getImageEffectPluginCache().getPluginById( id, vermaj, vermin );
+		return _imageEffectPluginCache.getPluginById( id, vermaj, vermin );
 	}
 	
 public:

@@ -67,6 +67,7 @@ namespace tuttle {
       class ImageEffectHost : public tuttle::host::ofx::AbstractHost {
       public :
         ImageEffectHost();
+        virtual ~ImageEffectHost();
 
         /// fetch a suite
         virtual void *fetchSuite(const char *suiteName, int suiteVersion);
@@ -83,7 +84,7 @@ namespace tuttle {
         virtual Instance* newInstance(void* clientData,
                                       ImageEffectPlugin* plugin,
                                       Descriptor& desc,
-                                      const std::string& context) = 0;
+                                      const std::string& context) const = 0;
 
         /// Function called as each plugin binary is found and loaded from disk
         ///
@@ -97,17 +98,17 @@ namespace tuttle {
         virtual bool pluginSupported(ImageEffectPlugin *plugin, std::string &reason) const;
 
         /// Override this to create a descriptor, this makes the 'root' descriptor
-        virtual Descriptor *makeDescriptor(ImageEffectPlugin* plugin) = 0;
+        virtual Descriptor *makeDescriptor(ImageEffectPlugin* plugin) const = 0;
 
         /// used to construct a context description, rootContext is the main context
-        virtual Descriptor *makeDescriptor(const Descriptor &rootContext, ImageEffectPlugin *plug) = 0;        
+        virtual Descriptor *makeDescriptor(const Descriptor &rootContext, ImageEffectPlugin *plug) const = 0;
 
         /// used to construct populate the cache
-        virtual Descriptor *makeDescriptor(const std::string &bundlePath, ImageEffectPlugin *plug) = 0;
+        virtual Descriptor *makeDescriptor(const std::string &bundlePath, ImageEffectPlugin *plug) const = 0;
 
         /// Override this to initialise an image effect descriptor after it has been
         /// created.
-        virtual void initDescriptor(Descriptor* desc);
+        virtual void initDescriptor(Descriptor* desc) const;
       };
 
       ////////////////////////////////////////////////////////////////////////////////

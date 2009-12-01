@@ -572,7 +572,7 @@ Plugin *ImageEffectPluginCache::newPlugin( PluginBinary *pb,
 	return plugin;
 }
 
-void ImageEffectPluginCache::dumpToStdOut( )
+void ImageEffectPluginCache::dumpToStdOut( ) const
 {
 	if( _pluginsByID.empty( ) )
 		std::cout << "No Plug-ins Found." << std::endl;

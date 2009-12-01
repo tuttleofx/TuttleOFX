@@ -2125,13 +2125,19 @@ namespace imageEffect {
 				/// add the properties for an image effect host, derived classs to set most of them
 				_properties.addProperties( hostStuffs );
 			}
+			
+			ImageEffectHost::~ImageEffectHost( )
+			{
+			}
 
-			/// optionally over-ridden function to register the creation of a new descriptor in the host app
+			/**
+			 * optionally over-ridden function to register the creation of a new descriptor in the host app
+			 */
+			void ImageEffectHost::initDescriptor( Descriptor* desc ) const { }
 
-			void ImageEffectHost::initDescriptor( Descriptor* desc ) { }
-
-			/// Use this in any dialogue etc... showing progress
-
+			/**
+			 * Use this in any dialogue etc... showing progress
+			 */
 			void ImageEffectHost::loadingStatus( const std::string & ) { }
 
 			bool ImageEffectHost::pluginSupported( ImageEffectPlugin *plugin, std::string &reason ) const
@@ -2139,8 +2145,9 @@ namespace imageEffect {
 				return true;
 			}
 
-			/// our suite fetcher
-
+			/**
+			 * our suite fetcher
+			 */
 			void *ImageEffectHost::fetchSuite( const char *suiteName, int suiteVersion )
 			{
 				if( strcmp( suiteName, kOfxImageEffectSuite ) == 0 )

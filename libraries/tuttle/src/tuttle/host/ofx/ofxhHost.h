@@ -63,6 +63,7 @@ namespace ofx {
 
       
       /// get the props on this host
+      const Property::Set &getProperties() const {return _properties; }
       Property::Set &getProperties() {return _properties; }
 
       /// fetch a suite
@@ -75,7 +76,7 @@ namespace ofx {
       OfxHost *getHandle();
 
       /// override this to handle do post-construction initialisation on a Param::Descriptor
-      virtual void initDescriptor(attribute::ParamDescriptor *) { }
+      virtual void initDescriptor(attribute::ParamDescriptor *) const { }
 
       /// is my magic number valid?
       bool verifyMagic() { return true; }
@@ -84,7 +85,7 @@ namespace ofx {
       virtual OfxStatus vmessage(const char* type,
                                  const char* id,
                                  const char* format,
-                                 va_list args) = 0;
+                                 va_list args) const = 0;
       
     };
     
