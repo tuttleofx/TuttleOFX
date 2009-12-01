@@ -21,21 +21,13 @@ namespace merge {
 
 using namespace boost::gil;
 
-MergePlugin::MergePlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+MergePlugin::MergePlugin( OfxImageEffectHandle handle )
+: ImageEffect( handle )
 {
-    _srcClip = fetchClip( kMergeSourceA );
-    _dstClip = fetchClip( kMergeSourceB );
-}
-
-OFX::Clip * MergePlugin::getSrcClip( ) const
-{
-    return _srcClip;
-}
-
-OFX::Clip * MergePlugin::getDstClip( ) const
-{
-    return _dstClip;
+    _srcClipA = fetchClip( kMergeSourceA );
+    _srcClipB = fetchClip( kMergeSourceB );
+    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    assert(_srcClipA && _srcClipB && _dstClip);
 }
 
 /**
@@ -44,6 +36,7 @@ OFX::Clip * MergePlugin::getDstClip( ) const
  */
 void MergePlugin::render( const OFX::RenderArguments &args )
 {
+    assert(_dstClip);
     // instantiate the render code based on the pixel depth of the dst clip
     OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
     OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );

@@ -38,7 +38,7 @@ DPXReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
     // basic labels
     desc.setLabels("DPXReaderHd3d", "DPXReaderHd3d",
                    "DPX File reader Hd3d");
-    desc.setPluginGrouping("OFX");
+    desc.setPluginGrouping("tuttle");
 
     // add the supported contexts, only filter at the moment
     desc.addSupportedContext(eContextGenerator);
@@ -68,7 +68,7 @@ DPXReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
                                           OFX::ContextEnum context)
 {
     // Create the mandated output clip
-    ClipDescriptor *dstClip = desc.defineClip("Output");
+    ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent(ePixelComponentRGBA);
     dstClip->addSupportedComponent(ePixelComponentAlpha);
     dstClip->setSupportsTiles(kSupportTiles);

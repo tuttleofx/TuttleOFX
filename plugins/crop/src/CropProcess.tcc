@@ -186,8 +186,6 @@ void CropProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
         OfxRectD dProcWinRect = { procWindow.x1, procWindow.y1, procWindow.x2, procWindow.y2 };
         OfxRectD finalProcWin = intersection(croppedRect, dProcWinRect);
         OfxRectI iFinalProcWin = { (int)finalProcWin.x1, (int)finalProcWin.y1, (int)finalProcWin.x2, (int)finalProcWin.y2 };
-        COUT_VAR4(procWindow.x1, procWindow.y1, procWindow.x2, procWindow.y2);
-        COUT_VAR4(iFinalProcWin.x1, iFinalProcWin.y1, iFinalProcWin.x2, iFinalProcWin.y2);
 
         // If no image copy is needed, fill destination with black
         if ( iFinalProcWin.x1 == iFinalProcWin.x2 || iFinalProcWin.y1 == iFinalProcWin.y2 ) {

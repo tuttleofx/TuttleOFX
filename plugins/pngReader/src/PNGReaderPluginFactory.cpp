@@ -38,7 +38,7 @@ void PNGReaderPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
     // basic labels
     desc.setLabels("PNGReaderHd3d", "PNGReaderHd3d",
                    "PNG File reader Hd3d");
-    desc.setPluginGrouping("hd3d");
+    desc.setPluginGrouping("tuttle");
 
     // add the supported contexts, only filter at the moment
     desc.addSupportedContext(eContextGenerator);
@@ -67,7 +67,7 @@ void PNGReaderPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
                                           OFX::ContextEnum context)
 {
     // Create the mandated output clip
-    ClipDescriptor *dstClip = desc.defineClip("Output");
+    ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     assert(dstClip);
     dstClip->addSupportedComponent(ePixelComponentRGBA);
     dstClip->addSupportedComponent(ePixelComponentAlpha);

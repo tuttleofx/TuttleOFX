@@ -25,8 +25,8 @@ project
     : build-dir $(DIST)/bin/tuttle
     ;
 
-use-project /expat 	: ../../3rdParty/expat ;
-use-project /ofxPluginSupport 	: ../openfxHack/Support ;
+use-project /expat  : ../../3rdParty/expat ;
+use-project /ofxPluginSupport   : ../openfxHack/Support ;
 
 ###############################################################################
 # tuttle library
@@ -53,7 +53,7 @@ lib tuttlehost :
 lib tuttleplugin :
     [ glob src/tuttle/plugin/*.cpp ]
     /ofxPluginSupport/<link>static
-	;
+    ;
 
 ###############################################################################
 # Automatic install
@@ -65,6 +65,6 @@ install dist_src
     ;
 
 install dist_include
-	:	headers
-	:	<location>$(DIST)/include/tuttle
+	: headers
+	: <location>$(DIST)/include/tuttle
 	;

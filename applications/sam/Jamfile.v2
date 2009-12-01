@@ -2,6 +2,7 @@
 ## Main BJam makefile for Sam command line tool
 ## author Nicolas Rondaud
 ###############################################################################
+import os ;
 
 ###############################################################################
 # Global project requirements
@@ -23,7 +24,12 @@ use-project /tuttlelib : ../../libraries/tuttle ;
 ###############################################################################
 alias headers : [ glob-tree *.hpp ] ;
 
-lib dl ;
+if [ os.name ] = NT
+	{ alias dl : ; }
+else if [ os.name ] = LINUX 
+	{ lib dl ; alias dl : dl ; }
+else if [ os.name ] = MACOSX 
+	{ lib dl ; alias dl : dl ; }
 
 exe sam : 
     [ glob src/*.cpp ]
@@ -38,12 +44,12 @@ exe sam :
 # Automatic install
 ###############################################################################
 install dist_src	
-	: sam
-      /boost/system
-      /boost/filesystem
-	: <variant>debug:<location>$(DIST)/applications/sam/debug
-      <variant>release:<location>$(DIST)/dist/applications/sam/release
-	;
+    : sam
+        /boost/system
+        /boost/filesystem
+    : <variant>debug:<location>$(DIST)/applications/sam/debug
+        <variant>release:<location>$(DIST)/dist/applications/sam/release
+    ;
 
 install dist_include
 	: headers

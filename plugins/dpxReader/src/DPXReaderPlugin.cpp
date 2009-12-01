@@ -147,7 +147,6 @@ DPXReaderPlugin::getRegionOfDefinition(const OFX::RegionOfDefinitionArguments &a
     return true;
 }
 
-
 void
 DPXReaderPlugin::getClipPreferences(OFX::ClipPreferencesSetter &clipPreferences) {
     clipPreferences.setClipComponents(*_dstClip, OFX::ePixelComponentRGBA);

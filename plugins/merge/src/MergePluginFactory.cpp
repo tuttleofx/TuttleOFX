@@ -26,10 +26,6 @@ namespace tuttle {
 namespace plugin {
 namespace merge {
 
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
-
 mDeclarePluginFactory( MergePluginFactory, { }, { } );
 
 /**
@@ -43,10 +39,10 @@ MergePluginFactory::describe( OFX::ImageEffectDescriptor &desc )
     // basic labels
     desc.setLabels( "Merge", "Merge",
                     "Clip merge" );
-    desc.setPluginGrouping( "merge" );
+    desc.setPluginGrouping( "tuttle" );
 
     // add the supported contexts, only filter at the moment
-    desc.addSupportedContext( eContextGeneral );
+    desc.addSupportedContext(eContextGeneral);
 
     // add supported pixel depths
     desc.addSupportedBitDepth( eBitDepthUByte );
@@ -70,26 +66,32 @@ MergePluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  */
 void
 MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                             OFX::ContextEnum context )
+                                       OFX::ContextEnum context )
 {
     OFX::ClipDescriptor *srcClipA = desc.defineClip( kMergeSourceA );
+    assert(srcClipA);
     srcClipA->addSupportedComponent( ePixelComponentRGBA );
     srcClipA->addSupportedComponent( ePixelComponentAlpha );
     srcClipA->setSupportsTiles( kSupportTiles );
+//    srcClipA->setOptional(false);
 
-    OFX::ClipDescriptor *srcClipB = desc.defineClip( kMergeSourceA );
+    OFX::ClipDescriptor *srcClipB = desc.defineClip( kMergeSourceB );
+    assert(srcClipB);
     srcClipB->addSupportedComponent( ePixelComponentRGBA );
     srcClipB->addSupportedComponent( ePixelComponentAlpha );
     srcClipB->setSupportsTiles( kSupportTiles );
+//    srcClipB->setOptional(false);
 
     // Create the mandated output clip
     OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+    assert(dstClip);
     dstClip->addSupportedComponent( ePixelComponentRGBA );
     dstClip->addSupportedComponent( ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
     // Define some merging function
     OFX::ChoiceParamDescriptor *mergeFunction = desc.defineChoiceParam( kMergeFunction );
+    assert(mergeFunction);
     mergeFunction->appendOption( "atop: Ab+B(1-a)" );
     mergeFunction->appendOption( "average: (A+B)/2" );
     mergeFunction->appendOption( "color-burn: darken B towards A" );
