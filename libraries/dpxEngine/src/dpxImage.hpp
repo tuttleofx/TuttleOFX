@@ -11,12 +11,13 @@
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
-namespace fs = boost::filesystem;
 
-#include "tuttle/common/utils/global.hpp"
+#include <cmath>
 
 namespace tuttle {
 namespace io {
+
+namespace fs = boost::filesystem;
 
 #define DPX_MAGIC           0x53445058
 #define DPX_MAGIC_SWAP      0x58504453
