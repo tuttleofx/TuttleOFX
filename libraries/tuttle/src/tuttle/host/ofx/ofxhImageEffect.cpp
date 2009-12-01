@@ -302,13 +302,6 @@ namespace imageEffect {
 				return c;
 			}
 
-			/// implemented for Param::SetDescriptor
-
-			Property::Set &Descriptor::getParamSetProps( )
-			{
-				return _properties;
-			}
-
 			/// get the interact description, this will also call describe on the interact
 
 			Interact::Descriptor &Descriptor::getOverlayDescriptor( int bitDepthPerComponent, bool hasAlpha )
@@ -321,13 +314,6 @@ namespace imageEffect {
 				}
 
 				return _overlayDescriptor;
-			}
-
-			/// get the clips
-
-			const std::map<std::string, attribute::ClipImageDescriptor*> &Descriptor::getClips( ) const
-			{
-				return _clips;
 			}
 
 			void Descriptor::addClip( const std::string &name, attribute::ClipImageDescriptor *clip )
@@ -362,7 +348,6 @@ namespace imageEffect {
 			, _descriptor( &other )
 			, _interactive( interactive )
 			, _created( false )
-			, _clipPrefsDirty( true )
 			, _continuousSamples( false )
 			, _frameVarying( false )
 			, _outputFrameRate( 24 )
@@ -399,6 +384,70 @@ namespace imageEffect {
 				}
 			}
 
+			/// called after construction to populate clips and params
+			OfxStatus Instance::populate( )
+			{
+				try {
+					populateClips( *_descriptor );
+				} catch ( std::logic_error& e )
+				{
+					COUT_EXCEPTION(e);
+					return kOfxStatFailed;
+				}
+
+				try {
+					populateParams( *_descriptor );
+				} catch ( std::logic_error& e )
+				{
+					COUT_EXCEPTION(e);
+					return kOfxStatFailed;
+				}
+				
+				return kOfxStatOK;
+			}
+
+			void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw(core::Exception)
+			{
+
+				const std::list<attribute::ParamDescriptor*>& map = _descriptor->getParamList( );
+
+				std::map<std::string, attribute::ParamInstance*> parameters;
+
+				// Create parameters on their own groups
+				for( std::list<attribute::ParamDescriptor*>::const_iterator it = map.begin( );
+					 it != map.end( ); ++it )
+				{
+					// SetInstance where the childrens param instances will be added
+					attribute::ParamInstanceSet *setInstance = this;
+					attribute::ParamDescriptor* descriptor = ( *it );
+
+					// get the param descriptor
+					if( !descriptor )
+						throw core::Exception( kOfxStatErrValue );
+
+					// name and parentName of the parameter
+					std::string name = descriptor->getName( );
+					std::string parentName = descriptor->getParentName( );
+
+					if( parentName != "" )
+					{
+						attribute::ParamGroupInstance *parentGroup = dynamic_cast<attribute::ParamGroupInstance*> ( parameters[parentName] );
+						if( parentGroup )
+						{
+							setInstance = parentGroup->getChildrens( );
+						}
+					}
+					else
+						setInstance = this;
+
+					// get a param instance from a param descriptor. Param::Instance is automaticaly added into the setInstance provided.
+					attribute::ParamInstance* instance = newParam( *descriptor );
+					parameters[name] = instance;
+					 
+				}
+				 
+			}
+
 			// where is the good class to do that in std ?
 			template <typename T>
 			struct equals_ptrContent : public std::binary_function<T*,T*,bool>
@@ -428,72 +477,14 @@ namespace imageEffect {
 				return _properties;
 			}
 
-			/// called after construction to populate clips and params
-
-			OfxStatus Instance::populate( )
-			{
-				const std::vector<attribute::ClipImageDescriptor*>& clips = _descriptor->getClipsByOrder( );
-
-				int counter = 0;
-				for( std::vector<attribute::ClipImageDescriptor*>::const_iterator it = clips.begin( );
-					 it != clips.end( ); ++it, ++counter )
-				{
-					const std::string &name = ( *it )->getName( );
-					// foreach clip descriptor make a clip instance
-					attribute::ClipImageInstance* instance = newClipInstance( this, *it, counter );
-					if( !instance ) return kOfxStatFailed;
-
-					_clips[name] = instance;
-				}
-
-				const std::list<attribute::ParamDescriptor*>& map = _descriptor->getParamList( );
-
-				std::map<std::string, attribute::ParamInstance*> parameters;
-
-				// Create parameters on their own groups
-				for( std::list<attribute::ParamDescriptor*>::const_iterator it = map.begin( );
-					 it != map.end( ); ++it )
-				{
-					// SetInstance where the childrens param instances will be added
-					attribute::ParamInstanceSet *setInstance = this;
-					attribute::ParamDescriptor* descriptor = ( *it );
-
-					// get the param descriptor
-					if( !descriptor )
-						return kOfxStatErrValue;
-
-					// name and parentName of the parameter
-					std::string name = descriptor->getName( );
-					std::string parentName = descriptor->getParentName( );
-
-					if( parentName != "" )
-					{
-						attribute::ParamGroupInstance *parentGroup = dynamic_cast<attribute::ParamGroupInstance*> ( parameters[parentName] );
-						if( parentGroup )
-						{
-							setInstance = parentGroup->getChildrens( );
-						}
-					}
-					else
-						setInstance = this;
-
-					// get a param instance from a param descriptor. Param::Instance is automaticaly added into the setInstance provided.
-					attribute::ParamInstance* instance = newParam( name, *descriptor, setInstance );
-					parameters[name] = instance;
-				}
-
-				return kOfxStatOK;
-			}
-
 			// do nothing
-
-                        size_t Instance::getDimension( const std::string &name ) const OFX_EXCEPTION_SPEC
+			size_t Instance::getDimension( const std::string &name ) const OFX_EXCEPTION_SPEC
 			{
 				fprintf( stderr, "failing in %s with name=%s\n", "__PRETTY_FUNCTION__", name.c_str( ) );
 				throw Property::Exception( kOfxStatErrMissingHostFeature );
 			}
 
-                        size_t Instance::upperGetDimension( const std::string &name )
+			size_t Instance::upperGetDimension( const std::string &name )
 			{
 				return _properties.getDimension( name );
 			}
@@ -598,15 +589,6 @@ namespace imageEffect {
 				{
 					mainEntry( kOfxActionDestroyInstance, this->getHandle( ), 0, 0 );
 				}
-
-				/// clobber my clips
-				std::map<std::string, attribute::ClipImageInstance*>::iterator i;
-				for( i = _clips.begin( ); i != _clips.end( ); ++i )
-				{
-					if( i->second )
-						delete i->second;
-					i->second = NULL;
-				}
 			}
 
 			/// this is used to populate with any extra action in arguments that may be needed
@@ -707,24 +689,6 @@ namespace imageEffect {
 					return kOfxStatFailed;
 				}
 				return kOfxStatFailed;
-			}
-
-			// get the nth clip, in order of declaration
-
-			attribute::ClipImageInstance* Instance::getNthClip( int index )
-			{
-				const std::string name = _descriptor->getClipsByOrder( )[index]->getName( );
-				return _clips[name];
-			}
-
-			attribute::ClipImageInstance* Instance::getClip( const std::string& name )
-			{
-				std::map<std::string, attribute::ClipImageInstance*>::iterator it = _clips.find( name );
-				if( it != _clips.end( ) )
-				{
-					return it->second;
-				}
-				return 0;
 			}
 
 			// create a clip instance
@@ -2161,13 +2125,19 @@ namespace imageEffect {
 				/// add the properties for an image effect host, derived classs to set most of them
 				_properties.addProperties( hostStuffs );
 			}
+			
+			ImageEffectHost::~ImageEffectHost( )
+			{
+			}
 
-			/// optionally over-ridden function to register the creation of a new descriptor in the host app
+			/**
+			 * optionally over-ridden function to register the creation of a new descriptor in the host app
+			 */
+			void ImageEffectHost::initDescriptor( Descriptor* desc ) const { }
 
-			void ImageEffectHost::initDescriptor( Descriptor* desc ) { }
-
-			/// Use this in any dialogue etc... showing progress
-
+			/**
+			 * Use this in any dialogue etc... showing progress
+			 */
 			void ImageEffectHost::loadingStatus( const std::string & ) { }
 
 			bool ImageEffectHost::pluginSupported( ImageEffectPlugin *plugin, std::string &reason ) const
@@ -2175,8 +2145,9 @@ namespace imageEffect {
 				return true;
 			}
 
-			/// our suite fetcher
-
+			/**
+			 * our suite fetcher
+			 */
 			void *ImageEffectHost::fetchSuite( const char *suiteName, int suiteVersion )
 			{
 				if( strcmp( suiteName, kOfxImageEffectSuite ) == 0 )

@@ -56,7 +56,7 @@ namespace tuttle {
     }
   }
   
-	const std::string mapStatusToString(const OfxStatus stat)
+	const std::string mapStatusToString(const OfxStatus& stat)
 	{
 		switch(stat)
 		{

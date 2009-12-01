@@ -61,27 +61,27 @@ namespace core {
      *  @arg desc - the descriptor for that plugin
      *  @arg context - the context to be created in
 	 */
-    virtual tuttle::host::core::EffectInstance* newInstance(void* clientData,
+    tuttle::host::core::EffectInstance* newInstance(void* clientData,
                                                           tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
                                                           tuttle::host::ofx::imageEffect::Descriptor& desc,
-                                                          const std::string& context);
+                                                          const std::string& context) const;
 
     /// Override this to create a descriptor, this makes the 'root' descriptor
-    virtual tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin);
+    tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin) const;
 
     /// used to construct a context description, rootContext is the main context
-    virtual tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(const tuttle::host::ofx::imageEffect::Descriptor &rootContext,
-                                                               tuttle::host::ofx::imageEffect::ImageEffectPlugin *plug);
+    tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(const tuttle::host::ofx::imageEffect::Descriptor &rootContext,
+                                                               tuttle::host::ofx::imageEffect::ImageEffectPlugin *plug) const;
 
     /// used to construct populate the cache
-    virtual tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(const std::string &bundlePath,
-                                                               tuttle::host::ofx::imageEffect::ImageEffectPlugin *plug);
+    tuttle::host::ofx::imageEffect::Descriptor *makeDescriptor(const std::string &bundlePath,
+                                                               tuttle::host::ofx::imageEffect::ImageEffectPlugin *plug) const;
 
     /// vmessage
-    virtual OfxStatus vmessage(const char* type,
+    OfxStatus vmessage(const char* type,
                                const char* id,
                                const char* format,
-                               va_list args);
+                               va_list args) const;
 
   };
 

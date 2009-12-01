@@ -9,22 +9,6 @@
 #include <tuttle/host/core/HostDescriptor.hpp>
 #include <tuttle/host/core/Core.hpp>
 
-// ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-
-// ofx host
-#include "ofx/ofxhBinary.h"
-#include "ofx/ofxhPropertySuite.h"
-#include "ofx/ofxhClip.h"
-#include "ofx/ofxhParam.h"
-#include "ofx/ofxhMemory.h"
-#include "ofx/ofxhImageEffect.h"
-#include "ofx/ofxhPluginAPICache.h"
-#include "ofx/ofxhPluginCache.h"
-#include "ofx/ofxhHost.h"
-#include "ofx/ofxhImageEffectAPI.h"
-
 #include <boost/shared_ptr.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/cstdint.hpp>
@@ -55,7 +39,7 @@ int main( int argc, char **argv )
         tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
         tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
 
-        tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
+        //tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 
         if( pluginR && pluginI && pluginW )
         {

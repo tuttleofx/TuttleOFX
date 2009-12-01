@@ -1,9 +1,9 @@
 #ifndef _TUTTLE_GRAPHEXPORTER_HPP_
 #define _TUTTLE_GRAPHEXPORTER_HPP_
 
-#include <tuttle/graph/Graph.hpp>
-#include <tuttle/graph/Vertex.hpp>
-#include <tuttle/graph/Edge.hpp>
+#include <tuttle/host/graph/InternalGraph.hpp>
+#include <tuttle/host/graph/Vertex.hpp>
+#include <tuttle/host/graph/Edge.hpp>
 
 #include <boost/graph/graphviz.hpp>
 #include <iostream>
@@ -15,7 +15,7 @@ namespace tuttle{
 template < typename VERTEX, typename EDGE >
 struct GraphExporter
 {
-	static void exportAsDOT(const Graph<VERTEX,EDGE > & g, const char * filename)
+	static void exportAsDOT(const InternalGraph<VERTEX,EDGE > & g, const char * filename)
 	{
 		std::ofstream ofs(filename);
 		boost::write_graphviz( ofs, g.getGraph() );
@@ -25,7 +25,7 @@ struct GraphExporter
 template <>
 struct GraphExporter<Vertex, Edge >
 {
-	static void exportAsDOT(const Graph<Vertex,Edge > & g, const char * filename)
+	static void exportAsDOT(const InternalGraph<Vertex,Edge > & g, const char * filename)
 	{
 		std::map<std::string,std::string> graph_attr, vertex_attr, edge_attr;
 		graph_attr["size"] 			= "6,6";

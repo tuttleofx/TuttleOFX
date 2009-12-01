@@ -221,6 +221,14 @@ class InternalGraph
 			return has_cycle;
 		}
 
+		void dumpToStdOut()
+		{
+			std::cout
+			<< "internalGraph dump" << std::endl
+			<< "\tvertex count: " << getVertexCount() << std::endl
+			<< "\tedge count: " << getEdgeCount() << std::endl;
+		}
+
 		void test_dfs(){
 			test_dfs_visitor vis;
 			boost::depth_first_search(_graph, visitor(vis));

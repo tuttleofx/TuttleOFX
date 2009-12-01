@@ -24,8 +24,9 @@ namespace tuttle {
 namespace plugin {
 namespace invert {
 
-static const bool   kSupportTiles   = true;
+using namespace OFX;
 
+static const bool   kSupportTiles   = true;
 
 mDeclarePluginFactory(InvertPluginFactory, {}, {});
 
@@ -33,12 +34,10 @@ mDeclarePluginFactory(InvertPluginFactory, {}, {});
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
-void
-InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
+void InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
     // basic labels
-    desc.setLabels("Invert", "Invert",
+    desc.setLabels("Invert", "Image inverter",
                    "Image inverter");
     desc.setPluginGrouping("tuttle");
 
@@ -66,9 +65,7 @@ InvertPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc,
-                                          OFX::ContextEnum context)
+void InvertPluginFactory::describeInContext(OFX::ImageEffectDescriptor &desc, OFX::ContextEnum context)
 {
     OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( ePixelComponentRGBA );

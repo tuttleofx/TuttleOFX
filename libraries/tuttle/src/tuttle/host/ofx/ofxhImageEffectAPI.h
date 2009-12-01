@@ -62,12 +62,9 @@ namespace tuttle {
         /// map to store contexts in
         std::map<std::string, Descriptor *> _contexts;
 
-        mutable std::set<std::string> _knownContexts;
-        mutable bool _madeKnownContexts;
+        std::set<std::string> _knownContexts;
 
         std::auto_ptr<PluginHandle> _pluginHandle;
-
-        void addContextInternal(const std::string &context) const;
 
       public:
 			  ImageEffectPlugin(ImageEffectPluginCache &pc, PluginBinary *pb, int pi, OfxPlugin *pl);
@@ -95,25 +92,29 @@ namespace tuttle {
         const Descriptor &getDescriptor() const;
 
         /// @brief get the image effect descriptor for the context
-        Descriptor *getContext(const std::string &context);
+        Descriptor *getDescriptorInContext(const std::string &context);
 
         void addContext(const std::string &context);
         void addContext(const std::string &context, Descriptor *ied);
 
         virtual void saveXML(std::ostream &os);
 
+		void initContexts();
         const std::set<std::string>& getContexts() const;
 
-        PluginHandle *getPluginHandle();
+        PluginHandle *getPluginHandle() { return _pluginHandle.get(); }
 
-        void unload();
+        void loadAndDescribeActions();
+
+        void unloadAction();
 
         /**
 		 * @brief this is called to make an instance of the effect
          *  the client data ptr is what is passed back to the client creation function
 		 */
         imageEffect::Instance* createInstance(const std::string &context, void *clientDataPtr);
-
+	  private:
+		Descriptor* describeInContextAction( const std::string &context );
       };
 
       class MajorPlugin {
@@ -234,7 +235,7 @@ namespace tuttle {
                           int pluginMajorVersion,
                           int pluginMinorVersion);
 
-        void dumpToStdOut();
+        void dumpToStdOut() const;
       };
 
 }

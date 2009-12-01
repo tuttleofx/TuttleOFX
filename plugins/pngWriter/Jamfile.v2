@@ -49,4 +49,5 @@ install install-plug
 	:	pngWriter
 	:	<os>NT:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/Win32
 		<os>LINUX:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/MacOS
 	;
