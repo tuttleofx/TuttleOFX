@@ -24,20 +24,12 @@ use-project /tuttlelib : ../../libraries/tuttle ;
 ###############################################################################
 alias headers : [ glob-tree *.hpp ] ;
 
-if [ os.name ] = NT
-	{ alias dl : ; }
-else if [ os.name ] = LINUX 
-	{ lib dl ; alias dl : dl ; }
-else if [ os.name ] = MACOSX 
-	{ lib dl ; alias dl : dl ; }
-
 exe sam : 
     [ glob src/*.cpp ]
     /boost/system
     /boost/filesystem
     /tuttlelib//tuttlehost/<link>static
     /expat/<link>static
-    dl
     ;
 
 ###############################################################################

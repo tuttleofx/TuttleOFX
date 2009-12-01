@@ -41,6 +41,9 @@ else {
     alias nt_libs : ;
 }
 
+lib dl : : <os>LINUX <link>shared ;
+alias dl ;
+
 lib tuttlehost :
     [ glob src/tuttle/host/*.cpp ]
     [ glob src/tuttle/host/*/*.cpp ]
@@ -48,6 +51,7 @@ lib tuttlehost :
     /boost/filesystem
     /expat/<link>static
     nt_libs
+    dl/<link>shared
     ;
 
 lib tuttleplugin :

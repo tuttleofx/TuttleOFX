@@ -646,6 +646,11 @@ namespace attribute {
 				return kOfxStatErrMissingHostFeature;
 			}
 
+			ParamGroupInstance* ParamGroupInstance::clone() const
+			{
+				return new ParamGroupInstance(*this);
+			}
+
 			/// setChildrens have to clone each source instance recursively
 
 			void ParamGroupInstance::setChildrens( const ParamInstanceSet * childrens )
@@ -675,6 +680,10 @@ namespace attribute {
 			//
 			// Page Instance
 			//
+			ParamPageInstance* ParamPageInstance::clone() const
+			{
+				return new ParamPageInstance(*this);
+			}
 
 			const std::map<int, attribute::ParamInstance*> &ParamPageInstance::getChildren( ) const
 			{
