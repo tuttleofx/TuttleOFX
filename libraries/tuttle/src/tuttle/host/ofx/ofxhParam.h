@@ -241,11 +241,13 @@ namespace attribute {
         ParamInstanceSet*  _paramSetInstance;
         ParamInstance*     _parentInstance;
       public:
-        virtual ~ParamInstance();
+        virtual ~ParamInstance()=0;
 
         /// make a parameter, with the given type and name
         explicit ParamInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance );
 
+        /// clone this parameter
+        virtual ParamInstance* clone() const =0;
 		/**
 		 * @todo check values...
 		 */
@@ -440,6 +442,7 @@ namespace attribute {
       class ParamGroupInstance : public ParamInstance, public ParamInstanceSet {
       public:
         ParamGroupInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance ) : ParamInstance(descriptor, setInstance) {}
+        virtual ParamGroupInstance* clone() const;
 
         /// setChildrens have to clone each source instance recursively
         void setChildrens( const attribute::ParamInstanceSet * childrens );
@@ -475,6 +478,7 @@ namespace attribute {
       class ParamPageInstance : public ParamInstance {
       public:
         ParamPageInstance(ParamDescriptor& descriptor, attribute::ParamInstanceSet & setInstance) : ParamInstance(descriptor, setInstance) {}
+        virtual ParamPageInstance* clone() const;
         const std::map<int,attribute::ParamInstance*> &getChildren() const;
       protected :
         mutable std::map<int,attribute::ParamInstance*> _children; // if set in a notify hook, this need not be mutable

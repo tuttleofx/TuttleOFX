@@ -70,6 +70,11 @@ StringInstance::StringInstance( EffectInstance* effect,
     _value = getDefault();
 }
 
+StringInstance* StringInstance::clone() const
+{
+	return new StringInstance(*this);
+}
+
 const std::string & StringInstance::getDefault() const
 {
     return getProperties().getStringProperty( kOfxParamPropDefault );
@@ -110,6 +115,11 @@ IntegerInstance::IntegerInstance( EffectInstance* effect,
 , _effect( effect )
 {
     _value = getDefault();
+}
+
+IntegerInstance* IntegerInstance::clone() const
+{
+	return new IntegerInstance(*this);
 }
 
 int IntegerInstance::getDefault() const
@@ -153,6 +163,11 @@ DoubleInstance::DoubleInstance( EffectInstance* effect,
 
 {
     _value = getDefault();
+}
+
+DoubleInstance* DoubleInstance::clone() const
+{
+	return new DoubleInstance(*this);
 }
 
 double DoubleInstance::getDefault() const
@@ -208,6 +223,11 @@ BooleanInstance::BooleanInstance( EffectInstance* effect,
     _value = getDefault();
 }
 
+BooleanInstance* BooleanInstance::clone() const
+{
+	return new BooleanInstance(*this);
+}
+
 bool BooleanInstance::getDefault() const
 {
     return static_cast<bool>(getProperties().getIntProperty( kOfxParamPropDefault ));
@@ -249,6 +269,11 @@ ChoiceInstance::ChoiceInstance( EffectInstance* effect,
 
 {
     _value = getDefault();
+}
+
+ChoiceInstance* ChoiceInstance::clone() const
+{
+	return new ChoiceInstance(*this);
 }
 
 int ChoiceInstance::getDefault() const
@@ -297,6 +322,11 @@ RGBAInstance::RGBAInstance( EffectInstance* effect,
     _controls.push_back( new DoubleInstance(effect, name+".a_", descriptor, setInstance) );
 
     _value = getDefault();
+}
+
+RGBAInstance* RGBAInstance::clone() const
+{
+	return new RGBAInstance(*this);
 }
 
 OfxRGBAColourD RGBAInstance::getDefault() const
@@ -359,6 +389,12 @@ RGBInstance::RGBInstance( EffectInstance* effect,
     _value = getDefault();
 }
 
+
+RGBInstance* RGBInstance::clone() const
+{
+	return new RGBInstance(*this);
+}
+
 OfxRGBColourD RGBInstance::getDefault() const
 {
     OfxRGBColourD color;
@@ -414,6 +450,11 @@ Double2DInstance::Double2DInstance( EffectInstance* effect,
     _value = getDefault();
 }
 
+Double2DInstance* Double2DInstance::clone() const
+{
+	return new Double2DInstance(*this);
+}
+
 OfxPointD Double2DInstance::getDefault() const
 {
     OfxPointD point;
@@ -463,6 +504,11 @@ Integer2DInstance::Integer2DInstance( EffectInstance* effect,
     _controls.push_back( new IntegerInstance(effect, name+".x_", descriptor, setInstance) );
     _controls.push_back( new IntegerInstance(effect, name+".y_", descriptor, setInstance) );
     _value = getDefault();
+}
+
+Integer2DInstance* Integer2DInstance::clone() const
+{
+	return new Integer2DInstance(*this);
 }
 
 OfxPointI Integer2DInstance::getDefault() const
@@ -515,6 +561,11 @@ Integer3DInstance::Integer3DInstance( EffectInstance* effect,
     _controls.push_back( new IntegerInstance(effect, name+".y_", descriptor, setInstance) );
     _controls.push_back( new IntegerInstance(effect, name+".z_", descriptor, setInstance) );
     _value = getDefault();
+}
+
+Integer3DInstance* Integer3DInstance::clone() const
+{
+	return new Integer3DInstance(*this);
 }
 
 Ofx3DPointI Integer3DInstance::getDefault() const
@@ -572,6 +623,11 @@ Double3DInstance::Double3DInstance( EffectInstance* effect,
     _value = getDefault();
 }
 
+Double3DInstance* Double3DInstance::clone() const
+{
+	return new Double3DInstance(*this);
+}
+
 Ofx3DPointD Double3DInstance::getDefault() const
 {
     Ofx3DPointD point;
@@ -621,6 +677,10 @@ PushbuttonInstance::PushbuttonInstance( EffectInstance* effect,
 , _effect( effect )
 
 {
+}
+
+PushbuttonInstance* PushbuttonInstance::clone() const {
+	return new PushbuttonInstance(*this);
 }
 
 }
