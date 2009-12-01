@@ -53,7 +53,7 @@ int main( int argc, char **argv )
         tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
         tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
 
-        tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
+        //tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 
         if( pluginR && pluginI && pluginW )
         {

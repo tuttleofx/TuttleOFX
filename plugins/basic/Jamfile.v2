@@ -43,4 +43,5 @@ install dist_src
 	:
 		<os>NT:<location>$(DIST)/plugins/basic.ofx.bundle/Contents/Win32
 		<os>LINUX:<location>$(DIST)/plugins/basic.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/basic.ofx.bundle/Contents/MacOS
 	;

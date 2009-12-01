@@ -2,16 +2,19 @@
 
 #include <iostream>
 #include <sstream>
+#include <tuttle/host/graph/GraphExporter.hpp>
 
 namespace tuttle {
 namespace host {
 namespace core {
 
+
 Graph::Graph()
+	: _nodeCount(0)
 {
 }
 
-EffectInstance* Graph::createNode( const std::string& id ) throw(std::logic_error)
+NodeID Graph::createNode( const std::string& id ) throw(std::logic_error)
 {
 	ofx::imageEffect::ImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 	if( !plug )
@@ -23,18 +26,22 @@ EffectInstance* Graph::createNode( const std::string& id ) throw(std::logic_erro
 	if( !node )
 		throw std::logic_error( "Plugin not found." );
 
-	std::stringstream s;
-	s << node->getName() << ++_instanceCount[node->getName()];
-	node->setName( s.str() );
-
 	addToGraph( *node );
 
-	return node;
+	return _nodeCount++;
 }
 
 void Graph::addToGraph( EffectInstance& node )
 {
-//	_graph;
+	std::stringstream s;
+	s << node.getLabel() << ++_instanceCount[node.getLabel()];
+
+	//TODO: Fix this, do not work
+	node.setName( s.str() );
+
+	//TODO: set the good attribute name
+	graph::Vertex v(s.str(), &node, std::string("Attribute"));
+	_nodes[_nodeCount] = _graph.addVertex(v);
 }
 
 void Graph::deleteNode( const EffectInstance& node )
@@ -42,9 +49,25 @@ void Graph::deleteNode( const EffectInstance& node )
 
 }
 
-void Graph::connectNodes( const EffectInstance& out, const ofx::attribute::AttributeInstance& outAttr, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr )
+void Graph::connect( const NodeID& out, const NodeID& in )
 {
+	graph::Edge e("edge");
+	_graph.addEdge(_nodes[out],_nodes[in],e);
+}
 
+void Graph::dumpToStdOut()
+{
+	std::cout
+	<< "graph dump" << std::endl
+	<< "\tnode count: " << "-" << std::endl;
+	_graph.dumpToStdOut();
+}
+
+void Graph::compute()
+{
+	_graph.test_dfs();
+
+	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT(_graph, "testDOTExport.dot");
 }
 
 
