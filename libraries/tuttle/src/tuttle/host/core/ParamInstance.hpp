@@ -42,10 +42,10 @@ class PushbuttonInstance : public tuttle::host::ofx::attribute::ParamPushbuttonI
 //	PushbuttonInstance( const PushbuttonInstance& );
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 public:
-	PushbuttonInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	PushbuttonInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual PushbuttonInstance* clone() const;
 };
 
@@ -54,11 +54,11 @@ class StringInstance : public tuttle::host::ofx::attribute::ParamStringInstance
 //	StringInstance( const StringInstance& );
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 	std::string _value; /// @todo link de parametres
 
 public:
-	StringInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	StringInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual StringInstance* clone() const;
 
 	const std::string& getDefault() const;
@@ -73,11 +73,11 @@ class IntegerInstance : public tuttle::host::ofx::attribute::ParamIntegerInstanc
 //	IntegerInstance( const IntegerInstance& );
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 	int _value; /// @todo link de parametres
 
 public:
-	IntegerInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	IntegerInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual IntegerInstance* clone() const;
 
 	int       getDefault() const;
@@ -92,11 +92,11 @@ class DoubleInstance : public tuttle::host::ofx::attribute::ParamDoubleInstance
 //	DoubleInstance(const DoubleInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 	double _value;
 
 public:
-	DoubleInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	DoubleInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual DoubleInstance* clone() const;
 
 	double    getDefault() const;
@@ -113,12 +113,12 @@ class BooleanInstance : public tuttle::host::ofx::attribute::ParamBooleanInstanc
 //	BooleanInstance(const BooleanInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	bool _value;
 
 public:
-	BooleanInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	BooleanInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual BooleanInstance* clone() const;
 
 	bool      getDefault() const;
@@ -133,12 +133,12 @@ class ChoiceInstance : public tuttle::host::ofx::attribute::ParamChoiceInstance
 //	ChoiceInstance(const ChoiceInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	int _value;
 
 public:
-	ChoiceInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	ChoiceInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual ChoiceInstance* clone() const;
 
 	int       getDefault() const;
@@ -153,12 +153,12 @@ class RGBAInstance : public tuttle::host::ofx::attribute::MultiDimParam<DoubleIn
 //	RGBAInstance(const RGBAInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	OfxRGBAColourD _value;
 
 public:
-	RGBAInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	RGBAInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual RGBAInstance* clone() const;
 
 	OfxRGBAColourD getDefault() const;
@@ -173,12 +173,12 @@ class RGBInstance : public tuttle::host::ofx::attribute::MultiDimParam<DoubleIns
 //	RGBInstance(const RGBInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	OfxRGBColourD _value;
 
 public:
-	RGBInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	RGBInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual RGBInstance* clone() const;
 
 	OfxRGBColourD getDefault() const;
@@ -193,12 +193,12 @@ class Double2DInstance : public tuttle::host::ofx::attribute::MultiDimParam<Doub
 //	Double2DInstance(const Double2DInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	OfxPointD _value;
 
 public:
-	Double2DInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	Double2DInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual Double2DInstance* clone() const;
 
 	OfxPointD getDefault() const;
@@ -213,12 +213,12 @@ class Integer2DInstance : public tuttle::host::ofx::attribute::MultiDimParam<Int
 //	Integer2DInstance(const Integer2DInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	OfxPointI _value;
 
 public:
-	Integer2DInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	Integer2DInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual Integer2DInstance* clone() const;
 
 	OfxPointI getDefault() const;
@@ -233,12 +233,12 @@ class Integer3DInstance : public tuttle::host::ofx::attribute::MultiDimParam<Int
 //	Integer3DInstance(const Integer3DInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	Ofx3DPointI _value;
 
 public:
-	Integer3DInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	Integer3DInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual Integer3DInstance* clone() const;
 
 	Ofx3DPointI getDefault() const;
@@ -253,12 +253,12 @@ class Double3DInstance : public tuttle::host::ofx::attribute::MultiDimParam<Doub
 //	Double3DInstance(const Double3DInstance&);
 
 protected:
-	EffectInstance* _effect;
+	EffectInstance& _effect;
 
 	Ofx3DPointD _value;
 
 public:
-	Double3DInstance( EffectInstance* effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor, tuttle::host::ofx::attribute::ParamInstanceSet& setInstance );
+	Double3DInstance( EffectInstance& effect, const std::string& name, tuttle::host::ofx::attribute::ParamDescriptor& descriptor );
 	virtual Double3DInstance* clone() const;
 
 	Ofx3DPointD getDefault() const;

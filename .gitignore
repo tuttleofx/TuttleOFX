@@ -8,3 +8,6 @@
 
 # do not keep tuttlePluginCache.xml in case you one executes sam
 tuttlePluginCache.xml
+
+# removing dist folder : folder receiving the compilation products
+/dist
