@@ -19,7 +19,10 @@ namespace merge {
 const static std::string kMergeSourceA = "SourceA";
 const static std::string kMergeSourceB = "SourceB";
 const static std::string kMergeHelpButton = "Help";
-const static std::string kMergeFunction = "MergeFunction";
+const static std::string kMergeFunction = "Merging function";
+
+static const bool   kSupportTiles                 = false;
+static const bool   kSupportTemporalClipAccess    = false;
 
 // Plugin internal data
 const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used to merge two clips A and B.  <br />";
@@ -37,7 +40,8 @@ enum EMergeFunction { eMergeFunctionATop, eMergeFunctionAverage,
                       eMergeFunctionOver, eMergeFunctionOverlay,
                       eMergeFunctionPlus, eMergeFunctionScreen,
                       eMergeFunctionStencil, eMergeFunctionUnder,
-                      eMergeFunctionXOR };
+                      eMergeFunctionXOR
+                    };
 }
 }
 }

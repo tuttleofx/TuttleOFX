@@ -120,8 +120,6 @@ void InvertProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
                                   procWindow.y2 - procWindow.y1 );
 
         transform_pixels( src, dst, inverter() );
-        // @todo: check if this is necessary...
-        copy_and_convert_pixels( src, dst );
     }
     catch( PluginException err )
     {

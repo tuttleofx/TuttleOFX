@@ -7,14 +7,16 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-        <include>lib
-        <threading>multi 
+    : requirements
         <os>NT:<define>COMPILED_FROM_DSP
         <os>MACOSX:<define>HAVE_BCOPY
         <define>XML_STATIC
+        <include>lib
+        <threading>multi
         <link>static
     : usage-requirements
+        <os>NT:<define>COMPILED_FROM_DSP
+        <define>XML_STATIC
         <include>lib
     : build-dir $(DIST)/lib/expat
     ;

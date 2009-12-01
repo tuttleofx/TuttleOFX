@@ -93,6 +93,7 @@ void DpxImage::readHeader(ifstream & f)
     if (! f.read(reinterpret_cast<char*>(&_header), 32)) {
         std::ostringstream msg;
         msg << "Unable to read header...";
+        std::cerr << "Unable to read dpx header..." << std::endl;
         throw std::exception();
     }
 
@@ -116,7 +117,8 @@ void DpxImage::readHeader(ifstream & f)
     // reads data from _header...
     if (! f.read(reinterpret_cast<char*>(&_header)+32, hdrSize)){
         std::ostringstream msg;
-        msg << "Unable to read header...";
+        msg << "DPX: Unable to read header...";
+        std::cerr << msg << std::endl;
         throw std::exception();
     }
 
@@ -190,7 +192,8 @@ void DpxImage::readHeader(ifstream & f)
 
     if(_header._imageInfo.orientation > 1){
         std::ostringstream msg;
-        msg << "bad orientation value";
+        msg << "DPX: bad orientation value";
+        std::cerr << msg << std::endl;
         throw std::exception();
     }
 
@@ -198,7 +201,8 @@ void DpxImage::readHeader(ifstream & f)
     if(bitSize != 8 && bitSize != 10)
     {
         std::ostringstream msg;
-        msg << "bad bit size value";
+        msg << "DPX: bad bit size value (= " << bitSize << ")";
+        std::cerr << msg << std::endl;
         throw std::exception();
     }
 
@@ -209,6 +213,7 @@ void DpxImage::readHeader(ifstream & f)
     {
         std::ostringstream msg;
         msg << "bad packing value";
+        std::cerr << msg << std::endl;
         throw std::exception();
     }
 }
@@ -222,6 +227,7 @@ void DpxImage::readHeader(const path & filename) {
         std::ostringstream msg;
         msg << "Unable to open ";
         msg << filename;
+        std::cerr << msg << std::endl;
         throw std::exception();
     }
 
