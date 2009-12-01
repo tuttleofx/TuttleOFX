@@ -16,7 +16,7 @@ project
         <define>CINTERFACE
         <threading>multi 
         <link>static
-	: usage-requirements
+    : usage-requirements
         <include>src
         <include>src/tuttle/host
         <include>../openfxHack/include
@@ -39,16 +39,17 @@ if [ os.name ] = NT {
     alias dl ;
 } else {
     alias nt_libs ;
-    lib dl : : : <link>shared ;
+    lib dl : : <link>shared : <link>shared ;
 }
 
 lib tuttlehost :
     [ glob src/tuttle/host/*.cpp ]
     [ glob src/tuttle/host/*/*.cpp ]
+    dl
+    nt_libs
     /boost/system
     /boost/filesystem
     /expat/<link>static
-    nt_libs
     ;
 
 lib tuttleplugin :
