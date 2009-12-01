@@ -1112,7 +1112,7 @@ int ValueParam::getKeyIndex( double        time,
 
 	// oops?
 	if( stat == kOfxStatFailed )
-		return -1;                                           // if search failed, return -1
+		return -1;                                                              // if search failed, return -1
 	throwSuiteStatusException( stat );
 	return v;
 }
@@ -1124,7 +1124,7 @@ void ValueParam::deleteKeyAtTime( double time )
 		throwHostMissingSuiteException( "paramDeleteKey" );
 	OfxStatus stat = OFX::Private::gParamSuite->paramDeleteKey( _paramHandle, time );
 	if( stat == kOfxStatFailed )
-		return;                                        // if no key at time, fail quietly
+		return;                                                        // if no key at time, fail quietly
 	throwSuiteStatusException( stat );
 }
 

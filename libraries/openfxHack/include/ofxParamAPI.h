@@ -24,16 +24,9 @@ extern "C" {
  */
 #define kOfxParamPluginApiVersion 1
 
-
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
 
-
 #endif
-
 

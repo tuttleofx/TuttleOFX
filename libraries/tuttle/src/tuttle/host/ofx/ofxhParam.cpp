@@ -480,7 +480,7 @@ ParamDescriptor* ParamDescriptorSet::paramDefine( const char* paramType,
                                                   const char* name )
 {
 	if( !isStandardType( paramType ) )
-		return NULL;                                  /// << EEK! This is bad.
+		return NULL;                                                       /// << EEK! This is bad.
 
 	ParamDescriptor* desc = new ParamDescriptor( paramType, name );
 	desc->addStandardParamProps( paramType );

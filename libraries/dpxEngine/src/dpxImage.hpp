@@ -149,7 +149,8 @@ private:
 	void readHeader( fs::ifstream& f );
 
 public:
-	enum EDPX_CompType {
+	enum EDPX_CompType
+	{
 		eCompTypeUnknown,
 		eCompTypeR8G8B8,    eCompTypeR8G8B8A8,     eCompTypeA8B8G8R8,
 		eCompTypeR10G10B10, eCompTypeR10G10B10A10, eCompTypeA10B10G10R10,

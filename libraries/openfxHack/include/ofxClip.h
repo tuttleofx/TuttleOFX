@@ -10,10 +10,8 @@ extern "C" {
 // TUTTLE_TODO
 // out what can be output from ofxImageEffect.h
 
-
 /** @brief Used as a value for ::kOfxPropType on image effect clips */
 #define kOfxTypeClip "OfxTypeClip" // move from ofxImageEffect.h
-
 
 /**
  * @brief The type of a clip.
@@ -28,13 +26,9 @@ extern "C" {
 /** @brief String to identify a clip as an imageClip */
 #define kOfxClipTypeImage "OfxClipTypeImage"
 
-
-
 #ifdef __cplusplus
 }
 #endif
 
-
 #endif
-
 
