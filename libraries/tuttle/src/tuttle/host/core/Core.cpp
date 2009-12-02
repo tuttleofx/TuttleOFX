@@ -10,7 +10,8 @@ namespace host {
 namespace core {
 
 Core::Core()
-	: _imageEffectPluginCache( _host )
+	: _imageEffectPluginCache( _host ),
+	_memoryCache( _memoryPool )
 {
 	_pluginCache.setCacheVersion( "tuttleV1" );
 

@@ -4,7 +4,8 @@
 #include "EffectInstance.hpp"
 
 #include <tuttle/host/core/HostDescriptor.hpp>
-#include <tuttle/host/core/MemoryPool.hpp>
+#include <tuttle/host/core/memory/MemoryPool.hpp>
+#include <tuttle/host/core/memory/MemoryCache.hpp>
 #include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 #include <tuttle/common/patterns/Singleton.hpp>
@@ -29,12 +30,14 @@ private:
 	ofx::imageEffect::ImageEffectPluginCache _imageEffectPluginCache;
 	ofx::PluginCache _pluginCache;
 	core::MemoryPool _memoryPool;
+	core::MemoryCache _memoryCache;
 
 public:
 	const ofx::PluginCache&                         getPluginCache() const            { return _pluginCache; }
 	const Host&                                     getHost() const                   { return _host; }
 	const ofx::imageEffect::ImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
 	const core::MemoryPool&                         getMemoryPool() const             { return _memoryPool; }
+	const core::MemoryCache&                        getMemoryCache() const            { return _memoryCache; }
 
 public:
 	ofx::imageEffect::ImageEffectPlugin* getImageEffectPluginById( const std::string& id, int vermaj = -1, int vermin = -1 )

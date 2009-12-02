@@ -553,7 +553,7 @@ bool Set::fetchTypedProperty( const std::string& name, T*& prop, bool followChai
 	prop = dynamic_cast<T*>( myprop );
 	if( prop == 0 )
 	{
-		COUT_ERROR("Maybe you don't use the good property type when you get or set value for " << name<<" property (dynamic_cast error).");
+		COUT_ERROR( "Maybe you don't use the good property type when you get or set value for " << name << " property (dynamic_cast error)." );
 		return false;
 	}
 	return true;
@@ -712,16 +712,16 @@ void Set::setProperty( const std::string& property, int index, const typename T:
 		}
 		else
 		{
-			COUT_ERROR("Property::Set::setProperty - Property " << property << " not in the propertySet (value="<<value<<"), " <<
-			           "on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
+			COUT_ERROR( "Property::Set::setProperty - Property " << property << " not in the propertySet (value=" << value << "), " <<
+			            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 			cout();
 
 		}
 	}
-	catch(...)
+	catch(... )
 	{
-		COUT_ERROR("Property::Set::setProperty - Error on " << property << " property (value="<<value<<")." <<
-		           "on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
+		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
+		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 	}
 }
 
@@ -739,14 +739,14 @@ void Set::setPropertyN( const std::string& property, int count, const typename T
 		}
 		else
 		{
-			COUT_ERROR("Set::setProperty - Property " << property << " not in the propertySet (value="<<value<<").");
-			COUT_ERROR("on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
+			COUT_ERROR( "Set::setProperty - Property " << property << " not in the propertySet (value=" << value << ")." );
+			COUT_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 		}
 	}
-	catch(...)
+	catch(... )
 	{
-		COUT_ERROR("Set::setProperty - Error on " << property << " property (value="<<value<<").");
-		COUT_ERROR("on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
+		COUT_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
+		COUT_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 	}
 }
 
@@ -1170,7 +1170,7 @@ struct OfxPropertySuiteV1 gSuite =
 void* GetSuite( int version )
 {
 	if( version == 1 )
-		return (void*) ( &gSuite );
+		return ( void* )( &gSuite );
 	return NULL;
 }
 

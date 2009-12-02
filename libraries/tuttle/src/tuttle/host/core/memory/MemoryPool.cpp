@@ -6,8 +6,6 @@ namespace core {
 
 MemoryPool::MemoryPool() {}
 
-MemoryPool::MemoryPool( const MemoryPool& orig ) {}
-
 MemoryPool::~MemoryPool() {}
 
 }

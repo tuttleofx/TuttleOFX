@@ -15,12 +15,12 @@ Graph::Graph()
 
 Graph::~Graph()
 {
-	for( std::list<Node*>::iterator it=_nodesList.begin(), itEnd=_nodesList.end();
-	 it != itEnd;
-	 ++it)
-	 {
-		 delete *it;
-	 }
+	for( std::list<Node*>::iterator it = _nodesList.begin(), itEnd = _nodesList.end();
+	     it != itEnd;
+	     ++it )
+	{
+		delete *it;
+	}
 }
 
 Graph::Node& Graph::createNode( const std::string& id ) throw( std::logic_error )
@@ -43,37 +43,37 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( std::logic_error 
 	addToGraph( *node );
 
 	++_nodeCount;
-	
+
 	return *node;
 }
 
 void Graph::addToGraph( EffectInstance& node )
 {
 	graph::Vertex v( node.getName(), &node );
-	
+
 	_nodesList.push_back( &node );
-	_nodes[node.getName()] = &node;
+	_nodes[node.getName()]           = &node;
 	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
 void Graph::removeFromGraph( EffectInstance& node )
 {
-//	graph::Vertex v( node.getName(), &node );
-//
-//	_nodesList.find( &node );
-//	_nodes[node.getName()] = node;
-//	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
+	//	graph::Vertex v( node.getName(), &node );
+	//
+	//	_nodesList.find( &node );
+	//	_nodes[node.getName()] = node;
+	//	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
 void Graph::deleteNode( const EffectInstance& node )
 {}
 
-void Graph::connect( const Node& out, const Node& in ) throw(Exception)
+void Graph::connect( const Node& out, const Node& in ) throw( Exception )
 {
-	const std::vector<ofx::attribute::ClipImageInstance*> inClips = in.getClipsByOrder();
+	const std::vector<ofx::attribute::ClipImageInstance*> inClips              = in.getClipsByOrder();
 	const std::map<std::string, ofx::attribute::ClipImageInstance*> inClipsMap = in.getClips();
 	std::string inAttrName;
-	if( inClips.size()==1 )
+	if( inClips.size() == 1 )
 	{
 		inAttrName = inClips[0]->getName();
 	}
@@ -90,12 +90,12 @@ void Graph::connect( const Node& out, const Node& in ) throw(Exception)
 			inAttrName = inClips[0]->getName();
 		}
 	}
-	else// if( inClips.empty() )
+	else // if( inClips.empty() )
 	{
-		throw Exception("Connection failed : no clip.");
+		throw Exception( "Connection failed : no clip." );
 	}
 
-	graph::Edge e( out.getName()+"."+kOfxOutputAttributeName+"-->"+in.getName()+"."+inAttrName );
+	graph::Edge e( out.getName() + "." + kOfxOutputAttributeName + "-->" + in.getName() + "." + inAttrName );
 
 	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[in.getName()], e );
 }

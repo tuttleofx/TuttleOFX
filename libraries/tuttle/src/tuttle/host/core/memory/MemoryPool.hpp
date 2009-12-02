@@ -9,12 +9,11 @@ class MemoryPool
 {
 public:
 	MemoryPool();
-	MemoryPool( const MemoryPool& orig );
-	virtual ~MemoryPool();
+	~MemoryPool();
 
 public:
-	bool release();
-	bool purge();
+	bool release(){}
+	bool purge(){}
 
 };
 
