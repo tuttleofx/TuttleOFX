@@ -169,7 +169,7 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 		}
 
 		// If image ratio is lesser than the specified ratio, we need to add left and right bands
-		if( ( (double) ( w ) / h ) > ratio )
+		if( ( (double)( w ) / h ) > ratio )
 		{
 			bandSize = (int)round( ( w - ( h / ( 1.0 / ratio ) ) ) / 2.0 );
 			upBand->setValue( 0 );
@@ -177,7 +177,7 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 			leftBand->setValue( (int)round( bandSize / par ) );
 			rightBand->setValue( (int)round( bandSize / par ) );
 		}
-		else if( ( (double) ( w )  / h ) < ratio )
+		else if( ( (double)( w )  / h ) < ratio )
 		{
 			// Add top and bottom bands
 			bandSize = (int)round( ( h - ( ( w ) / ratio ) ) / 2.0 );

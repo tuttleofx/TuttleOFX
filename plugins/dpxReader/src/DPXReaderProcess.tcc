@@ -178,7 +178,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 			typedef std::iterator_traits< rgba10101010_ptr_t >::value_type rgba10101010_pixel_t;
 			typedef typename view_type_from_pixel< rgba10101010_pixel_t >::type rgba10101010_view_t;
 			rgba10101010_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-			                                            (rgba10101010_pixel_t*)( pData ),
+			                                            ( rgba10101010_pixel_t* )( pData ),
 			                                            _plugin.getDpxImg().width() * 5 );
 			copy_and_convert_pixels( flipped_up_down_view( src ), color_converted_view<rgba16_pixel_t>( dst ) );
 			break;
@@ -187,7 +187,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 		{
 			const uint16_t* pData = _plugin.getDpxImg().data16();
 			abgr16_view_t src     = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-			                                          (abgr16_pixel_t*)( pData ),
+			                                          ( abgr16_pixel_t* )( pData ),
 			                                          _plugin.getDpxImg().width() * 4 * sizeof( uint16_t ) );
 
 			copy_and_convert_pixels( flipped_up_down_view( src ), dst );

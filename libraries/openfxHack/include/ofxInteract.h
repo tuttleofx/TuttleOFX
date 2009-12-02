@@ -196,14 +196,14 @@ typedef struct OfxInteract* OfxInteractHandle;
 typedef struct OfxInteractSuiteV1
 {
 	/** @brief Requests an openGL buffer swap on the interact instance */
-	OfxStatus ( * interactSwapBuffers )( OfxInteractHandle interactInstance );
+	OfxStatus ( *interactSwapBuffers )( OfxInteractHandle interactInstance );
 
 	/** @brief Requests a redraw of the interact instance */
-	OfxStatus ( * interactRedraw )( OfxInteractHandle interactInstance );
+	OfxStatus ( *interactRedraw )( OfxInteractHandle interactInstance );
 
 	/** @brief Gets the property set handle for this interact handle */
-	OfxStatus ( * interactGetPropertySet )( OfxInteractHandle     interactInstance,
-	                                        OfxPropertySetHandle* property );
+	OfxStatus ( *interactGetPropertySet )( OfxInteractHandle     interactInstance,
+	                                       OfxPropertySetHandle* property );
 } OfxInteractSuiteV1;
 
 #ifdef __cplusplus

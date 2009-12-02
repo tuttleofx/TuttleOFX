@@ -94,7 +94,7 @@ namespace Memory {
 void* allocate( size_t nBytes, ImageEffect* effect = 0 ) throw( std::bad_alloc )
 {
 	void* data     = 0;
-	OfxStatus stat = OFX::Private::gMemorySuite->memoryAlloc( (void*)( effect ? effect->getHandle() : 0 ), nBytes, &data );
+	OfxStatus stat = OFX::Private::gMemorySuite->memoryAlloc( ( void* )( effect ? effect->getHandle() : 0 ), nBytes, &data );
 
 	if( stat != kOfxStatOK )
 		throw std::bad_alloc();

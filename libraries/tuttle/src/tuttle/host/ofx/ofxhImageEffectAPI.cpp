@@ -204,16 +204,16 @@ Descriptor* ImageEffectPlugin::getDescriptorInContext( const std::string& contex
 		return it->second;
 	}
 
-//	COUT( "ImageEffectPlugin::getContext -- _contexts" );
-//	for( std::map<std::string, Descriptor*>::const_iterator a = _contexts.begin(); a != _contexts.end(); ++a )
-//	{
-//		COUT( a->second->getLabel() );
-//	}
-//	COUT( "ImageEffectPlugin::getContext -- _knownContexts" );
-//	for( std::set<std::string>::const_iterator a = _knownContexts.begin(); a != _knownContexts.end(); ++a )
-//	{
-//		COUT( *a );
-//	}
+	//	COUT( "ImageEffectPlugin::getContext -- _contexts" );
+	//	for( std::map<std::string, Descriptor*>::const_iterator a = _contexts.begin(); a != _contexts.end(); ++a )
+	//	{
+	//		COUT( a->second->getLabel() );
+	//	}
+	//	COUT( "ImageEffectPlugin::getContext -- _knownContexts" );
+	//	for( std::set<std::string>::const_iterator a = _knownContexts.begin(); a != _knownContexts.end(); ++a )
+	//	{
+	//		COUT( *a );
+	//	}
 
 	if( _knownContexts.find( context ) == _knownContexts.end() )
 	{

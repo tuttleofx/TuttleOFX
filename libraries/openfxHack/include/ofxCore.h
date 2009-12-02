@@ -153,7 +153,7 @@ typedef struct OfxPlugin
 	 *  \post
 	 *    - the pointer suite is valid until the plug-in is unloaded
 	 */
-	void ( * setHost )( OfxHost* host );
+	void ( *setHost )( OfxHost* host );
 
 	/** @brief Main entry point for plug-ins
 	 *

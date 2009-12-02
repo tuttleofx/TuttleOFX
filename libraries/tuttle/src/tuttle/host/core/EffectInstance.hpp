@@ -39,10 +39,14 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class EffectInstance : public ProcessNode, public tuttle::host::ofx::imageEffect::Instance
+class EffectInstance : public ProcessNode,
+	public tuttle::host::ofx::imageEffect::Instance
 {
 protected:
 	OfxPointD _frameRange;
+
+private:
+	EffectInstance( const EffectInstance& );
 
 public:
 	EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,

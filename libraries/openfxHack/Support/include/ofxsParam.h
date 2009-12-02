@@ -104,7 +104,8 @@ class PushButtonParam;
 class ParamSet;
 
 /** @brief Enumerates the different types of parameter */
-enum ParamTypeEnum {
+enum ParamTypeEnum
+{
 	eDummyParam,
 	eStringParam,
 	eIntParam,
@@ -124,14 +125,16 @@ enum ParamTypeEnum {
 };
 
 /** @brief Enumerates the different types of cache invalidation */
-enum CacheInvalidationEnum {
+enum CacheInvalidationEnum
+{
 	eCacheInvalidateValueChange,
 	eCacheInvalidateValueChangeToEnd,
 	eCacheInvalidateValueAll
 };
 
 /** @brief Enumerates how we search for keys in an animating parameter */
-enum KeySearchEnum {
+enum KeySearchEnum
+{
 	eKeySearchBackwards,
 	eKeySearchNear,
 	eKeySearchForwards
@@ -690,7 +693,7 @@ protected:
 				return true;
 			}
 			else
-				return false;                                   // SHOULD THROW SOMETHING HERE!!!!!!!
+				return false;                                                                 // SHOULD THROW SOMETHING HERE!!!!!!!
 		}
 		else
 		{

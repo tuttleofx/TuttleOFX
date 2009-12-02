@@ -73,7 +73,7 @@ void Progress::progressEnd()
 Progress& Progress::operator=( const Progress& p )
 {
 	if( this == &p )
-		return *this;                                             // Gracefully handle self assignment
+		return *this;                                                                   // Gracefully handle self assignment
 	_counter  = p._counter;
 	_stepSize = p._stepSize;
 	return *this;

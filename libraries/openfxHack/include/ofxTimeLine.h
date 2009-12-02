@@ -54,7 +54,7 @@ typedef struct OfxTimeLineSuiteV1
 	 *  - ::kOfxStatFailed - the enquiry failed for some host specific reason
 	 *  - ::kOfxStatErrBadHandle - the effect handle was invalid
 	 */
-	OfxStatus ( * getTime )( void* instance, double* time );
+	OfxStatus ( *getTime )( void* instance, double* time );
 
 	/** @brief Move the timeline control to the indicated time.
 	 *
@@ -71,7 +71,7 @@ typedef struct OfxTimeLineSuiteV1
 	 *  - ::kOfxStatErrBadHandle - the effect handle was invalid
 	 *  - ::kOfxStatErrValue - the time was an illegal value
 	 */
-	OfxStatus ( * gotoTime )( void* instance, double time );
+	OfxStatus ( *gotoTime )( void* instance, double time );
 
 	/** @brief Get the current bounds on a timeline
 	 *
@@ -86,7 +86,7 @@ typedef struct OfxTimeLineSuiteV1
 	 *  - ::kOfxStatFailed - the enquiry failed for some host specific reason
 	 *  - ::kOfxStatErrBadHandle - the effect handle was invalid
 	 */
-	OfxStatus ( * getTimeBounds )( void* instance, double* firstTime, double* lastTime );
+	OfxStatus ( *getTimeBounds )( void* instance, double* firstTime, double* lastTime );
 } OfxTimeLineSuiteV1;
 
 #endif

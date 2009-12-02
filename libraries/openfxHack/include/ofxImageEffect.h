@@ -949,8 +949,8 @@ typedef struct OfxImageEffectSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the paramter handle was invalid
 	 * - ::kOfxStatErrUnknown    - if the type is unknown
 	 */
-	OfxStatus ( * getPropertySet )( OfxImageEffectHandle  imageEffect,
-	                                OfxPropertySetHandle* propHandle );
+	OfxStatus ( *getPropertySet )( OfxImageEffectHandle  imageEffect,
+	                               OfxPropertySetHandle* propHandle );
 
 	/** @brief Retrieves the parameter set for the given image effect
 	 *
@@ -964,8 +964,8 @@ typedef struct OfxImageEffectSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the paramter handle was invalid
 	 * - ::kOfxStatErrUnknown    - if the type is unknown
 	 */
-	OfxStatus ( * getParamSet )( OfxImageEffectHandle imageEffect,
-	                             OfxParamSetHandle*   paramSet );
+	OfxStatus ( *getParamSet )( OfxImageEffectHandle imageEffect,
+	                            OfxParamSetHandle*   paramSet );
 
 	/** @brief Define a clip to the effect.
 	 *
@@ -981,9 +981,9 @@ typedef struct OfxImageEffectSuiteV1
 	 *
 	 * @returns
 	 */
-	OfxStatus ( * clipDefine )( OfxImageEffectHandle  imageEffect,
-	                            const char*           name,
-	                            OfxPropertySetHandle* propertySet );
+	OfxStatus ( *clipDefine )( OfxImageEffectHandle  imageEffect,
+	                           const char*           name,
+	                           OfxPropertySetHandle* propertySet );
 
 	/** @brief Get the propery handle of the named input clip in the given instance
 	 *
@@ -1009,10 +1009,10 @@ typedef struct OfxImageEffectSuiteV1
 	 * - handle will be valid for the life time of the instance.
 	 *
 	 */
-	OfxStatus ( * clipGetHandle )( OfxImageEffectHandle  imageEffect,
-	                               const char*           name,
-	                               OfxImageClipHandle*   clip,
-	                               OfxPropertySetHandle* propertySet );
+	OfxStatus ( *clipGetHandle )( OfxImageEffectHandle  imageEffect,
+	                              const char*           name,
+	                              OfxImageClipHandle*   clip,
+	                              OfxPropertySetHandle* propertySet );
 
 	/** @brief Retrieves the property set for a given clip
 	 *
@@ -1026,8 +1026,8 @@ typedef struct OfxImageEffectSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the paramter handle was invalid
 	 * - ::kOfxStatErrUnknown    - if the type is unknown
 	 */
-	OfxStatus ( * clipGetPropertySet )( OfxImageClipHandle    clip,
-	                                    OfxPropertySetHandle* propHandle );
+	OfxStatus ( *clipGetPropertySet )( OfxImageClipHandle    clip,
+	                                   OfxPropertySetHandle* propHandle );
 
 	/** @brief Get a handle for an image in a clip at the indicated time and indicated region
 	 *
@@ -1058,10 +1058,10 @@ typedef struct OfxImageEffectSuiteV1
 	 * - ::kOfxStatErrMemory - the host had not enough memory to complete the operation, plugin should abort whatever it was doing.
 	 *
 	 */
-	OfxStatus ( * clipGetImage )( OfxImageClipHandle    clip,
-	                              OfxTime               time,
-	                              OfxRectD*             region,
-	                              OfxPropertySetHandle* imageHandle );
+	OfxStatus ( *clipGetImage )( OfxImageClipHandle    clip,
+	                             OfxTime               time,
+	                             OfxRectD*             region,
+	                             OfxPropertySetHandle* imageHandle );
 
 	/** @brief Releases the image handle previously returned by clipGetImage
 	 *
@@ -1076,7 +1076,7 @@ typedef struct OfxImageEffectSuiteV1
 	 * - ::kOfxStatOK - the image was successfully fetched and returned in the handle,
 	 * - ::kOfxStatErrBadHandle - the image handle was invalid,
 	 */
-	OfxStatus ( * clipReleaseImage )( OfxPropertySetHandle imageHandle );
+	OfxStatus ( *clipReleaseImage )( OfxPropertySetHandle imageHandle );
 
 	/** @brief Returns the spatial region of definition of the clip at the given time
 	 *
@@ -1105,9 +1105,9 @@ typedef struct OfxImageEffectSuiteV1
 	 *
 	 *
 	 */
-	OfxStatus ( * clipGetRegionOfDefinition )( OfxImageClipHandle clip,
-	                                           OfxTime            time,
-	                                           OfxRectD*          bounds );
+	OfxStatus ( *clipGetRegionOfDefinition )( OfxImageClipHandle clip,
+	                                          OfxTime            time,
+	                                          OfxRectD*          bounds );
 
 	/** @brief Returns whether to abort processing or not.
 	 *
@@ -1122,7 +1122,7 @@ typedef struct OfxImageEffectSuiteV1
 	 * - 0 if the effect should continue whatever processing it is doing
 	 * - 1 if the effect should abort whatever processing it is doing
 	 */
-	int ( * abort )( OfxImageEffectHandle imageEffect );
+	int ( *abort )( OfxImageEffectHandle imageEffect );
 
 	/** @brief Allocate memory from the host's image memory pool
 	 *
@@ -1140,9 +1140,9 @@ typedef struct OfxImageEffectSuiteV1
 	 * - kOfxStatErrBadHandle if instanceHandle is not valid, memoryHandle is set to NULL
 	 * - kOfxStatErrMemory if there was not enough memory to satisfy the call, memoryHandle is set to NULL
 	 */
-	OfxStatus ( * imageMemoryAlloc )( OfxImageEffectHandle  instanceHandle,
-	                                  size_t                nBytes,
-	                                  OfxImageMemoryHandle* memoryHandle );
+	OfxStatus ( *imageMemoryAlloc )( OfxImageEffectHandle  instanceHandle,
+	                                 size_t                nBytes,
+	                                 OfxImageMemoryHandle* memoryHandle );
 
 	/** @brief Frees a memory handle and associated memory.
 	 *
@@ -1158,7 +1158,7 @@ typedef struct OfxImageEffectSuiteV1
 	 * - kOfxStatOK if the memory was cleanly deleted
 	 * - kOfxStatErrBadHandle if the value of \e memoryHandle was not a valid pointer returned by OfxImageEffectSuiteV1::imageMemoryAlloc
 	 */
-	OfxStatus ( * imageMemoryFree )( OfxImageMemoryHandle memoryHandle );
+	OfxStatus ( *imageMemoryFree )( OfxImageMemoryHandle memoryHandle );
 
 	/** @brief Lock the memory associated with a memory handle and make it available for use.
 	 *
@@ -1180,8 +1180,8 @@ typedef struct OfxImageEffectSuiteV1
 	 * - kOfxStatErrBadHandle if the value of \e memoryHandle was not a valid pointer returned by OfxImageEffectSuiteV1::imageMemoryAlloc, null is placed in \e *returnedPtr
 	 * - kOfxStatErrMemory if there was not enough memory to satisfy the call, \e *returnedPtr is set to NULL
 	 */
-	OfxStatus ( * imageMemoryLock )( OfxImageMemoryHandle memoryHandle,
-	                                 void**               returnedPtr );
+	OfxStatus ( *imageMemoryLock )( OfxImageMemoryHandle memoryHandle,
+	                                void**               returnedPtr );
 
 	/** @brief Unlock allocated image data
 	 *
@@ -1201,7 +1201,7 @@ typedef struct OfxImageEffectSuiteV1
 	 * - kOfxStatOK if the memory was unlocked cleanly,
 	 * - kOfxStatErrBadHandle if the value of \e memoryHandle was not a valid pointer returned by OfxImageEffectSuiteV1::imageMemoryAlloc, null is placed in \e *returnedPtr
 	 */
-	OfxStatus ( * imageMemoryUnlock )( OfxImageMemoryHandle memoryHandle );
+	OfxStatus ( *imageMemoryUnlock )( OfxImageMemoryHandle memoryHandle );
 
 } OfxImageEffectSuiteV1;
 

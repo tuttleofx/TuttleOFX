@@ -57,8 +57,8 @@ typedef struct OfxProgressSuiteV1
 	 *  - ::kOfxStatFailed - the progress object failed for some reason
 	 *  - ::kOfxStatErrBadHandle - effectInstance was invalid
 	 */
-	OfxStatus ( * progressStart )( void*       effectInstance,
-	                               const char* label );
+	OfxStatus ( *progressStart )( void*       effectInstance,
+	                              const char* label );
 
 	/** @brief Indicate how much of the processing task has been completed and reports on any abort status.
 	 *
@@ -71,7 +71,7 @@ typedef struct OfxProgressSuiteV1
 	 *  - ::kOfxStatReplyNo - the progress object was successfully updated and the task should abort
 	 *  - ::kOfxStatErrBadHandle - the progress handle was invalid,
 	 */
-	OfxStatus ( * progressUpdate )( void* effectInstance, double progress );
+	OfxStatus ( *progressUpdate )( void* effectInstance, double progress );
 
 	/** @brief Signal that we are finished with the progress meter.
 	 *
@@ -87,7 +87,7 @@ typedef struct OfxProgressSuiteV1
 	 *  - ::kOfxStatOK - the progress object was successfully closed
 	 *  - ::kOfxStatErrBadHandle - the progress handle was invalid,
 	 */
-	OfxStatus ( * progressEnd )( void* effectInstance );
+	OfxStatus ( *progressEnd )( void* effectInstance );
 
 } OfxProgressSuiteV1 ;
 

@@ -672,7 +672,7 @@ void* Image::getPixelAddress( int x, int y )
 	if( x < _bounds.x1 || x >= _bounds.x2 || y < _bounds.y1 || y > _bounds.y2 || _pixelBytes == 0 )
 		return 0;
 
-	char* pix = (char*) ( ( (char*) _pixelData ) + ( y - _bounds.y1 ) * _rowBytes );
+	char* pix = ( char* )( ( (char*) _pixelData ) + ( y - _bounds.y1 ) * _rowBytes );
 	pix += ( x - _bounds.x1 ) * _pixelBytes;
 	return (void*) pix;
 }
@@ -2349,6 +2349,14 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		stat = OFX_CLIENT_EXCEPTION_HANDLER( e, plugname );
 	}
 	#endif
+
+	// catch all exceptions
+	catch( std::exception& e )
+	{
+		std::cout << "Caught std::exception (" << e.what() << ")" << std::endl;
+		stat = kOfxStatFailed;
+	}
+
 	// Catch anything else, unknown
 	catch(... )
 	{

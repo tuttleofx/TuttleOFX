@@ -199,7 +199,7 @@ bool Base::getHostFrameThreading() const
 
 OfxPluginEntryPoint* Base::getOverlayInteractMainEntry() const
 {
-	return (OfxPluginEntryPoint*) ( _properties.getPointerProperty( kOfxImageEffectPluginPropOverlayInteractV1 ) );
+	return ( OfxPluginEntryPoint* )( _properties.getPointerProperty( kOfxImageEffectPluginPropOverlayInteractV1 ) );
 }
 
 /// does the effect support images of differing sizes
@@ -723,14 +723,14 @@ OfxStatus Instance::createInstanceAction()
 	setDefaultClipPreferences();
 
 	// now tell the plug-in to create instance
-	OfxStatus st = mainEntry( kOfxActionCreateInstance, this->getHandle(), 0, 0 );
+	OfxStatus status = mainEntry( kOfxActionCreateInstance, this->getHandle(), 0, 0 );
 
-	if( st == kOfxStatOK )
+	if( status == kOfxStatOK )
 	{
 		_created = true;
 	}
 
-	return st;
+	return status;
 }
 
 // begin/change/end instance changed
@@ -854,7 +854,7 @@ OfxStatus Instance::beginRenderAction( OfxTime   startFrame,
 
 	inArgs.setDoubleProperty( kOfxImageEffectPropFrameStep, step );
 
-	inArgs.setDoubleProperty( kOfxPropIsInteractive, interactive );
+	inArgs.setIntProperty( kOfxPropIsInteractive, interactive );
 
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
@@ -904,7 +904,7 @@ OfxStatus Instance::endRenderAction( OfxTime   startFrame,
 
 	inArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, startFrame, 0 );
 	inArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, endFrame, 1 );
-	inArgs.setDoubleProperty( kOfxPropIsInteractive, interactive );
+	inArgs.setIntProperty( kOfxPropIsInteractive, interactive );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
 	return mainEntry( kOfxImageEffectActionEndSequenceRender, this->getHandle(), &inArgs, 0 );
@@ -1204,7 +1204,7 @@ OfxStatus Instance::getFrameNeededAction( OfxTime   time,
 
 				int nRanges = outArgs.getDimension( name );
 				if( nRanges % 2 != 0 )
-					return kOfxStatFailed;                                                                                                   // bad! needs to be divisible by 2
+					return kOfxStatFailed;                                                                                                                                              // bad! needs to be divisible by 2
 
 				if( nRanges == 0 )
 				{

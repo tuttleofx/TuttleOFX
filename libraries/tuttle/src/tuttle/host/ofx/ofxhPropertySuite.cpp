@@ -533,6 +533,7 @@ Property* Set::fetchProperty( const std::string& name, bool followChain ) const
 		{
 			return _chainedSet->fetchProperty( name, true );
 		}
+		//COUT_ERROR("fetchProperty: " << name << " NULL, (followChain: " << followChain << ").");
 		return NULL;
 	}
 	return i->second;
@@ -543,12 +544,16 @@ bool Set::fetchTypedProperty( const std::string& name, T*& prop, bool followChai
 {
 	Property* myprop = fetchProperty( name, followChain );
 
-	if( !myprop )
+	if( myprop == NULL )
+	{
+		//COUT_ERROR("fetchTypedProperty: " << name << ", (followChain: " << followChain<<").");
 		return false;
+	}
 
 	prop = dynamic_cast<T*>( myprop );
 	if( prop == 0 )
 	{
+		COUT_ERROR("Maybe you don't use the good property type when you get or set value for " << name<<" property (dynamic_cast error).");
 		return false;
 	}
 	return true;
@@ -592,7 +597,7 @@ void Set::createProperty( const PropSpec& spec )
 {
 	if( _props.find( spec.name ) != _props.end() )
 	{
-		std::cerr << "Tried to add a duplicate property to a Property::Set (" << spec.name << ")" << std::endl;
+		COUT_ERROR( "Tried to add a duplicate property to a Property::Set (" << spec.name << ")" );
 		return;
 	}
 
@@ -611,7 +616,7 @@ void Set::createProperty( const PropSpec& spec )
 			_props[spec.name] = new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue );
 			break;
 		default:
-			std::cerr << "Tried to create a property of an unrecognized type (" << spec.name << ", " << spec.type << ")" << std::endl;
+			COUT_ERROR( "Tried to create a property of an unrecognized type (" << spec.name << ", " << spec.type << ")" );
 			break;
 	}
 }
@@ -707,12 +712,16 @@ void Set::setProperty( const std::string& property, int index, const typename T:
 		}
 		else
 		{
-			COUT_ERROR("Set::setProperty - Property " << property << " not in the propertySet (value="<<value<<").");
+			COUT_ERROR("Property::Set::setProperty - Property " << property << " not in the propertySet (value="<<value<<"), " <<
+			           "on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
+			cout();
+
 		}
 	}
 	catch(...)
 	{
-		COUT_ERROR("Set::setProperty - Error on " << property << " property (value="<<value<<").");
+		COUT_ERROR("Property::Set::setProperty - Error on " << property << " property (value="<<value<<")." <<
+		           "on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
 	}
 }
 
@@ -728,9 +737,17 @@ void Set::setPropertyN( const std::string& property, int count, const typename T
 		{
 			prop->setValueN( value, count );
 		}
+		else
+		{
+			COUT_ERROR("Set::setProperty - Property " << property << " not in the propertySet (value="<<value<<").");
+			COUT_ERROR("on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
+		}
 	}
-	catch(... )
-	{}
+	catch(...)
+	{
+		COUT_ERROR("Set::setProperty - Error on " << property << " property (value="<<value<<").");
+		COUT_ERROR("on Property::Set (type:" << this->getStringProperty( kOfxPropType )<<", name:"<< this->getStringProperty( kOfxPropName ) << ").");
+	}
 }
 
 /// get a particular property

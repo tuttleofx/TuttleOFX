@@ -65,9 +65,9 @@ BOOST_AUTO_TEST_CASE( create_node )
 	core::Core::instance().preload();
 
 	core::Graph g;
-	core::NodeID invert = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::NodeID invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::NodeID basic  = g.createNode( "net.sf.openfx:basicplugin" );
+	core::Graph::Node& invert  = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& basic   = g.createNode( "net.sf.openfx:basicplugin" );
 
 	g.connect( basic, invert );
 

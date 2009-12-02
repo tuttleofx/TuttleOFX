@@ -497,18 +497,25 @@ public:
 	/// dump to cout
 	void cout() const
 	{
-		COUT_INFOS;
+		COUT( "Property::Set {" );
 		for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();
 		     it != itEnd;
 		     ++it )
 		{
 			Property* prop = it->second;
-			COUT( "[" << it->first << "]: " << mapTypeEnumToString( prop->getType() ) );
-			for( size_t i = 0; i < prop->getDimension(); ++i )
+			std::cout << "    [" << it->first << "]: " << mapTypeEnumToString( prop->getType() );
+			std::cout << " (";
+			size_t i = 0;
+			for( ; i < prop->getDimension() - 1; ++i )
 			{
-				COUT( " - " << prop->getStringValue( i ) );
+				std::cout << prop->getStringValue( i ) << ", ";
 			}
+			std::cout << prop->getStringValue( i );
+			std::cout << "), ";
+			std::cout << "(ro:" << prop->getPluginReadOnly() << ")" << std::endl;
 		}
+		COUT( "}" );
+		COUT( "fetchProperty(kOfxPropIsInteractive): " << fetchProperty( kOfxPropIsInteractive ) );
 	}
 
 	/// hide assignment

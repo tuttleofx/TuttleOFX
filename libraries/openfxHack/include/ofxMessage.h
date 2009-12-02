@@ -96,11 +96,11 @@ typedef struct OfxMessageSuiteV1
 	 * - ::kOfxStatFailed - if the message could not be posted for some reason
 	 *
 	 */
-	OfxStatus ( * message )( void*       handle,
-	                         const char* messageType,
-	                         const char* messageId,
-	                         const char* format,
-	                         ... );
+	OfxStatus ( *message )( void*       handle,
+	                        const char* messageType,
+	                        const char* messageId,
+	                        const char* format,
+	                        ... );
 
 } OfxMessageSuiteV1;
 

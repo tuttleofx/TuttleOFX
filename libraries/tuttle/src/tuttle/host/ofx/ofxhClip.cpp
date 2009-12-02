@@ -53,18 +53,11 @@ namespace attribute {
 ClipAccessor::ClipAccessor()
 {}
 
-ClipAccessor::ClipAccessor( const ClipAccessor& v )
-	: attribute::AttributeAccessor( v )
-{
-	//TUTTLE_TODO : switch this function in private
-	COUT_WITHINFOS( "This copy contructor should never be called." );
-	assert( 0 );
-}
-
 ClipAccessor::~ClipAccessor()
 {}
 
-/** is the clip optional
+/**
+ * is the clip optional
  */
 bool ClipAccessor::isOptional() const
 {

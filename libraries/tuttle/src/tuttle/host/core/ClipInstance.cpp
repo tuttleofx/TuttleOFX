@@ -134,10 +134,11 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 	setIntProperty( kOfxImagePropBounds, ibounds.x2, 2 );
 	setIntProperty( kOfxImagePropBounds, ibounds.y2, 3 );
 
-	setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.x1, 0 );
-	setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.y1, 1 );
-	setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.x2, 2 );
-	setDoubleProperty( kOfxImagePropRegionOfDefinition, bounds.y2, 3 );
+	/// @todo the same for bounds and rod, no tiles for the moment !
+	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.x1, 0 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.y1, 1 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.x2, 2 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.y2, 3 );
 
 	// row bytes
 	setIntProperty( kOfxImagePropRowBytes, rowlen );
@@ -169,7 +170,7 @@ VIEW_T Image::gilViewFromImage( Image* img )
 	typedef typename VIEW_T::value_type value_t;
 	return interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
 	                         std::abs( bounds.y2 - bounds.y1 ),
-	                         (value_t*) ( img->getPixelData() ),
+	                         ( value_t* )( img->getPixelData() ),
 	                         img->getRowBytes() );
 }
 

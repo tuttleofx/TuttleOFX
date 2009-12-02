@@ -52,24 +52,24 @@ typedef struct OfxGraphSuiteV1
 {
 	// plugins from core ( not the one instantiated in the Graph )
 
-	OfxStatus ( * getNumberOfPlugins )( int* );
-	OfxStatus ( * getPluginDescriptor )( int id, OfxPluginHandle* pluginDescriptor );
-	OfxStatus ( * getPluginDescriptorFromName )( char* id, OfxPluginHandle* pluginDescriptor );
+	OfxStatus ( *getNumberOfPlugins )( int* );
+	OfxStatus ( *getPluginDescriptor )( int id, OfxPluginHandle* pluginDescriptor );
+	OfxStatus ( *getPluginDescriptorFromName )( char* id, OfxPluginHandle* pluginDescriptor );
 
-	OfxStatus ( * createNode )( OfxPluginHandle pluginDescriptor, OfxPluginHandle* node );
+	OfxStatus ( *createNode )( OfxPluginHandle pluginDescriptor, OfxPluginHandle* node );
 
-	OfxStatus ( * getPropertySet )( OfxGraphHandle graph, OfxPropertySetHandle* propHandle );
+	OfxStatus ( *getPropertySet )( OfxGraphHandle graph, OfxPropertySetHandle* propHandle );
 
 	// An attribute are input/ouput elements of the OfxPlugin ( can be clip, image clip, sound clip, params... )
-	OfxStatus ( * getAttributeSet )( OfxGraphHandle graph, OfxAttributeSetHandle* attributeSet );
-	OfxStatus ( * attributeGetHandle )( OfxAttributeSetHandle attributeSet, const char* name, OfxAttributeHandle* attribute, OfxPropertySetHandle* propertySet );
-	OfxStatus ( * attributeGetPropertySet )( OfxAttributeHandle attribute, OfxPropertySetHandle* propHandle );
+	OfxStatus ( *getAttributeSet )( OfxGraphHandle graph, OfxAttributeSetHandle* attributeSet );
+	OfxStatus ( *attributeGetHandle )( OfxAttributeSetHandle attributeSet, const char* name, OfxAttributeHandle* attribute, OfxPropertySetHandle* propertySet );
+	OfxStatus ( *attributeGetPropertySet )( OfxAttributeHandle attribute, OfxPropertySetHandle* propHandle );
 
-	OfxStatus ( * connectNodes )( OfxNodeHandle fromNode, OfxAttributeHandle fromAttribute, OfxNodeHandle toNode, OfxAttributeHandle toAttribute );
-	OfxStatus ( * unconnectNodes )( OfxNodeHandle fromNode, OfxAttributeHandle fromAttribute, OfxNodeHandle toNode, OfxAttributeHandle toAttribute );
+	OfxStatus ( *connectNodes )( OfxNodeHandle fromNode, OfxAttributeHandle fromAttribute, OfxNodeHandle toNode, OfxAttributeHandle toAttribute );
+	OfxStatus ( *unconnectNodes )( OfxNodeHandle fromNode, OfxAttributeHandle fromAttribute, OfxNodeHandle toNode, OfxAttributeHandle toAttribute );
 	// the exposed attribute is an output if the attribute from the inner node is itself an ouput, an input if the attribute from the inner node is itself an input
-	OfxStatus ( * exposeAttribute )( OfxNodeHandle node, OfxAttributeHandle attribute, OfxPropertySetHandle propertySet );
-	OfxStatus ( * unexposeAttribute )( OfxNodeHandle node, OfxAttributeHandle attribute, OfxPropertySetHandle propertySet );
+	OfxStatus ( *exposeAttribute )( OfxNodeHandle node, OfxAttributeHandle attribute, OfxPropertySetHandle propertySet );
+	OfxStatus ( *unexposeAttribute )( OfxNodeHandle node, OfxAttributeHandle attribute, OfxPropertySetHandle propertySet );
 
 } OfxGraphSuiteV1;
 
@@ -79,7 +79,7 @@ typedef struct OfxGraphSuiteV1
  |             |
  |  Attribute  |
  |_____________|
- *      /        \
+ *      / \
  * ______/__     ___\___
  |         |   |       |
  |   Param |   |  Clip |
@@ -90,7 +90,7 @@ typedef struct OfxGraphSuiteV1
  |                      |
  |         Node         | attributeList
  |______________________|
- *       /          |           \
+ *       /          | \
  * _______/___    ____|______    __\______________
  |           |  |           |  |                 |
  | ParamNode |  | GraphNode |  | ImageEffectNode | clipList

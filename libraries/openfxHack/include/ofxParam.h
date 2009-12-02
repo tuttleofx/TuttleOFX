@@ -662,7 +662,7 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
 #define kOfxParamStringIsSingleLine    "OfxParamStringIsSingleLine"
 
 /** @brief Used to set a string parameter to be multiple line,
- *  value to be passed to a kOfxParamPropStringMode property */
+*  value to be passed to a kOfxParamPropStringMode property */
 #define kOfxParamStringIsMultiLine     "OfxParamStringIsMultiLine"
 
 /** @brief Used to set a string parameter to be a file path,
@@ -757,10 +757,10 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrUnknown     - if the type is unknown
 	 * - ::kOfxStatErrUnsupported - if the type is known but unsupported
 	 */
-	OfxStatus ( * paramDefine )( OfxParamSetHandle     paramSet,
-	                             const char*           paramType,
-	                             const char*           name,
-	                             OfxPropertySetHandle* propertySet );
+	OfxStatus ( *paramDefine )( OfxParamSetHandle     paramSet,
+	                            const char*           paramType,
+	                            const char*           name,
+	                            OfxPropertySetHandle* propertySet );
 
 	/** @brief Retrieves the handle for a parameter in a given parameter set
 	 *
@@ -776,10 +776,10 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the plugin handle was invalid
 	 * - ::kOfxStatErrUnknown    - if the type is unknown
 	 */
-	OfxStatus ( * paramGetHandle )( OfxParamSetHandle     paramSet,
-	                                const char*           name,
-	                                OfxParamHandle*       param,
-	                                OfxPropertySetHandle* propertySet );
+	OfxStatus ( *paramGetHandle )( OfxParamSetHandle     paramSet,
+	                               const char*           name,
+	                               OfxParamHandle*       param,
+	                               OfxPropertySetHandle* propertySet );
 
 	/** @brief Retrieves the property set handle for the given parameter set
 	 *
@@ -793,8 +793,8 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the paramter handle was invalid
 	 * - ::kOfxStatErrUnknown    - if the type is unknown
 	 */
-	OfxStatus ( * paramSetGetPropertySet )( OfxParamSetHandle     paramSet,
-	                                        OfxPropertySetHandle* propHandle );
+	OfxStatus ( *paramSetGetPropertySet )( OfxParamSetHandle     paramSet,
+	                                       OfxPropertySetHandle* propHandle );
 
 	/** @brief Retrieves the property set handle for the given parameter
 	 *
@@ -808,8 +808,8 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the paramter handle was invalid
 	 * - ::kOfxStatErrUnknown    - if the type is unknown
 	 */
-	OfxStatus ( * paramGetPropertySet )( OfxParamHandle        param,
-	                                     OfxPropertySetHandle* propHandle );
+	OfxStatus ( *paramGetPropertySet )( OfxParamHandle        param,
+	                                    OfxPropertySetHandle* propHandle );
 
 	/** @brief Gets the current value of a parameter,
 	 *
@@ -834,8 +834,8 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramGetValue )( OfxParamHandle paramHandle,
-	                               ... );
+	OfxStatus ( *paramGetValue )( OfxParamHandle paramHandle,
+	                              ... );
 
 	/** @brief Gets the value of a parameter at a specific time.
 	 *
@@ -851,9 +851,9 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramGetValueAtTime )( OfxParamHandle paramHandle,
-	                                     OfxTime        time,
-	                                     ... );
+	OfxStatus ( *paramGetValueAtTime )( OfxParamHandle paramHandle,
+	                                    OfxTime        time,
+	                                    ... );
 
 	/** @brief Gets the derivative of a parameter at a specific time.
 	 *
@@ -873,9 +873,9 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramGetDerivative )( OfxParamHandle paramHandle,
-	                                    OfxTime        time,
-	                                    ... );
+	OfxStatus ( *paramGetDerivative )( OfxParamHandle paramHandle,
+	                                   OfxTime        time,
+	                                   ... );
 
 	/** @brief Gets the integral of a parameter over a specific time range,
 	 *
@@ -896,9 +896,9 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramGetIntegral )( OfxParamHandle paramHandle,
-	                                  OfxTime time1, OfxTime time2,
-	                                  ... );
+	OfxStatus ( *paramGetIntegral )( OfxParamHandle paramHandle,
+	                                 OfxTime time1, OfxTime time2,
+	                                 ... );
 
 	/** @brief Sets the current value of a parameter
 	 *
@@ -917,8 +917,8 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramSetValue )( OfxParamHandle paramHandle,
-	                               ... );
+	OfxStatus ( *paramSetValue )( OfxParamHandle paramHandle,
+	                              ... );
 
 	/** @brief Keyframes the value of a parameter at a specific time.
 	 *
@@ -936,9 +936,9 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramSetValueAtTime )( OfxParamHandle paramHandle,
-	                                     OfxTime        time,  // time in frames
-	                                     ... );
+	OfxStatus ( *paramSetValueAtTime )( OfxParamHandle paramHandle,
+	                                    OfxTime        time, // time in frames
+	                                    ... );
 
 	/** @brief Returns the number of keyframes in the parameter
 	 *
@@ -953,8 +953,8 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramGetNumKeys )( OfxParamHandle paramHandle,
-	                                 unsigned int*  numberOfKeys );
+	OfxStatus ( *paramGetNumKeys )( OfxParamHandle paramHandle,
+	                                unsigned int*  numberOfKeys );
 
 	/** @brief Returns the time of the nth key
 	 *
@@ -967,9 +967,9 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 * - ::kOfxStatErrBadIndex   - the nthKey does not exist
 	 */
-	OfxStatus ( * paramGetKeyTime )( OfxParamHandle paramHandle,
-	                                 unsigned int   nthKey,
-	                                 OfxTime*       time );
+	OfxStatus ( *paramGetKeyTime )( OfxParamHandle paramHandle,
+	                                unsigned int   nthKey,
+	                                OfxTime*       time );
 
 	/** @brief Finds the index of a keyframe at/before/after a specified time.
 	 *
@@ -986,10 +986,10 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatFailed        - if the search failed to find a key
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramGetKeyIndex )( OfxParamHandle paramHandle,
-	                                  OfxTime        time,
-	                                  int            direction,
-	                                  int*           index );
+	OfxStatus ( *paramGetKeyIndex )( OfxParamHandle paramHandle,
+	                                 OfxTime        time,
+	                                 int            direction,
+	                                 int*           index );
 
 	/** @brief Deletes a keyframe if one exists at the given time.
 	 *
@@ -1001,8 +1001,8 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 * - ::kOfxStatErrBadIndex   - no key at the given time
 	 */
-	OfxStatus ( * paramDeleteKey )( OfxParamHandle paramHandle,
-	                                OfxTime        time );
+	OfxStatus ( *paramDeleteKey )( OfxParamHandle paramHandle,
+	                               OfxTime        time );
 
 	/** @brief Deletes all keyframes from a parameter.
 	 *
@@ -1015,7 +1015,7 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramDeleteAllKeys )( OfxParamHandle paramHandle );
+	OfxStatus ( *paramDeleteAllKeys )( OfxParamHandle paramHandle );
 
 	/** @brief Copies one parameter to another, including any animation etc...
 	 *
@@ -1037,7 +1037,7 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatOK       - all was OK
 	 * - ::kOfxStatErrBadHandle  - if the parameter handle was invalid
 	 */
-	OfxStatus ( * paramCopy )( OfxParamHandle paramTo, OfxParamHandle paramFrom, OfxTime dstOffset, OfxRangeD* frameRange );
+	OfxStatus ( *paramCopy )( OfxParamHandle paramTo, OfxParamHandle paramFrom, OfxTime dstOffset, OfxRangeD* frameRange );
 
 	/** @brief Used to group any parameter changes for undo/redo purposes
 	 *
@@ -1055,7 +1055,7 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the instance handle was invalid
 	 *
 	 */
-	OfxStatus ( * paramEditBegin )( OfxParamSetHandle paramSet, const char* name );
+	OfxStatus ( *paramEditBegin )( OfxParamSetHandle paramSet, const char* name );
 
 	/** @brief Used to group any parameter changes for undo/redo purposes
 	 *
@@ -1072,7 +1072,7 @@ typedef struct OfxParameterSuiteV1
 	 * - ::kOfxStatErrBadHandle  - if the instance handle was invalid
 	 *
 	 */
-	OfxStatus ( * paramEditEnd )( OfxParamSetHandle paramSet );
+	OfxStatus ( *paramEditEnd )( OfxParamSetHandle paramSet );
 } OfxParameterSuiteV1;
 
 #ifdef __cplusplus

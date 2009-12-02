@@ -82,7 +82,8 @@ class ImageEffect;
 class ImageMemory;
 
 /** @brief Enumerates the contexts a plugin can be used in */
-enum ContextEnum {
+enum ContextEnum
+{
 	eContextNone,
 	eContextGenerator,
 	eContextFilter,
@@ -93,7 +94,8 @@ enum ContextEnum {
 };
 
 /** @brief Enumerates the pixel depths supported */
-enum BitDepthEnum {
+enum BitDepthEnum
+{
 	eBitDepthNone, /**< @brief bit depth that indicates no data is present */
 	eBitDepthUByte,
 	eBitDepthUShort,
@@ -102,7 +104,8 @@ enum BitDepthEnum {
 };
 
 /** @brief Enumerates the component types supported */
-enum PixelComponentEnum {
+enum PixelComponentEnum
+{
 	ePixelComponentNone,
 	ePixelComponentRGBA,
 	ePixelComponentAlpha,
@@ -110,28 +113,32 @@ enum PixelComponentEnum {
 };
 
 /** @brief Enumerates the ways a fielded image can be extracted from a clip */
-enum FieldExtractionEnum {
+enum FieldExtractionEnum
+{
 	eFieldExtractBoth,   /**< @brief extract both fields */
 	eFieldExtractSingle, /**< @brief extracts a single field, so you have a half height image */
 	eFieldExtractDoubled /**< @brief extracts a single field, but doubles up the field, so you have a full height image */
 };
 
 /** @brief Enumerates the kind of render thread safety a plugin has */
-enum RenderSafetyEnum {
+enum RenderSafetyEnum
+{
 	eRenderUnsafe,       /**< @brief can only render a single instance at any one time */
 	eRenderInstanceSafe, /**< @brief can call a single render on an instance, but can render multiple instances simultaneously */
 	eRenderFullySafe     /**< @brief can call render any number of times on an instance, and render multiple instances simultaneously */
 };
 
 /** @brief Enumerates the fields present in an image */
-enum FieldEnum {
+enum FieldEnum
+{
 	eFieldNone,   /**< @brief unfielded image */
 	eFieldBoth,   /**< @brief fielded image with both fields present */
 	eFieldLower,  /**< @brief only the spatially lower field is present */
 	eFieldUpper   /**< @brief only the spatially upper field is present  */
 };
 
-enum PreMultiplicationEnum {
+enum PreMultiplicationEnum
+{
 	eImageOpaque,          /**< @brief the image is opaque and so has no premultiplication state */
 	eImagePreMultiplied,   /**< @brief the image is premultiplied by it's alpha */
 	eImageUnPreMultiplied, /**< @brief the image is unpremultiplied */

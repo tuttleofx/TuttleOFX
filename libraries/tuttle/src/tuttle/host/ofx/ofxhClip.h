@@ -56,9 +56,6 @@ public:
 	/// @brief base ctor, for a descriptor
 	ClipAccessor();
 
-	/// @brief ctor, when copy constructing an instance from a descriptor
-	explicit ClipAccessor( const ClipAccessor& other );
-
 	virtual ~ClipAccessor() = 0;
 
 	/// is the clip optional

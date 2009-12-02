@@ -60,9 +60,9 @@ typedef struct OfxMemorySuiteV1
 	 * - ::kOfxStatErrMemory the request could not be met and no memory was allocated
 	 *
 	 */
-	OfxStatus ( * memoryAlloc )( void*  handle,
-	                             size_t nBytes,
-	                             void** allocatedData );
+	OfxStatus ( *memoryAlloc )( void*  handle,
+	                            size_t nBytes,
+	                            void** allocatedData );
 
 	/** @brief Frees memory.
 	 *
@@ -75,7 +75,7 @@ typedef struct OfxMemorySuiteV1
 	 * - ::kOfxStatErrBadHandle \e allocatedData was not a valid pointer returned by OfxMemorySuiteV1::memoryAlloc
 	 *
 	 */
-	OfxStatus ( * memoryFree )( void* allocatedData );
+	OfxStatus ( *memoryFree )( void* allocatedData );
 } OfxMemorySuiteV1;
 
 /** @file ofxMemory.h

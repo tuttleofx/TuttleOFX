@@ -35,7 +35,7 @@ int main( int argc, char** argv )
 		tuttle::host::core::Core::instance().preload();
 
 		// get some plugins examples
-		tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.dpxreader" );
+		tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngreader" );
 		tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
 		tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
 
