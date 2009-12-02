@@ -79,7 +79,7 @@ private:
 class ClipImgInstance : public tuttle::host::ofx::attribute::ClipImageInstance
 {
 protected:
-	EffectInstance& _effect;
+	const EffectInstance& _effect;
 	std::string _name;
 	Image* _inputImage; ///< input clip image @OFX_TODO: variables dependantes du rendu, ne peuvent rester la (ProcessableNode)
 	Image* _outputImage; ///< output clip image @OFX_TODO: variables dependantes du rendu, ne peuvent rester la (ProcessableNode)

@@ -111,7 +111,6 @@ void InvertProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 template<class View>
 void InvertProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 {
-	COUT_INFOS;
 	try
 	{
 		// Invert pixels

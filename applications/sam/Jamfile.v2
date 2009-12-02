@@ -16,7 +16,6 @@ project
     : build-dir $(DIST)/bin/sam
     ;
 
-use-project /expat 	: ../../3rdParty/expat ;
 use-project /tuttlelib : ../../libraries/tuttle ;
 
 ###############################################################################
@@ -29,7 +28,6 @@ exe sam :
     /boost/system
     /boost/filesystem
     /tuttlelib//tuttlehost/<link>static
-    /expat/<link>static
     ;
 
 ###############################################################################

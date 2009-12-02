@@ -65,7 +65,7 @@ EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugi
 	populate();
 }
 
-void EffectInstance::dumpToStdOut()
+void EffectInstance::dumpToStdOut() const
 {
 	std::cout << "________________________________________________________________________________" << std::endl;
 	std::cout << "Plug-in:" << this->getLabel() << std::endl;
@@ -105,7 +105,7 @@ const std::string& EffectInstance::getDefaultOutputFielding() const
 OfxStatus EffectInstance::vmessage( const char* type,
                                     const char* id,
                                     const char* format,
-                                    va_list     args )
+                                    va_list     args ) const
 {
 	vprintf( format, args );
 	return kOfxStatOK;
@@ -185,25 +185,25 @@ tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::h
 	std::string name = descriptor.getName();
 
 	if( descriptor.getParamType() == kOfxParamTypeString )
-		return new StringInstance( this, name, descriptor, *this );
+		return new StringInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeInteger )
-		return new IntegerInstance( this, name, descriptor, *this );
+		return new IntegerInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeDouble )
-		return new DoubleInstance( this, name, descriptor, *this );
+		return new DoubleInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeBoolean )
-		return new BooleanInstance( this, name, descriptor, *this );
+		return new BooleanInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeChoice )
-		return new ChoiceInstance( this, name, descriptor, *this );
+		return new ChoiceInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeRGBA )
-		return new RGBAInstance( this, name, descriptor, *this );
+		return new RGBAInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeRGB )
-		return new RGBInstance( this, name, descriptor, *this );
+		return new RGBInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeDouble2D )
-		return new Double2DInstance( this, name, descriptor, *this );
+		return new Double2DInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeInteger2D )
-		return new Integer2DInstance( this, name, descriptor, *this );
+		return new Integer2DInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypePushButton )
-		return new PushbuttonInstance( this, name, descriptor, *this );
+		return new PushbuttonInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeGroup )
 		return new tuttle::host::ofx::attribute::ParamGroupInstance( descriptor, *this );
 	else if( descriptor.getParamType() == kOfxParamTypePage )

@@ -61,7 +61,8 @@ static const bool kSupportTemporalClipAccess = false;
 
 // Plugin internal data
 const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used to merge two clips A and B.  <br />";
-enum EMergeFunction {
+enum EMergeFunction
+{
 	eMergeFunctionATop, eMergeFunctionAverage,
 	eMergeFunctionColorBurn, eMergeFunctionColorDodge,
 	eMergeFunctionConjointOver, eMergeFunctionCopy,

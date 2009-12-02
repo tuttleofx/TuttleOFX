@@ -112,7 +112,7 @@ void PluginBinary::loadPluginInfo( PluginCache* cache )
 
 	_binary.load();
 
-	int ( * getNo )( void )      = ( int( * ) () )_binary.findSymbol( "OfxGetNumberOfPlugins" );
+	int ( *getNo )( void )       = ( int( * ) () )_binary.findSymbol( "OfxGetNumberOfPlugins" );
 	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_binary.findSymbol( "OfxGetPlugin" );
 
 	if( getNo == 0 || getPlug == 0 )

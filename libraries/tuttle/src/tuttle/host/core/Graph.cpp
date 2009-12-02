@@ -1,8 +1,9 @@
 #include "Graph.hpp"
-
+//#include "ClipInstance.hpp"
+#include <tuttle/host/ofx/ofxhClipImage.h>
+#include <tuttle/host/graph/GraphExporter.hpp>
 #include <iostream>
 #include <sstream>
-#include <tuttle/host/graph/GraphExporter.hpp>
 
 namespace tuttle {
 namespace host {
@@ -12,7 +13,17 @@ Graph::Graph()
 	: _nodeCount( 0 )
 {}
 
-NodeID Graph::createNode( const std::string& id ) throw( std::logic_error )
+Graph::~Graph()
+{
+	for( std::list<Node*>::iterator it = _nodesList.begin(), itEnd = _nodesList.end();
+	     it != itEnd;
+	     ++it )
+	{
+		delete *it;
+	}
+}
+
+Graph::Node& Graph::createNode( const std::string& id ) throw( std::logic_error )
 {
 	ofx::imageEffect::ImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 
@@ -25,33 +36,68 @@ NodeID Graph::createNode( const std::string& id ) throw( std::logic_error )
 	if( !node )
 		throw std::logic_error( "Plugin not found." );
 
+	std::stringstream uniqueName;
+	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
+	node->setName( uniqueName.str() );
+
 	addToGraph( *node );
 
-	return _nodeCount++;
+	++_nodeCount;
+
+	return *node;
 }
 
 void Graph::addToGraph( EffectInstance& node )
 {
-	std::stringstream s;
+	graph::Vertex v( node.getName(), &node );
 
-	s << node.getLabel() << ++_instanceCount[node.getLabel()];
+	_nodesList.push_back( &node );
+	_nodes[node.getName()]           = &node;
+	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
+}
 
-	//TODO: Fix this, do not work
-	node.setName( s.str() );
-
-	//TODO: set the good attribute name
-	graph::Vertex v( s.str(), &node, std::string( "Attribute" ) );
-	_nodes[_nodeCount] = _graph.addVertex( v );
+void Graph::removeFromGraph( EffectInstance& node )
+{
+	//	graph::Vertex v( node.getName(), &node );
+	//
+	//	_nodesList.find( &node );
+	//	_nodes[node.getName()] = node;
+	//	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
 void Graph::deleteNode( const EffectInstance& node )
 {}
 
-void Graph::connect( const NodeID& out, const NodeID& in )
+void Graph::connect( const Node& out, const Node& in ) throw( Exception )
 {
-	graph::Edge e( "edge" );
+	const std::vector<ofx::attribute::ClipImageInstance*> inClips              = in.getClipsByOrder();
+	const std::map<std::string, ofx::attribute::ClipImageInstance*> inClipsMap = in.getClips();
+	std::string inAttrName;
+	if( inClips.size() == 1 )
+	{
+		inAttrName = inClips[0]->getName();
+	}
+	else if( inClips.size() > 1 )
+	{
+		const std::map<std::string, ofx::attribute::ClipImageInstance*>::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
+		if( it !=  inClipsMap.end() )
+		{
+			inAttrName = it->second->getName();
+		}
+		else
+		{
+			// search "Source"
+			inAttrName = inClips[0]->getName();
+		}
+	}
+	else // if( inClips.empty() )
+	{
+		throw Exception( "Connection failed : no clip." );
+	}
 
-	_graph.addEdge( _nodes[out], _nodes[in], e );
+	graph::Edge e( out.getName() + "." + kOfxOutputAttributeName + "-->" + in.getName() + "." + inAttrName );
+
+	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[in.getName()], e );
 }
 
 void Graph::dumpToStdOut()

@@ -11,12 +11,13 @@
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
-namespace fs = boost::filesystem;
 
-#include "tuttle/common/utils/global.hpp"
+#include <cmath>
 
 namespace tuttle {
 namespace io {
+
+namespace fs = boost::filesystem;
 
 #define DPX_MAGIC           0x53445058
 #define DPX_MAGIC_SWAP      0x58504453
@@ -148,7 +149,8 @@ private:
 	void readHeader( fs::ifstream& f );
 
 public:
-	enum EDPX_CompType {
+	enum EDPX_CompType
+	{
 		eCompTypeUnknown,
 		eCompTypeR8G8B8,    eCompTypeR8G8B8A8,     eCompTypeA8B8G8R8,
 		eCompTypeR10G10B10, eCompTypeR10G10B10A10, eCompTypeA10B10G10R10,

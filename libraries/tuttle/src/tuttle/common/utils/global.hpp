@@ -88,6 +88,20 @@ namespace bgil = boost::gil;
     std::endl << "\t" << e.what() << std::endl
 
 ////////////////////////////////////////////////////////////////////////////////
+
+#define TCOUT COUT
+#define TCOUT_VAR COUT_VAR
+#define TCOUT_VAR2 COUT_VAR2
+#define TCOUT_VAR3 COUT_VAR3
+#define TCOUT_VAR4 COUT_VAR4
+#define TCOUT_INFOS COUT_INFOS
+#define TCOUT_WITHINFOS COUT_WITHINFOS
+#define TCOUT_WARNING COUT_WARNING
+#define TCOUT_ERROR COUT_ERROR
+#define TCOUT_FATALERROR COUT_FATALERROR
+#define TCOUT_EXCEPTION COUT_EXCEPTION
+
+////////////////////////////////////////////////////////////////////////////////
 // Some specifics things to debug or release version
 #ifdef DEBUG
  #include "debug.hpp"

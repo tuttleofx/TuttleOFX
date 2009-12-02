@@ -125,10 +125,10 @@ void propertyXMLWrite( std::ostream& o, Property::Property* prop, const std::str
 	{
 
 		o << indent << "<property "
-		<< XML::attribute( "name", prop->getName() )
-		<< XML::attribute( "type", Property::gTypeNames[prop->getType()] )
-		<< XML::attribute( "dimension", prop->getFixedDimension() )
-		<< ">\n";
+		  << XML::attribute( "name", prop->getName() )
+		  << XML::attribute( "type", Property::gTypeNames[prop->getType()] )
+		  << XML::attribute( "dimension", prop->getFixedDimension() )
+		  << ">\n";
 
 		for( size_t i = 0; i < prop->getDimension(); i++ )
 		{

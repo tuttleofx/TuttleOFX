@@ -16,15 +16,12 @@ public:
 	Vertex() {}
 
 	Vertex( const std::string& name,
-	        core::ProcessNode* processNode,
-	        const std::string& attributeName )
+	        core::ProcessNode* processNode )
 		: _name( name ),
-		_attributeName( attributeName ),
 		_processNode( processNode ) {}
 
 	Vertex( Vertex& v )
 		: _name( v.name() ),
-		_attributeName( v.attributeName() ),
 		_processNode( v.processNode() ) {}
 
 	virtual ~Vertex()
@@ -35,14 +32,12 @@ public:
 	{
 		if( this == &v )
 			return *this;
-		_name          = v.name();
-		_attributeName = v.attributeName();
-		_processNode   = v.processNode();
+		_name        = v.name();
+		_processNode = v.processNode();
 		return *this;
 	}
 
 	const std::string& name() const                           { return _name; }
-	const std::string& attributeName() const                  { return _attributeName; }
 	core::ProcessNode* processNode() const                    { return _processNode; }
 	void               setProcessNode( core::ProcessNode* p ) { _processNode = p; }
 
@@ -50,7 +45,6 @@ public:
 
 private:
 	std::string _name;
-	std::string _attributeName;
 	core::ProcessNode* _processNode;
 };
 

@@ -13,7 +13,7 @@
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE "graph_tests"
+#define BOOST_TEST_MODULE graph_tests
 #include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
@@ -64,14 +64,10 @@ BOOST_AUTO_TEST_CASE( create_node )
 	//core::Core::instance().getPluginCache().scanPluginFiles();
 	core::Core::instance().preload();
 
-	// :-/
-	core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" )->getContexts();
-	core::Core::instance().getImageEffectPluginById( "net.sf.openfx:basicplugin" )->getContexts();
-	//core::Core::instance().getImageEffectPluginCache().dumpToStdOut();
-
 	core::Graph g;
-	core::NodeID invert = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::NodeID basic  = g.createNode( "net.sf.openfx:basicplugin" );
+	core::Graph::Node& invert  = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& basic   = g.createNode( "net.sf.openfx:basicplugin" );
 
 	g.connect( basic, invert );
 

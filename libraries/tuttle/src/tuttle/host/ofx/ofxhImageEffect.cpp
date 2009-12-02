@@ -59,6 +59,7 @@ namespace imageEffect {
 static Property::PropSpec effectDescriptorStuff[] = {
 	/* name                                 type                   dim. r/o default value */
 	{ kOfxPropType, Property::eString, 1, true, kOfxTypeImageEffect },
+	{ kOfxPropName, Property::eString, 1, false, "UNIQUE_NAME_NOT_SET" },
 	{ kOfxPropLabel, Property::eString, 1, false, "" },
 	{ kOfxPropShortLabel, Property::eString, 1, false, "" },
 	{ kOfxPropLongLabel, Property::eString, 1, false, "" },
@@ -198,7 +199,7 @@ bool Base::getHostFrameThreading() const
 
 OfxPluginEntryPoint* Base::getOverlayInteractMainEntry() const
 {
-	return (OfxPluginEntryPoint*) ( _properties.getPointerProperty( kOfxImageEffectPluginPropOverlayInteractV1 ) );
+	return ( OfxPluginEntryPoint* )( _properties.getPointerProperty( kOfxImageEffectPluginPropOverlayInteractV1 ) );
 }
 
 /// does the effect support images of differing sizes
@@ -326,6 +327,7 @@ void Descriptor::addClip( const std::string& name, attribute::ClipImageDescripto
 static const Property::PropSpec effectInstanceStuff[] = {
 	/* name                                 type                   dim.   r/o    default value */
 	{ kOfxPropType, Property::eString, 1, true, kOfxTypeImageEffectInstance },
+	{ kOfxPropName, Property::eString, 1, false, "UNIQUE_NAME_NOT_SET" },
 	{ kOfxImageEffectPropContext, Property::eString, 1, true, "" },
 	{ kOfxPropInstanceData, Property::ePointer, 1, false, NULL },
 	{ kOfxImageEffectPropProjectSize, Property::eDouble, 2, true, "0" },
@@ -721,14 +723,14 @@ OfxStatus Instance::createInstanceAction()
 	setDefaultClipPreferences();
 
 	// now tell the plug-in to create instance
-	OfxStatus st = mainEntry( kOfxActionCreateInstance, this->getHandle(), 0, 0 );
+	OfxStatus status = mainEntry( kOfxActionCreateInstance, this->getHandle(), 0, 0 );
 
-	if( st == kOfxStatOK )
+	if( status == kOfxStatOK )
 	{
 		_created = true;
 	}
 
-	return st;
+	return status;
 }
 
 // begin/change/end instance changed
@@ -852,7 +854,7 @@ OfxStatus Instance::beginRenderAction( OfxTime   startFrame,
 
 	inArgs.setDoubleProperty( kOfxImageEffectPropFrameStep, step );
 
-	inArgs.setDoubleProperty( kOfxPropIsInteractive, interactive );
+	inArgs.setIntProperty( kOfxPropIsInteractive, interactive );
 
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
@@ -902,7 +904,7 @@ OfxStatus Instance::endRenderAction( OfxTime   startFrame,
 
 	inArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, startFrame, 0 );
 	inArgs.setDoubleProperty( kOfxImageEffectPropFrameRange, endFrame, 1 );
-	inArgs.setDoubleProperty( kOfxPropIsInteractive, interactive );
+	inArgs.setIntProperty( kOfxPropIsInteractive, interactive );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
 	return mainEntry( kOfxImageEffectActionEndSequenceRender, this->getHandle(), &inArgs, 0 );
@@ -1202,7 +1204,7 @@ OfxStatus Instance::getFrameNeededAction( OfxTime   time,
 
 				int nRanges = outArgs.getDimension( name );
 				if( nRanges % 2 != 0 )
-					return kOfxStatFailed;                                                        // bad! needs to be divisible by 2
+					return kOfxStatFailed;                                                                                                                                                                                         // bad! needs to be divisible by 2
 
 				if( nRanges == 0 )
 				{

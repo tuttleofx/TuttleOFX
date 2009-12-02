@@ -45,19 +45,19 @@ class EffectInstance : public ProcessNode,
 protected:
 	OfxPointD _frameRange;
 
+private:
+	EffectInstance( const EffectInstance& );
+
 public:
 	EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
 	                tuttle::host::ofx::imageEffect::Descriptor&        desc,
 	                const std::string&                                 context );
 
-	/**
-	 * @todo a working clone...
-	 */
 	EffectInstance* clone() const { return new EffectInstance( _plugin, *_descriptor, _context ); }
 
 	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }
 
-	void dumpToStdOut();
+	void dumpToStdOut() const;
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ public:
 	OfxStatus vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
-	                    va_list     args );
+	                    va_list     args ) const;
 
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a

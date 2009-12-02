@@ -1,32 +1,31 @@
-
 /*
-Software License :
-
-Copyright (c) 2007-2009, The Open Effects Association Ltd.  All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice,
-      this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice,
-      this list of conditions and the following disclaimer in the documentation
-      and/or other materials provided with the distribution.
-    * Neither the name The Open Effects Association Ltd, nor the names of its 
-      contributors may be used to endorse or promote products derived from this
-      software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
-ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ * Software License :
+ *
+ * Copyright (c) 2007-2009, The Open Effects Association Ltd.  All Rights Reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * Neither the name The Open Effects Association Ltd, nor the names of its
+ *    contributors may be used to endorse or promote products derived from this
+ *    software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #ifndef OFXH_IMAGE_EFFECT_API_H
 #define OFXH_IMAGE_EFFECT_API_H
@@ -43,200 +42,207 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ofxhHost.h"
 
 namespace tuttle {
-  namespace host {
-  namespace ofx {
-    namespace imageEffect {
+namespace host {
+namespace ofx {
+namespace imageEffect {
 
-      class ImageEffectPluginCache;
+class ImageEffectPluginCache;
 
-      /// subclass of Plugin representing an ImageEffect plugin.  used to store API-specific
-      /// data
-      class ImageEffectPlugin : public Plugin {
+/// subclass of Plugin representing an ImageEffect plugin.  used to store API-specific
+/// data
+class ImageEffectPlugin : public Plugin
+{
 
-        ImageEffectPluginCache &_pc;
+ImageEffectPluginCache& _pc;
 
-        // this comes off Descriptor's property set after a describe
-        // context independent
-        Descriptor *_baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
+// this comes off Descriptor's property set after a describe
+// context independent
+Descriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
-        /// map to store contexts in
-        std::map<std::string, Descriptor *> _contexts;
+/// map to store contexts in
+std::map<std::string, Descriptor*> _contexts;
 
-        std::set<std::string> _knownContexts;
+std::set<std::string> _knownContexts;
 
-        std::auto_ptr<PluginHandle> _pluginHandle;
+std::auto_ptr<PluginHandle> _pluginHandle;
 
-      public:
-			  ImageEffectPlugin(ImageEffectPluginCache &pc, PluginBinary *pb, int pi, OfxPlugin *pl);
+public:
+	ImageEffectPlugin( ImageEffectPluginCache& pc, PluginBinary* pb, int pi, OfxPlugin* pl );
 
-        ImageEffectPlugin(ImageEffectPluginCache &pc,
-                          PluginBinary *pb,
-                          int pi,
-                          const std::string &api,
-                          int apiVersion,
-                          const std::string &pluginId,
-                          const std::string &rawId,
-                          int pluginMajorVersion,
-                          int pluginMinorVersion);
+	ImageEffectPlugin( ImageEffectPluginCache& pc,
+	                   PluginBinary*           pb,
+	                   int                     pi,
+	                   const std::string&      api,
+	                   int                     apiVersion,
+	                   const std::string&      pluginId,
+	                   const std::string&      rawId,
+	                   int                     pluginMajorVersion,
+	                   int                     pluginMinorVersion );
 
-        virtual ~ImageEffectPlugin();
+	virtual ~ImageEffectPlugin();
 
-        /// @return the API handler this plugin was constructed by
-        APICache::PluginAPICacheI &getApiHandler();
+	/// @return the API handler this plugin was constructed by
+	APICache::PluginAPICacheI& getApiHandler();
 
+	/// @brief get the base image effect descriptor
+	Descriptor& getDescriptor();
 
-        /// @brief get the base image effect descriptor
-        Descriptor &getDescriptor();
+	/// @brief get the base image effect descriptor, const version
+	const Descriptor& getDescriptor() const;
 
-        /// @brief get the base image effect descriptor, const version
-        const Descriptor &getDescriptor() const;
+	/// @brief get the image effect descriptor for the context
+	Descriptor* getDescriptorInContext( const std::string& context );
 
-        /// @brief get the image effect descriptor for the context
-        Descriptor *getDescriptorInContext(const std::string &context);
+	void addContext( const std::string& context );
+	void addContext( const std::string& context, Descriptor* ied );
 
-        void addContext(const std::string &context);
-        void addContext(const std::string &context, Descriptor *ied);
+	virtual void saveXML( std::ostream& os );
 
-        virtual void saveXML(std::ostream &os);
+	void                         initContexts();
+	const std::set<std::string>& getContexts() const;
 
-		void initContexts();
-        const std::set<std::string>& getContexts() const;
+	PluginHandle* getPluginHandle() { return _pluginHandle.get(); }
 
-        PluginHandle *getPluginHandle() { return _pluginHandle.get(); }
+	void loadAndDescribeActions();
 
-        void loadAndDescribeActions();
+	void unloadAction();
 
-        void unloadAction();
+	/**
+	 * @brief this is called to make an instance of the effect
+	 *  the client data ptr is what is passed back to the client creation function
+	 */
+	imageEffect::Instance* createInstance( const std::string& context, void* clientDataPtr );
 
-        /**
-		 * @brief this is called to make an instance of the effect
-         *  the client data ptr is what is passed back to the client creation function
-		 */
-        imageEffect::Instance* createInstance(const std::string &context, void *clientDataPtr);
-	  private:
-		Descriptor* describeInContextAction( const std::string &context );
-      };
+private:
+	Descriptor* describeInContextAction( const std::string& context );
+};
 
-      class MajorPlugin {
-        std::string _id;
-        int _major;
+class MajorPlugin
+{
+std::string _id;
+int _major;
 
-      public:
-        MajorPlugin(const std::string &id, int major) : _id(id), _major(major) {
-        }
+public:
+	MajorPlugin( const std::string& id, int major ) : _id( id ),
+		_major( major ) {}
 
-        MajorPlugin(ImageEffectPlugin *iep) : _id(iep->getIdentifier()), _major(iep->getVersionMajor()) {
-        }
+	MajorPlugin( ImageEffectPlugin* iep ) : _id( iep->getIdentifier() ),
+		_major( iep->getVersionMajor() ) {}
 
-        const std::string &getId() const {
-          return _id;
-        }
+	const std::string& getId() const
+	{
+		return _id;
+	}
 
-        int getMajor() const {
-          return _major;
-        }
+	int getMajor() const
+	{
+		return _major;
+	}
 
-        bool operator<(const MajorPlugin &other) const {
-          if (_id < other._id)
-            return true;
+	bool operator<( const MajorPlugin& other ) const
+	{
+		if( _id < other._id )
+			return true;
 
-          if (_id > other._id)
-            return false;
-          
-          if (_major < other._major)
-            return true;
+		if( _id > other._id )
+			return false;
 
-          return false;
-        }
-      };
+		if( _major < other._major )
+			return true;
 
-      /// implementation of the specific Image Effect handler API cache.
-      class ImageEffectPluginCache : public APICache::PluginAPICacheI {
-      public:      
+		return false;
+	}
 
-      private:
-        /// all plugins
-        std::vector<ImageEffectPlugin *> _plugins;
+};
 
-        /// latest version of each plugin by ID
-        std::map<std::string, ImageEffectPlugin *> _pluginsByID;
+/// implementation of the specific Image Effect handler API cache.
+class ImageEffectPluginCache : public APICache::PluginAPICacheI
+{
+public:
+private:
+	/// all plugins
+	std::vector<ImageEffectPlugin*> _plugins;
 
-        /// latest minor version of each plugin by (ID,major)
-        std::map<MajorPlugin, ImageEffectPlugin *> _pluginsByIDMajor;
+	/// latest version of each plugin by ID
+	std::map<std::string, ImageEffectPlugin*> _pluginsByID;
 
-        /// xml parsing state
-        ImageEffectPlugin *_currentPlugin;
-        /// xml parsing state
-        Property::Property *_currentProp;
-        
-        Descriptor *_currentContext;
-        attribute::ParamDescriptor *_currentParam;
-        attribute::ClipImageDescriptor *_currentClip;
+	/// latest minor version of each plugin by (ID,major)
+	std::map<MajorPlugin, ImageEffectPlugin*> _pluginsByIDMajor;
 
-        /// pointer to our image effect host
-        tuttle::host::ofx::imageEffect::ImageEffectHost* _host;
+	/// xml parsing state
+	ImageEffectPlugin* _currentPlugin;
+	/// xml parsing state
+	Property::Property* _currentProp;
 
-      public:  
-        explicit ImageEffectPluginCache(tuttle::host::ofx::imageEffect::ImageEffectHost &host);
-        virtual ~ImageEffectPluginCache();
+	Descriptor* _currentContext;
+	attribute::ParamDescriptor* _currentParam;
+	attribute::ClipImageDescriptor* _currentClip;
 
-        /// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
-        /// pick the highest found version.
-        ImageEffectPlugin *getPluginById(const std::string &id, int vermaj=-1, int vermin=-1);
+	/// pointer to our image effect host
+	tuttle::host::ofx::imageEffect::ImageEffectHost* _host;
 
-        /// get the plugin by label.  vermaj and vermin can be specified.  if they are not it will
-        /// pick the highest found version.
-        ImageEffectPlugin *getPluginByLabel(const std::string &label, int vermaj=-1, int vermin=-1);
+public:
+	explicit ImageEffectPluginCache( tuttle::host::ofx::imageEffect::ImageEffectHost& host );
+	virtual ~ImageEffectPluginCache();
 
-        tuttle::host::ofx::imageEffect::ImageEffectHost *getHost() {
-          return _host;
-        }
+	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
+	/// pick the highest found version.
+	ImageEffectPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
 
-        const std::vector<ImageEffectPlugin *>& getPlugins() const;
+	/// get the plugin by label.  vermaj and vermin can be specified.  if they are not it will
+	/// pick the highest found version.
+	ImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 );
 
-        const std::map<std::string, ImageEffectPlugin *>& getPluginsByID() const;
+	tuttle::host::ofx::imageEffect::ImageEffectHost* getHost()
+	{
+		return _host;
+	}
 
-        const std::map<MajorPlugin, ImageEffectPlugin *>& getPluginsByIDMajor() const
-        {
-          return _pluginsByIDMajor;
-        }
+	const std::vector<ImageEffectPlugin*>& getPlugins() const;
 
-        /// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
-        void loadFromPlugin(Plugin *p) const;
-        
-        /// handler for preparing to read in a chunk of XML from the cache, set up context to do this
-        void beginXmlParsing(Plugin *p);
+	const std::map<std::string, ImageEffectPlugin*>& getPluginsByID() const;
 
-        /// XML handler : element begins (everything is stored in elements and attributes)       
-        virtual void xmlElementBegin(const std::string &el, std::map<std::string, std::string> map);
+	const std::map<MajorPlugin, ImageEffectPlugin*>& getPluginsByIDMajor() const
+	{
+		return _pluginsByIDMajor;
+	}
 
-        virtual void xmlCharacterHandler(const std::string &);
-        
-        virtual void xmlElementEnd(const std::string &el);
-        
-        virtual void endXmlParsing();
-        
-        virtual void saveXML(Plugin *ip, std::ostream &os) const;
+	/// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
+	void loadFromPlugin( Plugin* p ) const;
 
-        void confirmPlugin(Plugin *p);
+	/// handler for preparing to read in a chunk of XML from the cache, set up context to do this
+	void beginXmlParsing( Plugin* p );
 
-        virtual bool pluginSupported(Plugin *p, std::string &reason) const;
+	/// XML handler : element begins (everything is stored in elements and attributes)
+	virtual void xmlElementBegin( const std::string& el, std::map<std::string, std::string> map );
 
-        Plugin *newPlugin(PluginBinary *pb,
-                          int pi,
-                          OfxPlugin *pl);
+	virtual void xmlCharacterHandler( const std::string& );
 
-        Plugin *newPlugin(PluginBinary *pb,
-                          int pi,
-                          const std::string &api,
-                          int apiVersion,
-                          const std::string &pluginId,
-                          const std::string &rawId,
-                          int pluginMajorVersion,
-                          int pluginMinorVersion);
+	virtual void xmlElementEnd( const std::string& el );
 
-        void dumpToStdOut() const;
-      };
+	virtual void endXmlParsing();
+
+	virtual void saveXML( Plugin* ip, std::ostream& os ) const;
+
+	void confirmPlugin( Plugin* p );
+
+	virtual bool pluginSupported( Plugin* p, std::string& reason ) const;
+
+	Plugin* newPlugin( PluginBinary* pb,
+	                   int           pi,
+	                   OfxPlugin*    pl );
+
+	Plugin* newPlugin( PluginBinary*      pb,
+	                   int                pi,
+	                   const std::string& api,
+	                   int                apiVersion,
+	                   const std::string& pluginId,
+	                   const std::string& rawId,
+	                   int                pluginMajorVersion,
+	                   int                pluginMinorVersion );
+
+	void dumpToStdOut() const;
+};
 
 }
 }

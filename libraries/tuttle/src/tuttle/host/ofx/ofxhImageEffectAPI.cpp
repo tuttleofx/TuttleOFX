@@ -159,7 +159,7 @@ void ImageEffectPlugin::loadAndDescribeActions()
 {
 	if( getPluginHandle() )
 	{
-		COUT_ERROR( "loadAndDescribeAction already called on plugin " + getApiHandler()._apiName );
+		//COUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._apiName );
 		return;
 	}
 	_pluginHandle.reset( new tuttle::host::ofx::PluginHandle( this, _pc.getHost() ) );
@@ -197,23 +197,23 @@ Descriptor* ImageEffectPlugin::getDescriptorInContext( const std::string& contex
 {
 	std::map<std::string, Descriptor*>::iterator it = _contexts.find( context );
 
-	COUT( "context : " << context );
+	//COUT( "context : " << context );
 	if( it != _contexts.end() )
 	{
-		COUT( "found context description : " << it->second->getLabel() );
+		//COUT( "found context description : " << it->second->getLabel() );
 		return it->second;
 	}
 
-	COUT( "ImageEffectPlugin::getContext -- _contexts" );
-	for( std::map<std::string, Descriptor*>::const_iterator a = _contexts.begin(); a != _contexts.end(); ++a )
-	{
-		COUT( a->second->getLabel() );
-	}
-	COUT( "ImageEffectPlugin::getContext -- _knownContexts" );
-	for( std::set<std::string>::const_iterator a = _knownContexts.begin(); a != _knownContexts.end(); ++a )
-	{
-		COUT( *a );
-	}
+	//	COUT( "ImageEffectPlugin::getContext -- _contexts" );
+	//	for( std::map<std::string, Descriptor*>::const_iterator a = _contexts.begin(); a != _contexts.end(); ++a )
+	//	{
+	//		COUT( a->second->getLabel() );
+	//	}
+	//	COUT( "ImageEffectPlugin::getContext -- _knownContexts" );
+	//	for( std::set<std::string>::const_iterator a = _knownContexts.begin(); a != _knownContexts.end(); ++a )
+	//	{
+	//		COUT( *a );
+	//	}
 
 	if( _knownContexts.find( context ) == _knownContexts.end() )
 	{
@@ -241,7 +241,6 @@ Descriptor* ImageEffectPlugin::describeInContextAction( const std::string& conte
 
 	if( rval == kOfxStatOK || rval == kOfxStatReplyDefault )
 	{
-		COUT_INFOS;
 		_contexts[context] = newContext.release();
 		return _contexts[context];
 	}
@@ -266,7 +265,7 @@ imageEffect::Instance* ImageEffectPlugin::createInstance( const std::string& con
 	Descriptor* desc = getDescriptorInContext( context );
 	if( !desc )
 	{
-		COUT( "The plugin doesn't support the context " << context << "." );
+		COUT_ERROR( "The plugin doesn't support the context " << context << "." );
 		return NULL; // throw specific Exception
 	}
 

@@ -176,7 +176,7 @@ public:
 			for( int x = procWindow.x1; x < procWindow.x2; x++ )
 			{
 
-				PIX* srcPix = (PIX*)  ( _srcImg ? _srcImg->getPixelAddress( x, y ) : 0 );
+				PIX* srcPix = ( PIX* )( _srcImg ? _srcImg->getPixelAddress( x, y ) : 0 );
 
 				// are we doing masking
 				if( _doMasking )
@@ -186,7 +186,7 @@ public:
 						maskScale = 1.0f;
 					else
 					{
-						PIX* maskPix = (PIX*)  ( _maskImg ? _maskImg->getPixelAddress( x, y ) : 0 );
+						PIX* maskPix = ( PIX* )( _maskImg ? _maskImg->getPixelAddress( x, y ) : 0 );
 						// figure the scale factor from that pixel
 						maskScale = maskPix != 0 ? float(*maskPix) / float(max) : 0.0f;
 					}
@@ -322,7 +322,7 @@ void BasicPlugin::setupAndProcess( ImageScalerBase& processor, const OFX::Render
 
 		// see if they have the same depths and bytes and all
 		if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
-			throw int(1);                            // HACK!! need to throw an sensible exception here!
+			throw int(1);                                                                                                          // HACK!! need to throw an sensible exception here!
 	}
 
 	// auto ptr for the mask.

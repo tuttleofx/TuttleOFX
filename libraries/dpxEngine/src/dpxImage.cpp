@@ -1,15 +1,16 @@
 #include "dpxImage.hpp"
-#include "include/dpxImage.hpp"
-#include "include/dpxUtils.hpp"
-#include <string.h>
-#include <sstream>
-#include <iostream>
+#include <dpxUtils.hpp>
 
-#include <cassert>
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/detail/endian.hpp>
+
+#include <string.h>
+#include <sstream>
+#include <iostream>
+#include <cassert>
+
 using namespace boost::filesystem;
 using namespace tuttle::utils;
 using namespace boost;

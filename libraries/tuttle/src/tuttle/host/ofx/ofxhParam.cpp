@@ -307,7 +307,7 @@ void ParamDescriptor::addInteractParamProps( const std::string& type )
 		{ kOfxParamPropInteractV1, Property::ePointer, 1, false, 0 },
 		{ kOfxParamPropInteractSize, Property::eDouble, 2, false, "0" },
 		{ kOfxParamPropInteractSizeAspect, Property::eDouble, 1, false, "1" },
-		{ kOfxParamPropInteractMinimumSize, Property::eDouble, 2, false, "10" },
+		{ kOfxParamPropInteractMinimumSize, Property::eInt, 2, false, "10" },
 		{ kOfxParamPropInteractPreferedSize, Property::eInt, 2, false, "10" },
 		{ 0 }
 	};
@@ -480,7 +480,7 @@ ParamDescriptor* ParamDescriptorSet::paramDefine( const char* paramType,
                                                   const char* name )
 {
 	if( !isStandardType( paramType ) )
-		return NULL;                                  /// << EEK! This is bad.
+		return NULL;                                                                                                 /// << EEK! This is bad.
 
 	ParamDescriptor* desc = new ParamDescriptor( paramType, name );
 	desc->addStandardParamProps( paramType );

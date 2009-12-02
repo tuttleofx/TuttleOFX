@@ -384,7 +384,7 @@ static PropertyDescription gPluginDescriptorProps[] =
 	PropertyDescription( kOfxImageEffectPropSupportsMultipleClipPARs,     OFX::eInt, 1, eDescDefault, 0, eDescFinished ),
 
 	// Pointer props with defaults that can be checked against
-	PropertyDescription( kOfxImageEffectPluginPropOverlayInteractV1,      OFX::ePointer, 1, eDescDefault, (void*)( 0 ), eDescFinished ),
+	PropertyDescription( kOfxImageEffectPluginPropOverlayInteractV1,      OFX::ePointer, 1, eDescDefault, ( void* )( 0 ), eDescFinished ),
 
 	// string props that have variable dimension, and can't be checked against for defaults
 	PropertyDescription( kOfxImageEffectPropSupportedContexts,  OFX::eString, -1, eDescFinished ),
@@ -407,7 +407,7 @@ static PropertyDescription gPluginInstanceProps[] =
 	PropertyDescription( kOfxImageEffectInstancePropSequentialRender, OFX::eInt,     1, eDescDefault, 0, eDescFinished ),
 
 	// Pointer props with defaults that can be checked against
-	PropertyDescription( kOfxPropInstanceData,                        OFX::ePointer, 1, eDescDefault, (void*)( 0 ), eDescFinished ),
+	PropertyDescription( kOfxPropInstanceData,                        OFX::ePointer, 1, eDescDefault, ( void* )( 0 ), eDescFinished ),
 	PropertyDescription( kOfxImageEffectPropPluginHandle,             OFX::ePointer, eDescFinished ),
 
 	// string props that have no defaults that can be checked against
@@ -730,13 +730,13 @@ static PropertyDescription gBasicParamProps[] =
 	PropertyDescription( kOfxParamPropScriptName,        OFX::eString, 1, eDescFinished ),
 	PropertyDescription( kOfxParamPropParent,            OFX::eString, 1, eDescFinished ),
 	PropertyDescription( kOfxParamPropEnabled,           OFX::eInt,    1, eDescDefault, 1, eDescFinished ),
-	PropertyDescription( kOfxParamPropDataPtr,           OFX::ePointer, 1, eDescDefault, (void*)( 0 ), eDescFinished ),
+	PropertyDescription( kOfxParamPropDataPtr,           OFX::ePointer, 1, eDescDefault, ( void* )( 0 ), eDescFinished ),
 };
 
 /** @brief Props for params that can have an interact override their UI */
 static PropertyDescription gInteractOverideParamProps[] =
 {
-	PropertyDescription( kOfxParamPropInteractV1,           OFX::ePointer, 1, eDescDefault, (void*)( 0 ), eDescFinished ),
+	PropertyDescription( kOfxParamPropInteractV1,           OFX::ePointer, 1, eDescDefault, ( void* )( 0 ), eDescFinished ),
 	PropertyDescription( kOfxParamPropInteractSize,         OFX::eDouble, 2, eDescFinished ),
 	PropertyDescription( kOfxParamPropInteractSizeAspect,   OFX::eDouble, 1, eDescDefault, 1.0, eDescFinished ),
 	PropertyDescription( kOfxParamPropInteractMinimumSize,  OFX::eInt,    2, eDescDefault, 10, 10, eDescFinished ),
