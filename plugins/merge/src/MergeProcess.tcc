@@ -25,45 +25,21 @@ namespace tuttle {
 namespace plugin {
 namespace merge {
 
-template <typename DstV>
-struct FunctorATop
-{
-	template <class AlphaA, class AlphaB, typename SrcAV, typename SrcBV>
-	static const DstV merge( const AlphaA& a, const AlphaB& b,
-	                         const SrcAV& A, const SrcBV& B )
-	{
-		// Ab+B(1-a)
-		return (DstV)( A* b + B*( 1 - a ) );
-	}
-
-};
-
-template <typename DstV>
-struct FunctorPlus
-{
-	template <typename SrcAV, typename SrcBV>
-	static const DstV merge( const SrcAV& srcA, const SrcBV& srcB )
-	{
-		// A + B
-		return (DstV)( srcA + srcB );
-	}
-
-};
-
 using namespace boost::gil;
 
-template<class View>
-MergeProcess<View>::MergeProcess( MergePlugin& instance )
+template<class View, class Functor>
+MergeProcess<View, Functor>::MergeProcess( MergePlugin& instance )
 	: tuttle::plugin::ImageGilProcessor<View>( instance ),
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
 {}
 
-template<class View>
-void MergeProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
+template<class View, class Functor>
+void MergeProcess<View, Functor>::setupAndProcess( const OFX::RenderArguments& args )
 {
 	try
 	{
+		// Create views
 		boost::scoped_ptr<OFX::Image> srcA( _plugin.getSrcClipA()->fetchImage( args.time ) );
 		if( !srcA.get() )
 			throw( ImageNotReadyException() );
@@ -74,7 +50,9 @@ void MergeProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		boost::scoped_ptr<OFX::Image> srcB( _plugin.getSrcClipB()->fetchImage( args.time ) );
 		if( !srcB.get() )
 			throw( ImageNotReadyException() );
-		OfxRectI sBoundsB = srcB->getBounds();
+		OfxRectI sBoundsB                      = srcB->getBounds();
+		OFX::BitDepthEnum srcBitDepthB         = srcB->getPixelDepth();
+		OFX::PixelComponentEnum srcComponentsB = srcB->getPixelComponents();
 
 		boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
 		if( !dst.get() )
@@ -84,7 +62,8 @@ void MergeProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		OFX::PixelComponentEnum dstComponents = dst->getPixelComponents();
 
 		// Make sure bit depths are the same
-		if( srcBitDepthA != dstBitDepth || srcComponentsA != dstComponents )
+		if( srcBitDepthA != dstBitDepth || srcBitDepthB != srcBitDepthA ||
+			srcComponentsA != dstComponents || srcComponentsB != srcComponentsA )
 		{
 			throw( BitDepthMismatchException() );
 		}
@@ -120,8 +99,8 @@ void MergeProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  *
  * @param[in] procWindow  Processing window
  */
-template<class View>
-void MergeProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
+template<class View, class Functor>
+void MergeProcess<View, Functor>::multiThreadProcessImages( OfxRectI procWindow )
 {
 	try
 	{
@@ -132,10 +111,10 @@ void MergeProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		                           procWindow.x2 - procWindow.x1,
 		                           procWindow.y2 - procWindow.y1 );
 		View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
-		                          procWindow.x2 - procWindow.x1,
-		                          procWindow.y2 - procWindow.y1 );
+								  procWindow.x2 - procWindow.x1,
+								  procWindow.y2 - procWindow.y1 );
 
-		merge_pixels( srcA, srcB, dst, default_color_merging< FunctorPlus >() );
+		merge_pixels<Functor>( srcA, srcB, dst );
 	}
 	catch( PluginException err )
 	{

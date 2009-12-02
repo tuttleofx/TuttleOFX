@@ -51,7 +51,7 @@ lib tuttlehost :
     /boost/filesystem
     /expat/<link>static
     nt_libs
-    dl/<link>shared
+    dl
     ;
 
 lib tuttleplugin :

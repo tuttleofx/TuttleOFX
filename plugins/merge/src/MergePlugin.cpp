@@ -24,10 +24,11 @@ using namespace boost::gil;
 MergePlugin::MergePlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
+	_mergeFunction = fetchChoiceParam( kMergeFunction );
 	_srcClipA = fetchClip( kMergeSourceA );
 	_srcClipB = fetchClip( kMergeSourceB );
 	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
-	assert( _srcClipA && _srcClipB && _dstClip );
+	assert( _mergeFunction && _srcClipA && _srcClipB && _dstClip );
 }
 
 /**
@@ -36,71 +37,210 @@ MergePlugin::MergePlugin( OfxImageEffectHandle handle )
  */
 void MergePlugin::render( const OFX::RenderArguments& args )
 {
-	assert( _dstClip );
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents();
+	bool isGray = _dstClip->getPixelComponents() == OFX::ePixelComponentAlpha;
+	if (isGray) {
+		switch( (EMergeFunction)_mergeFunction->getValue() )
+		{
+			// Functions that doesn't need alpha
+			case eMergeFunctionAverage:
+			{
+				renderGray<FunctorAverage>( args );
+				break;
+			}
+			case eMergeFunctionCopy:
+			{
+				break;
+			}
+			case eMergeFunctionDifference:
+			{
+				break;
+			}
+			case eMergeFunctionDivide:
+			{
+				break;
+			}
+			case eMergeFunctionExclusion:
+			{
+				break;
+			}
+			case eMergeFunctionFrom:
+			{
+				break;
+			}
+			case eMergeFunctionGeometric:
+			{
+				break;
+			}
+			case eMergeFunctionHardLight:
+			{
+				break;
+			}
+			case eMergeFunctionHypot:
+			{
+				break;
+			}
+			case eMergeFunctionMax:
+			{
+				break;
+			}
+			case eMergeFunctionMin:
+			{
+				break;
+			}
+			case eMergeFunctionMinus:
+			{
+				break;
+			}
+			case eMergeFunctionMultiply:
+			{
+				break;
+			}
+			case eMergeFunctionOverlay:
+			{
+				break;
+			}
+			case eMergeFunctionPlus:
+			{
+				renderGray<FunctorPlus>( args );
+				break;
+			}
+			case eMergeFunctionScreen:
+			{
+				break;
+			}
+			default:
+				COUT_ERROR("Unsupported operation !");
+				break;
+		}
+	} else {
+		switch( (EMergeFunction)_mergeFunction->getValue() )
+		{
+			// Functions that need alpha
+			case eMergeFunctionATop:
+			{
+				renderRGBA<FunctorATop>( args );
+				break;
+			}
+			case eMergeFunctionConjointOver:
+			{
+				break;
+			}
+			case eMergeFunctionColorBurn:
+			{
+				break;
+			}
+			case eMergeFunctionColorDodge:
+			{
+				break;
+			}
+			case eMergeFunctionDisjointOver:
+			{
+				break;
+			}
+			case eMergeFunctionIn:
+			{
+				break;
+			}
+			case eMergeFunctionMask:
+			{
+				break;
+			}
+			case eMergeFunctionMatte:
+			{
+				break;
+			}
+			case eMergeFunctionOut:
+			{
+				break;
+			}
+			case eMergeFunctionOver:
+			{
+				break;
+			}
+			case eMergeFunctionStencil:
+			{
+				break;
+			}
+			case eMergeFunctionUnder:
+			{
+				break;
+			}
+			case eMergeFunctionXOR:
+			{
+				break;
+			}
+			// Function that doesn't needs alpha
+			case eMergeFunctionAverage:
+			{
+				renderGray<FunctorAverage>( args );
+				break;
+			}
+			case eMergeFunctionCopy:
+			{
+				break;
+			}
+			case eMergeFunctionDifference:
+			{
+				break;
+			}
+			case eMergeFunctionDivide:
+			{
+				break;
+			}
+			case eMergeFunctionExclusion:
+			{
+				break;
+			}
+			case eMergeFunctionFrom:
+			{
+				break;
+			}
+			case eMergeFunctionGeometric:
+			{
+				break;
+			}
+			case eMergeFunctionHardLight:
+			{
+				break;
+			}
+			case eMergeFunctionHypot:
+			{
+				break;
+			}
+			case eMergeFunctionMax:
+			{
+				break;
+			}
+			case eMergeFunctionMin:
+			{
+				break;
+			}
+			case eMergeFunctionMinus:
+			{
+				break;
+			}
+			case eMergeFunctionMultiply:
+			{
+				break;
+			}
+			case eMergeFunctionOverlay:
+			{
+				break;
+			}
+			case eMergeFunctionPlus:
+			{
+				renderGray<FunctorPlus>( args );
+				break;
+			}
+			case eMergeFunctionScreen:
+			{
+				break;
+			}
+			default:
+				COUT_ERROR("Unsupported operation !");
+				break;
+		}
 
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				MergeProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				MergeProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				MergeProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				MergeProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				MergeProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				MergeProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
 	}
 }
 

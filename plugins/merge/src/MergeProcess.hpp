@@ -32,7 +32,7 @@ namespace merge {
  * @brief Base class
  *
  */
-template<class View>
+template<class View, class Functor>
 class MergeProcess : public tuttle::plugin::ImageGilProcessor<View>,
 	public tuttle::plugin::Progress
 {
@@ -44,7 +44,7 @@ protected:
 	View _srcViewB; ///< Source view B
 
 public:
-	MergeProcess<View>( MergePlugin & instance );
+	MergeProcess<View, Functor>( MergePlugin & instance );
 
 	// set up and run a processor
 	void setupAndProcess( const OFX::RenderArguments& args );
