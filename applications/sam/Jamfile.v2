@@ -27,7 +27,6 @@ exe sam :
     [ glob src/*.cpp ]
     /boost/system
     /boost/filesystem
-    /tuttlelib//dl/<link>shared
     /tuttlelib//tuttlehost/<link>static
     ;
 
