@@ -172,7 +172,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			// Function that doesn't needs alpha
 			case eMergeFunctionAverage:
 			{
-				renderGray<FunctorAverage>( args );
+				renderRGBA<FunctorAverage>( args );
 				break;
 			}
 			case eMergeFunctionCopy:
@@ -229,7 +229,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			}
 			case eMergeFunctionPlus:
 			{
-				renderGray<FunctorPlus>( args );
+				renderRGBA<FunctorPlus>( args );
 				break;
 			}
 			case eMergeFunctionScreen:
@@ -243,6 +243,76 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 
 	}
 }
+
+template<class Functor>
+void MergePlugin::renderGray( const OFX::RenderArguments& args )
+{
+	assert( _dstClip );
+	/*
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth();
+	switch( dstBitDepth )
+	{
+		case OFX::eBitDepthUByte:
+		{
+			MergeProcess<gray8_view_t, Functor> fred( *this );
+			fred.setupAndProcess( args );
+			break;
+		}
+		case OFX::eBitDepthUShort:
+		{
+			MergeProcess<gray16_view_t, Functor> fred( *this );
+			fred.setupAndProcess( args );
+			break;
+		}
+		case OFX::eBitDepthFloat:
+		{
+			MergeProcess<gray32f_view_t, Functor> fred( *this );
+			fred.setupAndProcess( args );
+			break;
+		}
+		case OFX::eBitDepthCustom:
+		case OFX::eBitDepthNone:
+			COUT_FATALERROR( "BitDepthNone not recognize." );
+			return;
+	}
+	*/
+}
+
+template<class Functor>
+void MergePlugin::renderRGBA( const OFX::RenderArguments& args )
+{
+	assert( _dstClip );
+	OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth();
+
+	// do the rendering
+	switch( dstBitDepth )
+	{
+		case OFX::eBitDepthUByte:
+		{
+			MergeProcess<rgba8_view_t, Functor> fred( *this );
+			fred.setupAndProcess( args );
+			break;
+		}
+		case OFX::eBitDepthUShort:
+		{
+			MergeProcess<rgba16_view_t, Functor> fred( *this );
+			fred.setupAndProcess( args );
+			break;
+		}
+		case OFX::eBitDepthFloat:
+		{
+			MergeProcess<rgba32f_view_t, Functor> fred( *this );
+			fred.setupAndProcess( args );
+			break;
+		}
+		case OFX::eBitDepthCustom:
+		case OFX::eBitDepthNone:
+			COUT_FATALERROR( "BitDepthNone not recognize." );
+			return;
+	}
+}
+
 
 void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {

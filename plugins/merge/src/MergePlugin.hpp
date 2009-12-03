@@ -9,7 +9,7 @@
 #ifndef MERGE_PLUGIN_H
 #define MERGE_PLUGIN_H
 
-#include "ColorMerge.hpp"
+#include "MergeFunctors.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
@@ -27,70 +27,10 @@ class MergePlugin : public OFX::ImageEffect
 {
 private:
 	template<class Functor>
-	void renderGray( const OFX::RenderArguments& args )
-	{
-		assert( _dstClip );
-		// instantiate the render code based on the pixel depth of the dst clip
-		OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth();
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				MergeProcess<gray8_view_t, Functor> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				MergeProcess<gray16_view_t, Functor> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				MergeProcess<gray32f_view_t, Functor> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthCustom:
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-		}
-	}
-	template<class Functor>
-	void renderRGBA( const OFX::RenderArguments& args )
-	{
-		assert( _dstClip );
-		OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth();
+	void renderGray( const OFX::RenderArguments& args );
 
-		// do the rendering
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				MergeProcess<rgba8_view_t, Functor> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				MergeProcess<rgba16_view_t, Functor> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				MergeProcess<rgba32f_view_t, Functor> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthCustom:
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-		}
-	}
+	template<class Functor>
+	void renderRGBA( const OFX::RenderArguments& args );
 
 public:
 	MergePlugin( OfxImageEffectHandle handle );

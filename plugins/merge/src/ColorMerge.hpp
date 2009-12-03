@@ -1,14 +1,3 @@
-/*
- *  Copyright 2005-2007 Adobe Systems Incorporated
- *
- *  Use, modification and distribution are subject to the Boost Software License,
- *  Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
- *  http://www.boost.org/LICENSE_1_0.txt).
- *
- *  See http://opensource.adobe.com/gil for most recent version including documentation.
- */
-/*************************************************************************************************/
-
 #ifndef GIL_COLOR_MERGE_HPP
 #define GIL_COLOR_MERGE_HPP
 
@@ -23,12 +12,16 @@
 
 #include <functional>
 #include <boost/static_assert.hpp>
+#include <boost/gil/gil_all.hpp>
+/*
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/color_convert.hpp>
 #include <boost/gil/channel_algorithm.hpp>
 #include <boost/gil/pixel.hpp>
 #include <boost/gil/metafunctions.hpp>
 #include <boost/gil/utilities.hpp>
+#include <boost/gil/image_view_factory.hpp>
+*/
 
 namespace boost {
 namespace gil {
@@ -48,11 +41,7 @@ struct merge_functor
 	typedef NEED_ALPHA need_alpha_t;
 };
 
-/// \ingroup ChannelConvertAlgorithm
-/// \brief Same as channel_converter, except it takes the destination channel
-///        by reference, which allows us to move the templates from the class
-///        level to the method level. This is important when invoking it on
-///        heterogeneous pixels.
+namespace detail {
 
 template<class F, typename ItA, typename ItB>
 struct default_alpha_channel_merging
@@ -69,7 +58,9 @@ struct default_alpha_channel_merging
 	template <typename V1, typename V2, typename V3>
 	void operator()( const V1& srcA, const V2& srcB, V3& dst ) const
 	{
-		dst = F::merge<V3>( get_color(_itA, alpha_t()), get_color(_itB, alpha_t()), srcA, srcB );
+		F::merge( get_color(_itA, alpha_t()),
+				  get_color(_itB, alpha_t()),
+				  srcA, srcB, dst );
 	}
 };
 
@@ -79,25 +70,23 @@ struct default_channel_merging
 	template <typename V1, typename V2, typename V3>
 	void operator()( const V1& srcA, const V2& srcB, V3& dstC ) const
 	{
-		dstC = F::merge<V3>( srcA, srcB );
+		F::merge( srcA, srcB, dstC );
 	}
 };
 
 /// Implementation for pixel merging
 template < class F >
 struct merge_pixels_alpha_impl {
-	template < typename View1, typename View2, typename View3 >
-	inline void operator()( View1& src1, View2& src2, View3& dst ) {
-		View3 srcA(color_converted_view<View3::value_type>(src1));
-		View3 srcB(color_converted_view<View3::value_type>(src2));
-		typedef typename View3::value_type channel_t;
+	template < typename View >
+	inline void operator()( const View& srcA, const View& srcB, View& dst ) {
+		typedef typename View::value_type channel_t;
 
 		// Need alpha channel on sources & destination
 		for( std::ptrdiff_t y = 0; y < dst.height(); ++y )
 		{
-			typename View3::x_iterator srcIt1 = srcA.row_begin( y );
-			typename View3::x_iterator srcIt2 = srcB.row_begin( y );
-			typename View3::x_iterator dstIt  = dst.row_begin( y );
+			typename View::x_iterator srcIt1 = srcA.row_begin( y );
+			typename View::x_iterator srcIt2 = srcB.row_begin( y );
+			typename View::x_iterator dstIt  = dst.row_begin( y );
 			for( std::ptrdiff_t x = 0; x < dst.width(); ++x )
 				static_for_each( srcIt1[x],
 								 srcIt2[x],
@@ -114,35 +103,47 @@ struct merge_pixels_alpha_impl {
 
 template < class F >
 struct merge_pixels_impl {
-	template < typename View1, typename View2, typename View3 >
-	inline void operator()( View1& src1, View2& src2, View3& dst )
+	template < typename View >
+	inline void operator()( const View& srcA, const View& srcB, View& dst )
 	{
+//		typename View::value_type alpha_max = channel_traits< typename channel_type< typename View::value_type >::type >::max_value();
 		// Need alpha channel on sources & destination
 		for( std::ptrdiff_t y = 0; y < dst.height(); ++y )
 		{
-			typename View1::x_iterator srcIt1 = src1.row_begin( y );
-			typename View2::x_iterator srcIt2 = src2.row_begin( y );
-			typename View3::x_iterator dstIt  = dst.row_begin( y );
-			for( std::ptrdiff_t x = 0; x < dst.width(); ++x )
+			typename View::x_iterator srcIt1 = srcA.row_begin( y );
+			typename View::x_iterator srcIt2 = srcB.row_begin( y );
+			typename View::x_iterator dstIt1 = dst.row_begin( y );
+			for( std::ptrdiff_t x = 0; x < dst.width(); ++x ) {
 				static_for_each( srcIt1[x],
 								 srcIt2[x],
-								 dstIt[x],
+								 dstIt1[x],
 								 default_channel_merging<F>() );
+//				get_color(dstIt1[x], alpha_t()) = alpha_max;
+			}
 		}
 	}
 };
 
+}
+
 template < class F, typename View1, typename View2, typename View3>
-void merge_pixels( View1& src1, View2& src2, View3& dst )
+void merge_pixels( const View1& src1, const View2& src2, View3& dst )
 {
 	// If merging functor needs alpha, check if destination contains alpha.
-	typedef typename mpl::contains<typename color_space_type<View3::value_type>::type, alpha_t>::type has_alpha_t;
-	BOOST_STATIC_ASSERT((has_alpha_t::value == F::need_alpha_t::value) || F::need_alpha_t::value == false);
+	typedef typename mpl::contains<
+			typename color_space_type<typename View3::value_type>::type
+									  , alpha_t>::type has_alpha_t;
+	BOOST_STATIC_ASSERT((has_alpha_t::value == F::need_alpha_t::value)
+						|| F::need_alpha_t::value == false);
 
 	// Chose the right merging function according to alpha channel needs
-	mpl::if_< F::need_alpha_t, typename merge_pixels_alpha_impl<F>, typename merge_pixels_impl<F> >::type merger;
+	typename mpl::if_< typename F::need_alpha_t,
+					   typename detail::merge_pixels_alpha_impl<F>,
+					   typename detail::merge_pixels_impl<F> >::type merger;
 	// Apply
-	merger(src1, src2, dst);
+	merger(color_converted_view<typename View3::value_type>(src1),
+		   color_converted_view<typename View3::value_type>(src2),
+		   dst);
 }
 
 }
