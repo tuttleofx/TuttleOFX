@@ -49,54 +49,67 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			}
 			case eMergeFunctionCopy:
 			{
+				renderGray<FunctorCopy>( args );
 				break;
 			}
 			case eMergeFunctionDifference:
 			{
+				renderGray<FunctorDifference>( args );
 				break;
 			}
 			case eMergeFunctionDivide:
 			{
+				renderGray<FunctorDivide>( args );
 				break;
 			}
 			case eMergeFunctionExclusion:
 			{
+				renderGray<FunctorExclusion>( args );
 				break;
 			}
 			case eMergeFunctionFrom:
 			{
+				renderGray<FunctorFrom>( args );
 				break;
 			}
 			case eMergeFunctionGeometric:
 			{
+				renderGray<FunctorGeometric>( args );
 				break;
 			}
 			case eMergeFunctionHardLight:
 			{
+				renderGray<FunctorHardLight>( args );
 				break;
 			}
 			case eMergeFunctionHypot:
 			{
+				renderGray<FunctorHypot>( args );
 				break;
 			}
-			case eMergeFunctionMax:
+			case eMergeFunctionLighten:
 			{
+				renderGray<FunctorLighten>( args );
 				break;
 			}
-			case eMergeFunctionMin:
+			case eMergeFunctionDarken:
 			{
+				renderGray<FunctorDarken>( args );
 				break;
 			}
 			case eMergeFunctionMinus:
 			{
+				renderGray<FunctorMinus>( args );
 				break;
 			}
 			case eMergeFunctionMultiply:
 			{
+				renderGray<FunctorMultiply>( args );
 				break;
 			}
 			case eMergeFunctionOverlay:
 			{
+				renderGray<FunctorOverlay>( args );
 				break;
 			}
 			case eMergeFunctionPlus:
@@ -106,6 +119,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			}
 			case eMergeFunctionScreen:
 			{
+				renderGray<FunctorScreen>( args );
 				break;
 			}
 			default:
@@ -123,53 +137,88 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			}
 			case eMergeFunctionConjointOver:
 			{
+				renderRGBA<FunctorConjointOver>( args );
 				break;
 			}
 			case eMergeFunctionColorBurn:
 			{
+				renderRGBA<FunctorColorBurn>( args );
 				break;
 			}
 			case eMergeFunctionColorDodge:
 			{
+				renderRGBA<FunctorColorDodge>( args );
 				break;
 			}
 			case eMergeFunctionDisjointOver:
 			{
+				renderRGBA<FunctorDisjointOver>( args );
+				break;
+			}
+			case eMergeFunctionPinLight:
+			{
+				renderRGBA<FunctorPinLight>( args );
+				break;
+			}
+			case eMergeFunctionReflect:
+			{
+				// Quadratic mode: reflect
+				renderRGBA<FunctorReflect>( args );
+				break;
+			}
+			case eMergeFunctionFreeze:
+			{
+				// Quadratic mode: freeze
+				renderRGBA<FunctorFreeze>( args );
+				break;
+			}
+			case eMergeFunctionInterpolated:
+			{
+				// Similar to average, but smoother (and a lot slower)...
+				renderRGBA<FunctorInterpolated>( args );
 				break;
 			}
 			case eMergeFunctionIn:
 			{
+				renderRGBA<FunctorIn>( args );
 				break;
 			}
 			case eMergeFunctionMask:
 			{
+				renderRGBA<FunctorMask>( args );
 				break;
 			}
 			case eMergeFunctionMatte:
 			{
+				renderRGBA<FunctorMatte>( args );
 				break;
 			}
 			case eMergeFunctionOut:
 			{
+				renderRGBA<FunctorOut>( args );
 				break;
 			}
 			case eMergeFunctionOver:
 			{
+				renderRGBA<FunctorOver>( args );
 				break;
 			}
 			case eMergeFunctionStencil:
 			{
+				renderRGBA<FunctorStencil>( args );
 				break;
 			}
 			case eMergeFunctionUnder:
 			{
+				renderRGBA<FunctorUnder>( args );
 				break;
 			}
 			case eMergeFunctionXOR:
 			{
+				renderRGBA<FunctorXOR>( args );
 				break;
 			}
-			// Function that doesn't needs alpha
+			// Functions that doesn't need alpha
 			case eMergeFunctionAverage:
 			{
 				renderRGBA<FunctorAverage>( args );
@@ -177,54 +226,67 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			}
 			case eMergeFunctionCopy:
 			{
+				renderRGBA<FunctorCopy>( args );
 				break;
 			}
 			case eMergeFunctionDifference:
 			{
+				renderRGBA<FunctorDifference>( args );
 				break;
 			}
 			case eMergeFunctionDivide:
 			{
+				renderRGBA<FunctorDivide>( args );
 				break;
 			}
 			case eMergeFunctionExclusion:
 			{
+				renderRGBA<FunctorExclusion>( args );
 				break;
 			}
 			case eMergeFunctionFrom:
 			{
+				renderRGBA<FunctorFrom>( args );
 				break;
 			}
 			case eMergeFunctionGeometric:
 			{
+				renderRGBA<FunctorGeometric>( args );
 				break;
 			}
 			case eMergeFunctionHardLight:
 			{
+				renderRGBA<FunctorHardLight>( args );
 				break;
 			}
 			case eMergeFunctionHypot:
 			{
+				renderRGBA<FunctorHypot>( args );
 				break;
 			}
-			case eMergeFunctionMax:
+			case eMergeFunctionLighten:
 			{
+				renderRGBA<FunctorLighten>( args );
 				break;
 			}
-			case eMergeFunctionMin:
+			case eMergeFunctionDarken:
 			{
+				renderRGBA<FunctorDarken>( args );
 				break;
 			}
 			case eMergeFunctionMinus:
 			{
+				renderRGBA<FunctorMinus>( args );
 				break;
 			}
 			case eMergeFunctionMultiply:
 			{
+				renderRGBA<FunctorMultiply>( args );
 				break;
 			}
 			case eMergeFunctionOverlay:
 			{
+				renderRGBA<FunctorOverlay>( args );
 				break;
 			}
 			case eMergeFunctionPlus:
@@ -234,6 +296,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			}
 			case eMergeFunctionScreen:
 			{
+				renderRGBA<FunctorScreen>( args );
 				break;
 			}
 			default:

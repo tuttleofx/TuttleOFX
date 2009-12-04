@@ -32,6 +32,9 @@ namespace gil {
 ///
 ////////////////////////////////////////////////////////////////////////////////////////
 
+typedef mpl::true_  need_alpha_t;
+typedef mpl::false_ need_noalpha_t;
+
 /// @defgroup ColorMerge Color Space Merging
 /// \brief	Functors need to heritates from merge_functor<boost::mpl::true_ or false_>
 template <typename NEED_ALPHA>
@@ -42,37 +45,6 @@ struct merge_functor
 };
 
 namespace detail {
-
-template<class F, typename ItA, typename ItB>
-struct default_alpha_channel_merging
-{
-	// View iterators are needed because merging depends on each alpha
-	// channel
-	const ItA& _itA;  /// View iterator src A
-	const ItB& _itB;  /// View iterator src B
-
-	default_alpha_channel_merging( const ItA& itA, const ItB& itB )
-		: _itA( itA ),
-		  _itB( itB ) {}
-
-	template <typename V1, typename V2, typename V3>
-	void operator()( const V1& srcA, const V2& srcB, V3& dst ) const
-	{
-		F::merge( get_color(_itA, alpha_t()),
-				  get_color(_itB, alpha_t()),
-				  srcA, srcB, dst );
-	}
-};
-
-template<class F>
-struct default_channel_merging
-{
-	template <typename V1, typename V2, typename V3>
-	void operator()( const V1& srcA, const V2& srcB, V3& dstC ) const
-	{
-		F::merge( srcA, srcB, dstC );
-	}
-};
 
 /// Implementation for pixel merging
 template < class F >
@@ -88,15 +60,7 @@ struct merge_pixels_alpha_impl {
 			typename View::x_iterator srcIt2 = srcB.row_begin( y );
 			typename View::x_iterator dstIt  = dst.row_begin( y );
 			for( std::ptrdiff_t x = 0; x < dst.width(); ++x )
-				static_for_each( srcIt1[x],
-								 srcIt2[x],
-								 dstIt[x],
-								 default_alpha_channel_merging
-								 <	 F,
-									 channel_t,
-									 channel_t
-								 >( srcIt1[x], srcIt2[x] )
-							   );
+				F::merge( srcIt1[x], srcIt2[x], dstIt[x] );
 		}
 	}
 };
@@ -106,18 +70,19 @@ struct merge_pixels_impl {
 	template < typename View >
 	inline void operator()( const View& srcA, const View& srcB, View& dst )
 	{
+// @todo: the separation between alpha & non-alpha is temporary.
+// I don't know yet if it will be usefull in the future.
+// Following comments shows what need to be done:
+
 //		typename View::value_type alpha_max = channel_traits< typename channel_type< typename View::value_type >::type >::max_value();
 		// Need alpha channel on sources & destination
 		for( std::ptrdiff_t y = 0; y < dst.height(); ++y )
 		{
 			typename View::x_iterator srcIt1 = srcA.row_begin( y );
 			typename View::x_iterator srcIt2 = srcB.row_begin( y );
-			typename View::x_iterator dstIt1 = dst.row_begin( y );
+			typename View::x_iterator dstIt = dst.row_begin( y );
 			for( std::ptrdiff_t x = 0; x < dst.width(); ++x ) {
-				static_for_each( srcIt1[x],
-								 srcIt2[x],
-								 dstIt1[x],
-								 default_channel_merging<F>() );
+				F::merge( srcIt1[x], srcIt2[x], dstIt[x] );
 //				get_color(dstIt1[x], alpha_t()) = alpha_max;
 			}
 		}

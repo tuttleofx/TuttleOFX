@@ -25,6 +25,7 @@ static const bool kSupportTemporalClipAccess = false;
 
 // Plugin internal data
 const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used to merge two clips A and B.  <br />";
+
 enum EMergeFunction
 {
 	eMergeFunctionATop, eMergeFunctionAverage,
@@ -32,17 +33,20 @@ enum EMergeFunction
 	eMergeFunctionConjointOver, eMergeFunctionCopy,
 	eMergeFunctionDifference, eMergeFunctionDisjointOver,
 	eMergeFunctionDivide, eMergeFunctionExclusion,
-	eMergeFunctionFrom, eMergeFunctionGeometric,
-	eMergeFunctionHardLight, eMergeFunctionHypot,
-	eMergeFunctionIn, eMergeFunctionMask,
-	eMergeFunctionMatte, eMergeFunctionMax,
-	eMergeFunctionMin, eMergeFunctionMinus,
+	eMergeFunctionFreeze, eMergeFunctionFrom,
+	eMergeFunctionGeometric, eMergeFunctionHardLight,
+	eMergeFunctionHypot, eMergeFunctionIn,
+	eMergeFunctionInterpolated, eMergeFunctionMask,
+	eMergeFunctionMatte, eMergeFunctionLighten,
+	eMergeFunctionDarken, eMergeFunctionMinus,
 	eMergeFunctionMultiply, eMergeFunctionOut,
 	eMergeFunctionOver, eMergeFunctionOverlay,
-	eMergeFunctionPlus, eMergeFunctionScreen,
+	eMergeFunctionPinLight, eMergeFunctionPlus,
+	eMergeFunctionReflect, eMergeFunctionScreen,
 	eMergeFunctionStencil, eMergeFunctionUnder,
 	eMergeFunctionXOR
 };
+
 }
 }
 }
