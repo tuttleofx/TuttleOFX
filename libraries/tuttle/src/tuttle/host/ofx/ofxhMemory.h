@@ -33,7 +33,7 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace Memory {
+namespace memory {
 
 class Instance
 {

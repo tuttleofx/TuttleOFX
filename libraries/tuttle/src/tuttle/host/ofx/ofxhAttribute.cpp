@@ -58,7 +58,7 @@ AttributeDescriptor::AttributeDescriptor()
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
 	static Property::PropSpec attributeDescriptorStuffs[] = {
-		{ kOfxPropName, Property::eString, 1, true, "SET ME ON CONSTRUCTION" },
+		{ kOfxPropName, Property::eString, 1, true, "SET_ME_ON_CONSTRUCTION" },
 		{ kOfxPropLabel, Property::eString, 1, false, "" },
 		{ kOfxPropShortLabel, Property::eString, 1, false, "" },
 		{ kOfxPropLongLabel, Property::eString, 1, false, "" },
@@ -74,7 +74,7 @@ AttributeDescriptor::AttributeDescriptor( const Property::Set& properties )
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
 	static Property::PropSpec attributeDescriptorStuffs[] = {
-		{ kOfxPropName, Property::eString, 1, true, "SET ME ON CONSTRUCTION" },
+		{ kOfxPropName, Property::eString, 1, true, "SET_ME_ON_CONSTRUCTION" },
 		{ kOfxPropLabel, Property::eString, 1, false, "" },
 		{ kOfxPropShortLabel, Property::eString, 1, false, "" },
 		{ kOfxPropLongLabel, Property::eString, 1, false, "" },

@@ -195,22 +195,25 @@ public:
 
 /// an image effect plugin descriptor
 class Descriptor
-	: public Base,
-	public attribute::ParamDescriptorSet
+	: public Base
+	, public attribute::ParamDescriptorSet
 {
+public:
+	typedef std::map<std::string, attribute::ClipImageDescriptor*> ClipImageDescriptorMap;
+	typedef boost::ptr_vector<attribute::ClipImageDescriptor> ClipImageDescriptorVector;
+protected:
+	Plugin* _plugin;      ///< the plugin I belong to
+	ClipImageDescriptorMap _clips;        ///< clips descriptors by name
+	ClipImageDescriptorVector _clipsByOrder; ///< clip descriptors in order of declaration
+	mutable Interact::Descriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description
+	int _built;
+
 private:
 	// private CC
 	Descriptor( const Descriptor& other )
 		: Base( other._properties ),
 		_plugin( other._plugin )
 	{}
-
-protected:
-	Plugin* _plugin;      ///< the plugin I belong to
-	std::map<std::string, attribute::ClipImageDescriptor*>  _clips;        ///< clips descriptors by name
-	std::vector<attribute::ClipImageDescriptor*>            _clipsByOrder; ///< clip descriptors in order of declaration
-	mutable Interact::Descriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description
-	int _built;
 
 public:
 	/// used to construct the global description
@@ -238,7 +241,7 @@ public:
 	virtual attribute::ClipImageDescriptor* defineClip( const std::string& name );
 
 	/// get the clips
-	const std::map<std::string, attribute::ClipImageDescriptor*>& getClips() const
+	const ClipImageDescriptorMap& getClips() const
 	{
 		return _clips;
 	}
@@ -247,13 +250,13 @@ public:
 	void addClip( const std::string& name, attribute::ClipImageDescriptor* clip );
 
 	/// get the clips in order of construction
-	const std::vector<attribute::ClipImageDescriptor*>& getClipsByOrder() const
+	const ClipImageDescriptorVector& getClipsByOrder() const
 	{
 		return _clipsByOrder;
 	}
 
 	/// get the clips in order of construction
-	std::vector<attribute::ClipImageDescriptor*>& getClipsByOrder()
+	ClipImageDescriptorVector& getClipsByOrder()
 	{
 		return _clipsByOrder;
 	}
@@ -354,10 +357,10 @@ public:
 	virtual int abort();
 
 	/// override this to use your own memory instance - must inherrit from memory::instance
-	virtual Memory::Instance* newMemoryInstance( size_t nBytes );
+	virtual memory::Instance* newMemoryInstance( size_t nBytes );
 
 	// return an memory::instance calls makeMemoryInstance that can be overriden
-	Memory::Instance* imageMemoryAlloc( size_t nBytes );
+	memory::Instance* imageMemoryAlloc( size_t nBytes );
 
 	/// make a clip
 	//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;

@@ -34,6 +34,8 @@
 #include "ofxhAttribute.h"
 #include "ofxCore.h"
 
+#include <boost/ptr_container/ptr_list.hpp>
+
 #include <string>
 #include <map>
 #include <list>
@@ -86,10 +88,10 @@ public:
 
 	const std::string& getParentName() const;
 
-	/// @todo TUTTLE_TODO : common to all attributes
+	/// @todo tuttle : common to all attributes
 	const std::string& getScriptName() const;
 
-	/// @todo TUTTLE_TODO : common to all attributes
+	/// @todo tuttle : common to all attributes
 	const std::string& getHint() const;
 
 	const std::string& getDoubleType() const;
@@ -143,9 +145,12 @@ public:
 /// but that adds complexity for no strong gain.
 class ParamInstanceSet : public ParamAccessorSet
 {
+public:
+	typedef std::map<std::string, ParamInstance*> ParamMap;
+	typedef boost::ptr_list<ParamInstance> ParamList;
 protected:
-	std::map<std::string, ParamInstance*> _params;        ///< params by name
-	std::list<ParamInstance*>            _paramList;    ///< params list
+	ParamMap _params;        ///< params by name
+	ParamList _paramList;    ///< params list
 
 public:
 	/// ctor
@@ -163,22 +168,22 @@ public:
 		return ( OfxParamSetHandle ) this;
 	}
 
-	const std::map<std::string, ParamInstance*>& getParams() const
+	const ParamMap& getParams() const
 	{
 		return _params;
 	}
 
-	std::map<std::string, ParamInstance*>& getParams()
+	ParamMap& getParams()
 	{
 		return _params;
 	}
 
-	const std::list<ParamInstance*>& getParamList() const
+	const ParamList& getParamList() const
 	{
 		return _paramList;
 	}
 
-	std::list<ParamInstance*>& getParamList()
+	ParamList& getParamList()
 	{
 		return _paramList;
 	}
@@ -186,7 +191,7 @@ public:
 	// get the param
 	ParamInstance* getParam( std::string name )
 	{
-		std::map<std::string, ParamInstance*>::iterator it = _params.find( name );
+		ParamMap::iterator it = _params.find( name );
 		if( it != _params.end() )
 			return it->second;
 		else
@@ -219,8 +224,10 @@ public:
 /// a set of parameters
 class ParamDescriptorSet : public ParamAccessorSet
 {
-std::map<std::string, ParamDescriptor*> _paramMap;
-std::list<ParamDescriptor*> _paramList;
+	typedef std::map<std::string, ParamDescriptor*> ParamDescriptorMap;
+	typedef std::list<ParamDescriptor*> ParamDescriptorList;
+	ParamDescriptorMap _paramMap;
+	ParamDescriptorList _paramList;
 
 /// CC doesn't exist
 ParamDescriptorSet( const ParamDescriptorSet& );
@@ -233,17 +240,14 @@ public:
 	virtual ~ParamDescriptorSet();
 
 	/// obtain a handle on this set for passing to the C api
-	OfxParamSetHandle getParamSetHandle() const
-	{
-		return ( OfxParamSetHandle ) this;
-	}
+	OfxParamSetHandle getParamSetHandle() const { return (OfxParamSetHandle)this; }
 
 	/// get the map of params
-	const std::map<std::string, ParamDescriptor*>& getParams() const;
-	std::map<std::string, ParamDescriptor*>&       getParams();
+	const ParamDescriptorMap& getParams() const { return _paramMap; }
+	ParamDescriptorMap&       getParams() { return _paramMap; }
 
 	/// get the list of params
-	const std::list<ParamDescriptor*>& getParamList() const;
+	const ParamDescriptorList& getParamList() const { return _paramList; }
 
 	/// define a param
 	virtual ParamDescriptor* paramDefine( const char* paramType,
@@ -255,8 +259,9 @@ public:
 
 /// plugin parameter instance
 class ParamInstance : virtual public ParamAccessor,
-	public attribute::AttributeInstance,
-	private Property::NotifyHook
+	public AttributeInstance,
+	private Property::NotifyHook,
+	private boost::noncopyable
 {
 ParamInstance();
 
@@ -264,11 +269,20 @@ protected:
 	ParamInstanceSet*  _paramSetInstance;
 	ParamInstance*     _parentInstance;
 
+protected:
+	ParamInstance( const ParamInstance& other )
+	: AttributeInstance(other)
+	{
+		/// @todo tuttle : copy content, not pointer ?
+		_paramSetInstance = const_cast<ParamInstance&>(other).getParamSetInstance();
+		_parentInstance   = const_cast<ParamInstance&>(other).getParentInstance();
+	}
+	
 public:
 	virtual ~ParamInstance() = 0;
 
 	/// make a parameter, with the given type and name
-	explicit ParamInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance );
+	explicit ParamInstance( const ParamDescriptor& descriptor, ParamInstanceSet& setInstance );
 
 	/// clone this parameter
 	virtual ParamInstance* clone() const = 0;
@@ -289,8 +303,8 @@ public:
 	//                                        double      renderScaleY);
 
 	// get the param instance
-	tuttle::host::ofx::attribute::ParamInstanceSet* getParamSetInstance()                                                           { return _paramSetInstance; }
-	void                                            setParamSetInstance( tuttle::host::ofx::attribute::ParamInstanceSet* instance ) { _paramSetInstance = instance; }
+	ParamInstanceSet* getParamSetInstance()                             { return _paramSetInstance; }
+	void              setParamSetInstance( ParamInstanceSet* instance ) { _paramSetInstance = instance; }
 
 	// set/get parent instance
 	void           setParentInstance( ParamInstance* instance );
@@ -341,6 +355,14 @@ public:
 	/// overridden from Property::NotifyHook
 	virtual void notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC;
 };
+
+/**
+ * @brief to make ParamInstance clonable (for use in boost::ptr_container)
+ */
+inline ParamInstance* new_clone( const ParamInstance& a )
+{
+    return a.clone();
+}
 
 class KeyframeParam
 {
@@ -503,18 +525,14 @@ class ParamGroupInstance : public ParamInstance,
 {
 public:
 	ParamGroupInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	virtual ~ParamGroupInstance() {}
 	virtual ParamGroupInstance* clone() const;
 
 	void deleteChildrens()
 	{
-		for( std::list<ParamInstance*>::iterator it = _paramList.begin(); it != _paramList.end(); ++it )
-		{
-			delete ( *it );
-		}
 		_paramList.clear();
 	}
 
-	/// setChildrens have to clone each source instance recursively
 	void                         setChildrens( const attribute::ParamInstanceSet* childrens );
 	attribute::ParamInstanceSet* getChildrens() const;
 	void                         addChildren( ParamInstance* children );

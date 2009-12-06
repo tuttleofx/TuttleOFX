@@ -221,26 +221,21 @@ ClipImageInstanceSet::ClipImageInstanceSet()
 
 ClipImageInstanceSet::~ClipImageInstanceSet()
 {
-	// iterate the clips and delete them
-	for( std::vector<ClipImageInstance*>::iterator i = _clipsByOrder.begin(); i != _clipsByOrder.end(); ++i )
-	{
-		if( *i )
-			delete ( *i );
-	}
 }
 
 void ClipImageInstanceSet::populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error )
 {
-	const std::vector<attribute::ClipImageDescriptor*>& clips = descriptor.getClipsByOrder();
+	const imageEffect::Descriptor::ClipImageDescriptorVector& clips = descriptor.getClipsByOrder();
 
 	_clipsByOrder.reserve( clips.size() );
-	/// @todo tuttle_todo fab don't manipulate clip here, delegate to ClipInstanceSet
-	for( std::vector<attribute::ClipImageDescriptor*>::const_iterator it = clips.begin(), itEnd = clips.end();
-	     it != itEnd; ++it )
+	/// @todo tuttle don't manipulate clip here, delegate to ClipInstanceSet
+	for( imageEffect::Descriptor::ClipImageDescriptorVector::const_iterator it = clips.begin(), itEnd = clips.end();
+	     it != itEnd;
+	     ++it )
 	{
-		const std::string& name = ( *it )->getName();
+		const std::string& name = it->getName();
 		// foreach clip descriptor make a ClipImageInstance
-		attribute::ClipImageInstance* instance = newClipImage( **it ); //( this, *it, counter );
+		ClipImageInstance* instance = newClipImage( *it ); //( this, *it, counter );
 		if( !instance )
 			throw std::logic_error( "Error on ClipImage creation." );
 

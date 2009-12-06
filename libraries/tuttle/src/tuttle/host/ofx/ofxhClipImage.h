@@ -36,7 +36,7 @@
 #include "ofxhUtilities.h"
 #include "ofxhPropertySuite.h"
 
-#include <vector>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <map>
 #include <stdexcept>
 
@@ -285,9 +285,12 @@ public:
 
 class ClipImageInstanceSet //: public ClipAccessorSet
 {
+public:
+	typedef std::map<std::string, ClipImageInstance*> ClipImageMap;
+	typedef boost::ptr_vector<ClipImageInstance> ClipImageVector;
 protected:
-	std::map<std::string, ClipImageInstance*> _clips; ///< clips by name
-	std::vector<ClipImageInstance*> _clipsByOrder; ///< clips list
+	ClipImageMap _clips; ///< clips by name
+	ClipImageVector _clipsByOrder; ///< clips list
 	bool _clipPrefsDirty; ///< do we need to re-run the clip prefs action
 
 public:
@@ -302,22 +305,22 @@ public:
 
 	void populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error );
 
-	const std::map<std::string, ClipImageInstance*>& getClips() const
+	const ClipImageMap& getClips() const
 	{
 		return _clips;
 	}
 
-	std::map<std::string, ClipImageInstance*>& getClips()
+	ClipImageMap& getClips()
 	{
 		return _clips;
 	}
 
-	const std::vector<ClipImageInstance*>& getClipsByOrder() const
+	const ClipImageVector& getClipsByOrder() const
 	{
 		return _clipsByOrder;
 	}
 
-	std::vector<ClipImageInstance*>& getClipsByOrder()
+	ClipImageVector& getClipsByOrder()
 	{
 		return _clipsByOrder;
 	}
@@ -355,12 +358,12 @@ public:
 	 *
 	 * Client host code needs to implement this
 	 */
-	virtual ClipImageInstance* newClipImage( ClipImageDescriptor& descriptor ) = 0;
+	virtual ClipImageInstance* newClipImage( const ClipImageDescriptor& descriptor ) = 0;
 
 	/**
 	 * get the nth clip, in order of declaration
 	 */
-	ClipImageInstance* getNthClip( int index )
+	ClipImageInstance& getNthClip( int index )
 	{
 		return _clipsByOrder[index];
 	}

@@ -48,7 +48,7 @@ namespace ofx {
 
 ////////////////////////////////////////////////////////////////////////////////
 /// simple memory suite
-namespace Memory {
+namespace memory {
 static OfxStatus memoryAlloc( void* handle, size_t bytes, void** data )
 {
 	*data = malloc( bytes );
@@ -129,7 +129,7 @@ void* AbstractHost::fetchSuite( const char* suiteName, int suiteVersion )
 	}
 	else if( strcmp( suiteName, kOfxMemorySuite ) == 0 && suiteVersion == 1 )
 	{
-		return (void*)&Memory::gMallocSuite;
+		return (void*)&memory::gMallocSuite;
 	}
 
 	///printf("fetchSuite failed with host = %p, name = %s, version = %i\n", this, suiteName, suiteVersion);

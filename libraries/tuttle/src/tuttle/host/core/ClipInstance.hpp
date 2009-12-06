@@ -81,12 +81,12 @@ class ClipImgInstance : public tuttle::host::ofx::attribute::ClipImageInstance
 protected:
 	const EffectInstance& _effect;
 	std::string _name;
-	Image* _inputImage; ///< input clip image @OFX_TODO: variables dependantes du rendu, ne peuvent rester la (ProcessableNode)
-	Image* _outputImage; ///< output clip image @OFX_TODO: variables dependantes du rendu, ne peuvent rester la (ProcessableNode)
+	Image* _inputImage; ///< input clip image @todo tuttle: variable used in rendering process, need to be moved to ProcessNode ?
+	Image* _outputImage; ///< output clip image @todo tuttle: variable used in rendering process, need to be moved to ProcessNode ?
 	OfxPointD _frameRange; ///< get frame range
 
 public:
-	ClipImgInstance( EffectInstance& effect, tuttle::host::ofx::attribute::ClipImageDescriptor& desc );
+	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::ClipImageDescriptor& desc );
 
 	virtual ~ClipImgInstance();
 
