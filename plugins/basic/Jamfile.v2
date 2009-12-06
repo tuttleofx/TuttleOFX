@@ -10,7 +10,6 @@ import os ;
 project
     : requirements	
 				<include>src
-				<include>../_common
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
     : build-dir $(DIST)/bin/plugins/basic
@@ -32,6 +31,7 @@ else if [ os.name ] = MACOSX
 plugin basic : 
 				[ glob src/*.cpp ]
 				/supportlib
+			   /tuttlelib//tuttleplugin/<link>static
 				opengl
 				;
 

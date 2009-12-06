@@ -45,11 +45,11 @@ if [ os.name ] = NT {
 lib tuttlehost :
     [ glob src/tuttle/host/*.cpp ]
     [ glob src/tuttle/host/*/*.cpp ]
-    dl
-    nt_libs
     /boost/system
     /boost/filesystem
     /expat/<link>static
+    nt_libs
+    dl
     ;
 
 lib tuttleplugin :

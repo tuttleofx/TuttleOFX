@@ -109,18 +109,23 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	mergeFunction->appendOption( "in: Ab" );
 	mergeFunction->appendOption( "mask: Ba" );
 	mergeFunction->appendOption( "matte: Aa + B(1-a) (unpremultiplied over)" );
-	mergeFunction->appendOption( "max: max(A, B)" );
-	mergeFunction->appendOption( "min: min(A, B)" );
+	mergeFunction->appendOption( "lighten: max(A, B)" );
+	mergeFunction->appendOption( "darken: min(A, B)" );
 	mergeFunction->appendOption( "minus: A-B" );
 	mergeFunction->appendOption( "multiply: AB, 0 if A < 0 and B < 0" );
 	mergeFunction->appendOption( "out: A(1-b)" );
 	mergeFunction->appendOption( "over: A+B(1-a)" );
 	mergeFunction->appendOption( "overlay: multiply if B<0.5, screen if B>0.5" );
+	mergeFunction->appendOption( "pinlight: if B >= 0.5 then max(A, 2*B - 1), min(A, B * 2.0 ) else" );
 	mergeFunction->appendOption( "plus: A+B" );
 	mergeFunction->appendOption( "screen: A+B-AB" );
 	mergeFunction->appendOption( "stencil: B(1-a)" );
 	mergeFunction->appendOption( "under: A(1-b)+B" );
 	mergeFunction->appendOption( "xor: A(1-b)+B(1-a)" );
+	mergeFunction->appendOption( "plus: A+B" );
+	mergeFunction->appendOption( "screen: A+B-AB" );
+	mergeFunction->appendOption( "stencil: B(1-a)" );
+	mergeFunction->appendOption( "under: A(1-b)+B" );
 	mergeFunction->setDefault( eMergeFunctionPlus );
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kMergeHelpButton );

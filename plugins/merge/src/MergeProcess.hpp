@@ -8,7 +8,6 @@
 #ifndef MERGE_PROCESS_HPP
 #define MERGE_PROCESS_HPP
 
-#include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -32,19 +31,19 @@ namespace merge {
  * @brief Base class
  *
  */
-template<class View>
+template<class View, class Functor>
 class MergeProcess : public tuttle::plugin::ImageGilProcessor<View>,
 	public tuttle::plugin::Progress
 {
 typedef typename View::value_type value_t;
 
 protected:
-	MergePlugin&        _plugin;    ///< Rendering plugin
-	View _srcViewA; ///< Source view A
-	View _srcViewB; ///< Source view B
+	MergePlugin	&	_plugin;    ///< Rendering plugin
+	View			_srcViewA;  ///< Source view A
+	View			_srcViewB;  ///< Source view B
 
 public:
-	MergeProcess<View>( MergePlugin & instance );
+	MergeProcess<View, Functor>( MergePlugin & instance );
 
 	// set up and run a processor
 	void setupAndProcess( const OFX::RenderArguments& args );
