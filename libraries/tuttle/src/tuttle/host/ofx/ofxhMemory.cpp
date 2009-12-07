@@ -39,7 +39,7 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace Memory {
+namespace memory {
 
 Instance::Instance() : _ptr( 0 ),
 	_locked( false ) {}

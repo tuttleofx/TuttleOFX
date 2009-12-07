@@ -288,9 +288,6 @@ Descriptor::Descriptor( const std::string& bundlePath, Plugin* plug )
 
 Descriptor::~Descriptor()
 {
-	for( std::map<std::string, attribute::ClipImageDescriptor*>::iterator it = _clips.begin(); it != _clips.end(); ++it )
-		delete it->second;
-	_clips.clear();
 }
 
 /// create a new clip and add this to the clip map
@@ -456,27 +453,16 @@ void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw
 
 }
 
-// where is the good class to do that in std ?
-template <typename T>
-struct equals_ptrContent : public std::binary_function<T*, T*, bool>
-{
-	bool operator()( const T* const a,  const T* const b )
-	{
-		return * a == * b;
-	}
-
-};
 /**
  * @todo check clip ? check hash ? etc.
  */
 bool Instance::operator==( const Instance& other )
 {
 	bool result;
-
-	result = std::equal( getParamList().begin(), getParamList().end(), other.getParamList().begin(), equals_ptrContent<ofx::attribute::ParamInstance>() );
-	//				if( !result )
-	//					return result;
-	//				result = std::equal( getClipList().begin(), getClipList().end(), other.getClipList().begin() );
+	result = getParamList() == other.getParamList();
+	// if( !result )
+	// 	return result;
+	// result = std::equal( getClipList().begin(), getClipList().end(), other.getClipList().begin() );
 	return result;
 }
 
@@ -649,22 +635,22 @@ int Instance::abort()
 
 // override this to use your own memory instance - must inherrit from memory::instance
 
-Memory::Instance* Instance::newMemoryInstance( size_t nBytes )
+memory::Instance* Instance::newMemoryInstance( size_t nBytes )
 {
 	return 0;
 }
 
 // return an memory::instance calls makeMemoryInstance that can be overriden
 
-Memory::Instance* Instance::imageMemoryAlloc( size_t nBytes )
+memory::Instance* Instance::imageMemoryAlloc( size_t nBytes )
 {
-	Memory::Instance* instance = newMemoryInstance( nBytes );
+	memory::Instance* instance = newMemoryInstance( nBytes );
 
 	if( instance )
 		return instance;
 	else
 	{
-		Memory::Instance* instance = new Memory::Instance;
+		memory::Instance* instance = new memory::Instance;
 		instance->alloc( nBytes );
 		return instance;
 	}
@@ -1834,7 +1820,7 @@ static OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
 {
 	imageEffect::Base* effectBase         = reinterpret_cast<imageEffect::Base*>( instanceHandle );
 	imageEffect::Instance* effectInstance = reinterpret_cast<imageEffect::Instance*>( effectBase );
-	Memory::Instance* memory;
+	memory::Instance* memory;
 
 	if( effectInstance )
 	{
@@ -1848,7 +1834,7 @@ static OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
 	}
 	else
 	{
-		memory = new Memory::Instance;
+		memory = new memory::Instance;
 		memory->alloc( nBytes );
 	}
 
@@ -1858,7 +1844,7 @@ static OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
 
 static OfxStatus imageMemoryFree( OfxImageMemoryHandle memoryHandle )
 {
-	Memory::Instance* memoryInstance = reinterpret_cast<Memory::Instance*>( memoryHandle );
+	memory::Instance* memoryInstance = reinterpret_cast<memory::Instance*>( memoryHandle );
 
 	if( memoryInstance && memoryInstance->verifyMagic() )
 	{
@@ -1873,7 +1859,7 @@ static OfxStatus imageMemoryFree( OfxImageMemoryHandle memoryHandle )
 OfxStatus imageMemoryLock( OfxImageMemoryHandle memoryHandle,
                            void**               returnedPtr )
 {
-	Memory::Instance* memoryInstance = reinterpret_cast<Memory::Instance*>( memoryHandle );
+	memory::Instance* memoryInstance = reinterpret_cast<memory::Instance*>( memoryHandle );
 
 	if( memoryInstance && memoryInstance->verifyMagic() )
 	{
@@ -1887,7 +1873,7 @@ OfxStatus imageMemoryLock( OfxImageMemoryHandle memoryHandle,
 
 static OfxStatus imageMemoryUnlock( OfxImageMemoryHandle memoryHandle )
 {
-	Memory::Instance* memoryInstance = reinterpret_cast<Memory::Instance*>( memoryHandle );
+	memory::Instance* memoryInstance = reinterpret_cast<memory::Instance*>( memoryHandle );
 
 	if( memoryInstance && memoryInstance->verifyMagic() )
 	{

@@ -68,7 +68,7 @@ public:
 	const std::string& getDefaultOutputFielding() const;
 
 	/// make a clip
-	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor );
+	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( const tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor );
 
 	/// vmessage
 	OfxStatus vmessage( const char* type,

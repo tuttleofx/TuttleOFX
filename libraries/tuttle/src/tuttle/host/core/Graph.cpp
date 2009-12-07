@@ -70,24 +70,24 @@ void Graph::deleteNode( const EffectInstance& node )
 
 void Graph::connect( const Node& out, const Node& in ) throw( Exception )
 {
-	const std::vector<ofx::attribute::ClipImageInstance*> inClips              = in.getClipsByOrder();
-	const std::map<std::string, ofx::attribute::ClipImageInstance*> inClipsMap = in.getClips();
+	const ofx::attribute::ClipImageInstanceSet::ClipImageVector& inClips = in.getClipsByOrder();
+	const ofx::attribute::ClipImageInstanceSet::ClipImageMap& inClipsMap = in.getClips();
 	std::string inAttrName;
 	if( inClips.size() == 1 )
 	{
-		inAttrName = inClips[0]->getName();
+		inAttrName = inClips[0].getName();
 	}
 	else if( inClips.size() > 1 )
 	{
-		const std::map<std::string, ofx::attribute::ClipImageInstance*>::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
-		if( it !=  inClipsMap.end() )
+		const ofx::attribute::ClipImageInstanceSet::ClipImageMap::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
+		if( it != inClipsMap.end() )
 		{
 			inAttrName = it->second->getName();
 		}
 		else
 		{
 			// search "Source"
-			inAttrName = inClips[0]->getName();
+			inAttrName = inClips[0].getName();
 		}
 	}
 	else // if( inClips.empty() )

@@ -447,25 +447,6 @@ ParamDescriptorSet::ParamDescriptorSet() {}
 
 ParamDescriptorSet::~ParamDescriptorSet()
 {
-	for( std::list<ParamDescriptor*>::iterator it = _paramList.begin(); it != _paramList.end(); ++it )
-	{
-		delete ( *it );
-	}
-}
-
-const std::map<std::string, ParamDescriptor*>& ParamDescriptorSet::getParams() const
-{
-	return _paramMap;
-}
-
-std::map<std::string, ParamDescriptor*>& ParamDescriptorSet::getParams()
-{
-	return _paramMap;
-}
-
-const std::list<ParamDescriptor*>& ParamDescriptorSet::getParamList() const
-{
-	return _paramList;
 }
 
 void ParamDescriptorSet::addParam( const std::string& name, ParamDescriptor* p )
@@ -492,13 +473,16 @@ ParamDescriptor* ParamDescriptorSet::paramDefine( const char* paramType,
 //
 // Instance
 //
-/// the description of a plugin parameter
 
+/**
+ * the description of a plugin parameter
+ */
 ParamInstance::~ParamInstance() {}
 
-/// make a parameter, with the given type and name
-
-ParamInstance::ParamInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance )
+/**
+ * make a parameter, with the given type and name
+ */
+ParamInstance::ParamInstance( const ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance )
 	: attribute::AttributeInstance( descriptor ),
 	_paramSetInstance( &setInstance ),
 	_parentInstance( 0 )
@@ -513,24 +497,29 @@ ParamInstance::ParamInstance( ParamDescriptor& descriptor, attribute::ParamInsta
 	getProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
 }
 
-// callback which should set enabled state as appropriate
-
+/**
+ * callback which should set enabled state as appropriate
+ */
 void ParamInstance::setEnabled() {}
 
-// callback which should set secret state as appropriate
-
+/**
+ * callback which should set secret state as appropriate
+ */
 void ParamInstance::setSecret() {}
 
-// callback which should update label
-
+/**
+ * callback which should update label
+ */
 void ParamInstance::setLabel() {}
 
-/// callback which should set
-
+/**
+ * callback which should set
+ */
 void ParamInstance::setDisplayRange() {}
 
-/// get a value, implemented by instances to deconstruct var args
-
+/**
+ * get a value, implemented by instances to deconstruct var args
+ */
 OfxStatus ParamInstance::getV( va_list arg )
 {
 	COUT_WITHINFOS( "ParamInstance getValue failed !" );
@@ -538,43 +527,49 @@ OfxStatus ParamInstance::getV( va_list arg )
 	return kOfxStatErrUnsupported;
 }
 
-/// get a value, implemented by instances to deconstruct var args
-
+/**
+ * get a value, implemented by instances to deconstruct var args
+ */
 OfxStatus ParamInstance::getV( OfxTime time, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
 
-/// set a value, implemented by instances to deconstruct var args
-
+/**
+ * set a value, implemented by instances to deconstruct var args
+ */
 OfxStatus ParamInstance::setV( va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
 
-/// key a value, implemented by instances to deconstruct var args
-
+/**
+ * key a value, implemented by instances to deconstruct var args
+ */
 OfxStatus ParamInstance::setV( OfxTime time, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
 
-/// derive a value, implemented by instances to deconstruct var args
-
+/**
+ * derive a value, implemented by instances to deconstruct var args
+ */
 OfxStatus ParamInstance::deriveV( OfxTime time, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
 
-/// integrate a value, implemented by instances to deconstruct var args
-
+/**
+ * integrate a value, implemented by instances to deconstruct var args
+ */
 OfxStatus ParamInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
 
-/// overridden from Property::NotifyHook
-
+/**
+ * overridden from Property::NotifyHook
+ */
 void ParamInstance::notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC
 {
 	if( name == kOfxPropLabel )
@@ -595,15 +590,17 @@ void ParamInstance::notify( const std::string& name, bool single, int num ) OFX_
 	}
 }
 
-// copy one parameter to another
-
+/**
+ * copy one parameter to another
+ */
 OfxStatus ParamInstance::copy( const ParamInstance& instance, OfxTime offset )
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-// copy one parameter to another, with a range
-
+/**
+ * copy one parameter to another, with a range
+ */
 OfxStatus ParamInstance::copy( const ParamInstance& instance, OfxTime offset, OfxRangeD range )
 {
 	return kOfxStatErrMissingHostFeature;
@@ -653,19 +650,20 @@ ParamGroupInstance* ParamGroupInstance::clone() const
 	return new ParamGroupInstance( *this );
 }
 
-/// setChildrens have to clone each source instance recursively
-
+/**
+ * setChildrens have to clone each source instance recursively
+ */
 void ParamGroupInstance::setChildrens( const ParamInstanceSet* childrens )
 {
-	std::list<ParamInstance*> srcList = childrens->getParamList();
-	// iterate the params and delete them
-	deleteChildrens();
+	deleteChildrens( );
 
 	/// @todo use clone ?
-	//for( it = srcList.begin( ); it != srcList.end( ); ++it )
-	//{
-	//	_paramList.push_back( (*it)->clone(this) );
-	//}
+	for( ParamList::const_iterator it = childrens->getParamList( ).begin( ), itEnd = childrens->getParamList( ).end( );
+	     it != itEnd;
+	     ++it )
+	{
+		_paramList.push_back( it->clone( /*this*/ ) );
+	}
 }
 
 void ParamGroupInstance::addChildren( ParamInstance* children )
@@ -717,8 +715,9 @@ OfxStatus ParamChoiceInstance::getV( va_list arg )
 	return get( *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamChoiceInstance::getV( OfxTime time, va_list arg )
 {
 	int* value = va_arg( arg, int* );
@@ -726,21 +725,21 @@ OfxStatus ParamChoiceInstance::getV( OfxTime time, va_list arg )
 	return get( time, *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamChoiceInstance::setV( va_list arg )
 {
 	int value = va_arg( arg, int );
-
 	return set( value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamChoiceInstance::setV( OfxTime time, va_list arg )
 {
 	int value = va_arg( arg, int );
-
 	return set( time, value );
 }
 
@@ -758,35 +757,36 @@ OfxStatus ParamIntegerInstance::integrate( OfxTime time1, OfxTime time2, int& )
 	return kOfxStatErrUnsupported;
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamIntegerInstance::getV( va_list arg )
 {
 	int* value = va_arg( arg, int* );
-
 	return get( *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamIntegerInstance::getV( OfxTime time, va_list arg )
 {
 	int* value = va_arg( arg, int* );
-
 	return get( time, *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamIntegerInstance::setV( va_list arg )
 {
 	int value = va_arg( arg, int );
-
 	return set( value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamIntegerInstance::setV( OfxTime time, va_list arg )
 {
 	int value = va_arg( arg, int );
@@ -794,8 +794,9 @@ OfxStatus ParamIntegerInstance::setV( OfxTime time, va_list arg )
 	return set( time, value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamIntegerInstance::deriveV( OfxTime time, va_list arg )
 {
 	int* value = va_arg( arg, int* );
@@ -803,8 +804,9 @@ OfxStatus ParamIntegerInstance::deriveV( OfxTime time, va_list arg )
 	return derive( time, *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamIntegerInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 {
 	int* value = va_arg( arg, int* );
@@ -815,8 +817,10 @@ OfxStatus ParamIntegerInstance::integrateV( OfxTime time1, OfxTime time2, va_lis
 //
 // DoubleInstance
 //
-/// implementation of var args function
 
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamDoubleInstance::getV( va_list arg )
 {
 	double* value = va_arg( arg, double* );
@@ -824,8 +828,9 @@ OfxStatus ParamDoubleInstance::getV( va_list arg )
 	return get( *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamDoubleInstance::getV( OfxTime time, va_list arg )
 {
 	double* value = va_arg( arg, double* );
@@ -833,8 +838,9 @@ OfxStatus ParamDoubleInstance::getV( OfxTime time, va_list arg )
 	return get( time, *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamDoubleInstance::setV( va_list arg )
 {
 	double value = va_arg( arg, double );
@@ -842,8 +848,9 @@ OfxStatus ParamDoubleInstance::setV( va_list arg )
 	return set( value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamDoubleInstance::setV( OfxTime time, va_list arg )
 {
 	double value = va_arg( arg, double );
@@ -851,8 +858,9 @@ OfxStatus ParamDoubleInstance::setV( OfxTime time, va_list arg )
 	return set( time, value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamDoubleInstance::deriveV( OfxTime time, va_list arg )
 {
 	double* value = va_arg( arg, double* );
@@ -860,8 +868,9 @@ OfxStatus ParamDoubleInstance::deriveV( OfxTime time, va_list arg )
 	return derive( time, *value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamDoubleInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 {
 	double* value = va_arg( arg, double* );
@@ -872,8 +881,10 @@ OfxStatus ParamDoubleInstance::integrateV( OfxTime time1, OfxTime time2, va_list
 //
 // BooleanInstance
 //
-/// implementation of var args function
 
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamBooleanInstance::getV( va_list arg )
 {
 	bool v;
@@ -885,8 +896,9 @@ OfxStatus ParamBooleanInstance::getV( va_list arg )
 	return stat;
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamBooleanInstance::getV( OfxTime time, va_list arg )
 {
 	bool v;
@@ -898,8 +910,9 @@ OfxStatus ParamBooleanInstance::getV( OfxTime time, va_list arg )
 	return stat;
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamBooleanInstance::setV( va_list arg )
 {
 	bool value = va_arg( arg, int ) != 0;
@@ -907,8 +920,9 @@ OfxStatus ParamBooleanInstance::setV( va_list arg )
 	return set( value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamBooleanInstance::setV( OfxTime time, va_list arg )
 {
 	bool value = va_arg( arg, int ) != 0;
@@ -928,8 +942,9 @@ OfxStatus ParamStringInstance::getV( va_list arg )
 	return stat;
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamStringInstance::getV( OfxTime time, va_list arg )
 {
 	const char** value = va_arg( arg, const char** );
@@ -940,21 +955,21 @@ OfxStatus ParamStringInstance::getV( OfxTime time, va_list arg )
 	return stat;
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamStringInstance::setV( va_list arg )
 {
 	char* value = va_arg( arg, char* );
-
 	return set( value );
 }
 
-/// implementation of var args function
-
+/**
+ * implementation of var args function
+ */
 OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 {
 	char* value = va_arg( arg, char* );
-
 	return set( time, value );
 }
 
@@ -962,20 +977,12 @@ OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 // ParamInstanceSet
 //
 
-/// ctor
-ParamInstanceSet::ParamInstanceSet() {}
-
-/// dtor.
+ParamInstanceSet::ParamInstanceSet()
+{
+}
 
 ParamInstanceSet::~ParamInstanceSet()
 {
-	// iterate the params and delete them
-	std::list<ParamInstance*>::iterator i;
-	for( i = _paramList.begin(); i != _paramList.end(); ++i )
-	{
-		if( *i )
-			delete ( *i );
-	}
 }
 
 OfxStatus ParamInstanceSet::addParam( const std::string& name, ParamInstance* instance )
@@ -1106,8 +1113,9 @@ static OfxStatus paramGetPropertySet( OfxParamHandle        param,
 		return kOfxStatErrBadHandle;
 }
 
-/// get the current param value
-
+/**
+ * get the current param value
+ */
 static OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 {
 	ParamInstance* paramInstance = reinterpret_cast<ParamInstance*>( paramHandle );
@@ -1133,8 +1141,9 @@ static OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 	return stat;
 }
 
-/// get the param value at a time
-
+/**
+ * get the param value at a time
+ */
 static OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time,
                                       ... )
@@ -1160,8 +1169,9 @@ static OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
 	return stat;
 }
 
-/// get the param's derivative at the given time
-
+/**
+ * get the param's derivative at the given time
+ */
 static OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
                                      OfxTime        time,
                                      ... )
@@ -1212,8 +1222,9 @@ static OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
 	return stat;
 }
 
-/// set the param's value at the 'current' time
-
+/**
+ * set the param's value at the 'current' time
+ */
 static OfxStatus paramSetValue( OfxParamHandle paramHandle,
                                 ... )
 {
@@ -1245,8 +1256,9 @@ static OfxStatus paramSetValue( OfxParamHandle paramHandle,
 	return stat;
 }
 
-/// set the param's value at the indicated time, and set a key
-
+/**
+ * set the param's value at the indicated time, and set a key
+ */
 static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time, // time in frames
                                       ... )

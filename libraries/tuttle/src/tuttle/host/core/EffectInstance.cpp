@@ -72,21 +72,25 @@ void EffectInstance::dumpToStdOut() const
 	std::cout << "Description:" << this->getLongLabel() << std::endl;
 	std::cout << "Context:" << this->_context << std::endl;
 	std::cout << "Clips:" << std::endl;
-	for( std::map<std::string, tuttle::host::ofx::attribute::ClipImageInstance*>::const_iterator it = this->_clips.begin(); it != this->_clips.end(); ++it )
+	for( ClipImageMap::const_iterator it = this->_clips.begin(), itEnd = this->_clips.end();
+	     it != itEnd;
+	     ++it )
 	{
 		std::cout << "\t\t* " << it->first << std::endl;
 	}
 	std::cout << "Params:" << std::endl;
-	for( std::list<tuttle::host::ofx::attribute::ParamInstance*>::const_iterator it = this->_paramList.begin(); it != this->_paramList.end(); ++it )
+	for( ParamList::const_iterator it = this->_paramList.begin(), itEnd = this->_paramList.end();
+	     it != itEnd;
+	     ++it )
 	{
-		std::cout << "\t\t* " << ( *it )->getLabel() << std::endl;
+		std::cout << "\t\t* " << it->getLabel() << std::endl;
 	}
 
 	std::cout << "________________________________________________________________________________" << std::endl;
 }
 
 // get a new clip instance
-tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor )
+tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( const tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor )
 {
 	return new ClipImgInstance( *this, descriptor );
 }
