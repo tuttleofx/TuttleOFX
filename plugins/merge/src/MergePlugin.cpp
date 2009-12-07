@@ -47,6 +47,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderGray<FunctorAverage>( args );
 				break;
 			}
+			/*
 			case eMergeFunctionCopy:
 			{
 				renderGray<FunctorCopy>( args );
@@ -122,6 +123,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderGray<FunctorScreen>( args );
 				break;
 			}
+			*/
 			default:
 				COUT_ERROR("Unsupported operation !");
 				break;
@@ -132,9 +134,10 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			// Functions that need alpha
 			case eMergeFunctionATop:
 			{
-				renderRGBA<FunctorATop>( args );
+				renderRGBA< FunctorATop >( args );
 				break;
 			}
+			/*
 			case eMergeFunctionConjointOver:
 			{
 				renderRGBA<FunctorConjointOver>( args );
@@ -299,15 +302,17 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderRGBA<FunctorScreen>( args );
 				break;
 			}
+			*/
 			default:
 				COUT_ERROR("Unsupported operation !");
 				break;
+
 		}
 
 	}
 }
 
-template<class Functor>
+template< template <typename> class Functor >
 void MergePlugin::renderGray( const OFX::RenderArguments& args )
 {
 	assert( _dstClip );
@@ -318,19 +323,19 @@ void MergePlugin::renderGray( const OFX::RenderArguments& args )
 	{
 		case OFX::eBitDepthUByte:
 		{
-			MergeProcess<gray8_view_t, Functor> fred( *this );
+			MergeProcess<gray8_view_t, Functor<gray8_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
 		case OFX::eBitDepthUShort:
 		{
-			MergeProcess<gray16_view_t, Functor> fred( *this );
+			MergeProcess<gray16_view_t, Functor<gray16_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
 		case OFX::eBitDepthFloat:
 		{
-			MergeProcess<gray32f_view_t, Functor> fred( *this );
+			MergeProcess<gray32f_view_t, Functor<gray32f_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
@@ -342,7 +347,7 @@ void MergePlugin::renderGray( const OFX::RenderArguments& args )
 	*/
 }
 
-template<class Functor>
+template< template <typename> class Functor >
 void MergePlugin::renderRGBA( const OFX::RenderArguments& args )
 {
 	assert( _dstClip );
@@ -353,19 +358,19 @@ void MergePlugin::renderRGBA( const OFX::RenderArguments& args )
 	{
 		case OFX::eBitDepthUByte:
 		{
-			MergeProcess<rgba8_view_t, Functor> fred( *this );
+			MergeProcess<rgba8_view_t, Functor<rgba8_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
 		case OFX::eBitDepthUShort:
 		{
-			MergeProcess<rgba16_view_t, Functor> fred( *this );
+			MergeProcess<rgba16_view_t, Functor<rgba16_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
 		case OFX::eBitDepthFloat:
 		{
-			MergeProcess<rgba32f_view_t, Functor> fred( *this );
+			MergeProcess<rgba32f_view_t, Functor<rgba32f_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}

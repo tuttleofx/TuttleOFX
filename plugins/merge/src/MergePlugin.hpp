@@ -26,10 +26,10 @@ namespace merge {
 class MergePlugin : public OFX::ImageEffect
 {
 private:
-	template<class Functor>
+	template<template <typename> class Functor>
 	void renderGray( const OFX::RenderArguments& args );
 
-	template<class Functor>
+	template<template <typename> class Functor>
 	void renderRGBA( const OFX::RenderArguments& args );
 
 public:
