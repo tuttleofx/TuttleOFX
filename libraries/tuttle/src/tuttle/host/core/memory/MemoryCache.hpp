@@ -2,7 +2,7 @@
 #define _TUTTLE_HOST_CORE_MEMORYCACHE_HPP
 
 #include "MemoryPool.hpp"
-#include <boost/ptr_container/ptr_list.hpp>
+#include <list>
 #include <cstring>
 
 namespace tuttle {
@@ -15,7 +15,7 @@ public:
 	class Data
 	{
 	public:
-		typedef boost::ptr_list<MemoryPool::Data> PoolDataList;
+		typedef std::list<MemoryPool::Data*> PoolDataList;
 	public:
 		Data(MemoryPool::Data* data){ _datas.push_back(data); }
 		~Data(){}
