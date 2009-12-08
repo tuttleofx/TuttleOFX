@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
 
-	core::SizeInteger size = 222;
+	core::SizeInteger size = 123;
 	core::MemoryPool::Data& d = pool.allocate( size );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), size );
@@ -37,6 +37,13 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
 
+	core::SizeInteger size1 = 222;
+	core::SizeInteger size2 = 333;
+	core::MemoryPool::Data& d1 = pool.allocate( size1 );
+	core::MemoryPool::Data& d2 = pool.allocate( size2 );
+	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size1+size2 );
+	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), size1+size2 );
+	BOOST_CHECK_EQUAL( pool.getMemorySizeAvailable(), pool.getMemorySizeAuthorized()-pool.getMemorySizeUsed() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

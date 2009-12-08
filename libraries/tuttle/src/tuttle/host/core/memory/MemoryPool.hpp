@@ -70,7 +70,7 @@ public:
 
 	Data& allocate( SizeInteger size ) throw(std::bad_alloc, std::length_error )
 	{
-		if( size > getMemorySizeAuthorized( ) - getMemorySizeAllocated( ) )
+		if( size > getMemorySizeAvailable() )
 		{
 			std::stringstream s;
 			s << "MemoryPool can't allocate size:" << size << " because memoryAuthorized-memoryAllocated=" << _memoryAuthorized - _memoryAllocated;
@@ -152,6 +152,11 @@ public:
 	SizeInteger getMemorySizeAuthorized( ) const
 	{
 		return _memoryAuthorized;
+	}
+
+	SizeInteger getMemorySizeAvailable( ) const
+	{
+		return getMemorySizeAuthorized() - getMemorySizeUsed();
 	}
 	SizeInteger clear( SizeInteger size );
 	SizeInteger clearOne( );
