@@ -300,7 +300,7 @@ struct FunctorInterpolated
 /******************************************************************************
  * Functors that does need alpha                                              *
  ******************************************************************************/
-/*
+
 template <typename Pixel>
 struct FunctorATop
 : public boost::gil::merge_functor<Pixel, mpl::true_>
@@ -318,7 +318,7 @@ struct FunctorATop
     }
 };
 
-
+/*
 struct FunctorConjointOver
 : public boost::gil::merge_functor<mpl::true_>
 {

@@ -124,8 +124,7 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( OfxRectI procWindow 
 								  procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
 								  procWindow.x2 - procWindow.x1,
 								  procWindow.y2 - procWindow.y1 );
-//		Functor fun = Functor();
-//		merge_pixels( srcA, srcB, dst, Functor() );
+		merge_pixels( srcA, srcB, dst, Functor() );
 	}
 	catch( PluginException err )
 	{
