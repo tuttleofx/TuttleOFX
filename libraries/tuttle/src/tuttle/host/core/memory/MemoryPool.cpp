@@ -27,7 +27,7 @@ SizeInteger MemoryPool::clearOne()
 
 SizeInteger MemoryPool::clearAll()
 {
-	_datas.remove_if( data_is_unused );
+	_datasUnused.clear();
 }
 
 }
