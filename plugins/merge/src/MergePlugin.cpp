@@ -47,7 +47,6 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderGray<FunctorAverage>( args );
 				break;
 			}
-			/*
 			case eMergeFunctionCopy:
 			{
 				renderGray<FunctorCopy>( args );
@@ -123,7 +122,29 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderGray<FunctorScreen>( args );
 				break;
 			}
-			*/
+			case eMergeFunctionPinLight:
+			{
+				renderGray<FunctorPinLight>( args );
+				break;
+			}
+			case eMergeFunctionReflect:
+			{
+				// Quadratic mode: reflect
+				renderGray<FunctorReflect>( args );
+				break;
+			}
+			case eMergeFunctionFreeze:
+			{
+				// Quadratic mode: freeze
+				renderGray<FunctorFreeze>( args );
+				break;
+			}
+			case eMergeFunctionInterpolated:
+			{
+				// Similar to average, but smoother (and a lot slower)...
+				renderGray<FunctorInterpolated>( args );
+				break;
+			}
 			default:
 				COUT_ERROR("Unsupported operation !");
 				break;
@@ -137,7 +158,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderRGBA< FunctorATop >( args );
 				break;
 			}
-			/*
+
 			case eMergeFunctionConjointOver:
 			{
 				renderRGBA<FunctorConjointOver>( args );
@@ -156,29 +177,6 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 			case eMergeFunctionDisjointOver:
 			{
 				renderRGBA<FunctorDisjointOver>( args );
-				break;
-			}
-			case eMergeFunctionPinLight:
-			{
-				renderRGBA<FunctorPinLight>( args );
-				break;
-			}
-			case eMergeFunctionReflect:
-			{
-				// Quadratic mode: reflect
-				renderRGBA<FunctorReflect>( args );
-				break;
-			}
-			case eMergeFunctionFreeze:
-			{
-				// Quadratic mode: freeze
-				renderRGBA<FunctorFreeze>( args );
-				break;
-			}
-			case eMergeFunctionInterpolated:
-			{
-				// Similar to average, but smoother (and a lot slower)...
-				renderRGBA<FunctorInterpolated>( args );
 				break;
 			}
 			case eMergeFunctionIn:
@@ -302,7 +300,29 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderRGBA<FunctorScreen>( args );
 				break;
 			}
-			*/
+			case eMergeFunctionPinLight:
+			{
+				renderRGBA<FunctorPinLight>( args );
+				break;
+			}
+			case eMergeFunctionReflect:
+			{
+				// Quadratic mode: reflect
+				renderRGBA<FunctorReflect>( args );
+				break;
+			}
+			case eMergeFunctionFreeze:
+			{
+				// Quadratic mode: freeze
+				renderRGBA<FunctorFreeze>( args );
+				break;
+			}
+			case eMergeFunctionInterpolated:
+			{
+				// Similar to average, but smoother (and a lot slower)...
+				renderRGBA<FunctorInterpolated>( args );
+				break;
+			}
 			default:
 				COUT_ERROR("Unsupported operation !");
 				break;
@@ -316,26 +336,25 @@ template< template <typename> class Functor >
 void MergePlugin::renderGray( const OFX::RenderArguments& args )
 {
 	assert( _dstClip );
-	/*
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth();
 	switch( dstBitDepth )
 	{
 		case OFX::eBitDepthUByte:
 		{
-			MergeProcess<gray8_view_t, Functor<gray8_view_t::value_type> > fred( *this );
+			MergeProcess<gray8_view_t, Functor<typename gray8_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
 		case OFX::eBitDepthUShort:
 		{
-			MergeProcess<gray16_view_t, Functor<gray16_view_t::value_type> > fred( *this );
+			MergeProcess<gray16_view_t, Functor<typename gray16_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
 		case OFX::eBitDepthFloat:
 		{
-			MergeProcess<gray32f_view_t, Functor<gray32f_view_t::value_type> > fred( *this );
+			MergeProcess<gray32f_view_t, Functor<typename gray32f_view_t::value_type> > fred( *this );
 			fred.setupAndProcess( args );
 			break;
 		}
@@ -344,7 +363,6 @@ void MergePlugin::renderGray( const OFX::RenderArguments& args )
 			COUT_FATALERROR( "BitDepthNone not recognize." );
 			return;
 	}
-	*/
 }
 
 template< template <typename> class Functor >
