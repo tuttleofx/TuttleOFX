@@ -148,6 +148,7 @@ class ParamInstanceSet : public ParamAccessorSet
 public:
 	typedef std::map<std::string, ParamInstance*> ParamMap;
 	typedef boost::ptr_list<ParamInstance> ParamList;
+
 protected:
 	ParamMap _params;        ///< params by name
 	ParamList _paramList;    ///< params list
@@ -192,6 +193,7 @@ public:
 	ParamInstance* getParam( std::string name )
 	{
 		ParamMap::iterator it = _params.find( name );
+
 		if( it != _params.end() )
 			return it->second;
 		else
@@ -224,10 +226,10 @@ public:
 /// a set of parameters
 class ParamDescriptorSet : public ParamAccessorSet
 {
-	typedef std::map<std::string, ParamDescriptor*> ParamDescriptorMap;
-	typedef std::list<ParamDescriptor*> ParamDescriptorList;
-	ParamDescriptorMap _paramMap;
-	ParamDescriptorList _paramList;
+typedef std::map<std::string, ParamDescriptor*> ParamDescriptorMap;
+typedef std::list<ParamDescriptor*> ParamDescriptorList;
+ParamDescriptorMap _paramMap;
+ParamDescriptorList _paramList;
 
 /// CC doesn't exist
 ParamDescriptorSet( const ParamDescriptorSet& );
@@ -240,11 +242,11 @@ public:
 	virtual ~ParamDescriptorSet();
 
 	/// obtain a handle on this set for passing to the C api
-	OfxParamSetHandle getParamSetHandle() const { return (OfxParamSetHandle)this; }
+	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
 
 	/// get the map of params
 	const ParamDescriptorMap& getParams() const { return _paramMap; }
-	ParamDescriptorMap&       getParams() { return _paramMap; }
+	ParamDescriptorMap&       getParams()       { return _paramMap; }
 
 	/// get the list of params
 	const ParamDescriptorList& getParamList() const { return _paramList; }
@@ -271,13 +273,13 @@ protected:
 
 protected:
 	ParamInstance( const ParamInstance& other )
-	: AttributeInstance(other)
+		: AttributeInstance( other )
 	{
 		/// @todo tuttle : copy content, not pointer ?
-		_paramSetInstance = const_cast<ParamInstance&>(other).getParamSetInstance();
-		_parentInstance   = const_cast<ParamInstance&>(other).getParentInstance();
+		_paramSetInstance = const_cast<ParamInstance&>( other ).getParamSetInstance();
+		_parentInstance   = const_cast<ParamInstance&>( other ).getParentInstance();
 	}
-	
+
 public:
 	virtual ~ParamInstance() = 0;
 
@@ -361,7 +363,7 @@ public:
  */
 inline ParamInstance* new_clone( const ParamInstance& a )
 {
-    return a.clone();
+	return a.clone();
 }
 
 class KeyframeParam

@@ -288,6 +288,7 @@ class ClipImageInstanceSet //: public ClipAccessorSet
 public:
 	typedef std::map<std::string, ClipImageInstance*> ClipImageMap;
 	typedef boost::ptr_vector<ClipImageInstance> ClipImageVector;
+
 protected:
 	ClipImageMap _clips; ///< clips by name
 	ClipImageVector _clipsByOrder; ///< clips list

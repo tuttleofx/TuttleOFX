@@ -287,8 +287,7 @@ Descriptor::Descriptor( const std::string& bundlePath, Plugin* plug )
 }
 
 Descriptor::~Descriptor()
-{
-}
+{}
 
 /// create a new clip and add this to the clip map
 
@@ -459,9 +458,10 @@ void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw
 bool Instance::operator==( const Instance& other )
 {
 	bool result;
+
 	result = getParamList() == other.getParamList();
 	// if( !result )
-	// 	return result;
+	//  return result;
 	// result = std::equal( getClipList().begin(), getClipList().end(), other.getClipList().begin() );
 	return result;
 }
@@ -1190,7 +1190,7 @@ OfxStatus Instance::getFrameNeededAction( OfxTime   time,
 
 				int nRanges = outArgs.getDimension( name );
 				if( nRanges % 2 != 0 )
-					return kOfxStatFailed;                                                                                                                                                                                         // bad! needs to be divisible by 2
+					return kOfxStatFailed;                                                                                                                                                                                                                                                                                                                                                                     // bad! needs to be divisible by 2
 
 				if( nRanges == 0 )
 				{

@@ -195,12 +195,13 @@ public:
 
 /// an image effect plugin descriptor
 class Descriptor
-	: public Base
-	, public attribute::ParamDescriptorSet
+	: public Base,
+	public attribute::ParamDescriptorSet
 {
 public:
 	typedef std::map<std::string, attribute::ClipImageDescriptor*> ClipImageDescriptorMap;
 	typedef boost::ptr_vector<attribute::ClipImageDescriptor> ClipImageDescriptorVector;
+
 protected:
 	Plugin* _plugin;      ///< the plugin I belong to
 	ClipImageDescriptorMap _clips;        ///< clips descriptors by name

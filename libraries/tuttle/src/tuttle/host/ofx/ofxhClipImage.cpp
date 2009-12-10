@@ -220,8 +220,7 @@ ClipImageInstanceSet::ClipImageInstanceSet()
 {}
 
 ClipImageInstanceSet::~ClipImageInstanceSet()
-{
-}
+{}
 
 void ClipImageInstanceSet::populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error )
 {

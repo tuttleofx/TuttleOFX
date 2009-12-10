@@ -73,6 +73,7 @@ void Graph::connect( const Node& out, const Node& in ) throw( Exception )
 	const ofx::attribute::ClipImageInstanceSet::ClipImageVector& inClips = in.getClipsByOrder();
 	const ofx::attribute::ClipImageInstanceSet::ClipImageMap& inClipsMap = in.getClips();
 	std::string inAttrName;
+
 	if( inClips.size() == 1 )
 	{
 		inAttrName = inClips[0].getName();
