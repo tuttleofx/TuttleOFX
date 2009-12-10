@@ -13,12 +13,16 @@ namespace graph {
 class Vertex
 {
 public:
-	Vertex() {}
+	Vertex()
+	: _name( "Undefined" ),
+	_processNode( NULL )
+	{}
 
 	Vertex( const std::string& name,
-	        core::ProcessNode* processNode )
+	        core::ProcessNode& processNode )
 		: _name( name ),
-		_processNode( processNode ) {}
+		_processNode( &processNode )
+		{}
 
 	Vertex( Vertex& v )
 		: _name( v.name() ),

@@ -8,6 +8,8 @@
 #include <tuttle/host/graph/Vertex.hpp>
 #include <tuttle/host/graph/Edge.hpp>
 
+#include <boost/ptr_container/ptr_map.hpp>
+
 #include <stdexcept>
 #include <string>
 #include <map>
@@ -24,30 +26,33 @@ public:
 
 public:
 	Graph();
+	Graph( const Graph& other);
 	~Graph();
 
 	Node& createNode( const std::string& id ) throw( std::logic_error );
 	void  deleteNode( const EffectInstance& node );
 
 	void connect( const Node& out, const Node& in ) throw( Exception );
-	//		void connect( const EffectInstance& out, const ofx::attribute::AttributeInstance& outAttr, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr );
-	//		void connect( const EffectInstance& out, const EffectInstance& in, const AttributeInstance& inAttr ) { connectNodes( out, out.getOutput(), in, inAttr ); }
-	//		void connect( const EffectInstance& out, const EffectInstance& in ) { connectNodes( out, out.getOutput(), in, in.getInput(0) ); }
-	void dumpToStdOut();
+	void connect( const EffectInstance& out, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr ) throw( Exception );
+	void unconnectNode( const EffectInstance& node );
+
 	void compute();
 
+public:
+	const Node& getNode( const std::string& id ) const { return _nodes.at(id); }
+	void dumpToStdOut();
+
 private:
-	typedef graph::InternalGraph<graph::Vertex, graph::Edge> internalGraph_t;
-	internalGraph_t _graph;
-	std::list<Node*> _nodesList;
-	std::map<std::string, Node*> _nodes;
-	std::map<std::string, internalGraph_t::VertexDescriptor> _nodesDescriptor;
+	typedef graph::InternalGraph<graph::Vertex, graph::Edge> InternalGraph;
+	typedef boost::ptr_map<const std::string, Node> NodeMap;
+	InternalGraph _graph;
+	NodeMap _nodes;
+	std::map<std::string, InternalGraph::VertexDescriptor> _nodesDescriptor;
 	std::map<std::string, int> _instanceCount; ///< used to assign a unique name to each node
 
 private:
 	void addToGraph( EffectInstance& node );
 	void removeFromGraph( EffectInstance& node );
-	unsigned int _nodeCount;
 };
 
 }

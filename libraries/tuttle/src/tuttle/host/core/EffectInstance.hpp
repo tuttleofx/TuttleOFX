@@ -45,15 +45,16 @@ class EffectInstance : public ProcessNode,
 protected:
 	OfxPointD _frameRange;
 
-private:
-	EffectInstance( const EffectInstance& );
-
 public:
 	EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
 	                tuttle::host::ofx::imageEffect::Descriptor&        desc,
 	                const std::string&                                 context );
 
-	EffectInstance* clone() const { return new EffectInstance( _plugin, *_descriptor, _context ); }
+	EffectInstance( const EffectInstance& other );
+
+	EffectInstance* clone() const { return new EffectInstance( *this ); }
+
+	bool operator==( const EffectInstance& other ) const;
 
 	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }
 

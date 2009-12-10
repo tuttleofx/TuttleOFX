@@ -60,7 +60,7 @@ Host::Host()
 {
 	// set host properties... TODO
 	_properties.setStringProperty( kOfxPropName, "TuttleOfx" );
-	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx linear demo" );
+	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx beta" );
 	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, 0 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, 0 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultiResolution, 0 );

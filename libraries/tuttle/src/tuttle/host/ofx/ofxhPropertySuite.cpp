@@ -657,6 +657,9 @@ Set::Set( const Set& other )
 	: _magic( kMagic ),
 	_chainedSet( NULL )
 {
+	TCOUT("YOUPLABOOM !");
+	cout();
+
 	bool failed = false;
 
 	for( std::map<std::string, Property*>::const_iterator i = other._props.begin();
@@ -697,6 +700,29 @@ void Set::operator=( const Set& s )
 {
 	_props      = s._props;
 	_chainedSet = s._chainedSet;
+}
+
+void Set::cout() const
+{
+	COUT( "Property::Set {" );
+	for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();
+	     it != itEnd;
+	     ++it )
+	{
+		Property* prop = it->second;
+		std::cout << "    [" << it->first << "]: " << mapTypeEnumToString( prop->getType() );
+		std::cout << " (";
+		int i = 0;
+		//for( ; i < (int)(prop->getDimension()) - 1; ++i )
+		//{
+		//	std::cout << prop->getStringValue( i ) << ", ";
+		//}
+		std::cout << prop->getStringValue( i );
+		std::cout << "), ";
+		std::cout << "(ro:" << prop->getPluginReadOnly() << ")" << std::endl;
+	}
+	COUT( "}" );
+	COUT( "fetchProperty(kOfxPropIsInteractive): " << fetchProperty( kOfxPropIsInteractive ) );
 }
 
 /// set a particular property
