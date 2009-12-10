@@ -205,7 +205,7 @@ protected:
 	Plugin* _plugin;      ///< the plugin I belong to
 	ClipImageDescriptorMap _clips;        ///< clips descriptors by name
 	ClipImageDescriptorVector _clipsByOrder; ///< clip descriptors in order of declaration
-	mutable Interact::Descriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description
+	mutable interact::Descriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description
 	int _built;
 
 private:
@@ -241,30 +241,24 @@ public:
 	virtual attribute::ClipImageDescriptor* defineClip( const std::string& name );
 
 	/// get the clips
-	const ClipImageDescriptorMap& getClips() const
-	{
-		return _clips;
-	}
+	const ClipImageDescriptorMap& getClips() const { return _clips; }
 
 	/// add a new clip
 	void addClip( const std::string& name, attribute::ClipImageDescriptor* clip );
 
 	/// get the clips in order of construction
-	const ClipImageDescriptorVector& getClipsByOrder() const
-	{
-		return _clipsByOrder;
-	}
+	const ClipImageDescriptorVector& getClipsByOrder() const { return _clipsByOrder; }
 
 	/// get the clips in order of construction
-	ClipImageDescriptorVector& getClipsByOrder()
-	{
-		return _clipsByOrder;
-	}
+	ClipImageDescriptorVector& getClipsByOrder() { return _clipsByOrder; }
 
+	/// @warning tuttle some modifs here... doc needs updates...
 	/// Get the interact description, this will also call describe on the interact
 	/// This will return NULL if there is not main entry point or if the description failed
 	/// otherwise it will return the described overlay
-	Interact::Descriptor& getOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false );
+	const interact::Descriptor& getOverlayDescriptor() const { return _overlayDescriptor; }
+
+	void initOverlayDescriptor( int bitDepthPerComponent=8, bool hasAlpha=false );
 };
 
 /// a map used to specify needed frame ranges on set of clips
@@ -282,9 +276,9 @@ class Instance : public Base,
 	private Property::GetHook
 {
 protected:
-	ImageEffectPlugin* _plugin;
+	const ImageEffectPlugin* _plugin;
 	std::string _context;
-	Descriptor* _descriptor;
+	const Descriptor& _descriptor;
 	bool _interactive;
 	bool _created;
 	bool _continuousSamples; ///< set by clip prefs
@@ -295,10 +289,12 @@ protected:
 
 public:
 	/// constructor based on clip descriptor
-	Instance( ImageEffectPlugin* plugin,
-	          Descriptor&        other,
+	Instance( const ImageEffectPlugin* plugin,
+			  const Descriptor&        other,
 	          const std::string& context,
 	          bool               interactive );
+
+	Instance( const Instance& other );
 
 	/// called after construction to populate the various members
 	/// ideally should be called in the ctor, but it relies on
@@ -318,16 +314,16 @@ public:
 	virtual void paramChangedByPlugin( attribute::ParamInstance* param );
 
 	/// get the descriptor for this instance
-	const Descriptor& getDescriptor() const { return *_descriptor; }
+	const Descriptor& getDescriptor() const { return _descriptor; }
 
 	/// return the plugin this instance was created with
-	tuttle::host::ofx::imageEffect::ImageEffectPlugin* getPlugin() const { return _plugin; }
+	const tuttle::host::ofx::imageEffect::ImageEffectPlugin* getPlugin() const { return _plugin; }
 
 	/// return the context this instance was created with
 	const std::string& getContext() const { return _context; }
 
-	/// get the descriptor for this instance
-	Descriptor& getDescriptor() { return *_descriptor; }
+	// get the descriptor for this instance
+	//Descriptor& getDescriptor() { return *_descriptor; }
 
 	/// get default output fielding. This is passed into the clip prefs action
 	/// and  might be mapped (if the host allows such a thing)
@@ -552,6 +548,7 @@ public:
 	                                    OfxPointD          renderScale,
 	                                    std::string&       clip );
 
+
 	// time domain
 	virtual OfxStatus getTimeDomainAction( OfxRangeD& range );
 
@@ -559,7 +556,16 @@ public:
 	/// This will return NULL if there is not main entry point or if the description failed
 	/// otherwise it will return the described overlay
 	/// This is called by the CTOR of OverlayInteract to get the descriptor to do things with
-	Interact::Descriptor& getOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false );
+	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false )
+	{
+		/// @todo tuttle initOverlayDescriptor... !!! Correct the constness
+		//_descriptor->initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
+	}
+
+	const interact::Descriptor& getOverlayDescriptor() const
+	{
+		return _descriptor.getOverlayDescriptor();
+	}
 
 	/// Setup the default clip preferences on the clips
 	virtual void setDefaultClipPreferences();
@@ -618,7 +624,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 /// An overlay interact for image effects, derived from one of these to
 /// be an overlay interact
-class OverlayInteract : public Interact::Instance
+class OverlayInteract : public interact::Instance
 {
 protected:
 	/// our image effect instance
@@ -626,7 +632,7 @@ protected:
 
 public:
 	/// ctor this calls Instance->getOverlayDescriptor to get the descriptor
-	OverlayInteract( imageEffect::Instance& v, int bitDepthPerComponent = 8, bool hasAlpha = false );
+	OverlayInteract( imageEffect::Instance& v );
 };
 
 }
