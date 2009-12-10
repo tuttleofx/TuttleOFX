@@ -1,5 +1,4 @@
 #include "Graph.hpp"
-//#include "ClipInstance.hpp"
 #include <tuttle/host/ofx/ofxhClipImage.h>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <iostream>
@@ -97,7 +96,9 @@ void Graph::connect( const Node& out, const Node& in ) throw( Exception )
 {
 	const ofx::attribute::ClipImageInstanceSet::ClipImageVector& inClips = in.getClipsByOrder();
 	const ofx::attribute::ClipImageInstanceSet::ClipImageMap& inClipsMap = in.getClips();
+
 	const ofx::attribute::AttributeInstance* inAttr;
+
 	if( inClips.size() == 1 )
 	{
 		inAttr = &inClips[0];

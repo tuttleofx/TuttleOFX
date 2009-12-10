@@ -25,9 +25,9 @@ MergePlugin::MergePlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
 	_mergeFunction = fetchChoiceParam( kMergeFunction );
-	_srcClipA = fetchClip( kMergeSourceA );
-	_srcClipB = fetchClip( kMergeSourceB );
-	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
+	_srcClipA      = fetchClip( kMergeSourceA );
+	_srcClipB      = fetchClip( kMergeSourceB );
+	_dstClip       = fetchClip( kOfxImageEffectOutputClipName );
 	assert( _mergeFunction && _srcClipA && _srcClipB && _dstClip );
 }
 
@@ -38,7 +38,9 @@ MergePlugin::MergePlugin( OfxImageEffectHandle handle )
 void MergePlugin::render( const OFX::RenderArguments& args )
 {
 	bool isGray = _dstClip->getPixelComponents() == OFX::ePixelComponentAlpha;
-	if (isGray) {
+
+	if( isGray )
+	{
 		switch( (EMergeFunction)_mergeFunction->getValue() )
 		{
 			// Functions that doesn't need alpha
@@ -146,10 +148,12 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				break;
 			}
 			default:
-				COUT_ERROR("Unsupported operation !");
+				COUT_ERROR( "Unsupported operation !" );
 				break;
 		}
-	} else {
+	}
+	else
+	{
 		switch( (EMergeFunction)_mergeFunction->getValue() )
 		{
 			// Functions that need alpha
@@ -324,7 +328,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				break;
 			}
 			default:
-				COUT_ERROR("Unsupported operation !");
+				COUT_ERROR( "Unsupported operation !" );
 				break;
 
 		}
@@ -398,7 +402,6 @@ void MergePlugin::renderRGBA( const OFX::RenderArguments& args )
 			return;
 	}
 }
-
 
 void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {

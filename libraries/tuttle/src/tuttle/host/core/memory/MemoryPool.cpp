@@ -4,28 +4,22 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-unsigned long MemoryPool::Data::_count = 0;
+unsigned long MemoryPool::PoolData::_count = 0;
 
-MemoryPool::MemoryPool()
-: _memoryUsed(0)
-, _memoryAllocated(0)
-, _memoryAuthorized(1000000000)
-{
-}
+MemoryPool::MemoryPool( const std::size_t maxSize )
+	: _memoryAuthorized( maxSize )
+{}
 
 MemoryPool::~MemoryPool()
-{
-}
+{}
 
-SizeInteger MemoryPool::clear(SizeInteger size)
-{
-}
+void MemoryPool::clear( std::size_t size )
+{}
 
-SizeInteger MemoryPool::clearOne()
-{
-}
+void MemoryPool::clearOne()
+{}
 
-SizeInteger MemoryPool::clearAll()
+void MemoryPool::clearAll()
 {
 	_datasUnused.clear();
 }

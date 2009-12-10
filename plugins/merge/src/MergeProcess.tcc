@@ -28,7 +28,7 @@ namespace merge {
 using namespace boost::gil;
 
 template<class View, class Functor>
-MergeProcess<View, Functor>::MergeProcess( MergePlugin & instance )
+MergeProcess<View, Functor>::MergeProcess( MergePlugin& instance )
 	: tuttle::plugin::ImageGilProcessor<View>( instance ),
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
@@ -63,7 +63,7 @@ void MergeProcess<View, Functor>::setupAndProcess( const OFX::RenderArguments& a
 
 		// Make sure bit depths are the same
 		if( srcBitDepthA != dstBitDepth || srcBitDepthB != srcBitDepthA ||
-			srcComponentsA != dstComponents || srcComponentsB != srcComponentsA )
+		    srcComponentsA != dstComponents || srcComponentsB != srcComponentsA )
 		{
 			throw( BitDepthMismatchException() );
 		}
@@ -104,26 +104,26 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( OfxRectI procWindow 
 {
 	try
 	{
-		OfxRectI rA = { procWindow.x1, procWindow.y1, this->_srcViewA.width(), this->_srcViewA.height() };
-		OfxRectI rB = { procWindow.x1, procWindow.y1, this->_srcViewB.width(), this->_srcViewB.height() };
-		OfxRectI rC = { procWindow.x1, procWindow.y1, this->_dstView.width(), this->_dstView.height() };
-		OfxRectI rInterAB = intersection( rA, rB );
+		OfxRectI rA         = { procWindow.x1, procWindow.y1, this->_srcViewA.width(), this->_srcViewA.height() };
+		OfxRectI rB         = { procWindow.x1, procWindow.y1, this->_srcViewB.width(), this->_srcViewB.height() };
+		OfxRectI rC         = { procWindow.x1, procWindow.y1, this->_dstView.width(), this->_dstView.height() };
+		OfxRectI rInterAB   = intersection( rA, rB );
 		OfxRectI rIntersect = intersection( rC, rInterAB );
-		View srcA = subimage_view( this->_srcViewA,
-								   procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
-								   procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
-		                           procWindow.x2 - procWindow.x1,
-		                           procWindow.y2 - procWindow.y1 );
+		View srcA           = subimage_view( this->_srcViewA,
+		                                     procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
+		                                     procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
+		                                     procWindow.x2 - procWindow.x1,
+		                                     procWindow.y2 - procWindow.y1 );
 		View srcB = subimage_view( this->_srcViewB,
-								   procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
-								   procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
+		                           procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
+		                           procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
 		                           procWindow.x2 - procWindow.x1,
 		                           procWindow.y2 - procWindow.y1 );
 		View dst = subimage_view( this->_dstView,
-								  procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
-								  procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
-								  procWindow.x2 - procWindow.x1,
-								  procWindow.y2 - procWindow.y1 );
+		                          procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
+		                          procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
+		                          procWindow.x2 - procWindow.x1,
+		                          procWindow.y2 - procWindow.y1 );
 		merge_pixels( srcA, srcB, dst, Functor() );
 	}
 	catch( PluginException err )

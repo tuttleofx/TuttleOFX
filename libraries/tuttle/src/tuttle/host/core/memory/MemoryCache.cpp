@@ -4,14 +4,21 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-MemoryCache::MemoryCache( MemoryPool& pool )
-: _pool( pool )
+MemoryCache::CacheData::CacheData( MemoryPool::PoolData& data )
+	: _data( data ),
+	_isUsed( false ),
+	_willBeUsed( 0 ),
+	_weight( 0 )
 {
+	/*_datas.push_back(&data);*/
 }
 
+MemoryCache::MemoryCache( MemoryPool& pool )
+	: _pool( pool )
+{}
+
 MemoryCache::~MemoryCache()
-{
-}
+{}
 
 }
 }

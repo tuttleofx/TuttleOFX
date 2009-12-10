@@ -55,11 +55,11 @@ public:
 	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
-	OFX::ChoiceParam *_mergeFunction;	///< Functor structure
+	OFX::ChoiceParam* _mergeFunction;   ///< Functor structure
 	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _srcClipA;				///< Source image clip A
-	OFX::Clip* _srcClipB;				///< Source image clip B
-	OFX::Clip* _dstClip;				///< Destination image clip
+	OFX::Clip* _srcClipA;               ///< Source image clip A
+	OFX::Clip* _srcClipB;               ///< Source image clip B
+	OFX::Clip* _dstClip;                ///< Destination image clip
 };
 
 }

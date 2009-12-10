@@ -446,8 +446,7 @@ ParamAccessorSet::~ParamAccessorSet() {}
 ParamDescriptorSet::ParamDescriptorSet() {}
 
 ParamDescriptorSet::~ParamDescriptorSet()
-{
-}
+{}
 
 void ParamDescriptorSet::addParam( const std::string& name, ParamDescriptor* p )
 {
@@ -461,7 +460,7 @@ ParamDescriptor* ParamDescriptorSet::paramDefine( const char* paramType,
                                                   const char* name )
 {
 	if( !isStandardType( paramType ) )
-		return NULL;                                                                                                 /// << EEK! This is bad.
+		return NULL;                                                                                                                                                                                                          /// << EEK! This is bad.
 
 	ParamDescriptor* desc = new ParamDescriptor( paramType, name );
 	desc->addStandardParamProps( paramType );
@@ -655,10 +654,10 @@ ParamGroupInstance* ParamGroupInstance::clone() const
  */
 void ParamGroupInstance::setChildrens( const ParamInstanceSet* childrens )
 {
-	deleteChildrens( );
+	deleteChildrens();
 
 	/// @todo use clone ?
-	for( ParamList::const_iterator it = childrens->getParamList( ).begin( ), itEnd = childrens->getParamList( ).end( );
+	for( ParamList::const_iterator it = childrens->getParamList().begin(), itEnd = childrens->getParamList().end();
 	     it != itEnd;
 	     ++it )
 	{
@@ -730,6 +729,7 @@ OfxStatus ParamChoiceInstance::getV( OfxTime time, va_list arg )
 OfxStatus ParamChoiceInstance::setV( va_list arg )
 {
 	int value = va_arg( arg, int );
+
 	return set( value );
 }
 
@@ -739,6 +739,7 @@ OfxStatus ParamChoiceInstance::setV( va_list arg )
 OfxStatus ParamChoiceInstance::setV( OfxTime time, va_list arg )
 {
 	int value = va_arg( arg, int );
+
 	return set( time, value );
 }
 
@@ -762,6 +763,7 @@ OfxStatus ParamIntegerInstance::integrate( OfxTime time1, OfxTime time2, int& )
 OfxStatus ParamIntegerInstance::getV( va_list arg )
 {
 	int* value = va_arg( arg, int* );
+
 	return get( *value );
 }
 
@@ -771,6 +773,7 @@ OfxStatus ParamIntegerInstance::getV( va_list arg )
 OfxStatus ParamIntegerInstance::getV( OfxTime time, va_list arg )
 {
 	int* value = va_arg( arg, int* );
+
 	return get( time, *value );
 }
 
@@ -780,6 +783,7 @@ OfxStatus ParamIntegerInstance::getV( OfxTime time, va_list arg )
 OfxStatus ParamIntegerInstance::setV( va_list arg )
 {
 	int value = va_arg( arg, int );
+
 	return set( value );
 }
 
@@ -960,6 +964,7 @@ OfxStatus ParamStringInstance::getV( OfxTime time, va_list arg )
 OfxStatus ParamStringInstance::setV( va_list arg )
 {
 	char* value = va_arg( arg, char* );
+
 	return set( value );
 }
 
@@ -969,6 +974,7 @@ OfxStatus ParamStringInstance::setV( va_list arg )
 OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 {
 	char* value = va_arg( arg, char* );
+
 	return set( time, value );
 }
 
@@ -977,12 +983,10 @@ OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 //
 
 ParamInstanceSet::ParamInstanceSet()
-{
-}
+{}
 
 ParamInstanceSet::~ParamInstanceSet()
-{
-}
+{}
 
 OfxStatus ParamInstanceSet::addParam( const std::string& name, ParamInstance* instance )
 {

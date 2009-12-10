@@ -38,9 +38,9 @@ class MergeProcess : public tuttle::plugin::ImageGilProcessor<View>,
 typedef typename View::value_type value_t;
 
 protected:
-	MergePlugin	&	_plugin;    ///< Rendering plugin
-	View			_srcViewA;  ///< Source view A
-	View			_srcViewB;  ///< Source view B
+	MergePlugin&   _plugin;   ///< Rendering plugin
+	View _srcViewA; ///< Source view A
+	View _srcViewB; ///< Source view B
 
 public:
 	MergeProcess<View, Functor>( MergePlugin & instance );
