@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
 
-	core::SizeInteger size        = 123;
+	std::size_t size        = 123;
 	core::MemoryPool::PoolData& d = pool.allocate( size );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), size );
@@ -37,8 +37,8 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
 
-	core::SizeInteger size1        = 222;
-	core::SizeInteger size2        = 333;
+	std::size_t size1        = 222;
+	std::size_t size2        = 333;
 	core::MemoryPool::PoolData& d1 = pool.allocate( size1 );
 	core::MemoryPool::PoolData& d2 = pool.allocate( size2 );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size1 + size2 );
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( memoryCache )
 	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
 	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
 
-	core::SizeInteger size        = 123;
+	std::size_t size        = 123;
 	core::MemoryPool::PoolData& d = pool.allocate( size );
 	cache.add( "d", 12, d );
 	char* buffer = cache.get( "d", 12 ).getData();
@@ -78,8 +78,8 @@ BOOST_AUTO_TEST_CASE( memoryCache )
 	 * BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
 	 * BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
 	 *
-	 * core::SizeInteger size1 = 222;
-	 * core::SizeInteger size2 = 333;
+	 * std::size_t size1 = 222;
+	 * std::size_t size2 = 333;
 	 * core::MemoryPool::Data& d1 = pool.allocate( size1 );
 	 * core::MemoryPool::Data& d2 = pool.allocate( size2 );
 	 * BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size1+size2 );
