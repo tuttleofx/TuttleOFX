@@ -170,7 +170,7 @@ VIEW_T Image::gilViewFromImage( Image* img )
 	typedef typename VIEW_T::value_type value_t;
 	return interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
 	                         std::abs( bounds.y2 - bounds.y1 ),
-	                         ( value_t* )( img->getPixelData() ),
+	                         (value_t*)( img->getPixelData() ),
 	                         img->getRowBytes() );
 }
 

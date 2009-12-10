@@ -26,7 +26,7 @@ public:
 		~CacheData() {}
 
 	public:
-		SizeInteger           getSize() const { return _data.getSize(); }
+		std::size_t           getSize() const { return _data.getSize(); }
 		MemoryPool::PoolData& getData()       { return _data; }
 		bool                  isUsed()        { return _isUsed; }
 		int                   getWillBeUsed() { return _willBeUsed; }
@@ -95,7 +95,7 @@ public:
 		}
 	}
 
-	SizeInteger getMemorySizeUsed() const
+	std::size_t getMemorySizeUsed() const
 	{
 		using namespace boost;
 		//		return std::accumulate( _datas.begin(), _datas.end(), 0, bind( std::plus<int>(), _1, bind(mem_fn(&CacheData::getSize), _1, bind(&DataMap::value_type::second, _2) ) ) );
@@ -103,7 +103,7 @@ public:
 	}
 
 private:
-	static SizeInteger functor_data_size( const SizeInteger& sum, const DataMapContent& x )
+	static std::size_t functor_data_size( const std::size_t& sum, const DataMapContent& x )
 	{
 		return sum + x.second->getSize();
 	}
