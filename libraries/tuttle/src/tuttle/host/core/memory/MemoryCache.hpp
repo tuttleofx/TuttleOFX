@@ -26,7 +26,7 @@ public:
 		~CacheData() {}
 
 	public:
-		SizeInteger           getSize() const { return _data.getSize(); }
+		std::size_t           getSize() const { return _data.getSize(); }
 		MemoryPool::PoolData& getData()       { return _data; }
 		bool                  isUsed()        { return _isUsed; }
 		int                   getWillBeUsed() { return _willBeUsed; }
@@ -95,10 +95,9 @@ public:
 		}
 	}
 
-	SizeInteger getMemorySizeUsed() const
+	std::size_t getMemorySizeUsed() const
 	{
-		SizeInteger counter = 0;
-
+		std::size_t counter = 0;
 		BOOST_FOREACH( DataMapContent p, _datas )
 		{
 			counter += p.second->getSize();

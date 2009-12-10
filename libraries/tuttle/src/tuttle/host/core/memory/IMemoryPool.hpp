@@ -1,21 +1,21 @@
 #ifndef _TUTTLE_HOST_CORE_IMEMORYPOOL_HPP_
 #define _TUTTLE_HOST_CORE_IMEMORYPOOL_HPP_
 
+#include <cstddef>
+
 namespace tuttle {
 namespace host {
 namespace core {
 
-typedef unsigned long long SizeInteger;
-
 class IMemoryPool
 {
 public:
-	virtual SizeInteger getMemorySizeUsed() const       = 0;
-	virtual SizeInteger getMemorySizeAllocated() const  = 0;
-	virtual SizeInteger getMemorySizeAuthorized() const = 0;
-	virtual SizeInteger clear( SizeInteger size )       = 0;
-	virtual SizeInteger clearOne()                      = 0;
-	virtual SizeInteger clearAll()                      = 0;
+	virtual std::size_t getMemorySizeUsed() const       = 0;
+	virtual std::size_t getMemorySizeAllocated() const  = 0;
+	virtual std::size_t getMemorySizeAuthorized() const = 0;
+	virtual void        clear( std::size_t size )       = 0;
+	virtual void        clearOne()                      = 0;
+	virtual void        clearAll()                      = 0;
 };
 
 }

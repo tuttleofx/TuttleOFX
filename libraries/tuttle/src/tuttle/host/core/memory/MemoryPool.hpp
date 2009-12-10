@@ -9,6 +9,7 @@
 #include <functional>
 #include <sstream>
 #include <stdexcept>
+#include <climits>
 
 namespace tuttle {
 namespace host {
@@ -22,7 +23,7 @@ public:
 	static unsigned long _count;
 
 	public:
-		PoolData( const SizeInteger size ) : _size( size )
+		PoolData( const std::size_t size ) : _size( size )
 		{
 			_id   = _count++;
 			_data = new char[size];
@@ -41,25 +42,25 @@ public:
 
 		char*              getData()       { return _data; }
 		const char*        getData() const { return _data; }
-		const SizeInteger& getSize() const { return _size; }
+		const std::size_t& getSize() const { return _size; }
 
 	private:
 		unsigned long _id; ///< unique id to identify one memory data
 		char* _data; ///< own the data
-		SizeInteger _size; ///< data size
+		std::size_t _size; ///< data size
 		//		bool _used; ///< is this data currently used
 	};
 	typedef boost::ptr_list<PoolData> DataList;
 	DataList _datasUsed;
 	DataList _datasUnused;
-	SizeInteger _memoryAuthorized;
+	const std::size_t _memoryAuthorized;
 
 public:
-	MemoryPool();
+	MemoryPool( const std::size_t maxSize = ULONG_MAX );
 	~MemoryPool();
 
 public:
-	PoolData& allocate( SizeInteger size ) throw( std::bad_alloc, std::length_error )
+	PoolData& allocate( std::size_t size ) throw( std::bad_alloc, std::length_error )
 	{
 		if( size > getMemorySizeAvailable() )
 		{
@@ -123,35 +124,35 @@ public:
 	}
 
 public:
-	//	SizeInteger getMemorySizeUsed() const { return _memoryUsed; }
-	//	SizeInteger getMemorySizeAllocated() const { return _memoryAllocated; }
+	//	std::size_t getMemorySizeUsed() const { return _memoryUsed; }
+	//	std::size_t getMemorySizeAllocated() const { return _memoryAllocated; }
 
-	SizeInteger getMemorySizeUsed() const
+	std::size_t getMemorySizeUsed() const
 	{
 		return std::accumulate( _datasUsed.begin(), _datasUsed.end(), 0, std::ptr_fun( &functor_data_size ) );
 	}
 
-	SizeInteger getMemorySizeAllocated() const
+	std::size_t getMemorySizeAllocated() const
 	{
 		return getMemorySizeUsed() + std::accumulate( _datasUnused.begin(), _datasUnused.end(), 0, std::ptr_fun( &functor_data_size ) );
 	}
 
-	SizeInteger getMemorySizeAuthorized() const
+	std::size_t getMemorySizeAuthorized() const
 	{
 		return _memoryAuthorized;
 	}
 
-	SizeInteger getMemorySizeAvailable() const
+	std::size_t getMemorySizeAvailable() const
 	{
 		return getMemorySizeAuthorized() - getMemorySizeUsed();
 	}
 
-	SizeInteger clear( SizeInteger size );
-	SizeInteger clearOne();
-	SizeInteger clearAll();
+	virtual void clear( std::size_t size );
+	virtual void clearOne();
+	virtual void clearAll();
 
 private:
-	static SizeInteger functor_data_size( const SizeInteger& sum, const PoolData& x )
+	static std::size_t functor_data_size( const std::size_t& sum, const PoolData& x )
 	{
 		return sum + x.getSize();
 	}
