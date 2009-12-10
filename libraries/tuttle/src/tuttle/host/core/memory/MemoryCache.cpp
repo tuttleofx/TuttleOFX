@@ -4,7 +4,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-MemoryCache::CacheData::CacheData( MemoryPool::PoolData& data )
+MemoryCache::CacheData::CacheData( PoolData& data )
 	: _data( data ),
 	_isUsed( false ),
 	_willBeUsed( 0 ),

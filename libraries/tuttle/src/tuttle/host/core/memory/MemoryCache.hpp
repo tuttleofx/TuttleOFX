@@ -22,24 +22,24 @@ public:
 		//typedef std::list<MemoryPool::Data*> PoolDataList;
 
 	public:
-		CacheData( MemoryPool::PoolData& data );
+		CacheData( PoolData& data );
 		~CacheData() {}
 
 	public:
-		std::size_t           getSize() const { return _data.getSize(); }
-		MemoryPool::PoolData& getData()       { return _data; }
+		std::size_t           getSize() const { return _data.size(); }
+		PoolData& getData()       { return _data; }
 		bool                  isUsed()        { return _isUsed; }
 		int                   getWillBeUsed() { return _willBeUsed; }
 		int                   getWeight()     { return _weight; }
 
 	private:
 		//PoolDataList _datas;
-		MemoryPool::PoolData& _data;
+		PoolData& _data;
 		bool _isUsed; ///< this data is used
 		int _willBeUsed; ///< we known that this data will be used x times in the future
-		int _weight; ///< a coefficent representing the priority to keep this data (maybe the complexity to recalculate from scratch)
+		int _weight; ///< a coefficient representing the priority to keep this data (maybe the complexity to recalculate from scratch)
 	};
-	typedef std::pair<std::string, double> Key;
+	typedef std::pair<std::string, double> Key; ///< string=pluginName, double=frame ( or time )
 	typedef boost::ptr_map<Key, CacheData> DataMap;
 	typedef DataMap::value_type DataMapContent;
 	typedef std::list<Key> KeyList;
@@ -54,31 +54,33 @@ private:
 	MemoryPool& _pool;
 
 public:
-	MemoryPool::PoolData& get( const std::string& id, const double t )
+	PoolData& get( const std::string& id, const double t )
 	{
 		return _datas.at( Key( id, t ) ).getData();
 	}
 
-	bool add( const std::string& id, const double t, MemoryPool::PoolData& data )
+	bool add( const std::string& id, const double t, PoolData& data )
 	{
 		Key k( id, t );
 
 		_datas.insert( k, new CacheData( data ) );
 		_keys.push_front( k );
+		return true;
 	}
 
 	bool release( const std::pair<std::string, double>& key )
 	{
-		release( key.first, key.second );
+		return release( key.first, key.second );
 	}
 
 	bool release( std::string id, double t )
 	{
 		Key k( id, t );
 
-		_pool.setUnused( _datas.at( k ).getData() );
+//		_pool.setUnused( _datas.at( k ).getData() );
 		_datas.erase( k );
 		_keys.remove( k );
+		return true;
 	}
 
 	bool purge()
@@ -93,6 +95,7 @@ public:
 				release( it->first );
 			}
 		}
+		return true;
 	}
 
 	std::size_t getMemorySizeUsed() const

@@ -3,9 +3,9 @@
 
 #include "EffectInstance.hpp"
 
-#include <tuttle/host/core/HostDescriptor.hpp>
 #include <tuttle/host/core/memory/MemoryPool.hpp>
 #include <tuttle/host/core/memory/MemoryCache.hpp>
+#include <tuttle/host/core/HostDescriptor.hpp>
 #include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 #include <tuttle/common/patterns/Singleton.hpp>

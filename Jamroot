@@ -15,8 +15,8 @@
 ###############################################################################
 # Environment variables
 ###############################################################################
-path-constant BOOST_LIBS 	: 3rdParty/boost ;
-path-constant DIST 			: ./dist ;
+path-constant BOOST_LIBS  	 : 3rdParty/boost ;
+path-constant DIST 		 	 : ./dist ;
 
 ###############################################################################
 # 3rd party libraries
