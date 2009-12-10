@@ -322,7 +322,7 @@ void BasicPlugin::setupAndProcess( ImageScalerBase& processor, const OFX::Render
 
 		// see if they have the same depths and bytes and all
 		if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
-			throw int(1);                                                                                                                                                                                                                  // HACK!! need to throw an sensible exception here!
+			throw int(1);                                                                                                                                                                                                                                            // HACK!! need to throw an sensible exception here!
 	}
 
 	// auto ptr for the mask.

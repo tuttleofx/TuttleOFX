@@ -1190,7 +1190,7 @@ OfxStatus Instance::getFrameNeededAction( OfxTime   time,
 
 				int nRanges = outArgs.getDimension( name );
 				if( nRanges % 2 != 0 )
-					return kOfxStatFailed;                                                                                                                                                                                                                                                                                                                                                                     // bad! needs to be divisible by 2
+					return kOfxStatFailed;                                                                                                                                                                                                                                                                                                                                                                                                                // bad! needs to be divisible by 2
 
 				if( nRanges == 0 )
 				{
