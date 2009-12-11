@@ -52,13 +52,13 @@ namespace attribute {
  * is used to basically fetch common properties
  * by function name
  */
-class ClipAccessor : virtual public attribute::AttributeAccessor
+class OfxhClipAccessor : virtual public attribute::OfxhAttributeAccessor
 {
 public:
 	/// @brief base ctor, for a descriptor
-	ClipAccessor();
+	OfxhClipAccessor();
 
-	virtual ~ClipAccessor() = 0;
+	virtual ~OfxhClipAccessor() = 0;
 
 	/// is the clip optional
 	bool isOptional() const;
@@ -73,42 +73,42 @@ public:
 /**
  * a clip descriptor
  */
-class ClipDescriptor : virtual public ClipAccessor,
-	public attribute::AttributeDescriptor
+class OfxhClipDescriptor : virtual public OfxhClipAccessor,
+	public attribute::OfxhAttributeDescriptor
 {
 public:
 	/// constructor
-	ClipDescriptor();
-	ClipDescriptor( const tuttle::host::ofx::Property::Set& );
-	~ClipDescriptor() = 0;
+	OfxhClipDescriptor();
+	OfxhClipDescriptor( const tuttle::host::ofx::property::OfxhSet& );
+	~OfxhClipDescriptor() = 0;
 };
 
 /**
  * a clip instance
  */
-class ClipInstance : virtual public ClipAccessor,
+class OfxhClip : virtual public OfxhClipAccessor,
 	public attribute::AttributeInstance,
-	protected Property::GetHook,
-	protected Property::NotifyHook,
+	protected property::OfxhGetHook,
+	protected property::OfxhNotifyHook,
 	private boost::noncopyable
 {
 protected:
-	ClipInstance( const ClipInstance& other ):attribute::AttributeInstance(other){}
+	OfxhClip( const OfxhClip& other ):attribute::AttributeInstance(other){}
 public:
-	ClipInstance( const ClipDescriptor& desc );
-	virtual ~ClipInstance() = 0;
+	OfxhClip( const OfxhClipDescriptor& desc );
+	virtual ~OfxhClip() = 0;
 
 	/// clone this clip
-	virtual ClipInstance* clone() const = 0;
+	virtual OfxhClip* clone() const = 0;
 
-	void initHook( const Property::PropSpec* propSpec );
+	void initHook( const property::OfxhPropSpec* propSpec );
 
 	/// notify override properties
 
 	void notify( const std::string& name, bool isSingle, int indexOrN ) OFX_EXCEPTION_SPEC
 	{
 		COUT_WITHINFOS( "What we should do here?" );
-		throw Property::Exception( kOfxStatErrMissingHostFeature );
+		throw property::OfxhException( kOfxStatErrMissingHostFeature );
 	}
 
 	// don't know what to do
@@ -116,7 +116,7 @@ public:
 	void reset( const std::string& name ) OFX_EXCEPTION_SPEC
 	{
 		COUT_WITHINFOS( "What we should do here?" );
-		throw Property::Exception( kOfxStatErrMissingHostFeature );
+		throw property::OfxhException( kOfxStatErrMissingHostFeature );
 	}
 
 	// Connected -
@@ -129,7 +129,7 @@ public:
 /**
  * @brief to make ClipInstance clonable (for use in boost::ptr_container)
  */
-inline ClipInstance* new_clone( const ClipInstance& a )
+inline OfxhClip* new_clone( const OfxhClip& a )
 {
 	return a.clone();
 }

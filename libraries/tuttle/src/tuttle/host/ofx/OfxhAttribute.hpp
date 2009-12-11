@@ -42,19 +42,19 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-class AttributeAccessor
+class OfxhAttributeAccessor
 {
 public:
-	AttributeAccessor();
+	OfxhAttributeAccessor();
 	//	explicit Base( const Base& ); // auto
-	virtual ~AttributeAccessor() = 0;
+	virtual ~OfxhAttributeAccessor() = 0;
 
 protected:
-	virtual void setProperties( const Property::Set& properties ) = 0;
+	virtual void setProperties( const property::OfxhSet& properties ) = 0;
 
 public:
-	virtual const Property::Set& getProperties() const   = 0;
-	virtual Property::Set&       getEditableProperties() = 0;
+	virtual const property::OfxhSet& getProperties() const   = 0;
+	virtual property::OfxhSet&       getEditableProperties() = 0;
 
 public:
 	/// is the clip an output clip
@@ -146,7 +146,7 @@ public:
 		return getEditableProperties().setStringProperty( kOfxPropLongLabel, label );
 	}
 
-	const Property::Set& getProps() const
+	const property::OfxhSet& getProps() const
 	{
 		return getProperties();
 	}
@@ -160,60 +160,60 @@ public:
 
 };
 
-class AttributeDescriptor : virtual public AttributeAccessor
+class OfxhAttributeDescriptor : virtual public OfxhAttributeAccessor
 {
 public:
-	AttributeDescriptor();
-	AttributeDescriptor( const Property::Set& properties );
-	virtual ~AttributeDescriptor() = 0;
+	OfxhAttributeDescriptor();
+	OfxhAttributeDescriptor( const property::OfxhSet& properties );
+	virtual ~OfxhAttributeDescriptor() = 0;
 
 protected:
-	Property::Set _properties;
+	property::OfxhSet _properties;
 
 protected:
-	void setProperties( const Property::Set& properties )
+	void setProperties( const property::OfxhSet& properties )
 	{
 		_properties = properties;
 		assert( getAttributeType().c_str() );
 	}
 
 public:
-	const Property::Set& getProperties() const
+	const property::OfxhSet& getProperties() const
 	{
 		return _properties;
 	}
 
-	Property::Set& getEditableProperties()
+	property::OfxhSet& getEditableProperties()
 	{
 		return _properties;
 	}
 
 };
 
-class AttributeInstance : virtual public AttributeAccessor
+class AttributeInstance : virtual public OfxhAttributeAccessor
 {
 public:
-	AttributeInstance( const Property::Set& properties );
-	AttributeInstance( const AttributeDescriptor& desc );
+	AttributeInstance( const property::OfxhSet& properties );
+	AttributeInstance( const OfxhAttributeDescriptor& desc );
 	virtual ~AttributeInstance() = 0;
 
 protected:
-	Property::Set _properties;
+	property::OfxhSet _properties;
 
 protected:
-	virtual void setProperties( const Property::Set& properties )
+	virtual void setProperties( const property::OfxhSet& properties )
 	{
 		_properties = properties;
 		assert( getAttributeType().c_str() );
 	}
 
 public:
-	virtual const Property::Set& getProperties() const
+	virtual const property::OfxhSet& getProperties() const
 	{
 		return _properties;
 	}
 
-	virtual Property::Set& getEditableProperties()
+	virtual property::OfxhSet& getEditableProperties()
 	{
 		return _properties;
 	}

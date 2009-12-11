@@ -75,7 +75,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
-	: tuttle::host::ofx::imageEffect::Image( clip ),
+	: tuttle::host::ofx::imageEffect::OfxhImage( clip ),
 	/// this ctor will set basic props on the image
 	_data( NULL )
 {
@@ -316,8 +316,8 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	}
 }
 
-ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::ClipImageDescriptor& desc )
-	: tuttle::host::ofx::attribute::ClipImageInstance( effect, desc ),
+ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
+	: tuttle::host::ofx::attribute::OfxhClipImage( effect, desc ),
 	_effect( effect ),
 	_inputImage( NULL ),
 	_outputImage( NULL )
@@ -483,7 +483,7 @@ bool ClipImgInstance::getContinuousSamples() const
 /// be 'appropriate' for the.
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
 
-tuttle::host::ofx::imageEffect::Image* ClipImgInstance::getImage( OfxTime time, OfxRectD* optionalBounds )
+tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime time, OfxRectD* optionalBounds )
 {
 	OfxRectD bounds;
 

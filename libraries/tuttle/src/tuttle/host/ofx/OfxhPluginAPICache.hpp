@@ -39,9 +39,9 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-class Plugin;
-class PluginBinary;
-class PluginCache;
+class OfxhPlugin;
+class OfxhPluginBinary;
+class OfxhPluginCache;
 
 namespace imageEffect {
 class ImageEffectDescriptor;
@@ -56,51 +56,51 @@ namespace ofx {
 namespace APICache {
 
 /// this acts as an interface for the Plugin Cache, handling api-specific cacheing
-class PluginAPICacheI
+class OfxhPluginAPICacheI
 {
 public:
 	std::string _apiName;
 	int _apiVersionMin, _apiVersionMax;
 
 public:
-	PluginAPICacheI( std::string apiName, int verMin, int verMax )
+	OfxhPluginAPICacheI( std::string apiName, int verMin, int verMax )
 		: _apiName( apiName ),
 		_apiVersionMin( verMin ),
 		_apiVersionMax( verMax )
 	{}
 
-	virtual ~PluginAPICacheI() {}
+	virtual ~OfxhPluginAPICacheI() {}
 
-	virtual void loadFromPlugin( Plugin* ) const = 0;
+	virtual void loadFromPlugin( OfxhPlugin* ) const = 0;
 
 	/// factory method, to create a new plugin (from binary)
-	virtual Plugin* newPlugin( PluginBinary*, int pi, OfxPlugin* plug ) = 0;
+	virtual OfxhPlugin* newPlugin( OfxhPluginBinary*, int pi, OfxPlugin* plug ) = 0;
 
 	/// factory method, to create a new plugin (from the
-	virtual Plugin* newPlugin( PluginBinary* pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
+	virtual OfxhPlugin* newPlugin( OfxhPluginBinary* pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
 	                           const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion ) = 0;
 
-	virtual void beginXmlParsing( Plugin* )                                               = 0;
+	virtual void beginXmlParsing( OfxhPlugin* )                                               = 0;
 	virtual void xmlElementBegin( const std::string&, std::map<std::string, std::string>) = 0;
 	virtual void xmlCharacterHandler( const std::string& )                                = 0;
 	virtual void xmlElementEnd( const std::string& )                                      = 0;
 	virtual void endXmlParsing()                                                          = 0;
 
-	virtual void saveXML( Plugin*, std::ostream& ) const = 0;
+	virtual void saveXML( OfxhPlugin*, std::ostream& ) const = 0;
 
-	virtual void confirmPlugin( Plugin* ) = 0;
+	virtual void confirmPlugin( OfxhPlugin* ) = 0;
 
-	virtual bool pluginSupported( Plugin*, std::string& reason ) const = 0;
+	virtual bool pluginSupported( OfxhPlugin*, std::string& reason ) const = 0;
 };
 
 /// helper function to build a property set from XML. Really should be a member of the property set!!!
-void propertySetXMLRead( const std::string& el, std::map<std::string, std::string> map, Property::Set& set, Property::Property*& );
+void propertySetXMLRead( const std::string& el, std::map<std::string, std::string> map, property::OfxhSet& set, property::OfxhProperty*& );
 
 /// helper function to write a property set to XML. Really should be a member of the property set!!!
-void propertySetXMLWrite( std::ostream& o, const Property::Set& set, int indent = 0 );
+void propertySetXMLWrite( std::ostream& o, const property::OfxhSet& set, int indent = 0 );
 
 /// helper function to write a single property from a set to XML. Really should be a member of the property set!!!
-void propertyXMLWrite( std::ostream& o, const Property::Set& set, const std::string& name, int indent = 0 );
+void propertyXMLWrite( std::ostream& o, const property::OfxhSet& set, const std::string& name, int indent = 0 );
 
 }
 }

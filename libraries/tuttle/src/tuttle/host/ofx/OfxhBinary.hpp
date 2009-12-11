@@ -73,7 +73,7 @@ namespace host {
 namespace ofx {
 
 /// class representing a DLL/Shared Object/etc
-class Binary
+class OfxhBinary
 {
 /// destruction will close the library and invalidate
 /// any function pointers returned by lookupSymbol()
@@ -94,9 +94,9 @@ protected:
 public:
 	/// create object representing the binary.  will stat() it,
 	/// and this fails, will set binary to be invalid.
-	Binary( const std::string& binaryPath );
+	OfxhBinary( const std::string& binaryPath );
 
-	~Binary() { unload(); }
+	~OfxhBinary() { unload(); }
 
 	bool isLoaded() const { return _dlHandle != 0; }
 

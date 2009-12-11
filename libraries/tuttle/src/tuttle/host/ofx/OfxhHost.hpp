@@ -43,28 +43,28 @@ namespace host {
 namespace ofx {
 
 /// a plugin what we use
-class Plugin;
+class OfxhPlugin;
 
 /// a param descriptor
 namespace attribute {
-class ParamDescriptor;
+class OfxhParamDescriptor;
 }
 
 /// Base class for all objects passed to a plugin by the 'setHost' function
 /// passed back by any plug-in.
-class AbstractHost
+class OfxhAbstractHost
 {
 protected:
 	OfxHost _host;
-	Property::Set _properties;
+	property::OfxhSet _properties;
 
 public:
-	AbstractHost();
-	virtual ~AbstractHost() = 0;
+	OfxhAbstractHost();
+	virtual ~OfxhAbstractHost() = 0;
 
 	/// get the props on this host
-	const Property::Set& getProperties() const { return _properties; }
-	Property::Set&       getProperties()       { return _properties; }
+	const property::OfxhSet& getProperties() const { return _properties; }
+	property::OfxhSet&       getProperties()       { return _properties; }
 
 	/// fetch a suite
 	/// The base class returns the following suites
@@ -76,7 +76,7 @@ public:
 	OfxHost* getHandle();
 
 	/// override this to handle do post-construction initialisation on a Param::Descriptor
-	virtual void initDescriptor( attribute::ParamDescriptor* ) const {}
+	virtual void initDescriptor( attribute::OfxhParamDescriptor* ) const {}
 
 	/// is my magic number valid?
 	bool verifyMagic() { return true; }

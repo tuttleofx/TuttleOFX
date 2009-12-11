@@ -39,10 +39,10 @@ namespace TimeLine {
 
 /// Things that implement timeline controls derive from this ABC and implement the following
 /// functions.
-class TimeLineI
+class OfxhTimeLineI
 {
 public:
-	virtual ~TimeLineI() {}
+	virtual ~OfxhTimeLineI() {}
 
 	/// get the current time on the timeline. This is not necessarily the same
 	/// time as being passed to an action (eg render)

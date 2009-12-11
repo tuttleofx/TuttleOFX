@@ -40,7 +40,7 @@ namespace ofx {
 namespace imageEffect {
 
 // forward declarations
-class Image;
+class OfxhImage;
 class Instance;
 
 /** @brief Enumerates the contexts a plugin can be used in */
@@ -77,23 +77,23 @@ enum PixelComponentEnum
 /**
  *  instance of an image inside an image effect
  */
-class Image : public Property::Set
+class OfxhImage : public property::OfxhSet
 {
 protected:
 	/// called during ctors to get bits from the clip props into ours
-	void getClipBits( attribute::ClipInstance& instance );
+	void getClipBits( attribute::OfxhClip& instance );
 	int _referenceCount; ///< reference count on this image
 
 public:
 	// default constructor
-	virtual ~Image();
+	virtual ~OfxhImage();
 
 	/// basic ctor, makes empty property set but sets not value
-	Image();
+	OfxhImage();
 
 	/// construct from a clip instance, but leave the
 	/// filling it to the calling code via the propery set
-	explicit Image( attribute::ClipInstance& instance );
+	explicit OfxhImage( attribute::OfxhClip& instance );
 
 	// Render Scale (renderScaleX,renderScaleY) -
 	//
@@ -135,7 +135,7 @@ public:
 	// and re-evaluate the cached information.
 
 	// construction based on clip instance
-	Image( attribute::ClipInstance& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
+	OfxhImage( attribute::OfxhClip& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
 	       double                   renderScaleX,
 	       double                   renderScaleY,
 	       void*                    data,
@@ -149,7 +149,7 @@ public:
 
 	OfxPropertySetHandle getPropHandle() const
 	{
-		return Property::Set::getHandle();
+		return property::OfxhSet::getHandle();
 	}
 
 	/// get the bounds of the pixels in memory

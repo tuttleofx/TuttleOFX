@@ -57,7 +57,7 @@ namespace host {
 namespace core {
 
 // my host support code
-EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
+EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
                                 tuttle::host::ofx::imageEffect::Descriptor&        desc,
                                 const std::string&                                 context )
 	: tuttle::host::ofx::imageEffect::Instance( plugin, desc, context, false )
@@ -117,7 +117,7 @@ void EffectInstance::dumpToStdOut() const
 }
 
 // get a new clip instance
-tuttle::host::ofx::attribute::ClipImageInstance* EffectInstance::newClipImage( const tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor )
+tuttle::host::ofx::attribute::OfxhClipImage* EffectInstance::newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor )
 {
 	return new ClipImgInstance( *this, descriptor );
 }
@@ -211,7 +211,7 @@ const std::string EffectInstance::getProjectBitDepth() const
 }
 
 // make a parameter instance
-tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::host::ofx::attribute::ParamDescriptor& descriptor )
+tuttle::host::ofx::attribute::OfxhParam* EffectInstance::newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 {
 	std::string name = descriptor.getName();
 
@@ -236,7 +236,7 @@ tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::h
 	else if( descriptor.getParamType() == kOfxParamTypePushButton )
 		return new PushbuttonInstance( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeGroup )
-		return new tuttle::host::ofx::attribute::ParamGroupInstance( descriptor, *this );
+		return new tuttle::host::ofx::attribute::OfxhParamGroup( descriptor, *this );
 	else if( descriptor.getParamType() == kOfxParamTypePage )
 		return new tuttle::host::ofx::attribute::ParamPageInstance( descriptor, *this );
 	else

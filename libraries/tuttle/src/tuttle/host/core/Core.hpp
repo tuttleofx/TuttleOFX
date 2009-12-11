@@ -27,20 +27,20 @@ private:
 
 private:
 	core::Host _host;
-	ofx::imageEffect::ImageEffectPluginCache _imageEffectPluginCache;
-	ofx::PluginCache _pluginCache;
+	ofx::imageEffect::OfxhImageEffectPluginCache _imageEffectPluginCache;
+	ofx::OfxhPluginCache _pluginCache;
 	core::MemoryPool _memoryPool;
 	core::MemoryCache _memoryCache;
 
 public:
-	const ofx::PluginCache&                         getPluginCache() const            { return _pluginCache; }
+	const ofx::OfxhPluginCache&                         getPluginCache() const            { return _pluginCache; }
 	const Host&                                     getHost() const                   { return _host; }
-	const ofx::imageEffect::ImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
+	const ofx::imageEffect::OfxhImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
 	const core::MemoryPool&                         getMemoryPool() const             { return _memoryPool; }
 	const core::MemoryCache&                        getMemoryCache() const            { return _memoryCache; }
 
 public:
-	ofx::imageEffect::ImageEffectPlugin* getImageEffectPluginById( const std::string& id, int vermaj = -1, int vermin = -1 )
+	ofx::imageEffect::OfxhImageEffectPlugin* getImageEffectPluginById( const std::string& id, int vermaj = -1, int vermin = -1 )
 	{
 		return _imageEffectPluginCache.getPluginById( id, vermaj, vermin );
 	}

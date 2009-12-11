@@ -25,7 +25,7 @@ Graph::~Graph()
 
 Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicError )
 {
-	ofx::imageEffect::ImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
+	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 
 	if( !plug )
 		throw exception::LogicError( "Plugin not found. plug ("+id+")" );
@@ -89,8 +89,8 @@ void Graph::deleteNode( const EffectInstance& node ) throw( exception::LogicErro
 
 void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicError )
 {
-	const ofx::attribute::ClipImageInstanceSet::ClipImageVector& inClips = in.getClipsByOrder();
-	const ofx::attribute::ClipImageInstanceSet::ClipImageMap& inClipsMap = in.getClips();
+	const ofx::attribute::OfxhClipImageSet::ClipImageVector& inClips = in.getClipsByOrder();
+	const ofx::attribute::OfxhClipImageSet::ClipImageMap& inClipsMap = in.getClips();
 
 	const ofx::attribute::AttributeInstance* inAttr;
 
@@ -100,7 +100,7 @@ void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicEr
 	}
 	else if( inClips.size() > 1 )
 	{
-		const ofx::attribute::ClipImageInstanceSet::ClipImageMap::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
+		const ofx::attribute::OfxhClipImageSet::ClipImageMap::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
 		if( it != inClipsMap.end() )
 		{
 			inAttr = it->second;

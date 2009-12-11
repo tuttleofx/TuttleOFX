@@ -46,7 +46,7 @@ class ClipImgInstance;
 
 /// make an image up
 
-class Image : public tuttle::host::ofx::imageEffect::Image
+class Image : public tuttle::host::ofx::imageEffect::OfxhImage
 {
 protected:
 	size_t _ncomp; // number of components
@@ -76,7 +76,7 @@ private:
 	                  const OfxPointI& srcCorner, const OfxPointI& count );
 };
 
-class ClipImgInstance : public tuttle::host::ofx::attribute::ClipImageInstance
+class ClipImgInstance : public tuttle::host::ofx::attribute::OfxhClipImage
 {
 protected:
 	const EffectInstance& _effect;
@@ -86,7 +86,7 @@ protected:
 	OfxPointD _frameRange; ///< get frame range
 
 public:
-	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::ClipImageDescriptor& desc );
+	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc );
 
 	~ClipImgInstance();
 
@@ -170,7 +170,7 @@ public:
 	/// on the effect instance. Outside a render call, the optionalBounds should
 	/// be 'appropriate' for the.
 	/// If bounds is not null, fetch the indicated section of the canonical image plane.
-	tuttle::host::ofx::imageEffect::Image* getImage( OfxTime time, OfxRectD* optionalBounds = NULL );
+	tuttle::host::ofx::imageEffect::OfxhImage* getImage( OfxTime time, OfxRectD* optionalBounds = NULL );
 
 	/// override this to return the rod on the clip
 	OfxRectD getRegionOfDefinition( OfxTime time ) const;

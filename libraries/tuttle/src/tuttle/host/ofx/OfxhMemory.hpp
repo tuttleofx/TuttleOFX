@@ -35,12 +35,12 @@ namespace host {
 namespace ofx {
 namespace memory {
 
-class Instance
+class OfxhMemory
 {
 public:
-	Instance();
+	OfxhMemory();
 
-	virtual ~Instance();
+	virtual ~OfxhMemory();
 	virtual bool                 alloc( size_t nBytes );
 	virtual OfxImageMemoryHandle getHandle();
 	virtual void                 freeMem();
