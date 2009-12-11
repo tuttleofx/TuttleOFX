@@ -30,9 +30,11 @@ private:
 	};
 	typedef std::map<Key, IPoolDataPtr> MAP;
 	MAP _map;
+	MAP::const_iterator getIteratorForValue(const IPoolDataPtr &) const;
+	MAP::iterator getIteratorForValue(const IPoolDataPtr &);
 public:
 	virtual void               put(const std::string& pluginName, const double &time, IPoolDataPtr pData);
-	virtual IPoolDataPtr&      get(const std::string& pluginName, const double &time) const;
+	virtual IPoolDataPtr       get(const std::string& pluginName, const double &time) const;
 	virtual std::size_t		   size() const;
 	virtual bool    		   empty() const;
 	virtual bool               inCache(const IPoolDataPtr &) const;
