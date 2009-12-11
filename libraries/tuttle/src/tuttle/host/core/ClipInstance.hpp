@@ -104,7 +104,6 @@ public:
 	~ClipImgInstance();
 
 	ClipImgInstance* clone() const { return new ClipImgInstance(*this); };
-	ClipImgInstance* clone() const { return new ClipImgInstance( *this ); }
 
 	/**
 	 * @brief Get the Raw Unmapped Pixel Depth from the host
@@ -171,17 +170,14 @@ public:
 	 * @brief Connected
 	 * Says whether the clip is actually connected at the moment.
 	 */
-	const bool getConnected() const { return _isConnected; }
+	bool getConnected() const { return _isConnected; }
 	void setConnected( const bool isConnected ) { _isConnected = isConnected; }
-	const bool getConnected() const                   { return _isConnected; }
-	void       setConnected( const bool isConnected ) { _isConnected = isConnected; }
 
 	/**
 	 * @brief Unmapped Frame Rate
 	 * The unmaped frame range over which an output clip has images.
 	 */
 	double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
-	const double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
 
 	/**
 	 * @brief Unmapped Frame Range -
@@ -196,8 +192,6 @@ public:
 	 */
 	bool getContinuousSamples() const { return _continuousSamples; }
 	void setContinuousSamples( const bool continuousSamples ) { _continuousSamples = continuousSamples; }
-	const bool getContinuousSamples() const                         { return _continuousSamples; }
-	void       setContinuousSamples( const bool continuousSamples ) { _continuousSamples = continuousSamples; }
 
 	/**
 	 * @brief override this to fill in the image at the given time.

@@ -75,7 +75,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
-	: tuttle::host::ofx::imageEffect::OfxhImage( clip )
+	: tuttle::host::ofx::imageEffect::OfxhImage( clip ),
 	/// this ctor will set basic props on the image
 	_memoryPool( core::Core::instance().getMemoryPool() )
 {

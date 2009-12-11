@@ -46,7 +46,7 @@ namespace ofx {
 
 namespace imageEffect {
 class OfxhImageEffect;
-class Descriptor;
+class OfxhDescriptor;
 }
 namespace attribute {
 
@@ -317,7 +317,7 @@ public:
 	/// dtor.
 	virtual ~OfxhClipImageSet();
 
-	void populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error );
+	void populateClips( const imageEffect::OfxhDescriptor& descriptor ) throw( std::logic_error );
 
 	const ClipImageMap& getClips() const
 	{

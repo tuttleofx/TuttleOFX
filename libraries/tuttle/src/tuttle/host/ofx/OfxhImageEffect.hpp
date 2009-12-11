@@ -59,16 +59,16 @@ namespace imageEffect {
 
 // forward declare
 class OfxhImageEffectPlugin;
-class OverlayInstance;
+class OfxhOverlayInstance;
 class OfxhImageEffect;
-class Descriptor;
+class OfxhDescriptor;
 
 /// An image effect host, passed to the setHost function of all image effect plugins
-class ImageEffectHost : public tuttle::host::ofx::OfxhAbstractHost
+class OfxhImageEffectHost : public tuttle::host::ofx::OfxhAbstractHost
 {
 public:
-	ImageEffectHost();
-	virtual ~ImageEffectHost();
+	OfxhImageEffectHost();
+	virtual ~OfxhImageEffectHost();
 
 	/// fetch a suite
 	virtual void* fetchSuite( const char* suiteName, int suiteVersion );
@@ -84,7 +84,7 @@ public:
 	///   \arg context - the context to be created in
 	virtual OfxhImageEffect* newInstance( void*              clientData,
 	                               OfxhImageEffectPlugin* plugin,
-	                               Descriptor&        desc,
+	                               OfxhDescriptor&        desc,
 	                               const std::string& context ) const = 0;
 
 	/// Function called as each plugin binary is found and loaded from disk
@@ -99,30 +99,30 @@ public:
 	virtual bool pluginSupported( OfxhImageEffectPlugin* plugin, std::string& reason ) const;
 
 	/// Override this to create a descriptor, this makes the 'root' descriptor
-	virtual Descriptor* makeDescriptor( OfxhImageEffectPlugin* plugin ) const = 0;
+	virtual OfxhDescriptor* makeDescriptor( OfxhImageEffectPlugin* plugin ) const = 0;
 
 	/// used to construct a context description, rootContext is the main context
-	virtual Descriptor* makeDescriptor( const Descriptor& rootContext, OfxhImageEffectPlugin* plug ) const = 0;
+	virtual OfxhDescriptor* makeDescriptor( const OfxhDescriptor& rootContext, OfxhImageEffectPlugin* plug ) const = 0;
 
 	/// used to construct populate the cache
-	virtual Descriptor* makeDescriptor( const std::string& bundlePath, OfxhImageEffectPlugin* plug ) const = 0;
+	virtual OfxhDescriptor* makeDescriptor( const std::string& bundlePath, OfxhImageEffectPlugin* plug ) const = 0;
 
 	/// Override this to initialise an image effect descriptor after it has been
 	/// created.
-	virtual void initDescriptor( Descriptor* desc ) const;
+	virtual void initDescriptor( OfxhDescriptor* desc ) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /// base class to both effect descriptors and instances
-class Base
+class OfxhBase
 {
 protected:
 	property::OfxhSet _properties;
 
 public:
-	Base( const property::OfxhSet& set );
-	Base( const property::OfxhPropSpec* propSpec );
-	virtual ~Base();
+	OfxhBase( const property::OfxhSet& set );
+	OfxhBase( const property::OfxhPropSpec* propSpec );
+	virtual ~OfxhBase();
 
 	/// is my magic number valid?
 	virtual bool verifyMagic() { return true; }
@@ -194,8 +194,8 @@ public:
 };
 
 /// an image effect plugin descriptor
-class Descriptor
-	: public Base,
+class OfxhDescriptor
+	: public OfxhBase,
 	public attribute::OfxhParamDescriptorSet
 {
 public:
@@ -211,23 +211,23 @@ protected:
 
 private:
 	// private CC
-	Descriptor( const Descriptor& other )
-		: Base( other._properties ),
+	OfxhDescriptor( const OfxhDescriptor& other )
+		: OfxhBase( other._properties ),
 		_plugin( other._plugin )
 	{}
 
 public:
 	/// used to construct the global description
-	Descriptor( OfxhPlugin* plug );
+	OfxhDescriptor( OfxhPlugin* plug );
 
 	/// used to construct a context description, 'other' is the main context
-	Descriptor( const Descriptor& rootContext, OfxhPlugin* plug );
+	OfxhDescriptor( const OfxhDescriptor& rootContext, OfxhPlugin* plug );
 
 	/// used to construct populate the cache
-	Descriptor( const std::string& bundlePath, OfxhPlugin* plug );
+	OfxhDescriptor( const std::string& bundlePath, OfxhPlugin* plug );
 
 	/// dtor
-	virtual ~Descriptor();
+	virtual ~OfxhDescriptor();
 
 	/// implemented for ParamDescriptorSet
 	property::OfxhSet& getParamSetProps()
@@ -268,7 +268,7 @@ typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
 /// an image effect plugin instance.
 ///
 /// Client code needs to filling the pure virtuals in this.
-class OfxhImageEffect : public Base,
+class OfxhImageEffect : public OfxhBase,
 	public attribute::OfxhParamSet,
 	public attribute::OfxhClipImageSet,
 	public Progress::ProgressI,
@@ -279,7 +279,7 @@ class OfxhImageEffect : public Base,
 protected:
 	const OfxhImageEffectPlugin* _plugin;
 	std::string _context;
-	const Descriptor& _descriptor;
+	const OfxhDescriptor& _descriptor;
 	bool _interactive;
 	bool _created;
 	bool _continuousSamples; ///< set by clip prefs
@@ -291,7 +291,7 @@ protected:
 public:
 	/// constructor based on clip descriptor
 	OfxhImageEffect( const OfxhImageEffectPlugin* plugin,
-			  const Descriptor&        other,
+			  const OfxhDescriptor&        other,
 	          const std::string& context,
 	          bool               interactive );
 
@@ -302,7 +302,7 @@ public:
 	/// virtuals so has to be delayed until after the effect is
 	/// constructed
 	OfxStatus populate();
-	void      populateParams( const imageEffect::Descriptor& descriptor ) throw( core::exception::LogicError );
+	void      populateParams( const imageEffect::OfxhDescriptor& descriptor ) throw( core::exception::LogicError );
 
 	virtual ~OfxhImageEffect();
 
@@ -315,7 +315,7 @@ public:
 	virtual void paramChangedByPlugin( attribute::OfxhParam* param );
 
 	/// get the descriptor for this instance
-	const Descriptor& getDescriptor() const { return _descriptor; }
+	const OfxhDescriptor& getDescriptor() const { return _descriptor; }
 
 	/// return the plugin this instance was created with
 	const tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* getPlugin() const { return _plugin; }

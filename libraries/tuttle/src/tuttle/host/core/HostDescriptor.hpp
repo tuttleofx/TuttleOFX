@@ -46,7 +46,7 @@ namespace core {
  *
  * @todo how to support multiple APIs...
  */
-class Host : public tuttle::host::ofx::imageEffect::ImageEffectHost
+class Host : public tuttle::host::ofx::imageEffect::OfxhImageEffectHost
 {
 public:
 	Host();
@@ -63,18 +63,18 @@ public:
 	 */
 	tuttle::host::core::EffectInstance* newInstance( void*                                                  clientData,
 	                                                 tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                                                 tuttle::host::ofx::imageEffect::Descriptor&            desc,
+	                                                 tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
 	                                                 const std::string&                                     context ) const;
 
 	/// Override this to create a descriptor, this makes the 'root' descriptor
-	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const;
+	tuttle::host::ofx::imageEffect::OfxhDescriptor* makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const;
 
 	/// used to construct a context description, rootContext is the main context
-	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( const tuttle::host::ofx::imageEffect::Descriptor&      rootContext,
+	tuttle::host::ofx::imageEffect::OfxhDescriptor* makeDescriptor( const tuttle::host::ofx::imageEffect::OfxhDescriptor&      rootContext,
 	                                                            tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plug ) const;
 
 	/// used to construct populate the cache
-	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( const std::string&                                     bundlePath,
+	tuttle::host::ofx::imageEffect::OfxhDescriptor* makeDescriptor( const std::string&                                     bundlePath,
 	                                                            tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plug ) const;
 
 	/// vmessage

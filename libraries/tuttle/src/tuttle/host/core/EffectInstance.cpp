@@ -58,32 +58,18 @@ namespace core {
 
 // my host support code
 EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-                                tuttle::host::ofx::imageEffect::Descriptor&        desc,
+                                tuttle::host::ofx::imageEffect::OfxhDescriptor&        desc,
                                 const std::string&                                 context )
-                                tuttle::host::ofx::imageEffect::Descriptor&            desc,
-                                const std::string&                                     context )
-	: tuttle::host::ofx::imageEffect::Instance( plugin, desc, context, false )
+	: tuttle::host::ofx::imageEffect::OfxhImageEffect( plugin, desc, context, false )
 {
 	populate();
 }
 
 EffectInstance::EffectInstance( const EffectInstance& other )
-: tuttle::host::ofx::imageEffect::Instance(other)
-	: tuttle::host::ofx::imageEffect::Instance( other )
+: tuttle::host::ofx::imageEffect::OfxhImageEffect(other)
 {
 	//populate();
 	/*
-	/// @todo copy params
-
-	try
-	{
-		populateClips( _descriptor );
-	}
-	catch( std::logic_error& e )
-	{
-		COUT_EXCEPTION( e );
-	}
-	*/
 	 * /// @todo copy params
 	 *
 	 * try
@@ -313,7 +299,7 @@ OfxStatus EffectInstance::beginRenderAction( OfxTime   startFrame,
 {
 	_frameRange.x = startFrame;
 	_frameRange.y = endFrame;
-	return Instance::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
+	return OfxhImageEffect::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
 
 }

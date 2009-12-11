@@ -47,7 +47,7 @@ protected:
 
 public:
 	EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                tuttle::host::ofx::imageEffect::Descriptor&            desc,
+	                tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
 	                const std::string&                                     context );
 
 	EffectInstance( const EffectInstance& other );
@@ -56,13 +56,13 @@ public:
 
 	bool operator==( const EffectInstance& other ) const;
 
-	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }
+	const std::string& getName() const { return tuttle::host::ofx::imageEffect::OfxhBase::getName(); }
 
 	void dumpToStdOut() const;
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
-	// overridden for ImageEffect::Instance
+	// overridden for imageEffect::OfxhInstance
 
 	/// get default output fielding. This is passed into the clip prefs action
 	/// and  might be mapped (if the host allows such a thing)
