@@ -85,14 +85,12 @@ static property::OfxhPropSpec effectDescriptorStuff[] = {
 // Base
 //
 Base::Base( const property::OfxhSet& set )
-: _properties( set )
-{
-}
+	: _properties( set )
+{}
 
 Base::Base( const property::OfxhPropSpec* propSpec )
-: _properties( propSpec )
-{
-}
+	: _properties( propSpec )
+{}
 
 Base::~Base() {}
 
@@ -339,9 +337,9 @@ static const property::OfxhPropSpec effectInstanceStuff[] = {
 };
 
 Instance::Instance( const OfxhImageEffectPlugin* plugin,
-                    const Descriptor&        descriptor,
-                    const std::string& context,
-                    bool               interactive )
+                    const Descriptor&            descriptor,
+                    const std::string&           context,
+                    bool                         interactive )
 	: Base( effectInstanceStuff ),
 	_plugin( plugin ),
 	_context( context ),
@@ -386,19 +384,18 @@ Instance::Instance( const OfxhImageEffectPlugin* plugin,
 }
 
 Instance::Instance( const Instance& other )
-: Base( other.getProperties() )
-, attribute::OfxhParamSet(other)
-, attribute::OfxhClipImageSet(other)
-, _plugin( other.getPlugin() )
-, _context( other.getContext() )
-, _descriptor( other.getDescriptor() )
-, _interactive( other._interactive )
-, _created( other._created )
-, _continuousSamples( other._continuousSamples )
-, _frameVarying( other._frameVarying )
-, _outputFrameRate( other._outputFrameRate )
-{
-}
+	: Base( other.getProperties() ),
+	attribute::OfxhParamSet( other ),
+	attribute::OfxhClipImageSet( other ),
+	_plugin( other.getPlugin() ),
+	_context( other.getContext() ),
+	_descriptor( other.getDescriptor() ),
+	_interactive( other._interactive ),
+	_created( other._created ),
+	_continuousSamples( other._continuousSamples ),
+	_frameVarying( other._frameVarying ),
+	_outputFrameRate( other._outputFrameRate )
+{}
 
 /// called after construction to populate clips and params
 OfxStatus Instance::populate()
@@ -440,7 +437,7 @@ void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw
 	{
 		attribute::OfxhParamSet* setInstance = this;
 		// SetInstance where the childrens param instances will be added
-		attribute::OfxhParamDescriptor* descriptor   = ( *it );
+		attribute::OfxhParamDescriptor* descriptor = ( *it );
 
 		// get the param descriptor
 		if( !descriptor )
@@ -676,8 +673,8 @@ memory::OfxhMemory* Instance::imageMemoryAlloc( size_t nBytes )
 
 // call the effect entry point
 
-OfxStatus Instance::mainEntry( const char*    action,
-                               const void*    handle,
+OfxStatus Instance::mainEntry( const char*        action,
+                               const void*        handle,
                                property::OfxhSet* inArgs,
                                property::OfxhSet* outArgs )
 {
@@ -787,7 +784,7 @@ OfxStatus Instance::paramInstanceChangedAction( const std::string& paramName,
 		COUT_EXCEPTION( e );
 		return kOfxStatFailed;
 	}
-	catch( ... )
+	catch(... )
 	{
 		COUT_ERROR( "Exception..." );
 		return kOfxStatFailed;
@@ -949,7 +946,7 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 		}
 		catch( core::exception::LogicError& e )
 		{
-			COUT_EXCEPTION(e);
+			COUT_EXCEPTION( e );
 		}
 	}
 	else if( _context == kOfxImageEffectContextTransition )
@@ -964,7 +961,7 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 		}
 		catch( core::exception::LogicError& e )
 		{
-			COUT_EXCEPTION(e);
+			COUT_EXCEPTION( e );
 		}
 	}
 	else if( _context == kOfxImageEffectContextGeneral )
@@ -999,7 +996,7 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 		// retimer
 		try
 		{
-			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			attribute::OfxhClipImage& clip        = getClip( kOfxImageEffectSimpleSourceClipName );
 			attribute::ParamDoubleInstance& param = dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
 			rod = clip.getRegionOfDefinition( floor( time ) );
 			rod = Union( rod, clip.getRegionOfDefinition( floor( time ) + 1 ) );
@@ -1008,7 +1005,7 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 		{
 			COUT_EXCEPTION( e );
 		}
-		catch( ... )
+		catch(... )
 		{
 			COUT_ERROR( "Exception." );
 		}
@@ -1230,7 +1227,7 @@ OfxStatus Instance::getFrameNeededAction( OfxTime   time,
 
 				int nRanges = outArgs.getDimension( name );
 				if( nRanges % 2 != 0 )
-					return kOfxStatFailed;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // bad! needs to be divisible by 2
+					return kOfxStatFailed;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            // bad! needs to be divisible by 2
 
 				if( nRanges == 0 )
 				{
@@ -1967,11 +1964,9 @@ static struct OfxMessageSuiteV1 gMessageSuite =
 /// make an overlay interact for an image effect
 
 OverlayInteract::OverlayInteract( imageEffect::Instance& effect )
-: interact::OfxhInteract( effect.getOverlayDescriptor(), ( void* )( effect.getHandle() ) )
-, _instance( effect )
-{
-
-}
+	: interact::OfxhInteract( effect.getOverlayDescriptor(), ( void* )( effect.getHandle() ) ),
+	_instance( effect )
+{}
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////

@@ -457,10 +457,10 @@ void OfxhParamDescriptorSet::addParam( const std::string& name, OfxhParamDescrip
 /// define a param on this effect
 
 OfxhParamDescriptor* OfxhParamDescriptorSet::paramDefine( const char* paramType,
-                                                  const char* name )
+                                                          const char* name )
 {
 	if( !isStandardType( paramType ) )
-		return NULL;                                                                                                                                                                                                                                                                         /// << EEK! This is bad.
+		return NULL;                                                                                                                                                                                                                                                                                              /// << EEK! This is bad.
 
 	OfxhParamDescriptor* desc = new OfxhParamDescriptor( paramType, name );
 	desc->addStandardParamProps( paramType );
@@ -693,7 +693,7 @@ const std::map<int, attribute::OfxhParam*>& ParamPageInstance::getChildren() con
 		int nChildren = getProperties().getDimension( kOfxParamPropPageChild );
 		for( int i = 0; i < nChildren; i++ )
 		{
-			std::string childName           = getProperties().getStringProperty( kOfxParamPropPageChild, i );
+			std::string childName       = getProperties().getStringProperty( kOfxParamPropPageChild, i );
 			attribute::OfxhParam* child = &_paramSetInstance->getParam( childName );
 			_children[i] = child;
 		}
@@ -986,7 +986,7 @@ OfxhParamSet::OfxhParamSet()
 {}
 
 OfxhParamSet::OfxhParamSet( const OfxhParamSet& other )
-: _paramList(other._paramList.clone())
+	: _paramList( other._paramList.clone() )
 {
 	initMapFromList();
 }
@@ -997,7 +997,7 @@ void OfxhParamSet::initMapFromList()
 	     it != itEnd;
 	     ++it )
 	{
-		_params[it->getName()] = &(*it);
+		_params[it->getName()] = &( *it );
 	}
 }
 

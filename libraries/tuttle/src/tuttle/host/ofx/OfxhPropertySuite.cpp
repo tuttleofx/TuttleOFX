@@ -198,9 +198,9 @@ void OfxhGetHook::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 }
 
 OfxhProperty::OfxhProperty( const std::string& name,
-                    TypeEnum           type,
-                    size_t             dimension,
-                    bool               pluginReadOnly )
+                            TypeEnum           type,
+                            size_t             dimension,
+                            bool               pluginReadOnly )
 	: _name( name ),
 	_type( type ),
 	_dimension( dimension ),
@@ -247,9 +247,9 @@ inline const char* castToAPIType( const std::string& s )
 
 template<class T>
 OfxhPropertyTemplate<T>::OfxhPropertyTemplate( const std::string& name,
-                                       size_t             dimension,
-                                       bool               pluginReadOnly,
-                                       APIType            defaultValue )
+                                               size_t             dimension,
+                                               bool               pluginReadOnly,
+                                               APIType            defaultValue )
 	: OfxhProperty( name, T::typeCode, dimension )
 {
 	if( dimension != _value.size() )
@@ -708,13 +708,13 @@ void OfxhSet::cout() const
 	{
 		OfxhProperty* prop = it->second;
 		std::cout << "    " << it->first << " ";
-		std::cout << "(type:"<< mapTypeEnumToString( prop->getType() ) <<" dim:"<< prop->getDimension() <<" ro:" << prop->getPluginReadOnly() << ") : [";
+		std::cout << "(type:" << mapTypeEnumToString( prop->getType() ) << " dim:" << prop->getDimension() << " ro:" << prop->getPluginReadOnly() << ") : [";
 		int i = 0;
-		for( ; i < (int)(prop->getDimension()) - 1; ++i )
+		for( ; i < (int)( prop->getDimension() ) - 1; ++i )
 		{
 			std::cout << prop->getStringValue( i ) << ", ";
 		}
-		if( prop->getDimension()>0 )
+		if( prop->getDimension() > 0 )
 			std::cout << prop->getStringValue( i );
 		std::cout << "] " << std::endl;
 	}
@@ -977,7 +977,7 @@ size_t OfxhSet::getDimension( const std::string& property ) const
 /// this returns a non negative index if it is found, otherwise, -1
 
 int OfxhSet::findStringPropValueIndex( const std::string& propName,
-                                   const std::string& propValue ) const
+                                       const std::string& propValue ) const
 {
 	String* prop = fetchStringProperty( propName, true );
 

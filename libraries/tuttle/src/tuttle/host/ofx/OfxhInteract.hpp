@@ -140,7 +140,7 @@ public:
 	const property::OfxhSet& getProperties() const { return _properties; }
 
 	/// call the entry point in the descriptor with action and the given args
-	virtual OfxStatus callEntry( const char*    action,
+	virtual OfxStatus callEntry( const char*        action,
 	                             property::OfxhSet* inArgs );
 
 	/// hooks to kOfxInteractPropViewportSize in the property set

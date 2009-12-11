@@ -87,10 +87,10 @@ Host::Host()
 	_properties.setIntProperty( kOfxParamHostPropPageRowColumnCount, 0, 1 );
 }
 
-tuttle::host::core::EffectInstance* Host::newInstance( void*                                              clientData,
+tuttle::host::core::EffectInstance* Host::newInstance( void*                                                  clientData,
                                                        tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-                                                       tuttle::host::ofx::imageEffect::Descriptor&        desc,
-                                                       const std::string&                                 context ) const
+                                                       tuttle::host::ofx::imageEffect::Descriptor&            desc,
+                                                       const std::string&                                     context ) const
 {
 	return new tuttle::host::core::EffectInstance( plugin, desc, context );
 }
@@ -104,14 +104,14 @@ tuttle::host::ofx::imageEffect::Descriptor* Host::makeDescriptor( tuttle::host::
 }
 
 /// used to construct a context description, rootContext is the main context
-tuttle::host::ofx::imageEffect::Descriptor* Host::makeDescriptor( const tuttle::host::ofx::imageEffect::Descriptor&  rootContext,
+tuttle::host::ofx::imageEffect::Descriptor* Host::makeDescriptor( const tuttle::host::ofx::imageEffect::Descriptor&      rootContext,
                                                                   tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const
 {
 	return new tuttle::host::ofx::imageEffect::Descriptor( rootContext, plugin );
 }
 
 /// used to construct populate the cache
-tuttle::host::ofx::imageEffect::Descriptor* Host::makeDescriptor( const std::string&                                 bundlePath,
+tuttle::host::ofx::imageEffect::Descriptor* Host::makeDescriptor( const std::string&                                     bundlePath,
                                                                   tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const
 {
 	return new tuttle::host::ofx::imageEffect::Descriptor( bundlePath, plugin );

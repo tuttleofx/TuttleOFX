@@ -24,18 +24,20 @@ public:
 	LogicError( const OfxStatus& status, const std::string& msg = "" );
 	LogicError( const LogicError& other );
 	virtual ~LogicError() throw( );
-	const OfxStatus ofxStatus() const { return _status; }
+	const OfxStatus   ofxStatus() const    { return _status; }
 	const std::string ofxStatusStr() const { return ofx::mapStatusToString( _status ); }
 	template<typename T>
 	LogicError& operator<<( const T& v ) { _ss << v; return *this; }
 
-	virtual const std::string message() const throw()
+	virtual const std::string message() const throw( )
 	{
 		std::stringstream ss;
+
 		ss << ofxStatusStr() << " : " << std::logic_error::what() << _ss;
 		return ss.str();
 	}
-	virtual const char* what() const throw()
+
+	virtual const char* what() const throw( )
 	{
 		return message().c_str();
 	}

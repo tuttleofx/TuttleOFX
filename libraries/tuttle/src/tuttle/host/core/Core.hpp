@@ -28,15 +28,17 @@ private:
 	core::Host _host;
 	ofx::imageEffect::OfxhImageEffectPluginCache _imageEffectPluginCache;
 	ofx::OfxhPluginCache _pluginCache;
-	core::IMemoryPool &_memoryPool;
-	core::IMemoryCache &_memoryCache;
+	core::IMemoryPool& _memoryPool;
+	core::IMemoryCache& _memoryCache;
 
 public:
 	const ofx::OfxhPluginCache&                         getPluginCache() const            { return _pluginCache; }
-	const Host&                                     getHost() const                   { return _host; }
+	const Host&                                         getHost() const                   { return _host; }
 	const ofx::imageEffect::OfxhImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
-	const core::IMemoryPool&                         getMemoryPool() const             { return _memoryPool; }
-	const core::IMemoryCache&                        getMemoryCache() const            { return _memoryCache; }
+	core::IMemoryPool&                                  getMemoryPool()                   { return _memoryPool; }
+	const core::IMemoryPool&                            getMemoryPool() const             { return _memoryPool; }
+	core::IMemoryCache&                                 getMemoryCache()                  { return _memoryCache; }
+	const core::IMemoryCache&                           getMemoryCache() const            { return _memoryCache; }
 
 public:
 	ofx::imageEffect::OfxhImageEffectPlugin* getImageEffectPluginById( const std::string& id, int vermaj = -1, int vermin = -1 )

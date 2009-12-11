@@ -20,8 +20,8 @@ MemoryCache cache;
 
 Core::Core()
 	: _imageEffectPluginCache( _host ),
-	  _memoryPool( pool ),
-	  _memoryCache( cache )
+	_memoryPool( pool ),
+	_memoryCache( cache )
 {
 	_pluginCache.setCacheVersion( "tuttleV1" );
 

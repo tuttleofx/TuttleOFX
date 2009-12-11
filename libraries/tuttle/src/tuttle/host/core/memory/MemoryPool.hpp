@@ -13,13 +13,15 @@ namespace host {
 namespace core {
 
 class PoolData; ///< forward declaration
-class IPool{
+class IPool
+{
 public:
-	virtual void referenced(PoolData *) = 0;
-	virtual void released(PoolData *) = 0;
+	virtual void referenced( PoolData* ) = 0;
+	virtual void released( PoolData* )   = 0;
 };
 
-class MemoryPool : public IMemoryPool, public IPool
+class MemoryPool : public IMemoryPool,
+	public IPool
 {
 public:
 	MemoryPool( const size_t maxSize = ULONG_MAX );
@@ -27,8 +29,8 @@ public:
 
 	virtual IPoolDataPtr allocate( const size_t size ) throw( std::bad_alloc, std::length_error );
 
-	virtual void referenced(PoolData *);
-	virtual void released(PoolData *);
+	virtual void referenced( PoolData* );
+	virtual void released( PoolData* );
 
 	virtual size_t getUsedMemorySize() const;
 	virtual size_t getAllocatedMemorySize() const;

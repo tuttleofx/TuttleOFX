@@ -101,14 +101,14 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance )
 // construction based on clip instance
 
 OfxhImage::OfxhImage( attribute::OfxhClip& instance,
-              double                   renderScaleX,
-              double                   renderScaleY,
-              void*                    data,
-              const OfxRectI&          bounds,
-              const OfxRectI&          rod,
-              int                      rowBytes,
-              std::string              field,
-              std::string              uniqueIdentifier )
+                      double               renderScaleX,
+                      double               renderScaleY,
+                      void*                data,
+                      const OfxRectI&      bounds,
+                      const OfxRectI&      rod,
+                      int                  rowBytes,
+                      std::string          field,
+                      std::string          uniqueIdentifier )
 	: property::OfxhSet( imageStuffs ),
 	_referenceCount( 1 )
 {

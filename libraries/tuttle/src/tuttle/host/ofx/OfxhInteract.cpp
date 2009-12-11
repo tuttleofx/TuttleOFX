@@ -87,9 +87,9 @@ bool OfxhInteractDescriptor::describe( int bitDepthPerComponent, bool hasAlpha )
 
 // call the interactive entry point
 OfxStatus OfxhInteractDescriptor::callEntry( const char*          action,
-                                 void*                handle,
-                                 OfxPropertySetHandle inArgs,
-                                 OfxPropertySetHandle outArgs ) const
+                                             void*                handle,
+                                             OfxPropertySetHandle inArgs,
+                                             OfxPropertySetHandle outArgs ) const
 {
 	if( _entryPoint && _state != eFailed )
 	{
@@ -258,7 +258,7 @@ void OfxhInteract::getSlaveToParam( std::vector<std::string>& params ) const
 
 /// initialise the argument properties
 void OfxhInteract::initArgProp( OfxTime          time,
-                            const OfxPointD& renderScale )
+                                const OfxPointD& renderScale )
 {
 	double pixelScale[2];
 
@@ -271,8 +271,8 @@ void OfxhInteract::initArgProp( OfxTime          time,
 }
 
 void OfxhInteract::setPenArgProps( const OfxPointD& penPos,
-                               const OfxPointI& penPosViewport,
-                               double           pressure )
+                                   const OfxPointI& penPosViewport,
+                                   double           pressure )
 {
 	_argProperties.setDoublePropertyN( kOfxInteractPropPenPosition, &penPos.x, 2 );
 	#ifdef kOfxInteractPropPenViewportPosition
@@ -282,7 +282,7 @@ void OfxhInteract::setPenArgProps( const OfxPointD& penPos,
 }
 
 void OfxhInteract::setKeyArgProps( int   key,
-                               char* keyString )
+                                   char* keyString )
 {
 	_argProperties.setIntProperty( kOfxPropKeySym, key );
 	_argProperties.setStringProperty( kOfxPropKeyString, keyString );
@@ -304,17 +304,17 @@ OfxStatus OfxhInteract::createInstanceAction()
 }
 
 OfxStatus OfxhInteract::drawAction( OfxTime          time,
-                                const OfxPointD& renderScale )
+                                    const OfxPointD& renderScale )
 {
 	initArgProp( time, renderScale );
 	return callEntry( kOfxInteractActionDraw, &_argProperties );
 }
 
 OfxStatus OfxhInteract::penMotionAction( OfxTime          time,
-                                     const OfxPointD& renderScale,
-                                     const OfxPointD& penPos,
-                                     const OfxPointI& penPosViewport,
-                                     double           pressure )
+                                         const OfxPointD& renderScale,
+                                         const OfxPointD& penPos,
+                                         const OfxPointI& penPosViewport,
+                                         double           pressure )
 {
 	initArgProp( time, renderScale );
 	setPenArgProps( penPos, penPosViewport, pressure );
@@ -322,10 +322,10 @@ OfxStatus OfxhInteract::penMotionAction( OfxTime          time,
 }
 
 OfxStatus OfxhInteract::penUpAction( OfxTime          time,
-                                 const OfxPointD& renderScale,
-                                 const OfxPointD& penPos,
-                                 const OfxPointI& penPosViewport,
-                                 double           pressure )
+                                     const OfxPointD& renderScale,
+                                     const OfxPointD& penPos,
+                                     const OfxPointI& penPosViewport,
+                                     double           pressure )
 {
 	initArgProp( time, renderScale );
 	setPenArgProps( penPos, penPosViewport, pressure );
@@ -333,10 +333,10 @@ OfxStatus OfxhInteract::penUpAction( OfxTime          time,
 }
 
 OfxStatus OfxhInteract::penDownAction( OfxTime          time,
-                                   const OfxPointD& renderScale,
-                                   const OfxPointD& penPos,
-                                   const OfxPointI& penPosViewport,
-                                   double           pressure )
+                                       const OfxPointD& renderScale,
+                                       const OfxPointD& penPos,
+                                       const OfxPointI& penPosViewport,
+                                       double           pressure )
 {
 	initArgProp( time, renderScale );
 	setPenArgProps( penPos, penPosViewport, pressure );
@@ -344,9 +344,9 @@ OfxStatus OfxhInteract::penDownAction( OfxTime          time,
 }
 
 OfxStatus OfxhInteract::keyDownAction( OfxTime          time,
-                                   const OfxPointD& renderScale,
-                                   int              key,
-                                   char*            keyString )
+                                       const OfxPointD& renderScale,
+                                       int              key,
+                                       char*            keyString )
 {
 	initArgProp( time, renderScale );
 	setKeyArgProps( key, keyString );
@@ -354,9 +354,9 @@ OfxStatus OfxhInteract::keyDownAction( OfxTime          time,
 }
 
 OfxStatus OfxhInteract::keyUpAction( OfxTime          time,
-                                 const OfxPointD& renderScale,
-                                 int              key,
-                                 char*            keyString )
+                                     const OfxPointD& renderScale,
+                                     int              key,
+                                     char*            keyString )
 {
 	initArgProp( time, renderScale );
 	setKeyArgProps( key, keyString );
@@ -364,9 +364,9 @@ OfxStatus OfxhInteract::keyUpAction( OfxTime          time,
 }
 
 OfxStatus OfxhInteract::keyRepeatAction( OfxTime          time,
-                                     const OfxPointD& renderScale,
-                                     int              key,
-                                     char*            keyString )
+                                         const OfxPointD& renderScale,
+                                         int              key,
+                                         char*            keyString )
 {
 	initArgProp( time, renderScale );
 	setKeyArgProps( key, keyString );
@@ -374,14 +374,14 @@ OfxStatus OfxhInteract::keyRepeatAction( OfxTime          time,
 }
 
 OfxStatus OfxhInteract::gainFocusAction( OfxTime          time,
-                                     const OfxPointD& renderScale )
+                                         const OfxPointD& renderScale )
 {
 	initArgProp( time, renderScale );
 	return callEntry( kOfxInteractActionGainFocus, &_argProperties );
 }
 
 OfxStatus OfxhInteract::loseFocusAction( OfxTime          time,
-                                     const OfxPointD& renderScale )
+                                         const OfxPointD& renderScale )
 {
 	initArgProp( time, renderScale );
 	return callEntry( kOfxInteractActionLoseFocus, &_argProperties );

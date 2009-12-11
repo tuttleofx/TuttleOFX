@@ -58,29 +58,29 @@ namespace core {
 
 // my host support code
 EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-                                tuttle::host::ofx::imageEffect::Descriptor&        desc,
-                                const std::string&                                 context )
+                                tuttle::host::ofx::imageEffect::Descriptor&            desc,
+                                const std::string&                                     context )
 	: tuttle::host::ofx::imageEffect::Instance( plugin, desc, context, false )
 {
 	populate();
 }
 
 EffectInstance::EffectInstance( const EffectInstance& other )
-: tuttle::host::ofx::imageEffect::Instance(other)
+	: tuttle::host::ofx::imageEffect::Instance( other )
 {
 	//populate();
 	/*
-	/// @todo copy params
-
-	try
-	{
-		populateClips( _descriptor );
-	}
-	catch( std::logic_error& e )
-	{
-		COUT_EXCEPTION( e );
-	}
-	*/
+	 * /// @todo copy params
+	 *
+	 * try
+	 * {
+	 *  populateClips( _descriptor );
+	 * }
+	 * catch( std::logic_error& e )
+	 * {
+	 *  COUT_EXCEPTION( e );
+	 * }
+	 */
 }
 
 /**
@@ -239,8 +239,8 @@ tuttle::host::ofx::attribute::OfxhParam* EffectInstance::newParam( tuttle::host:
 	else if( descriptor.getParamType() == kOfxParamTypePage )
 		return new tuttle::host::ofx::attribute::ParamPageInstance( descriptor, *this );
 	else
-		throw exception::LogicError("Can't create param instance from param descriptor.");
-	
+		throw exception::LogicError( "Can't create param instance from param descriptor." );
+
 }
 
 OfxStatus EffectInstance::editBegin( const std::string& name )

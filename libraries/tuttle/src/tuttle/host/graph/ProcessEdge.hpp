@@ -19,7 +19,7 @@ public:
 
 	~ProcessEdge() {}
 
-	const std::string& name() const { return _edge.name(); }
+	const std::string name() const { return _edge.name(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const ProcessEdge& v );
 

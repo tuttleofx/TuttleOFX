@@ -56,19 +56,16 @@ class Image : public tuttle::host::ofx::imageEffect::OfxhImage
 {
 protected:
 	size_t _ncomp; ///< number of components
-	boost::uint8_t* _data; ///< where we are keeping our image data
+	IPoolDataPtr _data; ///< where we are keeping our image data
 	IMemoryPool& _memoryPool;
 
 public:
 	explicit Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime t );
 	virtual ~Image();
 
-	boost::uint8_t* getPixelData()
-	{
-		return _data;
-	}
+	boost::uint8_t* getPixelData() { return reinterpret_cast<boost::uint8_t*>( _data->data() ); }
 
-	boost::uint8_t* pixel( int x, int y ) const;
+	boost::uint8_t* pixel( int x, int y );
 	static void     copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	                      const OfxPointI& srcCorner, const OfxPointI& count );
 	template < class VIEW_T >
@@ -84,7 +81,7 @@ private:
 };
 
 /**
- * 
+ *
  */
 class ClipImgInstance : public tuttle::host::ofx::attribute::OfxhClipImage
 {
@@ -97,13 +94,13 @@ protected:
 	bool _isConnected;
 	bool _continuousSamples;
 	IMemoryCache& _memoryCache;
-	
+
 public:
 	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc );
 
 	~ClipImgInstance();
 
-	ClipImgInstance* clone() const { return new ClipImgInstance(*this); };
+	ClipImgInstance* clone() const { return new ClipImgInstance( *this ); }
 
 	/**
 	 * @brief Get the Raw Unmapped Pixel Depth from the host
@@ -131,7 +128,7 @@ public:
 	 *      - kOfxImageUnPreMultiplied - the image is unpremultiplied
 	 */
 	const std::string& getPremult() const { return _effect.getOutputPreMultiplication(); }
-	
+
 	/**
 	 * @brief Frame Rate
 	 * The frame rate of a clip or instance's project.
@@ -140,6 +137,7 @@ public:
 	{
 		/// our clip is pretending to be progressive PAL SD by default
 		double val = _effect.getFrameRate();
+
 		return val;
 	}
 
@@ -160,21 +158,22 @@ public:
 	{
 		/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
 		static const std::string v( kOfxImageFieldNone );
+
 		return v;
 	}
-	
+
 	/**
 	 * @brief Connected
 	 * Says whether the clip is actually connected at the moment.
 	 */
-	const bool getConnected() const { return _isConnected; }
-	void setConnected( const bool isConnected ) { _isConnected = isConnected; }
+	const bool getConnected() const                   { return _isConnected; }
+	void       setConnected( const bool isConnected ) { _isConnected = isConnected; }
 
 	/**
 	 * @brief Unmapped Frame Rate
 	 * The unmaped frame range over which an output clip has images.
 	 */
-	double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
+	const double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
 
 	/**
 	 * @brief Unmapped Frame Range -
@@ -187,8 +186,8 @@ public:
 	 *  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
 	 *  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
 	 */
-	bool getContinuousSamples() const { return _continuousSamples; }
-	void setContinuousSamples( const bool continuousSamples ) { _continuousSamples = continuousSamples; }
+	const bool getContinuousSamples() const                         { return _continuousSamples; }
+	void       setContinuousSamples( const bool continuousSamples ) { _continuousSamples = continuousSamples; }
 
 	/**
 	 * @brief override this to fill in the image at the given time.

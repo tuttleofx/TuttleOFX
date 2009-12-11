@@ -183,9 +183,9 @@ public:
 	/// construct me from the cache
 
 	OfxhPlugin( OfxhPluginBinary* bin, int idx, const std::string& api,
-	        int apiVersion, const std::string& identifier,
-	        const std::string& rawIdentifier,
-	        int majorVersion, int minorVersion )
+	            int apiVersion, const std::string& identifier,
+	            const std::string& rawIdentifier,
+	            int majorVersion, int minorVersion )
 		: PluginDesc( api, apiVersion, identifier, rawIdentifier, majorVersion, minorVersion ),
 		_binary( bin ),
 		_index( idx ) {}
@@ -341,7 +341,7 @@ public:
 	OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstractHost* _host );
 	virtual ~OfxhPluginHandle();
 
-	OfxPlugin* getOfxPlugin() { return _op; }
+	OfxPlugin*       getOfxPlugin()       { return _op; }
 	const OfxPlugin* getOfxPlugin() const { return _op; }
 
 	OfxPlugin* operator->() { return _op; }

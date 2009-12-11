@@ -47,8 +47,8 @@ protected:
 
 public:
 	EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                tuttle::host::ofx::imageEffect::Descriptor&        desc,
-	                const std::string&                                 context );
+	                tuttle::host::ofx::imageEffect::Descriptor&            desc,
+	                const std::string&                                     context );
 
 	EffectInstance( const EffectInstance& other );
 

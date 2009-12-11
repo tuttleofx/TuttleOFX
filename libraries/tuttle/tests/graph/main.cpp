@@ -62,7 +62,6 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	BOOST_CHECK( g2.getNode( read1.getName() ) == read1 );
 //}
 
-
 BOOST_AUTO_TEST_CASE( create_processGraph )
 {
 	using namespace std;
@@ -73,22 +72,22 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	core::Core::instance().preload();
 
 	core::Graph g;
-	core::Graph::Node& read1  = g.createNode( "fr.hd3d.tuttle.pngreader" );
-	core::Graph::Node& read2  = g.createNode( "fr.hd3d.tuttle.pngreader" );
+	core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
+	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.pngreader" );
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& write1 = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 
 	g.connect( read1, invert1 );
 	g.connect( read2, invert1 );
 	g.connect( invert1, invert2 );
 	g.connect( invert2, write1 );
 
-//	core::ProcessGraph processGraph(g);
+	//	core::ProcessGraph processGraph(g);
 
 	std::list<std::string> outputs;
-	outputs.push_back(write1.getName());
-	g.compute(outputs, 0, 1);
+	outputs.push_back( write1.getName() );
+	g.compute( outputs, 0, 1 );
 }
 
 //BOOST_AUTO_TEST_CASE( graph_compute )

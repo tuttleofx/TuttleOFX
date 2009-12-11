@@ -70,14 +70,14 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, Of
 }
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
-                                      OfxhPluginBinary*           pb,
-                                      int                     pi,
-                                      const std::string&      api,
-                                      int                     apiVersion,
-                                      const std::string&      pluginId,
-                                      const std::string&      rawId,
-                                      int                     pluginMajorVersion,
-                                      int                     pluginMinorVersion )
+                                              OfxhPluginBinary*           pb,
+                                              int                         pi,
+                                              const std::string&          api,
+                                              int                         apiVersion,
+                                              const std::string&          pluginId,
+                                              const std::string&          rawId,
+                                              int                         pluginMajorVersion,
+                                              int                         pluginMinorVersion )
 	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion ),
 	_pc( pc ),
 	_baseDescriptor( NULL ),
@@ -146,16 +146,16 @@ const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 {
 	/*
-	std::cout << context << " supportsContext? " << _knownContexts.size() << std::endl;
-
-	for( ContextSet::iterator it = _knownContexts.begin(),
-			itEnd = _knownContexts.end();
-			it != itEnd;
-			++it )
-	{
-		TCOUT( "context " << *it );
-	}
-	*/
+	 * std::cout << context << " supportsContext? " << _knownContexts.size() << std::endl;
+	 *
+	 * for( ContextSet::iterator it = _knownContexts.begin(),
+	 *      itEnd = _knownContexts.end();
+	 *      it != itEnd;
+	 ++it )
+	 * {
+	 *  TCOUT( "context " << *it );
+	 * }
+	 */
 
 	return _knownContexts.find( context ) != _knownContexts.end();
 }
@@ -163,7 +163,7 @@ bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 void OfxhImageEffectPlugin::initContexts()
 {
 	const tuttle::host::ofx::property::OfxhSet& eProps = getDescriptor().getProperties();
-	int size                                       = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
+	int size                                           = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
 	for( int j = 0; j < size; ++j )
 	{
@@ -431,7 +431,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 	}
 
 	const imageEffect::Descriptor& e = p->getDescriptor();
-	const property::OfxhSet& eProps      = e.getProperties();
+	const property::OfxhSet& eProps  = e.getProperties();
 
 	int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
@@ -572,22 +572,22 @@ void OfxhImageEffectPluginCache::confirmPlugin( OfxhPlugin* p )
 }
 
 OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary* pb,
-                                           int           pi,
-                                           OfxPlugin*    pl )
+                                                   int               pi,
+                                                   OfxPlugin*        pl )
 {
 	OfxhImageEffectPlugin* plugin = new OfxhImageEffectPlugin( *this, pb, pi, pl );
 
 	return plugin;
 }
 
-OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary*      pb,
-                                           int                pi,
-                                           const std::string& api,
-                                           int                apiVersion,
-                                           const std::string& pluginId,
-                                           const std::string& rawId,
-                                           int                pluginMajorVersion,
-                                           int                pluginMinorVersion )
+OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary*  pb,
+                                                   int                pi,
+                                                   const std::string& api,
+                                                   int                apiVersion,
+                                                   const std::string& pluginId,
+                                                   const std::string& rawId,
+                                                   int                pluginMajorVersion,
+                                                   int                pluginMinorVersion )
 {
 	OfxhImageEffectPlugin* plugin = new OfxhImageEffectPlugin( *this, pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion );
 
