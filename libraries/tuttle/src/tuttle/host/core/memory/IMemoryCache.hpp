@@ -12,7 +12,7 @@ class IMemoryCache
 {
 public:
 	virtual void               put(const std::string& pluginName, const double &time, IPoolDataPtr pData) = 0;
-	virtual IPoolDataPtr&      get(const std::string& pluginName, const double &time) const = 0;
+	virtual IPoolDataPtr       get(const std::string& pluginName, const double &time) const = 0;
 	virtual std::size_t		   size() const = 0;
 	virtual bool    		   empty() const = 0;
 	virtual bool               inCache(const IPoolDataPtr &) const = 0;
