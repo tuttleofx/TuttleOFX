@@ -56,6 +56,43 @@ public:
 
 	bool operator==( const EffectInstance& other ) const;
 
+	const EProcessNodeType getProcessNodeType() const { return eImageEffect; }
+
+	void begin(const ProcessOptions & processOptions)
+	{
+		getClipPreferences();
+		TCOUT_INFOS;
+		beginRenderAction(	processOptions._startFrame
+						,	processOptions._endFrame
+						,	processOptions._step
+						,	processOptions._interactive
+						,	processOptions._renderScale);
+		TCOUT_INFOS;
+	}
+
+	void preProcess(const ProcessOptions & processOptions){
+
+	}
+
+	void process(const ProcessOptions & processOptions)
+	{
+		renderAction(	processOptions._time
+					,	processOptions._field
+					,	processOptions._renderRoI
+					,	processOptions._renderScale);
+	}
+
+	void postProcess(const ProcessOptions & processOptions){}
+
+	void end(const ProcessOptions & processOptions)
+	{
+		endRenderAction(	processOptions._startFrame
+						,	processOptions._endFrame
+						,	processOptions._step
+						,	processOptions._interactive
+						,	processOptions._renderScale);
+	}
+
 	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }
 
 	void dumpToStdOut() const;

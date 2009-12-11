@@ -848,6 +848,7 @@ OfxStatus Instance::beginRenderAction( OfxTime   startFrame,
                                        bool      interactive,
                                        OfxPointD renderScale )
 {
+	TCOUT_INFOS;
 	property::OfxhPropSpec stuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
 		{ kOfxImageEffectPropFrameStep, property::eDouble, 1, true, "0" },
@@ -868,6 +869,7 @@ OfxStatus Instance::beginRenderAction( OfxTime   startFrame,
 
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
+	TCOUT("kOfxImageEffectActionBeginSequenceRender");
 	return mainEntry( kOfxImageEffectActionBeginSequenceRender, this->getHandle(), &inArgs, 0 );
 }
 

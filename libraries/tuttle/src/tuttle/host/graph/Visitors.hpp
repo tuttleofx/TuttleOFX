@@ -30,26 +30,6 @@ struct cycle_detector : public boost::dfs_visitor<>
 		bool& _has_cycle;
 };
 
-/*
- * //visitor: leaves_detector
- * template<class VertexDesc >
- * struct leaves_detector: public boost::bfs_visitor<> {
- *  public:
- *  leaves_detector(std::vector<VertexDesc >& leaves)
- *      : _leaves(leaves) {}
- *
- *      template<class VertexDescriptor, class Graph>
- *      void discover_vertex(VertexDescriptor v, Graph& g) {
- *          std::cout << out_degree(v, g) << std::endl;
- *          if(out_degree(v, g) == 0)
- *              _leaves.push_back(v);
- *      }
- *
- *  protected:
- *      std::vector<VertexDesc >& _leaves;
- * };
- */
-
 //visitor: test_dfs
 struct test_dfs_visitor : public boost::dfs_visitor<>
 {

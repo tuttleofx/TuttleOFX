@@ -33,6 +33,7 @@
 #include "ofxCore.h"
 #include "OfxhPropertySuite.hpp"
 #include "OfxhAttribute.hpp"
+#include <tuttle/host/core/Exception.hpp>
 
 #include <boost/ptr_container/ptr_list.hpp>
 
@@ -176,7 +177,7 @@ public:
 	ParamList&       getParamList()       { return _paramList; }
 
 	// get the param
-	OfxhParam& getParam( std::string name )
+	OfxhParam& getParam( const std::string& name )
 	{
 		ParamMap::iterator it = _params.find( name );
 
@@ -324,6 +325,10 @@ public:
 	// they are not to be overridden by host implementors by
 	// by the various typeed param instances so that they can
 	// deconstruct the var args lists
+
+	virtual OfxStatus set( const std::string& value ) { throw core::exception::LogicError("Not a string parameter."); }
+	virtual OfxStatus set( const int& value ) { throw core::exception::LogicError("Not an int parameter."); }
+	virtual OfxStatus set( const double& value ) { throw core::exception::LogicError("Not a double parameter."); }
 
 	/// get a value, implemented by instances to deconstruct var args
 	virtual OfxStatus getV( va_list arg );

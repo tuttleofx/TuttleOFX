@@ -196,17 +196,21 @@ public:
 		<< "\tedge count: " << getEdgeCount() << std::endl;
 	}
 
-	void test_dfs()
+	template<class Visitor>
+	void dfs(Visitor vis)
 	{
-		test_dfs_visitor vis;
-
 		boost::depth_first_search( _graph, visitor( vis ) );
 	}
 
-	void test_bfs( const VertexDescriptor& vroot )
+	void dfs()
+	{
+		test_dfs_visitor vis;
+		boost::depth_first_search( _graph, visitor( vis ) );
+	}
+
+	void bfs( const VertexDescriptor& vroot )
 	{
 		test_bfs_visitor vis;
-
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
 	}
 
