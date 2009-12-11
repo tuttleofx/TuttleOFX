@@ -41,6 +41,7 @@
 #include <list>
 #include <cstdarg>
 #include <cassert>
+#include <stdexcept>
 
 namespace tuttle {
 namespace host {
@@ -164,40 +165,23 @@ public:
 	virtual ~ParamInstanceSet();
 
 	/// obtain a handle on this set for passing to the C api
-	OfxParamSetHandle getParamSetHandle() const
-	{
-		return ( OfxParamSetHandle ) this;
-	}
+	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
 
-	const ParamMap& getParams() const
-	{
-		return _params;
-	}
+	const ParamMap& getParams() const { return _params; }
+	ParamMap& getParams() { return _params; }
 
-	ParamMap& getParams()
-	{
-		return _params;
-	}
-
-	const ParamList& getParamList() const
-	{
-		return _paramList;
-	}
-
-	ParamList& getParamList()
-	{
-		return _paramList;
-	}
+	const ParamList& getParamList() const { return _paramList; }
+	ParamList& getParamList() { return _paramList; }
 
 	// get the param
-	ParamInstance* getParam( std::string name )
+	ParamInstance& getParam( std::string name )
 	{
 		ParamMap::iterator it = _params.find( name );
 
-		if( it != _params.end() )
-			return it->second;
-		else
-			return 0;
+		if( it == _params.end() )
+			throw( std::logic_error( std::string("Param not found. (")+name+")" ) );
+		return *it->second;
+
 	}
 
 	/// The inheriting plugin instance needs to set this up to deal with

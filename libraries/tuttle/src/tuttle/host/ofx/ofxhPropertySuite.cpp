@@ -699,6 +699,29 @@ void Set::operator=( const Set& s )
 	_chainedSet = s._chainedSet;
 }
 
+void Set::cout() const
+{
+	COUT( "Property::Set {" );
+	for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();
+	     it != itEnd;
+	     ++it )
+	{
+		Property* prop = it->second;
+		std::cout << "    " << it->first << " ";
+		std::cout << "(type:"<< mapTypeEnumToString( prop->getType() ) <<" dim:"<< prop->getDimension() <<" ro:" << prop->getPluginReadOnly() << ") : [";
+		int i = 0;
+		for( ; i < (int)(prop->getDimension()) - 1; ++i )
+		{
+			std::cout << prop->getStringValue( i ) << ", ";
+		}
+		if( prop->getDimension()>0 )
+			std::cout << prop->getStringValue( i );
+		std::cout << "] " << std::endl;
+	}
+	COUT( "}" );
+	COUT( "fetchProperty(kOfxPropIsInteractive): " << fetchProperty( kOfxPropIsInteractive ) );
+}
+
 /// set a particular property
 template<class T>
 void Set::setProperty( const std::string& property, int index, const typename T::Type& value )
@@ -715,7 +738,6 @@ void Set::setProperty( const std::string& property, int index, const typename T:
 			COUT_ERROR( "Property::Set::setProperty - Property " << property << " not in the propertySet (value=" << value << "), " <<
 			            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 			cout();
-
 		}
 	}
 	catch(... )

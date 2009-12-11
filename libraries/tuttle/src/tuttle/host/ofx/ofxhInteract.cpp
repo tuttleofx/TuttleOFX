@@ -44,7 +44,7 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace Interact {
+namespace interact {
 
 //
 // descriptor
@@ -89,7 +89,7 @@ bool Descriptor::describe( int bitDepthPerComponent, bool hasAlpha )
 OfxStatus Descriptor::callEntry( const char*          action,
                                  void*                handle,
                                  OfxPropertySetHandle inArgs,
-                                 OfxPropertySetHandle outArgs )
+                                 OfxPropertySetHandle outArgs ) const
 {
 	if( _entryPoint && _state != eFailed )
 	{
@@ -131,7 +131,7 @@ static Property::PropSpec interactArgsStuffs[] = {
 
 // instance
 
-Instance::Instance( Descriptor& desc, void* effectInstance )
+Instance::Instance( const Descriptor& desc, void* effectInstance )
 	: _descriptor( desc ),
 	_properties( interactInstanceStuffs ),
 	_state( desc.getState() ),
@@ -394,7 +394,7 @@ OfxStatus Instance::loseFocusAction( OfxTime          time,
 
 static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 {
-	Interact::Instance* interactInstance = reinterpret_cast<Interact::Instance*>( handle );
+	interact::Instance* interactInstance = reinterpret_cast<interact::Instance*>( handle );
 
 	if( interactInstance )
 		return interactInstance->swapBuffers();
@@ -404,7 +404,7 @@ static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 
 static OfxStatus interactRedraw( OfxInteractHandle handle )
 {
-	Interact::Instance* interactInstance = reinterpret_cast<Interact::Instance*>( handle );
+	interact::Instance* interactInstance = reinterpret_cast<interact::Instance*>( handle );
 
 	if( interactInstance )
 		return interactInstance->redraw();
@@ -414,7 +414,7 @@ static OfxStatus interactRedraw( OfxInteractHandle handle )
 
 static OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle* property )
 {
-	Interact::Base* interact = reinterpret_cast<Interact::Base*>( handle );
+	interact::Base* interact = reinterpret_cast<interact::Base*>( handle );
 
 	if( interact )
 	{

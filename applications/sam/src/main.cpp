@@ -118,7 +118,7 @@ int main( int argc, char** argv )
 				vPluginsInst[0]->getRegionOfInterestAction( frame, renderScale, defaultRoi, rois );
 
 				// get the output clip
-				outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( vPluginsInst[0]->getClip( kOfxImageEffectOutputClipName ) );
+				outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( &vPluginsInst[0]->getClip( kOfxImageEffectOutputClipName ) );
 				/// RoI is in canonical coords,
 				OfxRectD regionOfInterest = rois[outputClip];
 
@@ -138,9 +138,9 @@ int main( int argc, char** argv )
 				{
 					( *( instIter + 1 ) )->getRegionOfInterestAction( frame, renderScale, regionOfInterest, rois );
 					// get the output clip
-					outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( ( *instIter )->getClip( kOfxImageEffectOutputClipName ) );
+					outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( &( *instIter )->getClip( kOfxImageEffectOutputClipName ) );
 					// get next input
-					inputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( ( *( instIter + 1 ) )->getClip( kOfxImageEffectSimpleSourceClipName ) );
+					inputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( &( *( instIter + 1 ) )->getClip( kOfxImageEffectSimpleSourceClipName ) );
 					( *instIter )->renderAction( t, kOfxImageFieldBoth, renderWindow, renderScale );
 					if( inputClip && outputClip )
 					{

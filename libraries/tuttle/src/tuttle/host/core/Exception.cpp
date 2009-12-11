@@ -3,23 +3,30 @@
 namespace tuttle {
 namespace host {
 namespace core {
+namespace exception {
 
-Exception::Exception( const std::string& msg )
-	: std::logic_error( std::string( "OfxStatErrUnknown" ) + std::string( " - " ) + msg ),
+LogicError::LogicError( const std::string& msg )
+	: std::logic_error( msg ),
 	_status( kOfxStatErrUnknown )
-{}
+{
+}
 
-Exception::Exception( const OfxStatus& status, const std::string& msg )
-	: std::logic_error( std::string( mapStatusToString( status ) ) + std::string( " - " ) + msg ),
+LogicError::LogicError( const OfxStatus& status, const std::string& msg )
+	: std::logic_error( msg ),
 	_status( status )
-{}
+{
+}
 
-Exception::Exception( const Exception& orig )
-	: std::logic_error( orig )
-{}
+LogicError::LogicError( const LogicError& other )
+: std::logic_error(other)
+, _status(other._status)
+{
+	_ss << other._ss; // no copy ctor for stringstream
+}
 
-Exception::~Exception() throw( ) {}
+LogicError::~LogicError() throw( ) {}
 
+}
 }
 }
 }

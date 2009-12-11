@@ -54,7 +54,6 @@ template<class T>
 inline std::string castToString( T i )
 {
 	std::ostringstream o;
-
 	o << i;
 	return o.str();
 }
@@ -453,7 +452,7 @@ protected:
 	/// chained property set, which is read only
 	/// these are searched on a get if not found
 	/// on a local search
-	Set* _chainedSet;
+	const Set* _chainedSet;
 
 	/// set a particular property
 	template<class T>
@@ -494,32 +493,11 @@ public:
 	/// destructor
 	virtual ~Set();
 
-	/// dump to cout
-	void cout() const
-	{
-		COUT( "Property::Set {" );
-		for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();
-		     it != itEnd;
-		     ++it )
-		{
-			Property* prop = it->second;
-			std::cout << "    [" << it->first << "]: " << mapTypeEnumToString( prop->getType() );
-			std::cout << " (";
-			size_t i = 0;
-			for( ; i < prop->getDimension() - 1; ++i )
-			{
-				std::cout << prop->getStringValue( i ) << ", ";
-			}
-			std::cout << prop->getStringValue( i );
-			std::cout << "), ";
-			std::cout << "(ro:" << prop->getPluginReadOnly() << ")" << std::endl;
-		}
-		COUT( "}" );
-		COUT( "fetchProperty(kOfxPropIsInteractive): " << fetchProperty( kOfxPropIsInteractive ) );
-	}
-
 	/// hide assignment
 	void operator=( const Set& );
+
+	/// dump to cout
+	void cout() const;
 
 	/// adds a bunch of properties from PropSpec
 	void addProperties( const PropSpec* );
@@ -533,7 +511,7 @@ public:
 	void addProperty( Property* prop );
 
 	/// set the chained property set
-	void setChainedSet( Set* s ) { _chainedSet = s; }
+	void setChainedSet( const Set* const s ) { _chainedSet = s; }
 
 	/// grab the internal properties map
 	const PropertyMap& getMap() const

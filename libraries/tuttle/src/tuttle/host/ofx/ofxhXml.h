@@ -31,6 +31,8 @@
  */
 
 namespace tuttle {
+namespace host {
+namespace ofx {
 
 namespace XML {
 
@@ -65,6 +67,8 @@ inline std::string attribute( const std::string& st, int val )
 	return attribute( st, o.str() );
 }
 
+}
+}
 }
 }
 

@@ -460,7 +460,7 @@ ParamDescriptor* ParamDescriptorSet::paramDefine( const char* paramType,
                                                   const char* name )
 {
 	if( !isStandardType( paramType ) )
-		return NULL;                                                                                                                                                                                                          /// << EEK! This is bad.
+		return NULL;                                                                                                                                                                                                                                                                         /// << EEK! This is bad.
 
 	ParamDescriptor* desc = new ParamDescriptor( paramType, name );
 	desc->addStandardParamProps( paramType );
@@ -487,7 +487,7 @@ ParamInstance::ParamInstance( const ParamDescriptor& descriptor, attribute::Para
 	_parentInstance( 0 )
 {
 	// parameter has to be owned by paramSet
-	setInstance.addParam( descriptor.getName(), this );
+	setInstance.addParam( descriptor.getName(), this ); ///< @todo tuttle move this from here (introduce too many problems), no good reason to be here.
 
 	getProperties().addNotifyHook( kOfxParamPropEnabled, this );
 	getProperties().addNotifyHook( kOfxParamPropSecret, this );
@@ -694,9 +694,8 @@ const std::map<int, attribute::ParamInstance*>& ParamPageInstance::getChildren()
 		for( int i = 0; i < nChildren; i++ )
 		{
 			std::string childName           = getProperties().getStringProperty( kOfxParamPropPageChild, i );
-			attribute::ParamInstance* child = _paramSetInstance->getParam( childName );
-			if( child )
-				_children[i] = child;
+			attribute::ParamInstance* child = &_paramSetInstance->getParam( childName );
+			_children[i] = child;
 		}
 	}
 	return _children;

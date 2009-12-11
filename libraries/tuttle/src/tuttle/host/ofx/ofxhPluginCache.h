@@ -341,15 +341,10 @@ public:
 	PluginHandle( Plugin* p, tuttle::host::ofx::AbstractHost* _host );
 	virtual ~PluginHandle();
 
-	OfxPlugin* getOfxPlugin()
-	{
-		return _op;
-	}
+	OfxPlugin* getOfxPlugin() { return _op; }
+	const OfxPlugin* getOfxPlugin() const { return _op; }
 
-	OfxPlugin* operator->()
-	{
-		return _op;
-	}
+	OfxPlugin* operator->() { return _op; }
 
 };
 
