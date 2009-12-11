@@ -1,5 +1,7 @@
 #include "Core.hpp"
 
+#include <tuttle/host/core/memory/MemoryPool.hpp>
+#include <tuttle/host/core/memory/MemoryCache.hpp>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -9,9 +11,17 @@ namespace tuttle {
 namespace host {
 namespace core {
 
+namespace {
+
+MemoryPool pool;
+MemoryCache cache(pool);
+
+}  // namespace
+
 Core::Core()
 	: _imageEffectPluginCache( _host ),
-	_memoryCache( _memoryPool )
+	  _memoryPool( pool ),
+	  _memoryCache( cache )
 {
 	_pluginCache.setCacheVersion( "tuttleV1" );
 
