@@ -302,7 +302,7 @@ public:
 	/// virtuals so has to be delayed until after the effect is
 	/// constructed
 	OfxStatus populate();
-	void      populateParams( const imageEffect::Descriptor& descriptor ) throw( core::Exception );
+	void      populateParams( const imageEffect::Descriptor& descriptor ) throw( core::exception::LogicError );
 
 	virtual ~Instance();
 

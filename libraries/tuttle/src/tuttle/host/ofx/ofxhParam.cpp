@@ -487,7 +487,7 @@ ParamInstance::ParamInstance( const ParamDescriptor& descriptor, attribute::Para
 	_parentInstance( 0 )
 {
 	// parameter has to be owned by paramSet
-	setInstance.addParam( descriptor.getName(), this );
+	setInstance.addParam( descriptor.getName(), this ); ///< @todo tuttle move this from here (introduce too many problems), no good reason to be here.
 
 	getProperties().addNotifyHook( kOfxParamPropEnabled, this );
 	getProperties().addNotifyHook( kOfxParamPropSecret, this );

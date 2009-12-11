@@ -29,12 +29,12 @@ public:
 	Graph( const Graph& other);
 	~Graph();
 
-	Node& createNode( const std::string& id ) throw( std::logic_error );
-	void  deleteNode( const EffectInstance& node );
+	Node& createNode( const std::string& id ) throw( exception::LogicError );
+	void  deleteNode( const EffectInstance& node ) throw( exception::LogicError );
 
-	void connect( const Node& out, const Node& in ) throw( Exception );
-	void connect( const EffectInstance& out, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr ) throw( Exception );
-	void unconnectNode( const EffectInstance& node );
+	void connect( const Node& out, const Node& in ) throw( exception::LogicError );
+	void connect( const EffectInstance& out, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr ) throw( exception::LogicError );
+	void unconnectNode( const EffectInstance& node ) throw( exception::LogicError );
 
 	void compute();
 
@@ -52,7 +52,7 @@ private:
 
 private:
 	void addToGraph( EffectInstance& node );
-	void removeFromGraph( EffectInstance& node );
+	void removeFromGraph( EffectInstance& node ) throw( exception::LogicError );
 };
 
 }

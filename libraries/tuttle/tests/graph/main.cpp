@@ -77,12 +77,17 @@ BOOST_AUTO_TEST_CASE( create_node )
 	core::Graph::Node& read2  = g.createNode( "fr.hd3d.tuttle.pngreader" );
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
+//	core::Graph::Node& merge1 = g.createNode( "fr.hd3d.tuttle.merge" );
 	core::Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
 	core::Graph::Node& write1 = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 
 	g.connect( read1, invert1 );
 	g.connect( invert1, invert2 );
-	g.connect( invert2, write1 );
+	g.connect( invert2, basic1 );
+	g.connect( basic1, write1 );
+//	g.connect( read2, merge1, merge1.getClip("A") );
+//	g.connect( invert1, merge1, merge1.getClip("B") );
+//	g.connect( merge1, write1 );
 
 	//read1.getParam('filename').setValue('test1.png')
 
@@ -94,10 +99,7 @@ BOOST_AUTO_TEST_CASE( create_node )
 
 	g.compute();
 
-
-	TCOUT("avant g2");
 	core::Graph g2(g);
-	TCOUT("apres g2");
 
 	BOOST_CHECK_NE( &g2.getNode( read1.getName() ), &read1 );
 

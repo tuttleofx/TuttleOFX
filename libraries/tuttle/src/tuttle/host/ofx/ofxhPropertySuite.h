@@ -54,7 +54,6 @@ template<class T>
 inline std::string castToString( T i )
 {
 	std::ostringstream o;
-
 	o << i;
 	return o.str();
 }

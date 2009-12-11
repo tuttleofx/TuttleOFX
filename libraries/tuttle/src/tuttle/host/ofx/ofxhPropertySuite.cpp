@@ -657,9 +657,6 @@ Set::Set( const Set& other )
 	: _magic( kMagic ),
 	_chainedSet( NULL )
 {
-	TCOUT("YOUPLABOOM !");
-	cout();
-
 	bool failed = false;
 
 	for( std::map<std::string, Property*>::const_iterator i = other._props.begin();
@@ -710,16 +707,16 @@ void Set::cout() const
 	     ++it )
 	{
 		Property* prop = it->second;
-		std::cout << "    [" << it->first << "]: " << mapTypeEnumToString( prop->getType() );
-		std::cout << " (";
+		std::cout << "    " << it->first << " ";
+		std::cout << "(type:"<< mapTypeEnumToString( prop->getType() ) <<" dim:"<< prop->getDimension() <<" ro:" << prop->getPluginReadOnly() << ") : [";
 		int i = 0;
-		//for( ; i < (int)(prop->getDimension()) - 1; ++i )
-		//{
-		//	std::cout << prop->getStringValue( i ) << ", ";
-		//}
-		std::cout << prop->getStringValue( i );
-		std::cout << "), ";
-		std::cout << "(ro:" << prop->getPluginReadOnly() << ")" << std::endl;
+		for( ; i < (int)(prop->getDimension()) - 1; ++i )
+		{
+			std::cout << prop->getStringValue( i ) << ", ";
+		}
+		if( prop->getDimension()>0 )
+			std::cout << prop->getStringValue( i );
+		std::cout << "] " << std::endl;
 	}
 	COUT( "}" );
 	COUT( "fetchProperty(kOfxPropIsInteractive): " << fetchProperty( kOfxPropIsInteractive ) );
@@ -741,7 +738,6 @@ void Set::setProperty( const std::string& property, int index, const typename T:
 			COUT_ERROR( "Property::Set::setProperty - Property " << property << " not in the propertySet (value=" << value << "), " <<
 			            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 			cout();
-
 		}
 	}
 	catch(... )

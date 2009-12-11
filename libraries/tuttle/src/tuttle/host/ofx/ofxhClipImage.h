@@ -329,13 +329,12 @@ public:
 	/**
 	 * get the clip
 	 */
-	ClipImageInstance* getClip( std::string name )
+	ClipImageInstance& getClip( std::string name )
 	{
 		std::map<std::string, ClipImageInstance*>::iterator it = _clips.find( name );
-		if( it != _clips.end() )
-			return it->second;
-		else
-			return 0;
+		if( it == _clips.end() )
+			throw core::exception::LogicError("Clip not found ("+name+").");
+		return *it->second;
 	}
 
 	/**

@@ -87,9 +87,6 @@ static Property::PropSpec effectDescriptorStuff[] = {
 Base::Base( const Property::Set& set )
 : _properties( set )
 {
-	TCOUT( "ofxhImageEffect::Base copy constructor" );
-	//set.cout(); /// @todo tuttle what the fuck here...
-	TCOUT( "ofxhImageEffect::Base copy constructor end" );
 }
 
 Base::Base( const Property::PropSpec* propSpec )
@@ -399,8 +396,6 @@ Instance::Instance( const Instance& other )
 	_frameVarying( other._frameVarying ),
 	_outputFrameRate( other._outputFrameRate )
 {
-	TCOUT_INFOS;
-	other.getProperties().cout();
 }
 
 /// called after construction to populate clips and params
@@ -410,7 +405,7 @@ OfxStatus Instance::populate()
 	{
 		populateClips( _descriptor );
 	}
-	catch( std::logic_error& e )
+	catch( core::exception::LogicError& e )
 	{
 		COUT_EXCEPTION( e );
 		return kOfxStatFailed;
@@ -420,7 +415,7 @@ OfxStatus Instance::populate()
 	{
 		populateParams( _descriptor );
 	}
-	catch( std::logic_error& e )
+	catch( core::exception::LogicError& e )
 	{
 		COUT_EXCEPTION( e );
 		return kOfxStatFailed;
@@ -429,7 +424,7 @@ OfxStatus Instance::populate()
 	return kOfxStatOK;
 }
 
-void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw( core::Exception )
+void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw( core::exception::LogicError )
 {
 
 	const std::list<attribute::ParamDescriptor*>& map = _descriptor.getParamList();
@@ -447,7 +442,7 @@ void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw
 
 		// get the param descriptor
 		if( !descriptor )
-			throw core::Exception( kOfxStatErrValue );
+			throw core::exception::LogicError( kOfxStatErrValue );
 
 		// name and parentName of the parameter
 		std::string name       = descriptor->getName();
@@ -785,9 +780,10 @@ OfxStatus Instance::paramInstanceChangedAction( const std::string& paramName,
 		return mainEntry( kOfxActionInstanceChanged, this->getHandle(), &inArgs, 0 );
 
 	}
-	catch( std::logic_error & e )
+	catch( core::exception::LogicError& e )
 	{
 		COUT_EXCEPTION( e );
+		return kOfxStatFailed;
 	}
 	catch( ... )
 	{
@@ -943,22 +939,30 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 	else if( _context == kOfxImageEffectContextFilter ||
 	         _context == kOfxImageEffectContextPaint )
 	{
-		// filter and paint default to the input clip
-		attribute::ClipImageInstance* clip = getClip( kOfxImageEffectSimpleSourceClipName );
-		if( clip )
+		try
 		{
-			rod = clip->getRegionOfDefinition( time );
+			// filter and paint default to the input clip
+			attribute::ClipImageInstance& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			rod = clip.getRegionOfDefinition( time );
+		}
+		catch( core::exception::LogicError& e )
+		{
+			COUT_EXCEPTION(e);
 		}
 	}
 	else if( _context == kOfxImageEffectContextTransition )
 	{
-		// transition is the union of the two clips
-		attribute::ClipImageInstance* clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
-		attribute::ClipImageInstance* clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
-		if( clipFrom && clipTo )
+		try
 		{
-			rod = clipFrom->getRegionOfDefinition( time );
-			rod = Union( rod, clipTo->getRegionOfDefinition( time ) );
+			// transition is the union of the two clips
+			attribute::ClipImageInstance& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
+			attribute::ClipImageInstance& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
+			rod = clipFrom.getRegionOfDefinition( time );
+			rod = Union( rod, clipTo.getRegionOfDefinition( time ) );
+		}
+		catch( core::exception::LogicError& e )
+		{
+			COUT_EXCEPTION(e);
 		}
 	}
 	else if( _context == kOfxImageEffectContextGeneral )
@@ -991,22 +995,20 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 	else if( _context == kOfxImageEffectContextRetimer )
 	{
 		// retimer
-		attribute::ClipImageInstance* clip = getClip( kOfxImageEffectSimpleSourceClipName );
-		if( clip )
+		try
 		{
-			try {
-				attribute::ParamDoubleInstance& param = dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
-				rod = clip->getRegionOfDefinition( floor( time ) );
-				rod = Union( rod, clip->getRegionOfDefinition( floor( time ) + 1 ) );
-			}
-			catch( std::logic_error& e )
-			{
-				COUT_EXCEPTION( e );
-			}
-			catch( ... )
-			{
-				COUT_ERROR( "Exception." );
-			}
+			attribute::ClipImageInstance& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			attribute::ParamDoubleInstance& param = dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
+			rod = clip.getRegionOfDefinition( floor( time ) );
+			rod = Union( rod, clip.getRegionOfDefinition( floor( time ) + 1 ) );
+		}
+		catch( core::exception::LogicError& e )
+		{
+			COUT_EXCEPTION( e );
+		}
+		catch( ... )
+		{
+			COUT_ERROR( "Exception." );
 		}
 	}
 
@@ -1794,10 +1796,10 @@ static OfxStatus clipGetHandle( OfxImageEffectHandle  imageEffect,
 
 	if( effectInstance )
 	{
-		attribute::ClipImageInstance* instance = effectInstance->getClip( name );
-		*clip = instance->getOfxImageClipHandle();
+		attribute::ClipImageInstance& instance = effectInstance->getClip( name );
+		*clip = instance.getOfxImageClipHandle();
 		if( propertySet )
-			*propertySet = instance->getPropHandle();
+			*propertySet = instance.getPropHandle();
 		return kOfxStatOK;
 	}
 

@@ -240,7 +240,8 @@ tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::h
 	else if( descriptor.getParamType() == kOfxParamTypePage )
 		return new tuttle::host::ofx::attribute::ParamPageInstance( descriptor, *this );
 	else
-		return NULL;
+		throw exception::LogicError("Can't create param instance from param descriptor.");
+	
 }
 
 OfxStatus EffectInstance::editBegin( const std::string& name )
