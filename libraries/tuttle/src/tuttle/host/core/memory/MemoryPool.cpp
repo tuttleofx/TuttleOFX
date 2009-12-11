@@ -9,17 +9,17 @@ class PoolData : public IPoolData
 {
 private:
 	PoolData(); ///< No default Ctor
-	PoolData(const PoolData&); ///< No copy Ctor
+	PoolData( const PoolData& ); ///< No copy Ctor
 	friend class MemoryPool;
 
 public:
-	PoolData( IPool& pool, const size_t size ) :
-		_pool(pool),
-		_id(_count++),
-		_reservedSize(size),
+	PoolData( IPool& pool, const size_t size )
+		: _pool( pool ),
+		_id( _count++ ),
+		_reservedSize( size ),
 		_size( size ),
-		_pData(new char[size]),
-		_refCount(0)
+		_pData( new char[size] ),
+		_refCount( 0 )
 	{}
 
 	~PoolData()
@@ -36,39 +36,43 @@ public:
 	virtual void addRef();
 	virtual void release();
 
-	virtual char*              data()       { return _pData; }
-	virtual const char*        data() const { return _pData; }
-	virtual const size_t  size() const { return _size; }
+	virtual char*        data()               { return _pData; }
+	virtual const char*  data() const         { return _pData; }
+	virtual const size_t size() const         { return _size; }
 	virtual const size_t reservedSize() const { return _reservedSize; }
 
 private:
 	static size_t _count; ///< unique id generator
-	IPool		&_pool; ///< ref to the owner pool
+	IPool& _pool; ///< ref to the owner pool
 	const size_t _id; ///< unique id to identify one memory data
 	const size_t _reservedSize; ///< memory allocated
 	size_t _size; ///< memory requested
-	char * const _pData; ///< own the data
+	char* const _pData; ///< own the data
 	int _refCount; ///< counter on clients currently using this data
 };
 
-void intrusive_ptr_add_ref(IPoolData *pData){
+void intrusive_ptr_add_ref( IPoolData* pData )
+{
 	pData->addRef();
 }
 
-void intrusive_ptr_release(IPoolData *pData){
+void intrusive_ptr_release( IPoolData* pData )
+{
 	pData->release();
 }
 
 size_t PoolData::_count = 0;
 
-void PoolData::addRef() {
-	if(++_refCount==1)
-		_pool.referenced(this);
+void PoolData::addRef()
+{
+	if( ++_refCount == 1 )
+		_pool.referenced( this );
 }
 
-void PoolData::release() {
-	if(--_refCount == 0)
-		_pool.released(this);
+void PoolData::release()
+{
+	if( --_refCount == 0 )
+		_pool.released( this );
 }
 
 MemoryPool::MemoryPool( const size_t maxSize )
@@ -78,44 +82,50 @@ MemoryPool::MemoryPool( const size_t maxSize )
 MemoryPool::~MemoryPool()
 {}
 
-
-void MemoryPool::referenced(PoolData *pData){
+void MemoryPool::referenced( PoolData* pData )
+{
 	_dataUnused.remove( pData );
 	_dataUsed.push_front( pData );
 }
 
-void MemoryPool::released(PoolData *pData){
+void MemoryPool::released( PoolData* pData )
+{
 	_dataUsed.remove( pData );
 	_dataUnused.push_front( pData );
 }
 
 namespace  {
 
-struct DataFitSize : public std::unary_function<PoolData*, void>{
-	DataFitSize(size_t size) :
-		_size(size),
+struct DataFitSize : public std::unary_function<PoolData*, void>
+{
+	DataFitSize( size_t size )
+		: _size( size ),
 		_bestMatchDiff( ULONG_MAX ),
-		_pBestMatch(NULL)
-		{}
+		_pBestMatch( NULL )
+	{}
 
-	void operator()(PoolData *pData) {
+	void operator()( PoolData* pData )
+	{
 		const size_t dataSize = pData->reservedSize();
+
 		if( _size > dataSize )
 			return;
 		const size_t diff = dataSize - _size;
 		if( diff >= _bestMatchDiff )
 			return;
 		_bestMatchDiff = diff;
-		_pBestMatch = pData;
+		_pBestMatch    = pData;
 	}
 
-	PoolData* bestMatch(){
+	PoolData* bestMatch()
+	{
 		return _pBestMatch;
 	}
-private:
-	const size_t _size;
-	size_t _bestMatchDiff;
-	PoolData *_pBestMatch;
+
+	private:
+		const size_t _size;
+		size_t _bestMatchDiff;
+		PoolData* _pBestMatch;
 };
 
 }  // namespace
@@ -123,8 +133,10 @@ private:
 boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const size_t size ) throw( std::bad_alloc, std::length_error )
 {
 	// checking within unused data
-	PoolData * const pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize(size) ).bestMatch();
-	if( pData != NULL ){
+	PoolData* const pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
+
+	if( pData != NULL )
+	{
 		pData->_size = size;
 		return pData;
 	}

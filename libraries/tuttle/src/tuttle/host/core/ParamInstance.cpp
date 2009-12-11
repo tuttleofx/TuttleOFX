@@ -60,8 +60,8 @@ namespace core {
 //
 // StringInstance
 //
-StringInstance::StringInstance( EffectInstance&                                effect,
-                                const std::string&                             name,
+StringInstance::StringInstance( EffectInstance&                                    effect,
+                                const std::string&                                 name,
                                 tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::ParamStringInstance( descriptor, effect ),
 	_effect( effect )
@@ -106,8 +106,8 @@ OfxStatus StringInstance::set( OfxTime time, const char* v )
 //
 // IntegerInstance
 //
-IntegerInstance::IntegerInstance( EffectInstance&                                effect,
-                                  const std::string&                             name,
+IntegerInstance::IntegerInstance( EffectInstance&                                    effect,
+                                  const std::string&                                 name,
                                   tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::ParamIntegerInstance( descriptor, effect ),
 	_effect( effect )
@@ -152,8 +152,8 @@ OfxStatus IntegerInstance::set( OfxTime time, int v )
 //
 // DoubleInstance
 //
-DoubleInstance::DoubleInstance( EffectInstance&                                effect,
-                                const std::string&                             name,
+DoubleInstance::DoubleInstance( EffectInstance&                                    effect,
+                                const std::string&                                 name,
                                 tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::ParamDoubleInstance( descriptor, effect ),
 	_effect( effect )
@@ -209,8 +209,8 @@ OfxStatus DoubleInstance::integrate( OfxTime time1, OfxTime time2, double& )
 //
 // BooleanInstance
 //
-BooleanInstance::BooleanInstance( EffectInstance&                                effect,
-                                  const std::string&                             name,
+BooleanInstance::BooleanInstance( EffectInstance&                                    effect,
+                                  const std::string&                                 name,
                                   tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::ParamBooleanInstance( descriptor, effect ),
 	_effect( effect )
@@ -256,8 +256,8 @@ OfxStatus BooleanInstance::set( OfxTime time, bool v )
 //
 // ChoiceInteger
 //
-ChoiceInstance::ChoiceInstance( EffectInstance&                                effect,
-                                const std::string&                             name,
+ChoiceInstance::ChoiceInstance( EffectInstance&                                    effect,
+                                const std::string&                                 name,
                                 tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::ParamChoiceInstance( descriptor, effect ),
 	_effect( effect )
@@ -303,8 +303,8 @@ OfxStatus ChoiceInstance::set( OfxTime time, int v )
 //
 // RGBAInstance
 //
-RGBAInstance::RGBAInstance( EffectInstance&                                effect,
-                            const std::string&                             name,
+RGBAInstance::RGBAInstance( EffectInstance&                                    effect,
+                            const std::string&                                 name,
                             tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 4>( descriptor, effect ),
 	_effect( effect )
@@ -370,8 +370,8 @@ OfxStatus RGBAInstance::set( OfxTime time, double r, double g, double b, double 
 //
 // RGBInstance
 //
-RGBInstance::RGBInstance( EffectInstance&                                effect,
-                          const std::string&                             name,
+RGBInstance::RGBInstance( EffectInstance&                                    effect,
+                          const std::string&                                 name,
                           tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 3>( descriptor, effect ),
 	_effect( effect )
@@ -431,8 +431,8 @@ OfxStatus RGBInstance::set( OfxTime time, double r, double g, double b )
 //
 // Double2DInstance
 //
-Double2DInstance::Double2DInstance( EffectInstance&                                effect,
-                                    const std::string&                             name,
+Double2DInstance::Double2DInstance( EffectInstance&                                    effect,
+                                    const std::string&                                 name,
                                     tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 2>( descriptor, effect ),
 	_effect( effect )
@@ -487,8 +487,8 @@ OfxStatus Double2DInstance::set( OfxTime time, double x, double y )
 //
 // Integer2DInstance
 //
-Integer2DInstance::Integer2DInstance( EffectInstance&                                effect,
-                                      const std::string&                             name,
+Integer2DInstance::Integer2DInstance( EffectInstance&                                    effect,
+                                      const std::string&                                 name,
                                       tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<IntegerInstance, 2>( descriptor, effect ),
 	_effect( effect )
@@ -543,8 +543,8 @@ OfxStatus Integer2DInstance::set( OfxTime time, int x, int y )
 //
 // Integer3DInstance
 //
-Integer3DInstance::Integer3DInstance( EffectInstance&                                effect,
-                                      const std::string&                             name,
+Integer3DInstance::Integer3DInstance( EffectInstance&                                    effect,
+                                      const std::string&                                 name,
                                       tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<IntegerInstance, 3>( descriptor, effect ),
 	_effect( effect )
@@ -603,8 +603,8 @@ OfxStatus Integer3DInstance::set( OfxTime time, int x, int y, int z )
 //
 // Double3DInstance
 //
-Double3DInstance::Double3DInstance( EffectInstance&                                effect,
-                                    const std::string&                             name,
+Double3DInstance::Double3DInstance( EffectInstance&                                    effect,
+                                    const std::string&                                 name,
                                     tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 3>( descriptor, effect ),
 	_effect( effect )
@@ -663,8 +663,8 @@ OfxStatus Double3DInstance::set( OfxTime time, double x, double y, double z )
 //
 // PushbuttonInstance
 //
-PushbuttonInstance::PushbuttonInstance( EffectInstance&                                effect,
-                                        const std::string&                             name,
+PushbuttonInstance::PushbuttonInstance( EffectInstance&                                    effect,
+                                        const std::string&                                 name,
                                         tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::ParamPushbuttonInstance( descriptor, effect ),
 	_effect( effect )

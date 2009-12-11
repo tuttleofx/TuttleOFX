@@ -61,20 +61,20 @@ public:
 	 *  @arg desc - the descriptor for that plugin
 	 *  @arg context - the context to be created in
 	 */
-	tuttle::host::core::EffectInstance* newInstance( void*                                              clientData,
+	tuttle::host::core::EffectInstance* newInstance( void*                                                  clientData,
 	                                                 tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                                                 tuttle::host::ofx::imageEffect::Descriptor&        desc,
-	                                                 const std::string&                                 context ) const;
+	                                                 tuttle::host::ofx::imageEffect::Descriptor&            desc,
+	                                                 const std::string&                                     context ) const;
 
 	/// Override this to create a descriptor, this makes the 'root' descriptor
 	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const;
 
 	/// used to construct a context description, rootContext is the main context
-	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( const tuttle::host::ofx::imageEffect::Descriptor&  rootContext,
+	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( const tuttle::host::ofx::imageEffect::Descriptor&      rootContext,
 	                                                            tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plug ) const;
 
 	/// used to construct populate the cache
-	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( const std::string&                                 bundlePath,
+	tuttle::host::ofx::imageEffect::Descriptor* makeDescriptor( const std::string&                                     bundlePath,
 	                                                            tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plug ) const;
 
 	/// vmessage

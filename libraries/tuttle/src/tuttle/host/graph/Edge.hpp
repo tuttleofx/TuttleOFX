@@ -14,11 +14,10 @@ public:
 	Edge() {}
 
 	Edge( const std::string& out, const std::string& in, const std::string& inAttrName )
-	:_out(out)
-	,_in(in)
-	,_inAttrName(inAttrName)
-	{
-	}
+		: _out( out ),
+		_in( in ),
+		_inAttrName( inAttrName )
+	{}
 
 	//Edge( const Edge& e );
 
@@ -30,16 +29,16 @@ public:
 	{
 		if( this == &e )
 			return *this;
-		_in = e.in();
-		_out = e.out();
+		_in         = e.in();
+		_out        = e.out();
 		_inAttrName = e.inAttrName();
 		return *this;
 	}
 
-	const std::string& out() const  { return _out; }
-	const std::string& in() const  { return _in; }
-	const std::string& inAttrName() const  { return _inAttrName; }
-	const std::string name() const  { return out() + "." + kOfxOutputAttributeName + "-->" + in() + "." + inAttrName(); }
+	const std::string& out() const        { return _out; }
+	const std::string& in() const         { return _in; }
+	const std::string& inAttrName() const { return _inAttrName; }
+	const std::string  name() const       { return out() + "." + kOfxOutputAttributeName + "-->" + in() + "." + inAttrName(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const Edge& v );
 

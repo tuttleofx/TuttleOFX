@@ -81,34 +81,34 @@ void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 	else if( dstComponents == OFX::ePixelComponentAlpha )
 	{
 		/*
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				DPXReaderProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				DPXReaderProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				DPXReaderProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	*/
+		 * switch( dstBitDepth )
+		 * {
+		 *  case OFX::eBitDepthUByte:
+		 *  {
+		 *      DPXReaderProcess<gray8_view_t> fred( *this );
+		 *      fred.setupAndProcess( args );
+		 *      break;
+		 *  }
+		 *  case OFX::eBitDepthUShort:
+		 *  {
+		 *      DPXReaderProcess<gray16_view_t> fred( *this );
+		 *      fred.setupAndProcess( args );
+		 *      break;
+		 *  }
+		 *  case OFX::eBitDepthFloat:
+		 *  {
+		 *      DPXReaderProcess<gray32f_view_t> fred( *this );
+		 *      fred.setupAndProcess( args );
+		 *      break;
+		 *  }
+		 *  case OFX::eBitDepthNone:
+		 *      COUT_FATALERROR( "BitDepthNone not recognize." );
+		 *      return;
+		 *  case OFX::eBitDepthCustom:
+		 *      COUT_FATALERROR( "BitDepthCustom not recognize." );
+		 *      return;
+		 * }
+		 */
 	}
 }
 

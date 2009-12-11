@@ -5,16 +5,14 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-ProcessGraph::ProcessGraph(const Graph & graph)
-	: _graph(graph)
-{
-}
+ProcessGraph::ProcessGraph( const Graph& graph )
+	: _graph( graph )
+{}
 
 ProcessGraph::~ProcessGraph()
-{
-}
+{}
 
-void ProcessGraph::compute(const std::list<std::string>& nodes, const int t)
+void ProcessGraph::compute( const std::list<std::string>& nodes, const int t )
 {
 	Graph::InternalGraph optimizedGraph = _graph.getGraph();
 

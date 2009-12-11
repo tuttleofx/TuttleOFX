@@ -10,10 +10,10 @@ namespace core {
 class ProcessGraph
 {
 public:
-	ProcessGraph(const Graph & graph);
+	ProcessGraph( const Graph& graph );
 	~ProcessGraph();
 
-	void compute(const std::list<std::string>& nodes, const int t);
+	void compute( const std::list<std::string>& nodes, const int t );
 
 private:
 	const Graph _graph;

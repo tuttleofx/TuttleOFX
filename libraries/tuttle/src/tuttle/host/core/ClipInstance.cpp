@@ -65,7 +65,6 @@
 #include <ctime>
 #include <cstring>
 
-
 /// @todo TUTTLE_TODO : clean using namespace...
 using namespace tuttle::host;
 using namespace tuttle::host::ofx::imageEffect;
@@ -78,8 +77,7 @@ namespace core {
 Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 	: tuttle::host::ofx::imageEffect::OfxhImage( clip )
 	/// this ctor will set basic props on the image
-	, _data( NULL )
-	, _memoryPool( core::Core::instance().getMemoryPool() )
+	_memoryPool( core::Core::instance().getMemoryPool() )
 {
 	size_t memlen = 0;
 	size_t rowlen = 0;
@@ -121,17 +119,16 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 		rowlen = int(_ncomp * dimensions.x * sizeof( float ) );
 	}
 
-	//_memoryPool.
-	_data = new uint8_t[memlen];
+	_data = _memoryPool.allocate( memlen );
 	// now blank it
-	memset( _data, 0, memlen );
+	memset( getPixelData(), 0, memlen );
 
 	// render scale x and y of 1.0
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 0 );
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 1 );
 
 	// data ptr
-	setPointerProperty( kOfxImagePropData, _data );
+	setPointerProperty( kOfxImagePropData, getPixelData() );
 
 	// bounds and rod
 	setIntProperty( kOfxImagePropBounds, ibounds.x1, 0 );
@@ -150,11 +147,9 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 }
 
 Image::~Image()
-{
-	delete [] _data;
-}
+{}
 
-uint8_t* Image::pixel( int x, int y ) const
+uint8_t* Image::pixel( int x, int y )
 {
 	OfxRectI bounds = getBounds();
 
@@ -162,7 +157,7 @@ uint8_t* Image::pixel( int x, int y ) const
 	{
 		int rowBytes = getIntProperty( kOfxImagePropRowBytes );
 		int offset   = ( y = bounds.y1 ) * rowBytes + ( x - bounds.x1 ) * _ncomp;
-		return &( _data[offset] );
+		return &(getPixelData()[offset]);
 	}
 	return 0;
 }
@@ -175,7 +170,7 @@ VIEW_T Image::gilViewFromImage( Image* img )
 	typedef typename VIEW_T::value_type value_t;
 	return interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
 	                         std::abs( bounds.y2 - bounds.y1 ),
-	                         (value_t*)( img->getPixelData() ),
+	                         ( value_t* )( img->getPixelData() ),
 	                         img->getRowBytes() );
 }
 
@@ -320,7 +315,7 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 }
 
 ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
-: tuttle::host::ofx::attribute::OfxhClipImage( effect, desc ),
+: tuttle::host::ofx::attribute::OfxhClipImage( effect, desc )
 , _effect( effect )
 , _inputImage( NULL )
 , _outputImage( NULL )
@@ -335,14 +330,14 @@ ClipImgInstance::~ClipImgInstance()
 {
 }
 
-ClipImgInstance::releaseClipsInputs()
+void ClipImgInstance::releaseClipsInputs()
 {
 	if( _inputImage )
 		if( _inputImage->releaseReference() )
 			delete _inputImage;
 }
 
-ClipImgInstance::releaseClipsOutput()
+void ClipImgInstance::releaseClipsOutput()
 {
 	if( _outputImage )
 		if( _outputImage->releaseReference() )
@@ -393,6 +388,7 @@ OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
 const std::string& ClipImgInstance::getUnmappedBitDepth() const
 {
 	static const std::string v( _effect.getProjectBitDepth() );
+
 	return v;
 }
 
@@ -401,6 +397,7 @@ const std::string& ClipImgInstance::getUnmappedBitDepth() const
 const std::string& ClipImgInstance::getUnmappedComponents() const
 {
 	static const std::string v( _effect.getProjectPixelComponentsType() );
+
 	return v;
 }
 

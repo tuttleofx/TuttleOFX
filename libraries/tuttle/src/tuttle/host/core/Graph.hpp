@@ -28,24 +28,23 @@ public:
 
 public:
 	Graph();
-	Graph( const Graph& other);
+	Graph( const Graph& other );
 	~Graph();
 
 	Node& createNode( const std::string& id ) throw( exception::LogicError );
 	void  deleteNode( const EffectInstance& node ) throw( exception::LogicError );
 
-
 	void connect( const Node& out, const Node& in ) throw( exception::LogicError );
 	void connect( const EffectInstance& out, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr ) throw( exception::LogicError );
 	void unconnectNode( const EffectInstance& node ) throw( exception::LogicError );
 
-	void compute(const std::list<std::string>& nodes, const int first, const int last);
+	void compute( const std::list<std::string>& nodes, const int first, const int last );
 
-	const InternalGraph & getGraph() const { return _graph; }
+	const InternalGraph& getGraph() const { return _graph; }
 
 public:
-	const Node& getNode( const std::string& id ) const { return _nodes.at(id); }
-	void dumpToStdOut();
+	const Node& getNode( const std::string& id ) const { return _nodes.at( id ); }
+	void        dumpToStdOut();
 
 private:
 	InternalGraph _graph;

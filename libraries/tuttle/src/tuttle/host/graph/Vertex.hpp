@@ -14,15 +14,15 @@ class Vertex
 {
 public:
 	Vertex()
-	: _name( "Undefined" ),
-	_processNode( NULL )
+		: _name( "Undefined" ),
+		_processNode( NULL )
 	{}
 
 	Vertex( const std::string& name,
 	        core::ProcessNode& processNode )
 		: _name( name ),
 		_processNode( &processNode )
-		{}
+	{}
 
 	Vertex( Vertex& v )
 		: _name( v.name() ),

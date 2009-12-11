@@ -5,21 +5,23 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-bool MemoryCache::Key::operator<(const Key&other) const {
-	if(_time!=other._time)
+bool MemoryCache::Key::operator<( const Key& other ) const
+{
+	if( _time != other._time )
 		return _time < other._time;
 	return _pluginName < other._pluginName;
 }
 
-void MemoryCache::put(const std::string& pluginName, const double &time,IPoolDataPtr pData)
+void MemoryCache::put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData )
 {
-	_map[Key(pluginName, time)] = pData;
+	_map[Key( pluginName, time )] = pData;
 }
 
-IPoolDataPtr MemoryCache::get(const std::string& pluginName, const double &time) const
+CACHE_ELEMENT MemoryCache::get( const std::string& pluginName, const double& time ) const
 {
-	MAP::const_iterator itr = _map.find(Key(pluginName, time));
-	if(itr == _map.end())
+	MAP::const_iterator itr = _map.find( Key( pluginName, time ) );
+
+	if( itr == _map.end() )
 		return NULL;
 	return itr->second;
 }
@@ -34,57 +36,63 @@ bool MemoryCache::empty() const
 	return _map.empty();
 }
 
-bool MemoryCache::inCache(const IPoolDataPtr &pData) const
+bool MemoryCache::inCache( const CACHE_ELEMENT& pData ) const
 {
-	return getIteratorForValue(pData) != _map.end();
+	return getIteratorForValue( pData ) != _map.end();
 }
 
 namespace {
 
-const std::string EMPTY_STRING="";
+const std::string EMPTY_STRING = "";
 
 #include <functional>
 template<typename T>
-struct FindValuePredicate : public std::unary_function<typename T::value_type,bool>
+struct FindValuePredicate : public std::unary_function<typename T::value_type, bool>
 {
-	const typename T::mapped_type& _value;
-	FindValuePredicate(const typename T::mapped_type& value) : _value(value){}
+	const typename T::mapped_type & _value;
+	FindValuePredicate( const typename T::mapped_type& value ) : _value( value ) {}
 
-	bool operator()(const typename T::value_type& pair)
+	bool operator()( const typename T::value_type& pair )
 	{
 		return pair.second == _value;
 	}
+
 };
 
 }  // namespace
 
-MemoryCache::MAP::const_iterator MemoryCache::getIteratorForValue(const IPoolDataPtr &pData) const {
-	return std::find_if(_map.begin(), _map.end(), FindValuePredicate<MAP>(pData));
-}
-
-MemoryCache::MAP::iterator MemoryCache::getIteratorForValue(const IPoolDataPtr &pData) {
-	return std::find_if(_map.begin(), _map.end(), FindValuePredicate<MAP>(pData));
-}
-
-double MemoryCache::getTime(const IPoolDataPtr &pData) const
+MemoryCache::MAP::const_iterator MemoryCache::getIteratorForValue( const CACHE_ELEMENT& pData ) const
 {
-	MAP::const_iterator itr = getIteratorForValue(pData);
-	if(itr == _map.end())
+	return std::find_if( _map.begin(), _map.end(), FindValuePredicate<MAP>( pData ) );
+}
+
+MemoryCache::MAP::iterator MemoryCache::getIteratorForValue( const CACHE_ELEMENT& pData )
+{
+	return std::find_if( _map.begin(), _map.end(), FindValuePredicate<MAP>( pData ) );
+}
+
+double MemoryCache::getTime( const CACHE_ELEMENT& pData ) const
+{
+	MAP::const_iterator itr = getIteratorForValue( pData );
+
+	if( itr == _map.end() )
 		return 0;
 	return itr->first._time;
 }
 
-const std::string& MemoryCache::getPluginName(const IPoolDataPtr &pData) const
+const std::string& MemoryCache::getPluginName( const CACHE_ELEMENT& pData ) const
 {
-	MAP::const_iterator itr = getIteratorForValue(pData);
-	if(itr == _map.end())
+	MAP::const_iterator itr = getIteratorForValue( pData );
+
+	if( itr == _map.end() )
 		return EMPTY_STRING;
 	return itr->first._pluginName;
 }
 
-bool MemoryCache::remove(const IPoolDataPtr &pData)
+bool MemoryCache::remove( const CACHE_ELEMENT& pData )
 {
-	const MAP::iterator itr = getIteratorForValue(pData);
+	const MAP::iterator itr = getIteratorForValue( pData );
+
 	if( itr == _map.end() )
 		return false;
 	_map.erase( itr );
