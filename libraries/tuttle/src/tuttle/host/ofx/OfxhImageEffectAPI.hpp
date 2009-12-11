@@ -57,10 +57,10 @@ OfxhImageEffectPluginCache& _pc;
 
 // this comes off Descriptor's property set after a describe
 // context independent
-Descriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
+OfxhDescriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
 /// map to store contexts in
-typedef std::map<std::string, Descriptor*> ContextMap;
+typedef std::map<std::string, OfxhDescriptor*> ContextMap;
 ContextMap _contexts;
 
 typedef std::set<std::string> ContextSet;
@@ -87,16 +87,16 @@ public:
 	APICache::OfxhPluginAPICacheI& getApiHandler();
 
 	/// @brief get the base image effect descriptor
-	Descriptor& getDescriptor();
+	OfxhDescriptor& getDescriptor();
 
 	/// @brief get the base image effect descriptor, const version
-	const Descriptor& getDescriptor() const;
+	const OfxhDescriptor& getDescriptor() const;
 
 	/// @brief get the image effect descriptor for the context
-	Descriptor* getDescriptorInContext( const std::string& context );
+	OfxhDescriptor* getDescriptorInContext( const std::string& context );
 
 	void addContext( const std::string& context );
-	void addContext( const std::string& context, Descriptor* ied );
+	void addContext( const std::string& context, OfxhDescriptor* ied );
 
 	virtual void saveXML( std::ostream& os );
 
@@ -115,10 +115,10 @@ public:
 	 * @brief this is called to make an instance of the effect
 	 *  the client data ptr is what is passed back to the client creation function
 	 */
-	imageEffect::Instance* createInstance( const std::string& context, void* clientDataPtr );
+	imageEffect::OfxhImageEffect* createInstance( const std::string& context, void* clientDataPtr );
 
 private:
-	Descriptor* describeInContextAction( const std::string& context );
+	OfxhDescriptor* describeInContextAction( const std::string& context );
 };
 
 class OfxhMajorPlugin
@@ -178,15 +178,15 @@ private:
 	/// xml parsing state
 	property::OfxhProperty* _currentProp;
 
-	Descriptor* _currentContext;
+	OfxhDescriptor* _currentContext;
 	attribute::OfxhParamDescriptor* _currentParam;
 	attribute::OfxhClipImageDescriptor* _currentClip;
 
 	/// pointer to our image effect host
-	tuttle::host::ofx::imageEffect::ImageEffectHost* _host;
+	tuttle::host::ofx::imageEffect::OfxhImageEffectHost* _host;
 
 public:
-	explicit OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::ImageEffectHost& host );
+	explicit OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::OfxhImageEffectHost& host );
 	virtual ~OfxhImageEffectPluginCache();
 
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
@@ -197,7 +197,7 @@ public:
 	/// pick the highest found version.
 	OfxhImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 );
 
-	tuttle::host::ofx::imageEffect::ImageEffectHost* getHost()
+	tuttle::host::ofx::imageEffect::OfxhImageEffectHost* getHost()
 	{
 		return _host;
 	}

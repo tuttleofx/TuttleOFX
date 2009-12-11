@@ -45,8 +45,8 @@ namespace host {
 namespace ofx {
 
 namespace imageEffect {
-class Instance;
-class Descriptor;
+class OfxhImageEffect;
+class OfxhDescriptor;
 }
 namespace attribute {
 
@@ -114,10 +114,10 @@ class OfxhClipImage : virtual public OfxhClipImageAccessor,
 	public attribute::OfxhClip
 {
 protected:
-	imageEffect::Instance& _effectInstance; ///< image effect instance
+	imageEffect::OfxhImageEffect& _effectInstance; ///< image effect instance
 
 public:
-	OfxhClipImage( imageEffect::Instance& effectInstance, const attribute::OfxhClipImageDescriptor& desc );
+	OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, const attribute::OfxhClipImageDescriptor& desc );
 	OfxhClipImage( const OfxhClipImage& other );
 
 	virtual ~OfxhClipImage() {}
@@ -317,7 +317,7 @@ public:
 	/// dtor.
 	virtual ~OfxhClipImageSet();
 
-	void populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error );
+	void populateClips( const imageEffect::OfxhDescriptor& descriptor ) throw( std::logic_error );
 
 	const ClipImageMap& getClips() const
 	{

@@ -125,11 +125,12 @@ OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 /**
  * clip clipimage instance
  */
-OfxhClipImage::OfxhClipImage( imageEffect::Instance& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
-	: attribute::OfxhClip( desc ),
-	_effectInstance( effectInstance )
-	//				, _pixelDepth( kOfxBitDepthNone )
-	//				, _components( kOfxImageComponentNone )
+
+OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
+: attribute::OfxhClip( desc )
+, _effectInstance( effectInstance )
+//				, _pixelDepth( kOfxBitDepthNone )
+//				, _components( kOfxImageComponentNone )
 {
 	//					_par = 1.0;
 	/**
@@ -243,13 +244,13 @@ void OfxhClipImageSet::initMapFromList()
 OfxhClipImageSet::~OfxhClipImageSet()
 {}
 
-void OfxhClipImageSet::populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error )
+void OfxhClipImageSet::populateClips( const imageEffect::OfxhDescriptor& descriptor ) throw( std::logic_error )
 {
-	const imageEffect::Descriptor::ClipImageDescriptorVector& clips = descriptor.getClipsByOrder();
+	const imageEffect::OfxhDescriptor::ClipImageDescriptorVector& clips = descriptor.getClipsByOrder();
 
 	_clipsByOrder.reserve( clips.size() );
 	/// @todo tuttle don't manipulate clip here, delegate to ClipInstanceSet
-	for( imageEffect::Descriptor::ClipImageDescriptorVector::const_iterator it = clips.begin(), itEnd = clips.end();
+	for( imageEffect::OfxhDescriptor::ClipImageDescriptorVector::const_iterator it = clips.begin(), itEnd = clips.end();
 	     it != itEnd;
 	     ++it )
 	{

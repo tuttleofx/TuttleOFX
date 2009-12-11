@@ -144,9 +144,12 @@ class DpxImage
 private:
 	bool _bigEndian;
 	DpxHeader _header;
-	boost::uint8_t* _data;
+	size_t			_dataSize;			/// raw data size given by dataSize()
+	boost::uint8_t* _data;				/// raw data (better if was scoped_ptr)
+	boost::uint8_t* _indyData;			/// right endianness reinterpreted data
 
 	void readHeader( fs::ifstream& f );
+	boost::uint8_t* reinterpretEndianness() const;
 
 public:
 	enum EDPX_CompType
@@ -159,7 +162,7 @@ public:
 	};
 	DpxImage();
 	~DpxImage();
-	void read( const fs::path& filename );
+	void read( const fs::path& filename, bool reinterpretation = true );
 	void readHeader( const fs::path& filename );
 	void write( const fs::path& filename );
 
@@ -273,14 +276,13 @@ public:
 		return type;
 	}
 
-	inline boost::uint8_t* data() const
+	inline const boost::uint8_t* rawData() const
 	{
 		return _data;
 	}
-
-	/// NEED TO BE DELETED BY CALLER
-	const boost::uint16_t* data16() const;
-
+	inline boost::uint8_t* data() const {
+		return _indyData;
+	}
 };
 
 }  // namespace io

@@ -24,7 +24,7 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 
 	plug->loadAndDescribeActions(); ///< @todo tuttle keep here or move inside getImageEffectPluginById
 
-	ofx::imageEffect::Instance* plugInst = NULL;
+	ofx::imageEffect::OfxhImageEffect* plugInst = NULL;
 	if( plug->supportsContext( kOfxImageEffectContextFilter ) )
 	{
 		plugInst = plug->createInstance( kOfxImageEffectContextFilter, NULL );

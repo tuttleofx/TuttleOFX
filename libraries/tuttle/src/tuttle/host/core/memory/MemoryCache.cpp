@@ -12,12 +12,12 @@ bool MemoryCache::Key::operator<( const Key& other ) const
 	return _pluginName < other._pluginName;
 }
 
-void MemoryCache::put( const std::string& pluginName, const double& time, IPoolDataPtr pData )
+void MemoryCache::put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData )
 {
 	_map[Key( pluginName, time )] = pData;
 }
 
-IPoolDataPtr MemoryCache::get( const std::string& pluginName, const double& time ) const
+CACHE_ELEMENT MemoryCache::get( const std::string& pluginName, const double& time ) const
 {
 	MAP::const_iterator itr = _map.find( Key( pluginName, time ) );
 
@@ -36,7 +36,7 @@ bool MemoryCache::empty() const
 	return _map.empty();
 }
 
-bool MemoryCache::inCache( const IPoolDataPtr& pData ) const
+bool MemoryCache::inCache( const CACHE_ELEMENT& pData ) const
 {
 	return getIteratorForValue( pData ) != _map.end();
 }
@@ -61,17 +61,17 @@ struct FindValuePredicate : public std::unary_function<typename T::value_type, b
 
 }  // namespace
 
-MemoryCache::MAP::const_iterator MemoryCache::getIteratorForValue( const IPoolDataPtr& pData ) const
+MemoryCache::MAP::const_iterator MemoryCache::getIteratorForValue( const CACHE_ELEMENT& pData ) const
 {
 	return std::find_if( _map.begin(), _map.end(), FindValuePredicate<MAP>( pData ) );
 }
 
-MemoryCache::MAP::iterator MemoryCache::getIteratorForValue( const IPoolDataPtr& pData )
+MemoryCache::MAP::iterator MemoryCache::getIteratorForValue( const CACHE_ELEMENT& pData )
 {
 	return std::find_if( _map.begin(), _map.end(), FindValuePredicate<MAP>( pData ) );
 }
 
-double MemoryCache::getTime( const IPoolDataPtr& pData ) const
+double MemoryCache::getTime( const CACHE_ELEMENT& pData ) const
 {
 	MAP::const_iterator itr = getIteratorForValue( pData );
 
@@ -80,7 +80,7 @@ double MemoryCache::getTime( const IPoolDataPtr& pData ) const
 	return itr->first._time;
 }
 
-const std::string& MemoryCache::getPluginName( const IPoolDataPtr& pData ) const
+const std::string& MemoryCache::getPluginName( const CACHE_ELEMENT& pData ) const
 {
 	MAP::const_iterator itr = getIteratorForValue( pData );
 
@@ -89,7 +89,7 @@ const std::string& MemoryCache::getPluginName( const IPoolDataPtr& pData ) const
 	return itr->first._pluginName;
 }
 
-bool MemoryCache::remove( const IPoolDataPtr& pData )
+bool MemoryCache::remove( const CACHE_ELEMENT& pData )
 {
 	const MAP::iterator itr = getIteratorForValue( pData );
 

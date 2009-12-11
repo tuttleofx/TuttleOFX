@@ -39,19 +39,22 @@ inline boost::uint16_t reverseBytes( boost::uint16_t v )
 }
 
 DpxImage::DpxImage()
-	: _bigEndian( false ),
-	_data( NULL )
+: _bigEndian( false )
+, _data( NULL )
+, _indyData( NULL )
 {
 	memset( &_header, 0, sizeof( DpxHeader ) );
 }
 
 DpxImage::~DpxImage()
 {
+	if( _data != _indyData && _indyData )
+		delete [] _indyData;
 	if( _data )
 		delete [] _data;
 }
 
-void DpxImage::read( const path& filename )
+void DpxImage::read( const path& filename, bool reinterpretation )
 {
 	//
 	// Open file
@@ -68,22 +71,31 @@ void DpxImage::read( const path& filename )
 	readHeader( f );
 
 	// initialize raw data
-	size_t sz = dataSize();
+	_dataSize = dataSize();
 	// reads and throws away characters until 'offset' characters have been read
 	f.ignore( _header._fileInfo.offset - f.tellg() );
 	printf( "DPX pixel offset start: %d\n", _header._fileInfo.offset );
 	if( _data )
 		delete [] _data;
-	_data = new uint8_t[ sz ];
-
+	// Data have to be packed on uint32_t size to allow indianess fast
+	// reinterpretation
+	_data = new uint8_t[ _dataSize + ( _dataSize % sizeof(uint32_t) ) ];
 	// reads data
-	if( !f.read( reinterpret_cast<char*>( _data ), sz ) )
+	if( !f.read( reinterpret_cast<char*>( _data ), _dataSize ) )
 	{
 		std::ostringstream msg;
 		msg << "Unable to read data ";
 		msg << "( " << filename << " )" ;
 		throw std::exception();
 	}
+	if( _indyData ) {
+		delete [] _indyData;
+		_indyData = NULL;
+	}
+	if ( reinterpretation )
+		_indyData = reinterpretEndianness();
+	else
+		_indyData = _data;
 
 	f.close();
 }
@@ -212,7 +224,7 @@ void DpxImage::readHeader( ifstream& f )
 	}
 
 	uint8_t bitSize = _header._imageInfo.image_element[0].bit_size;
-	if( bitSize != 8 && bitSize != 10 )
+	if( bitSize != 8 && bitSize != 10 && bitSize != 12 && bitSize != 16)
 	{
 		std::ostringstream msg;
 		msg << "DPX: bad bit size value (= " << bitSize << ")";
@@ -220,7 +232,6 @@ void DpxImage::readHeader( ifstream& f )
 		throw std::exception();
 	}
 
-	//TODO dpx packing
 	uint16_t packing = _header._imageInfo.image_element[0].packing;
 	if( packing == 256 )
 		packing = 1;
@@ -255,216 +266,17 @@ void DpxImage::readHeader( const path& filename )
 
 void DpxImage::write( const path& filename ) {}
 
-/// HAVE TO BE DELETED BY CALLER
-const uint16_t* DpxImage::data16() const
+uint8_t* DpxImage::reinterpretEndianness() const
 {
-	size_t nComponents = components();
-	uint8_t bits       = _header._imageInfo.image_element[0].bit_size;
-	size_t w           = width();
-	size_t h           = height();
-	uint16_t* pData    = new uint16_t[w * h * nComponents];
-
-	printf( "Number of components: %d\n", nComponents );
-	switch( bits )
-	{
-		case 10:
-		{
-			size_t x;
-			// uint32_t channel size
-			size_t n          = w * h;
-			uint32_t* pData32 = (uint32_t*)_data;
-			switch( packing() )
-			{
-				case 0:
-				{
-					for( size_t y = 0; y < h; ++y )
-					{
-						size_t start = y * ( w * nComponents );
-						size_t stop  = start + ( w * nComponents );
-						for( x = start; x < stop; ++x )
-						{
-							unsigned a = ( x * bits ) / ( sizeof( uint32_t ) * 8 );
-							// b bits greater than 32*k and lesser than 32*(k+1)
-							unsigned b = ( x * bits ) % ( sizeof( uint32_t ) * 8 );
-							if( b > 22 )
-							{
-								/*
-								 * // Bits are between current pData32 and next one
-								 * pData[x] = ((_bigEndian ? swapEndian<uint32_t>( pData32[a + 1] ) : pData32[a + 1] >> b) << 6) |
-								 *         ((( _bigEndian ? swapEndian<uint32_t>( pData32[a] ) : pData32[a] >> ( 32 - b ) ) & 0x3ff) << 6);
-								 */
-							}
-							else
-							{
-								pData[x] = ( ( _bigEndian ? swapEndian<uint32_t>( pData32[a] ) : pData32[a] >> ( 32 - ( b + bits ) ) ) & 0x3ff ) << 6;
-							}
-						}
-					}
-					break;
-				}
-				case 1:
-				{
-					uint32_t val;
-					// Check if pixels are big endian
-					if( _bigEndian )
-					{
-						// check if host is big endian
-						if( BOOST_BYTE_ORDER == 4321 )
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val = pData32[x];
-								// we convert values from 10b to interpretable 16b
-								pData[3 * x + 0] = (uint16_t)( ( val >> 22 ) & 0x03ff );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 12 ) & 0x03ff );
-								pData[3 * x + 2] = (uint16_t)( ( val >> 02 ) & 0x03ff );
-							}
-						}
-						else
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val = swapEndian<uint32_t>( pData32[x] );
-								// we convert values from 10b to interpretable 16b
-								pData[3 * x + 0] = (uint16_t)( ( val >> 16 ) & 0xffc0 );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 06 ) & 0xffc0 );
-								pData[3 * x + 2] = (uint16_t)( ( val << 04 ) & 0xffc0 );
-							}
-						}
-					}
-					else
-					{
-						// check if host is big endian
-						if( BOOST_BYTE_ORDER == 4321 )
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val = swapEndian<uint32_t>( pData32[x] );
-								// we convert values from 10b to interpretable 16b
-								pData[3 * x + 0] = (uint16_t)( ( val >> 22 ) & 0x03ff );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 12 ) & 0x03ff );
-								pData[3 * x + 2] = (uint16_t)( ( val >> 02 ) & 0x03ff );
-							}
-						}
-						else
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val              = pData32[x];
-								pData[3 * x + 0] = (uint16_t)( ( val >> 16 ) & 0xffc0 );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 06 ) & 0xffc0 );
-								pData[3 * x + 2] = (uint16_t)( ( val << 04 ) & 0xffc0 );
-							}
-						}
-					}
-					break;
-				}
-				case 2: {
-					// @todo check the following code
-					uint32_t val;
-					// Check if pixels are big endian
-					if( _bigEndian )
-					{
-						// check if host is big endian
-						if( BOOST_BYTE_ORDER == 4321 )
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val = pData32[x];
-								// we convert values from 10b to interpretable 16b
-								pData[3 * x + 0] = (uint16_t)( ( val >> 20 ) & 0x03ff );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 10 ) & 0x03ff );
-								pData[3 * x + 2] = (uint16_t)( ( val >> 00 ) & 0x03ff );
-							}
-						}
-						else
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val = swapEndian<uint32_t>( pData32[x] );
-								// we convert values from 10b to interpretable 16b
-								pData[3 * x + 0] = (uint16_t)( ( val >> 14 ) & 0xffc0 );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 04 ) & 0xffc0 );
-								pData[3 * x + 2] = (uint16_t)( ( val << 06 ) & 0xffc0 );
-							}
-						}
-					}
-					else
-					{
-						// check if host is big endian
-						if( BOOST_BYTE_ORDER == 4321 )
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val = swapEndian<uint32_t>( pData32[x] );
-								// we convert values from 10b to interpretable 16b
-								pData[3 * x + 0] = (uint16_t)( ( val >> 20 ) & 0x03ff );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 10 ) & 0x03ff );
-								pData[3 * x + 2] = (uint16_t)( ( val >> 00 ) & 0x03ff );
-							}
-						}
-						else
-						{
-							for( x = 0; x < n; x++ )
-							{
-								val              = pData32[x];
-								pData[3 * x + 0] = (uint16_t)( ( val >> 14 ) & 0xffc0 );
-								pData[3 * x + 1] = (uint16_t)( ( val >> 04 ) & 0xffc0 );
-								pData[3 * x + 2] = (uint16_t)( ( val << 06 ) & 0xffc0 );
-							}
-						}
-					}
-					break;
-				}
-			}
-		}
-			/*
-			 * case 12:
-			 * switch (e.packing) {
-			 *  case 0: {
-			 *    unsigned n = (e.bytes + 3) / 4;
-			 *    ARRAY(U32, src, n);
-			 *    read(src, e.dataOffset + y * e.bytes, e.bytes);
-			 *    if (flipped)
-			 *      flip(src, n);
-			 *    for (unsigned x = 0; x < width * e.components; x++) {
-			 *      unsigned a = (x * 12) / 32;
-			 *      unsigned b = (x * 12) % 32;
-			 *      if (b > 20)
-			 *        buf[x] = ((src[a + 1] << (32 - b)) + (src[a] >> b)) & 0xfff;
-			 *      else
-			 *        buf[x] = (src[a] >> b) & 0xfff;
-			 *    }
-			 *    break;
-			 *  }
-			 *  case 1: {
-			 *    unsigned n = width * e.components;
-			 *    read(buf, e.dataOffset + y * e.bytes, n * 2);
-			 *    if (flipped)
-			 *      flip(buf, n);
-			 *    for (unsigned x = 0; x < n; x++)
-			 *      buf[x] >>= 4;
-			 *    break;
-			 *  }
-			 *  case 2: {
-			 *    unsigned n = width * e.components;
-			 *    read(buf, e.dataOffset + y * e.bytes, n * 2);
-			 *    if (flipped)
-			 *      flip(buf, n);
-			 *    for (unsigned x = 0; x < n; x++)
-			 *      buf[x] &= 0xfff;
-			 *    break;
-			 *  }
-			 * }
-			 * break;
-			 * case 16:
-			 * read(buf, e.dataOffset + y * e.bytes, width * e.components * 2);
-			 * if (flipped)
-			 *  flip(buf, width * e.components);
-			 * break;
-			 */
-	}
-
+	// Data have to be packed on uint32_t size to allow indianess fast
+	// reinterpretation
+	uint8_t* pData    = new uint8_t[_dataSize + (_dataSize % sizeof(uint32_t))];
+	size_t dataSize32 = _dataSize / sizeof(uint32_t);
+	uint32_t *pData32 = (uint32_t*)pData;
+	uint32_t *pData32End = pData32 + dataSize32;
+	do {
+		*pData32++ = swapEndian<uint32_t>(*pData32);
+	} while(++pData32 != pData32End);
 	return pData;
 }
 

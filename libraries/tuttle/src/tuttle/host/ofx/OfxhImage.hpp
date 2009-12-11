@@ -41,7 +41,7 @@ namespace imageEffect {
 
 // forward declarations
 class OfxhImage;
-class Instance;
+class OfxhImageEffect;
 
 /** @brief Enumerates the contexts a plugin can be used in */
 enum ContextEnum

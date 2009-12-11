@@ -92,7 +92,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 
 OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 {
-	for( std::map<std::string, Descriptor*>::iterator it = _contexts.begin(); it != _contexts.end(); ++it )
+	for( std::map<std::string, OfxhDescriptor*>::iterator it = _contexts.begin(); it != _contexts.end(); ++it )
 	{
 		delete it->second;
 	}
@@ -111,18 +111,18 @@ APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler()
 }
 
 /// get the image effect descriptor
-Descriptor& OfxhImageEffectPlugin::getDescriptor()
+OfxhDescriptor& OfxhImageEffectPlugin::getDescriptor()
 {
 	return *_baseDescriptor;
 }
 
 /// get the image effect descriptor const version
-const Descriptor& OfxhImageEffectPlugin::getDescriptor() const
+const OfxhDescriptor& OfxhImageEffectPlugin::getDescriptor() const
 {
 	return *_baseDescriptor;
 }
 
-void OfxhImageEffectPlugin::addContext( const std::string& context, Descriptor* ied )
+void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhDescriptor* ied )
 {
 	_contexts[context] = ied;
 	_knownContexts.insert( context );
@@ -210,9 +210,9 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	initContexts();
 }
 
-Descriptor* OfxhImageEffectPlugin::getDescriptorInContext( const std::string& context )
+OfxhDescriptor* OfxhImageEffectPlugin::getDescriptorInContext( const std::string& context )
 {
-	std::map<std::string, Descriptor*>::iterator it = _contexts.find( context );
+	std::map<std::string, OfxhDescriptor*>::iterator it = _contexts.find( context );
 
 	//COUT( "context : " << context );
 	if( it != _contexts.end() )
@@ -240,7 +240,7 @@ Descriptor* OfxhImageEffectPlugin::getDescriptorInContext( const std::string& co
 	return describeInContextAction( context );
 }
 
-Descriptor* OfxhImageEffectPlugin::describeInContextAction( const std::string& context )
+OfxhDescriptor* OfxhImageEffectPlugin::describeInContextAction( const std::string& context )
 {
 	tuttle::host::ofx::property::OfxhPropSpec inargspec[] = {
 		{ kOfxImageEffectPropContext, tuttle::host::ofx::property::eString, 1, true, context.c_str() },
@@ -251,7 +251,7 @@ Descriptor* OfxhImageEffectPlugin::describeInContextAction( const std::string& c
 
 	OfxhPluginHandle* ph = getPluginHandle();
 
-	std::auto_ptr<tuttle::host::ofx::imageEffect::Descriptor> newContext( core::Core::instance().getHost().makeDescriptor( getDescriptor(), this ) );
+	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhDescriptor> newContext( core::Core::instance().getHost().makeDescriptor( getDescriptor(), this ) );
 	int rval = kOfxStatFailed;
 	if( ph->getOfxPlugin() )
 		rval = ph->getOfxPlugin()->mainEntry( kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0 );
@@ -266,7 +266,7 @@ Descriptor* OfxhImageEffectPlugin::describeInContextAction( const std::string& c
 	return NULL;
 }
 
-imageEffect::Instance* OfxhImageEffectPlugin::createInstance( const std::string& context, void* clientData )
+imageEffect::OfxhImageEffect* OfxhImageEffectPlugin::createInstance( const std::string& context, void* clientData )
 {
 	/**
 	 * @todo - we need to make sure action:load is called, then action:describe again
@@ -279,13 +279,13 @@ imageEffect::Instance* OfxhImageEffectPlugin::createInstance( const std::string&
 		COUT_ERROR( "imageEffectPlugin::createInstance, unexpected error." );
 		return NULL; // throw specific Exception
 	}
-	Descriptor* desc = getDescriptorInContext( context );
+	OfxhDescriptor* desc = getDescriptorInContext( context );
 	if( !desc )
 	{
 		COUT_ERROR( "The plugin doesn't support the context " << context << "." );
 		return NULL; // throw specific Exception
 	}
-	imageEffect::Instance* instance = core::Core::instance().getHost().newInstance( clientData, this, *desc, context );
+	imageEffect::OfxhImageEffect* instance = core::Core::instance().getHost().newInstance( clientData, this, *desc, context );
 	instance->createInstanceAction();
 	return instance;
 }
@@ -298,7 +298,7 @@ void OfxhImageEffectPlugin::unloadAction()
 	}
 }
 
-OfxhImageEffectPluginCache::OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::ImageEffectHost& host )
+OfxhImageEffectPluginCache::OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::OfxhImageEffectHost& host )
 	: OfxhPluginAPICacheI( kOfxImageEffectPluginApi, 1, 1 ),
 	_currentPlugin( 0 ),
 	_currentProp( 0 ),
@@ -431,8 +431,8 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 		return;
 	}
 
-	const imageEffect::Descriptor& e = p->getDescriptor();
-	const property::OfxhSet& eProps  = e.getProperties();
+	const imageEffect::OfxhDescriptor& e = p->getDescriptor();
+	const property::OfxhSet& eProps      = e.getProperties();
 
 	int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
@@ -611,7 +611,7 @@ void OfxhImageEffectPluginCache::dumpToStdOut() const
 		const std::set<std::string>& contexts = it->second->getContexts();
 		for( std::set<std::string>::const_iterator it2 = contexts.begin(); it2 != contexts.end(); ++it2 )
 			std::cout << "\t* " << *it2 << std::endl;
-		const Descriptor& d = it->second->getDescriptor();
+		const OfxhDescriptor& d = it->second->getDescriptor();
 		std::cout << "Inputs:" << std::endl;
 		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
 		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
