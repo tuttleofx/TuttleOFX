@@ -25,7 +25,7 @@ public:
 	LogicError( const LogicError& other );
 	virtual ~LogicError() throw( );
 	const OfxStatus ofxStatus() const { return _status; }
-	const std::string ofxStatusStr() const { return mapStatusToString( _status ); }
+	const std::string ofxStatusStr() const { return ofx::mapStatusToString( _status ); }
 	template<typename T>
 	LogicError& operator<<( const T& v ) { _ss << v; return *this; }
 

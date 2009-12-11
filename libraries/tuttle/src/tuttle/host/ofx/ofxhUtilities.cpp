@@ -31,6 +31,8 @@
 #include "ofxhUtilities.h"
 
 namespace tuttle {
+namespace host {
+namespace ofx {
 
 /// get me deepest bit depth
 std::string FindDeepestBitDepth( const std::string& s1, const std::string& s2 )
@@ -82,7 +84,9 @@ const std::string mapStatusToString( const OfxStatus& stat )
 		case kOfxStatReplyDefault: return "kOfxStatReplyDefault";
 		case kOfxStatErrImageFormat: return "kOfxStatErrImageFormat";
 	}
-	return "UNKNOWN STATUS CODE";
+	return "UNKNOWN_STATUS_CODE";
 }
 
+}
+}
 }
