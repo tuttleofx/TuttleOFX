@@ -31,7 +31,7 @@
 #define TUTTLE_EFFECT_INSTANCE_H
 
 #include "ProcessNode.hpp"
-#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/OfxhImageEffect.hpp>
 
 #include <cassert>
 

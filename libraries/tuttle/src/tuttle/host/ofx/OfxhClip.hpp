@@ -30,10 +30,12 @@
 #ifndef OFXH_CLIP_H
 #define OFXH_CLIP_H
 
-#include "ofxhAttribute.h"
 #include "ofxImageEffect.h"
-#include "ofxhUtilities.h"
-#include "ofxhPropertySuite.h"
+#include "OfxhAttribute.hpp"
+#include "OfxhUtilities.hpp"
+#include "OfxhPropertySuite.hpp"
+
+#include <boost/utility.hpp>
 
 namespace tuttle {
 namespace host {
@@ -87,11 +89,17 @@ public:
 class ClipInstance : virtual public ClipAccessor,
 	public attribute::AttributeInstance,
 	protected Property::GetHook,
-	protected Property::NotifyHook
+	protected Property::NotifyHook,
+	private boost::noncopyable
 {
+protected:
+	ClipInstance( const ClipInstance& other ):attribute::AttributeInstance(other){}
 public:
 	ClipInstance( const ClipDescriptor& desc );
 	virtual ~ClipInstance() = 0;
+
+	/// clone this clip
+	virtual ClipInstance* clone() const = 0;
 
 	void initHook( const Property::PropSpec* propSpec );
 
@@ -116,6 +124,15 @@ public:
 	//  Says whether the clip is actually connected at the moment.
 	virtual bool getConnected() const = 0;
 };
+
+
+/**
+ * @brief to make ClipInstance clonable (for use in boost::ptr_container)
+ */
+inline ClipInstance* new_clone( const ClipInstance& a )
+{
+	return a.clone();
+}
 
 }
 }

@@ -3,10 +3,9 @@
 
 #include "EffectInstance.hpp"
 
-#include <tuttle/host/core/memory/MemoryPool.hpp>
-#include <tuttle/host/core/memory/MemoryCache.hpp>
+#include <tuttle/host/core/memory/IMemoryCache.hpp>
 #include <tuttle/host/core/HostDescriptor.hpp>
-#include <tuttle/host/ofx/ofxhImageEffectAPI.h>
+#include <tuttle/host/ofx/OfxhImageEffectAPI.hpp>
 
 #include <tuttle/common/patterns/Singleton.hpp>
 
@@ -29,15 +28,15 @@ private:
 	core::Host _host;
 	ofx::imageEffect::ImageEffectPluginCache _imageEffectPluginCache;
 	ofx::PluginCache _pluginCache;
-	core::MemoryPool _memoryPool;
-	core::MemoryCache _memoryCache;
+	core::IMemoryPool &_memoryPool;
+	core::IMemoryCache &_memoryCache;
 
 public:
 	const ofx::PluginCache&                         getPluginCache() const            { return _pluginCache; }
 	const Host&                                     getHost() const                   { return _host; }
 	const ofx::imageEffect::ImageEffectPluginCache& getImageEffectPluginCache() const { return _imageEffectPluginCache; }
-	const core::MemoryPool&                         getMemoryPool() const             { return _memoryPool; }
-	const core::MemoryCache&                        getMemoryCache() const            { return _memoryCache; }
+	const core::IMemoryPool&                         getMemoryPool() const             { return _memoryPool; }
+	const core::IMemoryCache&                        getMemoryCache() const            { return _memoryCache; }
 
 public:
 	ofx::imageEffect::ImageEffectPlugin* getImageEffectPluginById( const std::string& id, int vermaj = -1, int vermin = -1 )

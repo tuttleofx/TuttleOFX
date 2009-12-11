@@ -1,8 +1,6 @@
 #ifndef _TUTTLE_PROCESSNODE_HPP_
 #define _TUTTLE_PROCESSNODE_HPP_
 
-#include <tuttle/host/ofx/Attribute.hpp>
-
 #include <iostream>
 #include <string>
 #include <vector>

@@ -40,7 +40,7 @@
 #include <algorithm> // for find
 #include <iostream>
 #include <sstream>
-#include <string.h>
+#include <string>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {

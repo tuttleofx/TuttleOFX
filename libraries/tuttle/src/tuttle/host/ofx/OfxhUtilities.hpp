@@ -26,70 +26,102 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef _OfxhUtilities_h_
+#define _OfxhUtilities_h_
 
-// ofx host
+#include <string>
+#include <vector>
 
-// ofx
+#include <tuttle/common/utils/global.hpp>
+
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
-
-// ofx host
-#include "ofxhMemory.h"
 
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace memory {
 
-Instance::Instance() : _ptr( 0 ),
-	_locked( false ) {}
+/// class that is a std::vector of std::strings
+typedef std::vector<std::string> StringVec;
 
-Instance::~Instance()
+/// class that is a std::vector of std::strings
+inline void SetStringVecValue( StringVec& sv, const std::string& value, size_t index = 0 )
 {
-	delete [] _ptr;
-}
+	size_t size = sv.size();
 
-bool Instance::alloc( size_t nBytes )
-{
-	if( !_locked )
+	if( size <= index )
 	{
-		if( _ptr )
-			freeMem();
-		_ptr = new char[nBytes];
-		return true;
+		while( size < index )
+		{
+			sv.push_back( "" );
+			++size;
+		}
+		sv.push_back( value );
 	}
 	else
-		return false;
+		sv[index] = value;
 }
 
-OfxImageMemoryHandle Instance::getHandle()
+/// get me deepest bit depth
+std::string FindDeepestBitDepth( const std::string& s1, const std::string& s2 );
+
+/// get the min value
+template<class T>
+inline T Minimum( const T& a, const T& b )
 {
-	return ( OfxImageMemoryHandle ) this;
+	return a < b ? a : b;
 }
 
-void Instance::freeMem()
+/// get the min value
+template<class T>
+inline T Maximum( const T& a, const T& b )
 {
-	delete [] _ptr;
-	_ptr = 0;
+	return a > b ? a : b;
 }
 
-void* Instance::getPtr()
+/// clamp the value
+template<class T>
+inline T Clamp( const T& v, const T& mn, const T& mx )
 {
-	return _ptr;
+	if( v < mn )
+		return mn;
+	if( v > mx )
+		return mx;
+	return v;
 }
 
-void Instance::lock()
+/// clamp the rect in v to the given bounds
+inline OfxRectD Clamp( const OfxRectD& v,
+                       const OfxRectD& bounds )
 {
-	_locked = true;
+	OfxRectD r;
+
+	r.x1 = Clamp( v.x1, bounds.x1, bounds.x2 );
+	r.x2 = Clamp( v.x2, bounds.x1, bounds.x2 );
+	r.y1 = Clamp( v.y1, bounds.y1, bounds.y2 );
+	r.y2 = Clamp( v.y2, bounds.y1, bounds.y2 );
+	return r;
 }
 
-void Instance::unlock()
+/// get the union of the two rects
+inline OfxRectD Union( const OfxRectD& a,
+                       const OfxRectD& b )
 {
-	_locked = false;
+	OfxRectD r;
+
+	r.x1 = Minimum( a.x1, b.x1 );
+	r.x2 = Maximum( a.x2, b.x2 );
+	r.y1 = Minimum( a.y1, b.y1 );
+	r.y2 = Maximum( a.y2, b.y2 );
+	return r;
 }
+
+/** @brief maps status to a string */
+const std::string mapStatusToString( const OfxStatus& stat );
 
 }
 }
 }
-}
+
+#endif
 

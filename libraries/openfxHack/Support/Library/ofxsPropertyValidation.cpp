@@ -41,7 +41,7 @@
  */
 
 #include "ofxsSupportPrivate.h"
-#include <stdarg.h>
+#include <cstdarg>
 #include <cassert>
 
 /** @brief Null pointer definition */

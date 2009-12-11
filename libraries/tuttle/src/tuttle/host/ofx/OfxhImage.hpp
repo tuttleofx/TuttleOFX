@@ -31,8 +31,8 @@
 #define OFXH_IMAGE_H
 
 #include "ofxImageEffect.h"
-#include "ofxhUtilities.h"
-#include "ofxhPropertySuite.h"
+#include "OfxhUtilities.hpp"
+#include "OfxhPropertySuite.hpp"
 
 namespace tuttle {
 namespace host {

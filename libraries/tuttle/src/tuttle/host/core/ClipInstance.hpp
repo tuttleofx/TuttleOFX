@@ -31,8 +31,8 @@
 #define TUTTLE_CLIP_INSTANCE_H
 
 #include "EffectInstance.hpp"
-#include <tuttle/host/ofx/ofxhImageEffect.h>
-#include <tuttle/host/ofx/ofxhImage.h>
+#include <tuttle/host/ofx/OfxhImageEffect.hpp>
+#include <tuttle/host/ofx/OfxhImage.hpp>
 #include <boost/cstdint.hpp>
 
 #define SOFXCLIPLENGTH 1
@@ -88,7 +88,9 @@ protected:
 public:
 	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::ClipImageDescriptor& desc );
 
-	virtual ~ClipImgInstance();
+	~ClipImgInstance();
+
+	ClipImgInstance* clone() const { return new ClipImgInstance(*this); };
 
 	Image* getInputImage()
 	{
@@ -115,52 +117,52 @@ public:
 	///     - kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
 	///     - kOfxImageComponentRGBA
 	///     - kOfxImageComponentAlpha
-	virtual const std::string& getUnmappedComponents() const;
+	const std::string& getUnmappedComponents() const;
 
 	// PreMultiplication -
 	//
 	//  kOfxImageOpaque - the image is opaque and so has no premultiplication state
 	//  kOfxImagePreMultiplied - the image is premultiplied by it's alpha
 	//  kOfxImageUnPreMultiplied - the image is unpremultiplied
-	virtual const std::string& getPremult() const;
+	const std::string& getPremult() const;
 
 	// Frame Rate -
 	//
 	//  The frame rate of a clip or instance's project.
-	virtual double getFrameRate() const;
+	double getFrameRate() const;
 
 	// Frame Range (startFrame, endFrame) -
 	//
 	//  The frame range over which a clip has images.
-	virtual void getFrameRange( double& startFrame, double& endFrame ) const;
+	void getFrameRange( double& startFrame, double& endFrame ) const;
 
 	/// Field Order - Which spatial field occurs temporally first in a frame.
 	/// \returns
 	///  - kOfxImageFieldNone - the clip material is unfielded
 	///  - kOfxImageFieldLower - the clip material is fielded, with image rows 0,2,4.... occuring first in a frame
 	///  - kOfxImageFieldUpper - the clip material is fielded, with image rows line 1,3,5.... occuring first in a frame
-	virtual const std::string& getFieldOrder() const;
+	const std::string& getFieldOrder() const;
 
 	// Connected -
 	//
 	//  Says whether the clip is actually connected at the moment.
-	virtual bool getConnected() const;
+	bool getConnected() const;
 
 	// Unmapped Frame Rate -
 	//
 	//  The unmaped frame range over which an output clip has images.
-	virtual double getUnmappedFrameRate() const;
+	double getUnmappedFrameRate() const;
 
 	// Unmapped Frame Range -
 	//
 	//  The unmaped frame range over which an output clip has images.
-	virtual void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const;
+	void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const;
 
 	// Continuous Samples -
 	//
 	//  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
 	//  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
-	virtual bool getContinuousSamples() const;
+	bool getContinuousSamples() const;
 
 	/// override this to fill in the image at the given time.
 	/// The bounds of the image on the image plane should be
@@ -168,10 +170,10 @@ public:
 	/// on the effect instance. Outside a render call, the optionalBounds should
 	/// be 'appropriate' for the.
 	/// If bounds is not null, fetch the indicated section of the canonical image plane.
-	virtual tuttle::host::ofx::imageEffect::Image* getImage( OfxTime time, OfxRectD* optionalBounds = NULL );
+	tuttle::host::ofx::imageEffect::Image* getImage( OfxTime time, OfxRectD* optionalBounds = NULL );
 
 	/// override this to return the rod on the clip
-	virtual OfxRectD getRegionOfDefinition( OfxTime time ) const;
+	OfxRectD getRegionOfDefinition( OfxTime time ) const;
 };
 
 }

@@ -36,7 +36,7 @@
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
 #include "ofxTimeLine.h"
-#include "ofxhPropertySuite.h"
+#include "OfxhPropertySuite.hpp"
 
 namespace tuttle {
 namespace host {

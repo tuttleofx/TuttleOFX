@@ -1,6 +1,6 @@
 #include "Graph.hpp"
 #include "ProcessGraph.hpp"
-#include <tuttle/host/ofx/ofxhClipImage.h>
+#include <tuttle/host/ofx/ofxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <iostream>
 #include <sstream>

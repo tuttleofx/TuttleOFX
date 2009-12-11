@@ -26,42 +26,44 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <iostream>
-#include <fstream>
-#include <math.h>
-#include <time.h>
-#include <cstring>
-
-// ofx
-#include <ofxCore.h>
-#include <ofxImageEffect.h>
-
-// ofx host
-#include <tuttle/host/ofx/ofxhBinary.h>
-#include <tuttle/host/ofx/ofxhPropertySuite.h>
-#include <tuttle/host/ofx/ofxhClip.h>
-#include <tuttle/host/ofx/ofxhParam.h>
-#include <tuttle/host/ofx/ofxhMemory.h>
-#include <tuttle/host/ofx/ofxhImageEffect.h>
-#include <tuttle/host/ofx/ofxhPluginAPICache.h>
-#include <tuttle/host/ofx/ofxhPluginCache.h>
-#include <tuttle/host/ofx/ofxhHost.h>
-#include <tuttle/host/ofx/ofxhImageEffect.h>
-#include <tuttle/host/ofx/ofxhImageEffectAPI.h>
 
 // my host
 #include "HostDescriptor.hpp"
 #include "EffectInstance.hpp"
 #include "ClipInstance.hpp"
 
+// utilities
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/image/gilGlobals.hpp>
+
+// ofx host
+#include <tuttle/host/ofx/OfxhBinary.hpp>
+#include <tuttle/host/ofx/OfxhPropertySuite.hpp>
+#include <tuttle/host/ofx/OfxhClip.hpp>
+#include <tuttle/host/ofx/OfxhParam.hpp>
+#include <tuttle/host/ofx/OfxhMemory.hpp>
+#include <tuttle/host/ofx/OfxhImageEffect.hpp>
+#include <tuttle/host/ofx/OfxhPluginAPICache.hpp>
+#include <tuttle/host/ofx/OfxhPluginCache.hpp>
+#include <tuttle/host/ofx/OfxhHost.hpp>
+#include <tuttle/host/ofx/OfxhImageEffect.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectAPI.hpp>
+
+// ofx
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
+
 // boost
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/cstdint.hpp>
 
-// utilities
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/common/image/gilGlobals.hpp"
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <ctime>
+#include <cstring>
+
 
 /// @todo TUTTLE_TODO : clean using namespace...
 using namespace tuttle::host;

@@ -35,13 +35,13 @@
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
 
-#include "ofxhHost.h"
-#include "ofxhClipImage.h"
-#include "ofxhProgress.h"
-#include "ofxhTimeLine.h"
-#include "ofxhParam.h"
-#include "ofxhMemory.h"
-#include "ofxhInteract.h"
+#include "OfxhHost.hpp"
+#include "OfxhClipImage.hpp"
+#include "OfxhProgress.hpp"
+#include "OfxhTimeLine.hpp"
+#include "OfxhParam.hpp"
+#include "OfxhMemory.hpp"
+#include "OfxhInteract.hpp"
 
 namespace tuttle {
 namespace host {

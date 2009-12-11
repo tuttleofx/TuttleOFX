@@ -6,7 +6,8 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/detail/endian.hpp>
 
-#include <string.h>
+#include <string>
+#include <cstring>
 #include <sstream>
 #include <iostream>
 #include <cassert>

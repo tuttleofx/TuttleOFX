@@ -27,32 +27,32 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _ofxhProgress_h_
-#define _ofxhProgress_h_
+#ifndef _OfxhTimeLine_h_
+#define _OfxhTimeLine_h_
 
-#include "ofxProgress.h"
+#include "ofxTimeLine.h"
 
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace Progress {
+namespace TimeLine {
 
-/// Things that display progress derive from this ABC and implement the following
+/// Things that implement timeline controls derive from this ABC and implement the following
 /// functions.
-class ProgressI
+class TimeLineI
 {
 public:
-	virtual ~ProgressI() {}
+	virtual ~TimeLineI() {}
 
-	/// Start doing progress.
-	virtual void progressStart( const std::string& message ) = 0;
+	/// get the current time on the timeline. This is not necessarily the same
+	/// time as being passed to an action (eg render)
+	virtual double timeLineGetTime() = 0;
 
-	/// finish yer progress
-	virtual void progressEnd() = 0;
+	/// set the timeline to a specific time
+	virtual void timeLineGotoTime( double t ) = 0;
 
-	/// set the progress to some level of completion, returns
-	/// false if you should abandon processing, true to continue
-	virtual bool progressUpdate( double t ) = 0;
+	/// get the first and last times available on the effect's timeline
+	virtual void timeLineGetBounds( double& t1, double& t2 ) = 0;
 };
 
 }

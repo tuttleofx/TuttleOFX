@@ -26,8 +26,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef OFX_PLUGIN_CACHE_H
-#define OFX_PLUGIN_CACHE_H
+#ifndef OFX_PLUGIN_CACHE_HPP
+#define OFX_PLUGIN_CACHE_HPP
 
 #include <string>
 #include <vector>
@@ -35,14 +35,14 @@
 #include <set>
 #include <iostream>
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "expat.h"
 
 #include "ofxCore.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhPluginAPICache.h"
-#include "ofxhBinary.h"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhPluginAPICache.hpp"
+#include "OfxhBinary.hpp"
 
 namespace tuttle {
 namespace host {
@@ -228,7 +228,7 @@ class PluginBinary
 friend class PluginHandle;
 
 protected:
-	Binary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in ofxhBinary.h
+	Binary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.h
 	std::string _filePath; ///< full path to the file
 	std::string _bundlePath; ///< path to the .bundle directory
 	std::vector<Plugin*> _plugins; ///< my plugins
