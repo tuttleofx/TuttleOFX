@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( memoryCache )
 
 	const string plugName( "name" );
 	const double time = 10;
-	IPoolDataPtr pData( pool.allocate( 10 ) );
+	CACHE_ELEMENT pData( 0 );
 
 	// testing put function
 	cache.put( plugName, time, pData );
