@@ -78,43 +78,13 @@ public:
 		if( this == &g )
 			return *this;
 
-		// reset of existing data
-		BOOST_FOREACH( core::ProcessNode * p, _processNodes )
-		delete p;
-		_processNodes.clear();
-
-		// deep copy
 		boost::copy_graph( g._graph, _graph );
 		_count = g._count;
-		BOOST_FOREACH( core::ProcessNode * p, g._processNodes )
-		{
-			_processNodes.push_back( p->clone() );
-		}
-
-		// relinking of processNode reference for each vertex
-		vertex_range_t vrange = getVertices();
-		for( vertex_iter it = vrange.first; it != vrange.second; ++it )
-		{
-			std::string processName = instance( *it ).processNode()->getName();
-			BOOST_FOREACH( core::ProcessNode * p, _processNodes )
-			{
-				if( processName.compare( p->getName() ) == 0 )
-				{
-					instance( *it ).setProcessNode( p );
-					break;
-				}
-			}
-		}
-
 		return *this;
 	}
 
 	virtual ~InternalGraph()
-	{
-		BOOST_FOREACH( core::ProcessNode * p, _processNodes )
-		delete p;
-		_processNodes.clear();
-	}
+	{}
 
 	// structure modification methods
 	void clear()
@@ -150,11 +120,6 @@ public:
 		}
 
 		return addedEdge;
-	}
-
-	void addProcessNode( const core::ProcessNode& p )
-	{
-		_processNodes.push_back( p.clone() );
 	}
 
 	// property access
@@ -245,7 +210,7 @@ public:
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
 	}
 
-	void test_dominatorTree()
+	void toDominatorTree()
 	{
 		typedef typename boost::property_map<GraphContainer, boost::vertex_index_t>::type IndexMap;
 		typedef typename std::vector<VertexDescriptor >::iterator VectorDescIter;
@@ -294,9 +259,6 @@ public:
 
 		return vleaves;
 	}
-
-	//TODO: make private
-	std::vector<core::ProcessNode*> _processNodes;
 
 protected:
 	GraphContainer _graph;
