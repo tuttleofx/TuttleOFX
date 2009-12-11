@@ -30,9 +30,9 @@
 #ifndef OFXH_ATTRIBUTE_H
 #define OFXH_ATTRIBUTE_H
 
-#include "ofxhPropertySuite.h"
-#include "ofxAttribute.h"
 #include "ofxCore.h"
+#include "ofxAttribute.h"
+#include "OfxhPropertySuite.hpp"
 
 #include <string>
 #include <cassert>

@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <assert.h>
+#include <cassert>
 #include <cstdio>
 
 // ofx
@@ -35,10 +35,10 @@
 #include "ofxClip.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhClip.h"
-#include "ofxhImageEffect.h"
+#include "OfxhBinary.hpp"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhClip.hpp"
+#include "OfxhImageEffect.hpp"
 
 namespace tuttle {
 namespace host {
@@ -126,10 +126,10 @@ ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
  * clip clipimage instance
  */
 ClipImageInstance::ClipImageInstance( imageEffect::Instance& effectInstance, const attribute::ClipImageDescriptor& desc )
-	: attribute::ClipInstance( desc ),
-	_effectInstance( effectInstance )
-	//				, _pixelDepth( kOfxBitDepthNone )
-	//				, _components( kOfxImageComponentNone )
+: attribute::ClipInstance( desc )
+, _effectInstance( effectInstance )
+//				, _pixelDepth( kOfxBitDepthNone )
+//				, _components( kOfxImageComponentNone )
 {
 	//					_par = 1.0;
 	/**
@@ -154,6 +154,14 @@ ClipImageInstance::ClipImageInstance( imageEffect::Instance& effectInstance, con
 
 	_properties.addProperties( clipImageInstanceStuffs );
 	initHook( clipImageInstanceStuffs );
+}
+
+
+ClipImageInstance::ClipImageInstance( const ClipImageInstance& other )
+: attribute::ClipInstance( other )
+, _effectInstance( other._effectInstance )
+{
+	
 }
 
 OfxStatus ClipImageInstance::instanceChangedAction( std::string why,
@@ -217,7 +225,25 @@ const std::string& ClipImageInstance::findSupportedComp( const std::string& s ) 
 
 ClipImageInstanceSet::ClipImageInstanceSet()
 	: _clipPrefsDirty( true )
-{}
+{
+}
+
+ClipImageInstanceSet::ClipImageInstanceSet( const ClipImageInstanceSet& other )
+: _clipsByOrder(other._clipsByOrder.clone())
+{
+	initMapFromList();
+}
+
+void ClipImageInstanceSet::initMapFromList()
+{
+	for( ClipImageVector::iterator it = _clipsByOrder.begin(), itEnd = _clipsByOrder.end();
+	     it != itEnd;
+	     ++it )
+	{
+		_clips[it->getName()] = &(*it);
+	}
+}
+
 
 ClipImageInstanceSet::~ClipImageInstanceSet()
 {}

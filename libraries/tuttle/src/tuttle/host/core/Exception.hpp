@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_CORE_EXCEPTION_HPP
 #define _TUTTLE_HOST_CORE_EXCEPTION_HPP
 
-#include <tuttle/host/ofx/ofxhUtilities.h>
+#include <tuttle/host/ofx/OfxhUtilities.hpp>
 
 #include <ofxCore.h>
 

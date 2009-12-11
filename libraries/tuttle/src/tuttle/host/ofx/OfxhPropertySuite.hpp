@@ -29,7 +29,7 @@
 #ifndef OFXH_PROPERTY_SUITE_H
 #define OFXH_PROPERTY_SUITE_H
 
-#include "ofxhUtilities.h"
+#include "OfxhUtilities.hpp"
 
 #include <string>
 #include <vector>

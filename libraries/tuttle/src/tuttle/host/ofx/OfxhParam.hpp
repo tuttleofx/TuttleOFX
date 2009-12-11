@@ -30,9 +30,9 @@
 #ifndef OFXH_PARAM_H
 #define OFXH_PARAM_H
 
-#include "ofxhPropertySuite.h"
-#include "ofxhAttribute.h"
 #include "ofxCore.h"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhAttribute.hpp"
 
 #include <boost/ptr_container/ptr_list.hpp>
 
@@ -161,6 +161,8 @@ public:
 	/// plugin instance.
 	explicit ParamInstanceSet();
 
+	explicit ParamInstanceSet( const ParamInstanceSet& other );
+
 	/// dtor.
 	virtual ~ParamInstanceSet();
 
@@ -205,6 +207,8 @@ public:
 	///
 	/// Client host code needs to implement this
 	virtual OfxStatus editEnd() = 0;
+private:
+	void initMapFromList();
 };
 
 /// a set of parameters
@@ -249,7 +253,7 @@ class ParamInstance : virtual public ParamAccessor,
 	private Property::NotifyHook,
 	private boost::noncopyable
 {
-ParamInstance();
+	ParamInstance();
 
 protected:
 	ParamInstanceSet*  _paramSetInstance;
@@ -258,10 +262,10 @@ protected:
 protected:
 	ParamInstance( const ParamInstance& other )
 		: AttributeInstance( other )
+		, _paramSetInstance(other._paramSetInstance)
+		, _parentInstance(other._parentInstance)
 	{
 		/// @todo tuttle : copy content, not pointer ?
-		_paramSetInstance = const_cast<ParamInstance&>( other ).getParamSetInstance();
-		_parentInstance   = const_cast<ParamInstance&>( other ).getParentInstance();
 	}
 
 public:

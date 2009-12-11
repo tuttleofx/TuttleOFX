@@ -27,8 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _ofxhTimeLine_h_
-#define _ofxhTimeLine_h_
+#ifndef _OfxhTimeLine_h_
+#define _OfxhTimeLine_h_
 
 #include "ofxTimeLine.h"
 

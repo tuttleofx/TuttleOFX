@@ -32,15 +32,15 @@
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhParam.h"
-#include "ofxhImageEffect.h"
+#include "OfxhBinary.hpp"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhParam.hpp"
+#include "OfxhImageEffect.hpp"
 
-#include <assert.h>
-#include <float.h>
-#include <limits.h>
-#include <stdarg.h>
+#include <cassert>
+#include <cfloat>
+#include <climits>
+#include <cstdarg>
 
 namespace tuttle {
 namespace host {
@@ -984,6 +984,22 @@ OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 
 ParamInstanceSet::ParamInstanceSet()
 {}
+
+ParamInstanceSet::ParamInstanceSet( const ParamInstanceSet& other )
+: _paramList(other._paramList.clone())
+{
+	initMapFromList();
+}
+
+void ParamInstanceSet::initMapFromList()
+{
+	for( ParamList::iterator it = _paramList.begin(), itEnd = _paramList.end();
+	     it != itEnd;
+	     ++it )
+	{
+		_params[it->getName()] = &(*it);
+	}
+}
 
 ParamInstanceSet::~ParamInstanceSet()
 {}

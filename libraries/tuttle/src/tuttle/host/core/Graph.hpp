@@ -3,7 +3,7 @@
 
 #include "Core.hpp"
 #include "Exception.hpp"
-#include <tuttle/host/ofx/ofxhAttribute.h>
+#include <tuttle/host/ofx/OfxhAttribute.hpp>
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/Vertex.hpp>
 #include <tuttle/host/graph/Edge.hpp>

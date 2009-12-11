@@ -28,7 +28,7 @@
  */
 
 #include "ofxCore.h"
-#include "ofxhUtilities.h"
+#include "OfxhUtilities.hpp"
 
 namespace tuttle {
 namespace host {

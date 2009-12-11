@@ -33,13 +33,13 @@
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhClip.h"
-#include "ofxhParam.h"
-#include "ofxhMemory.h"
-#include "ofxhImageEffect.h"
-#include "ofxhInteract.h"
+#include "OfxhBinary.hpp"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhClip.hpp"
+#include "OfxhParam.hpp"
+#include "OfxhMemory.hpp"
+#include "OfxhImageEffect.hpp"
+#include "OfxhInteract.hpp"
 
 namespace tuttle {
 namespace host {
