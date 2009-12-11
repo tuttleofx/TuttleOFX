@@ -42,7 +42,7 @@ namespace host {
 namespace ofx {
 
 namespace imageEffect {
-class Instance;
+class OfxhImageEffect;
 }
 
 namespace attribute {

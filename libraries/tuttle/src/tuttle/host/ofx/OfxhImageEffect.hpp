@@ -60,7 +60,7 @@ namespace imageEffect {
 // forward declare
 class OfxhImageEffectPlugin;
 class OverlayInstance;
-class Instance;
+class OfxhImageEffect;
 class Descriptor;
 
 /// An image effect host, passed to the setHost function of all image effect plugins
@@ -82,7 +82,7 @@ public:
 	///   \arg plugin - the plugin being created
 	///   \arg desc - the descriptor for that plugin
 	///   \arg context - the context to be created in
-	virtual Instance* newInstance( void*              clientData,
+	virtual OfxhImageEffect* newInstance( void*              clientData,
 	                               OfxhImageEffectPlugin* plugin,
 	                               Descriptor&        desc,
 	                               const std::string& context ) const = 0;
@@ -268,7 +268,7 @@ typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
 /// an image effect plugin instance.
 ///
 /// Client code needs to filling the pure virtuals in this.
-class Instance : public Base,
+class OfxhImageEffect : public Base,
 	public attribute::OfxhParamSet,
 	public attribute::OfxhClipImageSet,
 	public Progress::ProgressI,
@@ -290,12 +290,12 @@ protected:
 
 public:
 	/// constructor based on clip descriptor
-	Instance( const OfxhImageEffectPlugin* plugin,
+	OfxhImageEffect( const OfxhImageEffectPlugin* plugin,
 			  const Descriptor&        other,
 	          const std::string& context,
 	          bool               interactive );
 
-	Instance( const Instance& other );
+	OfxhImageEffect( const OfxhImageEffect& other );
 
 	/// called after construction to populate the various members
 	/// ideally should be called in the ctor, but it relies on
@@ -304,9 +304,9 @@ public:
 	OfxStatus populate();
 	void      populateParams( const imageEffect::Descriptor& descriptor ) throw( core::exception::LogicError );
 
-	virtual ~Instance();
+	virtual ~OfxhImageEffect();
 
-	bool operator==( const Instance& );
+	bool operator==( const OfxhImageEffect& );
 
 	/// implemented for Param::SetInstance
 	virtual property::OfxhSet& getParamSetProps();
@@ -629,11 +629,11 @@ class OverlayInteract : public interact::OfxhInteract
 {
 protected:
 	/// our image effect instance
-	imageEffect::Instance& _instance;
+	imageEffect::OfxhImageEffect& _instance;
 
 public:
 	/// ctor this calls Instance->getOverlayDescriptor to get the descriptor
-	OverlayInteract( imageEffect::Instance& v );
+	OverlayInteract( imageEffect::OfxhImageEffect& v );
 };
 
 }

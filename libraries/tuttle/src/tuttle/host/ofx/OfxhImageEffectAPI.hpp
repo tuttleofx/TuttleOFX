@@ -115,7 +115,7 @@ public:
 	 * @brief this is called to make an instance of the effect
 	 *  the client data ptr is what is passed back to the client creation function
 	 */
-	imageEffect::Instance* createInstance( const std::string& context, void* clientDataPtr );
+	imageEffect::OfxhImageEffect* createInstance( const std::string& context, void* clientDataPtr );
 
 private:
 	Descriptor* describeInContextAction( const std::string& context );

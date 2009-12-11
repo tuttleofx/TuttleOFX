@@ -266,7 +266,7 @@ Descriptor* OfxhImageEffectPlugin::describeInContextAction( const std::string& c
 	return NULL;
 }
 
-imageEffect::Instance* OfxhImageEffectPlugin::createInstance( const std::string& context, void* clientData )
+imageEffect::OfxhImageEffect* OfxhImageEffectPlugin::createInstance( const std::string& context, void* clientData )
 {
 	/**
 	 * @todo - we need to make sure action:load is called, then action:describe again

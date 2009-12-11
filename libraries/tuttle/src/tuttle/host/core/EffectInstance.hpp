@@ -40,7 +40,7 @@ namespace host {
 namespace core {
 
 class EffectInstance : public ProcessNode,
-	public tuttle::host::ofx::imageEffect::Instance
+	public tuttle::host::ofx::imageEffect::OfxhImageEffect
 {
 protected:
 	OfxPointD _frameRange;

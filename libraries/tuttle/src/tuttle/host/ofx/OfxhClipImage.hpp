@@ -45,7 +45,7 @@ namespace host {
 namespace ofx {
 
 namespace imageEffect {
-class Instance;
+class OfxhImageEffect;
 class Descriptor;
 }
 namespace attribute {
@@ -114,10 +114,10 @@ class OfxhClipImage : virtual public OfxhClipImageAccessor,
 	public attribute::OfxhClip
 {
 protected:
-	imageEffect::Instance& _effectInstance; ///< image effect instance
+	imageEffect::OfxhImageEffect& _effectInstance; ///< image effect instance
 
 public:
-	OfxhClipImage( imageEffect::Instance& effectInstance, const attribute::OfxhClipImageDescriptor& desc );
+	OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, const attribute::OfxhClipImageDescriptor& desc );
 	OfxhClipImage( const OfxhClipImage& other );
 
 	virtual ~OfxhClipImage() {}
