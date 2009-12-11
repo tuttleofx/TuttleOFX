@@ -38,6 +38,8 @@
 #include "ofxImageEffect.h"
 
 namespace tuttle {
+namespace host {
+namespace ofx {
 
 /// class that is a std::vector of std::strings
 typedef std::vector<std::string> StringVec;
@@ -117,6 +119,8 @@ inline OfxRectD Union( const OfxRectD& a,
 /** @brief maps status to a string */
 const std::string mapStatusToString( const OfxStatus& stat );
 
+}
+}
 }
 
 #endif

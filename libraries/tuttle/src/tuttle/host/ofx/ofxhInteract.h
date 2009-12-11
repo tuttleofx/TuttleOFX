@@ -33,7 +33,7 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace Interact {
+namespace interact {
 
 /// fetch a versioned suite for our interact
 void* GetSuite( int version );
@@ -93,7 +93,7 @@ public:
 	OfxStatus callEntry( const char*          action,
 	                     void*                handle,
 	                     OfxPropertySetHandle inArgs,
-	                     OfxPropertySetHandle outArgs );
+	                     OfxPropertySetHandle outArgs ) const;
 
 	/// what is it's state?
 	State getState() const { return _state; }
@@ -106,7 +106,7 @@ class Instance : public Base,
 	protected Property::GetHook
 {
 protected:
-	Descriptor& _descriptor; ///< who we are
+	const Descriptor& _descriptor; ///< who we are
 	Property::Set _properties;  ///< its props
 	State _state;      ///< how is it feeling today
 	void* _effectInstance; ///< this is ugly, we need a base class to all plugin instances at some point.
@@ -126,7 +126,7 @@ protected:
 	                     char* keyString );
 
 public:
-	Instance( Descriptor& desc, void* effectInstance );
+	Instance( const Descriptor& desc, void* effectInstance );
 
 	virtual ~Instance();
 

@@ -60,9 +60,11 @@ ImageEffectPluginCache& _pc;
 Descriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
 /// map to store contexts in
-std::map<std::string, Descriptor*> _contexts;
+typedef std::map<std::string, Descriptor*> ContextMap;
+ContextMap _contexts;
 
-std::set<std::string> _knownContexts;
+typedef std::set<std::string> ContextSet;
+ContextSet _knownContexts;
 
 std::auto_ptr<PluginHandle> _pluginHandle;
 
@@ -99,9 +101,11 @@ public:
 	virtual void saveXML( std::ostream& os );
 
 	void                         initContexts();
-	const std::set<std::string>& getContexts() const;
+	const ContextSet& getContexts() const;
+	bool supportsContext( const std::string& context ) const;
 
 	PluginHandle* getPluginHandle() { return _pluginHandle.get(); }
+	const PluginHandle* getPluginHandle() const { return _pluginHandle.get(); }
 
 	void loadAndDescribeActions();
 

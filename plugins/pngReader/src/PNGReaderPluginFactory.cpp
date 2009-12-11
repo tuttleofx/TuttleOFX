@@ -37,8 +37,8 @@ mDeclarePluginFactory( PNGReaderPluginFactory, {}, {}
 void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "PNGReaderHd3d", "PNGReaderHd3d",
-	                "PNG File reader Hd3d" );
+	desc.setLabels( "PNGReader", "PNGReader",
+	                "PNG File reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment

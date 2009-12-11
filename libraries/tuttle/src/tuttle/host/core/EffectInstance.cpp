@@ -65,6 +65,33 @@ EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugi
 	populate();
 }
 
+EffectInstance::EffectInstance( const EffectInstance& other )
+	: tuttle::host::ofx::imageEffect::Instance(other)
+{
+	//populate();
+	/*
+	/// @todo copy params
+
+	try
+	{
+		populateClips( _descriptor );
+	}
+	catch( std::logic_error& e )
+	{
+		COUT_EXCEPTION( e );
+	}
+	*/
+}
+
+/**
+ * @warning do a deep comparison
+ */
+bool EffectInstance::operator==( const EffectInstance& other ) const
+{
+	TCOUT("test EffectInstance::operator== "<< getName() << "  " << other.getName());
+	return getName() == other.getName();
+}
+
 void EffectInstance::dumpToStdOut() const
 {
 	std::cout << "________________________________________________________________________________" << std::endl;
@@ -213,7 +240,8 @@ tuttle::host::ofx::attribute::ParamInstance* EffectInstance::newParam( tuttle::h
 	else if( descriptor.getParamType() == kOfxParamTypePage )
 		return new tuttle::host::ofx::attribute::ParamPageInstance( descriptor, *this );
 	else
-		return NULL;
+		throw exception::LogicError("Can't create param instance from param descriptor.");
+	
 }
 
 OfxStatus EffectInstance::editBegin( const std::string& name )

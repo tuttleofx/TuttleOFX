@@ -4,7 +4,7 @@
 #include "IMemoryCache.hpp"
 #include "MemoryPool.hpp"
 
-#include <boost/bind.hpp>
+#include "boost/foreach.hpp"
 #include <boost/ptr_container/ptr_map.hpp>
 #include <list>
 #include <cstring>
@@ -41,7 +41,7 @@ public:
 	};
 	typedef std::pair<std::string, double> Key; ///< string=pluginName, double=frame ( or time )
 	typedef boost::ptr_map<Key, CacheData> DataMap;
-	typedef DataMap::value_type DataMapContent;
+	typedef boost::ptr_container_detail::ref_pair<Key, const CacheData* const> DataMapContent;
 	typedef std::list<Key> KeyList;
 	DataMap _datas;
 	KeyList _keys; ///< sort by last usage
@@ -100,15 +100,12 @@ public:
 
 	std::size_t getMemorySizeUsed() const
 	{
-		using namespace boost;
-		//		return std::accumulate( _datas.begin(), _datas.end(), 0, bind( std::plus<int>(), _1, bind(mem_fn(&CacheData::getSize), _1, bind(&DataMap::value_type::second, _2) ) ) );
-		return 0;
-	}
-
-private:
-	static std::size_t functor_data_size( const std::size_t& sum, const DataMapContent& x )
-	{
-		return sum + x.second->getSize();
+		std::size_t counter = 0;
+		BOOST_FOREACH( DataMapContent p, _datas )
+		{
+			counter += p.second->getSize();
+		}
+		return counter;
 	}
 
 };

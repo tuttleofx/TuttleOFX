@@ -143,6 +143,23 @@ const std::set<std::string>& ImageEffectPlugin::getContexts() const
 	return _knownContexts;
 }
 
+bool ImageEffectPlugin::supportsContext( const std::string& context ) const
+{
+	/*
+	std::cout << context << " supportsContext? " << _knownContexts.size() << std::endl;
+
+	for( ContextSet::iterator it = _knownContexts.begin(),
+			itEnd = _knownContexts.end();
+			it != itEnd;
+			++it )
+	{
+		TCOUT( "context " << *it );
+	}
+	*/
+
+	return _knownContexts.find( context ) != _knownContexts.end();
+}
+
 void ImageEffectPlugin::initContexts()
 {
 	const tuttle::host::ofx::Property::Set& eProps = getDescriptor().getProperties();
@@ -256,7 +273,7 @@ imageEffect::Instance* ImageEffectPlugin::createInstance( const std::string& con
 	 * (not because we are expecting the results to change, but because plugin
 	 * might get confused otherwise), then a describe_in_context
 	 */
-	loadAndDescribeActions();
+	loadAndDescribeActions(); ///< @todo tuttle remove or not ? (already called from outside...)
 	if( getPluginHandle() == NULL )
 	{
 		COUT_ERROR( "imageEffectPlugin::createInstance, unexpected error." );

@@ -18,6 +18,15 @@
 
 using namespace boost::unit_test;
 
+class A
+{
+public:
+	int _id;
+	A( const int id ):_id(id) {}
+	~A(){}
+	bool operator==(const A& other) const { return _id == other._id; }
+};
+
 BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 
 /*
@@ -56,7 +65,6 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 
 BOOST_AUTO_TEST_CASE( create_node )
 {
-
 	using namespace std;
 	using namespace tuttle::host;
 
@@ -65,11 +73,23 @@ BOOST_AUTO_TEST_CASE( create_node )
 	core::Core::instance().preload();
 
 	core::Graph g;
-	core::Graph::Node& invert  = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& read1  = g.createNode( "fr.hd3d.tuttle.pngreader" );
+	core::Graph::Node& read2  = g.createNode( "fr.hd3d.tuttle.pngreader" );
+	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& basic   = g.createNode( "net.sf.openfx:basicplugin" );
+//	core::Graph::Node& merge1 = g.createNode( "fr.hd3d.tuttle.merge" );
+	core::Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
+	core::Graph::Node& write1 = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 
-	g.connect( basic, invert );
+	g.connect( read1, invert1 );
+	g.connect( invert1, invert2 );
+	g.connect( invert2, basic1 );
+	g.connect( basic1, write1 );
+//	g.connect( read2, merge1, merge1.getClip("A") );
+//	g.connect( invert1, merge1, merge1.getClip("B") );
+//	g.connect( merge1, write1 );
+
+	//read1.getParam('filename').setValue('test1.png')
 
 	std::cout
 	<< std::endl
@@ -79,7 +99,13 @@ BOOST_AUTO_TEST_CASE( create_node )
 
 	g.compute();
 
-	//g.dumpToStdOut();
+	core::Graph g2(g);
+
+	BOOST_CHECK_NE( &g2.getNode( read1.getName() ), &read1 );
+
+	BOOST_CHECK( g2.getNode( read1.getName() ) == read1 );
+
+	//g2.dumpToStdOut();
 
 	//	reader = graph.createNode('fr.hd3d.tuttle.pngreader')
 	//	invert = graph.createNode('fr.hd3d.tuttle.invert')

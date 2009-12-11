@@ -84,12 +84,15 @@ static Property::PropSpec effectDescriptorStuff[] = {
 //
 // Base
 //
-
 Base::Base( const Property::Set& set )
-	: _properties( set ) {}
+: _properties( set )
+{
+}
 
 Base::Base( const Property::PropSpec* propSpec )
-	: _properties( propSpec ) {}
+: _properties( propSpec )
+{
+}
 
 Base::~Base() {}
 
@@ -300,18 +303,16 @@ attribute::ClipImageDescriptor* Descriptor::defineClip( const std::string& name 
 	return c;
 }
 
+/// @warning tuttle some modifs here, doc needs update
 /// get the interact description, this will also call describe on the interact
-
-Interact::Descriptor& Descriptor::getOverlayDescriptor( int bitDepthPerComponent, bool hasAlpha )
+void Descriptor::initOverlayDescriptor( int bitDepthPerComponent, bool hasAlpha )
 {
-	if( _overlayDescriptor.getState() == Interact::eUninitialised )
+	if( _overlayDescriptor.getState() == interact::eUninitialised )
 	{
 		// OK, we need to describe it, set the entry point and describe away
 		_overlayDescriptor.setEntryPoint( getOverlayInteractMainEntry() );
 		_overlayDescriptor.describe( bitDepthPerComponent, hasAlpha );
 	}
-
-	return _overlayDescriptor;
 }
 
 void Descriptor::addClip( const std::string& name, attribute::ClipImageDescriptor* clip )
@@ -337,14 +338,14 @@ static const Property::PropSpec effectInstanceStuff[] = {
 	{ 0 }
 };
 
-Instance::Instance( ImageEffectPlugin* plugin,
-                    Descriptor&        other,
+Instance::Instance( const ImageEffectPlugin* plugin,
+                    const Descriptor&        descriptor,
                     const std::string& context,
                     bool               interactive )
 	: Base( effectInstanceStuff ),
 	_plugin( plugin ),
 	_context( context ),
-	_descriptor( &other ),
+	_descriptor( descriptor ),
 	_interactive( interactive ),
 	_created( false ),
 	_continuousSamples( false ),
@@ -353,13 +354,13 @@ Instance::Instance( ImageEffectPlugin* plugin,
 {
 	int i = 0;
 
-	_properties.setChainedSet( &other.getEditableProperties() );
+	_properties.setChainedSet( &descriptor.getProperties() );
 
 	_properties.setStringProperty( kOfxImageEffectPropContext, context );
 	_properties.setIntProperty( kOfxPropIsInteractive, interactive );
 
 	// copy is sequential over
-	bool sequential = other.getProperties().getIntProperty( kOfxImageEffectInstancePropSequentialRender ) != 0;
+	bool sequential = descriptor.getProperties().getIntProperty( kOfxImageEffectInstancePropSequentialRender ) != 0;
 	_properties.setIntProperty( kOfxImageEffectInstancePropSequentialRender, sequential );
 
 	while( effectInstanceStuff[i].name )
@@ -384,14 +385,27 @@ Instance::Instance( ImageEffectPlugin* plugin,
 	}
 }
 
+Instance::Instance( const Instance& other )
+	: Base( other.getProperties() ),
+	_plugin( other.getPlugin() ),
+	_context( other.getContext() ),
+	_descriptor( other.getDescriptor() ),
+	_interactive( other._interactive ),
+	_created( other._created ),
+	_continuousSamples( other._continuousSamples ),
+	_frameVarying( other._frameVarying ),
+	_outputFrameRate( other._outputFrameRate )
+{
+}
+
 /// called after construction to populate clips and params
 OfxStatus Instance::populate()
 {
 	try
 	{
-		populateClips( *_descriptor );
+		populateClips( _descriptor );
 	}
-	catch( std::logic_error& e )
+	catch( core::exception::LogicError& e )
 	{
 		COUT_EXCEPTION( e );
 		return kOfxStatFailed;
@@ -399,9 +413,9 @@ OfxStatus Instance::populate()
 
 	try
 	{
-		populateParams( *_descriptor );
+		populateParams( _descriptor );
 	}
-	catch( std::logic_error& e )
+	catch( core::exception::LogicError& e )
 	{
 		COUT_EXCEPTION( e );
 		return kOfxStatFailed;
@@ -410,24 +424,25 @@ OfxStatus Instance::populate()
 	return kOfxStatOK;
 }
 
-void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw( core::Exception )
+void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw( core::exception::LogicError )
 {
 
-	const std::list<attribute::ParamDescriptor*>& map = _descriptor->getParamList();
+	const std::list<attribute::ParamDescriptor*>& map = _descriptor.getParamList();
 
 	std::map<std::string, attribute::ParamInstance*> parameters;
 
 	// Create parameters on their own groups
-	for( std::list<attribute::ParamDescriptor*>::const_iterator it = map.begin();
-	     it != map.end(); ++it )
+	for( std::list<attribute::ParamDescriptor*>::const_iterator it = map.begin(), itEnd = map.end();
+	     it != itEnd;
+	     ++it )
 	{
-		// SetInstance where the childrens param instances will be added
 		attribute::ParamInstanceSet* setInstance = this;
+		// SetInstance where the childrens param instances will be added
 		attribute::ParamDescriptor* descriptor   = ( *it );
 
 		// get the param descriptor
 		if( !descriptor )
-			throw core::Exception( kOfxStatErrValue );
+			throw core::exception::LogicError( kOfxStatErrValue );
 
 		// name and parentName of the parameter
 		std::string name       = descriptor->getName();
@@ -444,8 +459,9 @@ void Instance::populateParams( const imageEffect::Descriptor& descriptor ) throw
 		else
 			setInstance = this;
 
-		// get a param instance from a param descriptor. Param::Instance is automaticaly added into the setInstance provided.
+		// get a param instance from a param descriptor. Param::Instance is automatically added into the setInstance provided.
 		attribute::ParamInstance* instance = newParam( *descriptor );
+		/// @todo set the groups of the ParamInstance !!!
 		parameters[name] = instance;
 
 	}
@@ -665,10 +681,10 @@ OfxStatus Instance::mainEntry( const char*    action,
 {
 	if( _plugin )
 	{
-		PluginHandle* pHandle = _plugin->getPluginHandle();
+		const PluginHandle* pHandle = _plugin->getPluginHandle();
 		if( pHandle )
 		{
-			OfxPlugin* ofxPlugin = pHandle->getOfxPlugin();
+			const OfxPlugin* ofxPlugin = pHandle->getOfxPlugin();
 			if( ofxPlugin )
 			{
 
@@ -738,33 +754,42 @@ OfxStatus Instance::paramInstanceChangedAction( const std::string& paramName,
                                                 OfxTime            time,
                                                 OfxPointD          renderScale )
 {
-	attribute::ParamInstance* param = getParam( paramName );
-
-	if( isClipPreferencesSlaveParam( paramName ) )
-		_clipPrefsDirty = true;
-
-	if( !param )
+	try
 	{
+		attribute::ParamInstance& param = getParam( paramName );
+
+		if( isClipPreferencesSlaveParam( paramName ) )
+			_clipPrefsDirty = true;
+
+		Property::PropSpec stuff[] = {
+			{ kOfxPropType, Property::eString, 1, true, kOfxTypeParameter },
+			{ kOfxPropName, Property::eString, 1, true, paramName.c_str() },
+			{ kOfxPropChangeReason, Property::eString, 1, true, why.c_str() },
+			{ kOfxPropTime, Property::eDouble, 1, true, "0" },
+			{ kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
+			{ 0 }
+		};
+
+		Property::Set inArgs( stuff );
+
+		// add the second dimension of the render scale
+		inArgs.setDoubleProperty( kOfxPropTime, time );
+
+		inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
+
+		return mainEntry( kOfxActionInstanceChanged, this->getHandle(), &inArgs, 0 );
+
+	}
+	catch( core::exception::LogicError& e )
+	{
+		COUT_EXCEPTION( e );
 		return kOfxStatFailed;
 	}
-
-	Property::PropSpec stuff[] = {
-		{ kOfxPropType, Property::eString, 1, true, kOfxTypeParameter },
-		{ kOfxPropName, Property::eString, 1, true, paramName.c_str() },
-		{ kOfxPropChangeReason, Property::eString, 1, true, why.c_str() },
-		{ kOfxPropTime, Property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
-		{ 0 }
-	};
-
-	Property::Set inArgs( stuff );
-
-	// add the second dimension of the render scale
-	inArgs.setDoubleProperty( kOfxPropTime, time );
-
-	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
-
-	return mainEntry( kOfxActionInstanceChanged, this->getHandle(), &inArgs, 0 );
+	catch( ... )
+	{
+		COUT_ERROR( "Exception..." );
+		return kOfxStatFailed;
+	}
 }
 
 OfxStatus Instance::clipInstanceChangedAction( const std::string& clipName,
@@ -914,22 +939,30 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 	else if( _context == kOfxImageEffectContextFilter ||
 	         _context == kOfxImageEffectContextPaint )
 	{
-		// filter and paint default to the input clip
-		attribute::ClipImageInstance* clip = getClip( kOfxImageEffectSimpleSourceClipName );
-		if( clip )
+		try
 		{
-			rod = clip->getRegionOfDefinition( time );
+			// filter and paint default to the input clip
+			attribute::ClipImageInstance& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			rod = clip.getRegionOfDefinition( time );
+		}
+		catch( core::exception::LogicError& e )
+		{
+			COUT_EXCEPTION(e);
 		}
 	}
 	else if( _context == kOfxImageEffectContextTransition )
 	{
-		// transition is the union of the two clips
-		attribute::ClipImageInstance* clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
-		attribute::ClipImageInstance* clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
-		if( clipFrom && clipTo )
+		try
 		{
-			rod = clipFrom->getRegionOfDefinition( time );
-			rod = Union( rod, clipTo->getRegionOfDefinition( time ) );
+			// transition is the union of the two clips
+			attribute::ClipImageInstance& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
+			attribute::ClipImageInstance& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
+			rod = clipFrom.getRegionOfDefinition( time );
+			rod = Union( rod, clipTo.getRegionOfDefinition( time ) );
+		}
+		catch( core::exception::LogicError& e )
+		{
+			COUT_EXCEPTION(e);
 		}
 	}
 	else if( _context == kOfxImageEffectContextGeneral )
@@ -962,15 +995,20 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 	else if( _context == kOfxImageEffectContextRetimer )
 	{
 		// retimer
-		attribute::ClipImageInstance* clip = getClip( kOfxImageEffectSimpleSourceClipName );
-		if( clip )
+		try
 		{
-			attribute::ParamDoubleInstance* param = dynamic_cast<attribute::ParamDoubleInstance*>( getParam( kOfxImageEffectRetimerParamName ) );
-			if( param )
-			{
-				rod = clip->getRegionOfDefinition( floor( time ) );
-				rod = Union( rod, clip->getRegionOfDefinition( floor( time ) + 1 ) );
-			}
+			attribute::ClipImageInstance& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			attribute::ParamDoubleInstance& param = dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
+			rod = clip.getRegionOfDefinition( floor( time ) );
+			rod = Union( rod, clip.getRegionOfDefinition( floor( time ) + 1 ) );
+		}
+		catch( core::exception::LogicError& e )
+		{
+			COUT_EXCEPTION( e );
+		}
+		catch( ... )
+		{
+			COUT_ERROR( "Exception." );
 		}
 	}
 
@@ -1190,7 +1228,7 @@ OfxStatus Instance::getFrameNeededAction( OfxTime   time,
 
 				int nRanges = outArgs.getDimension( name );
 				if( nRanges % 2 != 0 )
-					return kOfxStatFailed;                                                                                                                                                                                                                                                                                                                                                                                                                // bad! needs to be divisible by 2
+					return kOfxStatFailed;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 // bad! needs to be divisible by 2
 
 				if( nRanges == 0 )
 				{
@@ -1564,13 +1602,6 @@ const std::string& Instance::bestSupportedDepth( const std::string& depth ) cons
 	return none;
 }
 
-/// get the interact description, this will also call describe on the interact
-
-Interact::Descriptor& Instance::getOverlayDescriptor( int bitDepthPerComponent, bool hasAlpha )
-{
-	return _descriptor->getOverlayDescriptor( bitDepthPerComponent, hasAlpha );
-}
-
 OfxStatus Instance::getTimeDomainAction( OfxRangeD& range )
 {
 	Property::PropSpec outStuff[] = {
@@ -1765,10 +1796,10 @@ static OfxStatus clipGetHandle( OfxImageEffectHandle  imageEffect,
 
 	if( effectInstance )
 	{
-		attribute::ClipImageInstance* instance = effectInstance->getClip( name );
-		*clip = instance->getOfxImageClipHandle();
+		attribute::ClipImageInstance& instance = effectInstance->getClip( name );
+		*clip = instance.getOfxImageClipHandle();
 		if( propertySet )
-			*propertySet = instance->getPropHandle();
+			*propertySet = instance.getPropHandle();
 		return kOfxStatOK;
 	}
 
@@ -1933,10 +1964,12 @@ static struct OfxMessageSuiteV1 gMessageSuite =
 ////////////////////////////////////////////////////////////////////////////////
 /// make an overlay interact for an image effect
 
-OverlayInteract::OverlayInteract( imageEffect::Instance& effect, int bitDepthPerComponent, bool hasAlpha )
-	: Interact::Instance( effect.getOverlayDescriptor( bitDepthPerComponent, hasAlpha ),
-	                      ( void* )( effect.getHandle() ) ),
-	_instance( effect ) {}
+OverlayInteract::OverlayInteract( imageEffect::Instance& effect )
+: interact::Instance( effect.getOverlayDescriptor(), ( void* )( effect.getHandle() ) )
+, _instance( effect )
+{
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -2184,7 +2217,7 @@ void* ImageEffectHost::fetchSuite( const char* suiteName, int suiteVersion )
 	}
 	else if( strcmp( suiteName, kOfxInteractSuite ) == 0 )
 	{
-		return Interact::GetSuite( suiteVersion );
+		return interact::GetSuite( suiteVersion );
 	}
 	else if( strcmp( suiteName, kOfxProgressSuite ) == 0 )
 	{
