@@ -54,6 +54,7 @@ template<class T>
 inline std::string castToString( T i )
 {
 	std::ostringstream o;
+
 	o << i;
 	return o.str();
 }
@@ -264,9 +265,9 @@ protected:
 public:
 	/// ctor
 	OfxhProperty( const std::string& name,
-	          TypeEnum           type,
-	          size_t             dimension = 1,
-	          bool               pluginReadOnly = false );
+	              TypeEnum           type,
+	              size_t             dimension = 1,
+	              bool               pluginReadOnly = false );
 
 	/// copy ctor
 	OfxhProperty( const OfxhProperty& other );
@@ -357,9 +358,9 @@ protected:
 public:
 	/// constructor
 	OfxhPropertyTemplate( const std::string& name,
-	                  size_t             dimension,
-	                  bool               pluginReadOnly,
-	                  APIType            defaultValue );
+	                      size_t             dimension,
+	                      bool               pluginReadOnly,
+	                      APIType            defaultValue );
 
 	OfxhPropertyTemplate( const OfxhPropertyTemplate<T>& pt );
 

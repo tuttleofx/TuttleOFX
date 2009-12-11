@@ -78,9 +78,9 @@ public:
 
 	/// factory method, to create a new plugin (from the
 	virtual OfxhPlugin* newPlugin( OfxhPluginBinary* pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
-	                           const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion ) = 0;
+	                               const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion ) = 0;
 
-	virtual void beginXmlParsing( OfxhPlugin* )                                               = 0;
+	virtual void beginXmlParsing( OfxhPlugin* )                                           = 0;
 	virtual void xmlElementBegin( const std::string&, std::map<std::string, std::string>) = 0;
 	virtual void xmlCharacterHandler( const std::string& )                                = 0;
 	virtual void xmlElementEnd( const std::string& )                                      = 0;

@@ -136,14 +136,14 @@ public:
 
 	// construction based on clip instance
 	OfxhImage( attribute::OfxhClip& instance, // construct from clip instance taking pixel depth, components, pre mult and aspect ratio
-	       double                   renderScaleX,
-	       double                   renderScaleY,
-	       void*                    data,
-	       const OfxRectI&          bounds,
-	       const OfxRectI&          rod,
-	       int                      rowBytes,
-	       std::string              field,
-	       std::string              uniqueIdentifier );
+	           double               renderScaleX,
+	           double               renderScaleY,
+	           void*                data,
+	           const OfxRectI&      bounds,
+	           const OfxRectI&      rod,
+	           int                  rowBytes,
+	           std::string          field,
+	           std::string          uniqueIdentifier );
 
 	// OfxImageClipHandle getHandle();
 

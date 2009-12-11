@@ -84,7 +84,7 @@ public:
 	///   \arg context - the context to be created in
 	virtual OfxhImageEffect* newInstance( void*              clientData,
 	                               OfxhImageEffectPlugin* plugin,
-	                               OfxhDescriptor&        desc,
+	                               Descriptor&        desc,
 	                               const std::string& context ) const = 0;
 
 	/// Function called as each plugin binary is found and loaded from disk
@@ -259,7 +259,7 @@ public:
 	/// otherwise it will return the described overlay
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const { return _overlayDescriptor; }
 
-	void initOverlayDescriptor( int bitDepthPerComponent=8, bool hasAlpha=false );
+	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false );
 };
 
 /// a map used to specify needed frame ranges on set of clips
@@ -368,8 +368,8 @@ public:
 	                            va_list     args ) const = 0;
 
 	/// call the effect entry point
-	virtual OfxStatus mainEntry( const char*    action,
-	                             const void*    handle,
+	virtual OfxStatus mainEntry( const char*        action,
+	                             const void*        handle,
 	                             property::OfxhSet* inArgs,
 	                             property::OfxhSet* outArgs );
 
@@ -548,7 +548,6 @@ public:
 	                                    const OfxRectI&    renderRoI,
 	                                    OfxPointD          renderScale,
 	                                    std::string&       clip );
-
 
 	// time domain
 	virtual OfxStatus getTimeDomainAction( OfxRangeD& range );

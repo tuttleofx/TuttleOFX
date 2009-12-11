@@ -170,10 +170,10 @@ public:
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
 
 	const ParamMap& getParams() const { return _params; }
-	ParamMap& getParams() { return _params; }
+	ParamMap&       getParams()       { return _params; }
 
 	const ParamList& getParamList() const { return _paramList; }
-	ParamList& getParamList() { return _paramList; }
+	ParamList&       getParamList()       { return _paramList; }
 
 	// get the param
 	OfxhParam& getParam( std::string name )
@@ -181,7 +181,7 @@ public:
 		ParamMap::iterator it = _params.find( name );
 
 		if( it == _params.end() )
-			throw( std::logic_error( std::string("Param not found. (")+name+")" ) );
+			throw( std::logic_error( std::string( "Param not found. (" ) + name + ")" ) );
 		return *it->second;
 
 	}
@@ -207,6 +207,7 @@ public:
 	///
 	/// Client host code needs to implement this
 	virtual OfxStatus editEnd() = 0;
+
 private:
 	void initMapFromList();
 };
@@ -241,7 +242,7 @@ public:
 
 	/// define a param
 	virtual OfxhParamDescriptor* paramDefine( const char* paramType,
-	                                      const char* name );
+	                                          const char* name );
 
 	/// add a param in
 	virtual void addParam( const std::string& name, OfxhParamDescriptor* p );
@@ -253,7 +254,7 @@ class OfxhParam : virtual public OfxhParamAccessor,
 	private property::OfxhNotifyHook,
 	private boost::noncopyable
 {
-	OfxhParam();
+OfxhParam();
 
 protected:
 	OfxhParamSet*  _paramSetInstance;
@@ -261,9 +262,9 @@ protected:
 
 protected:
 	OfxhParam( const OfxhParam& other )
-		: AttributeInstance( other )
-		, _paramSetInstance(other._paramSetInstance)
-		, _parentInstance(other._parentInstance)
+		: AttributeInstance( other ),
+		_paramSetInstance( other._paramSetInstance ),
+		_parentInstance( other._parentInstance )
 	{
 		/// @todo tuttle : copy content, not pointer ?
 	}
@@ -293,11 +294,11 @@ public:
 	//                                        double      renderScaleY);
 
 	// get the param instance
-	OfxhParamSet* getParamSetInstance()                             { return _paramSetInstance; }
-	void              setParamSetInstance( OfxhParamSet* instance ) { _paramSetInstance = instance; }
+	OfxhParamSet* getParamSetInstance()                         { return _paramSetInstance; }
+	void          setParamSetInstance( OfxhParamSet* instance ) { _paramSetInstance = instance; }
 
 	// set/get parent instance
-	void           setParentInstance( OfxhParam* instance );
+	void       setParentInstance( OfxhParam* instance );
 	OfxhParam* getParentInstance();
 
 	// copy one parameter to another
@@ -523,9 +524,9 @@ public:
 		_paramList.clear();
 	}
 
-	void                         setChildrens( const attribute::OfxhParamSet* childrens );
+	void                     setChildrens( const attribute::OfxhParamSet* childrens );
 	attribute::OfxhParamSet* getChildrens() const;
-	void                         addChildren( OfxhParam* children );
+	void                     addChildren( OfxhParam* children );
 
 	property::OfxhSet& getParamSetProps()
 	{
@@ -562,7 +563,7 @@ class ParamPageInstance : public OfxhParam
 {
 public:
 	ParamPageInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
-	virtual ParamPageInstance*                      clone() const;
+	virtual ParamPageInstance*                  clone() const;
 	const std::map<int, attribute::OfxhParam*>& getChildren() const;
 
 protected:

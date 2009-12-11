@@ -58,7 +58,6 @@ namespace core {
 
 // my host support code
 EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-                                tuttle::host::ofx::imageEffect::OfxhDescriptor&        desc,
                                 const std::string&                                 context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffect( plugin, desc, context, false )
 {
@@ -239,8 +238,8 @@ tuttle::host::ofx::attribute::OfxhParam* EffectInstance::newParam( tuttle::host:
 	else if( descriptor.getParamType() == kOfxParamTypePage )
 		return new tuttle::host::ofx::attribute::ParamPageInstance( descriptor, *this );
 	else
-		throw exception::LogicError("Can't create param instance from param descriptor.");
-	
+		throw exception::LogicError( "Can't create param instance from param descriptor." );
+
 		throw exception::LogicError( "Can't create param instance from param descriptor." );
 
 }

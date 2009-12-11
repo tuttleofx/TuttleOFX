@@ -93,7 +93,8 @@ class OfxhClip : virtual public OfxhClipAccessor,
 	private boost::noncopyable
 {
 protected:
-	OfxhClip( const OfxhClip& other ):attribute::AttributeInstance(other){}
+	OfxhClip( const OfxhClip& other ) : attribute::AttributeInstance( other ) {}
+
 public:
 	OfxhClip( const OfxhClipDescriptor& desc );
 	virtual ~OfxhClip() = 0;
@@ -122,9 +123,8 @@ public:
 	// Connected -
 	//
 	//  Says whether the clip is actually connected at the moment.
-	virtual bool getConnected() const = 0;
+	virtual const bool getConnected() const = 0;
 };
-
 
 /**
  * @brief to make ClipInstance clonable (for use in boost::ptr_container)

@@ -125,11 +125,19 @@ OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 /**
  * clip clipimage instance
  */
+<<<<<<< HEAD
 OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
 : attribute::OfxhClip( desc )
 , _effectInstance( effectInstance )
 //				, _pixelDepth( kOfxBitDepthNone )
 //				, _components( kOfxImageComponentNone )
+=======
+OfxhClipImage::OfxhClipImage( imageEffect::Instance& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
+	: attribute::OfxhClip( desc ),
+	_effectInstance( effectInstance )
+	//				, _pixelDepth( kOfxBitDepthNone )
+	//				, _components( kOfxImageComponentNone )
+>>>>>>> 7abe01dfe64f942d5e85e3127d6e9b7e04ec156b
 {
 	//					_par = 1.0;
 	/**
@@ -156,17 +164,14 @@ OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, cons
 	initHook( clipImageInstanceStuffs );
 }
 
-
 OfxhClipImage::OfxhClipImage( const OfxhClipImage& other )
-: attribute::OfxhClip( other )
-, _effectInstance( other._effectInstance )
-{
-	
-}
+	: attribute::OfxhClip( other ),
+	_effectInstance( other._effectInstance )
+{}
 
 OfxStatus OfxhClipImage::instanceChangedAction( std::string why,
-                                                    OfxTime     time,
-                                                    OfxPointD   renderScale )
+                                                OfxTime     time,
+                                                OfxPointD   renderScale )
 {
 	property::OfxhPropSpec stuff[] = {
 		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
@@ -225,11 +230,10 @@ const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) cons
 
 OfxhClipImageSet::OfxhClipImageSet()
 	: _clipPrefsDirty( true )
-{
-}
+{}
 
 OfxhClipImageSet::OfxhClipImageSet( const OfxhClipImageSet& other )
-: _clipsByOrder(other._clipsByOrder.clone())
+	: _clipsByOrder( other._clipsByOrder.clone() )
 {
 	initMapFromList();
 }
@@ -240,10 +244,9 @@ void OfxhClipImageSet::initMapFromList()
 	     it != itEnd;
 	     ++it )
 	{
-		_clips[it->getName()] = &(*it);
+		_clips[it->getName()] = &( *it );
 	}
 }
-
 
 OfxhClipImageSet::~OfxhClipImageSet()
 {}

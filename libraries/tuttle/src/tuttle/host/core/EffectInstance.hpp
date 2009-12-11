@@ -49,7 +49,6 @@ public:
 	EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
 	                tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
 	                const std::string&                                     context );
-
 	EffectInstance( const EffectInstance& other );
 
 	EffectInstance* clone() const { return new EffectInstance( *this ); }

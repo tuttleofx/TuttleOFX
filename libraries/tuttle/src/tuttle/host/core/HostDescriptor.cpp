@@ -90,7 +90,7 @@ Host::Host()
 tuttle::host::core::EffectInstance* Host::newInstance( void*                                                  clientData,
                                                        tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
                                                        tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
-                                                       const std::string&                                     context ) const
+                                                       const std::string&                                 context ) const
 {
 	return new tuttle::host::core::EffectInstance( plugin, desc, context );
 }

@@ -247,13 +247,13 @@ public:
 	 *
 	 *  Says whether the clip is actually connected at the moment.
 	 */
-	virtual bool getConnected() const = 0;
+	virtual const bool getConnected() const = 0;
 
 	/** Unmapped Frame Rate -
 	 *
 	 *  The unmaped frame range over which an output clip has images.
 	 */
-	virtual double getUnmappedFrameRate() const = 0;
+	virtual const double getUnmappedFrameRate() const = 0;
 
 	/** Unmapped Frame Range -
 	 *
@@ -266,7 +266,7 @@ public:
 	 *  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
 	 *  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
 	 */
-	virtual bool getContinuousSamples() const = 0;
+	virtual const bool getContinuousSamples() const = 0;
 
 	/**  override this to fill in the image at the given time.
 	 *  The bounds of the image on the image plane should be
@@ -346,7 +346,7 @@ public:
 	{
 		std::map<std::string, OfxhClipImage*>::iterator it = _clips.find( name );
 		if( it == _clips.end() )
-			throw core::exception::LogicError("Clip not found ("+name+").");
+			throw core::exception::LogicError( "Clip not found (" + name + ")." );
 		return *it->second;
 	}
 
@@ -396,7 +396,7 @@ public:
 	{
 		return _clipPrefsDirty;
 	}
-	
+
 private:
 	void initMapFromList();
 };

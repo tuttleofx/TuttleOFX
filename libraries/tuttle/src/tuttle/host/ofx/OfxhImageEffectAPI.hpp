@@ -72,14 +72,14 @@ public:
 	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl );
 
 	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
-	                   OfxhPluginBinary*           pb,
-	                   int                     pi,
-	                   const std::string&      api,
-	                   int                     apiVersion,
-	                   const std::string&      pluginId,
-	                   const std::string&      rawId,
-	                   int                     pluginMajorVersion,
-	                   int                     pluginMinorVersion );
+	                       OfxhPluginBinary*           pb,
+	                       int                         pi,
+	                       const std::string&          api,
+	                       int                         apiVersion,
+	                       const std::string&          pluginId,
+	                       const std::string&          rawId,
+	                       int                         pluginMajorVersion,
+	                       int                         pluginMinorVersion );
 
 	virtual ~OfxhImageEffectPlugin();
 
@@ -100,11 +100,11 @@ public:
 
 	virtual void saveXML( std::ostream& os );
 
-	void                         initContexts();
+	void              initContexts();
 	const ContextSet& getContexts() const;
-	bool supportsContext( const std::string& context ) const;
+	bool              supportsContext( const std::string& context ) const;
 
-	OfxhPluginHandle* getPluginHandle() { return _pluginHandle.get(); }
+	OfxhPluginHandle*       getPluginHandle()       { return _pluginHandle.get(); }
 	const OfxhPluginHandle* getPluginHandle() const { return _pluginHandle.get(); }
 
 	void loadAndDescribeActions();
@@ -233,17 +233,17 @@ public:
 	virtual bool pluginSupported( OfxhPlugin* p, std::string& reason ) const;
 
 	OfxhPlugin* newPlugin( OfxhPluginBinary* pb,
-	                   int           pi,
-	                   OfxPlugin*    pl );
+	                       int               pi,
+	                       OfxPlugin*        pl );
 
-	OfxhPlugin* newPlugin( OfxhPluginBinary*      pb,
-	                   int                pi,
-	                   const std::string& api,
-	                   int                apiVersion,
-	                   const std::string& pluginId,
-	                   const std::string& rawId,
-	                   int                pluginMajorVersion,
-	                   int                pluginMinorVersion );
+	OfxhPlugin* newPlugin( OfxhPluginBinary*  pb,
+	                       int                pi,
+	                       const std::string& api,
+	                       int                apiVersion,
+	                       const std::string& pluginId,
+	                       const std::string& rawId,
+	                       int                pluginMajorVersion,
+	                       int                pluginMinorVersion );
 
 	void dumpToStdOut() const;
 };

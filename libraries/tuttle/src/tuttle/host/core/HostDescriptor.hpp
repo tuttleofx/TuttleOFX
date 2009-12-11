@@ -65,7 +65,6 @@ public:
 	                                                 tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
 	                                                 tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
 	                                                 const std::string&                                     context ) const;
-
 	/// Override this to create a descriptor, this makes the 'root' descriptor
 	tuttle::host::ofx::imageEffect::OfxhDescriptor* makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const;
 
