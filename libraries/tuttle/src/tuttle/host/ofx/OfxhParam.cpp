@@ -985,6 +985,22 @@ OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 ParamInstanceSet::ParamInstanceSet()
 {}
 
+ParamInstanceSet::ParamInstanceSet( const ParamInstanceSet& other )
+: _paramList(other._paramList.clone())
+{
+	initMapFromList();
+}
+
+void ParamInstanceSet::initMapFromList()
+{
+	for( ParamList::iterator it = _paramList.begin(), itEnd = _paramList.end();
+	     it != itEnd;
+	     ++it )
+	{
+		_params[it->getName()] = &(*it);
+	}
+}
+
 ParamInstanceSet::~ParamInstanceSet()
 {}
 

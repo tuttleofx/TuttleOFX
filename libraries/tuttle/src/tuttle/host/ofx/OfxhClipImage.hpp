@@ -118,8 +118,11 @@ protected:
 
 public:
 	ClipImageInstance( imageEffect::Instance& effectInstance, const attribute::ClipImageDescriptor& desc );
+	ClipImageInstance( const ClipImageInstance& other );
 
 	virtual ~ClipImageInstance() {}
+
+	virtual ClipImageInstance* clone() const = 0;
 
 	/**
 	 * get a handle on the clip descriptor for the C api
@@ -283,6 +286,14 @@ public:
 	virtual const std::string& findSupportedComp( const std::string& s ) const;
 };
 
+/**
+ * @brief to make ClipImageInstance clonable (for use in boost::ptr_container)
+ */
+inline ClipImageInstance* new_clone( const ClipImageInstance& a )
+{
+	return a.clone();
+}
+
 class ClipImageInstanceSet //: public ClipAccessorSet
 {
 public:
@@ -300,6 +311,8 @@ public:
 	/// The propery set being passed in belongs to the owning
 	/// plugin instance.
 	explicit ClipImageInstanceSet();
+
+	explicit ClipImageInstanceSet( const ClipImageInstanceSet& other );
 
 	/// dtor.
 	virtual ~ClipImageInstanceSet();
@@ -383,7 +396,9 @@ public:
 	{
 		return _clipPrefsDirty;
 	}
-
+	
+private:
+	void initMapFromList();
 };
 
 }
