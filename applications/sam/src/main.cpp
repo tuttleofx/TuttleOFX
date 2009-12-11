@@ -50,7 +50,7 @@ int main( int argc, char** argv )
 			return 1;
 		}
 		std::vector< boost::shared_ptr< tuttle::host::core::EffectInstance > > vPluginsInst;
-		tuttle::host::ofx::imageEffect::Instance* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
+		tuttle::host::ofx::imageEffect::OfxhImageEffect* ofxinst = pluginR->createInstance( kOfxImageEffectContextGenerator, NULL );
 
 		tuttle::host::core::EffectInstance* inst = dynamic_cast< tuttle::host::core::EffectInstance* >( ofxinst );
 		if( inst )

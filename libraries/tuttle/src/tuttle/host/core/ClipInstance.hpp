@@ -167,7 +167,7 @@ public:
 	 * @brief Connected
 	 * Says whether the clip is actually connected at the moment.
 	 */
-	const bool getConnected() const { return _isConnected; }
+	bool getConnected() const { return _isConnected; }
 	void setConnected( const bool isConnected ) { _isConnected = isConnected; }
 
 	/**
