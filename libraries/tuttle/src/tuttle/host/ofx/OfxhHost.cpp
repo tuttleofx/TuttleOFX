@@ -27,10 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <limits.h>
-#include <math.h>
-#include <float.h>
-#include <string.h>
+#include "OfxhHost.hpp"
 
 // ofx
 #include "ofxCore.h"
@@ -38,7 +35,10 @@
 #include "ofxMultiThread.h"
 #include "ofxMemory.h"
 
-#include "ofxhHost.h"
+#include <climits>
+#include <cmath>
+#include <cfloat>
+#include <cstring>
 
 typedef OfxPlugin* ( *OfxGetPluginType )( int );
 

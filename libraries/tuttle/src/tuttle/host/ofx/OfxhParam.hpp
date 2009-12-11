@@ -30,9 +30,9 @@
 #ifndef OFXH_PARAM_H
 #define OFXH_PARAM_H
 
-#include "ofxhPropertySuite.h"
-#include "ofxhAttribute.h"
 #include "ofxCore.h"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhAttribute.hpp"
 
 #include <boost/ptr_container/ptr_list.hpp>
 

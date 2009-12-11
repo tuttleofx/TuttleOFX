@@ -63,7 +63,7 @@
  #include <dlfcn.h>
 #elif defined ( WINDOWS )
  #include "windows.h"
- #include <assert.h>
+ #include <cassert>
 #endif
 
 #include <sys/stat.h>

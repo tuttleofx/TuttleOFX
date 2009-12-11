@@ -26,72 +26,100 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef OFXH_HOST_H
-#define OFXH_HOST_H
 
-#include <map>
-#include <string>
-#include <cstdarg>
+#ifndef OFXH_CLIP_H
+#define OFXH_CLIP_H
 
-#include "ofxCore.h"
 #include "ofxImageEffect.h"
-#include "ofxTimeLine.h"
-#include "ofxhPropertySuite.h"
+#include "OfxhAttribute.hpp"
+#include "OfxhUtilities.hpp"
+#include "OfxhPropertySuite.hpp"
 
 namespace tuttle {
 namespace host {
 namespace ofx {
 
-/// a plugin what we use
-class Plugin;
-
-/// a param descriptor
-namespace attribute {
-class ParamDescriptor;
+namespace imageEffect {
+class Instance;
 }
 
-/// Base class for all objects passed to a plugin by the 'setHost' function
-/// passed back by any plug-in.
-class AbstractHost
+namespace attribute {
+
+/**
+ * Base to both descriptor and instance it
+ * is used to basically fetch common properties
+ * by function name
+ */
+class ClipAccessor : virtual public attribute::AttributeAccessor
 {
-protected:
-	OfxHost _host;
-	Property::Set _properties;
-
 public:
-	AbstractHost();
-	virtual ~AbstractHost() = 0;
+	/// @brief base ctor, for a descriptor
+	ClipAccessor();
 
-	/// get the props on this host
-	const Property::Set& getProperties() const { return _properties; }
-	Property::Set&       getProperties()       { return _properties; }
+	virtual ~ClipAccessor() = 0;
 
-	/// fetch a suite
-	/// The base class returns the following suites
-	///    PropertySuite
-	///    MemorySuite
-	virtual void* fetchSuite( const char* suiteName, int suiteVersion );
+	/// is the clip optional
+	bool isOptional() const;
 
-	/// get the C API handle that is passed across the API to represent this host
-	OfxHost* getHandle();
+	virtual bool verifyMagic()
+	{
+		return true;
+	}
 
-	/// override this to handle do post-construction initialisation on a Param::Descriptor
-	virtual void initDescriptor( attribute::ParamDescriptor* ) const {}
+};
 
-	/// is my magic number valid?
-	bool verifyMagic() { return true; }
+/**
+ * a clip descriptor
+ */
+class ClipDescriptor : virtual public ClipAccessor,
+	public attribute::AttributeDescriptor
+{
+public:
+	/// constructor
+	ClipDescriptor();
+	ClipDescriptor( const tuttle::host::ofx::Property::Set& );
+	~ClipDescriptor() = 0;
+};
 
-	/// vmessage
-	virtual OfxStatus vmessage( const char* type,
-	                            const char* id,
-	                            const char* format,
-	                            va_list     args ) const = 0;
+/**
+ * a clip instance
+ */
+class ClipInstance : virtual public ClipAccessor,
+	public attribute::AttributeInstance,
+	protected Property::GetHook,
+	protected Property::NotifyHook
+{
+public:
+	ClipInstance( const ClipDescriptor& desc );
+	virtual ~ClipInstance() = 0;
 
+	void initHook( const Property::PropSpec* propSpec );
+
+	/// notify override properties
+
+	void notify( const std::string& name, bool isSingle, int indexOrN ) OFX_EXCEPTION_SPEC
+	{
+		COUT_WITHINFOS( "What we should do here?" );
+		throw Property::Exception( kOfxStatErrMissingHostFeature );
+	}
+
+	// don't know what to do
+
+	void reset( const std::string& name ) OFX_EXCEPTION_SPEC
+	{
+		COUT_WITHINFOS( "What we should do here?" );
+		throw Property::Exception( kOfxStatErrMissingHostFeature );
+	}
+
+	// Connected -
+	//
+	//  Says whether the clip is actually connected at the moment.
+	virtual bool getConnected() const = 0;
 };
 
 }
 }
 }
+}
 
 #endif
-

@@ -1,5 +1,5 @@
 #include "PluginException.hpp"
-#include <stdio.h>
+#include <cstdio>
 
 namespace tuttle {
 namespace plugin {

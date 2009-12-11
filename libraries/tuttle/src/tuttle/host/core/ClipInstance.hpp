@@ -31,8 +31,8 @@
 #define TUTTLE_CLIP_INSTANCE_H
 
 #include "EffectInstance.hpp"
-#include <tuttle/host/ofx/ofxhImageEffect.h>
-#include <tuttle/host/ofx/ofxhImage.h>
+#include <tuttle/host/ofx/OfxhImageEffect.hpp>
+#include <tuttle/host/ofx/OfxhImage.hpp>
 #include <boost/cstdint.hpp>
 
 #define SOFXCLIPLENGTH 1

@@ -32,23 +32,23 @@
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhClip.h"
-#include "ofxhParam.h"
-#include "ofxhMemory.h"
-#include "ofxhImageEffect.h"
-#include "ofxhPluginAPICache.h"
-#include "ofxhPluginCache.h"
-#include "ofxhHost.h"
-#include "ofxhImageEffectAPI.h"
-#include "ofxhUtilities.h"
+#include "OfxhBinary.hpp"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhClip.hpp"
+#include "OfxhParam.hpp"
+#include "OfxhMemory.hpp"
+#include "OfxhImageEffect.hpp"
+#include "OfxhPluginAPICache.hpp"
+#include "OfxhPluginCache.hpp"
+#include "OfxhHost.hpp"
+#include "OfxhImageEffectAPI.hpp"
+#include "OfxhUtilities.hpp"
 
 #include <tuttle/host/core/Core.hpp>
 
-#include <string.h>
-#include <stdarg.h>
-#include <math.h>
+#include <cstring>
+#include <cstdarg>
+#include <cmath>
 
 namespace tuttle {
 namespace host {

@@ -30,7 +30,7 @@
 #define _TUTTLE_PARAM_INSTANCE_HPP
 
 #include <iostream>
-#include <tuttle/host/ofx/ofxhParam.h>
+#include <tuttle/host/ofx/OfxhParam.hpp>
 #include <tuttle/host/core/EffectInstance.hpp>
 
 namespace tuttle {

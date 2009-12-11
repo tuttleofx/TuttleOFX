@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ofxhBinary.h"
+#include "OfxhBinary.hpp"
 
 namespace tuttle {
 namespace host {

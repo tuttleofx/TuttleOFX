@@ -29,7 +29,7 @@
 #ifndef _TUTTLE_HOST_DESCRIPTOR_H
 #define _TUTTLE_HOST_DESCRIPTOR_H
 
-#include <tuttle/host/ofx/ofxhImageEffect.h>
+#include <tuttle/host/ofx/OfxhImageEffect.hpp>
 #include <tuttle/host/core/EffectInstance.hpp>
 
 namespace tuttle {

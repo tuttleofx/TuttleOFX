@@ -30,11 +30,11 @@
 #ifndef OFXH_CLIPIMAGE_H
 #define OFXH_CLIPIMAGE_H
 
-#include "ofxhClip.h"
-#include "ofxhImage.h"
 #include "ofxImageEffect.h"
-#include "ofxhUtilities.h"
-#include "ofxhPropertySuite.h"
+#include "OfxhClip.hpp"
+#include "OfxhImage.hpp"
+#include "OfxhUtilities.hpp"
+#include "OfxhPropertySuite.hpp"
 
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <map>

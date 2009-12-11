@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <assert.h>
+#include <cassert>
 
 #include <map>
 #include <string>
@@ -35,8 +35,8 @@
 #include <fstream>
 #include <sstream>
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 #include <expat.h>
 
@@ -45,14 +45,14 @@
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhMemory.h"
-#include "ofxhPluginAPICache.h"
-#include "ofxhPluginCache.h"
-#include "ofxhHost.h"
-#include "ofxhXml.h"
-#include "ofxhUtilities.h"
+#include "OfxhBinary.hpp"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhMemory.hpp"
+#include "OfxhPluginAPICache.hpp"
+#include "OfxhPluginCache.hpp"
+#include "OfxhHost.hpp"
+#include "OfxhXml.hpp"
+#include "OfxhUtilities.hpp"
 
 namespace tuttle {
 namespace host {

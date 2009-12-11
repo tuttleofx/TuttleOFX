@@ -1,5 +1,5 @@
 #include "Graph.hpp"
-#include <tuttle/host/ofx/ofxhClipImage.h>
+#include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <iostream>
 #include <sstream>

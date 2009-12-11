@@ -30,16 +30,16 @@
 #ifndef OFXH_IMAGE_EFFECT_API_H
 #define OFXH_IMAGE_EFFECT_API_H
 
+#include "ofxCore.h"
+#include "ofxImageEffect.h"
+#include "OfxhImageEffect.hpp"
+#include "OfxhPluginCache.hpp"
+#include "OfxhHost.hpp"
+
 #include <string>
 #include <map>
 #include <set>
 #include <memory>
-
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-#include "ofxhImageEffect.h"
-#include "ofxhPluginCache.h"
-#include "ofxhHost.h"
 
 namespace tuttle {
 namespace host {

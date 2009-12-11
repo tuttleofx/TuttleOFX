@@ -27,7 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <assert.h>
+#include <cassert>
 
 #include <string>
 #include <map>
@@ -36,17 +36,17 @@
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "ofxhBinary.h"
-#include "ofxhPropertySuite.h"
-#include "ofxhClip.h"
-#include "ofxhParam.h"
-#include "ofxhMemory.h"
-#include "ofxhImageEffect.h"
-#include "ofxhPluginAPICache.h"
-#include "ofxhPluginCache.h"
-#include "ofxhHost.h"
-#include "ofxhImageEffectAPI.h"
-#include "ofxhXml.h"
+#include "OfxhBinary.hpp"
+#include "OfxhPropertySuite.hpp"
+#include "OfxhClip.hpp"
+#include "OfxhParam.hpp"
+#include "OfxhMemory.hpp"
+#include "OfxhImageEffect.hpp"
+#include "OfxhPluginAPICache.hpp"
+#include "OfxhPluginCache.hpp"
+#include "OfxhHost.hpp"
+#include "OfxhImageEffectAPI.hpp"
+#include "OfxhXml.hpp"
 
 #include <tuttle/host/core/Core.hpp>
 

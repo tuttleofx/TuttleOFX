@@ -96,7 +96,7 @@
 #include "ofxParam.h"
 #include "ofxProperty.h"
 
-#include <assert.h>
+#include <cassert>
 #include <vector>
 #include <string>
 #include <map>
