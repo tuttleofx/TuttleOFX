@@ -1,5 +1,6 @@
 #include "Graph.hpp"
-#include <tuttle/host/ofx/OfxhClipImage.hpp>
+#include "ProcessGraph.hpp"
+#include <tuttle/host/ofx/ofxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <iostream>
 #include <sstream>
@@ -17,6 +18,7 @@ Graph::Graph( const Graph& other )
 , _nodes(other._nodes)
 , _instanceCount(other._instanceCount)
 {
+	relink();
 }
 
 Graph::~Graph()
@@ -65,6 +67,16 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 	addToGraph( *node );
 
 	return *node;
+}
+
+void Graph::relink()
+{
+	InternalGraph::vertex_range_t vrange = _graph.getVertices();
+	for( InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
+	{
+		graph::Vertex & v = _graph.instance( *it );
+		v.setProcessNode( &_nodes.at(v.processNode()->getName()) );
+	}
 }
 
 void Graph::addToGraph( EffectInstance& node )
@@ -130,19 +142,21 @@ void Graph::unconnectNode( const EffectInstance& node ) throw( exception::LogicE
 
 }
 
+void Graph::compute(const std::list<std::string>& nodes, const int first, const int last)
+{
+	ProcessGraph process(*this);
+	for( int t = first; t<last; ++t )
+	{
+		process.compute( nodes, t );
+	}
+}
+
 void Graph::dumpToStdOut()
 {
 	std::cout
 	<< "graph dump" << std::endl
 	<< "\tnode count: " << "-" << std::endl;
 	_graph.dumpToStdOut();
-
-	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "testDOTExport.dot" );
-}
-
-void Graph::compute()
-{
-	_graph.test_dfs();
 }
 
 }
