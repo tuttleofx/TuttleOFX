@@ -23,6 +23,8 @@ class Graph
 {
 public:
 	typedef core::EffectInstance Node;
+	typedef graph::InternalGraph<graph::Vertex, graph::Edge> InternalGraph;
+	typedef boost::ptr_map<const std::string, Node> NodeMap;
 
 public:
 	Graph();
@@ -32,25 +34,27 @@ public:
 	Node& createNode( const std::string& id ) throw( exception::LogicError );
 	void  deleteNode( const EffectInstance& node ) throw( exception::LogicError );
 
+
 	void connect( const Node& out, const Node& in ) throw( exception::LogicError );
 	void connect( const EffectInstance& out, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr ) throw( exception::LogicError );
 	void unconnectNode( const EffectInstance& node ) throw( exception::LogicError );
 
-	void compute();
+	void compute(const std::list<std::string>& nodes, const int first, const int last);
+
+	const InternalGraph & getGraph() const { return _graph; }
 
 public:
 	const Node& getNode( const std::string& id ) const { return _nodes.at(id); }
 	void dumpToStdOut();
 
 private:
-	typedef graph::InternalGraph<graph::Vertex, graph::Edge> InternalGraph;
-	typedef boost::ptr_map<const std::string, Node> NodeMap;
 	InternalGraph _graph;
 	NodeMap _nodes;
 	std::map<std::string, InternalGraph::VertexDescriptor> _nodesDescriptor;
 	std::map<std::string, int> _instanceCount; ///< used to assign a unique name to each node
 
 private:
+	void relink();
 	void addToGraph( EffectInstance& node );
 	void removeFromGraph( EffectInstance& node ) throw( exception::LogicError );
 };

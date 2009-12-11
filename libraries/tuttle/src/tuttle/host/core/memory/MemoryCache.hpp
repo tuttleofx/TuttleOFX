@@ -2,112 +2,46 @@
 #define _TUTTLE_HOST_CORE_MEMORYCACHE_HPP_
 
 #include "IMemoryCache.hpp"
-#include "MemoryPool.hpp"
+#include "IMemoryPool.hpp"
 
-#include "boost/foreach.hpp"
 #include <boost/ptr_container/ptr_map.hpp>
-#include <list>
-#include <cstring>
+#include <map>
 
 namespace tuttle {
 namespace host {
 namespace core {
 
-class MemoryCache // : public IMemoryCache
+class MemoryCache : public IMemoryCache
 {
+	MemoryCache( const MemoryCache& pool );
 public:
-	class CacheData
-	{
-	public:
-		//typedef std::list<MemoryPool::Data*> PoolDataList;
-
-	public:
-		CacheData( PoolData& data );
-		~CacheData() {}
-
-	public:
-		std::size_t           getSize() const { return _data.size(); }
-		PoolData& getData()       { return _data; }
-		bool                  isUsed()        { return _isUsed; }
-		int                   getWillBeUsed() { return _willBeUsed; }
-		int                   getWeight()     { return _weight; }
-
-	private:
-		//PoolDataList _datas;
-		PoolData& _data;
-		bool _isUsed; ///< this data is used
-		int _willBeUsed; ///< we known that this data will be used x times in the future
-		int _weight; ///< a coefficient representing the priority to keep this data (maybe the complexity to recalculate from scratch)
-	};
-	typedef std::pair<std::string, double> Key; ///< string=pluginName, double=frame ( or time )
-	typedef boost::ptr_map<Key, CacheData> DataMap;
-	typedef boost::ptr_container_detail::ref_pair<Key, const CacheData* const> DataMapContent;
-	typedef std::list<Key> KeyList;
-	DataMap _datas;
-	KeyList _keys; ///< sort by last usage
-
-public:
-	MemoryCache( MemoryPool& pool );
-	~MemoryCache();
+	MemoryCache(){}
+	~MemoryCache(){}
 
 private:
-	MemoryPool& _pool;
-
+	struct Key{
+		Key(const std::string& name, const double &time) :
+			_pluginName(name),
+			_time(time)
+			{}
+		bool operator<(const Key&) const;
+		std::string _pluginName;
+		double _time;
+	};
+	typedef std::map<Key, IPoolDataPtr> MAP;
+	MAP _map;
+	MAP::const_iterator getIteratorForValue(const IPoolDataPtr &) const;
+	MAP::iterator getIteratorForValue(const IPoolDataPtr &);
 public:
-	PoolData& get( const std::string& id, const double t )
-	{
-		return _datas.at( Key( id, t ) ).getData();
-	}
-
-	bool add( const std::string& id, const double t, PoolData& data )
-	{
-		Key k( id, t );
-
-		_datas.insert( k, new CacheData( data ) );
-		_keys.push_front( k );
-		return true;
-	}
-
-	bool release( const std::pair<std::string, double>& key )
-	{
-		return release( key.first, key.second );
-	}
-
-	bool release( std::string id, double t )
-	{
-		Key k( id, t );
-
-//		_pool.setUnused( _datas.at( k ).getData() );
-		_datas.erase( k );
-		_keys.remove( k );
-		return true;
-	}
-
-	bool purge()
-	{
-		for( DataMap::iterator it = _datas.begin(), itEnd = _datas.end();
-		     it != itEnd;
-		     ++it )
-		{
-			CacheData* d = it->second;
-			if( !d->isUsed() )
-			{
-				release( it->first );
-			}
-		}
-		return true;
-	}
-
-	std::size_t getMemorySizeUsed() const
-	{
-		std::size_t counter = 0;
-		BOOST_FOREACH( DataMapContent p, _datas )
-		{
-			counter += p.second->getSize();
-		}
-		return counter;
-	}
-
+	virtual void               put(const std::string& pluginName, const double &time, IPoolDataPtr pData);
+	virtual IPoolDataPtr       get(const std::string& pluginName, const double &time) const;
+	virtual std::size_t		   size() const;
+	virtual bool    		   empty() const;
+	virtual bool               inCache(const IPoolDataPtr &) const;
+	virtual double             getTime(const IPoolDataPtr &) const;
+	virtual const std::string& getPluginName(const IPoolDataPtr &) const;
+	virtual bool			   remove(const IPoolDataPtr &);
+	virtual void			   clearAll();
 };
 
 }

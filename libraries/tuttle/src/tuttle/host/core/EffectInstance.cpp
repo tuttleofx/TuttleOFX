@@ -88,7 +88,6 @@ EffectInstance::EffectInstance( const EffectInstance& other )
  */
 bool EffectInstance::operator==( const EffectInstance& other ) const
 {
-	TCOUT("test EffectInstance::operator== "<< getName() << "  " << other.getName());
 	return getName() == other.getName();
 }
 
