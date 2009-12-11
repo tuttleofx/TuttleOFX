@@ -79,59 +79,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 		data[0] = const_data[0];
 	}
 	BOOST_REQUIRE_THROW( pool.allocate(50), std::exception );
-
-//	core::MemoryPool pool;
-//
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
-//
-//	size_t size        = 10;
-//	core::MemoryPool::PoolData& d = pool.allocate( size );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), size );
-//	pool.setUnused( d );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
-//	pool.setUsed( d );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), size );
-//	pool.setUnused( d );
-//	pool.clearAll();
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
-//
-//	size_t size1 = 222;
-//	size_t size2 = 333;
-//	core::MemoryPool::PoolData& d1 = pool.allocate( size1 );
-//	core::MemoryPool::PoolData& d2 = pool.allocate( size2 );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size1 + size2 );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), size1 + size2 );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAvailable(), pool.getMemorySizeAuthorized() - pool.getMemorySizeUsed() );
-//	pool.deallocate(d2);
-//	pool.deallocate(d1);
 }
-
-//BOOST_AUTO_TEST_CASE( memoryCache )
-//{
-//	using namespace std;
-//	using namespace tuttle::host;
-//
-//	core::MemoryPool pool;
-//	core::MemoryCache cache( pool );
-//
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), 0 );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), 0 );
-//
-//	std::size_t size        = 123;
-//	core::MemoryPool::PoolData& d = pool.allocate( size );
-//	cache.add( "d", 12, d );
-//	char* buffer = cache.get( "d", 12 );
-//	BOOST_CHECK_EQUAL( buffer, d );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeAllocated(), size );
-//	BOOST_CHECK_EQUAL( pool.getMemorySizeUsed(), size );
-//
-//	cache.release( "d", 12 );
-//}
 
 BOOST_AUTO_TEST_SUITE_END()
 
