@@ -755,7 +755,7 @@ OfxStatus Instance::paramInstanceChangedAction( const std::string& paramName,
 {
 	try
 	{
-		attribute::OfxhParam& param = getParam( paramName );
+		/*attribute::OfxhParam& param = */getParam( paramName );
 
 		if( isClipPreferencesSlaveParam( paramName ) )
 			_clipPrefsDirty = true;
@@ -997,7 +997,7 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 		try
 		{
 			attribute::OfxhClipImage& clip        = getClip( kOfxImageEffectSimpleSourceClipName );
-			attribute::ParamDoubleInstance& param = dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
+			/*attribute::ParamDoubleInstance& param = */dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
 			rod = clip.getRegionOfDefinition( floor( time ) );
 			rod = Union( rod, clip.getRegionOfDefinition( floor( time ) + 1 ) );
 		}
