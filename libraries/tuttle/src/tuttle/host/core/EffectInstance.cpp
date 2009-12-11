@@ -66,7 +66,7 @@ EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugi
 }
 
 EffectInstance::EffectInstance( const EffectInstance& other )
-	: tuttle::host::ofx::imageEffect::Instance(other)
+: tuttle::host::ofx::imageEffect::Instance(other)
 {
 	//populate();
 	/*

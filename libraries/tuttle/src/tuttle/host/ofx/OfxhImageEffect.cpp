@@ -386,15 +386,17 @@ Instance::Instance( const ImageEffectPlugin* plugin,
 }
 
 Instance::Instance( const Instance& other )
-	: Base( other.getProperties() ),
-	_plugin( other.getPlugin() ),
-	_context( other.getContext() ),
-	_descriptor( other.getDescriptor() ),
-	_interactive( other._interactive ),
-	_created( other._created ),
-	_continuousSamples( other._continuousSamples ),
-	_frameVarying( other._frameVarying ),
-	_outputFrameRate( other._outputFrameRate )
+: Base( other.getProperties() )
+, attribute::ParamInstanceSet(other)
+, attribute::ClipImageInstanceSet(other)
+, _plugin( other.getPlugin() )
+, _context( other.getContext() )
+, _descriptor( other.getDescriptor() )
+, _interactive( other._interactive )
+, _created( other._created )
+, _continuousSamples( other._continuousSamples )
+, _frameVarying( other._frameVarying )
+, _outputFrameRate( other._outputFrameRate )
 {
 }
 
