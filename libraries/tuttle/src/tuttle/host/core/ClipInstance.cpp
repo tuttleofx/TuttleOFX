@@ -31,6 +31,7 @@
 #include "HostDescriptor.hpp"
 #include "EffectInstance.hpp"
 #include "ClipInstance.hpp"
+#include "Core.hpp"
 
 // utilities
 #include <tuttle/common/utils/global.hpp>
@@ -75,9 +76,10 @@ namespace tuttle {
 namespace host {
 namespace core {
 Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
-	: tuttle::host::ofx::imageEffect::Image( clip ),
+	: tuttle::host::ofx::imageEffect::Image( clip )
 	/// this ctor will set basic props on the image
-	_data( NULL )
+	, _data( NULL )
+	, _memoryPool( core::Core::instance().getMemoryPool() )
 {
 	size_t memlen = 0;
 	size_t rowlen = 0;
@@ -119,6 +121,7 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 		rowlen = int(_ncomp * dimensions.x * sizeof( float ) );
 	}
 
+	//_memoryPool.
 	_data = new uint8_t[memlen];
 	// now blank it
 	memset( _data, 0, memlen );
@@ -176,7 +179,7 @@ VIEW_T Image::gilViewFromImage( Image* img )
 	                         img->getRowBytes() );
 }
 
-// @todo: put this in gilGlobals.hpp
+/// @todo: put this in gilGlobals.hpp
 template < class D_VIEW, class S_VIEW >
 void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
                   const OfxPointI& srcCorner, const OfxPointI& count )
@@ -317,19 +320,31 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 }
 
 ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::ClipImageDescriptor& desc )
-	: tuttle::host::ofx::attribute::ClipImageInstance( effect, desc ),
-	_effect( effect ),
-	_inputImage( NULL ),
-	_outputImage( NULL )
+: tuttle::host::ofx::attribute::ClipImageInstance( effect, desc )
+, _effect( effect )
+, _inputImage( NULL )
+, _outputImage( NULL )
+, _isConnected( false )
+, _continuousSamples( false )
+, _memoryCache( core::Core::instance().getMemoryCache() )
 {
+
 	_frameRange = _effect.getEffectFrameRange();
 }
 
 ClipImgInstance::~ClipImgInstance()
 {
+}
+
+ClipImgInstance::releaseClipsInputs()
+{
 	if( _inputImage )
 		if( _inputImage->releaseReference() )
 			delete _inputImage;
+}
+
+ClipImgInstance::releaseClipsOutput()
+{
 	if( _outputImage )
 		if( _outputImage->releaseReference() )
 			delete _outputImage;
@@ -379,7 +394,6 @@ OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
 const std::string& ClipImgInstance::getUnmappedBitDepth() const
 {
 	static const std::string v( _effect.getProjectBitDepth() );
-
 	return v;
 }
 
@@ -388,29 +402,7 @@ const std::string& ClipImgInstance::getUnmappedBitDepth() const
 const std::string& ClipImgInstance::getUnmappedComponents() const
 {
 	static const std::string v( _effect.getProjectPixelComponentsType() );
-
 	return v;
-}
-
-// PreMultiplication -
-//
-//  kOfxImageOpaque - the image is opaque and so has no premultiplication state
-//  kOfxImagePreMultiplied - the image is premultiplied by it's alpha
-//  kOfxImageUnPreMultiplied - the image is unpremultiplied
-
-const std::string& ClipImgInstance::getPremult() const
-{
-	return _effect.getOutputPreMultiplication();
-}
-
-// Frame Rate -
-
-double ClipImgInstance::getFrameRate() const
-{
-	/// our clip is pretending to be progressive PAL SD by default
-	double val = _effect.getFrameRate();
-
-	return val;
 }
 
 // Frame Range (startFrame, endFrame) -
@@ -423,38 +415,6 @@ void ClipImgInstance::getFrameRange( double& startFrame, double& endFrame ) cons
 	endFrame   = 1.0;
 }
 
-/// Field Order - Which spatial field occurs temporally first in a frame.
-/// \returns
-///  - kOfxImageFieldNone - the clip material is unfielded
-///  - kOfxImageFieldLower - the clip material is fielded, with image rows 0,2,4.... occuring first in a frame
-///  - kOfxImageFieldUpper - the clip material is fielded, with image rows line 1,3,5.... occuring first in a frame
-
-const std::string& ClipImgInstance::getFieldOrder() const
-{
-	/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
-	static const std::string v( kOfxImageFieldNone );
-
-	return v;
-}
-
-// Connected -
-//
-//  Says whether the clip is actually connected at the moment.
-
-bool ClipImgInstance::getConnected() const
-{
-	return true;
-}
-
-// Unmapped Frame Rate -
-//
-//  The unmaped frame range over which an output clip has images.
-
-double ClipImgInstance::getUnmappedFrameRate() const
-{
-	return _effect.getFrameRate();
-}
-
 // Unmapped Frame Range -
 //
 //  The unmaped frame range over which an output clip has images.
@@ -464,16 +424,6 @@ void ClipImgInstance::getUnmappedFrameRange( double& unmappedStartFrame, double&
 {
 	unmappedStartFrame = 0;
 	unmappedEndFrame   = 1;
-}
-
-// Continuous Samples -
-//
-//  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
-//  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
-
-bool ClipImgInstance::getContinuousSamples() const
-{
-	return false;
 }
 
 /// override this to fill in the image at the given time.
@@ -503,6 +453,7 @@ tuttle::host::ofx::imageEffect::Image* ClipImgInstance::getImage( OfxTime time, 
 		{
 			// make a new ref counted image
 			_outputImage = new Image( *this, bounds, time );
+			_memoryCache.put( _effect.getName(), time, _outputImage );
 		}
 
 		// add another reference to the member image for this fetch
