@@ -35,9 +35,9 @@ int main( int argc, char** argv )
 		tuttle::host::core::Core::instance().preload();
 
 		// get some plugins examples
-		tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngreader" );
-		tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
-		tuttle::host::ofx::imageEffect::ImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
+		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.dpxreader" );
+		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
+		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
 
 		//tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 
@@ -92,7 +92,7 @@ int main( int argc, char** argv )
 			tuttle::host::core::StringInstance* dstFileParam = dynamic_cast<tuttle::host::core::StringInstance*>( vPluginsInst[2]->getParams()["Output filename"] );
 			if( srcFileParam && dstFileParam )
 			{
-				srcFileParam->set( "input.png" );
+				srcFileParam->set( "input.dpx" );
 				dstFileParam->set( "output.png" );
 				vPluginsInst[0]->paramInstanceChangedAction( srcFileParam->getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 				vPluginsInst[2]->paramInstanceChangedAction( dstFileParam->getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
@@ -112,7 +112,7 @@ int main( int argc, char** argv )
 				// the regions of interest for each input clip are returned in a std::map
 				// on a real host, these will be the regions of each input clip that the
 				// effect needs to render a given frame (clipped to the RoD).
-				std::map<tuttle::host::ofx::attribute::ClipImageInstance*, OfxRectD> rois;
+				std::map<tuttle::host::ofx::attribute::OfxhClipImage*, OfxRectD> rois;
 				OfxRectD defaultRoi;
 				memset( &defaultRoi, 0, sizeof( OfxRectD ) );
 				vPluginsInst[0]->getRegionOfInterestAction( frame, renderScale, defaultRoi, rois );

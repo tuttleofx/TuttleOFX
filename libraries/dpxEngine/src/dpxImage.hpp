@@ -273,7 +273,7 @@ public:
 		return type;
 	}
 
-	inline const boost::uint8_t* data() const
+	inline boost::uint8_t* data() const
 	{
 		return _data;
 	}

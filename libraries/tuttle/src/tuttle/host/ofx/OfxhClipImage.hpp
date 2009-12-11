@@ -55,13 +55,13 @@ namespace attribute {
  * is used to basically fetch common properties
  * by function name
  */
-class ClipImageAccessor : virtual public attribute::ClipAccessor
+class OfxhClipImageAccessor : virtual public attribute::OfxhClipAccessor
 {
 public:
 	/// @brief base ctor, for a descriptor
-	ClipImageAccessor();
+	OfxhClipImageAccessor();
 
-	virtual ~ClipImageAccessor() = 0;
+	virtual ~OfxhClipImageAccessor() = 0;
 
 	/// @return a std::vector of supported comp
 	const std::vector<std::string>& getSupportedComponents() const;
@@ -89,14 +89,14 @@ public:
 /**
  * a clip image descriptor
  */
-class ClipImageDescriptor : virtual public ClipImageAccessor,
-	public attribute::ClipDescriptor
+class OfxhClipImageDescriptor : virtual public OfxhClipImageAccessor,
+	public attribute::OfxhClipDescriptor
 {
 public:
 	/// constructor
-	ClipImageDescriptor( const std::string& name );
+	OfxhClipImageDescriptor( const std::string& name );
 
-	virtual ~ClipImageDescriptor() {}
+	virtual ~OfxhClipImageDescriptor() {}
 
 	/** get a handle on the clip descriptor for the C api
 	 */
@@ -110,19 +110,19 @@ public:
 /**
  * a clip image instance
  */
-class ClipImageInstance : virtual public ClipImageAccessor,
-	public attribute::ClipInstance
+class OfxhClipImage : virtual public OfxhClipImageAccessor,
+	public attribute::OfxhClip
 {
 protected:
 	imageEffect::Instance& _effectInstance; ///< image effect instance
 
 public:
-	ClipImageInstance( imageEffect::Instance& effectInstance, const attribute::ClipImageDescriptor& desc );
-	ClipImageInstance( const ClipImageInstance& other );
+	OfxhClipImage( imageEffect::Instance& effectInstance, const attribute::OfxhClipImageDescriptor& desc );
+	OfxhClipImage( const OfxhClipImage& other );
 
-	virtual ~ClipImageInstance() {}
+	virtual ~OfxhClipImage() {}
 
-	virtual ClipImageInstance* clone() const = 0;
+	virtual OfxhClipImage* clone() const = 0;
 
 	/**
 	 * get a handle on the clip descriptor for the C api
@@ -275,7 +275,7 @@ public:
 	 *  be 'appropriate' for the.
 	 *  If bounds is not null, fetch the indicated section of the canonical image plane.
 	 */
-	virtual tuttle::host::ofx::imageEffect::Image* getImage( OfxTime time, OfxRectD* optionalBounds = NULL ) = 0;
+	virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage( OfxTime time, OfxRectD* optionalBounds = NULL ) = 0;
 
 	/// override this to return the rod on the clip
 	virtual OfxRectD getRegionOfDefinition( OfxTime time ) const = 0;
@@ -289,16 +289,16 @@ public:
 /**
  * @brief to make ClipImageInstance clonable (for use in boost::ptr_container)
  */
-inline ClipImageInstance* new_clone( const ClipImageInstance& a )
+inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 {
 	return a.clone();
 }
 
-class ClipImageInstanceSet //: public ClipAccessorSet
+class OfxhClipImageSet //: public ClipAccessorSet
 {
 public:
-	typedef std::map<std::string, ClipImageInstance*> ClipImageMap;
-	typedef boost::ptr_vector<ClipImageInstance> ClipImageVector;
+	typedef std::map<std::string, OfxhClipImage*> ClipImageMap;
+	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
 
 protected:
 	ClipImageMap _clips; ///< clips by name
@@ -310,12 +310,12 @@ public:
 	///
 	/// The propery set being passed in belongs to the owning
 	/// plugin instance.
-	explicit ClipImageInstanceSet();
+	explicit OfxhClipImageSet();
 
-	explicit ClipImageInstanceSet( const ClipImageInstanceSet& other );
+	explicit OfxhClipImageSet( const OfxhClipImageSet& other );
 
 	/// dtor.
-	virtual ~ClipImageInstanceSet();
+	virtual ~OfxhClipImageSet();
 
 	void populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error );
 
@@ -342,9 +342,9 @@ public:
 	/**
 	 * get the clip
 	 */
-	ClipImageInstance& getClip( std::string name )
+	OfxhClipImage& getClip( std::string name )
 	{
-		std::map<std::string, ClipImageInstance*>::iterator it = _clips.find( name );
+		std::map<std::string, OfxhClipImage*>::iterator it = _clips.find( name );
 		if( it == _clips.end() )
 			throw core::exception::LogicError("Clip not found ("+name+").");
 		return *it->second;
@@ -353,7 +353,7 @@ public:
 	/**
 	 * add a clip
 	 */
-	OfxStatus addClip( const std::string& name, ClipImageInstance* instance )
+	OfxStatus addClip( const std::string& name, OfxhClipImage* instance )
 	{
 		if( _clips.find( name ) == _clips.end() )
 		{
@@ -371,12 +371,12 @@ public:
 	 *
 	 * Client host code needs to implement this
 	 */
-	virtual ClipImageInstance* newClipImage( const ClipImageDescriptor& descriptor ) = 0;
+	virtual OfxhClipImage* newClipImage( const OfxhClipImageDescriptor& descriptor ) = 0;
 
 	/**
 	 * get the nth clip, in order of declaration
 	 */
-	ClipImageInstance& getNthClip( int index )
+	OfxhClipImage& getNthClip( int index )
 	{
 		return _clipsByOrder[index];
 	}

@@ -14,7 +14,7 @@ namespace core {
 namespace {
 
 MemoryPool pool;
-MemoryCache cache(pool);
+MemoryCache cache;
 
 }  // namespace
 

@@ -76,7 +76,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
-	: tuttle::host::ofx::imageEffect::Image( clip )
+	: tuttle::host::ofx::imageEffect::OfxhImage( clip ),
 	/// this ctor will set basic props on the image
 	, _data( NULL )
 	, _memoryPool( core::Core::instance().getMemoryPool() )
@@ -319,8 +319,8 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	}
 }
 
-ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::ClipImageDescriptor& desc )
-: tuttle::host::ofx::attribute::ClipImageInstance( effect, desc )
+ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
+: tuttle::host::ofx::attribute::OfxhClipImage( effect, desc ),
 , _effect( effect )
 , _inputImage( NULL )
 , _outputImage( NULL )
@@ -328,7 +328,6 @@ ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::of
 , _continuousSamples( false )
 , _memoryCache( core::Core::instance().getMemoryCache() )
 {
-
 	_frameRange = _effect.getEffectFrameRange();
 }
 
@@ -433,7 +432,7 @@ void ClipImgInstance::getUnmappedFrameRange( double& unmappedStartFrame, double&
 /// be 'appropriate' for the.
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
 
-tuttle::host::ofx::imageEffect::Image* ClipImgInstance::getImage( OfxTime time, OfxRectD* optionalBounds )
+tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime time, OfxRectD* optionalBounds )
 {
 	OfxRectD bounds;
 
@@ -453,7 +452,7 @@ tuttle::host::ofx::imageEffect::Image* ClipImgInstance::getImage( OfxTime time, 
 		{
 			// make a new ref counted image
 			_outputImage = new Image( *this, bounds, time );
-			_memoryCache.put( _effect.getName(), time, _outputImage );
+			//_memoryCache.put( _effect.getName(), time, _outputImage );
 		}
 
 		// add another reference to the member image for this fetch

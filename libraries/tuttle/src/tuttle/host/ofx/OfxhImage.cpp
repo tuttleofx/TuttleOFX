@@ -44,31 +44,31 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-static Property::PropSpec imageStuffs[] = {
-	{ kOfxPropType, Property::eString, 1, false, kOfxTypeImage },
-	{ kOfxImageEffectPropPixelDepth, Property::eString, 1, true, kOfxBitDepthNone },
-	{ kOfxImageEffectPropComponents, Property::eString, 1, true, kOfxImageComponentNone },
-	{ kOfxImageEffectPropPreMultiplication, Property::eString, 1, true, kOfxImageOpaque },
-	{ kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "1.0" },
-	{ kOfxImagePropPixelAspectRatio, Property::eDouble, 1, true, "1.0" },
-	{ kOfxImagePropData, Property::ePointer, 1, true, NULL },
-	{ kOfxImagePropBounds, Property::eInt, 4, true, "0" },
-	{ kOfxImagePropRegionOfDefinition, Property::eInt, 4, true, "0", },
-	{ kOfxImagePropRowBytes, Property::eInt, 1, true, "0", },
-	{ kOfxImagePropField, Property::eString, 1, true, "", },
-	{ kOfxImagePropUniqueIdentifier, Property::eString, 1, true, "" },
+static property::OfxhPropSpec imageStuffs[] = {
+	{ kOfxPropType, property::eString, 1, false, kOfxTypeImage },
+	{ kOfxImageEffectPropPixelDepth, property::eString, 1, true, kOfxBitDepthNone },
+	{ kOfxImageEffectPropComponents, property::eString, 1, true, kOfxImageComponentNone },
+	{ kOfxImageEffectPropPreMultiplication, property::eString, 1, true, kOfxImageOpaque },
+	{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "1.0" },
+	{ kOfxImagePropPixelAspectRatio, property::eDouble, 1, true, "1.0" },
+	{ kOfxImagePropData, property::ePointer, 1, true, NULL },
+	{ kOfxImagePropBounds, property::eInt, 4, true, "0" },
+	{ kOfxImagePropRegionOfDefinition, property::eInt, 4, true, "0", },
+	{ kOfxImagePropRowBytes, property::eInt, 1, true, "0", },
+	{ kOfxImagePropField, property::eString, 1, true, "", },
+	{ kOfxImagePropUniqueIdentifier, property::eString, 1, true, "" },
 	{ 0 }
 };
 
-Image::Image()
-	: Property::Set( imageStuffs ),
+OfxhImage::OfxhImage()
+	: property::OfxhSet( imageStuffs ),
 	_referenceCount( 1 ) {}
 
 /// called during ctor to get bits from the clip props into ours
 
-void Image::getClipBits( attribute::ClipInstance& instance )
+void OfxhImage::getClipBits( attribute::OfxhClip& instance )
 {
-	const Property::Set& clipProperties = instance.getProps();
+	const property::OfxhSet& clipProperties = instance.getProps();
 
 	// get and set the clip instance pixel depth
 	const std::string& depth = clipProperties.getStringProperty( kOfxImageEffectPropPixelDepth );
@@ -91,8 +91,8 @@ void Image::getClipBits( attribute::ClipInstance& instance )
 
 /// make an image from a clip instance
 
-Image::Image( attribute::ClipInstance& instance )
-	: Property::Set( imageStuffs ),
+OfxhImage::OfxhImage( attribute::OfxhClip& instance )
+	: property::OfxhSet( imageStuffs ),
 	_referenceCount( 1 )
 {
 	getClipBits( instance );
@@ -100,7 +100,7 @@ Image::Image( attribute::ClipInstance& instance )
 
 // construction based on clip instance
 
-Image::Image( attribute::ClipInstance& instance,
+OfxhImage::OfxhImage( attribute::OfxhClip& instance,
               double                   renderScaleX,
               double                   renderScaleY,
               void*                    data,
@@ -109,7 +109,7 @@ Image::Image( attribute::ClipInstance& instance,
               int                      rowBytes,
               std::string              field,
               std::string              uniqueIdentifier )
-	: Property::Set( imageStuffs ),
+	: property::OfxhSet( imageStuffs ),
 	_referenceCount( 1 )
 {
 	getClipBits( instance );
@@ -133,7 +133,7 @@ Image::Image( attribute::ClipInstance& instance,
 	setStringProperty( kOfxImagePropUniqueIdentifier, uniqueIdentifier );
 }
 
-OfxRectI Image::getBounds() const
+OfxRectI OfxhImage::getBounds() const
 {
 	OfxRectI bounds;
 
@@ -141,7 +141,7 @@ OfxRectI Image::getBounds() const
 	return bounds;
 }
 
-OfxRectI Image::getROD() const
+OfxRectI OfxhImage::getROD() const
 {
 	OfxRectI rod;
 
@@ -149,7 +149,7 @@ OfxRectI Image::getROD() const
 	return rod;
 }
 
-BitDepthEnum Image::getBitDepth() const
+BitDepthEnum OfxhImage::getBitDepth() const
 {
 	std::string depth     = getStringProperty( kOfxImageEffectPropPixelDepth );
 	BitDepthEnum bitDepth = eBitDepthNone;
@@ -169,7 +169,7 @@ BitDepthEnum Image::getBitDepth() const
 	return bitDepth;
 }
 
-PixelComponentEnum Image::getComponentsType() const
+PixelComponentEnum OfxhImage::getComponentsType() const
 {
 	std::string sType           = getStringProperty( kOfxImageEffectPropComponents );
 	PixelComponentEnum compType = ePixelComponentNone;
@@ -185,15 +185,15 @@ PixelComponentEnum Image::getComponentsType() const
 	return compType;
 }
 
-int Image::getRowBytes() const
+int OfxhImage::getRowBytes() const
 {
 	return getIntProperty( kOfxImagePropRowBytes );
 }
 
-Image::~Image() {}
+OfxhImage::~OfxhImage() {}
 
 // release the reference
-bool Image::releaseReference()
+bool OfxhImage::releaseReference()
 {
 	--_referenceCount;
 	return _referenceCount <= 0;

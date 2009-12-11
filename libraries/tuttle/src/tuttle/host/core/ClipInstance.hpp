@@ -52,7 +52,7 @@ class ClipImgInstance;
 /**
  * make an image up
  */
-class Image : public tuttle::host::ofx::imageEffect::Image
+class Image : public tuttle::host::ofx::imageEffect::OfxhImage
 {
 protected:
 	size_t _ncomp; ///< number of components
@@ -86,7 +86,7 @@ private:
 /**
  * 
  */
-class ClipImgInstance : public tuttle::host::ofx::attribute::ClipImageInstance
+class ClipImgInstance : public tuttle::host::ofx::attribute::OfxhClipImage
 {
 protected:
 	const EffectInstance& _effect;
@@ -99,7 +99,7 @@ protected:
 	IMemoryCache& _memoryCache;
 	
 public:
-	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::ClipImageDescriptor& desc );
+	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc );
 
 	~ClipImgInstance();
 
@@ -198,7 +198,7 @@ public:
 	 * be 'appropriate' for the.
 	 * If bounds is not null, fetch the indicated section of the canonical image plane.
 	 */
-	tuttle::host::ofx::imageEffect::Image* getImage( OfxTime time, OfxRectD* optionalBounds = NULL );
+	tuttle::host::ofx::imageEffect::OfxhImage* getImage( OfxTime time, OfxRectD* optionalBounds = NULL );
 
 	Image* getInputImage()
 	{

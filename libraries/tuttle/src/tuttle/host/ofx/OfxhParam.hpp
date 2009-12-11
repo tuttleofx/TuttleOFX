@@ -54,14 +54,14 @@ void* GetSuite( int version );
 /// is this a standard BaseType
 bool isStandardType( const std::string& BaseType );
 
-class ParamInstance;
-class ParamInstanceSet;
+class OfxhParam;
+class OfxhParamSet;
 
 /// base class to the param set instance and param set descriptor
-class ParamAccessorSet
+class OfxhParamAccessorSet
 {
 public:
-	virtual ~ParamAccessorSet() = 0;
+	virtual ~OfxhParamAccessorSet() = 0;
 
 	/// obtain a handle on this set for passing to the C api
 	virtual OfxParamSetHandle getParamSetHandle() const = 0;
@@ -69,16 +69,16 @@ public:
 	/// get the property handle that lives with the set
 	/// The plugin descriptor/instance that derives from
 	/// this will provide this.
-	virtual Property::Set& getParamSetProps() = 0;
+	virtual property::OfxhSet& getParamSetProps() = 0;
 };
 
 /// base class for all params
-class ParamAccessor : virtual public attribute::AttributeAccessor
+class OfxhParamAccessor : virtual public attribute::OfxhAttributeAccessor
 {
 public:
-	ParamAccessor();
+	OfxhParamAccessor();
 	//        ParamAccessor( const ParamAccessor& other );
-	virtual ~ParamAccessor() = 0;
+	virtual ~OfxhParamAccessor() = 0;
 
 	/// grab a handle on the parameter for passing to the C API
 	virtual OfxParamHandle getParamHandle() const = 0;
@@ -111,14 +111,14 @@ public:
 };
 
 /// the Descriptor of a plugin parameter
-class ParamDescriptor : virtual public ParamAccessor,
-	public attribute::AttributeDescriptor
+class OfxhParamDescriptor : virtual public OfxhParamAccessor,
+	public attribute::OfxhAttributeDescriptor
 {
-ParamDescriptor();
+OfxhParamDescriptor();
 
 public:
 	/// make a parameter, with the given type and name
-	ParamDescriptor( const std::string& type, const std::string& name );
+	OfxhParamDescriptor( const std::string& type, const std::string& name );
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxParamHandle getParamHandle() const
@@ -133,10 +133,10 @@ public:
 	void addInteractParamProps( const std::string& type );
 
 	/// add standard properties to a value holding param
-	void addValueParamProps( const std::string& type, Property::TypeEnum valueType, int dim );
+	void addValueParamProps( const std::string& type, property::TypeEnum valueType, int dim );
 
 	/// add standard properties to a value holding param
-	void addNumericParamProps( const std::string& type, Property::TypeEnum valueType, int dim );
+	void addNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim );
 };
 
 /// A set of parameters
@@ -144,11 +144,11 @@ public:
 /// As we are the owning object we delete the params inside ourselves. It was tempting
 /// to make params autoref objects and have shared ownership with the client code
 /// but that adds complexity for no strong gain.
-class ParamInstanceSet : public ParamAccessorSet
+class OfxhParamSet : public OfxhParamAccessorSet
 {
 public:
-	typedef std::map<std::string, ParamInstance*> ParamMap;
-	typedef boost::ptr_list<ParamInstance> ParamList;
+	typedef std::map<std::string, OfxhParam*> ParamMap;
+	typedef boost::ptr_list<OfxhParam> ParamList;
 
 protected:
 	ParamMap _params;        ///< params by name
@@ -159,12 +159,12 @@ public:
 	///
 	/// The propery set being passed in belongs to the owning
 	/// plugin instance.
-	explicit ParamInstanceSet();
+	explicit OfxhParamSet();
 
-	explicit ParamInstanceSet( const ParamInstanceSet& other );
+	explicit OfxhParamSet( const OfxhParamSet& other );
 
 	/// dtor.
-	virtual ~ParamInstanceSet();
+	virtual ~OfxhParamSet();
 
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
@@ -176,7 +176,7 @@ public:
 	ParamList& getParamList() { return _paramList; }
 
 	// get the param
-	ParamInstance& getParam( std::string name )
+	OfxhParam& getParam( std::string name )
 	{
 		ParamMap::iterator it = _params.find( name );
 
@@ -188,15 +188,15 @@ public:
 
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
-	virtual void paramChangedByPlugin( attribute::ParamInstance* param ) = 0;
+	virtual void paramChangedByPlugin( attribute::OfxhParam* param ) = 0;
 
 	/// add a param
-	virtual OfxStatus addParam( const std::string& name, ParamInstance* instance );
+	virtual OfxStatus addParam( const std::string& name, OfxhParam* instance );
 
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	virtual ParamInstance* newParam( ParamDescriptor& Descriptor ) = 0;
+	virtual OfxhParam* newParam( OfxhParamDescriptor& Descriptor ) = 0;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///
@@ -212,22 +212,22 @@ private:
 };
 
 /// a set of parameters
-class ParamDescriptorSet : public ParamAccessorSet
+class OfxhParamDescriptorSet : public OfxhParamAccessorSet
 {
-typedef std::map<std::string, ParamDescriptor*> ParamDescriptorMap;
-typedef std::list<ParamDescriptor*> ParamDescriptorList;
+typedef std::map<std::string, OfxhParamDescriptor*> ParamDescriptorMap;
+typedef std::list<OfxhParamDescriptor*> ParamDescriptorList;
 ParamDescriptorMap _paramMap;
 ParamDescriptorList _paramList;
 
 /// CC doesn't exist
-ParamDescriptorSet( const ParamDescriptorSet& );
+OfxhParamDescriptorSet( const OfxhParamDescriptorSet& );
 
 public:
 	/// default ctor
-	ParamDescriptorSet();
+	OfxhParamDescriptorSet();
 
 	/// dtor
-	virtual ~ParamDescriptorSet();
+	virtual ~OfxhParamDescriptorSet();
 
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
@@ -240,27 +240,27 @@ public:
 	const ParamDescriptorList& getParamList() const { return _paramList; }
 
 	/// define a param
-	virtual ParamDescriptor* paramDefine( const char* paramType,
+	virtual OfxhParamDescriptor* paramDefine( const char* paramType,
 	                                      const char* name );
 
 	/// add a param in
-	virtual void addParam( const std::string& name, ParamDescriptor* p );
+	virtual void addParam( const std::string& name, OfxhParamDescriptor* p );
 };
 
 /// plugin parameter instance
-class ParamInstance : virtual public ParamAccessor,
+class OfxhParam : virtual public OfxhParamAccessor,
 	public AttributeInstance,
-	private Property::NotifyHook,
+	private property::OfxhNotifyHook,
 	private boost::noncopyable
 {
-	ParamInstance();
+	OfxhParam();
 
 protected:
-	ParamInstanceSet*  _paramSetInstance;
-	ParamInstance*     _parentInstance;
+	OfxhParamSet*  _paramSetInstance;
+	OfxhParam*     _parentInstance;
 
 protected:
-	ParamInstance( const ParamInstance& other )
+	OfxhParam( const OfxhParam& other )
 		: AttributeInstance( other )
 		, _paramSetInstance(other._paramSetInstance)
 		, _parentInstance(other._parentInstance)
@@ -269,17 +269,17 @@ protected:
 	}
 
 public:
-	virtual ~ParamInstance() = 0;
+	virtual ~OfxhParam() = 0;
 
 	/// make a parameter, with the given type and name
-	explicit ParamInstance( const ParamDescriptor& descriptor, ParamInstanceSet& setInstance );
+	explicit OfxhParam( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance );
 
 	/// clone this parameter
-	virtual ParamInstance* clone() const = 0;
+	virtual OfxhParam* clone() const = 0;
 	/**
 	 * @todo check values...
 	 */
-	bool operator==( const ParamInstance& p ) const { return true; }
+	bool operator==( const OfxhParam& p ) const { return true; }
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxParamHandle getParamHandle() const
@@ -293,18 +293,18 @@ public:
 	//                                        double      renderScaleY);
 
 	// get the param instance
-	ParamInstanceSet* getParamSetInstance()                             { return _paramSetInstance; }
-	void              setParamSetInstance( ParamInstanceSet* instance ) { _paramSetInstance = instance; }
+	OfxhParamSet* getParamSetInstance()                             { return _paramSetInstance; }
+	void              setParamSetInstance( OfxhParamSet* instance ) { _paramSetInstance = instance; }
 
 	// set/get parent instance
-	void           setParentInstance( ParamInstance* instance );
-	ParamInstance* getParentInstance();
+	void           setParentInstance( OfxhParam* instance );
+	OfxhParam* getParentInstance();
 
 	// copy one parameter to another
-	virtual OfxStatus copy( const ParamInstance& instance, OfxTime offset );
+	virtual OfxStatus copy( const OfxhParam& instance, OfxTime offset );
 
 	// copy one parameter to another, with a range
-	virtual OfxStatus copy( const ParamInstance& instance, OfxTime offset, OfxRangeD range );
+	virtual OfxStatus copy( const OfxhParam& instance, OfxTime offset, OfxRangeD range );
 
 	// callback which should set enabled state as appropriate
 	virtual void setEnabled();
@@ -349,12 +349,12 @@ public:
 /**
  * @brief to make ParamInstance clonable (for use in boost::ptr_container)
  */
-inline ParamInstance* new_clone( const ParamInstance& a )
+inline OfxhParam* new_clone( const OfxhParam& a )
 {
 	return a.clone();
 }
 
-class KeyframeParam
+class OfxhKeyframeParam
 {
 public:
 	virtual OfxStatus getNumKeys( unsigned int& nKeys ) const ;
@@ -363,13 +363,13 @@ public:
 	virtual OfxStatus deleteKey( OfxTime time ) ;
 	virtual OfxStatus deleteAllKeys() ;
 
-	virtual ~KeyframeParam() {}
+	virtual ~OfxhKeyframeParam() {}
 
 };
 
 template <class T, int DIM>
-class MultiDimParam : public ParamInstance,
-	public KeyframeParam
+class OfxhMultiDimParam : public OfxhParam,
+	public OfxhKeyframeParam
 {
 public:
 	typedef T Type;
@@ -379,9 +379,9 @@ protected:
 	std::vector<T*> _controls;
 
 public:
-	MultiDimParam( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	OfxhMultiDimParam( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
-	virtual ~MultiDimParam()
+	virtual ~OfxhMultiDimParam()
 	{
 		for( typename std::vector<T*>::iterator it = _controls.begin();
 		     it != _controls.end(); ++it )
@@ -510,36 +510,36 @@ public:
 
 };
 
-class ParamGroupInstance : public ParamInstance,
-	public ParamInstanceSet
+class OfxhParamGroup : public OfxhParam,
+	public OfxhParamSet
 {
 public:
-	ParamGroupInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
-	virtual ~ParamGroupInstance() {}
-	virtual ParamGroupInstance* clone() const;
+	OfxhParamGroup( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	virtual ~OfxhParamGroup() {}
+	virtual OfxhParamGroup* clone() const;
 
 	void deleteChildrens()
 	{
 		_paramList.clear();
 	}
 
-	void                         setChildrens( const attribute::ParamInstanceSet* childrens );
-	attribute::ParamInstanceSet* getChildrens() const;
-	void                         addChildren( ParamInstance* children );
+	void                         setChildrens( const attribute::OfxhParamSet* childrens );
+	attribute::OfxhParamSet* getChildrens() const;
+	void                         addChildren( OfxhParam* children );
 
-	Property::Set& getParamSetProps()
+	property::OfxhSet& getParamSetProps()
 	{
 		return _paramSetInstance->getParamSetProps();
 	}
 
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
-	virtual void paramChangedByPlugin( attribute::ParamInstance* param )
+	virtual void paramChangedByPlugin( attribute::OfxhParam* param )
 	{
 		_paramSetInstance->paramChangedByPlugin( param );
 	}
 
-	virtual ParamInstance* newParam( ParamDescriptor& descriptor )
+	virtual OfxhParam* newParam( OfxhParamDescriptor& descriptor )
 	{
 		return _paramSetInstance->newParam( descriptor );
 	}
@@ -558,23 +558,23 @@ public:
 
 };
 
-class ParamPageInstance : public ParamInstance
+class ParamPageInstance : public OfxhParam
 {
 public:
-	ParamPageInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	ParamPageInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 	virtual ParamPageInstance*                      clone() const;
-	const std::map<int, attribute::ParamInstance*>& getChildren() const;
+	const std::map<int, attribute::OfxhParam*>& getChildren() const;
 
 protected:
-	mutable std::map<int, attribute::ParamInstance*> _children; // if set in a notify hook, this need not be mutable
+	mutable std::map<int, attribute::OfxhParam*> _children; // if set in a notify hook, this need not be mutable
 };
 
-class ParamIntegerInstance : public ParamInstance,
-	public KeyframeParam
+class ParamIntegerInstance : public OfxhParam,
+	public OfxhKeyframeParam
 {
 public:
 	typedef int BaseType;
-	ParamIntegerInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	ParamIntegerInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( int& )               = 0;
@@ -605,11 +605,11 @@ public:
 	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg );
 };
 
-class ParamChoiceInstance : public ParamInstance,
-	public KeyframeParam
+class ParamChoiceInstance : public OfxhParam,
+	public OfxhKeyframeParam
 {
 public:
-	ParamChoiceInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	ParamChoiceInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( int& )               = 0;
@@ -630,12 +630,12 @@ public:
 	virtual OfxStatus setV( OfxTime time, va_list arg );
 };
 
-class ParamDoubleInstance : public ParamInstance,
-	public KeyframeParam
+class ParamDoubleInstance : public OfxhParam,
+	public OfxhKeyframeParam
 {
 public:
 	typedef double BaseType;
-	ParamDoubleInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	ParamDoubleInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( double& )                                     = 0;
@@ -664,12 +664,12 @@ public:
 	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg );
 };
 
-class ParamBooleanInstance : public ParamInstance,
-	public KeyframeParam
+class ParamBooleanInstance : public OfxhParam,
+	public OfxhKeyframeParam
 {
 public:
 	typedef bool BaseType;
-	ParamBooleanInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	ParamBooleanInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( bool& )               = 0;
@@ -690,14 +690,14 @@ public:
 	virtual OfxStatus setV( OfxTime time, va_list arg );
 };
 
-class ParamStringInstance : public ParamInstance,
-	public KeyframeParam
+class ParamStringInstance : public OfxhParam,
+	public OfxhKeyframeParam
 {
 std::string _returnValue; ///< location to hold temporary return value. Should delegate this to implementation!!!
 
 public:
 	typedef std::string BaseType;
-	ParamStringInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	ParamStringInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	virtual OfxStatus get( std::string& )               = 0;
 	virtual OfxStatus get( OfxTime time, std::string& ) = 0;
@@ -720,14 +720,14 @@ public:
 class ParamCustomInstance : public ParamStringInstance
 {
 public:
-	ParamCustomInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamStringInstance( descriptor, setInstance ) {}
+	ParamCustomInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : ParamStringInstance( descriptor, setInstance ) {}
 };
 
-class ParamPushbuttonInstance : public ParamInstance,
-	public KeyframeParam
+class ParamPushbuttonInstance : public OfxhParam,
+	public OfxhKeyframeParam
 {
 public:
-	ParamPushbuttonInstance( ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance ) : ParamInstance( descriptor, setInstance ) {}
+	ParamPushbuttonInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 };
 
 }

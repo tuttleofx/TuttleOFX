@@ -51,15 +51,15 @@ namespace attribute {
 /**
  * base ctor, for a descriptor
  */
-ClipImageAccessor::ClipImageAccessor() {}
+OfxhClipImageAccessor::OfxhClipImageAccessor() {}
 
-ClipImageAccessor::~ClipImageAccessor() {}
+OfxhClipImageAccessor::~OfxhClipImageAccessor() {}
 
 /** return a std::vector of supported comp
  */
-const std::vector<std::string>& ClipImageAccessor::getSupportedComponents() const
+const std::vector<std::string>& OfxhClipImageAccessor::getSupportedComponents() const
 {
-	Property::String* p = getProperties().fetchStringProperty( kOfxImageEffectPropSupportedComponents );
+	property::String* p = getProperties().fetchStringProperty( kOfxImageEffectPropSupportedComponents );
 
 	assert( p != NULL );
 	return p->getValues();
@@ -67,35 +67,35 @@ const std::vector<std::string>& ClipImageAccessor::getSupportedComponents() cons
 
 /** is the given component supported
  */
-bool ClipImageAccessor::isSupportedComponent( const std::string& comp ) const
+bool OfxhClipImageAccessor::isSupportedComponent( const std::string& comp ) const
 {
 	return getProperties().findStringPropValueIndex( kOfxImageEffectPropSupportedComponents, comp ) != -1;
 }
 
 /** does the clip do random temporal access
  */
-bool ClipImageAccessor::temporalAccess() const
+bool OfxhClipImageAccessor::temporalAccess() const
 {
 	return getProperties().getIntProperty( kOfxImageEffectPropTemporalClipAccess ) != 0;
 }
 
 /** is the clip a nominal 'mask' clip
  */
-bool ClipImageAccessor::isMask() const
+bool OfxhClipImageAccessor::isMask() const
 {
 	return getProperties().getIntProperty( kOfxImageClipPropIsMask ) != 0;
 }
 
 /** how does this clip like fielded images to be presented to it
  */
-const std::string& ClipImageAccessor::getFieldExtraction() const
+const std::string& OfxhClipImageAccessor::getFieldExtraction() const
 {
 	return getProperties().getStringProperty( kOfxImageClipPropFieldExtraction );
 }
 
 /** is the clip a nominal 'mask' clip
  */
-bool ClipImageAccessor::supportsTiles() const
+bool OfxhClipImageAccessor::supportsTiles() const
 {
 	return getProperties().getIntProperty( kOfxImageEffectPropSupportsTiles ) != 0;
 }
@@ -103,18 +103,18 @@ bool ClipImageAccessor::supportsTiles() const
 /**
  * descriptor
  */
-ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
-	: tuttle::host::ofx::attribute::ClipDescriptor()
+OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
+	: tuttle::host::ofx::attribute::OfxhClipDescriptor()
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
-	static const Property::PropSpec clipImageDescriptorStuffs[] = {
-		{ kOfxClipPropType, Property::eString, 1, true, kOfxClipTypeImage },
-		{ kOfxImageEffectPropSupportedComponents, Property::eString, 0, false, "" },
-		{ kOfxImageEffectPropTemporalClipAccess, Property::eInt, 1, false, "0" },
-		{ kOfxImageClipPropIsMask, Property::eInt, 1, false, "0" },
-		{ kOfxImageClipPropFieldExtraction, Property::eString, 1, false, kOfxImageFieldDoubled },
-		{ kOfxImageEffectPropSupportsTiles, Property::eInt, 1, false, "1" },
+	static const property::OfxhPropSpec clipImageDescriptorStuffs[] = {
+		{ kOfxClipPropType, property::eString, 1, true, kOfxClipTypeImage },
+		{ kOfxImageEffectPropSupportedComponents, property::eString, 0, false, "" },
+		{ kOfxImageEffectPropTemporalClipAccess, property::eInt, 1, false, "0" },
+		{ kOfxImageClipPropIsMask, property::eInt, 1, false, "0" },
+		{ kOfxImageClipPropFieldExtraction, property::eString, 1, false, kOfxImageFieldDoubled },
+		{ kOfxImageEffectPropSupportsTiles, property::eInt, 1, false, "1" },
 		{ 0 },
 	};
 
@@ -125,8 +125,8 @@ ClipImageDescriptor::ClipImageDescriptor( const std::string& name )
 /**
  * clip clipimage instance
  */
-ClipImageInstance::ClipImageInstance( imageEffect::Instance& effectInstance, const attribute::ClipImageDescriptor& desc )
-: attribute::ClipInstance( desc )
+OfxhClipImage::OfxhClipImage( imageEffect::Instance& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
+: attribute::OfxhClip( desc )
 , _effectInstance( effectInstance )
 //				, _pixelDepth( kOfxBitDepthNone )
 //				, _components( kOfxImageComponentNone )
@@ -136,19 +136,19 @@ ClipImageInstance::ClipImageInstance( imageEffect::Instance& effectInstance, con
 	 * extra properties for the instance, these are fetched from the host
 	 * via a get hook and some virtuals
 	 */
-	static Property::PropSpec clipImageInstanceStuffs[] = {
-		{ kOfxImageEffectPropPixelDepth, Property::eString, 1, true, kOfxBitDepthNone },
-		{ kOfxImageEffectPropComponents, Property::eString, 1, true, kOfxImageComponentNone },
-		{ kOfxImageClipPropUnmappedPixelDepth, Property::eString, 1, true, kOfxBitDepthNone },
-		{ kOfxImageClipPropUnmappedComponents, Property::eString, 1, true, kOfxImageComponentNone },
-		{ kOfxImageEffectPropPreMultiplication, Property::eString, 1, true, kOfxImageOpaque },
-		{ kOfxImagePropPixelAspectRatio, Property::eDouble, 1, true, "1.0" },
-		{ kOfxImageEffectPropFrameRate, Property::eDouble, 1, true, "25.0" },
-		{ kOfxImageEffectPropFrameRange, Property::eDouble, 2, true, "0" },
-		{ kOfxImageClipPropFieldOrder, Property::eString, 1, true, kOfxImageFieldNone },
-		{ kOfxImageEffectPropUnmappedFrameRange, Property::eDouble, 2, true, "0" },
-		{ kOfxImageEffectPropUnmappedFrameRate, Property::eDouble, 1, true, "25.0" },
-		{ kOfxImageClipPropContinuousSamples, Property::eInt, 1, true, "0" },
+	static property::OfxhPropSpec clipImageInstanceStuffs[] = {
+		{ kOfxImageEffectPropPixelDepth, property::eString, 1, true, kOfxBitDepthNone },
+		{ kOfxImageEffectPropComponents, property::eString, 1, true, kOfxImageComponentNone },
+		{ kOfxImageClipPropUnmappedPixelDepth, property::eString, 1, true, kOfxBitDepthNone },
+		{ kOfxImageClipPropUnmappedComponents, property::eString, 1, true, kOfxImageComponentNone },
+		{ kOfxImageEffectPropPreMultiplication, property::eString, 1, true, kOfxImageOpaque },
+		{ kOfxImagePropPixelAspectRatio, property::eDouble, 1, true, "1.0" },
+		{ kOfxImageEffectPropFrameRate, property::eDouble, 1, true, "25.0" },
+		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
+		{ kOfxImageClipPropFieldOrder, property::eString, 1, true, kOfxImageFieldNone },
+		{ kOfxImageEffectPropUnmappedFrameRange, property::eDouble, 2, true, "0" },
+		{ kOfxImageEffectPropUnmappedFrameRate, property::eDouble, 1, true, "25.0" },
+		{ kOfxImageClipPropContinuousSamples, property::eInt, 1, true, "0" },
 		{ 0 },
 	};
 
@@ -157,27 +157,27 @@ ClipImageInstance::ClipImageInstance( imageEffect::Instance& effectInstance, con
 }
 
 
-ClipImageInstance::ClipImageInstance( const ClipImageInstance& other )
-: attribute::ClipInstance( other )
+OfxhClipImage::OfxhClipImage( const OfxhClipImage& other )
+: attribute::OfxhClip( other )
 , _effectInstance( other._effectInstance )
 {
 	
 }
 
-OfxStatus ClipImageInstance::instanceChangedAction( std::string why,
+OfxStatus OfxhClipImage::instanceChangedAction( std::string why,
                                                     OfxTime     time,
                                                     OfxPointD   renderScale )
 {
-	Property::PropSpec stuff[] = {
-		{ kOfxPropType, Property::eString, 1, true, kOfxTypeClip },
-		{ kOfxPropName, Property::eString, 1, true, getName().c_str() },
-		{ kOfxPropChangeReason, Property::eString, 1, true, why.c_str() },
-		{ kOfxPropTime, Property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
+	property::OfxhPropSpec stuff[] = {
+		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
+		{ kOfxPropName, property::eString, 1, true, getName().c_str() },
+		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
+		{ kOfxPropTime, property::eDouble, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
 		{ 0 }
 	};
 
-	Property::Set inArgs( stuff );
+	property::OfxhSet inArgs( stuff );
 
 	// add the second dimension of the render scale
 	inArgs.setDoubleProperty( kOfxPropTime, time );
@@ -188,7 +188,7 @@ OfxStatus ClipImageInstance::instanceChangedAction( std::string why,
 
 /// given the colour component, find the nearest set of supported colour components
 
-const std::string& ClipImageInstance::findSupportedComp( const std::string& s ) const
+const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) const
 {
 	static const std::string none( kOfxImageComponentNone );
 	static const std::string rgba( kOfxImageComponentRGBA );
@@ -223,18 +223,18 @@ const std::string& ClipImageInstance::findSupportedComp( const std::string& s ) 
 //////////////////////////////////////////////////////////////////////////////////
 // ClipImageInstanceSet
 
-ClipImageInstanceSet::ClipImageInstanceSet()
+OfxhClipImageSet::OfxhClipImageSet()
 	: _clipPrefsDirty( true )
 {
 }
 
-ClipImageInstanceSet::ClipImageInstanceSet( const ClipImageInstanceSet& other )
+OfxhClipImageSet::OfxhClipImageSet( const OfxhClipImageSet& other )
 : _clipsByOrder(other._clipsByOrder.clone())
 {
 	initMapFromList();
 }
 
-void ClipImageInstanceSet::initMapFromList()
+void OfxhClipImageSet::initMapFromList()
 {
 	for( ClipImageVector::iterator it = _clipsByOrder.begin(), itEnd = _clipsByOrder.end();
 	     it != itEnd;
@@ -245,10 +245,10 @@ void ClipImageInstanceSet::initMapFromList()
 }
 
 
-ClipImageInstanceSet::~ClipImageInstanceSet()
+OfxhClipImageSet::~OfxhClipImageSet()
 {}
 
-void ClipImageInstanceSet::populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error )
+void OfxhClipImageSet::populateClips( const imageEffect::Descriptor& descriptor ) throw( std::logic_error )
 {
 	const imageEffect::Descriptor::ClipImageDescriptorVector& clips = descriptor.getClipsByOrder();
 
@@ -260,7 +260,7 @@ void ClipImageInstanceSet::populateClips( const imageEffect::Descriptor& descrip
 	{
 		const std::string& name = it->getName();
 		// foreach clip descriptor make a ClipImageInstance
-		ClipImageInstance* instance = newClipImage( *it ); //( this, *it, counter );
+		OfxhClipImage* instance = newClipImage( *it ); //( this, *it, counter );
 		if( !instance )
 			throw std::logic_error( "Error on ClipImage creation." );
 

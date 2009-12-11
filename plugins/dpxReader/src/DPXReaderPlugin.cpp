@@ -80,6 +80,7 @@ void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 	}
 	else if( dstComponents == OFX::ePixelComponentAlpha )
 	{
+		/*
 		switch( dstBitDepth )
 		{
 			case OFX::eBitDepthUByte:
@@ -107,6 +108,7 @@ void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}
+	*/
 	}
 }
 

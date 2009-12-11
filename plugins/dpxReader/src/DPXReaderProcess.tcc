@@ -1,7 +1,7 @@
 #include "DPXReaderPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
-//#include <tuttle/common/image/gilViewTypes.hpp>
+#include <tuttle/common/image/gilViewTypes.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -151,47 +151,61 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 		}
 		case tuttle::io::DpxImage::eCompTypeR10G10B10:
 		{
-			printf( "RGB10\n" );
-			const uint16_t* pData = _plugin.getDpxImg().data16();
-
-			rgb16c_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-			                                      (const rgb16_pixel_t*)( pData ),
-			                                      _plugin.getDpxImg().width() * 3 * sizeof( uint16_t ) );
+			rgb10c_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
+			                                      (const rgb10_pixel_t*)( _plugin.getDpxImg().data() ),
+			                                      _plugin.getDpxImg().width() * sizeof(uint32_t) );
 			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
-			png_write_view( "alpha.png", src );
-			delete [] pData;
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeR10G10B10A10:
 		{
-			printf( "RGBA10\n" );
+			std::cout << "RGBA10: " << std::endl;
+			boost::uint8_t* pData = _plugin.getDpxImg().data();
+			// Interpret pixels according to its bit packing
+			switch(_plugin.getDpxImg().packing()) {
+				// bit stream
+				case 0: {
+					typedef unsigned char byte_t;
+					int width = _plugin.getDpxImg().width();
+					int height = _plugin.getDpxImg().height();
+					int num_channels = 4;		// RGBA
+					int channel_size = 10; // in bits
+					int scanline_in_bits = width * num_channels * channel_size;
+					int scanline_in_bytes = scanline_in_bits / 8;
+					scanline_in_bytes += ( scanline_in_bits % 8 != 0 ) ? 1 : 0;
+					rgba10101010_ptr_t p( pData, 0 );
+					rgba16_image_t img(dst.width(), img.height());
+					rgba16_view_t vw(view(img));
+					for( typename rgba16_view_t::y_coord_t y = 0; y < height; ++y )
+					{
+					   typename rgba16_view_t::x_iterator it = vw.row_begin( y );
 
-			const uint8_t* pData = _plugin.getDpxImg().data();
-			typedef bit_aligned_pixel_reference< uint64_t,
-			                                     mpl::vector4_c<uint16_t, 10, 10, 10, 10>,
-			                                     rgba_layout_t,
-			                                     true
-			                                     >  rgba10101010_ref_t;
-
-			// A mutable iterator over RGBA10 pixels
-			typedef bit_aligned_pixel_iterator< rgba10101010_ref_t > rgba10101010_ptr_t;
-			typedef std::iterator_traits< rgba10101010_ptr_t >::value_type rgba10101010_pixel_t;
-			typedef typename view_type_from_pixel< rgba10101010_pixel_t >::type rgba10101010_view_t;
-			rgba10101010_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-			                                            ( rgba10101010_pixel_t* )( pData ),
-			                                            _plugin.getDpxImg().width() * 5 );
-			copy_and_convert_pixels( flipped_up_down_view( src ), color_converted_view<rgba16_pixel_t>( dst ) );
+					   for( typename rgba16_view_t::x_coord_t x = 0; x < width; ++x )
+					   {
+						   color_convert( *p, *it );
+						   ++p;
+						   ++it;
+					   }
+					}
+					copy_and_convert_pixels(vw, dst);
+				}
+				case 1:
+				case 2:
+					rgba10101010_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
+																( rgba10101010_pixel_t* )( pData ),
+																_plugin.getDpxImg().width() * 5 );
+					copy_and_convert_pixels( flipped_up_down_view( src ), color_converted_view<rgba16_pixel_t>( dst ) );
+					break;
+			}
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeA10B10G10R10:
 		{
-			const uint16_t* pData = _plugin.getDpxImg().data16();
-			abgr16_view_t src     = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-			                                          ( abgr16_pixel_t* )( pData ),
-			                                          _plugin.getDpxImg().width() * 4 * sizeof( uint16_t ) );
+			abgr16_view_t src	= interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
+			                                        ( abgr16_pixel_t* )( _plugin.getDpxImg().data() ),
+			                                        _plugin.getDpxImg().width() * 4 * sizeof( uint16_t ) );
 
 			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
-			delete [] pData;
 			break;
 		}
 		default:

@@ -47,50 +47,50 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-AttributeAccessor::AttributeAccessor()
+OfxhAttributeAccessor::OfxhAttributeAccessor()
 {}
 
-AttributeAccessor::~AttributeAccessor() {}
+OfxhAttributeAccessor::~OfxhAttributeAccessor() {}
 
-AttributeDescriptor::AttributeDescriptor()
-	: _properties( Property::Set() )
+OfxhAttributeDescriptor::OfxhAttributeDescriptor()
+	: _properties( property::OfxhSet() )
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
-	static Property::PropSpec attributeDescriptorStuffs[] = {
-		{ kOfxPropName, Property::eString, 1, true, "SET_ME_ON_CONSTRUCTION" },
-		{ kOfxPropLabel, Property::eString, 1, false, "" },
-		{ kOfxPropShortLabel, Property::eString, 1, false, "" },
-		{ kOfxPropLongLabel, Property::eString, 1, false, "" },
+	static property::OfxhPropSpec attributeDescriptorStuffs[] = {
+		{ kOfxPropName, property::eString, 1, true, "SET_ME_ON_CONSTRUCTION" },
+		{ kOfxPropLabel, property::eString, 1, false, "" },
+		{ kOfxPropShortLabel, property::eString, 1, false, "" },
+		{ kOfxPropLongLabel, property::eString, 1, false, "" },
 		{ 0 },
 	};
 
 	getEditableProperties().addProperties( attributeDescriptorStuffs );
 }
 
-AttributeDescriptor::AttributeDescriptor( const Property::Set& properties )
+OfxhAttributeDescriptor::OfxhAttributeDescriptor( const property::OfxhSet& properties )
 	: _properties( properties )
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
-	static Property::PropSpec attributeDescriptorStuffs[] = {
-		{ kOfxPropName, Property::eString, 1, true, "SET_ME_ON_CONSTRUCTION" },
-		{ kOfxPropLabel, Property::eString, 1, false, "" },
-		{ kOfxPropShortLabel, Property::eString, 1, false, "" },
-		{ kOfxPropLongLabel, Property::eString, 1, false, "" },
+	static property::OfxhPropSpec attributeDescriptorStuffs[] = {
+		{ kOfxPropName, property::eString, 1, true, "SET_ME_ON_CONSTRUCTION" },
+		{ kOfxPropLabel, property::eString, 1, false, "" },
+		{ kOfxPropShortLabel, property::eString, 1, false, "" },
+		{ kOfxPropLongLabel, property::eString, 1, false, "" },
 		{ 0 },
 	};
 
 	getEditableProperties().addProperties( attributeDescriptorStuffs );
 }
 
-AttributeDescriptor::~AttributeDescriptor() {}
+OfxhAttributeDescriptor::~OfxhAttributeDescriptor() {}
 
-AttributeInstance::AttributeInstance( const Property::Set& properties )
+AttributeInstance::AttributeInstance( const property::OfxhSet& properties )
 	: _properties( properties )
 {}
 
-AttributeInstance::AttributeInstance( const AttributeDescriptor& desc )
+AttributeInstance::AttributeInstance( const OfxhAttributeDescriptor& desc )
 	: _properties( desc.getProperties() )
 {}
 

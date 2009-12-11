@@ -39,7 +39,7 @@
 #include <iostream>
 
 #ifndef WINDOWS
- #define OFX_EXCEPTION_SPEC throw (tuttle::host::ofx::Property::Exception)
+ #define OFX_EXCEPTION_SPEC throw (tuttle::host::ofx::property::OfxhException)
 #else
  #define OFX_EXCEPTION_SPEC
 #endif
@@ -47,7 +47,7 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace Property {
+namespace property {
 
 /// simple function to turn a thing into a std string
 template<class T>
@@ -79,17 +79,17 @@ inline double stringToDouble( const std::string& s )
 }
 
 // forward declarations
-class Property;
-class Set;
+class OfxhProperty;
+class OfxhSet;
 
 /// exception, representing an OfxStatus
-class Exception
+class OfxhException
 {
 OfxStatus _stat;
 
 public:
 	/// ctor
-	Exception( OfxStatus stat ) : _stat( stat )
+	OfxhException( OfxStatus stat ) : _stat( stat )
 	{}
 
 	/// get the status
@@ -134,7 +134,7 @@ inline const std::string mapTypeEnumToString( const TypeEnum& e )
 }
 
 /// type holder, for integers, used to template up int properties
-struct IntValue
+struct OfxhIntValue
 {
 	typedef int APIType; ///< C type of the property that is passed across the raw API
 	typedef int APITypeConstless;  ///< C type of the property that is passed across the raw API, without any const it
@@ -145,7 +145,7 @@ struct IntValue
 };
 
 /// type holder, for doubles, used to template up double properties
-struct DoubleValue
+struct OfxhDoubleValue
 {
 	typedef double APIType;
 	typedef double APITypeConstless;
@@ -156,7 +156,7 @@ struct DoubleValue
 };
 
 /// type holder, for pointers, used to template up pointer properties
-struct PointerValue
+struct OfxhPointerValue
 {
 	typedef void* APIType;
 	typedef void* APITypeConstless;
@@ -167,7 +167,7 @@ struct PointerValue
 };
 
 /// type holder, for strings, used to template up string properties
-struct StringValue
+struct OfxhStringValue
 {
 	typedef const char* APIType;
 	typedef char* APITypeConstless;
@@ -184,11 +184,11 @@ extern const char* gTypeNames[];
 /// only one of these can be in any property (as the thing has only a single value).
 /// We deliberately don't have a getStringPropertyN as it is somewhat more painfull and never
 /// used in practice.
-class GetHook
+class OfxhGetHook
 {
 public:
 	/// dtor
-	virtual ~GetHook()
+	virtual ~OfxhGetHook()
 	{}
 
 	/// We specialise this to do some magic so that it calls get string/int/double/pointer appropriately
@@ -235,11 +235,11 @@ public:
 /// has been changed. On notification you should fetch properties with a 'raw' call, rather
 /// than the standard calls, as you may be fetching through a getHook and you won't see
 /// the local value that has been shoved into the property.
-class NotifyHook
+class OfxhNotifyHook
 {
 public:
 	/// dtor
-	virtual ~NotifyHook() {}
+	virtual ~OfxhNotifyHook() {}
 
 	/// override this to be notified when a property changes
 	/// \arg name is the name of the property just set
@@ -249,30 +249,30 @@ public:
 };
 
 /// base class for all properties
-class Property
+class OfxhProperty
 {
 protected:
 	std::string _name;                    ///< name of this property
 	TypeEnum _type;                    ///< type of this property
 	size_t _dimension;               ///< the fixed dimension of this property
 	bool _pluginReadOnly;          ///< set is forbidden through suite: value may still change between get() calls
-	std::vector<NotifyHook*> _notifyHooks; ///< hooks to call whenever the property is set
-	GetHook* _getHook;    ///< if we are not storing props locally, they are stored via fetching from here
+	std::vector<OfxhNotifyHook*> _notifyHooks; ///< hooks to call whenever the property is set
+	OfxhGetHook* _getHook;    ///< if we are not storing props locally, they are stored via fetching from here
 
-	friend class Set;
+	friend class OfxhSet;
 
 public:
 	/// ctor
-	Property( const std::string& name,
+	OfxhProperty( const std::string& name,
 	          TypeEnum           type,
 	          size_t             dimension = 1,
 	          bool               pluginReadOnly = false );
 
 	/// copy ctor
-	Property( const Property& other );
+	OfxhProperty( const OfxhProperty& other );
 
 	/// dtor
-	virtual ~Property()
+	virtual ~OfxhProperty()
 	{}
 
 	/// is it read only?
@@ -282,7 +282,7 @@ public:
 	void setPluginReadOnly( bool v ) { _pluginReadOnly = v; }
 
 	/// override this to return a clone of the property
-	virtual Property* deepCopy() = 0;
+	virtual OfxhProperty* deepCopy() = 0;
 
 	/// get the name of this property
 	const std::string& getName()
@@ -297,13 +297,13 @@ public:
 	}
 
 	/// add a notify hook
-	void addNotifyHook( NotifyHook* hook )
+	void addNotifyHook( OfxhNotifyHook* hook )
 	{
 		_notifyHooks.push_back( hook );
 	}
 
 	/// set the get hook
-	void setGetHook( GetHook* hook )
+	void setGetHook( OfxhGetHook* hook )
 	{
 		_getHook = hook;
 	}
@@ -340,7 +340,7 @@ public:
 /// of using this variable.
 /// Make sure that T::ReturnType is const if appropriate, as no extra qualifiers are applied here.
 template<class T>
-class PropertyTemplate : public Property
+class OfxhPropertyTemplate : public OfxhProperty
 {
 public:
 	typedef typename T::Type Type;
@@ -356,19 +356,19 @@ protected:
 
 public:
 	/// constructor
-	PropertyTemplate( const std::string& name,
+	OfxhPropertyTemplate( const std::string& name,
 	                  size_t             dimension,
 	                  bool               pluginReadOnly,
 	                  APIType            defaultValue );
 
-	PropertyTemplate( const PropertyTemplate<T>& pt );
+	OfxhPropertyTemplate( const OfxhPropertyTemplate<T>& pt );
 
-	PropertyTemplate<T>* deepCopy()
+	OfxhPropertyTemplate<T>* deepCopy()
 	{
-		return new PropertyTemplate( *this );
+		return new OfxhPropertyTemplate( *this );
 	}
 
-	virtual ~PropertyTemplate()
+	virtual ~OfxhPropertyTemplate()
 	{}
 
 	/// get the vector
@@ -415,15 +415,15 @@ public:
 
 };
 
-typedef PropertyTemplate<IntValue>     Int;     /// Our int property
-typedef PropertyTemplate<DoubleValue>  Double;  /// Our double property
-typedef PropertyTemplate<StringValue>  String;  /// Our string property
-typedef PropertyTemplate<PointerValue> Pointer; /// Our pointer property
+typedef OfxhPropertyTemplate<OfxhIntValue>     Int;     /// Our int property
+typedef OfxhPropertyTemplate<OfxhDoubleValue>  Double;  /// Our double property
+typedef OfxhPropertyTemplate<OfxhStringValue>  String;  /// Our string property
+typedef OfxhPropertyTemplate<OfxhPointerValue> Pointer; /// Our pointer property
 
 /// A class that is used to initialise a property set. Feed in an array of these to
 /// a property and it will construct a bunch of properties. Terminate such an array
 /// with an empty (all zero) set.
-struct PropSpec
+struct OfxhPropSpec
 {
 	const char* name;          ///< name of the property
 	TypeEnum type;             ///< type
@@ -433,14 +433,14 @@ struct PropSpec
 };
 
 /// A std::map of properties by name
-typedef std::map<std::string, Property*> PropertyMap;
+typedef std::map<std::string, OfxhProperty*> PropertyMap;
 
 /**
  * Class that holds a set of properties and manipulates them
  * The 'fetch' methods return a property object.
  * The 'get' methods return a property value
  */
-class Set
+class OfxhSet
 {
 private:
 	static const int kMagic = 0x12082007; ///< magic number for property sets, and Connie's birthday :-)
@@ -452,7 +452,7 @@ protected:
 	/// chained property set, which is read only
 	/// these are searched on a get if not found
 	/// on a local search
-	const Set* _chainedSet;
+	const OfxhSet* _chainedSet;
 
 	/// set a particular property
 	template<class T>
@@ -481,37 +481,37 @@ protected:
 public:
 	/// take an array of of PropSpecs (which must be terminated with an entry in which
 	/// ->name is null), and turn these into a Set
-	Set( const PropSpec spec[] );
+	OfxhSet( const OfxhPropSpec spec[] );
 	//        explicit Set(const std::vector<const PropSpec*>& multipleSpec);
 
 	/// deep copies the property set
-	Set( const Set& );
+	OfxhSet( const OfxhSet& );
 
 	/// empty ctor
-	Set();
+	OfxhSet();
 
 	/// destructor
-	virtual ~Set();
+	virtual ~OfxhSet();
 
 	/// hide assignment
-	void operator=( const Set& );
+	void operator=( const OfxhSet& );
 
 	/// dump to cout
 	void cout() const;
 
 	/// adds a bunch of properties from PropSpec
-	void addProperties( const PropSpec* );
+	void addProperties( const OfxhPropSpec* );
 
-	inline Set& operator+( const PropSpec* p ) { addProperties( p ); return *this; }
-
-	/// add one new property
-	void createProperty( const PropSpec& s );
+	inline OfxhSet& operator+( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
 
 	/// add one new property
-	void addProperty( Property* prop );
+	void createProperty( const OfxhPropSpec& s );
+
+	/// add one new property
+	void addProperty( OfxhProperty* prop );
 
 	/// set the chained property set
-	void setChainedSet( const Set* const s ) { _chainedSet = s; }
+	void setChainedSet( const OfxhSet* const s ) { _chainedSet = s; }
 
 	/// grab the internal properties map
 	const PropertyMap& getMap() const
@@ -521,15 +521,15 @@ public:
 
 	/// set the get hook for a particular property.  users may need to call particular
 	/// specialised versions of this.
-	void setGetHook( const std::string& s, GetHook* ghook ) const;
+	void setGetHook( const std::string& s, OfxhGetHook* ghook ) const;
 
 	/// add a set hook for a particular property.  users may need to call particular
 	/// specialised versions of this.
-	void addNotifyHook( const std::string& name, NotifyHook* hook ) const;
+	void addNotifyHook( const std::string& name, OfxhNotifyHook* hook ) const;
 
 	/// Fetchs a pointer to a property of the given name, following the property chain if the
 	/// 'followChain' arg is not false.
-	Property* fetchProperty( const std::string& name, bool followChain = false ) const;
+	OfxhProperty* fetchProperty( const std::string& name, bool followChain = false ) const;
 
 	/// get property with the particular name and type.  if the property is
 	/// missing or is of the wrong type, return an error status.  if this is a sloppy

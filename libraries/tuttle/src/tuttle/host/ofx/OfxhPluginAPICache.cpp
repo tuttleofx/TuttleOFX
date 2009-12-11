@@ -55,8 +55,8 @@ namespace ofx {
 namespace APICache {
 void propertySetXMLRead( const std::string& el,
                          std::map<std::string, std::string> map,
-                         Property::Set& set,
-                         Property::Property*& currentProp )
+                         property::OfxhSet& set,
+                         property::OfxhProperty*& currentProp )
 {
 	if( el == "property" )
 	{
@@ -70,19 +70,19 @@ void propertySetXMLRead( const std::string& el,
 		{
 			if( propType == "int" )
 			{
-				currentProp = new Property::Int( propName, dimension, false, 0 );
+				currentProp = new property::Int( propName, dimension, false, 0 );
 			}
 			else if( propType == "string" )
 			{
-				currentProp = new Property::String( propName, dimension, false, "" );
+				currentProp = new property::String( propName, dimension, false, "" );
 			}
 			else if( propType == "double" )
 			{
-				currentProp = new Property::Double( propName, dimension, false, 0 );
+				currentProp = new property::Double( propName, dimension, false, 0 );
 			}
 			else if( propType == "pointer" )
 			{
-				currentProp = new Property::Pointer( propName, dimension, false, 0 );
+				currentProp = new property::Pointer( propName, dimension, false, 0 );
 			}
 			set.addProperty( currentProp );
 		}
@@ -96,16 +96,16 @@ void propertySetXMLRead( const std::string& el,
 
 		switch( currentProp->getType() )
 		{
-			case Property::eInt:
+			case property::eInt:
 				set.setIntProperty( currentProp->getName(), atoi( value.c_str() ), index );
 				break;
-			case Property::eString:
+			case property::eString:
 				set.setStringProperty( currentProp->getName(), value, index );
 				break;
-			case Property::eDouble:
+			case property::eDouble:
 				set.setDoubleProperty( currentProp->getName(), atof( value.c_str() ), index );
 				break;
-			case Property::ePointer:
+			case property::ePointer:
 				break;
 			default:
 				break;
@@ -119,14 +119,14 @@ void propertySetXMLRead( const std::string& el,
 	assert( false );
 }
 
-void propertyXMLWrite( std::ostream& o, Property::Property* prop, const std::string& indent = "" )
+void propertyXMLWrite( std::ostream& o, property::OfxhProperty* prop, const std::string& indent = "" )
 {
-	if( prop->getType() != Property::ePointer )
+	if( prop->getType() != property::ePointer )
 	{
 
 		o << indent << "<property "
 		  << XML::attribute( "name", prop->getName() )
-		  << XML::attribute( "type", Property::gTypeNames[prop->getType()] )
+		  << XML::attribute( "type", property::gTypeNames[prop->getType()] )
 		  << XML::attribute( "dimension", prop->getFixedDimension() )
 		  << ">\n";
 
@@ -142,9 +142,9 @@ void propertyXMLWrite( std::ostream& o, Property::Property* prop, const std::str
 	}
 }
 
-void propertyXMLWrite( std::ostream& o, const Property::Set& set, const std::string& name, int indent )
+void propertyXMLWrite( std::ostream& o, const property::OfxhSet& set, const std::string& name, int indent )
 {
-	Property::Property* prop = set.fetchProperty( name );
+	property::OfxhProperty* prop = set.fetchProperty( name );
 
 	if( prop )
 	{
@@ -153,15 +153,15 @@ void propertyXMLWrite( std::ostream& o, const Property::Set& set, const std::str
 	}
 }
 
-void propertySetXMLWrite( std::ostream& o, const Property::Set& set, int indent )
+void propertySetXMLWrite( std::ostream& o, const property::OfxhSet& set, int indent )
 {
 	std::string indent_prefix( indent, ' ' );
 
-	for( Property::PropertyMap::const_iterator i = set.getMap().begin();
+	for( property::PropertyMap::const_iterator i = set.getMap().begin();
 	     i != set.getMap().end();
 	     i++ )
 	{
-		Property::Property* prop = i->second;
+		property::OfxhProperty* prop = i->second;
 		propertyXMLWrite( o, prop, indent_prefix );
 	}
 }

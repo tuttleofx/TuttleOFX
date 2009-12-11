@@ -35,10 +35,9 @@ alias headers : [ glob-tree *.hpp ] [ glob-tree *.h ] ;
 
 if [ os.name ] = NT {
     lib shell32 ;
-    lib nt_libs : shell32 ;
     alias dl ;
 } else {
-    alias nt_libs ;
+    alias shell32 ;
     lib dl : : <link>shared : <link>shared ;
 }
 
@@ -49,7 +48,7 @@ lib tuttlehost :
     /boost/system
     /boost/filesystem
     /expat/<link>static
-    nt_libs
+    shell32
     dl
     ;
 

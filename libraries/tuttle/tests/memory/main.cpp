@@ -84,21 +84,46 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 BOOST_AUTO_TEST_CASE( memoryCache)
 {
 	MemoryPool pool;
-	MemoryCache cache(pool);
+	MemoryCache cache;
 
+	// checking initial state
 	BOOST_CHECK_EQUAL( true , cache.empty() );
-	BOOST_CHECK_EQUAL( 0L , cache.size() );
+	BOOST_CHECK_EQUAL( 0U , cache.size() );
 
 	const string plugName("name");
 	const double time = 10;
 	IPoolDataPtr pData( pool.allocate(10) );
+
+	// testing put function
 	cache.put(plugName, time, pData);
 	BOOST_CHECK_EQUAL( false , cache.empty() );
-	BOOST_CHECK_EQUAL( 1L , cache.size() );
+	BOOST_CHECK_EQUAL( 1U , cache.size() );
 	BOOST_CHECK_EQUAL( true  , cache.inCache(pData) );
 	BOOST_CHECK_EQUAL( plugName , cache.getPluginName(pData) );
 	BOOST_CHECK_EQUAL( time , cache.getTime(pData) );
 
+	// testing clearAll function
+	cache.clearAll();
+	BOOST_CHECK_EQUAL( true , cache.empty() );
+	BOOST_CHECK_EQUAL( 0U , cache.size() );
+	BOOST_CHECK_EQUAL( false  , cache.inCache(pData) );
+
+	// putting data in cache for a second time
+	cache.put(plugName, time, pData);
+	BOOST_CHECK_EQUAL( true  , cache.inCache(pData) );
+
+	// testing remove function
+	cache.remove(pData);
+	BOOST_CHECK_EQUAL( true , cache.empty() );
+	BOOST_CHECK_EQUAL( 0U , cache.size() );
+	BOOST_CHECK_EQUAL( false  , cache.inCache(pData) );
+
+	// putting twice the same element
+	cache.put(plugName, time, pData);
+	cache.put(plugName, time, pData);
+	BOOST_CHECK_EQUAL( false , cache.empty() );
+	BOOST_CHECK_EQUAL( 1U , cache.size() );
+	BOOST_CHECK_EQUAL( true  , cache.inCache(pData) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

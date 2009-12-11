@@ -84,19 +84,19 @@ namespace ofx {
 /// our own internal property for storing away our private pointer to our host descriptor
 #define kOfxHostSupportHostPointer "sf.openfx.net.OfxHostSupportHostPointer"
 
-static Property::PropSpec hostStuffs[] = {
-	{ kOfxPropType, Property::eString, 1, false, "Host" },
-	{ kOfxPropName, Property::eString, 1, false, "UNKNOWN" },
-	{ kOfxPropLabel, Property::eString, 1, false, "UNKNOWN" },
-	{ kOfxHostSupportHostPointer,    Property::ePointer,    0,    false,    NULL },
+static property::OfxhPropSpec hostStuffs[] = {
+	{ kOfxPropType, property::eString, 1, false, "Host" },
+	{ kOfxPropName, property::eString, 1, false, "UNKNOWN" },
+	{ kOfxPropLabel, property::eString, 1, false, "UNKNOWN" },
+	{ kOfxHostSupportHostPointer,    property::ePointer,    0,    false,    NULL },
 	{ 0 },
 };
 
 static void* fetchSuite( OfxPropertySetHandle hostProps, const char* suiteName, int suiteVersion )
 {
-	Property::Set* properties = reinterpret_cast<Property::Set*>( hostProps );
+	property::OfxhSet* properties = reinterpret_cast<property::OfxhSet*>( hostProps );
 
-	AbstractHost* host = (AbstractHost*)properties->getPointerProperty( kOfxHostSupportHostPointer );
+	OfxhAbstractHost* host = (OfxhAbstractHost*)properties->getPointerProperty( kOfxHostSupportHostPointer );
 
 	if( host )
 		return host->fetchSuite( suiteName, suiteVersion );
@@ -105,7 +105,7 @@ static void* fetchSuite( OfxPropertySetHandle hostProps, const char* suiteName, 
 }
 
 // Base Host
-AbstractHost::AbstractHost() : _properties( hostStuffs )
+OfxhAbstractHost::OfxhAbstractHost() : _properties( hostStuffs )
 {
 	_host.host       = _properties.getHandle();
 	_host.fetchSuite = tuttle::host::ofx::fetchSuite;
@@ -114,18 +114,18 @@ AbstractHost::AbstractHost() : _properties( hostStuffs )
 	_properties.setPointerProperty( kOfxHostSupportHostPointer, this );
 }
 
-AbstractHost::~AbstractHost() {}
+OfxhAbstractHost::~OfxhAbstractHost() {}
 
-OfxHost* AbstractHost::getHandle()
+OfxHost* OfxhAbstractHost::getHandle()
 {
 	return &_host;
 }
 
-void* AbstractHost::fetchSuite( const char* suiteName, int suiteVersion )
+void* OfxhAbstractHost::fetchSuite( const char* suiteName, int suiteVersion )
 {
 	if( strcmp( suiteName, kOfxPropertySuite ) == 0  && suiteVersion == 1 )
 	{
-		return Property::GetSuite( suiteVersion );
+		return property::GetSuite( suiteVersion );
 	}
 	else if( strcmp( suiteName, kOfxMemorySuite ) == 0 && suiteVersion == 1 )
 	{

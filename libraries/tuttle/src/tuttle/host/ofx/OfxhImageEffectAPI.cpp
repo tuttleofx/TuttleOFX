@@ -60,8 +60,8 @@ namespace imageEffect {
 #pragma warning( disable : 4355 )
 #endif
 
-ImageEffectPlugin::ImageEffectPlugin( ImageEffectPluginCache& pc, PluginBinary* pb, int pi, OfxPlugin* pl )
-	: Plugin( pb, pi, pl ),
+OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl )
+	: OfxhPlugin( pb, pi, pl ),
 	_pc( pc ),
 	_baseDescriptor( NULL ),
 	_pluginHandle( 0 )
@@ -69,8 +69,8 @@ ImageEffectPlugin::ImageEffectPlugin( ImageEffectPluginCache& pc, PluginBinary* 
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
 }
 
-ImageEffectPlugin::ImageEffectPlugin( ImageEffectPluginCache& pc,
-                                      PluginBinary*           pb,
+OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
+                                      OfxhPluginBinary*           pb,
                                       int                     pi,
                                       const std::string&      api,
                                       int                     apiVersion,
@@ -78,7 +78,7 @@ ImageEffectPlugin::ImageEffectPlugin( ImageEffectPluginCache& pc,
                                       const std::string&      rawId,
                                       int                     pluginMajorVersion,
                                       int                     pluginMinorVersion )
-	: Plugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion ),
+	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion ),
 	_pc( pc ),
 	_baseDescriptor( NULL ),
 	_pluginHandle( NULL )
@@ -90,7 +90,7 @@ ImageEffectPlugin::ImageEffectPlugin( ImageEffectPluginCache& pc,
 #pragma warning( default : 4355 )
 #endif
 
-ImageEffectPlugin::~ImageEffectPlugin()
+OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 {
 	for( std::map<std::string, Descriptor*>::iterator it = _contexts.begin(); it != _contexts.end(); ++it )
 	{
@@ -105,45 +105,45 @@ ImageEffectPlugin::~ImageEffectPlugin()
 	delete _baseDescriptor;
 }
 
-APICache::PluginAPICacheI& ImageEffectPlugin::getApiHandler()
+APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler()
 {
 	return _pc;
 }
 
 /// get the image effect descriptor
-Descriptor& ImageEffectPlugin::getDescriptor()
+Descriptor& OfxhImageEffectPlugin::getDescriptor()
 {
 	return *_baseDescriptor;
 }
 
 /// get the image effect descriptor const version
-const Descriptor& ImageEffectPlugin::getDescriptor() const
+const Descriptor& OfxhImageEffectPlugin::getDescriptor() const
 {
 	return *_baseDescriptor;
 }
 
-void ImageEffectPlugin::addContext( const std::string& context, Descriptor* ied )
+void OfxhImageEffectPlugin::addContext( const std::string& context, Descriptor* ied )
 {
 	_contexts[context] = ied;
 	_knownContexts.insert( context );
 }
 
-void ImageEffectPlugin::addContext( const std::string& context )
+void OfxhImageEffectPlugin::addContext( const std::string& context )
 {
 	_knownContexts.insert( context );
 }
 
-void ImageEffectPlugin::saveXML( std::ostream& os )
+void OfxhImageEffectPlugin::saveXML( std::ostream& os )
 {
 	APICache::propertySetXMLWrite( os, getDescriptor().getProperties(), 6 );
 }
 
-const std::set<std::string>& ImageEffectPlugin::getContexts() const
+const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 {
 	return _knownContexts;
 }
 
-bool ImageEffectPlugin::supportsContext( const std::string& context ) const
+bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 {
 	/*
 	std::cout << context << " supportsContext? " << _knownContexts.size() << std::endl;
@@ -160,9 +160,9 @@ bool ImageEffectPlugin::supportsContext( const std::string& context ) const
 	return _knownContexts.find( context ) != _knownContexts.end();
 }
 
-void ImageEffectPlugin::initContexts()
+void OfxhImageEffectPlugin::initContexts()
 {
-	const tuttle::host::ofx::Property::Set& eProps = getDescriptor().getProperties();
+	const tuttle::host::ofx::property::OfxhSet& eProps = getDescriptor().getProperties();
 	int size                                       = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
 	for( int j = 0; j < size; ++j )
@@ -172,14 +172,14 @@ void ImageEffectPlugin::initContexts()
 	}
 }
 
-void ImageEffectPlugin::loadAndDescribeActions()
+void OfxhImageEffectPlugin::loadAndDescribeActions()
 {
 	if( getPluginHandle() )
 	{
 		//COUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._apiName );
 		return;
 	}
-	_pluginHandle.reset( new tuttle::host::ofx::PluginHandle( this, _pc.getHost() ) );
+	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( this, _pc.getHost() ) );
 
 	OfxPlugin* op = _pluginHandle->getOfxPlugin();
 
@@ -210,7 +210,7 @@ void ImageEffectPlugin::loadAndDescribeActions()
 	initContexts();
 }
 
-Descriptor* ImageEffectPlugin::getDescriptorInContext( const std::string& context )
+Descriptor* OfxhImageEffectPlugin::getDescriptorInContext( const std::string& context )
 {
 	std::map<std::string, Descriptor*>::iterator it = _contexts.find( context );
 
@@ -240,16 +240,16 @@ Descriptor* ImageEffectPlugin::getDescriptorInContext( const std::string& contex
 	return describeInContextAction( context );
 }
 
-Descriptor* ImageEffectPlugin::describeInContextAction( const std::string& context )
+Descriptor* OfxhImageEffectPlugin::describeInContextAction( const std::string& context )
 {
-	tuttle::host::ofx::Property::PropSpec inargspec[] = {
-		{ kOfxImageEffectPropContext, tuttle::host::ofx::Property::eString, 1, true, context.c_str() },
+	tuttle::host::ofx::property::OfxhPropSpec inargspec[] = {
+		{ kOfxImageEffectPropContext, tuttle::host::ofx::property::eString, 1, true, context.c_str() },
 		{ 0 }
 	};
 
-	tuttle::host::ofx::Property::Set inarg( inargspec );
+	tuttle::host::ofx::property::OfxhSet inarg( inargspec );
 
-	PluginHandle* ph = getPluginHandle();
+	OfxhPluginHandle* ph = getPluginHandle();
 
 	std::auto_ptr<tuttle::host::ofx::imageEffect::Descriptor> newContext( core::Core::instance().getHost().makeDescriptor( getDescriptor(), this ) );
 	int rval = kOfxStatFailed;
@@ -266,7 +266,7 @@ Descriptor* ImageEffectPlugin::describeInContextAction( const std::string& conte
 	return NULL;
 }
 
-imageEffect::Instance* ImageEffectPlugin::createInstance( const std::string& context, void* clientData )
+imageEffect::Instance* OfxhImageEffectPlugin::createInstance( const std::string& context, void* clientData )
 {
 	/**
 	 * @todo - we need to make sure action:load is called, then action:describe again
@@ -289,7 +289,7 @@ imageEffect::Instance* ImageEffectPlugin::createInstance( const std::string& con
 	return core::Core::instance().getHost().newInstance( clientData, this, *desc, context );
 }
 
-void ImageEffectPlugin::unloadAction()
+void OfxhImageEffectPlugin::unloadAction()
 {
 	if( getPluginHandle() )
 	{
@@ -297,8 +297,8 @@ void ImageEffectPlugin::unloadAction()
 	}
 }
 
-ImageEffectPluginCache::ImageEffectPluginCache( tuttle::host::ofx::imageEffect::ImageEffectHost& host )
-	: PluginAPICacheI( kOfxImageEffectPluginApi, 1, 1 ),
+OfxhImageEffectPluginCache::OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::ImageEffectHost& host )
+	: OfxhPluginAPICacheI( kOfxImageEffectPluginApi, 1, 1 ),
 	_currentPlugin( 0 ),
 	_currentProp( 0 ),
 	_currentContext( 0 ),
@@ -306,20 +306,20 @@ ImageEffectPluginCache::ImageEffectPluginCache( tuttle::host::ofx::imageEffect::
 	_currentClip( 0 ),
 	_host( &host ) {}
 
-ImageEffectPluginCache::~ImageEffectPluginCache() {}
+OfxhImageEffectPluginCache::~OfxhImageEffectPluginCache() {}
 
 /**
  * get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
  * pick the highest found version.
  */
-ImageEffectPlugin* ImageEffectPluginCache::getPluginById( const std::string& id, int vermaj, int vermin )
+OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::string& id, int vermaj, int vermin )
 {
 	// return the highest version one, which fits the pattern provided
-	ImageEffectPlugin* sofar = 0;
+	OfxhImageEffectPlugin* sofar = 0;
 
-	for( std::vector<ImageEffectPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
+	for( std::vector<OfxhImageEffectPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
 	{
-		ImageEffectPlugin* p = *i;
+		OfxhImageEffectPlugin* p = *i;
 
 		if( p->getIdentifier() != id )
 		{
@@ -345,23 +345,23 @@ ImageEffectPlugin* ImageEffectPluginCache::getPluginById( const std::string& id,
 }
 
 /// whether we support this plugin.
-bool ImageEffectPluginCache::pluginSupported( tuttle::host::ofx::Plugin* p, std::string& reason ) const
+bool OfxhImageEffectPluginCache::pluginSupported( tuttle::host::ofx::OfxhPlugin* p, std::string& reason ) const
 {
-	return core::Core::instance().getHost().pluginSupported( dynamic_cast<tuttle::host::ofx::imageEffect::ImageEffectPlugin*>( p ), reason );
+	return core::Core::instance().getHost().pluginSupported( dynamic_cast<tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin*>( p ), reason );
 }
 
 /**
  * get the plugin by label. vermaj and vermin can be specified.  if they are not it will
  * pick the highest found version.
  */
-ImageEffectPlugin* ImageEffectPluginCache::getPluginByLabel( const std::string& label, int vermaj, int vermin )
+OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginByLabel( const std::string& label, int vermaj, int vermin )
 {
 	// return the highest version one, which fits the pattern provided
-	ImageEffectPlugin* sofar = 0;
+	OfxhImageEffectPlugin* sofar = 0;
 
-	for( std::vector<ImageEffectPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
+	for( std::vector<OfxhImageEffectPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
 	{
-		ImageEffectPlugin* p = *i;
+		OfxhImageEffectPlugin* p = *i;
 
 		if( p->getDescriptor().getProperties().getStringProperty( kOfxPropLabel ) != label )
 		{
@@ -387,12 +387,12 @@ ImageEffectPlugin* ImageEffectPluginCache::getPluginByLabel( const std::string& 
 	return sofar;
 }
 
-const std::vector<ImageEffectPlugin*>& ImageEffectPluginCache::getPlugins() const
+const std::vector<OfxhImageEffectPlugin*>& OfxhImageEffectPluginCache::getPlugins() const
 {
 	return _plugins;
 }
 
-const std::map<std::string, ImageEffectPlugin*>& ImageEffectPluginCache::getPluginsByID() const
+const std::map<std::string, OfxhImageEffectPlugin*>& OfxhImageEffectPluginCache::getPluginsByID() const
 {
 	return _pluginsByID;
 }
@@ -401,7 +401,7 @@ const std::map<std::string, ImageEffectPlugin*>& ImageEffectPluginCache::getPlug
  * handle the case where the info needs filling in from the file.
  * Runs the "describe" action on the plugin.
  */
-void ImageEffectPluginCache::loadFromPlugin( Plugin* op ) const
+void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 {
 	std::string msg = "loading ";
 
@@ -409,10 +409,10 @@ void ImageEffectPluginCache::loadFromPlugin( Plugin* op ) const
 
 	_host->loadingStatus( msg );
 
-	ImageEffectPlugin* p = dynamic_cast<ImageEffectPlugin*>( op );
+	OfxhImageEffectPlugin* p = dynamic_cast<OfxhImageEffectPlugin*>( op );
 	assert( p );
 
-	PluginHandle plug( p, _host );
+	OfxhPluginHandle plug( p, _host );
 
 	int rval = plug->mainEntry( kOfxActionLoad, 0, 0, 0 );
 
@@ -431,7 +431,7 @@ void ImageEffectPluginCache::loadFromPlugin( Plugin* op ) const
 	}
 
 	const imageEffect::Descriptor& e = p->getDescriptor();
-	const Property::Set& eProps      = e.getProperties();
+	const property::OfxhSet& eProps      = e.getProperties();
 
 	int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
@@ -447,15 +447,15 @@ void ImageEffectPluginCache::loadFromPlugin( Plugin* op ) const
 /**
  * handler for preparing to read in a chunk of XML from the cache, set up context to do this
  */
-void ImageEffectPluginCache::beginXmlParsing( Plugin* p )
+void OfxhImageEffectPluginCache::beginXmlParsing( OfxhPlugin* p )
 {
-	_currentPlugin = dynamic_cast<ImageEffectPlugin*>( p );
+	_currentPlugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
 }
 
 /**
  * XML handler : element begins (everything is stored in elements and attributes)
  */
-void ImageEffectPluginCache::xmlElementBegin( const std::string& el, std::map<std::string, std::string> map )
+void OfxhImageEffectPluginCache::xmlElementBegin( const std::string& el, std::map<std::string, std::string> map )
 {
 	if( el == "apiproperties" )
 	{
@@ -482,7 +482,7 @@ void ImageEffectPluginCache::xmlElementBegin( const std::string& el, std::map<st
 	{
 		std::string cname = map["name"];
 
-		_currentClip = new attribute::ClipImageDescriptor( cname );
+		_currentClip = new attribute::OfxhClipImageDescriptor( cname );
 		_currentContext->addClip( cname, _currentClip );
 		return;
 	}
@@ -509,9 +509,9 @@ void ImageEffectPluginCache::xmlElementBegin( const std::string& el, std::map<st
 	assert( false );
 }
 
-void ImageEffectPluginCache::xmlCharacterHandler( const std::string& ) {}
+void OfxhImageEffectPluginCache::xmlCharacterHandler( const std::string& ) {}
 
-void ImageEffectPluginCache::xmlElementEnd( const std::string& el )
+void OfxhImageEffectPluginCache::xmlElementEnd( const std::string& el )
 {
 	if( el == "param" )
 	{
@@ -524,27 +524,27 @@ void ImageEffectPluginCache::xmlElementEnd( const std::string& el )
 	}
 }
 
-void ImageEffectPluginCache::endXmlParsing()
+void OfxhImageEffectPluginCache::endXmlParsing()
 {
 	_currentPlugin = 0;
 }
 
-void ImageEffectPluginCache::saveXML( Plugin* ip, std::ostream& os ) const
+void OfxhImageEffectPluginCache::saveXML( OfxhPlugin* ip, std::ostream& os ) const
 {
-	ImageEffectPlugin* p = dynamic_cast<ImageEffectPlugin*>( ip );
+	OfxhImageEffectPlugin* p = dynamic_cast<OfxhImageEffectPlugin*>( ip );
 
 	p->saveXML( os );
 }
 
-void ImageEffectPluginCache::confirmPlugin( Plugin* p )
+void OfxhImageEffectPluginCache::confirmPlugin( OfxhPlugin* p )
 {
-	ImageEffectPlugin* plugin = dynamic_cast<ImageEffectPlugin*>( p );
+	OfxhImageEffectPlugin* plugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
 
 	_plugins.push_back( plugin );
 
 	if( _pluginsByID.find( plugin->getIdentifier() ) != _pluginsByID.end() )
 	{
-		ImageEffectPlugin* otherPlugin = _pluginsByID[plugin->getIdentifier()];
+		OfxhImageEffectPlugin* otherPlugin = _pluginsByID[plugin->getIdentifier()];
 		if( plugin->trumps( otherPlugin ) )
 		{
 			_pluginsByID[plugin->getIdentifier()] = plugin;
@@ -555,11 +555,11 @@ void ImageEffectPluginCache::confirmPlugin( Plugin* p )
 		_pluginsByID[plugin->getIdentifier()] = plugin;
 	}
 
-	MajorPlugin maj( plugin );
+	OfxhMajorPlugin maj( plugin );
 
 	if( _pluginsByIDMajor.find( maj ) != _pluginsByIDMajor.end() )
 	{
-		ImageEffectPlugin* otherPlugin = _pluginsByIDMajor[maj];
+		OfxhImageEffectPlugin* otherPlugin = _pluginsByIDMajor[maj];
 		if( plugin->getVersionMajor() != otherPlugin->getVersionMajor() || plugin->trumps( otherPlugin ) )
 		{
 			_pluginsByIDMajor[maj] = plugin;
@@ -571,16 +571,16 @@ void ImageEffectPluginCache::confirmPlugin( Plugin* p )
 	}
 }
 
-Plugin* ImageEffectPluginCache::newPlugin( PluginBinary* pb,
+OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary* pb,
                                            int           pi,
                                            OfxPlugin*    pl )
 {
-	ImageEffectPlugin* plugin = new ImageEffectPlugin( *this, pb, pi, pl );
+	OfxhImageEffectPlugin* plugin = new OfxhImageEffectPlugin( *this, pb, pi, pl );
 
 	return plugin;
 }
 
-Plugin* ImageEffectPluginCache::newPlugin( PluginBinary*      pb,
+OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary*      pb,
                                            int                pi,
                                            const std::string& api,
                                            int                apiVersion,
@@ -589,18 +589,18 @@ Plugin* ImageEffectPluginCache::newPlugin( PluginBinary*      pb,
                                            int                pluginMajorVersion,
                                            int                pluginMinorVersion )
 {
-	ImageEffectPlugin* plugin = new ImageEffectPlugin( *this, pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion );
+	OfxhImageEffectPlugin* plugin = new OfxhImageEffectPlugin( *this, pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion );
 
 	return plugin;
 }
 
-void ImageEffectPluginCache::dumpToStdOut() const
+void OfxhImageEffectPluginCache::dumpToStdOut() const
 {
 	if( _pluginsByID.empty() )
 		std::cout << "No Plug-ins Found." << std::endl;
 
 	std::cout << "________________________________________________________________________________" << std::endl;
-	for( std::map<std::string, ImageEffectPlugin*>::const_iterator it = _pluginsByID.begin(); it != _pluginsByID.end(); ++it )
+	for( std::map<std::string, OfxhImageEffectPlugin*>::const_iterator it = _pluginsByID.begin(); it != _pluginsByID.end(); ++it )
 	{
 		std::cout << "Plug-in:" << it->first << std::endl;
 		std::cout << "\t" << "Filepath: " << it->second->getBinary()->getFilePath();
@@ -612,8 +612,8 @@ void ImageEffectPluginCache::dumpToStdOut() const
 			std::cout << "\t* " << *it2 << std::endl;
 		const Descriptor& d = it->second->getDescriptor();
 		std::cout << "Inputs:" << std::endl;
-		const std::map<std::string, attribute::ClipImageDescriptor*>& inputs = d.getClips();
-		for( std::map<std::string, attribute::ClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
+		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
+		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
 			std::cout << "\t\t* " << it2->first << std::endl;
 		std::cout << "________________________________________________________________________________" << std::endl;
 	}

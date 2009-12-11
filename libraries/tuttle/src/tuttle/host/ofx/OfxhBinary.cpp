@@ -33,7 +33,7 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-Binary::Binary( const std::string& binaryPath ) : _binaryPath( binaryPath ),
+OfxhBinary::OfxhBinary( const std::string& binaryPath ) : _binaryPath( binaryPath ),
 	_invalid( false ),
 	_dlHandle( 0 ),
 	_users( 0 )
@@ -52,7 +52,7 @@ Binary::Binary( const std::string& binaryPath ) : _binaryPath( binaryPath ),
 }
 
 // actually open the binary.
-void Binary::load()
+void OfxhBinary::load()
 {
 	if( _invalid )
 		return;
@@ -90,7 +90,7 @@ void Binary::load()
 }
 
 /// close the binary
-void Binary::unload()
+void OfxhBinary::unload()
 {
 	if( _dlHandle != 0 )
 	{
@@ -105,7 +105,7 @@ void Binary::unload()
 
 /// look up a symbol in the binary file and return it as a pointer.
 /// returns null pointer if not found, or if the library is not loaded.
-void* Binary::findSymbol( const std::string& symbol )
+void* OfxhBinary::findSymbol( const std::string& symbol )
 {
 	if( _dlHandle != 0 )
 	{
@@ -121,7 +121,7 @@ void* Binary::findSymbol( const std::string& symbol )
 	}
 }
 
-void Binary::ref()
+void OfxhBinary::ref()
 {
 	if( _users == 0 )
 	{
@@ -130,7 +130,7 @@ void Binary::ref()
 	_users++;
 }
 
-void Binary::unref()
+void OfxhBinary::unref()
 {
 	_users--;
 	if( _users == 0 )

@@ -41,15 +41,15 @@ namespace host {
 namespace ofx {
 namespace memory {
 
-Instance::Instance() : _ptr( 0 ),
+OfxhMemory::OfxhMemory() : _ptr( 0 ),
 	_locked( false ) {}
 
-Instance::~Instance()
+OfxhMemory::~OfxhMemory()
 {
 	delete [] _ptr;
 }
 
-bool Instance::alloc( size_t nBytes )
+bool OfxhMemory::alloc( size_t nBytes )
 {
 	if( !_locked )
 	{
@@ -62,28 +62,28 @@ bool Instance::alloc( size_t nBytes )
 		return false;
 }
 
-OfxImageMemoryHandle Instance::getHandle()
+OfxImageMemoryHandle OfxhMemory::getHandle()
 {
 	return ( OfxImageMemoryHandle ) this;
 }
 
-void Instance::freeMem()
+void OfxhMemory::freeMem()
 {
 	delete [] _ptr;
 	_ptr = 0;
 }
 
-void* Instance::getPtr()
+void* OfxhMemory::getPtr()
 {
 	return _ptr;
 }
 
-void Instance::lock()
+void OfxhMemory::lock()
 {
 	_locked = true;
 }
 
-void Instance::unlock()
+void OfxhMemory::unlock()
 {
 	_locked = false;
 }

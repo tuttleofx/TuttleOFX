@@ -48,16 +48,16 @@ namespace attribute {
 // props to clips descriptors and instances
 
 // base ctor, for a descriptor
-ClipAccessor::ClipAccessor()
+OfxhClipAccessor::OfxhClipAccessor()
 {}
 
-ClipAccessor::~ClipAccessor()
+OfxhClipAccessor::~OfxhClipAccessor()
 {}
 
 /**
  * is the clip optional
  */
-bool ClipAccessor::isOptional() const
+bool OfxhClipAccessor::isOptional() const
 {
 	return getProperties().getIntProperty( kOfxImageClipPropOptional ) != 0;
 }
@@ -65,14 +65,14 @@ bool ClipAccessor::isOptional() const
 /**
  * descriptor
  */
-ClipDescriptor::ClipDescriptor()
-	: attribute::AttributeDescriptor()
+OfxhClipDescriptor::OfxhClipDescriptor()
+	: attribute::OfxhAttributeDescriptor()
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
-	static const Property::PropSpec clipDescriptorStuffs[] = {
-		{ kOfxPropType, Property::eString, 1, true, kOfxTypeClip },
-		{ kOfxImageClipPropOptional, Property::eInt, 1, false, "0" },
+	static const property::OfxhPropSpec clipDescriptorStuffs[] = {
+		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
+		{ kOfxImageClipPropOptional, property::eInt, 1, false, "0" },
 		{ 0 },
 	};
 
@@ -82,33 +82,33 @@ ClipDescriptor::ClipDescriptor()
 /**
  * descriptor
  */
-ClipDescriptor::ClipDescriptor( const Property::Set& properties )
-	: attribute::AttributeDescriptor( properties )
+OfxhClipDescriptor::OfxhClipDescriptor( const property::OfxhSet& properties )
+	: attribute::OfxhAttributeDescriptor( properties )
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
-	static const Property::PropSpec clipDescriptorStuffs[] = {
-		{ kOfxPropType, Property::eString, 1, true, kOfxTypeClip },
-		{ kOfxImageClipPropOptional, Property::eInt, 1, false, "0" },
+	static const property::OfxhPropSpec clipDescriptorStuffs[] = {
+		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
+		{ kOfxImageClipPropOptional, property::eInt, 1, false, "0" },
 		{ 0 },
 	};
 
 	getEditableProperties().addProperties( clipDescriptorStuffs );
 }
 
-ClipDescriptor::~ClipDescriptor()
+OfxhClipDescriptor::~OfxhClipDescriptor()
 {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // instance
 
-ClipInstance::ClipInstance( const ClipDescriptor& desc )
+OfxhClip::OfxhClip( const OfxhClipDescriptor& desc )
 	: attribute::AttributeInstance( desc )
 {
 	/// extra properties for the instance, these are fetched from the host
 	/// via a get hook and some virtuals
-	static const Property::PropSpec clipInstanceStuffs[] = {
-		{ kOfxImageClipPropConnected, Property::eInt, 1, true, "0" },
+	static const property::OfxhPropSpec clipInstanceStuffs[] = {
+		{ kOfxImageClipPropConnected, property::eInt, 1, true, "0" },
 		{ 0 },
 	};
 
@@ -117,18 +117,18 @@ ClipInstance::ClipInstance( const ClipDescriptor& desc )
 	initHook( clipInstanceStuffs );
 
 	/// we are an instance, we need to reset the props to read only
-	const Property::PropertyMap& map = getProperties().getMap();
-	Property::PropertyMap::const_iterator i;
+	const property::PropertyMap& map = getProperties().getMap();
+	property::PropertyMap::const_iterator i;
 	for( i = map.begin(); i != map.end(); ++i )
 	{
 		( *i ).second->setPluginReadOnly( false );
 	}
 }
 
-ClipInstance::~ClipInstance()
+OfxhClip::~OfxhClip()
 {}
 
-void ClipInstance::initHook( const Property::PropSpec* propSpec )
+void OfxhClip::initHook( const property::OfxhPropSpec* propSpec )
 {
 	// no more GetHook on clip for the moment...
 	/*

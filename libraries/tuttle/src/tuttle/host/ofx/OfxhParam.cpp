@@ -47,57 +47,57 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-ParamAccessor::ParamAccessor()
+OfxhParamAccessor::OfxhParamAccessor()
 {}
 
-ParamAccessor::~ParamAccessor() {}
+OfxhParamAccessor::~OfxhParamAccessor() {}
 
-const std::string& ParamAccessor::getParamType() const
+const std::string& OfxhParamAccessor::getParamType() const
 {
 	return getProperties().getStringProperty( kOfxParamPropType );
 }
 
-const std::string& ParamAccessor::getParentName() const
+const std::string& OfxhParamAccessor::getParentName() const
 {
 	return getProperties().getStringProperty( kOfxParamPropParent );
 }
 
-const std::string& ParamAccessor::getScriptName() const
+const std::string& OfxhParamAccessor::getScriptName() const
 {
 	return getProperties().getStringProperty( kOfxParamPropScriptName );
 }
 
-const std::string& ParamAccessor::getHint() const
+const std::string& OfxhParamAccessor::getHint() const
 {
 	return getProperties().getStringProperty( kOfxParamPropHint, 0 );
 }
 
-const std::string& ParamAccessor::getDoubleType() const
+const std::string& OfxhParamAccessor::getDoubleType() const
 {
 	return getProperties().getStringProperty( kOfxParamPropDoubleType, 0 );
 }
 
-const std::string& ParamAccessor::getCacheInvalidation() const
+const std::string& OfxhParamAccessor::getCacheInvalidation() const
 {
 	return getProperties().getStringProperty( kOfxParamPropCacheInvalidation, 0 );
 }
 
-bool ParamAccessor::getEnabled() const
+bool OfxhParamAccessor::getEnabled() const
 {
 	return getProperties().getIntProperty( kOfxParamPropEnabled, 0 ) != 0;
 }
 
-bool ParamAccessor::getSecret() const
+bool OfxhParamAccessor::getSecret() const
 {
 	return getProperties().getIntProperty( kOfxParamPropSecret, 0 ) != 0;
 }
 
-bool ParamAccessor::getEvaluateOnChange() const
+bool OfxhParamAccessor::getEvaluateOnChange() const
 {
 	return getProperties().getIntProperty( kOfxParamPropEvaluateOnChange, 0 ) != 0;
 }
 
-bool ParamAccessor::getCanUndo() const
+bool OfxhParamAccessor::getCanUndo() const
 {
 	if( getProperties().fetchProperty( kOfxParamPropCanUndo ) )
 	{
@@ -106,7 +106,7 @@ bool ParamAccessor::getCanUndo() const
 	return false;
 }
 
-bool ParamAccessor::getCanAnimate() const
+bool OfxhParamAccessor::getCanAnimate() const
 {
 	if( getProperties().fetchProperty( kOfxParamPropAnimates ) )
 	{
@@ -123,7 +123,7 @@ struct TypeMap
 {
 
 	const char* paramType;
-	Property::TypeEnum propType;
+	property::TypeEnum propType;
 	int propDimension;
 };
 
@@ -149,21 +149,21 @@ bool isIntParam( const std::string& paramType )
 }
 
 static TypeMap typeMap[] = {
-	{ kOfxParamTypeInteger, Property::eInt, 1 },
-	{ kOfxParamTypeDouble, Property::eDouble, 1 },
-	{ kOfxParamTypeBoolean, Property::eInt, 1 },
-	{ kOfxParamTypeChoice, Property::eInt, 1 },
-	{ kOfxParamTypeRGBA, Property::eDouble, 4 },
-	{ kOfxParamTypeRGB, Property::eDouble, 3 },
-	{ kOfxParamTypeDouble2D, Property::eDouble, 2 },
-	{ kOfxParamTypeInteger2D, Property::eInt, 2 },
-	{ kOfxParamTypeDouble3D, Property::eDouble, 3 },
-	{ kOfxParamTypeInteger3D, Property::eInt, 3 },
-	{ kOfxParamTypeString, Property::eString, 1 },
-	{ kOfxParamTypeCustom, Property::eString, 1 },
-	{ kOfxParamTypeGroup, Property::eNone },
-	{ kOfxParamTypePage, Property::eNone },
-	{ kOfxParamTypePushButton, Property::eNone },
+	{ kOfxParamTypeInteger, property::eInt, 1 },
+	{ kOfxParamTypeDouble, property::eDouble, 1 },
+	{ kOfxParamTypeBoolean, property::eInt, 1 },
+	{ kOfxParamTypeChoice, property::eInt, 1 },
+	{ kOfxParamTypeRGBA, property::eDouble, 4 },
+	{ kOfxParamTypeRGB, property::eDouble, 3 },
+	{ kOfxParamTypeDouble2D, property::eDouble, 2 },
+	{ kOfxParamTypeInteger2D, property::eInt, 2 },
+	{ kOfxParamTypeDouble3D, property::eDouble, 3 },
+	{ kOfxParamTypeInteger3D, property::eInt, 3 },
+	{ kOfxParamTypeString, property::eString, 1 },
+	{ kOfxParamTypeCustom, property::eString, 1 },
+	{ kOfxParamTypeGroup, property::eNone },
+	{ kOfxParamTypePage, property::eNone },
+	{ kOfxParamTypePushButton, property::eNone },
 	{ 0 }
 };
 
@@ -182,7 +182,7 @@ bool isStandardType( const std::string& type )
 	return false;
 }
 
-bool findType( const std::string paramType, Property::TypeEnum& propType, int& propDim )
+bool findType( const std::string paramType, property::TypeEnum& propType, int& propDim )
 {
 	TypeMap* tm = typeMap;
 
@@ -202,25 +202,25 @@ bool findType( const std::string paramType, Property::TypeEnum& propType, int& p
 /**
  * @brief make a parameter, with the given type and name
  */
-ParamDescriptor::ParamDescriptor( const std::string& type, const std::string& name )
-	: attribute::AttributeDescriptor( Property::Set() )
+OfxhParamDescriptor::OfxhParamDescriptor( const std::string& type, const std::string& name )
+	: attribute::OfxhAttributeDescriptor( property::OfxhSet() )
 {
 	const char* ctype = type.c_str();
 	const char* cname = name.c_str();
 
-	static const Property::PropSpec paramDescriptorProps[] = {
-		{ kOfxPropType, Property::eString, 1, true, kOfxTypeParameter },
-		{ kOfxParamPropSecret, Property::eInt, 1, false, "0" },
-		{ kOfxParamPropHint, Property::eString, 1, false, "" },
-		{ kOfxParamPropParent, Property::eString, 1, false, "" },
-		{ kOfxParamPropEnabled, Property::eInt, 1, false, "1" },
-		{ kOfxParamPropDataPtr, Property::ePointer, 1, false, 0 },
+	static const property::OfxhPropSpec paramDescriptorProps[] = {
+		{ kOfxPropType, property::eString, 1, true, kOfxTypeParameter },
+		{ kOfxParamPropSecret, property::eInt, 1, false, "0" },
+		{ kOfxParamPropHint, property::eString, 1, false, "" },
+		{ kOfxParamPropParent, property::eString, 1, false, "" },
+		{ kOfxParamPropEnabled, property::eInt, 1, false, "1" },
+		{ kOfxParamPropDataPtr, property::ePointer, 1, false, 0 },
 		{ 0 }
 	};
 
-	const Property::PropSpec dynamicParamDescriptorProps[] = {
-		{ kOfxParamPropType, Property::eString, 1, true, ctype },
-		{ kOfxParamPropScriptName, Property::eString, 1, false, cname }, ///< @todo TUTTLE_TODO : common property for all Attributes
+	const property::OfxhPropSpec dynamicParamDescriptorProps[] = {
+		{ kOfxParamPropType, property::eString, 1, true, ctype },
+		{ kOfxParamPropScriptName, property::eString, 1, false, cname }, ///< @todo TUTTLE_TODO : common property for all Attributes
 		{ 0 }
 	};
 
@@ -235,35 +235,35 @@ ParamDescriptor::ParamDescriptor( const std::string& type, const std::string& na
 
 /// make a parameter, with the given type and name
 
-void ParamDescriptor::addStandardParamProps( const std::string& type )
+void OfxhParamDescriptor::addStandardParamProps( const std::string& type )
 {
-	Property::TypeEnum propType = Property::eString;
+	property::TypeEnum propType = property::eString;
 	int propDim                 = 1;
 
 	findType( type, propType, propDim );
 
-	static Property::PropSpec allString[] = {
-		{ kOfxParamPropStringMode, Property::eString, 1, false, kOfxParamStringIsSingleLine },
-		{ kOfxParamPropStringFilePathExists, Property::eInt, 1, false, "1" },
+	static property::OfxhPropSpec allString[] = {
+		{ kOfxParamPropStringMode, property::eString, 1, false, kOfxParamStringIsSingleLine },
+		{ kOfxParamPropStringFilePathExists, property::eInt, 1, false, "1" },
 		{ 0 }
 	};
 
-	static Property::PropSpec allChoice[] = {
-		{ kOfxParamPropChoiceOption, Property::eString, 0, false, "" },
+	static property::OfxhPropSpec allChoice[] = {
+		{ kOfxParamPropChoiceOption, property::eString, 0, false, "" },
 		{ 0 }
 	};
 
-	static Property::PropSpec allCustom[] = {
-		{ kOfxParamPropCustomInterpCallbackV1, Property::ePointer, 1, false, 0 },
+	static property::OfxhPropSpec allCustom[] = {
+		{ kOfxParamPropCustomInterpCallbackV1, property::ePointer, 1, false, 0 },
 		{ 0 },
 	};
 
-	static Property::PropSpec allPage[] = {
-		{ kOfxParamPropPageChild, Property::eString, 0, false, "" },
+	static property::OfxhPropSpec allPage[] = {
+		{ kOfxParamPropPageChild, property::eString, 0, false, "" },
 		{ 0 }
 	};
 
-	if( propType != Property::eNone )
+	if( propType != property::eNone )
 	{
 		addValueParamProps( type, propType, propDim );
 	}
@@ -301,14 +301,14 @@ void ParamDescriptor::addStandardParamProps( const std::string& type )
 
 /// add standard properties to a params that can take an interact
 
-void ParamDescriptor::addInteractParamProps( const std::string& type )
+void OfxhParamDescriptor::addInteractParamProps( const std::string& type )
 {
-	static Property::PropSpec allButGroupPageProps[] = {
-		{ kOfxParamPropInteractV1, Property::ePointer, 1, false, 0 },
-		{ kOfxParamPropInteractSize, Property::eDouble, 2, false, "0" },
-		{ kOfxParamPropInteractSizeAspect, Property::eDouble, 1, false, "1" },
-		{ kOfxParamPropInteractMinimumSize, Property::eInt, 2, false, "10" },
-		{ kOfxParamPropInteractPreferedSize, Property::eInt, 2, false, "10" },
+	static property::OfxhPropSpec allButGroupPageProps[] = {
+		{ kOfxParamPropInteractV1, property::ePointer, 1, false, 0 },
+		{ kOfxParamPropInteractSize, property::eDouble, 2, false, "0" },
+		{ kOfxParamPropInteractSizeAspect, property::eDouble, 1, false, "1" },
+		{ kOfxParamPropInteractMinimumSize, property::eInt, 2, false, "10" },
+		{ kOfxParamPropInteractPreferedSize, property::eInt, 2, false, "10" },
 		{ 0 }
 	};
 
@@ -317,22 +317,22 @@ void ParamDescriptor::addInteractParamProps( const std::string& type )
 
 /// add standard properties to a value holding param
 
-void ParamDescriptor::addValueParamProps( const std::string& type, Property::TypeEnum valueType, int dim )
+void OfxhParamDescriptor::addValueParamProps( const std::string& type, property::TypeEnum valueType, int dim )
 {
-	static Property::PropSpec invariantProps[] = {
-		{ kOfxParamPropAnimates, Property::eInt, 1, false, "1" },
-		{ kOfxParamPropIsAnimating, Property::eInt, 1, false, "0" },
-		{ kOfxParamPropIsAutoKeying, Property::eInt, 1, false, "0" },
-		{ kOfxParamPropPersistant, Property::eInt, 1, false, "1" },
-		{ kOfxParamPropEvaluateOnChange, Property::eInt, 1, false, "1" },
-		{ kOfxParamPropPluginMayWrite, Property::eInt, 1, false, "0" },
-		{ kOfxParamPropCanUndo, Property::eInt, 1, false, "1" },
-		{ kOfxParamPropCacheInvalidation, Property::eString, 1, false, kOfxParamInvalidateValueChange },
+	static property::OfxhPropSpec invariantProps[] = {
+		{ kOfxParamPropAnimates, property::eInt, 1, false, "1" },
+		{ kOfxParamPropIsAnimating, property::eInt, 1, false, "0" },
+		{ kOfxParamPropIsAutoKeying, property::eInt, 1, false, "0" },
+		{ kOfxParamPropPersistant, property::eInt, 1, false, "1" },
+		{ kOfxParamPropEvaluateOnChange, property::eInt, 1, false, "1" },
+		{ kOfxParamPropPluginMayWrite, property::eInt, 1, false, "0" },
+		{ kOfxParamPropCanUndo, property::eInt, 1, false, "1" },
+		{ kOfxParamPropCacheInvalidation, property::eString, 1, false, kOfxParamInvalidateValueChange },
 		{ 0 }
 	};
 
-	Property::PropSpec variantProps[] = {
-		{ kOfxParamPropDefault, valueType, dim, false, valueType == Property::eString ? "" : "0" },
+	property::OfxhPropSpec variantProps[] = {
+		{ kOfxParamPropDefault, valueType, dim, false, valueType == property::eString ? "" : "0" },
 		{ 0 }
 	};
 
@@ -342,7 +342,7 @@ void ParamDescriptor::addValueParamProps( const std::string& type, Property::Typ
 
 /// add standard properties to a value holding param
 
-void ParamDescriptor::addNumericParamProps( const std::string& type, Property::TypeEnum valueType, int dim )
+void OfxhParamDescriptor::addNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim )
 {
 	static std::string dbl_minstr, dbl_maxstr, int_minstr, int_maxstr;
 	bool doneOne = false;
@@ -362,22 +362,22 @@ void ParamDescriptor::addNumericParamProps( const std::string& type, Property::T
 		int_maxstr = int_max.str();
 	}
 
-	Property::PropSpec allNumeric[] = {
-		{ kOfxParamPropDisplayMin, valueType, dim, false, isColourParam( type ) ? "0" : ( valueType == Property::eDouble ? dbl_minstr : int_minstr ).c_str() },
-		{ kOfxParamPropDisplayMax, valueType, dim, false, isColourParam( type ) ? "1" : ( valueType == Property::eDouble ? dbl_maxstr : int_maxstr ).c_str() },
-		{ kOfxParamPropMin, valueType, dim, false, ( valueType == Property::eDouble ? dbl_minstr : int_minstr ).c_str() },
-		{ kOfxParamPropMax, valueType, dim, false, ( valueType == Property::eDouble ? dbl_maxstr : int_maxstr ).c_str() },
+	property::OfxhPropSpec allNumeric[] = {
+		{ kOfxParamPropDisplayMin, valueType, dim, false, isColourParam( type ) ? "0" : ( valueType == property::eDouble ? dbl_minstr : int_minstr ).c_str() },
+		{ kOfxParamPropDisplayMax, valueType, dim, false, isColourParam( type ) ? "1" : ( valueType == property::eDouble ? dbl_maxstr : int_maxstr ).c_str() },
+		{ kOfxParamPropMin, valueType, dim, false, ( valueType == property::eDouble ? dbl_minstr : int_minstr ).c_str() },
+		{ kOfxParamPropMax, valueType, dim, false, ( valueType == property::eDouble ? dbl_maxstr : int_maxstr ).c_str() },
 		{ 0 }
 	};
 
 	getEditableProperties().addProperties( allNumeric );
 
 	/// if any double or a colour
-	if( valueType == Property::eDouble )
+	if( valueType == property::eDouble )
 	{
-		static Property::PropSpec allDouble[] = {
-			{ kOfxParamPropIncrement, Property::eDouble, 1, false, "1" },
-			{ kOfxParamPropDigits, Property::eInt, 1, false, "2" },
+		static property::OfxhPropSpec allDouble[] = {
+			{ kOfxParamPropIncrement, property::eDouble, 1, false, "1" },
+			{ kOfxParamPropDigits, property::eInt, 1, false, "2" },
 			{ 0 }
 		};
 		getEditableProperties().addProperties( allDouble );
@@ -386,16 +386,16 @@ void ParamDescriptor::addNumericParamProps( const std::string& type, Property::T
 	/// if a double param type
 	if( isDoubleParam( type ) )
 	{
-		static Property::PropSpec allDouble[] = {
-			{ kOfxParamPropDoubleType, Property::eString, 1, false, kOfxParamDoubleTypePlain },
+		static property::OfxhPropSpec allDouble[] = {
+			{ kOfxParamPropDoubleType, property::eString, 1, false, kOfxParamDoubleTypePlain },
 			{ 0 }
 		};
 		getEditableProperties().addProperties( allDouble );
 
 		if( dim == 1 )
 		{
-			static Property::PropSpec allDouble1D[] = {
-				{ kOfxParamPropShowTimeMarker, Property::eInt, 1, false, "0" },
+			static property::OfxhPropSpec allDouble1D[] = {
+				{ kOfxParamPropShowTimeMarker, property::eInt, 1, false, "0" },
 				{ 0 }
 			};
 
@@ -406,8 +406,8 @@ void ParamDescriptor::addNumericParamProps( const std::string& type, Property::T
 	/// if a multi dimensional param
 	if( isDoubleParam( type ) && ( dim == 2 || dim == 3 ) )
 	{
-		Property::PropSpec all2D3D[] = {
-			{ kOfxParamPropDimensionLabel, Property::eString, dim, false, "" },
+		property::OfxhPropSpec all2D3D[] = {
+			{ kOfxParamPropDimensionLabel, property::eString, dim, false, "" },
 			{ 0 },
 		};
 
@@ -423,8 +423,8 @@ void ParamDescriptor::addNumericParamProps( const std::string& type, Property::T
 	/// if a multi dimensional param
 	if( isColourParam( type ) )
 	{
-		Property::PropSpec allColor[] = {
-			{ kOfxParamPropDimensionLabel, Property::eString, dim, false, "" },
+		property::OfxhPropSpec allColor[] = {
+			{ kOfxParamPropDimensionLabel, property::eString, dim, false, "" },
 			{ 0 },
 		};
 
@@ -439,16 +439,16 @@ void ParamDescriptor::addNumericParamProps( const std::string& type, Property::T
 	}
 }
 
-ParamAccessorSet::~ParamAccessorSet() {}
+OfxhParamAccessorSet::~OfxhParamAccessorSet() {}
 
 /// obtain a handle on this set for passing to the C api
 
-ParamDescriptorSet::ParamDescriptorSet() {}
+OfxhParamDescriptorSet::OfxhParamDescriptorSet() {}
 
-ParamDescriptorSet::~ParamDescriptorSet()
+OfxhParamDescriptorSet::~OfxhParamDescriptorSet()
 {}
 
-void ParamDescriptorSet::addParam( const std::string& name, ParamDescriptor* p )
+void OfxhParamDescriptorSet::addParam( const std::string& name, OfxhParamDescriptor* p )
 {
 	_paramList.push_back( p );
 	_paramMap[name] = p;
@@ -456,13 +456,13 @@ void ParamDescriptorSet::addParam( const std::string& name, ParamDescriptor* p )
 
 /// define a param on this effect
 
-ParamDescriptor* ParamDescriptorSet::paramDefine( const char* paramType,
+OfxhParamDescriptor* OfxhParamDescriptorSet::paramDefine( const char* paramType,
                                                   const char* name )
 {
 	if( !isStandardType( paramType ) )
 		return NULL;                                                                                                                                                                                                                                                                         /// << EEK! This is bad.
 
-	ParamDescriptor* desc = new ParamDescriptor( paramType, name );
+	OfxhParamDescriptor* desc = new OfxhParamDescriptor( paramType, name );
 	desc->addStandardParamProps( paramType );
 	addParam( name, desc );
 	return desc;
@@ -476,12 +476,12 @@ ParamDescriptor* ParamDescriptorSet::paramDefine( const char* paramType,
 /**
  * the description of a plugin parameter
  */
-ParamInstance::~ParamInstance() {}
+OfxhParam::~OfxhParam() {}
 
 /**
  * make a parameter, with the given type and name
  */
-ParamInstance::ParamInstance( const ParamDescriptor& descriptor, attribute::ParamInstanceSet& setInstance )
+OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
 	: attribute::AttributeInstance( descriptor ),
 	_paramSetInstance( &setInstance ),
 	_parentInstance( 0 )
@@ -499,27 +499,27 @@ ParamInstance::ParamInstance( const ParamDescriptor& descriptor, attribute::Para
 /**
  * callback which should set enabled state as appropriate
  */
-void ParamInstance::setEnabled() {}
+void OfxhParam::setEnabled() {}
 
 /**
  * callback which should set secret state as appropriate
  */
-void ParamInstance::setSecret() {}
+void OfxhParam::setSecret() {}
 
 /**
  * callback which should update label
  */
-void ParamInstance::setLabel() {}
+void OfxhParam::setLabel() {}
 
 /**
  * callback which should set
  */
-void ParamInstance::setDisplayRange() {}
+void OfxhParam::setDisplayRange() {}
 
 /**
  * get a value, implemented by instances to deconstruct var args
  */
-OfxStatus ParamInstance::getV( va_list arg )
+OfxStatus OfxhParam::getV( va_list arg )
 {
 	COUT_WITHINFOS( "ParamInstance getValue failed !" );
 	COUT( "(paramName:" << getName() << ")" );
@@ -529,7 +529,7 @@ OfxStatus ParamInstance::getV( va_list arg )
 /**
  * get a value, implemented by instances to deconstruct var args
  */
-OfxStatus ParamInstance::getV( OfxTime time, va_list arg )
+OfxStatus OfxhParam::getV( OfxTime time, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
@@ -537,7 +537,7 @@ OfxStatus ParamInstance::getV( OfxTime time, va_list arg )
 /**
  * set a value, implemented by instances to deconstruct var args
  */
-OfxStatus ParamInstance::setV( va_list arg )
+OfxStatus OfxhParam::setV( va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
@@ -545,7 +545,7 @@ OfxStatus ParamInstance::setV( va_list arg )
 /**
  * key a value, implemented by instances to deconstruct var args
  */
-OfxStatus ParamInstance::setV( OfxTime time, va_list arg )
+OfxStatus OfxhParam::setV( OfxTime time, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
@@ -553,7 +553,7 @@ OfxStatus ParamInstance::setV( OfxTime time, va_list arg )
 /**
  * derive a value, implemented by instances to deconstruct var args
  */
-OfxStatus ParamInstance::deriveV( OfxTime time, va_list arg )
+OfxStatus OfxhParam::deriveV( OfxTime time, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
@@ -561,7 +561,7 @@ OfxStatus ParamInstance::deriveV( OfxTime time, va_list arg )
 /**
  * integrate a value, implemented by instances to deconstruct var args
  */
-OfxStatus ParamInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+OfxStatus OfxhParam::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 {
 	return kOfxStatErrUnsupported;
 }
@@ -569,7 +569,7 @@ OfxStatus ParamInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 /**
  * overridden from Property::NotifyHook
  */
-void ParamInstance::notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC
+void OfxhParam::notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC
 {
 	if( name == kOfxPropLabel )
 	{
@@ -592,7 +592,7 @@ void ParamInstance::notify( const std::string& name, bool single, int num ) OFX_
 /**
  * copy one parameter to another
  */
-OfxStatus ParamInstance::copy( const ParamInstance& instance, OfxTime offset )
+OfxStatus OfxhParam::copy( const OfxhParam& instance, OfxTime offset )
 {
 	return kOfxStatErrMissingHostFeature;
 }
@@ -600,17 +600,17 @@ OfxStatus ParamInstance::copy( const ParamInstance& instance, OfxTime offset )
 /**
  * copy one parameter to another, with a range
  */
-OfxStatus ParamInstance::copy( const ParamInstance& instance, OfxTime offset, OfxRangeD range )
+OfxStatus OfxhParam::copy( const OfxhParam& instance, OfxTime offset, OfxRangeD range )
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-void ParamInstance::setParentInstance( ParamInstance* instance )
+void OfxhParam::setParentInstance( OfxhParam* instance )
 {
 	_parentInstance = instance;
 }
 
-ParamInstance* ParamInstance::getParentInstance()
+OfxhParam* OfxhParam::getParentInstance()
 {
 	return _parentInstance;
 }
@@ -619,40 +619,40 @@ ParamInstance* ParamInstance::getParentInstance()
 // KeyframeParam
 //
 
-OfxStatus KeyframeParam::getNumKeys( unsigned int& nKeys ) const
+OfxStatus OfxhKeyframeParam::getNumKeys( unsigned int& nKeys ) const
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-OfxStatus KeyframeParam::getKeyTime( int nth, OfxTime& time ) const
+OfxStatus OfxhKeyframeParam::getKeyTime( int nth, OfxTime& time ) const
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-OfxStatus KeyframeParam::getKeyIndex( OfxTime time, int direction, int& index ) const
+OfxStatus OfxhKeyframeParam::getKeyIndex( OfxTime time, int direction, int& index ) const
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-OfxStatus KeyframeParam::deleteKey( OfxTime time )
+OfxStatus OfxhKeyframeParam::deleteKey( OfxTime time )
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-OfxStatus KeyframeParam::deleteAllKeys()
+OfxStatus OfxhKeyframeParam::deleteAllKeys()
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-ParamGroupInstance* ParamGroupInstance::clone() const
+OfxhParamGroup* OfxhParamGroup::clone() const
 {
-	return new ParamGroupInstance( *this );
+	return new OfxhParamGroup( *this );
 }
 
 /**
  * setChildrens have to clone each source instance recursively
  */
-void ParamGroupInstance::setChildrens( const ParamInstanceSet* childrens )
+void OfxhParamGroup::setChildrens( const OfxhParamSet* childrens )
 {
 	deleteChildrens();
 
@@ -665,15 +665,15 @@ void ParamGroupInstance::setChildrens( const ParamInstanceSet* childrens )
 	}
 }
 
-void ParamGroupInstance::addChildren( ParamInstance* children )
+void OfxhParamGroup::addChildren( OfxhParam* children )
 {
 	children->setParamSetInstance( this );
 	_paramList.push_back( children );
 }
 
-ParamInstanceSet* ParamGroupInstance::getChildrens() const
+OfxhParamSet* OfxhParamGroup::getChildrens() const
 {
-	return (ParamInstanceSet*)this;
+	return (OfxhParamSet*)this;
 }
 
 //
@@ -684,7 +684,7 @@ ParamPageInstance* ParamPageInstance::clone() const
 	return new ParamPageInstance( *this );
 }
 
-const std::map<int, attribute::ParamInstance*>& ParamPageInstance::getChildren() const
+const std::map<int, attribute::OfxhParam*>& ParamPageInstance::getChildren() const
 {
 	// HACK!!!! this really should be done with a notify hook so we don't force
 	// _children to be mutable
@@ -694,7 +694,7 @@ const std::map<int, attribute::ParamInstance*>& ParamPageInstance::getChildren()
 		for( int i = 0; i < nChildren; i++ )
 		{
 			std::string childName           = getProperties().getStringProperty( kOfxParamPropPageChild, i );
-			attribute::ParamInstance* child = &_paramSetInstance->getParam( childName );
+			attribute::OfxhParam* child = &_paramSetInstance->getParam( childName );
 			_children[i] = child;
 		}
 	}
@@ -982,16 +982,16 @@ OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
 // ParamInstanceSet
 //
 
-ParamInstanceSet::ParamInstanceSet()
+OfxhParamSet::OfxhParamSet()
 {}
 
-ParamInstanceSet::ParamInstanceSet( const ParamInstanceSet& other )
+OfxhParamSet::OfxhParamSet( const OfxhParamSet& other )
 : _paramList(other._paramList.clone())
 {
 	initMapFromList();
 }
 
-void ParamInstanceSet::initMapFromList()
+void OfxhParamSet::initMapFromList()
 {
 	for( ParamList::iterator it = _paramList.begin(), itEnd = _paramList.end();
 	     it != itEnd;
@@ -1001,10 +1001,10 @@ void ParamInstanceSet::initMapFromList()
 	}
 }
 
-ParamInstanceSet::~ParamInstanceSet()
+OfxhParamSet::~OfxhParamSet()
 {}
 
-OfxStatus ParamInstanceSet::addParam( const std::string& name, ParamInstance* instance )
+OfxStatus OfxhParamSet::addParam( const std::string& name, OfxhParam* instance )
 {
 	if( _params.find( name ) == _params.end() )
 	{
@@ -1025,14 +1025,14 @@ static OfxStatus paramDefine( OfxParamSetHandle     paramSet,
                               const char*           name,
                               OfxPropertySetHandle* propertySet )
 {
-	ParamDescriptorSet* paramSetDescriptor = reinterpret_cast<ParamDescriptorSet*>( paramSet );
+	OfxhParamDescriptorSet* paramSetDescriptor = reinterpret_cast<OfxhParamDescriptorSet*>( paramSet );
 
 	if( !paramSetDescriptor )
 	{
 		return kOfxStatErrBadHandle;
 	}
 
-	ParamDescriptor* desc = paramSetDescriptor->paramDefine( paramType, name );
+	OfxhParamDescriptor* desc = paramSetDescriptor->paramDefine( paramType, name );
 
 	if( desc )
 	{
@@ -1051,19 +1051,19 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
                                  OfxPropertySetHandle* propertySet )
 {
 
-	ParamAccessorSet* baseSet = reinterpret_cast<ParamAccessorSet*>( paramSet );
+	OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
 
 	if( !baseSet )
 	{
 		return kOfxStatErrBadHandle;
 	}
 
-	ParamInstanceSet* setInstance = dynamic_cast<ParamInstanceSet*>( baseSet );
+	OfxhParamSet* setInstance = dynamic_cast<OfxhParamSet*>( baseSet );
 
 	if( setInstance )
 	{
-		const std::map<std::string, ParamInstance*>& params      = setInstance->getParams();
-		std::map<std::string, ParamInstance*>::const_iterator it = params.find( name );
+		const std::map<std::string, OfxhParam*>& params      = setInstance->getParams();
+		std::map<std::string, OfxhParam*>::const_iterator it = params.find( name );
 
 		// if we can't find it return an error...
 		if( it == params.end() )
@@ -1079,12 +1079,12 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 		return kOfxStatOK;
 	}
 
-	ParamDescriptorSet* setDescriptor = dynamic_cast<ParamDescriptorSet*>( baseSet );
+	OfxhParamDescriptorSet* setDescriptor = dynamic_cast<OfxhParamDescriptorSet*>( baseSet );
 
 	if( setDescriptor )
 	{
-		const std::map<std::string, ParamDescriptor*>& params      = setDescriptor->getParams();
-		std::map<std::string, ParamDescriptor*>::const_iterator it = params.find( name );
+		const std::map<std::string, OfxhParamDescriptor*>& params      = setDescriptor->getParams();
+		std::map<std::string, OfxhParamDescriptor*>::const_iterator it = params.find( name );
 
 		// if we can't find it return an error...
 		if( it == params.end() )
@@ -1106,7 +1106,7 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 static OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
                                          OfxPropertySetHandle* propHandle )
 {
-	ParamAccessorSet* baseSet = reinterpret_cast<ParamAccessorSet*>( paramSet );
+	OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
 
 	if( baseSet )
 	{
@@ -1119,7 +1119,7 @@ static OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
 static OfxStatus paramGetPropertySet( OfxParamHandle        param,
                                       OfxPropertySetHandle* propHandle )
 {
-	attribute::ParamInstance* paramInstance = reinterpret_cast<attribute::ParamInstance*>( param );
+	attribute::OfxhParam* paramInstance = reinterpret_cast<attribute::OfxhParam*>( param );
 
 	if( paramInstance && paramInstance->verifyMagic() )
 	{
@@ -1137,7 +1137,7 @@ static OfxStatus paramGetPropertySet( OfxParamHandle        param,
  */
 static OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 {
-	ParamInstance* paramInstance = reinterpret_cast<ParamInstance*>( paramHandle );
+	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
 
 	if( !paramInstance || !paramInstance->verifyMagic() )
 		return kOfxStatErrBadHandle;
@@ -1167,7 +1167,7 @@ static OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time,
                                       ... )
 {
-	ParamInstance* paramInstance = reinterpret_cast<ParamInstance*>( paramHandle );
+	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
 
 	if( !paramInstance || !paramInstance->verifyMagic() )
 		return kOfxStatErrBadHandle;
@@ -1195,7 +1195,7 @@ static OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
                                      OfxTime        time,
                                      ... )
 {
-	ParamInstance* paramInstance = reinterpret_cast<ParamInstance*>( paramHandle );
+	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
 
 	if( !paramInstance || !paramInstance->verifyMagic() )
 		return kOfxStatErrBadHandle;
@@ -1220,7 +1220,7 @@ static OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
                                    OfxTime time1, OfxTime time2,
                                    ... )
 {
-	ParamInstance* paramInstance = reinterpret_cast<ParamInstance*>( paramHandle );
+	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
 
 	if( !paramInstance || !paramInstance->verifyMagic() )
 		return kOfxStatErrBadHandle;
@@ -1247,7 +1247,7 @@ static OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
 static OfxStatus paramSetValue( OfxParamHandle paramHandle,
                                 ... )
 {
-	ParamInstance* paramInstance = reinterpret_cast<ParamInstance*>( paramHandle );
+	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
 
 	if( !paramInstance || !paramInstance->verifyMagic() )
 		return kOfxStatErrBadHandle;
@@ -1282,7 +1282,7 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time, // time in frames
                                       ... )
 {
-	ParamInstance* paramInstance = reinterpret_cast<ParamInstance*>( paramHandle );
+	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
 
 	if( !paramInstance || !paramInstance->verifyMagic() )
 		return kOfxStatErrBadHandle;
@@ -1311,14 +1311,14 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 static OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
                                   unsigned int*  numberOfKeys )
 {
-	attribute::ParamInstance* pInstance = reinterpret_cast<attribute::ParamInstance*>( paramHandle );
+	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
 
 	if( !pInstance || !pInstance->verifyMagic() )
 	{
 		return kOfxStatErrBadHandle;
 	}
 
-	KeyframeParam* paramInstance = dynamic_cast<KeyframeParam*>( pInstance );
+	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 	if( !paramInstance )
 		return kOfxStatErrBadHandle;
 	return paramInstance->getNumKeys( *numberOfKeys );
@@ -1328,14 +1328,14 @@ static OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
                                   unsigned int   nthKey,
                                   OfxTime*       time )
 {
-	attribute::ParamInstance* pInstance = reinterpret_cast<attribute::ParamInstance*>( paramHandle );
+	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
 
 	if( !pInstance || !pInstance->verifyMagic() )
 	{
 		return kOfxStatErrBadHandle;
 	}
 
-	KeyframeParam* paramInstance = dynamic_cast<KeyframeParam*>( pInstance );
+	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 	if( !paramInstance )
 		return kOfxStatErrBadHandle;
 	return paramInstance->getKeyTime( nthKey, *time );
@@ -1346,14 +1346,14 @@ static OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
                                    int            direction,
                                    int*           index )
 {
-	attribute::ParamInstance* pInstance = reinterpret_cast<attribute::ParamInstance*>( paramHandle );
+	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
 
 	if( !pInstance || !pInstance->verifyMagic() )
 	{
 		return kOfxStatErrBadHandle;
 	}
 
-	KeyframeParam* paramInstance = dynamic_cast<KeyframeParam*>( pInstance );
+	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 	if( !paramInstance )
 		return kOfxStatErrBadHandle;
 	return paramInstance->getKeyIndex( time, direction, *index );
@@ -1362,14 +1362,14 @@ static OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
 static OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
                                  OfxTime        time )
 {
-	attribute::ParamInstance* pInstance = reinterpret_cast<attribute::ParamInstance*>( paramHandle );
+	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
 
 	if( !pInstance || !pInstance->verifyMagic() )
 	{
 		return kOfxStatErrBadHandle;
 	}
 
-	KeyframeParam* paramInstance = dynamic_cast<KeyframeParam*>( pInstance );
+	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 	if( !paramInstance )
 		return kOfxStatErrBadHandle;
 	return paramInstance->deleteKey( time );
@@ -1377,14 +1377,14 @@ static OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
 
 static OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 {
-	attribute::ParamInstance* pInstance = reinterpret_cast<attribute::ParamInstance*>( paramHandle );
+	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
 
 	if( !pInstance || !pInstance->verifyMagic() )
 	{
 		return kOfxStatErrBadHandle;
 	}
 
-	KeyframeParam* paramInstance = dynamic_cast<KeyframeParam*>( pInstance );
+	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 	if( !paramInstance )
 		return kOfxStatErrBadHandle;
 	return paramInstance->deleteAllKeys();
@@ -1394,8 +1394,8 @@ static OfxStatus paramCopy( OfxParamHandle paramTo,
                             OfxParamHandle paramFrom,
                             OfxTime dstOffset, OfxRangeD* frameRange )
 {
-	ParamInstance* paramInstanceTo   = reinterpret_cast<ParamInstance*>( paramTo );
-	ParamInstance* paramInstanceFrom = reinterpret_cast<ParamInstance*>( paramFrom );
+	OfxhParam* paramInstanceTo   = reinterpret_cast<OfxhParam*>( paramTo );
+	OfxhParam* paramInstanceFrom = reinterpret_cast<OfxhParam*>( paramFrom );
 
 	if( !paramInstanceTo || !paramInstanceTo->verifyMagic() )
 		return kOfxStatErrBadHandle;
@@ -1410,7 +1410,7 @@ static OfxStatus paramCopy( OfxParamHandle paramTo,
 
 static OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char* name )
 {
-	ParamInstanceSet* setInstance = reinterpret_cast<ParamInstanceSet*>( paramSet );
+	OfxhParamSet* setInstance = reinterpret_cast<OfxhParamSet*>( paramSet );
 
 	if( !setInstance )
 		return kOfxStatErrBadHandle;
@@ -1419,7 +1419,7 @@ static OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char* name )
 
 static OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
 {
-	ParamInstanceSet* setInstance = reinterpret_cast<ParamInstanceSet*>( paramSet );
+	OfxhParamSet* setInstance = reinterpret_cast<OfxhParamSet*>( paramSet );
 
 	if( !setInstance )
 		return kOfxStatErrBadHandle;

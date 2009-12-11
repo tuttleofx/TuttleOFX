@@ -38,10 +38,10 @@ namespace interact {
 /// fetch a versioned suite for our interact
 void* GetSuite( int version );
 
-class Base
+class OfxhBase
 {
 public:
-	virtual ~Base() {}
+	virtual ~OfxhBase() {}
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxInteractHandle getHandle() { return ( OfxInteractHandle ) this; }
@@ -60,19 +60,19 @@ enum State
 };
 
 /// Descriptor for an interact. Interacts all share a single description
-class Descriptor : public Base
+class OfxhInteractDescriptor : public OfxhBase
 {
 protected:
-	Property::Set _properties; ///< its props
+	property::OfxhSet _properties; ///< its props
 	State _state;      ///< how is it feeling today
 	OfxPluginEntryPoint* _entryPoint;  ///< the entry point for this overlay
 
 public:
 	/// CTOR
-	Descriptor();
+	OfxhInteractDescriptor();
 
 	/// dtor
-	virtual ~Descriptor();
+	virtual ~OfxhInteractDescriptor();
 
 	/// set the main entry points
 	void setEntryPoint( OfxPluginEntryPoint* entryPoint ) { _entryPoint = entryPoint; }
@@ -84,10 +84,10 @@ public:
 	OfxPropertySetHandle getPropHandle() { return _properties.getHandle(); }
 
 	/// get prop set
-	const Property::Set& getProperties() const { return _properties; }
+	const property::OfxhSet& getProperties() const { return _properties; }
 
 	/// get a non const prop set
-	Property::Set& getProperties() { return _properties; }
+	property::OfxhSet& getProperties() { return _properties; }
 
 	/// call the entry point with action and the given args
 	OfxStatus callEntry( const char*          action,
@@ -102,15 +102,15 @@ public:
 /// a generic interact, it doesn't belong to anything in particular
 /// we need to generify this slighty more and remove the renderscale args
 /// into a derived class, as they only belong to image effect plugins
-class Instance : public Base,
-	protected Property::GetHook
+class OfxhInteract : public OfxhBase,
+	protected property::OfxhGetHook
 {
 protected:
-	const Descriptor& _descriptor; ///< who we are
-	Property::Set _properties;  ///< its props
+	const OfxhInteractDescriptor& _descriptor; ///< who we are
+	property::OfxhSet _properties;  ///< its props
 	State _state;      ///< how is it feeling today
 	void* _effectInstance; ///< this is ugly, we need a base class to all plugin instances at some point.
-	Property::Set _argProperties;
+	property::OfxhSet _argProperties;
 
 	/// initialise the argument properties
 	void initArgProp( OfxTime          time,
@@ -126,9 +126,9 @@ protected:
 	                     char* keyString );
 
 public:
-	Instance( const Descriptor& desc, void* effectInstance );
+	OfxhInteract( const OfxhInteractDescriptor& desc, void* effectInstance );
 
-	virtual ~Instance();
+	virtual ~OfxhInteract();
 
 	/// what is it's state?
 	State getState() const { return _state; }
@@ -137,11 +137,11 @@ public:
 	OfxPropertySetHandle getPropHandle() { return _properties.getHandle(); }
 
 	/// get prop set
-	const Property::Set& getProperties() const { return _properties; }
+	const property::OfxhSet& getProperties() const { return _properties; }
 
 	/// call the entry point in the descriptor with action and the given args
 	virtual OfxStatus callEntry( const char*    action,
-	                             Property::Set* inArgs );
+	                             property::OfxhSet* inArgs );
 
 	/// hooks to kOfxInteractPropViewportSize in the property set
 	/// this is actually redundant and is to be deprecated

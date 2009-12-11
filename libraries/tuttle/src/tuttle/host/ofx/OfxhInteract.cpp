@@ -49,23 +49,23 @@ namespace interact {
 //
 // descriptor
 //
-static Property::PropSpec interactDescriptorStuffs[] = {
-	{ kOfxInteractPropHasAlpha, Property::eInt, 1, true, "0" },
-	{ kOfxInteractPropBitDepth, Property::eInt, 1, true, "0" },
+static property::OfxhPropSpec interactDescriptorStuffs[] = {
+	{ kOfxInteractPropHasAlpha, property::eInt, 1, true, "0" },
+	{ kOfxInteractPropBitDepth, property::eInt, 1, true, "0" },
 	{ 0 },
 };
 
-Descriptor::Descriptor()
+OfxhInteractDescriptor::OfxhInteractDescriptor()
 	: _properties( interactDescriptorStuffs ),
 	_state( eUninitialised ),
 	_entryPoint( NULL )
 {}
 
-Descriptor::~Descriptor()
+OfxhInteractDescriptor::~OfxhInteractDescriptor()
 {}
 
 /// call describe on this descriptor
-bool Descriptor::describe( int bitDepthPerComponent, bool hasAlpha )
+bool OfxhInteractDescriptor::describe( int bitDepthPerComponent, bool hasAlpha )
 {
 	if( _state == eUninitialised )
 	{
@@ -86,7 +86,7 @@ bool Descriptor::describe( int bitDepthPerComponent, bool hasAlpha )
 }
 
 // call the interactive entry point
-OfxStatus Descriptor::callEntry( const char*          action,
+OfxStatus OfxhInteractDescriptor::callEntry( const char*          action,
                                  void*                handle,
                                  OfxPropertySetHandle inArgs,
                                  OfxPropertySetHandle outArgs ) const
@@ -102,36 +102,36 @@ OfxStatus Descriptor::callEntry( const char*          action,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-static Property::PropSpec interactInstanceStuffs[] = {
-	{ kOfxPropEffectInstance, Property::ePointer, 1, true, NULL },
-	{ kOfxPropInstanceData, Property::ePointer, 1, false, NULL },
-	{ kOfxInteractPropPixelScale, Property::eDouble, 2, true, "1.0f" },
-	{ kOfxInteractPropBackgroundColour, Property::eDouble, 3, true, "0.0f" },
-	{ kOfxInteractPropViewportSize, Property::eDouble, 2, true, "100.0f" },
-	{ kOfxInteractPropSlaveToParam, Property::eString, 0, false, "" },
+static property::OfxhPropSpec interactInstanceStuffs[] = {
+	{ kOfxPropEffectInstance, property::ePointer, 1, true, NULL },
+	{ kOfxPropInstanceData, property::ePointer, 1, false, NULL },
+	{ kOfxInteractPropPixelScale, property::eDouble, 2, true, "1.0f" },
+	{ kOfxInteractPropBackgroundColour, property::eDouble, 3, true, "0.0f" },
+	{ kOfxInteractPropViewportSize, property::eDouble, 2, true, "100.0f" },
+	{ kOfxInteractPropSlaveToParam, property::eString, 0, false, "" },
 	{ 0 },
 };
 
-static Property::PropSpec interactArgsStuffs[] = {
-	{ kOfxPropEffectInstance, Property::ePointer, 1, false, NULL },
-	{ kOfxPropTime, Property::eDouble, 1, false, "0.0" },
-	{ kOfxImageEffectPropRenderScale, Property::eDouble, 2, false, "0.0" },
-	{ kOfxInteractPropBackgroundColour, Property::eDouble, 3, false, "0.0f" },
-	{ kOfxInteractPropViewportSize, Property::eDouble, 2, false, "0.0f" },
-	{ kOfxInteractPropPixelScale, Property::eDouble, 2, false, "1.0f" },
-	{ kOfxInteractPropPenPosition, Property::eDouble, 2, false, "0.0" },
+static property::OfxhPropSpec interactArgsStuffs[] = {
+	{ kOfxPropEffectInstance, property::ePointer, 1, false, NULL },
+	{ kOfxPropTime, property::eDouble, 1, false, "0.0" },
+	{ kOfxImageEffectPropRenderScale, property::eDouble, 2, false, "0.0" },
+	{ kOfxInteractPropBackgroundColour, property::eDouble, 3, false, "0.0f" },
+	{ kOfxInteractPropViewportSize, property::eDouble, 2, false, "0.0f" },
+	{ kOfxInteractPropPixelScale, property::eDouble, 2, false, "1.0f" },
+	{ kOfxInteractPropPenPosition, property::eDouble, 2, false, "0.0" },
 	#ifdef kOfxInteractPropPenViewportPosition
-	{ kOfxInteractPropPenViewportPosition, Property::eInt, 2, false, "0" },
+	{ kOfxInteractPropPenViewportPosition, property::eInt, 2, false, "0" },
 	#endif
-	{ kOfxInteractPropPenPressure, Property::eDouble, 1, false, "0.0" },
-	{ kOfxPropKeyString, Property::eString, 1, false, "" },
-	{ kOfxPropKeySym, Property::eInt, 1, false, "0" },
+	{ kOfxInteractPropPenPressure, property::eDouble, 1, false, "0.0" },
+	{ kOfxPropKeyString, property::eString, 1, false, "" },
+	{ kOfxPropKeySym, property::eInt, 1, false, "0" },
 	{ 0 },
 };
 
 // instance
 
-Instance::Instance( const Descriptor& desc, void* effectInstance )
+OfxhInteract::OfxhInteract( const OfxhInteractDescriptor& desc, void* effectInstance )
 	: _descriptor( desc ),
 	_properties( interactInstanceStuffs ),
 	_state( desc.getState() ),
@@ -149,14 +149,14 @@ Instance::Instance( const Descriptor& desc, void* effectInstance )
 	_argProperties.setGetHook( kOfxInteractPropViewportSize, this );
 }
 
-Instance::~Instance()
+OfxhInteract::~OfxhInteract()
 {
 	/// call it directly incase CI failed and we should always tidy up after create instance
 	callEntry( kOfxActionDestroyInstance,  NULL );
 }
 
 /// call the entry point in the descriptor with action and the given args
-OfxStatus Instance::callEntry( const char* action, Property::Set* inArgs )
+OfxStatus OfxhInteract::callEntry( const char* action, property::OfxhSet* inArgs )
 {
 	if( _state != eFailed )
 	{
@@ -167,7 +167,7 @@ OfxStatus Instance::callEntry( const char* action, Property::Set* inArgs )
 }
 
 // do nothing
-size_t Instance::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
+size_t OfxhInteract::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
 {
 	if( name == kOfxInteractPropPixelScale )
 	{
@@ -182,21 +182,21 @@ size_t Instance::getDimension( const std::string& name ) const OFX_EXCEPTION_SPE
 		return 2;
 	}
 	else
-		throw Property::Exception( kOfxStatErrValue );
+		throw property::OfxhException( kOfxStatErrValue );
 }
 
 // do nothing function
-void Instance::reset( const std::string& name ) OFX_EXCEPTION_SPEC
+void OfxhInteract::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 {
 	// no-op
 }
 
-double Instance::getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
+double OfxhInteract::getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
 {
 	if( name == kOfxInteractPropPixelScale )
 	{
 		if( index >= 2 )
-			throw Property::Exception( kOfxStatErrBadIndex );
+			throw property::OfxhException( kOfxStatErrBadIndex );
 		double first[2];
 		getPixelScale( first[0], first[1] );
 		return first[index];
@@ -204,7 +204,7 @@ double Instance::getDoubleProperty( const std::string& name, int index ) const O
 	else if( name == kOfxInteractPropBackgroundColour )
 	{
 		if( index >= 3 )
-			throw Property::Exception( kOfxStatErrBadIndex );
+			throw property::OfxhException( kOfxStatErrBadIndex );
 		double first[3];
 		getBackgroundColour( first[0], first[1], first[2] );
 		return first[index];
@@ -212,40 +212,40 @@ double Instance::getDoubleProperty( const std::string& name, int index ) const O
 	else if( name == kOfxInteractPropViewportSize )
 	{
 		if( index >= 2 )
-			throw Property::Exception( kOfxStatErrBadIndex );
+			throw property::OfxhException( kOfxStatErrBadIndex );
 		double first[2];
 		getViewportSize( first[0], first[1] );
 		return first[index];
 	}
 	else
-		throw Property::Exception( kOfxStatErrUnknown );
+		throw property::OfxhException( kOfxStatErrUnknown );
 }
 
-void Instance::getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC
+void OfxhInteract::getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC
 {
 	if( name == kOfxInteractPropPixelScale )
 	{
 		if( n > 2 )
-			throw Property::Exception( kOfxStatErrBadIndex );
+			throw property::OfxhException( kOfxStatErrBadIndex );
 		getPixelScale( first[0], first[1] );
 	}
 	else if( name == kOfxInteractPropBackgroundColour )
 	{
 		if( n > 3 )
-			throw Property::Exception( kOfxStatErrBadIndex );
+			throw property::OfxhException( kOfxStatErrBadIndex );
 		getBackgroundColour( first[0], first[1], first[2] );
 	}
 	else if( name == kOfxInteractPropViewportSize )
 	{
 		if( n > 2 )
-			throw Property::Exception( kOfxStatErrBadIndex );
+			throw property::OfxhException( kOfxStatErrBadIndex );
 		getViewportSize( first[0], first[1] );
 	}
 	else
-		throw Property::Exception( kOfxStatErrUnknown );
+		throw property::OfxhException( kOfxStatErrUnknown );
 }
 
-void Instance::getSlaveToParam( std::vector<std::string>& params ) const
+void OfxhInteract::getSlaveToParam( std::vector<std::string>& params ) const
 {
 	int nSlaveParams = _properties.getDimension( kOfxInteractPropSlaveToParam );
 
@@ -257,7 +257,7 @@ void Instance::getSlaveToParam( std::vector<std::string>& params ) const
 }
 
 /// initialise the argument properties
-void Instance::initArgProp( OfxTime          time,
+void OfxhInteract::initArgProp( OfxTime          time,
                             const OfxPointD& renderScale )
 {
 	double pixelScale[2];
@@ -270,7 +270,7 @@ void Instance::initArgProp( OfxTime          time,
 	_argProperties.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 }
 
-void Instance::setPenArgProps( const OfxPointD& penPos,
+void OfxhInteract::setPenArgProps( const OfxPointD& penPos,
                                const OfxPointI& penPosViewport,
                                double           pressure )
 {
@@ -281,14 +281,14 @@ void Instance::setPenArgProps( const OfxPointD& penPos,
 	_argProperties.setDoubleProperty( kOfxInteractPropPenPressure, pressure );
 }
 
-void Instance::setKeyArgProps( int   key,
+void OfxhInteract::setKeyArgProps( int   key,
                                char* keyString )
 {
 	_argProperties.setIntProperty( kOfxPropKeySym, key );
 	_argProperties.setStringProperty( kOfxPropKeyString, keyString );
 }
 
-OfxStatus Instance::createInstanceAction()
+OfxStatus OfxhInteract::createInstanceAction()
 {
 	OfxStatus stat = callEntry( kOfxActionCreateInstance, NULL );
 
@@ -303,14 +303,14 @@ OfxStatus Instance::createInstanceAction()
 	return stat;
 }
 
-OfxStatus Instance::drawAction( OfxTime          time,
+OfxStatus OfxhInteract::drawAction( OfxTime          time,
                                 const OfxPointD& renderScale )
 {
 	initArgProp( time, renderScale );
 	return callEntry( kOfxInteractActionDraw, &_argProperties );
 }
 
-OfxStatus Instance::penMotionAction( OfxTime          time,
+OfxStatus OfxhInteract::penMotionAction( OfxTime          time,
                                      const OfxPointD& renderScale,
                                      const OfxPointD& penPos,
                                      const OfxPointI& penPosViewport,
@@ -321,7 +321,7 @@ OfxStatus Instance::penMotionAction( OfxTime          time,
 	return callEntry( kOfxInteractActionPenMotion, &_argProperties );
 }
 
-OfxStatus Instance::penUpAction( OfxTime          time,
+OfxStatus OfxhInteract::penUpAction( OfxTime          time,
                                  const OfxPointD& renderScale,
                                  const OfxPointD& penPos,
                                  const OfxPointI& penPosViewport,
@@ -332,7 +332,7 @@ OfxStatus Instance::penUpAction( OfxTime          time,
 	return callEntry( kOfxInteractActionPenUp, &_argProperties );
 }
 
-OfxStatus Instance::penDownAction( OfxTime          time,
+OfxStatus OfxhInteract::penDownAction( OfxTime          time,
                                    const OfxPointD& renderScale,
                                    const OfxPointD& penPos,
                                    const OfxPointI& penPosViewport,
@@ -343,7 +343,7 @@ OfxStatus Instance::penDownAction( OfxTime          time,
 	return callEntry( kOfxInteractActionPenDown, &_argProperties );
 }
 
-OfxStatus Instance::keyDownAction( OfxTime          time,
+OfxStatus OfxhInteract::keyDownAction( OfxTime          time,
                                    const OfxPointD& renderScale,
                                    int              key,
                                    char*            keyString )
@@ -353,7 +353,7 @@ OfxStatus Instance::keyDownAction( OfxTime          time,
 	return callEntry( kOfxInteractActionKeyDown, &_argProperties );
 }
 
-OfxStatus Instance::keyUpAction( OfxTime          time,
+OfxStatus OfxhInteract::keyUpAction( OfxTime          time,
                                  const OfxPointD& renderScale,
                                  int              key,
                                  char*            keyString )
@@ -363,7 +363,7 @@ OfxStatus Instance::keyUpAction( OfxTime          time,
 	return callEntry( kOfxInteractActionKeyUp, &_argProperties );
 }
 
-OfxStatus Instance::keyRepeatAction( OfxTime          time,
+OfxStatus OfxhInteract::keyRepeatAction( OfxTime          time,
                                      const OfxPointD& renderScale,
                                      int              key,
                                      char*            keyString )
@@ -373,14 +373,14 @@ OfxStatus Instance::keyRepeatAction( OfxTime          time,
 	return callEntry( kOfxInteractActionKeyRepeat, &_argProperties );
 }
 
-OfxStatus Instance::gainFocusAction( OfxTime          time,
+OfxStatus OfxhInteract::gainFocusAction( OfxTime          time,
                                      const OfxPointD& renderScale )
 {
 	initArgProp( time, renderScale );
 	return callEntry( kOfxInteractActionGainFocus, &_argProperties );
 }
 
-OfxStatus Instance::loseFocusAction( OfxTime          time,
+OfxStatus OfxhInteract::loseFocusAction( OfxTime          time,
                                      const OfxPointD& renderScale )
 {
 	initArgProp( time, renderScale );
@@ -394,7 +394,7 @@ OfxStatus Instance::loseFocusAction( OfxTime          time,
 
 static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 {
-	interact::Instance* interactInstance = reinterpret_cast<interact::Instance*>( handle );
+	interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
 
 	if( interactInstance )
 		return interactInstance->swapBuffers();
@@ -404,7 +404,7 @@ static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 
 static OfxStatus interactRedraw( OfxInteractHandle handle )
 {
-	interact::Instance* interactInstance = reinterpret_cast<interact::Instance*>( handle );
+	interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
 
 	if( interactInstance )
 		return interactInstance->redraw();
@@ -414,7 +414,7 @@ static OfxStatus interactRedraw( OfxInteractHandle handle )
 
 static OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle* property )
 {
-	interact::Base* interact = reinterpret_cast<interact::Base*>( handle );
+	interact::OfxhBase* interact = reinterpret_cast<interact::OfxhBase*>( handle );
 
 	if( interact )
 	{

@@ -46,14 +46,14 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-class ImageEffectPluginCache;
+class OfxhImageEffectPluginCache;
 
 /// subclass of Plugin representing an ImageEffect plugin.  used to store API-specific
 /// data
-class ImageEffectPlugin : public Plugin
+class OfxhImageEffectPlugin : public OfxhPlugin
 {
 
-ImageEffectPluginCache& _pc;
+OfxhImageEffectPluginCache& _pc;
 
 // this comes off Descriptor's property set after a describe
 // context independent
@@ -66,13 +66,13 @@ ContextMap _contexts;
 typedef std::set<std::string> ContextSet;
 ContextSet _knownContexts;
 
-std::auto_ptr<PluginHandle> _pluginHandle;
+std::auto_ptr<OfxhPluginHandle> _pluginHandle;
 
 public:
-	ImageEffectPlugin( ImageEffectPluginCache& pc, PluginBinary* pb, int pi, OfxPlugin* pl );
+	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl );
 
-	ImageEffectPlugin( ImageEffectPluginCache& pc,
-	                   PluginBinary*           pb,
+	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
+	                   OfxhPluginBinary*           pb,
 	                   int                     pi,
 	                   const std::string&      api,
 	                   int                     apiVersion,
@@ -81,10 +81,10 @@ public:
 	                   int                     pluginMajorVersion,
 	                   int                     pluginMinorVersion );
 
-	virtual ~ImageEffectPlugin();
+	virtual ~OfxhImageEffectPlugin();
 
 	/// @return the API handler this plugin was constructed by
-	APICache::PluginAPICacheI& getApiHandler();
+	APICache::OfxhPluginAPICacheI& getApiHandler();
 
 	/// @brief get the base image effect descriptor
 	Descriptor& getDescriptor();
@@ -104,8 +104,8 @@ public:
 	const ContextSet& getContexts() const;
 	bool supportsContext( const std::string& context ) const;
 
-	PluginHandle* getPluginHandle() { return _pluginHandle.get(); }
-	const PluginHandle* getPluginHandle() const { return _pluginHandle.get(); }
+	OfxhPluginHandle* getPluginHandle() { return _pluginHandle.get(); }
+	const OfxhPluginHandle* getPluginHandle() const { return _pluginHandle.get(); }
 
 	void loadAndDescribeActions();
 
@@ -121,16 +121,16 @@ private:
 	Descriptor* describeInContextAction( const std::string& context );
 };
 
-class MajorPlugin
+class OfxhMajorPlugin
 {
 std::string _id;
 int _major;
 
 public:
-	MajorPlugin( const std::string& id, int major ) : _id( id ),
+	OfxhMajorPlugin( const std::string& id, int major ) : _id( id ),
 		_major( major ) {}
 
-	MajorPlugin( ImageEffectPlugin* iep ) : _id( iep->getIdentifier() ),
+	OfxhMajorPlugin( OfxhImageEffectPlugin* iep ) : _id( iep->getIdentifier() ),
 		_major( iep->getVersionMajor() ) {}
 
 	const std::string& getId() const
@@ -143,7 +143,7 @@ public:
 		return _major;
 	}
 
-	bool operator<( const MajorPlugin& other ) const
+	bool operator<( const OfxhMajorPlugin& other ) const
 	{
 		if( _id < other._id )
 			return true;
@@ -160,62 +160,62 @@ public:
 };
 
 /// implementation of the specific Image Effect handler API cache.
-class ImageEffectPluginCache : public APICache::PluginAPICacheI
+class OfxhImageEffectPluginCache : public APICache::OfxhPluginAPICacheI
 {
 public:
 private:
 	/// all plugins
-	std::vector<ImageEffectPlugin*> _plugins;
+	std::vector<OfxhImageEffectPlugin*> _plugins;
 
 	/// latest version of each plugin by ID
-	std::map<std::string, ImageEffectPlugin*> _pluginsByID;
+	std::map<std::string, OfxhImageEffectPlugin*> _pluginsByID;
 
 	/// latest minor version of each plugin by (ID,major)
-	std::map<MajorPlugin, ImageEffectPlugin*> _pluginsByIDMajor;
+	std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*> _pluginsByIDMajor;
 
 	/// xml parsing state
-	ImageEffectPlugin* _currentPlugin;
+	OfxhImageEffectPlugin* _currentPlugin;
 	/// xml parsing state
-	Property::Property* _currentProp;
+	property::OfxhProperty* _currentProp;
 
 	Descriptor* _currentContext;
-	attribute::ParamDescriptor* _currentParam;
-	attribute::ClipImageDescriptor* _currentClip;
+	attribute::OfxhParamDescriptor* _currentParam;
+	attribute::OfxhClipImageDescriptor* _currentClip;
 
 	/// pointer to our image effect host
 	tuttle::host::ofx::imageEffect::ImageEffectHost* _host;
 
 public:
-	explicit ImageEffectPluginCache( tuttle::host::ofx::imageEffect::ImageEffectHost& host );
-	virtual ~ImageEffectPluginCache();
+	explicit OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::ImageEffectHost& host );
+	virtual ~OfxhImageEffectPluginCache();
 
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
 	/// pick the highest found version.
-	ImageEffectPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
+	OfxhImageEffectPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
 
 	/// get the plugin by label.  vermaj and vermin can be specified.  if they are not it will
 	/// pick the highest found version.
-	ImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 );
+	OfxhImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 );
 
 	tuttle::host::ofx::imageEffect::ImageEffectHost* getHost()
 	{
 		return _host;
 	}
 
-	const std::vector<ImageEffectPlugin*>& getPlugins() const;
+	const std::vector<OfxhImageEffectPlugin*>& getPlugins() const;
 
-	const std::map<std::string, ImageEffectPlugin*>& getPluginsByID() const;
+	const std::map<std::string, OfxhImageEffectPlugin*>& getPluginsByID() const;
 
-	const std::map<MajorPlugin, ImageEffectPlugin*>& getPluginsByIDMajor() const
+	const std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*>& getPluginsByIDMajor() const
 	{
 		return _pluginsByIDMajor;
 	}
 
 	/// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
-	void loadFromPlugin( Plugin* p ) const;
+	void loadFromPlugin( OfxhPlugin* p ) const;
 
 	/// handler for preparing to read in a chunk of XML from the cache, set up context to do this
-	void beginXmlParsing( Plugin* p );
+	void beginXmlParsing( OfxhPlugin* p );
 
 	/// XML handler : element begins (everything is stored in elements and attributes)
 	virtual void xmlElementBegin( const std::string& el, std::map<std::string, std::string> map );
@@ -226,17 +226,17 @@ public:
 
 	virtual void endXmlParsing();
 
-	virtual void saveXML( Plugin* ip, std::ostream& os ) const;
+	virtual void saveXML( OfxhPlugin* ip, std::ostream& os ) const;
 
-	void confirmPlugin( Plugin* p );
+	void confirmPlugin( OfxhPlugin* p );
 
-	virtual bool pluginSupported( Plugin* p, std::string& reason ) const;
+	virtual bool pluginSupported( OfxhPlugin* p, std::string& reason ) const;
 
-	Plugin* newPlugin( PluginBinary* pb,
+	OfxhPlugin* newPlugin( OfxhPluginBinary* pb,
 	                   int           pi,
 	                   OfxPlugin*    pl );
 
-	Plugin* newPlugin( PluginBinary*      pb,
+	OfxhPlugin* newPlugin( OfxhPluginBinary*      pb,
 	                   int                pi,
 	                   const std::string& api,
 	                   int                apiVersion,

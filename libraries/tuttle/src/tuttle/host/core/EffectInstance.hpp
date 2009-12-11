@@ -46,7 +46,7 @@ protected:
 	OfxPointD _frameRange;
 
 public:
-	EffectInstance( tuttle::host::ofx::imageEffect::ImageEffectPlugin* plugin,
+	EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
 	                tuttle::host::ofx::imageEffect::Descriptor&        desc,
 	                const std::string&                                 context );
 
@@ -69,7 +69,7 @@ public:
 	const std::string& getDefaultOutputFielding() const;
 
 	/// make a clip
-	tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( const tuttle::host::ofx::attribute::ClipImageDescriptor& descriptor );
+	tuttle::host::ofx::attribute::OfxhClipImage* newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
 	/// vmessage
 	OfxStatus vmessage( const char* type,
@@ -130,7 +130,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	tuttle::host::ofx::attribute::ParamInstance* newParam( tuttle::host::ofx::attribute::ParamDescriptor& Descriptor );
+	tuttle::host::ofx::attribute::OfxhParam* newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& Descriptor );
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///

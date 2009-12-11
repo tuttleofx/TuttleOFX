@@ -1,5 +1,6 @@
 #include "Graph.hpp"
-#include <tuttle/host/ofx/OfxhClipImage.hpp>
+#include "ProcessGraph.hpp"
+#include <tuttle/host/ofx/ofxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <iostream>
 #include <sstream>
@@ -17,6 +18,7 @@ Graph::Graph( const Graph& other )
 , _nodes(other._nodes)
 , _instanceCount(other._instanceCount)
 {
+	relink();
 }
 
 Graph::~Graph()
@@ -25,7 +27,7 @@ Graph::~Graph()
 
 Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicError )
 {
-	ofx::imageEffect::ImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
+	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 
 	if( !plug )
 		throw exception::LogicError( "Plugin not found. plug ("+id+")" );
@@ -67,6 +69,16 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 	return *node;
 }
 
+void Graph::relink()
+{
+	InternalGraph::vertex_range_t vrange = _graph.getVertices();
+	for( InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
+	{
+		graph::Vertex & v = _graph.instance( *it );
+		v.setProcessNode( &_nodes.at(v.processNode()->getName()) );
+	}
+}
+
 void Graph::addToGraph( EffectInstance& node )
 {
 	graph::Vertex v( node.getName(), node );
@@ -89,8 +101,8 @@ void Graph::deleteNode( const EffectInstance& node ) throw( exception::LogicErro
 
 void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicError )
 {
-	const ofx::attribute::ClipImageInstanceSet::ClipImageVector& inClips = in.getClipsByOrder();
-	const ofx::attribute::ClipImageInstanceSet::ClipImageMap& inClipsMap = in.getClips();
+	const ofx::attribute::OfxhClipImageSet::ClipImageVector& inClips = in.getClipsByOrder();
+	const ofx::attribute::OfxhClipImageSet::ClipImageMap& inClipsMap = in.getClips();
 
 	const ofx::attribute::AttributeInstance* inAttr;
 
@@ -100,7 +112,7 @@ void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicEr
 	}
 	else if( inClips.size() > 1 )
 	{
-		const ofx::attribute::ClipImageInstanceSet::ClipImageMap::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
+		const ofx::attribute::OfxhClipImageSet::ClipImageMap::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
 		if( it != inClipsMap.end() )
 		{
 			inAttr = it->second;
@@ -130,19 +142,21 @@ void Graph::unconnectNode( const EffectInstance& node ) throw( exception::LogicE
 
 }
 
+void Graph::compute(const std::list<std::string>& nodes, const int first, const int last)
+{
+	ProcessGraph process(*this);
+	for( int t = first; t<last; ++t )
+	{
+		process.compute( nodes, t );
+	}
+}
+
 void Graph::dumpToStdOut()
 {
 	std::cout
 	<< "graph dump" << std::endl
 	<< "\tnode count: " << "-" << std::endl;
 	_graph.dumpToStdOut();
-
-	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "testDOTExport.dot" );
-}
-
-void Graph::compute()
-{
-	_graph.test_dfs();
 }
 
 }
