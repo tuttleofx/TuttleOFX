@@ -10,10 +10,9 @@ import testing ;
 
 project 
     : requirements	<define>BOOST_TEST_MAIN
-    				<include>.
 					<threading>multi
     ;
-    
+
 use-project /tuttle 	: ../.. ;
 
 alias dependencies

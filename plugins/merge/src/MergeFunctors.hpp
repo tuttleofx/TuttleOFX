@@ -399,6 +399,8 @@ template <typename Pixel>
 struct FunctorATop
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template<typename Channel>
@@ -414,6 +416,8 @@ template <typename Pixel>
 struct FunctorConjointOver
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -434,6 +438,8 @@ template <typename Pixel>
 struct FunctorDisjointOver
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -453,6 +459,8 @@ template <typename Pixel>
 struct FunctorIn
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -467,6 +475,8 @@ template <typename Pixel>
 struct FunctorMask
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -481,6 +491,8 @@ template <typename Pixel>
 struct FunctorMatte
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -497,6 +509,8 @@ template <typename Pixel>
 struct FunctorOut
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -513,6 +527,8 @@ template <typename Pixel>
 struct FunctorOver
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -527,6 +543,8 @@ template <typename Pixel>
 struct FunctorStencil
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -541,6 +559,8 @@ template <typename Pixel>
 struct FunctorUnder
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
@@ -555,6 +575,8 @@ template <typename Pixel>
 struct FunctorXOR
 	: public boost::gil::merge_functor<Pixel, fun_op_alpha_t>
 {
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::a;
+	using boost::gil::merge_functor<Pixel, fun_op_alpha_t>::b;
 	//@todo: this functor only work on floats, on int types it
 	//       needs to be specialized
 	template <typename Channel>
