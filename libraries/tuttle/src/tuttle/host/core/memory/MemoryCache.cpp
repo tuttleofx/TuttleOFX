@@ -11,13 +11,6 @@ bool MemoryCache::Key::operator<(const Key&other) const {
 	return _pluginName < other._pluginName;
 }
 
-MemoryCache::MemoryCache(IMemoryPool& pool) : _pool(pool)
-{
-}
-
-MemoryCache::~MemoryCache() {
-}
-
 void MemoryCache::put(const std::string& pluginName, const double &time,IPoolDataPtr pData)
 {
 	_map[Key(pluginName, time)] = pData;

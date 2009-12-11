@@ -13,12 +13,12 @@ namespace core {
 
 class MemoryCache : public IMemoryCache
 {
+	MemoryCache( const MemoryCache& pool );
 public:
-	MemoryCache( IMemoryPool& pool );
-	~MemoryCache();
+	MemoryCache(){}
+	~MemoryCache(){}
 
 private:
-	IMemoryPool& _pool;
 	struct Key{
 		Key(const std::string& name, const double &time) :
 			_pluginName(name),

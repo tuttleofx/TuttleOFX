@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 BOOST_AUTO_TEST_CASE( memoryCache)
 {
 	MemoryPool pool;
-	MemoryCache cache(pool);
+	MemoryCache cache;
 
 	// checking initial state
 	BOOST_CHECK_EQUAL( true , cache.empty() );
