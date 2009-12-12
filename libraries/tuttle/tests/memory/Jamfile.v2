@@ -13,12 +13,14 @@ project
 					<threading>multi
     ;
 
-use-project /tuttle 	: ../.. ;
+path-constant MEMORY_PATH : ../../src/tuttle/host/core/memory ;
 
 alias dependencies
     : 
 		/boost//unit_test_framework
-		/tuttle//tuttlehost/<link>static
+		[ glob $(MEMORY_PATH)/*.cpp ]
+    :
+    		<include>$(MEMORY_PATH)
     ; 
 
 run   main.cpp dependencies ;
