@@ -191,6 +191,7 @@ protected:
 
 public:
 	explicit Suite( OfxStatus s ) : std::runtime_error( mapStatusToString( _status ) ), _status( s ) {}
+	explicit Suite( OfxStatus s, const string &what ) : std::runtime_error( mapStatusToString( _status )+" : "+what ), _status( s ) {}
 	OfxStatus status( void ) { return _status; }
 	operator OfxStatus() { return _status; }
 };
@@ -199,14 +200,14 @@ public:
 class PropertyUnknownToHost : public std::runtime_error
 {
 public:
-	explicit PropertyUnknownToHost( const char* what );
+	explicit PropertyUnknownToHost( const string &what );
 };
 
 /** @brief exception indicating that the host thinks a property has an illegal value */
 class PropertyValueIllegalToHost : public std::invalid_argument
 {
 public:
-	explicit PropertyValueIllegalToHost( const char* what );
+	explicit PropertyValueIllegalToHost( const string &what );
 };
 
 /** @brief exception indicating a request for a named thing exists (eg: a param), but is of the wrong type, should never make it back to the main entry
@@ -215,7 +216,7 @@ public:
 class TypeRequest : public std::logic_error
 {
 public:
-	explicit TypeRequest( const char* what );
+	explicit TypeRequest( const string &what );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +228,7 @@ public:
 class HostInadequate : public std::runtime_error
 {
 public:
-	explicit HostInadequate( const char* what );
+	explicit HostInadequate( const string &what );
 };
 
 }; // end of Exception namespace
@@ -236,7 +237,7 @@ public:
 void throwSuiteStatusException( OfxStatus stat )
 	throw( OFX::Exception::Suite, std::bad_alloc );
 
-void throwHostMissingSuiteException( std::string name )
+void throwHostMissingSuiteException( const std::string &name )
 	throw( OFX::Exception::Suite );
 
 /** @brief This struct is used to return an identifier for the plugin by the function @ref OFX:Plugin::getPlugin.
