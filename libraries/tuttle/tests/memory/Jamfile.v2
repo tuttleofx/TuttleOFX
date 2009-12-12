@@ -1,6 +1,6 @@
 ###############################################################################
 ## Tests for Tuttle library
-## author Nicolas Rondaud
+## author Guillaume Chatelet
 ###############################################################################
 import testing ;
 
@@ -8,19 +8,18 @@ import testing ;
 # compile the test and run it
 ###############################################################################
 
+path-constant TUTTLE_INCLUDE : ../../src ;
+path-constant SRC : $(TUTTLE_INCLUDE)/tuttle/host/core/memory ;
+
 project 
     : requirements	<define>BOOST_TEST_MAIN
-					<threading>multi
+ 	   		<include>$(TUTTLE_INCLUDE)
     ;
-
-path-constant MEMORY_PATH : ../../src/tuttle/host/core/memory ;
 
 alias dependencies
     : 
 		/boost//unit_test_framework
-		[ glob $(MEMORY_PATH)/*.cpp ]
-    :
-    		<include>$(MEMORY_PATH)
+		[ glob $(SRC)/*.cpp ]
     ; 
 
 run   main.cpp dependencies ;
