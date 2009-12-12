@@ -1,0 +1,11 @@
+--- Jamfile.v2	2009-12-12 18:38:45.000000000 +0100
++++ Jamfile.v2.new	2009-12-12 18:40:36.000000000 +0100
+@@ -9,6 +9,8 @@
+     : requirements <link>shared:<define>BOOST_TEST_DYN_LINK=1
+                    <toolset>msvc:<asynch-exceptions>on
+                    <toolset>borland:<cxxflags>-w-8080
++                   # Disable Warning about "long long" in gcc's stdlib 
++                   <toolset>gcc:<cxxflags>-Wno-long-long 
+                    # Disable Warning about boost::noncopyable not being exported
+                    <link>shared,<toolset>msvc:<cxxflags>-wd4275
+                    <toolset>msvc:<cxxflags>-wd4671

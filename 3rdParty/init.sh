@@ -25,6 +25,8 @@ uncompress(){
 echo ">>> GETTING Boost"
 getAndUncompress $BOOST_URL $BOOST_ARCHIVE
 ln -s $BOOST_FILENAME boost
+echo ">>> PATCHING Boost Unit Testing Framework for $BOOST_FILENAME"
+patch boost/libs/test/build/Jamfile.v2 boost_unit_testing_framework.patch
 
 echo ">>> BUILDING Boost JAM"
 CURRENT_DIR=`pwd`
