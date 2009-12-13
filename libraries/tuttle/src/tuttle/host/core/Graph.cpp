@@ -12,14 +12,6 @@ namespace core {
 Graph::Graph()
 {}
 
-Graph::Graph( const Graph& other )
-	: _graph( other._graph ),
-	_nodes( other._nodes ),
-	_instanceCount( other._instanceCount )
-{
-	relink();
-}
-
 Graph::~Graph()
 {}
 
@@ -32,7 +24,7 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 
 	plug->loadAndDescribeActions(); ///< @todo tuttle keep here or move inside getImageEffectPluginById
 
-	ofx::imageEffect::Instance* plugInst = NULL;
+	ofx::imageEffect::OfxhImageEffect* plugInst = NULL;
 	if( plug->supportsContext( kOfxImageEffectContextFilter ) )
 	{
 		plugInst = plug->createInstance( kOfxImageEffectContextFilter, NULL );
@@ -66,16 +58,6 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 	return *node;
 }
 
-void Graph::relink()
-{
-	InternalGraph::vertex_range_t vrange = _graph.getVertices();
-
-	for( InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
-	{
-		graph::Vertex& v = _graph.instance( *it );
-		v.setProcessNode( &_nodes.at( v.processNode()->getName() ) );
-	}
-}
 
 void Graph::addToGraph( EffectInstance& node )
 {
@@ -137,14 +119,10 @@ void Graph::connect( const Node& out, const Node& in, const ofx::attribute::Attr
 void Graph::unconnectNode( const EffectInstance& node ) throw( exception::LogicError )
 {}
 
-void Graph::compute( const std::list<std::string>& nodes, const int first, const int last )
+void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
 	ProcessGraph process( *this );
-
-	for( int t = first; t < last; ++t )
-	{
-		process.compute( nodes, t );
-	}
+	process.compute( nodes, tBegin, tEnd );
 }
 
 void Graph::dumpToStdOut()

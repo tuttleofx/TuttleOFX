@@ -13,10 +13,15 @@ public:
 	ProcessGraph( const Graph& graph );
 	~ProcessGraph();
 
-	void compute( const std::list<std::string>& nodes, const int t );
+	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 
 private:
-	const Graph _graph;
+	void relink();
+
+	Graph::InternalGraph _graph;
+	Graph::NodeMap _nodes;
+	std::map<std::string, int> _instanceCount;
+
 };
 
 }

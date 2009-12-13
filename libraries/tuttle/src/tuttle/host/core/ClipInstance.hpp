@@ -82,6 +82,7 @@ private:
 
 /**
  *
+ *
  */
 class ClipImgInstance : public tuttle::host::ofx::attribute::OfxhClipImage
 {
@@ -138,6 +139,7 @@ public:
 	 */
 	const std::string& getPremult() const { return _effect.getOutputPreMultiplication(); }
 
+
 	/**
 	 * @brief Frame Rate
 	 * The frame rate of a clip or instance's project.
@@ -171,12 +173,14 @@ public:
 		return v;
 	}
 
+
+	const bool getConnected() const { return _isConnected; }
+
 	/**
 	 * @brief Connected
 	 * Says whether the clip is actually connected at the moment.
 	 */
-	const bool getConnected() const                   { return _isConnected; }
-	void       setConnected( const bool isConnected ) { _isConnected = isConnected; }
+	void setConnected( const bool isConnected ) { _isConnected = isConnected; }
 
 	/**
 	 * @brief Unmapped Frame Rate
@@ -232,3 +236,4 @@ public:
 }
 
 #endif
+

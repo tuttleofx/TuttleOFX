@@ -40,15 +40,15 @@ namespace host {
 namespace core {
 
 class EffectInstance : public ProcessNode,
-	public tuttle::host::ofx::imageEffect::Instance
+	public tuttle::host::ofx::imageEffect::OfxhImageEffect
 {
 protected:
 	OfxPointD _frameRange;
 
 public:
 	EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                tuttle::host::ofx::imageEffect::Descriptor&            desc,
-	                const std::string&                                     context );
+	                tuttle::host::ofx::imageEffect::OfxhDescriptor& desc,
+	                const std::string& context );
 
 	EffectInstance( const EffectInstance& other );
 
@@ -56,13 +56,50 @@ public:
 
 	bool operator==( const EffectInstance& other ) const;
 
-	const std::string& getName() const { return tuttle::host::ofx::imageEffect::Base::getName(); }
+	const EProcessNodeType getProcessNodeType() const { return eImageEffect; }
+
+	void begin(const ProcessOptions & processOptions)
+	{
+		getClipPreferences();
+		TCOUT_INFOS;
+		beginRenderAction(	processOptions._startFrame
+						,	processOptions._endFrame
+						,	processOptions._step
+						,	processOptions._interactive
+						,	processOptions._renderScale);
+		TCOUT_INFOS;
+	}
+
+	void preProcess(const ProcessOptions & processOptions){
+
+	}
+
+	void process(const ProcessOptions & processOptions)
+	{
+		renderAction(	processOptions._time
+					,	processOptions._field
+					,	processOptions._renderRoI
+					,	processOptions._renderScale);
+	}
+
+	void postProcess(const ProcessOptions & processOptions){}
+
+	void end(const ProcessOptions & processOptions)
+	{
+		endRenderAction(	processOptions._startFrame
+						,	processOptions._endFrame
+						,	processOptions._step
+						,	processOptions._interactive
+						,	processOptions._renderScale);
+	}
+
+	const std::string& getName() const { return tuttle::host::ofx::imageEffect::OfxhBase::getName(); }
 
 	void dumpToStdOut() const;
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
-	// overridden for ImageEffect::Instance
+	// overridden for imageEffect::OfxhInstance
 
 	/// get default output fielding. This is passed into the clip prefs action
 	/// and  might be mapped (if the host allows such a thing)

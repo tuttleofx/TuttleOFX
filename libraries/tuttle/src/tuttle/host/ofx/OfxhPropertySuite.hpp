@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
 
 #ifndef WINDOWS
  #define OFX_EXCEPTION_SPEC throw (tuttle::host::ofx::property::OfxhException)
@@ -131,6 +132,8 @@ inline const std::string mapTypeEnumToString( const TypeEnum& e )
 			return "eString";
 		case ePointer:
 			return "ePointer";
+		default:
+			throw std::invalid_argument("bad value for TypeEnum" );
 	}
 }
 

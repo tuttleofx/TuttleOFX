@@ -50,6 +50,7 @@ int main( int argc, char** argv )
 			COUT_VAR( pluginW );
 			return 1;
 		}
+
 		typedef boost::ptr_vector< tuttle::host::core::EffectInstance > EffectInstVector;
 		EffectInstVector vPluginsInst;
 		tuttle::host::core::EffectInstance* ofxinstR = dynamic_cast< tuttle::host::core::EffectInstance* >( pluginR->createInstance( kOfxImageEffectContextGenerator, NULL ) );
@@ -61,7 +62,6 @@ int main( int argc, char** argv )
 		vPluginsInst.push_back( ofxinstR );
 		vPluginsInst.push_back( ofxinstI );
 		vPluginsInst.push_back( ofxinstW );
-
 
 		// Initialize variables
 		if( vPluginsInst.size() > 0 )

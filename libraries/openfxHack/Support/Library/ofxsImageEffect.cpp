@@ -1614,7 +1614,7 @@ ImageEffect* retrieveImageEffectPointer( OfxImageEffectHandle handle )
 	if( instance == NULL )
 	{
 		// need to throw something here
-		std::cerr << "Can't retrieve ImageEffecy pointeur from ofxImageEffectHandle. (property: " << kOfxPropInstanceData << " is NULL)." << std::endl;
+		std::cerr << "Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: " << kOfxPropInstanceData << " is NULL)." << std::endl;
 		std::cerr << "The plugin will crash..." << std::endl;
 		// OFX_TODO Exception !!!!!!!!!
 	}

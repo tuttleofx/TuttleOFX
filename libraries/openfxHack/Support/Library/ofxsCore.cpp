@@ -34,7 +34,6 @@
  *
  */
 #include "./ofxsSupportPrivate.h"
-#include <iostream>
 
 namespace OFX {
 /** @brief Throws an @ref OFX::Exception depending on the status flag passed in */
@@ -52,15 +51,13 @@ void throwSuiteStatusException( OfxStatus stat ) throw( OFX::Exception::Suite, s
 			throw std::bad_alloc();
 
 		default:
-			std::cout << "Threw suite exception!" << std::endl;
-			throw OFX::Exception::Suite( stat );
+			throw OFX::Exception::Suite( stat , "Threw suite exception!" );
 	}
 }
 
-void throwHostMissingSuiteException( std::string name ) throw( OFX::Exception::Suite )
+void throwHostMissingSuiteException( const std::string &name ) throw( OFX::Exception::Suite )
 {
-	std::cout << "Threw suite exception! Host missing '" << name << "' suite." << std::endl;
-	throw OFX::Exception::Suite( kOfxStatErrUnsupported );
+	throw OFX::Exception::Suite( kOfxStatErrUnsupported, "Threw suite exception! Host missing '" + name + "' suite.");
 }
 
 /** @brief maps status to a string */
