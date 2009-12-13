@@ -123,6 +123,8 @@ public:
 	virtual ~OfxhClipImage() {}
 
 	virtual OfxhClipImage* clone() const = 0;
+	virtual std::string getFullName() const = 0;
+	virtual std::string getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
 
 	/**
 	 * get a handle on the clip descriptor for the C api
@@ -204,7 +206,10 @@ public:
 	 *     - kOfxBitDepthShort
 	 *     - kOfxBitDepthFloat
 	 */
-	virtual const std::string& getUnmappedBitDepth() const = 0;
+	virtual const std::string& getUnmappedBitDepth() const //= 0;
+	{
+		return getProperties().getStringProperty( kOfxImageClipPropUnmappedPixelDepth );
+	}
 
 	/** Get the Raw Unmapped Components from the host
 	 *
@@ -213,7 +218,10 @@ public:
 	 *      - kOfxImageComponentRGBA
 	 *      - kOfxImageComponentAlpha
 	 */
-	virtual const std::string& getUnmappedComponents() const = 0;
+	virtual const std::string& getUnmappedComponents() const //= 0;
+	{
+		return getProperties().getStringProperty( kOfxImageClipPropUnmappedComponents );
+	}
 
 	/** PreMultiplication -
 	 *
@@ -221,19 +229,30 @@ public:
 	 *  kOfxImagePreMultiplied - the image is premultiplied by it's alpha
 	 *  kOfxImageUnPreMultiplied - the image is unpremultiplied
 	 */
-	virtual const std::string& getPremult() const = 0;
+	virtual const std::string& getPremult() const //= 0;
+	{
+		return getProperties().getStringProperty( kOfxImageEffectPropPreMultiplication );
+	}
+
 
 	/** Frame Rate -
 	 *
 	 *  The frame rate of a clip or instance's project.
 	 */
-	virtual double getFrameRate() const = 0;
+	virtual double getFrameRate() const //= 0;
+	{
+		return getProperties().getDoubleProperty( kOfxImageEffectPropFrameRate );
+	}
 
 	/** Frame Range (startFrame, endFrame) -
 	 *
 	 *  The frame range over which a clip has images.
 	 */
-	virtual void getFrameRange( double& startFrame, double& endFrame ) const = 0;
+	virtual void getFrameRange( double& startFrame, double& endFrame ) const //= 0;
+	{
+		startFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
+		endFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
+	}
 
 	/**  Field Order - Which spatial field occurs temporally first in a frame.
 	 *  @returns
@@ -241,32 +260,56 @@ public:
 	 *   - kOfxImageFieldLower - the clip material is fielded, with image rows 0,2,4.... occuring first in a frame
 	 *   - kOfxImageFieldUpper - the clip material is fielded, with image rows line 1,3,5.... occuring first in a frame
 	 */
-	virtual const std::string& getFieldOrder() const = 0;
+	virtual const std::string& getFieldOrder() const //= 0;
+	{
+		return getProperties().getStringProperty( kOfxImageClipPropFieldOrder );
+	}
+
+	/**
+	 * @todo tuttle: This function has been added here. Why was it not before?
+	 */
+	virtual const std::string& getFieldExtraction() const //= 0;
+	{
+		return getProperties().getStringProperty( kOfxImageClipPropFieldExtraction );
+	}
 
 	/** Connected -
 	 *
 	 *  Says whether the clip is actually connected at the moment.
 	 */
 	virtual const bool getConnected() const = 0;
+//	{
+//		return getProperties().getDoubleProperty( kOfxImageClipPropConnected );
+//	}
 
 	/** Unmapped Frame Rate -
 	 *
 	 *  The unmaped frame range over which an output clip has images.
 	 */
-	virtual const double getUnmappedFrameRate() const = 0;
+	virtual const double getUnmappedFrameRate() const //= 0;
+	{
+		return getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRate );
+	}
 
 	/** Unmapped Frame Range -
 	 *
 	 *  The unmaped frame range over which an output clip has images.
 	 */
-	virtual void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const = 0;
+	virtual void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const //= 0;
+	{
+		unmappedStartFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 0 );
+		unmappedEndFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 1 );
+	}
 
 	/** Continuous Samples -
 	 *
 	 *  0 if the images can only be sampled at discreet times (eg: the clip is a sequence of frames),
 	 *  1 if the images can only be sampled continuously (eg: the clip is infact an animating roto spline and can be rendered anywhen).
 	 */
-	virtual const bool getContinuousSamples() const = 0;
+	virtual const bool getContinuousSamples() const //= 0;
+	{
+		return getProperties().getDoubleProperty( kOfxImageClipPropContinuousSamples );
+	}
 
 	/**  override this to fill in the image at the given time.
 	 *  The bounds of the image on the image plane should be

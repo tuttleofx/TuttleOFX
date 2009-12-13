@@ -849,7 +849,6 @@ OfxStatus OfxhImageEffect::beginRenderAction( OfxTime   startFrame,
                                        bool      interactive,
                                        OfxPointD renderScale )
 {
-	TCOUT_INFOS;
 	property::OfxhPropSpec stuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
 		{ kOfxImageEffectPropFrameStep, property::eDouble, 1, true, "0" },
@@ -870,7 +869,6 @@ OfxStatus OfxhImageEffect::beginRenderAction( OfxTime   startFrame,
 
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
-	TCOUT("kOfxImageEffectActionBeginSequenceRender");
 	return mainEntry( kOfxImageEffectActionBeginSequenceRender, this->getHandle(), &inArgs, 0 );
 }
 
@@ -936,7 +934,9 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 		// generator is the extent
 		rod.x1 = rod.y1 = 0;
 		getProjectExtent( rod.x2, rod.y2 );
-		//@OFX_TODO: le mal est ici... pour les Read ca se passe par la...
+		attribute::OfxhClipImage& clip = getClip( kOfxImageEffectOutputClipName );
+		rod = clip.fetchRegionOfDefinition( time );
+		/// @todo tuttle: maybe RoD problems with Generator and Read here... to check !
 	}
 	else if( _context == kOfxImageEffectContextFilter ||
 	         _context == kOfxImageEffectContextPaint )
@@ -960,7 +960,7 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 			attribute::OfxhClipImage& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
 			attribute::OfxhClipImage& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
 			rod = clipFrom.fetchRegionOfDefinition( time );
-			rod = Union( rod, clipTo.fetchRegionOfDefinition( time ) );
+			rod = rectUnion( rod, clipTo.fetchRegionOfDefinition( time ) );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -981,7 +981,7 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 				if( !gotOne )
 					rod = clip->fetchRegionOfDefinition( time );
 				else
-					rod = Union( rod, clip->fetchRegionOfDefinition( time ) );
+					rod = rectUnion( rod, clip->fetchRegionOfDefinition( time ) );
 				gotOne = true;
 			}
 		}
@@ -1002,7 +1002,7 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 			attribute::OfxhClipImage& clip        = getClip( kOfxImageEffectSimpleSourceClipName );
 			/*attribute::ParamDoubleInstance& param = */dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
 			rod = clip.fetchRegionOfDefinition( floor( time ) );
-			rod = Union( rod, clip.fetchRegionOfDefinition( floor( time ) + 1 ) );
+			rod = rectUnion( rod, clip.fetchRegionOfDefinition( floor( time ) + 1 ) );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -1055,6 +1055,10 @@ OfxStatus OfxhImageEffect::getRegionOfDefinitionAction( OfxTime   time,
 	{
 		rod = calcDefaultRegionOfDefinition( time, renderScale );
 	}
+	else
+	{
+		throw core::exception::LogicError( "getRegionOfDefinitionAction error (plugin return "+mapStatusToString(stat)+")" );
+	}
 
 	return stat;
 }
@@ -1080,7 +1084,7 @@ OfxStatus OfxhImageEffect::getRegionOfInterestAction( OfxTime time,
 		{
 			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
 			{
-				/// @todo tuttle how to support size on generators... check if this is correct in all cases.
+				/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
 				OfxRectD roi = it->second->fetchRegionOfDefinition( time );
 				rois[it->second] = roi;
 			}
@@ -1148,7 +1152,7 @@ OfxStatus OfxhImageEffect::getRegionOfInterestAction( OfxTime time,
 					thisRoi.y2 = outArgs.getDoubleProperty( name, 3 );
 
 					/// and clamp it to the clip's rod
-					thisRoi          = Clamp( thisRoi, rod );
+					thisRoi          = clamp( thisRoi, rod );
 					rois[it->second] = thisRoi;
 				}
 				else
@@ -1367,7 +1371,7 @@ void OfxhImageEffect::setDefaultClipPreferences()
 		// If not output clip
 		if( !clip->isOutput() )
 		{
-			frameRate = Maximum( frameRate, clip->getFrameRate() );
+			frameRate = maximum( frameRate, clip->getFrameRate() );
 
 			std::string rawComp = clip->getUnmappedComponents();
 			rawComp = clip->findSupportedComp( rawComp ); // turn that into a comp the plugin expects on that clip
@@ -1381,7 +1385,7 @@ void OfxhImageEffect::setDefaultClipPreferences()
 					premult = kOfxImagePreMultiplied;
 				else if( rawPreMult == kOfxImageUnPreMultiplied && premult != kOfxImagePreMultiplied )
 					premult = kOfxImageUnPreMultiplied;
-				deepestBitDepth = FindDeepestBitDepth( deepestBitDepth, rawDepth );
+				deepestBitDepth = findDeepestBitDepth( deepestBitDepth, rawDepth );
 				mostComponents  = findMostChromaticComponents( mostComponents, rawComp );
 			}
 		}

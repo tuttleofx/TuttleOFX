@@ -81,7 +81,7 @@ class OfxhImage : public property::OfxhSet
 {
 protected:
 	/// called during ctors to get bits from the clip props into ours
-	void getClipBits( attribute::OfxhClip& instance );
+	void initClipBits( attribute::OfxhClip& instance );
 	int _referenceCount; ///< reference count on this image
 
 public:

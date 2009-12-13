@@ -58,22 +58,22 @@ namespace core {
 
 Host::Host()
 {
-	// set host properties... TODO
+	/// @todo tuttle set host properties correctly...
 	_properties.setStringProperty( kOfxPropName, "TuttleOfx" );
-	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx beta" );
-	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, 0 );
+	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx alpha" );
+	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, 1 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, 0 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultiResolution, 0 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, true );
-	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, true );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, false /*true*/ ); ///< we hope to do this !
+	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, false /*true*/ ); ///< we hope to do this !
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGBA, 0 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentAlpha, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGenerator, 0 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextFilter, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGeneral, 2 );
-	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextTransition, 3 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths, 0 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipPARs, 0 );
+//	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextTransition, 3 ); ///< we hope to do this !
+	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths, 1 );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipPARs, 1 );
 	_properties.setIntProperty( kOfxImageEffectPropSetableFrameRate, 0 );
 	_properties.setIntProperty( kOfxImageEffectPropSetableFielding, 0 );
 	_properties.setIntProperty( kOfxParamHostPropSupportsCustomInteract, 0 );

@@ -73,6 +73,8 @@ void PNGWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  *        a process must be done.
  *
  * @param[in] procWindow  Processing window
+ *
+ * @warning no multithread here !
  */
 template<class View>
 void PNGWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )

@@ -38,6 +38,7 @@
 #include <tuttle/common/image/gilGlobals.hpp>
 
 // ofx host
+#include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhBinary.hpp>
 #include <tuttle/host/ofx/OfxhPropertySuite.hpp>
 #include <tuttle/host/ofx/OfxhClip.hpp>
@@ -50,14 +51,13 @@
 #include <tuttle/host/ofx/OfxhImageEffect.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectAPI.hpp>
 
-// ofx
-#include <ofxCore.h>
-#include <ofxImageEffect.h>
-
 // boost
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/cstdint.hpp>
+
+/// @todo only in debug mode
+#include <boost/gil/extension/io/png_io.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -192,6 +192,66 @@ void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 	}
 }
 
+
+void Image::debugSaveAsPng( const std::string& filename )
+{
+	switch( getComponentsType() )
+	{
+		case ofx::imageEffect::ePixelComponentRGBA:
+			switch( getBitDepth() )
+			{
+				case ofx::imageEffect::eBitDepthUByte:
+				{
+					rgba8_view_t view = gilViewFromImage<rgba8_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthUShort:
+				{
+					rgba16_view_t view = gilViewFromImage<rgba16_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthFloat:
+				{
+					rgba32f_view_t view = gilViewFromImage<rgba32f_view_t >( this );
+					png_write_view(filename,clamp<rgb8_pixel_t>(view));
+					break;
+				}
+				default:
+					break;
+			}
+			break;
+		case ofx::imageEffect::ePixelComponentAlpha:
+			switch( getBitDepth() )
+			{
+				case ofx::imageEffect::eBitDepthUByte:
+				{
+					gray8_view_t view = gilViewFromImage<gray8_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthUShort:
+				{
+					gray16_view_t view = gilViewFromImage<gray16_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthFloat:
+				{
+					gray32f_view_t view = gilViewFromImage<gray32f_view_t >( this );
+					png_write_view(filename,clamp<rgb8_pixel_t>(view));
+					break;
+				}
+				default:
+					break;
+			}
+			break;
+		default:
+			break;
+	}
+}
+
 /// Copy from gil image view to Image
 template < class S_VIEW >
 void Image::copy( Image* dst, S_VIEW& src, const OfxPointI& dstCorner,
@@ -316,15 +376,13 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	}
 }
 
+
 ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
 : tuttle::host::ofx::attribute::OfxhClipImage( effect, desc )
 , _effect( effect )
-, _inputImage( NULL )
-, _outputImage( NULL )
 , _isConnected( false )
 , _continuousSamples( false )
 , _memoryCache( core::Core::instance().getMemoryCache() )
-, _useHack(false)
 {
 	_frameRange = _effect.getEffectFrameRange();
 }
@@ -333,30 +391,25 @@ ClipImgInstance::~ClipImgInstance()
 {
 }
 
-void ClipImgInstance::releaseClipsInputs()
-{
-//	if( _inputImage )
-//		if( _inputImage->releaseReference() )
-//			delete _inputImage;
-}
-
-void ClipImgInstance::releaseClipsOutput()
-{
-//	if( _outputImage )
-//		if( _outputImage->releaseReference() )
-//			delete _outputImage;
-}
-
 /// Return the rod on the clip cannoical coords!
 OfxRectD ClipImgInstance::fetchRegionOfDefinition( OfxTime time )
 {
+	if( !isOutput() )
+	{
+		if( !getConnected() )
+		{
+			throw exception::LogicError("fetchRegionOfDefinition on an unconnected input clip ! (clip: "+ getFullName() + ")." );
+		}
+		return const_cast<ClipImgInstance*>(_connectedClip)->fetchRegionOfDefinition(time); /// @todo tuttle: hack !!!
+	}
+
+	OfxRectD rod;
+	OfxPointD renderScale = { 1.0, 1.0 };
+	_effect.getRegionOfDefinitionAction( time, renderScale, rod );
+	return rod;
+	/*
 	OfxRectD rod;
 	OfxPointD renderScale;
-
-	// Rule: default is project size
-//	_effect.getProjectOffset( rod.x1, rod.y1 );
-//	_effect.getProjectSize( rod.x2, rod.y2 );
-//	_effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
 
 	/// @todo tuttle: strange: seams to have bug with commercial plugins (memory overflow)
 	ofx::property::OfxhPropSpec inStuff[] = {
@@ -383,11 +436,25 @@ OfxRectD ClipImgInstance::fetchRegionOfDefinition( OfxTime time )
 	{
 	     outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
 	}
+	else if( stat == kOfxStatReplyDefault )
+	{
+		// Rule: default is project size
+		_effect.getProjectOffset( rod.x1, rod.y1 );
+		_effect.getProjectSize( rod.x2, rod.y2 );
+		_effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
+
+		/// @todo tuttle: or inputs RoD if not generator ?
+	}
+	else
+	{
+		throw exception::LogicError("fetchRegionOfDefinition error on clip : " + getFullName() );
+	}
 	return rod;
+	*/
 }
 
-/// Get the Raw Unmapped Pixel Depth from the host.
 
+/// Get the Raw Unmapped Pixel Depth from the host.
 const std::string& ClipImgInstance::getUnmappedBitDepth() const
 {
 	static const std::string v( _effect.getProjectBitDepth() );
@@ -425,6 +492,7 @@ void ClipImgInstance::getUnmappedFrameRange( double& unmappedStartFrame, double&
 	unmappedEndFrame   = 1;
 }
 
+
 /// override this to fill in the image at the given time.
 /// The bounds of the image on the image plane should be
 /// 'appropriate', typically the value returned in getRegionsOfInterest
@@ -441,12 +509,14 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime ti
 		bounds.y1 = optionalBounds->y1;
 		bounds.x2 = optionalBounds->x2;
 		bounds.y2 = optionalBounds->y2;
+//		throw exception::LogicError(kOfxStatErrMissingHostFeature, "Uses optionalBounds not supported yet."); ///< @todo tuttle: this must be supported !
+		TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
 	}
 	else
 		bounds = fetchRegionOfDefinition( time );
 
-	TCOUT( "--> getImage : " << getFullName() << " on effect : " << _effect.getName() << " with connection: " << useHack() << " isOutput: " << isOutput() );
-	boost::shared_ptr<Image> image = _memoryCache.get( getFullName(), time );
+	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
+	boost::shared_ptr<Image> image = _memoryCache.get( getConnectedClipFullName(), time );
 //	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds... if not the same as in cache...
 	if( image.get() != NULL )
@@ -468,7 +538,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime ti
 		boost::shared_ptr<Image> outputImage(new Image( *this, bounds, time ));
 //		outputImage.get()->cout();
 		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
-		_memoryCache.put( getFullName(), time, outputImage );
+		_memoryCache.put( getConnectedClipFullName(), time, outputImage );
 		TCOUT_VAR( _memoryCache.size() );
 //		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
 //		_memoryCache.get( getFullName(), time ).get()->cout();
