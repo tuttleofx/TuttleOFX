@@ -686,7 +686,6 @@ OfxStatus Instance::mainEntry( const char*        action,
 			const OfxPlugin* ofxPlugin = pHandle->getOfxPlugin();
 			if( ofxPlugin )
 			{
-
 				OfxPropertySetHandle inHandle = 0;
 				if( inArgs )
 				{
@@ -942,7 +941,7 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 		{
 			// filter and paint default to the input clip
 			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
-			rod = clip.getRegionOfDefinition( time );
+			rod = clip.fetchRegionOfDefinition( time );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -956,8 +955,8 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 			// transition is the union of the two clips
 			attribute::OfxhClipImage& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
 			attribute::OfxhClipImage& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
-			rod = clipFrom.getRegionOfDefinition( time );
-			rod = Union( rod, clipTo.getRegionOfDefinition( time ) );
+			rod = clipFrom.fetchRegionOfDefinition( time );
+			rod = Union( rod, clipTo.fetchRegionOfDefinition( time ) );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -976,9 +975,9 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 			if( !clip->isOutput() && !clip->isOptional() )
 			{
 				if( !gotOne )
-					rod = clip->getRegionOfDefinition( time );
+					rod = clip->fetchRegionOfDefinition( time );
 				else
-					rod = Union( rod, clip->getRegionOfDefinition( time ) );
+					rod = Union( rod, clip->fetchRegionOfDefinition( time ) );
 				gotOne = true;
 			}
 		}
@@ -998,8 +997,8 @@ OfxRectD Instance::calcDefaultRegionOfDefinition( OfxTime   time,
 		{
 			attribute::OfxhClipImage& clip        = getClip( kOfxImageEffectSimpleSourceClipName );
 			/*attribute::ParamDoubleInstance& param = */dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
-			rod = clip.getRegionOfDefinition( floor( time ) );
-			rod = Union( rod, clip.getRegionOfDefinition( floor( time ) + 1 ) );
+			rod = clip.fetchRegionOfDefinition( floor( time ) );
+			rod = Union( rod, clip.fetchRegionOfDefinition( floor( time ) + 1 ) );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -1071,14 +1070,14 @@ OfxStatus Instance::getRegionOfInterestAction( OfxTime time,
 	if( !supportsTiles() )
 	{
 		/// No tiling support on the effect at all. So set the roi of each input clip to be the RoD of that clip.
-		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-		     it != _clips.end();
-		     it++ )
+		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin(), itEnd = _clips.end();
+		     it != itEnd;
+		     ++it )
 		{
 			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
 			{
-				// OFX_TODO
-				OfxRectD roi = it->second->getRegionOfDefinition( time );
+				/// @todo tuttle how to support size on generators... check if this is correct in all cases.
+				OfxRectD roi = it->second->fetchRegionOfDefinition( time );
 				rois[it->second] = roi;
 			}
 		}
@@ -1134,7 +1133,7 @@ OfxStatus Instance::getRegionOfInterestAction( OfxTime time,
 		{
 			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
 			{
-				OfxRectD rod = it->second->getRegionOfDefinition( time );
+				OfxRectD rod = it->second->fetchRegionOfDefinition( time );
 				if( it->second->supportsTiles() )
 				{
 					std::string name = "OfxImageClipPropRoI_" + it->first;
@@ -1771,8 +1770,7 @@ static OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
 	if( image )
 	{
 		// clip::image has a virtual destructor for derived classes
-		if( image->releaseReference() )
-			delete image;
+		image->releaseReference();
 		return kOfxStatOK;
 	}
 	else
@@ -1818,7 +1816,7 @@ static OfxStatus clipGetRegionOfDefinition( OfxImageClipHandle clip,
 
 	if( clipInstance )
 	{
-		*bounds = clipInstance->getRegionOfDefinition( time );
+		*bounds = clipInstance->fetchRegionOfDefinition( time );
 		return kOfxStatOK;
 	}
 

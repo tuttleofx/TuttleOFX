@@ -165,14 +165,7 @@ public:
 	PixelComponentEnum getComponentsType() const;
 
 	/// release the reference count, which, if zero, deletes this
-	bool releaseReference();
-
-	/// add a reference to this image
-
-	void addReference()
-	{
-		++_referenceCount;
-	}
+	bool releaseReference(){ TCOUT("Image::releaseReference from plugin."); }
 
 };
 

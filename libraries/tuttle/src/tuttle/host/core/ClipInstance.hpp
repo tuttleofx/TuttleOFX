@@ -86,7 +86,7 @@ private:
 class ClipImgInstance : public tuttle::host::ofx::attribute::OfxhClipImage
 {
 protected:
-	const EffectInstance& _effect;
+	/*const*/ EffectInstance& _effect;
 	std::string _name;
 	Image* _inputImage; ///< input clip image @todo tuttle: variable used in rendering process, need to be moved to ProcessNode ?
 	Image* _outputImage; ///< output clip image @todo tuttle: variable used in rendering process, need to be moved to ProcessNode ?
@@ -95,12 +95,21 @@ protected:
 	bool _continuousSamples;
 	IMemoryCache& _memoryCache;
 
+	bool _useHack;
+	std::string _fullName; ///< @warning HACK ! to force connection (only for test) @todo remove this !!!!
+
 public:
 	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc );
 
 	~ClipImgInstance();
 
 	ClipImgInstance* clone() const { return new ClipImgInstance( *this ); }
+
+	const bool useHack() const { return _useHack; }
+	/// @warning HACK ! to force connection (only for test)
+	/// @todo remove this !!!!
+	void setHackFullName( const std::string& fullName ){ _fullName = fullName; _useHack = true; }
+	const std::string getFullName() const { return _fullName.size()>0 ? _fullName : _effect.getName()+"."+getName(); }
 
 	/**
 	 * @brief Get the Raw Unmapped Pixel Depth from the host
@@ -215,7 +224,7 @@ public:
 	/**
 	 * @brief override this to return the rod on the clip
 	 */
-	OfxRectD getRegionOfDefinition( OfxTime time ) const;
+	OfxRectD fetchRegionOfDefinition( OfxTime time );
 };
 
 }

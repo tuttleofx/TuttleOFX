@@ -278,7 +278,7 @@ public:
 	virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage( OfxTime time, OfxRectD* optionalBounds = NULL ) = 0;
 
 	/// override this to return the rod on the clip
-	virtual OfxRectD getRegionOfDefinition( OfxTime time ) const = 0;
+	virtual OfxRectD fetchRegionOfDefinition( OfxTime time ) = 0;
 
 	/** given the colour component, find the nearest set of supported colour components
 	 *  override this for extra wierd custom component depths

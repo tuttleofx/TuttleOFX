@@ -121,7 +121,7 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 
 	_data = _memoryPool.allocate( memlen );
 	// now blank it
-	memset( getPixelData(), 0, memlen );
+	//memset( getPixelData(), 0, memlen );
 
 	// render scale x and y of 1.0
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 0 );
@@ -147,7 +147,9 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 }
 
 Image::~Image()
-{}
+{
+	TCOUT_INFOS;
+}
 
 uint8_t* Image::pixel( int x, int y )
 {
@@ -322,6 +324,7 @@ ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::of
 , _isConnected( false )
 , _continuousSamples( false )
 , _memoryCache( core::Core::instance().getMemoryCache() )
+, _useHack(false)
 {
 	_frameRange = _effect.getEffectFrameRange();
 }
@@ -332,54 +335,54 @@ ClipImgInstance::~ClipImgInstance()
 
 void ClipImgInstance::releaseClipsInputs()
 {
-	if( _inputImage )
-		if( _inputImage->releaseReference() )
-			delete _inputImage;
+//	if( _inputImage )
+//		if( _inputImage->releaseReference() )
+//			delete _inputImage;
 }
 
 void ClipImgInstance::releaseClipsOutput()
 {
-	if( _outputImage )
-		if( _outputImage->releaseReference() )
-			delete _outputImage;
+//	if( _outputImage )
+//		if( _outputImage->releaseReference() )
+//			delete _outputImage;
 }
 
 /// Return the rod on the clip cannoical coords!
-OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
+OfxRectD ClipImgInstance::fetchRegionOfDefinition( OfxTime time )
 {
 	OfxRectD rod;
 	OfxPointD renderScale;
 
 	// Rule: default is project size
-	_effect.getProjectOffset( rod.x1, rod.y1 );
-	_effect.getProjectSize( rod.x2, rod.y2 );
-	_effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
+//	_effect.getProjectOffset( rod.x1, rod.y1 );
+//	_effect.getProjectSize( rod.x2, rod.y2 );
+//	_effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
 
-	/* @OFX_TODO: Tres etrange: ca bug avec les plugins du commerce: debordement de pile.
-	 * Property::PropSpec inStuff[] = {
-	 *      { kOfxPropTime, Property::eDouble, 1, true, "0" },
-	 *      { kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
-	 *      { 0 }
-	 * };
-	 *
-	 * Property::PropSpec outStuff[] = {
-	 *      { kOfxImageEffectPropRegionOfDefinition, Property::eDouble, 4, false, "0" },
-	 *      { 0 }
-	 * };
-	 *
-	 * Property::Set inArgs(inStuff);
-	 * Property::Set outArgs(outStuff);
-	 *
-	 * inArgs.setDoubleProperty(kOfxPropTime,time);
-	 *
-	 * inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
-	 *
-	 * OfxStatus stat = _effect->mainEntry(kOfxImageEffectActionGetRegionOfDefinition,
-	 *                                                                      _effect->getHandle(), &inArgs, &outArgs);
-	 *
-	 * if(stat == kOfxStatOK)
-	 *      outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
-	 */
+	/// @todo tuttle: strange: seams to have bug with commercial plugins (memory overflow)
+	ofx::property::OfxhPropSpec inStuff[] = {
+	     { kOfxPropTime, ofx::property::eDouble, 1, true, "0" },
+	     { kOfxImageEffectPropRenderScale, ofx::property::eDouble, 2, true, "0" },
+	     { 0 }
+	};
+	
+	ofx::property::OfxhPropSpec outStuff[] = {
+	     { kOfxImageEffectPropRegionOfDefinition, ofx::property::eDouble, 4, false, "0" },
+	     { 0 }
+	};
+	
+	ofx::property::OfxhSet inArgs(inStuff);
+	ofx::property::OfxhSet outArgs(outStuff);
+	
+	inArgs.setDoubleProperty(kOfxPropTime,time);
+	
+	inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
+	
+	OfxStatus stat = _effect.mainEntry(kOfxImageEffectActionGetRegionOfDefinition, (const void*)(_effect.getHandle()), &inArgs, &outArgs);
+	
+	if( stat == kOfxStatOK )
+	{
+	     outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
+	}
 	return rod;
 }
 
@@ -428,7 +431,6 @@ void ClipImgInstance::getUnmappedFrameRange( double& unmappedStartFrame, double&
 /// on the effect instance. Outside a render call, the optionalBounds should
 /// be 'appropriate' for the.
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
-
 tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime time, OfxRectD* optionalBounds )
 {
 	OfxRectD bounds;
@@ -441,41 +443,38 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime ti
 		bounds.y2 = optionalBounds->y2;
 	}
 	else
-		bounds = getRegionOfDefinition( time );
+		bounds = fetchRegionOfDefinition( time );
 
+	TCOUT( "--> getImage : " << getFullName() << " on effect : " << _effect.getName() << " with connection: " << useHack() << " isOutput: " << isOutput() );
+	boost::shared_ptr<Image> image = _memoryCache.get( getFullName(), time );
+//	std::cout << "got image : " << image.get() << std::endl;
+	/// @todo tuttle do something with bounds... if not the same as in cache...
+	if( image.get() != NULL )
+	{
+		if( isOutput() )
+		{
+			TCOUT("output already in cache !");
+			TCOUT( "return output image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
+		}
+		else
+		{
+			TCOUT( "return input image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
+		}
+		return image.get();
+	}
 	if( isOutput() )
 	{
-		if( !_outputImage )
-		{
-			// make a new ref counted image
-			_outputImage = new Image( *this, bounds, time );
-			//_memoryCache.put( _effect.getName(), time, _outputImage );
-		}
-
-		// add another reference to the member image for this fetch
-		// as we have a ref count of 1 due to construction, this will
-		// cause the output image never to delete by the plugin
-		// when it releases the image
-		_outputImage->addReference();
-
-		return _outputImage;
+		// make a new ref counted image
+		boost::shared_ptr<Image> outputImage(new Image( *this, bounds, time ));
+//		outputImage.get()->cout();
+		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
+		_memoryCache.put( getFullName(), time, outputImage );
+		TCOUT_VAR( _memoryCache.size() );
+//		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
+//		_memoryCache.get( getFullName(), time ).get()->cout();
+		return outputImage.get();
 	}
-	else
-	{
-		if( !_inputImage )
-		{
-			// make a new ref counted image
-			_inputImage = new Image( *this, bounds, time );
-		}
-
-		// add another reference to the member image for this fetch
-		// as we have a ref count of 1 due to construction, this will
-		// cause the output image never to delete by the plugin
-		// when it releases the image
-		_inputImage->addReference();
-
-		return _inputImage;
-	}
+	throw exception::LogicError("Error input clip not in cache !");
 }
 
 }

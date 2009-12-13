@@ -192,13 +192,6 @@ int OfxhImage::getRowBytes() const
 
 OfxhImage::~OfxhImage() {}
 
-// release the reference
-bool OfxhImage::releaseReference()
-{
-	--_referenceCount;
-	return _referenceCount <= 0;
-}
-
 }
 }
 }
