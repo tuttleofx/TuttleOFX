@@ -36,6 +36,7 @@
 #include "./ofxsSupportPrivate.h"
 
 namespace OFX {
+
 /** @brief Throws an @ref OFX::Exception depending on the status flag passed in */
 void throwSuiteStatusException( OfxStatus stat ) throw( OFX::Exception::Suite, std::bad_alloc )
 {
