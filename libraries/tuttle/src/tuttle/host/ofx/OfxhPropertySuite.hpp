@@ -256,12 +256,12 @@ public:
 class OfxhProperty
 {
 protected:
-	std::string _name;                    ///< name of this property
-	TypeEnum _type;                    ///< type of this property
-	size_t _dimension;               ///< the fixed dimension of this property
-	bool _pluginReadOnly;          ///< set is forbidden through suite: value may still change between get() calls
+	std::string _name;                         ///< name of this property
+	TypeEnum _type;                            ///< type of this property
+	size_t _dimension;                         ///< the fixed dimension of this property
+	bool _pluginReadOnly;                      ///< set is forbidden through suite: value may still change between get() calls
 	std::vector<OfxhNotifyHook*> _notifyHooks; ///< hooks to call whenever the property is set
-	OfxhGetHook* _getHook;    ///< if we are not storing props locally, they are stored via fetching from here
+	OfxhGetHook* _getHook;                     ///< if we are not storing props locally, they are stored via fetching from here
 
 	friend class OfxhSet;
 
@@ -424,7 +424,7 @@ typedef OfxhPropertyTemplate<OfxhDoubleValue>  Double;  /// Our double property
 typedef OfxhPropertyTemplate<OfxhStringValue>  String;  /// Our string property
 typedef OfxhPropertyTemplate<OfxhPointerValue> Pointer; /// Our pointer property
 
-/// A class that is used to initialise a property set. Feed in an array of these to
+/// A class that is used to initialize a property set. Feed in an array of these to
 /// a property and it will construct a bunch of properties. Terminate such an array
 /// with an empty (all zero) set.
 struct OfxhPropSpec
