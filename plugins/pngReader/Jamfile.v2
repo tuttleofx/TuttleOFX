@@ -37,7 +37,7 @@ plugin pngReader :
         /boost/filesystem/<link>static
         /tuttlelib//tuttleplugin/<link>static
         /supportlib
-        /png
+        /png/<link>static
         opengl
         ;
 

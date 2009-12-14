@@ -220,10 +220,21 @@ public:
 			case eCompTypeR16G16B16:
 			case eCompTypeR10G10B10A10:
 			case eCompTypeA10B10G10R10:
-				sz = 5 * width() * height();
+				if( packing ) {
+					// This kind of packing is complex...
+					int x = width() * height();
+					sz = (int)(std::floor((x-1)/3.0f)*8.0f+(std::floor(x/3.0f)*4.0f*2.0f)
+							+ (8+((x%4)*4.0f)) );
+				} else
+					sz = 5 * width() * height();
 				break;
 			case eCompTypeR12G12B12A12:
 			case eCompTypeA12B12G12R12:
+					if( packing )
+						sz = sizeof( boost::uint64_t ) * width() * height();
+					else
+						sz = ( size_t ) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
+				break;
 			case eCompTypeR16G16B16A16:
 			case eCompTypeA16B16G16R16:
 				sz = sizeof( boost::uint64_t ) * width() * height();
@@ -276,7 +287,7 @@ public:
 		return type;
 	}
 
-	inline const boost::uint8_t* rawData() const
+	inline boost::uint8_t* rawData() const
 	{
 		return _data;
 	}

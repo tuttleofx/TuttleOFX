@@ -23,37 +23,88 @@ namespace gil  {
  * Bit stream
  *****************************************************************************/
 typedef uint16_t uint10_t;
+typedef uint16_t uint12_t;
+
+/// 10 bits rgba bit stream
 typedef bit_aligned_pixel_reference< uint64_t,
                                      mpl::vector4_c<uint10_t, 10, 10, 10, 10>,
                                      rgba_layout_t,
                                      true
-                                     >  rgba10101010_ref_t;
+                                     >  rgba10_stream_ref_t;
+typedef bit_aligned_pixel_iterator<rgba10_stream_ref_t> rgba10_stream_ptr_t;
+typedef std::iterator_traits<rgba10_stream_ptr_t>::value_type rgba10_stream_pixel_t;
+typedef view_type_from_pixel<rgba10_stream_pixel_t>::type rgba10_stream_view_t;
 
-// A mutable iterator over RGBA10 pixels
-typedef bit_aligned_pixel_iterator< rgba10101010_ref_t >
-rgba10101010_ptr_t;
-
-typedef std::iterator_traits< rgba10101010_ptr_t >::value_type
-rgba10101010_pixel_t;
-
-typedef view_type_from_pixel< rgba10101010_pixel_t >::type
-rgba10101010_view_t;
-
+/// 10 bits abgr bit stream
 typedef bit_aligned_pixel_reference< uint64_t,
                                      mpl::vector4_c<uint10_t, 10, 10, 10, 10>,
+                                     abgr_layout_t,
+                                     true
+                                     >  abgr10_stream_ref_t;
+typedef bit_aligned_pixel_iterator<abgr10_stream_ref_t> abgr10_stream_ptr_t;
+typedef std::iterator_traits<abgr10_stream_ptr_t>::value_type abgr10_stream_pixel_t;
+typedef view_type_from_pixel<abgr10_stream_pixel_t>::type abgr10_stream_view_t;
+
+/// 12 bits rgba bit stream
+typedef bit_aligned_pixel_reference< uint64_t,
+                                     mpl::vector4_c<uint12_t, 12, 12, 12, 12>,
                                      rgba_layout_t,
-                                     false
-                                     >  rgbac10101010_ref_t;
+                                     true
+                                     >  rgba12_stream_ref_t;
+typedef bit_aligned_pixel_iterator<rgba12_stream_ref_t> rgba12_stream_ptr_t;
+typedef std::iterator_traits<rgba12_stream_ptr_t>::value_type rgba12_stream_pixel_t;
+typedef view_type_from_pixel<rgba12_stream_pixel_t>::type rgba12_stream_view_t;
 
-// A mutable iterator over RGBA10 pixels
-typedef bit_aligned_pixel_iterator< rgbac10101010_ref_t >
-rgbac10101010_ptr_t;
+/// 12 bits abgr bit stream
+typedef bit_aligned_pixel_reference< uint64_t,
+                                     mpl::vector4_c<uint12_t, 12, 12, 12, 12>,
+                                     abgr_layout_t,
+                                     true
+                                     >  abgr12_stream_ref_t;
+typedef bit_aligned_pixel_iterator<abgr12_stream_ref_t> abgr12_stream_ptr_t;
+typedef std::iterator_traits<abgr12_stream_ptr_t>::value_type abgr12_stream_pixel_t;
+typedef view_type_from_pixel<abgr12_stream_pixel_t>::type abgr12_stream_view_t;
 
-typedef std::iterator_traits< rgbac10101010_ptr_t >::value_type
-rgbac10101010_pixel_t;
+/// 12 bits rgba packed to short
+typedef const packed_channel_reference<uint64_t, 04, 12,true> rgba12_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 20, 12,true> rgba12_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 36, 12,true> rgba12_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 52, 12,true> rgba12_packed_channel3_t;
+typedef mpl::vector4<rgba12_packed_channel0_t,rgba12_packed_channel1_t,
+					 rgba12_packed_channel2_t,rgba12_packed_channel3_t> rgba12_packed_channels_t;
+typedef packed_pixel<uint64_t, rgba12_packed_channels_t, rgba_layout_t> rgba12_packed_pixel_t;
+typedef view_type_from_pixel<rgba12_packed_pixel_t>::type rgba12_packed_view_t;
 
-typedef view_type_from_pixel< rgbac10101010_pixel_t >::type
-rgbac10101010_view_t;
+/// 12 bits abgr packed to short
+typedef const packed_channel_reference<uint64_t, 04, 12,true> abgr12_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 20, 12,true> abgr12_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 36, 12,true> abgr12_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 52, 12,true> abgr12_packed_channel3_t;
+typedef mpl::vector4<abgr12_packed_channel0_t,abgr12_packed_channel1_t,
+					 abgr12_packed_channel2_t,abgr12_packed_channel3_t> abgr12_packed_channels_t;
+typedef packed_pixel<uint64_t, abgr12_packed_channels_t, abgr_layout_t> abgr12_packed_pixel_t;
+typedef view_type_from_pixel<abgr12_packed_pixel_t>::type abgr12_packed_view_t;
+
+/// 10 bits rgba packed to short
+typedef const packed_channel_reference<uint64_t, 22, 10,true> rgba10_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 12, 10,true> rgba10_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 02, 10,true> rgba10_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 54, 10,true> rgba10_packed_channel3_t;
+typedef mpl::vector4<rgba10_packed_channel0_t,rgba10_packed_channel1_t,
+					 rgba10_packed_channel2_t,rgba10_packed_channel3_t> rgba10_packed_channels_t;
+typedef packed_pixel<uint64_t, rgba10_packed_channels_t, rgba_layout_t> rgba10_packed_pixel_t;
+typedef view_type_from_pixel<rgba10_packed_pixel_t>::type rgba10_packed_view_t;
+
+/// 10 bits abgr packed to short
+typedef const packed_channel_reference<uint64_t, 4, 10,true> abgr10_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 20,10,true> abgr10_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 36,10,true> abgr10_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 52,10,true> abgr10_packed_channel3_t;
+typedef mpl::vector4<abgr10_packed_channel0_t,abgr10_packed_channel1_t,
+					 abgr10_packed_channel2_t,abgr10_packed_channel3_t> abgr10_packed_channels_t;
+typedef packed_pixel<uint64_t, abgr10_packed_channels_t, abgr_layout_t> abgr10_packed_pixel_t;
+typedef view_type_from_pixel<abgr10_packed_pixel_t>::type abgr10_packed_view_t;
+
 
 /******************************************************************************
  * Packed on bytes view types
