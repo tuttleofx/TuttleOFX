@@ -56,8 +56,12 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/cstdint.hpp>
 
-/// @todo only in debug mode
-#include <boost/gil/extension/io/png_io.hpp>
+//#define _DEBUG 1
+
+//TODO: delete this
+#ifdef _DEBUG
+	#include <boost/gil/extension/io/png_io.hpp>
+#endif
 
 #include <iostream>
 #include <fstream>
@@ -192,7 +196,7 @@ void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 	}
 }
 
-
+#ifdef _DEBUG
 void Image::debugSaveAsPng( const std::string& filename )
 {
 	switch( getComponentsType() )
@@ -251,6 +255,7 @@ void Image::debugSaveAsPng( const std::string& filename )
 			break;
 	}
 }
+#endif
 
 /// Copy from gil image view to Image
 template < class S_VIEW >

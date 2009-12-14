@@ -40,8 +40,7 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	OfxRectI renderWindow = { 0, 0,
 							123, 123 };
 
-
-
+	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "test.dot" );
 
 	//TODO dog-faced   :/
 	Graph::InternalGraph::vertex_range_t vrange = _graph.getVertices();
@@ -51,8 +50,9 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		dynamic_cast<EffectInstance*>(_graph.instance(*it).processNode())->getClipPreferences();
 	}
 
+
 	// Setup parameters
-	EffectInstance& firstEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGReaderHd3d1"));
+	EffectInstance& firstEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGReader1"));
 	EffectInstance& lastEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGWriterHd3d1"));
 
 	firstEffect.getParam("Input filename").set("input.png");
@@ -93,8 +93,6 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		graph::Vertex& v = _graph.instance( *it );
 		v.processNode()->end(processOptions);
 	}
-
-//	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( optimizedGraph, "test.dot" );
 }
 
 }

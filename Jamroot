@@ -23,14 +23,14 @@ path-constant DIST 		 	 : ./dist ;
 ###############################################################################
 project
     : requirements
-    		# multithreading on
+   		# multithreading on
   		<threading>multi
-                <warnings-as-errors>off
+		<variant>release:<warnings-as-errors>on
   		#
   		# GCC specific flags
   		#
   		# removes deprecated header used by boost
-                <toolset>gcc:<cflags>-Wno-deprecated
+        <toolset>gcc:<cflags>-Wno-deprecated
     ;
 
 ###############################################################################

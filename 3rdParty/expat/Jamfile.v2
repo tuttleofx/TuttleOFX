@@ -14,6 +14,9 @@ project
         <include>lib
         <threading>multi
         <link>static
+        <toolset>gcc:<cflags>-Wno-switch
+        <toolset>darwin:<cflags>-Wno-switch
+		<warnings-as-errors>off
     : usage-requirements
         <os>NT:<define>COMPILED_FROM_DSP
         <define>XML_STATIC
