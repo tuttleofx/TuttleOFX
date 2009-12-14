@@ -35,7 +35,7 @@ namespace host {
 namespace ofx {
 
 /// get me deepest bit depth
-std::string FindDeepestBitDepth( const std::string& s1, const std::string& s2 )
+std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 )
 {
 	if( s1 == kOfxBitDepthNone )
 	{

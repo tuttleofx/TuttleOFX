@@ -437,7 +437,7 @@ struct OfxhPropSpec
 };
 
 /// A std::map of properties by name
-typedef std::map<std::string, OfxhProperty*> PropertyMap;
+typedef std::map<std::string, OfxhProperty*> PropertyMap; /// @todo tuttle: use boost::ptr_map
 
 /**
  * Class that holds a set of properties and manipulates them
@@ -496,16 +496,20 @@ public:
 
 	/// destructor
 	virtual ~OfxhSet();
+	
+	void clear();
 
 	/// hide assignment
 	void operator=( const OfxhSet& );
 
 	/// dump to cout
-	void cout() const;
+	void coutProperties() const;
 
 	/// adds a bunch of properties from PropSpec
 	void addProperties( const OfxhPropSpec* );
 
+	void eraseProperty( const std::string& propName );
+	
 	inline OfxhSet& operator+( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
 
 	/// add one new property

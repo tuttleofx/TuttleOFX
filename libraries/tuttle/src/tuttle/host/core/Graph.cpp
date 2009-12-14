@@ -63,6 +63,7 @@ void Graph::addToGraph( EffectInstance& node )
 {
 	graph::Vertex v( node.getName(), node );
 
+	std::cout<< node.getName() <<std::endl;
 	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 

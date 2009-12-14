@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_EDGE_HPP_
 #define _TUTTLE_EDGE_HPP_
 
-#include <string>
+#include <iostream>
 #include <ofxAttribute.h>
 
 namespace tuttle {

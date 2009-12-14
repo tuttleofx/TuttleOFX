@@ -8,12 +8,12 @@
 ###############################################################################
 project
     : requirements	
-        <include>src
+        <include>.
         <threading>multi
         <link>static
 		<warnings-as-errors>off
     : usage-requirements
-        <include>src
+        <include>.
     : build-dir $(DIST)/lib/bin/zlib
     ;
 
@@ -23,7 +23,7 @@ project
 alias headers : [ glob-tree *.h ] ;
 
 lib zlib : 
-    [ glob src/*.c ]
+    [ glob *.c ]
     ;
 
 install dist_src	

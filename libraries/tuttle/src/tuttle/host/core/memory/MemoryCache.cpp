@@ -22,7 +22,7 @@ CACHE_ELEMENT MemoryCache::get( const std::string& pluginName, const double& tim
 	MAP::const_iterator itr = _map.find( Key( pluginName, time ) );
 
 	if( itr == _map.end() )
-		return NULL;
+		return CACHE_ELEMENT();
 	return itr->second;
 }
 

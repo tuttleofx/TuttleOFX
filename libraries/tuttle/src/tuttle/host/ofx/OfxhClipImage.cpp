@@ -125,7 +125,6 @@ OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 /**
  * clip clipimage instance
  */
-
 OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
 : attribute::OfxhClip( desc )
 , _effectInstance( effectInstance )

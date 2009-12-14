@@ -58,7 +58,7 @@ void throwPropertyException( OfxStatus          stat,
 		case kOfxStatErrUnknown:
 		case kOfxStatErrUnsupported: // unsupported implies unknow here
 			if( OFX::PropertySet::getThrowOnUnsupportedProperties() ) // are we suppressing this?
-				throw OFX::Exception::PropertyUnknownToHost( propName.c_str() );
+				throw OFX::Exception::PropertyUnknownToHost( propName );
 			break;
 
 		case kOfxStatErrMemory:

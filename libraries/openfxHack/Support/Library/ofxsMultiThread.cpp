@@ -35,6 +35,7 @@
  */
 
 #include "ofxsSupportPrivate.h"
+#include "ofxsUtilities.h"
 #include <iostream>
 
 namespace OFX {
@@ -68,6 +69,11 @@ void Processor::multiThread( unsigned int nCPUs )
 	// if 0, use all the CPUs we can
 	if( nCPUs == 0 )
 		nCPUs = OFX::MultiThread::getNumCPUs();
+
+	if( nCPUs == 0 )
+	{
+		COUT_ERROR("Run process on 0 cpus... it seems to be a problem.");
+	}
 
 	// if 1 cpu, don't bother with the threading
 	if( nCPUs == 1 )

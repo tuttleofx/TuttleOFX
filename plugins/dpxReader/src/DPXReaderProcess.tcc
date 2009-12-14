@@ -169,7 +169,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 					typedef unsigned char byte_t;
 					int width             = _plugin.getDpxImg().width();
 					int height            = _plugin.getDpxImg().height();
-					int num_channels      = 4;       // RGBA
+					int num_channels      = 4;  // RGBA
 					int channel_size      = 10; // in bits
 					int scanline_in_bits  = width * num_channels * channel_size;
 					int scanline_in_bytes = scanline_in_bits / 8;
@@ -177,7 +177,8 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 					rgba10101010_ptr_t p( pData, 0 );
 					rgba16_image_t img( dst.width(), img.height() );
 					rgba16_view_t vw( view( img ) );
-					for( typename rgba16_view_t::y_coord_t y = 0; y < height; ++y )
+					for( typename rgba16_view_t::y_coord_t y = 0;
+						 y < height; ++y )
 					{
 						typename rgba16_view_t::x_iterator it = vw.row_begin( y );
 
