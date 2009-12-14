@@ -12,6 +12,7 @@ project
         <include>../zlib/src/
         <threading>multi
         <link>static
+		<warnings-as-errors>off
     : usage-requirements
         <include>src
     : build-dir $(DIST)/lib/bin/png

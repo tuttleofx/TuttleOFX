@@ -25,7 +25,7 @@ project
     : requirements
     		# multithreading on
   		<threading>multi
-                <warnings-as-errors>on
+        <warnings-as-errors>on
   		#
   		# GCC specific flags
   		#

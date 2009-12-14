@@ -14,6 +14,7 @@ project
         <include>lib
         <threading>multi
         <link>static
+		<warnings-as-errors>off
     : usage-requirements
         <os>NT:<define>COMPILED_FROM_DSP
         <define>XML_STATIC
