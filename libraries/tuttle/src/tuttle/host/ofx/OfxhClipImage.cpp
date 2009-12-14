@@ -125,19 +125,11 @@ OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 /**
  * clip clipimage instance
  */
-<<<<<<< HEAD
 OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
 : attribute::OfxhClip( desc )
 , _effectInstance( effectInstance )
 //				, _pixelDepth( kOfxBitDepthNone )
 //				, _components( kOfxImageComponentNone )
-=======
-OfxhClipImage::OfxhClipImage( imageEffect::Instance& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
-	: attribute::OfxhClip( desc ),
-	_effectInstance( effectInstance )
-	//				, _pixelDepth( kOfxBitDepthNone )
-	//				, _components( kOfxImageComponentNone )
->>>>>>> 7abe01dfe64f942d5e85e3127d6e9b7e04ec156b
 {
 	//					_par = 1.0;
 	/**

@@ -66,7 +66,6 @@ public:
 	boost::uint8_t* getPixelData() { return reinterpret_cast<boost::uint8_t*>( _data->data() ); }
 
 	boost::uint8_t* pixel( int x, int y );
-	boost::uint8_t* pixel( int x, int y );
 	static void     copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	                      const OfxPointI& srcCorner, const OfxPointI& count );
 	template < class VIEW_T >
@@ -170,6 +169,7 @@ public:
 	 * @brief Connected
 	 * Says whether the clip is actually connected at the moment.
 	 */
+	const bool getConnected() const { return _isConnected; }
 	void setConnected( const bool isConnected ) { _isConnected = isConnected; }
 
 	/**

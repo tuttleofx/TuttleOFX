@@ -84,7 +84,7 @@ public:
 	///   \arg context - the context to be created in
 	virtual OfxhImageEffect* newInstance( void*              clientData,
 	                               OfxhImageEffectPlugin* plugin,
-	                               Descriptor&        desc,
+	                               OfxhDescriptor&        desc,
 	                               const std::string& context ) const = 0;
 
 	/// Function called as each plugin binary is found and loaded from disk

@@ -58,6 +58,7 @@ namespace core {
 
 // my host support code
 EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
+			                    tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
                                 const std::string&                                 context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffect( plugin, desc, context, false )
 {

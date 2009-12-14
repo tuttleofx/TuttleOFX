@@ -430,13 +430,8 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 		return;
 	}
 
-<<<<<<< HEAD
 	const imageEffect::OfxhDescriptor& e = p->getDescriptor();
 	const property::OfxhSet& eProps      = e.getProperties();
-=======
-	const imageEffect::Descriptor& e = p->getDescriptor();
-	const property::OfxhSet& eProps  = e.getProperties();
->>>>>>> 7abe01dfe64f942d5e85e3127d6e9b7e04ec156b
 
 	int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
