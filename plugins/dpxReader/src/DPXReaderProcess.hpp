@@ -24,11 +24,13 @@ template<class View>
 class DPXReaderProcess : public tuttle::plugin::ImageGilProcessor<View>,
 	public tuttle::plugin::Progress
 {
-typedef typename View::value_type value_t;
-
 protected:
+	typedef typename View::value_type value_t;
 	OFX::StringParam*   _filepath;      ///< File path
 	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
+
+	template<class T, class DST_V>
+	void bitStreamToView(DST_V & dst, const int nc, const int channelSize);
 
 public:
 	DPXReaderProcess<View>( DPXReaderPlugin & instance );
@@ -39,7 +41,7 @@ public:
 	// Do some processing
 	void multiThreadProcessImages( OfxRectI procWindow );
 
-	//
+	// Read dpx image
 	View& readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 

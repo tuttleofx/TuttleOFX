@@ -51,7 +51,7 @@ void DPXReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		_filepath->getValue( sFilepath );
 		if( bfs::exists( sFilepath ) )
 		{
-			_plugin.getDpxImg().read( sFilepath );
+			_plugin.getDpxImg().read( sFilepath, true );
 
 			point2<ptrdiff_t> imageDims( _plugin.getDpxImg().width(),
 			                             _plugin.getDpxImg().height() );
@@ -159,54 +159,100 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 		}
 		case tuttle::io::DpxImage::eCompTypeR10G10B10A10:
 		{
-			std::cout << "RGBA10: " << std::endl;
-			boost::uint8_t* pData = _plugin.getDpxImg().data();
 			// Interpret pixels according to its bit packing
 			switch( _plugin.getDpxImg().packing() )
 			{
 				// bit stream
 				case 0: {
-					typedef unsigned char byte_t;
-					int width             = _plugin.getDpxImg().width();
-					int height            = _plugin.getDpxImg().height();
-					int num_channels      = 4;       // RGBA
-					int channel_size      = 10; // in bits
-					int scanline_in_bits  = width * num_channels * channel_size;
-					int scanline_in_bytes = scanline_in_bits / 8;
-					scanline_in_bytes += ( scanline_in_bits % 8 != 0 ) ? 1 : 0;
-					rgba10101010_ptr_t p( pData, 0 );
-					rgba16_image_t img( dst.width(), img.height() );
+					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
-					for( typename rgba16_view_t::y_coord_t y = 0; y < height; ++y )
-					{
-						typename rgba16_view_t::x_iterator it = vw.row_begin( y );
-
-						for( typename rgba16_view_t::x_coord_t x = 0; x < width; ++x )
-						{
-							color_convert( *p, *it );
-							++p;
-							++it;
-						}
-					}
-					copy_and_convert_pixels( vw, dst );
+					bitStreamToView<rgba10_stream_ptr_t>(vw, 4, 10);
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					break;
 				}
 				case 1:
-				case 2:
-					rgba10101010_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-					                                            ( rgba10101010_pixel_t* )( pData ),
-					                                            _plugin.getDpxImg().width() * 5 );
-					copy_and_convert_pixels( flipped_up_down_view( src ), color_converted_view<rgba16_pixel_t>( dst ) );
+				case 2: {
+					rgba10_packed_view_t vw = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
+																( rgba10_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+																_plugin.getDpxImg().width() * sizeof( uint64_t ) );
+
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
+				}
 			}
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeA10B10G10R10:
 		{
-			abgr16_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-			                                      ( abgr16_pixel_t* )( _plugin.getDpxImg().data() ),
-			                                      _plugin.getDpxImg().width() * 4 * sizeof( uint16_t ) );
+			// Interpret pixels according to its bit packing
+			switch( _plugin.getDpxImg().packing() )
+			{
+				// bit stream
+				case 0: {
+					rgba16_image_t img( dst.width(), dst.height() );
+					rgba16_view_t vw( view( img ) );
+					bitStreamToView<abgr10_stream_ptr_t>(vw, 4, 10);
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					break;
+				}
+				case 1:
+				case 2: {
+					abgr10_packed_view_t vw = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
+																( abgr10_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+																_plugin.getDpxImg().width() * sizeof( uint64_t ) );
 
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					break;
+				}
+			}
+			break;
+		}
+		case tuttle::io::DpxImage::eCompTypeR12G12B12A12: {
+			// Interpret pixels according to its bit packing
+			switch( _plugin.getDpxImg().packing() )
+			{
+				// bit stream
+				case 0: {
+					rgba16_image_t img( dst.width(), dst.height() );
+					rgba16_view_t vw( view( img ) );
+					bitStreamToView<rgba12_stream_ptr_t>(vw, 4, 12);
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					break;
+				}
+				case 1:
+				case 2: {
+					rgba12_packed_view_t vw = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
+																( rgba12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+																_plugin.getDpxImg().width() * sizeof( uint64_t ) );
+
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					break;
+				}
+			}
+			break;
+		}
+		case tuttle::io::DpxImage::eCompTypeA12B12G12R12: {
+			// Interpret pixels according to its bit packing
+			switch( _plugin.getDpxImg().packing() )
+			{
+				// bit stream
+				case 0: {
+					rgba16_image_t img( dst.width(), dst.height() );
+					rgba16_view_t vw( view( img ) );
+					bitStreamToView<abgr12_stream_ptr_t>(vw, 4, 12);
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					break;
+				}
+				case 1:
+				case 2: {
+					abgr12_packed_view_t vw = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
+																( abgr12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+																_plugin.getDpxImg().width() * sizeof( uint64_t ) );
+
+					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					break;
+				}
+			}
 			break;
 		}
 		default:
@@ -214,6 +260,31 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 	}
 
 	return dst;
+}
+
+template<class View>
+template<class T, class DST_V>
+void DPXReaderProcess<View>::bitStreamToView(DST_V & dst, const int nc, const int channelSize) {
+	boost::uint8_t* pData = _plugin.getDpxImg().data();
+	typedef unsigned char byte_t;
+	int width             = _plugin.getDpxImg().width();
+	int height            = _plugin.getDpxImg().height();
+	int scanline_in_bits  = width * nc * channelSize;
+	int scanline_in_bytes = scanline_in_bits / 8;
+	scanline_in_bytes += ( scanline_in_bits % 8 != 0 ) ? 1 : 0;
+	T p( pData, 0 );
+
+	for( typename DST_V::y_coord_t y = 0; y < height; ++y )
+	{
+		typename DST_V::x_iterator it = dst.row_begin( y );
+
+		for( typename DST_V::x_coord_t x = 0; x < width; ++x )
+		{
+			color_convert( *p, *it );
+			++p;
+			++it;
+		}
+	}
 }
 
 }

@@ -81,7 +81,7 @@ class OfxhImage : public property::OfxhSet
 {
 protected:
 	/// called during ctors to get bits from the clip props into ours
-	void getClipBits( attribute::OfxhClip& instance );
+	void initClipBits( attribute::OfxhClip& instance );
 	int _referenceCount; ///< reference count on this image
 
 public:
@@ -164,16 +164,7 @@ public:
 
 	PixelComponentEnum getComponentsType() const;
 
-	/// release the reference count, which, if zero, deletes this
-	bool releaseReference();
-
-	/// add a reference to this image
-
-	void addReference()
-	{
-		++_referenceCount;
-	}
-
+	/// release the reference count, which, if zero, deletes this	bool releaseReference(){ TCOUT("Image::releaseReference from plugin."); return _referenceCount <=0; }
 };
 
 }

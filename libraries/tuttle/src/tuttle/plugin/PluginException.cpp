@@ -23,7 +23,7 @@ PluginException::PluginException( const char* format, ... )
 	#ifndef __GNUC__
 	size_t n = _snprintf( NULL, 0, format );
 	#else
-	int n = snprintf( NULL, 0, format );
+	int n = snprintf( NULL, 0, "%s", format );
 	#endif
 	if( n > 0 )
 	{

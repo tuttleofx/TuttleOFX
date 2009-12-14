@@ -1,11 +1,18 @@
---- Jamfile.v2	2009-12-12 18:38:45.000000000 +0100
-+++ Jamfile.v2.new	2009-12-12 18:40:36.000000000 +0100
-@@ -9,6 +9,8 @@
+--- Jamfile.v2	2009-12-14 13:57:33.000000000 +0100
++++ Jamfile.new	2009-12-14 14:00:29.000000000 +0100
+@@ -8,6 +8,8 @@
+     : source-location ../src
      : requirements <link>shared:<define>BOOST_TEST_DYN_LINK=1
                     <toolset>msvc:<asynch-exceptions>on
-                    <toolset>borland:<cxxflags>-w-8080
-+                   # Disable Warning about "long long" in gcc's stdlib 
 +                   <toolset>gcc:<cxxflags>-Wno-long-long 
++                   <toolset>darwin:<cxxflags>-Wno-long-long  
+                    <toolset>borland:<cxxflags>-w-8080
                     # Disable Warning about boost::noncopyable not being exported
                     <link>shared,<toolset>msvc:<cxxflags>-wd4275
-                    <toolset>msvc:<cxxflags>-wd4671
+@@ -107,4 +109,4 @@
+ boost-install boost_prg_exec_monitor 
+               boost_test_exec_monitor
+               boost_unit_test_framework ;
+-          
+\ No newline at end of file
++          

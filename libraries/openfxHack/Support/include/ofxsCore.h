@@ -200,14 +200,14 @@ public:
 class PropertyUnknownToHost : public std::runtime_error
 {
 public:
-	explicit PropertyUnknownToHost( const std::string &what );
+	explicit PropertyUnknownToHost( const std::string &what ) : std::runtime_error( what ){};
 };
 
 /** @brief exception indicating that the host thinks a property has an illegal value */
 class PropertyValueIllegalToHost : public std::invalid_argument
 {
 public:
-	explicit PropertyValueIllegalToHost( const std::string &what );
+	explicit PropertyValueIllegalToHost( const std::string &what ) : std::invalid_argument( what ){};
 };
 
 /** @brief exception indicating a request for a named thing exists (eg: a param), but is of the wrong type, should never make it back to the main entry
@@ -216,7 +216,7 @@ public:
 class TypeRequest : public std::logic_error
 {
 public:
-	explicit TypeRequest( const std::string &what );
+	explicit TypeRequest( const std::string &what ) : std::logic_error( what ){};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -228,7 +228,7 @@ public:
 class HostInadequate : public std::runtime_error
 {
 public:
-	explicit HostInadequate( const std::string &what );
+	explicit HostInadequate( const std::string &what ) : std::runtime_error( what ){};
 };
 
 }; // end of Exception namespace

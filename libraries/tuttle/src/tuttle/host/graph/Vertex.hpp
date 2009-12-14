@@ -1,7 +1,6 @@
 #ifndef _TUTTLE_VERTEX_HPP_
 #define _TUTTLE_VERTEX_HPP_
 
-#include <string>
 #include <iostream>
 
 #include <tuttle/host/core/ProcessNode.hpp>

@@ -19,6 +19,22 @@ using namespace boost;
 namespace tuttle {
 namespace io {
 
+template < typename T >
+inline T highbit(T& t)
+{
+	return t = (((T)(-1)) >> 1) + 1;
+}
+
+template < typename T >
+std::ostream& bin(T& value, std::ostream &o)
+{
+	for ( T bit = highbit(bit); bit; bit >>= 1 )
+	{
+		o << ( ( value & bit ) ? '1' : '0' );
+	}
+	return o;
+}
+
 // @todo: move this in the right place
 inline boost::uint16_t reverseBits( boost::uint16_t v )
 {
@@ -74,7 +90,10 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 	_dataSize = dataSize();
 	// reads and throws away characters until 'offset' characters have been read
 	f.ignore( _header._fileInfo.offset - f.tellg() );
-	printf( "DPX pixel offset start: %d\n", _header._fileInfo.offset );
+	if( _indyData && _data != _indyData ) {
+		delete [] _indyData;
+		_indyData = NULL;
+	}
 	if( _data )
 		delete [] _data;
 	// Data have to be packed on uint32_t size to allow indianess fast
@@ -88,15 +107,13 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 		msg << "( " << filename << " )" ;
 		throw std::exception();
 	}
-	if( _indyData ) {
-		delete [] _indyData;
-		_indyData = NULL;
-	}
 	if ( reinterpretation )
 		_indyData = reinterpretEndianness();
 	else
 		_indyData = _data;
-
+	std::cout << "Pix(0,0)[1]: b";
+	bin(((uint64_t*)_indyData)[0], std::cout);
+	std::cout <<  std::endl;
 	f.close();
 }
 
@@ -268,15 +285,20 @@ void DpxImage::write( const path& filename ) {}
 
 uint8_t* DpxImage::reinterpretEndianness() const
 {
-	// Data have to be packed on uint32_t size to allow indianess fast
-	// reinterpretation
-	uint8_t* pData    = new uint8_t[_dataSize + (_dataSize % sizeof(uint32_t))];
-	size_t dataSize32 = _dataSize / sizeof(uint32_t);
-	uint32_t *pData32 = (uint32_t*)pData;
-	uint32_t *pData32End = pData32 + dataSize32;
-	do {
-		*pData32++ = swapEndian<uint32_t>(*pData32);
-	} while(++pData32 != pData32End);
+	// Do we need reinterpretation ?
+	uint8_t* pData = _data;
+	if (_bigEndian && BOOST_BYTE_ORDER == 1234) {
+		// Data have to be packed on uint32_t size to allow indianess fast
+		// reinterpretation
+		pData    = new uint8_t[_dataSize + (_dataSize % sizeof(uint32_t))];
+		size_t dataSize32 = (_dataSize + (_dataSize % sizeof(uint32_t))) / sizeof(uint32_t);
+		uint32_t *pData32 = (uint32_t*)pData;
+		uint32_t *pSrcData32 = (uint32_t*)_data;
+		uint32_t *pData32End = pData32 + dataSize32;
+		do {
+			*pData32++ = swapEndian<uint32_t>(*pSrcData32++);
+		} while(pData32 != pData32End);
+	}
 	return pData;
 }
 

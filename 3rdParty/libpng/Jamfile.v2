@@ -8,12 +8,13 @@
 ###############################################################################
 project
     : requirements	
-        <include>src
-        <include>../zlib/src/
+        <include>.
+        <include>../zlib
         <threading>multi
         <link>static
+		<warnings-as-errors>off
     : usage-requirements
-        <include>src
+        <include>.
     : build-dir $(DIST)/lib/bin/png
     ;
 
@@ -25,7 +26,7 @@ use-project /zlib 	: ../zlib ;
 alias headers : [ glob-tree *.h ] ;
 
 lib png : 
-        [ glob src/*.c ]
+        [ glob *.c ]
         /zlib/<link>static
         ;
 

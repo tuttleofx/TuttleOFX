@@ -14,6 +14,8 @@ project
         <include>lib
         <threading>multi
         <link>static
+		<toolset>gcc:<cflags>-Wno-switch
+        <toolset>darwin:<cflags>-Wno-switch
         # disabling warning as error as we are not responsible for this code
         <warnings-as-errors>off
     : usage-requirements
