@@ -25,6 +25,7 @@ project
     : build-dir $(DIST)/bin/tuttle
     ;
 
+use-project /png  : ../../3rdParty/libpng ;
 use-project /expat  : ../../3rdParty/expat ;
 use-project /ofxPluginSupport   : ../openfxHack/Support ;
 
@@ -48,6 +49,7 @@ lib tuttlehost :
     /boost/system
     /boost/filesystem
     /expat/<link>static
+    /png/<link>static
     shell32
     dl
     ;
