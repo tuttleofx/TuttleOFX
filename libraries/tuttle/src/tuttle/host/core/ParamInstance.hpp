@@ -65,6 +65,7 @@ public:
 	OfxStatus          get( std::string& );
 	OfxStatus          get( OfxTime time, std::string& );
 	OfxStatus          set( const char* );
+	OfxStatus          set( const std::string& value ) { _value = value; return kOfxStatOK; }
 	OfxStatus          set( OfxTime time, const char* );
 };
 

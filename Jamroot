@@ -19,17 +19,24 @@ path-constant BOOST_LIBS  	 : 3rdParty/boost ;
 path-constant DIST 		 	 : ./dist ;
 
 ###############################################################################
-# 3rd party libraries
-###############################################################################
-use-project /boost : $(BOOST_LIBS) ;
-
-###############################################################################
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
+    : requirements
+    		# multithreading on
   		<threading>multi
+                <warnings-as-errors>on
+  		#
+  		# GCC specific flags
+  		#
+  		# removes deprecated header used by boost
+                <toolset>gcc:<cflags>-Wno-deprecated
     ;
+
+###############################################################################
+# 3rd party libraries
+###############################################################################
+use-project /boost : $(BOOST_LIBS) ;
 
 ###############################################################################
 # Main targets

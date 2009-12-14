@@ -688,7 +688,6 @@ OfxStatus OfxhImageEffect::mainEntry( const char*    action,
 			const OfxPlugin* ofxPlugin = pHandle->getOfxPlugin();
 			if( ofxPlugin )
 			{
-
 				OfxPropertySetHandle inHandle = 0;
 				if( inArgs )
 				{
@@ -935,7 +934,9 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 		// generator is the extent
 		rod.x1 = rod.y1 = 0;
 		getProjectExtent( rod.x2, rod.y2 );
-		//@OFX_TODO: le mal est ici... pour les Read ca se passe par la...
+		attribute::OfxhClipImage& clip = getClip( kOfxImageEffectOutputClipName );
+		rod = clip.fetchRegionOfDefinition( time );
+		/// @todo tuttle: maybe RoD problems with Generator and Read here... to check !
 	}
 	else if( _context == kOfxImageEffectContextFilter ||
 	         _context == kOfxImageEffectContextPaint )
@@ -944,7 +945,7 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 		{
 			// filter and paint default to the input clip
 			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
-			rod = clip.getRegionOfDefinition( time );
+			rod = clip.fetchRegionOfDefinition( time );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -958,8 +959,8 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 			// transition is the union of the two clips
 			attribute::OfxhClipImage& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
 			attribute::OfxhClipImage& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
-			rod = clipFrom.getRegionOfDefinition( time );
-			rod = Union( rod, clipTo.getRegionOfDefinition( time ) );
+			rod = clipFrom.fetchRegionOfDefinition( time );
+			rod = rectUnion( rod, clipTo.fetchRegionOfDefinition( time ) );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -978,9 +979,9 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 			if( !clip->isOutput() && !clip->isOptional() )
 			{
 				if( !gotOne )
-					rod = clip->getRegionOfDefinition( time );
+					rod = clip->fetchRegionOfDefinition( time );
 				else
-					rod = Union( rod, clip->getRegionOfDefinition( time ) );
+					rod = rectUnion( rod, clip->fetchRegionOfDefinition( time ) );
 				gotOne = true;
 			}
 		}
@@ -1000,8 +1001,8 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 		{
 			attribute::OfxhClipImage& clip        = getClip( kOfxImageEffectSimpleSourceClipName );
 			/*attribute::ParamDoubleInstance& param = */dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
-			rod = clip.getRegionOfDefinition( floor( time ) );
-			rod = Union( rod, clip.getRegionOfDefinition( floor( time ) + 1 ) );
+			rod = clip.fetchRegionOfDefinition( floor( time ) );
+			rod = rectUnion( rod, clip.fetchRegionOfDefinition( floor( time ) + 1 ) );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -1054,6 +1055,10 @@ OfxStatus OfxhImageEffect::getRegionOfDefinitionAction( OfxTime   time,
 	{
 		rod = calcDefaultRegionOfDefinition( time, renderScale );
 	}
+	else
+	{
+		throw core::exception::LogicError( "getRegionOfDefinitionAction error (plugin return "+mapStatusToString(stat)+")" );
+	}
 
 	return stat;
 }
@@ -1073,14 +1078,14 @@ OfxStatus OfxhImageEffect::getRegionOfInterestAction( OfxTime time,
 	if( !supportsTiles() )
 	{
 		/// No tiling support on the effect at all. So set the roi of each input clip to be the RoD of that clip.
-		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-		     it != _clips.end();
-		     it++ )
+		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin(), itEnd = _clips.end();
+		     it != itEnd;
+		     ++it )
 		{
 			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
 			{
-				// OFX_TODO
-				OfxRectD roi = it->second->getRegionOfDefinition( time );
+				/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
+				OfxRectD roi = it->second->fetchRegionOfDefinition( time );
 				rois[it->second] = roi;
 			}
 		}
@@ -1136,7 +1141,7 @@ OfxStatus OfxhImageEffect::getRegionOfInterestAction( OfxTime time,
 		{
 			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
 			{
-				OfxRectD rod = it->second->getRegionOfDefinition( time );
+				OfxRectD rod = it->second->fetchRegionOfDefinition( time );
 				if( it->second->supportsTiles() )
 				{
 					std::string name = "OfxImageClipPropRoI_" + it->first;
@@ -1147,7 +1152,7 @@ OfxStatus OfxhImageEffect::getRegionOfInterestAction( OfxTime time,
 					thisRoi.y2 = outArgs.getDoubleProperty( name, 3 );
 
 					/// and clamp it to the clip's rod
-					thisRoi          = Clamp( thisRoi, rod );
+					thisRoi          = clamp( thisRoi, rod );
 					rois[it->second] = thisRoi;
 				}
 				else
@@ -1366,7 +1371,7 @@ void OfxhImageEffect::setDefaultClipPreferences()
 		// If not output clip
 		if( !clip->isOutput() )
 		{
-			frameRate = Maximum( frameRate, clip->getFrameRate() );
+			frameRate = maximum( frameRate, clip->getFrameRate() );
 
 			std::string rawComp = clip->getUnmappedComponents();
 			rawComp = clip->findSupportedComp( rawComp ); // turn that into a comp the plugin expects on that clip
@@ -1380,7 +1385,7 @@ void OfxhImageEffect::setDefaultClipPreferences()
 					premult = kOfxImagePreMultiplied;
 				else if( rawPreMult == kOfxImageUnPreMultiplied && premult != kOfxImagePreMultiplied )
 					premult = kOfxImageUnPreMultiplied;
-				deepestBitDepth = FindDeepestBitDepth( deepestBitDepth, rawDepth );
+				deepestBitDepth = findDeepestBitDepth( deepestBitDepth, rawDepth );
 				mostComponents  = findMostChromaticComponents( mostComponents, rawComp );
 			}
 		}
@@ -1773,8 +1778,7 @@ static OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
 	if( image )
 	{
 		// clip::image has a virtual destructor for derived classes
-		if( image->releaseReference() )
-			delete image;
+		image->releaseReference();
 		return kOfxStatOK;
 	}
 	else
@@ -1820,7 +1824,7 @@ static OfxStatus clipGetRegionOfDefinition( OfxImageClipHandle clip,
 
 	if( clipInstance )
 	{
-		*bounds = clipInstance->getRegionOfDefinition( time );
+		*bounds = clipInstance->fetchRegionOfDefinition( time );
 		return kOfxStatOK;
 	}
 

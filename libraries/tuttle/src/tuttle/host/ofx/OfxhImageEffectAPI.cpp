@@ -285,8 +285,9 @@ imageEffect::OfxhImageEffect* OfxhImageEffectPlugin::createInstance( const std::
 		COUT_ERROR( "The plugin doesn't support the context " << context << "." );
 		return NULL; // throw specific Exception
 	}
-
-	return core::Core::instance().getHost().newInstance( clientData, this, *desc, context );
+	imageEffect::OfxhImageEffect* instance = core::Core::instance().getHost().newInstance( clientData, this, *desc, context );
+	instance->createInstanceAction();
+	return instance;
 }
 
 void OfxhImageEffectPlugin::unloadAction()

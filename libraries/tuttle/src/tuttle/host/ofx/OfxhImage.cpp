@@ -66,7 +66,7 @@ OfxhImage::OfxhImage()
 
 /// called during ctor to get bits from the clip props into ours
 
-void OfxhImage::getClipBits( attribute::OfxhClip& instance )
+void OfxhImage::initClipBits( attribute::OfxhClip& instance )
 {
 	const property::OfxhSet& clipProperties = instance.getProps();
 
@@ -89,17 +89,19 @@ void OfxhImage::getClipBits( attribute::OfxhClip& instance )
 	setDoubleProperty( kOfxImagePropPixelAspectRatio, clipProperties.getDoubleProperty( kOfxImagePropPixelAspectRatio ) );
 }
 
-/// make an image from a clip instance
-
+/**
+ * make an image from a clip instance
+ */
 OfxhImage::OfxhImage( attribute::OfxhClip& instance )
 	: property::OfxhSet( imageStuffs ),
 	_referenceCount( 1 )
 {
-	getClipBits( instance );
+	initClipBits( instance );
 }
 
-// construction based on clip instance
-
+/**
+ * construction based on clip instance
+ */
 OfxhImage::OfxhImage( attribute::OfxhClip& instance,
                       double               renderScaleX,
                       double               renderScaleY,
@@ -112,7 +114,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 	: property::OfxhSet( imageStuffs ),
 	_referenceCount( 1 )
 {
-	getClipBits( instance );
+	initClipBits( instance );
 
 	// set other data
 	setDoubleProperty( kOfxImageEffectPropRenderScale, renderScaleX, 0 );
@@ -191,13 +193,6 @@ int OfxhImage::getRowBytes() const
 }
 
 OfxhImage::~OfxhImage() {}
-
-// release the reference
-bool OfxhImage::releaseReference()
-{
-	--_referenceCount;
-	return _referenceCount <= 0;
-}
 
 }
 }

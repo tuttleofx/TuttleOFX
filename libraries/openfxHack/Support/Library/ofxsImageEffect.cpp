@@ -1294,7 +1294,7 @@ const std::string& ClipPreferencesSetter::extractValueForName( const StringStrin
 	StringStringMap::const_iterator it = m.find( name );
 
 	if( it == m.end() )
-		throw( Exception::PropertyUnknownToHost( name.c_str() ) );
+		throw( Exception::PropertyUnknownToHost( name ) );
 	return it->second;
 }
 
@@ -1614,7 +1614,7 @@ ImageEffect* retrieveImageEffectPointer( OfxImageEffectHandle handle )
 	if( instance == NULL )
 	{
 		// need to throw something here
-		std::cerr << "Can't retrieve ImageEffecy pointeur from ofxImageEffectHandle. (property: " << kOfxPropInstanceData << " is NULL)." << std::endl;
+		std::cerr << "Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: " << kOfxPropInstanceData << " is NULL)." << std::endl;
 		std::cerr << "The plugin will crash..." << std::endl;
 		// OFX_TODO Exception !!!!!!!!!
 	}
@@ -1807,7 +1807,7 @@ bool regionsOfInterestAction( OfxImageEffectHandle handle, OFX::PropertySet inAr
 		{
 			std::map<std::string, std::string>::const_iterator it = clipROIPropNames_.find( clip.name() );
 			if( it == clipROIPropNames_.end() )
-				throw( Exception::PropertyUnknownToHost( clip.name().c_str() ) );
+				throw( Exception::PropertyUnknownToHost( clip.name() ) );
 
 			// construct the name of the property
 			const std::string& propName = it->second;
@@ -1891,7 +1891,7 @@ bool framesNeededAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, O
 					// Make the property name we are setting
 					const std::map<std::string, std::string>::const_iterator it = _clipFrameRangePropNames.find( i->first );
 					if( it == _clipFrameRangePropNames.end() )
-						throw( Exception::PropertyUnknownToHost( i->first.c_str() ) );
+						throw( Exception::PropertyUnknownToHost( i->first ) );
 
 					const std::string& propName = it->second;
 

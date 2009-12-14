@@ -630,6 +630,16 @@ void OfxhSet::addProperties( const OfxhPropSpec spec[] )
 	}
 }
 
+void OfxhSet::eraseProperty( const std::string& propName )
+{
+	PropertyMap::iterator it = _props.find(propName);
+	if( it != _props.end() )
+	{
+		delete it->second;
+		_props.erase(it);
+	}
+}
+
 /// add one new property
 void OfxhSet::addProperty( OfxhProperty* prop )
 {
@@ -684,11 +694,16 @@ OfxhSet::OfxhSet( const OfxhSet& other )
 
 OfxhSet::~OfxhSet()
 {
-	std::map<std::string, OfxhProperty*>::iterator i = _props.begin();
-	while( i != _props.end() )
+	clear();
+}
+
+void OfxhSet::clear()
+{
+	for( PropertyMap::iterator it = _props.begin(), itEnd = _props.end();
+	     it != itEnd;
+	     ++it )
 	{
-		delete i->second;
-		i++;
+		delete it->second;
 	}
 }
 
@@ -699,7 +714,7 @@ void OfxhSet::operator=( const OfxhSet& s )
 	_chainedSet = s._chainedSet;
 }
 
-void OfxhSet::cout() const
+void OfxhSet::coutProperties() const
 {
 	COUT( "Property::Set {" );
 	for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();
@@ -737,7 +752,7 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 		{
 			COUT_ERROR( "Property::Set::setProperty - Property " << property << " not in the propertySet (value=" << value << "), " <<
 			            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-			cout();
+			coutProperties();
 		}
 	}
 	catch(... )

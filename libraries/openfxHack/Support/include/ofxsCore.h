@@ -171,8 +171,8 @@ enum PropertyTypeEnum
 /** @brief Enumerates the reasons a plug-in instance may have had one of its values changed */
 enum InstanceChangeReason
 {
-	eChangeUserEdit,    /**< @brief A user actively editted something in the plugin, eg: changed the value of an integer param on an interface */
-	eChangePluginEdit,  /**< @brief The plugin's own code changed something in the instance, eg: a callback on on param settting the value of another */
+	eChangeUserEdit,    /**< @brief A user actively edited something in the plugin, eg: changed the value of an integer param on an interface */
+	eChangePluginEdit,  /**< @brief The plugin's own code changed something in the instance, eg: a callback on on param setting the value of another */
 	eChangeTime         /**< @brief The current value of a parameter has changed because the param animates and the current time has changed */
 };
 
@@ -182,77 +182,41 @@ const std::string mapStatusToString( const OfxStatus stat );
 /** @brief namespace for OFX support lib exceptions, all derive from std::exception, calling it */
 namespace Exception {
 
-/** @brief thrown when a suite returns a dud status code
+/** @brief thrown when a suite returns a failure status code
  */
-class Suite : public std::exception
+class Suite : public std::runtime_error
 {
 protected:
 	OfxStatus _status;
 
 public:
-	Suite( OfxStatus s ) : _status( s ) {}
+	explicit Suite( OfxStatus s ) : std::runtime_error( mapStatusToString( _status ) ), _status( s ) {}
+	explicit Suite( OfxStatus s, const std::string &what ) : std::runtime_error( mapStatusToString( _status )+" : "+what ), _status( s ) {}
 	OfxStatus status( void ) { return _status; }
 	operator OfxStatus() { return _status; }
-
-	/** @brief reimplemented from std::exception */
-	virtual const char* what() const throw ( ) { return mapStatusToString( _status ).c_str(); }
-
 };
 
 /** @brief Exception indicating that a host doesn't know about a property that is should do */
-class PropertyUnknownToHost : public std::exception
+class PropertyUnknownToHost : public std::runtime_error
 {
-protected:
-	std::string _what;
-
 public:
-	PropertyUnknownToHost( const char* what ) : _what( what ) {}
-	virtual ~PropertyUnknownToHost() throw( ) {}
-
-	/** @brief reimplemented from std::exception */
-	virtual const char* what() const throw ( )
-	{
-		return _what.c_str();
-	}
-
+	explicit PropertyUnknownToHost( const std::string &what ) : std::runtime_error( what ){}
 };
 
 /** @brief exception indicating that the host thinks a property has an illegal value */
-class PropertyValueIllegalToHost : public std::exception
+class PropertyValueIllegalToHost : public std::invalid_argument
 {
-protected:
-	std::string _what;
-
 public:
-	PropertyValueIllegalToHost( const char* what ) : _what( what ) {}
-	virtual ~PropertyValueIllegalToHost() throw( ) {}
-
-	/** @brief reimplemented from std::exception */
-	virtual const char* what() const throw ( )
-	{
-		return _what.c_str();
-	}
-
+	explicit PropertyValueIllegalToHost( const std::string &what ) : std::invalid_argument( what ){}
 };
 
 /** @brief exception indicating a request for a named thing exists (eg: a param), but is of the wrong type, should never make it back to the main entry
  * indicates a logical error in the code. Asserts are raised in debug code in these situations.
  */
-class TypeRequest : public std::exception
+class TypeRequest : public std::logic_error
 {
-protected:
-	std::string _what;
-
 public:
-	TypeRequest( const char* what ) : _what( what ) {}
-	virtual ~TypeRequest() throw( ) {}
-
-	/** @brief reimplemented from std::exception */
-	virtual const char* what() const throw ( )
-	{
-		return _what.c_str();
-	}
-
+	explicit TypeRequest( const std::string &what ) : std::logic_error( what ){}
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -261,21 +225,10 @@ public:
 // status code to the host.
 
 /** @brief exception indicating a required host feature is missing */
-class HostInadequate : public std::exception
+class HostInadequate : public std::runtime_error
 {
-protected:
-	std::string _what;
-
 public:
-	HostInadequate( const char* what ) : _what( what ) {}
-	virtual ~HostInadequate() throw( ) {}
-
-	/** @brief reimplemented from std::exception */
-	virtual const char* what() const throw ( )
-	{
-		return _what.c_str();
-	}
-
+	explicit HostInadequate( const std::string &what ) : std::runtime_error( what ){}
 };
 
 }; // end of Exception namespace
@@ -284,7 +237,7 @@ public:
 void throwSuiteStatusException( OfxStatus stat )
 	throw( OFX::Exception::Suite, std::bad_alloc );
 
-void throwHostMissingSuiteException( std::string name )
+void throwHostMissingSuiteException( const std::string &name )
 	throw( OFX::Exception::Suite );
 
 /** @brief This struct is used to return an identifier for the plugin by the function @ref OFX:Plugin::getPlugin.

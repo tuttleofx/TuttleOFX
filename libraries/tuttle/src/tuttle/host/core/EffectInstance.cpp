@@ -58,8 +58,9 @@ namespace core {
 
 // my host support code
 EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-			                    tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
-                                const std::string&                                 context )
+                                const std::string&                                 context,
+								tuttle::host::ofx::imageEffect::OfxhDescriptor& desc,
+                                const std::string& context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffect( plugin, desc, context, false )
 {
 	populate();
@@ -165,7 +166,7 @@ void EffectInstance::getProjectExtent( double& xSize, double& ySize ) const
 // get the PAR, SD PAL is 768/720=1.0666
 double EffectInstance::getProjectPixelAspectRatio() const
 {
-	return 720.0 / 720.0;
+	return 1.0;
 }
 
 // we are only 25 frames
@@ -195,18 +196,23 @@ void EffectInstance::getRenderScaleRecursive( double& x, double& y ) const
 	x = y = 1.0;
 }
 
-// The pixel components type of the current project
-// @OFX_TODO : to remove in the future.... size, pixelType, BitDepth, etc... must be locally defined
+/**
+ * The pixel components type of the current project
+ * @todo tuttle: to remove in the future.... size, pixelType, BitDepth, etc... must be locally defined
+ */
 const std::string EffectInstance::getProjectPixelComponentsType() const
 {
 	return kOfxImageComponentRGBA;
 }
 
-// The pixel bit depth of the current project (host work in float)
-// @OFX_TODO : to remove in the future.... size, pixelType, BitDepth, etc... must be locally defined
+/**
+ * The pixel bit depth of the current project (host work in float)
+ * @todo tuttle: to remove in the future.... size, pixelType, BitDepth, etc... must be locally defined
+ */
 const std::string EffectInstance::getProjectBitDepth() const
 {
-	return kOfxBitDepthFloat;
+	return kOfxBitDepthByte;
+//	return kOfxBitDepthFloat;
 }
 
 // make a parameter instance

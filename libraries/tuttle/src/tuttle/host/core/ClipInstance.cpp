@@ -38,6 +38,7 @@
 #include <tuttle/common/image/gilGlobals.hpp>
 
 // ofx host
+#include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhBinary.hpp>
 #include <tuttle/host/ofx/OfxhPropertySuite.hpp>
 #include <tuttle/host/ofx/OfxhClip.hpp>
@@ -50,14 +51,13 @@
 #include <tuttle/host/ofx/OfxhImageEffect.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectAPI.hpp>
 
-// ofx
-#include <ofxCore.h>
-#include <ofxImageEffect.h>
-
 // boost
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/cstdint.hpp>
+
+/// @todo only in debug mode
+#include <boost/gil/extension/io/png_io.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -121,7 +121,7 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 
 	_data = _memoryPool.allocate( memlen );
 	// now blank it
-	memset( getPixelData(), 0, memlen );
+	//memset( getPixelData(), 0, memlen );
 
 	// render scale x and y of 1.0
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 0 );
@@ -147,7 +147,9 @@ Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 }
 
 Image::~Image()
-{}
+{
+	TCOUT_INFOS;
+}
 
 uint8_t* Image::pixel( int x, int y )
 {
@@ -187,6 +189,66 @@ void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 		S_VIEW subSrc = subimage_view( src, srcCorner.x, srcCorner.y, count.x, count.y );
 		D_VIEW subDst = subimage_view( dst, dstCorner.x, dstCorner.y, count.x, count.y );
 		copy_and_convert_pixels( subSrc, subDst );
+	}
+}
+
+
+void Image::debugSaveAsPng( const std::string& filename )
+{
+	switch( getComponentsType() )
+	{
+		case ofx::imageEffect::ePixelComponentRGBA:
+			switch( getBitDepth() )
+			{
+				case ofx::imageEffect::eBitDepthUByte:
+				{
+					rgba8_view_t view = gilViewFromImage<rgba8_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthUShort:
+				{
+					rgba16_view_t view = gilViewFromImage<rgba16_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthFloat:
+				{
+					rgba32f_view_t view = gilViewFromImage<rgba32f_view_t >( this );
+					png_write_view(filename,clamp<rgb8_pixel_t>(view));
+					break;
+				}
+				default:
+					break;
+			}
+			break;
+		case ofx::imageEffect::ePixelComponentAlpha:
+			switch( getBitDepth() )
+			{
+				case ofx::imageEffect::eBitDepthUByte:
+				{
+					gray8_view_t view = gilViewFromImage<gray8_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthUShort:
+				{
+					gray16_view_t view = gilViewFromImage<gray16_view_t >( this );
+					png_write_view(filename,view);
+					break;
+				}
+				case ofx::imageEffect::eBitDepthFloat:
+				{
+					gray32f_view_t view = gilViewFromImage<gray32f_view_t >( this );
+					png_write_view(filename,clamp<rgb8_pixel_t>(view));
+					break;
+				}
+				default:
+					break;
+			}
+			break;
+		default:
+			break;
 	}
 }
 
@@ -314,11 +376,10 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	}
 }
 
+
 ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
 : tuttle::host::ofx::attribute::OfxhClipImage( effect, desc )
 , _effect( effect )
-, _inputImage( NULL )
-, _outputImage( NULL )
 , _isConnected( false )
 , _continuousSamples( false )
 , _memoryCache( core::Core::instance().getMemoryCache() )
@@ -330,61 +391,70 @@ ClipImgInstance::~ClipImgInstance()
 {
 }
 
-void ClipImgInstance::releaseClipsInputs()
-{
-	if( _inputImage )
-		if( _inputImage->releaseReference() )
-			delete _inputImage;
-}
-
-void ClipImgInstance::releaseClipsOutput()
-{
-	if( _outputImage )
-		if( _outputImage->releaseReference() )
-			delete _outputImage;
-}
-
 /// Return the rod on the clip cannoical coords!
-OfxRectD ClipImgInstance::getRegionOfDefinition( OfxTime time ) const
+OfxRectD ClipImgInstance::fetchRegionOfDefinition( OfxTime time )
 {
+	if( !isOutput() )
+	{
+		if( !getConnected() )
+		{
+			throw exception::LogicError("fetchRegionOfDefinition on an unconnected input clip ! (clip: "+ getFullName() + ")." );
+		}
+		return const_cast<ClipImgInstance*>(_connectedClip)->fetchRegionOfDefinition(time); /// @todo tuttle: hack !!!
+	}
+
+	OfxRectD rod;
+	OfxPointD renderScale = { 1.0, 1.0 };
+	_effect.getRegionOfDefinitionAction( time, renderScale, rod );
+	return rod;
+	/*
 	OfxRectD rod;
 	OfxPointD renderScale;
 
-	// Rule: default is project size
-	_effect.getProjectOffset( rod.x1, rod.y1 );
-	_effect.getProjectSize( rod.x2, rod.y2 );
-	_effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
+	/// @todo tuttle: strange: seams to have bug with commercial plugins (memory overflow)
+	ofx::property::OfxhPropSpec inStuff[] = {
+	     { kOfxPropTime, ofx::property::eDouble, 1, true, "0" },
+	     { kOfxImageEffectPropRenderScale, ofx::property::eDouble, 2, true, "0" },
+	     { 0 }
+	};
+	
+	ofx::property::OfxhPropSpec outStuff[] = {
+	     { kOfxImageEffectPropRegionOfDefinition, ofx::property::eDouble, 4, false, "0" },
+	     { 0 }
+	};
+	
+	ofx::property::OfxhSet inArgs(inStuff);
+	ofx::property::OfxhSet outArgs(outStuff);
+	
+	inArgs.setDoubleProperty(kOfxPropTime,time);
+	
+	inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
+	
+	OfxStatus stat = _effect.mainEntry(kOfxImageEffectActionGetRegionOfDefinition, (const void*)(_effect.getHandle()), &inArgs, &outArgs);
+	
+	if( stat == kOfxStatOK )
+	{
+	     outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
+	}
+	else if( stat == kOfxStatReplyDefault )
+	{
+		// Rule: default is project size
+		_effect.getProjectOffset( rod.x1, rod.y1 );
+		_effect.getProjectSize( rod.x2, rod.y2 );
+		_effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
 
-	/* @OFX_TODO: Tres etrange: ca bug avec les plugins du commerce: debordement de pile.
-	 * Property::PropSpec inStuff[] = {
-	 *      { kOfxPropTime, Property::eDouble, 1, true, "0" },
-	 *      { kOfxImageEffectPropRenderScale, Property::eDouble, 2, true, "0" },
-	 *      { 0 }
-	 * };
-	 *
-	 * Property::PropSpec outStuff[] = {
-	 *      { kOfxImageEffectPropRegionOfDefinition, Property::eDouble, 4, false, "0" },
-	 *      { 0 }
-	 * };
-	 *
-	 * Property::Set inArgs(inStuff);
-	 * Property::Set outArgs(outStuff);
-	 *
-	 * inArgs.setDoubleProperty(kOfxPropTime,time);
-	 *
-	 * inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
-	 *
-	 * OfxStatus stat = _effect->mainEntry(kOfxImageEffectActionGetRegionOfDefinition,
-	 *                                                                      _effect->getHandle(), &inArgs, &outArgs);
-	 *
-	 * if(stat == kOfxStatOK)
-	 *      outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
-	 */
+		/// @todo tuttle: or inputs RoD if not generator ?
+	}
+	else
+	{
+		throw exception::LogicError("fetchRegionOfDefinition error on clip : " + getFullName() );
+	}
 	return rod;
+	*/
 }
 
-/// Get the Raw Unmapped Pixel Depth from the host.
 
+/// Get the Raw Unmapped Pixel Depth from the host.
 const std::string& ClipImgInstance::getUnmappedBitDepth() const
 {
 	static const std::string v( _effect.getProjectBitDepth() );
@@ -422,13 +492,13 @@ void ClipImgInstance::getUnmappedFrameRange( double& unmappedStartFrame, double&
 	unmappedEndFrame   = 1;
 }
 
+
 /// override this to fill in the image at the given time.
 /// The bounds of the image on the image plane should be
 /// 'appropriate', typically the value returned in getRegionsOfInterest
 /// on the effect instance. Outside a render call, the optionalBounds should
 /// be 'appropriate' for the.
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
-
 tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime time, OfxRectD* optionalBounds )
 {
 	OfxRectD bounds;
@@ -439,43 +509,42 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime ti
 		bounds.y1 = optionalBounds->y1;
 		bounds.x2 = optionalBounds->x2;
 		bounds.y2 = optionalBounds->y2;
+//		throw exception::LogicError(kOfxStatErrMissingHostFeature, "Uses optionalBounds not supported yet."); ///< @todo tuttle: this must be supported !
+		TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
 	}
 	else
-		bounds = getRegionOfDefinition( time );
+		bounds = fetchRegionOfDefinition( time );
 
+	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
+	boost::shared_ptr<Image> image = _memoryCache.get( getConnectedClipFullName(), time );
+//	std::cout << "got image : " << image.get() << std::endl;
+	/// @todo tuttle do something with bounds... if not the same as in cache...
+	if( image.get() != NULL )
+	{
+		if( isOutput() )
+		{
+			TCOUT("output already in cache !");
+			TCOUT( "return output image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
+		}
+		else
+		{
+			TCOUT( "return input image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
+		}
+		return image.get();
+	}
 	if( isOutput() )
 	{
-		if( !_outputImage )
-		{
-			// make a new ref counted image
-			_outputImage = new Image( *this, bounds, time );
-			//_memoryCache.put( _effect.getName(), time, _outputImage );
-		}
-
-		// add another reference to the member image for this fetch
-		// as we have a ref count of 1 due to construction, this will
-		// cause the output image never to delete by the plugin
-		// when it releases the image
-		_outputImage->addReference();
-
-		return _outputImage;
+		// make a new ref counted image
+		boost::shared_ptr<Image> outputImage(new Image( *this, bounds, time ));
+//		outputImage.get()->cout();
+		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
+		_memoryCache.put( getConnectedClipFullName(), time, outputImage );
+		TCOUT_VAR( _memoryCache.size() );
+//		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
+//		_memoryCache.get( getFullName(), time ).get()->cout();
+		return outputImage.get();
 	}
-	else
-	{
-		if( !_inputImage )
-		{
-			// make a new ref counted image
-			_inputImage = new Image( *this, bounds, time );
-		}
-
-		// add another reference to the member image for this fetch
-		// as we have a ref count of 1 due to construction, this will
-		// cause the output image never to delete by the plugin
-		// when it releases the image
-		_inputImage->addReference();
-
-		return _inputImage;
-	}
+	throw exception::LogicError("Error input clip not in cache !");
 }
 
 }

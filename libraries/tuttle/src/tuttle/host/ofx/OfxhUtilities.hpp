@@ -45,7 +45,7 @@ namespace ofx {
 typedef std::vector<std::string> StringVec;
 
 /// class that is a std::vector of std::strings
-inline void SetStringVecValue( StringVec& sv, const std::string& value, size_t index = 0 )
+inline void setStringVecValue( StringVec& sv, const std::string& value, size_t index = 0 )
 {
 	size_t size = sv.size();
 
@@ -63,25 +63,25 @@ inline void SetStringVecValue( StringVec& sv, const std::string& value, size_t i
 }
 
 /// get me deepest bit depth
-std::string FindDeepestBitDepth( const std::string& s1, const std::string& s2 );
+std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 );
 
 /// get the min value
 template<class T>
-inline T Minimum( const T& a, const T& b )
+inline T minimum( const T& a, const T& b )
 {
 	return a < b ? a : b;
 }
 
 /// get the min value
 template<class T>
-inline T Maximum( const T& a, const T& b )
+inline T maximum( const T& a, const T& b )
 {
 	return a > b ? a : b;
 }
 
 /// clamp the value
 template<class T>
-inline T Clamp( const T& v, const T& mn, const T& mx )
+inline T clamp( const T& v, const T& mn, const T& mx )
 {
 	if( v < mn )
 		return mn;
@@ -91,28 +91,28 @@ inline T Clamp( const T& v, const T& mn, const T& mx )
 }
 
 /// clamp the rect in v to the given bounds
-inline OfxRectD Clamp( const OfxRectD& v,
+inline OfxRectD clamp( const OfxRectD& v,
                        const OfxRectD& bounds )
 {
 	OfxRectD r;
 
-	r.x1 = Clamp( v.x1, bounds.x1, bounds.x2 );
-	r.x2 = Clamp( v.x2, bounds.x1, bounds.x2 );
-	r.y1 = Clamp( v.y1, bounds.y1, bounds.y2 );
-	r.y2 = Clamp( v.y2, bounds.y1, bounds.y2 );
+	r.x1 = clamp( v.x1, bounds.x1, bounds.x2 );
+	r.x2 = clamp( v.x2, bounds.x1, bounds.x2 );
+	r.y1 = clamp( v.y1, bounds.y1, bounds.y2 );
+	r.y2 = clamp( v.y2, bounds.y1, bounds.y2 );
 	return r;
 }
 
 /// get the union of the two rects
-inline OfxRectD Union( const OfxRectD& a,
+inline OfxRectD rectUnion( const OfxRectD& a,
                        const OfxRectD& b )
 {
 	OfxRectD r;
 
-	r.x1 = Minimum( a.x1, b.x1 );
-	r.x2 = Maximum( a.x2, b.x2 );
-	r.y1 = Minimum( a.y1, b.y1 );
-	r.y2 = Maximum( a.y2, b.y2 );
+	r.x1 = minimum( a.x1, b.x1 );
+	r.x2 = maximum( a.x2, b.x2 );
+	r.y1 = minimum( a.y1, b.y1 );
+	r.y2 = maximum( a.y2, b.y2 );
 	return r;
 }
 

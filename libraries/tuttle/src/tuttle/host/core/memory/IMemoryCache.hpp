@@ -4,14 +4,21 @@
 #include "IMemoryPool.hpp"
 #include <string>
 
+/// @todo remove this...
+#include <boost/shared_ptr.hpp>
+//#include <tuttle/host/core/ClipInstance.hpp> // Image...
+///
+
 namespace tuttle {
 namespace host {
 namespace core {
-
+class Image;
 // configure the cache with this element
 // CACHE_ELEMENT should be a smart_ptr of some kind
 // pointer will be stored in a container so no auto_ptr is allowed
-typedef IPoolDataPtr CACHE_ELEMENT;
+
+typedef ::boost::shared_ptr<tuttle::host::core::Image> CACHE_ELEMENT; ///< @todo temporary solution..
+//typedef IPoolDataPtr CACHE_ELEMENT;
 
 class IMemoryCache
 {
