@@ -30,7 +30,7 @@ project
   		# GCC specific flags
   		#
   		# removes deprecated header used by boost
-                <toolset>gcc:<cflags>-Wno-deprecated
+                <toolset>gcc:<cxxflags>-Wno-deprecated
     ;
 
 ###############################################################################
