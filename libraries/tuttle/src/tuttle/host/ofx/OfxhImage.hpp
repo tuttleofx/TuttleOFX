@@ -166,7 +166,6 @@ public:
 
 	/// release the reference count, which, if zero, deletes this
 	bool releaseReference(){ TCOUT("Image::releaseReference from plugin."); return _referenceCount <=0; }
-
 };
 
 }
