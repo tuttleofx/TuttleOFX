@@ -83,6 +83,16 @@ EffectInstance::EffectInstance( const EffectInstance& other )
 	 */
 }
 
+void EffectInstance::connect(const ProcessNode& sourceEffect)
+{
+	const EffectInstance& source = dynamic_cast<const EffectInstance&>(sourceEffect);
+
+	ClipImgInstance& output = dynamic_cast<ClipImgInstance&>( source.getClip(kOfxImageEffectOutputClipName) );
+	ClipImgInstance& input = dynamic_cast<ClipImgInstance&>( getClip(kOfxImageEffectSimpleSourceClipName) );
+
+	input.setConnectedClip( output );
+}
+
 /**
  * @warning do a deep comparison
  */

@@ -35,14 +35,14 @@ void ProcessGraph::relink()
 
 void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
+	//graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "test.dot" );
+
+
+	// Initialize variables
 	const int numFramesToRender = 1;
 	OfxPointD renderScale = { 1.0, 1.0 };
 	OfxRectI renderWindow = { 0, 0,
 							123, 123 };
-
-	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "test.dot" );
-
-	//TODO dog-faced   :/
 	Graph::InternalGraph::vertex_range_t vrange = _graph.getVertices();
 	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
 	{
@@ -54,14 +54,20 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	// Setup parameters
 	EffectInstance& firstEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGReader1"));
 	EffectInstance& lastEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGWriterHd3d1"));
-
 	firstEffect.getParam("Input filename").set("input.png");
 	lastEffect.getParam("Output filename").set("output.png");
 	firstEffect.paramInstanceChangedAction("Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 	lastEffect.paramInstanceChangedAction("Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
-	ProcessOptions processOptions;
+
+	//Setup clips
+	core::dfs_connect_visitor connectVisitor;
+	_graph.dfs(connectVisitor);
+
+
+
 	//--- BEGIN RENDER
+	ProcessOptions processOptions;
 	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
@@ -73,6 +79,7 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		v.processNode()->begin(processOptions);
 	}
 
+/*
 	//--- RENDER
 	for( int t = 0; t < numFramesToRender; ++t )
 	{
@@ -93,6 +100,7 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		graph::Vertex& v = _graph.instance( *it );
 		v.processNode()->end(processOptions);
 	}
+	*/
 }
 
 }

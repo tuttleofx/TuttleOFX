@@ -22,7 +22,7 @@ project
         <include>../openfxHack/include
         <include>../../3rdParty/expat/lib
         <define>CINTERFACE
-    : build-dir $(DIST)/bin/tuttle
+    : build-dir $(DIST)/tuttle/obj
     ;
 
 use-project /png  : ../../3rdParty/libpng ;
@@ -64,11 +64,11 @@ lib tuttleplugin :
 ###############################################################################
 install dist_src
     : tuttlehost tuttleplugin
-    : <variant>debug:<location>$(DIST)/tuttle/debug/lib
-      <variant>release:<location>$(DIST)/tuttle/release/lib
+    : <variant>debug:<location>$(DIST)/tuttle/bin/debug
+      <variant>release:<location>$(DIST)/tuttle/bin/release
     ;
 
 install dist_include
 	: headers
-	: <location>$(DIST)/include/tuttle
+	: <location>$(DIST)/tuttle/include
 	;

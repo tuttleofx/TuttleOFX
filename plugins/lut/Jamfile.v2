@@ -10,10 +10,9 @@ import os ;
 project
     : requirements	
         <include>src
-        <include>../_common
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/lut
+    : build-dir $(DIST)/plugins/lut/obj
     ;
 
 ###############################################################################
@@ -45,7 +44,7 @@ plugin lut :
 alias install : install-plug ;
 install install-plug
 	:	lut
-	:	<os>NT:<location>$(DIST)/plugins/lut.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/lut.ofx.bundle/Contents/Linux
+	:	<os>NT:<location>$(DIST)/plugins/lut/bundle/lut.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/lut/bundle/lut.ofx.bundle/Contents/Linux
 	;
 

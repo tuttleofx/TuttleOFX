@@ -10,10 +10,9 @@ import os ;
 project
     : requirements	
 				<include>src
-				<include>../_common
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/invert
+    : build-dir $(DIST)/plugins/invert/obj
     ;
 
 ###############################################################################
@@ -42,8 +41,8 @@ plugin invert :
 alias install : install-plug ;
 install install-plug
 	:	invert
-	:	<os>NT:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/invert.ofx.bundle/Contents/MacOS
+	:	<os>NT:<location>$(DIST)/plugins/invert/bundle/invert.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/invert/bundle/invert.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/invert/bundle/invert.ofx.bundle/Contents/MacOS
 	;
 

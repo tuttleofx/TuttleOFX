@@ -26,6 +26,8 @@ public:
 	virtual const std::string&		getName() const = 0;
 	virtual const EProcessNodeType 	getProcessNodeType() const = 0;
 
+	virtual void connect(const ProcessNode & inNode) = 0;
+
 	virtual void begin(const ProcessOptions & processOptions) = 0;
 	virtual void preProcess(const ProcessOptions & processOptions) = 0;
 	virtual void process(const ProcessOptions & processOptions) = 0;

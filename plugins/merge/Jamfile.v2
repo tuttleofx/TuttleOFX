@@ -10,10 +10,9 @@ import os ;
 project
     : requirements	
 				<include>src
-				<include>../_common
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/merge
+    : build-dir $(DIST)/plugins/merge/obj
     ;
 
 ###############################################################################
@@ -42,7 +41,7 @@ plugin merge :
 alias install : install-plug ;
 install install-plug
 	:	merge
-	:	<os>NT:<location>$(DIST)/plugins/merge.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/merge.ofx.bundle/Contents/Linux
+	:	<os>NT:<location>$(DIST)/plugins/merge/bundle/merge.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/merge/bundle/merge.ofx.bundle/Contents/Linux
 	;
 

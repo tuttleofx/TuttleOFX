@@ -385,9 +385,9 @@ public:
 	/**
 	 * get the clip
 	 */
-	OfxhClipImage& getClip( std::string name )
+	OfxhClipImage& getClip( std::string name ) const
 	{
-		std::map<std::string, OfxhClipImage*>::iterator it = _clips.find( name );
+		std::map<std::string, OfxhClipImage*>::const_iterator it = _clips.find( name );
 		if( it == _clips.end() )
 			throw core::exception::LogicError( "Clip not found (" + name + ")." );
 		return *it->second;

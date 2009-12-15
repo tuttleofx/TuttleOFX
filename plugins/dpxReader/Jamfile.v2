@@ -10,11 +10,10 @@ import os ;
 project
     : requirements
         <include>src
-        <include>../_common
         <include>../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/dpxReader
+    : build-dir $(DIST)/plugins/dpxReader/obj
     ;
 
 use-project /dpx 	: ../../libraries/dpxEngine ;
@@ -41,8 +40,8 @@ plugin dpxReader :
 alias install : install-plug ;
 install install-plug
 	:	dpxReader
-	:	<os>NT:<location>$(DIST)/plugins/dpxReader.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/dpxReader.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/dpxReader.ofx.bundle/Contents/MacOS
+	:	<os>NT:<location>$(DIST)/plugins/dpxReader/bundle/dpxReader.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/dpxReader/bundle/dpxReader.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/dpxReader/bundle/dpxReader.ofx.bundle/Contents/MacOS
 	;
 

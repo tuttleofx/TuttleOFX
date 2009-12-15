@@ -21,7 +21,7 @@ project
         <os>NT:<define>COMPILED_FROM_DSP
         <define>XML_STATIC
         <include>lib
-    : build-dir $(DIST)/lib/expat
+    : build-dir $(DIST)/3rdParty/expat/obj
     ;
 
 ###############################################################################
@@ -36,6 +36,6 @@ lib expat :
 
 install dist_src
 	:	expat
-	:	<variant>debug:<location>$(DIST)/lib/expat/debug
-		<variant>release:<location>$(DIST)/lib/expat/release
+	:	<variant>debug:<location>$(DIST)/3rdParty/expat/bin/debug
+		<variant>release:<location>$(DIST)/3rdParty/expat/bin/release
 	;
