@@ -22,8 +22,9 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace %NAMESPACE% {
+namespace tuttle {
 namespace plugin {
+namespace %NAMESPACE% {
 
 static const bool   kSupportTiles                 = false;
 static const bool   kSupportTemporalClipAccess    = false;
@@ -102,6 +103,7 @@ OFX::ImageEffect*
 
 }
 }
+}
 
 namespace OFX 
 {
@@ -109,7 +111,7 @@ namespace OFX
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static %NAMESPACE%::plugin::%CLASSNAME%PluginFactory p("fr.%COMPANY_NAME%.%PROJECT_NAME%.%L_CLASSNAME%", 1, 0);
+            static tuttle::plugin::%NAMESPACE%::%CLASSNAME%PluginFactory p("fr.%COMPANY_NAME%.%PROJECT_NAME%.%L_CLASSNAME%", 1, 0);
             ids.push_back(&p);
         }
     }

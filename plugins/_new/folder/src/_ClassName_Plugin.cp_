@@ -15,8 +15,9 @@
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
-namespace %NAMESPACE% {
+namespace tuttle {
 namespace plugin {
+namespace %NAMESPACE% {
 
 using namespace boost::gil;
 
@@ -120,5 +121,6 @@ void %CLASSNAME%Plugin::changedParam( const OFX::InstanceChangedArgs &args, cons
     }
 }
 
+}
 }
 }

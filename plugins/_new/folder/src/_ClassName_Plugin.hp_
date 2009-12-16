@@ -13,8 +13,9 @@
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
 
-namespace %NAMESPACE% {
+namespace tuttle {
 namespace plugin {
+namespace %NAMESPACE% {
 
 /**
  * @brief
@@ -37,6 +38,7 @@ protected:
     OFX::Clip           *_dstClip;       ///< Destination image clip
 };
 
+}
 }
 }
 

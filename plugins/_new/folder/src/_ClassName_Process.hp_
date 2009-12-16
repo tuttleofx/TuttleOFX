@@ -26,8 +26,9 @@
 #include <boost/scoped_ptr.hpp>
 
 
-namespace %NAMESPACE% {
+namespace tuttle {
 namespace plugin {
+namespace %NAMESPACE% {
 
 /**
  * @brief Base class
@@ -51,6 +52,7 @@ public :
     void multiThreadProcessImages(OfxRectI procWindow);
 };
 
+}
 }
 }
 
