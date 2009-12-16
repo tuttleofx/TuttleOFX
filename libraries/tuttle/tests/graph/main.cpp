@@ -73,15 +73,11 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	core::Graph g;
 	core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
-	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.pngreader" );
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 
 	g.connect( read1, invert1 );
-	g.connect( read2, invert1 );
-	g.connect( invert1, invert2 );
-	g.connect( invert2, write1 );
+	g.connect( invert1, write1 );
 
 	//	core::ProcessGraph processGraph(g);
 

@@ -14,14 +14,12 @@ project
         <link>static
     : usage-requirements
         <include>src
-    : build-dir $(DIST)/lib/bin/dpx
+    : build-dir $(DIST)/dpxEngine/obj
     ;
 
 ###############################################################################
 # libpng library
 ###############################################################################
-alias headers : [ glob-tree *.hpp ] ;
-
 lib dpx : 
         [ glob src/*.cpp ]
         /boost/system/<link>static
@@ -30,6 +28,6 @@ lib dpx :
 
 install dist_src	
 	:	dpx
-	:	<variant>debug:<location>$(DIST)/lib/dpx/debug
-		<variant>release:<location>$(DIST)/lib/dpx/release
+	:	<variant>debug:<location>$(DIST)/dpxEngine/bin/debug
+		<variant>release:<location>$(DIST)/dpxEngine/bin/release
 	;

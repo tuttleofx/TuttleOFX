@@ -15,7 +15,7 @@ project
 	: usage-requirements
 				<include>include
 				<include>../include
-    : build-dir $(DIST)/bin/openFX/Support
+    : build-dir $(DIST)/openFX/Support/obj
     ;
 
 
@@ -32,6 +32,6 @@ lib Support :
 ###############################################################################
 install dist_src	
 	:	Support
-	:	<variant>debug:<location>$(DIST)/lib/openFX/Support/debug
-		<variant>release:<location>$(DIST)/lib/openFX/Support/release
+	:	<variant>debug:<location>$(DIST)/openFX/Support/bin/debug
+		<variant>release:<location>$(DIST)/openFX/Support/bin/release
 	;

@@ -32,6 +32,27 @@ struct dfs_compute_visitor : public boost::dfs_visitor<>
 		const ProcessOptions & _options;
 };
 
+
+struct dfs_connect_visitor : public boost::dfs_visitor<>
+{
+	public:
+		dfs_connect_visitor(){}
+
+		template<class EdgeDescriptor, class Graph>
+		void examine_edge( EdgeDescriptor e, Graph& g )
+		{
+			std::cout << "examine_edge "
+					  << get( vertex_properties, g )[source(e, g)]
+					  << " TO "
+					  << get( vertex_properties, g )[target(e, g)]
+			          << std::endl;
+
+			core::ProcessNode * sourceNode = get( vertex_properties, g )[source(e, g)].processNode();
+			core::ProcessNode * targetNode = get( vertex_properties, g )[target(e, g)].processNode();
+			targetNode->connect( *sourceNode );
+		}
+};
+
 } // namespace core
 } // namespace host
 } // namespace tuttle

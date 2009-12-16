@@ -14,14 +14,15 @@ project
         <include>lib
         <threading>multi
         <link>static
-        <toolset>gcc:<cflags>-Wno-switch
+		<toolset>gcc:<cflags>-Wno-switch
         <toolset>darwin:<cflags>-Wno-switch
-		<warnings-as-errors>off
+        # disabling warning as error as we are not responsible for this code
+        <warnings-as-errors>off
     : usage-requirements
         <os>NT:<define>COMPILED_FROM_DSP
         <define>XML_STATIC
         <include>lib
-    : build-dir $(DIST)/lib/expat
+    : build-dir $(DIST)/3rdParty/expat/obj
     ;
 
 ###############################################################################
@@ -36,6 +37,6 @@ lib expat :
 
 install dist_src
 	:	expat
-	:	<variant>debug:<location>$(DIST)/lib/expat/debug
-		<variant>release:<location>$(DIST)/lib/expat/release
+	:	<variant>debug:<location>$(DIST)/3rdParty/expat/bin/debug
+		<variant>release:<location>$(DIST)/3rdParty/expat/bin/release
 	;

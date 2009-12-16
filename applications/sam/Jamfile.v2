@@ -13,7 +13,7 @@ project
         <threading>multi
     : usage-requirements
         <include>src
-    : build-dir $(DIST)/bin/sam
+    : build-dir $(DIST)/sam/obj
     ;
 
 use-project /tuttlelib : ../../libraries/tuttle ;
@@ -35,13 +35,13 @@ exe sam :
 ###############################################################################
 install dist_src	
     : sam
-        /boost/system
-        /boost/filesystem
-    : <variant>debug:<location>$(DIST)/applications/sam/debug
-        <variant>release:<location>$(DIST)/dist/applications/sam/release
+      /boost/system
+      /boost/filesystem
+    : <variant>debug:<location>$(DIST)/sam/bin/debug
+      <variant>release:<location>$(DIST)/sam/bin/release
     ;
 
 install dist_include
 	: headers
-	: <location>$(DIST)/include/sam
+	: <location>$(DIST)/sam/include
 	;

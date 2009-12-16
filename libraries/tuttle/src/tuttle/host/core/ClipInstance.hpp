@@ -136,11 +136,10 @@ public:
 		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
 		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
 		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
-		TCOUT("OUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU");
-		getProperties().coutProperties();
-		TCOUT("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
 		getEditableProperties().setChainedSet( &other.getProperties() );
+		getProperties().coutProperties();
 		setConnected();
+		TCOUT("Clip connected!");
 	}
 	void setUnconnected() { _connectedClip = NULL; setConnected(false); }
 	

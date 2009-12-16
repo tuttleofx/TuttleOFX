@@ -10,11 +10,10 @@ import os ;
 project
     : requirements
         <include>src
-        <include>../_common
         <include>../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/pngReader
+    : build-dir $(DIST)/plugins/pngReader/obj
     ;
 
 use-project /png 	: ../../3rdParty/libpng ;
@@ -47,8 +46,8 @@ plugin pngReader :
 alias install : install-plug ;
 install install-plug
 	:	pngReader
-	:	<os>NT:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/pngReader.ofx.bundle/Contents/MacOS
+	:	<os>NT:<location>$(DIST)/plugins/pngReader/bundle/pngReader.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/pngReader/bundle/pngReader.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/pngReader/bundle/pngReader.ofx.bundle/Contents/MacOS
 	;
 

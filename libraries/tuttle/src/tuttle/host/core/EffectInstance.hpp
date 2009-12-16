@@ -58,16 +58,17 @@ public:
 
 	const EProcessNodeType getProcessNodeType() const { return eImageEffect; }
 
+	void connect(const ProcessNode& sourceEffect);
+
+
 	void begin(const ProcessOptions & processOptions)
 	{
 		getClipPreferences();
-		TCOUT_INFOS;
 		beginRenderAction(	processOptions._startFrame
 						,	processOptions._endFrame
 						,	processOptions._step
 						,	processOptions._interactive
 						,	processOptions._renderScale);
-		TCOUT_INFOS;
 	}
 
 	void preProcess(const ProcessOptions & processOptions){

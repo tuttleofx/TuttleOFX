@@ -15,7 +15,7 @@ project
 		<warnings-as-errors>off
     : usage-requirements
         <include>.
-    : build-dir $(DIST)/lib/bin/png
+    : build-dir $(DIST)/3rdParty/png/obj
     ;
 
 use-project /zlib 	: ../zlib ;
@@ -32,6 +32,6 @@ lib png :
 
 install dist_src	
 	:	png
-	:	<variant>debug:<location>$(DIST)/lib/png/debug
-		<variant>release:<location>$(DIST)/lib/png/release
+	:	<variant>debug:<location>$(DIST)/3rdParty/png/bin/debug
+		<variant>release:<location>$(DIST)/3rdParty/png/bin/release
 	;

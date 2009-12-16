@@ -10,10 +10,9 @@ import os ;
 project
     : requirements	
         <include>src
-        <include>../_common
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/crop
+    : build-dir $(DIST)/plugins/crop/obj
     ;
 
 ###############################################################################
@@ -42,8 +41,8 @@ plugin crop :
 alias install : install-plug ;
 install install-plug
 	:	crop
-	:	<os>NT:<location>$(DIST)/plugins/crop.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/crop.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/crop.ofx.bundle/Contents/MacOS
+	:	<os>NT:<location>$(DIST)/plugins/crop/bundle/crop.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/crop/bundle/crop.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/crop/bundle/crop.ofx.bundle/Contents/MacOS
 	;
 

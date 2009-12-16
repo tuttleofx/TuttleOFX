@@ -14,7 +14,7 @@ project
 		<warnings-as-errors>off
     : usage-requirements
         <include>.
-    : build-dir $(DIST)/lib/bin/zlib
+    : build-dir $(DIST)/3rdParty/zlib/obj
     ;
 
 ###############################################################################
@@ -28,6 +28,6 @@ lib zlib :
 
 install dist_src	
 	:	zlib
-	:	<variant>debug:<location>$(DIST)/lib/zlib/debug
-		<variant>release:<location>$(DIST)/lib/zlib/release
+	:	<variant>debug:<location>$(DIST)/3rdParty/zlib/bin/debug
+		<variant>release:<location>$(DIST)/3rdParty/zlib/bin/release
 	;
