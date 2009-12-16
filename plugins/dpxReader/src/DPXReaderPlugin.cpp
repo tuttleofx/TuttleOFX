@@ -78,38 +78,6 @@ void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 				return;
 		}
 	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		/*
-		 * switch( dstBitDepth )
-		 * {
-		 *  case OFX::eBitDepthUByte:
-		 *  {
-		 *      DPXReaderProcess<gray8_view_t> fred( *this );
-		 *      fred.setupAndProcess( args );
-		 *      break;
-		 *  }
-		 *  case OFX::eBitDepthUShort:
-		 *  {
-		 *      DPXReaderProcess<gray16_view_t> fred( *this );
-		 *      fred.setupAndProcess( args );
-		 *      break;
-		 *  }
-		 *  case OFX::eBitDepthFloat:
-		 *  {
-		 *      DPXReaderProcess<gray32f_view_t> fred( *this );
-		 *      fred.setupAndProcess( args );
-		 *      break;
-		 *  }
-		 *  case OFX::eBitDepthNone:
-		 *      COUT_FATALERROR( "BitDepthNone not recognize." );
-		 *      return;
-		 *  case OFX::eBitDepthCustom:
-		 *      COUT_FATALERROR( "BitDepthCustom not recognize." );
-		 *      return;
-		 * }
-		 */
-	}
 }
 
 void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

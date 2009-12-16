@@ -26,8 +26,7 @@ static const bool kSupportTiles = false;
 
 using namespace OFX;
 
-mDeclarePluginFactory( DPXReaderPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( DPXReaderPluginFactory, {}, {} );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -69,8 +68,8 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	// Create the mandated output clip
 	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 
+	// Dpx only supports RGB(A)
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls

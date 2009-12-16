@@ -3,7 +3,7 @@
 
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
-#include "dpxImage.hpp"
+#include <dpxImage.hpp>
 
 namespace bgil = boost::gil;
 
