@@ -15,6 +15,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////
 
 #include <boost/gil/gil_all.hpp>
+#include <cmath>
+#include <iostream>
 
 namespace boost { namespace gil {
 
@@ -40,7 +42,6 @@ typedef mpl::vector3< hsl_color_space::hue_t
 /// \ingroup LayoutModel
 typedef layout<hsl_t> hsl_layout_t;
 
-
 GIL_DEFINE_ALL_TYPEDEFS( 32f, hsl );
 
 /// \ingroup ColorConvert
@@ -60,13 +61,14 @@ struct default_color_converter_impl< rgb_t, hsl_t >
 
       bits32f hue, saturation, lightness;
 
-      bits32f min_color = (std::min)( temp_red, (std::min)( temp_green, temp_blue ));
-      bits32f max_color = (std::max)( temp_red, (std::max)( temp_green, temp_blue ));
+      bits32f min_color = std::min( temp_red, std::min( temp_green, temp_blue ));
+	  bits32f max_color = std::max( temp_red, std::max( temp_green, temp_blue ));
 
-      if( abs( min_color - max_color ) < 0.001 )
+// Important change: std::abs instead of abs otherwise it call boost::rational::abs
+//    if( abs( min_color - max_color ) < 0.001f )
+      if( std::abs( min_color - max_color ) < 0.001f )
       {
          // rgb color is gray
-
          hue        = 0.f;
          saturation = 0.f;
 
@@ -75,15 +77,10 @@ struct default_color_converter_impl< rgb_t, hsl_t >
       }
       else
       {
-
          bits32f diff = max_color - min_color;
-
          // lightness calculation
-
          lightness = ( min_color + max_color ) / 2.f;
-
          // saturation calculation
-
          if( lightness < 0.5f )
          {
             saturation = diff 
@@ -91,47 +88,51 @@ struct default_color_converter_impl< rgb_t, hsl_t >
          }
          else
          {
-            saturation = ( max_color - min_color ) 
-                       / ( 2.f - diff );
-
+			// Eloi's correction (hope this is not wrong)
+//            saturation = ( max_color - min_color )
+//                       / ( 2.f - diff );
+            saturation = diff
+                       / ( 2.f - max_color - min_color );
          }
 
          // hue calculation
-         if( abs( max_color - temp_red ) < 0.0001f )
+         if( std::abs( max_color - temp_red ) < 0.0001f )
          {
             // max_color is red
             hue = ( temp_green - temp_blue ) 
                 / diff;
-
          }
-         else if( abs( max_color - temp_green) < 0.0001f )
+		 else if( std::abs( max_color - temp_green) < 0.0001f )
          {
             // max_color is green
             // 2.0 + (b - r) / (maxColor - minColor);
             hue = 2.f 
                 + ( temp_blue - temp_red ) 
                 / diff;
-
          }
-         else
+         else if( std::abs( max_color - temp_blue) < 0.0001f )
          {
             // max_color is blue
+			// Eloi's correction (hope this is not wrong)
+//            hue = 4.f
+//                + ( temp_red - temp_blue )
+//                / diff;
             hue = 4.f 
-                + ( temp_red - temp_blue ) 
+                + ( temp_red - temp_green )
                 / diff;
          }
 
-         hue /= 6.f;
-         
+         hue *= 60.f;
+
          if( hue < 0.f )
          {
-            hue += 1.f;
+            hue += 360.f;
          }
       }
 
-      get_color( dst,hue_t() )        = hue;
-      get_color( dst,saturation_t() ) = saturation;
-      get_color( dst,lightness_t() )  = lightness;
+      get_color( dst, hue_t() )        = hue / 360.0f;
+      get_color( dst, saturation_t() ) = saturation;
+      get_color( dst, lightness_t() )  = lightness;
    }
 };
 
@@ -147,7 +148,7 @@ struct default_color_converter_impl<hsl_t,rgb_t>
 
       bits32f red, green, blue;
 
-      if( abs( get_color( src, saturation_t() )) < 0.0001  )
+	  if( std::abs( get_color( src, saturation_t() )) < 0.0001f  )
       {
          // If saturation is 0, the color is a shade of gray
          red   = get_color( src, lightness_t() );
@@ -160,7 +161,7 @@ struct default_color_converter_impl<hsl_t,rgb_t>
          float tempr, tempg, tempb;
 
          //Set the temporary values
-         if( get_color( src, lightness_t() ) < 0.5 ) 
+         if( get_color( src, lightness_t() ) < 0.5f )
          {
             temp2 = get_color( src, lightness_t() )
                   * ( 1.f + get_color( src, saturation_t() ) );

@@ -9,7 +9,7 @@
 #ifndef MERGE_PLUGIN_H
 #define MERGE_PLUGIN_H
 
-#include "MergeFunctors.hpp"
+#include "gil/toolbox/MergeFunctors.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>

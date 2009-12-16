@@ -2,6 +2,7 @@
 #define GIL_FUNCTORS_HPP
 
 #include "ViewsMerging.hpp"
+#include "hsl.hpp"
 #include <boost/math/constants/constants.hpp>
 #include <cmath>
 
@@ -587,6 +588,31 @@ struct FunctorXOR
 		dst = (Channel)( A * ( max - b ) + B * ( max - a ) );
 	}
 
+};
+
+
+/*****************************************************************************
+* Functors that operates on pixels                                           *
+******************************************************************************/
+
+template <typename Pixel>
+struct FunctorColor
+	: public boost::gil::merge_functor<Pixel, fun_op_pixel_t>
+{
+	//@todo: make this code faster
+	inline void operator()( const Pixel& A, const Pixel& B, Pixel& C )
+	{
+		using namespace hsl_color_space;
+		hsl32f_pixel_t hA, hB;
+
+		// @todo: improve this !
+		color_convert( A, hA );
+		color_convert( B, hB );
+		hsl32f_pixel_t hC( get_color( hB, hue_t() ),
+						   get_color( hB, saturation_t() ),
+						   get_color( hA, lightness_t() ) );
+		color_convert(hC, C);
+	}
 };
 
 }
