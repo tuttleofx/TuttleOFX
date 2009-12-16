@@ -99,7 +99,7 @@ bool OfxhParamAccessor::getEvaluateOnChange() const
 
 bool OfxhParamAccessor::getCanUndo() const
 {
-	if( getProperties().fetchProperty( kOfxParamPropCanUndo ) )
+	if( getProperties().hasProperty( kOfxParamPropCanUndo ) )
 	{
 		return getProperties().getIntProperty( kOfxParamPropCanUndo ) != 0;
 	}
@@ -108,7 +108,7 @@ bool OfxhParamAccessor::getCanUndo() const
 
 bool OfxhParamAccessor::getCanAnimate() const
 {
-	if( getProperties().fetchProperty( kOfxParamPropAnimates ) )
+	if( getProperties().hasProperty( kOfxParamPropAnimates ) )
 	{
 		return getProperties().getIntProperty( kOfxParamPropAnimates ) != 0;
 	}
@@ -489,11 +489,9 @@ OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, attribute::OfxhPara
 	// parameter has to be owned by paramSet
 	setInstance.addParam( descriptor.getName(), this ); ///< @todo tuttle move this from here (introduce too many problems), no good reason to be here.
 
-	getProperties().addNotifyHook( kOfxParamPropEnabled, this );
-	getProperties().addNotifyHook( kOfxParamPropSecret, this );
-	getProperties().addNotifyHook( kOfxPropLabel, this );
-	getProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
-	getProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
+	getEditableProperties().addNotifyHook( kOfxParamPropEnabled, this );
+	getEditableProperties().addNotifyHook( kOfxParamPropSecret, this );
+	getEditableProperties().addNotifyHook( kOfxPropLabel, this );
 }
 
 /**

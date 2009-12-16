@@ -31,10 +31,10 @@ public:
 
 	virtual const std::string message() const throw( )
 	{
-		std::stringstream ss;
-
-		ss << ofxStatusStr() << " : " << std::logic_error::what() << _ss;
-		return ss.str();
+		//std::stringstream ss;
+		//ss << ofxStatusStr() << " : " << std::logic_error::what() << _ss.str().c_str();
+		//return ss.str();
+		return ofxStatusStr() + " : " + std::logic_error::what();
 	}
 
 	virtual const char* what() const throw( )

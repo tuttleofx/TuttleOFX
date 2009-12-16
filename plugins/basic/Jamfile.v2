@@ -31,7 +31,7 @@ else if [ os.name ] = MACOSX
 plugin basic : 
 				[ glob src/*.cpp ]
 				/supportlib
-			   /tuttlelib//tuttleplugin/<link>static
+			    /tuttlelib//tuttleplugin/<link>static
 				opengl
 				;
 

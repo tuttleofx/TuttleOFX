@@ -31,6 +31,8 @@
 
 #include "OfxhUtilities.hpp"
 
+#include <boost/ptr_container/ptr_map.hpp>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -253,7 +255,7 @@ public:
 };
 
 /// base class for all properties
-class OfxhProperty
+class OfxhProperty : private boost::noncopyable
 {
 protected:
 	std::string _name;                         ///< name of this property
@@ -286,16 +288,16 @@ public:
 	void setPluginReadOnly( bool v ) { _pluginReadOnly = v; }
 
 	/// override this to return a clone of the property
-	virtual OfxhProperty* deepCopy() = 0;
+	virtual OfxhProperty* clone() const = 0;
 
 	/// get the name of this property
-	const std::string& getName()
+	const std::string& getName() const
 	{
 		return _name;
 	}
 
 	/// get the type of this property
-	TypeEnum getType()
+	TypeEnum getType() const
 	{
 		return _type;
 	}
@@ -334,8 +336,15 @@ public:
 	virtual void reset() = 0;
 
 	// get a string representing the value of this property at element nth
-	virtual std::string getStringValue( int nth ) = 0;
+	virtual std::string getStringValue( int nth ) const = 0;
 };
+
+
+inline OfxhProperty* new_clone( const OfxhProperty& p )
+{
+	return p.clone();
+}
+
 
 /// this represents a generic property.
 /// template parameter T is the type descriptor of the
@@ -350,6 +359,7 @@ public:
 	typedef typename T::Type Type;
 	typedef typename T::ReturnType ReturnType;
 	typedef typename T::APIType APIType;
+	typedef typename T::APITypeConstless APITypeConstless;
 
 protected:
 	/// this is the present value of the property
@@ -367,7 +377,7 @@ public:
 
 	OfxhPropertyTemplate( const OfxhPropertyTemplate<T>& pt );
 
-	OfxhPropertyTemplate<T>* deepCopy()
+	OfxhPropertyTemplate<T>* clone() const
 	{
 		return new OfxhPropertyTemplate( *this );
 	}
@@ -376,7 +386,7 @@ public:
 	{}
 
 	/// get the vector
-	const std::vector<Type>& getValues()
+	const std::vector<Type>& getValues() const
 	{
 		return _value;
 	}
@@ -412,17 +422,27 @@ public:
 	size_t getDimension() const OFX_EXCEPTION_SPEC;
 
 	/// return the value as a string
-	inline std::string getStringValue( int idx )
+	inline std::string getStringValue( int idx ) const
 	{
 		return castToString( _value[idx] );
 	}
 
+public: /// @todo in private and friend function...
+	ReturnType getConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC;
+	ReturnType getConstlessValueRaw( int index = 0 ) const OFX_EXCEPTION_SPEC;
+	/// @todo tuttle remove ReturnType, only use Type
+	inline APITypeConstless getAPIConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC { return getConstlessValue(); }
 };
 
 typedef OfxhPropertyTemplate<OfxhIntValue>     Int;     /// Our int property
 typedef OfxhPropertyTemplate<OfxhDoubleValue>  Double;  /// Our double property
 typedef OfxhPropertyTemplate<OfxhStringValue>  String;  /// Our string property
 typedef OfxhPropertyTemplate<OfxhPointerValue> Pointer; /// Our pointer property
+
+
+template<>
+inline String::APITypeConstless String::getAPIConstlessValue( int index ) const OFX_EXCEPTION_SPEC { return const_cast<String::APITypeConstless>(getConstlessValue().c_str()); }
+
 
 /// A class that is used to initialize a property set. Feed in an array of these to
 /// a property and it will construct a bunch of properties. Terminate such an array
@@ -437,7 +457,7 @@ struct OfxhPropSpec
 };
 
 /// A std::map of properties by name
-typedef std::map<std::string, OfxhProperty*> PropertyMap; /// @todo tuttle: use boost::ptr_map
+typedef boost::ptr_map<const std::string, OfxhProperty> PropertyMap;
 
 /**
  * Class that holds a set of properties and manipulates them
@@ -509,6 +529,8 @@ public:
 	void addProperties( const OfxhPropSpec* );
 
 	void eraseProperty( const std::string& propName );
+
+	bool hasProperty( const std::string& propName, bool followChain = false ) const;
 	
 	inline OfxhSet& operator+( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
 
@@ -522,41 +544,47 @@ public:
 	void setChainedSet( const OfxhSet* const s ) { _chainedSet = s; }
 
 	/// grab the internal properties map
-	const PropertyMap& getMap() const
-	{
-		return _props;
-	}
+	const PropertyMap& getMap() const { return _props; }
+	PropertyMap& getMap() { return _props; }
 
 	/// set the get hook for a particular property.  users may need to call particular
 	/// specialised versions of this.
-	void setGetHook( const std::string& s, OfxhGetHook* ghook ) const;
+	void setGetHook( const std::string& s, OfxhGetHook* ghook );
 
 	/// add a set hook for a particular property.  users may need to call particular
 	/// specialised versions of this.
-	void addNotifyHook( const std::string& name, OfxhNotifyHook* hook ) const;
+	void addNotifyHook( const std::string& name, OfxhNotifyHook* hook );
 
-	/// Fetchs a pointer to a property of the given name, following the property chain if the
+	/// Fetchs a reference to a property of the given name, following the property chain if the
 	/// 'followChain' arg is not false.
-	OfxhProperty* fetchProperty( const std::string& name, bool followChain = false ) const;
+	OfxhProperty& fetchProperty( const std::string& name, bool followChain = false );
+	const OfxhProperty& fetchProperty( const std::string& name, bool followChain = false ) const { return const_cast<OfxhSet*>(this)->fetchProperty( name, followChain ); }
 
 	/// get property with the particular name and type.  if the property is
 	/// missing or is of the wrong type, return an error status.  if this is a sloppy
 	/// property set and the property is missing, a new one will be created of the right
 	/// type
 	template<class T>
-	bool fetchTypedProperty( const std::string& name, T*& prop, bool followChain = false ) const;
+	T& fetchTypedProperty( const std::string& name, bool followChain = false );
 
-	/// retrieve the nameed string property
-	String* fetchStringProperty( const std::string& name,  bool followChain = false ) const;
+	template<class T>
+	const T& fetchTypedProperty( const std::string& name, bool followChain = false ) const { return const_cast<OfxhSet*>(this)->fetchTypedProperty<T>( name, followChain ); }
 
-	/// retrieve the named double property
-	Double* fetchDoubleProperty( const std::string& name,  bool followChain = false ) const;
-
-	/// retrieve the named double property
-	Pointer* fetchPointerProperty( const std::string& name, bool followChain = false ) const;
+	/// retrieve the named string property
+	String& fetchStringProperty( const std::string& name,  bool followChain = false );
+	const String& fetchStringProperty( const std::string& name,  bool followChain = false ) const { return const_cast<OfxhSet*>(this)->fetchStringProperty( name, followChain ); }
 
 	/// retrieve the named double property
-	Int* fetchIntProperty( const std::string& name, bool followChain = false ) const;
+	Double& fetchDoubleProperty( const std::string& name,  bool followChain = false );
+	const Double& fetchDoubleProperty( const std::string& name,  bool followChain = false ) const { return const_cast<OfxhSet*>(this)->fetchDoubleProperty( name, followChain ); }
+
+	/// retrieve the named double property
+	Pointer& fetchPointerProperty( const std::string& name, bool followChain = false );
+	const Pointer& fetchPointerProperty( const std::string& name, bool followChain = false ) const { return const_cast<OfxhSet*>(this)->fetchPointerProperty( name, followChain ); }
+
+	/// retrieve the named double property
+	Int& fetchIntProperty( const std::string& name, bool followChain = false );
+	const Int& fetchIntProperty( const std::string& name, bool followChain = false ) const { return const_cast<OfxhSet*>(this)->fetchIntProperty( name, followChain ); }
 
 	/// get a particular int property without fetching via a get hook, useful for notifies
 	int getIntPropertyRaw( const std::string& property, int index = 0 ) const;
@@ -565,7 +593,7 @@ public:
 	double getDoublePropertyRaw( const std::string& property, int index = 0 ) const;
 
 	/// get a particular pointer property without fetching via a get hook, useful for notifies
-	void* getPointerPropertyRaw( const std::string& property, int index = 0 ) const;
+	void* getPointerPropertyRaw( const std::string& property, int index = 0 ) const; /// @todo tuttle: return const no ?
 
 	/// get a particular string property
 	const std::string& getStringPropertyRaw( const std::string& property, int index = 0 ) const;

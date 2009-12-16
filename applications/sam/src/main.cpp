@@ -225,9 +225,14 @@ int main( int argc, char** argv )
 		}
 
 	}
+	catch( tuttle::host::core::exception::LogicError& e )
+	{
+		std::cout << "Tuttle Exception : main de tuttle..." << std::endl;
+		std::cout << e.what() << std::endl;
+	}
 	catch( std::exception& e )
 	{
-		std::cout << "Exception : main de tuttle..." << std::endl;
+		std::cout << "Std Exception : main de tuttle..." << std::endl;
 		std::cout << e.what() << std::endl;
 	}
 	catch( ... )

@@ -64,9 +64,11 @@ void propertySetXMLRead( const std::string& el,
 		std::string propType = map["type"];
 		int dimension        = atoi( map["dimension"].c_str() );
 
-		currentProp = set.fetchProperty( propName, false );
-
-		if( !currentProp )
+		if( set.hasProperty( propName, false ) )
+		{
+			currentProp = &set.fetchProperty( propName, false );
+		}
+		else
 		{
 			if( propType == "int" )
 			{
@@ -119,22 +121,22 @@ void propertySetXMLRead( const std::string& el,
 	assert( false );
 }
 
-void propertyXMLWrite( std::ostream& o, property::OfxhProperty* prop, const std::string& indent = "" )
+void propertyXMLWrite( std::ostream& o, const property::OfxhProperty& prop, const std::string& indent = "" )
 {
-	if( prop->getType() != property::ePointer )
+	if( prop.getType() != property::ePointer )
 	{
 
 		o << indent << "<property "
-		  << XML::attribute( "name", prop->getName() )
-		  << XML::attribute( "type", property::gTypeNames[prop->getType()] )
-		  << XML::attribute( "dimension", prop->getFixedDimension() )
+		  << XML::attribute( "name", prop.getName() )
+		  << XML::attribute( "type", property::gTypeNames[prop.getType()] )
+		  << XML::attribute( "dimension", prop.getFixedDimension() )
 		  << ">\n";
 
-		for( size_t i = 0; i < prop->getDimension(); i++ )
+		for( size_t i = 0; i < prop.getDimension(); i++ )
 		{
 			o << indent << "  <value "
 			  << XML::attribute( "index", i )
-			  << XML::attribute( "value", prop->getStringValue( i ) )
+			  << XML::attribute( "value", prop.getStringValue( i ) )
 			  << "/>\n";
 		}
 
@@ -144,10 +146,9 @@ void propertyXMLWrite( std::ostream& o, property::OfxhProperty* prop, const std:
 
 void propertyXMLWrite( std::ostream& o, const property::OfxhSet& set, const std::string& name, int indent )
 {
-	property::OfxhProperty* prop = set.fetchProperty( name );
-
-	if( prop )
+	if( set.hasProperty( name ) )
 	{
+		const property::OfxhProperty& prop = set.fetchProperty( name );
 		std::string indent_prefix( indent, ' ' );
 		propertyXMLWrite( o, prop, indent_prefix );
 	}
@@ -161,7 +162,7 @@ void propertySetXMLWrite( std::ostream& o, const property::OfxhSet& set, int ind
 	     i != set.getMap().end();
 	     i++ )
 	{
-		property::OfxhProperty* prop = i->second;
+		const property::OfxhProperty& prop = *(i->second);
 		propertyXMLWrite( o, prop, indent_prefix );
 	}
 }

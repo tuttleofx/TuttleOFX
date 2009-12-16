@@ -36,6 +36,7 @@
 #include "OfxhPropertySuite.hpp"
 
 #include <tuttle/common/utils/global.hpp>
+#include <tuttle/host/core/Exception.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -250,7 +251,7 @@ OfxhPropertyTemplate<T>::OfxhPropertyTemplate( const std::string& name,
                                                size_t             dimension,
                                                bool               pluginReadOnly,
                                                APIType            defaultValue )
-	: OfxhProperty( name, T::typeCode, dimension )
+	: OfxhProperty( name, T::typeCode, dimension, pluginReadOnly )
 {
 	if( dimension != _value.size() )
 	{
@@ -289,6 +290,19 @@ const typename T::ReturnType OfxhPropertyTemplate<T>::getValue( int index ) cons
 	else
 	{
 		return getValueRaw( index );
+	}
+}
+
+template<class T>
+typename T::ReturnType OfxhPropertyTemplate<T>::getConstlessValue( int index ) const OFX_EXCEPTION_SPEC
+{
+	if( _getHook )
+	{
+		return _getHook->getProperty<T >( _name, index );
+	}
+	else
+	{
+		return getConstlessValueRaw( index );
 	}
 }
 
@@ -335,6 +349,16 @@ void OfxhPropertyTemplate<OfxhStringValue>::getValueN( OfxhStringValue::APIType*
 
 template<class T>
 const typename T::ReturnType OfxhPropertyTemplate<T>::getValueRaw( int index ) const OFX_EXCEPTION_SPEC
+{
+	if( index < 0 || ( (size_t) index >= _value.size() ) )
+	{
+		throw OfxhException( kOfxStatErrBadIndex );
+	}
+	return _value[index];
+}
+
+template<class T>
+typename T::ReturnType OfxhPropertyTemplate<T>::getConstlessValueRaw( int index ) const OFX_EXCEPTION_SPEC
 {
 	if( index < 0 || ( (size_t) index >= _value.size() ) )
 	{
@@ -460,135 +484,58 @@ void OfxhPropertyTemplate<T>::reset() OFX_EXCEPTION_SPEC
 	}
 }
 
-inline int castAwayConst( int i )
+void OfxhSet::setGetHook( const std::string& s, OfxhGetHook* ghook )
 {
-	return i;
-}
-
-inline double castAwayConst( double d )
-{
-	return d;
-}
-
-inline void* castAwayConst( void* v )
-{
-	return v;
-}
-
-inline char* castAwayConst( const char* s )
-{
-	return const_cast<char*>( s );
-}
-
-inline int* castToConst( int* i )
-{
-	return i;
-}
-
-inline double* castToConst( double* d )
-{
-	return d;
-}
-
-inline const char* * castToConst( char** s )
-{
-	return const_cast<const char**>( s );
-}
-
-inline void* * castToConst( void** v )
-{
-	return v;
-}
-
-void OfxhSet::setGetHook( const std::string& s, OfxhGetHook* ghook ) const
-{
-	OfxhProperty* prop = fetchProperty( s );
-
-	if( prop )
-	{
-		prop->setGetHook( ghook );
-	}
+	fetchProperty( s ).setGetHook( ghook );
 }
 
 /// add a notify hook for a particular property.  users may need to call particular
 /// specialised versions of this.
 
-void OfxhSet::addNotifyHook( const std::string& s, OfxhNotifyHook* hook ) const
+void OfxhSet::addNotifyHook( const std::string& s, OfxhNotifyHook* hook )
 {
-	OfxhProperty* prop = fetchProperty( s );
-
-	if( prop )
-	{
-		prop->addNotifyHook( hook );
-	}
+	fetchProperty( s ).addNotifyHook( hook );
 }
 
-OfxhProperty* OfxhSet::fetchProperty( const std::string& name, bool followChain ) const
+OfxhProperty& OfxhSet::fetchProperty( const std::string& name, bool followChain )
 {
-	PropertyMap::const_iterator i = _props.find( name );
+	PropertyMap::iterator i = _props.find( name );
 
 	if( i == _props.end() )
 	{
 		if( followChain && _chainedSet )
 		{
-			return _chainedSet->fetchProperty( name, true );
+			return const_cast<OfxhProperty&>(_chainedSet->fetchProperty( name, true )); /// @todo tuttle: const cast, create a fetchLocalProperty
 		}
-		//COUT_ERROR("fetchProperty: " << name << " NULL, (followChain: " << followChain << ").");
-		return NULL;
+		throw core::exception::LogicError( "fetchProperty: " + name );// " NULL, (followChain: " << followChain << ").";
 	}
-	return i->second;
+	return *(i->second);
 }
 
 template<class T>
-bool OfxhSet::fetchTypedProperty( const std::string& name, T*& prop, bool followChain ) const
+T& OfxhSet::fetchTypedProperty( const std::string& name, bool followChain ) /// @todo throw( exception::LogicalError, std::bad_cast )
 {
-	OfxhProperty* myprop = fetchProperty( name, followChain );
-
-	if( myprop == NULL )
-	{
-		//COUT_ERROR("fetchTypedProperty: " << name << ", (followChain: " << followChain<<").");
-		return false;
-	}
-
-	prop = dynamic_cast<T*>( myprop );
-	if( prop == 0 )
-	{
-		COUT_ERROR( "Maybe you don't use the good property type when you get or set value for " << name << " property (dynamic_cast error)." );
-		return false;
-	}
-	return true;
+	return dynamic_cast<T&>( fetchProperty( name, followChain ) );
 }
 
-String* OfxhSet::fetchStringProperty( const std::string& name, bool followChain ) const
+String& OfxhSet::fetchStringProperty( const std::string& name, bool followChain )
 {
-	String* p = NULL;
-
-	fetchTypedProperty( name, p, followChain );
-	return p;
+	return fetchTypedProperty<String>( name, followChain );
 }
 
-Int* OfxhSet::fetchIntProperty( const std::string& name, bool followChain ) const
+Int& OfxhSet::fetchIntProperty( const std::string& name, bool followChain )
 {
-	Int* p = NULL;
-
-	fetchTypedProperty( name, p, followChain );
-	return p;
+	return fetchTypedProperty<Int>( name, followChain );
 }
 
-Pointer* OfxhSet::fetchPointerProperty( const std::string& name, bool followChain ) const
+Pointer& OfxhSet::fetchPointerProperty( const std::string& name, bool followChain )
 {
-	Pointer* p = NULL;
-
-	fetchTypedProperty( name, p, followChain );
-	return p;
+	return fetchTypedProperty<Pointer>( name, followChain );
 }
 
-Double* OfxhSet::fetchDoubleProperty( const std::string& name, bool followChain ) const
+Double& OfxhSet::fetchDoubleProperty( const std::string& name, bool followChain )
 {
-	Double* p = NULL;
-
-	fetchTypedProperty( name, p, followChain );
-	return p;
+	return fetchTypedProperty<Double>( name, followChain );
 }
 
 /// add one new property
@@ -604,16 +551,16 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 	switch( spec.type )
 	{
 		case eInt:
-			_props[spec.name] = new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atoi( spec.defaultValue ) : 0 );
+			_props.insert( spec.name, new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atoi( spec.defaultValue ) : 0 ) );
 			break;
 		case eDouble:
-			_props[spec.name] = new Double( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atof( spec.defaultValue ) : 0 );
+			_props.insert( spec.name, new Double( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atof( spec.defaultValue ) : 0 ) );
 			break;
 		case eString:
-			_props[spec.name] = new String( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? spec.defaultValue : "" );
+			_props.insert( spec.name, new String( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? spec.defaultValue : "" ) );
 			break;
 		case ePointer:
-			_props[spec.name] = new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue );
+			_props.insert( spec.name, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
 			break;
 		default:
 			COUT_ERROR( "Tried to create a property of an unrecognized type (" << spec.name << ", " << spec.type << ")" );
@@ -632,12 +579,20 @@ void OfxhSet::addProperties( const OfxhPropSpec spec[] )
 
 void OfxhSet::eraseProperty( const std::string& propName )
 {
-	PropertyMap::iterator it = _props.find(propName);
-	if( it != _props.end() )
+	_props.erase( propName );
+}
+
+bool OfxhSet::hasProperty( const std::string& propName, bool followChain ) const
+{
+	PropertyMap::const_iterator it = _props.find(propName);
+	if( it == _props.end() )
 	{
-		delete it->second;
-		_props.erase(it);
+		if( followChain && _chainedSet )
+		{
+			return _chainedSet->hasProperty( propName, true );
+		}
 	}
+	return it != _props.end();
 }
 
 /// add one new property
@@ -647,49 +602,30 @@ void OfxhSet::addProperty( OfxhProperty* prop )
 
 	if( t != _props.end() )
 		delete t->second;
-	_props[prop->getName()] = prop;
+	_props.insert(prop->getName(), prop);
 }
 
 /// empty ctor
 
 OfxhSet::OfxhSet()
-	: _magic( kMagic ),
-	_chainedSet( NULL ) {}
+	: _magic( kMagic )
+	, _chainedSet( NULL )
+{
+
+}
 
 OfxhSet::OfxhSet( const OfxhPropSpec spec[] )
-	: _magic( kMagic ),
-	_chainedSet( NULL )
+	: _magic( kMagic )
+	, _chainedSet( NULL )
 {
 	addProperties( spec );
 }
 
 OfxhSet::OfxhSet( const OfxhSet& other )
-	: _magic( kMagic ),
-	_chainedSet( NULL )
+	: _magic( kMagic )
+	, _props( other._props )
+	, _chainedSet( NULL )
 {
-	bool failed = false;
-
-	for( std::map<std::string, OfxhProperty*>::const_iterator i = other._props.begin();
-	     i != other._props.end(); ++i )
-	{
-		OfxhProperty* copyProp = i->second->deepCopy();
-		if( !copyProp )
-		{
-			failed = true;
-			break;
-		}
-		_props[i->first] = copyProp;
-	}
-
-	if( failed )
-	{
-		COUT_ERROR( "Properties copy failed." );
-		for( std::map<std::string, OfxhProperty*>::iterator j = _props.begin();
-		     j != _props.end(); ++j )
-		{
-			delete j->second;
-		}
-	}
 }
 
 OfxhSet::~OfxhSet()
@@ -699,12 +635,7 @@ OfxhSet::~OfxhSet()
 
 void OfxhSet::clear()
 {
-	for( PropertyMap::iterator it = _props.begin(), itEnd = _props.end();
-	     it != itEnd;
-	     ++it )
-	{
-		delete it->second;
-	}
+	_props.clear();
 }
 
 /// hide assignment
@@ -721,20 +652,19 @@ void OfxhSet::coutProperties() const
 	     it != itEnd;
 	     ++it )
 	{
-		OfxhProperty* prop = it->second;
+		const OfxhProperty& prop = *(it->second);
 		std::cout << "    " << it->first << " ";
-		std::cout << "(type:" << mapTypeEnumToString( prop->getType() ) << " dim:" << prop->getDimension() << " ro:" << prop->getPluginReadOnly() << ") : [";
+		std::cout << "(type:" << mapTypeEnumToString( prop.getType() ) << " dim:" << prop.getDimension() << " ro:" << prop.getPluginReadOnly() << ") : [";
 		int i = 0;
-		for( ; i < (int)( prop->getDimension() ) - 1; ++i )
+		for( ; i < (int)( prop.getDimension() ) - 1; ++i )
 		{
-			std::cout << prop->getStringValue( i ) << ", ";
+			std::cout << prop.getStringValue( i ) << ", ";
 		}
-		if( prop->getDimension() > 0 )
-			std::cout << prop->getStringValue( i );
+		if( prop.getDimension() > 0 )
+			std::cout << prop.getStringValue( i );
 		std::cout << "] " << std::endl;
 	}
 	COUT( "}" );
-	COUT( "fetchProperty(kOfxPropIsInteractive): " << fetchProperty( kOfxPropIsInteractive ) );
 }
 
 /// set a particular property
@@ -743,22 +673,20 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 {
 	try
 	{
-		OfxhPropertyTemplate<T>* prop = 0;
-		if( fetchTypedProperty( property, prop ) )
-		{
-			prop->setValue( value, index );
-		}
-		else
-		{
-			COUT_ERROR( "Property::Set::setProperty - Property " << property << " not in the propertySet (value=" << value << "), " <<
-			            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-			coutProperties();
-		}
+		fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).setValue( value, index );
 	}
-	catch(... )
+	catch( core::exception::LogicError& e )
 	{
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
+		COUT_EXCEPTION(e);
+		coutProperties();
+	}
+	catch(...)
+	{
+		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
+		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
+		coutProperties();
 	}
 }
 
@@ -769,16 +697,13 @@ void OfxhSet::setPropertyN( const std::string& property, int count, const typena
 {
 	try
 	{
-		OfxhPropertyTemplate<T>* prop = 0;
-		if( fetchTypedProperty( property, prop ) )
-		{
-			prop->setValueN( value, count );
-		}
-		else
-		{
-			COUT_ERROR( "Set::setProperty - Property " << property << " not in the propertySet (value=" << value << ")." );
-			COUT_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		}
+		fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).setValueN( value, count );
+	}
+	catch( core::exception::LogicError& e )
+	{
+		COUT_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
+		COUT_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
+		COUT_EXCEPTION(e);
 	}
 	catch(... )
 	{
@@ -792,17 +717,11 @@ void OfxhSet::setPropertyN( const std::string& property, int count, const typena
 template<class T>
 typename T::ReturnType OfxhSet::getProperty( const std::string& property, int index ) const
 {
-	try
+	if( !hasProperty( property, true ) )
 	{
-		OfxhPropertyTemplate<T>* prop;
-		if( fetchTypedProperty( property, prop, true ) )
-		{
-			return prop->getValue( index );
-		}
+		return T::kEmpty; /// @todo tuttle: is this really needed ?
 	}
-	catch(... )
-	{}
-	return T::kEmpty;
+	return fetchTypedProperty<OfxhPropertyTemplate<T> >( property, true ).getValue( index );
 }
 
 /// get a particular property
@@ -810,16 +729,7 @@ typename T::ReturnType OfxhSet::getProperty( const std::string& property, int in
 template<class T>
 void OfxhSet::getPropertyN( const std::string& property, int count, typename T::APIType* value ) const
 {
-	try
-	{
-		OfxhPropertyTemplate<T>* prop;
-		if( fetchTypedProperty( property, prop, true ) )
-		{
-			return prop->getValueN( value, count );
-		}
-	}
-	catch(... )
-	{}
+	fetchTypedProperty<OfxhPropertyTemplate<T> >( property, true ).getValueN( value, count );
 }
 
 /// get a particular property
@@ -827,17 +737,7 @@ void OfxhSet::getPropertyN( const std::string& property, int count, typename T::
 template<class T>
 typename T::ReturnType OfxhSet::getPropertyRaw( const std::string& property, int index ) const
 {
-	try
-	{
-		OfxhPropertyTemplate<T>* prop;
-		if( fetchTypedProperty( property, prop, true ) )
-		{
-			return prop->getValueRaw( index );
-		}
-	}
-	catch(... )
-	{}
-	return T::kEmpty;
+	return fetchTypedProperty<OfxhPropertyTemplate<T> >( property, true ).getValueRaw( index );
 }
 
 /// get a particular property
@@ -845,147 +745,127 @@ typename T::ReturnType OfxhSet::getPropertyRaw( const std::string& property, int
 template<class T>
 void OfxhSet::getPropertyRawN( const std::string& property, int count, typename T::APIType* value ) const
 {
-	try
-	{
-		OfxhPropertyTemplate<T>* prop;
-		if( fetchTypedProperty( property, prop, true ) )
-		{
-			return prop->getValueNRaw( value, count );
-		}
-	}
-	catch(... )
-	{}
+	return fetchTypedProperty<OfxhPropertyTemplate<T> >( property, true ).getValueNRaw( value, count );
 }
 
 /// get a particular int property
 
 int OfxhSet::getIntPropertyRaw( const std::string& property, int index ) const
 {
-	return getPropertyRaw<tuttle::host::ofx::property::OfxhIntValue >( property, index );
+	return getPropertyRaw<OfxhIntValue>( property, index );
 }
 
 /// get a particular double property
 
 double OfxhSet::getDoublePropertyRaw( const std::string& property, int index ) const
 {
-	return getPropertyRaw<tuttle::host::ofx::property::OfxhDoubleValue >( property, index );
+	return getPropertyRaw<OfxhDoubleValue>( property, index );
 }
 
 /// get a particular double property
 
 void* OfxhSet::getPointerPropertyRaw( const std::string& property, int index ) const
 {
-	return getPropertyRaw<tuttle::host::ofx::property::OfxhPointerValue >( property, index );
+	return getPropertyRaw<OfxhPointerValue>( property, index );
 }
 
 /// get a particular double property
 
 const std::string& OfxhSet::getStringPropertyRaw( const std::string& property, int index ) const
 {
-	String* prop;
-
-	if( fetchTypedProperty( property, prop, true ) )
-	{
-		return prop->getValueRaw( index );
-	}
-	return OfxhStringValue::kEmpty;
+	return fetchTypedProperty<OfxhPropertyTemplate<String> >( property, true ).getValueRaw( index );
+	//return OfxhStringValue::kEmpty;
 }
 
 /// get a particular int property
 
 int OfxhSet::getIntProperty( const std::string& property, int index ) const
 {
-	return getProperty<tuttle::host::ofx::property::OfxhIntValue >( property, index );
+	return getProperty<OfxhIntValue >( property, index );
 }
 
 /// get the value of a particular double property
 
 void OfxhSet::getIntPropertyN( const std::string& property, int* v, int N ) const
 {
-	return getPropertyN<tuttle::host::ofx::property::OfxhIntValue >( property, N, v );
+	return getPropertyN<OfxhIntValue >( property, N, v );
 }
 
 /// get a particular double property
 
 double OfxhSet::getDoubleProperty( const std::string& property, int index ) const
 {
-	return getProperty<tuttle::host::ofx::property::OfxhDoubleValue >( property, index );
+	return getProperty<OfxhDoubleValue >( property, index );
 }
 
 /// get the value of a particular double property
 
 void OfxhSet::getDoublePropertyN( const std::string& property, double* v, int N ) const
 {
-	return getPropertyN<tuttle::host::ofx::property::OfxhDoubleValue >( property, N, v );
+	return getPropertyN<OfxhDoubleValue >( property, N, v );
 }
 
 /// get a particular double property
 
 void* OfxhSet::getPointerProperty( const std::string& property, int index ) const
 {
-	return getProperty<tuttle::host::ofx::property::OfxhPointerValue >( property, index );
+	return getProperty<OfxhPointerValue >( property, index );
 }
 
 /// get a particular double property
 
 const std::string& OfxhSet::getStringProperty( const std::string& property, int index ) const
 {
-	return getProperty<tuttle::host::ofx::property::OfxhStringValue >( property, index );
+	return getProperty<OfxhStringValue >( property, index );
 }
 
 /// set a particular string property
 
 void OfxhSet::setStringProperty( const std::string& property, const std::string& value, int index )
 {
-	setProperty<tuttle::host::ofx::property::OfxhStringValue >( property, index, value );
+	setProperty<OfxhStringValue >( property, index, value );
 }
 
 /// get a particular int property
 
 void OfxhSet::setIntProperty( const std::string& property, int v, int index )
 {
-	setProperty<tuttle::host::ofx::property::OfxhIntValue >( property, index, v );
+	setProperty<OfxhIntValue >( property, index, v );
 }
 
 /// get a particular double property
 
 void OfxhSet::setIntPropertyN( const std::string& property, const int* v, int N )
 {
-	setPropertyN<tuttle::host::ofx::property::OfxhIntValue >( property, N, v );
+	setPropertyN<OfxhIntValue >( property, N, v );
 }
 
 /// get a particular double property
 
 void OfxhSet::setDoubleProperty( const std::string& property, double v, int index )
 {
-	setProperty<tuttle::host::ofx::property::OfxhDoubleValue >( property, index, v );
+	setProperty<OfxhDoubleValue >( property, index, v );
 }
 
 /// get a particular double property
 
 void OfxhSet::setDoublePropertyN( const std::string& property, const double* v, int N )
 {
-	setPropertyN<tuttle::host::ofx::property::OfxhDoubleValue >( property, N, v );
+	setPropertyN<OfxhDoubleValue >( property, N, v );
 }
 
 /// get a particular double property
 
 void OfxhSet::setPointerProperty( const std::string& property, void* v, int index )
 {
-	setProperty<tuttle::host::ofx::property::OfxhPointerValue >( property, index, v );
+	setProperty<OfxhPointerValue >( property, index, v );
 }
 
 /// get the dimension of a particular property
 
 size_t OfxhSet::getDimension( const std::string& property ) const
 {
-	OfxhProperty* prop = 0;
-
-	if( fetchTypedProperty( property, prop, true ) )
-	{
-		return prop->getDimension();
-	}
-	return 0;
+	return fetchProperty( property, true ).getDimension();
 }
 
 /// is the given string one of the values of a multi-dimensional string prop
@@ -994,16 +874,12 @@ size_t OfxhSet::getDimension( const std::string& property ) const
 int OfxhSet::findStringPropValueIndex( const std::string& propName,
                                        const std::string& propValue ) const
 {
-	String* prop = fetchStringProperty( propName, true );
-
-	if( prop )
+	const String& prop = fetchStringProperty( propName, true );
+	const std::vector<std::string>& values     = prop.getValues();
+	std::vector<std::string>::const_iterator i = find( values.begin(), values.end(), propValue );
+	if( i != values.end() )
 	{
-		const std::vector<std::string>& values     = prop->getValues();
-		std::vector<std::string>::const_iterator i = find( values.begin(), values.end(), propValue );
-		if( i != values.end() )
-		{
-			return int(i - values.begin() );
-		}
+		return int(i - values.begin() );
 	}
 	return -1;
 }
@@ -1024,24 +900,25 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
 		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
-		OfxhPropertyTemplate<T>* prop = 0;
-		if( !thisSet->fetchTypedProperty( property, prop, false ) )
-		{
-			#ifdef DEBUG_PROPERTIES
-			std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
-			#endif
-			return kOfxStatErrUnknown;
-		}
-		prop->setValue( value, index );
+
+		thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >( property, false ).setValue( value, index );
+//		#ifdef DEBUG_PROPERTIES
+//		std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
+//		#endif
+//		return kOfxStatErrUnknown;
+		return kOfxStatOK;
 	}
-	catch( OfxhException e )
+	catch( OfxhException& e )
 	{
 		#ifdef DEBUG_PROPERTIES
 		std::cout << " returning status " << e.getStatus() << "\n";
 		#endif
 		return e.getStatus();
 	}
-	return kOfxStatOK;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /// static functions for the suite
@@ -1061,18 +938,18 @@ static OfxStatus propSetN( OfxPropertySetHandle properties,
 		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
-		OfxhPropertyTemplate<T>* prop = 0;
-		if( !thisSet->fetchTypedProperty( property, prop, false ) )
-		{
-			return kOfxStatErrUnknown;
-		}
-		prop->setValueN( values, count );
+
+		thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >( property, false ).setValueN( values, count );
+		return kOfxStatOK;
 	}
-	catch( OfxhException e )
+	catch( OfxhException& e )
 	{
 		return e.getStatus();
 	}
-	return kOfxStatOK;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /// static functions for the suite
@@ -1092,18 +969,15 @@ static OfxStatus propGet( OfxPropertySetHandle          properties,
 		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
-		OfxhPropertyTemplate<T>* prop = 0;
-		if( !thisSet->fetchTypedProperty( property, prop, true ) )
-		{
-			return kOfxStatErrUnknown;
-		}
-		*value = castAwayConst( castToAPIType( prop->getValue( index ) ) );
+		*value = thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >( property, true ).getAPIConstlessValue( index );
+		//*value = castAwayConst( castToAPIType( prop->getValue( index ) ) );
 
 		#ifdef DEBUG_PROPERTIES
 		std::cout << *value << "\n";
 		#endif
+		return kOfxStatOK;
 	}
-	catch( OfxhException e )
+	catch( OfxhException& e )
 	{
 
 		#ifdef DEBUG_PROPERTIES
@@ -1111,7 +985,30 @@ static OfxStatus propGet( OfxPropertySetHandle          properties,
 		#endif
 		return e.getStatus();
 	}
-	return kOfxStatOK;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
+}
+
+///@todo tuttle: remove this !
+inline int* castToConst( int* s )
+{
+	return s;
+}
+inline double* castToConst( double* s )
+{
+	return s;
+}
+inline void** castToConst( void** s )
+{
+	return s;
+}
+
+///@todo tuttle: remove this !
+inline const char** castToConst( char**s )
+{
+	return const_cast<const char**>(s);
 }
 
 /// static functions for the suite
@@ -1127,18 +1024,17 @@ static OfxStatus propGetN( OfxPropertySetHandle          properties,
 		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
-		OfxhPropertyTemplate<T>* prop = 0;
-		if( !thisSet->fetchTypedProperty( property, prop, true ) )
-		{
-			return kOfxStatErrUnknown;
-		}
-		prop->getValueN( castToConst( values ), count );
+		thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >( property, true ).getValueN( castToConst( values ), count );
+		return kOfxStatOK;
 	}
-	catch( OfxhException e )
+	catch( OfxhException& e )
 	{
 		return e.getStatus();
 	}
-	return kOfxStatOK;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /// static functions for the suite
@@ -1150,33 +1046,37 @@ static OfxStatus propReset( OfxPropertySetHandle properties, const char* propert
 		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
-		OfxhProperty* prop = thisSet->fetchProperty( property, false );
-		if( !prop )
-		{
-			return kOfxStatErrUnknown;
-		}
-		prop->reset();
+		thisSet->fetchProperty( property, false ).reset();
+		return kOfxStatOK;
 	}
-	catch( OfxhException e )
+	catch( OfxhException& e )
 	{
 		return e.getStatus();
 	}
-	return kOfxStatOK;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /// static functions for the suite
 
 static OfxStatus propGetDimension( OfxPropertySetHandle properties, const char* property, int* count )
 {
-	OfxhSet* thisSet   = reinterpret_cast<OfxhSet*>( properties );
-	OfxhProperty* prop = thisSet->fetchProperty( property, true );
-
-	if( !prop )
+	try
+	{
+		OfxhSet* thisSet   = reinterpret_cast<OfxhSet*>( properties );
+		*count = thisSet->fetchProperty( property, true ).getDimension();
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
 	{
 		return kOfxStatErrUnknown;
 	}
-	*count = prop->getDimension();
-	return kOfxStatOK;
 }
 
 /// the actual suite that is passed across the API to manage properties

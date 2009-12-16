@@ -252,7 +252,7 @@ public:
 /// plugin parameter instance
 class OfxhParam : virtual public OfxhParamAccessor,
 	public AttributeInstance,
-	private property::OfxhNotifyHook,
+	protected property::OfxhNotifyHook,
 	private boost::noncopyable
 {
 OfxhParam();
@@ -580,7 +580,12 @@ class ParamIntegerInstance : public OfxhParam,
 {
 public:
 	typedef int BaseType;
-	ParamIntegerInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	ParamIntegerInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
+	: OfxhParam( descriptor, setInstance )
+	{
+		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
+		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
+	}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( int& )               = 0;
@@ -641,7 +646,12 @@ class ParamDoubleInstance : public OfxhParam,
 {
 public:
 	typedef double BaseType;
-	ParamDoubleInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	ParamDoubleInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
+	: OfxhParam( descriptor, setInstance )
+	{
+		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
+		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
+	}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( double& )                                     = 0;

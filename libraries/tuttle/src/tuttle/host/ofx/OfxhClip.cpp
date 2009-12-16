@@ -117,11 +117,11 @@ OfxhClip::OfxhClip( const OfxhClipDescriptor& desc )
 	initHook( clipInstanceStuffs );
 
 	/// we are an instance, we need to reset the props to read only
-	const property::PropertyMap& map = getProperties().getMap();
-	property::PropertyMap::const_iterator i;
-	for( i = map.begin(); i != map.end(); ++i )
+	for( property::PropertyMap::iterator i = getEditableProperties().getMap().begin(), iEnd = getEditableProperties().getMap().end();
+			i != iEnd;
+			++i )
 	{
-		( *i ).second->setPluginReadOnly( false );
+		i->second->setPluginReadOnly( false );
 	}
 }
 

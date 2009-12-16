@@ -2,8 +2,13 @@
 #include "ProcessVisitors.hpp"
 #include <tuttle/host/graph/GraphExporter.hpp>
 
-//TODO: delete this include
+#include <boost/foreach.hpp>
+
+
+
+//TODO: delete these include
 #include <tuttle/host/core/ParamInstance.hpp>
+#include <tuttle/host/core/ClipInstance.hpp>
 
 
 namespace tuttle {
@@ -37,19 +42,22 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 {
 	//graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "test.dot" );
 
-
 	// Initialize variables
-	const int numFramesToRender = 1;
+	const int numFramesToRender = tEnd - tBegin;
 	OfxPointD renderScale = { 1.0, 1.0 };
-	OfxRectI renderWindow = { 0, 0,
-							123, 123 };
-	Graph::InternalGraph::vertex_range_t vrange = _graph.getVertices();
-	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
-	{
-		dynamic_cast<EffectInstance*>(_graph.instance(*it).processNode())->createInstanceAction();
-		dynamic_cast<EffectInstance*>(_graph.instance(*it).processNode())->getClipPreferences();
-	}
+	OfxRectI renderWindow = { 0, 0,	123, 123 };
 
+
+	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
+
+		p.second->createInstanceAction();
+		p.second->getClipPreferences();
+		p.second->dumpToStdOut();
+
+		ClipImgInstance& outputClip = dynamic_cast<ClipImgInstance& >( p.second->getClip(kOfxImageEffectOutputClipName) );
+		outputClip.setPixelDepth( kOfxBitDepthByte );
+		outputClip.setComponents( kOfxImageComponentRGBA );
+	}
 
 	// Setup parameters
 	EffectInstance& firstEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGReader1"));
@@ -60,26 +68,23 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	lastEffect.paramInstanceChangedAction("Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
 
-	//Setup clips
+	// Connecting nodes
 	core::dfs_connect_visitor connectVisitor;
 	_graph.dfs(connectVisitor);
 
 
-
 	//--- BEGIN RENDER
 	ProcessOptions processOptions;
-	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
-	{
-		graph::Vertex& v = _graph.instance( *it );
+	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
 		processOptions._startFrame = tBegin;
 		processOptions._endFrame = tEnd;
 		processOptions._step = 1;
 		processOptions._interactive = false;
 		processOptions._renderScale = renderScale;
-		v.processNode()->begin(processOptions);
+		p.second->begin(processOptions);
 	}
 
-/*
+
 	//--- RENDER
 	for( int t = 0; t < numFramesToRender; ++t )
 	{
@@ -95,12 +100,14 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 
 
 	//--- END RENDER
-	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
-	{
-		graph::Vertex& v = _graph.instance( *it );
-		v.processNode()->end(processOptions);
+	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
+		processOptions._startFrame = tBegin;
+		processOptions._endFrame = tEnd;
+		processOptions._step = 1;
+		processOptions._interactive = false;
+		processOptions._renderScale = renderScale;
+		p.second->end(processOptions);
 	}
-	*/
 }
 
 }

@@ -390,6 +390,7 @@ ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::of
 , _memoryCache( core::Core::instance().getMemoryCache() )
 {
 	_frameRange = _effect.getEffectFrameRange();
+	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
 }
 
 ClipImgInstance::~ClipImgInstance()

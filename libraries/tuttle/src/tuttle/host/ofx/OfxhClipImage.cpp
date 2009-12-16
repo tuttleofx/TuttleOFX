@@ -59,10 +59,7 @@ OfxhClipImageAccessor::~OfxhClipImageAccessor() {}
  */
 const std::vector<std::string>& OfxhClipImageAccessor::getSupportedComponents() const
 {
-	property::String* p = getProperties().fetchStringProperty( kOfxImageEffectPropSupportedComponents );
-
-	assert( p != NULL );
-	return p->getValues();
+	return getProperties().fetchStringProperty( kOfxImageEffectPropSupportedComponents ).getValues();
 }
 
 /** is the given component supported
@@ -157,8 +154,8 @@ OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffect& effectInstance, cons
 }
 
 OfxhClipImage::OfxhClipImage( const OfxhClipImage& other )
-	: attribute::OfxhClip( other ),
-	_effectInstance( other._effectInstance )
+	: attribute::OfxhClip( other )
+	, _effectInstance( other._effectInstance ) ///< @todo tuttle bad link in copy....
 {}
 
 OfxStatus OfxhClipImage::instanceChangedAction( std::string why,
