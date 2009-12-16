@@ -5,6 +5,7 @@
  */
 
 #include "PNGWriterPlugin.hpp"
+#include "PNGWriterDefinitions.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -79,7 +80,7 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
 	filename->setScriptName( "filename" );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );

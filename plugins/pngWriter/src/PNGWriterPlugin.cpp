@@ -25,7 +25,7 @@ PNGWriterPlugin::PNGWriterPlugin( OfxImageEffectHandle handle )
 {
 	_srcClip      = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_dstClip      = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath     = fetchStringParam( kInputFilename );
+	_filepath     = fetchStringParam( kOutputFilename );
 	_renderButton = fetchPushButtonParam( kRender );
 }
 
@@ -123,7 +123,7 @@ void PNGWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	{
 		_bRenderOnce = true;    // Hack stuff...
 	}
-	else if( paramName == kInputFilename )
+	else if( paramName == kOutputFilename )
 	{
 		std::string str;
 		_filepath->getValue( str );

@@ -1,3 +1,7 @@
+
+#include "PNGWriterDefinitions.hpp"
+#include "PNGWriterPlugin.hpp"
+
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -8,13 +12,9 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/gil/extension/io/png_io.hpp>
-#include <boost/gil/extension/io/png_dynamic_io.hpp>
 #include <boost/filesystem/fstream.hpp>
-
-#include "PNGWriterPlugin.hpp"
 
 namespace tuttle {
 namespace plugin {
@@ -28,7 +28,7 @@ PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
 {
-	_filepath = instance.fetchStringParam( kInputFilename );
+	_filepath = instance.fetchStringParam( kOutputFilename );
 }
 
 template<class View>
