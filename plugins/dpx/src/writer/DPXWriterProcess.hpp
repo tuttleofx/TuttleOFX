@@ -29,6 +29,7 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace writer {
 
 /**
  * @brief Base class
@@ -60,6 +61,7 @@ public :
     void multiThreadProcessImages(OfxRectI procWindow);
 };
 
+}
 }
 }
 }

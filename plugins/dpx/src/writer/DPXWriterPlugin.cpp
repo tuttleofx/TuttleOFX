@@ -18,6 +18,7 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace writer {
 
 using namespace boost::gil;
 
@@ -108,6 +109,7 @@ void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
     }
 }
 
+}
 }
 }
 }

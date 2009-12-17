@@ -16,6 +16,7 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace writer {
 
 /**
  * @brief
@@ -42,6 +43,7 @@ protected:
 
 };
 
+}
 }
 }
 }

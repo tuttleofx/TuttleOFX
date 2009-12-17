@@ -28,6 +28,7 @@ namespace bfs = boost::filesystem;
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace reader {
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
@@ -400,6 +401,7 @@ void DPXReaderProcess<View>::bitStreamToView(DST_V & dst, const int nc, const in
 	}
 }
 
+}
 }
 }
 }

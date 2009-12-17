@@ -29,6 +29,7 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace writer {
 
 using namespace boost::gil;
 
@@ -234,6 +235,7 @@ void DPXWriterProcess<View>::writeImage( View& src, std::string& filepath, int b
 	_dpxImg.write(filepath);
 }
 
+}
 }
 }
 }

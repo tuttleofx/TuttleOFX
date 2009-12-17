@@ -15,6 +15,7 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace reader {
 
 /**
  * @brief Base class for the denoising processor
@@ -45,6 +46,7 @@ public:
 	View& readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 
+}
 }
 }
 }

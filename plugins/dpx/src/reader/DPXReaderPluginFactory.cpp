@@ -4,6 +4,7 @@
  *
  */
 
+#include "DPXReaderPluginFactory.hpp"
 #include "DPXReaderPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -21,12 +22,9 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
-
-static const bool kSupportTiles = false;
+namespace reader {
 
 using namespace OFX;
-
-mDeclarePluginFactory( DPXReaderPluginFactory, {}, {} );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -93,18 +91,5 @@ OFX::ImageEffect* DPXReaderPluginFactory::createInstance( OfxImageEffectHandle h
 
 }
 }
-}
-
-namespace OFX
-{
-namespace Plugin
-{
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::dpx::DPXReaderPluginFactory p( "fr.hd3d.tuttle.dpxreader", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }

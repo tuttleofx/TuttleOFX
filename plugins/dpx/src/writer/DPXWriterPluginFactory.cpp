@@ -6,6 +6,7 @@
  *
  */
 
+#include "DPXWriterPluginFactory.hpp"
 #include "DPXWriterPlugin.hpp"
 #include "DPXWriterDefinitions.hpp"
 
@@ -25,12 +26,7 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
-
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
-
-mDeclarePluginFactory( DPXWriterPluginFactory, { }, { } );
+namespace writer {
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -128,17 +124,4 @@ DPXWriterPluginFactory::createInstance(OfxImageEffectHandle handle,
 }
 }
 }
-
-namespace OFX 
-{
-    namespace Plugin 
-    {
-        void getPluginIDs(OFX::PluginFactoryArray &ids)
-        {
-            static tuttle::plugin::dpx::DPXReaderPluginFactory p("fr.hd3d.tuttle.dpxreader", 1, 0);
-            ids.push_back(&p);
-			static tuttle::plugin::dpx::DPXWriterPluginFactory p("fr.hd3d.tuttle.dpxwriter", 1, 0);
-            ids.push_back(&p);
-        }
-    }
 }

@@ -12,6 +12,7 @@ using namespace tuttle::io;
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace reader {
 
 using namespace boost::gil;
 const static std::string kDpxReaderHelpString = "<b>DPX Reader</b> file reader.  <br />";
@@ -126,6 +127,7 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	clipPreferences.setPixelAspectRatio( *_dstClip, 720.0 / 720.0 );
 }
 
+}
 }
 }
 }

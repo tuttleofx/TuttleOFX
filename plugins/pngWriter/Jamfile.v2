@@ -10,11 +10,10 @@ import os ;
 project
     : requirements	
         <include>src
-        <include>../_common
         <include>../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/bin/plugins/pngWriter
+    : build-dir $(DIST)/plugins/pngWriter/obj
     ;
 
 use-project /png 	: ../../3rdParty/libpng ;
@@ -37,7 +36,7 @@ plugin pngWriter :
         /boost/filesystem/<link>static
         /tuttlelib//tuttleplugin/<link>static
         /supportlib
-        /png/<link>static
+        /png
         opengl
         ;
 
@@ -47,7 +46,7 @@ plugin pngWriter :
 alias install : install-plug ;
 install install-plug
 	:	pngWriter
-	:	<os>NT:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/pngWriter.ofx.bundle/Contents/MacOS
+	:	<os>NT:<location>$(DIST)/plugins/pngWriter/bundle/pngWriter.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/pngWriter/bundle/pngWriter.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/pngWriter/bundle/pngWriter.ofx.bundle/Contents/MacOS
 	;

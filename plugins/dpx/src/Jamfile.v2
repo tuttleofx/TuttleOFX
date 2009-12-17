@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX dpxReader Plugin
+## Main BJam makefile for TuttleOFX dpx Plugin
 ## author Eloi Du Bois
 ###############################################################################
 import os ;
@@ -10,14 +10,14 @@ import os ;
 project
     : requirements
         <include>src
-        <include>../../libraries/tuttle/src/
+        <include>../../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/dpxReader/obj
+    : build-dir $(DIST)/plugins/dpx/obj
     ;
 
-use-project /dpx 	: ../../libraries/dpxEngine ;
-use-project /png 	: ../../3rdParty/libpng ;
+use-project /dpx 	: ../../../libraries/dpxEngine ;
+use-project /png 	: ../../../3rdParty/libpng ;
 
 ###############################################################################
 # Dependencies
@@ -26,12 +26,12 @@ use-project /png 	: ../../3rdParty/libpng ;
 ###############################################################################
 # Product 
 ###############################################################################
-plugin dpxReader : 
-        [ glob src/*.cpp ]
+plugin dpx : 
+        [ glob-tree *.cpp ]
         /tuttlelib//tuttleplugin/<link>static
-        /png
-        /supportlib
-        /dpx
+        /png/<link>static
+        /supportlib/<link>static
+        /dpx/<link>static
         ;
 
 ###############################################################################
@@ -39,9 +39,9 @@ plugin dpxReader :
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	dpxReader
-	:	<os>NT:<location>$(DIST)/plugins/dpxReader/bundle/dpxReader.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/dpxReader/bundle/dpxReader.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/dpxReader/bundle/dpxReader.ofx.bundle/Contents/MacOS
+	:	dpx
+	:	<os>NT:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/MacOS
 	;
 

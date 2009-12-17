@@ -14,6 +14,7 @@
 namespace tuttle {
 namespace plugin {
 namespace dpx {
+namespace writer {
 
 static const std::string kOutputFilename      = "Output filename";
 static const std::string kRender              = "Render";
@@ -26,6 +27,7 @@ const static std::string kDPXWriterHelpButton = "Help";
 const static std::string kDPXWriterHelpString = "<b>DPX File writer Hd3d</b> plugin is used to output dpx files.  <br />";
 
 
+}
 }
 }
 }
