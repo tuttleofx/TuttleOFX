@@ -48,7 +48,8 @@ protected :
 	tuttle::io::DpxHeader _dpxHeader;     ///< Dpx image header
 	tuttle::io::DpxImage  _dpxImg;        ///< Dpx image reader
 
-	void writeImage( View& src, std::string& filepath ) throw( tuttle::plugin::PluginException );
+	template<class CONV_IMAGE>
+	void writeImage( View& src, std::string& filepath, int bitDepth, tuttle::io::DpxImage::EDPX_CompType compType, int packing ) throw( tuttle::plugin::PluginException );
 public :
     DPXWriterProcess<View>(DPXWriterPlugin &instance);
 

@@ -166,6 +166,7 @@ class DpxHeader
 	inline const boost::uint8_t descriptor() const { return _imageInfo.image_element[0].descriptor; }
 	inline const boost::uint32_t dataOffset() const { return _fileInfo.offset; }
 	inline const boost::uint16_t elementNumber() const { return _imageInfo.element_number; }
+	inline const boost::uint32_t elementOffset(const int i) const { return _imageInfo.image_element[i].data_offset; }
 
 	// Setters
 	inline void setBigEndian(const bool swap) {
@@ -217,6 +218,9 @@ class DpxHeader
 	inline void setElementNumber(uint16_t n)
 	{
 		_imageInfo.element_number = n;
+	}
+	inline void setElementOffset(uint32_t offset, const int i) {
+		_imageInfo.image_element[i].data_offset = offset;
 	}
 };
 
@@ -302,7 +306,8 @@ inline const boost::uint8_t DpxImage::compTypeToDescriptor(const EDPX_CompType t
 		case eCompTypeA10B10G10R10:
 		case eCompTypeA12B12G12R12:
 		case eCompTypeA16B16G16R16:
-			_header.setDescriptor(52);
+			ret = 52;
+			break;
 		default:
 			// unknown format (53)
 			break;

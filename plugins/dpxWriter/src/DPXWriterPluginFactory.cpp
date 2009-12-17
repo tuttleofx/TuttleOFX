@@ -99,8 +99,9 @@ DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
 	componentsType->setScriptName( "componentsType" );
-	componentsType->appendOption( "rgb output" );
+	componentsType->appendOption( "rgb  output" );
 	componentsType->appendOption( "rgba output" );
+	componentsType->appendOption( "abgr output" );
 	componentsType->setDefault( 1 );
 
 	OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
@@ -134,7 +135,9 @@ namespace OFX
     {
         void getPluginIDs(OFX::PluginFactoryArray &ids)
         {
-            static tuttle::plugin::dpx::DPXWriterPluginFactory p("fr.hd3d.tuttle.dpxwriter", 1, 0);
+            static tuttle::plugin::dpx::DPXReaderPluginFactory p("fr.hd3d.tuttle.dpxreader", 1, 0);
+            ids.push_back(&p);
+			static tuttle::plugin::dpx::DPXWriterPluginFactory p("fr.hd3d.tuttle.dpxwriter", 1, 0);
             ids.push_back(&p);
         }
     }
