@@ -11,7 +11,7 @@
 #include "EXRWriterProcess.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/common/image/gilViewTypes.hpp>
+#include <half/gilHalf.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -133,10 +133,6 @@ void EXRWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 			case 1: {
 				switch(compType) {
 					case 0:
-						// Todo to get it working:
-						// swap half byte then swap shorts (16 bits)
-						// ex: 0405 -> 4050 -> 5040
-						// or: roll short by 4 bits right.
 //						writeImage<rgb12_image_t>( src, filepath, 12, tuttle::io::ExrImage::eCompTypeR12G12B12, packing );
 						throw(PluginException("EXR Writer: Unsupported 12 bits rgb image..."));
 						break;

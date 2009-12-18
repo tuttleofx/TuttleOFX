@@ -2,7 +2,7 @@
 #include "EXRReaderPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/common/image/gilViewTypes.hpp>
+#include <half/gilHalf.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>

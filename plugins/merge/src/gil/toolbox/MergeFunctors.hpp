@@ -134,7 +134,7 @@ struct FunctorMultiply
 	inline void operator()( const Channel& A, const Channel& B, Channel& dst )
 	{
 		if( A < 0 && B < 0 )
-			dst = 0;
+			dst = (Channel)(0);
 		else
 			dst = (Channel)( A * B );
 	}

@@ -18,6 +18,11 @@
 namespace boost {
 namespace gil  {
 
+template <int N>
+struct devicen_t;
+template <int N>
+struct devicen_layout_t;
+
 /******************************************************************************
  * Bit stream
  *****************************************************************************/
@@ -171,19 +176,11 @@ GIL_DEFINE_ALL_TYPEDEFS( 12, rgb )
 GIL_DEFINE_ALL_TYPEDEFS( 12, rgba )
 GIL_DEFINE_ALL_TYPEDEFS( 12, cmyk )
 
-template <int N>
-struct devicen_t;
-template <int N>
-struct devicen_layout_t;
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 10, dev2n, devicen_t<2>, devicen_layout_t<2>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 10, dev3n, devicen_t<3>, devicen_layout_t<3>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 10, dev4n, devicen_t<4>, devicen_layout_t<4>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 10, dev5n, devicen_t<5>, devicen_layout_t<5>)
 
-template <int N>
-struct devicen_t;
-template <int N>
-struct devicen_layout_t;
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 12, dev2n, devicen_t<2>, devicen_layout_t<2>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 12, dev3n, devicen_t<3>, devicen_layout_t<3>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 12, dev4n, devicen_t<4>, devicen_layout_t<4>)
