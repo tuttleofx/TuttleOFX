@@ -1,0 +1,53 @@
+###############################################################################
+## Main BJam makefile for TuttleOFX exr Plugin
+## author Eloi Du Bois
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+path-constant EXR_LIB : ../../../3rdParty/openexr ;
+
+project
+    : requirements
+        <include>src
+        <include>$(EXR_LIB)/include/OpenEXR
+        <include>../../../libraries/tuttle/src/
+        <threading>multi
+        <os>NT:<define>_WINDOWS
+    : build-dir $(DIST)/plugins/exr/obj
+    ;
+
+lib iexr : : <name>IlmImf_dll_d <search>$(EXR_LIB)/lib
+				 <link>static : <link>static ;
+
+use-project /png 	: ../../../3rdParty/libpng ;
+
+###############################################################################
+# Dependencies
+###############################################################################
+
+###############################################################################
+# Product 
+###############################################################################
+plugin exr : 
+        [ glob-tree *.cpp ]
+        /tuttlelib//tuttleplugin/<link>static
+        /boost/filesystem/<link>static
+        /png/<link>static
+        /supportlib/<link>static
+        iexr
+        ;
+
+###############################################################################
+# Automatic install
+###############################################################################
+alias install : install-plug ;
+install install-plug
+	:	exr
+	:	<os>NT:<location>$(DIST)/plugins/exr/bundle/exr.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/exr/bundle/exr.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/exr/bundle/exr.ofx.bundle/Contents/MacOS
+	;
+

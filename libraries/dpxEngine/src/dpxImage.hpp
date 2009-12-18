@@ -201,25 +201,25 @@ class DpxHeader
 		for(int i = 0; i < 8; ++i)
 			_imageInfo.image_element[i].bit_size = bitSize;
 	}
-	inline void setDescriptor(uint8_t descriptor, const int i)
+	inline void setDescriptor(boost::uint8_t descriptor, const int i)
 	{
 		assert(i < 8 && i > 0);
 		_imageInfo.image_element[i].descriptor = descriptor;
 	}
-	inline void setDescriptor(uint8_t descriptor)
+	inline void setDescriptor(boost::uint8_t descriptor)
 	{
 		for(int i = 0; i < 8; ++i)
 			_imageInfo.image_element[i].descriptor = descriptor;
 	}
-	inline void setDataOffset(uint32_t offset)
+	inline void setDataOffset(boost::uint32_t offset)
 	{
 		_fileInfo.offset = offset;
 	}
-	inline void setElementNumber(uint16_t n)
+	inline void setElementNumber(boost::uint16_t n)
 	{
 		_imageInfo.element_number = n;
 	}
-	inline void setElementOffset(uint32_t offset, const int i) {
+	inline void setElementOffset(boost::uint32_t offset, const int i) {
 		_imageInfo.image_element[i].data_offset = offset;
 	}
 };
@@ -321,12 +321,11 @@ inline void DpxImage::setHeader(const DpxHeader& header) {
 	_header.setDataOffset(sizeof(DpxHeader));
 	// Data have to be packed on uint32_t size to allow endianess fast
 	// reinterpretation
-	_data.reset(new uint8_t[ _dataSize + ( _dataSize % sizeof(uint32_t) ) ]);
+	_data.reset(new boost::uint8_t[ _dataSize + ( _dataSize % sizeof(boost::uint32_t) ) ]);
 	_indyData = _data;
 }
 
-inline void DpxImage::setData(const uint8_t *data, bool reinterpretation) {
-	std::cout << "Data Size: " << _dataSize << std::endl;
+inline void DpxImage::setData(const boost::uint8_t *data, bool reinterpretation) {
 	memcpy(_data.get(), data, _dataSize);
 	if ( reinterpretation )
 		_indyData.reset(reinterpretEndianness());
