@@ -1,3 +1,4 @@
+#include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
@@ -38,7 +39,7 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
 {
-	_filepath = instance.fetchStringParam( "Input filename" );
+	_filepath = instance.fetchStringParam( kInputFilename );
 	assert( _filepath != NULL );
 }
 

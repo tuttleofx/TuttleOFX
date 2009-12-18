@@ -1,3 +1,4 @@
+#include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 #include "EXRReaderProcess.hpp"
 
@@ -16,14 +17,13 @@ namespace exr {
 namespace reader {
 using namespace Imf;
 using namespace boost::gil;
-const static std::string kExrReaderHelpString = "<b>EXR Reader</b> file reader.  <br />";
 
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle ),
 	_dstClip( 0 )
 {
-	_dstClip  = fetchClip( "Output" );
-	_filepath = fetchStringParam( "Input filename" );
+	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
+	_filepath = fetchStringParam( kInputFilename );
 	std::string sFilepath;
 	_filepath->getValue( sFilepath );
 	if( exists( sFilepath ) )
@@ -31,8 +31,11 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 		InputFile in (sFilepath.c_str());
 		const Header &h = in.header();
 		const Imath::V2i dataWindow = h.dataWindow().size();
-		_imageDims.x = dataWindow.x;
-		_imageDims.y = dataWindow.y;
+		_imageDims.x = dataWindow.x + 1;
+		_imageDims.y = dataWindow.y + 1;
+	} else {
+		_imageDims.x = 0;
+		_imageDims.y = 0;
 	}
 }
 
@@ -92,7 +95,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kExrReaderHelpString );
 	}
-	else if( paramName == "Input filename" )
+	else if( paramName == kInputFilename )
 	{
 		std::string sFilepath;
 		_filepath->getValue( sFilepath );
@@ -103,8 +106,11 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 			InputFile in (sFilepath.c_str());
 			const Header &h = in.header();
 			const Imath::V2i dataWindow = h.dataWindow().size();
-			_imageDims.x = dataWindow.x;
-			_imageDims.y = dataWindow.y;
+			_imageDims.x = dataWindow.x + 1;
+			_imageDims.y = dataWindow.y + 1;
+		} else {
+			_imageDims.x = 0;
+			_imageDims.y = 0;
 		}
 	}
 }

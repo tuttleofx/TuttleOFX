@@ -4,6 +4,7 @@
  *
  */
 
+#include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPluginFactory.hpp"
 #include "EXRReaderPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -69,9 +70,8 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
-
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( "Input filename" );
+	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
 	filename->setScriptName( "filename" );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
