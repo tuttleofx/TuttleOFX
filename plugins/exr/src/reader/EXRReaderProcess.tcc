@@ -2,7 +2,7 @@
 #include "EXRReaderPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
-#include <half/gilHalf.hpp>
+//#include <half/gilHalf.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -74,9 +74,9 @@ void EXRReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 			this->process();
 		}
 		else
-			throw( tuttle::plugin::PluginException( "Unable to open : %s", sFilepath.c_str() ) );
+			throw tuttle::plugin::PluginException( "Unable to open : " + sFilepath );
 	}
-	catch( tuttle::plugin::PluginException e )
+	catch( tuttle::plugin::PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}
@@ -97,9 +97,9 @@ void EXRReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		this->_filepath->getValue( filepath );
 		readImage( this->_dstView, filepath );
 	}
-	catch( tuttle::plugin::PluginException err )
+	catch( tuttle::plugin::PluginException& e )
 	{
-		COUT_EXCEPTION( err );
+		COUT_EXCEPTION( e );
 	}
 }
 
