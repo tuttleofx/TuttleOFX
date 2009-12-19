@@ -39,9 +39,6 @@ def adaptTemplate(filepath):
     fDest.close()
 
 if __name__ == '__main__':
-    pluginName = ""
-    while(len(pluginName) == 0):
-        pluginName = raw_input( "Plugin name (With or without spaces) ?: " )
     pluginLabel = raw_input( "Plugin label ?: " )
     pluginLongLabel = raw_input( "Plugin long label ?: " )
     pluginGroup = ""
@@ -91,7 +88,7 @@ if __name__ == '__main__':
                     print "Processing: " + name + " to " + dName;
                     os.rename( top + '/' + name, top + '/' + dName );
                     # Check if we need to replace things on the file
-                    if (dName.endswith(".cpp") or dName.endswith(".hpp") or dName.endswith(".tcc")):
+                    if (dName.endswith(".cp_") or dName.endswith(".hp_") or dName.endswith(".tc_")):
                         adaptTemplate(top + '/' + dName)
         sys.exit(0);
 

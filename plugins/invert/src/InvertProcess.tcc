@@ -1,11 +1,3 @@
-/**
- * @file InvertProcess.tcc
- * @brief
- * @author
- * @date    01/10/09 12:01
- *
- */
-
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>

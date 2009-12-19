@@ -94,6 +94,7 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	assert( mergeFunction );
 	mergeFunction->appendOption( "atop: Ab+B(1-a)" );
 	mergeFunction->appendOption( "average: (A+B)/2" );
+	mergeFunction->appendOption( "color: hue from B, saturation from B, lightness from A" );
 	mergeFunction->appendOption( "color-burn: darken B towards A" );
 	mergeFunction->appendOption( "color dodge inversed: brighten B towards A" );
 	mergeFunction->appendOption( "conjoint-over: A+B(1-a)/b, A if a > b" );

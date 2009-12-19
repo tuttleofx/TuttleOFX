@@ -11,8 +11,10 @@
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
-
+#include <boost/shared_array.hpp>
+#include <cstring>
 #include <cmath>
+#include <iostream>
 
 namespace tuttle {
 namespace io {
@@ -25,12 +27,13 @@ namespace fs = boost::filesystem;
 #define UNDEF_U32           0xFFFFFFFF
 #define UNDEF_S32           0x80000000
 #define UNDEF_R32           0x7F800000
+#define kDpxVersion			"V1.0"
 
 struct FileInformation
 {
 	boost::uint32_t magic_num;         // magic number 0x53445058 (SDPX) or 0x58504453 (XPDS)
 	boost::uint32_t offset;            // offset to image data in bytes
-	char vers[8];           // which header format version is being used (v1.0)
+	char vers[8];                      // which header format version is being used (v1.0)
 	boost::uint32_t file_size;         // file size in bytes
 	boost::uint32_t ditto_key;         // read time short cut - 0 = same, 1 = new
 	boost::uint32_t gen_hdr_size;      // generic header length in bytes
@@ -41,7 +44,7 @@ struct FileInformation
 	char creator[100];      // file creator's name
 	char project[200];      // project name
 	char copyright[200];    // right to use or copyright info
-	boost::uint32_t key;               // encryption ( FFFFFFFF = unencrypted )
+	boost::uint32_t key;    // encryption ( FFFFFFFF = unencrypted )
 	char Reserved[104];     // reserved field TBD (need to pad)
 };
 
@@ -93,30 +96,30 @@ struct ImageOrientation
 
 struct MotionPictureFilm
 {
-	boost::uint8_t film_mfg_id;           // film manufacturer ID code (2 digits from film edge code)
-	boost::uint8_t film_type;             // file type (2 digits from film edge code)
-	boost::uint8_t offset;                // offset in perfs (2 digits from film edge code)
-	boost::uint32_t prefix;                // prefix (6 digits from film edge code)
-	boost::uint32_t count;                 // count (4 digits from film edge code)
-	char format[32];                    // format (i.e. academy)
-	boost::uint32_t frame_position;        // frame position in sequence
-	boost::uint32_t sequence_len;          // sequence length in frames
-	boost::uint32_t held_count;            // held count (1 = default)
+	boost::uint8_t film_mfg_id;          // film manufacturer ID code (2 digits from film edge code)
+	boost::uint8_t film_type;            // file type (2 digits from film edge code)
+	boost::uint8_t offset;               // offset in perfs (2 digits from film edge code)
+	boost::uint32_t prefix;              // prefix (6 digits from film edge code)
+	boost::uint32_t count;               // count (4 digits from film edge code)
+	char format[32];                     // format (i.e. academy)
+	boost::uint32_t frame_position;      // frame position in sequence
+	boost::uint32_t sequence_len;        // sequence length in frames
+	boost::uint32_t held_count;          // held count (1 = default)
 	float frame_rate;                    // frame rate of original in frames/sec
-	float shutter_angle;         // shutter angle of camera in degrees
-	char frame_id[32];          // frame identification (i.e. keyframe)
-	char slate_info[100];       // slate information
-	boost::uint8_t reserved[60];          // reserved for future use (padding)
+	float shutter_angle;                 // shutter angle of camera in degrees
+	char frame_id[32];                   // frame identification (i.e. keyframe)
+	char slate_info[100];                // slate information
+	boost::uint8_t reserved[60];         // reserved for future use (padding)
 };
 
 struct TelevisionHeader
 {
-	boost::uint32_t tim_code;              // SMPTE time code
-	boost::uint32_t userBits;              // SMPTE user bits
-	boost::uint8_t interlace;             // interlace ( 0 = noninterlaced, 1 = 2:1 interlace
-	boost::uint8_t field_num;             // field number
-	boost::uint8_t video_signal;          // video signal standard (table 4)
-	boost::uint8_t unused;                // used for byte alignment only
+	boost::uint32_t tim_code;            // SMPTE time code
+	boost::uint32_t userBits;            // SMPTE user bits
+	boost::uint8_t interlace;            // interlace ( 0 = noninterlaced, 1 = 2:1 interlace
+	boost::uint8_t field_num;            // field number
+	boost::uint8_t video_signal;         // video signal standard (table 4)
+	boost::uint8_t unused;               // used for byte alignment only
 	float hor_sample_rate;               // horizontal sampling rate in Hz
 	float ver_sample_rate;               // vertical sampling rate in Hz
 	float frame_rate;                    // temporal sampling rate or frame rate in Hz
@@ -127,26 +130,108 @@ struct TelevisionHeader
 	float break_point;                   // breakpoint
 	float white_level;                   // reference white level code value
 	float integration_times;             // integration time(s)
-	boost::uint8_t reserved[76];          // reserved for future use (padding)
+	boost::uint8_t reserved[76];         // reserved for future use (padding)
 };
 
-typedef struct
+/// Class holding dpx informations
+class DpxHeader
 {
+	// Bad but easier
+	public:
 	FileInformation _fileInfo;
 	ImageInformation _imageInfo;
 	ImageOrientation _imageOrientation;
 	MotionPictureFilm _motionPicture;
 	TelevisionHeader _television;
-} DpxHeader;
+
+	DpxHeader() {
+		// zeroify
+		memset(&_fileInfo, 0, sizeof(FileInformation));
+		memset(&_imageInfo, 0, sizeof(ImageInformation));
+		memset(&_imageOrientation, 0, sizeof(ImageOrientation));
+		memset(&_motionPicture, 0, sizeof(MotionPictureFilm));
+		memset(&_television, 0, sizeof(TelevisionHeader));
+		// Full size of 1664+384 = 2048 bytes per default
+		_fileInfo.gen_hdr_size = 1664;
+		_fileInfo.ind_hdr_size = 384;
+		memcpy(_fileInfo.vers, kDpxVersion, strlen(kDpxVersion));
+	}
+
+	// Getters
+	inline const bool bigEndian() const { return _fileInfo.magic_num == DPX_MAGIC_SWAP; }
+	inline const boost::uint32_t width() const   { return _imageInfo.pixelsPerLine; }
+	inline const boost::uint32_t height() const  { return _imageInfo.linesPerImageEle; }
+	inline const boost::uint16_t packing() const { return _imageInfo.image_element[0].packing; }
+	inline const boost::uint8_t bitSize() const { return _imageInfo.image_element[0].bit_size; }
+	inline const boost::uint8_t descriptor() const { return _imageInfo.image_element[0].descriptor; }
+	inline const boost::uint32_t dataOffset() const { return _fileInfo.offset; }
+	inline const boost::uint16_t elementNumber() const { return _imageInfo.element_number; }
+	inline const boost::uint32_t elementOffset(const int i) const { return _imageInfo.image_element[i].data_offset; }
+
+	// Setters
+	inline void setBigEndian(const bool swap) {
+		if (swap)
+			_fileInfo.magic_num = DPX_MAGIC_SWAP;
+		else
+			_fileInfo.magic_num = DPX_MAGIC;
+	}
+	inline void setWidth(const boost::uint32_t pixelsPerLine) {
+		_imageInfo.pixelsPerLine = pixelsPerLine;
+	}
+	inline void setHeight(const boost::uint32_t height) {
+		_imageInfo.linesPerImageEle = height;
+	}
+	inline void setPacking(const boost::uint16_t packing, const int i)
+	{
+		assert(i < 8 && i > 0);
+		_imageInfo.image_element[i].packing = packing;
+	}
+	inline void setPacking(const boost::uint16_t packing)
+	{
+		for(int i = 0; i < 8; ++i)
+			_imageInfo.image_element[i].packing = packing;
+	}
+	inline void setBitSize(const boost::uint8_t bitSize, const int i)
+	{
+		assert(i < 8 && i > 0);
+		_imageInfo.image_element[i].bit_size = bitSize;
+	}
+	inline void setBitSize(const boost::uint8_t bitSize)
+	{
+		for(int i = 0; i < 8; ++i)
+			_imageInfo.image_element[i].bit_size = bitSize;
+	}
+	inline void setDescriptor(boost::uint8_t descriptor, const int i)
+	{
+		assert(i < 8 && i > 0);
+		_imageInfo.image_element[i].descriptor = descriptor;
+	}
+	inline void setDescriptor(boost::uint8_t descriptor)
+	{
+		for(int i = 0; i < 8; ++i)
+			_imageInfo.image_element[i].descriptor = descriptor;
+	}
+	inline void setDataOffset(boost::uint32_t offset)
+	{
+		_fileInfo.offset = offset;
+	}
+	inline void setElementNumber(boost::uint16_t n)
+	{
+		_imageInfo.element_number = n;
+	}
+	inline void setElementOffset(boost::uint32_t offset, const int i) {
+		_imageInfo.image_element[i].data_offset = offset;
+	}
+};
 
 class DpxImage
 {
 private:
 	bool _bigEndian;
 	DpxHeader _header;
-	size_t			_dataSize;			/// raw data size given by dataSize()
-	boost::uint8_t* _data;				/// raw data (better if was scoped_ptr)
-	boost::uint8_t* _indyData;			/// right endianness reinterpreted data
+	size_t			_dataSize;                      /// raw data size given by dataSize()
+	boost::shared_array<boost::uint8_t> _data;      /// raw data
+	boost::shared_array<boost::uint8_t> _indyData;  /// right endianness reinterpreted data
 
 	void readHeader( fs::ifstream& f );
 	boost::uint8_t* reinterpretEndianness() const;
@@ -160,141 +245,94 @@ public:
 		eCompTypeR12G12B12, eCompTypeR12G12B12A12, eCompTypeA12B12G12R12,
 		eCompTypeR16G16B16, eCompTypeR16G16B16A16, eCompTypeA16B16G16R16
 	};
+
 	DpxImage();
 	~DpxImage();
+
 	void read( const fs::path& filename, bool reinterpretation = true );
 	void readHeader( const fs::path& filename );
 	void write( const fs::path& filename );
+	void writeHeader( fs::ofstream& f );
 
-	inline const boost::uint32_t& width() const   { return _header._imageInfo.pixelsPerLine; }
-	inline const boost::uint32_t& height() const  { return _header._imageInfo.linesPerImageEle; }
-	inline const boost::uint16_t  packing() const { return _header._imageInfo.image_element[0].packing; }
-
-	const size_t components() const
-	{
-		switch( componentsType() )
-		{
-			case eCompTypeR8G8B8:
-			case eCompTypeR10G10B10:
-			case eCompTypeR12G12B12:
-			case eCompTypeR16G16B16:
-				return 3;
-			case eCompTypeR8G8B8A8:
-			case eCompTypeA8B8G8R8:
-			case eCompTypeR10G10B10A10:
-			case eCompTypeA10B10G10R10:
-			case eCompTypeR12G12B12A12:
-			case eCompTypeA12B12G12R12:
-			case eCompTypeR16G16B16A16:
-			case eCompTypeA16B16G16R16:
-				return 4;
-			default:
-				break;
-		}
-		return 0;
-	}
-
-	const size_t dataSize() const
-	{
-		size_t sz               = 0;
-		boost::uint16_t packing = _header._imageInfo.image_element[0].packing;
-
-		switch( componentsType() )
-		{
-			case eCompTypeR8G8B8:
-				sz = sizeof( boost::uint8_t ) * 3 * width() * height();
-				break;
-			case eCompTypeR10G10B10:
-				// Packing means that pixel are packed on bytes
-				if( packing )
-					sz = sizeof( boost::uint32_t ) * width() * height();
-				// Unpacked means that pixels are bit aligned
-				else
-					sz = ( size_t ) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
-				break;
-			case eCompTypeR8G8B8A8:
-			case eCompTypeA8B8G8R8:
-				sz = sizeof( boost::uint8_t ) * 4 * width() * height();
-				break;
-			case eCompTypeR12G12B12:
-			case eCompTypeR16G16B16:
-			case eCompTypeR10G10B10A10:
-			case eCompTypeA10B10G10R10:
-				if( packing ) {
-					// This kind of packing is complex...
-					int x = width() * height();
-					sz = (int)(std::floor((x-1)/3.0f)*8.0f+(std::floor(x/3.0f)*4.0f*2.0f)
-							+ (8+((x%4)*4.0f)) );
-				} else
-					sz = 5 * width() * height();
-				break;
-			case eCompTypeR12G12B12A12:
-			case eCompTypeA12B12G12R12:
-					if( packing )
-						sz = sizeof( boost::uint64_t ) * width() * height();
-					else
-						sz = ( size_t ) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
-				break;
-			case eCompTypeR16G16B16A16:
-			case eCompTypeA16B16G16R16:
-				sz = sizeof( boost::uint64_t ) * width() * height();
-				break;
-			default:
-				break;
-		}
-		return sz;
-	}
-
-	const EDPX_CompType componentsType() const
-	{
-		EDPX_CompType type      = eCompTypeUnknown;
-		unsigned int descriptor = _header._imageInfo.image_element[0].descriptor;
-		unsigned int bitSize    = _header._imageInfo.image_element[0].bit_size;
-
-		if( descriptor == 50 )
-		{
-			if( bitSize == 8 )
-				type = eCompTypeR8G8B8;
-			else if( bitSize == 10 )
-				type = eCompTypeR10G10B10;
-			else if( bitSize == 12 )
-				type = eCompTypeR12G12B12;
-			else if( bitSize == 16 )
-				type = eCompTypeR16G16B16;
-		}
-		else if( descriptor == 51 )
-		{
-			if( bitSize == 8 )
-				type = eCompTypeR8G8B8A8;
-			else if( bitSize == 10 )
-				type = eCompTypeR10G10B10A10;
-			else if( bitSize == 12 )
-				type = eCompTypeR12G12B12A12;
-			else if( bitSize == 16 )
-				type = eCompTypeR16G16B16A16;
-		}
-		else if( descriptor == 52 )
-		{
-			if( bitSize == 8 )
-				type = eCompTypeA8B8G8R8;
-			else if( bitSize == 10 )
-				type = eCompTypeA10B10G10R10;
-			else if( bitSize == 12 )
-				type = eCompTypeA12B12G12R12;
-			else if( bitSize == 16 )
-				type = eCompTypeA16B16G16R16;
-		}
-		return type;
-	}
+	// Getters
+	inline const boost::uint32_t width() const { return _header.width(); }
+	inline const boost::uint32_t height() const { return _header.height(); }
+	inline const boost::uint16_t packing() const { return _header.packing(); }
+	inline const size_t components() const;
+	const EDPX_CompType componentsType() const;
+	const size_t dataSize() const;
 
 	inline boost::uint8_t* rawData() const
 	{
-		return _data;
+		return _data.get();
 	}
 	inline boost::uint8_t* data() const {
-		return _indyData;
+		return _indyData.get();
 	}
+	inline const boost::uint8_t compTypeToDescriptor(const EDPX_CompType type);
+
+	// Setters
+	inline void setHeader(const DpxHeader& header);
+	inline void setComponentsType(EDPX_CompType);
+
+	/**
+	 * \brief Set raw data buffer, header must be set/read
+	 * \param data	set data raw buffer
+	 * \param reinterpretation	reinterpret endianness
+	 */
+	inline void setData(const boost::uint8_t *data, bool reinterpretation = true);
 };
+
+inline void DpxImage::setComponentsType(DpxImage::EDPX_CompType type) {
+	_header.setDescriptor(compTypeToDescriptor(type));
+}
+
+inline const boost::uint8_t DpxImage::compTypeToDescriptor(const EDPX_CompType type) {
+	boost::uint8_t ret = 53;
+	switch(type) {
+		case eCompTypeR8G8B8:
+		case eCompTypeR10G10B10:
+		case eCompTypeR12G12B12:
+		case eCompTypeR16G16B16:
+			ret = 50;
+			break;
+		case eCompTypeR8G8B8A8:
+		case eCompTypeR10G10B10A10:
+		case eCompTypeR12G12B12A12:
+		case eCompTypeR16G16B16A16:
+			ret = 51;
+			break;
+		case eCompTypeA8B8G8R8:
+		case eCompTypeA10B10G10R10:
+		case eCompTypeA12B12G12R12:
+		case eCompTypeA16B16G16R16:
+			ret = 52;
+			break;
+		default:
+			// unknown format (53)
+			break;
+	}
+	return ret;
+}
+
+inline void DpxImage::setHeader(const DpxHeader& header) {
+	memcpy(&_header, &header, sizeof(DpxHeader));
+	_dataSize = dataSize();
+	_header.setDataOffset(sizeof(DpxHeader));
+	// Data have to be packed on uint32_t size to allow endianess fast
+	// reinterpretation
+	_data.reset(new boost::uint8_t[ _dataSize + ( _dataSize % sizeof(boost::uint32_t) ) ]);
+	_indyData = _data;
+}
+
+inline void DpxImage::setData(const boost::uint8_t *data, bool reinterpretation) {
+	memcpy(_data.get(), data, _dataSize);
+	if ( reinterpretation )
+		_indyData.reset(reinterpretEndianness());
+	else
+		_indyData = _data;
+}
+
 
 }  // namespace io
 }  // namespace tuttle

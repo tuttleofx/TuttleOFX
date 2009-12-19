@@ -29,6 +29,7 @@ const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used 
 enum EMergeFunction
 {
 	eMergeFunctionATop, eMergeFunctionAverage,
+	eMergeFunctionColor,
 	eMergeFunctionColorBurn, eMergeFunctionColorDodge,
 	eMergeFunctionConjointOver, eMergeFunctionCopy,
 	eMergeFunctionDifference, eMergeFunctionDisjointOver,

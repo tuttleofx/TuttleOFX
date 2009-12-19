@@ -1,0 +1,35 @@
+/**
+ * @file EXRWriterProcess.hpp
+ * @brief
+ * @author
+ * @date    16/12/09 15:34
+ *
+ */
+#ifndef EXRWRITER_DEFINITIONS_HPP
+#define EXRWRITER_DEFINITIONS_HPP
+
+#include <tuttle/common/utils/global.hpp>
+
+
+namespace tuttle {
+namespace plugin {
+namespace exr {
+namespace writer {
+
+static const std::string kOutputFilename      = "Output filename";
+static const std::string kRender              = "Render";
+static const std::string kParamBitDepth       = "Bit depth";
+static const std::string kParamComponentsType = "Components type";
+static const std::string kParamCompressed     = "Compressed";
+
+const static std::string kEXRWriterHelpButton = "Help";
+
+const static std::string kEXRWriterHelpString = "<b>EXR File writer Hd3d</b> plugin is used to write exr files.  <br />";
+
+
+}
+}
+}
+}
+
+#endif  // EXRWRITER_DEFINITIONS_HPP

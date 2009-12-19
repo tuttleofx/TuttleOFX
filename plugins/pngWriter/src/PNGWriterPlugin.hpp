@@ -9,11 +9,6 @@ namespace plugin {
 namespace png {
 using namespace boost::gil;
 
-static const std::string kInputFilename = "Output filename";
-static const std::string kInput         = "Input";
-static const std::string kRender        = "Render";
-static const std::string kRenderSecret  = "RenderSecret";
-
 /**
  * @brief Class used to denoise with partial derivated equations
  *

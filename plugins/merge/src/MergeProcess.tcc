@@ -6,7 +6,8 @@
  *
  */
 
-#include "MergeFunctors.hpp"
+#include "gil/toolbox/hsl.hpp"
+#include "gil/toolbox/ViewsMerging.hpp"
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -104,16 +105,12 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( OfxRectI procWindow 
 {
 	try
 	{
-		OfxRectI rA         = { procWindow.x1, procWindow.y1, this->_srcViewA.width(), this->_srcViewA.height() };
-		OfxRectI rB         = { procWindow.x1, procWindow.y1, this->_srcViewB.width(), this->_srcViewB.height() };
-		OfxRectI rC         = { procWindow.x1, procWindow.y1, this->_dstView.width(), this->_dstView.height() };
-		OfxRectI rInterAB   = intersection( rA, rB );
-		OfxRectI rIntersect = intersection( rC, rInterAB );
-		View srcA           = subimage_view( this->_srcViewA,
-		                                     procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
-		                                     procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
-		                                     procWindow.x2 - procWindow.x1,
-		                                     procWindow.y2 - procWindow.y1 );
+		using namespace hsl_color_space;
+		View srcA = subimage_view( this->_srcViewA,
+		                           procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
+		                           procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,
+		                           procWindow.x2 - procWindow.x1,
+		                           procWindow.y2 - procWindow.y1 );
 		View srcB = subimage_view( this->_srcViewB,
 		                           procWindow.x1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.x1,
 		                           procWindow.y1 - tuttle::plugin::ImageGilProcessor<View>::_renderWindow.y1,

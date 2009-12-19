@@ -1,6 +1,7 @@
 #include "dpxImage.hpp"
 #include <dpxUtils.hpp>
 
+#include <vector>
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
@@ -19,6 +20,7 @@ using namespace boost;
 namespace tuttle {
 namespace io {
 
+//////////////////////////////////// CUT THIS PART AND RELATIVES ON RELEASE
 template < typename T >
 inline T highbit(T& t)
 {
@@ -53,21 +55,15 @@ inline boost::uint16_t reverseBytes( boost::uint16_t v )
 {
 	return ( ( (uint8_t*)&v )[1] << 8 ) | ( (uint8_t*)&v )[0];
 }
+//////////////////////////////////// END CUT
 
 DpxImage::DpxImage()
 : _bigEndian( false )
-, _data( NULL )
-, _indyData( NULL )
 {
-	memset( &_header, 0, sizeof( DpxHeader ) );
 }
 
 DpxImage::~DpxImage()
 {
-	if( _data != _indyData && _indyData )
-		delete [] _indyData;
-	if( _data )
-		delete [] _data;
 }
 
 void DpxImage::read( const path& filename, bool reinterpretation )
@@ -88,19 +84,13 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 
 	// initialize raw data
 	_dataSize = dataSize();
-	// reads and throws away characters until 'offset' characters have been read
-	f.ignore( _header._fileInfo.offset - f.tellg() );
-	if( _indyData && _data != _indyData ) {
-		delete [] _indyData;
-		_indyData = NULL;
-	}
-	if( _data )
-		delete [] _data;
+	// read and throws away characters until 'offset' characters have been read
+	f.ignore( _header.dataOffset() - f.tellg() );
 	// Data have to be packed on uint32_t size to allow indianess fast
 	// reinterpretation
-	_data = new uint8_t[ _dataSize + ( _dataSize % sizeof(uint32_t) ) ];
-	// reads data
-	if( !f.read( reinterpret_cast<char*>( _data ), _dataSize ) )
+	_data.reset(new uint8_t[ _dataSize + ( _dataSize % sizeof(uint32_t) ) ]);
+	// read data
+	if( !f.read( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
 	{
 		std::ostringstream msg;
 		msg << "Unable to read data ";
@@ -108,12 +98,29 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 		throw std::exception();
 	}
 	if ( reinterpretation )
-		_indyData = reinterpretEndianness();
+		_indyData.reset(reinterpretEndianness());
 	else
 		_indyData = _data;
-	std::cout << "Pix(0,0)[1]: b";
-	bin(((uint64_t*)_indyData)[0], std::cout);
-	std::cout <<  std::endl;
+	f.close();
+}
+
+void DpxImage::readHeader( const path& filename )
+{
+	//
+	// Open file
+	//
+	ifstream f( filename, std::ios_base::in | std::ios_base::binary );
+
+	if( !f )
+	{
+		std::ostringstream msg;
+		msg << "Unable to open ";
+		msg << filename;
+		std::cerr << msg << std::endl;
+		throw std::exception();
+	}
+
+	readHeader( f );
 	f.close();
 }
 
@@ -261,12 +268,11 @@ void DpxImage::readHeader( ifstream& f )
 	}
 }
 
-void DpxImage::readHeader( const path& filename )
-{
+void DpxImage::write( const path& filename ) {
 	//
 	// Open file
 	//
-	ifstream f( filename, std::ios_base::in | std::ios_base::binary );
+	ofstream f( filename, std::ios_base::out | std::ios_base::binary );
 
 	if( !f )
 	{
@@ -276,30 +282,228 @@ void DpxImage::readHeader( const path& filename )
 		std::cerr << msg << std::endl;
 		throw std::exception();
 	}
-
-	readHeader( f );
+	_header.setDataOffset(2048);
+	writeHeader( f );
+	// Pad with zeros untill we get at the right offset
+	std::vector<uint8_t> zeros(_header.dataOffset() - f.tellp());
+	if (zeros.size())
+		if( !f.write( reinterpret_cast<char*>( &zeros[0] ), zeros.size() ) ) {
+			throw std::exception();
+		}
+	// write image data
+	if( !f.write( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
+	{
+		std::ostringstream msg;
+		msg << "Unable to read data ";
+		msg << "( " << filename << " )" ;
+		throw std::exception();
+	}
 	f.close();
 }
 
-void DpxImage::write( const path& filename ) {}
+void DpxImage::writeHeader( ofstream& f ) {
+	// write data
+	if( !f.write( reinterpret_cast<char*>( &_header._fileInfo ), sizeof(FileInformation) ) )
+	{
+		std::ostringstream msg;
+		msg << "DpxImage::Unable to write data (FileInformation)" ;
+		throw std::exception();
+	}
+	if( !f.write( reinterpret_cast<char*>( &_header._imageInfo ), sizeof(ImageInformation) ) )
+	{
+		std::ostringstream msg;
+		msg << "DpxImage::Unable to write data (ImageInformation)" ;
+		throw std::exception();
+	}
+	if( !f.write( reinterpret_cast<char*>( &_header._imageOrientation ), sizeof(ImageOrientation) ) )
+	{
+		std::ostringstream msg;
+		msg << "DpxImage::Unable to write data (ImageOrientation)" ;
+		throw std::exception();
+	}
+	if( !f.write( reinterpret_cast<char*>( &_header._motionPicture ), sizeof(MotionPictureFilm) ) )
+	{
+		std::ostringstream msg;
+		msg << "DpxImage::Unable to write data (MotionPictureFilm)" ;
+		throw std::exception();
+	}
+	if( !f.write( reinterpret_cast<char*>( &_header._television ), sizeof(TelevisionHeader) ) )
+	{
+		std::ostringstream msg;
+		msg << "DpxImage::Unable to write data (TelevisionHeader)" ;
+		throw std::exception();
+	}
+}
 
 uint8_t* DpxImage::reinterpretEndianness() const
 {
 	// Do we need reinterpretation ?
-	uint8_t* pData = _data;
+	uint8_t* pData = _data.get();
 	if (_bigEndian && BOOST_BYTE_ORDER == 1234) {
-		// Data have to be packed on uint32_t size to allow indianess fast
-		// reinterpretation
-		pData    = new uint8_t[_dataSize + (_dataSize % sizeof(uint32_t))];
-		size_t dataSize32 = (_dataSize + (_dataSize % sizeof(uint32_t))) / sizeof(uint32_t);
-		uint32_t *pData32 = (uint32_t*)pData;
-		uint32_t *pSrcData32 = (uint32_t*)_data;
-		uint32_t *pData32End = pData32 + dataSize32;
-		do {
-			*pData32++ = swapEndian<uint32_t>(*pSrcData32++);
-		} while(pData32 != pData32End);
+		switch (_header.bitSize()) {
+			// 8 bits doesn't need convertion
+			case 8:
+				break;
+			// Need short swap
+			case 12:
+			{
+				// Data have to be packed on uint32_t size to allow indianess fast
+				// reinterpretation
+				pData    = new uint8_t[_dataSize + (_dataSize % sizeof(uint32_t))];
+				size_t dataSize16 = (_dataSize + (_dataSize % sizeof(uint32_t))) / sizeof(uint16_t);
+				uint16_t *pData16 = (uint16_t*)pData;
+				uint16_t *pSrcData16 = (uint16_t*)_data.get();
+				uint16_t *pData16End = pData16 + dataSize16;
+				do {
+					*pData16++ = swapEndian<uint16_t>(*pSrcData16++);
+				} while(pData16 != pData16End);
+				break;
+			}
+			// 16 bits doesn't need convertion
+			case 16:
+				break;
+			// Need int swap
+			default:
+			{
+				// Data have to be packed on uint32_t size to allow indianess fast
+				// reinterpretation
+				pData    = new uint8_t[_dataSize + (_dataSize % sizeof(uint32_t))];
+				size_t dataSize32 = (_dataSize + (_dataSize % sizeof(uint32_t))) / sizeof(uint32_t);
+				uint32_t *pData32 = (uint32_t*)pData;
+				uint32_t *pSrcData32 = (uint32_t*)_data.get();
+				uint32_t *pData32End = pData32 + dataSize32;
+				do {
+					*pData32++ = swapEndian<uint32_t>(*pSrcData32++);
+				} while(pData32 != pData32End);
+				break;
+			}
+		}
 	}
 	return pData;
+}
+
+inline const size_t DpxImage::components() const	{
+	switch( componentsType() )
+	{
+		case eCompTypeR8G8B8:
+		case eCompTypeR10G10B10:
+		case eCompTypeR12G12B12:
+		case eCompTypeR16G16B16:
+			return 3;
+		case eCompTypeR8G8B8A8:
+		case eCompTypeA8B8G8R8:
+		case eCompTypeR10G10B10A10:
+		case eCompTypeA10B10G10R10:
+		case eCompTypeR12G12B12A12:
+		case eCompTypeA12B12G12R12:
+		case eCompTypeR16G16B16A16:
+		case eCompTypeA16B16G16R16:
+			return 4;
+		default:
+			break;
+	}
+	return 0;
+}
+
+const size_t DpxImage::dataSize() const
+{
+	size_t sz               = 0;
+	boost::uint16_t packing = _header.packing();
+
+	switch( componentsType() )
+	{
+		case eCompTypeR8G8B8:
+			sz = sizeof( boost::uint8_t ) * 3 * width() * height();
+			break;
+		case eCompTypeR10G10B10:
+			// Packing means that pixel are packed on bytes
+			if( packing )
+				sz = sizeof( boost::uint32_t ) * width() * height();
+			// Unpacked means that pixels are bit aligned
+			else
+				sz = ( size_t ) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
+			break;
+		case eCompTypeR8G8B8A8:
+		case eCompTypeA8B8G8R8:
+			sz = sizeof( boost::uint8_t ) * 4 * width() * height();
+			break;
+		case eCompTypeR12G12B12:
+			sz = 6 * width() * height();
+			break;
+		case eCompTypeR16G16B16:
+			sz = sizeof(uint16_t) * 3 * width() * height();
+			break;
+		case eCompTypeR10G10B10A10:
+		case eCompTypeA10B10G10R10:
+			if( packing ) {
+				// This kind of packing is complex...
+				int x = width() * height();
+				if (x%3 == 0)
+					return int(floor(x / 3.0f)*8*2);
+				else if (x%3 == 1)
+					return int(floor(x / 3.0f)*8*2+8);
+				else if (x%3 == 2)
+					return int(floor(x / 3.0f)*8*2+12);
+			} else
+				sz = 5 * width() * height();
+			break;
+		case eCompTypeR12G12B12A12:
+		case eCompTypeA12B12G12R12:
+				if( packing )
+					sz = sizeof( boost::uint64_t ) * width() * height();
+				else
+					sz = ( size_t ) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
+			break;
+		case eCompTypeR16G16B16A16:
+		case eCompTypeA16B16G16R16:
+			sz = sizeof( boost::uint64_t ) * width() * height();
+			break;
+		default:
+			break;
+	}
+	return sz;
+}
+
+const DpxImage::EDPX_CompType DpxImage::componentsType() const
+{
+	EDPX_CompType type      = eCompTypeUnknown;
+	unsigned int descriptor = _header.descriptor();
+	unsigned int bitSize    = _header.bitSize();
+
+	if( descriptor == 50 )
+	{
+		if( bitSize == 8 )
+			type = eCompTypeR8G8B8;
+		else if( bitSize == 10 )
+			type = eCompTypeR10G10B10;
+		else if( bitSize == 12 )
+			type = eCompTypeR12G12B12;
+		else if( bitSize == 16 )
+			type = eCompTypeR16G16B16;
+	}
+	else if( descriptor == 51 )
+	{
+		if( bitSize == 8 )
+			type = eCompTypeR8G8B8A8;
+		else if( bitSize == 10 )
+			type = eCompTypeR10G10B10A10;
+		else if( bitSize == 12 )
+			type = eCompTypeR12G12B12A12;
+		else if( bitSize == 16 )
+			type = eCompTypeR16G16B16A16;
+	}
+	else if( descriptor == 52 )
+	{
+		if( bitSize == 8 )
+			type = eCompTypeA8B8G8R8;
+		else if( bitSize == 10 )
+			type = eCompTypeA10B10G10R10;
+		else if( bitSize == 12 )
+			type = eCompTypeA12B12G12R12;
+		else if( bitSize == 16 )
+			type = eCompTypeA16B16G16R16;
+	}
+	return type;
 }
 
 }

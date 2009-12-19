@@ -162,7 +162,11 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 				renderRGBA< FunctorATop >( args );
 				break;
 			}
-
+			case eMergeFunctionColor:
+			{
+				renderRGBA<FunctorColor>( args );
+				break;
+			}
 			case eMergeFunctionConjointOver:
 			{
 				renderRGBA<FunctorConjointOver>( args );
