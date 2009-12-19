@@ -65,9 +65,9 @@ void PNGReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 			this->process();
 		}
 		else
-			throw( PluginException( "Unable to open : %s", sFilepath.c_str() ) );
+			throw PluginException( "Unable to open : " + sFilepath );
 	}
-	catch( PluginException e )
+	catch( PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}
@@ -88,9 +88,9 @@ void PNGReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		this->_filepath->getValue( filepath );
 		readImage( this->_dstView, filepath );
 	}
-	catch( PluginException err )
+	catch( PluginException& e )
 	{
-		COUT_EXCEPTION( err );
+		COUT_EXCEPTION( e );
 	}
 }
 

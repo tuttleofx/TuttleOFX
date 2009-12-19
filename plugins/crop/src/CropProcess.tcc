@@ -148,7 +148,7 @@ void CropProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		this->process();
 		progressEnd();
 	}
-	catch( tuttle::plugin::PluginException e )
+	catch( tuttle::plugin::PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}

@@ -17,7 +17,7 @@ std::string stringify( double x )
 
 PluginException::PluginException()
 {}
-
+/*
 PluginException::PluginException( const char* format, ... )
 {
 	#ifndef __GNUC__
@@ -40,7 +40,7 @@ PluginException::PluginException( const char* format, ... )
 		delete message;
 	}
 }
-
+*/
 PluginException::~PluginException() throw( )
 {
 	// Nothing

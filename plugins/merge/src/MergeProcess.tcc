@@ -87,7 +87,7 @@ void MergeProcess<View, Functor>::setupAndProcess( const OFX::RenderArguments& a
 		// Call the base class process member
 		this->process();
 	}
-	catch( PluginException e )
+	catch( PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}
@@ -126,9 +126,9 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( OfxRectI procWindow 
 		                          procWindow.y2 - procWindow.y1 );
 		merge_pixels( srcA, srcB, dst, Functor() );
 	}
-	catch( PluginException err )
+	catch( PluginException& e )
 	{
-		COUT_EXCEPTION( err );
+		COUT_EXCEPTION( e );
 	}
 }
 

@@ -62,7 +62,7 @@ void PNGWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		// Call the base class process member
 		this->process();
 	}
-	catch( tuttle::plugin::PluginException e )
+	catch( tuttle::plugin::PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}
@@ -86,9 +86,9 @@ void PNGWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		writeImage( _srcView, filepath );
 		copy_pixels( _srcView, _dstView );
 	}
-	catch( tuttle::plugin::PluginException err )
+	catch( tuttle::plugin::PluginException& e )
 	{
-		COUT_EXCEPTION( err );
+		COUT_EXCEPTION( e );
 	}
 }
 

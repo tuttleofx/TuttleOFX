@@ -66,7 +66,7 @@ void propertySetXMLRead( const std::string& el,
 
 		if( set.hasProperty( propName, false ) )
 		{
-			currentProp = &set.fetchProperty( propName, false );
+			currentProp = &set.fetchLocalProperty( propName );
 		}
 		else
 		{
@@ -148,7 +148,7 @@ void propertyXMLWrite( std::ostream& o, const property::OfxhSet& set, const std:
 {
 	if( set.hasProperty( name ) )
 	{
-		const property::OfxhProperty& prop = set.fetchProperty( name );
+		const property::OfxhProperty& prop = set.fetchLocalProperty( name );
 		std::string indent_prefix( indent, ' ' );
 		propertyXMLWrite( o, prop, indent_prefix );
 	}

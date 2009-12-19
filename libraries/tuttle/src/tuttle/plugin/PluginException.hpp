@@ -40,7 +40,7 @@ public:
 
 	PluginException( const std::string& err );
 
-	PluginException( const char* format, ... );
+	//PluginException( const char* format, ... );
 
 	friend std::ostream& operator<<( std::ostream& s, const PluginException& exc )
 	{

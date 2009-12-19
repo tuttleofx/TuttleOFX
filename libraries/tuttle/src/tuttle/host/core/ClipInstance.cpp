@@ -69,15 +69,10 @@
 #include <ctime>
 #include <cstring>
 
-/// @todo TUTTLE_TODO : clean using namespace...
-using namespace tuttle::host;
-using namespace tuttle::host::ofx::imageEffect;
-using namespace boost::gil;
-using namespace boost;
-
 namespace tuttle {
 namespace host {
 namespace core {
+
 Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
 	: tuttle::host::ofx::imageEffect::OfxhImage( clip ),
 	/// this ctor will set basic props on the image

@@ -77,6 +77,7 @@ static property::OfxhPropSpec effectDescriptorStuff[] = {
 	{ kOfxImageEffectPropSupportsMultipleClipDepths, property::eInt, 1, false, "0" },
 	{ kOfxImageEffectPropSupportsMultipleClipPARs, property::eInt, 1, false, "0" },
 	{ kOfxImageEffectPropClipPreferencesSlaveParam, property::eString, 0, false, "" },
+	{ kOfxImageEffectInstancePropSequentialRender, property::eInt, 1, false, "0" },
 	{ kOfxPluginPropFilePath, property::eString, 1, true, "" },
 	{ 0 }
 };
@@ -877,7 +878,7 @@ OfxStatus OfxhImageEffect::renderAction( OfxTime            time,
                                   const OfxRectI&    renderRoI,
                                   OfxPointD          renderScale )
 {
-	property::OfxhPropSpec stuff[] = {
+	static const property::OfxhPropSpec stuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
 		{ kOfxImageEffectPropFieldToRender, property::eString, 1, true, "" },
 		{ kOfxImageEffectPropRenderWindow, property::eInt, 4, true, "0" },
@@ -887,10 +888,13 @@ OfxStatus OfxhImageEffect::renderAction( OfxTime            time,
 
 	property::OfxhSet inArgs( stuff );
 
-	inArgs.setStringProperty( kOfxImageEffectPropFieldToRender, field );
 	inArgs.setDoubleProperty( kOfxPropTime, time );
+	inArgs.setStringProperty( kOfxImageEffectPropFieldToRender, field );
 	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderRoI.x1, 4 );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
+
+	TCOUT("OfxhImageEffect::renderAction inArgs=");
+	inArgs.coutProperties();
 
 	return mainEntry( kOfxImageEffectActionRender, this->getHandle(), &inArgs, 0 );
 }

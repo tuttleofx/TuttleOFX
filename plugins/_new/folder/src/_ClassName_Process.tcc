@@ -72,7 +72,7 @@ namespace % NAMESPACE % {
 			// Call the base class process member
 			this->process();
 		}
-		catch( PluginException e )
+		catch( PluginException& e )
 		{
 			COUT_EXCEPTION( e );
 		}
@@ -98,9 +98,9 @@ namespace % NAMESPACE % {
 			// Put your computations here
 			copy_pixels( src, dst );
 		}
-		catch( PluginException err )
+		catch( PluginException& e )
 		{
-			COUT_EXCEPTION( err );
+			COUT_EXCEPTION( e );
 		}
 	}
 

@@ -92,7 +92,7 @@ void LutProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		else
 			throw( PluginException( "Unable to read lut file..." ) );
 	}
-	catch( PluginException e )
+	catch( PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}
@@ -117,9 +117,9 @@ void LutProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		                          procWindow.y2 - procWindow.y1 );
 		applyLut( dst, src );
 	}
-	catch( PluginException err )
+	catch( PluginException& e )
 	{
-		COUT_EXCEPTION( err );
+		COUT_EXCEPTION( e );
 	}
 }
 
@@ -131,11 +131,11 @@ void LutProcess<View>::applyLut( View& dst, View& src )
 	size_t w = src.width();
 	size_t h = src.height();
 
-	for( size_t y = 0; y < h; y++ )
+	for( size_t y = 0; y < h; ++y )
 	{
 		vIterator sit = src.row_begin( y );
 		vIterator dit = dst.row_begin( y );
-		for( size_t x = 0; x < w; x++ )
+		for( size_t x = 0; x < w; ++x )
 		{
 			Color col = _lut3D.getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
 			( *dit )[0] = (dPix_t)col.x;
@@ -143,8 +143,8 @@ void LutProcess<View>::applyLut( View& dst, View& src )
 			( *dit )[2] = (dPix_t)col.z;
 			if( dst.num_channels() > 3 )
 				( *dit )[3] = channel_traits< typename channel_type< View >::type >::max_value();
-			sit++;
-			dit++;
+			++sit;
+			++dit;
 		}
 	}
 }

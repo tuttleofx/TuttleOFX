@@ -137,6 +137,8 @@ public:
 		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
 		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
 		getEditableProperties().setChainedSet( &other.getProperties() );
+
+		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
 		getProperties().coutProperties();
 		setConnected();
 		TCOUT("Clip connected!");

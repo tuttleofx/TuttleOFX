@@ -96,7 +96,7 @@ void InvertProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		// Call the base class process member
 		this->process();
 	}
-	catch( PluginException e )
+	catch( PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}
@@ -123,9 +123,9 @@ void InvertProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 
 		transform_pixels( src, dst, inverter() );
 	}
-	catch( PluginException err )
+	catch( PluginException& e )
 	{
-		COUT_EXCEPTION( err );
+		COUT_EXCEPTION( e );
 	}
 }
 

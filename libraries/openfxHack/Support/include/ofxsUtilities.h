@@ -3,23 +3,25 @@
 
 #include <iostream>
 
-/**
- * @def   INFOS
- * @brief contient les infos : nom de fichier, numero de ligne, nom de fonction
- **/
-#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " /*<< __PRETTY_FUNCTION__*/
+#ifndef COUT
 
 /**
  * @def   COUT(...)
  * @param[in] ... : prend tous les parametres pour lesquel l'operator << est definit
  * @brief affichage sur la console uniquement en mode debug
  **/
-#define COUT(... )  std::cout << __VA_ARGS__ << std::endl
+#define COUT(... )  std::cout << "[PLUGIN] " << __VA_ARGS__ << std::endl
 
-#define COUT_VAR( a )  std::cout << # a << ": " << a << std::endl
-#define COUT_VAR2( a, b )  std::cout << # a << ": " << a << ", " << # b << ": " << b << std::endl
-#define COUT_VAR3( a, b, c )  std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << std::endl
-#define COUT_VAR4( a, b, c, d )  std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d << std::endl
+#define COUT_VAR( a )  COUT( # a << ": " << a )
+#define COUT_VAR2( a, b )  COUT( # a << ": " << a << ", " << # b << ": " << b )
+#define COUT_VAR3( a, b, c )  COUT( # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c )
+#define COUT_VAR4( a, b, c, d )  COUT( # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d )
+
+/**
+ * @def   INFOS
+ * @brief contient les infos : nom de fichier, numero de ligne, nom de fonction
+ **/
+#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " /*<< __PRETTY_FUNCTION__*/
 
 /**
  * @def   COUT_INFOS_DEBUG
@@ -55,6 +57,8 @@
     std::cerr << "Exception:" << \
     std::endl << INFOS << \
     std::endl << "\t" << __VA_ARGS__  << std::endl
+
+#endif
 
 #endif
 

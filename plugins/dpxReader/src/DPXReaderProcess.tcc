@@ -73,9 +73,9 @@ void DPXReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 			this->process();
 		}
 		else
-			throw( tuttle::plugin::PluginException( "Unable to open : %s", sFilepath.c_str() ) );
+			throw tuttle::plugin::PluginException( "Unable to open : " + sFilepath );
 	}
-	catch( tuttle::plugin::PluginException e )
+	catch( tuttle::plugin::PluginException& e )
 	{
 		COUT_EXCEPTION( e );
 	}
@@ -96,9 +96,9 @@ void DPXReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		this->_filepath->getValue( filepath );
 		readImage( this->_dstView, filepath );
 	}
-	catch( tuttle::plugin::PluginException err )
+	catch( tuttle::plugin::PluginException& e )
 	{
-		COUT_EXCEPTION( err );
+		COUT_EXCEPTION( e );
 	}
 }
 

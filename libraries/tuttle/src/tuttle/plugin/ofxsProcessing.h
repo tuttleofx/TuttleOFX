@@ -78,14 +78,11 @@ public:
 	void multiThreadFunction( unsigned int threadId, unsigned int nThreads )
 	{
 		// slice the y range into the number of threads it has
-		unsigned int dy = _renderWindow.y2 - _renderWindow.y1;
-
-		unsigned int y1 = _renderWindow.y1 + threadId * dy / nThreads;
-
-		int step        = ( threadId + 1 ) * dy / nThreads;
-		unsigned int y2 = _renderWindow.y1 + ( step < dy ? step : dy );
-
-		OfxRectI win = _renderWindow;
+		unsigned int dy   = _renderWindow.y2 - _renderWindow.y1;
+		unsigned int y1   = _renderWindow.y1 + threadId * dy / nThreads;
+		unsigned int step = ( threadId + 1 ) * dy / nThreads;
+		unsigned int y2   = _renderWindow.y1 + ( step < dy ? step : dy );
+		OfxRectI win      = _renderWindow;
 
 		win.y1 = y1; win.y2 = y2;
 
