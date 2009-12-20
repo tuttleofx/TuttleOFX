@@ -49,9 +49,9 @@
 
 // my host
 #include "HostDescriptor.hpp"
-#include "EffectInstance.hpp"
-#include "ClipInstance.hpp"
-#include "ParamInstance.hpp"
+#include "ImageEffectNode.hpp"
+#include "ClipImage.hpp"
+#include "Param.hpp"
 
 namespace tuttle {
 namespace host {
@@ -60,44 +60,44 @@ namespace core {
 //
 // StringInstance
 //
-StringInstance::StringInstance( EffectInstance&                                    effect,
+ParamString::ParamString( ImageEffectNode&                                    effect,
                                 const std::string&                                 name,
                                 tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::ParamStringInstance( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhParamString( descriptor, effect ),
 	_effect( effect )
 {
 	_value = getDefault();
 }
 
-StringInstance* StringInstance::clone() const
+ParamString* ParamString::clone() const
 {
-	return new StringInstance( *this );
+	return new ParamString( *this );
 }
 
-const std::string& StringInstance::getDefault() const
+const std::string& ParamString::getDefault() const
 {
 	return getProperties().getStringProperty( kOfxParamPropDefault );
 }
 
-OfxStatus StringInstance::get( std::string& v )
+OfxStatus ParamString::get( std::string& v )
 {
 	v = _value;
 	return kOfxStatOK;
 }
 
-OfxStatus StringInstance::get( OfxTime time, std::string& v )
+OfxStatus ParamString::get( OfxTime time, std::string& v )
 {
 	v = _value; ///< @todo: in time !
 	return kOfxStatOK;
 }
 
-OfxStatus StringInstance::set( const char* v )
+OfxStatus ParamString::set( const char* v )
 {
 	_value = std::string( v );
 	return kOfxStatOK;
 }
 
-OfxStatus StringInstance::set( OfxTime time, const char* v )
+OfxStatus ParamString::set( OfxTime time, const char* v )
 {
 	_value = std::string( v ); ///< @todo: in time !
 	return kOfxStatOK;
@@ -106,44 +106,44 @@ OfxStatus StringInstance::set( OfxTime time, const char* v )
 //
 // IntegerInstance
 //
-IntegerInstance::IntegerInstance( EffectInstance&                                    effect,
+ParamInteger::ParamInteger( ImageEffectNode&                                    effect,
                                   const std::string&                                 name,
                                   tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::ParamIntegerInstance( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhParamInteger( descriptor, effect ),
 	_effect( effect )
 {
 	_value = getDefault();
 }
 
-IntegerInstance* IntegerInstance::clone() const
+ParamInteger* ParamInteger::clone() const
 {
-	return new IntegerInstance( *this );
+	return new ParamInteger( *this );
 }
 
-int IntegerInstance::getDefault() const
+int ParamInteger::getDefault() const
 {
 	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
-OfxStatus IntegerInstance::get( int& v )
+OfxStatus ParamInteger::get( int& v )
 {
 	v = _value;
 	return kOfxStatOK;
 }
 
-OfxStatus IntegerInstance::get( OfxTime time, int& v )
+OfxStatus ParamInteger::get( OfxTime time, int& v )
 {
 	v = _value; ///< @todo: in time !
 	return kOfxStatOK;
 }
 
-OfxStatus IntegerInstance::set( int v )
+OfxStatus ParamInteger::set( int v )
 {
 	_value = v;
 	return kOfxStatOK;
 }
 
-OfxStatus IntegerInstance::set( OfxTime time, int v )
+OfxStatus ParamInteger::set( OfxTime time, int v )
 {
 	_value = v; ///< @todo: in time !
 	return kOfxStatOK;
@@ -152,56 +152,56 @@ OfxStatus IntegerInstance::set( OfxTime time, int v )
 //
 // DoubleInstance
 //
-DoubleInstance::DoubleInstance( EffectInstance&                                    effect,
+ParamDouble::ParamDouble( ImageEffectNode&                                    effect,
                                 const std::string&                                 name,
                                 tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::ParamDoubleInstance( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhParamDouble( descriptor, effect ),
 	_effect( effect )
 
 {
 	_value = getDefault();
 }
 
-DoubleInstance* DoubleInstance::clone() const
+ParamDouble* ParamDouble::clone() const
 {
-	return new DoubleInstance( *this );
+	return new ParamDouble( *this );
 }
 
-double DoubleInstance::getDefault() const
+double ParamDouble::getDefault() const
 {
 	return getProperties().getDoubleProperty( kOfxParamPropDefault );
 }
 
-OfxStatus DoubleInstance::get( double& v )
+OfxStatus ParamDouble::get( double& v )
 {
 	v = _value;
 	return kOfxStatOK;
 }
 
-OfxStatus DoubleInstance::get( OfxTime time, double& v )
+OfxStatus ParamDouble::get( OfxTime time, double& v )
 {
 	v = _value; ///< @todo: in time !
 	return kOfxStatOK;
 }
 
-OfxStatus DoubleInstance::set( double v )
+OfxStatus ParamDouble::set( double v )
 {
 	_value = v;
 	return kOfxStatOK;
 }
 
-OfxStatus DoubleInstance::set( OfxTime time, double v )
+OfxStatus ParamDouble::set( OfxTime time, double v )
 {
 	_value = v; ///< @todo: in time !
 	return kOfxStatOK;
 }
 
-OfxStatus DoubleInstance::derive( OfxTime time, double& )
+OfxStatus ParamDouble::derive( OfxTime time, double& )
 {
 	return kOfxStatErrMissingHostFeature;
 }
 
-OfxStatus DoubleInstance::integrate( OfxTime time1, OfxTime time2, double& )
+OfxStatus ParamDouble::integrate( OfxTime time1, OfxTime time2, double& )
 {
 	return kOfxStatErrMissingHostFeature;
 }
@@ -209,45 +209,45 @@ OfxStatus DoubleInstance::integrate( OfxTime time1, OfxTime time2, double& )
 //
 // BooleanInstance
 //
-BooleanInstance::BooleanInstance( EffectInstance&                                    effect,
+ParamBoolean::ParamBoolean( ImageEffectNode&                                    effect,
                                   const std::string&                                 name,
                                   tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::ParamBooleanInstance( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhParamBoolean( descriptor, effect ),
 	_effect( effect )
 
 {
 	_value = getDefault();
 }
 
-BooleanInstance* BooleanInstance::clone() const
+ParamBoolean* ParamBoolean::clone() const
 {
-	return new BooleanInstance( *this );
+	return new ParamBoolean( *this );
 }
 
-bool BooleanInstance::getDefault() const
+bool ParamBoolean::getDefault() const
 {
 	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault ) );
 }
 
-OfxStatus BooleanInstance::get( bool& v )
+OfxStatus ParamBoolean::get( bool& v )
 {
 	v = _value;
 	return kOfxStatOK;
 }
 
-OfxStatus BooleanInstance::get( OfxTime time, bool& v )
+OfxStatus ParamBoolean::get( OfxTime time, bool& v )
 {
 	v = _value; ///< @todo: in time !
 	return kOfxStatOK;
 }
 
-OfxStatus BooleanInstance::set( bool v )
+OfxStatus ParamBoolean::set( bool v )
 {
 	_value = v;
 	return kOfxStatOK;
 }
 
-OfxStatus BooleanInstance::set( OfxTime time, bool v )
+OfxStatus ParamBoolean::set( OfxTime time, bool v )
 {
 	_value = v; ///< @todo: in time !
 	return kOfxStatOK;
@@ -256,45 +256,45 @@ OfxStatus BooleanInstance::set( OfxTime time, bool v )
 //
 // ChoiceInteger
 //
-ChoiceInstance::ChoiceInstance( EffectInstance&                                    effect,
+ParamChoice::ParamChoice( ImageEffectNode&                                    effect,
                                 const std::string&                                 name,
                                 tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::ParamChoiceInstance( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhParamChoice( descriptor, effect ),
 	_effect( effect )
 
 {
 	_value = getDefault();
 }
 
-ChoiceInstance* ChoiceInstance::clone() const
+ParamChoice* ParamChoice::clone() const
 {
-	return new ChoiceInstance( *this );
+	return new ParamChoice( *this );
 }
 
-int ChoiceInstance::getDefault() const
+int ParamChoice::getDefault() const
 {
 	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
-OfxStatus ChoiceInstance::get( int& v )
+OfxStatus ParamChoice::get( int& v )
 {
 	v = _value;
 	return kOfxStatOK;
 }
 
-OfxStatus ChoiceInstance::get( OfxTime time, int& v )
+OfxStatus ParamChoice::get( OfxTime time, int& v )
 {
 	v = _value; ///< @todo: in time !
 	return kOfxStatOK;
 }
 
-OfxStatus ChoiceInstance::set( int v )
+OfxStatus ParamChoice::set( int v )
 {
 	_value = v;
 	return kOfxStatOK;
 }
 
-OfxStatus ChoiceInstance::set( OfxTime time, int v )
+OfxStatus ParamChoice::set( OfxTime time, int v )
 {
 	_value = v; ///< @todo: in time !
 	return kOfxStatOK;
@@ -303,27 +303,27 @@ OfxStatus ChoiceInstance::set( OfxTime time, int v )
 //
 // RGBAInstance
 //
-RGBAInstance::RGBAInstance( EffectInstance&                                    effect,
+ParamRGBA::ParamRGBA( ImageEffectNode&                                    effect,
                             const std::string&                                 name,
                             tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 4>( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 4>( descriptor, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new DoubleInstance( effect, name + ".r_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".g_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".b_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".a_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".r_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".g_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".b_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".a_", descriptor ) );
 
 	_value = getDefault();
 }
 
-RGBAInstance* RGBAInstance::clone() const
+ParamRGBA* ParamRGBA::clone() const
 {
-	return new RGBAInstance( *this );
+	return new ParamRGBA( *this );
 }
 
-OfxRGBAColourD RGBAInstance::getDefault() const
+OfxRGBAColourD ParamRGBA::getDefault() const
 {
 	OfxRGBAColourD color;
 
@@ -331,7 +331,7 @@ OfxRGBAColourD RGBAInstance::getDefault() const
 	return color;
 }
 
-OfxStatus RGBAInstance::get( double& r, double& g, double& b, double& a )
+OfxStatus ParamRGBA::get( double& r, double& g, double& b, double& a )
 {
 	r = _value.r;
 	g = _value.g;
@@ -340,7 +340,7 @@ OfxStatus RGBAInstance::get( double& r, double& g, double& b, double& a )
 	return kOfxStatOK;
 }
 
-OfxStatus RGBAInstance::get( OfxTime time, double& r, double& g, double& b, double& a )
+OfxStatus ParamRGBA::get( OfxTime time, double& r, double& g, double& b, double& a )
 {
 	r = _value.r;
 	g = _value.g;
@@ -349,7 +349,7 @@ OfxStatus RGBAInstance::get( OfxTime time, double& r, double& g, double& b, doub
 	return kOfxStatOK;
 }
 
-OfxStatus RGBAInstance::set( double r, double g, double b, double a )
+OfxStatus ParamRGBA::set( double r, double g, double b, double a )
 {
 	_value.r = r;
 	_value.g = g;
@@ -358,7 +358,7 @@ OfxStatus RGBAInstance::set( double r, double g, double b, double a )
 	return kOfxStatOK;
 }
 
-OfxStatus RGBAInstance::set( OfxTime time, double r, double g, double b, double a )
+OfxStatus ParamRGBA::set( OfxTime time, double r, double g, double b, double a )
 {
 	_value.r = r;
 	_value.g = g;
@@ -370,25 +370,25 @@ OfxStatus RGBAInstance::set( OfxTime time, double r, double g, double b, double 
 //
 // RGBInstance
 //
-RGBInstance::RGBInstance( EffectInstance&                                    effect,
+ParamRGB::ParamRGB( ImageEffectNode&                                    effect,
                           const std::string&                                 name,
                           tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 3>( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new DoubleInstance( effect, name + ".r_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".g_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".b_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".r_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".g_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".b_", descriptor ) );
 	_value = getDefault();
 }
 
-RGBInstance* RGBInstance::clone() const
+ParamRGB* ParamRGB::clone() const
 {
-	return new RGBInstance( *this );
+	return new ParamRGB( *this );
 }
 
-OfxRGBColourD RGBInstance::getDefault() const
+OfxRGBColourD ParamRGB::getDefault() const
 {
 	OfxRGBColourD color;
 
@@ -396,7 +396,7 @@ OfxRGBColourD RGBInstance::getDefault() const
 	return color;
 }
 
-OfxStatus RGBInstance::get( double& r, double& g, double& b )
+OfxStatus ParamRGB::get( double& r, double& g, double& b )
 {
 	r = _value.r;
 	g = _value.g;
@@ -404,7 +404,7 @@ OfxStatus RGBInstance::get( double& r, double& g, double& b )
 	return kOfxStatOK;
 }
 
-OfxStatus RGBInstance::get( OfxTime time, double& r, double& g, double& b )
+OfxStatus ParamRGB::get( OfxTime time, double& r, double& g, double& b )
 {
 	r = _value.r;
 	g = _value.g;
@@ -412,7 +412,7 @@ OfxStatus RGBInstance::get( OfxTime time, double& r, double& g, double& b )
 	return kOfxStatOK;
 }
 
-OfxStatus RGBInstance::set( double r, double g, double b )
+OfxStatus ParamRGB::set( double r, double g, double b )
 {
 	_value.r = r;
 	_value.g = g;
@@ -420,7 +420,7 @@ OfxStatus RGBInstance::set( double r, double g, double b )
 	return kOfxStatOK;
 }
 
-OfxStatus RGBInstance::set( OfxTime time, double r, double g, double b )
+OfxStatus ParamRGB::set( OfxTime time, double r, double g, double b )
 {
 	_value.r = r;
 	_value.g = g;
@@ -431,24 +431,24 @@ OfxStatus RGBInstance::set( OfxTime time, double r, double g, double b )
 //
 // Double2DInstance
 //
-Double2DInstance::Double2DInstance( EffectInstance&                                    effect,
+ParamDouble2D::ParamDouble2D( ImageEffectNode&                                    effect,
                                     const std::string&                                 name,
                                     tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 2>( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 2>( descriptor, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new DoubleInstance( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".y_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".x_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".y_", descriptor ) );
 	_value = getDefault();
 }
 
-Double2DInstance* Double2DInstance::clone() const
+ParamDouble2D* ParamDouble2D::clone() const
 {
-	return new Double2DInstance( *this );
+	return new ParamDouble2D( *this );
 }
 
-OfxPointD Double2DInstance::getDefault() const
+OfxPointD ParamDouble2D::getDefault() const
 {
 	OfxPointD point;
 
@@ -456,28 +456,28 @@ OfxPointD Double2DInstance::getDefault() const
 	return point;
 }
 
-OfxStatus Double2DInstance::get( double& x, double& y )
+OfxStatus ParamDouble2D::get( double& x, double& y )
 {
 	x = _value.x;
 	y = _value.y;
 	return kOfxStatOK;
 }
 
-OfxStatus Double2DInstance::get( OfxTime time, double& x, double& y )
+OfxStatus ParamDouble2D::get( OfxTime time, double& x, double& y )
 {
 	x = _value.x;
 	y = _value.y;
 	return kOfxStatOK;
 }
 
-OfxStatus Double2DInstance::set( double x, double y )
+OfxStatus ParamDouble2D::set( double x, double y )
 {
 	_value.x = x;
 	_value.y = y;
 	return kOfxStatOK;
 }
 
-OfxStatus Double2DInstance::set( OfxTime time, double x, double y )
+OfxStatus ParamDouble2D::set( OfxTime time, double x, double y )
 {
 	_value.x = x;
 	_value.y = y;
@@ -487,24 +487,24 @@ OfxStatus Double2DInstance::set( OfxTime time, double x, double y )
 //
 // Integer2DInstance
 //
-Integer2DInstance::Integer2DInstance( EffectInstance&                                    effect,
+ParamInteger2D::ParamInteger2D( ImageEffectNode&                                    effect,
                                       const std::string&                                 name,
                                       tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::OfxhMultiDimParam<IntegerInstance, 2>( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 2>( descriptor, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new IntegerInstance( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new IntegerInstance( effect, name + ".y_", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".x_", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".y_", descriptor ) );
 	_value = getDefault();
 }
 
-Integer2DInstance* Integer2DInstance::clone() const
+ParamInteger2D* ParamInteger2D::clone() const
 {
-	return new Integer2DInstance( *this );
+	return new ParamInteger2D( *this );
 }
 
-OfxPointI Integer2DInstance::getDefault() const
+OfxPointI ParamInteger2D::getDefault() const
 {
 	OfxPointI point;
 
@@ -512,28 +512,28 @@ OfxPointI Integer2DInstance::getDefault() const
 	return point;
 }
 
-OfxStatus Integer2DInstance::get( int& x, int& y )
+OfxStatus ParamInteger2D::get( int& x, int& y )
 {
 	x = _value.x;
 	y = _value.y;
 	return kOfxStatOK;
 }
 
-OfxStatus Integer2DInstance::get( OfxTime time, int& x, int& y )
+OfxStatus ParamInteger2D::get( OfxTime time, int& x, int& y )
 {
 	x = _value.x;
 	y = _value.y;
 	return kOfxStatOK;
 }
 
-OfxStatus Integer2DInstance::set( int x, int y )
+OfxStatus ParamInteger2D::set( int x, int y )
 {
 	_value.x = x;
 	_value.y = y;
 	return kOfxStatOK;
 }
 
-OfxStatus Integer2DInstance::set( OfxTime time, int x, int y )
+OfxStatus ParamInteger2D::set( OfxTime time, int x, int y )
 {
 	_value.x = x;
 	_value.y = y;
@@ -543,25 +543,25 @@ OfxStatus Integer2DInstance::set( OfxTime time, int x, int y )
 //
 // Integer3DInstance
 //
-Integer3DInstance::Integer3DInstance( EffectInstance&                                    effect,
+ParamInteger3D::ParamInteger3D( ImageEffectNode&                                    effect,
                                       const std::string&                                 name,
                                       tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::OfxhMultiDimParam<IntegerInstance, 3>( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 3>( descriptor, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new IntegerInstance( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new IntegerInstance( effect, name + ".y_", descriptor ) );
-	_controls.push_back( new IntegerInstance( effect, name + ".z_", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".x_", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".y_", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".z_", descriptor ) );
 	_value = getDefault();
 }
 
-Integer3DInstance* Integer3DInstance::clone() const
+ParamInteger3D* ParamInteger3D::clone() const
 {
-	return new Integer3DInstance( *this );
+	return new ParamInteger3D( *this );
 }
 
-Ofx3DPointI Integer3DInstance::getDefault() const
+Ofx3DPointI ParamInteger3D::getDefault() const
 {
 	Ofx3DPointI point;
 
@@ -569,7 +569,7 @@ Ofx3DPointI Integer3DInstance::getDefault() const
 	return point;
 }
 
-OfxStatus Integer3DInstance::get( int& x, int& y, int& z )
+OfxStatus ParamInteger3D::get( int& x, int& y, int& z )
 {
 	x = _value.x;
 	y = _value.y;
@@ -577,7 +577,7 @@ OfxStatus Integer3DInstance::get( int& x, int& y, int& z )
 	return kOfxStatOK;
 }
 
-OfxStatus Integer3DInstance::get( OfxTime time, int& x, int& y, int& z )
+OfxStatus ParamInteger3D::get( OfxTime time, int& x, int& y, int& z )
 {
 	x = _value.x;
 	y = _value.y;
@@ -585,7 +585,7 @@ OfxStatus Integer3DInstance::get( OfxTime time, int& x, int& y, int& z )
 	return kOfxStatOK;
 }
 
-OfxStatus Integer3DInstance::set( int x, int y, int z )
+OfxStatus ParamInteger3D::set( int x, int y, int z )
 {
 	_value.x = x;
 	_value.y = y;
@@ -593,7 +593,7 @@ OfxStatus Integer3DInstance::set( int x, int y, int z )
 	return kOfxStatOK;
 }
 
-OfxStatus Integer3DInstance::set( OfxTime time, int x, int y, int z )
+OfxStatus ParamInteger3D::set( OfxTime time, int x, int y, int z )
 {
 	_value.x = x;
 	_value.y = y;
@@ -603,25 +603,25 @@ OfxStatus Integer3DInstance::set( OfxTime time, int x, int y, int z )
 //
 // Double3DInstance
 //
-Double3DInstance::Double3DInstance( EffectInstance&                                    effect,
+ParamDouble3D::ParamDouble3D( ImageEffectNode&                                    effect,
                                     const std::string&                                 name,
                                     tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::OfxhMultiDimParam<DoubleInstance, 3>( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new DoubleInstance( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".y_", descriptor ) );
-	_controls.push_back( new DoubleInstance( effect, name + ".z_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".x_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".y_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".z_", descriptor ) );
 	_value = getDefault();
 }
 
-Double3DInstance* Double3DInstance::clone() const
+ParamDouble3D* ParamDouble3D::clone() const
 {
-	return new Double3DInstance( *this );
+	return new ParamDouble3D( *this );
 }
 
-Ofx3DPointD Double3DInstance::getDefault() const
+Ofx3DPointD ParamDouble3D::getDefault() const
 {
 	Ofx3DPointD point;
 
@@ -629,7 +629,7 @@ Ofx3DPointD Double3DInstance::getDefault() const
 	return point;
 }
 
-OfxStatus Double3DInstance::get( double& x, double& y, double& z )
+OfxStatus ParamDouble3D::get( double& x, double& y, double& z )
 {
 	x = _value.x;
 	y = _value.y;
@@ -637,7 +637,7 @@ OfxStatus Double3DInstance::get( double& x, double& y, double& z )
 	return kOfxStatOK;
 }
 
-OfxStatus Double3DInstance::get( OfxTime time, double& x, double& y, double& z )
+OfxStatus ParamDouble3D::get( OfxTime time, double& x, double& y, double& z )
 {
 	x = _value.x;
 	y = _value.y;
@@ -645,7 +645,7 @@ OfxStatus Double3DInstance::get( OfxTime time, double& x, double& y, double& z )
 	return kOfxStatOK;
 }
 
-OfxStatus Double3DInstance::set( double x, double y, double z )
+OfxStatus ParamDouble3D::set( double x, double y, double z )
 {
 	_value.x = x;
 	_value.y = y;
@@ -653,7 +653,7 @@ OfxStatus Double3DInstance::set( double x, double y, double z )
 	return kOfxStatOK;
 }
 
-OfxStatus Double3DInstance::set( OfxTime time, double x, double y, double z )
+OfxStatus ParamDouble3D::set( OfxTime time, double x, double y, double z )
 {
 	_value.x = x;
 	_value.y = y;
@@ -663,17 +663,17 @@ OfxStatus Double3DInstance::set( OfxTime time, double x, double y, double z )
 //
 // PushbuttonInstance
 //
-PushbuttonInstance::PushbuttonInstance( EffectInstance&                                    effect,
+ParamPushButton::ParamPushButton( ImageEffectNode&                                    effect,
                                         const std::string&                                 name,
                                         tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
-	: tuttle::host::ofx::attribute::ParamPushbuttonInstance( descriptor, effect ),
+	: tuttle::host::ofx::attribute::OfxhParamPushButton( descriptor, effect ),
 	_effect( effect )
 
 {}
 
-PushbuttonInstance* PushbuttonInstance::clone() const
+ParamPushButton* ParamPushButton::clone() const
 {
-	return new PushbuttonInstance( *this );
+	return new ParamPushButton( *this );
 }
 
 }

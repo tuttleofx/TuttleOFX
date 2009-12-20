@@ -49,8 +49,8 @@
 
 // my host
 #include "HostDescriptor.hpp"
-#include "EffectInstance.hpp"
-#include "ClipInstance.hpp"
+#include "ImageEffectNode.hpp"
+#include "ClipImage.hpp"
 
 namespace tuttle {
 namespace host {
@@ -87,12 +87,12 @@ Host::Host()
 	_properties.setIntProperty( kOfxParamHostPropPageRowColumnCount, 0, 1 );
 }
 
-tuttle::host::core::EffectInstance* Host::newInstance( void*                                                  clientData,
+tuttle::host::core::ImageEffectNode* Host::newInstance( void*                                                  clientData,
                                                        tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
                                                        tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
                                                        const std::string&                                 context ) const
 {
-	return new tuttle::host::core::EffectInstance( plugin, desc, context );
+	return new tuttle::host::core::ImageEffectNode( plugin, desc, context );
 }
 
 /// Override this to create a descriptor, this makes the 'root' descriptor

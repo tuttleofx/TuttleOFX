@@ -677,12 +677,12 @@ OfxhParamSet* OfxhParamGroup::getChildrens() const
 //
 // Page Instance
 //
-ParamPageInstance* ParamPageInstance::clone() const
+OfxhParamPage* OfxhParamPage::clone() const
 {
-	return new ParamPageInstance( *this );
+	return new OfxhParamPage( *this );
 }
 
-const std::map<int, attribute::OfxhParam*>& ParamPageInstance::getChildren() const
+const std::map<int, attribute::OfxhParam*>& OfxhParamPage::getChildren() const
 {
 	// HACK!!!! this really should be done with a notify hook so we don't force
 	// _children to be mutable
@@ -704,7 +704,7 @@ const std::map<int, attribute::OfxhParam*>& ParamPageInstance::getChildren() con
 //
 /// implementation of var args function
 
-OfxStatus ParamChoiceInstance::getV( va_list arg )
+OfxStatus OfxhParamChoice::getV( va_list arg )
 {
 	int* value = va_arg( arg, int* );
 
@@ -714,7 +714,7 @@ OfxStatus ParamChoiceInstance::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamChoiceInstance::getV( OfxTime time, va_list arg )
+OfxStatus OfxhParamChoice::getV( OfxTime time, va_list arg )
 {
 	int* value = va_arg( arg, int* );
 
@@ -724,7 +724,7 @@ OfxStatus ParamChoiceInstance::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamChoiceInstance::setV( va_list arg )
+OfxStatus OfxhParamChoice::setV( va_list arg )
 {
 	int value = va_arg( arg, int );
 
@@ -734,7 +734,7 @@ OfxStatus ParamChoiceInstance::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamChoiceInstance::setV( OfxTime time, va_list arg )
+OfxStatus OfxhParamChoice::setV( OfxTime time, va_list arg )
 {
 	int value = va_arg( arg, int );
 
@@ -745,12 +745,12 @@ OfxStatus ParamChoiceInstance::setV( OfxTime time, va_list arg )
 // IntegerInstance
 //
 
-OfxStatus ParamIntegerInstance::derive( OfxTime time, int& )
+OfxStatus OfxhParamInteger::derive( OfxTime time, int& )
 {
 	return kOfxStatErrUnsupported;
 }
 
-OfxStatus ParamIntegerInstance::integrate( OfxTime time1, OfxTime time2, int& )
+OfxStatus OfxhParamInteger::integrate( OfxTime time1, OfxTime time2, int& )
 {
 	return kOfxStatErrUnsupported;
 }
@@ -758,7 +758,7 @@ OfxStatus ParamIntegerInstance::integrate( OfxTime time1, OfxTime time2, int& )
 /**
  * implementation of var args function
  */
-OfxStatus ParamIntegerInstance::getV( va_list arg )
+OfxStatus OfxhParamInteger::getV( va_list arg )
 {
 	int* value = va_arg( arg, int* );
 
@@ -768,7 +768,7 @@ OfxStatus ParamIntegerInstance::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamIntegerInstance::getV( OfxTime time, va_list arg )
+OfxStatus OfxhParamInteger::getV( OfxTime time, va_list arg )
 {
 	int* value = va_arg( arg, int* );
 
@@ -778,7 +778,7 @@ OfxStatus ParamIntegerInstance::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamIntegerInstance::setV( va_list arg )
+OfxStatus OfxhParamInteger::setV( va_list arg )
 {
 	int value = va_arg( arg, int );
 
@@ -788,7 +788,7 @@ OfxStatus ParamIntegerInstance::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamIntegerInstance::setV( OfxTime time, va_list arg )
+OfxStatus OfxhParamInteger::setV( OfxTime time, va_list arg )
 {
 	int value = va_arg( arg, int );
 
@@ -798,7 +798,7 @@ OfxStatus ParamIntegerInstance::setV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamIntegerInstance::deriveV( OfxTime time, va_list arg )
+OfxStatus OfxhParamInteger::deriveV( OfxTime time, va_list arg )
 {
 	int* value = va_arg( arg, int* );
 
@@ -808,7 +808,7 @@ OfxStatus ParamIntegerInstance::deriveV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamIntegerInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+OfxStatus OfxhParamInteger::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 {
 	int* value = va_arg( arg, int* );
 
@@ -822,7 +822,7 @@ OfxStatus ParamIntegerInstance::integrateV( OfxTime time1, OfxTime time2, va_lis
 /**
  * implementation of var args function
  */
-OfxStatus ParamDoubleInstance::getV( va_list arg )
+OfxStatus OfxhParamDouble::getV( va_list arg )
 {
 	double* value = va_arg( arg, double* );
 
@@ -832,7 +832,7 @@ OfxStatus ParamDoubleInstance::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamDoubleInstance::getV( OfxTime time, va_list arg )
+OfxStatus OfxhParamDouble::getV( OfxTime time, va_list arg )
 {
 	double* value = va_arg( arg, double* );
 
@@ -842,7 +842,7 @@ OfxStatus ParamDoubleInstance::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamDoubleInstance::setV( va_list arg )
+OfxStatus OfxhParamDouble::setV( va_list arg )
 {
 	double value = va_arg( arg, double );
 
@@ -852,7 +852,7 @@ OfxStatus ParamDoubleInstance::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamDoubleInstance::setV( OfxTime time, va_list arg )
+OfxStatus OfxhParamDouble::setV( OfxTime time, va_list arg )
 {
 	double value = va_arg( arg, double );
 
@@ -862,7 +862,7 @@ OfxStatus ParamDoubleInstance::setV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamDoubleInstance::deriveV( OfxTime time, va_list arg )
+OfxStatus OfxhParamDouble::deriveV( OfxTime time, va_list arg )
 {
 	double* value = va_arg( arg, double* );
 
@@ -872,7 +872,7 @@ OfxStatus ParamDoubleInstance::deriveV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamDoubleInstance::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+OfxStatus OfxhParamDouble::integrateV( OfxTime time1, OfxTime time2, va_list arg )
 {
 	double* value = va_arg( arg, double* );
 
@@ -886,7 +886,7 @@ OfxStatus ParamDoubleInstance::integrateV( OfxTime time1, OfxTime time2, va_list
 /**
  * implementation of var args function
  */
-OfxStatus ParamBooleanInstance::getV( va_list arg )
+OfxStatus OfxhParamBoolean::getV( va_list arg )
 {
 	bool v;
 	OfxStatus stat = get( v );
@@ -900,7 +900,7 @@ OfxStatus ParamBooleanInstance::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamBooleanInstance::getV( OfxTime time, va_list arg )
+OfxStatus OfxhParamBoolean::getV( OfxTime time, va_list arg )
 {
 	bool v;
 	OfxStatus stat = get( time, v );
@@ -914,7 +914,7 @@ OfxStatus ParamBooleanInstance::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamBooleanInstance::setV( va_list arg )
+OfxStatus OfxhParamBoolean::setV( va_list arg )
 {
 	bool value = va_arg( arg, int ) != 0;
 
@@ -924,7 +924,7 @@ OfxStatus ParamBooleanInstance::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamBooleanInstance::setV( OfxTime time, va_list arg )
+OfxStatus OfxhParamBoolean::setV( OfxTime time, va_list arg )
 {
 	bool value = va_arg( arg, int ) != 0;
 
@@ -934,7 +934,7 @@ OfxStatus ParamBooleanInstance::setV( OfxTime time, va_list arg )
 ////////////////////////////////////////////////////////////////////////////////
 // string param
 
-OfxStatus ParamStringInstance::getV( va_list arg )
+OfxStatus OfxhParamString::getV( va_list arg )
 {
 	const char** value = va_arg( arg, const char** );
 	OfxStatus stat     = get( _returnValue ); // I so don't like this, temp storage should be delegated to the implementation
@@ -946,7 +946,7 @@ OfxStatus ParamStringInstance::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamStringInstance::getV( OfxTime time, va_list arg )
+OfxStatus OfxhParamString::getV( OfxTime time, va_list arg )
 {
 	const char** value = va_arg( arg, const char** );
 
@@ -959,7 +959,7 @@ OfxStatus ParamStringInstance::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamStringInstance::setV( va_list arg )
+OfxStatus OfxhParamString::setV( va_list arg )
 {
 	char* value = va_arg( arg, char* );
 
@@ -969,7 +969,7 @@ OfxStatus ParamStringInstance::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus ParamStringInstance::setV( OfxTime time, va_list arg )
+OfxStatus OfxhParamString::setV( OfxTime time, va_list arg )
 {
 	char* value = va_arg( arg, char* );
 

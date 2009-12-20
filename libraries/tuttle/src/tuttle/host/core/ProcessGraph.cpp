@@ -7,8 +7,8 @@
 
 
 //TODO: delete these include
-#include <tuttle/host/core/ParamInstance.hpp>
-#include <tuttle/host/core/ClipInstance.hpp>
+#include <tuttle/host/core/Param.hpp>
+#include <tuttle/host/core/ClipImage.hpp>
 
 
 namespace tuttle {
@@ -16,9 +16,9 @@ namespace host {
 namespace core {
 
 
-ProcessGraph::ProcessGraph( const Graph& graph )
+ProcessGraph::ProcessGraph( Graph& graph )
 : _graph( graph.getGraph() )
-, _nodes( graph.getNodes() )
+, _nodes( graph.getNodesTest() )
 , _instanceCount( graph.getInstanceCount() )
 {
 	relink();
@@ -54,11 +54,11 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		p.second->getClipPreferences();
 		p.second->dumpToStdOut();
 
-		ClipImgInstance& outputClip = dynamic_cast<ClipImgInstance& >( p.second->getClip(kOfxImageEffectOutputClipName) );
+		ClipImage& outputClip = dynamic_cast<ClipImage& >( p.second->getClip(kOfxImageEffectOutputClipName) );
 		outputClip.setPixelDepth( kOfxBitDepthByte );
 		outputClip.setComponents( kOfxImageComponentRGBA );
 	}
-
+/*
 	// Setup parameters
 	EffectInstance& firstEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGReader1"));
 	EffectInstance& lastEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGWriterHd3d1"));
@@ -66,7 +66,7 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	lastEffect.getParam("Output filename").set("output.png");
 	firstEffect.paramInstanceChangedAction("Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 	lastEffect.paramInstanceChangedAction("Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-
+*/
 
 	// Connecting nodes
 	core::dfs_connect_visitor connectVisitor;

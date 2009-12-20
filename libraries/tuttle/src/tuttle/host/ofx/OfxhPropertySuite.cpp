@@ -507,7 +507,7 @@ void OfxhSet::addNotifyHook( const std::string& s, OfxhNotifyHook* hook )
 	fetchLocalProperty( s ).addNotifyHook( hook );
 }
 
-OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name )
+OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( core::exception::LogicError, std::bad_cast )
 {
 	PropertyMap::iterator i = _props.find( name );
 
@@ -518,7 +518,7 @@ OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name )
 	return *(i->second);
 }
 
-const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const
+const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
 {
 	PropertyMap::const_iterator i = _props.find( name );
 

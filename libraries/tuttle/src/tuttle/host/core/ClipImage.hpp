@@ -30,7 +30,7 @@
 #ifndef TUTTLE_CLIP_INSTANCE_HPP
 #define TUTTLE_CLIP_INSTANCE_HPP
 
-#include "EffectInstance.hpp"
+#include "ImageEffectNode.hpp"
 
 #include <tuttle/host/ofx/OfxhImageEffect.hpp>
 #include <tuttle/host/ofx/OfxhImage.hpp>
@@ -47,7 +47,7 @@ namespace host {
 namespace core {
 
 // foward
-class ClipImgInstance;
+class ClipImage;
 
 /**
  * make an image up
@@ -60,7 +60,7 @@ protected:
 	IMemoryPool& _memoryPool;
 
 public:
-	explicit Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime t );
+	explicit Image( ClipImage& clip, const OfxRectD& bounds, OfxTime t );
 	virtual ~Image();
 
 	boost::uint8_t* getPixelData() { return reinterpret_cast<boost::uint8_t*>( _data->data() ); }
@@ -89,28 +89,28 @@ private:
  *
  *
  */
-class ClipImgInstance : public tuttle::host::ofx::attribute::OfxhClipImage
+class ClipImage : public tuttle::host::ofx::attribute::OfxhClipImage
 {
 protected:
-	/*const*/ EffectInstance& _effect;
+	/*const*/ ImageEffectNode& _effect;
 	std::string _name;
 	OfxPointD _frameRange; ///< get frame range
 	bool _isConnected;
 	bool _continuousSamples;
 	IMemoryCache& _memoryCache;
 
-	const ClipImgInstance* _connectedClip; ///< @warning HACK ! to force connection (only for test) @todo remove this !!!!
+	const ClipImage* _connectedClip; ///< @warning HACK ! to force connection (only for test) @todo remove this !!!!
 
 public:
-	ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc );
+	ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc );
 
-	~ClipImgInstance();
+	~ClipImage();
 
-	ClipImgInstance* clone() const { return new ClipImgInstance( *this ); }
+	ClipImage* clone() const { return new ClipImage( *this ); }
 
 	/// @warning HACK ! to force connection (only for test)
 	/// @todo remove this !!!!
-	void setConnectedClip( const ClipImgInstance& other )
+	void setConnectedClip( const ClipImage& other )
 	{
 		if( isOutput() )
 		{

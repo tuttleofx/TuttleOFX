@@ -564,23 +564,23 @@ public:
 
 };
 
-class ParamPageInstance : public OfxhParam
+class OfxhParamPage : public OfxhParam
 {
 public:
-	ParamPageInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
-	virtual ParamPageInstance*                  clone() const;
+	OfxhParamPage( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	virtual OfxhParamPage*                  clone() const;
 	const std::map<int, attribute::OfxhParam*>& getChildren() const;
 
 protected:
 	mutable std::map<int, attribute::OfxhParam*> _children; // if set in a notify hook, this need not be mutable
 };
 
-class ParamIntegerInstance : public OfxhParam,
+class OfxhParamInteger : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
 	typedef int BaseType;
-	ParamIntegerInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
+	OfxhParamInteger( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
 	: OfxhParam( descriptor, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
@@ -616,11 +616,11 @@ public:
 	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg );
 };
 
-class ParamChoiceInstance : public OfxhParam,
+class OfxhParamChoice : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
-	ParamChoiceInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamChoice( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( int& )               = 0;
@@ -641,12 +641,12 @@ public:
 	virtual OfxStatus setV( OfxTime time, va_list arg );
 };
 
-class ParamDoubleInstance : public OfxhParam,
+class OfxhParamDouble : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
 	typedef double BaseType;
-	ParamDoubleInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
+	OfxhParamDouble( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
 	: OfxhParam( descriptor, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
@@ -680,12 +680,12 @@ public:
 	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg );
 };
 
-class ParamBooleanInstance : public OfxhParam,
+class OfxhParamBoolean : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
 	typedef bool BaseType;
-	ParamBooleanInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamBoolean( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( bool& )               = 0;
@@ -706,14 +706,14 @@ public:
 	virtual OfxStatus setV( OfxTime time, va_list arg );
 };
 
-class ParamStringInstance : public OfxhParam,
+class OfxhParamString : public OfxhParam,
 	public OfxhKeyframeParam
 {
 std::string _returnValue; ///< location to hold temporary return value. Should delegate this to implementation!!!
 
 public:
 	typedef std::string BaseType;
-	ParamStringInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamString( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	virtual OfxStatus get( std::string& )               = 0;
 	virtual OfxStatus get( OfxTime time, std::string& ) = 0;
@@ -733,17 +733,17 @@ public:
 	virtual OfxStatus setV( OfxTime time, va_list arg );
 };
 
-class ParamCustomInstance : public ParamStringInstance
+class OfxhParamCustom : public OfxhParamString
 {
 public:
-	ParamCustomInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : ParamStringInstance( descriptor, setInstance ) {}
+	OfxhParamCustom( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParamString( descriptor, setInstance ) {}
 };
 
-class ParamPushbuttonInstance : public OfxhParam,
+class OfxhParamPushButton : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
-	ParamPushbuttonInstance( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamPushButton( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 };
 
 }

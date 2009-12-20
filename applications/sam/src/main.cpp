@@ -3,9 +3,9 @@
 #include <tuttle/common/math/rectOp.hpp>
 
 #include <tuttle/host/core/HostDescriptor.hpp>
-#include <tuttle/host/core/EffectInstance.hpp>
-#include <tuttle/host/core/ClipInstance.hpp>
-#include <tuttle/host/core/ParamInstance.hpp>
+#include <tuttle/host/core/ImageEffectNode.hpp>
+#include <tuttle/host/core/ClipImage.hpp>
+#include <tuttle/host/core/Param.hpp>
 #include <tuttle/host/core/HostDescriptor.hpp>
 #include <tuttle/host/core/Core.hpp>
 #include <tuttle/host/ofx/OfxhCore.hpp>
@@ -52,11 +52,11 @@ int main( int argc, char** argv )
 			return 1;
 		}
 
-		typedef boost::ptr_vector< tuttle::host::core::EffectInstance > EffectInstVector;
+		typedef boost::ptr_vector< tuttle::host::core::ImageEffectNode > EffectInstVector;
 		EffectInstVector vPluginsInst;
-		tuttle::host::core::EffectInstance* ofxinstR = dynamic_cast< tuttle::host::core::EffectInstance* >( pluginR->createInstance( kOfxImageEffectContextGenerator, NULL ) );
-		tuttle::host::core::EffectInstance* ofxinstI = dynamic_cast< tuttle::host::core::EffectInstance* >( pluginI->createInstance( kOfxImageEffectContextFilter, NULL ) );
-		tuttle::host::core::EffectInstance* ofxinstW = dynamic_cast< tuttle::host::core::EffectInstance* >( pluginW->createInstance( kOfxImageEffectContextGeneral, NULL ) );
+		tuttle::host::core::ImageEffectNode* ofxinstR = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginR->createInstance( kOfxImageEffectContextGenerator, NULL ) );
+		tuttle::host::core::ImageEffectNode* ofxinstI = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginI->createInstance( kOfxImageEffectContextFilter, NULL ) );
+		tuttle::host::core::ImageEffectNode* ofxinstW = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginW->createInstance( kOfxImageEffectContextGeneral, NULL ) );
 		ofxinstR->setName("pluginR");
 		ofxinstI->setName("pluginI");
 		ofxinstW->setName("pluginW");
@@ -86,18 +86,18 @@ int main( int argc, char** argv )
 			}
 
 			// Setup parameters
-			tuttle::host::core::StringInstance& srcFileParam = dynamic_cast<tuttle::host::core::StringInstance&>( vPluginsInst[0].getParam("Input filename") );
-			tuttle::host::core::StringInstance& dstFileParam = dynamic_cast<tuttle::host::core::StringInstance&>( vPluginsInst[2].getParam("Output filename") );
+			tuttle::host::core::ParamString& srcFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[0].getParam("Input filename") );
+			tuttle::host::core::ParamString& dstFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[2].getParam("Output filename") );
 			srcFileParam.set( "input.png" );
 			dstFileParam.set( "output.png" );
 			vPluginsInst[0].paramInstanceChangedAction( srcFileParam.getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 			vPluginsInst[2].paramInstanceChangedAction( dstFileParam.getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
 			// Setup clips
-			tuttle::host::core::ClipImgInstance& outputR = dynamic_cast<tuttle::host::core::ClipImgInstance&>( ofxinstR->getClip(kOfxImageEffectOutputClipName) );
-			tuttle::host::core::ClipImgInstance& inputI = dynamic_cast<tuttle::host::core::ClipImgInstance&>( ofxinstI->getClip(kOfxImageEffectSimpleSourceClipName) );
-			tuttle::host::core::ClipImgInstance& outputI = dynamic_cast<tuttle::host::core::ClipImgInstance&>( ofxinstI->getClip(kOfxImageEffectOutputClipName) );
-			tuttle::host::core::ClipImgInstance& inputW = dynamic_cast<tuttle::host::core::ClipImgInstance&>( ofxinstW->getClip(kOfxImageEffectSimpleSourceClipName) );
+			tuttle::host::core::ClipImage& outputR = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstR->getClip(kOfxImageEffectOutputClipName) );
+			tuttle::host::core::ClipImage& inputI = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstI->getClip(kOfxImageEffectSimpleSourceClipName) );
+			tuttle::host::core::ClipImage& outputI = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstI->getClip(kOfxImageEffectOutputClipName) );
+			tuttle::host::core::ClipImage& inputW = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstW->getClip(kOfxImageEffectSimpleSourceClipName) );
 			inputI.setConnectedClip( outputR );
 			inputW.setConnectedClip( outputI );
 

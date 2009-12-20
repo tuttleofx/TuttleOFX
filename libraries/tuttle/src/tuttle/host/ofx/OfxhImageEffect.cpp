@@ -1004,7 +1004,7 @@ OfxRectD OfxhImageEffect::calcDefaultRegionOfDefinition( OfxTime   time,
 		try
 		{
 			attribute::OfxhClipImage& clip        = getClip( kOfxImageEffectSimpleSourceClipName );
-			/*attribute::ParamDoubleInstance& param = */dynamic_cast<attribute::ParamDoubleInstance&>( getParam( kOfxImageEffectRetimerParamName ) );
+			/*attribute::ParamDoubleInstance& param = */dynamic_cast<attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
 			rod = clip.fetchRegionOfDefinition( floor( time ) );
 			rod = rectUnion( rod, clip.fetchRegionOfDefinition( floor( time ) + 1 ) );
 		}

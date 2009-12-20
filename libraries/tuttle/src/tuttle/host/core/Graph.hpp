@@ -22,7 +22,7 @@ namespace core {
 class Graph
 {
 public:
-	typedef core::EffectInstance Node;
+	typedef core::ImageEffectNode Node;
 	typedef graph::InternalGraph<graph::Vertex, graph::Edge> InternalGraph;
 	typedef boost::ptr_map<const std::string, Node> NodeMap;
 	typedef std::map<std::string, int> InstanceCountMap;
@@ -33,16 +33,17 @@ public:
 	~Graph();
 
 	Node& createNode( const std::string& id ) throw( exception::LogicError );
-	void  deleteNode( const EffectInstance& node ) throw( exception::LogicError );
+	void  deleteNode( const ImageEffectNode& node ) throw( exception::LogicError );
 
 	void connect( const Node& out, const Node& in ) throw( exception::LogicError );
-	void connect( const EffectInstance& out, const EffectInstance& in, const ofx::attribute::AttributeInstance& inAttr ) throw( exception::LogicError );
-	void unconnectNode( const EffectInstance& node ) throw( exception::LogicError );
+	void connect( const ImageEffectNode& out, const ImageEffectNode& in, const ofx::attribute::AttributeInstance& inAttr ) throw( exception::LogicError );
+	void unconnectNode( const ImageEffectNode& node ) throw( exception::LogicError );
 
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 
 	const InternalGraph& getGraph() const { return _graph; }
 	const NodeMap& getNodes() const { return _nodes; }
+	NodeMap& getNodesTest() { return _nodes; }
 	const InstanceCountMap& getInstanceCount() const { return _instanceCount; }
 
 public:
@@ -56,8 +57,8 @@ private:
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
 
 private:
-	void addToGraph( EffectInstance& node );
-	void removeFromGraph( EffectInstance& node ) throw( exception::LogicError );
+	void addToGraph( ImageEffectNode& node );
+	void removeFromGraph( ImageEffectNode& node ) throw( exception::LogicError );
 };
 
 }

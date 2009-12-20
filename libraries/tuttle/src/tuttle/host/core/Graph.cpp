@@ -44,7 +44,7 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 
 	if( !plugInst )
 		throw exception::LogicError( "Plugin not found. plugInst (" + id + ")" );
-	EffectInstance* node = dynamic_cast<EffectInstance*>( plugInst );
+	ImageEffectNode* node = dynamic_cast<ImageEffectNode*>( plugInst );
 	if( !node )
 		throw exception::LogicError( "Plugin not found (" + id + ")." );
 
@@ -59,7 +59,7 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 }
 
 
-void Graph::addToGraph( EffectInstance& node )
+void Graph::addToGraph( ImageEffectNode& node )
 {
 	graph::Vertex v( node.getName(), node );
 
@@ -67,7 +67,7 @@ void Graph::addToGraph( EffectInstance& node )
 	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
-void Graph::removeFromGraph( EffectInstance& node ) throw( exception::LogicError )
+void Graph::removeFromGraph( ImageEffectNode& node ) throw( exception::LogicError )
 {
 	//	graph::Vertex v( node.getName(), &node );
 	//
@@ -76,7 +76,7 @@ void Graph::removeFromGraph( EffectInstance& node ) throw( exception::LogicError
 	//	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
-void Graph::deleteNode( const EffectInstance& node ) throw( exception::LogicError )
+void Graph::deleteNode( const ImageEffectNode& node ) throw( exception::LogicError )
 {}
 
 void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicError )
@@ -117,7 +117,7 @@ void Graph::connect( const Node& out, const Node& in, const ofx::attribute::Attr
 	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[in.getName()], e );
 }
 
-void Graph::unconnectNode( const EffectInstance& node ) throw( exception::LogicError )
+void Graph::unconnectNode( const ImageEffectNode& node ) throw( exception::LogicError )
 {}
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )

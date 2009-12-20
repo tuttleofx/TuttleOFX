@@ -39,22 +39,22 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class EffectInstance : public ProcessNode,
+class ImageEffectNode : public ProcessNode,
 	public tuttle::host::ofx::imageEffect::OfxhImageEffect
 {
 protected:
 	OfxPointD _frameRange;
 
 public:
-	EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
+	ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
 	                tuttle::host::ofx::imageEffect::OfxhDescriptor& desc,
 	                const std::string& context );
 
-	EffectInstance( const EffectInstance& other );
+	ImageEffectNode( const ImageEffectNode& other );
 
-	EffectInstance* clone() const { return new EffectInstance( *this ); }
+	ImageEffectNode* clone() const { return new ImageEffectNode( *this ); }
 
-	bool operator==( const EffectInstance& other ) const;
+	bool operator==( const ImageEffectNode& other ) const;
 
 	const EProcessNodeType getProcessNodeType() const { return eImageEffect; }
 

@@ -30,7 +30,7 @@
 #define _TUTTLE_HOST_DESCRIPTOR_H
 
 #include <tuttle/host/ofx/OfxhImageEffect.hpp>
-#include <tuttle/host/core/EffectInstance.hpp>
+#include <tuttle/host/core/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -61,7 +61,7 @@ public:
 	 *  @arg desc - the descriptor for that plugin
 	 *  @arg context - the context to be created in
 	 */
-	tuttle::host::core::EffectInstance* newInstance( void*                                                  clientData,
+	tuttle::host::core::ImageEffectNode* newInstance( void*                                                  clientData,
 	                                                 tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
 	                                                 tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
 	                                                 const std::string&                                     context ) const;

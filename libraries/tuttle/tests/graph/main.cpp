@@ -3,12 +3,12 @@
 #include <tuttle/common/math/rectOp.hpp>
 
 #include <tuttle/host/core/HostDescriptor.hpp>
-#include <tuttle/host/core/EffectInstance.hpp>
-#include <tuttle/host/core/ClipInstance.hpp>
-#include <tuttle/host/core/ParamInstance.hpp>
+#include <tuttle/host/core/ImageEffectNode.hpp>
+#include <tuttle/host/core/ClipImage.hpp>
+#include <tuttle/host/core/Param.hpp>
 #include <tuttle/host/core/HostDescriptor.hpp>
 #include <tuttle/host/core/Core.hpp>
-#include <tuttle/host/core/EffectInstance.hpp>
+#include <tuttle/host/core/ImageEffectNode.hpp>
 #include <tuttle/host/core/Graph.hpp>
 #include <tuttle/host/core/ProcessGraph.hpp>
 
@@ -76,6 +76,13 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 
+	// Setup parameters
+	read1.getParam("Input filename").set("input.png");
+	write1.getParam("Output filename").set("output.png");
+	OfxPointD renderScale = { 1.0, 1.0 };
+	read1.paramInstanceChangedAction("Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	write1.paramInstanceChangedAction("Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+
 	g.connect( read1, invert1 );
 	g.connect( invert1, write1 );
 
@@ -83,7 +90,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	std::list<std::string> outputs;
 	outputs.push_back( write1.getName() );
-	//g.compute( outputs, 0, 1 );
+	g.compute( outputs, 0, 1 );
 }
 
 //BOOST_AUTO_TEST_CASE( graph_compute )

@@ -29,8 +29,8 @@
 
 // my host
 #include "HostDescriptor.hpp"
-#include "EffectInstance.hpp"
-#include "ClipInstance.hpp"
+#include "ImageEffectNode.hpp"
+#include "ClipImage.hpp"
 #include "Core.hpp"
 
 // utilities
@@ -73,7 +73,7 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-Image::Image( ClipImgInstance& clip, const OfxRectD& bounds, OfxTime time )
+Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	: tuttle::host::ofx::imageEffect::OfxhImage( clip ),
 	/// this ctor will set basic props on the image
 	_memoryPool( core::Core::instance().getMemoryPool() )
@@ -377,7 +377,7 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 }
 
 
-ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
+ClipImage::ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
 : tuttle::host::ofx::attribute::OfxhClipImage( effect, desc )
 , _effect( effect )
 , _isConnected( false )
@@ -388,12 +388,12 @@ ClipImgInstance::ClipImgInstance( EffectInstance& effect, const tuttle::host::of
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
 }
 
-ClipImgInstance::~ClipImgInstance()
+ClipImage::~ClipImage()
 {
 }
 
 /// Return the rod on the clip cannoical coords!
-OfxRectD ClipImgInstance::fetchRegionOfDefinition( OfxTime time )
+OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time )
 {
 	if( !isOutput() )
 	{
@@ -401,7 +401,7 @@ OfxRectD ClipImgInstance::fetchRegionOfDefinition( OfxTime time )
 		{
 			throw exception::LogicError("fetchRegionOfDefinition on an unconnected input clip ! (clip: "+ getFullName() + ")." );
 		}
-		return const_cast<ClipImgInstance*>(_connectedClip)->fetchRegionOfDefinition(time); /// @todo tuttle: hack !!!
+		return const_cast<ClipImage*>(_connectedClip)->fetchRegionOfDefinition(time); /// @todo tuttle: hack !!!
 	}
 
 	OfxRectD rod;
@@ -456,7 +456,7 @@ OfxRectD ClipImgInstance::fetchRegionOfDefinition( OfxTime time )
 
 
 /// Get the Raw Unmapped Pixel Depth from the host.
-const std::string& ClipImgInstance::getUnmappedBitDepth() const
+const std::string& ClipImage::getUnmappedBitDepth() const
 {
 	static const std::string v( _effect.getProjectBitDepth() );
 
@@ -465,7 +465,7 @@ const std::string& ClipImgInstance::getUnmappedBitDepth() const
 
 /// Get the Raw Unmapped Components from the host.
 
-const std::string& ClipImgInstance::getUnmappedComponents() const
+const std::string& ClipImage::getUnmappedComponents() const
 {
 	static const std::string v( _effect.getProjectPixelComponentsType() );
 
@@ -476,7 +476,7 @@ const std::string& ClipImgInstance::getUnmappedComponents() const
 //
 //  The frame range over which a clip has images.
 
-void ClipImgInstance::getFrameRange( double& startFrame, double& endFrame ) const
+void ClipImage::getFrameRange( double& startFrame, double& endFrame ) const
 {
 	startFrame = 0.0;
 	endFrame   = 1.0;
@@ -487,7 +487,7 @@ void ClipImgInstance::getFrameRange( double& startFrame, double& endFrame ) cons
 //  The unmaped frame range over which an output clip has images.
 // this is applicable only to hosts and plugins that allow a plugin to change frame rates
 
-void ClipImgInstance::getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const
+void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const
 {
 	unmappedStartFrame = 0;
 	unmappedEndFrame   = 1;
@@ -500,7 +500,7 @@ void ClipImgInstance::getUnmappedFrameRange( double& unmappedStartFrame, double&
 /// on the effect instance. Outside a render call, the optionalBounds should
 /// be 'appropriate' for the.
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
-tuttle::host::ofx::imageEffect::OfxhImage* ClipImgInstance::getImage( OfxTime time, OfxRectD* optionalBounds )
+tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( OfxTime time, OfxRectD* optionalBounds )
 {
 	OfxRectD bounds;
 

@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_CORE_HPP_
 #define _TUTTLE_HOST_CORE_HPP_
 
-#include "EffectInstance.hpp"
+#include "ImageEffectNode.hpp"
 
 #include <tuttle/host/core/memory/IMemoryCache.hpp>
 #include <tuttle/host/core/HostDescriptor.hpp>

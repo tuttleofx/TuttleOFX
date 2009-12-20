@@ -48,16 +48,16 @@
 
 // my host
 #include "HostDescriptor.hpp"
-#include "EffectInstance.hpp"
-#include "ClipInstance.hpp"
-#include "ParamInstance.hpp"
+#include "ImageEffectNode.hpp"
+#include "ClipImage.hpp"
+#include "Param.hpp"
 
 namespace tuttle {
 namespace host {
 namespace core {
 
 // my host support code
-EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
+ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
 								tuttle::host::ofx::imageEffect::OfxhDescriptor& desc,
                                 const std::string& context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffect( plugin, desc, context, false )
@@ -65,7 +65,7 @@ EffectInstance::EffectInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectP
 	populate();
 }
 
-EffectInstance::EffectInstance( const EffectInstance& other )
+ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 : tuttle::host::ofx::imageEffect::OfxhImageEffect(other)
 {
 	//populate();
@@ -83,12 +83,12 @@ EffectInstance::EffectInstance( const EffectInstance& other )
 	 */
 }
 
-void EffectInstance::connect(const ProcessNode& sourceEffect)
+void ImageEffectNode::connect(const ProcessNode& sourceEffect)
 {
-	const EffectInstance& source = dynamic_cast<const EffectInstance&>(sourceEffect);
+	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>(sourceEffect);
 
-	ClipImgInstance& output = dynamic_cast<ClipImgInstance&>( source.getClip(kOfxImageEffectOutputClipName) );
-	ClipImgInstance& input = dynamic_cast<ClipImgInstance&>( getClip(kOfxImageEffectSimpleSourceClipName) );
+	ClipImage& output = dynamic_cast<ClipImage&>( source.getClip(kOfxImageEffectOutputClipName) );
+	ClipImage& input = dynamic_cast<ClipImage&>( getClip(kOfxImageEffectSimpleSourceClipName) );
 
 	input.setConnectedClip( output );
 }
@@ -96,12 +96,12 @@ void EffectInstance::connect(const ProcessNode& sourceEffect)
 /**
  * @warning do a deep comparison
  */
-bool EffectInstance::operator==( const EffectInstance& other ) const
+bool ImageEffectNode::operator==( const ImageEffectNode& other ) const
 {
 	return getName() == other.getName();
 }
 
-void EffectInstance::dumpToStdOut() const
+void ImageEffectNode::dumpToStdOut() const
 {
 	std::cout << "________________________________________________________________________________" << std::endl;
 	std::cout << "Plug-in:" << this->getLabel() << std::endl;
@@ -126,14 +126,14 @@ void EffectInstance::dumpToStdOut() const
 }
 
 // get a new clip instance
-tuttle::host::ofx::attribute::OfxhClipImage* EffectInstance::newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor )
+tuttle::host::ofx::attribute::OfxhClipImage* ImageEffectNode::newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor )
 {
-	return new ClipImgInstance( *this, descriptor );
+	return new ClipImage( *this, descriptor );
 }
 
 /// get default output fielding. This is passed into the clip prefs action
 /// and  might be mapped (if the host allows such a thing)
-const std::string& EffectInstance::getDefaultOutputFielding() const
+const std::string& ImageEffectNode::getDefaultOutputFielding() const
 {
 	/// our clip is pretending to be progressive PAL SD, so return kOfxImageFieldNone
 	static const std::string v( kOfxImageFieldNone );
@@ -142,7 +142,7 @@ const std::string& EffectInstance::getDefaultOutputFielding() const
 }
 
 // vmessage
-OfxStatus EffectInstance::vmessage( const char* type,
+OfxStatus ImageEffectNode::vmessage( const char* type,
                                     const char* id,
                                     const char* format,
                                     va_list     args ) const
@@ -152,47 +152,47 @@ OfxStatus EffectInstance::vmessage( const char* type,
 }
 
 // get the project size in CANONICAL pixels, so PAL SD return 768, 576
-void EffectInstance::getProjectSize( double& xSize, double& ySize ) const
+void ImageEffectNode::getProjectSize( double& xSize, double& ySize ) const
 {
 	xSize = 720;
 	ySize = 576;
 }
 
 // get the project offset in CANONICAL pixels, we are at 0,0
-void EffectInstance::getProjectOffset( double& xOffset, double& yOffset ) const
+void ImageEffectNode::getProjectOffset( double& xOffset, double& yOffset ) const
 {
 	xOffset = 0;
 	yOffset = 0;
 }
 
 // get the project extent in CANONICAL pixels, so PAL SD return 768, 576
-void EffectInstance::getProjectExtent( double& xSize, double& ySize ) const
+void ImageEffectNode::getProjectExtent( double& xSize, double& ySize ) const
 {
 	xSize = 720.0;
 	ySize = 576.0;
 }
 
 // get the PAR, SD PAL is 768/720=1.0666
-double EffectInstance::getProjectPixelAspectRatio() const
+double ImageEffectNode::getProjectPixelAspectRatio() const
 {
 	return 1.0;
 }
 
 // we are only 25 frames
-double EffectInstance::getEffectDuration() const
+double ImageEffectNode::getEffectDuration() const
 {
 	return 25.0;
 }
 
 // get frame rate, so progressive PAL SD return 25
-double EffectInstance::getFrameRate() const
+double ImageEffectNode::getFrameRate() const
 {
 	return 25.0;
 }
 
 /// This is called whenever a param is changed by the plugin so that
 /// the recursive instanceChangedAction will be fed the correct frame
-double EffectInstance::getFrameRecursive() const
+double ImageEffectNode::getFrameRecursive() const
 {
 	return 0.0;
 }
@@ -200,7 +200,7 @@ double EffectInstance::getFrameRecursive() const
 /// This is called whenever a param is changed by the plugin so that
 /// the recursive instanceChangedAction will be fed the correct
 /// renderScale
-void EffectInstance::getRenderScaleRecursive( double& x, double& y ) const
+void ImageEffectNode::getRenderScaleRecursive( double& x, double& y ) const
 {
 	x = y = 1.0;
 }
@@ -209,7 +209,7 @@ void EffectInstance::getRenderScaleRecursive( double& x, double& y ) const
  * The pixel components type of the current project
  * @todo tuttle: to remove in the future.... size, pixelType, BitDepth, etc... must be locally defined
  */
-const std::string EffectInstance::getProjectPixelComponentsType() const
+const std::string ImageEffectNode::getProjectPixelComponentsType() const
 {
 	return kOfxImageComponentRGBA;
 }
@@ -218,41 +218,41 @@ const std::string EffectInstance::getProjectPixelComponentsType() const
  * The pixel bit depth of the current project (host work in float)
  * @todo tuttle: to remove in the future.... size, pixelType, BitDepth, etc... must be locally defined
  */
-const std::string EffectInstance::getProjectBitDepth() const
+const std::string ImageEffectNode::getProjectBitDepth() const
 {
 	return kOfxBitDepthByte;
 //	return kOfxBitDepthFloat;
 }
 
 // make a parameter instance
-tuttle::host::ofx::attribute::OfxhParam* EffectInstance::newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 {
 	std::string name = descriptor.getName();
 
 	if( descriptor.getParamType() == kOfxParamTypeString )
-		return new StringInstance( *this, name, descriptor );
+		return new ParamString( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeInteger )
-		return new IntegerInstance( *this, name, descriptor );
+		return new ParamInteger( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeDouble )
-		return new DoubleInstance( *this, name, descriptor );
+		return new ParamDouble( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeBoolean )
-		return new BooleanInstance( *this, name, descriptor );
+		return new ParamBoolean( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeChoice )
-		return new ChoiceInstance( *this, name, descriptor );
+		return new ParamChoice( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeRGBA )
-		return new RGBAInstance( *this, name, descriptor );
+		return new ParamRGBA( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeRGB )
-		return new RGBInstance( *this, name, descriptor );
+		return new ParamRGB( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeDouble2D )
-		return new Double2DInstance( *this, name, descriptor );
+		return new ParamDouble2D( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeInteger2D )
-		return new Integer2DInstance( *this, name, descriptor );
+		return new ParamInteger2D( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypePushButton )
-		return new PushbuttonInstance( *this, name, descriptor );
+		return new ParamPushButton( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeGroup )
 		return new tuttle::host::ofx::attribute::OfxhParamGroup( descriptor, *this );
 	else if( descriptor.getParamType() == kOfxParamTypePage )
-		return new tuttle::host::ofx::attribute::ParamPageInstance( descriptor, *this );
+		return new tuttle::host::ofx::attribute::OfxhParamPage( descriptor, *this );
 	else
 		throw exception::LogicError( "Can't create param instance from param descriptor." );
 
@@ -260,53 +260,53 @@ tuttle::host::ofx::attribute::OfxhParam* EffectInstance::newParam( tuttle::host:
 
 }
 
-OfxStatus EffectInstance::editBegin( const std::string& name )
+OfxStatus ImageEffectNode::editBegin( const std::string& name )
 {
 	return kOfxStatOK; // OFX_TODO
 	return kOfxStatErrMissingHostFeature;
 }
 
-OfxStatus EffectInstance::editEnd()
+OfxStatus ImageEffectNode::editEnd()
 {
 	return kOfxStatOK; // OFX_TODO
 	return kOfxStatErrMissingHostFeature;
 }
 
 /// Start doing progress.
-void EffectInstance::progressStart( const std::string& message )
+void ImageEffectNode::progressStart( const std::string& message )
 {}
 
 /// finish yer progress
-void EffectInstance::progressEnd()
+void ImageEffectNode::progressEnd()
 {}
 
 /// set the progress to some level of completion, returns
 /// false if you should abandon processing, true to continue
-bool EffectInstance::progressUpdate( double t )
+bool ImageEffectNode::progressUpdate( double t )
 {
 	return true;
 }
 
 /// get the current time on the timeline. This is not necessarily the same
 /// time as being passed to an action (eg render)
-double EffectInstance::timeLineGetTime()
+double ImageEffectNode::timeLineGetTime()
 {
 	return 0;
 }
 
 /// set the timeline to a specific time
-void EffectInstance::timeLineGotoTime( double t )
+void ImageEffectNode::timeLineGotoTime( double t )
 {}
 
 /// get the first and last times available on the effect's timeline
-void EffectInstance::timeLineGetBounds( double& t1, double& t2 )
+void ImageEffectNode::timeLineGetBounds( double& t1, double& t2 )
 {
 	t1 = 0;
 	t2 = 25;
 }
 
 /// override to get frame range of the effect
-OfxStatus EffectInstance::beginRenderAction( OfxTime   startFrame,
+OfxStatus ImageEffectNode::beginRenderAction( OfxTime   startFrame,
                                              OfxTime   endFrame,
                                              OfxTime   step,
                                              bool      interactive,
