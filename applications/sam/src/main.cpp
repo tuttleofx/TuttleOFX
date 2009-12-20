@@ -54,9 +54,9 @@ int main( int argc, char** argv )
 
 		typedef boost::ptr_vector< tuttle::host::core::ImageEffectNode > EffectInstVector;
 		EffectInstVector vPluginsInst;
-		tuttle::host::core::ImageEffectNode* ofxinstR = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginR->createInstance( kOfxImageEffectContextGenerator, NULL ) );
-		tuttle::host::core::ImageEffectNode* ofxinstI = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginI->createInstance( kOfxImageEffectContextFilter, NULL ) );
-		tuttle::host::core::ImageEffectNode* ofxinstW = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginW->createInstance( kOfxImageEffectContextGeneral, NULL ) );
+		tuttle::host::core::ImageEffectNode* ofxinstR = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginR->createInstance( kOfxImageEffectContextGenerator ) );
+		tuttle::host::core::ImageEffectNode* ofxinstI = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginI->createInstance( kOfxImageEffectContextFilter ) );
+		tuttle::host::core::ImageEffectNode* ofxinstW = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginW->createInstance( kOfxImageEffectContextGeneral ) );
 		ofxinstR->setName("pluginR");
 		ofxinstI->setName("pluginI");
 		ofxinstW->setName("pluginW");

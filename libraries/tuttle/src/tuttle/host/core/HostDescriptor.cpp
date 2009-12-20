@@ -87,34 +87,33 @@ Host::Host()
 	_properties.setIntProperty( kOfxParamHostPropPageRowColumnCount, 0, 1 );
 }
 
-tuttle::host::core::ImageEffectNode* Host::newInstance( void*                                                  clientData,
-                                                       tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-                                                       tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
-                                                       const std::string&                                 context ) const
+tuttle::host::core::ImageEffectNode* Host::newInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
+                                                        tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor&        desc,
+                                                        const std::string&                                     context ) const
 {
 	return new tuttle::host::core::ImageEffectNode( plugin, desc, context );
 }
 
 /// Override this to create a descriptor, this makes the 'root' descriptor
-tuttle::host::ofx::imageEffect::OfxhDescriptor* Host::makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const
+tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* Host::makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const
 {
-	tuttle::host::ofx::imageEffect::OfxhDescriptor* desc = new tuttle::host::ofx::imageEffect::OfxhDescriptor( plugin );
+	tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* desc = new tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor( plugin );
 
 	return desc;
 }
 
 /// used to construct a context description, rootContext is the main context
-tuttle::host::ofx::imageEffect::OfxhDescriptor* Host::makeDescriptor( const tuttle::host::ofx::imageEffect::OfxhDescriptor&      rootContext,
+tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* Host::makeDescriptor( const tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor&      rootContext,
                                                                   tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const
 {
-	return new tuttle::host::ofx::imageEffect::OfxhDescriptor( rootContext, plugin );
+	return new tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor( rootContext, plugin );
 }
 
 /// used to construct populate the cache
-tuttle::host::ofx::imageEffect::OfxhDescriptor* Host::makeDescriptor( const std::string&                                     bundlePath,
+tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* Host::makeDescriptor( const std::string&                                     bundlePath,
                                                                   tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const
 {
-	return new tuttle::host::ofx::imageEffect::OfxhDescriptor( bundlePath, plugin );
+	return new tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor( bundlePath, plugin );
 }
 
 /// message

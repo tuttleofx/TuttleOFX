@@ -40,14 +40,14 @@ namespace host {
 namespace core {
 
 class ImageEffectNode : public ProcessNode,
-	public tuttle::host::ofx::imageEffect::OfxhImageEffect
+	public tuttle::host::ofx::imageEffect::OfxhImageEffectNode
 {
 protected:
 	OfxPointD _frameRange;
 
 public:
 	ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                tuttle::host::ofx::imageEffect::OfxhDescriptor& desc,
+	                tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
 	                const std::string& context );
 
 	ImageEffectNode( const ImageEffectNode& other );
@@ -94,7 +94,7 @@ public:
 						,	processOptions._renderScale);
 	}
 
-	const std::string& getName() const { return tuttle::host::ofx::imageEffect::OfxhBase::getName(); }
+	const std::string& getName() const { return tuttle::host::ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 
 	void dumpToStdOut() const;
 	////////////////////////////////////////////////////////////////////////////////

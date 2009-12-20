@@ -60,10 +60,12 @@ namespace imageEffect {
 // forward declare
 class OfxhImageEffectPlugin;
 class OfxhOverlayInstance;
-class OfxhImageEffect;
-class OfxhDescriptor;
+class OfxhImageEffectNode;
+class OfxhImageEffectNodeDescriptor;
 
-/// An image effect host, passed to the setHost function of all image effect plugins
+/**
+ * An image effect host, passed to the setHost function of all image effect plugins
+ */
 class OfxhImageEffectHost : public tuttle::host::ofx::OfxhAbstractHost
 {
 public:
@@ -73,56 +75,65 @@ public:
 	/// fetch a suite
 	virtual void* fetchSuite( const char* suiteName, int suiteVersion );
 
-	/// Create a new instance of an image effect plug-in.
-	///
-	/// It is called by ImageEffectPlugin::createInstance which the
-	/// client code calls when it wants to make a new instance.
-	///
-	///   \arg clientData - the clientData passed into the ImageEffectPlugin::createInstance
-	///   \arg plugin - the plugin being created
-	///   \arg desc - the descriptor for that plugin
-	///   \arg context - the context to be created in
-	virtual OfxhImageEffect* newInstance( void*              clientData,
-	                               OfxhImageEffectPlugin* plugin,
-	                               OfxhDescriptor&        desc,
-	                               const std::string& context ) const = 0;
+	/**
+	 * Create a new instance of an image effect plug-in.
+	 *
+	 * It is called by ImageEffectPlugin::createInstance which the
+	 * client code calls when it wants to make a new instance.
+	 *
+	 * param: clientData - the clientData passed into the ImageEffectPlugin::createInstance (tuttle remove this parameter)
+	 *   @param plugin - the plugin being created
+	 *   @param desc - the descriptor for that plugin
+	 *   @param context - the context to be created in
+	 */
+	virtual OfxhImageEffectNode* newInstance( OfxhImageEffectPlugin* plugin,
+	                                      OfxhImageEffectNodeDescriptor&        desc,
+	                                      const std::string& context ) const = 0;
 
-	/// Function called as each plugin binary is found and loaded from disk
-	///
-	/// Use this in any dialogue etc... showing progress
+	/**
+	 * Function called as each plugin binary is found and loaded from disk
+	 *
+	 * Use this in any dialogue etc... showing progress
+	 */
 	virtual void loadingStatus( const std::string& );
 
-	/// Override this to filter out plugins which the host can't support for whatever reason
-	///
-	///   \arg plugin - the plugin to examine
-	///   \arg reason - set this to report the reason the plugin was not loaded
+	/**
+	 * Override this to filter out plugins which the host can't support for whatever reason
+	 *
+	 *   @param plugin - the plugin to examine
+	 *   @param reason - set this to report the reason the plugin was not loaded
+	 */
 	virtual bool pluginSupported( OfxhImageEffectPlugin* plugin, std::string& reason ) const;
 
 	/// Override this to create a descriptor, this makes the 'root' descriptor
-	virtual OfxhDescriptor* makeDescriptor( OfxhImageEffectPlugin* plugin ) const = 0;
+	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( OfxhImageEffectPlugin* plugin ) const = 0;
 
 	/// used to construct a context description, rootContext is the main context
-	virtual OfxhDescriptor* makeDescriptor( const OfxhDescriptor& rootContext, OfxhImageEffectPlugin* plug ) const = 0;
+	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhImageEffectPlugin* plug ) const = 0;
 
 	/// used to construct populate the cache
-	virtual OfxhDescriptor* makeDescriptor( const std::string& bundlePath, OfxhImageEffectPlugin* plug ) const = 0;
+	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const std::string& bundlePath, OfxhImageEffectPlugin* plug ) const = 0;
 
-	/// Override this to initialise an image effect descriptor after it has been
-	/// created.
-	virtual void initDescriptor( OfxhDescriptor* desc ) const;
+	/**
+	 *  Override this to initialise an image effect descriptor after it has been
+	 *  created.
+	 */
+	virtual void initDescriptor( OfxhImageEffectNodeDescriptor* desc ) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-/// base class to both effect descriptors and instances
-class OfxhBase
+/**
+ * base class to both effect descriptors and instances
+ */
+class OfxhImageEffectNodeBase
 {
 protected:
 	property::OfxhSet _properties;
 
 public:
-	OfxhBase( const property::OfxhSet& set );
-	OfxhBase( const property::OfxhPropSpec* propSpec );
-	virtual ~OfxhBase();
+	OfxhImageEffectNodeBase( const property::OfxhSet& set );
+	OfxhImageEffectNodeBase( const property::OfxhPropSpec* propSpec );
+	virtual ~OfxhImageEffectNodeBase();
 
 	/// is my magic number valid?
 	virtual bool verifyMagic() { return true; }
@@ -193,9 +204,11 @@ public:
 	bool isClipPreferencesSlaveParam( const std::string& s ) const;
 };
 
-/// an image effect plugin descriptor
-class OfxhDescriptor
-	: public OfxhBase,
+/**
+ * an image effect plugin descriptor
+ */
+class OfxhImageEffectNodeDescriptor
+	: public OfxhImageEffectNodeBase,
 	public attribute::OfxhParamDescriptorSet
 {
 public:
@@ -211,23 +224,23 @@ protected:
 
 private:
 	// private CC
-	OfxhDescriptor( const OfxhDescriptor& other )
-		: OfxhBase( other._properties ),
+	OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& other )
+		: OfxhImageEffectNodeBase( other._properties ),
 		_plugin( other._plugin )
 	{}
 
 public:
 	/// used to construct the global description
-	OfxhDescriptor( OfxhPlugin* plug );
+	OfxhImageEffectNodeDescriptor( OfxhPlugin* plug );
 
 	/// used to construct a context description, 'other' is the main context
-	OfxhDescriptor( const OfxhDescriptor& rootContext, OfxhPlugin* plug );
+	OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhPlugin* plug );
 
 	/// used to construct populate the cache
-	OfxhDescriptor( const std::string& bundlePath, OfxhPlugin* plug );
+	OfxhImageEffectNodeDescriptor( const std::string& bundlePath, OfxhPlugin* plug );
 
 	/// dtor
-	virtual ~OfxhDescriptor();
+	virtual ~OfxhImageEffectNodeDescriptor();
 
 	/// implemented for ParamDescriptorSet
 	property::OfxhSet& getParamSetProps()
@@ -253,10 +266,12 @@ public:
 	/// get the clips in order of construction
 	ClipImageDescriptorVector& getClipsByOrder() { return _clipsByOrder; }
 
-	/// @warning tuttle some modifs here... doc needs updates...
-	/// Get the interact description, this will also call describe on the interact
-	/// This will return NULL if there is not main entry point or if the description failed
-	/// otherwise it will return the described overlay
+	/**
+	 * @todo tuttle some modifs here... doc needs updates...
+	 * Get the interact description, this will also call describe on the interact
+	 * This will return NULL if there is not main entry point or if the description failed
+	 * otherwise it will return the described overlay
+	 */
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const { return _overlayDescriptor; }
 
 	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false );
@@ -265,10 +280,12 @@ public:
 /// a map used to specify needed frame ranges on set of clips
 typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
 
-/// an image effect plugin instance.
-///
-/// Client code needs to filling the pure virtuals in this.
-class OfxhImageEffect : public OfxhBase,
+/**
+ *  an image effect plugin instance.
+ *
+ *  Client code needs to filling the pure virtuals in this.
+ */
+class OfxhImageEffectNode : public OfxhImageEffectNodeBase,
 	public attribute::OfxhParamSet,
 	public attribute::OfxhClipImageSet,
 	public Progress::ProgressI,
@@ -279,7 +296,7 @@ class OfxhImageEffect : public OfxhBase,
 protected:
 	const OfxhImageEffectPlugin* _plugin;
 	std::string _context;
-	const OfxhDescriptor& _descriptor;
+	const OfxhImageEffectNodeDescriptor& _descriptor;
 	bool _interactive;
 	bool _created;
 	bool _continuousSamples; ///< set by clip prefs
@@ -290,23 +307,25 @@ protected:
 
 public:
 	/// constructor based on clip descriptor
-	OfxhImageEffect( const OfxhImageEffectPlugin* plugin,
-			  const OfxhDescriptor&        other,
+	OfxhImageEffectNode( const OfxhImageEffectPlugin* plugin,
+			  const OfxhImageEffectNodeDescriptor&        other,
 	          const std::string& context,
 	          bool               interactive );
 
-	OfxhImageEffect( const OfxhImageEffect& other );
+	OfxhImageEffectNode( const OfxhImageEffectNode& other );
 
-	/// called after construction to populate the various members
-	/// ideally should be called in the ctor, but it relies on
-	/// virtuals so has to be delayed until after the effect is
-	/// constructed
+	/**
+	 *  called after construction to populate the various members
+	 *  ideally should be called in the ctor, but it relies on
+	 *  virtuals so has to be delayed until after the effect is
+	 *  constructed
+	 */
 	OfxStatus populate();
-	void      populateParams( const imageEffect::OfxhDescriptor& descriptor ) throw( core::exception::LogicError );
+	void      populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( core::exception::LogicError );
 
-	virtual ~OfxhImageEffect();
+	virtual ~OfxhImageEffectNode();
 
-	bool operator==( const OfxhImageEffect& );
+	bool operator==( const OfxhImageEffectNode& );
 
 	/// implemented for Param::SetInstance
 	virtual property::OfxhSet& getParamSetProps();
@@ -315,7 +334,7 @@ public:
 	virtual void paramChangedByPlugin( attribute::OfxhParam* param );
 
 	/// get the descriptor for this instance
-	const OfxhDescriptor& getDescriptor() const { return _descriptor; }
+	const OfxhImageEffectNodeDescriptor& getDescriptor() const { return _descriptor; }
 
 	/// return the plugin this instance was created with
 	const tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* getPlugin() const { return _plugin; }
@@ -326,8 +345,10 @@ public:
 	// get the descriptor for this instance
 	//Descriptor& getDescriptor() { return *_descriptor; }
 
-	/// get default output fielding. This is passed into the clip prefs action
-	/// and  might be mapped (if the host allows such a thing)
+	/**
+	 *  get default output fielding. This is passed into the clip prefs action
+	 *  and  might be mapped (if the host allows such a thing)
+	 */
 	virtual const std::string& getDefaultOutputFielding() const = 0;
 
 	/// get output fielding as set in the clip preferences action.
@@ -519,20 +540,24 @@ public:
 	                                   bool      interactive,
 	                                   OfxPointD renderScale );
 
-	/// Call the region of definition action the plugin at the given time
-	/// and with the given render scales. The value is returned in rod.
-	/// Note that if the plugin does not trap the action the default
-	/// RoD is calculated and returned.
+	/**
+	 *  Call the region of definition action the plugin at the given time
+	 *  and with the given render scales. The value is returned in rod.
+	 *  Note that if the plugin does not trap the action the default
+	 *  RoD is calculated and returned.
+	 */
 	virtual OfxStatus getRegionOfDefinitionAction( OfxTime   time,
 	                                               OfxPointD renderScale,
 	                                               OfxRectD& rod );
 
-	/// call the get region of interest action on the plugin for the
-	/// given frame and renderscale. The render RoI is passed in in
-	/// roi, the std::map will contain the requested rois. Note
-	/// That this call will check for tiling support and for
-	/// default replies and set up the correct rois in these cases
-	/// as well
+	/**
+	 *  call the get region of interest action on the plugin for the
+	 *  given frame and renderscale. The render RoI is passed in in
+	 *  roi, the std::map will contain the requested rois. Note
+	 *  That this call will check for tiling support and for
+	 *  default replies and set up the correct rois in these cases
+	 *  as well
+	 */
 	virtual OfxStatus getRegionOfInterestAction( OfxTime time,
 	                                             OfxPointD renderScale,
 	                                             const OfxRectD& roi,
@@ -552,10 +577,12 @@ public:
 	// time domain
 	virtual OfxStatus getTimeDomainAction( OfxRangeD& range );
 
-	/// Get the interact description, this will also call describe on the interact
-	/// This will return NULL if there is not main entry point or if the description failed
-	/// otherwise it will return the described overlay
-	/// This is called by the CTOR of OverlayInteract to get the descriptor to do things with
+	/**
+	 * Get the interact description, this will also call describe on the interact
+	 * This will return NULL if there is not main entry point or if the description failed
+	 * otherwise it will return the described overlay
+	 * This is called by the CTOR of OverlayInteract to get the descriptor to do things with
+	 */
 	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false )
 	{
 		/// @todo tuttle initOverlayDescriptor... !!! Correct the constness
@@ -577,31 +604,35 @@ public:
 	/// stuff with wierd components etc... Calls setDefaultClipPreferences
 	virtual void setupClipPreferencesArgs( property::OfxhSet& args );
 
-	/// Run the clip preferences action from the effect.
-	///
-	/// This will look into the input clips and output clip
-	/// and set the following properties that the effect should
-	/// fetch the image at.
-	///     - pixel depth
-	///     - components
-	///     - pixel aspect ratio
-	/// It will also set on the effect itselff
-	///     - whether it is continuously samplable
-	///     - the premult state of the output
-	///     - whether the effect is frame varying
-	///     - the fielding of the output clip
-	///
-	/// This will be run automatically by the effect in the following situations...
-	///     - an input clip is changed
-	///     - a clip preferences slave param is changed
-	///
-	/// The host still needs to call this explicitly just after the effect is wired
-	/// up.
+	/**
+	 * Run the clip preferences action from the effect.
+	 *
+	 * This will look into the input clips and output clip
+	 * and set the following properties that the effect should
+	 * fetch the image at.
+	 *     - pixel depth
+	 *     - components
+	 *     - pixel aspect ratio
+	 * It will also set on the effect itselff
+	 *     - whether it is continuously samplable
+	 *     - the premult state of the output
+	 *     - whether the effect is frame varying
+	 *     - the fielding of the output clip
+	 *
+	 * This will be run automatically by the effect in the following situations...
+	 *     - an input clip is changed
+	 *     - a clip preferences slave param is changed
+	 *
+	 * The host still needs to call this explicitly just after the effect is wired
+	 * up.
+	 */
 	virtual bool getClipPreferences();
 
-	/// calls getClipPreferences only if the prefs are dirty
-	///
-	/// returns whether the clips prefs were dirty or not
+	/**
+	 *  calls getClipPreferences only if the prefs are dirty
+	 *
+	 *  returns whether the clips prefs were dirty or not
+	 */
 	bool runGetClipPrefsConditionally()
 	{
 		if( areClipPrefsDirty() )
@@ -622,17 +653,19 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-/// An overlay interact for image effects, derived from one of these to
-/// be an overlay interact
+/**
+ * An overlay interact for image effects, derived from one of these to
+ * be an overlay interact
+ */
 class OverlayInteract : public interact::OfxhInteract
 {
 protected:
 	/// our image effect instance
-	imageEffect::OfxhImageEffect& _instance;
+	imageEffect::OfxhImageEffectNode& _instance;
 
 public:
 	/// ctor this calls Instance->getOverlayDescriptor to get the descriptor
-	OverlayInteract( imageEffect::OfxhImageEffect& v );
+	OverlayInteract( imageEffect::OfxhImageEffectNode& v );
 };
 
 }

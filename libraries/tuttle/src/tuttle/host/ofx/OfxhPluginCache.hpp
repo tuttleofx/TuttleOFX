@@ -403,14 +403,12 @@ public:
 	~OfxhPluginCache();
 
 	/// get the list in which plugins are sought
-
 	const std::list<std::string>& getPluginPath()
 	{
 		return _pluginPath;
 	}
 
 	/// was the cache outdated?
-
 	bool dirty() const
 	{
 		return _dirty;
@@ -432,7 +430,6 @@ public:
 
 	/// set the version string to write to the cache,
 	/// and also that we expect on cachess read in
-
 	void setCacheVersion( const std::string& cacheVersion )
 	{
 		_cacheVersion = cacheVersion;
@@ -446,7 +443,6 @@ public:
 
 	/// Sets behaviour of seekPluginFile().
 	/// Enable (the default): normal operation; disable: returns an empty string instead
-
 	void setPluginSeekEnabled( bool enabled )
 	{
 		_enablePluginSeek = enabled;
@@ -464,7 +460,6 @@ public:
 	void elementEndCallback( void* userData, const XML_Char* name );
 
 	/// register an API cache handler
-
 	void registerAPICache( APICache::OfxhPluginAPICacheI& apiCache )
 	{
 		_apiHandlers.push_back( PluginCacheSupportedApi( &apiCache ) );
@@ -474,7 +469,6 @@ public:
 	APICache::OfxhPluginAPICacheI* findApiHandler( const std::string& api, int apiver );
 
 	/// obtain a list of plugins to walk through
-
 	const std::list<OfxhPlugin*>& getPlugins() const
 	{
 		return _plugins;

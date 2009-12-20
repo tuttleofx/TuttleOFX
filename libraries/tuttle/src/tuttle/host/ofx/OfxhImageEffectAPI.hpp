@@ -36,6 +36,8 @@
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
 
+#include <boost/scoped_ptr.hpp>
+
 #include <string>
 #include <map>
 #include <set>
@@ -48,25 +50,26 @@ namespace imageEffect {
 
 class OfxhImageEffectPluginCache;
 
-/// subclass of Plugin representing an ImageEffect plugin.  used to store API-specific
-/// data
+/**
+ * subclass of Plugin representing an ImageEffect plugin.
+ * used to store API-specific data
+ */
 class OfxhImageEffectPlugin : public OfxhPlugin
 {
+	OfxhImageEffectPluginCache& _pc;
 
-OfxhImageEffectPluginCache& _pc;
+	// this comes off Descriptor's property set after a describe
+	// context independent
+	OfxhImageEffectNodeDescriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
-// this comes off Descriptor's property set after a describe
-// context independent
-OfxhDescriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
+	/// map to store contexts in
+	typedef std::map<std::string, OfxhImageEffectNodeDescriptor*> ContextMap;
+	ContextMap _contexts;
 
-/// map to store contexts in
-typedef std::map<std::string, OfxhDescriptor*> ContextMap;
-ContextMap _contexts;
+	typedef std::set<std::string> ContextSet;
+	ContextSet _knownContexts;
 
-typedef std::set<std::string> ContextSet;
-ContextSet _knownContexts;
-
-std::auto_ptr<OfxhPluginHandle> _pluginHandle;
+	boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
 
 public:
 	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl );
@@ -87,16 +90,16 @@ public:
 	APICache::OfxhPluginAPICacheI& getApiHandler();
 
 	/// @brief get the base image effect descriptor
-	OfxhDescriptor& getDescriptor();
+	OfxhImageEffectNodeDescriptor& getDescriptor();
 
 	/// @brief get the base image effect descriptor, const version
-	const OfxhDescriptor& getDescriptor() const;
+	const OfxhImageEffectNodeDescriptor& getDescriptor() const;
 
 	/// @brief get the image effect descriptor for the context
-	OfxhDescriptor* getDescriptorInContext( const std::string& context );
+	OfxhImageEffectNodeDescriptor* getDescriptorInContext( const std::string& context );
 
 	void addContext( const std::string& context );
-	void addContext( const std::string& context, OfxhDescriptor* ied );
+	void addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied );
 
 	virtual void saveXML( std::ostream& os );
 
@@ -115,10 +118,10 @@ public:
 	 * @brief this is called to make an instance of the effect
 	 *  the client data ptr is what is passed back to the client creation function
 	 */
-	imageEffect::OfxhImageEffect* createInstance( const std::string& context, void* clientDataPtr );
+	imageEffect::OfxhImageEffectNode* createInstance( const std::string& context );
 
 private:
-	OfxhDescriptor* describeInContextAction( const std::string& context );
+	OfxhImageEffectNodeDescriptor* describeInContextAction( const std::string& context );
 };
 
 class OfxhMajorPlugin
@@ -178,7 +181,7 @@ private:
 	/// xml parsing state
 	property::OfxhProperty* _currentProp;
 
-	OfxhDescriptor* _currentContext;
+	OfxhImageEffectNodeDescriptor* _currentContext;
 	attribute::OfxhParamDescriptor* _currentParam;
 	attribute::OfxhClipImageDescriptor* _currentClip;
 

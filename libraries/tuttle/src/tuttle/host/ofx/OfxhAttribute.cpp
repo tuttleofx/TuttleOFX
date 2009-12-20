@@ -86,15 +86,15 @@ OfxhAttributeDescriptor::OfxhAttributeDescriptor( const property::OfxhSet& prope
 
 OfxhAttributeDescriptor::~OfxhAttributeDescriptor() {}
 
-AttributeInstance::AttributeInstance( const property::OfxhSet& properties )
+OfxhAttribute::OfxhAttribute( const property::OfxhSet& properties )
 	: _properties( properties )
 {}
 
-AttributeInstance::AttributeInstance( const OfxhAttributeDescriptor& desc )
+OfxhAttribute::OfxhAttribute( const OfxhAttributeDescriptor& desc )
 	: _properties( desc.getProperties() )
 {}
 
-AttributeInstance::~AttributeInstance() {}
+OfxhAttribute::~OfxhAttribute() {}
 
 }
 }

@@ -103,7 +103,7 @@ OfxhClipDescriptor::~OfxhClipDescriptor()
 // instance
 
 OfxhClip::OfxhClip( const OfxhClipDescriptor& desc )
-	: attribute::AttributeInstance( desc )
+	: attribute::OfxhAttribute( desc )
 {
 	/// extra properties for the instance, these are fetched from the host
 	/// via a get hook and some virtuals

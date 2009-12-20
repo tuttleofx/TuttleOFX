@@ -18,7 +18,7 @@ namespace core {
 
 ProcessGraph::ProcessGraph( Graph& graph )
 : _graph( graph.getGraph() )
-, _nodes( graph.getNodesTest() )
+, _nodes( graph.getNodes() )
 , _instanceCount( graph.getInstanceCount() )
 {
 	relink();
@@ -54,9 +54,9 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		p.second->getClipPreferences();
 		p.second->dumpToStdOut();
 
-		ClipImage& outputClip = dynamic_cast<ClipImage& >( p.second->getClip(kOfxImageEffectOutputClipName) );
-		outputClip.setPixelDepth( kOfxBitDepthByte );
-		outputClip.setComponents( kOfxImageComponentRGBA );
+//		ClipImage& outputClip = dynamic_cast<ClipImage& >( p.second->getClip(kOfxImageEffectOutputClipName) );
+//		outputClip.setPixelDepth( kOfxBitDepthByte );
+//		outputClip.setComponents( kOfxImageComponentRGBA );
 	}
 /*
 	// Setup parameters

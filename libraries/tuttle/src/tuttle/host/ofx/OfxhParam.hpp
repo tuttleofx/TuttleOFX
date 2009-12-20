@@ -251,7 +251,7 @@ public:
 
 /// plugin parameter instance
 class OfxhParam : virtual public OfxhParamAccessor,
-	public AttributeInstance,
+	public OfxhAttribute,
 	protected property::OfxhNotifyHook,
 	private boost::noncopyable
 {
@@ -263,7 +263,7 @@ protected:
 
 protected:
 	OfxhParam( const OfxhParam& other )
-		: AttributeInstance( other ),
+		: OfxhAttribute( other ),
 		_paramSetInstance( other._paramSetInstance ),
 		_parentInstance( other._parentInstance )
 	{

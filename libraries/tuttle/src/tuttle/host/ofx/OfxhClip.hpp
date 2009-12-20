@@ -42,7 +42,7 @@ namespace host {
 namespace ofx {
 
 namespace imageEffect {
-class OfxhImageEffect;
+class OfxhImageEffectNode;
 }
 
 namespace attribute {
@@ -87,13 +87,13 @@ public:
  * a clip instance
  */
 class OfxhClip : virtual public OfxhClipAccessor,
-	public attribute::AttributeInstance,
+	public attribute::OfxhAttribute,
 	protected property::OfxhGetHook,
 	protected property::OfxhNotifyHook,
 	private boost::noncopyable
 {
 protected:
-	OfxhClip( const OfxhClip& other ) : attribute::AttributeInstance( other ) {}
+	OfxhClip( const OfxhClip& other ) : attribute::OfxhAttribute( other ) {}
 
 public:
 	OfxhClip( const OfxhClipDescriptor& desc );

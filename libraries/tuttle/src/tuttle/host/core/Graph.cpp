@@ -22,20 +22,18 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 	if( !plug )
 		throw exception::LogicError( "Plugin not found. plug (" + id + ")" );
 
-	plug->loadAndDescribeActions(); ///< @todo tuttle keep here or move inside getImageEffectPluginById
-
-	ofx::imageEffect::OfxhImageEffect* plugInst = NULL;
+	ofx::imageEffect::OfxhImageEffectNode* plugInst = NULL;
 	if( plug->supportsContext( kOfxImageEffectContextFilter ) )
 	{
-		plugInst = plug->createInstance( kOfxImageEffectContextFilter, NULL );
+		plugInst = plug->createInstance( kOfxImageEffectContextFilter );
 	}
 	else if( plug->supportsContext( kOfxImageEffectContextGenerator ) )
 	{
-		plugInst = plug->createInstance( kOfxImageEffectContextGenerator, NULL );
+		plugInst = plug->createInstance( kOfxImageEffectContextGenerator );
 	}
 	else if( plug->supportsContext( kOfxImageEffectContextGeneral ) )
 	{
-		plugInst = plug->createInstance( kOfxImageEffectContextGeneral, NULL );
+		plugInst = plug->createInstance( kOfxImageEffectContextGeneral );
 	}
 	else
 	{
@@ -84,7 +82,7 @@ void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicEr
 	const ofx::attribute::OfxhClipImageSet::ClipImageVector& inClips = in.getClipsByOrder();
 	const ofx::attribute::OfxhClipImageSet::ClipImageMap& inClipsMap = in.getClips();
 
-	const ofx::attribute::AttributeInstance* inAttr;
+	const ofx::attribute::OfxhAttribute* inAttr;
 
 	if( inClips.size() == 1 )
 	{
@@ -110,7 +108,7 @@ void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicEr
 	connect( out, in, *inAttr );
 }
 
-void Graph::connect( const Node& out, const Node& in, const ofx::attribute::AttributeInstance& inAttr ) throw( exception::LogicError )
+void Graph::connect( const Node& out, const Node& in, const ofx::attribute::OfxhAttribute& inAttr ) throw( exception::LogicError )
 {
 	graph::Edge e( out.getName(), in.getName(), inAttr.getName() );
 

@@ -58,17 +58,19 @@ namespace core {
 
 // my host support code
 ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-								tuttle::host::ofx::imageEffect::OfxhDescriptor& desc,
+								tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
                                 const std::string& context )
-	: tuttle::host::ofx::imageEffect::OfxhImageEffect( plugin, desc, context, false )
+	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( plugin, desc, context, false )
 {
 	populate();
+	createInstanceAction();
 }
 
 ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
-: tuttle::host::ofx::imageEffect::OfxhImageEffect(other)
+: tuttle::host::ofx::imageEffect::OfxhImageEffectNode(other)
 {
-	//populate();
+	populate();
+	createInstanceAction();
 	/*
 	 * /// @todo copy params
 	 *
@@ -314,7 +316,7 @@ OfxStatus ImageEffectNode::beginRenderAction( OfxTime   startFrame,
 {
 	_frameRange.x = startFrame;
 	_frameRange.y = endFrame;
-	return OfxhImageEffect::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
+	return OfxhImageEffectNode::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
 
 }

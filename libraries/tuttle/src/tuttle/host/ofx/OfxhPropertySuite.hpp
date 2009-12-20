@@ -283,6 +283,21 @@ public:
 	virtual ~OfxhProperty()
 	{}
 
+	virtual bool operator==( const OfxhProperty& other ) const
+	{
+		if( _name != other._name )
+			return false;
+		if( _type != other._type )
+			return false;
+		if( _dimension != other._dimension )
+			return false;
+		if( _pluginReadOnly != other._pluginReadOnly )
+			return false;
+		return true;
+	}
+	
+	bool operator!=( const OfxhProperty& other ) const { return !operator==(other); }
+
 	/// is it read only?
 	bool getPluginReadOnly() const { return _pluginReadOnly; }
 
@@ -386,6 +401,24 @@ public:
 
 	virtual ~OfxhPropertyTemplate()
 	{}
+
+	bool operator==( const OfxhProperty& other ) const
+	{
+		if( getType() != other.getType() )
+			return false;
+		return operator==( dynamic_cast<const OfxhPropertyTemplate<T>&>(other) );
+	}
+
+	bool operator==( const OfxhPropertyTemplate<T>& other ) const
+	{
+		if( ! OfxhProperty::operator==( other ) )
+			return false;
+		if( _value != other._value )
+			return false;
+		if( _defaultValue != other._defaultValue )
+			return false;
+		return true;
+	}
 
 	/// get the vector
 	const std::vector<Type>& getValues() const
@@ -521,8 +554,20 @@ public:
 	
 	void clear();
 
+	size_t getLocalSize() const { return _props.size(); }
+	size_t getSize() const
+	{
+		if( _chainedSet == NULL )
+			return getLocalSize();
+		else
+			return getLocalSize() + _chainedSet->getSize();
+	}
+
 	/// hide assignment
 	void operator=( const OfxhSet& );
+
+	bool operator==( const OfxhSet& ) const;
+	bool operator!=( const OfxhSet& other ) const { return !operator==(other); }
 
 	/// dump to cout
 	void coutProperties() const;

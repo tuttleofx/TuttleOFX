@@ -71,9 +71,31 @@ BOOST_AUTO_TEST_CASE( properties_get_and_set )
 
 	BOOST_CHECK_THROW( testSet.getStringProperty("unexisting_properties"), core::exception::LogicError );
 	BOOST_CHECK_THROW( testSet.getIntProperty(testString_2_rw), std::bad_cast );
-	
+
+	// Assignment and comparison tests
+	ofx::property::OfxhSet testBSet( testSet );
+	BOOST_CHECK( testBSet == testSet );
+
+	testBSet.setIntProperty( testInt_4_ro, tab4Int[0]+1, 0 );
+	BOOST_CHECK( testBSet != testSet );
+
+	testBSet.setIntProperty( testInt_4_ro, tab4Int[0], 0 );
+	BOOST_CHECK( testBSet == testSet );
+
+	ofx::property::OfxhSet testCSet;
+	testCSet = testBSet;
+	BOOST_CHECK( testCSet == testBSet );
+
+	testCSet.setIntProperty( testInt_4_ro, tab4Int[0]+11, 0 );
+	BOOST_CHECK( testCSet != testBSet );
+	testBSet.setIntProperty( testInt_4_ro, tab4Int[0]+11, 0 );
+	BOOST_CHECK( testCSet == testBSet );
+
+
 //	bool sequential = descriptor.getProperties().getIntProperty( kOfxImageEffectInstancePropSequentialRender ) != 0;
 }
+
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

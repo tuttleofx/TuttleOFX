@@ -528,7 +528,7 @@ const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const thro
 		{
 			return _chainedSet->fetchProperty( name );
 		}
-		throw core::exception::LogicError( "fetchProperty: " + name ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
+		throw core::exception::LogicError( "fetchProperty: " + name + " property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
 	}
 	return *(i->second);
 }
@@ -633,14 +633,32 @@ void OfxhSet::clear()
 }
 
 /// hide assignment
-void OfxhSet::operator=( const OfxhSet& s )
+void OfxhSet::operator=( const OfxhSet& other )
 {
-	TCOUT_INFOS;
 	clear();
-	_props      = s._props.clone();
-//	_chainedSet = NULL;//s._chainedSet;
-	_chainedSet = s._chainedSet;
-	TCOUT_INFOS;
+	_props      = other._props.clone();
+	_chainedSet = other._chainedSet;
+}
+
+bool OfxhSet::operator==( const OfxhSet& other ) const
+{
+	if( _props != other._props )
+		return false;
+	if( _chainedSet == NULL )
+	{
+		if( other._chainedSet != NULL )
+			if( other._chainedSet->getSize() != 0 )
+				return false;
+	}
+	else
+	{
+		if( other._chainedSet == NULL )
+			if( _chainedSet->getSize() != 0 )
+				return false;
+		if( *_chainedSet != *(other._chainedSet) )
+			return false;
+	}
+	return true;
 }
 
 void OfxhSet::coutProperties() const

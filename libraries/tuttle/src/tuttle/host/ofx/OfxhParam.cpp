@@ -482,7 +482,7 @@ OfxhParam::~OfxhParam() {}
  * make a parameter, with the given type and name
  */
 OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
-	: attribute::AttributeInstance( descriptor ),
+	: attribute::OfxhAttribute( descriptor ),
 	_paramSetInstance( &setInstance ),
 	_parentInstance( 0 )
 {

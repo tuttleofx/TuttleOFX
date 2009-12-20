@@ -61,19 +61,18 @@ public:
 	 *  @arg desc - the descriptor for that plugin
 	 *  @arg context - the context to be created in
 	 */
-	tuttle::host::core::ImageEffectNode* newInstance( void*                                                  clientData,
-	                                                 tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                                                 tuttle::host::ofx::imageEffect::OfxhDescriptor&            desc,
-	                                                 const std::string&                                     context ) const;
+	tuttle::host::core::ImageEffectNode* newInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
+	                                                  tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor&        desc,
+	                                                  const std::string&                                     context ) const;
 	/// Override this to create a descriptor, this makes the 'root' descriptor
-	tuttle::host::ofx::imageEffect::OfxhDescriptor* makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const;
+	tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin ) const;
 
 	/// used to construct a context description, rootContext is the main context
-	tuttle::host::ofx::imageEffect::OfxhDescriptor* makeDescriptor( const tuttle::host::ofx::imageEffect::OfxhDescriptor&      rootContext,
+	tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* makeDescriptor( const tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor&      rootContext,
 	                                                            tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plug ) const;
 
 	/// used to construct populate the cache
-	tuttle::host::ofx::imageEffect::OfxhDescriptor* makeDescriptor( const std::string&                                     bundlePath,
+	tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* makeDescriptor( const std::string&                                     bundlePath,
 	                                                            tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plug ) const;
 
 	/// vmessage

@@ -162,6 +162,8 @@ public:
 
 class OfxhAttributeDescriptor : virtual public OfxhAttributeAccessor
 {
+	OfxhAttributeDescriptor( const OfxhAttributeDescriptor& other );
+	
 public:
 	OfxhAttributeDescriptor();
 	OfxhAttributeDescriptor( const property::OfxhSet& properties );
@@ -190,12 +192,12 @@ public:
 
 };
 
-class AttributeInstance : virtual public OfxhAttributeAccessor
+class OfxhAttribute : virtual public OfxhAttributeAccessor
 {
 public:
-	AttributeInstance( const property::OfxhSet& properties );
-	AttributeInstance( const OfxhAttributeDescriptor& desc );
-	virtual ~AttributeInstance() = 0;
+	OfxhAttribute( const property::OfxhSet& properties );
+	OfxhAttribute( const OfxhAttributeDescriptor& desc );
+	virtual ~OfxhAttribute() = 0;
 
 protected:
 	property::OfxhSet _properties;
