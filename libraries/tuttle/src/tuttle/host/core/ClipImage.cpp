@@ -28,11 +28,6 @@
 
 //#define _DEBUG 1
 
-//TODO: delete this
-#ifdef _DEBUG
-	#include <boost/gil/extension/io/png_io.hpp>
-#endif
-
 #include <iostream>
 #include <fstream>
 #include <cmath>

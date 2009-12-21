@@ -8,6 +8,11 @@
 
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
 
+//TODO: delete this
+#ifdef _DEBUG
+	#include <boost/gil/extension/io/png_io.hpp>
+#endif
+
 namespace tuttle {
 namespace host {
 namespace core {
@@ -48,8 +53,8 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	}
 	else if( clip.getPixelDepth() == kOfxBitDepthShort )
 	{
-		memlen = _ncomp * dimensions.x * dimensions.y * sizeof( uint16_t );
-		rowlen = _ncomp * dimensions.x * sizeof( uint16_t );
+		memlen = _ncomp * dimensions.x * dimensions.y * sizeof( boost::uint16_t );
+		rowlen = _ncomp * dimensions.x * sizeof( boost::uint16_t );
 	}
 	else if( clip.getPixelDepth() == kOfxBitDepthFloat )
 	{
@@ -89,7 +94,7 @@ Image::~Image()
 	TCOUT_INFOS;
 }
 
-uint8_t* Image::pixel( int x, int y )
+boost::uint8_t* Image::pixel( int x, int y )
 {
 	OfxRectI bounds = getBounds();
 
