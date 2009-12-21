@@ -2,7 +2,6 @@
 #define TUTTLE_HOST_CORE_IMAGE_HPP
 
 #include "ImageEffectNode.hpp"
-#include "Image.hpp"
 
 #include <tuttle/host/ofx/OfxhImage.hpp>
 #include <tuttle/host/core/memory/IMemoryPool.hpp>
