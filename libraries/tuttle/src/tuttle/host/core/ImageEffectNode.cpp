@@ -63,14 +63,14 @@ ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffec
 	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( plugin, desc, context, false )
 {
 	populate();
-	createInstanceAction();
+//	createInstanceAction();
 }
 
 ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 : tuttle::host::ofx::imageEffect::OfxhImageEffectNode(other)
 {
 	populate();
-	createInstanceAction();
+//	createInstanceAction();
 	/*
 	 * /// @todo copy params
 	 *
@@ -100,7 +100,7 @@ void ImageEffectNode::connect(const ProcessNode& sourceEffect)
  */
 bool ImageEffectNode::operator==( const ImageEffectNode& other ) const
 {
-	return getName() == other.getName();
+	return ofx::imageEffect::OfxhImageEffectNode::operator==( other );
 }
 
 void ImageEffectNode::dumpToStdOut() const

@@ -135,6 +135,9 @@ public:
 	OfxhImageEffectNodeBase( const property::OfxhPropSpec* propSpec );
 	virtual ~OfxhImageEffectNodeBase();
 
+	bool operator==( const OfxhImageEffectNodeBase& other ) const;
+	bool operator!=( const OfxhImageEffectNodeBase& other ) const { return !operator==(other); }
+
 	/// is my magic number valid?
 	virtual bool verifyMagic() { return true; }
 
@@ -325,7 +328,9 @@ public:
 
 	virtual ~OfxhImageEffectNode();
 
-	bool operator==( const OfxhImageEffectNode& );
+	bool operator==( const OfxhImageEffectNode& ) const;
+
+	bool operator!=( const OfxhImageEffectNode& other ) const { return ! operator==( other ); }
 
 	/// implemented for Param::SetInstance
 	virtual property::OfxhSet& getParamSetProps();

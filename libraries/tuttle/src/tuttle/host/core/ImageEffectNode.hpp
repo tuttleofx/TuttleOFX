@@ -40,14 +40,14 @@ namespace host {
 namespace core {
 
 class ImageEffectNode : public ProcessNode,
-	public tuttle::host::ofx::imageEffect::OfxhImageEffectNode
+	public ofx::imageEffect::OfxhImageEffectNode
 {
 protected:
 	OfxPointD _frameRange;
 
 public:
-	ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-	                tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
+	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin* plugin,
+	                ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
 	                const std::string& context );
 
 	ImageEffectNode( const ImageEffectNode& other );
@@ -94,7 +94,7 @@ public:
 						,	processOptions._renderScale);
 	}
 
-	const std::string& getName() const { return tuttle::host::ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
+	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 
 	void dumpToStdOut() const;
 	////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ public:
 	const std::string& getDefaultOutputFielding() const;
 
 	/// make a clip
-	tuttle::host::ofx::attribute::OfxhClipImage* newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor );
+	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
 	/// vmessage
 	OfxStatus vmessage( const char* type,
@@ -168,7 +168,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	tuttle::host::ofx::attribute::OfxhParam* newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& Descriptor );
+	ofx::attribute::OfxhParam* newParam( ofx::attribute::OfxhParamDescriptor& Descriptor );
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///

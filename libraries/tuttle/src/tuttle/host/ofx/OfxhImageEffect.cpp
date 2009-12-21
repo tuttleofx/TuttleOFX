@@ -95,6 +95,13 @@ OfxhImageEffectNodeBase::OfxhImageEffectNodeBase( const property::OfxhPropSpec* 
 
 OfxhImageEffectNodeBase::~OfxhImageEffectNodeBase() {}
 
+
+bool OfxhImageEffectNodeBase::operator==( const OfxhImageEffectNodeBase& other ) const
+{
+	return _properties == other._properties;
+}
+
+
 /// obtain a handle on this for passing to the C api
 
 OfxImageEffectHandle OfxhImageEffectNodeBase::getHandle() const
@@ -474,15 +481,15 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 /**
  * @todo check clip ? check hash ? etc.
  */
-bool OfxhImageEffectNode::operator==( const OfxhImageEffectNode& other )
+bool OfxhImageEffectNode::operator==( const OfxhImageEffectNode& other ) const
 {
-	bool result;
-
-	result = getParamList() == other.getParamList();
-	// if( !result )
-	//  return result;
-	// result = std::equal( getClipList().begin(), getClipList().end(), other.getClipList().begin() );
-	return result;
+	if( OfxhImageEffectNodeBase::operator!=( other ) )
+		return false;
+	if( attribute::OfxhParamSet::operator!=( other ) )
+		return false;
+	if( attribute::OfxhClipImageSet::operator!=( other ) )
+		return false;
+	return true;
 }
 
 /// implemented for Param::SetDescriptor

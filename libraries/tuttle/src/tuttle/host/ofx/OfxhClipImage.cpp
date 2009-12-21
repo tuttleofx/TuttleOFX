@@ -240,6 +240,12 @@ void OfxhClipImageSet::initMapFromList()
 OfxhClipImageSet::~OfxhClipImageSet()
 {}
 
+
+bool OfxhClipImageSet::operator==( const OfxhClipImageSet& other ) const
+{
+	return _clipsByOrder == other._clipsByOrder;
+}
+
 void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( std::logic_error )
 {
 	const imageEffect::OfxhImageEffectNodeDescriptor::ClipImageDescriptorVector& clips = descriptor.getClipsByOrder();

@@ -122,6 +122,10 @@ public:
 
 	virtual ~OfxhClipImage() {}
 
+	/// @todo tuttle !!!!!!!!!!!!!!!!
+	bool operator==( const OfxhClipImage& other ) const { return true; }
+	bool operator!=( const OfxhClipImage& other ) const { return !operator==(other); }
+
 	virtual OfxhClipImage* clone() const = 0;
 	virtual std::string getFullName() const = 0;
 	virtual std::string getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
@@ -359,6 +363,9 @@ public:
 
 	/// dtor.
 	virtual ~OfxhClipImageSet();
+
+	bool operator==( const OfxhClipImageSet& other ) const;
+	bool operator!=( const OfxhClipImageSet& other ) const { return !operator==(other); }
 
 	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( std::logic_error );
 

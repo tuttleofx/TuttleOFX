@@ -61,13 +61,13 @@ namespace imageEffect {
 #endif
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl )
-	: OfxhPlugin( pb, pi, pl ),
-	_pc( pc ),
-	_baseDescriptor( NULL ),
-	_pluginHandle( 0 )
+	: OfxhPlugin( pb, pi, pl )
+	, _pc( pc )
+	, _pluginHandle( 0 )
+	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-	loadAndDescribeActions();
+//	loadAndDescribeActions();
 }
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
@@ -79,13 +79,13 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
                                               const std::string&          rawId,
                                               int                         pluginMajorVersion,
                                               int                         pluginMinorVersion )
-	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion ),
-	_pc( pc ),
-	_baseDescriptor( NULL ),
-	_pluginHandle( NULL )
+	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
+	, _pc( pc )
+	, _pluginHandle( NULL )
+	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-	loadAndDescribeActions();
+//	loadAndDescribeActions();
 }
 
 #if defined( WINDOWS ) && !defined( __GNUC__ )
@@ -105,6 +105,11 @@ OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 		op->mainEntry( kOfxActionUnload, 0, 0, 0 );
 	}
 	delete _baseDescriptor;
+}
+
+bool OfxhImageEffectPlugin::operator==( const OfxhImageEffectPlugin& other ) const
+{
+	return true; /// @todo tuttle !!!!!!!!!!!!!!!
 }
 
 APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler()
@@ -274,6 +279,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	 * (not because we are expecting the results to change, but because plugin
 	 * might get confused otherwise), then a describe_in_context
 	 */
+	loadAndDescribeActions();
 	if( getPluginHandle() == NULL )
 	{
 		COUT_ERROR( "imageEffectPlugin::createInstance, unexpected error." );
@@ -286,6 +292,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 		return NULL; // throw specific Exception
 	}
 	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, *desc, context );
+	instance->createInstanceAction();
 	return instance;
 }
 

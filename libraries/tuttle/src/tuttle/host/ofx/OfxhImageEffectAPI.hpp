@@ -58,10 +58,6 @@ class OfxhImageEffectPlugin : public OfxhPlugin
 {
 	OfxhImageEffectPluginCache& _pc;
 
-	// this comes off Descriptor's property set after a describe
-	// context independent
-	OfxhImageEffectNodeDescriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
-
 	/// map to store contexts in
 	typedef std::map<std::string, OfxhImageEffectNodeDescriptor*> ContextMap;
 	ContextMap _contexts;
@@ -70,6 +66,10 @@ class OfxhImageEffectPlugin : public OfxhPlugin
 	ContextSet _knownContexts;
 
 	boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
+
+	// this comes off Descriptor's property set after a describe
+	// context independent
+	OfxhImageEffectNodeDescriptor* _baseDescriptor; ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
 public:
 	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl );
@@ -85,6 +85,8 @@ public:
 	                       int                         pluginMinorVersion );
 
 	virtual ~OfxhImageEffectPlugin();
+
+	bool operator==( const OfxhImageEffectPlugin& other ) const;
 
 	/// @return the API handler this plugin was constructed by
 	APICache::OfxhPluginAPICacheI& getApiHandler();
