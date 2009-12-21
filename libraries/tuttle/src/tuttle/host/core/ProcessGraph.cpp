@@ -21,6 +21,7 @@ ProcessGraph::ProcessGraph( Graph& graph )
 , _nodes( graph.getNodes() )
 , _instanceCount( graph.getInstanceCount() )
 {
+	_graph.transpose();
 	relink();
 }
 
@@ -50,12 +51,13 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 
 	//--- BEGIN RENDER
 	ProcessOptions processOptions;
+	processOptions._startFrame = tBegin;
+	processOptions._endFrame = tEnd;
+	processOptions._step = 1;
+	processOptions._interactive = false;
+	processOptions._renderScale = renderScale;
+
 	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
-		processOptions._startFrame = tBegin;
-		processOptions._endFrame = tEnd;
-		processOptions._step = 1;
-		processOptions._interactive = false;
-		processOptions._renderScale = renderScale;
 		p.second->begin(processOptions);
 	}
 
@@ -63,21 +65,20 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	for( int t = 0; t < numFramesToRender; ++t )
 	{
 		Graph::InternalGraph optimizedGraph(_graph);
-		graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( optimizedGraph, "optimized.dot" );
-		optimizedGraph.transpose();
-		graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( optimizedGraph, "optimized_transposed.dot" );
-		//optimizedGraph.toDominatorTree();
 
-		// Connecting nodes
-		core::dfs_connect_visitor connectVisitor;
-		optimizedGraph.dfs(connectVisitor);
-
-		core::dfs_compute_visitor computeVisitor(processOptions);
 		processOptions._time = t;
 		processOptions._field = kOfxImageFieldBoth;
 		processOptions._renderRoI = renderWindow;
 		processOptions._renderScale = renderScale;
+
+		core::dfs_preCompute_visitor preComputeVisitor(processOptions);
+		optimizedGraph.dfs(preComputeVisitor);
+
+		core::dfs_compute_visitor computeVisitor(processOptions);
 		optimizedGraph.dfs(computeVisitor);
+
+		core::dfs_postCompute_visitor postComputeVisitor(processOptions);
+		optimizedGraph.dfs(postComputeVisitor);
 	}
 
 

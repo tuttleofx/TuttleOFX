@@ -69,10 +69,12 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 	//core::Core::instance().getPluginCache().scanPluginFiles();
+	std::cout<< " hm. " << std::endl;
 	core::Core::instance().preload();
 	core::Core::instance().getImageEffectPluginCache().dumpToStdOut();
 
 	TCOUT("__________________________________________________1");
+
 	core::Graph g;
 	core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
@@ -96,6 +98,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	std::list<std::string> outputs;
 	outputs.push_back( write1.getName() );
 	g.compute( outputs, 0, 1 );
+
 	TCOUT("__________________________________________________5");
 }
 

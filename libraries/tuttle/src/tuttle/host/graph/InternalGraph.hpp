@@ -214,7 +214,7 @@ public:
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
 	}
 
-	const GraphContainer& transpose()
+	void transpose()
 	{
 		GraphContainer g;
 		boost::transpose_graph(_graph, g);

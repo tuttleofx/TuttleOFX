@@ -23,7 +23,7 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 		throw exception::LogicError( "Plugin not found. plug (" + id + ")" );
 
 	plug->loadAndDescribeActions();
-	
+
 	ofx::imageEffect::OfxhImageEffectNode* plugInst = NULL;
 	if( plug->supportsContext( kOfxImageEffectContextFilter ) )
 	{
