@@ -69,6 +69,7 @@ int main( int argc, char** argv )
 		{
 			// current render scale of 1
 			OfxPointD renderScale = { 1.0, 1.0 };
+			
 			for( EffectInstVector::iterator it = vPluginsInst.begin(), itEnd = vPluginsInst.end();
 			     it != itEnd;
 			     ++it )
@@ -84,6 +85,7 @@ int main( int argc, char** argv )
 
 				it->dumpToStdOut();
 			}
+			
 
 			// Setup parameters
 			tuttle::host::core::ParamString& srcFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[0].getParam("Input filename") );

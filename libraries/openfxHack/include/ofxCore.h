@@ -48,7 +48,7 @@ extern "C" {
 #ifdef _MSC_VER
  #define OfxExport extern __declspec( dllexport )
 #elif defined( __GNUC__ ) // Add compilator definition here...
- #define OfxExport extern
+ #define OfxExport __attribute__ ((visibility("default")))
 #else
  #error "OfxExport not defined for this compilator..."
 #endif

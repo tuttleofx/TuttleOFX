@@ -67,7 +67,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, Of
 	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-	loadAndDescribeActions();
+//	loadAndDescribeActions();
 }
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
@@ -85,7 +85,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-	loadAndDescribeActions();
+//	loadAndDescribeActions();
 }
 
 #if defined( WINDOWS ) && !defined( __GNUC__ )
@@ -280,7 +280,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	 * (not because we are expecting the results to change, but because plugin
 	 * might get confused otherwise), then a describe_in_context
 	 */
-//	loadAndDescribeActions();
+	loadAndDescribeActions();
 	if( getPluginHandle() == NULL )
 	{
 		COUT_ERROR( "imageEffectPlugin::createInstance, unexpected error." );
@@ -293,7 +293,6 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 		return NULL; // throw specific Exception
 	}
 	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, *desc, context );
-	instance->createInstanceAction();
 	return instance;
 }
 

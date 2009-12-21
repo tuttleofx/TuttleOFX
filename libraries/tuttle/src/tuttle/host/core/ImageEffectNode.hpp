@@ -63,6 +63,7 @@ public:
 
 	void begin(const ProcessOptions & processOptions)
 	{
+		createInstanceAction();
 		getClipPreferences();
 		beginRenderAction(	processOptions._startFrame
 						,	processOptions._endFrame

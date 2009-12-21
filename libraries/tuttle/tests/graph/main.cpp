@@ -70,12 +70,15 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 	//core::Core::instance().getPluginCache().scanPluginFiles();
 	core::Core::instance().preload();
+	core::Core::instance().getImageEffectPluginCache().dumpToStdOut();
 
+	TCOUT("__________________________________________________1");
 	core::Graph g;
 	core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 
+	TCOUT("__________________________________________________2");
 	// Setup parameters
 	read1.getParam("Input filename").set("input.png");
 	write1.getParam("Output filename").set("output.png");
@@ -83,14 +86,17 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	read1.paramInstanceChangedAction("Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 	write1.paramInstanceChangedAction("Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
+	TCOUT("__________________________________________________3");
 	g.connect( read1, invert1 );
 	g.connect( invert1, write1 );
 
 	//	core::ProcessGraph processGraph(g);
 
+	TCOUT("__________________________________________________4");
 	std::list<std::string> outputs;
 	outputs.push_back( write1.getName() );
 	g.compute( outputs, 0, 1 );
+	TCOUT("__________________________________________________5");
 }
 
 //BOOST_AUTO_TEST_CASE( graph_compute )
