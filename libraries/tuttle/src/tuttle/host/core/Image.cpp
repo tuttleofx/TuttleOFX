@@ -91,7 +91,6 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 
 Image::~Image()
 {
-	TCOUT_INFOS;
 }
 
 boost::uint8_t* Image::pixel( int x, int y )

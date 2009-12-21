@@ -172,17 +172,18 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( OfxTime time, Of
 		bounds.x2 = optionalBounds->x2;
 		bounds.y2 = optionalBounds->y2;
 //		throw exception::LogicError(kOfxStatErrMissingHostFeature, "Uses optionalBounds not supported yet."); ///< @todo tuttle: this must be supported !
-		TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
+//		TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
 	}
 	else
 		bounds = fetchRegionOfDefinition( time );
 
-	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
+//	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
 	boost::shared_ptr<Image> image = _memoryCache.get( getConnectedClipFullName(), time );
 //	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds... if not the same as in cache...
 	if( image.get() != NULL )
 	{
+		/*
 		if( isOutput() )
 		{
 			TCOUT("output already in cache !");
@@ -192,6 +193,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( OfxTime time, Of
 		{
 			TCOUT( "return input image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
 		}
+		*/
 		return image.get();
 	}
 	if( isOutput() )
@@ -199,9 +201,9 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( OfxTime time, Of
 		// make a new ref counted image
 		boost::shared_ptr<Image> outputImage(new Image( *this, bounds, time ));
 //		outputImage.get()->cout();
-		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
+//		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
 		_memoryCache.put( getConnectedClipFullName(), time, outputImage );
-		TCOUT_VAR( _memoryCache.size() );
+//		TCOUT_VAR( _memoryCache.size() );
 //		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
 //		_memoryCache.get( getFullName(), time ).get()->cout();
 		return outputImage.get();

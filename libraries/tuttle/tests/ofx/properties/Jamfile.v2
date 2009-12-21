@@ -13,7 +13,7 @@ project
 					<threading>multi
     ;
 
-use-project /tuttle 	: ../.. ;
+use-project /tuttle 	: ../../.. ;
 
 alias dependencies
     : 

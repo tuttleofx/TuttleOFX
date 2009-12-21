@@ -48,31 +48,6 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	OfxRectI renderWindow = { 0, 0,	123, 123 };
 
 
-	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
-
-		p.second->createInstanceAction();
-		p.second->getClipPreferences();
-		p.second->dumpToStdOut();
-
-//		ClipImage& outputClip = dynamic_cast<ClipImage& >( p.second->getClip(kOfxImageEffectOutputClipName) );
-//		outputClip.setPixelDepth( kOfxBitDepthByte );
-//		outputClip.setComponents( kOfxImageComponentRGBA );
-	}
-/*
-	// Setup parameters
-	EffectInstance& firstEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGReader1"));
-	EffectInstance& lastEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGWriterHd3d1"));
-	firstEffect.getParam("Input filename").set("input.png");
-	lastEffect.getParam("Output filename").set("output.png");
-	firstEffect.paramInstanceChangedAction("Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	lastEffect.paramInstanceChangedAction("Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-*/
-
-	// Connecting nodes
-	core::dfs_connect_visitor connectVisitor;
-	_graph.dfs(connectVisitor);
-
-
 	//--- BEGIN RENDER
 	ProcessOptions processOptions;
 	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
@@ -84,17 +59,24 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		p.second->begin(processOptions);
 	}
 
-
 	//--- RENDER
 	for( int t = 0; t < numFramesToRender; ++t )
 	{
+		Graph::InternalGraph optimizedGraph(_graph);
+		graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( optimizedGraph, "optimized.dot" );
+		optimizedGraph.transpose();
+		graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( optimizedGraph, "optimized_transposed.dot" );
+		//optimizedGraph.toDominatorTree();
+
+		// Connecting nodes
+		core::dfs_connect_visitor connectVisitor;
+		optimizedGraph.dfs(connectVisitor);
+
 		core::dfs_compute_visitor computeVisitor(processOptions);
 		processOptions._time = t;
 		processOptions._field = kOfxImageFieldBoth;
 		processOptions._renderRoI = renderWindow;
 		processOptions._renderScale = renderScale;
-		Graph::InternalGraph optimizedGraph(_graph);
-		//optimizedGraph.toDominatorTree();
 		optimizedGraph.dfs(computeVisitor);
 	}
 
