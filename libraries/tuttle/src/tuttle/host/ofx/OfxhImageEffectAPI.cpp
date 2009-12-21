@@ -67,7 +67,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, Of
 	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-//	loadAndDescribeActions();
+	loadAndDescribeActions();
 }
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
@@ -85,7 +85,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-//	loadAndDescribeActions();
+	loadAndDescribeActions();
 }
 
 #if defined( WINDOWS ) && !defined( __GNUC__ )
@@ -138,6 +138,7 @@ void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEff
 void OfxhImageEffectPlugin::addContext( const std::string& context )
 {
 	_knownContexts.insert( context );
+	//TCOUT( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
 }
 
 void OfxhImageEffectPlugin::saveXML( std::ostream& os )
@@ -279,7 +280,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	 * (not because we are expecting the results to change, but because plugin
 	 * might get confused otherwise), then a describe_in_context
 	 */
-	loadAndDescribeActions();
+//	loadAndDescribeActions();
 	if( getPluginHandle() == NULL )
 	{
 		COUT_ERROR( "imageEffectPlugin::createInstance, unexpected error." );
