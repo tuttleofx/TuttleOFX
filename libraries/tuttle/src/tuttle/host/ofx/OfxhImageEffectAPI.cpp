@@ -192,9 +192,8 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 
 	if( op == NULL )
 	{
-		COUT_ERROR( "loadAndDescribeAction OfxPlugin NULL, on plugin " + getApiHandler()._apiName );
 		_pluginHandle.reset( NULL );
-		return;
+		throw core::exception::LogicError( "loadAndDescribeAction OfxPlugin NULL, on plugin " + getApiHandler()._apiName );
 	}
 
 	int rval = op->mainEntry( kOfxActionLoad, 0, 0, 0 );
@@ -202,8 +201,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		_pluginHandle.reset( NULL );
-		COUT_ERROR( "Load Action failed on plugin " + getApiHandler()._apiName );
-		return;
+		throw core::exception::LogicError( "Load Action failed on plugin " + getApiHandler()._apiName );
 	}
 
 	rval = op->mainEntry( kOfxActionDescribe, getDescriptor().getHandle(), 0, 0 );
@@ -211,8 +209,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		_pluginHandle.reset( NULL );
-		COUT_ERROR( "Describe Action failed on plugin " + getApiHandler()._apiName );
-		return;
+		throw core::exception::LogicError( "Describe Action failed on plugin " + getApiHandler()._apiName );
 	}
 	initContexts();
 }
@@ -241,8 +238,7 @@ OfxhImageEffectNodeDescriptor* OfxhImageEffectPlugin::getDescriptorInContext( co
 
 	if( _knownContexts.find( context ) == _knownContexts.end() )
 	{
-		COUT_ERROR( "Context not found (" + context + ")" );
-		return NULL;
+		throw core::exception::LogicError( "Context not found (" + context + ")" );
 	}
 	return describeInContextAction( context );
 }
@@ -283,14 +279,12 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 //	loadAndDescribeActions();
 	if( getPluginHandle() == NULL )
 	{
-		COUT_ERROR( "imageEffectPlugin::createInstance, unexpected error." );
-		return NULL; // throw specific Exception
+		throw core::exception::LogicError( "imageEffectPlugin::createInstance, unexpected error." );
 	}
 	OfxhImageEffectNodeDescriptor* desc = getDescriptorInContext( context );
 	if( !desc )
 	{
-		COUT_ERROR( "The plugin doesn't support the context " << context << "." );
-		return NULL; // throw specific Exception
+		throw core::exception::LogicError( "The plugin doesn't support the context " + context + "." );
 	}
 	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, *desc, context );
 	instance->createInstanceAction();
@@ -426,16 +420,14 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		std::cerr << "load failed on plugin " << op->getIdentifier() << std::endl;
-		return;
+		throw core::exception::LogicError( "Load failed on plugin " + op->getIdentifier() );
 	}
 
 	rval = plug->mainEntry( kOfxActionDescribe, p->getDescriptor().getHandle(), 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		std::cerr << "describe failed on plugin " << op->getIdentifier() << std::endl;
-		return;
+		throw core::exception::LogicError( "Describe failed on plugin " + op->getIdentifier() );
 	}
 
 	const imageEffect::OfxhImageEffectNodeDescriptor& e = p->getDescriptor();
@@ -450,6 +442,11 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 	}
 
 	rval = plug->mainEntry( kOfxActionUnload, 0, 0, 0 );
+
+	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
+	{
+		throw core::exception::LogicError( "Unload failed on plugin " + op->getIdentifier() + " at initialization.");
+	}
 }
 
 /**

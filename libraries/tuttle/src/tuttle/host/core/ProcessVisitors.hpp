@@ -11,86 +11,26 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-struct dfs_compute_visitor : public boost::dfs_visitor<>
+struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_compute_visitor(const ProcessOptions & options)
+		dfs_preCompute_visitor(const ProcessOptions & options)
 			: _options(options)
 		{}
 
 		template<class VertexDescriptor, class Graph>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "[PROCESS] initialize_vertex "
+			std::cout << "[PRECOMPUTE] initialize_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
 
-			get( vertex_properties, g )[v].processNode()->process(_options);
-		}
-
-		template<class VertexDescriptor, class Graph>
-		void start_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "start_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-		}
-
-		template<class VertexDescriptor, class Graph>
-		void discover_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "discover_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-		}
-
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "finish_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
+			//get( vertex_properties, g )[v].processNode()->preCompute_initialize(_options);
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void examine_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "examine_edge "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void tree_edge( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "tree_edge "
-			          << get( edge_properties, g )[e]
-			          << "  source: " ;
-			std::cout << get( vertex_properties, g )[source( e, g )] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void back_edge( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "back_edge "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void forward_or_cross_edge( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "forward_or_cross_edge "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-	private:
-		const ProcessOptions & _options;
-};
-
-
-struct dfs_connect_visitor : public boost::dfs_visitor<>
-{
-	public:
-		dfs_connect_visitor(){}
-
-		template<class EdgeDescriptor, class Graph>
-		void examine_edge( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "examine_edge "
+			std::cout << "[PRECOMPUTE] examine_edge "
 					  << get( vertex_properties, g )[source(e, g)]
 					  << " TO "
 					  << get( vertex_properties, g )[target(e, g)]
@@ -100,7 +40,59 @@ struct dfs_connect_visitor : public boost::dfs_visitor<>
 			core::ProcessNode * targetNode = get( vertex_properties, g )[target(e, g)].processNode();
 			targetNode->connect( *sourceNode );
 		}
+
+		template<class VertexDescriptor, class Graph>
+		void finish_vertex( VertexDescriptor v, Graph& g )
+		{
+			std::cout << "[PRECOMPUTE] finish_vertex "
+			          << get( vertex_properties, g )[v] << std::endl;
+			//get( vertex_properties, g )[v].processNode()->preCompute_finish(_options);
+		}
+
+	private:
+		const ProcessOptions & _options;
 };
+
+struct dfs_compute_visitor : public boost::dfs_visitor<>
+{
+	public:
+		dfs_compute_visitor(const ProcessOptions & options)
+			: _options(options)
+		{}
+
+		template<class VertexDescriptor, class Graph>
+		void finish_vertex( VertexDescriptor v, Graph& g )
+		{
+			std::cout << "[COMPUTE] initialize_vertex "
+			          << get( vertex_properties, g )[v] << std::endl;
+
+			get( vertex_properties, g )[v].processNode()->process(_options);
+		}
+
+	private:
+		const ProcessOptions & _options;
+};
+
+struct dfs_postCompute_visitor : public boost::dfs_visitor<>
+{
+	public:
+		dfs_postCompute_visitor(const ProcessOptions & options)
+			: _options(options)
+		{}
+
+		template<class VertexDescriptor, class Graph>
+		void initialize_vertex( VertexDescriptor v, Graph& g )
+		{
+			std::cout << "[POSTCOMPUTE] initialize_vertex "
+			          << get( vertex_properties, g )[v] << std::endl;
+		}
+
+	private:
+		const ProcessOptions & _options;
+};
+
+
+
 
 } // namespace core
 } // namespace host

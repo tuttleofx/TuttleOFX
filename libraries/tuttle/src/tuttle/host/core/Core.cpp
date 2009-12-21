@@ -36,6 +36,7 @@ Core::~Core()
 
 void Core::preload()
 {
+
 	// try to read an old cache
 	std::ifstream ifs( "tuttlePluginCache.xml" );
 
