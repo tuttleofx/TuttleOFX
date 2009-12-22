@@ -27,8 +27,7 @@ using namespace OFX;
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( PNGReaderPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( PNGReaderPluginFactory, {}, {} );
 
 /**
  * @brief Function called to describe the plugin main features.

@@ -19,10 +19,8 @@ project
     : build-dir $(DIST)/plugins/exr/obj
     ;
 
-lib iexr : : <name>IlmImf_dll_d <search>$(EXR_LIB)/lib
-				 <link>static : <link>static ;
-
 use-project /png 	: ../../../3rdParty/libpng ;
+use-project /libexr : $(EXR_LIB) ;
 
 ###############################################################################
 # Dependencies
@@ -36,8 +34,8 @@ plugin exr :
         /tuttlelib//tuttleplugin/<link>static
         /boost/filesystem/<link>static
         /png/<link>static
+        /libexr/<link>static
         /supportlib/<link>static
-        iexr
         ;
 
 ###############################################################################

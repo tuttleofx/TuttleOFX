@@ -122,15 +122,6 @@ View& PNGReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 
 	png_read_image( filepath, anyImg );
 	copy_and_convert_pixels( subimage_view( flipped_up_down_view( view( anyImg ) ), 0, 0, dst.width(), dst.height() ), dst );
-	// little test on merge to remove:
-	/*        rgb8_image_t imgA, imgB;
-	 *      png_read_image ("c:/temp/inputA.png", imgA);
-	 *      png_read_image ("c:/temp/inputB.png", imgB);
-	 *      rgb8_image_t imgC(imgA.width(), imgA.height());
-	 *      rgb8_view_t srcA(view(imgA)), srcB(view(imgB)), dst(view(imgC));
-	 *      transform_pixels(srcA, srcB, dst, default_color_merging<FunctorPlus>());
-	 *      png_write_view ("c:/temp/merge.png", dst);
-	 */
 	return dst;
 }
 

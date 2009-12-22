@@ -2,7 +2,8 @@
 #include "EXRReaderPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
-//#include <half/gilHalf.hpp>
+#include "../half/gilHalf.hpp"
+#include "EXRReaderProcess.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -16,8 +17,6 @@
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/packed_pixel.hpp>
-
-#include <ImathVec.h>
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/cstdint.hpp>
@@ -55,7 +54,9 @@ void EXRReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 		{
 			_exrImage.reset(new Imf::InputFile(sFilepath.c_str()));
 			const Imf::Header &h = _exrImage->header();
-			const typename Imath::V2i imageDims = h.dataWindow().size();
+			typename Imath::V2i imageDims = h.dataWindow().size();
+			imageDims.x++;
+			imageDims.y++;
 
 			double par       = _plugin.getDstClip()->getPixelAspectRatio();
 			OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
@@ -124,291 +125,145 @@ View& EXRReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 	using namespace boost::gil;
 	using namespace Imf;
 
-	_exrImage.reset(new InputFile(filepath.c_str()));
+	Imf::InputFile in( filepath.c_str() );
+	Imf::FrameBuffer frameBuffer;
+	const Imf::Header &header = in.header();
+	const Imath::Box2i & dw = header.dataWindow();
+	typename Imath::V2i imageDims = dw.size();
+	imageDims.x++;	// Width
+	imageDims.y++;	// Height
 
-	/*
-	switch( _plugin.getExrImg().componentsType() )
+	// Get number of output components
+	switch( _outComponents->getValue() )
 	{
-		case tuttle::io::ExrImage::eCompTypeR8G8B8:
+		case 0:
 		{
-			// Tests passed: fill, non fill, big endian, little endian
-			rgb8c_view_t src = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-			                                     (const rgb8_pixel_t*)( _plugin.getExrImg().data() ),
-			                                     _plugin.getExrImg().width() * 3 );
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			// Copy 1 channel starting by the first channel (0)
+			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 1 );
 			break;
 		}
-		case tuttle::io::ExrImage::eCompTypeR8G8B8A8:
+		// RGB
+		case 1:
 		{
-			// Tests passed: fill, non fill, big endian, little endian
-			rgba8c_view_t src = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-			                                      (const rgba8_pixel_t*)( _plugin.getExrImg().data() ),
-			                                      _plugin.getExrImg().width() * 4 );
-
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			// Copy 3 channels starting by the first channel (0)
+			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 3 );
 			break;
 		}
-		case tuttle::io::ExrImage::eCompTypeA8B8G8R8:
+		// RGBA
+		case 2:
 		{
-			// Untested (need images samples), quite sure it is working
-			abgr8c_view_t src = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-			                                      (const abgr8_pixel_t*)( _plugin.getExrImg().data() ),
-			                                      _plugin.getExrImg().width() * 4 );
-
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			// Copy 4 channels starting by the first channel (0)
+			channelCopy( in, frameBuffer, dst, imageDims.x, imageDims.y, 0, 4 );
 			break;
 		}
-		case tuttle::io::ExrImage::eCompTypeR10G10B10:
-		{
-			// Tests passed: fill, non fill, big endian, little endian
-			// Interpret pixels according to its bit packing
-			switch( _plugin.getExrImg().packing() )
-			{
-				// bit stream
-				case 0:
-				{
-					rgb16_image_t img( dst.width(), dst.height() );
-					rgb16_view_t vw( view( img ) );
-					bitStreamToView<rgb10_stream_ptr_t>(vw, 3, 10);
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-				default:
-				{
-					int width = _plugin.getExrImg().width();
-					int height = _plugin.getExrImg().height();
-					rgb10_packed_view_t src = interleaved_view( width, height,
-																(rgb10_packed_pixel_t*)( _plugin.getExrImg().data() ),
-																width * sizeof( uint32_t ) );
-					// This is temporary but needed because of a probable bug in gil
-					// Should be using copy_and_convert_pixels
-					rgb16_image_t img16( width, height );
-					rgb16_view_t vw16( view( img16 ) );
-					for( typename rgb10_packed_view_t::y_coord_t y = 0; y < height; ++y )
-					{
-						typename rgb10_packed_view_t::x_iterator sit = src.row_begin( y );
-						typename rgb16_view_t::x_iterator dit = vw16.row_begin( y );
-						for( typename rgb10_packed_view_t::x_coord_t x = 0; x < width; ++x )
-						{
-							color_convert( *sit, *dit );
-							++sit;
-							++dit;
-						}
-					}
-					copy_and_convert_pixels(vw16, dst);
-					break;
-				}
-			}
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeR10G10B10A10:
-		{
-			// Tests passed: fill with big endian or little endian
-			// Tests failed: non fill
-			// Interpret pixels according to its bit packing
-			switch( _plugin.getExrImg().packing() )
-			{
-				// bit stream
-				case 0:
-				{
-					rgba16_image_t img( dst.width(), dst.height() );
-					rgba16_view_t vw( view( img ) );
-					bitStreamToView<rgba10_stream_ptr_t>(vw, 4, 10);
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-				default:
-				{
-					throw(PluginException("Error: unsupported exr file format (RGBA10 byte packed). "));
-					break;
-				}
-			}
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeA10B10G10R10:
-		{
-			// Untested (need images samples), quite sure it is not working :(
-			// Interpret pixels according to its bit packing
-			switch( _plugin.getExrImg().packing() )
-			{
-				// bit stream
-				case 0:
-				{
-					rgba16_image_t img( dst.width(), dst.height() );
-					rgba16_view_t vw( view( img ) );
-					bitStreamToView<abgr10_stream_ptr_t>(vw, 4, 10);
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-				case 1:
-				case 2:
-				{
-					throw(PluginException("Error: unsupported exr file format (ABGR10 byte packed). "));
-					break;
-				}
-			}
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeR12G12B12:
-		{
-			// Tests failed: all (sick) !
-			// Probable bug in gil...
-			// Interpret pixels according to its bit packing
-			switch( _plugin.getExrImg().packing() )
-			{
-				// bit stream
-				case 0:
-				{
-					rgb16_image_t img( dst.width(), dst.height() );
-					rgb16_view_t vw( view( img ) );
-					bitStreamToView<rgb12_stream_ptr_t>(vw, 3, 12);
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-				default:
-				{
-					int width = _plugin.getExrImg().width();
-					int height = _plugin.getExrImg().height();
-					rgb12_packed_view_t src = interleaved_view( width, height,
-															   ( rgb12_packed_pixel_t* )( _plugin.getExrImg().data() ),
-															   _plugin.getExrImg().width() * 6 );
-					// This is temporary but needed because of a probable bug in gil
-					// Should be using copy_and_convert_pixels
-					rgb16_image_t img16( width, height );
-					rgb16_view_t vw16( view( img16 ) );
-					for( typename rgb12_packed_view_t::y_coord_t y = 0; y < height; ++y )
-					{
-						typename rgb12_packed_view_t::x_iterator sit = src.row_begin( y );
-						typename rgb16_view_t::x_iterator dit = vw16.row_begin( y );
-						for( typename rgb12_packed_view_t::x_coord_t x = 0; x < width; ++x )
-						{
-							color_convert( *sit, *dit );
-							++sit;
-							++dit;
-						}
-					}
-					copy_and_convert_pixels(vw16, dst);
-					break;
-				}
-			}
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeR12G12B12A12:
-		{
-			// Tests passed: fill big endian or little endian, non fill little endian or big endian
-			// Interpret pixels according to its bit packing
-			switch( _plugin.getExrImg().packing() )
-			{
-				// bit stream
-				case 0:
-				{
-					rgba16_image_t img( dst.width(), dst.height() );
-					rgba16_view_t vw( view( img ) );
-					bitStreamToView<rgba12_stream_ptr_t>(vw, 4, 12);
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-				default:
-				{
-					rgba12_packed_view_t vw = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-																( rgba12_packed_pixel_t* )( _plugin.getExrImg().data() ),
-																_plugin.getExrImg().width() * sizeof( uint64_t ) );
-
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-			}
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeA12B12G12R12:
-		{
-			// Untested
-			// Interpret pixels according to its bit packing
-			switch( _plugin.getExrImg().packing() )
-			{
-				// bit stream
-				case 0:
-				{
-					rgba16_image_t img( dst.width(), dst.height() );
-					rgba16_view_t vw( view( img ) );
-					bitStreamToView<abgr12_stream_ptr_t>(vw, 4, 12);
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-				default:
-				{
-					abgr12_packed_view_t vw = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-																( abgr12_packed_pixel_t* )( _plugin.getExrImg().data() ),
-																_plugin.getExrImg().width() * sizeof( uint64_t ) );
-
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
-					break;
-				}
-			}
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeR16G16B16:
-		{
-			// Tests passed: fill, non fill, big endian, little endian
-			rgb16c_view_t src = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-			                                      (const rgb16_pixel_t*)( _plugin.getExrImg().data() ),
-			                                      _plugin.getExrImg().width() * 6 );
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeR16G16B16A16:
-		{
-			// Tests passed: fill, non fill, big endian, little endian
-			rgba16c_view_t src = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-			                                       (const rgba16_pixel_t*)( _plugin.getExrImg().data() ),
-			                                       _plugin.getExrImg().width() * sizeof(uint64_t) );
-
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
-			break;
-		}
-		case tuttle::io::ExrImage::eCompTypeA16B16G16R16:
-		{
-			// Untested (need images samples), quite sure it is working
-			abgr16c_view_t src = interleaved_view( _plugin.getExrImg().width(), _plugin.getExrImg().height(),
-			                                       (const abgr16_pixel_t*)( _plugin.getExrImg().data() ),
-			                                       _plugin.getExrImg().width() * sizeof(uint64_t) );
-
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
-			break;
-		}
-		default:
-			break;
 	}
-	*/
 	return dst;
 }
 
 template<class View>
-template<class T, class DST_V>
-void EXRReaderProcess<View>::bitStreamToView(DST_V & dst, const int nc, const int channelSize) {
-/*
-	boost::uint8_t* pData = _plugin.getExrImg().data();
-	typedef unsigned char byte_t;
-	int width             = _plugin.getExrImg().width();
-	int height            = _plugin.getExrImg().height();
-	int scanline_in_bits  = width * nc * channelSize;
-	int scanline_in_bytes = scanline_in_bits / 8;
-	scanline_in_bytes += ( scanline_in_bits % 8 != 0 ) ? 1 : 0;
-	T p( pData, 0 );
-
-	for( typename DST_V::y_coord_t y = 0; y < height; ++y )
-	{
-		typename DST_V::x_iterator it = dst.row_begin( y );
-
-		for( typename DST_V::x_coord_t x = 0; x < width; ++x )
+void EXRReaderProcess<View>::channelCopy(Imf::InputFile & input,
+										 Imf::FrameBuffer & frameBuffer,
+										 View & dst, int w, int h, 
+										 int n, int left)
+{
+	const Imf::Header & header = input.header();
+	const Imath::Box2i & dw = header.dataWindow();
+	if (left) {
+		const Imf::ChannelList & cl( header.channels() );
+		const Imf::Channel & ch = cl[ _plugin.channelNames()[ _plugin.channelChoice()[n]->getValue() ].c_str() ];
+		switch( ch.type )
 		{
-			color_convert( *p, *it );
-			++p;
-			++it;
+			case Imf::HALF:
+			{
+				//@todo: check: this may bug: swap w and h
+				Imf::Array2D<half> pixels(w, h);
+				frameBuffer.insert (_plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
+									Imf::Slice( ch.type,
+												(char *) (&pixels[0][0] - // base
+												dw.min.x -
+												dw.min.y * w),
+												sizeof (pixels[0][0]) * 1, // xStride
+												sizeof (pixels[0][0]) * w, // yStride
+												1, 1, // x/y sampling
+												0.0 )
+									); // fillValue
+				channelCopy(input, frameBuffer, dst, w, h, ++n, --left);
+				break;
+			}
+			case Imf::FLOAT:
+			{
+				//@todo: check: this may bug: swap w and h
+				Imf::Array2D<float> pixels(w, h);
+				frameBuffer.insert (_plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
+									Imf::Slice( ch.type,
+												(char *) (&pixels[0][0] - // base
+												dw.min.x -
+												dw.min.y * w),
+												sizeof (pixels[0][0]) * 1, // xStride
+												sizeof (pixels[0][0]) * w, // yStride
+												1, 1, // x/y sampling
+												0.0 )
+									); // fillValue
+				channelCopy(input, frameBuffer, dst, w, h, ++n, --left);
+				break;
+			}
+			default:
+			{
+				//@todo: check: this may bug: swap w and h
+				Imf::Array2D<boost::uint32_t> pixels(w, h);
+				frameBuffer.insert (_plugin.channelNames()[_plugin.channelChoice()[n]->getValue()].c_str(),
+									Imf::Slice( ch.type,
+												(char *) (&pixels[0][0] - // base
+												dw.min.x -
+												dw.min.y * w),
+												sizeof (pixels[0][0]) * 1, // xStride
+												sizeof (pixels[0][0]) * w, // yStride
+												1, 1, // x/y sampling
+												0.0 )
+									); // fillValue
+				channelCopy(input, frameBuffer, dst, w, h, ++n, --left);
+				break;
+			}
+		}
+	} else {
+		input.setFrameBuffer(frameBuffer);
+		input.readPixels(dw.min.y, dw.max.y);
+		for(int s = 0; s < n; ++s) {
+			const Imf::Slice *slice =
+				frameBuffer.findSlice(
+					_plugin.channelNames()[_plugin.channelChoice()[s]->getValue()].c_str() );
+			sliceCopy(slice, dst, s);
 		}
 	}
+}
 
-*/
+template<class View>
+void EXRReaderProcess<View>::sliceCopy(const Imf::Slice *slice, View & dst, int n)
+{
+	int w = slice->xStride + 1;
+	int h = slice->yStride + 1;
+	typedef typename View::value_type dPix_t;
+	switch( slice->type )
+	{
+		case Imf::HALF:
+		{
+			gray16h_view_t vw( interleaved_view( w, h, (gray16h_view_t::value_type*)slice->base, w * sizeof(boost::uint16_t) ) );
+			copy_and_convert_pixels(vw, nth_channel_view(dst, n));
+			break;
+		}
+		case Imf::FLOAT:
+		{
+			gray32f_view_t vw( interleaved_view( w, h, (gray32f_view_t::value_type*)slice->base, w * sizeof(float) ) );
+			copy_and_convert_pixels(vw, nth_channel_view(dst, n));
+			break;
+		}
+		default:
+		{
+			gray32_view_t vw( interleaved_view( w, h, (gray32_view_t::value_type*)slice->base, w * sizeof(boost::uint32_t) ) );
+			copy_and_convert_pixels(vw, nth_channel_view(dst, n));
+			break;
+		}
+	}
 }
 
 }

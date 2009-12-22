@@ -147,22 +147,22 @@ struct channel_multiplier_unsigned<bits16h>
 ///  defines gil types with new bits16h trait
 ///////////////////////////////////////////////////////////////////////////////
 
-GIL_DEFINE_BASE_TYPEDEFS(16h,	gray)
-GIL_DEFINE_BASE_TYPEDEFS(16h,	bgr)
-GIL_DEFINE_BASE_TYPEDEFS(16h,	argb)
-GIL_DEFINE_BASE_TYPEDEFS(16h,	abgr)
-GIL_DEFINE_BASE_TYPEDEFS(16h,	bgra)
+GIL_DEFINE_BASE_TYPEDEFS(16h, gray)
+GIL_DEFINE_BASE_TYPEDEFS(16h, bgr)
+GIL_DEFINE_BASE_TYPEDEFS(16h, argb)
+GIL_DEFINE_BASE_TYPEDEFS(16h, abgr)
+GIL_DEFINE_BASE_TYPEDEFS(16h, bgra)
 
-GIL_DEFINE_ALL_TYPEDEFS(16h,	rgb)
-GIL_DEFINE_ALL_TYPEDEFS(16h,	rgba)
-GIL_DEFINE_ALL_TYPEDEFS(16h,	cmyk)
+GIL_DEFINE_ALL_TYPEDEFS(16h, rgb)
+GIL_DEFINE_ALL_TYPEDEFS(16h, rgba)
+GIL_DEFINE_ALL_TYPEDEFS(16h, cmyk)
 
 template <int N> struct devicen_t;
 template <int N> struct devicen_layout_t;
-GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h,dev2n, devicen_t<2>, devicen_layout_t<2>)
-GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h,dev3n, devicen_t<3>, devicen_layout_t<3>)
-GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h,dev4n, devicen_t<4>, devicen_layout_t<4>)
-GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h,dev5n, devicen_t<5>, devicen_layout_t<5>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h, dev2n, devicen_t<2>, devicen_layout_t<2>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h, dev3n, devicen_t<3>, devicen_layout_t<3>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h, dev4n, devicen_t<4>, devicen_layout_t<4>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(16h, dev5n, devicen_t<5>, devicen_layout_t<5>)
 
 }
 }  // namespace boost::gil
