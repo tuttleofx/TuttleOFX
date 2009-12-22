@@ -11,6 +11,32 @@ namespace tuttle {
 namespace host {
 namespace core {
 
+
+struct dfs_connectClips_visitor : public boost::dfs_visitor<>
+{
+	public:
+		dfs_connectClips_visitor(const ProcessOptions & options)
+			: _options(options)
+		{}
+
+		template<class EdgeDescriptor, class Graph>
+		void examine_edge( EdgeDescriptor e, Graph& g )
+		{
+			std::cout << "[CONNECTCLIPS] examine_edge "
+					  << get( vertex_properties, g )[target(e, g)]
+					  << " TO "
+					  << get( vertex_properties, g )[source(e, g)]
+			          << std::endl;
+
+			core::ProcessNode * sourceNode = get( vertex_properties, g )[source(e, g)].processNode();
+			core::ProcessNode * targetNode = get( vertex_properties, g )[target(e, g)].processNode();
+			sourceNode->connect( *targetNode );
+		}
+		
+	private:
+		const ProcessOptions & _options;
+};
+
 struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
@@ -24,21 +50,21 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 			std::cout << "[PRECOMPUTE] initialize_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
 
-			//get( vertex_properties, g )[v].processNode()->preCompute_initialize(_options);
+			get( vertex_properties, g )[v].processNode()->preProcess_initialize(_options);
 		}
 
-		template<class EdgeDescriptor, class Graph>
-		void examine_edge( EdgeDescriptor e, Graph& g )
+		template<class VertexDescriptor, class Graph>
+		void start_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "[PRECOMPUTE] examine_edge "
-					  << get( vertex_properties, g )[source(e, g)]
-					  << " TO "
-					  << get( vertex_properties, g )[target(e, g)]
-			          << std::endl;
+			std::cout << "[PRECOMPUTE] start_vertex "
+			          << get( vertex_properties, g )[v] << std::endl;
+		}
 
-			core::ProcessNode * sourceNode = get( vertex_properties, g )[source(e, g)].processNode();
-			core::ProcessNode * targetNode = get( vertex_properties, g )[target(e, g)].processNode();
-			targetNode->connect( *sourceNode );
+		template<class VertexDescriptor, class Graph>
+		void discover_vertex( VertexDescriptor v, Graph& g )
+		{
+			std::cout << "[PRECOMPUTE] discover_vertex "
+			          << get( vertex_properties, g )[v] << std::endl;
 		}
 
 		template<class VertexDescriptor, class Graph>
@@ -46,7 +72,7 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 		{
 			std::cout << "[PRECOMPUTE] finish_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
-			//get( vertex_properties, g )[v].processNode()->preCompute_finish(_options);
+			get( vertex_properties, g )[v].processNode()->preProcess_finish(_options);
 		}
 
 	private:

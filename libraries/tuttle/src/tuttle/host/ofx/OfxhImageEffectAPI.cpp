@@ -287,6 +287,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 		throw core::exception::LogicError( "The plugin doesn't support the context " + context + "." );
 	}
 	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, *desc, context );
+	instance->createInstanceAction();
 	return instance;
 }
 

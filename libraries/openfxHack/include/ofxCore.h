@@ -48,7 +48,12 @@ extern "C" {
 #ifdef _MSC_VER
  #define OfxExport extern __declspec( dllexport )
 #elif defined( __GNUC__ ) // Add compilator definition here...
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
  #define OfxExport __attribute__ ((visibility("default")))
+#else
+ #define OfxExport
+ #warning "OfxExport can't be correctly setted because your gcc version is too old. The plugin may not compile with the option fvisible=hidden."
+#endif
 #else
  #error "OfxExport not defined for this compilator..."
 #endif

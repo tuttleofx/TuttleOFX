@@ -71,12 +71,19 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		processOptions._renderRoI = renderWindow;
 		processOptions._renderScale = renderScale;
 
+		TCOUT("---------------------------------------- connectClips");
+		core::dfs_connectClips_visitor connectClipsVisitor(processOptions);
+		optimizedGraph.dfs(connectClipsVisitor);
+
+		TCOUT("---------------------------------------- precompute");
 		core::dfs_preCompute_visitor preComputeVisitor(processOptions);
 		optimizedGraph.dfs(preComputeVisitor);
 
+		TCOUT("---------------------------------------- compute");
 		core::dfs_compute_visitor computeVisitor(processOptions);
 		optimizedGraph.dfs(computeVisitor);
 
+		TCOUT("---------------------------------------- postcompute");
 		core::dfs_postCompute_visitor postComputeVisitor(processOptions);
 		optimizedGraph.dfs(postComputeVisitor);
 	}
