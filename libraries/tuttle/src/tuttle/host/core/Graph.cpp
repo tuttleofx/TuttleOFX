@@ -2,6 +2,7 @@
 #include "ProcessGraph.hpp"
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
+#include <boost/foreach.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -123,7 +124,13 @@ void Graph::unconnectNode( const ImageEffectNode& node ) throw( exception::Logic
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
 	ProcessGraph process( *this );
-	process.compute( nodes, tBegin, tEnd );
+
+	std::list<InternalGraph::VertexDescriptor> outputs;
+	BOOST_FOREACH(std::string s, nodes){
+		outputs.push_back(_nodesDescriptor[s]);
+		std::cout << "MY OUTPUT " << s << std::endl;
+	}
+	process.compute( outputs, tBegin, tEnd );
 }
 
 void Graph::dumpToStdOut()

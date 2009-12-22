@@ -17,7 +17,6 @@
 #include <boost/graph/transpose_graph.hpp>
 #include <boost/graph/dominator_tree.hpp>
 
-
 // definition of basic boost::graph properties
 enum vertex_properties_t { vertex_properties };
 enum edge_properties_t { edge_properties };
@@ -43,7 +42,8 @@ public:
 	    boost::listS,               // vertex container
 	    boost::bidirectionalS,      // directed graph
 	    boost::property<boost::vertex_index_t, int,
-	                    boost::property<vertex_properties_t, VERTEX> >,
+						//boost::property<boost::vertex_color_t, boost::default_color_type,
+	                    boost::property<vertex_properties_t, VERTEX > >,
 	    boost::property<edge_properties_t, EDGE>
 	    > GraphContainer;
 
@@ -197,15 +197,35 @@ public:
 	}
 
 	template<class Visitor>
-	void dfs(Visitor vis)
+	void dfs(Visitor vis, const VertexDescriptor& vroot)
 	{
-		boost::depth_first_search( _graph, visitor( vis ));
+		std::vector<boost::default_color_type > colormap(boost::num_vertices(_graph));
+		boost::depth_first_visit( _graph
+				, vroot
+				, vis
+				, boost::make_iterator_property_map(colormap.begin(), boost::get(boost::vertex_index, _graph))
+		);
+		/*
+		vertex_iter uItr;
+		vertex_iter uEnd;
+		boost::tie( uItr, uEnd ) = vertices( _graph );
+		++uItr;
+		++uItr;
+		const VertexDescriptor& vroot = *uItr;
+
+		std::vector<boost::default_color_type > colormap(boost::num_vertices(_graph));
+		boost::depth_first_visit( _graph
+				, vroot
+				, vis
+				, boost::make_iterator_property_map(colormap.begin(), boost::get(boost::vertex_index, _graph))
+		);
+		*/
 	}
 
-	void dfs()
+	template<class Visitor>
+	void dfs(Visitor vis)
 	{
-		test_dfs_visitor vis;
-		boost::depth_first_search( _graph, visitor( vis ));
+		boost::depth_first_search( _graph, visitor(vis) );
 	}
 
 	void bfs( const VertexDescriptor& vroot )

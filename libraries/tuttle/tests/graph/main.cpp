@@ -77,7 +77,10 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	core::Graph g;
 	core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
-	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
+	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+
+/*	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
@@ -85,6 +88,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	core::Graph::Node& merge1 = g.createNode( "fr.hd3d.tuttle.merge" );
 	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 	core::Graph::Node& write2  = g.createNode( "fr.hd3d.tuttle.dpxwriter" );
+*/
 
 	TCOUT("__________________________________________________2");
 	// Setup parameters
@@ -96,17 +100,18 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	TCOUT("__________________________________________________3");
 	g.connect( read1, invert1 );
-	g.connect( invert1, invert2 );
-	g.connect( invert2, invert3 );
-	g.connect( invert3, write1 );
-	g.connect( invert1, invert4 );
-	g.connect( invert4, write2 );
+	//g.connect( invert1, invert2 );
+	//g.connect( invert2, invert3 );
+	//g.connect( invert3, write1 );
+	//g.connect( invert1, invert4 );
+	//g.connect( invert4, write2 );
+	g.connect( invert1, write1 );
 
 	//	core::ProcessGraph processGraph(g);
 
 	TCOUT("__________________________________________________4");
 	std::list<std::string> outputs;
-	outputs.push_back( write1.getName() );
+	outputs.push_back( read1.getName() );
 	g.compute( outputs, 0, 1 );
 
 	TCOUT("__________________________________________________5");

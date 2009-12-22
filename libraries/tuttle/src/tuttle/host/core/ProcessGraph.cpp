@@ -5,7 +5,6 @@
 #include <boost/foreach.hpp>
 
 
-
 //TODO: delete these include
 #include <tuttle/host/core/Param.hpp>
 #include <tuttle/host/core/ClipImage.hpp>
@@ -39,7 +38,7 @@ void ProcessGraph::relink()
 	}
 }
 
-void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
+void ProcessGraph::compute( const std::list<Graph::Descriptor> outputs, const int tBegin, const int tEnd )
 {
 	//graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "test.dot" );
 
@@ -47,7 +46,6 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	const int numFramesToRender = tEnd - tBegin;
 	OfxPointD renderScale = { 1.0, 1.0 };
 	OfxRectI renderWindow = { 0, 0,	123, 123 };
-
 
 	//--- BEGIN RENDER
 	ProcessOptions processOptions;
@@ -62,30 +60,35 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	}
 
 	//--- RENDER
+	// at each frame
 	for( int t = 0; t < numFramesToRender; ++t )
 	{
-		Graph::InternalGraph optimizedGraph(_graph);
+		// for each outputs
+		BOOST_FOREACH( Graph::Descriptor outputNode, outputs )
+		{
+			Graph::InternalGraph optimizedGraph(_graph);
 
-		processOptions._time = t;
-		processOptions._field = kOfxImageFieldBoth;
-		processOptions._renderRoI = renderWindow;
-		processOptions._renderScale = renderScale;
+			processOptions._time = t;
+			processOptions._field = kOfxImageFieldBoth;
+			processOptions._renderRoI = renderWindow;
+			processOptions._renderScale = renderScale;
 
-		TCOUT("---------------------------------------- connectClips");
-		core::dfs_connectClips_visitor connectClipsVisitor(processOptions);
-		optimizedGraph.dfs(connectClipsVisitor);
+			TCOUT("---------------------------------------- connectClips");
+			core::dfs_connectClips_visitor connectClipsVisitor(processOptions);
+			optimizedGraph.dfs(connectClipsVisitor);
 
-		TCOUT("---------------------------------------- precompute");
-		core::dfs_preCompute_visitor preComputeVisitor(processOptions);
-		optimizedGraph.dfs(preComputeVisitor);
+			TCOUT("---------------------------------------- precompute");
+			core::dfs_preCompute_visitor preComputeVisitor(processOptions);
+			optimizedGraph.dfs(preComputeVisitor, outputNode);
 
-		TCOUT("---------------------------------------- compute");
-		core::dfs_compute_visitor computeVisitor(processOptions);
-		optimizedGraph.dfs(computeVisitor);
+			TCOUT("---------------------------------------- compute");
+			core::dfs_compute_visitor computeVisitor(processOptions);
+			optimizedGraph.dfs(computeVisitor);
 
-		TCOUT("---------------------------------------- postcompute");
-		core::dfs_postCompute_visitor postComputeVisitor(processOptions);
-		optimizedGraph.dfs(postComputeVisitor);
+			TCOUT("---------------------------------------- postcompute");
+			core::dfs_postCompute_visitor postComputeVisitor(processOptions);
+			optimizedGraph.dfs(postComputeVisitor);
+		}
 	}
 
 
@@ -98,6 +101,7 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		processOptions._renderScale = renderScale;
 		p.second->end(processOptions);
 	}
+
 }
 
 }
