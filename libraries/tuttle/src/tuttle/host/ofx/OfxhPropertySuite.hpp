@@ -712,7 +712,6 @@ public:
 	/// set a particular double property
 	void setIntPropertyN( const std::string& property, const int* v, int N )
 	{
-		TCOUT("setIntPropertyN prop:"<<property);
 		setPropertyN<OfxhIntValue >( property, N, v );
 	}
 

@@ -14,9 +14,9 @@
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/copy.hpp>
+#include <boost/graph/transpose_graph.hpp>
 #include <boost/graph/dominator_tree.hpp>
 
-#include <tuttle/host/core/ProcessNode.hpp>
 
 // definition of basic boost::graph properties
 enum vertex_properties_t { vertex_properties };
@@ -199,19 +199,26 @@ public:
 	template<class Visitor>
 	void dfs(Visitor vis)
 	{
-		boost::depth_first_search( _graph, visitor( vis ) );
+		boost::depth_first_search( _graph, visitor( vis ));
 	}
 
 	void dfs()
 	{
 		test_dfs_visitor vis;
-		boost::depth_first_search( _graph, visitor( vis ) );
+		boost::depth_first_search( _graph, visitor( vis ));
 	}
 
 	void bfs( const VertexDescriptor& vroot )
 	{
 		test_bfs_visitor vis;
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
+	}
+
+	void transpose()
+	{
+		GraphContainer g;
+		boost::transpose_graph(_graph, g);
+		_graph = g;
 	}
 
 	void toDominatorTree()

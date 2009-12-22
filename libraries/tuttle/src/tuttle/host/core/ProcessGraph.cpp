@@ -21,6 +21,7 @@ ProcessGraph::ProcessGraph( Graph& graph )
 , _nodes( graph.getNodes() )
 , _instanceCount( graph.getInstanceCount() )
 {
+	_graph.transpose();
 	relink();
 }
 
@@ -48,54 +49,43 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	OfxRectI renderWindow = { 0, 0,	123, 123 };
 
 
-	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
-
-		p.second->createInstanceAction();
-		p.second->getClipPreferences();
-		p.second->dumpToStdOut();
-
-//		ClipImage& outputClip = dynamic_cast<ClipImage& >( p.second->getClip(kOfxImageEffectOutputClipName) );
-//		outputClip.setPixelDepth( kOfxBitDepthByte );
-//		outputClip.setComponents( kOfxImageComponentRGBA );
-	}
-/*
-	// Setup parameters
-	EffectInstance& firstEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGReader1"));
-	EffectInstance& lastEffect = dynamic_cast<EffectInstance&>(_nodes.at("PNGWriterHd3d1"));
-	firstEffect.getParam("Input filename").set("input.png");
-	lastEffect.getParam("Output filename").set("output.png");
-	firstEffect.paramInstanceChangedAction("Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	lastEffect.paramInstanceChangedAction("Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-*/
-
-	// Connecting nodes
-	core::dfs_connect_visitor connectVisitor;
-	_graph.dfs(connectVisitor);
-
-
 	//--- BEGIN RENDER
 	ProcessOptions processOptions;
+	processOptions._startFrame = tBegin;
+	processOptions._endFrame = tEnd;
+	processOptions._step = 1;
+	processOptions._interactive = false;
+	processOptions._renderScale = renderScale;
+
 	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
-		processOptions._startFrame = tBegin;
-		processOptions._endFrame = tEnd;
-		processOptions._step = 1;
-		processOptions._interactive = false;
-		processOptions._renderScale = renderScale;
 		p.second->begin(processOptions);
 	}
-
 
 	//--- RENDER
 	for( int t = 0; t < numFramesToRender; ++t )
 	{
-		core::dfs_compute_visitor computeVisitor(processOptions);
+		Graph::InternalGraph optimizedGraph(_graph);
+
 		processOptions._time = t;
 		processOptions._field = kOfxImageFieldBoth;
 		processOptions._renderRoI = renderWindow;
 		processOptions._renderScale = renderScale;
-		Graph::InternalGraph optimizedGraph(_graph);
-		//optimizedGraph.toDominatorTree();
+
+		TCOUT("---------------------------------------- connectClips");
+		core::dfs_connectClips_visitor connectClipsVisitor(processOptions);
+		optimizedGraph.dfs(connectClipsVisitor);
+
+		TCOUT("---------------------------------------- precompute");
+		core::dfs_preCompute_visitor preComputeVisitor(processOptions);
+		optimizedGraph.dfs(preComputeVisitor);
+
+		TCOUT("---------------------------------------- compute");
+		core::dfs_compute_visitor computeVisitor(processOptions);
 		optimizedGraph.dfs(computeVisitor);
+
+		TCOUT("---------------------------------------- postcompute");
+		core::dfs_postCompute_visitor postComputeVisitor(processOptions);
+		optimizedGraph.dfs(postComputeVisitor);
 	}
 
 

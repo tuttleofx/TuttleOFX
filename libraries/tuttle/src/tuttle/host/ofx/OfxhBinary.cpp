@@ -28,6 +28,7 @@
  */
 
 #include "OfxhBinary.hpp"
+#include "tuttle/host/core/Exception.hpp"
 
 namespace tuttle {
 namespace host {
@@ -117,7 +118,7 @@ void* OfxhBinary::findSymbol( const std::string& symbol )
 	}
 	else
 	{
-		return 0;
+		throw core::exception::LogicError( "Symbol '"+symbol+"' not found in plugin file: '"+_binaryPath+"'" );
 	}
 }
 

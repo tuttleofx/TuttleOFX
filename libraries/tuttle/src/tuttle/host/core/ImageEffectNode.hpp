@@ -66,6 +66,7 @@ public:
 
 	void begin(const ProcessOptions & processOptions)
 	{
+//		createInstanceAction();
 		getClipPreferences();
 		beginRenderAction(	processOptions._startFrame
 						,	processOptions._endFrame
@@ -74,7 +75,12 @@ public:
 						,	processOptions._renderScale);
 	}
 
-	void preProcess(const ProcessOptions & processOptions){
+	void preProcess_initialize(const ProcessOptions & processOptions)
+	{
+
+	}
+	void preProcess_finish(const ProcessOptions & processOptions)
+	{
 
 	}
 
@@ -86,7 +92,9 @@ public:
 					,	processOptions._renderScale);
 	}
 
-	void postProcess(const ProcessOptions & processOptions){}
+	void postProcess(const ProcessOptions & processOptions)
+	{
+	}
 
 	void end(const ProcessOptions & processOptions)
 	{
