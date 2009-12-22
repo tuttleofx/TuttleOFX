@@ -80,8 +80,11 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& invert4 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& merge1 = g.createNode( "fr.hd3d.tuttle.merge" );
 	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+	core::Graph::Node& write2  = g.createNode( "fr.hd3d.tuttle.dpxwriter" );
 
 	TCOUT("__________________________________________________2");
 	// Setup parameters
@@ -94,7 +97,10 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	TCOUT("__________________________________________________3");
 	g.connect( read1, invert1 );
 	g.connect( invert1, invert2 );
-	g.connect( invert2, write1 );
+	g.connect( invert2, invert3 );
+	g.connect( invert3, write1 );
+	g.connect( invert1, invert4 );
+	g.connect( invert4, write2 );
 
 	//	core::ProcessGraph processGraph(g);
 
