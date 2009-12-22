@@ -153,7 +153,7 @@ void maxmin( const View& view, T& max, T& min )
 					min = val;
 				}
 			}
-			view_it++;
+			++view_it;
 		}
 	}
 }
@@ -193,8 +193,8 @@ D_VIEW& normalize( const S_VIEW& src, D_VIEW& dst, const T a, const T b )
 				{
 					( *dst_it )[c] = (dPix_t)( ( ( *src_it )[c] - fm ) / ( fM - fm ) * ( b - a ) + a );
 				}
-				dst_it++;
-				src_it++;
+				++dst_it;
+				++src_it;
 			}
 		}
 	}
@@ -222,8 +222,8 @@ D_VIEW& multiply( const S_VIEW& src, D_VIEW& dst, const T factor )
 			{
 				( *dst_it )[c] = (dPix_t)( ( *src_it )[c] * factor );
 			}
-			src_it++;
-			dst_it++;
+			++src_it;
+			++dst_it;
 		}
 	}
 	return dst;

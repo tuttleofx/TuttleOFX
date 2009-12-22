@@ -154,14 +154,16 @@ OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstra
 	_b->_binary.ref();
 	_op                          = 0;
 	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_b->_binary.findSymbol( "OfxGetPlugin" );
-	if( getPlug )
+	if( !getPlug )
 	{
-		_op = getPlug( p->getIndex() );
-		if( _op )
-		{
-			_op->setHost( host->getHandle() );
-		}
-	}
+            throw core::exception::LogicError( "Symbol 'OfxGetPlugin' not found." );
+        }
+        _op = getPlug( p->getIndex() );
+        if( !_op )
+        {
+            throw core::exception::LogicError( "Plugin not found at index : " ); // p->getIndex()
+        }
+        _op->setHost( host->getHandle() );
 }
 
 OfxhPluginHandle::~OfxhPluginHandle()
