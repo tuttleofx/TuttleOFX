@@ -70,11 +70,24 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
+
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	assert( filename );
 	filename->setScriptName( "filename" );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+
+	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kOutputComponents );
+	assert( outComponents );
+	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kOutputRedIs );
+	assert( outRedIs );
+	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kOutputGreenIs );
+	assert( outGreenIs );
+	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kOutputBlueIs );
+	assert( outBlueIs );
+	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kOutputAlphaIs );
+	assert( outAlphaIs );
 }
 
 /**

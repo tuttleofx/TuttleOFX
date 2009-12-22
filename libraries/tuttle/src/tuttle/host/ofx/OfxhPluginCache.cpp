@@ -154,10 +154,6 @@ OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstra
 	_b->_binary.ref();
 	_op                          = 0;
 	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_b->_binary.findSymbol( "OfxGetPlugin" );
-	if( ! getPlug )
-	{
-		throw core::exception::LogicError( "Can't found Symbol 'OfxGetPlugin' in plugin '"+_p->getIdentifier()+"'" );
-	}
 	_op = getPlug( p->getIndex() );
 	if( !_op )
 	{

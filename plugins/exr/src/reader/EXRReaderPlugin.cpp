@@ -4,6 +4,7 @@
 
 #include <ImfInputFile.h>
 #include <ImathBox.h>
+#include <ImfChannelList.h>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -24,6 +25,12 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 {
 	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kInputFilename );
+	_outComponents = fetchChoiceParam( kOutputComponents );
+	_vChannelChoice.push_back( fetchChoiceParam( kOutputRedIs ) );
+	_vChannelChoice.push_back( fetchChoiceParam( kOutputGreenIs ) );
+	_vChannelChoice.push_back( fetchChoiceParam( kOutputBlueIs ) );
+	_vChannelChoice.push_back( fetchChoiceParam( kOutputAlphaIs ) );
+
 	std::string sFilepath;
 	_filepath->getValue( sFilepath );
 	if( exists( sFilepath ) )
@@ -104,13 +111,78 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		{
 			// read dims
 			InputFile in (sFilepath.c_str());
-			const Header &h = in.header();
+			const Header& h = in.header();
 			const Imath::V2i dataWindow = h.dataWindow().size();
 			_imageDims.x = dataWindow.x + 1;
 			_imageDims.y = dataWindow.y + 1;
+			const ChannelList& cl = h.channels();
+			int nc = 0;
+
+			_outComponents->resetOptions();
+			// Unhide output component type setup
+			_outComponents->setIsSecret(false);
+			// Hide output channel selection till we don't select a channel.
+			for( size_t i = 0; i < _vChannelChoice.size(); ++i )
+				_vChannelChoice[i]->setIsSecret(true);
+			_vChannelNames.clear();
+			for ( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
+			{
+				_vChannelNames.push_back(it.name());
+				for ( size_t j = 0; j < _vChannelChoice.size(); ++j )
+					_vChannelChoice[j]->appendOption( it.name() );
+				++nc;
+				switch( nc ) {
+					case 1:
+					{
+						_outComponents->appendOption( "Gray" );
+						for ( size_t j = 0; j < _vChannelChoice.size(); ++j )
+							_vChannelChoice[j]->setValue( 0 );
+						break;
+					}
+					case 3:
+					{
+						_outComponents->appendOption( "RGB" );
+						for ( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+							_vChannelChoice[j]->setValue( j );
+						_vChannelChoice[3]->setValue( 0 );
+						break;
+					}
+					case 4:
+					{
+						_outComponents->appendOption( "RGBA" );
+						for ( size_t j = 0; j < _vChannelChoice.size(); ++j )
+							_vChannelChoice[j]->setValue( j );
+						break;
+					}
+				}
+			}
 		} else {
 			_imageDims.x = 0;
 			_imageDims.y = 0;
+		}
+	}
+	else if ( paramName == kOutputComponents ) {
+		switch(_outComponents->getValue()) {
+			case 0:
+			{
+				for ( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+					_vChannelChoice[j]->setIsSecret( false );
+				_vChannelChoice[3]->setIsSecret( true );
+				break;
+			}
+			case 1:
+			{
+				for ( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+					_vChannelChoice[j]->setIsSecret( true );
+				_vChannelChoice[3]->setIsSecret( false );
+				break;
+			}
+			case 2:
+			{
+				for ( size_t j = 0; j < _vChannelChoice.size(); ++j )
+					_vChannelChoice[j]->setIsSecret( true );
+				break;
+			}
 		}
 	}
 }

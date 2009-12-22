@@ -2,8 +2,11 @@
 #define EXR_READER_PROCESS_HPP
 
 #include <ImfInputFile.h>
-#include <ImathBox.h>
+#include <ImfChannelList.h>
+#include <ImfArray.h>
+#include <ImathVec.h>
 
+#include "../half/gilHalf.hpp"
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -12,12 +15,13 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
+#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace exr {
+namespace exr    {
 namespace reader {
 
 /**
@@ -31,10 +35,13 @@ class EXRReaderProcess : public tuttle::plugin::ImageGilProcessor<View>,
 protected:
 	typedef typename View::value_type value_t;
 	OFX::StringParam*   _filepath;                      ///< File path
+	OFX::ChoiceParam*   _outComponents;                 ///< Components list
 	EXRReaderPlugin&    _plugin;                        ///< Rendering plugin
 	boost::scoped_ptr<Imf::InputFile>	_exrImage;		///< Pointer to an exr image
-	template<class T, class DST_V>
-	void bitStreamToView(DST_V & dst, const int nc, const int channelSize);
+
+	void channelCopy(Imf::InputFile & input, Imf::FrameBuffer & frameBuffer,
+					 View & dst, int w, int h, int n, int left);
+	void sliceCopy(const Imf::Slice *slice, View & dst, int n);
 
 public:
 	EXRReaderProcess<View>( EXRReaderPlugin & instance );

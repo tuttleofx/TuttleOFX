@@ -16,7 +16,14 @@ namespace plugin {
 namespace exr {
 namespace reader {
 
+static const std::string kOutputComponents   = "Output components";
+static const std::string kOutputRedIs        = "Red is";
+static const std::string kOutputGreenIs      = "Green is";
+static const std::string kOutputBlueIs       = "Blue is";
+static const std::string kOutputAlphaIs      = "Alpha is";
+
 static const std::string kInputFilename      = "Input filename";
+static const std::string kSlice				 = "Channel";
 
 const static std::string kEXRReaderHelpButton = "Help";
 

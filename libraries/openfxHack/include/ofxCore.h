@@ -45,7 +45,7 @@ extern "C" {
  * This macro is to be used before any symbol that is to be
  * exported from a plug-in. This is OS/compiler dependent.
  */
-#ifdef _MSC_VER
+#if (defined(_MSC_VER) || defined(__MINGW32__))
  #define OfxExport extern __declspec( dllexport )
 #elif defined( __GNUC__ ) // Add compilator definition here...
 #if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)

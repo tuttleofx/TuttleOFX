@@ -31,6 +31,7 @@
 #define TUTTLE_EFFECT_INSTANCE_H
 
 #include "ProcessNode.hpp"
+#include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhImageEffect.hpp>
 
 #include <cassert>
@@ -60,6 +61,8 @@ public:
 
 	void connect(const ProcessNode& sourceEffect);
 
+	ofx::attribute::OfxhClipImage& getOutputClip() { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip(kOfxImageEffectOutputClipName) ); }
+	const ofx::attribute::OfxhClipImage& getOutputClip() const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip(kOfxImageEffectOutputClipName) ); }
 
 	void begin(const ProcessOptions & processOptions)
 	{
