@@ -16,6 +16,7 @@ namespace plugin {
 namespace exr {
 namespace reader {
 
+enum ECompType { eGray, eRGB, eRGBA };
 static const std::string kOutputComponents   = "Output components";
 static const std::string kOutputRedIs        = "Red is";
 static const std::string kOutputGreenIs      = "Green is";

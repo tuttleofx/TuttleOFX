@@ -11,7 +11,7 @@
 #include "EXRWriterProcess.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
-//#include <half/gilHalf.hpp>
+#include "../half/gilHalf.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -42,7 +42,6 @@ EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin &instance )
 	_filepath = instance.fetchStringParam( kOutputFilename );
 	_bitDepth = instance.fetchChoiceParam( kParamBitDepth );
 	_componentsType = instance.fetchChoiceParam( kParamComponentsType );
-	_compressed = instance.fetchBooleanParam( kParamCompressed );
 }
 
 template<class View>
@@ -109,74 +108,80 @@ void EXRWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
                                   procWindow.x2 - procWindow.x1,
                                   procWindow.y2 - procWindow.y1 );
 		std::string filepath;
-		int bitDepth, compType;
 		this->_filepath->getValue( filepath );
-		int packing = _compressed->getValue() == false;
-		_bitDepth->getValue(bitDepth);
-		_componentsType->getValue(compType);
-		switch(bitDepth)
+
+		////// TODO IMPORTANT !!!! Single thread the process !!!!!
+		switch( (EBitDepth)_bitDepth->getValue() )
 		{
-			case 0: {
-				switch(compType) {
-					case 0: {
+			case eHalfFloat:
+			{
+				switch( (ECompType)_componentsType->getValue() )
+				{
+					case eGray:
+					{
+//						writeImage<gray16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
 						break;
 					}
-					case 1: {
+					case eRGB:
+					{
+						writeImage<rgb16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
 						break;
 					}
-					case 2: {
+					case eRGBA:
+					{
+						writeImage<rgba16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
 						break;
 					}
 				}
 				break;
 			}
-			case 1: {
-				switch(compType) {
-					case 0:
-//						writeImage<rgb12_image_t>( src, filepath, 12, tuttle::io::ExrImage::eCompTypeR12G12B12, packing );
-						throw(PluginException("EXR Writer: Unsupported 12 bits rgb image..."));
+			case eFloat:
+			{
+				switch( (ECompType)_componentsType->getValue() )
+				{
+					case eGray:
+					{
+//						writeImage<gray32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
-					case 1:
-//						writeImage<rgba12_image_t>( src, filepath, 12, tuttle::io::ExrImage::eCompTypeR12G12B12A12, packing );
-						throw(PluginException("EXR Writer: Unsupported 12 bits rgba image..."));
+					}
+					case eRGB:
+					{
+						writeImage<rgb32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
-					case 2:
-//						writeImage<abgr12_image_t>( src, filepath, 12, tuttle::io::ExrImage::eCompTypeA12B12G12R12, packing );
-						throw(PluginException("EXR Writer: Unsupported 12 bits abgr image..."));
+					}
+					case eRGBA:
+					{
+						writeImage<rgba32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
+					}
 				}
 				break;
 			}
-			case 2: {
-				switch(compType) {
-					case 0:
-//						writeImage<rgb10_packed_image_t>( src, filepath, 10, tuttle::io::ExrImage::eCompTypeR10G10B10, packing );
-						throw(PluginException("EXR Writer: Unsupported 10 bits rgb image..."));
+			case eInt32:
+			{
+				switch( (ECompType)_componentsType->getValue() )
+				{
+					case eGray:
+					{
+//						writeImage<gray32_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
-					case 1:
-						// Unsupported
-//						writeImage<rgba10_view_t>( src, filepath, 10, tuttle::io::ExrImage::eCompTypeR10G10B10A10, packing );
-						throw(PluginException("EXR Writer: Unsupported 10 bits rgba image..."));
+					}
+					case eRGB:
+					{
+						writeImage<rgb32f_pixel_t>(this->_srcView, filepath, Imf::UINT);
 						break;
-					case 2:
-//						writeImage<abgr10_view_t>( src, filepath, 10, tuttle::io::ExrImage::eCompTypeA10B10G10R10, packing );
-						throw(PluginException("EXR Writer: Unsupported 10 bits abgr image..."));
+					}
+					case eRGBA:
+					{
+						writeImage<rgba32_pixel_t>(this->_srcView, filepath, Imf::UINT);
 						break;
-				}
-				break;
-			}
-			case 3: {
-				switch(compType) {
-					case 0:
-						break;
-					case 1:
-						break;
-					case 2:
-						break;
+					}
 				}
 				break;
 			}
 		}
+		// @todo: This is sometimes not neccessary... Checkbox it.
+		copy_and_convert_pixels(src, dst);
     }
     catch( PluginException err )
     {
@@ -200,14 +205,98 @@ void EXRWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 
 //// TODO: FINISH REFACTORING !
 template<class View>
-template<class CONV_IMAGE>
-void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, int bitDepth, int eCompType, int packing ) throw( tuttle::plugin::PluginException )
+template<class Pixel>
+void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException )
 {
+	size_t bitsTypeSize = 0;
+	typedef image<Pixel, true> image_t;
+	typedef typename image_t::view_t view_t;
+	image_t img(src.width(), src.height());
+	view_t dvw(view(img));
 	View flippedView = flipped_up_down_view( src );
-	CONV_IMAGE img(src.width(), src.height());
-	typename CONV_IMAGE::view_t vw(view(img));
-	copy_and_convert_pixels(flippedView, vw);
-	boost::uint8_t *pData = (boost::uint8_t*)boost::gil::interleaved_view_get_raw_data(vw);
+	copy_and_convert_pixels(flippedView, dvw);
+	Imf::Header header (src.width(), src.height());
+	switch(pixType) {
+		case Imf::HALF:
+			bitsTypeSize = sizeof(half);
+			break;
+		case Imf::FLOAT:
+			bitsTypeSize = sizeof(float);
+			break;
+		case Imf::UINT:
+			bitsTypeSize = sizeof(boost::uint32_t);
+			break;
+		default:
+			break;
+	}
+	switch(dvw.num_channels()) {
+		// Gray
+		case 1:
+		{
+			header.channels().insert ("Y", Imf::Channel (pixType));
+			break;
+		}
+		case 3:
+		{
+			header.channels().insert ("R", Imf::Channel (pixType));
+			header.channels().insert ("G", Imf::Channel (pixType));
+			header.channels().insert ("B", Imf::Channel (pixType));
+			break;
+		}
+		case 4:
+		{
+			header.channels().insert ("R", Imf::Channel (pixType));
+			header.channels().insert ("G", Imf::Channel (pixType));
+			header.channels().insert ("B", Imf::Channel (pixType));
+			header.channels().insert ("A", Imf::Channel (pixType));
+			break;
+		}
+		default:
+			return;
+	}
+
+	Imf::OutputFile file ( filepath.c_str(), header );
+	Imf::FrameBuffer frameBuffer;
+
+	switch(dvw.num_channels()) {
+		// Gray
+		case 1:
+		{
+			char *pixelsY = (char *)boost::gil::planar_view_get_raw_data (dvw, 0);
+			frameBuffer.insert("Y", Imf::Slice(pixType, pixelsY, bitsTypeSize, bitsTypeSize * src.width()));
+			break;
+		}
+		// RGB
+		case 3:
+		{
+			char *pixelsR = (char *)boost::gil::planar_view_get_raw_data (dvw, 0);
+			char *pixelsG = (char *)boost::gil::planar_view_get_raw_data (dvw, 1);
+			char *pixelsB = (char *)boost::gil::planar_view_get_raw_data (dvw, 2);
+			frameBuffer.insert("R", Imf::Slice(pixType, pixelsR, bitsTypeSize, bitsTypeSize * src.width()));
+			frameBuffer.insert("G", Imf::Slice(pixType, pixelsG, bitsTypeSize, bitsTypeSize * src.width()));
+			frameBuffer.insert("B", Imf::Slice(pixType, pixelsB, bitsTypeSize, bitsTypeSize * src.width()));
+			break;
+		}
+		// RGBA
+		case 4:
+		{
+			char *pixelsR = (char *)boost::gil::planar_view_get_raw_data (dvw, 0);
+			char *pixelsG = (char *)boost::gil::planar_view_get_raw_data (dvw, 1);
+			char *pixelsB = (char *)boost::gil::planar_view_get_raw_data (dvw, 2);
+			char *pixelsA = (char *)boost::gil::planar_view_get_raw_data (dvw, 3);
+			frameBuffer.insert("R", Imf::Slice(pixType, pixelsR, bitsTypeSize, bitsTypeSize * src.width()));
+			frameBuffer.insert("G", Imf::Slice(pixType, pixelsG, bitsTypeSize, bitsTypeSize * src.width()));
+			frameBuffer.insert("B", Imf::Slice(pixType, pixelsB, bitsTypeSize, bitsTypeSize * src.width()));
+			frameBuffer.insert("A", Imf::Slice(pixType, pixelsA, bitsTypeSize, bitsTypeSize * src.width()));
+			break;
+		}
+		default:
+			throw(PluginException("ExrWriter: incompatible image type"));
+			break;
+	}
+	file.setFrameBuffer ( frameBuffer );
+	// Finalize output
+	file.writePixels ( src.height() );
 }
 
 }

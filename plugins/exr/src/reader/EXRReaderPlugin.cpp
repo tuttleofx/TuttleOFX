@@ -127,14 +127,16 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 			_vChannelNames.clear();
 			for ( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
 			{
-				_vChannelNames.push_back(it.name());
+				_vChannelNames.push_back( it.name() );
 				for ( size_t j = 0; j < _vChannelChoice.size(); ++j )
 					_vChannelChoice[j]->appendOption( it.name() );
 				++nc;
-				switch( nc ) {
+				switch( nc )
+				{
 					case 1:
 					{
 						_outComponents->appendOption( "Gray" );
+						_outComponents->setValue(0);
 						for ( size_t j = 0; j < _vChannelChoice.size(); ++j )
 							_vChannelChoice[j]->setValue( 0 );
 						break;
@@ -142,16 +144,20 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 					case 3:
 					{
 						_outComponents->appendOption( "RGB" );
-						for ( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
-							_vChannelChoice[j]->setValue( j );
+						_outComponents->setValue(1);
+						size_t nc = _vChannelChoice.size() - 1;
+						for ( size_t j = 0; j < nc; ++j )
+							_vChannelChoice[nc - j - 1]->setValue( j );
 						_vChannelChoice[3]->setValue( 0 );
 						break;
 					}
 					case 4:
 					{
 						_outComponents->appendOption( "RGBA" );
-						for ( size_t j = 0; j < _vChannelChoice.size(); ++j )
-							_vChannelChoice[j]->setValue( j );
+						_outComponents->setValue(2);
+						size_t nc = _vChannelChoice.size();
+						for ( size_t j = 0; j < nc; ++j )
+							_vChannelChoice[nc - j - 1]->setValue( j );
 						break;
 					}
 				}

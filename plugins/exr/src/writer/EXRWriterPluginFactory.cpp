@@ -53,6 +53,7 @@ EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
     desc.setSingleInstance( false );
     desc.setHostFrameThreading( false );
     desc.setSupportsMultiResolution( false );
+	desc.setRenderThreadSafety(OFX::eRenderInstanceSafe);
     desc.setSupportsTiles( kSupportTiles );
     desc.setTemporalClipAccess( kSupportTemporalClipAccess );
     desc.setRenderTwiceAlways( false );
@@ -87,22 +88,17 @@ EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamBitDepth );
 	bitDepth->setScriptName( "bitDepth" );
-	bitDepth->appendOption( "16 bits output" );
-	bitDepth->appendOption( "12 bits output" );
-	bitDepth->appendOption( "10 bits output" );
-	bitDepth->appendOption( "8 bits output" );
+	bitDepth->appendOption( "half float output" );
+	bitDepth->appendOption( "float output" );
+	bitDepth->appendOption( "32 bits output" );
 	bitDepth->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
 	componentsType->setScriptName( "componentsType" );
+	componentsType->appendOption( "gray  output" );
 	componentsType->appendOption( "rgb  output" );
 	componentsType->appendOption( "rgba output" );
-	componentsType->appendOption( "abgr output" );
-	componentsType->setDefault( 1 );
-
-	OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
-	compressed->setLabels( "Compressed", "Compressed", "Remove unused bits (bit streaming)" );
-	compressed->setDefault( false );
+	componentsType->setDefault( 2 );
 
 	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
 	renderButton->setScriptName( "renderButton" );

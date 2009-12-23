@@ -15,7 +15,6 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
@@ -29,8 +28,9 @@ namespace reader {
  *
  */
 template<class View>
-class EXRReaderProcess : public tuttle::plugin::ImageGilProcessor<View>,
-	public tuttle::plugin::Progress
+class EXRReaderProcess
+: public tuttle::plugin::ImageGilProcessor<View>
+, public tuttle::plugin::Progress
 {
 protected:
 	typedef typename View::value_type value_t;
@@ -39,9 +39,11 @@ protected:
 	EXRReaderPlugin&    _plugin;                        ///< Rendering plugin
 	boost::scoped_ptr<Imf::InputFile>	_exrImage;		///< Pointer to an exr image
 
+	template<class DView>
 	void channelCopy(Imf::InputFile & input, Imf::FrameBuffer & frameBuffer,
-					 View & dst, int w, int h, int n, int left);
-	void sliceCopy(const Imf::Slice *slice, View & dst, int n);
+					 DView & dst, int w, int h, int n, int left, int nc);
+	template<class DView>
+	void sliceCopy(const Imf::Slice *slice, DView & dst, int w, int h, int n);
 
 public:
 	EXRReaderProcess<View>( EXRReaderPlugin & instance );
@@ -53,7 +55,8 @@ public:
 	void multiThreadProcessImages( OfxRectI procWindow );
 
 	// Read exr image
-	View& readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException );
+	template<class DView>
+	void readImage( DView dst, std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 
 }

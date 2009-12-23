@@ -13,6 +13,13 @@
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
+#include <ImfOutputFile.h>
+#include <ImfRgba.h>
+#include <ImfChannelList.h>
+#include <ImfArray.h>
+#include <ImathVec.h>
+#include "../half/gilHalf.hpp"
+
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
@@ -43,11 +50,10 @@ protected :
 	OFX::StringParam*     _filepath;      ///< File path
 	OFX::ChoiceParam*     _bitDepth;      ///< Bit depth
 	OFX::ChoiceParam*     _componentsType;///< Components type
-	OFX::BooleanParam*    _compressed;    ///< Bit streaming
     View                  _srcView;       ///< Source view
 
-	template<class CONV_IMAGE>
-	void writeImage( View& src, std::string& filepath, int bitDepth, int compType, int packing ) throw( tuttle::plugin::PluginException );
+	template<class Pixel>
+	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException );
 public :
     EXRWriterProcess<View>(EXRWriterPlugin &instance);
 

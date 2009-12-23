@@ -16,6 +16,9 @@ namespace plugin {
 namespace exr {
 namespace writer {
 
+enum ECompType { eGray, eRGB, eRGBA };
+enum EBitDepth { eHalfFloat, eFloat, eInt32 };
+
 static const std::string kOutputFilename      = "Output filename";
 static const std::string kRender              = "Render";
 static const std::string kParamBitDepth       = "Bit depth";
