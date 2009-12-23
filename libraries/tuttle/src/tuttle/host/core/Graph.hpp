@@ -24,6 +24,7 @@ class Graph
 public:
 	typedef core::ImageEffectNode Node;
 	typedef graph::InternalGraph<graph::Vertex, graph::Edge> InternalGraph;
+	typedef graph::InternalGraph<graph::Vertex, graph::Edge>::VertexDescriptor Descriptor;
 	typedef boost::ptr_map<const std::string, Node> NodeMap;
 	typedef std::map<std::string, int> InstanceCountMap;
 
@@ -53,7 +54,7 @@ public:
 private:
 	InternalGraph _graph;
 	NodeMap _nodes;
-	std::map<std::string, InternalGraph::VertexDescriptor> _nodesDescriptor;
+	std::map<std::string, Descriptor> _nodesDescriptor;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
 
 private:

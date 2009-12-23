@@ -22,7 +22,7 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 		template<class EdgeDescriptor, class Graph>
 		void examine_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "[CONNECTCLIPS] examine_edge "
+			std::cout << "[CONNECT] examine_edge "
 					  << get( vertex_properties, g )[target(e, g)]
 					  << " TO "
 					  << get( vertex_properties, g )[source(e, g)]
@@ -45,26 +45,12 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 		{}
 
 		template<class VertexDescriptor, class Graph>
-		void initialize_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "[PRECOMPUTE] initialize_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-
-			get( vertex_properties, g )[v].processNode()->preProcess_initialize(_options);
-		}
-
-		template<class VertexDescriptor, class Graph>
-		void start_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "[PRECOMPUTE] start_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-		}
-
-		template<class VertexDescriptor, class Graph>
 		void discover_vertex( VertexDescriptor v, Graph& g )
 		{
 			std::cout << "[PRECOMPUTE] discover_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
+
+			get( vertex_properties, g )[v].processNode()->preProcess_initialize(_options);
 		}
 
 		template<class VertexDescriptor, class Graph>
@@ -89,7 +75,7 @@ struct dfs_compute_visitor : public boost::dfs_visitor<>
 		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "[COMPUTE] initialize_vertex "
+			std::cout << "[COMPUTE] finish_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
 
 			get( vertex_properties, g )[v].processNode()->process(_options);
@@ -110,6 +96,13 @@ struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
 			std::cout << "[POSTCOMPUTE] initialize_vertex "
+			          << get( vertex_properties, g )[v] << std::endl;
+		}
+
+		template<class VertexDescriptor, class Graph>
+		void finish_vertex( VertexDescriptor v, Graph& g )
+		{
+			std::cout << "[POSTCOMPUTE] finish_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
 		}
 
