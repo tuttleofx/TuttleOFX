@@ -39,7 +39,7 @@ int main( int argc, char** argv )
 		// get some plugins examples
 		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.exrreader" );
 		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
-		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
+		tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.exrwriter" );
 
 		//tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 
@@ -91,7 +91,7 @@ int main( int argc, char** argv )
 			tuttle::host::core::ParamString& srcFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[0].getParam("Input filename") );
 			tuttle::host::core::ParamString& dstFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[2].getParam("Output filename") );
 			srcFileParam.set( "input.exr" );
-			dstFileParam.set( "output.png" );
+			dstFileParam.set( "output.exr" );
 			vPluginsInst[0].paramInstanceChangedAction( srcFileParam.getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 			vPluginsInst[2].paramInstanceChangedAction( dstFileParam.getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
