@@ -28,12 +28,12 @@ public:
 
 	virtual void connect(const ProcessNode & inNode) = 0;
 
-	virtual void begin(const ProcessOptions & processOptions) = 0;
-	virtual void preProcess_initialize(const ProcessOptions & processOptions) = 0;
-	virtual void preProcess_finish(const ProcessOptions & processOptions) = 0;
+	virtual void begin(ProcessOptions & processOptions) = 0;
+	virtual void preProcess_initialize(ProcessOptions & processOptions) = 0;
+	virtual void preProcess_finish(ProcessOptions & processOptions) = 0;
 	virtual void process(const ProcessOptions & processOptions) = 0;
-	virtual void postProcess(const ProcessOptions & processOptions) = 0;
-	virtual void end(const ProcessOptions & processOptions) = 0;
+	virtual void postProcess(ProcessOptions & processOptions) = 0;
+	virtual void end(ProcessOptions & processOptions) = 0;
 };
 
 } // namespace core

@@ -16,11 +16,11 @@ namespace core {
 
 
 ProcessGraph::ProcessGraph( Graph& graph )
-: _graph( graph.getGraph() )
-, _nodes( graph.getNodes() )
+: _nodes( graph.getNodes() )
 , _instanceCount( graph.getInstanceCount() )
 {
-	_graph.transpose();
+//	_graph.copyTransposed( graph.getGraph() );
+	_graph.copy( graph.getGraph() );
 	relink();
 }
 
@@ -40,12 +40,12 @@ void ProcessGraph::relink()
 
 void ProcessGraph::compute( const std::list<Graph::Descriptor> outputs, const int tBegin, const int tEnd )
 {
-	//graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "test.dot" );
+	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graphprocess.dot" );
 
 	// Initialize variables
 	const int numFramesToRender = tEnd - tBegin;
 	OfxPointD renderScale = { 1.0, 1.0 };
-	OfxRectI renderWindow = { 0, 0,	123, 123 };
+	OfxRectD renderWindow = { 0, 0,	123, 123 };
 
 	//--- BEGIN RENDER
 	ProcessOptions processOptions;
@@ -55,7 +55,8 @@ void ProcessGraph::compute( const std::list<Graph::Descriptor> outputs, const in
 	processOptions._interactive = false;
 	processOptions._renderScale = renderScale;
 
-	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
+	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes )
+	{
 		p.second->begin(processOptions);
 	}
 
@@ -75,7 +76,7 @@ void ProcessGraph::compute( const std::list<Graph::Descriptor> outputs, const in
 
 			TCOUT("---------------------------------------- connectClips");
 			core::dfs_connectClips_visitor connectClipsVisitor(processOptions);
-			optimizedGraph.dfs(connectClipsVisitor);
+			optimizedGraph.dfs(connectClipsVisitor, outputNode);
 
 			TCOUT("---------------------------------------- precompute");
 			core::dfs_preCompute_visitor preComputeVisitor(processOptions);
@@ -83,17 +84,18 @@ void ProcessGraph::compute( const std::list<Graph::Descriptor> outputs, const in
 
 			TCOUT("---------------------------------------- compute");
 			core::dfs_compute_visitor computeVisitor(processOptions);
-			optimizedGraph.dfs(computeVisitor);
+			optimizedGraph.dfs(computeVisitor, outputNode);
 
 			TCOUT("---------------------------------------- postcompute");
 			core::dfs_postCompute_visitor postComputeVisitor(processOptions);
-			optimizedGraph.dfs(postComputeVisitor);
+			optimizedGraph.dfs(postComputeVisitor, outputNode);
 		}
 	}
 
 
 	//--- END RENDER
-	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes ){
+	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes )
+	{
 		processOptions._startFrame = tBegin;
 		processOptions._endFrame = tEnd;
 		processOptions._step = 1;

@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 
-/*	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
-	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
+	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
+/*	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
 	core::Graph::Node& invert4 = g.createNode( "fr.hd3d.tuttle.invert" );
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	TCOUT("__________________________________________________4");
 	std::list<std::string> outputs;
-	outputs.push_back( read1.getName() );
+	outputs.push_back( write1.getName() );
 	g.compute( outputs, 0, 1 );
 
 	TCOUT("__________________________________________________5");

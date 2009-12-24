@@ -232,7 +232,7 @@ void EXRReaderProcess<View>::channelCopy(Imf::InputFile & input,
 												sizeof (float) * 1,		  // xStride
 												sizeof (float) * w,		  // yStride
 												1, 1,					  // x/y sampling
-												FLT_MAX )
+												std::numeric_limits<float>::max() )
 									); // fillValue
 				channelCopy(input, frameBuffer, dst, w, h, ++n, --left, nc);
 				break;
@@ -246,7 +246,7 @@ void EXRReaderProcess<View>::channelCopy(Imf::InputFile & input,
 												sizeof (boost::uint32_t) * 1,		  // xStride
 												sizeof (boost::uint32_t) * w,		  // yStride
 												1, 1, // x/y sampling
-												UINT32_MAX )
+												std::numeric_limits<boost::uint32_t>::max() )
 									); // fillValue
 				channelCopy(input, frameBuffer, dst, w, h, ++n, --left, nc);
 				break;

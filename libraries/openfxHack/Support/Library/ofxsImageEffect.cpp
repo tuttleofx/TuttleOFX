@@ -2366,7 +2366,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	// catch all exceptions
 	catch( std::exception& e )
 	{
-		std::cout << "Caught std::exception (" << e.what() << ")" << std::endl;
+		std::cout << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
 		stat = kOfxStatFailed;
 	}
 

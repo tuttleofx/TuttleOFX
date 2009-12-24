@@ -34,6 +34,7 @@
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhImageEffect.hpp>
 
+#include <cmath>
 #include <cassert>
 
 namespace tuttle {
@@ -64,45 +65,57 @@ public:
 	ofx::attribute::OfxhClipImage& getOutputClip() { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip(kOfxImageEffectOutputClipName) ); }
 	const ofx::attribute::OfxhClipImage& getOutputClip() const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip(kOfxImageEffectOutputClipName) ); }
 
-	void begin(const ProcessOptions & processOptions)
+	void begin( ProcessOptions & processOptions )
 	{
 //		createInstanceAction();
 		getClipPreferences();
-		beginRenderAction(	processOptions._startFrame
-						,	processOptions._endFrame
-						,	processOptions._step
-						,	processOptions._interactive
-						,	processOptions._renderScale);
+		beginRenderAction( processOptions._startFrame
+						 , processOptions._endFrame
+						 , processOptions._step
+						 , processOptions._interactive
+						 , processOptions._renderScale);
 	}
 
-	void preProcess_initialize(const ProcessOptions & processOptions)
+	void preProcess_initialize( ProcessOptions & processOptions )
 	{
+		//OfxStatus status =
+		getRegionOfDefinitionAction( processOptions._time
+								  , processOptions._renderScale
+								  , processOptions._renderRoD );
+	}
+	void preProcess_finish( ProcessOptions & processOptions )
+	{
+		//OfxStatus status =
+		getRegionOfInterestAction( processOptions._time
+								, processOptions._renderScale
+								, processOptions._renderRoI
+								, processOptions._inputsRoI );
 
 	}
-	void preProcess_finish(const ProcessOptions & processOptions)
-	{
 
+	void process( const ProcessOptions & processOptions )
+	{
+		OfxRectI roi = { floor(processOptions._renderRoI.x1)
+		               , ceil(processOptions._renderRoI.x2)
+		               , floor(processOptions._renderRoI.y1)
+		               , ceil(processOptions._renderRoI.y2) };
+		renderAction( processOptions._time
+					, processOptions._field
+					, roi
+					, processOptions._renderScale);
 	}
 
-	void process(const ProcessOptions & processOptions)
-	{
-		renderAction(	processOptions._time
-					,	processOptions._field
-					,	processOptions._renderRoI
-					,	processOptions._renderScale);
-	}
-
-	void postProcess(const ProcessOptions & processOptions)
+	void postProcess( ProcessOptions & processOptions )
 	{
 	}
 
-	void end(const ProcessOptions & processOptions)
+	void end( ProcessOptions & processOptions )
 	{
-		endRenderAction(	processOptions._startFrame
-						,	processOptions._endFrame
-						,	processOptions._step
-						,	processOptions._interactive
-						,	processOptions._renderScale);
+		endRenderAction( processOptions._startFrame
+					   , processOptions._endFrame
+					   , processOptions._step
+					   , processOptions._interactive
+					   , processOptions._renderScale);
 	}
 
 	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }

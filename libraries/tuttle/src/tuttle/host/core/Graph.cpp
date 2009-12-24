@@ -123,6 +123,8 @@ void Graph::unconnectNode( const ImageEffectNode& node ) throw( exception::Logic
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
+	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graph.dot" );
+
 	ProcessGraph process( *this );
 
 	std::list<InternalGraph::VertexDescriptor> outputs;

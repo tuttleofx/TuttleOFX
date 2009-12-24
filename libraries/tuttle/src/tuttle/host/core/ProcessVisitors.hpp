@@ -34,13 +34,13 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 		}
 		
 	private:
-		const ProcessOptions & _options;
+		const ProcessOptions & _options; /// @todo tuttle remove this !
 };
 
 struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_preCompute_visitor(const ProcessOptions & options)
+		dfs_preCompute_visitor(ProcessOptions & options)
 			: _options(options)
 		{}
 
@@ -62,7 +62,7 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 		}
 
 	private:
-		const ProcessOptions & _options;
+		ProcessOptions & _options;
 };
 
 struct dfs_compute_visitor : public boost::dfs_visitor<>
@@ -88,7 +88,7 @@ struct dfs_compute_visitor : public boost::dfs_visitor<>
 struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_postCompute_visitor(const ProcessOptions & options)
+		dfs_postCompute_visitor(ProcessOptions & options)
 			: _options(options)
 		{}
 
@@ -107,7 +107,7 @@ struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 		}
 
 	private:
-		const ProcessOptions & _options;
+		ProcessOptions & _options;
 };
 
 

@@ -233,12 +233,24 @@ public:
 		test_bfs_visitor vis;
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
 	}
-
+/*
 	void transpose()
 	{
 		GraphContainer g;
 		boost::transpose_graph(_graph, g);
 		_graph = g;
+	}
+*/
+	void copyTransposed( const InternalGraph& g )
+	{
+		// make a transposed copy of g in _graph
+		boost::transpose_graph( g._graph, _graph);
+	}
+
+	void copy( const InternalGraph& g )
+	{
+		// make a transposed copy of g in _graph
+		boost::copy_graph( g._graph, _graph);
 	}
 
 	void toDominatorTree()

@@ -1,7 +1,9 @@
 #ifndef _TUTTLE_PROCESSOPTIONS_HPP_
 #define _TUTTLE_PROCESSOPTIONS_HPP_
 
-#include <ofxCore.h>
+#include <tuttle/host/ofx/OfxhClipImage.hpp>
+#include <tuttle/host/ofx/OfxhCore.hpp>
+
 #include <string>
 
 namespace tuttle {
@@ -20,9 +22,13 @@ public:
 	bool      _interactive;
 	OfxTime   _time;
 
+	// imageEffect specific options
 	std::string  _field;
-	OfxRectI     _renderRoI;
+	OfxRectD     _renderRoI;
 	OfxPointD    _renderScale;
+
+	OfxRectD     _renderRoD;
+	std::map<ofx::attribute::OfxhClipImage*, OfxRectD> _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
 };
 
 } // namespace core
