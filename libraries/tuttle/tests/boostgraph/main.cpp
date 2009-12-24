@@ -3,6 +3,8 @@
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 
+#include <boost/graph/graph_utility.hpp>
+
 #include <iostream>
 
 #define BOOST_TEST_MODULE graph_tests
@@ -54,17 +56,31 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 
 	std::string n1("coucou1");
 	std::string n2("coucou2");
+	std::string n3("coucou3");
 
 	typedef graph::InternalGraph<TestVertex, TestEdge> InternalGraph;
 	InternalGraph graph;
 	std::map<std::string, Descriptor> nodesDescriptor;
 	nodesDescriptor[n1] = graph.addVertex( TestVertex( n1 ) );
 	nodesDescriptor[n2] = graph.addVertex( TestVertex( n2 ) );
+	nodesDescriptor[n3] = graph.addVertex( TestVertex( n3 ) );
 
-	TestEdge e( n1, n2 );
-	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], e );
+	TestEdge e1( n1, n2 );
+	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], e1 );
+	TestEdge e2( n2, n3 );
+	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], e2 );
 
-	graph::GraphExporter<TestVertex, TestEdge>::exportAsDOT( graph, "testgraph.dot" );
+	TCOUT("graph:");
+	boost::print_graph( graph.getGraph() );
+
+
+	InternalGraph graphT;
+	graphT.copyTransposed(graph);
+	
+	TCOUT("graphT:");
+	boost::print_graph( graphT.getGraph() );
+
+	graph::GraphExporter<TestVertex, TestEdge>::exportAsDOT( graph, "boostgraphtest.dot" );
 
 	TCOUT("__________________________________________________");
 }
