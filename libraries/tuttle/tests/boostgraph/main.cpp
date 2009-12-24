@@ -2,17 +2,14 @@
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
+#include <tuttle/host/graph/Visitors.hpp>
 
 #include <boost/graph/graph_utility.hpp>
 
 #include <iostream>
 
-#define BOOST_TEST_MODULE graph_tests
-#include <boost/test/unit_test.hpp>
 
-using namespace boost::unit_test;
 
-BOOST_AUTO_TEST_SUITE( internalgraph_tests_suite01 )
 
 class TestVertex
 {
@@ -44,6 +41,51 @@ inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
 	os << " _in:" << e._nameIn << " out:" << e._nameOut;
 	return os;
 }
+
+namespace tuttle {
+namespace host {
+namespace graph {
+template <>
+struct GraphExporter<TestVertex, TestEdge >
+{
+	static void exportAsDOT( const InternalGraph<TestVertex, TestEdge >& g, const char* filename )
+	{
+		std::map<std::string, std::string> graph_attr, vertex_attr, edge_attr;
+		graph_attr["size"]       = "6,6";
+		graph_attr["rankdir"]    = "LR";
+		graph_attr["ratio"]      = "fill";
+		graph_attr["label"]      = "TuttleOFX";
+		vertex_attr["shape"]     = "circle";
+		vertex_attr["color"]     = "dodgerblue4";
+		vertex_attr["fontcolor"] = "dodgerblue4";
+		edge_attr["style"]       = "dashed";
+		edge_attr["minlen"]      = "1";
+		edge_attr["color"]       = "darkslategray";
+		edge_attr["fontcolor"]   = "darkslategray";
+
+		using namespace boost;
+		std::ofstream ofs( filename );
+		boost::write_graphviz( ofs,
+		                       g.getGraph(),
+		                       boost::make_label_writer( get( vertex_properties, g.getGraph() ) ),
+		                       boost::make_label_writer( get( edge_properties, g.getGraph() ) ),
+		                       boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
+	}
+
+};
+}}}
+
+
+
+
+
+
+#define BOOST_TEST_MODULE graph_tests
+#include <boost/test/unit_test.hpp>
+
+using namespace boost::unit_test;
+
+BOOST_AUTO_TEST_SUITE( internalgraph_tests_suite01 )
 
 BOOST_AUTO_TEST_CASE( create_internalGraph )
 {
@@ -81,8 +123,16 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	boost::print_graph( graphT.getGraph() );
 
 	graph::GraphExporter<TestVertex, TestEdge>::exportAsDOT( graph, "boostgraphtest.dot" );
+	graph::GraphExporter<TestVertex, TestEdge>::exportAsDOT( graphT, "boostgraphTtest.dot" );
 
 	TCOUT("__________________________________________________");
+	TCOUT("graph:");
+	graph::test_dfs_visitor testVisitor;
+	graph.dfs(testVisitor/*, nodesDescriptor[n1]*/);
+
+	TCOUT("__________________________________________________");
+	TCOUT("graphT:");
+	graphT.dfs(testVisitor/*, nodesDescriptor[n1]*/);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
