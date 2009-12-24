@@ -27,19 +27,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cassert>
-
-#include <map>
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-#include <cstring>
-#include <cstdlib>
-
-#include <expat.h>
-
 // ofx
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
@@ -53,6 +40,19 @@
 #include "OfxhHost.hpp"
 #include "OfxhXml.hpp"
 #include "OfxhUtilities.hpp"
+
+#include <expat.h>
+
+#include <boost/lexical_cast.hpp>
+
+#include <cassert>
+#include <map>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <cstring>
+#include <cstdlib>
 
 namespace tuttle {
 namespace host {
@@ -530,8 +530,8 @@ void OfxhPluginCache::elementBeginCallback( void* userData, const XML_Char* name
 
 		std::string fname = attmap["path"];
 		std::string bname = attmap["bundle_path"];
-		time_t mtime      = tuttle::host::ofx::property::stringToInt( attmap["mtime"] );
-		size_t size       = tuttle::host::ofx::property::stringToInt( attmap["size"] );
+		time_t mtime      = boost::lexical_cast<time_t>( attmap["mtime"] );
+		size_t size       = boost::lexical_cast<size_t>( attmap["size"] );
 
 		_xmlCurrentBinary = new OfxhPluginBinary( fname, bname, mtime, size );
 		_binaries.push_back( _xmlCurrentBinary );
@@ -558,10 +558,10 @@ void OfxhPluginCache::elementBeginCallback( void* userData, const XML_Char* name
 			identifier[i] = tolower( identifier[i] );
 		}
 
-		int idx           = tuttle::host::ofx::property::stringToInt( attmap["index"] );
-		int api_version   = tuttle::host::ofx::property::stringToInt( attmap["api_version"] );
-		int major_version = tuttle::host::ofx::property::stringToInt( attmap["major_version"] );
-		int minor_version = tuttle::host::ofx::property::stringToInt( attmap["minor_version"] );
+		int idx           = boost::lexical_cast<int>( attmap["index"] );
+		int api_version   = boost::lexical_cast<int>( attmap["api_version"] );
+		int major_version = boost::lexical_cast<int>( attmap["major_version"] );
+		int minor_version = boost::lexical_cast<int>( attmap["minor_version"] );
 
 		APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( api, api_version );
 		if( apiCache )

@@ -109,7 +109,7 @@ public:
 	void notify( const std::string& name, bool isSingle, int indexOrN ) OFX_EXCEPTION_SPEC
 	{
 		COUT_WITHINFOS( "What we should do here?" );
-		throw property::OfxhException( kOfxStatErrMissingHostFeature );
+		throw OfxhException( kOfxStatErrMissingHostFeature );
 	}
 
 	// don't know what to do
@@ -117,7 +117,7 @@ public:
 	void reset( const std::string& name ) OFX_EXCEPTION_SPEC
 	{
 		COUT_WITHINFOS( "What we should do here?" );
-		throw property::OfxhException( kOfxStatErrMissingHostFeature );
+		throw OfxhException( kOfxStatErrMissingHostFeature );
 	}
 
 	// Connected -

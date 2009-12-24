@@ -133,6 +133,13 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	TCOUT("__________________________________________________");
 	TCOUT("graphT:");
 	graphT.dfs(testVisitor/*, nodesDescriptor[n1]*/);
+	
+	/*
+	graph_traits<graph_type>::out_edge_iterator ei, edge_end;
+	for( boost::tie(ei, edge_end) = out_edges(*i, g); ei != edge_end; ++ei )
+		std::cout << " --" << name[*ei] << "--> " << id[target(*ei, g)] << "  ";
+	*/
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

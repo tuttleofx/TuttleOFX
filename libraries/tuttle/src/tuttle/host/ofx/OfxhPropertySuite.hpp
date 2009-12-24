@@ -30,10 +30,12 @@
 #define OFXH_PROPERTY_SUITE_H
 
 #include "OfxhUtilities.hpp"
+#include "OfxhException.hpp"
 
 #include <tuttle/host/core/Exception.hpp>
 
 #include <boost/ptr_container/ptr_map.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <string>
 #include <vector>
@@ -43,74 +45,14 @@
 #include <iostream>
 #include <stdexcept>
 
-#ifndef WINDOWS
- #define OFX_EXCEPTION_SPEC throw (tuttle::host::ofx::property::OfxhException)
-#else
- #define OFX_EXCEPTION_SPEC
-#endif
-
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace property {
 
-/// simple function to turn a thing into a std string
-template<class T>
-inline std::string castToString( T i )
-{
-	std::ostringstream o;
-
-	o << i;
-	return o.str();
-}
-
-/// simple function to turn a string into an int
-inline int stringToInt( const std::string& s )
-{
-	std::istringstream is( s );
-	int number;
-
-	is >> number;
-	return number;
-}
-
-/// simple function to turn a string into a double
-inline double stringToDouble( const std::string& s )
-{
-	std::istringstream is( s );
-	double number;
-
-	is >> number;
-	return number;
-}
-
 // forward declarations
 class OfxhProperty;
 class OfxhSet;
-
-/// exception, representing an OfxStatus
-class OfxhException
-{
-OfxStatus _stat;
-
-public:
-	/// ctor
-	OfxhException( OfxStatus stat ) : _stat( stat )
-	{}
-
-	/// get the status
-	OfxStatus getStatus()
-	{
-		return _stat;
-	}
-
-	// TUTTLE_TODO : mapStatusEnumToStr... in tuttle common
-	const std::string getStatusStr()
-	{
-		return mapStatusToString( _stat );
-	}
-
-};
 
 /// type of a property
 enum TypeEnum
@@ -185,8 +127,7 @@ struct OfxhStringValue
 	static std::string kEmpty;
 };
 
-/// array representing the names of the various types, in order of TypeEnum
-extern const char* gTypeNames[];
+std::string getTypeName( const TypeEnum& e );
 
 /// Sits on a property and can override the local property value when a value is being fetched
 /// only one of these can be in any property (as the thing has only a single value).
@@ -459,7 +400,7 @@ public:
 	/// return the value as a string
 	inline std::string getStringValue( int idx ) const
 	{
-		return castToString( _value[idx] );
+		return  boost::lexical_cast<std::string>( _value[idx] );
 	}
 
 public: /// @todo in private and friend function...

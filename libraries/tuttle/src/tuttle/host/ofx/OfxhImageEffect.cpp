@@ -503,7 +503,7 @@ property::OfxhSet& OfxhImageEffectNode::getParamSetProps()
 size_t OfxhImageEffectNode::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
 {
 	fprintf( stderr, "failing in %s with name=%s\n", "__PRETTY_FUNCTION__", name.c_str() );
-	throw property::OfxhException( kOfxStatErrMissingHostFeature );
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
 size_t OfxhImageEffectNode::upperGetDimension( const std::string& name )
@@ -521,7 +521,7 @@ void OfxhImageEffectNode::notify( const std::string& name, bool singleValue, int
 void OfxhImageEffectNode::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 {
 	fprintf( stderr, "failing in %s\n", "__PRETTY_FUNCTION__" );
-	throw property::OfxhException( kOfxStatErrMissingHostFeature );
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
 // get the virutals for viewport size, pixel scale, background colour
@@ -531,7 +531,7 @@ double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int inde
 	if( name == kOfxImageEffectPropProjectSize )
 	{
 		if( index >= 2 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		double values[2];
 		getProjectSize( values[0], values[1] );
 		return values[index];
@@ -539,7 +539,7 @@ double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int inde
 	else if( name == kOfxImageEffectPropProjectOffset )
 	{
 		if( index >= 2 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		double values[2];
 		getProjectOffset( values[0], values[1] );
 		return values[index];
@@ -547,7 +547,7 @@ double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int inde
 	else if( name == kOfxImageEffectPropProjectExtent )
 	{
 		if( index >= 2 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		double values[2];
 		getProjectExtent( values[0], values[1] );
 		return values[index];
@@ -555,23 +555,23 @@ double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int inde
 	else if( name == kOfxImageEffectPropProjectPixelAspectRatio )
 	{
 		if( index >= 1 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		return getProjectPixelAspectRatio();
 	}
 	else if( name == kOfxImageEffectInstancePropEffectDuration )
 	{
 		if( index >= 1 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		return getEffectDuration();
 	}
 	else if( name == kOfxImageEffectPropFrameRate )
 	{
 		if( index >= 1 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		return getFrameRate();
 	}
 	else
-		throw property::OfxhException( kOfxStatErrUnknown );
+		throw OfxhException( kOfxStatErrUnknown );
 }
 
 void OfxhImageEffectNode::getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC
@@ -579,41 +579,41 @@ void OfxhImageEffectNode::getDoublePropertyN( const std::string& name, double* f
 	if( name == kOfxImageEffectPropProjectSize )
 	{
 		if( n > 2 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		getProjectSize( first[0], first[1] );
 	}
 	else if( name == kOfxImageEffectPropProjectOffset )
 	{
 		if( n > 2 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		getProjectOffset( first[0], first[1] );
 	}
 	else if( name == kOfxImageEffectPropProjectExtent )
 	{
 		if( n > 2 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		getProjectExtent( first[0], first[1] );
 	}
 	else if( name == kOfxImageEffectPropProjectPixelAspectRatio )
 	{
 		if( n > 1 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		*first = getProjectPixelAspectRatio();
 	}
 	else if( name == kOfxImageEffectInstancePropEffectDuration )
 	{
 		if( n > 1 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		*first = getEffectDuration();
 	}
 	else if( name == kOfxImageEffectPropFrameRate )
 	{
 		if( n > 1 )
-			throw property::OfxhException( kOfxStatErrBadIndex );
+			throw OfxhException( kOfxStatErrBadIndex );
 		*first = getFrameRate();
 	}
 	else
-		throw property::OfxhException( kOfxStatErrUnknown );
+		throw OfxhException( kOfxStatErrUnknown );
 }
 
 OfxhImageEffectNode::~OfxhImageEffectNode()
@@ -2218,7 +2218,7 @@ void* OfxhImageEffectHost::fetchSuite( const char* suiteName, int suiteVersion )
 		else
 			return NULL;
 	}
-	//else TUTTLE_TODO : move to ofx::host::Host
+	///@todo tuttle : move to ofx::host::Host
 	else if( strcmp( suiteName, kOfxParameterSuite ) == 0 )
 	{
 		return attribute::GetSuite( suiteVersion );

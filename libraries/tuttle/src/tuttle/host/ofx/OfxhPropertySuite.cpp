@@ -55,7 +55,23 @@ int OfxhIntValue::kEmpty       = 0;
 double OfxhDoubleValue::kEmpty = 0;
 void* OfxhPointerValue::kEmpty = 0;
 std::string OfxhStringValue::kEmpty;
-const char* gTypeNames[] = { "int", "double", "string", "pointer" };
+
+std::string getTypeName( const TypeEnum& e )
+{
+	switch( e )
+	{
+	case eNone:
+		return "None";
+	case eInt:
+		return "int";
+	case eDouble:
+		return "double";
+	case eString:
+		return "string";
+	case ePointer:
+		return "pointer";
+	}
+}
 
 /// this does some magic so that it calls get string/int/double/pointer appropriately
 

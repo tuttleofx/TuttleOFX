@@ -128,7 +128,7 @@ void propertyXMLWrite( std::ostream& o, const property::OfxhProperty& prop, cons
 
 		o << indent << "<property "
 		  << XML::attribute( "name", prop.getName() )
-		  << XML::attribute( "type", property::gTypeNames[prop.getType()] )
+		  << XML::attribute( "type", property::getTypeName(prop.getType()) )
 		  << XML::attribute( "dimension", prop.getFixedDimension() )
 		  << ">\n";
 
