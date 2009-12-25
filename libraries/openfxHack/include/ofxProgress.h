@@ -30,6 +30,8 @@
 #ifndef _ofxProgressSuite_h_
 #define _ofxProgressSuite_h_
 
+#include "ofxCore.h"
+
 /** @brief suite for displaying a progress bar */
 #define kOfxProgressSuite "OfxProgressSuite"
 

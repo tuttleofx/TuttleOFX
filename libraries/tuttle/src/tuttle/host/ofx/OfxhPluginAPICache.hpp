@@ -34,7 +34,7 @@
 #include <ostream>
 #include <map>
 
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 
 namespace tuttle {
 namespace host {

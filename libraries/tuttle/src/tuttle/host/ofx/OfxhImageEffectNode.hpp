@@ -27,8 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _TUTTLE_HOST_OFX_IMAGEEFFECT_HPP_
-#define _TUTTLE_HOST_OFX_IMAGEEFFECT_HPP_
+#ifndef _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_HPP_
+#define _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_HPP_
 
 #include <tuttle/host/core/Exception.hpp>
 
@@ -36,9 +36,11 @@
 #include "ofxImageEffect.h"
 
 #include "OfxhHost.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhClipImage.hpp"
+#include "OfxhMessage.hpp"
 #include "OfxhProgress.hpp"
-#include "OfxhTimeLine.hpp"
+#include "OfxhTimeline.hpp"
 #include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
@@ -57,69 +59,7 @@ class OfxhClip;
 
 namespace imageEffect {
 
-// forward declare
 class OfxhImageEffectPlugin;
-class OfxhOverlayInstance;
-class OfxhImageEffectNode;
-class OfxhImageEffectNodeDescriptor;
-
-/**
- * An image effect host, passed to the setHost function of all image effect plugins
- */
-class OfxhImageEffectHost : public tuttle::host::ofx::OfxhAbstractHost
-{
-public:
-	OfxhImageEffectHost();
-	virtual ~OfxhImageEffectHost();
-
-	/// fetch a suite
-	virtual void* fetchSuite( const char* suiteName, int suiteVersion );
-
-	/**
-	 * Create a new instance of an image effect plug-in.
-	 *
-	 * It is called by ImageEffectPlugin::createInstance which the
-	 * client code calls when it wants to make a new instance.
-	 *
-	 * param: clientData - the clientData passed into the ImageEffectPlugin::createInstance (tuttle remove this parameter)
-	 *   @param plugin - the plugin being created
-	 *   @param desc - the descriptor for that plugin
-	 *   @param context - the context to be created in
-	 */
-	virtual OfxhImageEffectNode* newInstance( OfxhImageEffectPlugin* plugin,
-	                                      OfxhImageEffectNodeDescriptor&        desc,
-	                                      const std::string& context ) const = 0;
-
-	/**
-	 * Function called as each plugin binary is found and loaded from disk
-	 *
-	 * Use this in any dialogue etc... showing progress
-	 */
-	virtual void loadingStatus( const std::string& );
-
-	/**
-	 * Override this to filter out plugins which the host can't support for whatever reason
-	 *
-	 *   @param plugin - the plugin to examine
-	 *   @param reason - set this to report the reason the plugin was not loaded
-	 */
-	virtual bool pluginSupported( OfxhImageEffectPlugin* plugin, std::string& reason ) const;
-
-	/// Override this to create a descriptor, this makes the 'root' descriptor
-	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( OfxhImageEffectPlugin* plugin ) const = 0;
-
-	/// used to construct a context description, rootContext is the main context
-	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhImageEffectPlugin* plug ) const = 0;
-
-	/// used to construct populate the cache
-	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const std::string& bundlePath, OfxhImageEffectPlugin* plug ) const = 0;
-
-	/**
-	 *  Override this to initialise an image effect descriptor after it has been
-	 *  created.
-	 */
-	virtual void initDescriptor( OfxhImageEffectNodeDescriptor* desc ) const;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -222,7 +162,7 @@ protected:
 	OfxhPlugin* _plugin;      ///< the plugin I belong to
 	ClipImageDescriptorMap _clips;        ///< clips descriptors by name
 	ClipImageDescriptorVector _clipsByOrder; ///< clip descriptors in order of declaration
-	mutable interact::OfxhInteractDescriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description
+	mutable interact::OfxhInteractDescriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description @todo tuttle: remove mutable
 	int _built;
 
 private:
@@ -291,8 +231,9 @@ typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
 class OfxhImageEffectNode : public OfxhImageEffectNodeBase,
 	public attribute::OfxhParamSet,
 	public attribute::OfxhClipImageSet,
-	public Progress::ProgressI,
-	public TimeLine::OfxhTimeLineI,
+	public OfxhIProgress,
+	public OfxhIMessage,
+	public OfxhITimeline,
 	private property::OfxhNotifyHook,
 	private property::OfxhGetHook
 {
@@ -380,10 +321,10 @@ public:
 	virtual int abort();
 
 	/// override this to use your own memory instance - must inherrit from memory::instance
-	virtual memory::OfxhMemory* newMemoryInstance( size_t nBytes );
+	virtual OfxhMemory* newMemoryInstance( size_t nBytes );
 
 	// return an memory::instance calls makeMemoryInstance that can be overriden
-	memory::OfxhMemory* imageMemoryAlloc( size_t nBytes );
+	OfxhMemory* imageMemoryAlloc( size_t nBytes );
 
 	/// make a clip
 	//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;
@@ -657,21 +598,6 @@ public:
 	virtual const std::string& findMostChromaticComponents( const std::string& a, const std::string& b ) const;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-/**
- * An overlay interact for image effects, derived from one of these to
- * be an overlay interact
- */
-class OverlayInteract : public interact::OfxhInteract
-{
-protected:
-	/// our image effect instance
-	imageEffect::OfxhImageEffectNode& _instance;
-
-public:
-	/// ctor this calls Instance->getOverlayDescriptor to get the descriptor
-	OverlayInteract( imageEffect::OfxhImageEffectNode& v );
-};
 
 }
 }

@@ -33,9 +33,9 @@
 
 // ofx host
 #include "OfxhBinary.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhParam.hpp"
-#include "OfxhImageEffect.hpp"
+#include "OfxhImageEffectNode.hpp"
 
 #include <cassert>
 #include <cfloat>

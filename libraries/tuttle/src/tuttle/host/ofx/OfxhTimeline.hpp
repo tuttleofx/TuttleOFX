@@ -27,37 +27,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _OfxhTimeLine_h_
-#define _OfxhTimeLine_h_
+#ifndef _OfxhTimeline_h_
+#define _OfxhTimeline_h_
 
 #include "ofxTimeLine.h"
 
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace TimeLine {
 
-/// Things that implement timeline controls derive from this ABC and implement the following
-/// functions.
-class OfxhTimeLineI
+/**
+ * Things that implement timeline controls derive from this ABC and implement the following
+ * functions.
+ */
+class OfxhITimeline
 {
 public:
-	virtual ~OfxhTimeLineI() {}
+	virtual ~OfxhITimeline() {}
 
 	/// get the current time on the timeline. This is not necessarily the same
 	/// time as being passed to an action (eg render)
-	virtual double timeLineGetTime() = 0;
+	virtual double timelineGetTime() = 0;
 
 	/// set the timeline to a specific time
-	virtual void timeLineGotoTime( double t ) = 0;
+	virtual void timelineGotoTime( double t ) = 0;
 
 	/// get the first and last times available on the effect's timeline
-	virtual void timeLineGetBounds( double& t1, double& t2 ) = 0;
+	virtual void timelineGetBounds( double& t1, double& t2 ) = 0;
 };
 
 }
 }
 }
-}
 
 #endif
+

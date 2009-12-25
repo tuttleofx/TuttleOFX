@@ -32,7 +32,8 @@
 
 #include "ofxCore.h"
 #include "ofxImageEffect.h"
-#include "OfxhImageEffect.hpp"
+#include "OfxhImageEffectHost.hpp"
+#include "OfxhImageEffectNode.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
 
@@ -188,10 +189,10 @@ private:
 	attribute::OfxhClipImageDescriptor* _currentClip;
 
 	/// pointer to our image effect host
-	tuttle::host::ofx::imageEffect::OfxhImageEffectHost* _host;
+	OfxhImageEffectHost* _host;
 
 public:
-	explicit OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::OfxhImageEffectHost& host );
+	explicit OfxhImageEffectPluginCache( OfxhImageEffectHost& host );
 	virtual ~OfxhImageEffectPluginCache();
 
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
@@ -202,7 +203,7 @@ public:
 	/// pick the highest found version.
 	OfxhImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 );
 
-	tuttle::host::ofx::imageEffect::OfxhImageEffectHost* getHost()
+	OfxhImageEffectHost* getHost()
 	{
 		return _host;
 	}

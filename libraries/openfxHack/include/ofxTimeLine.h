@@ -30,6 +30,8 @@
 #ifndef _ofxTimeLine_h_
 #define _ofxTimeLine_h_
 
+#include "ofxCore.h"
+
 /** @brief Name of the time line suite */
 #define kOfxTimeLineSuite "OfxTimeLineSuite"
 

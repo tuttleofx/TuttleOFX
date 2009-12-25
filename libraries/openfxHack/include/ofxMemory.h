@@ -30,6 +30,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "ofxCore.h"
+
+#include <string.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

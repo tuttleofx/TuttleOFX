@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PROCESSOPTIONS_HPP_
-#define _TUTTLE_PROCESSOPTIONS_HPP_
+#ifndef _TUTTLE_HOST_PROCESSOPTIONS_HPP_
+#define _TUTTLE_HOST_PROCESSOPTIONS_HPP_
 
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhCore.hpp>
@@ -10,7 +10,8 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class ProcessOptions{
+class ProcessOptions
+{
 
 public:
 	ProcessOptions(){}
@@ -28,12 +29,12 @@ public:
 	OfxPointD    _renderScale;
 
 	OfxRectD     _renderRoD;
-	std::map<ofx::attribute::OfxhClipImage*, OfxRectD> _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
+	std::map<tuttle::host::ofx::attribute::OfxhClipImage*, OfxRectD> _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
 };
 
-} // namespace core
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif
 

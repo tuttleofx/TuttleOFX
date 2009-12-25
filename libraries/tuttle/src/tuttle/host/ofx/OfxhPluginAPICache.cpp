@@ -38,15 +38,15 @@
 
 // ofx host
 #include "OfxhBinary.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhClip.hpp"
 #include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
-#include "OfxhImageEffect.hpp"
+#include "OfxhImageEffectNode.hpp"
 #include "OfxhPluginAPICache.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
-#include "OfxhImageEffectAPI.hpp"
+#include "OfxhImageEffectPlugin.hpp"
 #include "OfxhXml.hpp"
 
 namespace tuttle {
@@ -128,7 +128,7 @@ void propertyXMLWrite( std::ostream& o, const property::OfxhProperty& prop, cons
 
 		o << indent << "<property "
 		  << XML::attribute( "name", prop.getName() )
-		  << XML::attribute( "type", property::getTypeName(prop.getType()) )
+		  << XML::attribute( "type", property::mapTypeEnumToString(prop.getType()) )
 		  << XML::attribute( "dimension", prop.getFixedDimension() )
 		  << ">\n";
 

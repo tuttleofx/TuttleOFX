@@ -39,10 +39,12 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace memory {
 
-OfxhMemory::OfxhMemory() : _ptr( 0 ),
-	_locked( false ) {}
+OfxhMemory::OfxhMemory()
+: _ptr( 0 )
+, _locked( false )
+{
+}
 
 OfxhMemory::~OfxhMemory()
 {
@@ -88,7 +90,7 @@ void OfxhMemory::unlock()
 	_locked = false;
 }
 
-}
+
 }
 }
 }

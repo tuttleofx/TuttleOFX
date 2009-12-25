@@ -29,6 +29,10 @@
 
 #include "OfxhHost.hpp"
 
+#include "OfxhPropertySuite.hpp"
+#include "OfxhMemorySuite.hpp"
+
+
 // ofx
 #include "ofxCore.h"
 #include "ofxProperty.h"
@@ -40,44 +44,7 @@
 #include <cfloat>
 #include <cstring>
 
-typedef OfxPlugin* ( *OfxGetPluginType )( int );
-
-namespace tuttle {
-namespace host {
-namespace ofx {
-
-////////////////////////////////////////////////////////////////////////////////
-/// simple memory suite
-namespace memory {
-static OfxStatus memoryAlloc( void* handle, size_t bytes, void** data )
-{
-	*data = malloc( bytes );
-	if( *data )
-	{
-		return kOfxStatOK;
-	}
-	else
-	{
-		return kOfxStatErrMemory;
-	}
-}
-
-static OfxStatus memoryFree( void* data )
-{
-	free( data );
-	return kOfxStatOK;
-}
-
-static struct OfxMemorySuiteV1 gMallocSuite =
-{
-	memoryAlloc,
-	memoryFree
-};
-}
-}
-}
-}
-
+//typedef OfxPlugin* ( *OfxGetPluginType )( int );
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -121,15 +88,15 @@ OfxHost* OfxhAbstractHost::getHandle()
 	return &_host;
 }
 
-void* OfxhAbstractHost::fetchSuite( const char* suiteName, int suiteVersion )
+void* OfxhAbstractHost::fetchSuite( const char* suiteName, const int suiteVersion )
 {
 	if( strcmp( suiteName, kOfxPropertySuite ) == 0  && suiteVersion == 1 )
 	{
-		return property::GetSuite( suiteVersion );
+		return property::getPropertySuite( suiteVersion );
 	}
 	else if( strcmp( suiteName, kOfxMemorySuite ) == 0 && suiteVersion == 1 )
 	{
-		return (void*)&memory::gMallocSuite;
+		return getMemorySuite( suiteVersion );
 	}
 
 	///printf("fetchSuite failed with host = %p, name = %s, version = %i\n", this, suiteName, suiteVersion);

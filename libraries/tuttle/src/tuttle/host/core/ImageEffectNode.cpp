@@ -36,15 +36,15 @@
 
 // ofx host
 #include <tuttle/host/ofx/OfxhBinary.hpp>
-#include <tuttle/host/ofx/OfxhPropertySuite.hpp>
+#include <tuttle/host/ofx/OfxhProperty.hpp>
 #include <tuttle/host/ofx/OfxhClip.hpp>
 #include <tuttle/host/ofx/OfxhParam.hpp>
 #include <tuttle/host/ofx/OfxhMemory.hpp>
-#include <tuttle/host/ofx/OfxhImageEffect.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/ofx/OfxhPluginAPICache.hpp>
 #include <tuttle/host/ofx/OfxhPluginCache.hpp>
 #include <tuttle/host/ofx/OfxhHost.hpp>
-#include <tuttle/host/ofx/OfxhImageEffectAPI.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
 
 // my host
 #include "HostDescriptor.hpp"
@@ -291,17 +291,17 @@ bool ImageEffectNode::progressUpdate( double t )
 
 /// get the current time on the timeline. This is not necessarily the same
 /// time as being passed to an action (eg render)
-double ImageEffectNode::timeLineGetTime()
+double ImageEffectNode::timelineGetTime()
 {
 	return 0;
 }
 
 /// set the timeline to a specific time
-void ImageEffectNode::timeLineGotoTime( double t )
+void ImageEffectNode::timelineGotoTime( double t )
 {}
 
 /// get the first and last times available on the effect's timeline
-void ImageEffectNode::timeLineGetBounds( double& t1, double& t2 )
+void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 {
 	t1 = 0;
 	t2 = 25;

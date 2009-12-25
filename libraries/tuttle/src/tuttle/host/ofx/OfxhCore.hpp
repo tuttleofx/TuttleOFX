@@ -1,9 +1,10 @@
-#ifndef _OFXHCORE_HPP_
-#define	_OFXHCORE_HPP_
+#ifndef _TUTTLE_HOST_OFX_CORE_HPP_
+#define	_TUTTLE_HOST_OFX_CORE_HPP_
 
 #include "ofxCore.h"
 
 #include <ostream>
+
 
 std::ostream& operator<<( std::ostream& os, const OfxPlugin& v );
 

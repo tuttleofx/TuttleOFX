@@ -34,11 +34,11 @@
 
 // ofx host
 #include "OfxhBinary.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhClip.hpp"
 #include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
-#include "OfxhImageEffect.hpp"
+#include "OfxhImageEffectNode.hpp"
 #include "OfxhInteract.hpp"
 
 namespace tuttle {
@@ -385,58 +385,6 @@ OfxStatus OfxhInteract::loseFocusAction( OfxTime          time,
 {
 	initArgProp( time, renderScale );
 	return callEntry( kOfxInteractActionLoseFocus, &_argProperties );
-}
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// Interact suite functions
-
-static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
-{
-	interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
-
-	if( interactInstance )
-		return interactInstance->swapBuffers();
-	else
-		return kOfxStatErrBadHandle;
-}
-
-static OfxStatus interactRedraw( OfxInteractHandle handle )
-{
-	interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
-
-	if( interactInstance )
-		return interactInstance->redraw();
-	else
-		return kOfxStatErrBadHandle;
-}
-
-static OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle* property )
-{
-	interact::OfxhBase* interact = reinterpret_cast<interact::OfxhBase*>( handle );
-
-	if( interact )
-	{
-		*property = interact->getPropHandle();
-		return kOfxStatOK;
-	}
-	return kOfxStatErrBadHandle;
-}
-
-/// the interact suite
-static OfxInteractSuiteV1 gSuite = {
-	interactSwapBuffers,
-	interactRedraw,
-	interactGetPropertySet
-};
-
-/// function to get the sutie
-void* GetSuite( int version )
-{
-	if( version == 1 )
-		return (void*) &gSuite;
-	return NULL;
 }
 
 }

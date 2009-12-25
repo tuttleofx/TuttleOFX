@@ -4,7 +4,8 @@
 #include "ImageEffectNode.hpp"
 #include "Image.hpp"
 
-#include <tuttle/host/ofx/OfxhImageEffect.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
+#include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhImage.hpp>
 #include <tuttle/host/core/memory/IMemoryPool.hpp>
 #include <tuttle/host/core/memory/IMemoryCache.hpp>

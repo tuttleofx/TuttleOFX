@@ -27,14 +27,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_CLIPIMAGE_H
-#define OFXH_CLIPIMAGE_H
+#ifndef _TUTTLE_HOST_OFX_CLIPIMAGE_HPP_
+#define _TUTTLE_HOST_OFX_CLIPIMAGE_HPP_
 
 #include "ofxImageEffect.h"
 #include "OfxhClip.hpp"
 #include "OfxhImage.hpp"
 #include "OfxhUtilities.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <map>
@@ -109,12 +109,13 @@ public:
 
 /**
  * a clip image instance
+ * @todo tuttle: template this class with the Node Type, so replace OfxhImageEffectNode by template parameter
  */
 class OfxhClipImage : virtual public OfxhClipImageAccessor,
 	public attribute::OfxhClip
 {
 protected:
-	imageEffect::OfxhImageEffectNode& _effectInstance; ///< image effect instance
+	imageEffect::OfxhImageEffectNode& _effectInstance; ///< effect instance
 
 public:
 	OfxhClipImage( imageEffect::OfxhImageEffectNode& effectInstance, const attribute::OfxhClipImageDescriptor& desc );

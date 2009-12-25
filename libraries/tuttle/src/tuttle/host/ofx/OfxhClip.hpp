@@ -33,7 +33,7 @@
 #include "ofxImageEffect.h"
 #include "OfxhAttribute.hpp"
 #include "OfxhUtilities.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 
 #include <boost/utility.hpp>
 
@@ -140,3 +140,4 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 }
 
 #endif
+

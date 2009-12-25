@@ -30,19 +30,18 @@
 #ifndef _OfxhProgress_h_
 #define _OfxhProgress_h_
 
-#include "ofxProgress.h"
+#include <string>
 
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace Progress {
 
 /// Things that display progress derive from this ABC and implement the following
 /// functions.
-class ProgressI
+class OfxhIProgress
 {
 public:
-	virtual ~ProgressI() {}
+	virtual ~OfxhIProgress() {}
 
 	/// Start doing progress.
 	virtual void progressStart( const std::string& message ) = 0;
@@ -58,6 +57,6 @@ public:
 }
 }
 }
-}
 
 #endif
+

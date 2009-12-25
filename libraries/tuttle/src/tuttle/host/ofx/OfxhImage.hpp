@@ -32,7 +32,8 @@
 
 #include "ofxImageEffect.h"
 #include "OfxhUtilities.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhClip.hpp"
+#include "OfxhProperty.hpp"
 
 namespace tuttle {
 namespace host {
@@ -58,7 +59,7 @@ enum ContextEnum
 /** @brief Enumerates the pixel depths supported */
 enum BitDepthEnum
 {
-	eBitDepthNone, /**< @brief bit depth that indicates no data is present */
+	eBitDepthNone, ///< @brief bit depth that indicates no data is present
 	eBitDepthUByte,
 	eBitDepthUShort,
 	eBitDepthFloat,

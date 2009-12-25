@@ -27,11 +27,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_PARAM_H
-#define OFXH_PARAM_H
+#ifndef _TUTTLE_HOST_OFX_PARAM_HPP_
+#define _TUTTLE_HOST_OFX_PARAM_HPP_
 
-#include "ofxCore.h"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhCore.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhAttribute.hpp"
 #include <tuttle/host/core/Exception.hpp>
 
@@ -48,9 +48,6 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 namespace attribute {
-
-/// fetch the param suite
-void* GetSuite( int version );
 
 /// is this a standard BaseType
 bool isStandardType( const std::string& BaseType );

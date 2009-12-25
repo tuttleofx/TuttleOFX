@@ -27,21 +27,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_INTERACT_H
-#define OFXH_INTERACT_H
+#ifndef _TUTTLE_HOST_OFX_INTERACT_HPP_
+#define _TUTTLE_HOST_OFX_INTERACT_HPP_
+
+#include "OfxhProperty.hpp"
+#include <ofxInteract.h>
 
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace interact {
 
-/// fetch a versioned suite for our interact
-void* GetSuite( int version );
-
-class OfxhBase
+class OfxhInteractBase
 {
 public:
-	virtual ~OfxhBase() {}
+	virtual ~OfxhInteractBase() {}
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxInteractHandle getHandle() { return ( OfxInteractHandle ) this; }
@@ -60,7 +60,7 @@ enum State
 };
 
 /// Descriptor for an interact. Interacts all share a single description
-class OfxhInteractDescriptor : public OfxhBase
+class OfxhInteractDescriptor : public OfxhInteractBase
 {
 protected:
 	property::OfxhSet _properties; ///< its props
@@ -102,7 +102,7 @@ public:
 /// a generic interact, it doesn't belong to anything in particular
 /// we need to generify this slighty more and remove the renderscale args
 /// into a derived class, as they only belong to image effect plugins
-class OfxhInteract : public OfxhBase,
+class OfxhInteract : public OfxhInteractBase,
 	protected property::OfxhGetHook
 {
 protected:

@@ -33,7 +33,7 @@
 
 // ofx host
 #include "OfxhBinary.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhPluginAPICache.hpp"
 #include "OfxhPluginCache.hpp"

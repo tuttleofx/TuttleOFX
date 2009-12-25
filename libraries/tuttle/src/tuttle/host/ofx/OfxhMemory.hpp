@@ -27,14 +27,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_MEMORY_H
-#define OFXH_MEMORY_H
+#ifndef _TUTTLE_HOST_OFX_MEMORY_HPP_
+#define _TUTTLE_HOST_OFX_MEMORY_HPP_
 
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace memory {
 
+/**
+ * @todo use MemoryPool
+ */
 class OfxhMemory
 {
 public:
@@ -58,6 +60,6 @@ protected:
 }
 }
 }
-}
 
 #endif
+

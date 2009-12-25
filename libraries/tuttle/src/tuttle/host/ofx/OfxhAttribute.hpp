@@ -32,7 +32,7 @@
 
 #include "ofxCore.h"
 #include "ofxAttribute.h"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 
 #include <string>
 #include <cassert>

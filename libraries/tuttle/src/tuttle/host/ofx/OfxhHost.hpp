@@ -26,32 +26,35 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef OFXH_HOST_H
-#define OFXH_HOST_H
+#ifndef _TUTTLE_HOST_OFX_HOST_HPP_
+#define _TUTTLE_HOST_OFX_HOST_HPP_
+
+#include "OfxhProperty.hpp"
+
+#include "ofxCore.h"
+#include "ofxImageEffect.h"
+#include "ofxTimeLine.h"
 
 #include <map>
 #include <string>
 #include <cstdarg>
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-#include "ofxTimeLine.h"
-#include "OfxhPropertySuite.hpp"
-
 namespace tuttle {
 namespace host {
 namespace ofx {
 
-/// a plugin what we use
+// a plugin what we use
 class OfxhPlugin;
 
-/// a param descriptor
+// a param descriptor
 namespace attribute {
 class OfxhParamDescriptor;
 }
 
-/// Base class for all objects passed to a plugin by the 'setHost' function
-/// passed back by any plug-in.
+/**
+ * Base class for all objects passed to a plugin by the 'setHost' function
+ * passed back by any plug-in.
+ */
 class OfxhAbstractHost
 {
 protected:
@@ -66,11 +69,13 @@ public:
 	const property::OfxhSet& getProperties() const { return _properties; }
 	property::OfxhSet&       getProperties()       { return _properties; }
 
-	/// fetch a suite
-	/// The base class returns the following suites
-	///    PropertySuite
-	///    MemorySuite
-	virtual void* fetchSuite( const char* suiteName, int suiteVersion );
+	/**
+	 * fetch a suite
+	 * The base class returns the following suites
+	 *    PropertySuite
+	 *    MemorySuite
+	 */
+	virtual void* fetchSuite( const char* suiteName, const int suiteVersion );
 
 	/// get the C API handle that is passed across the API to represent this host
 	OfxHost* getHandle();

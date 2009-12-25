@@ -32,7 +32,7 @@
 
 #include "ProcessNode.hpp"
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
-#include <tuttle/host/ofx/OfxhImageEffect.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 
 #include <cmath>
 #include <cassert>
@@ -121,10 +121,11 @@ public:
 	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 
 	void dumpToStdOut() const;
+	
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
-	// overridden for imageEffect::OfxhInstance
+	// overridden for imageEffect::OfxhImageEffectNode
 
 	/// get default output fielding. This is passed into the clip prefs action
 	/// and  might be mapped (if the host allows such a thing)
@@ -207,7 +208,7 @@ public:
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
-	// overridden for Progress::ProgressI
+	// overridden for OfxhIProgress
 
 	/// Start doing progress.
 	void progressStart( const std::string& message );
@@ -222,17 +223,17 @@ public:
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
-	// overridden for TimeLine::TimeLineI
+	// overridden for OfxhITimeLine
 
 	/// get the current time on the timeline. This is not necessarily the same
 	/// time as being passed to an action (eg render)
-	double timeLineGetTime();
+	double timelineGetTime();
 
 	/// set the timeline to a specific time
-	void timeLineGotoTime( double t );
+	void timelineGotoTime( double t );
 
 	/// get the first and last times available on the effect's timeline
-	void timeLineGetBounds( double& t1, double& t2 );
+	void timelineGetBounds( double& t1, double& t2 );
 
 	const OfxPointD& getEffectFrameRange() const
 	{

@@ -35,9 +35,8 @@
 
 // ofx host
 #include "OfxhBinary.hpp"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhClip.hpp"
-#include "OfxhImageEffect.hpp"
 
 namespace tuttle {
 namespace host {

@@ -40,7 +40,7 @@
 #include "expat.h"
 
 #include "ofxCore.h"
-#include "OfxhPropertySuite.hpp"
+#include "OfxhProperty.hpp"
 #include "OfxhPluginAPICache.hpp"
 #include "OfxhBinary.hpp"
 
