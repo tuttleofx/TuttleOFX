@@ -67,7 +67,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, Of
 	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-//	loadAndDescribeActions();
+	//	loadAndDescribeActions();
 }
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
@@ -85,7 +85,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 	, _baseDescriptor( NULL )
 {
 	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
-//	loadAndDescribeActions();
+	//	loadAndDescribeActions();
 }
 
 #if defined( WINDOWS ) && !defined( __GNUC__ )
@@ -159,11 +159,11 @@ bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 	for( ContextSet::iterator it = _knownContexts.begin(),
 	     itEnd = _knownContexts.end();
 	     it != itEnd;
-	++it )
+	 ++it )
 	{
 		TCOUT( "context " << *it );
 	}
-	*/
+	 */
 	return _knownContexts.find( context ) != _knownContexts.end();
 }
 
@@ -431,7 +431,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 	}
 
 	const imageEffect::OfxhImageEffectNodeDescriptor& e = p->getDescriptor();
-	const property::OfxhSet& eProps      = e.getProperties();
+	const property::OfxhSet& eProps                     = e.getProperties();
 
 	int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
@@ -445,7 +445,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		throw core::exception::LogicError( "Unload failed on plugin " + op->getIdentifier() + " at initialization.");
+		throw core::exception::LogicError( "Unload failed on plugin " + op->getIdentifier() + " at initialization." );
 	}
 }
 

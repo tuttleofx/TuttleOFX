@@ -42,9 +42,9 @@ public:
 
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 
-	const InternalGraph& getGraph() const { return _graph; }
-	const NodeMap& getNodes() const { return _nodes; }
-	NodeMap& getNodes() { return _nodes; }
+	const InternalGraph&    getGraph() const         { return _graph; }
+	const NodeMap&          getNodes() const         { return _nodes; }
+	NodeMap&                getNodes()               { return _nodes; }
 	const InstanceCountMap& getInstanceCount() const { return _instanceCount; }
 
 public:

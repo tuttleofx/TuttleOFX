@@ -7,10 +7,9 @@ namespace ofx {
 
 // boost thread simple example
 /*
-#include <boost/thread/thread.hpp>
-#include <boost/thread/thread_group.hpp>
-#include <vector>
-
+ #include <boost/thread/thread.hpp>
+ #include <boost/thread/thread_group.hpp>
+ #include <vector>
 // Une variable globale qui pourra être encapsulée au besoin
 boost::thread_specific_ptr<int> value;
 // Une variable globale avec son mutex, le tout devrait être dans une classe englobante
@@ -37,8 +36,7 @@ int main()
 	}
 	group.join_all();
 }
-*/
-
+ */
 
 static OfxStatus multiThread( OfxThreadFunctionV1 func,
                               unsigned int        nThreads,

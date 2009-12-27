@@ -1,10 +1,3 @@
-/**
- * @file DPXWriterProcess.hpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
 #ifndef DPXWRITER_PROCESS_HPP
 #define DPXWRITER_PROCESS_HPP
 
@@ -25,7 +18,6 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace dpx {
@@ -36,29 +28,32 @@ namespace writer {
  *
  */
 template<class View>
-class DPXWriterProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
+class DPXWriterProcess : public tuttle::plugin::ImageGilProcessor<View>,
+	public tuttle::plugin::Progress
 {
-    typedef typename View::value_type value_t;
-protected :
-    DPXWriterPlugin&      _plugin;        ///< Rendering plugin
+typedef typename View::value_type value_t;
+
+protected:
+	DPXWriterPlugin&      _plugin;        ///< Rendering plugin
 	OFX::StringParam*     _filepath;      ///< File path
 	OFX::ChoiceParam*     _bitDepth;      ///< Bit depth
-	OFX::ChoiceParam*     _componentsType;///< Components type
+	OFX::ChoiceParam*     _componentsType; ///< Components type
 	OFX::BooleanParam*    _compressed;    ///< Bit streaming
-    View                  _srcView;       ///< Source view
+	View _srcView;                        ///< Source view
 	tuttle::io::DpxHeader _dpxHeader;     ///< Dpx image header
-	tuttle::io::DpxImage  _dpxImg;        ///< Dpx image reader
+	tuttle::io::DpxImage _dpxImg;         ///< Dpx image reader
 
 	template<class CONV_IMAGE>
 	void writeImage( View& src, std::string& filepath, int bitDepth, tuttle::io::DpxImage::EDPX_CompType compType, int packing ) throw( tuttle::plugin::PluginException );
-public :
-    DPXWriterProcess<View>(DPXWriterPlugin &instance);
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+public:
+	DPXWriterProcess<View>( DPXWriterPlugin & instance );
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+	// set up and run a processor
+	void setupAndProcess( const OFX::RenderArguments& args );
+
+	// Do some processing
+	void multiThreadProcessImages( OfxRectI procWindow );
 };
 
 }
@@ -68,4 +63,4 @@ public :
 
 #include "DPXWriterProcess.tcc"
 
-#endif  // DPXWRITER_PROCESS_HPP
+#endif

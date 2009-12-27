@@ -14,7 +14,6 @@
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -58,9 +57,9 @@ public:
 	 *   @param desc - the descriptor for that plugin
 	 *   @param context - the context to be created in
 	 */
-	virtual OfxhImageEffectNode* newInstance( OfxhImageEffectPlugin* plugin,
-	                                      OfxhImageEffectNodeDescriptor&        desc,
-	                                      const std::string& context ) const = 0;
+	virtual OfxhImageEffectNode* newInstance( OfxhImageEffectPlugin*         plugin,
+	                                          OfxhImageEffectNodeDescriptor& desc,
+	                                          const std::string&             context ) const = 0;
 
 	/**
 	 * Function called as each plugin binary is found and loaded from disk

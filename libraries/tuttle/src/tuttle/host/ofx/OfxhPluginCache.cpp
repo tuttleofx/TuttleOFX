@@ -154,10 +154,10 @@ OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstra
 	_b->_binary.ref();
 	_op                          = 0;
 	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_b->_binary.findSymbol( "OfxGetPlugin" );
-	_op = getPlug( p->getIndex() );
+	_op                          = getPlug( p->getIndex() );
 	if( !_op )
 	{
-		throw core::exception::LogicError( "Can't found plugin at index 'todo' in plugin '"+_p->getIdentifier()+"'" ); // p->getIndex()
+		throw core::exception::LogicError( "Can't found plugin at index 'todo' in plugin '" + _p->getIdentifier() + "'" ); // p->getIndex()
 	}
 	_op->setHost( host->getHandle() );
 }

@@ -95,7 +95,7 @@ template<>
 struct merger<fun_op_pixel_t>
 {
 	template <class Pixel, class Functor>
-	static inline void merge( const Pixel& A, const Pixel& B, Pixel& d, Functor & fun )
+	static inline void merge( const Pixel& A, const Pixel& B, Pixel& d, Functor& fun )
 	{
 		fun( A, B, d );
 	}
@@ -105,7 +105,7 @@ template<>
 struct merger<fun_op_alpha_t>
 {
 	template <class Pixel, class Functor>
-	static inline void merge( const Pixel& A, const Pixel& B, Pixel& d, Functor & fun )
+	static inline void merge( const Pixel& A, const Pixel& B, Pixel& d, Functor& fun )
 	{
 		fun.a = get_color( A, alpha_t() );
 		fun.b = get_color( B, alpha_t() );
@@ -119,7 +119,7 @@ struct merger<fun_op_no_alpha_t>
 	template <class Pixel, class Functor>
 	static inline void merge( const Pixel& A,
 	                          const Pixel& B, Pixel& d,
-	                          Functor & fun )
+	                          Functor& fun )
 	{
 		static_for_each( A, B, d, fun );
 	}

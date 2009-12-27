@@ -232,8 +232,8 @@ public:
 			return false;
 		return true;
 	}
-	
-	bool operator!=( const OfxhProperty& other ) const { return !operator==(other); }
+
+	bool operator!=( const OfxhProperty& other ) const { return !operator==( other ); }
 
 	/// is it read only?
 	bool getPluginReadOnly() const { return _pluginReadOnly; }
@@ -293,12 +293,10 @@ public:
 	virtual std::string getStringValue( int nth ) const = 0;
 };
 
-
 inline OfxhProperty* new_clone( const OfxhProperty& p )
 {
 	return p.clone();
 }
-
 
 /// this represents a generic property.
 /// template parameter T is the type descriptor of the
@@ -343,12 +341,12 @@ public:
 	{
 		if( getType() != other.getType() )
 			return false;
-		return operator==( dynamic_cast<const OfxhPropertyTemplate<T>&>(other) );
+		return operator==( dynamic_cast<const OfxhPropertyTemplate<T>&>( other ) );
 	}
 
 	bool operator==( const OfxhPropertyTemplate<T>& other ) const
 	{
-		if( ! OfxhProperty::operator==( other ) )
+		if( !OfxhProperty::operator==( other ) )
 			return false;
 		if( _value != other._value )
 			return false;
@@ -396,14 +394,15 @@ public:
 	/// return the value as a string
 	inline std::string getStringValue( int idx ) const
 	{
-		return  boost::lexical_cast<std::string>( _value[idx] );
+		return boost::lexical_cast<std::string>( _value[idx] );
 	}
 
-public: /// @todo in private and friend function...
+public:
+	/// @todo in private and friend function...
 	ReturnType getConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC;
 	ReturnType getConstlessValueRaw( int index = 0 ) const OFX_EXCEPTION_SPEC;
 	/// @todo tuttle remove ReturnType, only use Type
-	inline APITypeConstless getAPIConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC { return getConstlessValue(index); }
+	inline APITypeConstless getAPIConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC { return getConstlessValue( index ); }
 };
 
 typedef OfxhPropertyTemplate<OfxhIntValue>     Int;     /// Our int property
@@ -412,8 +411,7 @@ typedef OfxhPropertyTemplate<OfxhStringValue>  String;  /// Our string property
 typedef OfxhPropertyTemplate<OfxhPointerValue> Pointer; /// Our pointer property
 
 template<>
-inline String::APITypeConstless String::getAPIConstlessValue( int index ) const OFX_EXCEPTION_SPEC { return const_cast<String::APITypeConstless>(getConstlessValue(index).c_str()); }
-
+inline String::APITypeConstless String::getAPIConstlessValue( int index ) const OFX_EXCEPTION_SPEC { return const_cast<String::APITypeConstless>( getConstlessValue( index ).c_str() ); }
 
 /// A class that is used to initialize a property set. Feed in an array of these to
 /// a property and it will construct a bunch of properties. Terminate such an array
@@ -487,7 +485,7 @@ public:
 
 	/// destructor
 	virtual ~OfxhSet();
-	
+
 	void clear();
 
 	size_t getLocalSize() const { return _props.size(); }
@@ -503,7 +501,7 @@ public:
 	void operator=( const OfxhSet& );
 
 	bool operator==( const OfxhSet& ) const;
-	bool operator!=( const OfxhSet& other ) const { return !operator==(other); }
+	bool operator!=( const OfxhSet& other ) const { return !operator==( other ); }
 
 	/// dump to cout
 	void coutProperties() const;
@@ -514,7 +512,7 @@ public:
 	void eraseProperty( const std::string& propName );
 
 	bool hasProperty( const std::string& propName, bool followChain = false ) const;
-	
+
 	inline OfxhSet& operator+( const OfxhPropSpec* p ) { addProperties( p ); return *this; }
 
 	/// add one new property
@@ -528,7 +526,7 @@ public:
 
 	/// grab the internal properties map
 	const PropertyMap& getMap() const { return _props; }
-	PropertyMap& getMap() { return _props; }
+	PropertyMap&       getMap()       { return _props; }
 
 	/// set the get hook for a particular property.  users may need to call particular
 	/// specialised versions of this.
@@ -541,8 +539,8 @@ public:
 	/// Fetchs a reference to a property of the given name, following the property chain if the
 	/// 'followChain' arg is not false.
 	const OfxhProperty& fetchProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast );
-	OfxhProperty& fetchLocalProperty( const std::string& name ) throw( core::exception::LogicError, std::bad_cast );
-	const OfxhProperty& fetchLocalProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>(this)->fetchLocalProperty(name); }
+	OfxhProperty&       fetchLocalProperty( const std::string& name ) throw( core::exception::LogicError, std::bad_cast );
+	const OfxhProperty& fetchLocalProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>( this )->fetchLocalProperty( name ); }
 
 	/// get property with the particular name and type.  if the property is
 	/// missing or is of the wrong type, return an error status.  if this is a sloppy
@@ -559,10 +557,11 @@ public:
 	{
 		return dynamic_cast<T&>( fetchLocalProperty( name ) );
 	}
+
 	template<class T>
 	const T& fetchLocalTypedProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
 	{
-		return const_cast<OfxhSet*>(this)->fetchLocalTypedProperty<T>( name );
+		return const_cast<OfxhSet*>( this )->fetchLocalTypedProperty<T>( name );
 	}
 
 	const String& fetchStringProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
@@ -574,7 +573,8 @@ public:
 	{
 		return fetchLocalTypedProperty<String>( name );
 	}
-	const String& fetchLocalStringProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>(this)->fetchLocalStringProperty(name); }
+
+	const String& fetchLocalStringProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>( this )->fetchLocalStringProperty( name ); }
 
 	const Int& fetchIntProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
 	{
@@ -585,7 +585,8 @@ public:
 	{
 		return fetchLocalTypedProperty<Int>( name );
 	}
-	const Int& fetchLocalIntProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>(this)->fetchLocalIntProperty(name); }
+
+	const Int& fetchLocalIntProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>( this )->fetchLocalIntProperty( name ); }
 
 	const Pointer& fetchPointerProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
 	{
@@ -596,7 +597,8 @@ public:
 	{
 		return fetchLocalTypedProperty<Pointer>( name );
 	}
-	const Pointer& fetchLocalPointerProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>(this)->fetchLocalPointerProperty(name); }
+
+	const Pointer& fetchLocalPointerProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>( this )->fetchLocalPointerProperty( name ); }
 
 	const Double& fetchDoubleProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
 	{
@@ -607,7 +609,8 @@ public:
 	{
 		return fetchLocalTypedProperty<Double>( name );
 	}
-	const Double& fetchLocalDoubleProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>(this)->fetchLocalDoubleProperty(name); }
+
+	const Double& fetchLocalDoubleProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast ) { return const_cast<OfxhSet*>( this )->fetchLocalDoubleProperty( name ); }
 
 	/// get a particular int property without fetching via a get hook, useful for notifies
 	int getIntPropertyRaw( const std::string& property, int index = 0 ) const;
@@ -675,7 +678,6 @@ public:
 	bool verifyMagic() { return this != NULL && _magic == kMagic; }
 };
 
-
 /// set a particular property
 template<class T>
 void OfxhSet::setProperty( const std::string& property, int index, const typename T::Type& value )
@@ -688,10 +690,10 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 	{
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		COUT_EXCEPTION(e);
+		COUT_EXCEPTION( e );
 		coutProperties();
 	}
-	catch(...)
+	catch(... )
 	{
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
@@ -712,7 +714,7 @@ void OfxhSet::setPropertyN( const std::string& property, int count, const typena
 	{
 		COUT_ERROR( "Set::setProperty - Error on " << property << " property (value=" << value << ")." );
 		COUT_ERROR( "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		COUT_EXCEPTION(e);
+		COUT_EXCEPTION( e );
 	}
 	catch(... )
 	{
@@ -732,7 +734,7 @@ typename T::ReturnType OfxhSet::getProperty( const std::string& property, int in
 		TCOUT( "return kEmpty on property: " << property );
 		return T::kEmpty; /// @todo tuttle: is this really needed ?
 	}
-	*/
+	 */
 	return fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).getValue( index );
 }
 
@@ -759,7 +761,6 @@ void OfxhSet::getPropertyRawN( const std::string& property, int count, typename 
 {
 	return fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).getValueNRaw( value, count );
 }
-
 
 }
 }

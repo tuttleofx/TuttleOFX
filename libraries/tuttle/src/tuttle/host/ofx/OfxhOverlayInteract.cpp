@@ -1,6 +1,5 @@
 #include "OfxhOverlayInteract.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {

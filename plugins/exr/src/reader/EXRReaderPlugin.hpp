@@ -20,15 +20,17 @@ class EXRReaderPlugin : public OFX::ImageEffect
 {
 public:
 	EXRReaderPlugin( OfxImageEffectHandle handle );
-	OFX::Clip*            getDstClip() const;
+	OFX::Clip* getDstClip() const;
+
 public:
-	virtual void render( const OFX::RenderArguments& args );
-	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	void         getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-	bool         getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void         getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	const std::vector<std::string>& channelNames() const { return _vChannelNames; }
+	virtual void                          render( const OFX::RenderArguments& args );
+	void                                  changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void                                  getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
+	bool                                  getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	void                                  getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+	const std::vector<std::string>&       channelNames() const  { return _vChannelNames; }
 	const std::vector<OFX::ChoiceParam*>& channelChoice() const { return _vChannelChoice; }
+
 protected:
 	std::vector<OFX::ChoiceParam*> _vChannelChoice;  ///< Channel choice
 	std::vector<std::string>       _vChannelNames;   ///< Channel names

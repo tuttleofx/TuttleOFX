@@ -52,13 +52,13 @@ void throwSuiteStatusException( OfxStatus stat ) throw( OFX::Exception::Suite, s
 			throw std::bad_alloc();
 
 		default:
-			throw OFX::Exception::Suite( stat , "Threw suite exception!" );
+			throw OFX::Exception::Suite( stat, "Threw suite exception!" );
 	}
 }
 
-void throwHostMissingSuiteException( const std::string &name ) throw( OFX::Exception::Suite )
+void throwHostMissingSuiteException( const std::string& name ) throw( OFX::Exception::Suite )
 {
-	throw OFX::Exception::Suite( kOfxStatErrUnsupported, "Threw suite exception! Host missing '" + name + "' suite.");
+	throw OFX::Exception::Suite( kOfxStatErrUnsupported, "Threw suite exception! Host missing '" + name + "' suite." );
 }
 
 /** @brief maps status to a string */

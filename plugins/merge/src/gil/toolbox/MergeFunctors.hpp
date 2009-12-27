@@ -134,7 +134,7 @@ struct FunctorMultiply
 	inline void operator()( const Channel& A, const Channel& B, Channel& dst )
 	{
 		if( A < 0 && B < 0 )
-			dst = (Channel)(0);
+			dst = (Channel)( 0 );
 		else
 			dst = (Channel)( A * B );
 	}
@@ -590,10 +590,9 @@ struct FunctorXOR
 
 };
 
-
 /*****************************************************************************
-* Functors that operates on pixels                                           *
-******************************************************************************/
+ * Functors that operates on pixels                                           *
+ ******************************************************************************/
 
 template <typename Pixel>
 struct FunctorColor
@@ -609,13 +608,14 @@ struct FunctorColor
 		color_convert( A, hA );
 		color_convert( B, hB );
 		hsl32f_pixel_t hC( get_color( hB, hue_t() ),
-						   get_color( hB, saturation_t() ),
-						   get_color( hA, lightness_t() ) );
-		color_convert(hC, C);
+		                   get_color( hB, saturation_t() ),
+		                   get_color( hA, lightness_t() ) );
+		color_convert( hC, C );
 	}
+
 };
 
 }
 }
 
-#endif //GIL_FUNCTORS_HPP
+#endif

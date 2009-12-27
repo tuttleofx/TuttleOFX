@@ -1,7 +1,6 @@
 #include "OfxhTimelineSuite.hpp"
 #include "OfxhTimeline.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -49,12 +48,11 @@ struct OfxTimeLineSuiteV1 gTimelineSuite =
 	TimelineGetBounds
 };
 
-
 void* getTimelineSuite( const int version )
 {
-    if( version == 1 )
-        return &gTimelineSuite;
-    return NULL;
+	if( version == 1 )
+		return &gTimelineSuite;
+	return NULL;
 }
 
 }

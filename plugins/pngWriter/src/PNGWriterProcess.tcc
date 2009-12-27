@@ -1,4 +1,3 @@
-
 #include "PNGWriterDefinitions.hpp"
 #include "PNGWriterPlugin.hpp"
 

@@ -1,11 +1,3 @@
-/**
- * @file EXRWriterPluginFactory.cpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
-
 #include "EXRWriterPluginFactory.hpp"
 #include "EXRWriterPlugin.hpp"
 #include "EXRWriterDefinitions.hpp"
@@ -28,36 +20,40 @@ namespace plugin {
 namespace exr {
 namespace writer {
 
+static const bool kSupportTiles              = false;
+static const bool kSupportTemporalClipAccess = false;
+
+using namespace OFX;
+
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
 using namespace OFX;
-void
-EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    // basic labels
-    desc.setLabels( "EXRWriterHd3d", "EXRWriterHd3d",
-                    "EXR File writer" );
-    desc.setPluginGrouping( "tuttle" );
+	// basic labels
+	desc.setLabels( "EXRWriterHd3d", "EXRWriterHd3d",
+	                "EXR File writer" );
+	desc.setPluginGrouping( "tuttle" );
 
-    // add the supported contexts, only filter at the moment
+	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( eContextGeneral );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth( eBitDepthUByte );
-    desc.addSupportedBitDepth( eBitDepthUShort );
-    desc.addSupportedBitDepth( eBitDepthFloat );
+	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthUByte );
+	desc.addSupportedBitDepth( eBitDepthUShort );
+	desc.addSupportedBitDepth( eBitDepthFloat );
 
-    // set a few flags
-    desc.setSingleInstance( false );
-    desc.setHostFrameThreading( false );
-    desc.setSupportsMultiResolution( false );
-	desc.setRenderThreadSafety(OFX::eRenderInstanceSafe);
-    desc.setSupportsTiles( kSupportTiles );
-    desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-    desc.setRenderTwiceAlways( false );
-    desc.setSupportsMultipleClipPARs( false );
+	// set a few flags
+	desc.setSingleInstance( false );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
+	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
+	desc.setRenderTwiceAlways( false );
+	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -65,20 +61,20 @@ EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                             OFX::ContextEnum context )
+void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                OFX::ContextEnum            context )
 {
-    OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	// Exr only supports RGB(A)
-    srcClip->addSupportedComponent( ePixelComponentRGBA );
-    srcClip->setSupportsTiles( kSupportTiles );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-    // Create the mandated output clip
-    OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	// Exr only supports RGB(A)
-    dstClip->addSupportedComponent( ePixelComponentRGBA );
-    dstClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent( ePixelComponentRGBA );
+	srcClip->setSupportsTiles( kSupportTiles );
+
+	// Create the mandated output clip
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	// Exr only supports RGB(A)
+	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
@@ -110,11 +106,10 @@ EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect*
-EXRWriterPluginFactory::createInstance(OfxImageEffectHandle handle,
-                                            OFX::ContextEnum context)
+OFX::ImageEffect* EXRWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
+                                                          OFX::ContextEnum     context )
 {
-    return new EXRWriterPlugin(handle);
+	return new EXRWriterPlugin( handle );
 }
 
 }

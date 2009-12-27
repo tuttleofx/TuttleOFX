@@ -1,4 +1,3 @@
-
 #include "HostDescriptor.hpp"
 #include "ImageEffectNode.hpp"
 #include "ClipImage.hpp"
@@ -49,8 +48,7 @@ ClipImage::ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribut
 }
 
 ClipImage::~ClipImage()
-{
-}
+{}
 
 /// Return the rod on the clip cannoical coords!
 OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time )
@@ -59,9 +57,9 @@ OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time )
 	{
 		if( !getConnected() )
 		{
-			throw exception::LogicError("fetchRegionOfDefinition on an unconnected input clip ! (clip: "+ getFullName() + ")." );
+			throw exception::LogicError( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." );
 		}
-		return const_cast<ClipImage*>(_connectedClip)->fetchRegionOfDefinition(time); /// @todo tuttle: hack !!!
+		return const_cast<ClipImage*>( _connectedClip )->fetchRegionOfDefinition( time ); /// @todo tuttle: hack !!!
 	}
 
 	OfxRectD rod;
@@ -69,51 +67,50 @@ OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time )
 	_effect.getRegionOfDefinitionAction( time, renderScale, rod );
 	return rod;
 	/*
-	OfxRectD rod;
-	OfxPointD renderScale;
-
-	/// @todo tuttle: strange: seams to have bug with commercial plugins (memory overflow)
-	ofx::property::OfxhPropSpec inStuff[] = {
-	     { kOfxPropTime, ofx::property::eDouble, 1, true, "0" },
-	     { kOfxImageEffectPropRenderScale, ofx::property::eDouble, 2, true, "0" },
-	     { 0 }
-	};
-	
-	ofx::property::OfxhPropSpec outStuff[] = {
-	     { kOfxImageEffectPropRegionOfDefinition, ofx::property::eDouble, 4, false, "0" },
-	     { 0 }
-	};
-	
-	ofx::property::OfxhSet inArgs(inStuff);
-	ofx::property::OfxhSet outArgs(outStuff);
-	
-	inArgs.setDoubleProperty(kOfxPropTime,time);
-	
-	inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
-	
-	OfxStatus stat = _effect.mainEntry(kOfxImageEffectActionGetRegionOfDefinition, (const void*)(_effect.getHandle()), &inArgs, &outArgs);
-	
-	if( stat == kOfxStatOK )
-	{
-	     outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
-	}
-	else if( stat == kOfxStatReplyDefault )
-	{
-		// Rule: default is project size
-		_effect.getProjectOffset( rod.x1, rod.y1 );
-		_effect.getProjectSize( rod.x2, rod.y2 );
-		_effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
-
-		/// @todo tuttle: or inputs RoD if not generator ?
-	}
-	else
-	{
-		throw exception::LogicError("fetchRegionOfDefinition error on clip : " + getFullName() );
-	}
-	return rod;
-	*/
+	 * OfxRectD rod;
+	 * OfxPointD renderScale;
+	 *
+	 * /// @todo tuttle: strange: seams to have bug with commercial plugins (memory overflow)
+	 * ofx::property::OfxhPropSpec inStuff[] = {
+	 *   { kOfxPropTime, ofx::property::eDouble, 1, true, "0" },
+	 *   { kOfxImageEffectPropRenderScale, ofx::property::eDouble, 2, true, "0" },
+	 *   { 0 }
+	 * };
+	 *
+	 * ofx::property::OfxhPropSpec outStuff[] = {
+	 *   { kOfxImageEffectPropRegionOfDefinition, ofx::property::eDouble, 4, false, "0" },
+	 *   { 0 }
+	 * };
+	 *
+	 * ofx::property::OfxhSet inArgs(inStuff);
+	 * ofx::property::OfxhSet outArgs(outStuff);
+	 *
+	 * inArgs.setDoubleProperty(kOfxPropTime,time);
+	 *
+	 * inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
+	 *
+	 * OfxStatus stat = _effect.mainEntry(kOfxImageEffectActionGetRegionOfDefinition, (const void*)(_effect.getHandle()), &inArgs, &outArgs);
+	 *
+	 * if( stat == kOfxStatOK )
+	 * {
+	 *   outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
+	 * }
+	 * else if( stat == kOfxStatReplyDefault )
+	 * {
+	 *  // Rule: default is project size
+	 *  _effect.getProjectOffset( rod.x1, rod.y1 );
+	 *  _effect.getProjectSize( rod.x2, rod.y2 );
+	 *  _effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
+	 *
+	 *  /// @todo tuttle: or inputs RoD if not generator ?
+	 * }
+	 * else
+	 * {
+	 *  throw exception::LogicError("fetchRegionOfDefinition error on clip : " + getFullName() );
+	 * }
+	 * return rod;
+	 */
 }
-
 
 /// Get the Raw Unmapped Pixel Depth from the host.
 const std::string& ClipImage::getUnmappedBitDepth() const
@@ -153,7 +150,6 @@ void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmap
 	unmappedEndFrame   = 1;
 }
 
-
 /// override this to fill in the image at the given time.
 /// The bounds of the image on the image plane should be
 /// 'appropriate', typically the value returned in getRegionsOfInterest
@@ -170,44 +166,44 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( OfxTime time, Of
 		bounds.y1 = optionalBounds->y1;
 		bounds.x2 = optionalBounds->x2;
 		bounds.y2 = optionalBounds->y2;
-//		throw exception::LogicError(kOfxStatErrMissingHostFeature, "Uses optionalBounds not supported yet."); ///< @todo tuttle: this must be supported !
-//		TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
+		//		throw exception::LogicError(kOfxStatErrMissingHostFeature, "Uses optionalBounds not supported yet."); ///< @todo tuttle: this must be supported !
+		//		TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
 	}
 	else
 		bounds = fetchRegionOfDefinition( time );
 
-//	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
+	//	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
 	boost::shared_ptr<Image> image = _memoryCache.get( getConnectedClipFullName(), time );
-//	std::cout << "got image : " << image.get() << std::endl;
+	//	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds... if not the same as in cache...
 	if( image.get() != NULL )
 	{
 		/*
-		if( isOutput() )
-		{
-			TCOUT("output already in cache !");
-			TCOUT( "return output image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
-		}
-		else
-		{
-			TCOUT( "return input image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
-		}
-		*/
+		 * if( isOutput() )
+		 * {
+		 *  TCOUT("output already in cache !");
+		 *  TCOUT( "return output image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
+		 * }
+		 * else
+		 * {
+		 *  TCOUT( "return input image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
+		 * }
+		 */
 		return image.get();
 	}
 	if( isOutput() )
 	{
 		// make a new ref counted image
-		boost::shared_ptr<Image> outputImage(new Image( *this, bounds, time ));
-//		outputImage.get()->cout();
-//		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
+		boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
+		//		outputImage.get()->cout();
+		//		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
 		_memoryCache.put( getConnectedClipFullName(), time, outputImage );
-//		TCOUT_VAR( _memoryCache.size() );
-//		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
-//		_memoryCache.get( getFullName(), time ).get()->cout();
+		//		TCOUT_VAR( _memoryCache.size() );
+		//		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
+		//		_memoryCache.get( getFullName(), time ).get()->cout();
 		return outputImage.get();
 	}
-	throw exception::LogicError("Error input clip not in cache !");
+	throw exception::LogicError( "Error input clip not in cache !" );
 }
 
 }

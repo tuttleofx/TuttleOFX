@@ -14,18 +14,22 @@ namespace ofx {
  */
 class OfxhException : public std::logic_error
 {
-    OfxStatus _stat;
+OfxStatus _stat;
 
 public:
-    explicit OfxhException( const std::string &what ) : std::logic_error( what )
-    {}
-    
-	/// ctor
-	explicit OfxhException( OfxStatus stat ) : std::logic_error( mapStatusToString(stat) ), _stat( stat )
+	explicit OfxhException( const std::string& what ) : std::logic_error( what )
 	{}
-	
+
 	/// ctor
-	explicit OfxhException( OfxStatus stat, const std::string &what ) : std::logic_error( mapStatusToString(stat) + " " + what ), _stat( stat )
+	explicit OfxhException( OfxStatus stat )
+		: std::logic_error( mapStatusToString( stat ) )
+		, _stat( stat )
+	{}
+
+	/// ctor
+	explicit OfxhException( OfxStatus stat, const std::string& what )
+		: std::logic_error( mapStatusToString( stat ) + " " + what )
+		, _stat( stat )
 	{}
 
 	/// get the status

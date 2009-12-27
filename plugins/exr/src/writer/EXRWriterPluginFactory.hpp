@@ -7,13 +7,8 @@ namespace plugin {
 namespace exr {
 namespace writer {
 
-static const bool kSupportTiles = false;
-static const bool kSupportTemporalClipAccess = false;
-
-
-using namespace OFX;
-
-mDeclarePluginFactory( EXRWriterPluginFactory, {}, {} );
+mDeclarePluginFactory( EXRWriterPluginFactory, {}, {}
+                       );
 
 }
 }

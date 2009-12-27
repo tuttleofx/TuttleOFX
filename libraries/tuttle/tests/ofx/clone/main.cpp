@@ -23,10 +23,10 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngreader" );
 	BOOST_CHECK( plugin != NULL );
 
-//	BOOST_CHECK_THROW( plugin->getProperties().fetchPointerProperty( kOfxPropInstanceData ), core::exception::LogicError );
+	//	BOOST_CHECK_THROW( plugin->getProperties().fetchPointerProperty( kOfxPropInstanceData ), core::exception::LogicError );
 
 	boost::scoped_ptr<tuttle::host::core::ImageEffectNode> ofxinst( dynamic_cast< tuttle::host::core::ImageEffectNode* >( plugin->createInstance( kOfxImageEffectContextGenerator ) ) );
-	ofxinst->setName("pluginTest");
+	ofxinst->setName( "pluginTest" );
 	/*
 	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
 	BOOST_CHECK( ofxinstclone->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
 //	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != ofxinstclone->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() );
-	*/
+	 */
 }
 
 BOOST_AUTO_TEST_SUITE_END()

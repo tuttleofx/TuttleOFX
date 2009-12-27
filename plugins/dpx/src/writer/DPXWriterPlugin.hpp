@@ -1,13 +1,5 @@
-/**
- * @file DPXWriterPlugin.hpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
-
-#ifndef DPXWRITER_PLUGIN_H
-#define DPXWRITER_PLUGIN_H
+#ifndef DPXWRITER_PLUGIN_HPP
+#define DPXWRITER_PLUGIN_HPP
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
@@ -25,13 +17,13 @@ namespace writer {
 class DPXWriterPlugin : public OFX::ImageEffect
 {
 public:
-    DPXWriterPlugin( OfxImageEffectHandle handle );
-    OFX::Clip *getSrcClip( ) const;
-    OFX::Clip *getDstClip( ) const;
+	DPXWriterPlugin( OfxImageEffectHandle handle );
+	OFX::Clip* getSrcClip() const;
+	OFX::Clip* getDstClip() const;
 
 public:
-    virtual void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	virtual void render( const OFX::RenderArguments& args );
+	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
 	OFX::PushButtonParam* _renderButton;  ///< Render push button
@@ -48,4 +40,4 @@ protected:
 }
 }
 
-#endif  // DPXWRITER_PLUGIN_H
+#endif

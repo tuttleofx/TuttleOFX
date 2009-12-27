@@ -27,7 +27,7 @@ namespace fs = boost::filesystem;
 #define UNDEF_U32           0xFFFFFFFF
 #define UNDEF_S32           0x80000000
 #define UNDEF_R32           0x7F800000
-#define kDpxVersion			"V1.0"
+#define kDpxVersion         "V1.0"
 
 struct FileInformation
 {
@@ -136,92 +136,110 @@ struct TelevisionHeader
 /// Class holding dpx informations
 class DpxHeader
 {
-	// Bad but easier
-	public:
+// Bad but easier
+
+public:
 	FileInformation _fileInfo;
 	ImageInformation _imageInfo;
 	ImageOrientation _imageOrientation;
 	MotionPictureFilm _motionPicture;
 	TelevisionHeader _television;
 
-	DpxHeader() {
+	DpxHeader()
+	{
 		// zeroify
-		memset(&_fileInfo, 0, sizeof(FileInformation));
-		memset(&_imageInfo, 0, sizeof(ImageInformation));
-		memset(&_imageOrientation, 0, sizeof(ImageOrientation));
-		memset(&_motionPicture, 0, sizeof(MotionPictureFilm));
-		memset(&_television, 0, sizeof(TelevisionHeader));
+		memset( &_fileInfo, 0, sizeof( FileInformation ) );
+		memset( &_imageInfo, 0, sizeof( ImageInformation ) );
+		memset( &_imageOrientation, 0, sizeof( ImageOrientation ) );
+		memset( &_motionPicture, 0, sizeof( MotionPictureFilm ) );
+		memset( &_television, 0, sizeof( TelevisionHeader ) );
 		// Full size of 1664+384 = 2048 bytes per default
 		_fileInfo.gen_hdr_size = 1664;
 		_fileInfo.ind_hdr_size = 384;
-		memcpy(_fileInfo.vers, kDpxVersion, strlen(kDpxVersion));
+		memcpy( _fileInfo.vers, kDpxVersion, strlen( kDpxVersion ) );
 	}
 
 	// Getters
-	inline const bool bigEndian() const { return _fileInfo.magic_num == DPX_MAGIC_SWAP; }
-	inline const boost::uint32_t width() const   { return _imageInfo.pixelsPerLine; }
-	inline const boost::uint32_t height() const  { return _imageInfo.linesPerImageEle; }
-	inline const boost::uint16_t packing() const { return _imageInfo.image_element[0].packing; }
-	inline const boost::uint8_t bitSize() const { return _imageInfo.image_element[0].bit_size; }
-	inline const boost::uint8_t descriptor() const { return _imageInfo.image_element[0].descriptor; }
-	inline const boost::uint32_t dataOffset() const { return _fileInfo.offset; }
-	inline const boost::uint16_t elementNumber() const { return _imageInfo.element_number; }
-	inline const boost::uint32_t elementOffset(const int i) const { return _imageInfo.image_element[i].data_offset; }
+	inline const bool            bigEndian() const                  { return _fileInfo.magic_num == DPX_MAGIC_SWAP; }
+	inline const boost::uint32_t width() const                      { return _imageInfo.pixelsPerLine; }
+	inline const boost::uint32_t height() const                     { return _imageInfo.linesPerImageEle; }
+	inline const boost::uint16_t packing() const                    { return _imageInfo.image_element[0].packing; }
+	inline const boost::uint8_t  bitSize() const                    { return _imageInfo.image_element[0].bit_size; }
+	inline const boost::uint8_t  descriptor() const                 { return _imageInfo.image_element[0].descriptor; }
+	inline const boost::uint32_t dataOffset() const                 { return _fileInfo.offset; }
+	inline const boost::uint16_t elementNumber() const              { return _imageInfo.element_number; }
+	inline const boost::uint32_t elementOffset( const int i ) const { return _imageInfo.image_element[i].data_offset; }
 
 	// Setters
-	inline void setBigEndian(const bool swap) {
-		if (swap)
+	inline void setBigEndian( const bool swap )
+	{
+		if( swap )
 			_fileInfo.magic_num = DPX_MAGIC_SWAP;
 		else
 			_fileInfo.magic_num = DPX_MAGIC;
 	}
-	inline void setWidth(const boost::uint32_t pixelsPerLine) {
+
+	inline void setWidth( const boost::uint32_t pixelsPerLine )
+	{
 		_imageInfo.pixelsPerLine = pixelsPerLine;
 	}
-	inline void setHeight(const boost::uint32_t height) {
+
+	inline void setHeight( const boost::uint32_t height )
+	{
 		_imageInfo.linesPerImageEle = height;
 	}
-	inline void setPacking(const boost::uint16_t packing, const int i)
+
+	inline void setPacking( const boost::uint16_t packing, const int i )
 	{
-		assert(i < 8 && i > 0);
+		assert( i < 8 && i > 0 );
 		_imageInfo.image_element[i].packing = packing;
 	}
-	inline void setPacking(const boost::uint16_t packing)
+
+	inline void setPacking( const boost::uint16_t packing )
 	{
-		for(int i = 0; i < 8; ++i)
+		for( int i = 0; i < 8; ++i )
 			_imageInfo.image_element[i].packing = packing;
 	}
-	inline void setBitSize(const boost::uint8_t bitSize, const int i)
+
+	inline void setBitSize( const boost::uint8_t bitSize, const int i )
 	{
-		assert(i < 8 && i > 0);
+		assert( i < 8 && i > 0 );
 		_imageInfo.image_element[i].bit_size = bitSize;
 	}
-	inline void setBitSize(const boost::uint8_t bitSize)
+
+	inline void setBitSize( const boost::uint8_t bitSize )
 	{
-		for(int i = 0; i < 8; ++i)
+		for( int i = 0; i < 8; ++i )
 			_imageInfo.image_element[i].bit_size = bitSize;
 	}
-	inline void setDescriptor(boost::uint8_t descriptor, const int i)
+
+	inline void setDescriptor( boost::uint8_t descriptor, const int i )
 	{
-		assert(i < 8 && i > 0);
+		assert( i < 8 && i > 0 );
 		_imageInfo.image_element[i].descriptor = descriptor;
 	}
-	inline void setDescriptor(boost::uint8_t descriptor)
+
+	inline void setDescriptor( boost::uint8_t descriptor )
 	{
-		for(int i = 0; i < 8; ++i)
+		for( int i = 0; i < 8; ++i )
 			_imageInfo.image_element[i].descriptor = descriptor;
 	}
-	inline void setDataOffset(boost::uint32_t offset)
+
+	inline void setDataOffset( boost::uint32_t offset )
 	{
 		_fileInfo.offset = offset;
 	}
-	inline void setElementNumber(boost::uint16_t n)
+
+	inline void setElementNumber( boost::uint16_t n )
 	{
 		_imageInfo.element_number = n;
 	}
-	inline void setElementOffset(boost::uint32_t offset, const int i) {
+
+	inline void setElementOffset( boost::uint32_t offset, const int i )
+	{
 		_imageInfo.image_element[i].data_offset = offset;
 	}
+
 };
 
 class DpxImage
@@ -229,11 +247,11 @@ class DpxImage
 private:
 	bool _bigEndian;
 	DpxHeader _header;
-	size_t			_dataSize;                      /// raw data size given by dataSize()
+	size_t _dataSize;                               /// raw data size given by dataSize()
 	boost::shared_array<boost::uint8_t> _data;      /// raw data
 	boost::shared_array<boost::uint8_t> _indyData;  /// right endianness reinterpreted data
 
-	void readHeader( fs::ifstream& f );
+	void            readHeader( fs::ifstream& f );
 	boost::uint8_t* reinterpretEndianness() const;
 
 public:
@@ -255,41 +273,48 @@ public:
 	void writeHeader( fs::ofstream& f );
 
 	// Getters
-	inline const boost::uint32_t width() const { return _header.width(); }
-	inline const boost::uint32_t height() const { return _header.height(); }
+	inline const boost::uint32_t width() const   { return _header.width(); }
+	inline const boost::uint32_t height() const  { return _header.height(); }
 	inline const boost::uint16_t packing() const { return _header.packing(); }
-	inline const size_t components() const;
-	const EDPX_CompType componentsType() const;
-	const size_t dataSize() const;
+	inline const size_t          components() const;
+	const EDPX_CompType          componentsType() const;
+	const size_t                 dataSize() const;
 
 	inline boost::uint8_t* rawData() const
 	{
 		return _data.get();
 	}
-	inline boost::uint8_t* data() const {
+
+	inline boost::uint8_t* data() const
+	{
 		return _indyData.get();
 	}
-	inline const boost::uint8_t compTypeToDescriptor(const EDPX_CompType type);
+
+	inline const boost::uint8_t compTypeToDescriptor( const EDPX_CompType type );
 
 	// Setters
-	inline void setHeader(const DpxHeader& header);
-	inline void setComponentsType(EDPX_CompType);
+	inline void setHeader( const DpxHeader& header );
+	inline void setComponentsType( EDPX_CompType );
 
 	/**
 	 * \brief Set raw data buffer, header must be set/read
 	 * \param data	set data raw buffer
 	 * \param reinterpretation	reinterpret endianness
 	 */
-	inline void setData(const boost::uint8_t *data, bool reinterpretation = true);
+	inline void setData( const boost::uint8_t* data, bool reinterpretation = true );
 };
 
-inline void DpxImage::setComponentsType(DpxImage::EDPX_CompType type) {
-	_header.setDescriptor(compTypeToDescriptor(type));
+inline void DpxImage::setComponentsType( DpxImage::EDPX_CompType type )
+{
+	_header.setDescriptor( compTypeToDescriptor( type ) );
 }
 
-inline const boost::uint8_t DpxImage::compTypeToDescriptor(const EDPX_CompType type) {
+inline const boost::uint8_t DpxImage::compTypeToDescriptor( const EDPX_CompType type )
+{
 	boost::uint8_t ret = 53;
-	switch(type) {
+
+	switch( type )
+	{
 		case eCompTypeR8G8B8:
 		case eCompTypeR10G10B10:
 		case eCompTypeR12G12B12:
@@ -315,24 +340,25 @@ inline const boost::uint8_t DpxImage::compTypeToDescriptor(const EDPX_CompType t
 	return ret;
 }
 
-inline void DpxImage::setHeader(const DpxHeader& header) {
-	memcpy(&_header, &header, sizeof(DpxHeader));
+inline void DpxImage::setHeader( const DpxHeader& header )
+{
+	memcpy( &_header, &header, sizeof( DpxHeader ) );
 	_dataSize = dataSize();
-	_header.setDataOffset(sizeof(DpxHeader));
+	_header.setDataOffset( sizeof( DpxHeader ) );
 	// Data have to be packed on uint32_t size to allow endianess fast
 	// reinterpretation
-	_data.reset(new boost::uint8_t[ _dataSize + ( _dataSize % sizeof(boost::uint32_t) ) ]);
+	_data.reset( new boost::uint8_t[ _dataSize + ( _dataSize % sizeof( boost::uint32_t ) ) ] );
 	_indyData = _data;
 }
 
-inline void DpxImage::setData(const boost::uint8_t *data, bool reinterpretation) {
-	memcpy(_data.get(), data, _dataSize);
-	if ( reinterpretation )
-		_indyData.reset(reinterpretEndianness());
+inline void DpxImage::setData( const boost::uint8_t* data, bool reinterpretation )
+{
+	memcpy( _data.get(), data, _dataSize );
+	if( reinterpretation )
+		_indyData.reset( reinterpretEndianness() );
 	else
 		_indyData = _data;
 }
-
 
 }  // namespace io
 }  // namespace tuttle

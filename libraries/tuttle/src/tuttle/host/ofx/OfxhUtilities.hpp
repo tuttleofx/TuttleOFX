@@ -105,7 +105,7 @@ inline OfxRectD clamp( const OfxRectD& v,
 
 /// get the union of the two rects
 inline OfxRectD rectUnion( const OfxRectD& a,
-                       const OfxRectD& b )
+                           const OfxRectD& b )
 {
 	OfxRectD r;
 

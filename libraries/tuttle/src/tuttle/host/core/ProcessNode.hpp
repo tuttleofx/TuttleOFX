@@ -13,8 +13,9 @@ namespace core {
 class ProcessNode
 {
 public:
-	enum EProcessNodeType{
-		  eImageEffect = 0
+	enum EProcessNodeType
+	{
+		eImageEffect = 0
 	};
 
 public:
@@ -22,23 +23,23 @@ public:
 	ProcessNode( const ProcessNode& e ) {}
 	virtual ~ProcessNode() = 0;
 
-	virtual ProcessNode* 			clone() const   = 0;
-	virtual const std::string&		getName() const = 0;
-	virtual const EProcessNodeType 	getProcessNodeType() const = 0;
+	virtual ProcessNode*           clone() const              = 0;
+	virtual const std::string&     getName() const            = 0;
+	virtual const EProcessNodeType getProcessNodeType() const = 0;
 
-	virtual void connect(const ProcessNode & inNode) = 0;
+	virtual void connect( const ProcessNode& inNode ) = 0;
 
-	virtual void begin(ProcessOptions & processOptions) = 0;
-	virtual void preProcess_initialize(ProcessOptions & processOptions) = 0;
-	virtual void preProcess_finish(ProcessOptions & processOptions) = 0;
-	virtual void process(const ProcessOptions & processOptions) = 0;
-	virtual void postProcess(ProcessOptions & processOptions) = 0;
-	virtual void end(ProcessOptions & processOptions) = 0;
+	virtual void begin( ProcessOptions& processOptions )                 = 0;
+	virtual void preProcess_initialize( ProcessOptions& processOptions ) = 0;
+	virtual void preProcess_finish( ProcessOptions& processOptions )     = 0;
+	virtual void process( const ProcessOptions& processOptions )         = 0;
+	virtual void postProcess( ProcessOptions& processOptions )           = 0;
+	virtual void end( ProcessOptions& processOptions )                   = 0;
 };
 
-} // namespace core
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif
 

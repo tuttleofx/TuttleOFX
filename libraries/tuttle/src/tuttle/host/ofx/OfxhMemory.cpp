@@ -90,7 +90,6 @@ void OfxhMemory::unlock()
 	_locked = false;
 }
 
-
 }
 }
 }

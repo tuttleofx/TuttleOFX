@@ -39,7 +39,7 @@ public:
 	const std::string& out() const        { return _out; }
 	const std::string& in() const         { return _in; }
 	const std::string& inAttrName() const { return _inAttrName; }
-	const std::string  name() const       { return out() + std::string(".") + std::string(kOfxOutputAttributeName) + std::string("-->") + in() + std::string(".") + inAttrName(); }
+	const std::string  name() const       { return out() + std::string( "." ) + std::string( kOfxOutputAttributeName ) + std::string( "-->" ) + in() + std::string( "." ) + inAttrName(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const Edge& v );
 

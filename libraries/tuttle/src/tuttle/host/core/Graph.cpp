@@ -59,12 +59,11 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 	return *node;
 }
 
-
 void Graph::addToGraph( ImageEffectNode& node )
 {
 	graph::Vertex v( node.getName(), node );
 
-	std::cout<< node.getName() <<std::endl;
+	std::cout << node.getName() << std::endl;
 	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 

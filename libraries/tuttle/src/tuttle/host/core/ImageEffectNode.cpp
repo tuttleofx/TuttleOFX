@@ -57,20 +57,20 @@ namespace host {
 namespace core {
 
 // my host support code
-ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin,
-								tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
-                                const std::string& context )
+ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin*         plugin,
+                                  tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
+                                  const std::string&                                             context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( plugin, desc, context, false )
 {
 	populate();
-//	createInstanceAction();
+	//	createInstanceAction();
 }
 
 ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
-: tuttle::host::ofx::imageEffect::OfxhImageEffectNode(other)
+	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( other )
 {
 	populate();
-//	createInstanceAction();
+	//	createInstanceAction();
 	/*
 	 * /// @todo copy params
 	 *
@@ -85,12 +85,12 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 	 */
 }
 
-void ImageEffectNode::connect(const ProcessNode& sourceEffect)
+void ImageEffectNode::connect( const ProcessNode& sourceEffect )
 {
-	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>(sourceEffect);
+	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>( sourceEffect );
 
-	ClipImage& output = dynamic_cast<ClipImage&>( source.getClip(kOfxImageEffectOutputClipName) );
-	ClipImage& input = dynamic_cast<ClipImage&>( getClip(kOfxImageEffectSimpleSourceClipName) );
+	ClipImage& output = dynamic_cast<ClipImage&>( source.getClip( kOfxImageEffectOutputClipName ) );
+	ClipImage& input  = dynamic_cast<ClipImage&>( getClip( kOfxImageEffectSimpleSourceClipName ) );
 
 	input.setConnectedClip( output );
 }
@@ -145,9 +145,9 @@ const std::string& ImageEffectNode::getDefaultOutputFielding() const
 
 // vmessage
 OfxStatus ImageEffectNode::vmessage( const char* type,
-                                    const char* id,
-                                    const char* format,
-                                    va_list     args ) const
+                                     const char* id,
+                                     const char* format,
+                                     va_list     args ) const
 {
 	vprintf( format, args );
 	return kOfxStatOK;
@@ -223,7 +223,7 @@ const std::string ImageEffectNode::getProjectPixelComponentsType() const
 const std::string ImageEffectNode::getProjectBitDepth() const
 {
 	return kOfxBitDepthByte;
-//	return kOfxBitDepthFloat;
+	//	return kOfxBitDepthFloat;
 }
 
 // make a parameter instance
@@ -258,7 +258,7 @@ tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host
 	else
 		throw exception::LogicError( "Can't create param instance from param descriptor." );
 
-		throw exception::LogicError( "Can't create param instance from param descriptor." );
+	throw exception::LogicError( "Can't create param instance from param descriptor." );
 
 }
 
@@ -309,10 +309,10 @@ void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 
 /// override to get frame range of the effect
 OfxStatus ImageEffectNode::beginRenderAction( OfxTime   startFrame,
-                                             OfxTime   endFrame,
-                                             OfxTime   step,
-                                             bool      interactive,
-                                             OfxPointD renderScale )
+                                              OfxTime   endFrame,
+                                              OfxTime   step,
+                                              bool      interactive,
+                                              OfxPointD renderScale )
 {
 	_frameRange.x = startFrame;
 	_frameRange.y = endFrame;

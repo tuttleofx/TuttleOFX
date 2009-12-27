@@ -37,13 +37,13 @@ protected:
 	OFX::StringParam*   _filepath;                      ///< File path
 	OFX::ChoiceParam*   _outComponents;                 ///< Components list
 	EXRReaderPlugin&    _plugin;                        ///< Rendering plugin
-	boost::scoped_ptr<Imf::InputFile>	_exrImage;		///< Pointer to an exr image
+	boost::scoped_ptr<Imf::InputFile>   _exrImage;      ///< Pointer to an exr image
 
 	template<class DView>
-	void channelCopy(Imf::InputFile & input, Imf::FrameBuffer & frameBuffer,
-					 DView & dst, int w, int h, int n, int left, int nc);
+	void channelCopy( Imf::InputFile& input, Imf::FrameBuffer& frameBuffer,
+	                  DView& dst, int w, int h, int n, int left, int nc );
 	template<class DView>
-	void sliceCopy(const Imf::Slice *slice, DView & dst, int w, int h, int n);
+	void sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n );
 
 public:
 	EXRReaderProcess<View>( EXRReaderPlugin & instance );

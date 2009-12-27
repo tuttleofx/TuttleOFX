@@ -60,9 +60,9 @@ namespace core {
 //
 // StringInstance
 //
-ParamString::ParamString( ImageEffectNode&                                    effect,
-                                const std::string&                                 name,
-                                tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamString::ParamString( ImageEffectNode&                                   effect,
+                          const std::string&                                 name,
+                          tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhParamString( descriptor, effect ),
 	_effect( effect )
 {
@@ -106,9 +106,9 @@ OfxStatus ParamString::set( OfxTime time, const char* v )
 //
 // IntegerInstance
 //
-ParamInteger::ParamInteger( ImageEffectNode&                                    effect,
-                                  const std::string&                                 name,
-                                  tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamInteger::ParamInteger( ImageEffectNode&                                   effect,
+                            const std::string&                                 name,
+                            tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhParamInteger( descriptor, effect ),
 	_effect( effect )
 {
@@ -152,9 +152,9 @@ OfxStatus ParamInteger::set( OfxTime time, int v )
 //
 // DoubleInstance
 //
-ParamDouble::ParamDouble( ImageEffectNode&                                    effect,
-                                const std::string&                                 name,
-                                tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamDouble::ParamDouble( ImageEffectNode&                                   effect,
+                          const std::string&                                 name,
+                          tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhParamDouble( descriptor, effect ),
 	_effect( effect )
 
@@ -209,9 +209,9 @@ OfxStatus ParamDouble::integrate( OfxTime time1, OfxTime time2, double& )
 //
 // BooleanInstance
 //
-ParamBoolean::ParamBoolean( ImageEffectNode&                                    effect,
-                                  const std::string&                                 name,
-                                  tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamBoolean::ParamBoolean( ImageEffectNode&                                   effect,
+                            const std::string&                                 name,
+                            tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhParamBoolean( descriptor, effect ),
 	_effect( effect )
 
@@ -256,9 +256,9 @@ OfxStatus ParamBoolean::set( OfxTime time, bool v )
 //
 // ChoiceInteger
 //
-ParamChoice::ParamChoice( ImageEffectNode&                                    effect,
-                                const std::string&                                 name,
-                                tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamChoice::ParamChoice( ImageEffectNode&                                   effect,
+                          const std::string&                                 name,
+                          tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhParamChoice( descriptor, effect ),
 	_effect( effect )
 
@@ -303,9 +303,9 @@ OfxStatus ParamChoice::set( OfxTime time, int v )
 //
 // RGBAInstance
 //
-ParamRGBA::ParamRGBA( ImageEffectNode&                                    effect,
-                            const std::string&                                 name,
-                            tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamRGBA::ParamRGBA( ImageEffectNode&                                   effect,
+                      const std::string&                                 name,
+                      tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 4>( descriptor, effect ),
 	_effect( effect )
 
@@ -370,9 +370,9 @@ OfxStatus ParamRGBA::set( OfxTime time, double r, double g, double b, double a )
 //
 // RGBInstance
 //
-ParamRGB::ParamRGB( ImageEffectNode&                                    effect,
-                          const std::string&                                 name,
-                          tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamRGB::ParamRGB( ImageEffectNode&                                   effect,
+                    const std::string&                                 name,
+                    tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, effect ),
 	_effect( effect )
 
@@ -431,9 +431,9 @@ OfxStatus ParamRGB::set( OfxTime time, double r, double g, double b )
 //
 // Double2DInstance
 //
-ParamDouble2D::ParamDouble2D( ImageEffectNode&                                    effect,
-                                    const std::string&                                 name,
-                                    tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamDouble2D::ParamDouble2D( ImageEffectNode&                                   effect,
+                              const std::string&                                 name,
+                              tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 2>( descriptor, effect ),
 	_effect( effect )
 
@@ -487,9 +487,9 @@ OfxStatus ParamDouble2D::set( OfxTime time, double x, double y )
 //
 // Integer2DInstance
 //
-ParamInteger2D::ParamInteger2D( ImageEffectNode&                                    effect,
-                                      const std::string&                                 name,
-                                      tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamInteger2D::ParamInteger2D( ImageEffectNode&                                   effect,
+                                const std::string&                                 name,
+                                tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 2>( descriptor, effect ),
 	_effect( effect )
 
@@ -543,9 +543,9 @@ OfxStatus ParamInteger2D::set( OfxTime time, int x, int y )
 //
 // Integer3DInstance
 //
-ParamInteger3D::ParamInteger3D( ImageEffectNode&                                    effect,
-                                      const std::string&                                 name,
-                                      tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamInteger3D::ParamInteger3D( ImageEffectNode&                                   effect,
+                                const std::string&                                 name,
+                                tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 3>( descriptor, effect ),
 	_effect( effect )
 
@@ -603,9 +603,9 @@ OfxStatus ParamInteger3D::set( OfxTime time, int x, int y, int z )
 //
 // Double3DInstance
 //
-ParamDouble3D::ParamDouble3D( ImageEffectNode&                                    effect,
-                                    const std::string&                                 name,
-                                    tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamDouble3D::ParamDouble3D( ImageEffectNode&                                   effect,
+                              const std::string&                                 name,
+                              tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, effect ),
 	_effect( effect )
 
@@ -663,9 +663,9 @@ OfxStatus ParamDouble3D::set( OfxTime time, double x, double y, double z )
 //
 // PushbuttonInstance
 //
-ParamPushButton::ParamPushButton( ImageEffectNode&                                    effect,
-                                        const std::string&                                 name,
-                                        tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+ParamPushButton::ParamPushButton( ImageEffectNode&                                   effect,
+                                  const std::string&                                 name,
+                                  tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
 	: tuttle::host::ofx::attribute::OfxhParamPushButton( descriptor, effect ),
 	_effect( effect )
 

@@ -20,27 +20,27 @@ PluginException::PluginException()
 /*
 PluginException::PluginException( const char* format, ... )
 {
-	#ifndef __GNUC__
+ #ifndef __GNUC__
 	size_t n = _snprintf( NULL, 0, format );
-	#else
+ #else
 	int n = snprintf( NULL, 0, "%s", format );
-	#endif
+ #endif
 	if( n > 0 )
 	{
 		char* message = new char[n];
 		std::va_list ap;
 		va_start( ap, format );
-		#ifndef __GNUC__
+ #ifndef __GNUC__
 		vsprintf_s( message, n, format, ap );
-		#else
+ #else
 		vsprintf( message, format, ap );
-		#endif
+ #endif
 		va_end( ap );
 		_err = message;
 		delete message;
 	}
 }
-*/
+ */
 PluginException::~PluginException() throw( )
 {
 	// Nothing

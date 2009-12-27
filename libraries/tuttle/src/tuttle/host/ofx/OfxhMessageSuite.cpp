@@ -38,8 +38,8 @@ static struct OfxMessageSuiteV1 gMessageSuite =
 void* getMessageSuite( const int version )
 {
 	if( version == 1 )
-        return static_cast<void*>(&gMessageSuite);
-    return NULL;
+		return static_cast<void*>( &gMessageSuite );
+	return NULL;
 }
 
 }

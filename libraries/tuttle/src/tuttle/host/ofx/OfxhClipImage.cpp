@@ -125,8 +125,8 @@ OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffectNode& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
 : attribute::OfxhClip( desc )
 , _effectInstance( effectInstance )
-//				, _pixelDepth( kOfxBitDepthNone )
-//				, _components( kOfxImageComponentNone )
+	//				, _pixelDepth( kOfxBitDepthNone )
+	//				, _components( kOfxImageComponentNone )
 {
 	//					_par = 1.0;
 	/**
@@ -239,7 +239,6 @@ void OfxhClipImageSet::initMapFromList()
 
 OfxhClipImageSet::~OfxhClipImageSet()
 {}
-
 
 bool OfxhClipImageSet::operator==( const OfxhClipImageSet& other ) const
 {

@@ -25,6 +25,9 @@ namespace plugin {
 namespace exr {
 namespace reader {
 
+static const bool kSupportTiles              = false;
+static const bool kSupportTemporalClipAccess = false;
+
 using namespace OFX;
 
 /**

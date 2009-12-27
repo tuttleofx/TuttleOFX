@@ -45,15 +45,15 @@ extern "C" {
  * This macro is to be used before any symbol that is to be
  * exported from a plug-in. This is OS/compiler dependent.
  */
-#if (defined(_MSC_VER) || defined(__MINGW32__))
+#if ( defined( _MSC_VER ) || defined( __MINGW32__ ) )
  #define OfxExport extern __declspec( dllexport )
 #elif defined( __GNUC__ ) // Add compilator definition here...
-#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
- #define OfxExport __attribute__ ((visibility("default")))
-#else
- #define OfxExport
- #warning "OfxExport can't be correctly setted because your gcc version is too old. The plugin may not compile with the option fvisible=hidden."
-#endif
+ #if __GNUC__ - 0 > 3 || ( __GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2 )
+  #define OfxExport __attribute__ ( ( visibility( "default" ) ) )
+ #else
+  #define OfxExport
+  #warning "OfxExport can't be correctly setted because your gcc version is too old. The plugin may not compile with the option fvisible=hidden."
+ #endif
 #else
  #error "OfxExport not defined for this compilator..."
 #endif
@@ -456,25 +456,25 @@ typedef struct OfxRectD
 typedef struct OfxRGBAColourB
 {
 	unsigned char r, g, b, a;
-}OfxRGBAColourB;
+} OfxRGBAColourB;
 
 /** @brief Defines a 16 bit per component RGBA pixel */
 typedef struct OfxRGBAColourS
 {
 	unsigned short r, g, b, a;
-}OfxRGBAColourS;
+} OfxRGBAColourS;
 
 /** @brief Defines a floating point component RGBA pixel */
 typedef struct OfxRGBAColourF
 {
 	float r, g, b, a;
-}OfxRGBAColourF;
+} OfxRGBAColourF;
 
 /** @brief Defines a double precision floating point component RGBA pixel */
 typedef struct OfxRGBAColourD
 {
 	double r, g, b, a;
-}OfxRGBAColourD;
+} OfxRGBAColourD;
 
 /** @brief Defines an 8 bit per component RGB pixel
  *
@@ -534,19 +534,19 @@ struct Ofx3DPointD
 typedef struct OfxYUVAColourB
 {
 	unsigned char y, u, v, a;
-}OfxYUVAColourB;
+} OfxYUVAColourB;
 
 /** @brief Defines an 16 bit per component YUVA pixel */
 typedef struct OfxYUVAColourS
 {
 	unsigned short y, u, v, a;
-}OfxYUVAColourS;
+} OfxYUVAColourS;
 
 /** @brief Defines an floating point component YUVA pixel */
 typedef struct OfxYUVAColourF
 {
 	float y, u, v, a;
-}OfxYUVAColourF;
+} OfxYUVAColourF;
 
 /** @brief String used to label unset bitdepths */
 #define kOfxBitDepthNone "OfxBitDepthNone"

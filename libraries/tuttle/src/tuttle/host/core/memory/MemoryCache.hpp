@@ -37,7 +37,7 @@ private:
 
 public:
 	virtual void               put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData );
-	virtual CACHE_ELEMENT       get( const std::string& pluginName, const double& time ) const;
+	virtual CACHE_ELEMENT      get( const std::string& pluginName, const double& time ) const;
 	virtual std::size_t        size() const;
 	virtual bool               empty() const;
 	virtual bool               inCache( const CACHE_ELEMENT& ) const;

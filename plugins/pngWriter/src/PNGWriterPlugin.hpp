@@ -1,5 +1,5 @@
-#ifndef PNG_WRITER_PLUGIN_H
-#define PNG_WRITER_PLUGIN_H
+#ifndef PNG_WRITER_PLUGIN_HPP
+#define PNG_WRITER_PLUGIN_HPP
 
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>

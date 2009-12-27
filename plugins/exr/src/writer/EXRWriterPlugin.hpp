@@ -25,13 +25,13 @@ namespace writer {
 class EXRWriterPlugin : public OFX::ImageEffect
 {
 public:
-    EXRWriterPlugin( OfxImageEffectHandle handle );
-    OFX::Clip *getSrcClip( ) const;
-    OFX::Clip *getDstClip( ) const;
+	EXRWriterPlugin( OfxImageEffectHandle handle );
+	OFX::Clip* getSrcClip() const;
+	OFX::Clip* getDstClip() const;
 
 public:
-    virtual void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	virtual void render( const OFX::RenderArguments& args );
+	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
 	OFX::PushButtonParam* _renderButton;  ///< Render push button

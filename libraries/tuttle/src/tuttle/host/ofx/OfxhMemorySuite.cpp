@@ -22,7 +22,7 @@ static OfxStatus memoryAlloc( void* handle, size_t bytes, void** data )
 
 static OfxStatus memoryFree( void* data )
 {
-	delete[] static_cast<char*>(data);
+	delete[] static_cast<char*>( data );
 	return kOfxStatOK;
 }
 
@@ -34,13 +34,12 @@ static struct OfxMemorySuiteV1 gMallocSuite =
 
 void* getMemorySuite( const int version )
 {
-    if( version == 1 )
-        return &gMallocSuite;
-    return NULL;
+	if( version == 1 )
+		return &gMallocSuite;
+	return NULL;
 }
 
 }
 }
 }
-
 

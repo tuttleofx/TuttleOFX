@@ -32,7 +32,6 @@
 #include "OfxhPropertySuite.hpp"
 #include "OfxhMemorySuite.hpp"
 
-
 // ofx
 #include "ofxCore.h"
 #include "ofxProperty.h"

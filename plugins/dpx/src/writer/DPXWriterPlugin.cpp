@@ -22,8 +22,8 @@ namespace writer {
 
 using namespace boost::gil;
 
-DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
 	_srcClip      = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_dstClip      = fetchClip( kOfxImageEffectOutputClipName );
@@ -31,55 +31,55 @@ ImageEffect( handle )
 	_renderButton = fetchPushButtonParam( kRender );
 }
 
-OFX::Clip * DPXWriterPlugin::getSrcClip( ) const
+OFX::Clip* DPXWriterPlugin::getSrcClip() const
 {
-    return _srcClip;
+	return _srcClip;
 }
 
-OFX::Clip * DPXWriterPlugin::getDstClip( ) const
+OFX::Clip* DPXWriterPlugin::getDstClip() const
 {
-    return _dstClip;
+	return _dstClip;
 }
 
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void DPXWriterPlugin::render( const OFX::RenderArguments &args )
+void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	if( _bRenderOnce )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
-		OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-		OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+		OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
+		OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents();
 
 		// do the rendering
 		if( dstComponents == OFX::ePixelComponentRGBA )
 		{
 			switch( dstBitDepth )
 			{
-				case OFX::eBitDepthUByte :
+				case OFX::eBitDepthUByte:
 				{
 					DPXWriterProcess<rgba8_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
-				case OFX::eBitDepthUShort :
+				case OFX::eBitDepthUShort:
 				{
 					DPXWriterProcess<rgba16_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
-				case OFX::eBitDepthFloat :
+				case OFX::eBitDepthFloat:
 				{
 					DPXWriterProcess<rgba32f_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
-				case OFX::eBitDepthNone :
+				case OFX::eBitDepthNone:
 					COUT_FATALERROR( "BitDepthNone not recognize." );
 					return;
-				case OFX::eBitDepthCustom :
+				case OFX::eBitDepthCustom:
 					COUT_FATALERROR( "BitDepthCustom not recognize." );
 					return;
 			}
@@ -88,7 +88,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments &args )
 	}
 }
 
-void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	_bRenderOnce = false;
 	if( paramName == kRender )
@@ -102,11 +102,11 @@ void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 		_bRenderOnce = true;
 	}
 	else if( paramName == kDPXWriterHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kDPXWriterHelpString );
-    }
+	{
+		sendMessage( OFX::Message::eMessageMessage,
+		             "", // No XML resources
+		             kDPXWriterHelpString );
+	}
 }
 
 }

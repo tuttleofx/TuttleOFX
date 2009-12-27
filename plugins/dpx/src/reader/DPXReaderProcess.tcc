@@ -162,17 +162,17 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 				{
 					rgb16_image_t img( dst.width(), dst.height() );
 					rgb16_view_t vw( view( img ) );
-					bitStreamToView<rgb10_stream_ptr_t>(vw, 3, 10);
+					bitStreamToView<rgb10_stream_ptr_t>( vw, 3, 10 );
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
 				}
 				default:
 				{
-					int width = _plugin.getDpxImg().width();
-					int height = _plugin.getDpxImg().height();
+					int width               = _plugin.getDpxImg().width();
+					int height              = _plugin.getDpxImg().height();
 					rgb10_packed_view_t src = interleaved_view( width, height,
-																(rgb10_packed_pixel_t*)( _plugin.getDpxImg().data() ),
-																width * sizeof( uint32_t ) );
+					                                            ( rgb10_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+					                                            width * sizeof( uint32_t ) );
 					// This is temporary but needed because of a probable bug in gil
 					// Should be using copy_and_convert_pixels
 					rgb16_image_t img16( width, height );
@@ -180,7 +180,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 					for( typename rgb10_packed_view_t::y_coord_t y = 0; y < height; ++y )
 					{
 						typename rgb10_packed_view_t::x_iterator sit = src.row_begin( y );
-						typename rgb16_view_t::x_iterator dit = vw16.row_begin( y );
+						typename rgb16_view_t::x_iterator dit        = vw16.row_begin( y );
 						for( typename rgb10_packed_view_t::x_coord_t x = 0; x < width; ++x )
 						{
 							color_convert( *sit, *dit );
@@ -188,7 +188,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 							++dit;
 						}
 					}
-					copy_and_convert_pixels(vw16, dst);
+					copy_and_convert_pixels( vw16, dst );
 					break;
 				}
 			}
@@ -206,13 +206,13 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 				{
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
-					bitStreamToView<rgba10_stream_ptr_t>(vw, 4, 10);
+					bitStreamToView<rgba10_stream_ptr_t>( vw, 4, 10 );
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
 				}
 				default:
 				{
-					throw(PluginException("Error: unsupported dpx file format (RGBA10 byte packed). "));
+					throw( PluginException( "Error: unsupported dpx file format (RGBA10 byte packed). " ) );
 					break;
 				}
 			}
@@ -229,14 +229,14 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 				{
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
-					bitStreamToView<abgr10_stream_ptr_t>(vw, 4, 10);
+					bitStreamToView<abgr10_stream_ptr_t>( vw, 4, 10 );
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
 				}
 				case 1:
 				case 2:
 				{
-					throw(PluginException("Error: unsupported dpx file format (ABGR10 byte packed). "));
+					throw( PluginException( "Error: unsupported dpx file format (ABGR10 byte packed). " ) );
 					break;
 				}
 			}
@@ -254,17 +254,17 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 				{
 					rgb16_image_t img( dst.width(), dst.height() );
 					rgb16_view_t vw( view( img ) );
-					bitStreamToView<rgb12_stream_ptr_t>(vw, 3, 12);
+					bitStreamToView<rgb12_stream_ptr_t>( vw, 3, 12 );
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
 				}
 				default:
 				{
-					int width = _plugin.getDpxImg().width();
-					int height = _plugin.getDpxImg().height();
+					int width               = _plugin.getDpxImg().width();
+					int height              = _plugin.getDpxImg().height();
 					rgb12_packed_view_t src = interleaved_view( width, height,
-															   ( rgb12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
-															   _plugin.getDpxImg().width() * 6 );
+					                                            ( rgb12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+					                                            _plugin.getDpxImg().width() * 6 );
 					// This is temporary but needed because of a probable bug in gil
 					// Should be using copy_and_convert_pixels
 					rgb16_image_t img16( width, height );
@@ -272,7 +272,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 					for( typename rgb12_packed_view_t::y_coord_t y = 0; y < height; ++y )
 					{
 						typename rgb12_packed_view_t::x_iterator sit = src.row_begin( y );
-						typename rgb16_view_t::x_iterator dit = vw16.row_begin( y );
+						typename rgb16_view_t::x_iterator dit        = vw16.row_begin( y );
 						for( typename rgb12_packed_view_t::x_coord_t x = 0; x < width; ++x )
 						{
 							color_convert( *sit, *dit );
@@ -280,7 +280,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 							++dit;
 						}
 					}
-					copy_and_convert_pixels(vw16, dst);
+					copy_and_convert_pixels( vw16, dst );
 					break;
 				}
 			}
@@ -297,15 +297,15 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 				{
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
-					bitStreamToView<rgba12_stream_ptr_t>(vw, 4, 12);
+					bitStreamToView<rgba12_stream_ptr_t>( vw, 4, 12 );
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
 				}
 				default:
 				{
 					rgba12_packed_view_t vw = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-																( rgba12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
-																_plugin.getDpxImg().width() * sizeof( uint64_t ) );
+					                                            ( rgba12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+					                                            _plugin.getDpxImg().width() * sizeof( uint64_t ) );
 
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
@@ -324,15 +324,15 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 				{
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
-					bitStreamToView<abgr12_stream_ptr_t>(vw, 4, 12);
+					bitStreamToView<abgr12_stream_ptr_t>( vw, 4, 12 );
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
 				}
 				default:
 				{
 					abgr12_packed_view_t vw = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
-																( abgr12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
-																_plugin.getDpxImg().width() * sizeof( uint64_t ) );
+					                                            ( abgr12_packed_pixel_t* )( _plugin.getDpxImg().data() ),
+					                                            _plugin.getDpxImg().width() * sizeof( uint64_t ) );
 
 					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
 					break;
@@ -354,7 +354,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 			// Tests passed: fill, non fill, big endian, little endian
 			rgba16c_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
 			                                       (const rgba16_pixel_t*)( _plugin.getDpxImg().data() ),
-			                                       _plugin.getDpxImg().width() * sizeof(uint64_t) );
+			                                       _plugin.getDpxImg().width() * sizeof( uint64_t ) );
 
 			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
 			break;
@@ -364,7 +364,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 			// Untested (need images samples), quite sure it is working
 			abgr16c_view_t src = interleaved_view( _plugin.getDpxImg().width(), _plugin.getDpxImg().height(),
 			                                       (const abgr16_pixel_t*)( _plugin.getDpxImg().data() ),
-			                                       _plugin.getDpxImg().width() * sizeof(uint64_t) );
+			                                       _plugin.getDpxImg().width() * sizeof( uint64_t ) );
 
 			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
 			break;
@@ -378,8 +378,10 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 
 template<class View>
 template<class T, class DST_V>
-void DPXReaderProcess<View>::bitStreamToView(DST_V & dst, const int nc, const int channelSize) {
+void DPXReaderProcess<View>::bitStreamToView( DST_V& dst, const int nc, const int channelSize )
+{
 	boost::uint8_t* pData = _plugin.getDpxImg().data();
+
 	typedef unsigned char byte_t;
 	int width             = _plugin.getDpxImg().width();
 	int height            = _plugin.getDpxImg().height();

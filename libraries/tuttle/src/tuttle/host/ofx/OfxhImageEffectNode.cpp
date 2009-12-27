@@ -95,12 +95,10 @@ OfxhImageEffectNodeBase::OfxhImageEffectNodeBase( const property::OfxhPropSpec* 
 
 OfxhImageEffectNodeBase::~OfxhImageEffectNodeBase() {}
 
-
 bool OfxhImageEffectNodeBase::operator==( const OfxhImageEffectNodeBase& other ) const
 {
 	return _properties == other._properties;
 }
-
 
 /// obtain a handle on this for passing to the C api
 
@@ -344,10 +342,10 @@ static const property::OfxhPropSpec effectInstanceStuff[] = {
 	{ 0 }
 };
 
-OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin* plugin,
-                    const OfxhImageEffectNodeDescriptor&        descriptor,
-                    const std::string& context,
-                    bool               interactive )
+OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin*         plugin,
+                                          const OfxhImageEffectNodeDescriptor& descriptor,
+                                          const std::string&                   context,
+                                          bool                                 interactive )
 	: OfxhImageEffectNodeBase( effectInstanceStuff ),
 	_plugin( plugin ),
 	_context( context ),
@@ -393,8 +391,8 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin* plugin,
 
 OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectNode& other )
 : OfxhImageEffectNodeBase( other.getProperties() )
-, attribute::OfxhParamSet(other)
-, attribute::OfxhClipImageSet(other)
+, attribute::OfxhParamSet( other )
+, attribute::OfxhClipImageSet( other )
 , _plugin( other.getPlugin() )
 , _context( other.getContext() )
 , _descriptor( other.getDescriptor() )
@@ -406,7 +404,6 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectNode& other )
 {
 	_properties.setChainedSet( &_descriptor.getProperties() );
 }
-
 
 /**
  * called after construction to populate clips and params
@@ -700,10 +697,10 @@ OfxhMemory* OfxhImageEffectNode::imageMemoryAlloc( size_t nBytes )
 /**
  * call the effect entry point
  */
-OfxStatus OfxhImageEffectNode::mainEntry( const char*    action,
-                               const void*    handle,
-                               property::OfxhSet* inArgs,
-                               property::OfxhSet* outArgs )
+OfxStatus OfxhImageEffectNode::mainEntry( const char*        action,
+                                          const void*        handle,
+                                          property::OfxhSet* inArgs,
+                                          property::OfxhSet* outArgs )
 {
 	if( _plugin )
 	{
@@ -777,13 +774,13 @@ OfxStatus OfxhImageEffectNode::beginInstanceChangedAction( const std::string& wh
 }
 
 OfxStatus OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramName,
-                                                const std::string& why,
-                                                OfxTime            time,
-                                                OfxPointD          renderScale )
+                                                           const std::string& why,
+                                                           OfxTime            time,
+                                                           OfxPointD          renderScale )
 {
 	try
 	{
-		/*attribute::OfxhParam& param = */getParam( paramName );
+		/*attribute::OfxhParam& param = */ getParam( paramName );
 
 		if( isClipPreferencesSlaveParam( paramName ) )
 			_clipPrefsDirty = true;
@@ -820,9 +817,9 @@ OfxStatus OfxhImageEffectNode::paramInstanceChangedAction( const std::string& pa
 }
 
 OfxStatus OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName,
-                                               const std::string& why,
-                                               OfxTime            time,
-                                               OfxPointD          renderScale )
+                                                          const std::string& why,
+                                                          OfxTime            time,
+                                                          OfxPointD          renderScale )
 {
 	_clipPrefsDirty = true;
 	std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.find( clipName );
@@ -877,10 +874,10 @@ OfxStatus OfxhImageEffectNode::endInstanceEditAction()
 }
 
 OfxStatus OfxhImageEffectNode::beginRenderAction( OfxTime   startFrame,
-                                       OfxTime   endFrame,
-                                       OfxTime   step,
-                                       bool      interactive,
-                                       OfxPointD renderScale )
+                                                  OfxTime   endFrame,
+                                                  OfxTime   step,
+                                                  bool      interactive,
+                                                  OfxPointD renderScale )
 {
 	property::OfxhPropSpec stuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
@@ -906,9 +903,9 @@ OfxStatus OfxhImageEffectNode::beginRenderAction( OfxTime   startFrame,
 }
 
 OfxStatus OfxhImageEffectNode::renderAction( OfxTime            time,
-                                  const std::string& field,
-                                  const OfxRectI&    renderRoI,
-                                  OfxPointD          renderScale )
+                                             const std::string& field,
+                                             const OfxRectI&    renderRoI,
+                                             OfxPointD          renderScale )
 {
 	static const property::OfxhPropSpec stuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
@@ -932,10 +929,10 @@ OfxStatus OfxhImageEffectNode::renderAction( OfxTime            time,
 }
 
 OfxStatus OfxhImageEffectNode::endRenderAction( OfxTime   startFrame,
-                                     OfxTime   endFrame,
-                                     OfxTime   step,
-                                     bool      interactive,
-                                     OfxPointD renderScale )
+                                                OfxTime   endFrame,
+                                                OfxTime   step,
+                                                bool      interactive,
+                                                OfxPointD renderScale )
 {
 	property::OfxhPropSpec stuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
@@ -961,7 +958,7 @@ OfxStatus OfxhImageEffectNode::endRenderAction( OfxTime   startFrame,
  * calculate the default rod for this effect instance
  */
 OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
-                                                  OfxPointD renderScale )
+                                                             OfxPointD renderScale )
 {
 	OfxRectD rod;
 
@@ -1036,8 +1033,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		// retimer
 		try
 		{
-			attribute::OfxhClipImage& clip        = getClip( kOfxImageEffectSimpleSourceClipName );
-			/*attribute::ParamDoubleInstance& param = */dynamic_cast<attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
+			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			/*attribute::ParamDoubleInstance& param = */ dynamic_cast<attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
 			rod = clip.fetchRegionOfDefinition( floor( time ) );
 			rod = rectUnion( rod, clip.fetchRegionOfDefinition( floor( time ) + 1 ) );
 		}
@@ -1058,8 +1055,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
  * RoD call
  */
 OfxStatus OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
-                                                 OfxPointD renderScale,
-                                                 OfxRectD& rod )
+                                                            OfxPointD renderScale,
+                                                            OfxRectD& rod )
 {
 	property::OfxhPropSpec inStuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
@@ -1094,7 +1091,7 @@ OfxStatus OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 	}
 	else
 	{
-		throw core::exception::LogicError( "getRegionOfDefinitionAction error (plugin return "+mapStatusToString(stat)+")" );
+		throw core::exception::LogicError( "getRegionOfDefinitionAction error (plugin return " + mapStatusToString( stat ) + ")" );
 	}
 
 	return stat;
@@ -1104,9 +1101,9 @@ OfxStatus OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
  * get the region of interest for each input and return it in the given std::map
  */
 OfxStatus OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
-                                               OfxPointD renderScale,
-                                               const OfxRectD& roi,
-                                               std::map<attribute::OfxhClipImage*, OfxRectD>& rois )
+                                                          OfxPointD renderScale,
+                                                          const OfxRectD& roi,
+                                                          std::map<attribute::OfxhClipImage*, OfxRectD>& rois )
 {
 	OfxStatus stat = kOfxStatReplyDefault;
 
@@ -1209,7 +1206,7 @@ OfxStatus OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
  * see how many frames are needed from each clip to render the indicated frame
  */
 OfxStatus OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
-                                          RangeMap& rangeMap )
+                                                     RangeMap& rangeMap )
 {
 	OfxStatus stat = kOfxStatReplyDefault;
 	property::OfxhSet outArgs;
@@ -1300,10 +1297,10 @@ OfxStatus OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
 }
 
 OfxStatus OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
-                                      const std::string& field,
-                                      const OfxRectI&    renderRoI,
-                                      OfxPointD          renderScale,
-                                      std::string&       clip )
+                                                 const std::string& field,
+                                                 const OfxRectI&    renderRoI,
+                                                 OfxPointD          renderScale,
+                                                 std::string&       clip )
 {
 	static property::OfxhPropSpec inStuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },

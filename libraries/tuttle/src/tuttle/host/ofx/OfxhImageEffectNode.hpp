@@ -76,7 +76,7 @@ public:
 	virtual ~OfxhImageEffectNodeBase();
 
 	bool operator==( const OfxhImageEffectNodeBase& other ) const;
-	bool operator!=( const OfxhImageEffectNodeBase& other ) const { return !operator==(other); }
+	bool operator!=( const OfxhImageEffectNodeBase& other ) const { return !operator==( other ); }
 
 	/// is my magic number valid?
 	virtual bool verifyMagic() { return true; }
@@ -251,10 +251,10 @@ protected:
 
 public:
 	/// constructor based on clip descriptor
-	OfxhImageEffectNode( const OfxhImageEffectPlugin* plugin,
-			  const OfxhImageEffectNodeDescriptor&        other,
-	          const std::string& context,
-	          bool               interactive );
+	OfxhImageEffectNode( const OfxhImageEffectPlugin*         plugin,
+	                     const OfxhImageEffectNodeDescriptor& other,
+	                     const std::string&                   context,
+	                     bool                                 interactive );
 
 	OfxhImageEffectNode( const OfxhImageEffectNode& other );
 
@@ -271,7 +271,7 @@ public:
 
 	bool operator==( const OfxhImageEffectNode& ) const;
 
-	bool operator!=( const OfxhImageEffectNode& other ) const { return ! operator==( other ); }
+	bool operator!=( const OfxhImageEffectNode& other ) const { return !operator==( other ); }
 
 	/// implemented for Param::SetInstance
 	virtual property::OfxhSet& getParamSetProps();
@@ -597,7 +597,6 @@ public:
 	/// more chromatic components
 	virtual const std::string& findMostChromaticComponents( const std::string& a, const std::string& b ) const;
 };
-
 
 }
 }

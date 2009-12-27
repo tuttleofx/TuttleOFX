@@ -41,9 +41,7 @@
 #include <iostream>
 #include <cstring>
 
-
 //#define DEBUG_PROPERTIES true
-
 
 namespace tuttle {
 namespace host {
@@ -412,7 +410,7 @@ void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, int index
 	}
 	_value[index] = value;
 
-//	TCOUT( "setValue: " << value << " at index: " << index );
+	//	TCOUT( "setValue: " << value << " at index: " << index );
 
 	notify( true, index );
 }
@@ -516,9 +514,9 @@ OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( core
 
 	if( i == _props.end() )
 	{
-		throw core::exception::LogicError( "fetchLocalProperty: " + name + ". Property not found."); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
+		throw core::exception::LogicError( "fetchLocalProperty: " + name + ". Property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
 	}
-	return *(i->second);
+	return *( i->second );
 }
 
 const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
@@ -533,7 +531,7 @@ const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const thro
 		}
 		throw core::exception::LogicError( "fetchProperty: " + name + " property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
 	}
-	return *(i->second);
+	return *( i->second );
 }
 
 /**
@@ -582,7 +580,8 @@ void OfxhSet::eraseProperty( const std::string& propName )
 
 bool OfxhSet::hasProperty( const std::string& propName, bool followChain ) const
 {
-	PropertyMap::const_iterator it = _props.find(propName);
+	PropertyMap::const_iterator it = _props.find( propName );
+
 	if( it == _props.end() )
 	{
 		if( followChain && _chainedSet )
@@ -598,7 +597,7 @@ bool OfxhSet::hasProperty( const std::string& propName, bool followChain ) const
  */
 void OfxhSet::addProperty( OfxhProperty* prop )
 {
-	_props.insert(prop->getName(), prop);
+	_props.insert( prop->getName(), prop );
 }
 
 /**
@@ -607,9 +606,7 @@ void OfxhSet::addProperty( OfxhProperty* prop )
 OfxhSet::OfxhSet()
 	: _magic( kMagic )
 	, _chainedSet( NULL )
-{
-
-}
+{}
 
 OfxhSet::OfxhSet( const OfxhPropSpec spec[] )
 	: _magic( kMagic )
@@ -622,8 +619,7 @@ OfxhSet::OfxhSet( const OfxhSet& other )
 	: _magic( kMagic )
 	, _props( other._props )
 	, _chainedSet( NULL )
-{
-}
+{}
 
 OfxhSet::~OfxhSet()
 {
@@ -658,7 +654,7 @@ bool OfxhSet::operator==( const OfxhSet& other ) const
 		if( other._chainedSet == NULL )
 			if( _chainedSet->getSize() != 0 )
 				return false;
-		if( *_chainedSet != *(other._chainedSet) )
+		if( *_chainedSet != *( other._chainedSet ) )
 			return false;
 	}
 	return true;
@@ -671,7 +667,7 @@ void OfxhSet::coutProperties() const
 	     it != itEnd;
 	     ++it )
 	{
-		const OfxhProperty& prop = *(it->second);
+		const OfxhProperty& prop = *( it->second );
 		std::cout << "    " << it->first << " ";
 		std::cout << "(type:" << mapTypeEnumToString( prop.getType() ) << " dim:" << prop.getDimension() << " ro:" << prop.getPluginReadOnly() << ") : [";
 		int i = 0;
@@ -763,6 +759,7 @@ int OfxhSet::findStringPropValueIndex( const std::string& propName,
                                        const std::string& propValue ) const
 {
 	const String& prop = fetchStringProperty( propName );
+
 	const std::vector<std::string>& values     = prop.getValues();
 	std::vector<std::string>::const_iterator i = find( values.begin(), values.end(), propValue );
 	if( i != values.end() )

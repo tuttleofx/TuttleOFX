@@ -4,16 +4,13 @@
 
 #include <boost/foreach.hpp>
 
-
 //TODO: delete these include
 #include <tuttle/host/core/Param.hpp>
 #include <tuttle/host/core/ClipImage.hpp>
 
-
 namespace tuttle {
 namespace host {
 namespace core {
-
 
 ProcessGraph::ProcessGraph( Graph& graph )
 : _nodes( graph.getNodes() )
@@ -24,12 +21,12 @@ ProcessGraph::ProcessGraph( Graph& graph )
 }
 
 ProcessGraph::~ProcessGraph()
-{
-}
+{}
 
 void ProcessGraph::relink()
 {
 	Graph::InternalGraph::vertex_range_t vrange = _graph.getVertices();
+
 	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
@@ -42,29 +39,29 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	std::list<Graph::Descriptor> outputs;
 	BOOST_FOREACH( std::string s, nodes )
 	{
-		outputs.push_back( _graph.getVertexDescriptor(s) );
+		outputs.push_back( _graph.getVertexDescriptor( s ) );
 		std::cout << "MY OUTPUT " << s << std::endl;
 	}
-	
+
 	typedef Graph::InternalGraph::GraphContainer GraphContainer;
 	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graphprocess.dot" );
 
 	// Initialize variables
 	const int numFramesToRender = tEnd - tBegin;
-	OfxPointD renderScale = { 1.0, 1.0 };
-	OfxRectD renderWindow = { 0, 0,	123, 123 };
+	OfxPointD renderScale       = { 1.0, 1.0 };
+	OfxRectD renderWindow       = { 0, 0, 123, 123 };
 
 	//--- BEGIN RENDER
 	ProcessOptions processOptions;
-	processOptions._startFrame = tBegin;
-	processOptions._endFrame = tEnd;
-	processOptions._step = 1;
+	processOptions._startFrame  = tBegin;
+	processOptions._endFrame    = tEnd;
+	processOptions._step        = 1;
 	processOptions._interactive = false;
 	processOptions._renderScale = renderScale;
 
 	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes )
 	{
-		p.second->begin(processOptions);
+		p.second->begin( processOptions );
 	}
 
 	//--- RENDER
@@ -74,41 +71,40 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 		// for each outputs
 		BOOST_FOREACH( Graph::Descriptor outputNode, outputs )
 		{
-			Graph::InternalGraph optimizedGraph(_graph);
+			Graph::InternalGraph optimizedGraph( _graph );
 
-			processOptions._time = t;
-			processOptions._field = kOfxImageFieldBoth;
-			processOptions._renderRoI = renderWindow;
+			processOptions._time        = t;
+			processOptions._field       = kOfxImageFieldBoth;
+			processOptions._renderRoI   = renderWindow;
 			processOptions._renderScale = renderScale;
 
-			TCOUT("---------------------------------------- connectClips");
-			core::dfs_connectClips_visitor<GraphContainer> connectClipsVisitor(optimizedGraph.getGraph());
-			optimizedGraph.dfs(connectClipsVisitor, outputNode);
+			TCOUT( "---------------------------------------- connectClips" );
+			core::dfs_connectClips_visitor<GraphContainer> connectClipsVisitor( optimizedGraph.getGraph() );
+			optimizedGraph.dfs( connectClipsVisitor, outputNode );
 
-			TCOUT("---------------------------------------- precompute");
-			core::dfs_preCompute_visitor<GraphContainer> preComputeVisitor(optimizedGraph.getGraph(), processOptions);
-			optimizedGraph.dfs(preComputeVisitor, outputNode);
+			TCOUT( "---------------------------------------- precompute" );
+			core::dfs_preCompute_visitor<GraphContainer> preComputeVisitor( optimizedGraph.getGraph(), processOptions );
+			optimizedGraph.dfs( preComputeVisitor, outputNode );
 
-			TCOUT("---------------------------------------- compute");
-			core::dfs_compute_visitor<GraphContainer> computeVisitor(optimizedGraph.getGraph(), processOptions);
-			optimizedGraph.dfs(computeVisitor, outputNode);
+			TCOUT( "---------------------------------------- compute" );
+			core::dfs_compute_visitor<GraphContainer> computeVisitor( optimizedGraph.getGraph(), processOptions );
+			optimizedGraph.dfs( computeVisitor, outputNode );
 
-			TCOUT("---------------------------------------- postcompute");
-			core::dfs_postCompute_visitor<GraphContainer> postComputeVisitor(optimizedGraph.getGraph(), processOptions);
-			optimizedGraph.dfs(postComputeVisitor, outputNode);
+			TCOUT( "---------------------------------------- postcompute" );
+			core::dfs_postCompute_visitor<GraphContainer> postComputeVisitor( optimizedGraph.getGraph(), processOptions );
+			optimizedGraph.dfs( postComputeVisitor, outputNode );
 		}
 	}
-
 
 	//--- END RENDER
 	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes )
 	{
-		processOptions._startFrame = tBegin;
-		processOptions._endFrame = tEnd;
-		processOptions._step = 1;
+		processOptions._startFrame  = tBegin;
+		processOptions._endFrame    = tEnd;
+		processOptions._step        = 1;
 		processOptions._interactive = false;
 		processOptions._renderScale = renderScale;
-		p.second->end(processOptions);
+		p.second->end( processOptions );
 	}
 
 }

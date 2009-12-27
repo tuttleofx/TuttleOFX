@@ -72,7 +72,7 @@ void Processor::multiThread( unsigned int nCPUs )
 
 	if( nCPUs == 0 )
 	{
-		COUT_ERROR("Run process on 0 cpus... it seems to be a problem.");
+		COUT_ERROR( "Run process on 0 cpus... it seems to be a problem." );
 	}
 	else if( nCPUs == 1 ) // if 1 cpu, don't bother with the threading
 	{

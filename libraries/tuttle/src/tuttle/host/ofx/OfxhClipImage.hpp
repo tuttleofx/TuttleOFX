@@ -125,11 +125,11 @@ public:
 
 	/// @todo tuttle !!!!!!!!!!!!!!!!
 	bool operator==( const OfxhClipImage& other ) const { return true; }
-	bool operator!=( const OfxhClipImage& other ) const { return !operator==(other); }
+	bool operator!=( const OfxhClipImage& other ) const { return !operator==( other ); }
 
-	virtual OfxhClipImage* clone() const = 0;
-	virtual std::string getFullName() const = 0;
-	virtual std::string getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
+	virtual OfxhClipImage* clone() const                    = 0;
+	virtual std::string    getFullName() const              = 0;
+	virtual std::string    getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
 
 	/**
 	 * get a handle on the clip descriptor for the C api
@@ -239,7 +239,6 @@ public:
 		return getProperties().getStringProperty( kOfxImageEffectPropPreMultiplication );
 	}
 
-
 	/** Frame Rate -
 	 *
 	 *  The frame rate of a clip or instance's project.
@@ -283,9 +282,9 @@ public:
 	 *  Says whether the clip is actually connected at the moment.
 	 */
 	virtual const bool getConnected() const = 0;
-//	{
-//		return getProperties().getDoubleProperty( kOfxImageClipPropConnected );
-//	}
+	//	{
+	//		return getProperties().getDoubleProperty( kOfxImageClipPropConnected );
+	//	}
 
 	/** Unmapped Frame Rate -
 	 *
@@ -366,7 +365,7 @@ public:
 	virtual ~OfxhClipImageSet();
 
 	bool operator==( const OfxhClipImageSet& other ) const;
-	bool operator!=( const OfxhClipImageSet& other ) const { return !operator==(other); }
+	bool operator!=( const OfxhClipImageSet& other ) const { return !operator==( other ); }
 
 	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( std::logic_error );
 
@@ -396,6 +395,7 @@ public:
 	OfxhClipImage& getClip( std::string name ) const
 	{
 		ClipImageMap::const_iterator it = _clips.find( name );
+
 		if( it == _clips.end() )
 			throw core::exception::LogicError( "Clip not found (" + name + ")." );
 		return *it->second;

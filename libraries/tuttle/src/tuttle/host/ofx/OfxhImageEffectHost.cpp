@@ -110,7 +110,6 @@ void* OfxhImageEffectHost::fetchSuite( const char* suiteName, const int suiteVer
 		return tuttle::host::ofx::OfxhAbstractHost::fetchSuite( suiteName, suiteVersion );
 }
 
-
 }
 }
 }

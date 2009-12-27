@@ -19,7 +19,6 @@ public:
 	                            va_list     args ) const = 0;
 };
 
-
 }
 }
 }

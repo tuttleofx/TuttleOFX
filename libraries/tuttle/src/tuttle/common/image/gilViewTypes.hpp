@@ -90,27 +90,26 @@ typedef std::iterator_traits<abgr12_stream_ptr_t>::value_type abgr12_stream_pixe
 typedef view_type_from_pixel<abgr12_stream_pixel_t>::type abgr12_stream_view_t;
 
 /// 12 bits rgba packed to short
-typedef const packed_channel_reference<uint64_t, 04, 12,true> rgba12_packed_channel0_t;
-typedef const packed_channel_reference<uint64_t, 20, 12,true> rgba12_packed_channel1_t;
-typedef const packed_channel_reference<uint64_t, 36, 12,true> rgba12_packed_channel2_t;
-typedef const packed_channel_reference<uint64_t, 52, 12,true> rgba12_packed_channel3_t;
-typedef mpl::vector4<rgba12_packed_channel0_t,rgba12_packed_channel1_t,
-					   rgba12_packed_channel2_t,rgba12_packed_channel3_t> rgba12_packed_channels_t;
+typedef const packed_channel_reference<uint64_t, 04, 12, true> rgba12_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 20, 12, true> rgba12_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 36, 12, true> rgba12_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 52, 12, true> rgba12_packed_channel3_t;
+typedef mpl::vector4<rgba12_packed_channel0_t, rgba12_packed_channel1_t,
+                     rgba12_packed_channel2_t, rgba12_packed_channel3_t> rgba12_packed_channels_t;
 typedef packed_pixel<uint64_t, rgba12_packed_channels_t, rgba_layout_t> rgba12_packed_pixel_t;
 typedef view_type_from_pixel<rgba12_packed_pixel_t>::type rgba12_packed_view_t;
 typedef image<rgba12_packed_pixel_t, false> rgba12_packed_image_t;
 
 /// 12 bits abgr packed to short
-typedef const packed_channel_reference<uint64_t, 04, 12,true> abgr12_packed_channel0_t;
-typedef const packed_channel_reference<uint64_t, 20, 12,true> abgr12_packed_channel1_t;
-typedef const packed_channel_reference<uint64_t, 36, 12,true> abgr12_packed_channel2_t;
-typedef const packed_channel_reference<uint64_t, 52, 12,true> abgr12_packed_channel3_t;
-typedef mpl::vector4<abgr12_packed_channel0_t,abgr12_packed_channel1_t,
-					   abgr12_packed_channel2_t,abgr12_packed_channel3_t> abgr12_packed_channels_t;
+typedef const packed_channel_reference<uint64_t, 04, 12, true> abgr12_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 20, 12, true> abgr12_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 36, 12, true> abgr12_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 52, 12, true> abgr12_packed_channel3_t;
+typedef mpl::vector4<abgr12_packed_channel0_t, abgr12_packed_channel1_t,
+                     abgr12_packed_channel2_t, abgr12_packed_channel3_t> abgr12_packed_channels_t;
 typedef packed_pixel<uint64_t, abgr12_packed_channels_t, abgr_layout_t> abgr12_packed_pixel_t;
 typedef view_type_from_pixel<abgr12_packed_pixel_t>::type abgr12_packed_view_t;
 typedef image<abgr12_packed_pixel_t, false> abgr12_packed_image_t;
-
 
 /// 12 bits rgb packed to 6 bytes
 typedef const packed_channel_reference<uint64_t, 04, 12, true> rgb12_packed_channel0_t;
@@ -131,23 +130,23 @@ typedef view_type_from_pixel<rgb10_packed_pixel_t>::type rgb10_packed_view_t;
 typedef image<rgb10_packed_pixel_t, false> rgb10_packed_image_t;
 
 /// 10 bits rgba packed to short
-typedef const packed_channel_reference<uint64_t, 22, 10,true> rgba10_packed_channel0_t;
-typedef const packed_channel_reference<uint64_t, 12, 10,true> rgba10_packed_channel1_t;
-typedef const packed_channel_reference<uint64_t, 02, 10,true> rgba10_packed_channel2_t;
-typedef const packed_channel_reference<uint64_t, 54, 10,true> rgba10_packed_channel3_t;
-typedef mpl::vector4<rgba10_packed_channel0_t,rgba10_packed_channel1_t,
-					   rgba10_packed_channel2_t,rgba10_packed_channel3_t> rgba10_packed_channels_t;
+typedef const packed_channel_reference<uint64_t, 22, 10, true> rgba10_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 12, 10, true> rgba10_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 02, 10, true> rgba10_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 54, 10, true> rgba10_packed_channel3_t;
+typedef mpl::vector4<rgba10_packed_channel0_t, rgba10_packed_channel1_t,
+                     rgba10_packed_channel2_t, rgba10_packed_channel3_t> rgba10_packed_channels_t;
 typedef packed_pixel<uint64_t, rgba10_packed_channels_t, rgba_layout_t> rgba10_packed_pixel_t;
 typedef view_type_from_pixel<rgba10_packed_pixel_t>::type rgba10_packed_view_t;
 typedef image<rgba10_packed_pixel_t, false> rgba10_packed_image_t;
 
 /// 10 bits abgr packed to short
-typedef const packed_channel_reference<uint64_t, 4, 10,true> abgr10_packed_channel0_t;
-typedef const packed_channel_reference<uint64_t, 20,10,true> abgr10_packed_channel1_t;
-typedef const packed_channel_reference<uint64_t, 36,10,true> abgr10_packed_channel2_t;
-typedef const packed_channel_reference<uint64_t, 52,10,true> abgr10_packed_channel3_t;
-typedef mpl::vector4<abgr10_packed_channel0_t,abgr10_packed_channel1_t,
-					   abgr10_packed_channel2_t,abgr10_packed_channel3_t> abgr10_packed_channels_t;
+typedef const packed_channel_reference<uint64_t, 4, 10, true> abgr10_packed_channel0_t;
+typedef const packed_channel_reference<uint64_t, 20, 10, true> abgr10_packed_channel1_t;
+typedef const packed_channel_reference<uint64_t, 36, 10, true> abgr10_packed_channel2_t;
+typedef const packed_channel_reference<uint64_t, 52, 10, true> abgr10_packed_channel3_t;
+typedef mpl::vector4<abgr10_packed_channel0_t, abgr10_packed_channel1_t,
+                     abgr10_packed_channel2_t, abgr10_packed_channel3_t> abgr10_packed_channels_t;
 typedef packed_pixel<uint64_t, abgr10_packed_channels_t, abgr_layout_t> abgr10_packed_pixel_t;
 typedef view_type_from_pixel<abgr10_packed_pixel_t>::type abgr10_packed_view_t;
 typedef image<abgr10_packed_pixel_t, false> abgr10_packed_image_t;

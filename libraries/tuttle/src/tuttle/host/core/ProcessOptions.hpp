@@ -14,21 +14,21 @@ class ProcessOptions
 {
 
 public:
-	ProcessOptions(){}
+	ProcessOptions() {}
 
 public:
-	OfxTime   _startFrame;
-	OfxTime   _endFrame;
-	OfxTime   _step;
-	bool      _interactive;
-	OfxTime   _time;
+	OfxTime _startFrame;
+	OfxTime _endFrame;
+	OfxTime _step;
+	bool _interactive;
+	OfxTime _time;
 
 	// imageEffect specific options
-	std::string  _field;
-	OfxRectD     _renderRoI;
-	OfxPointD    _renderScale;
+	std::string _field;
+	OfxRectD _renderRoI;
+	OfxPointD _renderScale;
 
-	OfxRectD     _renderRoD;
+	OfxRectD _renderRoD;
 	std::map<tuttle::host::ofx::attribute::OfxhClipImage*, OfxRectD> _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
 };
 

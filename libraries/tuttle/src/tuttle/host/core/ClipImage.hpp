@@ -72,14 +72,15 @@ public:
 		getEditableProperties().setChainedSet( &other.getProperties() );
 
 		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
-//		getProperties().coutProperties();
+		//		getProperties().coutProperties();
 		setConnected();
-//		TCOUT("Clip connected!");
+		//		TCOUT("Clip connected!");
 	}
-	void setUnconnected() { _connectedClip = NULL; setConnected(false); }
-	
-	std::string getFullName() const { return _effect.getName()+"."+getName(); }
-	
+
+	void setUnconnected() { _connectedClip = NULL; setConnected( false ); }
+
+	std::string getFullName() const { return _effect.getName() + "." + getName(); }
+
 	std::string getConnectedClipFullName() const
 	{
 		if( isOutput() )
@@ -88,9 +89,9 @@ public:
 		}
 		else
 		{
-			if( !getConnected() || _connectedClip->getFullName().size()==0 )
+			if( !getConnected() || _connectedClip->getFullName().size() == 0 )
 			{
-				throw exception::LogicError( "Input clip "+getFullName()+" is not connected !" );
+				throw exception::LogicError( "Input clip " + getFullName() + " is not connected !" );
 			}
 			return _connectedClip->getFullName();
 		}
@@ -115,7 +116,7 @@ public:
 	 */
 	const std::string& getUnmappedComponents() const;
 
-#if 0
+	#if 0
 	/**
 	 * @brief PreMultiplication
 	 *      - kOfxImageOpaque - the image is opaque and so has no premultiplication state
@@ -147,7 +148,7 @@ public:
 	const bool getContinuousSamples() const                         { return _continuousSamples; }
 	void       setContinuousSamples( const bool continuousSamples ) { _continuousSamples = continuousSamples; }
 
-#endif
+	#endif
 
 	/**
 	 * @brief Frame Rate
@@ -179,14 +180,13 @@ public:
 	 */
 	void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const;
 
-
 	const bool getConnected() const { return _isConnected; }
 
 	/**
 	 * @brief Connected
 	 * Says whether the clip is actually connected at the moment.
 	 */
-	void setConnected( const bool isConnected=true ) { _isConnected = isConnected; }
+	void setConnected( const bool isConnected = true ) { _isConnected = isConnected; }
 
 	/**
 	 * @brief override this to fill in the image at the given time.

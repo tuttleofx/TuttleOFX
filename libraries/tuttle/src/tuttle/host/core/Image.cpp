@@ -10,13 +10,12 @@
 
 //TODO: delete this
 #ifdef _DEBUG
-	#include <boost/gil/extension/io/png_io.hpp>
+ #include <boost/gil/extension/io/png_io.hpp>
 #endif
 
 namespace tuttle {
 namespace host {
 namespace core {
-
 
 Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	: ofx::imageEffect::OfxhImage( clip ) ///< this ctor will set basic props on the image
@@ -90,8 +89,7 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 }
 
 Image::~Image()
-{
-}
+{}
 
 boost::uint8_t* Image::pixel( int x, int y )
 {
@@ -101,7 +99,7 @@ boost::uint8_t* Image::pixel( int x, int y )
 	{
 		int rowBytes = getIntProperty( kOfxImagePropRowBytes );
 		int offset   = ( y = bounds.y1 ) * rowBytes + ( x - bounds.x1 ) * _ncomp;
-		return &(getPixelData()[offset]);
+		return &( getPixelData()[offset] );
 	}
 	return 0;
 }
@@ -145,19 +143,19 @@ void Image::debugSaveAsPng( const std::string& filename )
 				case ofx::imageEffect::eBitDepthUByte:
 				{
 					rgba8_view_t view = gilViewFromImage<rgba8_view_t >( this );
-					png_write_view(filename,view);
+					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
 					rgba16_view_t view = gilViewFromImage<rgba16_view_t >( this );
-					png_write_view(filename,view);
+					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
 					rgba32f_view_t view = gilViewFromImage<rgba32f_view_t >( this );
-					png_write_view(filename,clamp<rgb8_pixel_t>(view));
+					png_write_view( filename, clamp<rgb8_pixel_t>( view ) );
 					break;
 				}
 				default:
@@ -170,19 +168,19 @@ void Image::debugSaveAsPng( const std::string& filename )
 				case ofx::imageEffect::eBitDepthUByte:
 				{
 					gray8_view_t view = gilViewFromImage<gray8_view_t >( this );
-					png_write_view(filename,view);
+					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
 					gray16_view_t view = gilViewFromImage<gray16_view_t >( this );
-					png_write_view(filename,view);
+					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
 					gray32f_view_t view = gilViewFromImage<gray32f_view_t >( this );
-					png_write_view(filename,clamp<rgb8_pixel_t>(view));
+					png_write_view( filename, clamp<rgb8_pixel_t>( view ) );
 					break;
 				}
 				default:
@@ -193,6 +191,7 @@ void Image::debugSaveAsPng( const std::string& filename )
 			break;
 	}
 }
+
 #endif
 
 /// Copy from gil image view to Image
@@ -318,7 +317,6 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 			break;
 	}
 }
-
 
 }
 }

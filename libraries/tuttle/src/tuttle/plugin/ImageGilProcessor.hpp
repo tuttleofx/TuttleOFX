@@ -81,11 +81,11 @@ ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
 template <class View>
 void ImageGilProcessor<View>::process( void )
 {
-	COUT( "process->renderwindow : x1:"<<_renderWindow.x1<<" y1:"<<_renderWindow.y1<<" x2:"<<_renderWindow.x2<<" y2:"<<_renderWindow.y2 );
+	COUT( "process->renderwindow : x1:" << _renderWindow.x1 << " y1:" << _renderWindow.y1 << " x2:" << _renderWindow.x2 << " y2:" << _renderWindow.y2 );
 	// is it OK ?
 	if( _renderWindow.x2 - _renderWindow.x1 == 0 || _renderWindow.y2 - _renderWindow.y1 == 0 )
 	{
-		throw PluginException("RenderWindow empty !");
+		throw PluginException( "RenderWindow empty !" );
 	}
 	// call the pre MP pass
 	preProcess();

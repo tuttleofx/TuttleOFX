@@ -1,7 +1,6 @@
 #include "OfxhProgressSuite.hpp"
 #include "OfxhProgress.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -30,7 +29,7 @@ static OfxStatus ProgressEnd( void* effectInstance )
 static OfxStatus ProgressUpdate( void* effectInstance, double progress )
 {
 	OfxhIProgress* me = reinterpret_cast<OfxhIProgress*>( effectInstance );
-	bool v       = me->progressUpdate( progress );
+	bool v            = me->progressUpdate( progress );
 
 	return v ? kOfxStatOK : kOfxStatReplyNo;
 }

@@ -162,8 +162,8 @@ public:
 
 class OfxhAttributeDescriptor : virtual public OfxhAttributeAccessor
 {
-	OfxhAttributeDescriptor( const OfxhAttributeDescriptor& other );
-	
+OfxhAttributeDescriptor( const OfxhAttributeDescriptor& other );
+
 public:
 	OfxhAttributeDescriptor();
 	OfxhAttributeDescriptor( const property::OfxhSet& properties );

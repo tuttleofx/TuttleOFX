@@ -1,5 +1,5 @@
-#ifndef DPX_READER_PLUGIN_H
-#define DPX_READER_PLUGIN_H
+#ifndef DPX_READER_PLUGIN_HPP
+#define DPX_READER_PLUGIN_HPP
 
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>

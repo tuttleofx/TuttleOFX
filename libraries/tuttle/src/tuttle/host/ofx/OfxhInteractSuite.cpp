@@ -1,7 +1,6 @@
 #include "OfxhInteractSuite.hpp"
 #include "OfxhInteract.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -50,7 +49,7 @@ static OfxInteractSuiteV1 gSuite = {
 void* getInteractSuite( const int version )
 {
 	if( version == 1 )
-		return static_cast<void*>(&gSuite);
+		return static_cast<void*>( &gSuite );
 	return NULL;
 }
 

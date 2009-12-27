@@ -165,8 +165,8 @@ public:
 	virtual ~OfxhParamSet();
 
 	bool operator==( const OfxhParamSet& other ) const { return _paramList == other._paramList; }
-	
-	bool operator!=( const OfxhParamSet& other ) const { return ! operator==(other); }
+
+	bool operator!=( const OfxhParamSet& other ) const { return !operator==( other ); }
 
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
@@ -327,9 +327,9 @@ public:
 	// by the various typeed param instances so that they can
 	// deconstruct the var args lists
 
-	virtual OfxStatus set( const std::string& value ) { throw core::exception::LogicError("Not a string parameter."); }
-	virtual OfxStatus set( const int& value ) { throw core::exception::LogicError("Not an int parameter."); }
-	virtual OfxStatus set( const double& value ) { throw core::exception::LogicError("Not a double parameter."); }
+	virtual OfxStatus set( const std::string& value ) { throw core::exception::LogicError( "Not a string parameter." ); }
+	virtual OfxStatus set( const int& value )         { throw core::exception::LogicError( "Not an int parameter." ); }
+	virtual OfxStatus set( const double& value )      { throw core::exception::LogicError( "Not a double parameter." ); }
 
 	/// get a value, implemented by instances to deconstruct var args
 	virtual OfxStatus getV( va_list arg );
@@ -569,7 +569,7 @@ class OfxhParamPage : public OfxhParam
 {
 public:
 	OfxhParamPage( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
-	virtual OfxhParamPage*                  clone() const;
+	virtual OfxhParamPage*                      clone() const;
 	const std::map<int, attribute::OfxhParam*>& getChildren() const;
 
 protected:
@@ -582,7 +582,7 @@ class OfxhParamInteger : public OfxhParam,
 public:
 	typedef int BaseType;
 	OfxhParamInteger( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
-	: OfxhParam( descriptor, setInstance )
+		: OfxhParam( descriptor, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
@@ -648,7 +648,7 @@ class OfxhParamDouble : public OfxhParam,
 public:
 	typedef double BaseType;
 	OfxhParamDouble( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
-	: OfxhParam( descriptor, setInstance )
+		: OfxhParam( descriptor, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );

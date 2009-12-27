@@ -1,6 +1,5 @@
 #include "OfxhCore.hpp"
 
-
 std::ostream& operator<<( std::ostream& os, const OfxPlugin& v )
 {
 	os << "OfxPlugin {" << std::endl;
@@ -130,6 +129,5 @@ typedef struct OfxYUVAColourF
 {
 	float y, u, v, a;
 }OfxYUVAColourF;
-
-*/
+ */
 

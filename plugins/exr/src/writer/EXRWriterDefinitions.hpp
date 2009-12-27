@@ -10,7 +10,6 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace exr {
@@ -28,7 +27,6 @@ static const std::string kParamCompressed     = "Compressed";
 const static std::string kEXRWriterHelpButton = "Help";
 
 const static std::string kEXRWriterHelpString = "<b>EXR File writer Hd3d</b> plugin is used to write exr files.  <br />";
-
 
 }
 }

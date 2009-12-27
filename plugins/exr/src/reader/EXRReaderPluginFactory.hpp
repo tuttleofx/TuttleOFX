@@ -7,12 +7,6 @@ namespace plugin {
 namespace exr {
 namespace reader {
 
-static const bool kSupportTiles = false;
-static const bool kSupportTemporalClipAccess = false;
-
-
-using namespace OFX;
-
 mDeclarePluginFactory( EXRReaderPluginFactory, {}, {} );
 
 }
@@ -20,4 +14,4 @@ mDeclarePluginFactory( EXRReaderPluginFactory, {}, {} );
 }
 }
 
-#endif //EXR_READER_PLUGIN_FACTORY_HPP
+#endif

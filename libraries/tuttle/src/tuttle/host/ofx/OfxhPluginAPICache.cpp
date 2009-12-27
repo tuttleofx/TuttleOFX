@@ -128,7 +128,7 @@ void propertyXMLWrite( std::ostream& o, const property::OfxhProperty& prop, cons
 
 		o << indent << "<property "
 		  << XML::attribute( "name", prop.getName() )
-		  << XML::attribute( "type", property::mapTypeEnumToString(prop.getType()) )
+		  << XML::attribute( "type", property::mapTypeEnumToString( prop.getType() ) )
 		  << XML::attribute( "dimension", prop.getFixedDimension() )
 		  << ">\n";
 
@@ -162,7 +162,7 @@ void propertySetXMLWrite( std::ostream& o, const property::OfxhSet& set, int ind
 	     i != set.getMap().end();
 	     i++ )
 	{
-		const property::OfxhProperty& prop = *(i->second);
+		const property::OfxhProperty& prop = *( i->second );
 		propertyXMLWrite( o, prop, indent_prefix );
 	}
 }

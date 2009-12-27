@@ -6,7 +6,6 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 static OfxStatus paramDefine( OfxParamSetHandle     paramSet,
                               const char*           paramType,
                               const char*           name,

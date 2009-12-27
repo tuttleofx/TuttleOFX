@@ -33,30 +33,29 @@ namespace writer {
  * @param[in, out]   desc     Effect descriptor
  */
 using namespace OFX;
-void
-DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    // basic labels
-    desc.setLabels( "DPXWriterHd3d", "DPXWriterHd3d",
-                    "DPX File writer" );
-    desc.setPluginGrouping( "tuttle" );
+	// basic labels
+	desc.setLabels( "DPXWriterHd3d", "DPXWriterHd3d",
+	                "DPX File writer" );
+	desc.setPluginGrouping( "tuttle" );
 
-    // add the supported contexts, only filter at the moment
+	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( eContextGeneral );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth( eBitDepthUByte );
-    desc.addSupportedBitDepth( eBitDepthUShort );
-    desc.addSupportedBitDepth( eBitDepthFloat );
+	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthUByte );
+	desc.addSupportedBitDepth( eBitDepthUShort );
+	desc.addSupportedBitDepth( eBitDepthFloat );
 
-    // set a few flags
-    desc.setSingleInstance( false );
-    desc.setHostFrameThreading( false );
-    desc.setSupportsMultiResolution( false );
-    desc.setSupportsTiles( kSupportTiles );
-    desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-    desc.setRenderTwiceAlways( false );
-    desc.setSupportsMultipleClipPARs( false );
+	// set a few flags
+	desc.setSingleInstance( false );
+	desc.setHostFrameThreading( false );
+	desc.setSupportsMultiResolution( false );
+	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
+	desc.setRenderTwiceAlways( false );
+	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -64,20 +63,20 @@ DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                             OFX::ContextEnum context )
+void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                OFX::ContextEnum            context )
 {
-    OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	// Dpx only supports RGB(A)
-    srcClip->addSupportedComponent( ePixelComponentRGBA );
-    srcClip->setSupportsTiles( kSupportTiles );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-    // Create the mandated output clip
-    OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	// Dpx only supports RGB(A)
-    dstClip->addSupportedComponent( ePixelComponentRGBA );
-    dstClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent( ePixelComponentRGBA );
+	srcClip->setSupportsTiles( kSupportTiles );
+
+	// Create the mandated output clip
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	// Dpx only supports RGB(A)
+	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
@@ -114,11 +113,10 @@ DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect*
-DPXWriterPluginFactory::createInstance(OfxImageEffectHandle handle,
-                                            OFX::ContextEnum context)
+OFX::ImageEffect* DPXWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
+                                                          OFX::ContextEnum     context )
 {
-    return new DPXWriterPlugin(handle);
+	return new DPXWriterPlugin( handle );
 }
 
 }

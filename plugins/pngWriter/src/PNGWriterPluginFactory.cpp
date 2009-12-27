@@ -1,9 +1,3 @@
-/**
- * @author Eloi Du Bois.
- * @date   2009/10/11
- *
- */
-
 #include "PNGWriterPlugin.hpp"
 #include "PNGWriterDefinitions.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>

@@ -1,7 +1,6 @@
 #include "OfxhImageEffectSuite.hpp"
 #include "OfxhImageEffectNode.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {

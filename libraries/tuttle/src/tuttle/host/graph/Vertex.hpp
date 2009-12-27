@@ -41,10 +41,10 @@ public:
 		return *this;
 	}
 
-	const std::string& getName() const                        { return _name; }
-	core::ProcessNode* getProcessNode()                       { return _processNode; }
-	const core::ProcessNode* const getProcessNode() const     { return _processNode; }
-	void               setProcessNode( core::ProcessNode* p ) { _processNode = p; }
+	const std::string&             getName() const                        { return _name; }
+	core::ProcessNode*             getProcessNode()                       { return _processNode; }
+	const core::ProcessNode* const getProcessNode() const                 { return _processNode; }
+	void                           setProcessNode( core::ProcessNode* p ) { _processNode = p; }
 
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 

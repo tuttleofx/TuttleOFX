@@ -31,7 +31,7 @@ protected:
 	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
 
 	template<class T, class DST_V>
-	void bitStreamToView(DST_V & dst, const int nc, const int channelSize);
+	void bitStreamToView( DST_V& dst, const int nc, const int channelSize );
 
 public:
 	DPXReaderProcess<View>( DPXReaderPlugin & instance );

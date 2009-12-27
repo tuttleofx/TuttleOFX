@@ -1,10 +1,3 @@
-/**
- * @file EXRWriterProcess.hpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
 #ifndef EXRWRITER_PROCESS_HPP
 #define EXRWRITER_PROCESS_HPP
 
@@ -31,7 +24,6 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace exr {
@@ -42,26 +34,29 @@ namespace writer {
  *
  */
 template<class View>
-class EXRWriterProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
+class EXRWriterProcess : public tuttle::plugin::ImageGilProcessor<View>,
+	public tuttle::plugin::Progress
 {
-    typedef typename View::value_type value_t;
-protected :
-    EXRWriterPlugin&      _plugin;        ///< Rendering plugin
+typedef typename View::value_type value_t;
+
+protected:
+	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
 	OFX::StringParam*     _filepath;      ///< File path
 	OFX::ChoiceParam*     _bitDepth;      ///< Bit depth
-	OFX::ChoiceParam*     _componentsType;///< Components type
-    View                  _srcView;       ///< Source view
+	OFX::ChoiceParam*     _componentsType; ///< Components type
+	View _srcView;                        ///< Source view
 
 	template<class Pixel>
 	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException );
-public :
-    EXRWriterProcess<View>(EXRWriterPlugin &instance);
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+public:
+	EXRWriterProcess<View>( EXRWriterPlugin & instance );
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+	// set up and run a processor
+	void setupAndProcess( const OFX::RenderArguments& args );
+
+	// Do some processing
+	void multiThreadProcessImages( OfxRectI procWindow );
 };
 
 }
@@ -71,4 +66,4 @@ public :
 
 #include "EXRWriterProcess.tcc"
 
-#endif  // EXRWRITER_PROCESS_HPP
+#endif

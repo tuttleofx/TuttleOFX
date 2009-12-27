@@ -118,7 +118,7 @@ void* OfxhBinary::findSymbol( const std::string& symbol )
 	}
 	else
 	{
-		throw core::exception::LogicError( "Symbol '"+symbol+"' not found in plugin file: '"+_binaryPath+"'" );
+		throw core::exception::LogicError( "Symbol '" + symbol + "' not found in plugin file: '" + _binaryPath + "'" );
 	}
 }
 

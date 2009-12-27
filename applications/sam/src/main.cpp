@@ -57,9 +57,9 @@ int main( int argc, char** argv )
 		tuttle::host::core::ImageEffectNode* ofxinstR = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginR->createInstance( kOfxImageEffectContextGenerator ) );
 		tuttle::host::core::ImageEffectNode* ofxinstI = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginI->createInstance( kOfxImageEffectContextFilter ) );
 		tuttle::host::core::ImageEffectNode* ofxinstW = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginW->createInstance( kOfxImageEffectContextGeneral ) );
-		ofxinstR->setName("pluginR");
-		ofxinstI->setName("pluginI");
-		ofxinstW->setName("pluginW");
+		ofxinstR->setName( "pluginR" );
+		ofxinstI->setName( "pluginI" );
+		ofxinstW->setName( "pluginW" );
 		vPluginsInst.push_back( ofxinstR );
 		vPluginsInst.push_back( ofxinstI );
 		vPluginsInst.push_back( ofxinstW );
@@ -69,7 +69,7 @@ int main( int argc, char** argv )
 		{
 			// current render scale of 1
 			OfxPointD renderScale = { 1.0, 1.0 };
-			
+
 			for( EffectInstVector::iterator it = vPluginsInst.begin(), itEnd = vPluginsInst.end();
 			     it != itEnd;
 			     ++it )
@@ -85,21 +85,20 @@ int main( int argc, char** argv )
 
 				it->dumpToStdOut();
 			}
-			
 
 			// Setup parameters
-			tuttle::host::core::ParamString& srcFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[0].getParam("Input filename") );
-			tuttle::host::core::ParamString& dstFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[2].getParam("Output filename") );
+			tuttle::host::core::ParamString& srcFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[0].getParam( "Input filename" ) );
+			tuttle::host::core::ParamString& dstFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[2].getParam( "Output filename" ) );
 			srcFileParam.set( "input.exr" );
 			dstFileParam.set( "outputexr.png" );
 			vPluginsInst[0].paramInstanceChangedAction( srcFileParam.getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 			vPluginsInst[2].paramInstanceChangedAction( dstFileParam.getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
 			// Setup clips
-			tuttle::host::core::ClipImage& outputR = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstR->getClip(kOfxImageEffectOutputClipName) );
-			tuttle::host::core::ClipImage& inputI = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstI->getClip(kOfxImageEffectSimpleSourceClipName) );
-			tuttle::host::core::ClipImage& outputI = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstI->getClip(kOfxImageEffectOutputClipName) );
-			tuttle::host::core::ClipImage& inputW = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstW->getClip(kOfxImageEffectSimpleSourceClipName) );
+			tuttle::host::core::ClipImage& outputR = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstR->getClip( kOfxImageEffectOutputClipName ) );
+			tuttle::host::core::ClipImage& inputI  = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstI->getClip( kOfxImageEffectSimpleSourceClipName ) );
+			tuttle::host::core::ClipImage& outputI = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstI->getClip( kOfxImageEffectOutputClipName ) );
+			tuttle::host::core::ClipImage& inputW  = dynamic_cast<tuttle::host::core::ClipImage&>( ofxinstW->getClip( kOfxImageEffectSimpleSourceClipName ) );
 			inputI.setConnectedClip( outputR );
 			inputW.setConnectedClip( outputI );
 
@@ -137,7 +136,7 @@ int main( int argc, char** argv )
 					TCOUT( "on node: " << it->getName() );
 					for( RoiMap::iterator itR = rois.begin(), itREnd = rois.end();
 						 itR != itREnd;
-						 ++itR )
+				 ++itR )
 					{
 						TCOUT( "clip roi :" << itR->first->getFullName() << " - " << itR->first->getConnectedClipFullName() << " - " << itR->second );
 					}
@@ -151,11 +150,11 @@ int main( int argc, char** argv )
 				
 				// get the output clip
 				tuttle::host::core::ClipImgInstance& outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance&>( vPluginsInst[0].getClip( kOfxImageEffectOutputClipName ) );
-				*/
+				 */
 				/// RoI is in canonical coords,
 				OfxRectD rod;
 				vPluginsInst[0].getRegionOfDefinitionAction( frame, renderScale, rod );
-				OfxRectD regionOfInterest = rod;//rois[&outputClip];
+				OfxRectD regionOfInterest = rod; //rois[&outputClip];
 
 				double par = 1.0; //vPluginsInst[0].getProjectPixelAspectRatio();
 
@@ -169,58 +168,57 @@ int main( int argc, char** argv )
 				};
 
 				TCOUT( "render window on frame " << frame << " : " << renderWindow );
-				
 
 				// Generates & propagates
 				EffectInstVector::iterator it = vPluginsInst.begin(), itEnd = vPluginsInst.end();
-				for( ; it != itEnd-1;
-					 ++it )
+				for( ; it != itEnd - 1;
+				     ++it )
 				{
-//					( it + 1 )->getRegionOfInterestAction( frame, renderScale, regionOfInterest, rois );
-//					TCOUT( "on node: " << (it+1)->getName() );
-//					for( RoiMap::iterator itR = rois.begin(), itREnd = rois.end();
-//						 itR != itREnd;
-//						 ++itR )
-//					{
-//						TCOUT( "clip:" << itR->first->getName() << " - " << itR->first->getFullName() << " - " << itR->second );
-//					}
-					
+					//					( it + 1 )->getRegionOfInterestAction( frame, renderScale, regionOfInterest, rois );
+					//					TCOUT( "on node: " << (it+1)->getName() );
+					//					for( RoiMap::iterator itR = rois.begin(), itREnd = rois.end();
+					//						 itR != itREnd;
+					//						 ++itR )
+					//					{
+					//						TCOUT( "clip:" << itR->first->getName() << " - " << itR->first->getFullName() << " - " << itR->second );
+					//					}
+
 					// get the output clip
-//					outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( &it->getClip( kOfxImageEffectOutputClipName ) );
+					//					outputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( &it->getClip( kOfxImageEffectOutputClipName ) );
 					// get next input
-//					inputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( &(it+1)->getClip( kOfxImageEffectSimpleSourceClipName ) );
+					//					inputClip = dynamic_cast<tuttle::host::core::ClipImgInstance*>( &(it+1)->getClip( kOfxImageEffectSimpleSourceClipName ) );
 					it->renderAction( t, kOfxImageFieldBoth, renderWindow, renderScale );
-//					if( inputClip && outputClip )
-//					{
-//						regionOfInterest = tuttle::intersection( regionOfInterest, tuttle::intersection( outputClip->fetchRegionOfDefinition( frame ), rois[inputClip] ) );
-//
-//						outImg = dynamic_cast<tuttle::host::core::Image*>( outputClip->getImage( frame, &regionOfInterest ) );
-//						OfxRectD reqRegion = {
-//							( regionOfInterest.x1 / outputClip->getPixelAspectRatio() ) * inputClip->getPixelAspectRatio(), regionOfInterest.y1,
-//							( regionOfInterest.x2 / outputClip->getPixelAspectRatio() ) * inputClip->getPixelAspectRatio(), regionOfInterest.y2
-//						};
-//						inImg = dynamic_cast<tuttle::host::core::Image*>( inputClip->getImage( frame, &reqRegion ) );
-//
-//						OfxRectI bounds   = inImg->getBounds();
-//						OfxPointI sCorner = { 0, 0 };
-//						OfxPointI dCorner = { 0, 0 };
-//						OfxPointI count   = { bounds.x2 - bounds.x1, bounds.y2 - bounds.y1 };
-//						//tuttle::host::core::Image::copy( inImg, outImg, dCorner, sCorner, count );
-//					}
-//
-//					// recompute render window
-//					renderWindow.x1 = (int) std::ceil( regionOfInterest.x1 / par );
-//					renderWindow.x2 = (int) std::ceil( regionOfInterest.x2 / par );
-//					renderWindow.y1 = int(regionOfInterest.y1);
-//					renderWindow.y2 = int(regionOfInterest.y2);
+					//					if( inputClip && outputClip )
+					//					{
+					//						regionOfInterest = tuttle::intersection( regionOfInterest, tuttle::intersection( outputClip->fetchRegionOfDefinition( frame ), rois[inputClip] ) );
+					//
+					//						outImg = dynamic_cast<tuttle::host::core::Image*>( outputClip->getImage( frame, &regionOfInterest ) );
+					//						OfxRectD reqRegion = {
+					//							( regionOfInterest.x1 / outputClip->getPixelAspectRatio() ) * inputClip->getPixelAspectRatio(), regionOfInterest.y1,
+					//							( regionOfInterest.x2 / outputClip->getPixelAspectRatio() ) * inputClip->getPixelAspectRatio(), regionOfInterest.y2
+					//						};
+					//						inImg = dynamic_cast<tuttle::host::core::Image*>( inputClip->getImage( frame, &reqRegion ) );
+					//
+					//						OfxRectI bounds   = inImg->getBounds();
+					//						OfxPointI sCorner = { 0, 0 };
+					//						OfxPointI dCorner = { 0, 0 };
+					//						OfxPointI count   = { bounds.x2 - bounds.x1, bounds.y2 - bounds.y1 };
+					//						//tuttle::host::core::Image::copy( inImg, outImg, dCorner, sCorner, count );
+					//					}
+					//
+					//					// recompute render window
+					//					renderWindow.x1 = (int) std::ceil( regionOfInterest.x1 / par );
+					//					renderWindow.x2 = (int) std::ceil( regionOfInterest.x2 / par );
+					//					renderWindow.y1 = int(regionOfInterest.y1);
+					//					renderWindow.y2 = int(regionOfInterest.y2);
 				}
 				it->renderAction( t, kOfxImageFieldBoth, renderWindow, renderScale );
 			}
 
 			// say we are about to render a bunch of frames
 			for( EffectInstVector::iterator it = vPluginsInst.begin(), itEnd = vPluginsInst.end();
-					 it != itEnd-1;
-					 ++it )
+			     it != itEnd - 1;
+			     ++it )
 			{
 				it->endRenderAction( 0, numFramesToRender, 1.0, false, renderScale );
 			}
@@ -237,7 +235,7 @@ int main( int argc, char** argv )
 		std::cout << "Std Exception : main de tuttle..." << std::endl;
 		std::cout << e.what() << std::endl;
 	}
-	catch( ... )
+	catch(... )
 	{
 		std::cout << "Exception..." << std::endl;
 	}

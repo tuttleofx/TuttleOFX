@@ -11,38 +11,37 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-
 template<class TGraph>
 struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_connectClips_visitor( TGraph & graph )
-			: _graph(graph)
+		dfs_connectClips_visitor( TGraph& graph )
+			: _graph( graph )
 		{}
 
 		template<class EdgeDescriptor, class Graph>
 		void examine_edge( EdgeDescriptor e, Graph& g )
 		{
 			std::cout << "[CONNECT] examine_edge "
-					  << get( vertex_properties, g )[target(e, g)]
-					  << " TO "
-					  << get( vertex_properties, g )[source(e, g)]
+			          << get( vertex_properties, g )[target( e, g )]
+			          << " TO "
+			          << get( vertex_properties, g )[source( e, g )]
 			          << std::endl;
 
-			core::ProcessNode * sourceNode = get( vertex_properties, _graph )[source(e, _graph)].getProcessNode();
-			core::ProcessNode * targetNode = get( vertex_properties, _graph )[target(e, _graph)].getProcessNode();
+			core::ProcessNode* sourceNode = get( vertex_properties, _graph )[source( e, _graph )].getProcessNode();
+			core::ProcessNode* targetNode = get( vertex_properties, _graph )[target( e, _graph )].getProcessNode();
 			sourceNode->connect( *targetNode );
 		}
-		
+
 	private:
-		TGraph & _graph;
+		TGraph& _graph;
 };
 
 template<class TGraph>
 struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_preCompute_visitor( TGraph graph, ProcessOptions & options )
+		dfs_preCompute_visitor( TGraph graph, ProcessOptions& options )
 			: _graph(graph)
 			, _options(options)
 		{}
@@ -53,7 +52,7 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 			std::cout << "[PRECOMPUTE] discover_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
 
-			get( vertex_properties, _graph )[v].getProcessNode()->preProcess_initialize(_options);
+			get( vertex_properties, _graph )[v].getProcessNode()->preProcess_initialize( _options );
 		}
 
 		template<class VertexDescriptor, class Graph>
@@ -61,19 +60,19 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 		{
 			std::cout << "[PRECOMPUTE] finish_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
-			get( vertex_properties, _graph )[v].getProcessNode()->preProcess_finish(_options);
+			get( vertex_properties, _graph )[v].getProcessNode()->preProcess_finish( _options );
 		}
 
 	private:
-		TGraph & _graph;
-		ProcessOptions & _options;
+		TGraph& _graph;
+		ProcessOptions& _options;
 };
 
 template<class TGraph>
 struct dfs_compute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_compute_visitor( TGraph& graph, const ProcessOptions & options )
+		dfs_compute_visitor( TGraph& graph, const ProcessOptions& options )
 			: _graph(graph)
 			, _options(options)
 		{}
@@ -84,19 +83,19 @@ struct dfs_compute_visitor : public boost::dfs_visitor<>
 			std::cout << "[COMPUTE] finish_vertex "
 			          << get( vertex_properties, g )[v] << std::endl;
 
-			get( vertex_properties, _graph )[v].getProcessNode()->process(_options);
+			get( vertex_properties, _graph )[v].getProcessNode()->process( _options );
 		}
 
 	private:
-		TGraph & _graph;
-		const ProcessOptions & _options;
+		TGraph& _graph;
+		const ProcessOptions& _options;
 };
 
 template<class TGraph>
 struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_postCompute_visitor( TGraph& graph, ProcessOptions & options )
+		dfs_postCompute_visitor( TGraph& graph, ProcessOptions& options )
 			: _graph(graph)
 			, _options(options)
 		{}
@@ -116,12 +115,9 @@ struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 		}
 
 	private:
-		TGraph & _graph;
-		ProcessOptions & _options;
+		TGraph& _graph;
+		ProcessOptions& _options;
 };
-
-
-
 
 }
 }
