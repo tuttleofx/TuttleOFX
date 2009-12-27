@@ -392,7 +392,7 @@ public:
 	/**
 	 * get the clip
 	 */
-	OfxhClipImage& getClip( std::string name ) const
+	OfxhClipImage& getClip( const std::string& name ) const
 	{
 		ClipImageMap::const_iterator it = _clips.find( name );
 

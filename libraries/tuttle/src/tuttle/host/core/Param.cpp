@@ -137,13 +137,13 @@ OfxStatus ParamInteger::get( OfxTime time, int& v )
 	return kOfxStatOK;
 }
 
-OfxStatus ParamInteger::set( int v )
+OfxStatus ParamInteger::set( const int& v )
 {
 	_value = v;
 	return kOfxStatOK;
 }
 
-OfxStatus ParamInteger::set( OfxTime time, int v )
+OfxStatus ParamInteger::set( OfxTime time, const int& v )
 {
 	_value = v; ///< @todo: in time !
 	return kOfxStatOK;
@@ -184,13 +184,13 @@ OfxStatus ParamDouble::get( OfxTime time, double& v )
 	return kOfxStatOK;
 }
 
-OfxStatus ParamDouble::set( double v )
+OfxStatus ParamDouble::set( const double& v )
 {
 	_value = v;
 	return kOfxStatOK;
 }
 
-OfxStatus ParamDouble::set( OfxTime time, double v )
+OfxStatus ParamDouble::set( OfxTime time, const double& v )
 {
 	_value = v; ///< @todo: in time !
 	return kOfxStatOK;

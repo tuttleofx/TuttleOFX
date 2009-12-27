@@ -7,6 +7,7 @@
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhImage.hpp>
+#include <tuttle/host/core/ProcessNode.hpp>
 #include <tuttle/host/core/memory/IMemoryPool.hpp>
 #include <tuttle/host/core/memory/IMemoryCache.hpp>
 
@@ -22,7 +23,7 @@ namespace core {
  *
  *
  */
-class ClipImage : public tuttle::host::ofx::attribute::OfxhClipImage
+class ClipImage : public ofx::attribute::OfxhClipImage, public ProcessAttribute
 {
 protected:
 	/*const*/ ImageEffectNode& _effect;
@@ -35,11 +36,13 @@ protected:
 	const ClipImage* _connectedClip; ///< @warning HACK ! to force connection (only for test) @todo remove this !!!!
 
 public:
-	ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc );
+	ClipImage( ImageEffectNode& effect, const ofx::attribute::OfxhClipImageDescriptor& desc );
 
 	~ClipImage();
 
 	ClipImage* clone() const { return new ClipImage( *this ); }
+
+	const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
 
 	/// @warning HACK ! to force connection (only for test)
 	/// @todo remove this !!!!

@@ -591,8 +591,8 @@ public:
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( int& )               = 0;
 	virtual OfxStatus get( OfxTime time, int& ) = 0;
-	virtual OfxStatus set( int )                = 0;
-	virtual OfxStatus set( OfxTime time, int )  = 0;
+	virtual OfxStatus set( const int& )         = 0;
+	virtual OfxStatus set( OfxTime time, const int& )  = 0;
 
 	// probably derived class does not need to implement, default is an approximation
 	virtual OfxStatus derive( OfxTime time, int& );
@@ -657,8 +657,8 @@ public:
 	// Deriving implementatation needs to overide these
 	virtual OfxStatus get( double& )                                     = 0;
 	virtual OfxStatus get( OfxTime time, double& )                       = 0;
-	virtual OfxStatus set( double )                                      = 0;
-	virtual OfxStatus set( OfxTime time, double )                        = 0;
+	virtual OfxStatus set( const double& )                               = 0;
+	virtual OfxStatus set( OfxTime time, const double& )                 = 0;
 	virtual OfxStatus derive( OfxTime time, double& )                    = 0;
 	virtual OfxStatus integrate( OfxTime time1, OfxTime time2, double& ) = 0;
 

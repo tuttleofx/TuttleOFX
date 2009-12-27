@@ -85,12 +85,12 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 	 */
 }
 
-void ImageEffectNode::connect( const ProcessNode& sourceEffect )
+void ImageEffectNode::connect( const ProcessNode& sourceEffect, ProcessAttribute& attr )
 {
 	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>( sourceEffect );
 
-	ClipImage& output = dynamic_cast<ClipImage&>( source.getClip( kOfxImageEffectOutputClipName ) );
-	ClipImage& input  = dynamic_cast<ClipImage&>( getClip( kOfxImageEffectSimpleSourceClipName ) );
+	const ClipImage& output = dynamic_cast<ClipImage&>( source.getClip( kOfxImageEffectOutputClipName ) );
+	ClipImage& input  = dynamic_cast<ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
 
 	input.setConnectedClip( output );
 }

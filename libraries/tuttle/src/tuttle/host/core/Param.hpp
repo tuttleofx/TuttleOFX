@@ -78,8 +78,8 @@ public:
 	int       getDefault() const;
 	OfxStatus get( int& );
 	OfxStatus get( OfxTime time, int& );
-	OfxStatus set( int );
-	OfxStatus set( OfxTime time, int );
+	OfxStatus set( const int& );
+	OfxStatus set( OfxTime time, const int& );
 };
 
 class ParamDouble : public tuttle::host::ofx::attribute::OfxhParamDouble
@@ -95,8 +95,8 @@ public:
 	double    getDefault() const;
 	OfxStatus get( double& );
 	OfxStatus get( OfxTime time, double& );
-	OfxStatus set( double );
-	OfxStatus set( OfxTime time, double );
+	OfxStatus set( const double& );
+	OfxStatus set( OfxTime time, const double& );
 	OfxStatus derive( OfxTime time, double& );
 	OfxStatus integrate( OfxTime time1, OfxTime time2, double& );
 };

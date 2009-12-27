@@ -15,6 +15,10 @@ template<class TGraph>
 struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 {
 	public:
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+		typedef typename TGraph::Edge Edge;
+
 		dfs_connectClips_visitor( TGraph& graph )
 			: _graph( graph.getGraph() )
 		{}
@@ -22,19 +26,22 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 		template<class EdgeDescriptor, class Graph>
 		void examine_edge( EdgeDescriptor e, Graph& g )
 		{
+			Edge& edge = get( edge_properties, _graph )[e];
+			Vertex& vertexSource = get( vertex_properties, _graph )[source( e, _graph )];
+			Vertex& vertexDest   = get( vertex_properties, _graph )[target( e, _graph )];
 			std::cout << "[CONNECT] examine_edge "
-			          << get( vertex_properties, g )[target( e, g )]
+			          << vertexSource
 			          << " TO "
-			          << get( vertex_properties, g )[source( e, g )]
+			          << vertexDest << "." << edge.inAttrName()
 			          << std::endl;
 
-			core::ProcessNode* sourceNode = get( vertex_properties, _graph )[source( e, _graph )].getProcessNode();
-			core::ProcessNode* targetNode = get( vertex_properties, _graph )[target( e, _graph )].getProcessNode();
-			sourceNode->connect( *targetNode );
+			core::ProcessNode* sourceNode = vertexSource.getProcessNode();
+			core::ProcessNode* targetNode = vertexDest.getProcessNode();
+			sourceNode->connect( *targetNode, sourceNode->getProcessAttribute( edge.inAttrName() ) );
 		}
 
 	private:
-		typename TGraph::GraphContainer& _graph;
+		GraphContainer& _graph;
 };
 
 template<class TGraph>

@@ -70,12 +70,14 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	// at each frame
 	for( int t = 0; t < numFramesToRender; ++t )
 	{
+		TCOUT( "________________________________________ frame: " << t );
+		Graph::InternalGraph optimizedGraph( _graph );
+		defaultOptions._time = t;
+		
 		// for each outputs
 		BOOST_FOREACH( Graph::Descriptor outputNode, outputs )
 		{
-			Graph::InternalGraph optimizedGraph( _graph );
-			defaultOptions._time = t;
-
+			TCOUT( "________________________________________ output node : " << optimizedGraph.instance( outputNode ).getName() );
 			TCOUT( "---------------------------------------- connectClips" );
 			core::dfs_connectClips_visitor<Graph::InternalGraph> connectClipsVisitor( optimizedGraph );
 			optimizedGraph.dfs( connectClipsVisitor, outputNode );

@@ -27,12 +27,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef TUTTLE_EFFECT_INSTANCE_H
-#define TUTTLE_EFFECT_INSTANCE_H
+#ifndef _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
+#define _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 
 #include "ProcessNode.hpp"
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
+#include <tuttle/host/ofx/OfxhAttribute.hpp>
 
 #include <cmath>
 #include <cassert>
@@ -60,10 +61,12 @@ public:
 
 	const EProcessNodeType getProcessNodeType() const { return eImageEffect; }
 
-	void connect( const ProcessNode& sourceEffect );
+	void connect( const ProcessNode& sourceEffect, ProcessAttribute& attr );
 
 	ofx::attribute::OfxhClipImage&       getOutputClip()       { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
 	const ofx::attribute::OfxhClipImage& getOutputClip() const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
+
+	ProcessAttribute& getProcessAttribute( const std::string& name ) { return dynamic_cast<ProcessAttribute&>( getClip( name ) ); }
 
 	void begin( ProcessOptions& processOptions )
 	{
