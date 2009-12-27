@@ -16,7 +16,7 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 {
 	public:
 		dfs_connectClips_visitor( TGraph& graph )
-			: _graph( graph )
+			: _graph( graph.getGraph() )
 		{}
 
 		template<class EdgeDescriptor, class Graph>
@@ -34,89 +34,104 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 		}
 
 	private:
-		TGraph& _graph;
+		typename TGraph::GraphContainer& _graph;
 };
 
 template<class TGraph>
 struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_preCompute_visitor( TGraph graph, ProcessOptions& options )
-			: _graph(graph)
-			, _options(options)
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+
+		dfs_preCompute_visitor( TGraph& graph, ProcessOptions& defaultOptions )
+			: _graph(graph.getGraph())
+			, _defaultOptions(defaultOptions)
 		{}
 
 		template<class VertexDescriptor, class Graph>
 		void discover_vertex( VertexDescriptor v, Graph& g )
 		{
+			Vertex& vertex = get( vertex_properties, _graph )[v];
 			std::cout << "[PRECOMPUTE] discover_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
+			          << vertex << std::endl;
 
-			get( vertex_properties, _graph )[v].getProcessNode()->preProcess_initialize( _options );
+			vertex.setProcessOptions( _defaultOptions );
+			
+			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
+			Vertex& vertex = get( vertex_properties, _graph )[v];
 			std::cout << "[PRECOMPUTE] finish_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-			get( vertex_properties, _graph )[v].getProcessNode()->preProcess_finish( _options );
+			          << vertex << std::endl;
+			
+			vertex.getProcessNode()->preProcess_finish( vertex.getProcessOptions() );
 		}
 
 	private:
-		TGraph& _graph;
-		ProcessOptions& _options;
+		GraphContainer& _graph;
+		ProcessOptions& _defaultOptions;
 };
 
 template<class TGraph>
 struct dfs_compute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_compute_visitor( TGraph& graph, const ProcessOptions& options )
-			: _graph(graph)
-			, _options(options)
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+
+		dfs_compute_visitor( TGraph& graph )
+			: _graph(graph.getGraph())
 		{}
 
 		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
+			Vertex& vertex = get( vertex_properties, _graph )[v];
 			std::cout << "[COMPUTE] finish_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
+			          << vertex << std::endl;
 
-			get( vertex_properties, _graph )[v].getProcessNode()->process( _options );
+			vertex.getProcessNode()->process( vertex.getProcessOptions() );
 		}
 
 	private:
-		TGraph& _graph;
-		const ProcessOptions& _options;
+		GraphContainer& _graph;
 };
 
 template<class TGraph>
 struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 {
 	public:
-		dfs_postCompute_visitor( TGraph& graph, ProcessOptions& options )
-			: _graph(graph)
-			, _options(options)
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+
+		dfs_postCompute_visitor( TGraph& graph )
+			: _graph(graph.getGraph())
 		{}
 
 		template<class VertexDescriptor, class Graph>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
+			Vertex& vertex = get( vertex_properties, _graph )[v];
 			std::cout << "[POSTCOMPUTE] initialize_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
+			          << vertex << std::endl;
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
+			Vertex& vertex = get( vertex_properties, _graph )[v];
 			std::cout << "[POSTCOMPUTE] finish_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
+			          << vertex << std::endl;
+
+			vertex.getProcessNode()->postProcess( vertex.getProcessOptions() );
 		}
 
 	private:
-		TGraph& _graph;
-		ProcessOptions& _options;
+		GraphContainer& _graph;
 };
 
 }

@@ -45,12 +45,16 @@ public:
 	core::ProcessNode*             getProcessNode()                       { return _processNode; }
 	const core::ProcessNode* const getProcessNode() const                 { return _processNode; }
 	void                           setProcessNode( core::ProcessNode* p ) { _processNode = p; }
+	core::ProcessOptions&          getProcessOptions() { return _processOptions; }
+	const core::ProcessOptions&    getProcessOptions() const { return _processOptions; }
+	void                           setProcessOptions( core::ProcessOptions& options ) { _processOptions = options; }
 
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 
 private:
 	std::string _name;
 	core::ProcessNode* _processNode;
+	core::ProcessOptions _processOptions;
 };
 
 }

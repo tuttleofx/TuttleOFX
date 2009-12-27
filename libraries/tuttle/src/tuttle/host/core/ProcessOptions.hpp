@@ -12,9 +12,10 @@ namespace core {
 
 class ProcessOptions
 {
-
 public:
 	ProcessOptions() {}
+	ProcessOptions( const ProcessOptions& other ) { operator=( other ); }
+	~ProcessOptions() {}
 
 public:
 	OfxTime _startFrame;

@@ -82,6 +82,7 @@ public:
 		getRegionOfDefinitionAction( processOptions._time,
 		                             processOptions._renderScale,
 		                             processOptions._renderRoD );
+		processOptions._renderRoI = processOptions._renderRoD;
 	}
 
 	void preProcess_finish( ProcessOptions& processOptions )
@@ -98,8 +99,8 @@ public:
 	{
 		OfxRectI roi = {
 			floor( processOptions._renderRoI.x1 ),
-			ceil( processOptions._renderRoI.x2 ),
 			floor( processOptions._renderRoI.y1 ),
+			ceil( processOptions._renderRoI.x2 ),
 			ceil( processOptions._renderRoI.y2 )
 		};
 
