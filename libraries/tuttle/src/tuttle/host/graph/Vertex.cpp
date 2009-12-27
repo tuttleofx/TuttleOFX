@@ -6,10 +6,10 @@ namespace graph {
 
 std::ostream& operator<<( std::ostream& os, const Vertex& v )
 {
-	os << v.name() ;
+	os << v.getName() ;
 	return os;
 }
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}

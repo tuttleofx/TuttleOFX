@@ -13,7 +13,7 @@ public:
 	ProcessGraph( Graph& graph );
 	~ProcessGraph();
 
-	void compute( const std::list<Graph::Descriptor> outputs, const int tBegin, const int tEnd );
+	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 
 private:
 	void relink();

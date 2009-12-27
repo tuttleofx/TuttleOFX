@@ -18,11 +18,13 @@ public:
 	TestVertex(const std::string& name):_name(name){}
 	~TestVertex(){}
 	std::string _name;
+	const std::string& getName() const { return _name; }
+	std::string& getName() { return _name; }
 	friend std::ostream& operator<<( std::ostream& os, const TestVertex& v );
 };
 inline std::ostream& operator<<( std::ostream& os, const TestVertex& v )
 {
-	os << " _name:" << v._name;
+	os /*<< " _name:"*/ << v._name;
 	return os;
 }
 
@@ -38,7 +40,7 @@ public:
 };
 inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
 {
-	os << " _in:" << e._nameIn << " out:" << e._nameOut;
+	os << e._nameOut << "->" << e._nameIn;
 	return os;
 }
 
@@ -96,9 +98,9 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	typedef graph::InternalGraph<TestVertex, TestEdge>::VertexDescriptor Descriptor;
 	typedef std::map<std::string, int> InstanceCountMap;
 
-	std::string n1("coucou1");
-	std::string n2("coucou2");
-	std::string n3("coucou3");
+	std::string n1("v1");
+	std::string n2("v2");
+	std::string n3("v3");
 
 	typedef graph::InternalGraph<TestVertex, TestEdge> InternalGraph;
 	InternalGraph graph;
@@ -127,13 +129,28 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 
 	TCOUT("__________________________________________________");
 	TCOUT("graph:");
-	graph::test_dfs_visitor testVisitor;
-	graph.dfs(testVisitor/*, nodesDescriptor[n1]*/);
+//	std::vector<boost::default_color_type > colormap(boost::num_vertices(graph.getGraph()));
+	graph::test_dfs_visitor testVisitorA;
+//	boost::depth_first_search( graph.getGraph(), boost::root_vertex(nodesDescriptor[n1]), boost::visitor(testVisitorA) );//, colormap );
+	graph.dfs( testVisitorA, nodesDescriptor[n1] );
 
 	TCOUT("__________________________________________________");
 	TCOUT("graphT:");
-	graphT.dfs(testVisitor/*, nodesDescriptor[n1]*/);
-	
+
+	std::map<std::string, InternalGraph::VertexDescriptor> mmap;
+	for( InternalGraph::vertex_iter i = vertices(graphT.getGraph()).first, iEnd = vertices(graphT.getGraph()).second;
+								i != iEnd;
+								++i )
+	{
+		TCOUT( "pp: "<< get(vertex_properties, graphT.getGraph())[*i]._name );
+		mmap[get(vertex_properties, graphT.getGraph())[*i]._name] = *i;
+//		TCOUT( "pp: "<< graphT.getGraph()[*i]._name );
+	}
+
+	graph::test_dfs_visitor testVisitorB;
+//	boost::depth_first_search( graphT.getGraph(), boost::visitor(testVisitorB) );
+
+	graphT.dfs(testVisitorB, mmap["v3"]);
 	/*
 	graph_traits<graph_type>::out_edge_iterator ei, edge_end;
 	for( boost::tie(ei, edge_end) = out_edges(*i, g); ei != edge_end; ++ei )
@@ -141,6 +158,30 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	*/
 
 }
+
+/*
+BOOST_AUTO_TEST_CASE( create_boostGraph )
+{
+	typedef boost::adjacency_list< boost::listS, boost::vecS, boost::undirectedS, TestVertex, TestEdge > Graph;
+	Graph g;
+
+	//add 100 vertices
+	for( int i=0; i<15; ++i )
+	{
+		Graph::vertex_descriptor v = add_vertex(g);
+		g[v]._name = "albert" + boost::lexical_cast<std::string>(i);
+	}
+
+	//zero some_property for all vertices
+	for( Graph::vertex_iterator i = vertices(g).first, iEnd = vertices(g).second;
+								i != iEnd;
+								++i )
+	{
+		TCOUT(": " << g[*i]._name);
+	}
+
+}
+*/
 
 BOOST_AUTO_TEST_SUITE_END()
 

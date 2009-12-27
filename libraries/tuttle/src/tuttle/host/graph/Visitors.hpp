@@ -39,42 +39,42 @@ struct test_dfs_visitor : public boost::dfs_visitor<>
 		template<class VertexDescriptor, class Graph>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "initialize_vertex "
+			std::cout << "initialize_vertex: "
 			          << get( vertex_properties, g )[v] << std::endl;
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void start_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "start_vertex "
+			std::cout << "start_vertex: "
 			          << get( vertex_properties, g )[v] << std::endl;
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void discover_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "discover_vertex "
+			std::cout << "discover_vertex: "
 			          << get( vertex_properties, g )[v] << std::endl;
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "finish_vertex "
+			std::cout << "finish_vertex: "
 			          << get( vertex_properties, g )[v] << std::endl;
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void examine_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "examine_edge "
+			std::cout << "examine_edge: "
 			          << get( edge_properties, g )[e] << std::endl;
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void tree_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "tree_edge "
+			std::cout << "tree_edge: "
 			          << get( edge_properties, g )[e]
 			          << "  source: " ;
 			std::cout << get( vertex_properties, g )[source( e, g )] << std::endl;
@@ -83,14 +83,14 @@ struct test_dfs_visitor : public boost::dfs_visitor<>
 		template<class EdgeDescriptor, class Graph>
 		void back_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "back_edge "
+			std::cout << "back_edge: "
 			          << get( edge_properties, g )[e] << std::endl;
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void forward_or_cross_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "forward_or_cross_edge "
+			std::cout << "forward_or_cross_edge: "
 			          << get( edge_properties, g )[e] << std::endl;
 		}
 
@@ -170,9 +170,9 @@ struct test_bfs_visitor : public boost::bfs_visitor<>
 
 };
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif
 

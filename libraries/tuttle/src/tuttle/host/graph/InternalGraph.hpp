@@ -36,6 +36,8 @@ template < typename VERTEX, typename EDGE >
 class InternalGraph
 {
 public:
+	typedef VERTEX Vertex;
+	typedef EDGE   Edge;
 	// Directed acyclic graph
 	typedef boost::adjacency_list<
 	    boost::setS,                // disallow parallel edges
@@ -43,8 +45,8 @@ public:
 	    boost::bidirectionalS,      // directed graph
 	    boost::property<boost::vertex_index_t, int,
 						//boost::property<boost::vertex_color_t, boost::default_color_type,
-	                    boost::property<vertex_properties_t, VERTEX > >,
-	    boost::property<edge_properties_t, EDGE>
+	                    boost::property<vertex_properties_t, Vertex > >,
+	    boost::property<edge_properties_t, Edge>
 	    > GraphContainer;
 
 	// a bunch of graph-specific typedefs
@@ -80,6 +82,7 @@ public:
 
 		boost::copy_graph( g._graph, _graph );
 		_count = g._count;
+		rebuildVertexDescriptorMap();
 		return *this;
 	}
 
@@ -90,25 +93,29 @@ public:
 	void clear()
 	{
 		_graph.clear();
+		_vertexDescriptorMap.clear();
 	}
 
-	VertexDescriptor addVertex( const VERTEX& prop )
+	VertexDescriptor addVertex( const Vertex& prop )
 	{
 		VertexDescriptor v = add_vertex( _graph );
 
 		instance( v )                         = prop;
 		get( boost::vertex_index, _graph )[v] = _count++;
+		
+		_vertexDescriptorMap[prop.getName()] = v;
 
 		return v;
 	}
 
 	void removeVertex( const VertexDescriptor& v )
 	{
+		_vertexDescriptorMap.erase( instance(v).getName() );
 		clear_vertex( v, _graph );
 		remove_vertex( v, _graph );
 	}
 
-	EdgeDescriptor addEdge( const VertexDescriptor& v1, const VertexDescriptor& v2, const EDGE& prop )
+	EdgeDescriptor addEdge( const VertexDescriptor& v1, const VertexDescriptor& v2, const Edge& prop )
 	{
 		EdgeDescriptor addedEdge = add_edge( v1, v2, _graph ).first;
 
@@ -122,35 +129,65 @@ public:
 		return addedEdge;
 	}
 
+	VertexDescriptor& getVertexDescriptor( const std::string& vertexName )
+	{
+		return _vertexDescriptorMap[vertexName];
+	}
+	const VertexDescriptor& getVertexDescriptor( const std::string& vertexName ) const
+	{
+		return _vertexDescriptorMap[vertexName];
+	}
+
+	Vertex& getVertex( const std::string& vertexName )
+	{
+		return instance(_vertexDescriptorMap[vertexName]);
+	}
+	const Vertex& getVertex( const std::string& vertexName ) const
+	{
+		return instance(_vertexDescriptorMap[vertexName]);
+	}
+
 	// property access
-	VERTEX& instance( const VertexDescriptor& v )
+	Vertex& instance( const VertexDescriptor& v )
 	{
-		typename boost::property_map<GraphContainer, vertex_properties_t>::type param = get( vertex_properties, _graph );
-		return param[v];
+		//typename boost::property_map<GraphContainer, vertex_properties_t>::type param = get( vertex_properties, _graph );
+		//return param[v];
+		return get( vertex_properties, _graph )[v];
 	}
 
-	const VERTEX& instance( const VertexDescriptor& v ) const
+	const Vertex& instance( const VertexDescriptor& v ) const
 	{
-		typename boost::property_map<GraphContainer, vertex_properties_t>::const_type param = get( vertex_properties, _graph );
-		return param[v];
+		//typename boost::property_map<GraphContainer, vertex_properties_t>::const_type param = get( vertex_properties, _graph );
+		//return param[v];
+		return get( vertex_properties, _graph )[v];
 	}
 
-	EDGE& instance( const EdgeDescriptor& v )
+	Edge& instance( const EdgeDescriptor& e )
 	{
-		typename boost::property_map<GraphContainer, edge_properties_t>::type param = get( edge_properties, _graph );
-		return param[v];
+		//typename boost::property_map<GraphContainer, edge_properties_t>::type param = get( edge_properties, _graph );
+		//return param[e];
+		return get( edge_properties, _graph )[e];
 	}
 
-	const EDGE& instance( const EdgeDescriptor& v ) const
+	const Edge& instance( const EdgeDescriptor& e ) const
 	{
-		typename boost::property_map<GraphContainer, edge_properties_t>::const_type param = get( edge_properties, _graph );
-		return param[v];
+		//typename boost::property_map<GraphContainer, edge_properties_t>::const_type param = get( edge_properties, _graph );
+		//return param[e];
+		return get( edge_properties, _graph )[e];
 	}
 
-	// selectors
+	GraphContainer& getGraph()
+	{
+		return _graph;
+	}
 	const GraphContainer& getGraph() const
 	{
 		return _graph;
+	}
+
+	edge_range_t getEdges() const
+	{
+		return edges( _graph );
 	}
 
 	vertex_range_t getVertices() const
@@ -233,24 +270,19 @@ public:
 		test_bfs_visitor vis;
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
 	}
-/*
-	void transpose()
-	{
-		GraphContainer g;
-		boost::transpose_graph(_graph, g);
-		_graph = g;
-	}
-*/
+
 	void copyTransposed( const InternalGraph& g )
 	{
 		// make a transposed copy of g in _graph
 		boost::transpose_graph( g._graph, _graph);
+		rebuildVertexDescriptorMap();
 	}
 
 	void copy( const InternalGraph& g )
 	{
 		// make a transposed copy of g in _graph
 		boost::copy_graph( g._graph, _graph);
+		rebuildVertexDescriptorMap();
 	}
 
 	void toDominatorTree()
@@ -302,15 +334,29 @@ public:
 
 		return vleaves;
 	}
-
+	
+private:
+	void rebuildVertexDescriptorMap()
+	{
+		_vertexDescriptorMap.clear();
+		for( vertex_iter i = vertices(getGraph()).first, iEnd = vertices(getGraph()).second;
+									i != iEnd;
+									++i )
+		{
+//			TCOUT( "pp: "<< get(vertex_properties, graphT.getGraph())[*i]._name );
+//			TCOUT( "pp: "<< graphT.getGraph()[*i]._name ); // if no boost::property_map
+			_vertexDescriptorMap[get(vertex_properties, getGraph())[*i].getName()] = *i;
+		}
+	}
 protected:
 	GraphContainer _graph;
+	std::map<std::string, VertexDescriptor> _vertexDescriptorMap;
 	int _count; // for vertex_index
 
 };
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif

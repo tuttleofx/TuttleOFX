@@ -15,23 +15,24 @@ namespace graph {
 class ProcessVertex
 {
 public:
-	ProcessVertex( const Vertex& vertex )
+	ProcessVertex( Vertex& vertex )
 		: _vertex( vertex ) {}
 
 	~ProcessVertex() {}
 
-	const std::string& name() const        { return _vertex.name(); }
-	core::ProcessNode* processNode() const { return _vertex.processNode(); }
+	const std::string& getName() const        { return _vertex.getName(); }
+	core::ProcessNode* getProcessNode() { return _vertex.getProcessNode(); }
+	const core::ProcessNode* const getProcessNode() const { return _vertex.getProcessNode(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const ProcessVertex& v );
 
 private:
-	const Vertex& _vertex;
+	Vertex& _vertex;
 };
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif
 

@@ -19,8 +19,7 @@ ProcessGraph::ProcessGraph( Graph& graph )
 : _nodes( graph.getNodes() )
 , _instanceCount( graph.getInstanceCount() )
 {
-//	_graph.copyTransposed( graph.getGraph() );
-	_graph.copy( graph.getGraph() );
+	_graph.copyTransposed( graph.getGraph() );
 	relink();
 }
 
@@ -34,12 +33,20 @@ void ProcessGraph::relink()
 	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
-		v.setProcessNode( &_nodes.at( v.processNode()->getName() ) );
+		v.setProcessNode( &_nodes.at( v.getProcessNode()->getName() ) );
 	}
 }
 
-void ProcessGraph::compute( const std::list<Graph::Descriptor> outputs, const int tBegin, const int tEnd )
+void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
+	std::list<Graph::Descriptor> outputs;
+	BOOST_FOREACH( std::string s, nodes )
+	{
+		outputs.push_back( _graph.getVertexDescriptor(s) );
+		std::cout << "MY OUTPUT " << s << std::endl;
+	}
+	
+	typedef Graph::InternalGraph::GraphContainer GraphContainer;
 	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graphprocess.dot" );
 
 	// Initialize variables
@@ -75,19 +82,19 @@ void ProcessGraph::compute( const std::list<Graph::Descriptor> outputs, const in
 			processOptions._renderScale = renderScale;
 
 			TCOUT("---------------------------------------- connectClips");
-			core::dfs_connectClips_visitor connectClipsVisitor(processOptions);
+			core::dfs_connectClips_visitor<GraphContainer> connectClipsVisitor(optimizedGraph.getGraph());
 			optimizedGraph.dfs(connectClipsVisitor, outputNode);
 
 			TCOUT("---------------------------------------- precompute");
-			core::dfs_preCompute_visitor preComputeVisitor(processOptions);
+			core::dfs_preCompute_visitor<GraphContainer> preComputeVisitor(optimizedGraph.getGraph(), processOptions);
 			optimizedGraph.dfs(preComputeVisitor, outputNode);
 
 			TCOUT("---------------------------------------- compute");
-			core::dfs_compute_visitor computeVisitor(processOptions);
+			core::dfs_compute_visitor<GraphContainer> computeVisitor(optimizedGraph.getGraph(), processOptions);
 			optimizedGraph.dfs(computeVisitor, outputNode);
 
 			TCOUT("---------------------------------------- postcompute");
-			core::dfs_postCompute_visitor postComputeVisitor(processOptions);
+			core::dfs_postCompute_visitor<GraphContainer> postComputeVisitor(optimizedGraph.getGraph(), processOptions);
 			optimizedGraph.dfs(postComputeVisitor, outputNode);
 		}
 	}

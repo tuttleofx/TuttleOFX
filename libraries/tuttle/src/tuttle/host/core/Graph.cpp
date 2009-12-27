@@ -126,13 +126,7 @@ void Graph::compute( const std::list<std::string>& nodes, const int tBegin, cons
 	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graph.dot" );
 
 	ProcessGraph process( *this );
-
-	std::list<InternalGraph::VertexDescriptor> outputs;
-	BOOST_FOREACH(std::string s, nodes){
-		outputs.push_back(_nodesDescriptor[s]);
-		std::cout << "MY OUTPUT " << s << std::endl;
-	}
-	process.compute( outputs, tBegin, tEnd );
+	process.compute( nodes, tBegin, tEnd );
 }
 
 void Graph::dumpToStdOut()

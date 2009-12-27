@@ -24,8 +24,9 @@ public:
 	{}
 
 	Vertex( Vertex& v )
-		: _name( v.name() ),
-		_processNode( v.processNode() ) {}
+		: _name( v._name ),
+		_processNode( v._processNode )
+	{}
 
 	virtual ~Vertex()
 	{}
@@ -35,13 +36,14 @@ public:
 	{
 		if( this == &v )
 			return *this;
-		_name        = v.name();
-		_processNode = v.processNode();
+		_name        = v._name;
+		_processNode = v._processNode;
 		return *this;
 	}
 
-	const std::string& name() const                           { return _name; }
-	core::ProcessNode* processNode() const                    { return _processNode; }
+	const std::string& getName() const                        { return _name; }
+	core::ProcessNode* getProcessNode()                       { return _processNode; }
+	const core::ProcessNode* const getProcessNode() const     { return _processNode; }
 	void               setProcessNode( core::ProcessNode* p ) { _processNode = p; }
 
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
@@ -51,9 +53,9 @@ private:
 	core::ProcessNode* _processNode;
 };
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif
 

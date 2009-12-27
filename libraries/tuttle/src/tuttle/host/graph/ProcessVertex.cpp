@@ -6,7 +6,7 @@ namespace graph {
 
 std::ostream& operator<<( std::ostream& os, const ProcessVertex& v )
 {
-	os << v.name() ;
+	os << v.getName() ;
 	return os;
 }
 
