@@ -33,7 +33,7 @@ using namespace OFX;
 void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "EXRWriterHd3d", "EXRWriterHd3d",
+	desc.setLabels( "EXRWriter", "EXRWriter",
 	                "EXR File writer" );
 	desc.setPluginGrouping( "tuttle" );
 
@@ -116,3 +116,4 @@ OFX::ImageEffect* EXRWriterPluginFactory::createInstance( OfxImageEffectHandle h
 }
 }
 }
+

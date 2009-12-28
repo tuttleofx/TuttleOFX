@@ -33,8 +33,8 @@ using namespace OFX;
 void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "DPXReaderHd3d", "DPXReaderHd3d",
-	                "DPX File reader Hd3d" );
+	desc.setLabels( "DPXReader", "DPXReader",
+	                "DPX File reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment

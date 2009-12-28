@@ -37,8 +37,8 @@ using namespace OFX;
 void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "EXRReaderHd3d", "EXRReaderHd3d",
-	                "EXR File reader Hd3d" );
+	desc.setLabels( "EXRReader", "EXRReader",
+	                "EXR File reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment

@@ -94,11 +94,6 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 
 OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 {
-	for( ContextMap::iterator it = _contexts.begin(); it != _contexts.end(); ++it )
-	{
-		delete it->second;
-	}
-	_contexts.clear();
 	if( getPluginHandle() )
 	{
 		OfxPlugin* op = _pluginHandle->getOfxPlugin();
@@ -131,7 +126,7 @@ const OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptor() cons
 
 void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied )
 {
-	_contexts[context] = ied;
+	_contexts.insert( context, ied );
 	_knownContexts.insert( context );
 }
 
@@ -214,7 +209,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	initContexts();
 }
 
-OfxhImageEffectNodeDescriptor* OfxhImageEffectPlugin::getDescriptorInContext( const std::string& context )
+OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( const std::string& context )
 {
 	ContextMap::iterator it = _contexts.find( context );
 
@@ -222,20 +217,9 @@ OfxhImageEffectNodeDescriptor* OfxhImageEffectPlugin::getDescriptorInContext( co
 	if( it != _contexts.end() )
 	{
 		//COUT( "found context description : " << it->second->getLabel() );
-		return it->second;
+		return *(it->second);
 	}
-
-	//	COUT( "ImageEffectPlugin::getContext -- _contexts" );
-	//	for( std::map<std::string, Descriptor*>::const_iterator a = _contexts.begin(); a != _contexts.end(); ++a )
-	//	{
-	//		COUT( a->second->getLabel() );
-	//	}
-	//	COUT( "ImageEffectPlugin::getContext -- _knownContexts" );
-	//	for( std::set<std::string>::const_iterator a = _knownContexts.begin(); a != _knownContexts.end(); ++a )
-	//	{
-	//		COUT( *a );
-	//	}
-
+	
 	if( _knownContexts.find( context ) == _knownContexts.end() )
 	{
 		throw core::exception::LogicError( "Context not found (" + context + ")" );
@@ -243,7 +227,7 @@ OfxhImageEffectNodeDescriptor* OfxhImageEffectPlugin::getDescriptorInContext( co
 	return describeInContextAction( context );
 }
 
-OfxhImageEffectNodeDescriptor* OfxhImageEffectPlugin::describeInContextAction( const std::string& context )
+OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( const std::string& context )
 {
 	tuttle::host::ofx::property::OfxhPropSpec inargspec[] = {
 		{ kOfxImageEffectPropContext, tuttle::host::ofx::property::eString, 1, true, context.c_str() },
@@ -261,12 +245,10 @@ OfxhImageEffectNodeDescriptor* OfxhImageEffectPlugin::describeInContextAction( c
 
 	if( rval == kOfxStatOK || rval == kOfxStatReplyDefault )
 	{
-		_contexts[context] = newContext.release();
-		return _contexts[context];
+		_contexts.insert( context, newContext.release() );
+		return _contexts.at(context);
 	}
-	COUT_ERROR( "kOfxImageEffectActionDescribeInContext failed (" << mapStatusToString( rval ) << ")" ); // Exception( rval )
-
-	return NULL;
+	throw OfxhException( rval, "kOfxImageEffectActionDescribeInContext failed." );
 }
 
 imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const std::string& context )
@@ -281,13 +263,9 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	{
 		throw core::exception::LogicError( "imageEffectPlugin::createInstance, unexpected error." );
 	}
-	OfxhImageEffectNodeDescriptor* desc = getDescriptorInContext( context );
-	if( !desc )
-	{
-		throw core::exception::LogicError( "The plugin doesn't support the context " + context + "." );
-	}
-	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, *desc, context );
-	instance->createInstanceAction();
+	OfxhImageEffectNodeDescriptor& desc = getDescriptorInContext( context );
+	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, desc, context ); /// @todo tuttle: don't use singleton here.
+	instance->createInstanceAction(); /// @todo tuttle: it's not possible to move this in a constructor ?
 	return instance;
 }
 

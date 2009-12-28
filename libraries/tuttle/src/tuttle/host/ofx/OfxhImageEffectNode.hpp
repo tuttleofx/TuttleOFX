@@ -152,7 +152,8 @@ public:
  */
 class OfxhImageEffectNodeDescriptor
 	: public OfxhImageEffectNodeBase,
-	public attribute::OfxhParamDescriptorSet
+	public attribute::OfxhParamDescriptorSet,
+	private boost::noncopyable
 {
 public:
 	typedef std::map<std::string, attribute::OfxhClipImageDescriptor*> ClipImageDescriptorMap;

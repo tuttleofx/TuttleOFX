@@ -38,9 +38,9 @@
 #include "OfxhHost.hpp"
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 
 #include <string>
-#include <map>
 #include <set>
 #include <memory>
 
@@ -60,7 +60,7 @@ class OfxhImageEffectPlugin : public OfxhPlugin
 OfxhImageEffectPluginCache& _pc;
 
 /// map to store contexts in
-typedef std::map<std::string, OfxhImageEffectNodeDescriptor*> ContextMap;
+typedef boost::ptr_map<const std::string, OfxhImageEffectNodeDescriptor> ContextMap;
 ContextMap _contexts;
 
 typedef std::set<std::string> ContextSet;
@@ -70,6 +70,7 @@ boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
 
 // this comes off Descriptor's property set after a describe
 // context independent
+/// @todo tuttle: ???
 OfxhImageEffectNodeDescriptor* _baseDescriptor;     ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
 public:
@@ -99,7 +100,7 @@ public:
 	const OfxhImageEffectNodeDescriptor& getDescriptor() const;
 
 	/// @brief get the image effect descriptor for the context
-	OfxhImageEffectNodeDescriptor* getDescriptorInContext( const std::string& context );
+	OfxhImageEffectNodeDescriptor& getDescriptorInContext( const std::string& context );
 
 	void addContext( const std::string& context );
 	void addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied );
@@ -124,7 +125,7 @@ public:
 	imageEffect::OfxhImageEffectNode* createInstance( const std::string& context );
 
 private:
-	OfxhImageEffectNodeDescriptor* describeInContextAction( const std::string& context );
+	OfxhImageEffectNodeDescriptor& describeInContextAction( const std::string& context );
 };
 
 class OfxhMajorPlugin

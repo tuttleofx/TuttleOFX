@@ -16,7 +16,7 @@ static const std::string kParamCompressed     = "Compressed";
 
 const static std::string kDPXWriterHelpButton = "Help";
 
-const static std::string kDPXWriterHelpString = "<b>DPX File writer Hd3d</b> plugin is used to output dpx files.  <br />";
+const static std::string kDPXWriterHelpString = "<b>DPX File writer</b> plugin is used to output dpx files.  <br />";
 
 }
 }

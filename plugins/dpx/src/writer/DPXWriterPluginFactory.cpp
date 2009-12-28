@@ -36,7 +36,7 @@ using namespace OFX;
 void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "DPXWriterHd3d", "DPXWriterHd3d",
+	desc.setLabels( "DPXWriter", "DPXWriter",
 	                "DPX File writer" );
 	desc.setPluginGrouping( "tuttle" );
 

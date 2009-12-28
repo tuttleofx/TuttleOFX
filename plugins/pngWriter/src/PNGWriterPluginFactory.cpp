@@ -31,8 +31,8 @@ mDeclarePluginFactory( PNGWriterPluginFactory, {}, {}
 void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "PNGWriterHd3d", "PNGWriterHd3d",
-	                "PNG File writer Hd3d" );
+	desc.setLabels( "PNGWriter", "PNGWriter",
+	                "PNG File writer" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment

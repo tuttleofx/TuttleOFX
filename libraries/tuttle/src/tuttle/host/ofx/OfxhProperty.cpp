@@ -617,9 +617,9 @@ OfxhSet::OfxhSet( const OfxhPropSpec spec[] )
 
 OfxhSet::OfxhSet( const OfxhSet& other )
 	: _magic( kMagic )
-	, _props( other._props )
-	, _chainedSet( NULL )
-{}
+{
+	operator=( other );
+}
 
 OfxhSet::~OfxhSet()
 {
@@ -634,7 +634,6 @@ void OfxhSet::clear()
 /// hide assignment
 void OfxhSet::operator=( const OfxhSet& other )
 {
-	clear();
 	_props      = other._props.clone();
 	_chainedSet = other._chainedSet;
 }

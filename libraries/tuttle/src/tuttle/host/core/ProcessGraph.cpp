@@ -4,10 +4,6 @@
 
 #include <boost/foreach.hpp>
 
-//TODO: delete these include
-#include <tuttle/host/core/Param.hpp>
-#include <tuttle/host/core/ClipImage.hpp>
-
 namespace tuttle {
 namespace host {
 namespace core {
