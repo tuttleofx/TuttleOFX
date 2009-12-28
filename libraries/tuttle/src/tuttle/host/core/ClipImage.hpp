@@ -43,6 +43,8 @@ public:
 	ClipImage* clone() const { return new ClipImage( *this ); }
 
 	const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
+	
+	const ImageEffectNode& getNode() const { return _effect; }
 
 	/// @warning HACK ! to force connection (only for test)
 	/// @todo remove this !!!!

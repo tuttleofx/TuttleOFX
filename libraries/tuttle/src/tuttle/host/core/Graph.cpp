@@ -59,15 +59,16 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 	return *node;
 }
 
-void Graph::addToGraph( ImageEffectNode& node )
+
+void Graph::addToGraph( Node& node )
 {
 	graph::Vertex v( node.getName(), node );
 
-	std::cout << node.getName() << std::endl;
+	std::cout<< node.getName() <<std::endl;
 	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
-void Graph::removeFromGraph( ImageEffectNode& node ) throw( exception::LogicError )
+void Graph::removeFromGraph( Node& node ) throw( exception::LogicError )
 {
 	//	graph::Vertex v( node.getName(), &node );
 	//
@@ -76,48 +77,22 @@ void Graph::removeFromGraph( ImageEffectNode& node ) throw( exception::LogicErro
 	//	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
-void Graph::deleteNode( const ImageEffectNode& node ) throw( exception::LogicError )
+void Graph::deleteNode( const Node& node ) throw( exception::LogicError )
 {}
 
 void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicError )
 {
-	const ofx::attribute::OfxhClipImageSet::ClipImageVector& inClips = in.getClipsByOrder();
-	const ofx::attribute::OfxhClipImageSet::ClipImageMap& inClipsMap = in.getClips();
-
-	const ofx::attribute::OfxhAttribute* inAttr;
-
-	if( inClips.size() == 1 )
-	{
-		inAttr = &inClips[0];
-	}
-	else if( inClips.size() > 1 )
-	{
-		const ofx::attribute::OfxhClipImageSet::ClipImageMap::const_iterator it = inClipsMap.find( kOfxSimpleSourceAttributeName );
-		if( it != inClipsMap.end() )
-		{
-			inAttr = it->second;
-		}
-		else
-		{
-			// search "Source"
-			inAttr = &inClips[0];
-		}
-	}
-	else // if( inClips.empty() )
-	{
-		throw exception::LogicError( "Connection failed : no clip." );
-	}
-	connect( out, in, *inAttr );
+	connect( out, in.getSingleInputAttribute() );
 }
 
-void Graph::connect( const Node& out, const Node& in, const ofx::attribute::OfxhAttribute& inAttr ) throw( exception::LogicError )
+void Graph::connect( const Node& out, const Attribute& inAttr ) throw( exception::LogicError )
 {
-	graph::Edge e( out.getName(), in.getName(), inAttr.getName() );
+	graph::Edge e( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
 
-	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[in.getName()], e );
+	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[inAttr.getNode().getName()], e );
 }
 
-void Graph::unconnectNode( const ImageEffectNode& node ) throw( exception::LogicError )
+void Graph::unconnectNode( const Node& node ) throw( exception::LogicError )
 {}
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )

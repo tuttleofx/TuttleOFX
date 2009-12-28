@@ -67,6 +67,36 @@ public:
 	const ofx::attribute::OfxhClipImage& getOutputClip() const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
 
 	ProcessAttribute& getProcessAttribute( const std::string& name ) { return dynamic_cast<ProcessAttribute&>( getClip( name ) ); }
+	ProcessAttribute& getSingleInputAttribute()
+	{
+		ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
+		ofx::attribute::OfxhClipImageSet::ClipImageMap& clipsMap = getClips();
+		ofx::attribute::OfxhAttribute* inAttr;
+
+		if( clips.size() == 1 )
+		{
+			inAttr = &clips[0];
+		}
+		else if( clips.size() > 1 )
+		{
+			const ofx::attribute::OfxhClipImageSet::ClipImageMap::iterator it( clipsMap.find( kOfxSimpleSourceAttributeName ) );
+			if( it != clipsMap.end() )
+			{
+				inAttr = it->second;
+			}
+			else
+			{
+				inAttr = &clips[0];
+			}
+		}
+		else // if( inClips.empty() )
+		{
+			throw exception::LogicError( "Connection failed : no clip." );
+		}
+		return dynamic_cast<ProcessAttribute&>( *inAttr );
+	}
+
+	const ProcessAttribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>(this)->getSingleInputAttribute(); };
 
 	void begin( ProcessOptions& processOptions )
 	{

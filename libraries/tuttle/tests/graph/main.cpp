@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	g.connect( invert4, write2 );
 	g.connect( invert1, write3 );
 
-	g.connect( invert1, merge1, merge1.getClip("SourceA") );
-	g.connect( read3, merge1, merge1.getClip("SourceB") );
+	g.connect( invert1, merge1.getProcessAttribute("SourceA") );
+	g.connect( read3, merge1.getProcessAttribute("SourceB") );
 //	g.connect( merge1, crop1 );
 	g.connect( merge1, write4 );
 

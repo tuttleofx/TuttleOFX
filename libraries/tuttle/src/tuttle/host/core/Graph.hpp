@@ -22,7 +22,8 @@ namespace core {
 class Graph
 {
 public:
-	typedef core::ImageEffectNode Node;
+	typedef core::ImageEffectNode Node; /// @todo tuttle ProcessNode...
+	typedef core::ProcessAttribute Attribute;
 	typedef graph::InternalGraph<graph::Vertex, graph::Edge> InternalGraph;
 	typedef graph::InternalGraph<graph::Vertex, graph::Edge>::VertexDescriptor Descriptor;
 	typedef boost::ptr_map<const std::string, Node> NodeMap;
@@ -34,11 +35,11 @@ public:
 	~Graph();
 
 	Node& createNode( const std::string& id ) throw( exception::LogicError );
-	void  deleteNode( const ImageEffectNode& node ) throw( exception::LogicError );
+	void  deleteNode( const Node& node ) throw( exception::LogicError );
 
 	void connect( const Node& out, const Node& in ) throw( exception::LogicError );
-	void connect( const ImageEffectNode& out, const ImageEffectNode& in, const ofx::attribute::OfxhAttribute& inAttr ) throw( exception::LogicError );
-	void unconnectNode( const ImageEffectNode& node ) throw( exception::LogicError );
+	void connect( const Node& out, const Attribute& inAttr ) throw( exception::LogicError );
+	void unconnectNode( const Node& node ) throw( exception::LogicError );
 
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 
@@ -58,8 +59,8 @@ private:
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
 
 private:
-	void addToGraph( ImageEffectNode& node );
-	void removeFromGraph( ImageEffectNode& node ) throw( exception::LogicError );
+	void addToGraph( Node& node );
+	void removeFromGraph( Node& node ) throw( exception::LogicError );
 };
 
 }

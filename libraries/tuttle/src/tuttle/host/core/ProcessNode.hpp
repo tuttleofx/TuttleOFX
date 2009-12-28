@@ -10,10 +10,13 @@ namespace tuttle {
 namespace host {
 namespace core {
 
+class ProcessNode;
+
 class ProcessAttribute
 {
 public:
 	virtual const std::string& getName() const = 0;
+	virtual const ProcessNode& getNode() const = 0;
 };
 
 class ProcessNode
@@ -33,6 +36,9 @@ public:
 	virtual const std::string&      getName() const            = 0;
 	virtual const EProcessNodeType  getProcessNodeType() const = 0;
 	virtual ProcessAttribute& getProcessAttribute( const std::string& name ) = 0;
+//	const ProcessAttribute& getProcessAttribute( const std::string& name ) const { return const_cast<ProcessNode*>(this)->getProcessAttribute( name ); }
+	virtual ProcessAttribute& getSingleInputAttribute() = 0;
+	virtual const ProcessAttribute& getSingleInputAttribute() const = 0;
 
 	virtual void connect( const ProcessNode&, ProcessAttribute& ) = 0;
 
