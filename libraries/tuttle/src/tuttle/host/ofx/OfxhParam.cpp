@@ -988,9 +988,8 @@ OfxhParamSet::OfxhParamSet()
 {}
 
 OfxhParamSet::OfxhParamSet( const OfxhParamSet& other )
-	: _paramList( other._paramList.clone() )
 {
-	initMapFromList();
+	operator=( other );
 }
 
 void OfxhParamSet::initMapFromList()
@@ -1005,6 +1004,19 @@ void OfxhParamSet::initMapFromList()
 
 OfxhParamSet::~OfxhParamSet()
 {}
+
+void OfxhParamSet::operator=( const OfxhParamSet& other )
+{
+	_paramList = other._paramList.clone();
+	initMapFromList();
+}
+
+void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
+{
+	if( _paramList.size() != other._paramList.size() )
+		throw core::exception::LogicError( "You try to copy parameters values, but it is not the same list." );
+	operator=( other );
+}
 
 OfxStatus OfxhParamSet::addParam( const std::string& name, OfxhParam* instance )
 {

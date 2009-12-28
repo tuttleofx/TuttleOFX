@@ -70,19 +70,8 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( other )
 {
 	populate();
-	//	createInstanceAction();
-	/*
-	 * /// @todo copy params
-	 *
-	 * try
-	 * {
-	 *  populateClips( _descriptor );
-	 * }
-	 * catch( std::logic_error& e )
-	 * {
-	 *  COUT_EXCEPTION( e );
-	 * }
-	 */
+	createInstanceAction();
+	copyAttributesValues( other );
 }
 
 void ImageEffectNode::connect( const ProcessNode& sourceEffect, ProcessAttribute& attr )

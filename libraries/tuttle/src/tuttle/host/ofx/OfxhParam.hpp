@@ -164,6 +164,10 @@ public:
 	/// dtor.
 	virtual ~OfxhParamSet();
 
+	void operator=( const OfxhParamSet& other );
+	
+	void copyParamsValues( const OfxhParamSet& other );
+	
 	bool operator==( const OfxhParamSet& other ) const { return _paramList == other._paramList; }
 
 	bool operator!=( const OfxhParamSet& other ) const { return !operator==( other ); }

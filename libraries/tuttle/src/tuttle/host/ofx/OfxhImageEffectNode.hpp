@@ -258,6 +258,8 @@ public:
 
 	OfxhImageEffectNode( const OfxhImageEffectNode& other );
 
+	virtual ~OfxhImageEffectNode();
+
 	/**
 	 *  called after construction to populate the various members
 	 *  ideally should be called in the ctor, but it relies on
@@ -267,7 +269,10 @@ public:
 	OfxStatus populate();
 	void      populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( core::exception::LogicError );
 
-	virtual ~OfxhImageEffectNode();
+	void copyAttributesValues( const OfxhImageEffectNode& other )
+	{
+		copyParamsValues( other );
+	}
 
 	bool operator==( const OfxhImageEffectNode& ) const;
 
