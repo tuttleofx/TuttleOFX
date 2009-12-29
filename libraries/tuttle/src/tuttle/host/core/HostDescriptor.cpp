@@ -64,14 +64,14 @@ Host::Host()
 	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, 1 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, 0 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultiResolution, 0 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, false /*true*/ ); ///< we hope to do this !
-	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, false /*true*/ ); ///< we hope to do this !
+	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, false /*true*/ ); ///< @todo tuttle: we hope to do this !
+	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, false /*true*/ ); ///< @todo tuttle: we hope to do this !
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGBA, 0 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentAlpha, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextFilter, 0 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGenerator, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGeneral, 2 );
-	//	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextTransition, 3 ); ///< we hope to do this !
+	//_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextTransition, 3 ); ///< @todo tuttle: we hope to do this !
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths, 1 );
 	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipPARs, 1 );
 	_properties.setIntProperty( kOfxImageEffectPropSetableFrameRate, 0 );

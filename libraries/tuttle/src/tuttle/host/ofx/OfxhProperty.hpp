@@ -228,8 +228,8 @@ public:
 			return false;
 		if( _dimension != other._dimension )
 			return false;
-		if( _pluginReadOnly != other._pluginReadOnly )
-			return false;
+//		if( _pluginReadOnly != other._pluginReadOnly )
+//			return false;
 		return true;
 	}
 
@@ -348,10 +348,12 @@ public:
 	{
 		if( !OfxhProperty::operator==( other ) )
 			return false;
+		if( getType() == ePointer )
+			return true; // we can't compare abstract pointer content, so assume true.
 		if( _value != other._value )
 			return false;
-		if( _defaultValue != other._defaultValue )
-			return false;
+//		if( _defaultValue != other._defaultValue )
+//			return false;
 		return true;
 	}
 

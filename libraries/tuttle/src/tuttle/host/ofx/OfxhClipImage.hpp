@@ -367,7 +367,7 @@ public:
 	bool operator==( const OfxhClipImageSet& other ) const;
 	bool operator!=( const OfxhClipImageSet& other ) const { return !operator==( other ); }
 
-	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( std::logic_error );
+	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC;
 
 	const ClipImageMap& getClips() const
 	{

@@ -207,14 +207,14 @@ OfxhProperty::OfxhProperty( const std::string& name,
 	_type( type ),
 	_dimension( dimension ),
 	_pluginReadOnly( pluginReadOnly ),
-	_getHook( 0 ) {}
+	_getHook( NULL ) {}
 
 OfxhProperty::OfxhProperty( const OfxhProperty& other )
 	: _name( other._name ),
 	_type( other._type ),
 	_dimension( other._dimension ),
 	_pluginReadOnly( other._pluginReadOnly ),
-	_getHook( 0 ) {}
+	_getHook( NULL ) {}
 
 /// call notify on the contained notify hooks
 

@@ -37,16 +37,6 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class ParamPushButton : public tuttle::host::ofx::attribute::OfxhParamPushButton
-{
-protected:
-	ImageEffectNode& _effect;
-
-public:
-	ParamPushButton( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamPushButton* clone() const;
-};
-
 class ParamString : public tuttle::host::ofx::attribute::OfxhParamString
 {
 protected:
@@ -55,14 +45,23 @@ protected:
 
 public:
 	ParamString( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamString* clone() const;
+	ParamString* clone() const { return new ParamString( *this ); }
 
 	const std::string& getDefault() const;
-	OfxStatus          get( std::string& );
-	OfxStatus          get( OfxTime time, std::string& );
-	OfxStatus          set( const char* );
-	OfxStatus          set( const std::string& value ) { _value = value; return kOfxStatOK; }
-	OfxStatus          set( OfxTime time, const char* );
+	void          get( std::string& ) OFX_EXCEPTION_SPEC;
+	void          get( OfxTime time, std::string& ) OFX_EXCEPTION_SPEC;
+	void          set( const char* ) OFX_EXCEPTION_SPEC;
+	void          set( const std::string& value ) OFX_EXCEPTION_SPEC { _value = value; }
+	void          set( OfxTime time, const char* ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamString& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamString& param = dynamic_cast<const ParamString&>(p);
+		copy( param );
+	}
 };
 
 class ParamInteger : public tuttle::host::ofx::attribute::OfxhParamInteger
@@ -73,13 +72,22 @@ protected:
 
 public:
 	ParamInteger( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamInteger* clone() const;
+	ParamInteger* clone() const { return new ParamInteger( *this ); }
 
 	int       getDefault() const;
-	OfxStatus get( int& );
-	OfxStatus get( OfxTime time, int& );
-	OfxStatus set( const int& );
-	OfxStatus set( OfxTime time, const int& );
+	void get( int& ) OFX_EXCEPTION_SPEC;
+	void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC;
+	void set( const int& ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, const int& ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamInteger& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamInteger& param = dynamic_cast<const ParamInteger&>(p);
+		copy( param );
+	}
 };
 
 class ParamDouble : public tuttle::host::ofx::attribute::OfxhParamDouble
@@ -90,15 +98,24 @@ protected:
 
 public:
 	ParamDouble( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamDouble* clone() const;
+	ParamDouble* clone() const { return new ParamDouble( *this ); }
 
 	double    getDefault() const;
-	OfxStatus get( double& );
-	OfxStatus get( OfxTime time, double& );
-	OfxStatus set( const double& );
-	OfxStatus set( OfxTime time, const double& );
-	OfxStatus derive( OfxTime time, double& );
-	OfxStatus integrate( OfxTime time1, OfxTime time2, double& );
+	void get( double& ) OFX_EXCEPTION_SPEC;
+	void get( OfxTime time, double& ) OFX_EXCEPTION_SPEC;
+	void set( const double& ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, const double& ) OFX_EXCEPTION_SPEC;
+	void derive( OfxTime time, double& ) OFX_EXCEPTION_SPEC;
+	void integrate( OfxTime time1, OfxTime time2, double& ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamDouble& param = dynamic_cast<const ParamDouble&>(p);
+		copy( param );
+	}
 };
 
 class ParamBoolean : public tuttle::host::ofx::attribute::OfxhParamBoolean
@@ -110,13 +127,22 @@ protected:
 
 public:
 	ParamBoolean( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamBoolean* clone() const;
+	virtual ParamBoolean* clone() const { return new ParamBoolean( *this ); }
 
 	bool      getDefault() const;
-	OfxStatus get( bool& );
-	OfxStatus get( OfxTime time, bool& );
-	OfxStatus set( bool );
-	OfxStatus set( OfxTime time, bool );
+	void get( bool& ) OFX_EXCEPTION_SPEC;
+	void get( OfxTime time, bool& ) OFX_EXCEPTION_SPEC;
+	void set( bool ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, bool ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamBoolean& param = dynamic_cast<const ParamBoolean&>(p);
+		copy( param );
+	}
 };
 
 class ParamChoice : public tuttle::host::ofx::attribute::OfxhParamChoice
@@ -128,13 +154,22 @@ protected:
 
 public:
 	ParamChoice( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamChoice* clone() const;
+	ParamChoice* clone() const { return new ParamChoice( *this ); }
 
 	int       getDefault() const;
-	OfxStatus get( int& );
-	OfxStatus get( OfxTime time, int& );
-	OfxStatus set( int );
-	OfxStatus set( OfxTime time, int );
+	void get( int& ) OFX_EXCEPTION_SPEC;
+	void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC;
+	void set( int ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, int ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamChoice& param = dynamic_cast<const ParamChoice&>(p);
+		copy( param );
+	}
 };
 
 class ParamRGBA : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 4 >
@@ -146,13 +181,22 @@ protected:
 
 public:
 	ParamRGBA( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamRGBA* clone() const;
+	virtual ParamRGBA* clone() const { return new ParamRGBA( *this ); }
 
 	OfxRGBAColourD getDefault() const;
-	OfxStatus      get( double& r, double& g, double& b, double& a );
-	OfxStatus      get( OfxTime time, double& r, double& g, double& b, double& a );
-	OfxStatus      set( double r, double g, double b, double a );
-	OfxStatus      set( OfxTime time, double r, double g, double b, double a );
+	void      get( double& r, double& g, double& b, double& a ) OFX_EXCEPTION_SPEC;
+	void      get( OfxTime time, double& r, double& g, double& b, double& a ) OFX_EXCEPTION_SPEC;
+	void      set( double r, double g, double b, double a ) OFX_EXCEPTION_SPEC;
+	void      set( OfxTime time, double r, double g, double b, double a ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamRGBA& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamRGBA& param = dynamic_cast<const ParamRGBA&>(p);
+		copy( param );
+	}
 };
 
 class ParamRGB : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
@@ -164,13 +208,22 @@ protected:
 
 public:
 	ParamRGB( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamRGB* clone() const;
+	ParamRGB* clone() const { return new ParamRGB( *this ); }
 
 	OfxRGBColourD getDefault() const;
-	OfxStatus     get( double& r, double& g, double& b );
-	OfxStatus     get( OfxTime time, double& r, double& g, double& b );
-	OfxStatus     set( double r, double g, double b );
-	OfxStatus     set( OfxTime time, double r, double g, double b );
+	void     get( double& r, double& g, double& b ) OFX_EXCEPTION_SPEC;
+	void     get( OfxTime time, double& r, double& g, double& b ) OFX_EXCEPTION_SPEC;
+	void     set( double r, double g, double b ) OFX_EXCEPTION_SPEC;
+	void     set( OfxTime time, double r, double g, double b ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamRGB& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamRGB& param = dynamic_cast<const ParamRGB&>(p);
+		copy( param );
+	}
 };
 
 class ParamDouble2D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 2 >
@@ -182,13 +235,22 @@ protected:
 
 public:
 	ParamDouble2D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamDouble2D* clone() const;
+	ParamDouble2D* clone() const { return new ParamDouble2D( *this ); }
 
 	OfxPointD getDefault() const;
-	OfxStatus get( double& x, double& y );
-	OfxStatus get( OfxTime time, double& x, double& y );
-	OfxStatus set( double x, double y );
-	OfxStatus set( OfxTime time, double x, double y );
+	void get( double& x, double& y ) OFX_EXCEPTION_SPEC;
+	void get( OfxTime time, double& x, double& y ) OFX_EXCEPTION_SPEC;
+	void set( double x, double y ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, double x, double y ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamDouble2D& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamDouble2D& param = dynamic_cast<const ParamDouble2D&>(p);
+		copy( param );
+	}
 };
 
 class ParamInteger2D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 2 >
@@ -200,13 +262,22 @@ protected:
 
 public:
 	ParamInteger2D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamInteger2D* clone() const;
+	ParamInteger2D* clone() const { return new ParamInteger2D( *this ); }
 
 	OfxPointI getDefault() const;
-	OfxStatus get( int& x, int& y );
-	OfxStatus get( OfxTime time, int& x, int& y );
-	OfxStatus set( int x, int y );
-	OfxStatus set( OfxTime time, int x, int y );
+	void get( int& x, int& y ) OFX_EXCEPTION_SPEC;
+	void get( OfxTime time, int& x, int& y ) OFX_EXCEPTION_SPEC;
+	void set( int x, int y ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, int x, int y ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamInteger2D& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamInteger2D& param = dynamic_cast<const ParamInteger2D&>(p);
+		copy( param );
+	}
 };
 
 class ParamInteger3D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 3 >
@@ -218,13 +289,22 @@ protected:
 
 public:
 	ParamInteger3D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamInteger3D* clone() const;
+	ParamInteger3D* clone() const { return new ParamInteger3D( *this ); }
 
 	Ofx3DPointI getDefault() const;
-	OfxStatus   get( int& x, int& y, int& z );
-	OfxStatus   get( OfxTime time, int& x, int& y, int& z );
-	OfxStatus   set( int x, int y, int z );
-	OfxStatus   set( OfxTime time, int x, int y, int z );
+	void   get( int& x, int& y, int& z ) OFX_EXCEPTION_SPEC;
+	void   get( OfxTime time, int& x, int& y, int& z ) OFX_EXCEPTION_SPEC;
+	void   set( int x, int y, int z ) OFX_EXCEPTION_SPEC;
+	void   set( OfxTime time, int x, int y, int z ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamInteger3D& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamInteger3D& param = dynamic_cast<const ParamInteger3D&>(p);
+		copy( param );
+	}
 };
 
 class ParamDouble3D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
@@ -236,14 +316,76 @@ protected:
 
 public:
 	ParamDouble3D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
-	virtual ParamDouble3D* clone() const;
+	ParamDouble3D* clone() const { return new ParamDouble3D( *this ); }
 
 	Ofx3DPointD getDefault() const;
-	OfxStatus   get( double& x, double& y, double& z );
-	OfxStatus   get( OfxTime time, double& x, double& y, double& z );
-	OfxStatus   set( double x, double y, double z );
-	OfxStatus   set( OfxTime time, double x, double y, double z );
+	void   get( double& x, double& y, double& z ) OFX_EXCEPTION_SPEC;
+	void   get( OfxTime time, double& x, double& y, double& z ) OFX_EXCEPTION_SPEC;
+	void   set( double x, double y, double z ) OFX_EXCEPTION_SPEC;
+	void   set( OfxTime time, double x, double y, double z ) OFX_EXCEPTION_SPEC;
+	void          copy( const ParamDouble3D& p ) OFX_EXCEPTION_SPEC
+	{
+		_value = p._value;
+	}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamDouble3D& param = dynamic_cast<const ParamDouble3D&>(p);
+		copy( param );
+	}
 };
+
+
+class ParamPushButton : public tuttle::host::ofx::attribute::OfxhParamPushButton
+{
+protected:
+	ImageEffectNode& _effect;
+
+public:
+	ParamPushButton( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamPushButton* clone() const { return new ParamPushButton( *this ); }
+
+	void          copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC {}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamPushButton& param = dynamic_cast<const ParamPushButton&>(p);
+		copy( param );
+	}
+};
+
+class ParamGroup : public tuttle::host::ofx::attribute::OfxhParamGroup
+{
+protected:
+	ImageEffectNode& _effect;
+
+public:
+	ParamGroup( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamGroup* clone() const { return new ParamGroup(*this); }
+	
+	void          copy( const ParamGroup& p ) OFX_EXCEPTION_SPEC {}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamGroup& param = dynamic_cast<const ParamGroup&>(p);
+		copy( param );
+	}
+};
+
+class ParamPage : public tuttle::host::ofx::attribute::OfxhParamPage
+{
+protected:
+	ImageEffectNode& _effect;
+
+public:
+	ParamPage( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamPage* clone() const { return new ParamPage(*this); }
+
+	void          copy( const ParamPage& p ) OFX_EXCEPTION_SPEC {}
+	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const ParamPage& param = dynamic_cast<const ParamPage&>(p);
+		copy( param );
+	}
+};
+
 
 }
 }

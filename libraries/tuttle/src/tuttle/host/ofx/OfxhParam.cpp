@@ -521,51 +521,49 @@ void OfxhParam::setDisplayRange() {}
 /**
  * get a value, implemented by instances to deconstruct var args
  */
-OfxStatus OfxhParam::getV( va_list arg )
+void OfxhParam::getV( va_list arg ) OFX_EXCEPTION_SPEC
 {
-	COUT_WITHINFOS( "ParamInstance getValue failed !" );
-	COUT( "(paramName:" << getName() << ")" );
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getValue failed (paramName:") + getName() + ")" );
 }
 
 /**
  * get a value, implemented by instances to deconstruct var args
  */
-OfxStatus OfxhParam::getV( OfxTime time, va_list arg )
+void OfxhParam::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported );
 }
 
 /**
  * set a value, implemented by instances to deconstruct var args
  */
-OfxStatus OfxhParam::setV( va_list arg )
+void OfxhParam::setV( va_list arg ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported );
 }
 
 /**
  * key a value, implemented by instances to deconstruct var args
  */
-OfxStatus OfxhParam::setV( OfxTime time, va_list arg )
+void OfxhParam::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported );
 }
 
 /**
  * derive a value, implemented by instances to deconstruct var args
  */
-OfxStatus OfxhParam::deriveV( OfxTime time, va_list arg )
+void OfxhParam::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported );
 }
 
 /**
  * integrate a value, implemented by instances to deconstruct var args
  */
-OfxStatus OfxhParam::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+void OfxhParam::integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported );
 }
 
 /**
@@ -594,17 +592,17 @@ void OfxhParam::notify( const std::string& name, bool single, int num ) OFX_EXCE
 /**
  * copy one parameter to another
  */
-OfxStatus OfxhParam::copy( const OfxhParam& instance, OfxTime offset )
+void OfxhParam::copy( const OfxhParam& instance, OfxTime offset ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrMissingHostFeature;
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
 /**
  * copy one parameter to another, with a range
  */
-OfxStatus OfxhParam::copy( const OfxhParam& instance, OfxTime offset, OfxRangeD range )
+void OfxhParam::copy( const OfxhParam& instance, OfxTime offset, OfxRangeD range ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrMissingHostFeature;
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
 void OfxhParam::setParentInstance( OfxhParam* instance )
@@ -621,34 +619,29 @@ OfxhParam* OfxhParam::getParentInstance()
 // KeyframeParam
 //
 
-OfxStatus OfxhKeyframeParam::getNumKeys( unsigned int& nKeys ) const
+void OfxhKeyframeParam::getNumKeys( unsigned int& nKeys ) const OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrMissingHostFeature;
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-OfxStatus OfxhKeyframeParam::getKeyTime( int nth, OfxTime& time ) const
+void OfxhKeyframeParam::getKeyTime( int nth, OfxTime& time ) const OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrMissingHostFeature;
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-OfxStatus OfxhKeyframeParam::getKeyIndex( OfxTime time, int direction, int& index ) const
+void OfxhKeyframeParam::getKeyIndex( OfxTime time, int direction, int& index ) const OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrMissingHostFeature;
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-OfxStatus OfxhKeyframeParam::deleteKey( OfxTime time )
+void OfxhKeyframeParam::deleteKey( OfxTime time ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrMissingHostFeature;
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-OfxStatus OfxhKeyframeParam::deleteAllKeys()
+void OfxhKeyframeParam::deleteAllKeys() OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrMissingHostFeature;
-}
-
-OfxhParamGroup* OfxhParamGroup::clone() const
-{
-	return new OfxhParamGroup( *this );
+	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
 /**
@@ -658,12 +651,12 @@ void OfxhParamGroup::setChildrens( const OfxhParamSet* childrens )
 {
 	deleteChildrens();
 
-	/// @todo use clone ?
+	/// @todo tuttle: use clone ?
 	for( ParamList::const_iterator it = childrens->getParamList().begin(), itEnd = childrens->getParamList().end();
 	     it != itEnd;
 	     ++it )
 	{
-		_paramList.push_back( it->clone( /*this*/ ) );
+		_paramList.push_back( it->clone() );
 	}
 }
 
@@ -681,11 +674,6 @@ OfxhParamSet* OfxhParamGroup::getChildrens() const
 //
 // Page Instance
 //
-OfxhParamPage* OfxhParamPage::clone() const
-{
-	return new OfxhParamPage( *this );
-}
-
 const std::map<int, attribute::OfxhParam*>& OfxhParamPage::getChildren() const
 {
 	// HACK!!!! this really should be done with a notify hook so we don't force
@@ -708,7 +696,7 @@ const std::map<int, attribute::OfxhParam*>& OfxhParamPage::getChildren() const
 //
 /// implementation of var args function
 
-OfxStatus OfxhParamChoice::getV( va_list arg )
+void OfxhParamChoice::getV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -718,7 +706,7 @@ OfxStatus OfxhParamChoice::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamChoice::getV( OfxTime time, va_list arg )
+void OfxhParamChoice::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -728,7 +716,7 @@ OfxStatus OfxhParamChoice::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamChoice::setV( va_list arg )
+void OfxhParamChoice::setV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
@@ -738,7 +726,7 @@ OfxStatus OfxhParamChoice::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamChoice::setV( OfxTime time, va_list arg )
+void OfxhParamChoice::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
@@ -749,20 +737,20 @@ OfxStatus OfxhParamChoice::setV( OfxTime time, va_list arg )
 // IntegerInstance
 //
 
-OfxStatus OfxhParamInteger::derive( OfxTime time, int& )
+void OfxhParamInteger::derive( OfxTime time, int& ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported );
 }
 
-OfxStatus OfxhParamInteger::integrate( OfxTime time1, OfxTime time2, int& )
+void OfxhParamInteger::integrate( OfxTime time1, OfxTime time2, int& ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatErrUnsupported;
+	throw OfxhException( kOfxStatErrUnsupported );
 }
 
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamInteger::getV( va_list arg )
+void OfxhParamInteger::getV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -772,7 +760,7 @@ OfxStatus OfxhParamInteger::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamInteger::getV( OfxTime time, va_list arg )
+void OfxhParamInteger::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -782,7 +770,7 @@ OfxStatus OfxhParamInteger::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamInteger::setV( va_list arg )
+void OfxhParamInteger::setV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
@@ -792,7 +780,7 @@ OfxStatus OfxhParamInteger::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamInteger::setV( OfxTime time, va_list arg )
+void OfxhParamInteger::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
@@ -802,7 +790,7 @@ OfxStatus OfxhParamInteger::setV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamInteger::deriveV( OfxTime time, va_list arg )
+void OfxhParamInteger::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -812,7 +800,7 @@ OfxStatus OfxhParamInteger::deriveV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamInteger::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+void OfxhParamInteger::integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -826,7 +814,7 @@ OfxStatus OfxhParamInteger::integrateV( OfxTime time1, OfxTime time2, va_list ar
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamDouble::getV( va_list arg )
+void OfxhParamDouble::getV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -836,7 +824,7 @@ OfxStatus OfxhParamDouble::getV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamDouble::getV( OfxTime time, va_list arg )
+void OfxhParamDouble::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -846,7 +834,7 @@ OfxStatus OfxhParamDouble::getV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamDouble::setV( va_list arg )
+void OfxhParamDouble::setV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	double value = va_arg( arg, double );
 
@@ -856,7 +844,7 @@ OfxStatus OfxhParamDouble::setV( va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamDouble::setV( OfxTime time, va_list arg )
+void OfxhParamDouble::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	double value = va_arg( arg, double );
 
@@ -866,7 +854,7 @@ OfxStatus OfxhParamDouble::setV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamDouble::deriveV( OfxTime time, va_list arg )
+void OfxhParamDouble::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -876,7 +864,7 @@ OfxStatus OfxhParamDouble::deriveV( OfxTime time, va_list arg )
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamDouble::integrateV( OfxTime time1, OfxTime time2, va_list arg )
+void OfxhParamDouble::integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -890,94 +878,83 @@ OfxStatus OfxhParamDouble::integrateV( OfxTime time1, OfxTime time2, va_list arg
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamBoolean::getV( va_list arg )
+void OfxhParamBoolean::getV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	bool v;
-	OfxStatus stat = get( v );
+	get( v );
 
 	int* value = va_arg( arg, int* );
-
 	*value = v;
-	return stat;
 }
 
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamBoolean::getV( OfxTime time, va_list arg )
+void OfxhParamBoolean::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	bool v;
-	OfxStatus stat = get( time, v );
+	get( time, v );
 
 	int* value = va_arg( arg, int* );
-
 	*value = v;
-	return stat;
 }
 
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamBoolean::setV( va_list arg )
+void OfxhParamBoolean::setV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	bool value = va_arg( arg, int ) != 0;
-
-	return set( value );
+	set( value );
 }
 
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamBoolean::setV( OfxTime time, va_list arg )
+void OfxhParamBoolean::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	bool value = va_arg( arg, int ) != 0;
-
-	return set( time, value );
+	set( time, value );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // string param
 
-OfxStatus OfxhParamString::getV( va_list arg )
+void OfxhParamString::getV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	const char** value = va_arg( arg, const char** );
-	OfxStatus stat     = get( _returnValue ); // I so don't like this, temp storage should be delegated to the implementation
+	get( _returnValue ); /// @todo tuttle: "I so don't like this, temp storage should be delegated to the implementation"
 
 	*value = _returnValue.c_str();
-	return stat;
 }
 
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamString::getV( OfxTime time, va_list arg )
+void OfxhParamString::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	const char** value = va_arg( arg, const char** );
-
-	OfxStatus stat = get( time, _returnValue ); // I so don't like this, temp storage should be delegated to the implementation
+	get( time, _returnValue ); // I so don't like this, temp storage should be delegated to the implementation
 
 	*value = _returnValue.c_str();
-	return stat;
 }
 
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamString::setV( va_list arg )
+void OfxhParamString::setV( va_list arg ) OFX_EXCEPTION_SPEC
 {
 	char* value = va_arg( arg, char* );
-
-	return set( value );
+	set( value );
 }
 
 /**
  * implementation of var args function
  */
-OfxStatus OfxhParamString::setV( OfxTime time, va_list arg )
+void OfxhParamString::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	char* value = va_arg( arg, char* );
-
-	return set( time, value );
+	set( time, value );
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -1014,21 +991,29 @@ void OfxhParamSet::operator=( const OfxhParamSet& other )
 void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 {
 	if( _paramList.size() != other._paramList.size() )
-		throw core::exception::LogicError( "You try to copy parameters values, but it is not the same list." );
-	operator=( other );
+		throw core::exception::LogicError( "You try to copy parameters values, but the two lists are not identical." );
+
+	ParamList::const_iterator oit = other._paramList.begin(), oitEnd = other._paramList.end();
+	for( ParamList::iterator it = _paramList.begin(), itEnd = _paramList.end();
+	     it != itEnd && oit != oitEnd;
+	     ++it, ++oit )
+	{
+		OfxhParam& p = *it;
+		const OfxhParam& op = *oit;
+		if( p.getName() != op.getName() )
+			throw core::exception::LogicError( "You try to copy parameters values, but it is not the same parameters in the two lists." );
+		p.copy(op);
+	}
+	initMapFromList();
+//	operator=( other );
 }
 
-OfxStatus OfxhParamSet::addParam( const std::string& name, OfxhParam* instance )
+void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {
-	if( _params.find( name ) == _params.end() )
-	{
-		_params[name] = instance;
-		_paramList.push_back( instance );
-	}
-	else
-		return kOfxStatErrExists;
-
-	return kOfxStatOK;
+	if( _params.find( name ) != _params.end() )
+		throw OfxhException( kOfxStatErrExists );
+	_params[name] = instance;
+	_paramList.push_back( instance );
 }
 
 }

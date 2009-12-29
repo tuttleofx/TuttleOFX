@@ -1,7 +1,8 @@
 #ifndef _TUTTLE_HOST_OFX_MESSAGE_HPP_
 #define _TUTTLE_HOST_OFX_MESSAGE_HPP_
 
-#include "OfxhCore.hpp"
+#include "OfxhException.hpp"
+#include <cstdarg>
 #include <string>
 
 namespace tuttle {
@@ -13,10 +14,10 @@ class OfxhIMessage
 public:
 	virtual ~OfxhIMessage() {}
 
-	virtual OfxStatus vmessage( const char* type,
+	virtual void vmessage( const char* type,
 	                            const char* id,
 	                            const char* format,
-	                            va_list     args ) const = 0;
+	                            va_list     args ) const OFX_EXCEPTION_SPEC = 0;
 };
 
 }

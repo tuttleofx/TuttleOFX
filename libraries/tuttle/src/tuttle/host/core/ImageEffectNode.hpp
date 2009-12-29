@@ -111,7 +111,6 @@ public:
 
 	void preProcess_initialize( ProcessOptions& processOptions )
 	{
-		//OfxStatus status =
 		getRegionOfDefinitionAction( processOptions._time,
 		                             processOptions._renderScale,
 		                             processOptions._renderRoD );
@@ -120,7 +119,6 @@ public:
 
 	void preProcess_finish( ProcessOptions& processOptions )
 	{
-		//OfxStatus status =
 		getRegionOfInterestAction( processOptions._time,
 		                           processOptions._renderScale,
 		                           processOptions._renderRoI,
@@ -172,10 +170,10 @@ public:
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
 	/// vmessage
-	OfxStatus vmessage( const char* type,
+	void vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
-	                    va_list     args ) const;
+	                    va_list     args ) const OFX_EXCEPTION_SPEC;
 
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
@@ -230,17 +228,17 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	ofx::attribute::OfxhParam* newParam( ofx::attribute::OfxhParamDescriptor& Descriptor );
+	ofx::attribute::OfxhParam* newParam( ofx::attribute::OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///
 	/// Client host code needs to implement this
-	OfxStatus editBegin( const std::string& name );
+	void editBegin( const std::string& name ) OFX_EXCEPTION_SPEC;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditEnd
 	///
 	/// Client host code needs to implement this
-	OfxStatus editEnd();
+	void editEnd() OFX_EXCEPTION_SPEC;
 
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -288,11 +286,11 @@ public:
 		_frameRange.y = end;
 	}
 
-	OfxStatus beginRenderAction( OfxTime   startFrame,
+	void beginRenderAction( OfxTime   startFrame,
 	                             OfxTime   endFrame,
 	                             OfxTime   step,
 	                             bool      interactive,
-	                             OfxPointD renderScale );
+	                             OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 };
 
 }

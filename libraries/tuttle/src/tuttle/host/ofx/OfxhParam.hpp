@@ -33,7 +33,7 @@
 #include "OfxhCore.hpp"
 #include "OfxhProperty.hpp"
 #include "OfxhAttribute.hpp"
-#include <tuttle/host/core/Exception.hpp>
+#include "OfxhException.hpp"
 
 #include <boost/ptr_container/ptr_list.hpp>
 
@@ -187,7 +187,7 @@ public:
 		ParamMap::iterator it = _params.find( name );
 
 		if( it == _params.end() )
-			throw( std::logic_error( std::string( "Param not found. (" ) + name + ")" ) );
+			throw OfxhException( kOfxStatErrBadIndex, std::string( "Param not found. (" ) + name + ")" );
 		return *it->second;
 
 	}
@@ -197,22 +197,22 @@ public:
 	virtual void paramChangedByPlugin( attribute::OfxhParam* param ) = 0;
 
 	/// add a param
-	virtual OfxStatus addParam( const std::string& name, OfxhParam* instance );
+	virtual void addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
 
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	virtual OfxhParam* newParam( OfxhParamDescriptor& Descriptor ) = 0;
+	virtual OfxhParam* newParam( OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC = 0;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///
 	/// Client host code needs to implement this
-	virtual OfxStatus editBegin( const std::string& name ) = 0;
+	virtual void editBegin( const std::string& name ) OFX_EXCEPTION_SPEC = 0;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditEnd
 	///
 	/// Client host code needs to implement this
-	virtual OfxStatus editEnd() = 0;
+	virtual void editEnd() OFX_EXCEPTION_SPEC = 0;
 
 private:
 	void initMapFromList();
@@ -294,10 +294,10 @@ public:
 		return ( OfxParamHandle ) this;
 	}
 
-	//        OfxStatus instanceChangedAction(std::string why,
-	//                                        OfxTime     time,
-	//                                        double      renderScaleX,
-	//                                        double      renderScaleY);
+	// void instanceChangedAction( std::string why,
+	//                             OfxTime     time,
+	//                             double      renderScaleX,
+	//                             double      renderScaleY) OFX_EXCEPTION_SPEC;
 
 	// get the param instance
 	OfxhParamSet* getParamSetInstance()                         { return _paramSetInstance; }
@@ -308,10 +308,13 @@ public:
 	OfxhParam* getParentInstance();
 
 	// copy one parameter to another
-	virtual OfxStatus copy( const OfxhParam& instance, OfxTime offset );
+	virtual void copy( const OfxhParam& instance ) OFX_EXCEPTION_SPEC = 0;
+
+	// copy one parameter to another
+	virtual void copy( const OfxhParam& instance, OfxTime offset ) OFX_EXCEPTION_SPEC;
 
 	// copy one parameter to another, with a range
-	virtual OfxStatus copy( const OfxhParam& instance, OfxTime offset, OfxRangeD range );
+	virtual void copy( const OfxhParam& instance, OfxTime offset, OfxRangeD range ) OFX_EXCEPTION_SPEC;
 
 	// callback which should set enabled state as appropriate
 	virtual void setEnabled();
@@ -331,27 +334,27 @@ public:
 	// by the various typeed param instances so that they can
 	// deconstruct the var args lists
 
-	virtual OfxStatus set( const std::string& value ) { throw core::exception::LogicError( "Not a string parameter." ); }
-	virtual OfxStatus set( const int& value )         { throw core::exception::LogicError( "Not an int parameter." ); }
-	virtual OfxStatus set( const double& value )      { throw core::exception::LogicError( "Not a double parameter." ); }
+	virtual void set( const std::string& value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
+	virtual void set( const int& value ) OFX_EXCEPTION_SPEC         { throw OfxhException( kOfxStatErrBadHandle, "Not an int parameter." ); }
+	virtual void set( const double& value ) OFX_EXCEPTION_SPEC      { throw OfxhException( kOfxStatErrBadHandle, "Not a double parameter." ); }
 
 	/// get a value, implemented by instances to deconstruct var args
-	virtual OfxStatus getV( va_list arg );
+	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// get a value, implemented by instances to deconstruct var args
-	virtual OfxStatus getV( OfxTime time, va_list arg );
+	virtual void getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// set a value, implemented by instances to deconstruct var args
-	virtual OfxStatus setV( va_list arg );
+	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// key a value, implemented by instances to deconstruct var args
-	virtual OfxStatus setV( OfxTime time, va_list arg );
+	virtual void setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// derive a value, implemented by instances to deconstruct var args
-	virtual OfxStatus deriveV( OfxTime time, va_list arg );
+	virtual void deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// integrate a value, implemented by instances to deconstruct var args
-	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg );
+	virtual void integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// overridden from Property::NotifyHook
 	virtual void notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC;
@@ -368,11 +371,11 @@ inline OfxhParam* new_clone( const OfxhParam& a )
 class OfxhKeyframeParam
 {
 public:
-	virtual OfxStatus getNumKeys( unsigned int& nKeys ) const ;
-	virtual OfxStatus getKeyTime( int nth, OfxTime& time ) const ;
-	virtual OfxStatus getKeyIndex( OfxTime time, int direction, int& index ) const ;
-	virtual OfxStatus deleteKey( OfxTime time ) ;
-	virtual OfxStatus deleteAllKeys() ;
+	virtual void getNumKeys( unsigned int& nKeys ) const OFX_EXCEPTION_SPEC;
+	virtual void getKeyTime( int nth, OfxTime& time ) const OFX_EXCEPTION_SPEC;
+	virtual void getKeyIndex( OfxTime time, int direction, int& index ) const OFX_EXCEPTION_SPEC;
+	virtual void deleteKey( OfxTime time ) OFX_EXCEPTION_SPEC;
+	virtual void deleteAllKeys() OFX_EXCEPTION_SPEC;
 
 	virtual ~OfxhKeyframeParam() {}
 
@@ -402,121 +405,103 @@ public:
 	}
 
 	// Deriving implementatation needs to overide these
-	inline virtual OfxStatus get( BaseType& dst, const size_t& index )
+	inline virtual void get( BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		return _controls[index]->get( dst );
+		_controls[index]->get( dst );
 	}
 
-	inline virtual OfxStatus get( OfxTime time, BaseType& dst, const size_t& index )
+	inline virtual void get( OfxTime time, BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		return _controls[index]->get( time, dst );
+		_controls[index]->get( time, dst );
 	}
 
-	inline virtual OfxStatus set( const BaseType& value, const size_t& index )
+	inline virtual void set( const BaseType& value, const size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		return _controls[index]->set( value );
+		_controls[index]->set( value );
 	}
 
-	inline virtual OfxStatus set( OfxTime time, const BaseType& value, const size_t& index )
+	inline virtual void set( OfxTime time, const BaseType& value, const size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		return _controls[index]->set( time, value );
+		_controls[index]->set( time, value );
 	}
 
 	// derived class does not need to implement, default is an approximation
-	inline virtual OfxStatus derive( OfxTime time, BaseType& dst, const size_t& index )
+	inline virtual void derive( OfxTime time, BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		return _controls[index]->derive( time, dst );
+		_controls[index]->derive( time, dst );
 	}
 
-	inline virtual OfxStatus integrate( OfxTime time1, OfxTime time2, BaseType& dst, const size_t& index )
+	inline virtual void integrate( OfxTime time1, OfxTime time2, BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		return _controls[index]->integrate( time1, time2, dst );
+		_controls[index]->integrate( time1, time2, dst );
 	}
 
 	/// implementation of var args function
-	virtual OfxStatus getV( va_list arg )
+	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		OfxStatus st = kOfxStatOK;
-
 		for( int i = 0; i < DIM; ++i )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
-			st |= _controls[i]->get( *v );
+			_controls[i]->get( *v );
 		}
-		return st;
 	}
 
 	/// implementation of var args function
-	virtual OfxStatus getV( OfxTime time, va_list arg )
+	virtual void getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		OfxStatus st = kOfxStatOK;
-
 		for( int i = 0; i < DIM; ++i )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			st |= _controls[i]->get( time, *v );
+			_controls[i]->get( time, *v );
 		}
-		return st;
 	}
 
 	/// implementation of var args function
-	virtual OfxStatus setV( va_list arg )
+	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		OfxStatus st = kOfxStatOK;
-
 		for( int i = 0; i < DIM; ++i )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			st |= _controls[i]->set( v );
+			_controls[i]->set( v );
 		}
-		return st;
 	}
 
 	/// implementation of var args function
-	virtual OfxStatus setV( OfxTime time, va_list arg )
+	virtual void setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		OfxStatus st = kOfxStatOK;
-
 		for( int i = 0; i < DIM; ++i )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			st |= _controls[i]->set( time, v );
+			_controls[i]->set( time, v );
 		}
-		return st;
 	}
 
 	/// implementation of var args function
-	virtual OfxStatus deriveV( OfxTime time, va_list arg )
+	virtual void deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		OfxStatus st = kOfxStatOK;
-
 		for( int i = 0; i < DIM; ++i )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			st |= _controls[i]->derive( time, *v );
+			_controls[i]->derive( time, *v );
 		}
-		return st;
 	}
 
 	/// implementation of var args function
-	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg )
+	virtual void integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		OfxStatus st = kOfxStatOK;
-
 		for( int i = 0; i < DIM; ++i )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
-			st |= _controls[i]->integrate( time1, time2, *v );
+			_controls[i]->integrate( time1, time2, *v );
 		}
-		return st;
 	}
 
 };
@@ -527,7 +512,6 @@ class OfxhParamGroup : public OfxhParam,
 public:
 	OfxhParamGroup( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 	virtual ~OfxhParamGroup() {}
-	virtual OfxhParamGroup* clone() const;
 
 	void deleteChildrens()
 	{
@@ -550,19 +534,19 @@ public:
 		_paramSetInstance->paramChangedByPlugin( param );
 	}
 
-	virtual OfxhParam* newParam( OfxhParamDescriptor& descriptor )
+	virtual OfxhParam* newParam( OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 	{
 		return _paramSetInstance->newParam( descriptor );
 	}
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
-	virtual OfxStatus editBegin( const std::string& name )
+	virtual void editBegin( const std::string& name ) OFX_EXCEPTION_SPEC
 	{
 		return _paramSetInstance->editBegin( name );
 	}
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditEnd
-	virtual OfxStatus editEnd()
+	virtual void editEnd() OFX_EXCEPTION_SPEC
 	{
 		return _paramSetInstance->editEnd();
 	}
@@ -573,7 +557,6 @@ class OfxhParamPage : public OfxhParam
 {
 public:
 	OfxhParamPage( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
-	virtual OfxhParamPage*                      clone() const;
 	const std::map<int, attribute::OfxhParam*>& getChildren() const;
 
 protected:
@@ -593,32 +576,32 @@ public:
 	}
 
 	// Deriving implementatation needs to overide these
-	virtual OfxStatus get( int& )               = 0;
-	virtual OfxStatus get( OfxTime time, int& ) = 0;
-	virtual OfxStatus set( const int& )         = 0;
-	virtual OfxStatus set( OfxTime time, const int& )  = 0;
+	virtual void get( int& )               OFX_EXCEPTION_SPEC = 0;
+	virtual void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const int& )         OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, const int& ) OFX_EXCEPTION_SPEC = 0;
 
 	// probably derived class does not need to implement, default is an approximation
-	virtual OfxStatus derive( OfxTime time, int& );
-	virtual OfxStatus integrate( OfxTime time1, OfxTime time2, int& );
+	virtual void derive( OfxTime time, int& ) OFX_EXCEPTION_SPEC;
+	virtual void integrate( OfxTime time1, OfxTime time2, int& ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( va_list arg );
+	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( OfxTime time, va_list arg );
+	virtual void getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( va_list arg );
+	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( OfxTime time, va_list arg );
+	virtual void setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus deriveV( OfxTime time, va_list arg );
+	virtual void deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg );
+	virtual void integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC;
 };
 
 class OfxhParamChoice : public OfxhParam,
@@ -628,22 +611,22 @@ public:
 	OfxhParamChoice( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
-	virtual OfxStatus get( int& )               = 0;
-	virtual OfxStatus get( OfxTime time, int& ) = 0;
-	virtual OfxStatus set( int )                = 0;
-	virtual OfxStatus set( OfxTime time, int )  = 0;
+	virtual void get( int& )               OFX_EXCEPTION_SPEC = 0;
+	virtual void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC = 0;
+	virtual void set( int )                OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, int )  OFX_EXCEPTION_SPEC = 0;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( va_list arg );
+	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( OfxTime time, va_list arg );
+	virtual void getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( va_list arg );
+	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( OfxTime time, va_list arg );
+	virtual void setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 };
 
 class OfxhParamDouble : public OfxhParam,
@@ -659,30 +642,30 @@ public:
 	}
 
 	// Deriving implementatation needs to overide these
-	virtual OfxStatus get( double& )                                     = 0;
-	virtual OfxStatus get( OfxTime time, double& )                       = 0;
-	virtual OfxStatus set( const double& )                               = 0;
-	virtual OfxStatus set( OfxTime time, const double& )                 = 0;
-	virtual OfxStatus derive( OfxTime time, double& )                    = 0;
-	virtual OfxStatus integrate( OfxTime time1, OfxTime time2, double& ) = 0;
+	virtual void get( double& )                                     OFX_EXCEPTION_SPEC = 0;
+	virtual void get( OfxTime time, double& )                       OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const double& )                               OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, const double& )                 OFX_EXCEPTION_SPEC = 0;
+	virtual void derive( OfxTime time, double& )                    OFX_EXCEPTION_SPEC = 0;
+	virtual void integrate( OfxTime time1, OfxTime time2, double& ) OFX_EXCEPTION_SPEC = 0;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( va_list arg );
+	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( OfxTime time, va_list arg );
+	virtual void getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( va_list arg );
+	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( OfxTime time, va_list arg );
+	virtual void setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus deriveV( OfxTime time, va_list arg );
+	virtual void deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus integrateV( OfxTime time1, OfxTime time2, va_list arg );
+	virtual void integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC;
 };
 
 class OfxhParamBoolean : public OfxhParam,
@@ -693,22 +676,22 @@ public:
 	OfxhParamBoolean( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
-	virtual OfxStatus get( bool& )               = 0;
-	virtual OfxStatus get( OfxTime time, bool& ) = 0;
-	virtual OfxStatus set( bool )                = 0;
-	virtual OfxStatus set( OfxTime time, bool )  = 0;
+	virtual void get( bool& )               OFX_EXCEPTION_SPEC = 0;
+	virtual void get( OfxTime time, bool& ) OFX_EXCEPTION_SPEC = 0;
+	virtual void set( bool )                OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, bool )  OFX_EXCEPTION_SPEC = 0;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( va_list arg );
+	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( OfxTime time, va_list arg );
+	virtual void getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( va_list arg );
+	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( OfxTime time, va_list arg );
+	virtual void setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 };
 
 class OfxhParamString : public OfxhParam,
@@ -720,22 +703,22 @@ public:
 	typedef std::string BaseType;
 	OfxhParamString( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
-	virtual OfxStatus get( std::string& )               = 0;
-	virtual OfxStatus get( OfxTime time, std::string& ) = 0;
-	virtual OfxStatus set( const char* )                = 0;
-	virtual OfxStatus set( OfxTime time, const char* )  = 0;
+	virtual void get( std::string& )               OFX_EXCEPTION_SPEC = 0;
+	virtual void get( OfxTime time, std::string& ) OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const char* )                OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, const char* )  OFX_EXCEPTION_SPEC = 0;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( va_list arg );
+	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus getV( OfxTime time, va_list arg );
+	virtual void getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( va_list arg );
+	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual OfxStatus setV( OfxTime time, va_list arg );
+	virtual void setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
 };
 
 class OfxhParamCustom : public OfxhParamString

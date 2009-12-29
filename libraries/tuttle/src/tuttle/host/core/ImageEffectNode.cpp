@@ -133,13 +133,12 @@ const std::string& ImageEffectNode::getDefaultOutputFielding() const
 }
 
 // vmessage
-OfxStatus ImageEffectNode::vmessage( const char* type,
+void ImageEffectNode::vmessage( const char* type,
                                      const char* id,
                                      const char* format,
-                                     va_list     args ) const
+                                     va_list     args ) const OFX_EXCEPTION_SPEC
 {
 	vprintf( format, args );
-	return kOfxStatOK;
 }
 
 // get the project size in CANONICAL pixels, so PAL SD return 768, 576
@@ -216,7 +215,7 @@ const std::string ImageEffectNode::getProjectBitDepth() const
 }
 
 // make a parameter instance
-tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor )
+tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
 	std::string name = descriptor.getName();
 
@@ -241,9 +240,9 @@ tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host
 	else if( descriptor.getParamType() == kOfxParamTypePushButton )
 		return new ParamPushButton( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypeGroup )
-		return new tuttle::host::ofx::attribute::OfxhParamGroup( descriptor, *this );
+		return new ParamGroup( *this, name, descriptor );
 	else if( descriptor.getParamType() == kOfxParamTypePage )
-		return new tuttle::host::ofx::attribute::OfxhParamPage( descriptor, *this );
+		return new ParamPage( *this, name, descriptor );
 	else
 		throw exception::LogicError( "Can't create param instance from param descriptor." );
 
@@ -251,16 +250,14 @@ tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host
 
 }
 
-OfxStatus ImageEffectNode::editBegin( const std::string& name )
+void ImageEffectNode::editBegin( const std::string& name ) OFX_EXCEPTION_SPEC
 {
-	return kOfxStatOK; // OFX_TODO
-	return kOfxStatErrMissingHostFeature;
+	//throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-OfxStatus ImageEffectNode::editEnd()
+void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 {
-	return kOfxStatOK; // OFX_TODO
-	return kOfxStatErrMissingHostFeature;
+	//throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
 }
 
 /// Start doing progress.
@@ -297,15 +294,15 @@ void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 }
 
 /// override to get frame range of the effect
-OfxStatus ImageEffectNode::beginRenderAction( OfxTime   startFrame,
-                                              OfxTime   endFrame,
-                                              OfxTime   step,
-                                              bool      interactive,
-                                              OfxPointD renderScale )
+void ImageEffectNode::beginRenderAction( OfxTime   startFrame,
+										  OfxTime   endFrame,
+										  OfxTime   step,
+										  bool      interactive,
+										  OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
 	_frameRange.x = startFrame;
 	_frameRange.y = endFrame;
-	return OfxhImageEffectNode::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
+	OfxhImageEffectNode::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
 
 }

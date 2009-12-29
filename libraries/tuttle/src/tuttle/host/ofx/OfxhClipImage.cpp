@@ -245,7 +245,7 @@ bool OfxhClipImageSet::operator==( const OfxhClipImageSet& other ) const
 	return _clipsByOrder == other._clipsByOrder;
 }
 
-void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( std::logic_error )
+void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
 	const imageEffect::OfxhImageEffectNodeDescriptor::ClipImageDescriptorVector& clips = descriptor.getClipsByOrder();
 
@@ -259,7 +259,7 @@ void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDesc
 		// foreach clip descriptor make a ClipImageInstance
 		OfxhClipImage* instance = newClipImage( *it ); //( this, *it, counter );
 		if( !instance )
-			throw std::logic_error( "Error on ClipImage creation." );
+			throw OfxhException( "Error on ClipImage creation." );
 
 		_clipsByOrder.push_back( instance );
 		_clips[name] = instance;

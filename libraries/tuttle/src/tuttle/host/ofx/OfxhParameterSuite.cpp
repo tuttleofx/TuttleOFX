@@ -11,24 +11,28 @@ static OfxStatus paramDefine( OfxParamSetHandle     paramSet,
                               const char*           name,
                               OfxPropertySetHandle* propertySet )
 {
-	OfxhParamDescriptorSet* paramSetDescriptor = reinterpret_cast<OfxhParamDescriptorSet*>( paramSet );
-
-	if( !paramSetDescriptor )
+	try
 	{
-		return kOfxStatErrBadHandle;
-	}
+		OfxhParamDescriptorSet* paramSetDescriptor = reinterpret_cast<OfxhParamDescriptorSet*>( paramSet );
+		if( !paramSetDescriptor )
+			return kOfxStatErrBadHandle;
 
-	OfxhParamDescriptor* desc = paramSetDescriptor->paramDefine( paramType, name );
+		OfxhParamDescriptor* desc = paramSetDescriptor->paramDefine( paramType, name );
+		if( !desc )
+			return kOfxStatErrUnsupported;
 
-	if( desc )
-	{
 		*propertySet = desc->getPropHandle();
+
 		return kOfxStatOK;
 	}
-	else
-		return kOfxStatErrUnsupported;
-
-	return kOfxStatOK;
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
@@ -36,86 +40,109 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
                                  OfxParamHandle*       param,
                                  OfxPropertySetHandle* propertySet )
 {
-
-	OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
-
-	if( !baseSet )
+	try
 	{
+		OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
+		if( !baseSet )
+			return kOfxStatErrBadHandle;
+
+		OfxhParamSet* setInstance = dynamic_cast<OfxhParamSet*>( baseSet );
+		if( setInstance )
+		{
+			const std::map<std::string, OfxhParam*>& params      = setInstance->getParams();
+			std::map<std::string, OfxhParam*>::const_iterator it = params.find( name );
+
+			// if we can't find it return an error...
+			if( it == params.end() )
+				return kOfxStatErrUnknown;
+
+			// get the param
+			*param = ( it->second )->getParamHandle();
+
+			// get the param property set
+			if( propertySet )
+				*propertySet = ( it->second )->getPropHandle();
+
+			return kOfxStatOK;
+		}
+
+		OfxhParamDescriptorSet* setDescriptor = dynamic_cast<OfxhParamDescriptorSet*>( baseSet );
+		if( !setDescriptor )
+		{
+			const std::map<std::string, OfxhParamDescriptor*>& params      = setDescriptor->getParams();
+			std::map<std::string, OfxhParamDescriptor*>::const_iterator it = params.find( name );
+
+			// if we can't find it return an error...
+			if( it == params.end() )
+				return kOfxStatErrUnknown;
+
+			// get the param
+			*param = ( it->second )->getParamHandle();
+
+			// get the param property set
+			if( propertySet )
+				*propertySet = ( it->second )->getPropHandle();
+
+			return kOfxStatOK;
+		}
+
 		return kOfxStatErrBadHandle;
 	}
-
-	OfxhParamSet* setInstance = dynamic_cast<OfxhParamSet*>( baseSet );
-
-	if( setInstance )
+	catch( OfxhException& e )
 	{
-		const std::map<std::string, OfxhParam*>& params      = setInstance->getParams();
-		std::map<std::string, OfxhParam*>::const_iterator it = params.find( name );
-
-		// if we can't find it return an error...
-		if( it == params.end() )
-			return kOfxStatErrUnknown;
-
-		// get the param
-		*param = ( it->second )->getParamHandle();
-
-		// get the param property set
-		if( propertySet )
-			*propertySet = ( it->second )->getPropHandle();
-
-		return kOfxStatOK;
+		return e.getStatus();
 	}
-
-	OfxhParamDescriptorSet* setDescriptor = dynamic_cast<OfxhParamDescriptorSet*>( baseSet );
-
-	if( setDescriptor )
+	catch( ... )
 	{
-		const std::map<std::string, OfxhParamDescriptor*>& params      = setDescriptor->getParams();
-		std::map<std::string, OfxhParamDescriptor*>::const_iterator it = params.find( name );
-
-		// if we can't find it return an error...
-		if( it == params.end() )
-			return kOfxStatErrUnknown;
-
-		// get the param
-		*param = ( it->second )->getParamHandle();
-
-		// get the param property set
-		if( propertySet )
-			*propertySet = ( it->second )->getPropHandle();
-
-		return kOfxStatOK;
+		return kOfxStatErrUnknown;
 	}
-
-	return kOfxStatErrBadHandle;
 }
 
 static OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
                                          OfxPropertySetHandle* propHandle )
 {
-	OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
-
-	if( baseSet )
+	try
 	{
+		OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
+		if( !baseSet )
+			return kOfxStatErrBadHandle;
+
 		*propHandle = baseSet->getParamSetProps().getHandle();
+
 		return kOfxStatOK;
 	}
-	return kOfxStatErrBadHandle;
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramGetPropertySet( OfxParamHandle        param,
                                       OfxPropertySetHandle* propHandle )
 {
-	attribute::OfxhParam* paramInstance = reinterpret_cast<attribute::OfxhParam*>( param );
-
-	if( paramInstance && paramInstance->verifyMagic() )
+	try
 	{
+		attribute::OfxhParam* paramInstance = reinterpret_cast<attribute::OfxhParam*>( param );
+		if( !paramInstance || !paramInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
+
 		// get the param property set
 		*propHandle = paramInstance->getPropHandle();
 
 		return kOfxStatOK;
 	}
-	else
-		return kOfxStatErrBadHandle;
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**
@@ -123,27 +150,41 @@ static OfxStatus paramGetPropertySet( OfxParamHandle        param,
  */
 static OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 {
-	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
-
-	if( !paramInstance || !paramInstance->verifyMagic() )
-		return kOfxStatErrBadHandle;
-
-	va_list ap;
-	va_start( ap, paramHandle );
-	OfxStatus stat = kOfxStatErrUnsupported;
-
 	try
 	{
-		stat = paramInstance->getV( ap );
+		OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
+		if( !paramInstance || !paramInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
+
+		va_list ap;
+		va_start( ap, paramHandle );
+		OfxStatus stat = kOfxStatOK;
+
+		try
+		{
+			paramInstance->getV( ap );
+		}
+		catch( OfxhException& e )
+		{
+			stat = e.getStatus();
+		}
+		catch( ... )
+		{
+			stat = kOfxStatErrUnknown;
+		}
+
+		va_end( ap );
+
+		return stat;
 	}
-	catch(... )
+	catch( OfxhException& e )
 	{
-		COUT( "Exception in paramGetValue." );
+		return e.getStatus();
 	}
-
-	va_end( ap );
-
-	return stat;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**
@@ -153,25 +194,41 @@ static OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time,
                                       ... )
 {
-	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
-
-	if( !paramInstance || !paramInstance->verifyMagic() )
-		return kOfxStatErrBadHandle;
-
-	va_list ap;
-	va_start( ap, time );
-	OfxStatus stat = kOfxStatErrUnsupported;
-
 	try
 	{
-		stat = paramInstance->getV( time, ap );
+		OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
+		if( !paramInstance || !paramInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
+
+		va_list ap;
+		va_start( ap, time );
+		OfxStatus stat = kOfxStatOK;
+
+		try
+		{
+			paramInstance->getV( time, ap );
+		}
+		catch( OfxhException& e )
+		{
+			stat = e.getStatus();
+		}
+		catch( ... )
+		{
+			stat = kOfxStatErrUnknown;
+		}
+
+		va_end( ap );
+
+		return stat;
 	}
-	catch(... )
-	{}
-
-	va_end( ap );
-
-	return stat;
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**
@@ -181,50 +238,82 @@ static OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
                                      OfxTime        time,
                                      ... )
 {
-	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
-
-	if( !paramInstance || !paramInstance->verifyMagic() )
-		return kOfxStatErrBadHandle;
-
-	va_list ap;
-	va_start( ap, time );
-	OfxStatus stat = kOfxStatErrUnsupported;
-
 	try
 	{
-		stat = paramInstance->deriveV( time, ap );
+		OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
+		if( !paramInstance || !paramInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
+
+		va_list ap;
+		va_start( ap, time );
+		OfxStatus stat = kOfxStatOK;
+
+		try
+		{
+			paramInstance->deriveV( time, ap );
+		}
+		catch( OfxhException& e )
+		{
+			stat = e.getStatus();
+		}
+		catch( ... )
+		{
+			stat = kOfxStatErrUnknown;
+		}
+
+		va_end( ap );
+
+		return stat;
 	}
-	catch(... )
-	{}
-
-	va_end( ap );
-
-	return stat;
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
                                    OfxTime time1, OfxTime time2,
                                    ... )
 {
-	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
-
-	if( !paramInstance || !paramInstance->verifyMagic() )
-		return kOfxStatErrBadHandle;
-
-	va_list ap;
-	va_start( ap, time2 );
-	OfxStatus stat = kOfxStatErrUnsupported;
-
 	try
 	{
-		stat = paramInstance->integrateV( time1, time2, ap );
+		OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
+		if( !paramInstance || !paramInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
+
+		va_list ap;
+		va_start( ap, time2 );
+		OfxStatus stat = kOfxStatOK;
+
+		try
+		{
+			paramInstance->integrateV( time1, time2, ap );
+		}
+		catch( OfxhException& e )
+		{
+			stat = e.getStatus();
+		}
+		catch( ... )
+		{
+			stat = kOfxStatErrUnknown;
+		}
+
+		va_end( ap );
+
+		return stat;
 	}
-	catch(... )
-	{}
-
-	va_end( ap );
-
-	return stat;
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**
@@ -233,32 +322,49 @@ static OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
 static OfxStatus paramSetValue( OfxParamHandle paramHandle,
                                 ... )
 {
-	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
-
-	if( !paramInstance || !paramInstance->verifyMagic() )
-		return kOfxStatErrBadHandle;
-	va_list ap;
-	va_start( ap, paramHandle );
-	OfxStatus stat = kOfxStatErrUnsupported;
-
 	try
 	{
-		stat = paramInstance->setV( ap );
+		OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
+		if( !paramInstance || !paramInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
+
+		va_list ap;
+		va_start( ap, paramHandle );
+		OfxStatus stat = kOfxStatOK;
+
+		try
+		{
+			paramInstance->setV( ap );
+		}
+		catch( OfxhException& e )
+		{
+			stat = e.getStatus();
+		}
+		catch( ... )
+		{
+			stat = kOfxStatErrUnknown;
+		}
+
+		va_end( ap );
+
+		if( stat == kOfxStatOK )
+		{
+			if( paramInstance->getParamSetInstance() )
+				paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
+			else
+				stat = kOfxStatErrUnsupported;
+		}
+
+		return stat;
 	}
-	catch(... )
-	{}
-
-	va_end( ap );
-
-	if( stat == kOfxStatOK )
+	catch( OfxhException& e )
 	{
-		if( paramInstance->getParamSetInstance() )
-			paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
-		else
-			stat = kOfxStatErrUnsupported;
+		return e.getStatus();
 	}
-
-	return stat;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**
@@ -268,63 +374,104 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time, // time in frames
                                       ... )
 {
-	OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
-
-	if( !paramInstance || !paramInstance->verifyMagic() )
-		return kOfxStatErrBadHandle;
-
-	va_list ap;
-	va_start( ap, time );
-	OfxStatus stat = kOfxStatErrUnsupported;
-
 	try
 	{
-		stat = paramInstance->setV( time, ap );
+		OfxhParam* paramInstance = reinterpret_cast<OfxhParam*>( paramHandle );
+		if( !paramInstance || !paramInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
+
+		va_list ap;
+		va_start( ap, time );
+		OfxStatus stat = kOfxStatOK;
+
+		try
+		{
+			paramInstance->setV( time, ap );
+		}
+		catch( OfxhException& e )
+		{
+			stat = e.getStatus();
+		}
+		catch( ... )
+		{
+			stat = kOfxStatErrUnknown;
+		}
+
+		va_end( ap );
+
+		if( stat == kOfxStatOK )
+		{
+			if( paramInstance->getParamSetInstance() )
+				paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
+			else
+				stat = kOfxStatErrUnsupported;
+		}
+
+		return stat;
 	}
-	catch(... )
-	{}
-
-	va_end( ap );
-
-	if( stat == kOfxStatOK )
+	catch( OfxhException& e )
 	{
-		paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
+		return e.getStatus();
 	}
-
-	return stat;
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
                                   unsigned int*  numberOfKeys )
 {
-	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
-
-	if( !pInstance || !pInstance->verifyMagic() )
+	try
 	{
-		return kOfxStatErrBadHandle;
-	}
+		attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
+		if( !pInstance || !pInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
-	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
-	if( !paramInstance )
-		return kOfxStatErrBadHandle;
-	return paramInstance->getNumKeys( *numberOfKeys );
+		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
+		if( !paramInstance )
+			return kOfxStatErrBadHandle;
+		
+		paramInstance->getNumKeys( *numberOfKeys );
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
                                   unsigned int   nthKey,
                                   OfxTime*       time )
 {
-	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
-
-	if( !pInstance || !pInstance->verifyMagic() )
+	try
 	{
-		return kOfxStatErrBadHandle;
-	}
+		attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
+		if( !pInstance || !pInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
-	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
-	if( !paramInstance )
-		return kOfxStatErrBadHandle;
-	return paramInstance->getKeyTime( nthKey, *time );
+		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
+		if( !paramInstance )
+			return kOfxStatErrBadHandle;
+
+		paramInstance->getKeyTime( nthKey, *time );
+		
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
@@ -332,84 +479,153 @@ static OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
                                    int            direction,
                                    int*           index )
 {
-	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
-
-	if( !pInstance || !pInstance->verifyMagic() )
+	try
 	{
-		return kOfxStatErrBadHandle;
-	}
+		attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
+		if( !pInstance || !pInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
-	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
-	if( !paramInstance )
-		return kOfxStatErrBadHandle;
-	return paramInstance->getKeyIndex( time, direction, *index );
+		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
+		if( !paramInstance )
+			return kOfxStatErrBadHandle;
+		
+		paramInstance->getKeyIndex( time, direction, *index );
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
                                  OfxTime        time )
 {
-	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
-
-	if( !pInstance || !pInstance->verifyMagic() )
+	try
 	{
-		return kOfxStatErrBadHandle;
-	}
+		attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
+		if( !pInstance || !pInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
-	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
-	if( !paramInstance )
-		return kOfxStatErrBadHandle;
-	return paramInstance->deleteKey( time );
+		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
+		if( !paramInstance )
+			return kOfxStatErrBadHandle;
+
+		paramInstance->deleteKey( time );
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 {
-	attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
-
-	if( !pInstance || !pInstance->verifyMagic() )
+	try
 	{
-		return kOfxStatErrBadHandle;
-	}
+		attribute::OfxhParam* pInstance = reinterpret_cast<attribute::OfxhParam*>( paramHandle );
+		if( !pInstance || !pInstance->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
-	OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
-	if( !paramInstance )
-		return kOfxStatErrBadHandle;
-	return paramInstance->deleteAllKeys();
+		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
+		if( !paramInstance )
+			return kOfxStatErrBadHandle;
+		
+		paramInstance->deleteAllKeys();
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramCopy( OfxParamHandle paramTo,
                             OfxParamHandle paramFrom,
                             OfxTime dstOffset, OfxRangeD* frameRange )
 {
-	OfxhParam* paramInstanceTo   = reinterpret_cast<OfxhParam*>( paramTo );
-	OfxhParam* paramInstanceFrom = reinterpret_cast<OfxhParam*>( paramFrom );
+	try
+	{
+		OfxhParam* paramInstanceTo   = reinterpret_cast<OfxhParam*>( paramTo );
+		if( !paramInstanceTo || !paramInstanceTo->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
-	if( !paramInstanceTo || !paramInstanceTo->verifyMagic() )
-		return kOfxStatErrBadHandle;
-	if( !paramInstanceFrom || !paramInstanceFrom->verifyMagic() )
-		return kOfxStatErrBadHandle;
+		OfxhParam* paramInstanceFrom = reinterpret_cast<OfxhParam*>( paramFrom );
+		if( !paramInstanceFrom || !paramInstanceFrom->verifyMagic() )
+			return kOfxStatErrBadHandle;
 
-	if( !frameRange )
-		return paramInstanceTo->copy( *paramInstanceFrom, dstOffset );
-	else
-		return paramInstanceTo->copy( *paramInstanceFrom, dstOffset, *frameRange );
+		if( !frameRange )
+			paramInstanceTo->copy( *paramInstanceFrom, dstOffset );
+		else
+			paramInstanceTo->copy( *paramInstanceFrom, dstOffset, *frameRange );
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char* name )
 {
-	OfxhParamSet* setInstance = reinterpret_cast<OfxhParamSet*>( paramSet );
+	try
+	{
+		OfxhParamSet* setInstance = reinterpret_cast<OfxhParamSet*>( paramSet );
+		if( !setInstance )
+			return kOfxStatErrBadHandle;
 
-	if( !setInstance )
-		return kOfxStatErrBadHandle;
-	return setInstance->editBegin( std::string( name ) );
+		setInstance->editBegin( std::string( name ) );
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
 {
-	OfxhParamSet* setInstance = reinterpret_cast<OfxhParamSet*>( paramSet );
+	try
+	{
+		OfxhParamSet* setInstance = reinterpret_cast<OfxhParamSet*>( paramSet );
+		if( !setInstance )
+			return kOfxStatErrBadHandle;
+		
+		setInstance->editEnd();
 
-	if( !setInstance )
-		return kOfxStatErrBadHandle;
-	return setInstance->editEnd();
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxParameterSuiteV1 gParamSuiteV1 = {

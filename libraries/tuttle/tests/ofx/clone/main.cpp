@@ -29,13 +29,13 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 	ofxinst->setName( "pluginTest" );
 	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
 
-	boost::scoped_ptr<tuttle::host::core::ImageEffectNode> ofxinstclone( ofxinst->clone() ); //problem here...
+	boost::scoped_ptr<tuttle::host::core::ImageEffectNode> ofxinstclone( ofxinst->clone() );
 
 	BOOST_CHECK_NE( ofxinst.get(), ofxinstclone.get() );
-//	BOOST_CHECK( (*ofxinst == *ofxinstclone) );
+	BOOST_CHECK( (*ofxinst == *ofxinstclone) );
 	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
 	BOOST_CHECK( ofxinstclone->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
-//	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != ofxinstclone->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() );
+	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != ofxinstclone->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

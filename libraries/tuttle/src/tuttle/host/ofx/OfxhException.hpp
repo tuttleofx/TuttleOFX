@@ -1,7 +1,8 @@
 #ifndef _OFXH_EXCEPTION_HPP_
 #define _OFXH_EXCEPTION_HPP_
 
-#include <ofxCore.h>
+#include "OfxhCore.hpp"
+#include "OfxhUtilities.hpp"
 
 #include <stdexcept>
 
@@ -14,7 +15,7 @@ namespace ofx {
  */
 class OfxhException : public std::logic_error
 {
-OfxStatus _stat;
+	OfxStatus _stat;
 
 public:
 	explicit OfxhException( const std::string& what ) : std::logic_error( what )
@@ -47,7 +48,7 @@ public:
 };
 
 #ifndef WINDOWS
- #define OFX_EXCEPTION_SPEC throw (tuttle::host::ofx::OfxhException)
+ #define OFX_EXCEPTION_SPEC throw(tuttle::host::ofx::OfxhException)
 #else
  #define OFX_EXCEPTION_SPEC
 #endif

@@ -261,13 +261,15 @@ public:
 
 	virtual ~OfxhImageEffectNode();
 
+	void initHook();
+	
 	/**
 	 *  called after construction to populate the various members
 	 *  ideally should be called in the ctor, but it relies on
 	 *  virtuals so has to be delayed until after the effect is
 	 *  constructed
 	 */
-	OfxStatus populate();
+	void populate();
 	void      populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( core::exception::LogicError );
 
 	void copyAttributesValues( const OfxhImageEffectNode& other )
@@ -335,10 +337,10 @@ public:
 	/// make a clip
 	//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;
 
-	virtual OfxStatus vmessage( const char* type,
+	virtual void vmessage( const char* type,
 	                            const char* id,
 	                            const char* format,
-	                            va_list     args ) const = 0;
+	                            va_list     args ) const OFX_EXCEPTION_SPEC = 0;
 
 	/// call the effect entry point
 	virtual OfxStatus mainEntry( const char*        action,
@@ -436,7 +438,7 @@ public:
 	/// create an instance. This needs to be called _after_ construction and
 	/// _after_ the host populates it's params and clips with the 'correct'
 	/// values (either persisted ones or the defaults)
-	virtual OfxStatus createInstanceAction();
+	virtual void createInstanceAction() OFX_EXCEPTION_SPEC;
 
 	// begin/change/end instance changed
 	//
@@ -450,47 +452,47 @@ public:
 	// kOfxChangeTime         - the time has changed and this has affected the value
 	//                          of the object because it varies over time
 	//
-	virtual OfxStatus beginInstanceChangedAction( const std::string& why );
+	virtual void beginInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC;
 
-	virtual OfxStatus paramInstanceChangedAction( const std::string& paramName,
+	virtual void paramInstanceChangedAction( const std::string& paramName,
 	                                              const std::string& why,
 	                                              OfxTime            time,
-	                                              OfxPointD          renderScale );
+	                                              OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
-	virtual OfxStatus clipInstanceChangedAction( const std::string& clipName,
+	virtual void clipInstanceChangedAction( const std::string& clipName,
 	                                             const std::string& why,
 	                                             OfxTime            time,
-	                                             OfxPointD          renderScale );
+	                                             OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
-	virtual OfxStatus endInstanceChangedAction( const std::string& why );
+	virtual void endInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC;
 
 	// purge your caches
-	virtual OfxStatus purgeCachesAction();
+	virtual void purgeCachesAction() OFX_EXCEPTION_SPEC;
 
 	// sync your private data
-	virtual OfxStatus syncPrivateDataAction();
+	virtual void syncPrivateDataAction() OFX_EXCEPTION_SPEC;
 
 	// begin/end edit instance
-	virtual OfxStatus beginInstanceEditAction();
-	virtual OfxStatus endInstanceEditAction();
+	virtual void beginInstanceEditAction() OFX_EXCEPTION_SPEC;
+	virtual void endInstanceEditAction() OFX_EXCEPTION_SPEC;
 
 	// render action
-	virtual OfxStatus beginRenderAction( OfxTime   startFrame,
+	virtual void beginRenderAction( OfxTime   startFrame,
 	                                     OfxTime   endFrame,
 	                                     OfxTime   step,
 	                                     bool      interactive,
-	                                     OfxPointD renderScale );
+	                                     OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
-	virtual OfxStatus renderAction( OfxTime            time,
+	virtual void renderAction( OfxTime            time,
 	                                const std::string& field,
 	                                const OfxRectI&    renderRoI,
-	                                OfxPointD          renderScale );
+	                                OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
-	virtual OfxStatus endRenderAction( OfxTime   startFrame,
+	virtual void endRenderAction( OfxTime   startFrame,
 	                                   OfxTime   endFrame,
 	                                   OfxTime   step,
 	                                   bool      interactive,
-	                                   OfxPointD renderScale );
+	                                   OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 	/**
 	 *  Call the region of definition action the plugin at the given time
@@ -498,9 +500,9 @@ public:
 	 *  Note that if the plugin does not trap the action the default
 	 *  RoD is calculated and returned.
 	 */
-	virtual OfxStatus getRegionOfDefinitionAction( OfxTime   time,
+	virtual void getRegionOfDefinitionAction( OfxTime   time,
 	                                               OfxPointD renderScale,
-	                                               OfxRectD& rod );
+	                                               OfxRectD& rod ) OFX_EXCEPTION_SPEC;
 
 	/**
 	 *  call the get region of interest action on the plugin for the
@@ -510,24 +512,24 @@ public:
 	 *  default replies and set up the correct rois in these cases
 	 *  as well
 	 */
-	virtual OfxStatus getRegionOfInterestAction( OfxTime time,
+	virtual void getRegionOfInterestAction( OfxTime time,
 	                                             OfxPointD renderScale,
 	                                             const OfxRectD& roi,
-	                                             std::map<attribute::OfxhClipImage*, OfxRectD>& rois );
+	                                             std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) OFX_EXCEPTION_SPEC;
 
 	// get frames needed to render the given frame
-	virtual OfxStatus getFrameNeededAction( OfxTime   time,
-	                                        RangeMap& rangeMap );
+	virtual void getFrameNeededAction( OfxTime   time,
+	                                        RangeMap& rangeMap ) OFX_EXCEPTION_SPEC;
 
 	// is identity
-	virtual OfxStatus isIdentityAction( OfxTime&           time,
+	virtual void isIdentityAction( OfxTime&           time,
 	                                    const std::string& field,
 	                                    const OfxRectI&    renderRoI,
 	                                    OfxPointD          renderScale,
-	                                    std::string&       clip );
+	                                    std::string&       clip ) OFX_EXCEPTION_SPEC;
 
 	// time domain
-	virtual OfxStatus getTimeDomainAction( OfxRangeD& range );
+	virtual void getTimeDomainAction( OfxRangeD& range ) OFX_EXCEPTION_SPEC;
 
 	/**
 	 * Get the interact description, this will also call describe on the interact
@@ -578,7 +580,7 @@ public:
 	 * The host still needs to call this explicitly just after the effect is wired
 	 * up.
 	 */
-	virtual bool getClipPreferences();
+	virtual void getClipPreferences() OFX_EXCEPTION_SPEC;
 
 	/**
 	 *  calls getClipPreferences only if the prefs are dirty
