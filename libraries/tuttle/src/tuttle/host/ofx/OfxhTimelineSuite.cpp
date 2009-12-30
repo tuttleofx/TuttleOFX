@@ -1,5 +1,6 @@
 #include "OfxhTimelineSuite.hpp"
 #include "OfxhTimeline.hpp"
+#include "OfxhException.hpp"
 
 namespace tuttle {
 namespace host {
@@ -10,10 +11,24 @@ namespace ofx {
  */
 static OfxStatus TimelineGetTime( void* effectInstance, double* time )
 {
-	OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+	try
+	{
+		OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+		if( !me )
+			return kOfxStatErrBadHandle;
 
-	*time = me->timelineGetTime();
-	return kOfxStatOK;
+		*time = me->timelineGetTime();
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**
@@ -21,10 +36,24 @@ static OfxStatus TimelineGetTime( void* effectInstance, double* time )
  */
 static OfxStatus TimelineGotoTime( void* effectInstance, double time )
 {
-	OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+	try
+	{
+		OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+		if( !me )
+			return kOfxStatErrBadHandle;
 
-	me->timelineGotoTime( time );
-	return kOfxStatOK;
+		me->timelineGotoTime( time );
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**
@@ -32,10 +61,24 @@ static OfxStatus TimelineGotoTime( void* effectInstance, double time )
  */
 static OfxStatus TimelineGetBounds( void* effectInstance, double* firstTime, double* lastTime )
 {
-	OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+	try
+	{
+		OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+		if( !me )
+			return kOfxStatErrBadHandle;
 
-	me->timelineGetBounds( *firstTime, *lastTime );
-	return kOfxStatOK;
+		me->timelineGetBounds( *firstTime, *lastTime );
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /**

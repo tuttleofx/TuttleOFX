@@ -154,10 +154,10 @@ public:
 	virtual void getBackgroundColour( double& r, double& g, double& b ) const = 0;
 
 	/// implement
-	virtual OfxStatus swapBuffers() = 0;
+	virtual void swapBuffers() OFX_EXCEPTION_SPEC = 0;
 
 	/// implement this
-	virtual OfxStatus redraw() = 0;
+	virtual void redraw() OFX_EXCEPTION_SPEC = 0;
 
 	/// returns the params the interact uses
 	virtual void getSlaveToParam( std::vector<std::string>& params ) const;
@@ -175,7 +175,7 @@ public:
 	virtual void getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC;
 
 	/// call create instance
-	virtual OfxStatus createInstanceAction();
+	virtual void createInstanceAction() OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionDraw
 	//
@@ -183,7 +183,7 @@ public:
 	//
 	//    time              - the effect time at which changed occured
 	//    renderScale       - the render scale
-	virtual OfxStatus drawAction( OfxTime time, const OfxPointD& renderScale );
+	virtual void drawAction( OfxTime time, const OfxPointD& renderScale )  OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionPenMotion
 	//
@@ -194,11 +194,11 @@ public:
 	//    penX              - the X position
 	//    penY              - the Y position
 	//    pressure          - the pen pressue 0 to 1
-	virtual OfxStatus penMotionAction( OfxTime          time,
+	virtual void penMotionAction( OfxTime          time,
 	                                   const OfxPointD& renderScale,
 	                                   const OfxPointD& penPos,
 	                                   const OfxPointI& penPosViewport,
-	                                   double           pressure );
+	                                   double           pressure ) OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionPenUp
 	//
@@ -209,11 +209,11 @@ public:
 	//    penX              - the X position
 	//    penY              - the Y position
 	//    pressure          - the pen pressue 0 to 1
-	virtual OfxStatus penUpAction( OfxTime          time,
+	virtual void penUpAction( OfxTime          time,
 	                               const OfxPointD& renderScale,
 	                               const OfxPointD& penPos,
 	                               const OfxPointI& penPosViewport,
-	                               double           pressure );
+	                               double           pressure ) OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionPenDown
 	//
@@ -224,11 +224,11 @@ public:
 	//    penX              - the X position
 	//    penY              - the Y position
 	//    pressure          - the pen pressue 0 to 1
-	virtual OfxStatus penDownAction( OfxTime          time,
+	virtual void penDownAction( OfxTime          time,
 	                                 const OfxPointD& renderScale,
 	                                 const OfxPointD& penPos,
 	                                 const OfxPointI& penPosViewport,
-	                                 double           pressure );
+	                                 double           pressure ) OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionkeyDown
 	//
@@ -238,10 +238,10 @@ public:
 	//    renderScale       - the render scale
 	//    key               - the pressed key
 	//    keyString         - the pressed key string
-	virtual OfxStatus keyDownAction( OfxTime          time,
+	virtual void keyDownAction( OfxTime          time,
 	                                 const OfxPointD& renderScale,
 	                                 int              key,
-	                                 char*            keyString );
+	                                 char*            keyString ) OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionkeyUp
 	//
@@ -251,10 +251,10 @@ public:
 	//    renderScale       - the render scale
 	//    key               - the pressed key
 	//    keyString         - the pressed key string
-	virtual OfxStatus keyUpAction( OfxTime          time,
+	virtual void keyUpAction( OfxTime          time,
 	                               const OfxPointD& renderScale,
 	                               int              key,
-	                               char*            keyString );
+	                               char*            keyString ) OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionkeyRepeat
 	//
@@ -264,10 +264,10 @@ public:
 	//    renderScale       - the render scale
 	//    key               - the pressed key
 	//    keyString         - the pressed key string
-	virtual OfxStatus keyRepeatAction( OfxTime          time,
+	virtual void keyRepeatAction( OfxTime          time,
 	                                   const OfxPointD& renderScale,
 	                                   int              key,
-	                                   char*            keyString );
+	                                   char*            keyString ) OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionLoseFocus
 	//
@@ -275,8 +275,8 @@ public:
 	//
 	//    time              - the effect time at which changed occured
 	//    renderScale       - the render scale
-	virtual OfxStatus gainFocusAction( OfxTime          time,
-	                                   const OfxPointD& renderScale );
+	virtual void gainFocusAction( OfxTime          time,
+	                                   const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC;
 
 	// interact action - kOfxInteractActionLoseFocus
 	//
@@ -284,8 +284,8 @@ public:
 	//
 	//    time              - the effect time at which changed occured
 	//    renderScale       - the render scale
-	virtual OfxStatus loseFocusAction( OfxTime          time,
-	                                   const OfxPointD& renderScale );
+	virtual void loseFocusAction( OfxTime          time,
+	                                   const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC;
 };
 
 }

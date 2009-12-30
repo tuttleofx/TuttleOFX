@@ -8,34 +8,68 @@ namespace interact {
 
 static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 {
-	interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
+	try
+	{
+		interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
+		if( !interactInstance )
+			return kOfxStatErrBadHandle;
 
-	if( interactInstance )
-		return interactInstance->swapBuffers();
-	else
-		return kOfxStatErrBadHandle;
+		interactInstance->swapBuffers();
+
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus interactRedraw( OfxInteractHandle handle )
 {
-	interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
+	try
+	{
+		interact::OfxhInteract* interactInstance = reinterpret_cast<interact::OfxhInteract*>( handle );
+		if( !interactInstance )
+			return kOfxStatErrBadHandle;
 
-	if( interactInstance )
-		return interactInstance->redraw();
-	else
-		return kOfxStatErrBadHandle;
+		interactInstance->redraw();
+		
+		return kOfxStatOK;
+	}
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 static OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle* property )
 {
-	interact::OfxhInteractBase* interact = reinterpret_cast<interact::OfxhInteractBase*>( handle );
-
-	if( interact )
+	try
 	{
+		interact::OfxhInteractBase* interact = reinterpret_cast<interact::OfxhInteractBase*>( handle );
+		if( !interact )
+			return kOfxStatErrBadHandle;
+
 		*property = interact->getPropHandle();
+
 		return kOfxStatOK;
 	}
-	return kOfxStatErrBadHandle;
+	catch( OfxhException& e )
+	{
+		return e.getStatus();
+	}
+	catch( ... )
+	{
+		return kOfxStatErrUnknown;
+	}
 }
 
 /// the interact suite
