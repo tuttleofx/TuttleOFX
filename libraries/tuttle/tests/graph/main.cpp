@@ -1,16 +1,4 @@
-// custom host
-#include <tuttle/common/utils/global.hpp>
-#include <tuttle/common/math/rectOp.hpp>
-
-#include <tuttle/host/core/HostDescriptor.hpp>
-#include <tuttle/host/core/ImageEffectNode.hpp>
-#include <tuttle/host/core/ClipImage.hpp>
-#include <tuttle/host/core/Param.hpp>
-#include <tuttle/host/core/HostDescriptor.hpp>
-#include <tuttle/host/core/Core.hpp>
-#include <tuttle/host/core/ImageEffectNode.hpp>
 #include <tuttle/host/core/Graph.hpp>
-#include <tuttle/host/core/ProcessGraph.hpp>
 
 #include <iostream>
 
