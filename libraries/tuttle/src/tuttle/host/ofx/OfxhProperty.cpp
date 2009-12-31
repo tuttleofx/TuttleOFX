@@ -508,18 +508,18 @@ void OfxhSet::addNotifyHook( const std::string& s, OfxhNotifyHook* hook )
 	fetchLocalProperty( s ).addNotifyHook( hook );
 }
 
-OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( core::exception::LogicError, std::bad_cast )
+OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( OfxhException, std::bad_cast )
 {
 	PropertyMap::iterator i = _props.find( name );
 
 	if( i == _props.end() )
 	{
-		throw core::exception::LogicError( "fetchLocalProperty: " + name + ". Property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
+		throw OfxhException( kOfxStatErrValue, "fetchLocalProperty: " + name + ". Property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
 	}
 	return *( i->second );
 }
 
-const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const throw( core::exception::LogicError, std::bad_cast )
+const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const throw( OfxhException, std::bad_cast )
 {
 	PropertyMap::const_iterator i = _props.find( name );
 
@@ -529,7 +529,7 @@ const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const thro
 		{
 			return _chainedSet->fetchProperty( name );
 		}
-		throw core::exception::LogicError( "fetchProperty: " + name + " property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
+		throw OfxhException( kOfxStatErrValue, "fetchProperty: " + name + " property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
 	}
 	return *( i->second );
 }
@@ -541,7 +541,7 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 {
 	if( _props.find( spec.name ) != _props.end() )
 	{
-		throw core::exception::LogicError( "Tried to add a duplicate property to a Property::Set (" ) << spec.name << ")";
+		throw OfxhException( kOfxStatErrExists, std::string( "Tried to add a duplicate property to a Property::Set (" ) + spec.name + ")" );
 	}
 
 	switch( spec.type )
@@ -558,9 +558,8 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 		case ePointer:
 			_props.insert( spec.name, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
 			break;
-		default:
-			throw core::exception::LogicError( "Tried to create a property of an unrecognized type (" ) << spec.name << ", " << spec.type << ")";
-			break;
+		case eNone:
+			throw OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString(spec.type) + ")" );
 	}
 }
 

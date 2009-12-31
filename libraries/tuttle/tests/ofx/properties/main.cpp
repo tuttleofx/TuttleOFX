@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( properties_get_and_set )
 	for( unsigned int i = 0; i < 2; ++i )
 		BOOST_CHECK_EQUAL( testSet.getDoubleProperty( testDouble_2_ro, i ), tab2Double[i] );
 
-	BOOST_CHECK_THROW( testSet.getStringProperty( "unexisting_properties" ), core::exception::LogicError );
+	BOOST_CHECK_THROW( testSet.getStringProperty( "unexisting_properties" ), ofx::OfxhException );
 	BOOST_CHECK_THROW( testSet.getIntProperty( testString_2_rw ), std::bad_cast );
 
 	// Assignment and comparison tests

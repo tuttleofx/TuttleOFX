@@ -1,8 +1,6 @@
 #ifndef _ofxParamAPI_h_
 #define _ofxParamAPI_h_
 
-// TUTTLE_TODO
-
 #include "ofxCore.h"
 #include "ofxAttribute.h"
 #include "ofxParam.h"
@@ -23,6 +21,21 @@ extern "C" {
  * @brief The current version of the Param API
  */
 #define kOfxParamPluginApiVersion 1
+
+/**
+ * @defgroup ActionsParamAPI Actions Param API
+ */
+///@{
+
+#define kOfxParamAPIGetTimeDomain "OfxParamAPIGetTimeDomain"
+/// GetTimeRangeNeeded is similar to the function GetFramesNeeded in ImageEffectAPI
+#define kOfxParamAPIGetTimeRangeNeeded "OfxParamAPIGetTimeRangeNeeded"
+#define kOfxParamAPIProcess "OfxParamAPIProcess"
+#define kOfxParamAPIBeginSequenceProcess "OfxParamAPIBeginSequenceProcess"
+#define kOfxParamAPIEndSequenceProcess "OfxParamAPIEndSequenceProcess"
+
+///@}
+
 
 #ifdef __cplusplus
 }

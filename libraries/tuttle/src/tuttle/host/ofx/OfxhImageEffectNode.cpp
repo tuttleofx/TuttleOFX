@@ -331,6 +331,7 @@ static const property::OfxhPropSpec effectInstanceStuff[] = {
 	{ kOfxPropName, property::eString, 1, false, "UNIQUE_NAME_NOT_SET" },
 	{ kOfxImageEffectPropContext, property::eString, 1, true, "" },
 	{ kOfxPropInstanceData, property::ePointer, 1, false, NULL },
+	{ kOfxImageEffectPropPluginHandle, property::ePointer, 1, false, NULL },
 	{ kOfxImageEffectPropProjectSize, property::eDouble, 2, true, "0" },
 	{ kOfxImageEffectPropProjectOffset, property::eDouble, 2, true, "0" },
 	{ kOfxImageEffectPropProjectExtent, property::eDouble, 2, true, "0" },
@@ -357,6 +358,8 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin*         p
 	_outputFrameRate( 24 )
 {
 	_properties.setChainedSet( &descriptor.getProperties() );
+
+	_properties.setPointerProperty( kOfxImageEffectPropPluginHandle, const_cast<OfxPlugin*>( _plugin->getPluginHandle()->getOfxPlugin() ) );
 
 	_properties.setStringProperty( kOfxImageEffectPropContext, context );
 	_properties.setIntProperty( kOfxPropIsInteractive, interactive );

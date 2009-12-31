@@ -52,7 +52,7 @@ extern "C" {
   #define OfxExport __attribute__ ( ( visibility( "default" ) ) )
  #else
   #define OfxExport
-  #warning "OfxExport can't be correctly setted because your gcc version is too old. The plugin may not compile with the option fvisible=hidden."
+  #warning "OfxExport can't be correctly setted because your gcc version is too old. The plugin may not compile with the option -fvisible=hidden."
  #endif
 #else
  #error "OfxExport not defined for this compilator..."

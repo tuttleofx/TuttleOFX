@@ -123,7 +123,6 @@ public:
 		                           processOptions._renderScale,
 		                           processOptions._renderRoI,
 		                           processOptions._inputsRoI );
-
 	}
 
 	void process( const ProcessOptions& processOptions )

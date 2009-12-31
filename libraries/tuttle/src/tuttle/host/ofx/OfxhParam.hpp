@@ -132,6 +132,7 @@ public:
 
 	/// add standard properties to a value holding param
 	void addValueParamProps( const std::string& type, property::TypeEnum valueType, int dim );
+	void addNoValueParamProps();
 
 	/// add standard properties to a value holding param
 	void addNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim );

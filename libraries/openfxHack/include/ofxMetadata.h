@@ -13,19 +13,19 @@ extern "C" {
 
 typedef struct OfxClipMetaDataSuiteV1
 {
-
 	OfxStatus clipMetaDataGetParameterSet( const OfxClipHandle* clip, OfxParamSetHandle* paramSet );
-
 } OfxClipMetaDataSuiteV1;
 
 /*
- * // Need to exist ?
- * typedef struct OfxImageMetaDataSuiteV1 {
- *
- *  OfxStatus imageMetaDataGetParameterSet(const OfxImageHandle* image, OfxParamSetHandle *paramSet);
- *
- * } OfxImageMetaDataSuiteV1;
- */
+
+// Need to exist ?
+typedef struct OfxImageMetaDataSuiteV1 {
+
+ OfxStatus imageMetaDataGetParameterSet(const OfxImageHandle* image, OfxParamSetHandle *paramSet);
+
+} OfxImageMetaDataSuiteV1;
+
+*/
 
 #ifdef __cplusplus
 }

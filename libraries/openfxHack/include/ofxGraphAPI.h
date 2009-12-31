@@ -1,8 +1,6 @@
 #ifndef _ofxGraphAPI_h_
 #define _ofxGraphAPI_h_
 
-// TUTTLE_TODO
-
 #include "ofxCore.h"
 #include "ofxAttribute.h"
 #include "ofxParam.h"
@@ -15,32 +13,19 @@ extern "C" {
 /**
  * @brief String used to label OFX Graph Plug-ins
  *
- * Set the pluginApi member of the OfxPluginHeader inside any OfxParamPluginStruct
- * to be this so that the host knows the plugin is an image effect.
+ * Set the pluginApi member of the OfxPluginHeader inside any OfxGraphPluginStruct
+ * to be this so that the host knows the plugin is a subgraph node.
  */
 #define kOfxGraphPluginApi "OfxGraphPluginAPI"
 
 /**
- * @brief The current version of the Param API
+ * @brief The current version of the Graph API
  */
 #define kOfxGraphPluginApiVersion 1
 
-/**
- * @defgroup ActionsParamAPI Actions Param API
- */
-///@{
-
-#define kOfxParamAPIGetTimeDomain "OfxParamAPIGetTimeDomain"
-// GetTimeRangeNeeded is similar as the function GetFramesNeeded in ImageEffectAPI
-#define kOfxParamAPIGetTimeRangeNeeded "OfxParamAPIGetTimeRangeNeeded"
-#define kOfxParamAPIProcess "OfxParamAPIProcess"
-#define kOfxParamAPIBeginSequenceProcess "OfxParamAPIBeginSequenceProcess"
-#define kOfxParamAPIEndSequenceProcess "OfxParamAPIEndSequenceProcess"
-
-///@}
 
 /**
- * @defgroup PropertiesParamAPI Properties Param API
+ * @defgroup PropertiesGraphAPI Properties Graph API
  */
 ///@{
 
@@ -74,29 +59,30 @@ typedef struct OfxGraphSuiteV1
 } OfxGraphSuiteV1;
 
 /*
- * --------------------------------------------------------------------------------
- *     ______________
- |             |
- |  Attribute  |
- |_____________|
- *      / \
- * ______/__     ___\___
+--------------------------------------------------------------------------------
+    ______________
+    |             |
+    |  Attribute  |
+    |_____________|
+        /      \
+ ______/____   _\______
  |         |   |       |
  |   Param |   |  Clip |
  |_________|   |_______|
- *
- * --------------------------------------------------------------------------------
- *       _______________________
- |                      |
- |         Node         | attributeList
- |______________________|
- *       /          | \
- * _______/___    ____|______    __\______________
+
+--------------------------------------------------------------------------------
+         _______________________
+        |                      |
+        |         Node         | attributeList
+        |______________________|
+         /          |          \
+ _______/___    ____|______    _\________________
  |           |  |           |  |                 |
  | ParamNode |  | GraphNode |  | ImageEffectNode | clipList
  |___________|  |___________|  |_________________| paramList
- *
- */
+
+--------------------------------------------------------------------------------
+*/
 
 #ifdef __cplusplus
 }
