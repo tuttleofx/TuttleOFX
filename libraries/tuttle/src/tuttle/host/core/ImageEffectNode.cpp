@@ -244,9 +244,9 @@ tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host
 	else if( descriptor.getParamType() == kOfxParamTypePage )
 		return new ParamPage( *this, name, descriptor );
 	else
-		throw exception::LogicError( "Can't create param instance from param descriptor." );
+		throw( exception::LogicError( "Can't create param instance from param descriptor." ) );
 
-	throw exception::LogicError( "Can't create param instance from param descriptor." );
+	throw( exception::LogicError( "Can't create param instance from param descriptor." ) );
 
 }
 

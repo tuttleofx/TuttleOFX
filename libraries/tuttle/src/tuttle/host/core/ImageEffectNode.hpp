@@ -91,7 +91,7 @@ public:
 		}
 		else // if( inClips.empty() )
 		{
-			throw exception::LogicError( "Connection failed : no clip." );
+			throw( exception::LogicError( kOfxStatFailed, "Connection failed : no clip." ) );
 		}
 		return dynamic_cast<ProcessAttribute&>( *inAttr );
 	}

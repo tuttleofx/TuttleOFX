@@ -5,6 +5,10 @@
 
 #include <ofxCore.h>
 
+#include <boost/throw_exception.hpp>
+#include <boost/exception/exception.hpp>
+//#include <boost/exception.hpp>
+
 #include <sstream>
 #include <stdexcept>
 
@@ -13,36 +17,35 @@ namespace host {
 namespace core {
 namespace exception {
 
-class LogicError : public std::logic_error
+class LogicError : virtual public std::logic_error, virtual public boost::exception
 {
 protected:
 	OfxStatus _status;
-	std::stringstream _ss;
 
 public:
-	LogicError( const std::string& msg = "" );
-	LogicError( const OfxStatus& status, const std::string& msg = "" );
-	LogicError( const LogicError& other );
-	virtual ~LogicError() throw( );
+
+	explicit LogicError( const std::string& msg = "" )
+	: std::logic_error( msg ),
+	boost::exception(),
+	_status( kOfxStatErrUnknown )
+	{}
+
+	explicit LogicError( const OfxStatus& status, const std::string& msg = "" )
+	: std::logic_error( ofx::mapStatusToString( status ) + " : " + msg ),
+	boost::exception(),
+	_status( status )
+	{}
+
+//	explicit LogicError( const LogicError& other )
+//	: std::logic_error( other ),
+//	boost::exception(),
+//	_status( status )
+//	{}
+	
+	virtual ~LogicError() throw() {}
+
 	const OfxStatus   ofxStatus() const    { return _status; }
 	const std::string ofxStatusStr() const { return ofx::mapStatusToString( _status ); }
-	template<typename T>
-	LogicError& operator<<( const T& v ) { _ss << v; return *this; }
-
-	virtual const std::string message() const throw( )
-	{
-		//std::stringstream ss;
-		//ss << ofxStatusStr() << " : " << std::logic_error::what() << _ss.str().c_str();
-		//return ss.str();
-		return ofxStatusStr() + " : " + std::logic_error::what();
-	}
-
-	virtual const char* what() const throw( )
-	{
-		return message().c_str();
-	}
-
-private:
 };
 
 }
