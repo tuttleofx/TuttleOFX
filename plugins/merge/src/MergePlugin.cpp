@@ -11,6 +11,7 @@
 #include "MergeDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/math/rectOp.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -416,6 +417,19 @@ void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std:
 		             kMergeHelpString );
 	}
 }
+
+bool MergePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	const OfxRectD irod = intersection(_srcClipA->getRegionOfDefinition(args.time),
+									   _srcClipB->getRegionOfDefinition(args.time));
+	// Intersection of A & B
+	rod.x1 = irod.x1;
+	rod.x2 = irod.x2;
+	rod.y1 = irod.y1;
+	rod.y2 = irod.y2;
+	return true;
+}
+
 
 }
 }
