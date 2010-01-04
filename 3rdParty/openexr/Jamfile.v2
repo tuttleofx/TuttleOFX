@@ -1,0 +1,48 @@
+###############################################################################
+## Main BJam makefile for openexr (ilmImf) library
+## author Nicolas Rondaud
+###############################################################################
+
+use-project /base : ../ilmbase ;
+use-project /z : ../zlib ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements	
+		<include>./IlmImf
+		<os>NT:<include>./config.windows
+		<os>LINUX:<include>./config 
+		<os>MACOSX:<include>./config 
+	 	<os>NT:<define>WIN32
+	 	<os>NT:<define>_WINDOWS
+        <threading>multi
+        <link>static
+		<warnings-as-errors>off
+    : usage-requirements
+    	<include>./IlmImf
+		<os>NT:<include>./config.windows
+		<os>LINUX:<include>./config 
+		<os>MACOSX:<include>./config 
+    : build-dir $(DIST)/3rdParty/openexr/obj
+    ;
+
+
+###############################################################################
+# OpenEXR library
+###############################################################################
+lib IlmImf : 
+        [ glob IlmImf/*.cpp ]
+        /z//zlib/<link>static
+        /base//Iex/<link>static
+        /base//Half/<link>static
+        /base//IlmThread/<link>static
+        /base//Imath/<link>static
+        ;
+
+install dist_src 
+	:	IlmImf
+	:	<variant>debug:<location>$(DIST)/3rdParty/openexr/bin/debug
+		<variant>release:<location>$(DIST)/3rdParty/openexr/bin/release
+	;
