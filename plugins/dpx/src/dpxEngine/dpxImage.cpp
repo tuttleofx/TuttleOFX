@@ -1,5 +1,5 @@
 #include "dpxImage.hpp"
-#include <dpxUtils.hpp>
+#include "dpxUtils.hpp"
 
 #include <vector>
 #include <boost/cstdint.hpp>

@@ -1,7 +1,8 @@
 #ifndef DPXWRITER_PROCESS_HPP
 #define DPXWRITER_PROCESS_HPP
 
-#include <dpxImage.hpp>
+#include "../dpxEngine/dpxImage.hpp"
+
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>

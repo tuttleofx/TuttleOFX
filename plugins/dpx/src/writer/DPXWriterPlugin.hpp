@@ -4,6 +4,7 @@
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
+#include "../dpxEngine/dpxImage.hpp"
 
 namespace tuttle {
 namespace plugin {
