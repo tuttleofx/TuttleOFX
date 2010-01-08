@@ -101,7 +101,6 @@ void EXRWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		std::string filepath;
 		this->_filepath->getValue( filepath );
 
-		////// TODO IMPORTANT !!!! Single thread the process !!!!!
 		switch( (EBitDepth)_bitDepth->getValue() )
 		{
 			case eHalfFloat:
@@ -193,7 +192,6 @@ void EXRWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
  * @return Result view of the blurring process
  */
 
-//// TODO: FINISH REFACTORING !
 template<class View>
 template<class Pixel>
 void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException )

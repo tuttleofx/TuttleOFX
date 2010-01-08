@@ -41,7 +41,6 @@ void
     desc.setPluginGrouping( "%PLUGIN_GROUP%" );
 
     // add the supported contexts, only filter at the moment
-//    desc.addSupportedContext(eContextGenerator);
     desc.addSupportedContext( eContextGeneral );
 
     // add supported pixel depths
@@ -51,7 +50,7 @@ void
 
     // set a few flags
     desc.setSingleInstance( false );
-    desc.setHostFrameThreading( false );
+	 desc.setHostFrameThreading( true );
     desc.setSupportsMultiResolution( false );
     desc.setSupportsTiles( kSupportTiles );
     desc.setTemporalClipAccess( kSupportTemporalClipAccess );
