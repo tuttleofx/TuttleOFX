@@ -8,6 +8,7 @@
 
 #include "CropPlugin.hpp"
 #include "CropProcess.hpp"
+#include <ofxsImageEffect.h>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -207,10 +208,21 @@ OfxRectD CropPlugin::getCropRect()
 	OFX::IntParam* rightBand = fetchIntParam( kParamRight );
 
 	rect.x1 = par * leftBand->getValue();
-	rect.x2 = clipROD.x2 - par* rightBand->getValue();
+	rect.x2 = clipROD.x2 - par * rightBand->getValue();
 	rect.y1 = downBand->getValue();
 	rect.y2 = clipROD.y2 - upBand->getValue();
 	return rect;
+}
+
+bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	OFX::BooleanParam* bop = fetchBooleanParam( kParamFillBlack );
+	if ( bop->getValue() == false ) {
+		rod = getCropRect();
+	} else {
+		rod = getSrcClip()->getRegionOfDefinition(args.time);
+	}
+	return true;
 }
 
 }

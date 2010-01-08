@@ -1,6 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX dpx Plugin
-## author Eloi Du Bois
+## Main BJam makefile for TuttleOFX %L_CLASSNAME% Plugin
 ###############################################################################
 import os ;
 
@@ -8,39 +7,41 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-        <include>../../../libraries/tuttle/src/
-        <threading>multi
-        <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/dpx/obj
+    : requirements	
+				<include>src
+  				<threading>multi 
+  				<os>NT:<define>_WINDOWS
+    : build-dir $(DIST)/plugins/%L_CLASSNAME%/obj
     ;
-
-use-project /png 	: ../../../3rdParty/libpng ;
 
 ###############################################################################
 # Dependencies
 ###############################################################################
+if [ os.name ] = NT	
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX 
+	{	alias opengl : ; }
+else if [ os.name ] = MACOSX 
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin dpx : 
-        [ glob-tree *.cpp ]
-        /tuttlelib//tuttleplugin/<link>static
-        /png/<link>static
-        /supportlib/<link>static
-        /boost/filesystem/<link>static
-        ;
+plugin %L_CLASSNAME% : 
+    [ glob src/*.cpp ]
+    /tuttlelib//tuttleplugin/<link>static
+    /supportlib
+    opengl
+    ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	dpx
-	:	<os>NT:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/MacOS
+	:	%L_CLASSNAME%
+	:	<os>NT:<location>$(DIST)/plugins/%L_CLASSNAME%/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/%L_CLASSNAME%/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/%L_CLASSNAME%/bundle/%L_CLASSNAME%.ofx.bundle/Contents/MacOS
 	;
 

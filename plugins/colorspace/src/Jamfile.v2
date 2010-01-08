@@ -1,22 +1,20 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX dpx Plugin
-## author Eloi Du Bois
+## Main BJam makefile for TuttleOFX colorspace Plugin
 ###############################################################################
 import os ;
 
 ###############################################################################
 # Global project requirements
 ###############################################################################
+
 project
     : requirements
         <include>src
         <include>../../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/dpx/obj
+    : build-dir $(DIST)/plugins/colorspace/obj
     ;
-
-use-project /png 	: ../../../3rdParty/libpng ;
 
 ###############################################################################
 # Dependencies
@@ -25,12 +23,10 @@ use-project /png 	: ../../../3rdParty/libpng ;
 ###############################################################################
 # Product 
 ###############################################################################
-plugin dpx : 
+plugin colorspace : 
         [ glob-tree *.cpp ]
         /tuttlelib//tuttleplugin/<link>static
-        /png/<link>static
         /supportlib/<link>static
-        /boost/filesystem/<link>static
         ;
 
 ###############################################################################
@@ -38,9 +34,9 @@ plugin dpx :
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	dpx
-	:	<os>NT:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/dpx/bundle/dpx.ofx.bundle/Contents/MacOS
+	:	colorspace
+	:	<os>NT:<location>$(DIST)/plugins/colorspace/bundle/colorspace.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/colorspace/bundle/colorspace.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/colorspace/bundle/colorspace.ofx.bundle/Contents/MacOS
 	;
 
