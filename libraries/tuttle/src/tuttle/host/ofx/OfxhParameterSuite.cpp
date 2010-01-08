@@ -574,6 +574,8 @@ static OfxStatus paramCopy( OfxParamHandle paramTo,
 			paramInstanceTo->copy( *paramInstanceFrom, dstOffset );
 		else
 			paramInstanceTo->copy( *paramInstanceFrom, dstOffset, *frameRange );
+
+		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{

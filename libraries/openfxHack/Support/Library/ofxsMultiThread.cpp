@@ -136,7 +136,7 @@ Mutex::Mutex( int lockCount )
 /** @brief dtor */
 Mutex::~Mutex( void )
 {
-	OfxStatus stat = OFX::Private::gThreadSuite->mutexDestroy( _handle );
+	/*OfxStatus stat = */OFX::Private::gThreadSuite->mutexDestroy( _handle );
 }
 
 /** @brief lock it, blocks until lock is gained */

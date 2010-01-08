@@ -156,19 +156,19 @@ void PropertyDescription::validate( bool         checkDefaults,
 			switch( _ilk )
 			{
 				case OFX::ePointer: {
-					void* vP = propSet.propGetPointer( _name );
+					/*void* vP = */propSet.propGetPointer( _name );
 				}
 				break;
 				case OFX::eInt:     {
-					int vI = propSet.propGetInt( _name );
+					/*int vI = */propSet.propGetInt( _name );
 				}
 				break;
 				case OFX::eString: {
-					std::string vS = propSet.propGetString( _name );
+					/*std::string vS = */propSet.propGetString( _name );
 				}
 				break;
 				case OFX::eDouble: {
-					double vD = propSet.propGetDouble( _name );
+					/*double vD = */propSet.propGetDouble( _name );
 				}
 				break;
 			}
