@@ -1,5 +1,6 @@
 #ifndef %D_CLASSNAME%_PLUGIN_FACTORY_H
 #define %D_CLASSNAME%_PLUGIN_FACTORY_H
+#include <ofxsImageEffect.h>
 
 namespace tuttle {
 namespace plugin {
