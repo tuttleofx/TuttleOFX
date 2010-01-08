@@ -83,14 +83,19 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 
 	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kOutputComponents );
 	assert( outComponents );
+	outComponents->setDefault(0);
 	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kOutputRedIs );
 	assert( outRedIs );
+	outRedIs->setDefault(0);
 	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kOutputGreenIs );
 	assert( outGreenIs );
+	outGreenIs->setDefault(0);
 	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kOutputBlueIs );
 	assert( outBlueIs );
+	outBlueIs->setDefault(0);
 	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kOutputAlphaIs );
 	assert( outAlphaIs );
+	outAlphaIs->setDefault(0);
 }
 
 /**

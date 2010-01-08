@@ -5,6 +5,8 @@ int main( int argc, char** argv )
 {
 	try
 	{
+	try
+	{
 		using namespace tuttle::host;
 		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//core::Core::instance().getPluginCache().scanPluginFiles();
@@ -15,30 +17,60 @@ int main( int argc, char** argv )
 
 		core::Graph g;
 		core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
-		core::Graph::Node& denoiser1 = g.createNode( "fr.duranduboi.duplo.nlmdenoiser" );
+		core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
+		core::Graph::Node& read3   = g.createNode( "fr.hd3d.tuttle.exrreader" );
+		core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
+		core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
+		core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
+		core::Graph::Node& invert4 = g.createNode( "fr.hd3d.tuttle.invert" );
+		core::Graph::Node& crop1   = g.createNode( "fr.hd3d.tuttle.crop" );
+		core::Graph::Node& merge1  = g.createNode( "fr.hd3d.tuttle.merge" );
 		core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+		core::Graph::Node& write4  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+		core::Graph::Node& write2  = g.createNode( "fr.hd3d.tuttle.dpxwriter" );
+		core::Graph::Node& write3  = g.createNode( "fr.hd3d.tuttle.exrwriter" );
 
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
 		read1.getParam( "Input filename" ).set( "input.png" );
+		read2.getParam( "Input filename" ).set( "input.dpx" );
+		read3.getParam( "Input filename" ).set( "input.exr" );
 	//	crop1.getParam( "Down" ).set( 400 );
-		write1.getParam( "Output filename" ).set( "output.png" );
+		write1.getParam( "Output filename" ).set( "output1.png" );
+		write2.getParam( "Output filename" ).set( "output2.dpx" );
+		write3.getParam( "Output filename" ).set( "output3.exr" );
+		write4.getParam( "Output filename" ).set( "output4.png" );
 		OfxPointD renderScale = { 1.0, 1.0 };
 		read1.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		read2.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		read3.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 	//	crop1.paramInstanceChangedAction( "Down", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 		write1.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		write2.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		write3.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		write4.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
 		TCOUT( "__________________________________________________3" );
-		g.connect( read1, denoiser1 );
-		g.connect( denoiser1, write1 );
+		g.connect( read1, invert1 );
+		g.connect( invert1, invert2 );
+		g.connect( invert2, invert3 );
+		g.connect( invert3, write1 );
+		g.connect( invert1, invert4 );
+		g.connect( invert4, write2 );
+		g.connect( invert1, write3 );
+
+		g.connect( invert1, merge1.getProcessAttribute("SourceA") );
+		g.connect( read3, merge1.getProcessAttribute("SourceB") );
+	//	g.connect( merge1, crop1 );
+		g.connect( merge1, write4 );
 
 		TCOUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
+		outputs.push_back( write2.getName() );
+		outputs.push_back( write3.getName() );
+		outputs.push_back( write4.getName() );
 		g.compute( outputs, 0, 1 );
-
-		TCOUT( "__________________________________________________5" );
-
 	}
 	catch( tuttle::host::core::exception::LogicError& e )
 	{
