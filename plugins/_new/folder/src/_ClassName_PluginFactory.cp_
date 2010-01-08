@@ -5,7 +5,8 @@
  * @date    %DATE%
  *
  */
-
+ 
+#include "%CLASSNAME%PluginFactory.hpp"
 #include "%CLASSNAME%Plugin.hpp"
 #include "%CLASSNAME%Definitions.hpp"
 
@@ -25,12 +26,6 @@
 namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
-
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
-
-mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
 
 /**
  * @brief Function called to describe the plugin main features.
