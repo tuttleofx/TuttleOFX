@@ -1,0 +1,5 @@
+project Iex
+	: usage-requirements <include>.
+	;
+
+lib Iex : [ glob *.cpp ] ;

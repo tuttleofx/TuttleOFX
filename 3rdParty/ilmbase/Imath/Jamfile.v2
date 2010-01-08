@@ -1,0 +1,10 @@
+project Imath
+	: usage-requirements <include>.
+	;
+
+lib Imath
+	:
+		[ glob *.cpp ]
+		../Iex//Iex
+		../Half//Half
+	;

@@ -1,0 +1,5 @@
+project IlmBase
+	: requirements
+		<os>NT:<include>config.windows
+		<os>LINUX:<include>config
+	;
