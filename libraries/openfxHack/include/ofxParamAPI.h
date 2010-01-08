@@ -27,12 +27,12 @@ extern "C" {
  */
 ///@{
 
-#define kOfxParamAPIGetTimeDomain "OfxParamAPIGetTimeDomain"
+#define kOfxParamAPIActionGetTimeDomain "OfxParamAPIActionGetTimeDomain"
 /// GetTimeRangeNeeded is similar to the function GetFramesNeeded in ImageEffectAPI
-#define kOfxParamAPIGetTimeRangeNeeded "OfxParamAPIGetTimeRangeNeeded"
-#define kOfxParamAPIProcess "OfxParamAPIProcess"
-#define kOfxParamAPIBeginSequenceProcess "OfxParamAPIBeginSequenceProcess"
-#define kOfxParamAPIEndSequenceProcess "OfxParamAPIEndSequenceProcess"
+#define kOfxParamAPIActionGetTimeRangeNeeded "OfxParamAPIActionGetTimeRangeNeeded"
+#define kOfxParamAPIActionProcess "OfxParamAPIActionProcess"
+#define kOfxParamAPIActionBeginSequenceProcess "OfxParamAPIActionBeginSequenceProcess"
+#define kOfxParamAPIActionEndSequenceProcess "OfxParamAPIActionEndSequenceProcess"
 
 ///@}
 
