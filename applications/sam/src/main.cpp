@@ -5,8 +5,6 @@ int main( int argc, char** argv )
 {
 	try
 	{
-	try
-	{
 		using namespace tuttle::host;
 		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//core::Core::instance().getPluginCache().scanPluginFiles();
