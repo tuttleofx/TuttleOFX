@@ -1,11 +1,20 @@
 #include "OfxhMultiThreadSuite.hpp"
 #include "OfxhCore.hpp"
 
+#include <tuttle/common/utils/global.hpp>
+
+ #include <boost/thread/thread.hpp>
+ #include <boost/bind.hpp>
+
+typedef struct OfxMutex
+{
+	boost::mutex _mutex;
+} OfxMutex;
+
 namespace tuttle {
 namespace host {
 namespace ofx {
 
-// boost thread simple example
 /*
  #include <boost/thread/thread.hpp>
  #include <boost/thread/thread_group.hpp>
@@ -33,64 +42,85 @@ int main()
 	for(unsigned int i = 0; i < 10; ++i)
 	{
 		group.create_thread(&uneFonctionPlusieursThreads);
-	}
-	group.join_all();
 }
  */
 
 static OfxStatus multiThread( OfxThreadFunctionV1 func,
-                              unsigned int        nThreads,
+                              const unsigned int  nThreads,
                               void*               customArg )
 {
-	func( 0, 1, customArg );
+	if( nThreads == 0 )
+	{
+		return kOfxStatErrValue;
+	}
+	else if( nThreads == 1 )
+	{
+		func( 0, 1, customArg );
+	}
+	else
+	{
+		boost::thread_group group;
+		for( unsigned int i = 0; i < nThreads; ++i )
+		{
+			group.create_thread(boost::bind(func, i, nThreads, customArg));
+		}
+		group.join_all();
+	}
 	return kOfxStatOK;
 }
 
-static OfxStatus multiThreadNumCPUs( unsigned int* nCPUs )
+static OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
 {
 	*nCPUs = 1;
+//	*nCPUs = boost::thread::hardware_concurrency();
+//	COUT( "nCPUs: " << *nCPUs );
 	return kOfxStatOK;
 }
 
-static OfxStatus multiThreadIndex( unsigned int* threadIndex )
+static OfxStatus multiThreadIndex( unsigned int* const threadIndex )
 {
-	threadIndex = 0;
+//	*threadIndex = boost::this_thread::get_id();
+	*threadIndex = 0;
 	return kOfxStatOK;
 }
 
 static int multiThreadIsSpawnedThread( void )
 {
+//	return boost::this_thread::;
 	return false;
 }
 
-static OfxStatus mutexCreate( const OfxMutexHandle* mutex, int lockCount )
+static OfxStatus mutexCreate( OfxMutexHandle* mutex, const int lockCount )
 {
-	// do nothing single threaded
-	mutex = 0;
+	*mutex = new OfxMutex();
 	return kOfxStatOK;
 }
 
-static OfxStatus mutexDestroy( const OfxMutexHandle mutex )
+static OfxStatus mutexDestroy( OfxMutexHandle mutex )
+{
+	delete mutex;
+	mutex = NULL;
+	return kOfxStatOK;
+}
+
+static OfxStatus mutexLock( OfxMutexHandle mutex )
+{
+	// do nothing single threaded
+	// @todo tuttle multithread
+//	boost::mutex::scoped_lock lock(mutex->_mutex);
+	return kOfxStatOK;
+}
+
+static OfxStatus mutexUnLock( OfxMutexHandle mutex )
 {
 	// do nothing single threaded
 	return kOfxStatOK;
 }
 
-static OfxStatus mutexLock( const OfxMutexHandle mutex )
+static OfxStatus mutexTryLock( OfxMutexHandle mutex )
 {
 	// do nothing single threaded
-	return kOfxStatOK;
-}
-
-static OfxStatus mutexUnLock( const OfxMutexHandle mutex )
-{
-	// do nothing single threaded
-	return kOfxStatOK;
-}
-
-static OfxStatus mutexTryLock( const OfxMutexHandle mutex )
-{
-	// do nothing single threaded
+//	boost::mutex::scoped_try_lock lock(mutex->_mutex);
 	return kOfxStatOK;
 }
 
