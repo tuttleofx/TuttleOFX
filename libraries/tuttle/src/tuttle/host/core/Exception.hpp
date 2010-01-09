@@ -23,7 +23,6 @@ protected:
 	OfxStatus _status;
 
 public:
-
 	explicit LogicError( const std::string& msg = "" )
 	: std::logic_error( msg ),
 	boost::exception(),
@@ -36,12 +35,12 @@ public:
 	_status( status )
 	{}
 
-//	explicit LogicError( const LogicError& other )
-//	: std::logic_error( other ),
-//	boost::exception(),
-//	_status( status )
-//	{}
-	
+	LogicError( const LogicError& other )
+	: std::logic_error( other ),
+	boost::exception(),
+	_status( other._status )
+	{}
+
 	virtual ~LogicError() throw() {}
 
 	const OfxStatus   ofxStatus() const    { return _status; }

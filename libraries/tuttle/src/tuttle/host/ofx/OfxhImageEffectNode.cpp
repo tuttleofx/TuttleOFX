@@ -100,15 +100,15 @@ bool OfxhImageEffectNodeBase::operator==( const OfxhImageEffectNodeBase& other )
 	return _properties == other._properties;
 }
 
-/// obtain a handle on this for passing to the C api
-
+/**
+ * obtain a handle on this for passing to the C api
+ */
 OfxImageEffectHandle OfxhImageEffectNodeBase::getHandle() const
 {
 	return ( OfxImageEffectHandle ) this;
 }
 
-/// name of the clip
-
+/// name of the imageEffect
 const std::string& OfxhImageEffectNodeBase::getShortLabel() const
 {
 	const std::string& s = _properties.getStringProperty( kOfxPropShortLabel );
@@ -124,8 +124,7 @@ const std::string& OfxhImageEffectNodeBase::getShortLabel() const
 	return s;
 }
 
-/// name of the clip
-
+/// name of the imageEffect
 const std::string& OfxhImageEffectNodeBase::getLabel() const
 {
 	const std::string& s = _properties.getStringProperty( kOfxPropLabel );
@@ -137,19 +136,18 @@ const std::string& OfxhImageEffectNodeBase::getLabel() const
 	return s;
 }
 
-/// name of the clip
+/// name of the imageEffect
 const std::string& OfxhImageEffectNodeBase::getName() const
 {
 	return _properties.getStringProperty( kOfxPropName );
 }
 
-/// name of the clip
+/// name of the imageEffect
 void OfxhImageEffectNodeBase::setName( const std::string& name )
 {
 	_properties.setStringProperty( kOfxPropName, name );
 }
 
-/// name of the clip
 
 const std::string& OfxhImageEffectNodeBase::getLongLabel() const
 {
@@ -443,7 +441,7 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 
 		// get the param descriptor
 		if( !descriptor )
-			throw core::exception::LogicError( kOfxStatErrValue );
+			BOOST_THROW_EXCEPTION( core::exception::LogicError( kOfxStatErrValue ) );
 
 		// name and parentName of the parameter
 		std::string name       = descriptor->getName();

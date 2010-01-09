@@ -128,7 +128,7 @@ unsigned int getThreadIndex( void )
 Mutex::Mutex( int lockCount )
 	: _handle( 0 )
 {
-	OfxStatus stat = OFX::Private::gThreadSuite->mutexCreate( (const OfxMutexHandle*) &_handle, lockCount );
+	OfxStatus stat = OFX::Private::gThreadSuite->mutexCreate( &_handle, lockCount );
 
 	throwSuiteStatusException( stat );
 }
