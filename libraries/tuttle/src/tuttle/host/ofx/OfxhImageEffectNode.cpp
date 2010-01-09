@@ -441,7 +441,7 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 
 		// get the param descriptor
 		if( !descriptor )
-			BOOST_THROW_EXCEPTION( core::exception::LogicError( kOfxStatErrValue ) );
+			throw( core::exception::LogicError( kOfxStatErrValue ) );
 
 		// name and parentName of the parameter
 		std::string name       = descriptor->getName();
