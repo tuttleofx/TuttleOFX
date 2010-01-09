@@ -7,10 +7,11 @@
  */
 
 #include "LutPlugin.hpp"
+#include "LutDefinitions.hpp"
+
 #include "tuttle/plugin/ImageGilProcessor.hpp"
 #include "tuttle/plugin/Progress.hpp"
 #include "tuttle/plugin/PluginException.hpp"
-#include "LutDefinitions.hpp"
 
 #include <string>
 #include <iostream>
@@ -52,7 +53,7 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// set a few flags
 	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
+	desc.setHostFrameThreading( true );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setTemporalClipAccess( false );

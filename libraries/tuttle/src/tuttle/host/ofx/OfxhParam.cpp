@@ -40,6 +40,13 @@
 #include <cassert>
 #include <cfloat>
 #include <climits>
+
+#ifdef _MSC_VER
+	#undef max
+	#undef min
+	#include <limits>
+#endif
+
 #include <cstdarg>
 
 namespace tuttle {
@@ -370,12 +377,15 @@ void OfxhParamDescriptor::addNumericParamProps( const std::string& type, propert
 
 	if( !doneOne )
 	{
+		// Needed for msvc compilator
+		using namespace std;
+
 		std::ostringstream dbl_min, dbl_max, int_min, int_max;
 		doneOne = true;
-		dbl_min << -std::numeric_limits<double>::max();
-		dbl_max << std::numeric_limits<double>::max();
-		int_min << std::numeric_limits<int>::min();
-		int_max << std::numeric_limits<int>::max();
+		dbl_min << -numeric_limits<double>::max();
+		dbl_max << numeric_limits<double>::max();
+		int_min << numeric_limits<int>::min();
+		int_max << numeric_limits<int>::max();
 
 		dbl_minstr = dbl_min.str();
 		dbl_maxstr = dbl_max.str();

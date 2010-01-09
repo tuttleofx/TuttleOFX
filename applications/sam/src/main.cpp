@@ -8,7 +8,6 @@ int main( int argc, char** argv )
 		using namespace tuttle::host;
 		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//core::Core::instance().getPluginCache().scanPluginFiles();
-		std::cout << " hm. " << std::endl;
 		core::Core::instance().preload();
 		core::Core::instance().getImageEffectPluginCache().dumpToStdOut();
 
@@ -70,9 +69,6 @@ int main( int argc, char** argv )
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
 		g.compute( outputs, 0, 1 );
-
-		TCOUT( "__________________________________________________5" );
-
 	}
 	catch( tuttle::host::core::exception::LogicError& e )
 	{

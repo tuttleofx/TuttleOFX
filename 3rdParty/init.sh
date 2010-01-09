@@ -1,11 +1,9 @@
 #!/bin/bash
 
-EXPAT_URL=http://sourceforge.net/projects/expat/files/expat/2.0.1/expat-2.0.1.tar.gz/download
-
 # URL ARCHIVE UNCOMPRESED_ARCHIVE_DIR ALREADY_EXISTING_DIR
 getAndUncompressAndTransferToDir() {
 	getAndUncompress $1 $2
-	mv $4/* $3
+	cp -r $4/* $3
 	rm -rf $4
 	mv $3 $4
 }
@@ -44,6 +42,18 @@ PNG_ARCHIVE=$PNG_FILENAME.tar.gz
 PNG_URL=http://prdownloads.sourceforge.net/libpng/$PNG_ARCHIVE?download
 echo ">>> GETTING PNG"
 getAndUncompressAndTransferToDir $PNG_URL $PNG_ARCHIVE $PNG_FILENAME libpng
+
+ILMBASE_FILENAME=ilmbase-1.0.1
+ILMBASE_ARCHIVE=$ILMBASE_FILENAME.tar.gz
+ILMBASE_URL=http://download.savannah.nongnu.org/releases/openexr/$ILMBASE_ARCHIVE
+echo ">>> GETTING ILMBASE"
+getAndUncompressAndTransferToDir $ILMBASE_URL $ILMBASE_ARCHIVE $ILMBASE_FILENAME ilmbase
+
+OPENEXR_FILENAME=openexr-1.6.1
+OPENEXR_ARCHIVE=$OPENEXR_FILENAME.tar.gz
+OPENEXR_URL=http://download.savannah.nongnu.org/releases/openexr/$OPENEXR_ARCHIVE
+echo ">>> GETTING OPENEXR"
+getAndUncompressAndTransferToDir $OPENEXR_URL $OPENEXR_ARCHIVE $OPENEXR_FILENAME openexr
 
 BOOST_FILENAME=boost_1_41_0
 BOOST_ARCHIVE=$BOOST_FILENAME.tar.bz2

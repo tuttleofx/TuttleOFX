@@ -49,7 +49,7 @@ if __name__ == '__main__':
         className = raw_input( "Class name (Capitalized, Without spaces) ?: " )
     namespace = ""
     while(len(namespace) == 0 or namespace.find( " " ) != -1):
-        namespace = raw_input( "Namespace ?: ")
+        namespace = raw_input( "Namespace (eg. invert)?: ")
     print
     print "Setting up the declaration string (eg. fr.hd3d.tuttle.denoiser):"
     companyName = ""
@@ -90,6 +90,7 @@ if __name__ == '__main__':
                     # Check if we need to replace things on the file
                     if (dName.endswith(".cp_") or dName.endswith(".hp_") or dName.endswith(".tc_")):
                         adaptTemplate(top + '/' + dName)
+        adaptTemplate(pluginDir + 'Jamfile.v2')
         sys.exit(0);
 
     except ValueError, v:

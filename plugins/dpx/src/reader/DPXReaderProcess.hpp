@@ -1,6 +1,8 @@
 #ifndef DPX_READER_PROCESS_HPP
 #define DPX_READER_PROCESS_HPP
 
+#include "../dpxEngine/dpxImage.hpp"
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>

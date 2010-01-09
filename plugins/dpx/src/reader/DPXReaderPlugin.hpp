@@ -1,9 +1,10 @@
 #ifndef DPX_READER_PLUGIN_HPP
 #define DPX_READER_PLUGIN_HPP
 
+#include "../dpxEngine/dpxImage.hpp"
+
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
-#include <dpxImage.hpp>
 
 namespace bgil = boost::gil;
 

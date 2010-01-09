@@ -53,6 +53,7 @@ public:
 public:
 	virtual void render( const OFX::RenderArguments& args );
 	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	virtual bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 
 protected:
 	OFX::ChoiceParam* _mergeFunction;   ///< Functor structure

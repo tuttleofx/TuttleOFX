@@ -16,6 +16,7 @@ namespace tuttle {
 namespace plugin {
 namespace crop {
 
+static const std::string kParamFillBlack   = "Fill bands with black";
 static const std::string kParamUp          = "Up";
 static const std::string kParamDown        = "Down";
 static const std::string kParamLeft        = "Left";
@@ -45,6 +46,7 @@ public:
 public:
 	virtual void render( const OFX::RenderArguments& args );
 	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	bool		 getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 
 protected:
 	// do not need to delete these, the ImageEffect is managing them for us

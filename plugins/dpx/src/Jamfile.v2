@@ -16,7 +16,6 @@ project
     : build-dir $(DIST)/plugins/dpx/obj
     ;
 
-use-project /dpx 	: ../../../libraries/dpxEngine ;
 use-project /png 	: ../../../3rdParty/libpng ;
 
 ###############################################################################
@@ -31,7 +30,7 @@ plugin dpx :
         /tuttlelib//tuttleplugin/<link>static
         /png/<link>static
         /supportlib/<link>static
-        /dpx/<link>static
+        /boost/filesystem/<link>static
         ;
 
 ###############################################################################

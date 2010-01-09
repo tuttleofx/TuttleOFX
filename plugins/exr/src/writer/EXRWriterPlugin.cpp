@@ -20,6 +20,7 @@ namespace plugin {
 namespace exr {
 namespace writer {
 
+
 using namespace boost::gil;
 
 EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )

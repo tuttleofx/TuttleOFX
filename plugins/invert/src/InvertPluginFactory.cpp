@@ -53,7 +53,7 @@ void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// set a few flags
 	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
+	desc.setHostFrameThreading( true );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setTemporalClipAccess( false );

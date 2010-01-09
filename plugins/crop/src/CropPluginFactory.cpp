@@ -6,6 +6,8 @@
  *
  */
 
+#include <ofxsParam.h>
+
 #include "CropPlugin.hpp"
 #include "CropMargin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -55,7 +57,7 @@ void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// set a few flags
 	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
+	desc.setHostFrameThreading( true );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setTemporalClipAccess( false );
@@ -84,6 +86,11 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
+
+	OFX::BooleanParamDescriptor* bop = desc.defineBooleanParam( kParamFillBlack );
+	bop->setScriptName( "BandsOperations" );
+	bop->setHint("Fill bands with black color or repeat last pixel and reset Rod.");
+	bop->setDefault(true);
 
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormats );
 	format->setScriptName( "formats" );

@@ -49,7 +49,6 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setSingleInstance( false );
 	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
-	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
 	desc.setRenderTwiceAlways( false );

@@ -5,7 +5,8 @@
  * @date    %DATE%
  *
  */
-
+ 
+#include "%CLASSNAME%PluginFactory.hpp"
 #include "%CLASSNAME%Plugin.hpp"
 #include "%CLASSNAME%Definitions.hpp"
 
@@ -26,12 +27,6 @@ namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
-
-mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -46,7 +41,6 @@ void
     desc.setPluginGrouping( "%PLUGIN_GROUP%" );
 
     // add the supported contexts, only filter at the moment
-//    desc.addSupportedContext(eContextGenerator);
     desc.addSupportedContext( eContextGeneral );
 
     // add supported pixel depths
@@ -56,7 +50,7 @@ void
 
     // set a few flags
     desc.setSingleInstance( false );
-    desc.setHostFrameThreading( false );
+	 desc.setHostFrameThreading( true );
     desc.setSupportsMultiResolution( false );
     desc.setSupportsTiles( kSupportTiles );
     desc.setTemporalClipAccess( kSupportTemporalClipAccess );
