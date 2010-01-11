@@ -3,7 +3,5 @@
 !/README
 !/init.sh
 !/boost_unit_testing_framework.patch
-!/expat/Jamfile.v2
-!/libpng/Jamfile.v2
-!/zlib/Jamfile.v2
-!/openexr/Jamfile.v2
+!Jamfile.v2
+!Jamroot

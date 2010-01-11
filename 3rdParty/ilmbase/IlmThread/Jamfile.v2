@@ -1,0 +1,26 @@
+project IlmThread
+	: 
+	usage-requirements <include>.
+	;
+
+lib platformDependentFile :
+	[ glob *Win32*.cpp ]
+	: <os>NT <include>../Iex
+	;
+
+lib platformDependentFile :
+	[ glob *Posix*.cpp ]
+	: <include>../Iex
+	;
+
+lib IlmThread
+	:
+		IlmThread.cpp
+		IlmThreadMutex.cpp
+		IlmThreadPool.cpp
+		IlmThreadSemaphore.cpp
+		platformDependentFile/<link>static
+		../Iex//Iex
+	;
+
+install dist : IlmThread : <install-dependencies>on <install-type>LIB ;

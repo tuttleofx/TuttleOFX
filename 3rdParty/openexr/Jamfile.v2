@@ -17,11 +17,11 @@ project
 		<os>MACOSX:<include>./config 
 	 	<os>NT:<define>WIN32
 	 	<os>NT:<define>_WINDOWS
-        <threading>multi
-        <link>static
+ 		<threading>multi
+	        <link>static
 		<warnings-as-errors>off
     : usage-requirements
-    	<include>./IlmImf
+		<include>./IlmImf
 		<os>NT:<include>./config.windows
 		<os>LINUX:<include>./config 
 		<os>MACOSX:<include>./config 

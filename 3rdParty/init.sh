@@ -3,7 +3,7 @@
 # URL ARCHIVE UNCOMPRESED_ARCHIVE_DIR ALREADY_EXISTING_DIR
 getAndUncompressAndTransferToDir() {
 	getAndUncompress $1 $2
-	mv $4/* $3
+	cp -r $4/* $3
 	rm -rf $4
 	mv $3 $4
 }
