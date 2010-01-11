@@ -728,7 +728,7 @@ BitDepthEnum Clip::getPixelDepth( void ) const
 		}
 	}
 	// gone wrong ?
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		OFX::Log::error( true, "Unknown pixel depth property '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
 		bitDepth = eBitDepthNone;
@@ -751,7 +751,7 @@ PixelComponentEnum Clip::getPixelComponents( void ) const
 		}
 	}
 	// gone wrong ?
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		OFX::Log::error( true, "Unknown  pixel component type '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
 		pix = ePixelComponentNone;
@@ -774,7 +774,7 @@ BitDepthEnum Clip::getUnmappedPixelDepth( void ) const
 		}
 	}
 	// gone wrong ?
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		OFX::Log::error( true, "Unknown unmapped pixel depth property '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
 		bitDepth = eBitDepthNone;
@@ -797,7 +797,7 @@ PixelComponentEnum Clip::getUnmappedPixelComponents( void ) const
 		}
 	}
 	// gone wrong ?
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		OFX::Log::error( true, "Unknown unmapped pixel component type '%s' reported on clip '%s'", str.c_str(), _clipName.c_str() );
 		pix = ePixelComponentNone;
@@ -816,7 +816,7 @@ PreMultiplicationEnum Clip::getPreMultiplication( void ) const
 		premult = mapStrToPreMultiplicationEnum( str );
 	}
 	// gone wrong ?
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		OFX::Log::error( true, "Unknown premultiplication type '%s' reported on clip %s!", str.c_str(), _clipName.c_str() );
 		premult = eImageOpaque;
@@ -837,7 +837,7 @@ FieldEnum Clip::getFieldOrder( void ) const
 		                 "Field order '%s' reported on a clip %s is invalid, it must be none, lower or upper.", str.c_str(), _clipName.c_str() );
 	}
 	// gone wrong ?
-	catch( std::invalid_argument& e )
+	catch( std::invalid_argument& )
 	{
 		OFX::Log::error( true, "Unknown field order '%s' reported on a clip %s.", str.c_str(), _clipName.c_str() );
 		field = eFieldNone;
