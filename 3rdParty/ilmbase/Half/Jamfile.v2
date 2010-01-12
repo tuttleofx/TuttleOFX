@@ -7,24 +7,24 @@ install installExe : toFloat eLut : <location>$(HERE) ;
 make toFloat.h : installExe : @generateToFloat ;
 actions generateToFloat
 {
-	$(HERE)/toFloat>toFloat.h
+	$(HERE)/toFloat>$(HERE)/toFloat.h
 }
 
 make eLut.h : installExe : @generateELut ;
 actions generateELut
 {
-	$(HERE)/eLut>eLut.h
+	$(HERE)/eLut>$(HERE)/eLut.h
 }
 
 explicit toFloat eLut installExe eLut.h toFloat.h ;
 
 project Half
+	: requirements <include>.
 	: usage-requirements <include>.
 	;
 
 lib Half
 	: half.cpp
-	:
-		<dependency>eLut.h
-		<dependency>toFloat.h
+	: <implicit-dependency>eLut.h
+	  <implicit-dependency>toFloat.h
 	;
