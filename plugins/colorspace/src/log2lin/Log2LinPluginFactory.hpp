@@ -7,9 +7,6 @@ namespace plugin {
 namespace colorspace {
 namespace log2lin {
 
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
 mDeclarePluginFactory( Log2LinPluginFactory, {}, {} );
 
 }

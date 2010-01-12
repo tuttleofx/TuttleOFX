@@ -1,9 +1,5 @@
-/**
- * @author Eloi Du Bois.
- * @date   2009/10/11
- *
- */
-
+#include "PNGReaderPluginFactory.hpp"
+#include "PNGReaderDefinitions.hpp"
 #include "PNGReaderPlugin.hpp"
 #include "tuttle/plugin/ImageGilProcessor.hpp"
 #include "tuttle/plugin/Progress.hpp"
@@ -22,12 +18,7 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
-
-using namespace OFX;
-
-static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( PNGReaderPluginFactory, {}, {} );
+namespace reader {
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -68,19 +59,17 @@ void PNGReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 {
 	// Create the mandated output clip
 	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
 	assert( dstClip );
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( "Input filename" );
+	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
 	assert( filename );
-	filename->setScriptName( "filename" );
+	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
-
 }
 
 /**
@@ -97,18 +86,5 @@ OFX::ImageEffect* PNGReaderPluginFactory::createInstance( OfxImageEffectHandle h
 
 }
 }
-}
-
-namespace OFX
-{
-namespace Plugin
-{
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::png::PNGReaderPluginFactory p( "fr.hd3d.tuttle.pngreader", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }

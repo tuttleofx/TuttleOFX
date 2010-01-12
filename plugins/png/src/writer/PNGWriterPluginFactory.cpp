@@ -1,5 +1,6 @@
-#include "PNGWriterPlugin.hpp"
+#include "PNGWriterPluginFactory.hpp"
 #include "PNGWriterDefinitions.hpp"
+#include "PNGWriterPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -8,6 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <cmath>
+#include <cassert>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -16,13 +18,9 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace writer {
 
 using namespace OFX;
-
-static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( PNGWriterPluginFactory, {}, {}
-                       );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -36,7 +34,6 @@ void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment
-	//    desc.addSupportedContext(eContextGenerator);
 	desc.addSupportedContext( eContextGeneral );
 
 	// add supported pixel depths
@@ -63,24 +60,27 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::ContextEnum            context )
 {
 	ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
+	assert(srcClip);
 	srcClip->addSupportedComponent( ePixelComponentRGBA );
 	srcClip->addSupportedComponent( ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	assert(dstClip);
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setScriptName( "filename" );
+	assert(filename);
+	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
-	renderButton->setScriptName( "renderButton" );
+	assert(renderButton);
+	renderButton->setLabels( kRenderLabel, kRenderLabel, "Render step" );
 }
 
 /**
@@ -97,18 +97,5 @@ OFX::ImageEffect* PNGWriterPluginFactory::createInstance( OfxImageEffectHandle h
 
 }
 }
-}
-
-namespace OFX
-{
-namespace Plugin
-{
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::png::PNGWriterPluginFactory p( "fr.hd3d.tuttle.pngwriter", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }

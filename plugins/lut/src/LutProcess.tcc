@@ -6,6 +6,10 @@
  *
  */
 
+#if defined(_MSC_VER)
+	#pragma warning( disable : 4244 )
+#endif
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -39,7 +43,6 @@ LutProcess<View>::LutProcess( LutPlugin& instance )
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
 {
-	_sFilename = _plugin.fetchStringParam( kInputFilename );
 }
 
 template<class View>
@@ -47,12 +50,8 @@ void LutProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 {
 	try
 	{
-		std::string str;
-		_sFilename->getValue( str );
-
-		if( exists( str ) && !_reader.read( str ) )
-		{
-			_lut3D.reset( new TetraInterpolator(), _reader );
+		if ( _plugin.lutReader().readOk() ) {
+			_lut3D.reset( new TetraInterpolator(), _plugin.lutReader() );
 			boost::scoped_ptr< OFX::Image > src( _plugin.getSrcClip()->fetchImage( args.time ) );
 			if( !src.get() )
 				throw( ImageNotReadyException() );
@@ -63,8 +62,8 @@ void LutProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 
 			// Build destination view
 			this->_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
-			                                   static_cast<value_t*>( src->getPixelData() ),
-			                                   src->getRowBytes() );
+											   static_cast<value_t*>( src->getPixelData() ),
+											   src->getRowBytes() );
 
 			boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
 			if( !dst.get() )
@@ -82,7 +81,7 @@ void LutProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 
 			// Build destination view
 			this->_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-			                                   static_cast<value_t*>( dst->getPixelData() ), dst->getRowBytes() );
+											   static_cast<value_t*>( dst->getPixelData() ), dst->getRowBytes() );
 
 			// Set the render window
 			this->setRenderWindow( args.renderWindow );
@@ -90,7 +89,7 @@ void LutProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 			this->process();
 		}
 		else
-			throw( PluginException( "Unable to read lut file..." ) );
+			throw(PluginException("3DL need to be loaded !"));
 	}
 	catch( PluginException& e )
 	{
@@ -138,9 +137,9 @@ void LutProcess<View>::applyLut( View& dst, View& src )
 		for( size_t x = 0; x < w; ++x )
 		{
 			Color col = _lut3D.getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
-			( *dit )[0] = (dPix_t)col.x;
-			( *dit )[1] = (dPix_t)col.y;
-			( *dit )[2] = (dPix_t)col.z;
+			( *dit )[0] = static_cast<dPix_t>(col.x);
+			( *dit )[1] = static_cast<dPix_t>(col.y);
+			( *dit )[2] = static_cast<dPix_t>(col.z);
 			if( dst.num_channels() > 3 )
 				( *dit )[3] = channel_traits< typename channel_type< View >::type >::max_value();
 			++sit;

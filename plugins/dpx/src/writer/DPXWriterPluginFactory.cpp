@@ -80,12 +80,12 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setScriptName( "Output filename" );
+	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamBitDepth );
-	bitDepth->setScriptName( "bitDepth" );
+	bitDepth->setLabels( kParamBitDepthLabel, kParamBitDepthLabel, kParamBitDepthLabel );
 	bitDepth->appendOption( "16 bits output" );
 	bitDepth->appendOption( "12 bits output" );
 	bitDepth->appendOption( "10 bits output" );
@@ -93,17 +93,19 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-	componentsType->setScriptName( "componentsType" );
+	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, kParamComponentsTypeLabel );
 	componentsType->appendOption( "rgb  output" );
 	componentsType->appendOption( "rgba output" );
 	componentsType->appendOption( "abgr output" );
 	componentsType->setDefault( 1 );
 
 	OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
-	compressed->setLabels( "Compressed", "Compressed", "Remove unused bits (bit streaming)" );
+	compressed->setLabels( kParamCompressedLabel, kParamCompressedLabel, "Remove unused bits (bit streaming)" );
 	compressed->setDefault( false );
 
 	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
+	renderButton->setLabels( kRenderLabel, kRenderLabel, "Step rendering" );
+	renderButton->setHint( "Avoid to render the same image" );
 	renderButton->setScriptName( "renderButton" );
 }
 

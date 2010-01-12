@@ -64,14 +64,14 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	srcClipA->addSupportedComponent( ePixelComponentRGBA );
 	srcClipA->addSupportedComponent( ePixelComponentAlpha );
 	srcClipA->setSupportsTiles( kSupportTiles );
-	//    srcClipA->setOptional(false);
+	srcClipA->setOptional(false);
 
 	OFX::ClipDescriptor* srcClipB = desc.defineClip( kMergeSourceB );
 	assert( srcClipB );
 	srcClipB->addSupportedComponent( ePixelComponentRGBA );
 	srcClipB->addSupportedComponent( ePixelComponentAlpha );
 	srcClipB->setSupportsTiles( kSupportTiles );
-	//    srcClipB->setOptional(false);
+	srcClipB->setOptional(false);
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -83,6 +83,7 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	// Define some merging function
 	OFX::ChoiceParamDescriptor* mergeFunction = desc.defineChoiceParam( kMergeFunction );
 	assert( mergeFunction );
+	mergeFunction->setLabels( kMergeFunctionLabel, kMergeFunctionLabel, kMergeFunctionLabel );
 	mergeFunction->appendOption( "atop: Ab+B(1-a)" );
 	mergeFunction->appendOption( "average: (A+B)/2" );
 	mergeFunction->appendOption( "color: hue from B, saturation from B, lightness from A" );
@@ -120,7 +121,6 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	mergeFunction->setDefault( eMergeFunctionPlus );
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kMergeHelpButton );
-	helpButton->setScriptName( "&Help" );
 }
 
 /**

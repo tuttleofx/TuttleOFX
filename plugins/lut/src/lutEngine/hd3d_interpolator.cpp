@@ -5,9 +5,4 @@
 namespace tuttle
 {
 
-Color Interpolator::interpolate( const AbstractLut* lut, const Color& color ) const
-{
-	return interpolate( lut, color.x, color.y, color.z );
-}
-
 };

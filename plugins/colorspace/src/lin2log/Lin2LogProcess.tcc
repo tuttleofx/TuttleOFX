@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
+#include <limits>
 #include <vector>
 #include <iostream>
 #include <ofxsImageEffect.h>
@@ -34,13 +35,13 @@ static const float cineonBlackOffset = powf(10.0f, (95.0f-685.0f) / 300.0f);
 inline float toCineon(float v)
 {
 	float t = v*(1.0f-cineonBlackOffset)+cineonBlackOffset;
-	if (t <= 0.0f) return -INFINITY;
+	if (t <= 0.0f) return -std::numeric_limits<float>::infinity();
 	return (log10f(t)*300.0f+685.0f)/1023.0f;
 }
 
 struct lin2loger
 {
-	rgba32f_pixel_t operator()( const rgba32f_pixel_t& p ) const
+	inline rgba32f_pixel_t operator()( const rgba32f_pixel_t& p ) const
 	{
 		rgba32f_pixel_t p2;
 		for( int n = 0; n < 3; ++n )

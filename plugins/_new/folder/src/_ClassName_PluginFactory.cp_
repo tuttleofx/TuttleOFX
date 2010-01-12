@@ -79,7 +79,7 @@ void
     dstClip->setSupportsTiles( kSupportTiles );
 
     OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( k%CLASSNAME%HelpButton );
-    helpButton->setScriptName( "&Help" );
+    helpButton->setScriptName( "help" );
 }
 
 /**

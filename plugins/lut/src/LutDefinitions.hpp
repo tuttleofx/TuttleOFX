@@ -5,7 +5,8 @@ namespace tuttle {
 namespace plugin {
 namespace lut {
 
-#define kInputFilename  "Input filename"
+static const std::string kInputFilename = "filename";
+static const std::string kInputFilenameLabel = "3D Lut input filename";
 
 }
 }

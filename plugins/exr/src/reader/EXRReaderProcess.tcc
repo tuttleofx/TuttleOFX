@@ -22,7 +22,6 @@
 #include <boost/mpl/vector.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <boost/gil/extension/io/png_io.hpp>
 
 namespace tuttle {
 namespace plugin {

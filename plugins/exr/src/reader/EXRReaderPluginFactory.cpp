@@ -77,24 +77,33 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
 	assert( filename );
-	filename->setScriptName( "filename" );
+	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kOutputComponents );
 	assert( outComponents );
+	outComponents->setLabels( kOutputComponentsLabel, kOutputComponentsLabel, "Label the user wants to output" );
 	outComponents->setDefault(0);
+
 	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kOutputRedIs );
 	assert( outRedIs );
+	outRedIs->setLabels( kOutputRedIsLabel, kOutputRedIsLabel, kOutputRedIsLabel );
 	outRedIs->setDefault(0);
+
 	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kOutputGreenIs );
 	assert( outGreenIs );
+	outGreenIs->setLabels( kOutputGreenIsLabel, kOutputGreenIsLabel, kOutputGreenIsLabel );
 	outGreenIs->setDefault(0);
+
 	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kOutputBlueIs );
 	assert( outBlueIs );
+	outBlueIs->setLabels( kOutputBlueIsLabel, kOutputBlueIsLabel, kOutputBlueIsLabel );
 	outBlueIs->setDefault(0);
+
 	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kOutputAlphaIs );
 	assert( outAlphaIs );
+	outAlphaIs->setLabels( kOutputAlphaIsLabel, kOutputAlphaIsLabel, kOutputAlphaIsLabel );
 	outAlphaIs->setDefault(0);
 }
 

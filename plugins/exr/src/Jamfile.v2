@@ -16,10 +16,10 @@ project
         <include>../../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
+        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
     : build-dir $(DIST)/plugins/exr/obj
     ;
 
-use-project /png 	: ../../../3rdParty/libpng ;
 use-project /libexr : $(EXR_LIB) ;
 
 ###############################################################################
@@ -33,7 +33,6 @@ plugin exr :
         [ glob-tree *.cpp ]
         /tuttlelib//tuttleplugin/<link>static
         /boost/filesystem/<link>static
-        /png/<link>static
         /libexr/<link>static
         /supportlib/<link>static
         ;

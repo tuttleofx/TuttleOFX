@@ -37,12 +37,10 @@ class LutProcess
 {
 typedef typename View::value_type value_t;
 
-protected:
-	Lut3D _lut3D;        ///< Lut3D
-	LutReader _reader;       ///< Reader
-	LutPlugin&    _plugin;        ///< Rendering plugin
-	View _srcView;      ///< Source view
-	OFX::StringParam* _sFilename;    ///< Filename
+private:
+	Lut3D _lut3D;               ///< Lut3D
+	LutPlugin&  _plugin;        ///< Rendering plugin
+	View _srcView;              ///< Source view
 
 public:
 	LutProcess<View>( LutPlugin & instance );
