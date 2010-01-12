@@ -1,3 +1,4 @@
+#include "PNGWriterDefinitions.hpp"
 #include "PNGWriterPlugin.hpp"
 #include "PNGWriterProcess.hpp"
 
@@ -8,6 +9,7 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace writer {
 
 using namespace boost::gil;
 const static std::string kPngReaderHelpString = "<b>PNG Reader</b> file reader.  <br />";
@@ -111,19 +113,18 @@ void PNGWriterPlugin::render( const OFX::RenderArguments& args )
 
 void PNGWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	_bRenderOnce = false;
-	if( paramName == kRender )
-	{
-		_bRenderOnce = true;    // Hack stuff...
-	}
-	else if( paramName == kOutputFilename )
+	_bRenderOnce = true;
+	if( paramName == kOutputFilename )
 	{
 		std::string str;
 		_filepath->getValue( str );
-		_bRenderOnce = true;
+	}
+	else if (paramName == kPNGWriterHelpButton ) {
+		_bRenderOnce = false;
 	}
 }
 
+}
 }
 }
 }

@@ -90,19 +90,15 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	_bRenderOnce = false;
-	if( paramName == kRender )
-	{
-		_bRenderOnce = true;    // Hack stuff...
-	}
-	else if( paramName == kOutputFilename )
+	_bRenderOnce = true;
+	if( paramName == kOutputFilename )
 	{
 		std::string str;
 		_filepath->getValue( str );
-		_bRenderOnce = true;
 	}
 	else if( paramName == kDPXWriterHelpButton )
 	{
+		_bRenderOnce = false;
 		sendMessage( OFX::Message::eMessageMessage,
 		             "", // No XML resources
 		             kDPXWriterHelpString );

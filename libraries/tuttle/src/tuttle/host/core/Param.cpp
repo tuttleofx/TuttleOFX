@@ -195,7 +195,7 @@ ParamBoolean::ParamBoolean( ImageEffectNode&                                   e
 
 bool ParamBoolean::getDefault() const
 {
-	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault ) );
+	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault ) != 0 );
 }
 
 void ParamBoolean::get( bool& v ) OFX_EXCEPTION_SPEC

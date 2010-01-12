@@ -17,13 +17,15 @@ AbstractLut::AbstractLut()
 AbstractLut::AbstractLut( Interpolator* interpolator, size_t dimSize, double* data /* = NULL */ )
 	: _dimSize( dimSize ),
 	_data( data ),
-	_shared( false )
+	_shared( false ),
+	_interpolator(interpolator)
 {}
 
 AbstractLut::AbstractLut( Interpolator* interpolator, LutReader& reader )
 	: _dimSize( reader.steps().size() ),
 	_data( &reader.data()[0] ),
-	_shared( true )
+	_shared( true ),
+	_interpolator(interpolator)
 {}
 
 AbstractLut::~AbstractLut()

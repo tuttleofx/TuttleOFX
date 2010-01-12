@@ -64,38 +64,43 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::ContextEnum            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
+	assert(srcClip);
 	// Exr only supports RGB(A)
 	srcClip->addSupportedComponent( ePixelComponentRGBA );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	assert(dstClip);
 	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setScriptName( "Output filename" );
+	assert(filename);
+	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamBitDepth );
-	bitDepth->setScriptName( "bitDepth" );
+	assert(bitDepth);
+	bitDepth->setLabels( kParamBitDepthLabel, kParamBitDepthLabel, "Output bit depth" );
 	bitDepth->appendOption( "half float output" );
 	bitDepth->appendOption( "float output" );
 	bitDepth->appendOption( "32 bits output" );
 	bitDepth->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-	componentsType->setScriptName( "componentsType" );
+	assert(componentsType);
+	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, "Output component type" );
 	componentsType->appendOption( "gray  output" );
 	componentsType->appendOption( "rgb  output" );
 	componentsType->appendOption( "rgba output" );
 	componentsType->setDefault( 2 );
 
 	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
+	assert(renderButton);
 	renderButton->setScriptName( "renderButton" );
 }
 

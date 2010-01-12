@@ -8,6 +8,7 @@
 
 #include <ofxsParam.h>
 
+#include "CropDefinitions.hpp"
 #include "CropPlugin.hpp"
 #include "CropMargin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -27,13 +28,10 @@ namespace tuttle {
 namespace plugin {
 namespace crop {
 
+using namespace OFX;
+
 mDeclarePluginFactory( CropPluginFactory, {}, {}
                        );
-
-static const bool kSupportTiles          = true;
-static const bool kSupportTemporalAccess = false;
-
-using namespace OFX;
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -87,12 +85,14 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::BooleanParamDescriptor* bop = desc.defineBooleanParam( kParamFillBlack );
+	OFX::BooleanParamDescriptor* bop = desc.defineBooleanParam( kParamFillMode );
+	bop->setLabels(kParamFillModeLabel, kParamFillModeLabel, kParamFillModeLabel);
 	bop->setScriptName( "BandsOperations" );
 	bop->setHint("Fill bands with black color or repeat last pixel and reset Rod.");
 	bop->setDefault(true);
 
-	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormats );
+	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamPresets );
+	format->setLabels( kParamPresetsLabel, kParamPresetsLabel, kParamPresetsLabel );
 	format->setScriptName( "formats" );
 	format->appendOption( "1 : 1,33 (4/3) bands" );
 	format->appendOption( "1 : 1,77 (16/9e) bands" );
@@ -102,31 +102,32 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	format->setDefault( 0 );
 
 	OFX::BooleanParamDescriptor* shape = desc.defineBooleanParam( kParamDisplayRect );
+	shape->setLabels( kParamDisplayRectLabel, kParamDisplayRectLabel, kParamDisplayRectLabel );
 	shape->setDefault( false );
 
 	OFX::BooleanParamDescriptor* anamorphic = desc.defineBooleanParam( kParamAnamorphic );
-	anamorphic->setLabels( "Anamorphic", "Anamorphic", "Anamorphic (stretch)" );
+	anamorphic->setLabels( kParamAnamorphicLabel, kParamAnamorphicLabel, "Anamorphic (stretch)" );
 	anamorphic->setDefault( false );
 	anamorphic->setIsSecret( true );
 
 	OFX::GroupParamDescriptor* bandsGroup = desc.defineGroupParam( "Bands sizes" );
 	OFX::IntParamDescriptor* upBand       = desc.defineIntParam( kParamUp );
-	upBand->setScriptName( "upBand" );
+	upBand->setLabels( kParamUpLabel, kParamUpLabel, kParamUpLabel );
 	upBand->setParent( *bandsGroup );
 
 	OFX::IntParamDescriptor* downBand = desc.defineIntParam( kParamDown );
-	downBand->setScriptName( "downBand" );
+	downBand->setLabels( kParamDownLabel, kParamDownLabel, kParamDownLabel );
 	downBand->setParent( *bandsGroup );
 
 	OFX::IntParamDescriptor* leftBand = desc.defineIntParam( kParamLeft );
-	leftBand->setScriptName( "leftBand" );
+	leftBand->setLabels( kParamLeftLabel, kParamLeftLabel, kParamLeftLabel );
 	leftBand->setParent( *bandsGroup );
 
 	OFX::IntParamDescriptor* rightBand = desc.defineIntParam( kParamRight );
-	rightBand->setScriptName( "rightBand" );
+	rightBand->setLabels( kParamRightLabel, kParamRightLabel, kParamRightLabel );
 	rightBand->setParent( *bandsGroup );
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kCropHelpButton );
 	helpButton->setScriptName( "&Help" );
 }
 

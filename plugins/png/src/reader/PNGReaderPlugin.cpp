@@ -7,6 +7,7 @@
  */
 #include "PNGReaderPlugin.hpp"
 #include "PNGReaderProcess.hpp"
+#include "PNGReaderDefinitions.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -18,6 +19,7 @@ using namespace boost::filesystem;
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace reader {
 
 using namespace boost::gil;
 const static std::string kPngReaderHelpString = "<b>PNG Reader</b> file reader.  <br />";
@@ -26,8 +28,8 @@ PNGReaderPlugin::PNGReaderPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle ),
 	_dstClip( 0 )
 {
-	_dstClip  = fetchClip( "Output" );
-	_filepath = fetchStringParam( "Input filename" );
+	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
+	_filepath = fetchStringParam( kInputFilename );
 	std::string sFilepath;
 	_filepath->getValue( sFilepath );
 	if( exists( sFilepath ) )
@@ -122,7 +124,7 @@ void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kPngReaderHelpString );
 	}
-	else if( paramName == "Input filename" )
+	else if( paramName == kInputFilename )
 	{
 		std::string sFilepath;
 		_filepath->getValue( sFilepath );
@@ -157,6 +159,7 @@ void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	clipPreferences.setPixelAspectRatio( *_dstClip, 720.0 / 720.0 );
 }
 
+}
 }
 }
 }

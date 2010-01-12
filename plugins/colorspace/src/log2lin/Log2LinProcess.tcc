@@ -38,7 +38,7 @@ inline float fromCineon(float x)
 
 struct log2liner
 {
-	rgba32f_pixel_t operator()( const rgba32f_pixel_t& p ) const
+	inline rgba32f_pixel_t operator()( const rgba32f_pixel_t& p ) const
 	{
 		rgba32f_pixel_t p2;
 		for( int n = 0; n < 3; ++n )

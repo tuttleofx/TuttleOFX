@@ -7,6 +7,7 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace reader {
 
 using namespace boost::gil;
 
@@ -34,6 +35,7 @@ protected:
 	OFX::Clip* _dstClip;      ///< Destination image clip
 };
 
+}
 }
 }
 }

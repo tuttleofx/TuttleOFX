@@ -28,9 +28,6 @@ namespace plugin {
 namespace colorspace {
 namespace lin2log {
 
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -45,7 +42,6 @@ Lin2LogPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
     desc.setPluginGrouping( "tuttle" );
 
     // add the supported contexts, only filter at the moment
-//    desc.addSupportedContext(eContextGenerator);
     desc.addSupportedContext( eContextGeneral );
 
     // add supported pixel depths

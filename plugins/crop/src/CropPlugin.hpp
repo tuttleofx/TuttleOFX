@@ -16,20 +16,6 @@ namespace tuttle {
 namespace plugin {
 namespace crop {
 
-static const std::string kParamFillBlack   = "Fill bands with black";
-static const std::string kParamUp          = "Up";
-static const std::string kParamDown        = "Down";
-static const std::string kParamLeft        = "Left";
-static const std::string kParamRight       = "Right";
-static const std::string kParamFormats     = "Pre-defined formats";
-static const std::string kParamDisplayRect = "Display overlay rectangle";
-static const std::string kParamAnamorphic  = "Anamorphic";
-static const int k1_1_33                   = 0;
-static const int k1_1_77                   = 1;
-static const int k1_1_85                   = 2;
-static const int k1_2_35                   = 3;
-static const int k1_2_40                   = 4;
-
 /**
  * @brief
  *
@@ -40,7 +26,7 @@ public:
 	CropPlugin( OfxImageEffectHandle handle );
 	OFX::Clip* getSrcClip() const;
 	OFX::Clip* getDstClip() const;
-	OfxRectD   getCropRect();
+	OfxRectD   getCropRect(OfxRectD *clipROD = NULL);
 	bool       displayRect();
 
 public:

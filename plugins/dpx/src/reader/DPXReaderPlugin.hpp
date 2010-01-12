@@ -33,10 +33,10 @@ public:
 
 protected:
 	bgil::point2<ptrdiff_t>    _imageDims;       ///< Image file dimensions
-	tuttle::io::DpxImage _dpxImg;          ///< Dpx image reader
-	OFX::StringParam* _filepath;
+	tuttle::io::DpxImage       _dpxImg;          ///< Dpx image reader
+	OFX::StringParam*          _filepath;        ///< Dpx filepath
 	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _dstClip;      ///< Destination image clip
+	OFX::Clip*                 _dstClip;      ///< Destination image clip
 };
 
 }

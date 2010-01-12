@@ -1,4 +1,5 @@
 #include "DPXReaderPlugin.hpp"
+#include "DPXReaderDefinitions.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/common/image/gilViewTypes.hpp>
@@ -36,7 +37,7 @@ DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
 {
-	_filepath = instance.fetchStringParam( "Input filename" );
+	_filepath = instance.fetchStringParam( kInputFilename );
 	assert( _filepath != NULL );
 }
 

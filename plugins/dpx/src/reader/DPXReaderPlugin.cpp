@@ -1,3 +1,4 @@
+#include "DPXReaderDefinitions.hpp"
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderProcess.hpp"
 
@@ -21,8 +22,8 @@ DPXReaderPlugin::DPXReaderPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle ),
 	_dstClip( 0 )
 {
-	_dstClip  = fetchClip( "Output" );
-	_filepath = fetchStringParam( "Input filename" );
+	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
+	_filepath = fetchStringParam( kInputFilename );
 	std::string sFilepath;
 	_filepath->getValue( sFilepath );
 	if( exists( sFilepath ) )
@@ -89,7 +90,7 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kDpxReaderHelpString );
 	}
-	else if( paramName == "Input filename" )
+	else if( paramName == kInputFilename )
 	{
 		std::string sFilepath;
 		_filepath->getValue( sFilepath );

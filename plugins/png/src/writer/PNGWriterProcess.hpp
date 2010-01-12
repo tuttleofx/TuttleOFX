@@ -15,6 +15,7 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace writer {
 
 /**
  * @brief Base class for the denoising processor
@@ -45,6 +46,7 @@ public:
 	static void writeImage( View& src, std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 
+}
 }
 }
 }
