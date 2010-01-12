@@ -48,6 +48,8 @@ lib tuttlehost :
     [ glob src/tuttle/host/*/*/*.cpp ]
     /boost/system
     /boost/filesystem
+    /boost/thread
+    /boost/date_time
     /expat/<link>static
     /png/<link>static
     shell32
