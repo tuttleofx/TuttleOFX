@@ -1,8 +1,6 @@
 #ifndef StaticSingleton_HPP
 #define StaticSingleton_HPP
 
-#include <cstdlib>
-
 /**
  * @brief StaticSingleton<ClassStaticSingleton> Can transform a class into static Singleton (by inheriting this class)
  *
@@ -44,7 +42,7 @@ T StaticSingleton<T>::inst;
 template <class T>
 StaticSingleton<T>::~StaticSingleton() {}
 
-///macro to implement StaticSingleton. Use it in derivated class declaration
+///macro to implement StaticSingleton. Use it in derived class declaration
 #define MAKE_StaticSingleton( Class ) \
 	public: \
 		friend class StaticSingleton < Class >; \
