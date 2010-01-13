@@ -27,13 +27,6 @@ LutPlugin::LutPlugin( OfxImageEffectHandle handle )
 	_srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_dstClip = fetchClip( kOfxImageEffectOutputClipName );
 	_sFilename = fetchStringParam( kInputFilename );
-	std::string str;
-	_sFilename->getValue( str );
-	if( exists( str ) )
-	{
-		if ( _lutReader.read( str ) )
-			COUT_ERROR("Unable to read lut file..." );
-	}
 }
 
 OFX::Clip* LutPlugin::getSrcClip() const

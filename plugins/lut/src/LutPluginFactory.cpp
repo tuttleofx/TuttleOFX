@@ -82,9 +82,9 @@ void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX:
 	// Controls
 	StringParamDescriptor *filename = desc.defineStringParam( kInputFilename );
 	assert(filename);
+	filename->setDefault("");
 	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
-	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );
 	helpButton->setScriptName( "help" );
