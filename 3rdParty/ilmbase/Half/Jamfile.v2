@@ -1,30 +1,48 @@
+#
+# Jamfile for ilmbase Half package
+# Guillaume Chatelet
+#
+
+# this Jamfile is a bit different because we have to 
+# generate eLut.h and toFloat.h header files
+
 path-constant HERE : . ;
 
+# declaring toFloat and eLut two programs compiled from toFloat.cpp and eLut.cpp
 exe toFloat : toFloat.cpp ;
 exe eLut : eLut.cpp ;
+
+# as we want to execute them easily, we want them to be copied into this directory
 install installExe : toFloat eLut : <location>$(HERE) ;
 
+# declaring the generators
+
+# toFloat.h is created by calling the action generateToFloat, it depends on the installExe target
 make toFloat.h : installExe : @generateToFloat ;
 actions generateToFloat
 {
-	$(HERE)/toFloat>toFloat.h
+	$(HERE)/toFloat>$(HERE)/toFloat.h
 }
 
+# eLut.h is created by calling the action generateELut, it depends on the installExe target
 make eLut.h : installExe : @generateELut ;
 actions generateELut
 {
-	$(HERE)/eLut>eLut.h
+	$(HERE)/eLut>$(HERE)/eLut.h
 }
 
+# we don't want all the previous target to be executed implicitly
+# so declaring them explicit
 explicit toFloat eLut installExe eLut.h toFloat.h ;
 
 project Half
+	: requirements <include>.
 	: usage-requirements <include>.
 	;
 
 lib Half
 	: half.cpp
-	:
-		<dependency>eLut.h
-		<dependency>toFloat.h
+	:  # needed to declare this target needs eLut.h and toFloat.h to be built
+	  <implicit-dependency>eLut.h
+	  <implicit-dependency>toFloat.h
 	;
