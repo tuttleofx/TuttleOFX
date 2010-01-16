@@ -24,7 +24,9 @@ class ProcessNode
 public:
 	enum EProcessNodeType
 	{
-		eImageEffect = 0
+		eImageEffectNode,
+		eParamNode,
+		eGraphNode,
 	};
 
 public:

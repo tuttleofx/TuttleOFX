@@ -64,9 +64,8 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, Of
 	: OfxhPlugin( pb, pi, pl )
 	, _pc( pc )
 	, _pluginHandle( 0 )
-	, _baseDescriptor( NULL )
+	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( this ) )
 {
-	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
 	//	loadAndDescribeActions();
 }
 
@@ -82,9 +81,8 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
 	, _pc( pc )
 	, _pluginHandle( NULL )
-	, _baseDescriptor( NULL )
+	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( this ) )
 {
-	_baseDescriptor = core::Core::instance().getHost().makeDescriptor( this );
 	//	loadAndDescribeActions();
 }
 
@@ -96,18 +94,24 @@ OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 {
 	if( getPluginHandle() )
 	{
-		OfxPlugin* op = _pluginHandle->getOfxPlugin();
-		op->mainEntry( kOfxActionUnload, 0, 0, 0 );
+		getPluginHandle()->getOfxPlugin()->mainEntry( kOfxActionUnload, 0, 0, 0 );
 	}
-	delete _baseDescriptor;
 }
 
 bool OfxhImageEffectPlugin::operator==( const OfxhImageEffectPlugin& other ) const
 {
-	return true; /// @todo tuttle !!!!!!!!!!!!!!!
+	if( OfxhPlugin::operator!=( static_cast<const OfxhPlugin&>(other) ) ||
+	    *_baseDescriptor == *(other._baseDescriptor) )
+		return false;
+	return true;
 }
 
 APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler()
+{
+	return _pc;
+}
+
+const APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler() const
 {
 	return _pc;
 }
@@ -136,7 +140,7 @@ void OfxhImageEffectPlugin::addContext( const std::string& context )
 	//TCOUT( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
 }
 
-void OfxhImageEffectPlugin::saveXML( std::ostream& os )
+void OfxhImageEffectPlugin::saveXML( std::ostream& os ) const
 {
 	APICache::propertySetXMLWrite( os, getDescriptor().getProperties(), 6 );
 }
@@ -512,9 +516,9 @@ void OfxhImageEffectPluginCache::endXmlParsing()
 	_currentPlugin = 0;
 }
 
-void OfxhImageEffectPluginCache::saveXML( OfxhPlugin* ip, std::ostream& os ) const
+void OfxhImageEffectPluginCache::saveXML( const OfxhPlugin* const ip, std::ostream& os ) const
 {
-	OfxhImageEffectPlugin* p = dynamic_cast<OfxhImageEffectPlugin*>( ip );
+	const OfxhImageEffectPlugin* const p = dynamic_cast<const OfxhImageEffectPlugin* const>( ip );
 
 	p->saveXML( os );
 }

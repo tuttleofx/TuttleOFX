@@ -75,6 +75,7 @@ namespace ofx {
 /// class representing a DLL/Shared Object/etc
 class OfxhBinary
 {
+	typedef OfxhBinary This;
 /// destruction will close the library and invalidate
 /// any function pointers returned by lookupSymbol()
 
@@ -97,6 +98,18 @@ public:
 	OfxhBinary( const std::string& binaryPath );
 
 	~OfxhBinary() { unload(); }
+
+	bool operator==( const This& other ) const
+	{
+		if( _binaryPath != other._binaryPath ||
+			_invalid != other._invalid ||
+			_exists != other._exists ||
+			_time != other._time ||
+			_size != other._size )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	bool isLoaded() const { return _dlHandle != 0; }
 

@@ -57,6 +57,7 @@ class OfxhImageEffectPluginCache;
  */
 class OfxhImageEffectPlugin : public OfxhPlugin
 {
+typedef OfxhImageEffectPlugin This;
 OfxhImageEffectPluginCache& _pc;
 
 /// map to store contexts in
@@ -71,7 +72,7 @@ boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
 // this comes off Descriptor's property set after a describe
 // context independent
 /// @todo tuttle: ???
-OfxhImageEffectNodeDescriptor* _baseDescriptor;     ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
+boost::scoped_ptr<OfxhImageEffectNodeDescriptor> _baseDescriptor;     ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
 public:
 	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl );
@@ -89,9 +90,11 @@ public:
 	virtual ~OfxhImageEffectPlugin();
 
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
+	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==(other); }
 
 	/// @return the API handler this plugin was constructed by
 	APICache::OfxhPluginAPICacheI& getApiHandler();
+	const APICache::OfxhPluginAPICacheI& getApiHandler() const;
 
 	/// @brief get the base image effect descriptor
 	OfxhImageEffectNodeDescriptor& getDescriptor();
@@ -105,7 +108,7 @@ public:
 	void addContext( const std::string& context );
 	void addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied );
 
-	virtual void saveXML( std::ostream& os );
+	virtual void saveXML( std::ostream& os ) const;
 
 	void              initContexts();
 	const ContextSet& getContexts() const;
@@ -233,7 +236,7 @@ public:
 
 	virtual void endXmlParsing();
 
-	virtual void saveXML( OfxhPlugin* ip, std::ostream& os ) const;
+	virtual void saveXML( const OfxhPlugin* const ip, std::ostream& os ) const;
 
 	void confirmPlugin( OfxhPlugin* p );
 

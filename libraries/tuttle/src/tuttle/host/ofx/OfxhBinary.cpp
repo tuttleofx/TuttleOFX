@@ -128,12 +128,12 @@ void OfxhBinary::ref()
 	{
 		load();
 	}
-	_users++;
+	++_users;
 }
 
 void OfxhBinary::unref()
 {
-	_users--;
+	--_users;
 	if( _users == 0 )
 	{
 		unload();

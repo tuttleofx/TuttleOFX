@@ -125,7 +125,7 @@ void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 
 		_plugins.reserve( pluginCount );
 
-		for( int i = 0; i < pluginCount; i++ )
+		for( int i = 0; i < pluginCount; ++i )
 		{
 			OfxPlugin* plug = ( *getPlug )( i );
 
@@ -140,12 +140,6 @@ void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 
 OfxhPluginBinary::~OfxhPluginBinary()
 {
-	std::vector<OfxhPlugin*>::iterator i = _plugins.begin();
-	while( i != _plugins.end() )
-	{
-		delete *i;
-		i++;
-	}
 }
 
 OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstractHost* host ) : _p( p )
@@ -157,7 +151,7 @@ OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstra
 	_op                          = getPlug( p->getIndex() );
 	if( !_op )
 	{
-		throw core::exception::LogicError( "Can't found plugin at index 'todo' in plugin '" + _p->getIdentifier() + "'" ); // p->getIndex()
+		throw core::exception::LogicError( "Can't found plugin at index '"+boost::lexical_cast<std::string>(p->getIndex())+"' in plugin '" + _p->getIdentifier() + "'" );
 	}
 	_op->setHost( host->getHandle() );
 }
@@ -248,11 +242,6 @@ OfxhPluginCache::OfxhPluginCache()
 
 OfxhPluginCache::~OfxhPluginCache()
 {
-	for( std::list<OfxhPluginBinary*>::iterator it = _binaries.begin(); it != _binaries.end(); ++it )
-	{
-		delete ( *it );
-	}
-	_binaries.clear();
 }
 
 void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
@@ -329,7 +318,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				_binaries.push_back( pb );
 				_knownBinFiles.insert( binpath );
 
-				for( int j = 0; j < pb->getNPlugins(); j++ )
+				for( int j = 0; j < pb->getNPlugins(); ++j )
 				{
 					OfxhPlugin* plug                         = &pb->getPlugin( j );
 					const APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
@@ -375,7 +364,7 @@ std::string OfxhPluginCache::seekPluginFile( const std::string& baseName ) const
 
 	for( std::list<std::string>::const_iterator paths = _pluginDirs.begin();
 	     paths != _pluginDirs.end();
-	     paths++ )
+	     ++paths )
 	{
 		std::string candidate = *paths + DIRSEP + baseName;
 		FILE* f               = fopen( candidate.c_str(), "r" );
@@ -394,37 +383,34 @@ void OfxhPluginCache::scanPluginFiles()
 
 	for( std::list<std::string>::iterator paths = _pluginPath.begin();
 	     paths != _pluginPath.end();
-	     paths++ )
+	     ++paths )
 	{
 		scanDirectory( foundBinFiles, *paths, _nonrecursePath.find( *paths ) == _nonrecursePath.end() );
 	}
 
-	std::list<OfxhPluginBinary*>::iterator i = _binaries.begin();
+	OfxhPluginBinaryList::iterator i = _binaries.begin();
 	while( i != _binaries.end() )
 	{
-		OfxhPluginBinary* pb = *i;
-
-		if( foundBinFiles.find( pb->getFilePath() ) == foundBinFiles.end() )
+		if( foundBinFiles.find( i->getFilePath() ) == foundBinFiles.end() )
 		{
 			// the binary was in the cache, but was not on the path
 			_dirty = true;
 			i      = _binaries.erase( i );
-			delete pb;
 		}
 		else
 		{
-			bool binChanged = pb->hasBinaryChanged();
+			bool binChanged = i->hasBinaryChanged();
 
 			// the binary was in the cache, but the binary has changed and thus we need to reload
 			if( binChanged )
 			{
-				pb->loadPluginInfo( this );
+				i->loadPluginInfo( this );
 				_dirty = true;
 			}
 
-			for( int j = 0; j < pb->getNPlugins(); ++j )
+			for( int j = 0; j < i->getNPlugins(); ++j )
 			{
-				OfxhPlugin* plug                   = &pb->getPlugin( j );
+				OfxhPlugin* plug                   = &i->getPlugin( j );
 				APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
 
 				if( binChanged )
@@ -678,19 +664,18 @@ void OfxhPluginCache::writePluginCache( std::ostream& os ) const
 	#endif
 
 	os << "<cache version=\"" << _cacheVersion << "\">\n";
-	for( std::list<OfxhPluginBinary*>::const_iterator i = _binaries.begin(); i != _binaries.end(); ++i )
+	for( OfxhPluginBinaryList::const_iterator i = _binaries.begin(); i != _binaries.end(); ++i )
 	{
-		OfxhPluginBinary* b = *i;
 		os << "<bundle>\n";
 		os << "  <binary "
-		   << XML::attribute( "bundle_path", b->getBundlePath() )
-		   << XML::attribute( "path", b->getFilePath() )
-		   << XML::attribute( "mtime", int(b->getFileModificationTime() ) )
-		   << XML::attribute( "size", int(b->getFileSize() ) ) << "/>\n";
+		   << XML::attribute( "bundle_path", i->getBundlePath() )
+		   << XML::attribute( "path", i->getFilePath() )
+		   << XML::attribute( "mtime", int(i->getFileModificationTime() ) )
+		   << XML::attribute( "size", int(i->getFileSize() ) ) << "/>\n";
 
-		for( int j = 0; j < b->getNPlugins(); ++j )
+		for( int j = 0; j < i->getNPlugins(); ++j )
 		{
-			OfxhPlugin* p = &b->getPlugin( j );
+			const OfxhPlugin* p = &i->getPlugin( j );
 			os << "  <plugin "
 			   << XML::attribute( "name", p->getRawIdentifier() )
 			   << XML::attribute( "index", p->getIndex() )
