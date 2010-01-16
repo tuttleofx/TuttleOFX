@@ -1,13 +1,15 @@
-#include "PNGWriterPlugin.hpp"
-#include "PNGWriterDefinitions.hpp"
-#include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include "PNGReaderPluginFactory.hpp"
+#include "PNGReaderDefinitions.hpp"
+#include "PNGReaderPlugin.hpp"
+#include "tuttle/plugin/ImageGilProcessor.hpp"
+#include "tuttle/plugin/Progress.hpp"
+#include "tuttle/plugin/PluginException.hpp"
 
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <cmath>
+#include <cassert>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -16,33 +18,26 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
-
-using namespace OFX;
-
-static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( PNGWriterPluginFactory, {}, {}
-                       );
+namespace reader {
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "PNGWriter", "PNGWriter",
-	                "PNG File writer" );
+	desc.setLabels( "PNGReader", "PNGReader",
+	                "PNG File reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment
-	//    desc.addSupportedContext(eContextGenerator);
-	desc.addSupportedContext( eContextGeneral );
+	desc.addSupportedContext( eContextGenerator );
 
 	// add supported pixel depths
+	desc.addSupportedBitDepth( eBitDepthFloat );
 	desc.addSupportedBitDepth( eBitDepthUByte );
 	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
 
 	// set a few flags
 	desc.setSingleInstance( false );
@@ -59,28 +54,22 @@ void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void PNGReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                 OFX::ContextEnum            context )
 {
-	ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
-	srcClip->addSupportedComponent( ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
-
+	// Create the mandated output clip
 	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	assert( dstClip );
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setScriptName( "filename" );
+	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	assert( filename );
+	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
-
-	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
-	renderButton->setScriptName( "renderButton" );
 }
 
 /**
@@ -89,26 +78,13 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* PNGWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* PNGReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                           OFX::ContextEnum     context )
 {
-	return new PNGWriterPlugin( handle );
+	return new PNGReaderPlugin( handle );
 }
 
 }
 }
-}
-
-namespace OFX
-{
-namespace Plugin
-{
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::png::PNGWriterPluginFactory p( "fr.hd3d.tuttle.pngwriter", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }

@@ -312,7 +312,7 @@ public:
 	 */
 	virtual const bool getContinuousSamples() const //= 0;
 	{
-		return getProperties().getDoubleProperty( kOfxImageClipPropContinuousSamples );
+		return getProperties().getDoubleProperty( kOfxImageClipPropContinuousSamples ) != 0;
 	}
 
 	/**  override this to fill in the image at the given time.

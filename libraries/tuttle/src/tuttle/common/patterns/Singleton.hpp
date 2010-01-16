@@ -1,8 +1,6 @@
 #ifndef Singleton_HPP
 #define Singleton_HPP
 
-#include <cstdlib>
-
 /**
  * @brief Singleton<ClassSingleton> Can transform a class into Singleton (by inheriting this class)
  *
@@ -17,9 +15,8 @@ template <class T>
 class Singleton
 {
 private:
-	static T* inst; //instance de la classe
+	static T* inst;
 
-	// personne ne peut les utiliser
 	Singleton( const Singleton& ) {}
 	Singleton& operator=( const Singleton& ) {}
 
@@ -56,7 +53,7 @@ T * Singleton<T>::inst = NULL;
 template <class T>
 Singleton<T>::~Singleton() {}
 
-///macro to implement singleton. Use it in derivated class declaration
+///macro to implement singleton. Use it in derived class declaration
 #define MAKE_SINGLETON( Class ) \
 	public: \
 		friend class Singleton < Class >; \
@@ -64,7 +61,7 @@ Singleton<T>::~Singleton() {}
 		Class() {} \
 		~Class() {}
 
-///macro to implement singleton. Use it in derivated class declaration
+///macro to implement singleton. Use it in derived class declaration
 #define MAKE_SINGLETON_WITHCONSTRUCTORS( Class ) \
 	public: \
 		friend class Singleton < Class >; \

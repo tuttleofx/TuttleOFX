@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX pngWriter Plugin
+## Main BJam makefile for TuttleOFX png Plugin
 ## author Eloi Du Bois
 ###############################################################################
 import os ;
@@ -8,36 +8,29 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
+    : requirements
         <include>src
-        <include>../../libraries/tuttle/src/
+        <include>../../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/pngWriter/obj
+    : build-dir $(DIST)/plugins/png/obj
     ;
 
-use-project /png 	: ../../3rdParty/libpng ;
+use-project /png 	: ../../../3rdParty/libpng ;
 
 ###############################################################################
 # Dependencies
 ###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin pngWriter : 
-        [ glob src/*.cpp ]
-        /boost/filesystem/<link>static
+plugin png : 
+        [ glob-tree *.cpp ]
         /tuttlelib//tuttleplugin/<link>static
-        /supportlib
-        /png
-        opengl
+        /supportlib/<link>static
+        /boost/filesystem/<link>static
+        /png/<link>static
         ;
 
 ###############################################################################
@@ -45,8 +38,9 @@ plugin pngWriter :
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	pngWriter
-	:	<os>NT:<location>$(DIST)/plugins/pngWriter/bundle/pngWriter.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/pngWriter/bundle/pngWriter.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/pngWriter/bundle/pngWriter.ofx.bundle/Contents/MacOS
+	:	png
+	:	<os>NT:<location>$(DIST)/plugins/png/bundle/png.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/png/bundle/png.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/png/bundle/png.ofx.bundle/Contents/MacOS
 	;
+

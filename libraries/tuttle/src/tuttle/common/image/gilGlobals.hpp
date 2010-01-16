@@ -12,7 +12,7 @@ using namespace boost::gil;
 struct alpha_max_filler
 {
 	template< class P>
-	P operator()( const P& p ) const
+	inline P operator()( const P& p ) const
 	{
 		gil_function_requires<ColorSpacesCompatibleConcept<
 		                          typename color_space_type<P>::type,
@@ -24,21 +24,37 @@ struct alpha_max_filler
 
 };
 
+struct black_filler
+{
+	template< class P>
+	inline P operator()( const P& p ) const
+	{
+		P p2;
+		for( int v = 0; v < num_channels<P>::type::value; ++v )
+		{
+			p2[v] = 0;
+		}
+		return p2;
+	}
+
+};
+
 template <class View>
 struct image_from_view
 {
 	typedef typename View::value_type value_type; // pixel_t
-	typedef typename bgil::image<value_type, bgil::is_planar<View>::value> type;
+	typedef typename boost::gil::image<value_type, boost::gil::is_planar<View>::value> type;
 };
 
 /**
  * @brief Get black color value
  */
 template<class View>
-static inline typename View::value_type get_black( const View& view )
+static inline const typename View::value_type get_black( const View& view )
 {
 	typename View::value_type black;
-	color_convert( bgil::gray8_pixel_t( 0 ), black );
+	typedef pixel<bits8, gray_layout_t > comp_pixel_t;
+	color_convert( (const comp_pixel_t)( 0 ), black );
 	return black;
 }
 
@@ -46,23 +62,25 @@ template<class View>
 static inline typename View::value_type get_white( const View& view )
 {
 	typename View::value_type white;
-	color_convert( bgil::gray8_pixel_t( channel_traits< typename channel_type< View >::type >::max_value() ), white );
+	color_convert( gray8_pixel_t( channel_traits< typename channel_type< View >::type >::max_value() ), white );
 	return white;
 }
 
 template <class View>
-void fill_alpha_max( const View& view )
+void fill_alpha_max( const View& v )
 {
-	transform_pixels( view, view, alpha_max_filler() );
+	transform_pixels( v, v, alpha_max_filler() );
 }
 
 /**
  * @brief Remplit une image en noir (tous les canneaux a 0 sauf la couche alpha a 1 (ou 255, ou ...))
  */
 template <class View>
-void fill_black( const View& view )
+void fill_black( View& v )
 {
-	fill_pixels( view, get_black( view ) );
+	transform_pixels( v, v, black_filler() );
+	// Following doesn't work for built-in pixel types
+//	fill_pixels( v, get_black( v ) );
 }
 
 template <class View>
@@ -80,12 +98,12 @@ inline float domain_max_value()
 struct color_clamper_converter
 {
 	template <typename SrcP, typename DstP>
-	void operator()( const SrcP& src, DstP& dst ) const
+	inline void operator()( const SrcP& src, DstP& dst ) const
 	{
 		typedef typename color_space_type<SrcP>::type SrcColorSpace;
 		typedef typename color_space_type<DstP>::type DstColorSpace;
 		SrcP tmpPix;
-		for( int v = 0; v < num_channels<SrcP>::type::value; v++ )
+		for( int v = 0; v < num_channels<SrcP>::type::value; ++v )
 		{
 			if( src[v] > channel_traits< typename channel_type< SrcP >::type >::max_value() )
 				tmpPix[v] = channel_traits< typename channel_type< SrcP >::type >::max_value();
@@ -109,15 +127,15 @@ typename color_converted_view_type<S_VIEW, DstP, color_clamper_converter>::type 
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
-bgil::point2<T> operator*( const bgil::point2<T>& p, double t ) { return bgil::point2<T >( p.x * t, p.y * t ); }
+point2<T> operator*( const point2<T>& p, double t ) { return point2<T >( p.x * t, p.y * t ); }
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
-bgil::point2<T> operator*( const bgil::point2<T>& a, const bgil::point2<T>& b ) { return bgil::point2<T>( a.x * b.x, a.y * b.y ); }
+point2<T> operator*( const point2<T>& a, const point2<T>& b ) { return point2<T>( a.x * b.x, a.y * b.y ); }
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
-bgil::point2<T>& operator*=( bgil::point2<T>& p, double t ) { p.x *= t; p.y *= t; return p; }
+point2<T>& operator*=( point2<T>& p, double t ) { p.x *= t; p.y *= t; return p; }
 
 /**
  * @brief Compute min & max value from a view
@@ -179,8 +197,8 @@ D_VIEW& normalize( const S_VIEW& src, D_VIEW& dst, const T a, const T b )
 	int h          = dst.height();
 
 	if( m == M )
-		return fill( dst, 0 );
-	if( m != a || M != b )
+		fill_black( dst );
+	else if( m != a || M != b )
 	{
 		int nc = dst.num_channels();
 		for( int y = 0; y < h; ++y )

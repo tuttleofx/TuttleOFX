@@ -18,6 +18,7 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace writer {
 
 using namespace boost::gil;
 
@@ -111,6 +112,7 @@ void PNGWriterProcess<View>::writeImage( View& src, std::string& filepath ) thro
 	png_write_view( filepath, clamp<rgb8_pixel_t>( flippedView ) );
 }
 
+}
 }
 }
 }

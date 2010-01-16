@@ -4,6 +4,7 @@
  *
  */
 
+#include "DPXReaderDefinitions.hpp"
 #include "DPXReaderPluginFactory.hpp"
 #include "DPXReaderPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -71,8 +72,8 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( "Input filename" );
-	filename->setScriptName( "filename" );
+	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 }

@@ -15,9 +15,12 @@
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 
+#include "PNGReaderDefinitions.hpp"
+
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace reader {
 
 using namespace boost::gil;
 namespace bfs = boost::filesystem;
@@ -33,7 +36,7 @@ PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
 {
-	_filepath = instance.fetchStringParam( "Input filename" );
+	_filepath = instance.fetchStringParam( kInputFilename );
 	assert( _filepath != NULL );
 }
 
@@ -125,6 +128,7 @@ View& PNGReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 	return dst;
 }
 
+}
 }
 }
 }

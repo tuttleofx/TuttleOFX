@@ -6,6 +6,7 @@
  *
  */
 
+#include "CropDefinitions.hpp"
 #include "CropPlugin.hpp"
 #include "CropProcess.hpp"
 #include <ofxsImageEffect.h>
@@ -21,14 +22,13 @@ namespace crop {
 
 using namespace boost::math;
 using namespace boost::gil;
-const static std::string kCropHelpString = "<b>image volet</b> is used to add bands to an image (e.g 16/9 bands).  <br />";
 
 CropPlugin::CropPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
 	_srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_dstClip = fetchClip( kOfxImageEffectOutputClipName );
-	_formats = fetchChoiceParam( kParamFormats );
+	_formats = fetchChoiceParam( kParamPresets );
 	_rect    = fetchBooleanParam( kParamDisplayRect );
 }
 
@@ -122,13 +122,13 @@ void CropPlugin::render( const OFX::RenderArguments& args )
 
 void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == "Help" )
+	if( paramName == kCropHelpButton )
 	{
 		sendMessage( OFX::Message::eMessageMessage,
 		             "", // No XML resources
 		             kCropHelpString );
 	}
-	else if( paramName == kParamFormats )
+	else if( paramName == kParamPresets )
 	{
 		// Compute bands sizes in pixels
 		int f, bandSize;
@@ -197,28 +197,33 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 	}
 }
 
-OfxRectD CropPlugin::getCropRect()
+OfxRectD CropPlugin::getCropRect( OfxRectD *clipROD /* = NULL */ )
 {
+	OfxRectD tmp;
+	if (!clipROD) {
+		tmp = getSrcClip()->getRegionOfDefinition( timeLineGetTime() );
+		clipROD = &tmp;
+	}
 	OfxRectD rect;
 	double par               = getSrcClip()->getPixelAspectRatio();
-	OfxRectD clipROD         = getSrcClip()->getRegionOfDefinition( timeLineGetTime() );
 	OFX::IntParam* upBand    = fetchIntParam( kParamUp );
 	OFX::IntParam* downBand  = fetchIntParam( kParamDown );
 	OFX::IntParam* leftBand  = fetchIntParam( kParamLeft );
 	OFX::IntParam* rightBand = fetchIntParam( kParamRight );
 
 	rect.x1 = par * leftBand->getValue();
-	rect.x2 = clipROD.x2 - par * rightBand->getValue();
+	rect.x2 = clipROD->x2 - par * rightBand->getValue();
 	rect.y1 = downBand->getValue();
-	rect.y2 = clipROD.y2 - upBand->getValue();
+	rect.y2 = clipROD->y2 - upBand->getValue();
 	return rect;
 }
 
 bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	OFX::BooleanParam* bop = fetchBooleanParam( kParamFillBlack );
+	OFX::BooleanParam* bop = fetchBooleanParam( kParamFillMode );
 	if ( bop->getValue() == false ) {
-		rod = getCropRect();
+		OfxRectD rect = getSrcClip()->getRegionOfDefinition( args.time );
+		rod = getCropRect( &rect );
 	} else {
 		rod = getSrcClip()->getRegionOfDefinition(args.time);
 	}

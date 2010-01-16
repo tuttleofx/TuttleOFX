@@ -30,23 +30,23 @@ int main( int argc, char** argv )
 
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
-		read1.getParam( "Input filename" ).set( "input.png" );
-		read2.getParam( "Input filename" ).set( "input.dpx" );
-		read3.getParam( "Input filename" ).set( "input.exr" );
+		read1.getParam( "filename" ).set( "input.png" );
+		read2.getParam( "filename" ).set( "input.dpx" );
+		read3.getParam( "filename" ).set( "input.exr" );
 	//	crop1.getParam( "Down" ).set( 400 );
-		write1.getParam( "Output filename" ).set( "output1.png" );
-		write2.getParam( "Output filename" ).set( "output2.dpx" );
-		write3.getParam( "Output filename" ).set( "output3.exr" );
-		write4.getParam( "Output filename" ).set( "output4.png" );
+		write1.getParam( "filename" ).set( "output1.png" );
+		write2.getParam( "filename" ).set( "output2.dpx" );
+		write3.getParam( "filename" ).set( "output3.exr" );
+		write4.getParam( "filename" ).set( "output4.png" );
 		OfxPointD renderScale = { 1.0, 1.0 };
-		read1.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		read2.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		read3.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		read1.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		read2.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		read3.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 	//	crop1.paramInstanceChangedAction( "Down", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write1.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write2.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write3.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write4.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		write1.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		write2.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		write3.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+		write4.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
 		TCOUT( "__________________________________________________3" );
 		g.connect( read1, invert1 );

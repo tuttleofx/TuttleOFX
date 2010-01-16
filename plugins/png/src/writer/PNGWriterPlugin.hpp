@@ -7,6 +7,8 @@
 namespace tuttle {
 namespace plugin {
 namespace png {
+namespace writer {
+
 using namespace boost::gil;
 
 /**
@@ -33,6 +35,7 @@ protected:
 	bool _bRenderOnce;   ///< Avoid multiple useless writing
 };
 
+}
 }
 }
 }

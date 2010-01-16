@@ -15,13 +15,14 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/regex.h>
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/actor/assign_actor.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_assign_actor.hpp>
+#include <boost/spirit/include/classic_core.hpp>
 #include <boost/filesystem/fstream.hpp>
 
 using namespace boost;
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 namespace fs = boost::filesystem;
 using namespace std;
 
@@ -32,10 +33,12 @@ bool LutReader::read( const fs::path& filename )
 {
 	stringstream ss;
 	fs::ifstream file;
+	_bReadOk = false;
+	_data.clear();
+	_steps.clear();
 
 	file.open( filename, std::ios::in );
 	ss << file.rdbuf();
-
 	gram_3dl g( *this );
 	parse_info<> info = parse( ss.str().c_str(), g >> eps_p );
 
@@ -49,6 +52,8 @@ bool LutReader::read( const fs::path& filename )
 			( *it ) *= norm;
 		}
 	}
+	if (info.full)
+		_bReadOk = true;
 
 	return !info.full;
 }

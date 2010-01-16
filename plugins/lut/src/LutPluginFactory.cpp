@@ -26,10 +26,9 @@ namespace tuttle {
 namespace plugin {
 namespace lut {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
-mDeclarePluginFactory( LutPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( LutPluginFactory, {}, {} );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -68,26 +67,27 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  */
 void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::ContextEnum context )
 {
-	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	srcClip->addSupportedComponent( ePixelComponentRGBA );
 	srcClip->addSupportedComponent( ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
-	filename->setScriptName( "filename" );
+	StringParamDescriptor *filename = desc.defineStringParam( kInputFilename );
+	assert(filename);
+	filename->setDefault("");
+	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( eStringTypeFilePath );
-	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );
-	helpButton->setScriptName( "&Help" );
+	helpButton->setScriptName( "help" );
 }
 
 /**

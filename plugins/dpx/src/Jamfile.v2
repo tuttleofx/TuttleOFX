@@ -13,6 +13,7 @@ project
         <include>../../../libraries/tuttle/src/
         <threading>multi
         <os>NT:<define>_WINDOWS
+        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
     : build-dir $(DIST)/plugins/dpx/obj
     ;
 

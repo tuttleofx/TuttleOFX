@@ -1,5 +1,5 @@
 /**
- * @file Log2LinProcess.hpp
+ * @file Log2LinDefinition.hpp
  * @brief
  * @author
  * @date    08/01/10 15:39
@@ -16,9 +16,12 @@ namespace plugin {
 namespace colorspace {
 namespace log2lin {
 
+static const bool   kSupportTiles                 = false;
+static const bool   kSupportTemporalClipAccess    = false;
+
 const static std::string kLog2LinHelpButton = "Help";
 
-const static std::string kLog2LinHelpString = "<b>Logarithmic to linear convertion</b> plugin is used to ???.  <br />";
+const static std::string kLog2LinHelpString = "<b>Logarithmic to linear convertion</b> plugin is used to convert log image to linear.  <br />";
 
 
 }

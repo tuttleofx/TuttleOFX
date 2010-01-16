@@ -10,6 +10,8 @@
 #define LUT_PLUGIN_H
 
 #include <ofxsImageEffect.h>
+#include "lutEngine/lut_reader.h"
+#include "lutEngine/hd3d_lut.h"
 
 namespace tuttle {
 namespace plugin {
@@ -25,6 +27,8 @@ public:
 	LutPlugin( OfxImageEffectHandle handle );
 	OFX::Clip* getSrcClip() const;
 	OFX::Clip* getDstClip() const;
+	const LutReader & lutReader() const;
+	LutReader & lutReader();
 
 public:
 	void render( const OFX::RenderArguments& args );
@@ -32,8 +36,10 @@ public:
 
 protected:
 	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _srcClip;      ///< Source image clip
-	OFX::Clip* _dstClip;      ///< Destination image clip
+	OFX::Clip* _srcClip;             ///< Source image clip
+	OFX::Clip* _dstClip;             ///< Destination image clip
+	OFX::StringParam* _sFilename;    ///< Filename
+	LutReader _lutReader;               ///< Reader
 
 };
 
