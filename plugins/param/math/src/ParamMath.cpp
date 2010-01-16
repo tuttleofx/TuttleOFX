@@ -69,7 +69,6 @@ void ParamMathPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
     desc.setPluginGrouping("tuttle");
 
     OFX::ChoiceParamDescriptor *op = desc.defineChoiceParam( "operation" );
-    op->setScriptName( "operation" );
     op->appendOption( "Multiply" );
     op->appendOption( "Divide" );
     op->appendOption( "Addition" );
@@ -77,12 +76,9 @@ void ParamMathPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
     op->appendOption( "Modulo" );
     op->setDefault( 0 );
     
-    OFX::Descriptor<ParamType> *a = desc.define<ParamType>( "A" );
-    a->setScriptName( "a" );
-    OFX::Descriptor<ParamType> *b = desc.define<ParamType>( "B" );
-    b->setScriptName( "b" );
+    OFX::Descriptor<ParamType> *a = desc.define<ParamType>( "a" );
+    OFX::Descriptor<ParamType> *b = desc.define<ParamType>( "b" );
     OFX::Descriptor<ParamType> *output = desc.define<ParamType>( "Output" );
-    output->setScriptName( "output" );
 }
 
 template <class ParamType>
