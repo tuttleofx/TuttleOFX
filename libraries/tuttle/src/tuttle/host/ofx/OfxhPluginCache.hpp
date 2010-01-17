@@ -45,8 +45,6 @@
 #include <iostream>
 #include <algorithm>
 
-#include <cstdio>
-
 
 namespace tuttle {
 namespace host {
