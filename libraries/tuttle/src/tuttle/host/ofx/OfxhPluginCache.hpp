@@ -35,6 +35,9 @@
 #include "OfxhBinary.hpp"
 
 #include "expat.h"
+#include <boost/serialization/serialization.hpp>
+#include <boost/ptr_container/serialize_ptr_list.hpp>
+#include <boost/ptr_container/serialize_ptr_vector.hpp>
 
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -119,6 +122,19 @@ public:
 	}
 	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_pluginApi);
+		ar & BOOST_SERIALIZATION_NVP(_apiVersion);
+		ar & BOOST_SERIALIZATION_NVP(_identifier);
+		ar & BOOST_SERIALIZATION_NVP(_rawIdentifier);
+		ar & BOOST_SERIALIZATION_NVP(_versionMajor);
+		ar & BOOST_SERIALIZATION_NVP(_versionMinor);
+	}
+
 public:
 	const std::string& getPluginApi() const
 	{
@@ -190,14 +206,7 @@ public:
 
 	virtual ~OfxhPlugin() {}
 
-	bool operator==( const This& other ) const
-	{
-		if( PluginDesc::operator!=(other) ||
-//		    *(_binary) != *(other._binary) ||
-		    _index != other._index )
-			return false;
-		return true;
-	}
+	bool operator==( const This& other ) const;
 	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	OfxhPluginBinary* getBinary()
@@ -239,6 +248,15 @@ public:
 		return false;
 	}
 
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(PluginDesc);
+		ar & BOOST_SERIALIZATION_NVP(_binary);
+		ar & BOOST_SERIALIZATION_NVP(_index);
+	}
 };
 
 class OfxhPluginHandle;
@@ -307,7 +325,8 @@ public:
 			return false;
 		return true;
 	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+//	bool operator!=( const This& other ) const { return !This::operator==(other); }
+	bool operator!=( const This& other ) const { return true; }
 
 
 	time_t getFileModificationTime() const
@@ -365,6 +384,19 @@ public:
 		return _plugins[idx];
 	}
 
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_binary);
+		ar & BOOST_SERIALIZATION_NVP(_filePath);
+		ar & BOOST_SERIALIZATION_NVP(_bundlePath);
+		ar & BOOST_SERIALIZATION_NVP(_plugins);
+		ar & BOOST_SERIALIZATION_NVP(_fileModificationTime);
+		ar & BOOST_SERIALIZATION_NVP(_fileSize);
+		ar & BOOST_SERIALIZATION_NVP(_binaryChanged);
+	}
 };
 
 /// wrapper class for Plugin/PluginBinary.  use in a RAIA fashion to make sure the binary gets unloaded when needed and not before.
@@ -421,18 +453,18 @@ protected:
 	std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
 	std::set<std::string> _knownBinFiles;
 
-	OfxhPluginBinary* _xmlCurrentBinary;
-	OfxhPlugin* _xmlCurrentPlugin;
-
 	std::list<PluginCacheSupportedApi> _apiHandlers;
 
-	void scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse );
 
+	// internal state
 	bool _ignoreCache;
 	std::string _cacheVersion;
-
 	bool _dirty;
 	bool _enablePluginSeek; ///< Turn off to make all seekPluginFile() calls return an empty string
+
+	// temporary values
+	OfxhPluginBinary* _xmlCurrentBinary;
+	OfxhPlugin* _xmlCurrentPlugin;
 
 public:
 	/// ctor, which inits _pluginPath to default locations and not much else
@@ -441,6 +473,10 @@ public:
 	/// dtor
 	~OfxhPluginCache();
 
+protected:
+	void scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse );
+	
+public:
 	/// get the list in which plugins are sought
 	const std::list<std::string>& getPluginPath()
 	{
@@ -513,6 +549,18 @@ public:
 		return _plugins;
 	}
 
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
+		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
+		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
+		ar & BOOST_SERIALIZATION_NVP(_binaries);
+		ar & BOOST_SERIALIZATION_NVP(_plugins);
+		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
+	}
 };
 
 }

@@ -58,6 +58,16 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
+bool OfxhPlugin::operator==( const This& other ) const
+{
+	if( PluginDesc::operator!=(other) ||
+		*(_binary) != *(other._binary) ||
+		_index != other._index )
+		return false;
+	return true;
+}
+
+
 #if defined ( __linux__ )
 
  #define DIRLIST_SEP_CHARS ":;"
