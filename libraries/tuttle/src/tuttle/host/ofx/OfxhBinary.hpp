@@ -29,6 +29,9 @@
 #ifndef OFXH_BINARY_H
 #define OFXH_BINARY_H
 
+
+#include <boost/serialization/serialization.hpp>
+
 #include <string>
 #include <iostream>
 
@@ -141,6 +144,25 @@ public:
 	/// look up a symbol in the binary file and return it as a pointer.
 	/// returns null pointer if not found, or if the library is not loaded.
 	void* findSymbol( const std::string& symbol );
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_binaryPath);
+		ar & BOOST_SERIALIZATION_NVP(_invalid);
+		ar & BOOST_SERIALIZATION_NVP(_exists);
+		ar & BOOST_SERIALIZATION_NVP(_size);
+		ar & BOOST_SERIALIZATION_NVP(_time);
+//		ar & BOOST_SERIALIZATION_NVP(_users);
+
+		if( typename Archive::is_loading() )
+		{
+			_users = 0;
+			load();
+		}
+	}
 };
 
 }

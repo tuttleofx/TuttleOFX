@@ -36,6 +36,9 @@
 
 #include "expat.h"
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/set.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/vector.hpp>
 #include <boost/ptr_container/serialize_ptr_list.hpp>
 #include <boost/ptr_container/serialize_ptr_vector.hpp>
 
@@ -254,7 +257,7 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(PluginDesc);
-		ar & BOOST_SERIALIZATION_NVP(_binary);
+//		ar & BOOST_SERIALIZATION_NVP(_binary); /// @todo tuttle: just a link
 		ar & BOOST_SERIALIZATION_NVP(_index);
 	}
 };
@@ -271,7 +274,7 @@ typedef OfxhPluginBinary This;
 friend class OfxhPluginHandle;
 
 protected:
-	OfxhBinary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.h
+	OfxhBinary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.hpp
 	std::string _filePath; ///< full path to the file
 	std::string _bundlePath; ///< path to the .bundle directory
 	boost::ptr_vector<OfxhPlugin> _plugins; ///< my plugins
@@ -325,8 +328,7 @@ public:
 			return false;
 		return true;
 	}
-//	bool operator!=( const This& other ) const { return !This::operator==(other); }
-	bool operator!=( const This& other ) const { return true; }
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 
 	time_t getFileModificationTime() const
@@ -389,7 +391,9 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_binary);
+		ar.register_type( static_cast<OfxhPlugin*>(NULL) );
+
+//		ar & BOOST_SERIALIZATION_NVP(_binary); /// @todo tuttle: serialize !!!!!!!!!!!!!!
 		ar & BOOST_SERIALIZATION_NVP(_filePath);
 		ar & BOOST_SERIALIZATION_NVP(_bundlePath);
 		ar & BOOST_SERIALIZATION_NVP(_plugins);
@@ -554,11 +558,12 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
+		ar.register_type( static_cast<OfxhPluginBinary*>(NULL) );
 		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
 		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
 		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
 		ar & BOOST_SERIALIZATION_NVP(_binaries);
-		ar & BOOST_SERIALIZATION_NVP(_plugins);
+//		ar & BOOST_SERIALIZATION_NVP(_plugins);
 		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
 	}
 };
