@@ -62,7 +62,7 @@ static void* fetchSuite( OfxPropertySetHandle hostProps, const char* suiteName, 
 {
 	property::OfxhSet* properties = reinterpret_cast<property::OfxhSet*>( hostProps );
 
-	OfxhAbstractHost* host = (OfxhAbstractHost*)properties->getPointerProperty( kOfxHostSupportHostPointer );
+	OfxhHost* host = (OfxhHost*)properties->getPointerProperty( kOfxHostSupportHostPointer );
 
 	if( host )
 		return host->fetchSuite( suiteName, suiteVersion );
@@ -71,7 +71,7 @@ static void* fetchSuite( OfxPropertySetHandle hostProps, const char* suiteName, 
 }
 
 // Base Host
-OfxhAbstractHost::OfxhAbstractHost() : _properties( hostStuffs )
+OfxhHost::OfxhHost() : _properties( hostStuffs )
 {
 	_host.host       = _properties.getHandle();
 	_host.fetchSuite = tuttle::host::ofx::fetchSuite;
@@ -80,14 +80,14 @@ OfxhAbstractHost::OfxhAbstractHost() : _properties( hostStuffs )
 	_properties.setPointerProperty( kOfxHostSupportHostPointer, this );
 }
 
-OfxhAbstractHost::~OfxhAbstractHost() {}
+OfxhHost::~OfxhHost() {}
 
-OfxHost* OfxhAbstractHost::getHandle()
+OfxHost* OfxhHost::getHandle()
 {
 	return &_host;
 }
 
-void* OfxhAbstractHost::fetchSuite( const char* suiteName, const int suiteVersion )
+void* OfxhHost::fetchSuite( const char* suiteName, const int suiteVersion )
 {
 	if( strcmp( suiteName, kOfxPropertySuite ) == 0  && suiteVersion == 1 )
 	{

@@ -107,7 +107,7 @@ void* OfxhImageEffectHost::fetchSuite( const char* suiteName, const int suiteVer
 		return getMultithreadSuite( suiteVersion );
 	}
 	else /// otherwise just grab the base class one, which is props and memory
-		return tuttle::host::ofx::OfxhAbstractHost::fetchSuite( suiteName, suiteVersion );
+		return tuttle::host::ofx::OfxhHost::fetchSuite( suiteName, suiteVersion );
 }
 
 }

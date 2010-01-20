@@ -145,6 +145,14 @@ public:
 
 	/// does changing the named param re-tigger a clip preferences action
 	bool isClipPreferencesSlaveParam( const std::string& s ) const;
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_properties);
+	}
 };
 
 /**
@@ -604,6 +612,17 @@ public:
 	/// find the most chromatic components out of the two. Override this if you define
 	/// more chromatic components
 	virtual const std::string& findMostChromaticComponents( const std::string& a, const std::string& b ) const;
+
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
+//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet); /// @todo tuttle: serialize
+//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
+	}
 };
 
 }

@@ -26,27 +26,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef OFX_PLUGIN_CACHE_HPP
-#define OFX_PLUGIN_CACHE_HPP
+#ifndef OFXH_PLUGIN_CACHE_HPP
+#define OFXH_PLUGIN_CACHE_HPP
 
 #include "ofxCore.h"
 #include "OfxhProperty.hpp"
 #include "OfxhPluginAPICache.hpp"
-#include "OfxhBinary.hpp"
+#include "OfxhPluginBinary.hpp"
 
 #include "expat.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/list.hpp>
-#include <boost/serialization/vector.hpp>
+//#include <boost/serialization/vector.hpp>
 #include <boost/ptr_container/serialize_ptr_list.hpp>
-#include <boost/ptr_container/serialize_ptr_vector.hpp>
-
+//#include <boost/ptr_container/serialize_ptr_vector.hpp>
 #include <boost/ptr_container/ptr_list.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/algorithm/string.hpp>
+//#include <boost/ptr_container/ptr_vector.hpp>
+
 #include <string>
-#include <vector>
+//#include <vector>
 #include <set>
 #include <iostream>
 #include <algorithm>
@@ -56,374 +55,9 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-class OfxhAbstractHost;
-
-// forward delcarations
-class PluginDesc;
-class OfxhPlugin;
-class OfxhPluginBinary;
-class OfxhPluginCache;
-
-/// C++ version of the information kept inside an OfxPlugin struct
-
-class PluginDesc
-{
-	typedef PluginDesc This;
-protected:
-	std::string _pluginApi; ///< the API I implement
-	int _apiVersion; ///< the version of the API
-
-	std::string _identifier; ///< the identifier of the plugin
-	std::string _rawIdentifier; ///< the original identifier of the plugin
-	int _versionMajor; ///< the plugin major version
-	int _versionMinor; ///< the plugin minor version
-
-public:
-
-	PluginDesc() {}
-
-	virtual ~PluginDesc() {}
-
-	PluginDesc( const std::string& api,
-	            int                apiVersion,
-	            const std::string& identifier,
-	            const std::string& rawIdentifier,
-	            int                versionMajor,
-	            int                versionMinor )
-		: _pluginApi( api ),
-		_apiVersion( apiVersion ),
-		_identifier( identifier ),
-		_rawIdentifier( rawIdentifier ),
-		_versionMajor( versionMajor ),
-		_versionMinor( versionMinor ) {}
-
-	/**
-	 * constructor for the case where we have already loaded the plugin binary and
-	 * are populating this object from it
-	 */
-	PluginDesc( OfxPlugin* ofxPlugin )
-		: _pluginApi( ofxPlugin->pluginApi ),
-		_apiVersion( ofxPlugin->apiVersion ),
-		_identifier( ofxPlugin->pluginIdentifier ),
-		_rawIdentifier( ofxPlugin->pluginIdentifier ),
-		_versionMajor( ofxPlugin->pluginVersionMajor ),
-		_versionMinor( ofxPlugin->pluginVersionMinor )
-	{
-		boost::to_lower( _identifier );
-	}
-
-	bool operator==( const This& other ) const
-	{
-		if( _pluginApi != other._pluginApi ||
-		    _apiVersion != other._apiVersion ||
-		    _identifier != other._identifier ||
-		    _rawIdentifier != other._rawIdentifier ||
-		    _versionMajor != other._versionMajor ||
-		    _versionMinor != other._versionMinor )
-			return false;
-		return true;
-	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
-	{
-		ar & BOOST_SERIALIZATION_NVP(_pluginApi);
-		ar & BOOST_SERIALIZATION_NVP(_apiVersion);
-		ar & BOOST_SERIALIZATION_NVP(_identifier);
-		ar & BOOST_SERIALIZATION_NVP(_rawIdentifier);
-		ar & BOOST_SERIALIZATION_NVP(_versionMajor);
-		ar & BOOST_SERIALIZATION_NVP(_versionMinor);
-	}
-
-public:
-	const std::string& getPluginApi() const
-	{
-		return _pluginApi;
-	}
-
-	int getApiVersion() const
-	{
-		return _apiVersion;
-	}
-
-	const std::string& getIdentifier() const
-	{
-		return _identifier;
-	}
-
-	const std::string& getRawIdentifier() const
-	{
-		return _rawIdentifier;
-	}
-
-	int getVersionMajor() const
-	{
-		return _versionMajor;
-	}
-
-	int getVersionMinor() const
-	{
-		return _versionMinor;
-	}
-};
-
 /**
- * class that we use to manipulate a plugin.
- *
- * Owned by the PluginBinary it lives inside.
- * Plugins can only be pass about either by pointer or reference.
+ * for later
  */
-class OfxhPlugin : public PluginDesc
-{
-	typedef OfxhPlugin This;
-	OfxhPlugin( const This& ); ///< hidden
-	OfxhPlugin& operator=( const This& ); ///< hidden
-
-protected:
-	OfxhPluginBinary* _binary; ///< the file I live inside
-	int _index; ///< where I live inside that file
-
-public:
-	OfxhPlugin();
-
-	/**
-	 * construct this based on the struct returned by the getNthPlugin() in the binary
-	 */
-	OfxhPlugin( OfxhPluginBinary* bin, int idx, OfxPlugin* o ) : PluginDesc( o ),
-		_binary( bin ),
-		_index( idx ) {}
-
-	/**
-	 * construct me from the cache
-	 */
-	OfxhPlugin( OfxhPluginBinary* bin, int idx, const std::string& api,
-	            int apiVersion, const std::string& identifier,
-	            const std::string& rawIdentifier,
-	            int majorVersion, int minorVersion )
-		: PluginDesc( api, apiVersion, identifier, rawIdentifier, majorVersion, minorVersion ),
-		_binary( bin ),
-		_index( idx ) {}
-
-	virtual ~OfxhPlugin() {}
-
-	bool operator==( const This& other ) const;
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
-
-	OfxhPluginBinary* getBinary()
-	{
-		return _binary;
-	}
-
-	const OfxhPluginBinary* getBinary() const
-	{
-		return _binary;
-	}
-
-	int getIndex() const
-	{
-		return _index;
-	}
-
-	virtual APICache::OfxhPluginAPICacheI& getApiHandler() = 0;
-	virtual const APICache::OfxhPluginAPICacheI& getApiHandler() const = 0;
-
-	bool trumps( OfxhPlugin* other )
-	{
-		int myMajor    = getVersionMajor();
-		int theirMajor = other->getVersionMajor();
-
-		int myMinor    = getVersionMinor();
-		int theirMinor = other->getVersionMinor();
-
-		if( myMajor > theirMajor )
-		{
-			return true;
-		}
-
-		if( myMajor == theirMajor && myMinor > theirMinor )
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
-	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(PluginDesc);
-//		ar & BOOST_SERIALIZATION_NVP(_binary); /// @todo tuttle: just a link
-		ar & BOOST_SERIALIZATION_NVP(_index);
-	}
-};
-
-class OfxhPluginHandle;
-
-/// class that represents a binary file which holds plugins
-
-class OfxhPluginBinary
-{
-typedef OfxhPluginBinary This;
-/// has a set of plugins inside it and which it owns
-/// These are owned by a PluginCache
-friend class OfxhPluginHandle;
-
-protected:
-	OfxhBinary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.hpp
-	std::string _filePath; ///< full path to the file
-	std::string _bundlePath; ///< path to the .bundle directory
-	boost::ptr_vector<OfxhPlugin> _plugins; ///< my plugins
-	time_t _fileModificationTime; ///< used as a time stamp to check modification times, used for caching
-	size_t _fileSize; ///< file size last time we check, used for caching
-	bool _binaryChanged; ///< whether the timestamp/filesize in this cache is different from that in the actual binary
-
-public:
-	/// create one from the cache.  this will invoke the Binary() constructor which
-	/// will stat() the file.
-
-	explicit OfxhPluginBinary( const std::string& file, const std::string& bundlePath, time_t mtime, size_t size )
-		: _binary( file ),
-		_filePath( file ),
-		_bundlePath( bundlePath ),
-		_fileModificationTime( mtime ),
-		_fileSize( size ),
-		_binaryChanged( false )
-	{
-		if( _fileModificationTime != _binary.getTime() || _fileSize != _binary.getSize() )
-		{
-			_binaryChanged = true;
-		}
-	}
-
-	/// constructor which will open a library file, call things inside it, and then
-	/// create Plugin objects as appropriate for the plugins exported therefrom
-
-	explicit OfxhPluginBinary( const std::string& file, const std::string& bundlePath, OfxhPluginCache* cache )
-		: _binary( file ),
-		_filePath( file ),
-		_bundlePath( bundlePath ),
-		_binaryChanged( false )
-	{
-		loadPluginInfo( cache );
-	}
-
-	/// dtor
-	virtual ~OfxhPluginBinary();
-
-
-	bool operator==( const This& other ) const
-	{
-		if( _binary != other._binary ||
-			_filePath != other._filePath ||
-			_bundlePath != other._bundlePath ||
-			_plugins != other._plugins ||
-			_fileModificationTime != other._fileModificationTime ||
-			_fileSize != other._fileSize ||
-			_binaryChanged != other._binaryChanged )
-			return false;
-		return true;
-	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
-
-
-	time_t getFileModificationTime() const
-	{
-		return _fileModificationTime;
-	}
-
-	size_t getFileSize() const
-	{
-		return _fileSize;
-	}
-
-	const std::string& getFilePath() const
-	{
-		return _filePath;
-	}
-
-	const std::string& getBundlePath() const
-	{
-		return _bundlePath;
-	}
-
-	bool hasBinaryChanged() const
-	{
-		return _binaryChanged;
-	}
-
-	bool isLoaded() const
-	{
-		return _binary.isLoaded();
-	}
-
-	void addPlugin( OfxhPlugin* pe )
-	{
-		_plugins.push_back( pe );
-	}
-
-	void loadPluginInfo( OfxhPluginCache* );
-
-	/// how many plugins?
-	int getNPlugins() const
-	{
-		return (int) _plugins.size();
-	}
-
-	/// get a plugin
-	OfxhPlugin& getPlugin( int idx )
-	{
-		return _plugins[idx];
-	}
-
-	/// get a plugin
-	const OfxhPlugin& getPlugin( int idx ) const
-	{
-		return _plugins[idx];
-	}
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
-	{
-		ar.register_type( static_cast<OfxhPlugin*>(NULL) );
-
-//		ar & BOOST_SERIALIZATION_NVP(_binary); /// @todo tuttle: serialize !!!!!!!!!!!!!!
-		ar & BOOST_SERIALIZATION_NVP(_filePath);
-		ar & BOOST_SERIALIZATION_NVP(_bundlePath);
-		ar & BOOST_SERIALIZATION_NVP(_plugins);
-		ar & BOOST_SERIALIZATION_NVP(_fileModificationTime);
-		ar & BOOST_SERIALIZATION_NVP(_fileSize);
-		ar & BOOST_SERIALIZATION_NVP(_binaryChanged);
-	}
-};
-
-/// wrapper class for Plugin/PluginBinary.  use in a RAIA fashion to make sure the binary gets unloaded when needed and not before.
-
-class OfxhPluginHandle
-{
-OfxhPlugin* _p;
-OfxhPluginBinary* _b;
-OfxPlugin* _op;
-
-public:
-	OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstractHost* _host );
-	virtual ~OfxhPluginHandle();
-
-	OfxPlugin*       getOfxPlugin()       { return _op; }
-	const OfxPlugin* getOfxPlugin() const { return _op; }
-
-	OfxPlugin* operator->() { return _op; }
-
-};
-
-/// for later
-
 struct PluginCacheSupportedApi
 {
 	APICache::OfxhPluginAPICacheI* _handler;
@@ -442,8 +76,9 @@ struct PluginCacheSupportedApi
 
 };
 
-/// Where we keep our plugins.
-
+/**
+ * Where we keep our plugins.
+ */
 class OfxhPluginCache
 {
 	typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
@@ -559,11 +194,12 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 		ar.register_type( static_cast<OfxhPluginBinary*>(NULL) );
+		
 		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
 		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
 		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
 		ar & BOOST_SERIALIZATION_NVP(_binaries);
-//		ar & BOOST_SERIALIZATION_NVP(_plugins);
+//		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
 		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
 	}
 };

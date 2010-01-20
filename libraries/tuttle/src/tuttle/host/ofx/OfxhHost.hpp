@@ -55,15 +55,15 @@ class OfxhParamDescriptor;
  * Base class for all objects passed to a plugin by the 'setHost' function
  * passed back by any plug-in.
  */
-class OfxhAbstractHost
+class OfxhHost
 {
 protected:
 	OfxHost _host;
 	property::OfxhSet _properties;
 
 public:
-	OfxhAbstractHost();
-	virtual ~OfxhAbstractHost() = 0;
+	OfxhHost();
+	virtual ~OfxhHost() = 0;
 
 	/// get the props on this host
 	const property::OfxhSet& getProperties() const { return _properties; }

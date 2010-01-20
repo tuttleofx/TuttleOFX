@@ -1,5 +1,7 @@
 #include "Core.hpp"
 
+#include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
+
 #include <tuttle/host/core/memory/MemoryPool.hpp>
 #include <tuttle/host/core/memory/MemoryCache.hpp>
 
@@ -19,12 +21,8 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-namespace {
-
 MemoryPool pool;
 MemoryCache cache;
-
-}  // namespace
 
 Core::Core()
 	: _imageEffectPluginCache( _host ),
@@ -66,6 +64,8 @@ void Core::preload()
 
 	std::ofstream ofsb( "tuttlePluginCacheSerialize.xml" );
 	OArchive oArchive( ofsb );
+	oArchive.register_type( static_cast<ofx::imageEffect::OfxhImageEffectPlugin*>(NULL) );
+	boost::serialization::void_cast_register( static_cast<ofx::imageEffect::OfxhImageEffectPlugin*>(NULL),static_cast<ofx::OfxhPlugin*>(NULL) );
 	oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
 	ofsb.close();
 }

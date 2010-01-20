@@ -60,7 +60,7 @@ namespace ofx {
 
 bool OfxhPlugin::operator==( const This& other ) const
 {
-	if( PluginDesc::operator!=(other) ||
+	if( OfxhPluginDesc::operator!=(other) ||
 		*(_binary) != *(other._binary) ||
 		_index != other._index )
 		return false;
@@ -152,7 +152,7 @@ OfxhPluginBinary::~OfxhPluginBinary()
 {
 }
 
-OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstractHost* host ) : _p( p )
+OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, OfxhHost* host ) : _p( p )
 {
 	_b = p->getBinary();
 	_b->_binary.ref();
