@@ -21,11 +21,10 @@ Lut3D::Lut3D( Interpolator* interpolator, size_t dimSize, double* data /* = NULL
 
 Lut3D::Lut3D( Lut3D const& lut3d )
 {
+	_shared       = true;
 	_interpolator = lut3d._interpolator;
 	_dimSize      = lut3d._dimSize;
-	_shared       = true;
-	_data         = new double[ totalSize() * 3 ];
-	memcpy( _data, lut3d._data, sizeof( double ) * totalSize() * 3 );
+	_data         = lut3d._data;
 }
 
 inline Color Lut3D::getColor( Color const& color ) const

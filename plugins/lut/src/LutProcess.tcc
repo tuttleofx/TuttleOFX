@@ -43,6 +43,7 @@ LutProcess<View>::LutProcess( LutPlugin& instance )
 	tuttle::plugin::Progress( instance ),
 	_plugin( instance )
 {
+    _lut3D = &_plugin.lut3D();
 }
 
 template<class View>
@@ -50,47 +51,42 @@ void LutProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
 {
 	try
 	{
-		if ( _plugin.lutReader().readOk() ) {
-			_lut3D.reset( new TetraInterpolator(), _plugin.lutReader() );
-			boost::scoped_ptr< OFX::Image > src( _plugin.getSrcClip()->fetchImage( args.time ) );
-			if( !src.get() )
-				throw( ImageNotReadyException() );
-			OfxRectI sBounds = src->getBounds();
+        boost::scoped_ptr< OFX::Image > src( _plugin.getSrcClip()->fetchImage( args.time ) );
+        if( !src.get() )
+            throw( ImageNotReadyException() );
+        OfxRectI sBounds = src->getBounds();
 
-			OFX::BitDepthEnum srcBitDepth         = src->getPixelDepth();
-			OFX::PixelComponentEnum srcComponents = src->getPixelComponents();
+        OFX::BitDepthEnum srcBitDepth         = src->getPixelDepth();
+        OFX::PixelComponentEnum srcComponents = src->getPixelComponents();
 
-			// Build destination view
-			this->_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
-											   static_cast<value_t*>( src->getPixelData() ),
-											   src->getRowBytes() );
+        // Build destination view
+        this->_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
+                                           static_cast<value_t*>( src->getPixelData() ),
+                                           src->getRowBytes() );
 
-			boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-			if( !dst.get() )
-				throw( ImageNotReadyException() );
-			OfxRectI dBounds = dst->getBounds();
+        boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
+        if( !dst.get() )
+            throw( ImageNotReadyException() );
+        OfxRectI dBounds = dst->getBounds();
 
-			OFX::BitDepthEnum dstBitDepth         = dst->getPixelDepth();
-			OFX::PixelComponentEnum dstComponents = dst->getPixelComponents();
+        OFX::BitDepthEnum dstBitDepth         = dst->getPixelDepth();
+        OFX::PixelComponentEnum dstComponents = dst->getPixelComponents();
 
-			// Make sure bit depths are same
-			if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
-			{
-				throw( BitDepthMismatchException() );
-			}
+        // Make sure bit depths are same
+        if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
+        {
+            throw( BitDepthMismatchException() );
+        }
 
-			// Build destination view
-			this->_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-											   static_cast<value_t*>( dst->getPixelData() ), dst->getRowBytes() );
+        // Build destination view
+        this->_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
+                                           static_cast<value_t*>( dst->getPixelData() ), dst->getRowBytes() );
 
-			// Set the render window
-			this->setRenderWindow( args.renderWindow );
-			// Call the base class process member
-			this->process();
-		}
-		else
-			throw(PluginException("3DL need to be loaded !"));
-	}
+        // Set the render window
+        this->setRenderWindow( args.renderWindow );
+        // Call the base class process member
+        this->process();
+    }
 	catch( PluginException& e )
 	{
 		COUT_EXCEPTION( e );
@@ -108,10 +104,14 @@ void LutProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 {
 	try
 	{
-		View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
+		View src = subimage_view( this->_srcView, 
+                                  procWindow.x1 - this->_renderWindow.x1,
+                                  procWindow.y1  - this->_renderWindow.y1,
 		                          procWindow.x2 - procWindow.x1,
 		                          procWindow.y2 - procWindow.y1 );
-		View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
+		View dst = subimage_view( this->_dstView,
+                                  procWindow.x1 - this->_renderWindow.x1,
+                                  procWindow.y1  - this->_renderWindow.y1,
 		                          procWindow.x2 - procWindow.x1,
 		                          procWindow.y2 - procWindow.y1 );
 		applyLut( dst, src );
@@ -136,7 +136,7 @@ void LutProcess<View>::applyLut( View& dst, View& src )
 		vIterator dit = dst.row_begin( y );
 		for( size_t x = 0; x < w; ++x )
 		{
-			Color col = _lut3D.getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
+			Color col = _lut3D->getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
 			( *dit )[0] = static_cast<dPix_t>(col.x);
 			( *dit )[1] = static_cast<dPix_t>(col.y);
 			( *dit )[2] = static_cast<dPix_t>(col.z);

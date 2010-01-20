@@ -38,7 +38,7 @@ class LutProcess
 typedef typename View::value_type value_t;
 
 private:
-	Lut3D _lut3D;               ///< Lut3D
+	Lut3D *_lut3D;               ///< Lut3D
 	LutPlugin&  _plugin;        ///< Rendering plugin
 	View _srcView;              ///< Source view
 

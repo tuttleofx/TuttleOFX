@@ -47,6 +47,10 @@ LutReader & LutPlugin::lutReader() {
 	return _lutReader;
 }
 
+Lut3D & LutPlugin::lut3D() {
+    return _lut3D;
+}
+
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
@@ -64,6 +68,8 @@ void LutPlugin::render( const OFX::RenderArguments& args )
 		{
 			if ( _lutReader.read( str ) )
 				COUT_ERROR( "Unable to read lut file..." );
+            else
+                _lut3D.reset( new TetraInterpolator(), _lutReader );
 		}
 	}
 	if (_lutReader.readOk()) {
@@ -147,6 +153,8 @@ void LutPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::s
 		{
 			if ( _lutReader.read( str ) )
 				throw( PluginException( "Unable to read lut file..." ) );
+            else
+                _lut3D.reset( new TetraInterpolator(), _lutReader );
 		}
 	}
 }
