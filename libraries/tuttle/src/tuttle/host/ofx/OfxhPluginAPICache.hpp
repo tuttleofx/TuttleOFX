@@ -86,7 +86,7 @@ public:
 	virtual void xmlElementEnd( const std::string& )                                      = 0;
 	virtual void endXmlParsing()                                                          = 0;
 
-	virtual void saveXML( OfxhPlugin*, std::ostream& ) const = 0;
+	virtual void saveXML( const OfxhPlugin* const, std::ostream& ) const = 0;
 
 	virtual void confirmPlugin( OfxhPlugin* ) = 0;
 

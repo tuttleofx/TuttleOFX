@@ -34,7 +34,7 @@
 
 #include <tuttle/host/core/Exception.hpp>
 
-#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/ptr_container/serialize_ptr_map.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <string>
@@ -293,6 +293,18 @@ public:
 
 	// get a string representing the value of this property at element nth
 	virtual std::string getStringValue( int nth ) const = 0;
+
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_name);
+		ar & BOOST_SERIALIZATION_NVP(_type);
+		ar & BOOST_SERIALIZATION_NVP(_dimension);
+		ar & BOOST_SERIALIZATION_NVP(_pluginReadOnly);
+	}
 };
 
 inline OfxhProperty* new_clone( const OfxhProperty& p )
@@ -680,6 +692,14 @@ public:
 
 	/// is this a nice property set, or a dodgy pointer passed back to us
 	bool verifyMagic() { return this != NULL && _magic == kMagic; }
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_props);
+	}
 };
 
 /// set a particular property

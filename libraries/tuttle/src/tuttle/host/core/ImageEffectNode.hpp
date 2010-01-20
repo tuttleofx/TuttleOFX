@@ -59,7 +59,7 @@ public:
 
 	bool operator==( const ImageEffectNode& other ) const;
 
-	const EProcessNodeType getProcessNodeType() const { return eImageEffect; }
+	const EProcessNodeType getProcessNodeType() const { return eImageEffectNode; }
 
 	void connect( const ProcessNode& sourceEffect, ProcessAttribute& attr );
 

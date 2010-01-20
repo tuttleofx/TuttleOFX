@@ -85,8 +85,8 @@ int main( int argc, char** argv )
 		}
 
 		// Setup parameters
-		tuttle::host::core::ParamString& srcFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[0].getParam( "Input filename" ) );
-		tuttle::host::core::ParamString& dstFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[2].getParam( "Output filename" ) );
+		tuttle::host::core::ParamString& srcFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[0].getParam( "filename" ) );
+		tuttle::host::core::ParamString& dstFileParam = dynamic_cast<tuttle::host::core::ParamString&>( vPluginsInst[2].getParam( "filename" ) );
 		srcFileParam.set( "input.exr" );
 		dstFileParam.set( "outputexr.png" );
 		vPluginsInst[0].paramInstanceChangedAction( srcFileParam.getName(), kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
