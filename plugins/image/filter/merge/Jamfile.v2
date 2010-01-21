@@ -10,7 +10,7 @@ project
     : requirements	
 				<include>src
   				<threading>multi 
-    : build-dir $(DIST)/plugins/merge/obj
+    : build-dir $(DIST)/merge/obj
     ;
 
 ###############################################################################
@@ -27,4 +27,4 @@ plugin merge :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install merge ;
+auto_install merge : $(DIST) ;

@@ -10,7 +10,7 @@ project
     : requirements	
 				<include>src
   				<threading>multi 
-    : build-dir $(DIST)/plugins/invert/obj
+    : build-dir $(DIST)/invert/obj
     ;
 
 ###############################################################################
@@ -27,5 +27,5 @@ plugin invert :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install invert ;
+auto_install invert : $(DIST) ;
 

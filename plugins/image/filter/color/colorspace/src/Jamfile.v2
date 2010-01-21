@@ -10,7 +10,7 @@ project
     : requirements
         <include>src
         <threading>multi
-    : build-dir $(DIST)/plugins/colorspace/obj
+    : build-dir $(DIST)/colorspace/obj
     ;
 
 ###############################################################################
@@ -24,5 +24,4 @@ plugin colorspace :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install colorspace ;
-
+auto_install colorspace : $(DIST) ;

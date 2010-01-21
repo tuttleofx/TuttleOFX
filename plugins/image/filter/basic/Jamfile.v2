@@ -10,7 +10,7 @@ project
     : requirements	
 				<include>src
   				<threading>multi 
-    : build-dir $(DIST)/plugins/basic/obj
+    : build-dir $(DIST)/basic/obj
     ;
 
 ###############################################################################
@@ -27,4 +27,4 @@ plugin basic :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install basic ;
+auto_install basic : $(DIST) ;

@@ -9,7 +9,7 @@ import os ;
 project
     : requirements
         <threading>multi
-    : build-dir $(DIST)/plugins/png/obj
+    : build-dir $(DIST)/png/obj
     ;
 
 use-project /png 	: $(3RD_PARTY)/libpng ;
@@ -28,4 +28,4 @@ plugin png :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install png ;
+auto_install png : $(DIST) ;

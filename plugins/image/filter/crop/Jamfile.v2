@@ -10,7 +10,7 @@ project
     : requirements	
         <include>src
         <threading>multi
-    : build-dir $(DIST)/plugins/crop/obj
+    : build-dir $(DIST)/crop/obj
     ;
 
 ###############################################################################
@@ -27,5 +27,5 @@ plugin crop :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install crop ;
+auto_install crop : $(DIST) ;
 

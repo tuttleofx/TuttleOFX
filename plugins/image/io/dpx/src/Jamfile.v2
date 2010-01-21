@@ -10,7 +10,7 @@ project
     : requirements
         <threading>multi
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/plugins/dpx/obj
+    : build-dir $(DIST)/dpx/obj
     ;
 
 use-project /png 	: $(3RD_PARTY)/libpng ;
@@ -28,5 +28,5 @@ plugin dpx :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install dpx ;
+auto_install dpx : $(DIST) ;
 

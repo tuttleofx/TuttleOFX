@@ -10,7 +10,7 @@ project
     : requirements	
         <include>src
         <threading>multi
-    : build-dir $(DIST)/plugins/lut/obj
+    : build-dir $(DIST)/lut/obj
     ;
 
 ###############################################################################
@@ -30,5 +30,5 @@ plugin lut :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install lut ;
+auto_install lut : $(DIST) ;
 

@@ -11,7 +11,7 @@ project
         <include>src
         <threading>multi 
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/plugins/bitdepthconv/obj
+    : build-dir $(DIST)/bitdepthconv/obj
     ;
 
 ###############################################################################
@@ -28,5 +28,5 @@ plugin bitdepthconv :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install bitdepthconv ;
+auto_install bitdepthconv : $(DIST) ;
 

@@ -10,7 +10,7 @@ project
     : requirements
         <threading>multi
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/plugins/exr/obj
+    : build-dir $(DIST)/exr/obj
     ;
 
 use-project /libexr : $(3RD_PARTY)/openexr ;
@@ -29,5 +29,5 @@ plugin exr :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install exr ;
+auto_install exr : $(DIST) ;
 
