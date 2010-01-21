@@ -6,6 +6,7 @@ int main( int argc, char** argv )
 	try
 	{
 		using namespace tuttle::host;
+		TCOUT( "__________________________________________________0" );		
 		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//core::Core::instance().getPluginCache().scanPluginFiles();
 		core::Core::instance().preload();
@@ -21,7 +22,7 @@ int main( int argc, char** argv )
 		core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
 		core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
 		core::Graph::Node& invert4 = g.createNode( "fr.hd3d.tuttle.invert" );
-		core::Graph::Node& crop1   = g.createNode( "fr.hd3d.tuttle.crop" );
+	//	core::Graph::Node& crop1   = g.createNode( "fr.hd3d.tuttle.crop" );
 		core::Graph::Node& merge1  = g.createNode( "fr.hd3d.tuttle.merge" );
 		core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
 		core::Graph::Node& write4  = g.createNode( "fr.hd3d.tuttle.pngwriter" );

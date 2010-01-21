@@ -1,19 +1,16 @@
 ###############################################################################
 ## Tests for TuttleOFX Invert Plugin
-## author Nicolas Rondaud
 ###############################################################################
-
 import testing ;
 
 ###############################################################################
 # compile the test and run it
 ###############################################################################
-
 project 
     : requirements	<define>BOOST_TEST_MAIN
 					<threading>multi
     ;
-    
+
 alias dependencies
     : 
 		/boost//unit_test_framework

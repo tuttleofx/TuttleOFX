@@ -1,6 +1,5 @@
 ###############################################################################
 ## Main BJam makefile for TuttleOFX Invert Plugin
-## author Nicolas Rondaud
 ###############################################################################
 import os ;
 
@@ -11,19 +10,8 @@ project
     : requirements	
 				<include>src
   				<threading>multi 
-  				<os>NT:<define>_WINDOWS
     : build-dir $(DIST)/plugins/invert/obj
     ;
-
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
@@ -31,18 +19,13 @@ else if [ os.name ] = MACOSX
 plugin invert : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-    /supportlib
-    opengl
+	:
+	<os>NT:<find-shared-library>opengl32
+	<os>MACOSX:<linkflags>"-framework OpenGL"
     ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-alias install : install-plug ;
-install install-plug
-	:	invert
-	:	<os>NT:<location>$(DIST)/plugins/invert/bundle/invert.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/invert/bundle/invert.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/invert/bundle/invert.ofx.bundle/Contents/MacOS
-	;
+auto_install invert ;
 

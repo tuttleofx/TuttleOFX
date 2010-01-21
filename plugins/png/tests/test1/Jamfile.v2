@@ -1,14 +1,11 @@
 ###############################################################################
-## Tests for TuttleOFX pngReader Plugin
-## author Nicolas Rondaud
+## Tests for TuttleOFX png Plugin
 ###############################################################################
-
 import testing ;
 
 ###############################################################################
 # compile the test and run it
 ###############################################################################
-
 project 
     : requirements	<define>BOOST_TEST_MAIN
 					<threading>multi

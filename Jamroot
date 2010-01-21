@@ -2,7 +2,6 @@
 ## TuttleOFX Project
 ##
 ## Main BJam makefile for TuttleOFX
-## author Nicolas Rondaud
 ## 
 ## Build:
 ## 
@@ -15,6 +14,7 @@
 ###############################################################################
 # Environment variables
 ###############################################################################
+path-constant 3RD_PARTY  	 : 3rdParty ;
 path-constant BOOST_LIBS  	 : 3rdParty/boost ;
 path-constant DIST 		 	 : ./dist ;
 
@@ -26,6 +26,7 @@ project
    		# multithreading on
   		<threading>multi
 		<variant>release:<warnings-as-errors>on
+		<toolset>gcc,<address-model>64:<cxxflags>-fPIC
   		#
   		# GCC specific flags
   		#
@@ -41,7 +42,6 @@ use-project /boost : $(BOOST_LIBS) ;
 ###############################################################################
 # Main targets
 ###############################################################################
-
 #
 # TUTTLE LIBRARY & TESTS
 #
@@ -58,7 +58,6 @@ use-project /samtests 		: applications/sam/tests ;
 # TUTTLEOFX PLUGINS
 #
 use-project /plugins 		: plugins ;
-
 
 
 alias /tests :	

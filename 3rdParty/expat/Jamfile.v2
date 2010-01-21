@@ -1,6 +1,5 @@
 ###############################################################################
 ## Main BJam makefile for libexpat library
-## author Eloi Du Bois
 ###############################################################################
 
 ###############################################################################
@@ -10,6 +9,7 @@ project
     : requirements
         <os>NT:<define>COMPILED_FROM_DSP
         <os>MACOSX:<define>HAVE_BCOPY
+		<os>LINUX:<define>HAVE_MEMMOVE
         <define>XML_STATIC
         <include>lib
         <threading>multi
@@ -19,8 +19,6 @@ project
         # disabling warning as error as we are not responsible for this code
         <warnings-as-errors>off
     : usage-requirements
-        <os>NT:<define>COMPILED_FROM_DSP
-        <define>XML_STATIC
         <include>lib
     : build-dir $(DIST)/3rdParty/expat/obj
     ;
@@ -28,12 +26,9 @@ project
 ###############################################################################
 # libexpat library
 ###############################################################################
-alias headers : [ glob-tree *.h ] ;
-
 lib expat : 
     [ glob lib/*.c ]
     ;
-
 
 install dist_src
 	:	expat
