@@ -29,7 +29,7 @@ public:
 	OFX::Clip* getDstClip() const;
 	const LutReader & lutReader() const;
 	LutReader & lutReader();
-
+    Lut3D & lut3D();
 public:
 	void render( const OFX::RenderArguments& args );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
@@ -40,7 +40,7 @@ protected:
 	OFX::Clip* _dstClip;             ///< Destination image clip
 	OFX::StringParam* _sFilename;    ///< Filename
 	LutReader _lutReader;               ///< Reader
-
+    Lut3D     _lut3D;
 };
 
 }
