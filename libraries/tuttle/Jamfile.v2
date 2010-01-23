@@ -10,6 +10,7 @@ import os ;
 project
     : requirements
 		<include>src
+        <toolset>msvc:<define>CINTERFACE
     : usage-requirements
 		<include>src
     : build-dir $(DIST)/tuttle/obj
