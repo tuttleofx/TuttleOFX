@@ -1,6 +1,5 @@
 ###############################################################################
 ## Main BJam makefile for libpng library
-## author Eloi Du Bois
 ###############################################################################
 
 ###############################################################################
@@ -12,6 +11,7 @@ project
         <include>../zlib
         <threading>multi
         <link>static
+		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements
         <include>.
