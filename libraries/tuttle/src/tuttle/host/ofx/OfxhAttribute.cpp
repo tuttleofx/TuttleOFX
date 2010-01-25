@@ -32,8 +32,8 @@
 #include "ofxImageEffect.h"
 
 // ofx host
-#include "OfxhBinary.hpp"
 #include "OfxhProperty.hpp"
+#include "OfxhBinary.hpp"
 #include "OfxhParam.hpp"
 #include "OfxhImageEffectNode.hpp"
 

@@ -30,7 +30,9 @@
 #define OFXH_BINARY_H
 
 
-#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include <string>
 #include <iostream>
@@ -95,7 +97,12 @@ protected:
 	size_t _size;
 	int _users;
 
+private:
+	void init( const std::string& binaryPath );
+	
 public:
+	OfxhBinary();
+
 	/// create object representing the binary.  will stat() it,
 	/// and this fails, will set binary to be invalid.
 	OfxhBinary( const std::string& binaryPath );
@@ -168,5 +175,7 @@ private:
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhBinary)
 
 #endif

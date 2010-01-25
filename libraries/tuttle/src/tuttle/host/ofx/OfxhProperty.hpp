@@ -32,9 +32,12 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhException.hpp"
 
+#include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/core/Exception.hpp>
 
+#include <boost/serialization/export.hpp>
 #include <boost/ptr_container/serialize_ptr_map.hpp>
+#include <boost/serialization/string.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <string>
@@ -42,7 +45,6 @@
 #include <map>
 #include <algorithm>
 #include <sstream>
-#include <iostream>
 #include <stdexcept>
 
 namespace tuttle {
@@ -335,6 +337,8 @@ protected:
 	std::vector<Type> _defaultValue;
 
 public:
+	OfxhPropertyTemplate();
+
 	/// constructor
 	OfxhPropertyTemplate( const std::string& name,
 	                      size_t             dimension,
@@ -419,6 +423,16 @@ public:
 	ReturnType getConstlessValueRaw( int index = 0 ) const OFX_EXCEPTION_SPEC;
 	/// @todo tuttle remove ReturnType, only use Type
 	inline APITypeConstless getAPIConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC { return getConstlessValue( index ); }
+
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_value);
+		ar & BOOST_SERIALIZATION_NVP(_defaultValue);
+	}
 };
 
 typedef OfxhPropertyTemplate<OfxhIntValue>     Int;     /// Our int property
@@ -698,6 +712,16 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
+//		ar.register_type(static_cast<OfxhProperty*>(NULL));
+		ar.register_type(static_cast<Int*>(NULL));
+		ar.register_type(static_cast<Double*>(NULL));
+		ar.register_type(static_cast<String*>(NULL));
+		ar.register_type(static_cast<Pointer*>(NULL));
+		boost::serialization::void_cast_register( static_cast<Int*>(NULL), static_cast<OfxhProperty*>(NULL) );
+		boost::serialization::void_cast_register( static_cast<Double*>(NULL), static_cast<OfxhProperty*>(NULL) );
+		boost::serialization::void_cast_register( static_cast<String*>(NULL), static_cast<OfxhProperty*>(NULL) );
+		boost::serialization::void_cast_register( static_cast<Pointer*>(NULL), static_cast<OfxhProperty*>(NULL) );
+		
 		ar & BOOST_SERIALIZATION_NVP(_props);
 	}
 };
@@ -790,5 +814,10 @@ void OfxhSet::getPropertyRawN( const std::string& property, int count, typename 
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
 
 #endif

@@ -35,7 +35,7 @@
 #include "OfxhAttribute.hpp"
 #include "OfxhException.hpp"
 
-#include <boost/ptr_container/ptr_list.hpp>
+#include <boost/ptr_container/serialize_ptr_list.hpp>
 
 #include <string>
 #include <map>
@@ -109,14 +109,16 @@ public:
 };
 
 /// the Descriptor of a plugin parameter
-class OfxhParamDescriptor : virtual public OfxhParamAccessor,
-	public attribute::OfxhAttributeDescriptor
+class OfxhParamDescriptor :
+	public OfxhAttributeDescriptor,
+	virtual public OfxhParamAccessor
 {
 OfxhParamDescriptor();
 
 public:
 	/// make a parameter, with the given type and name
 	OfxhParamDescriptor( const std::string& type, const std::string& name );
+	~OfxhParamDescriptor(){}
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxParamHandle getParamHandle() const
@@ -136,6 +138,14 @@ public:
 
 	/// add standard properties to a value holding param
 	void addNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim );
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttributeDescriptor);
+	}
 };
 
 /// A set of parameters
@@ -195,7 +205,7 @@ public:
 
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
-	virtual void paramChangedByPlugin( attribute::OfxhParam* param ) = 0;
+	virtual void paramChangedByPlugin( OfxhParam* param ) = 0;
 
 	/// add a param
 	virtual void addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
@@ -203,7 +213,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	virtual OfxhParam* newParam( OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC = 0;
+	virtual OfxhParam* newParam( const OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC = 0;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///
@@ -222,11 +232,13 @@ private:
 /// a set of parameters
 class OfxhParamDescriptorSet : public OfxhParamAccessorSet
 {
-typedef std::map<std::string, OfxhParamDescriptor*> ParamDescriptorMap;
-typedef std::list<OfxhParamDescriptor*> ParamDescriptorList;
-ParamDescriptorMap _paramMap;
-ParamDescriptorList _paramList;
+public:
+	typedef std::map<std::string, OfxhParamDescriptor*> ParamDescriptorMap;
+	typedef boost::ptr_list<OfxhParamDescriptor> ParamDescriptorList;
+	ParamDescriptorMap _paramMap;
+	ParamDescriptorList _paramList;
 
+private:
 /// CC doesn't exist
 OfxhParamDescriptorSet( const OfxhParamDescriptorSet& );
 
@@ -253,12 +265,22 @@ public:
 
 	/// add a param in
 	virtual void addParam( const std::string& name, OfxhParamDescriptor* p );
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+//		ar.register_type( static_cast<OfxhParamDescriptor*>(NULL) );
+		ar & BOOST_SERIALIZATION_NVP(_paramList);
+	}
 };
 
 /// plugin parameter instance
-class OfxhParam : virtual public OfxhParamAccessor,
+class OfxhParam :
 	public OfxhAttribute,
 	protected property::OfxhNotifyHook,
+	virtual public OfxhParamAccessor,
 	private boost::noncopyable
 {
 OfxhParam();
@@ -406,38 +428,38 @@ public:
 	}
 
 	// Deriving implementatation needs to overide these
-	inline virtual void get( BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
+	inline virtual void get( BaseType& dst, const std::size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->get( dst );
 	}
 
-	inline virtual void get( OfxTime time, BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
+	inline virtual void get( OfxTime time, BaseType& dst, const std::size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->get( time, dst );
 	}
 
-	inline virtual void set( const BaseType& value, const size_t& index ) OFX_EXCEPTION_SPEC
+	inline virtual void set( const BaseType& value, const std::size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->set( value );
 	}
 
-	inline virtual void set( OfxTime time, const BaseType& value, const size_t& index ) OFX_EXCEPTION_SPEC
+	inline virtual void set( OfxTime time, const BaseType& value, const std::size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->set( time, value );
 	}
 
 	// derived class does not need to implement, default is an approximation
-	inline virtual void derive( OfxTime time, BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
+	inline virtual void derive( OfxTime time, BaseType& dst, const std::size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->derive( time, dst );
 	}
 
-	inline virtual void integrate( OfxTime time1, OfxTime time2, BaseType& dst, const size_t& index ) OFX_EXCEPTION_SPEC
+	inline virtual void integrate( OfxTime time1, OfxTime time2, BaseType& dst, const std::size_t& index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->integrate( time1, time2, dst );
@@ -535,7 +557,7 @@ public:
 		_paramSetInstance->paramChangedByPlugin( param );
 	}
 
-	virtual OfxhParam* newParam( OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
+	virtual OfxhParam* newParam( const OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 	{
 		return _paramSetInstance->newParam( descriptor );
 	}
@@ -739,5 +761,7 @@ public:
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhParamDescriptor)
 
 #endif

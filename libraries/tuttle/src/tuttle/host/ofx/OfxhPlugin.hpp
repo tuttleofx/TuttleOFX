@@ -2,8 +2,7 @@
 #define OFXH_PLUGIN_HPP
 
 #include "OfxhPluginDesc.hpp"
-
-#include <boost/serialization/serialization.hpp>
+#include "OfxhPluginAPICache.hpp"
 
 namespace tuttle {
 namespace host {
@@ -28,7 +27,7 @@ protected:
 	int _index; ///< where I live inside that file
 
 public:
-	OfxhPlugin();
+	OfxhPlugin(){}
 
 	/**
 	 * construct this based on the struct returned by the getNthPlugin() in the binary
@@ -98,7 +97,7 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPluginDesc);
-//		ar & BOOST_SERIALIZATION_NVP(_binary); /// @todo tuttle: just a link
+//		ar & BOOST_SERIALIZATION_NVP(_binary); // just a link, don't save
 		ar & BOOST_SERIALIZATION_NVP(_index);
 	}
 };
@@ -106,6 +105,8 @@ private:
 }
 }
 }
+
+// BOOST_SERIALIZATION_ASSUME_ABSTRACT(tuttle::host::ofx::OfxhPlugin)
 
 #endif
 

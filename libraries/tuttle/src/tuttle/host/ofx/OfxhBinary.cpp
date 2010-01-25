@@ -34,10 +34,25 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
+OfxhBinary::OfxhBinary()
+	: _invalid( false ),
+	_dlHandle( NULL ),
+	_exists( false ),
+	_time( 0 ),
+	_size( 0 ),
+	_users( 0 )
+{
+}
+
 OfxhBinary::OfxhBinary( const std::string& binaryPath ) : _binaryPath( binaryPath ),
 	_invalid( false ),
 	_dlHandle( 0 ),
 	_users( 0 )
+{
+	init( binaryPath );
+}
+
+void OfxhBinary::init( const std::string& binaryPath )
 {
 	struct stat sb;
 

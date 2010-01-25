@@ -36,6 +36,7 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhProperty.hpp"
 
+#include <boost/serialization/export.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <map>
 #include <stdexcept>
@@ -90,8 +91,11 @@ public:
  * a clip image descriptor
  */
 class OfxhClipImageDescriptor : virtual public OfxhClipImageAccessor,
-	public attribute::OfxhClipDescriptor
+	public OfxhClipDescriptor
 {
+private:
+	OfxhClipImageDescriptor();
+	void init( const std::string& name );
 public:
 	/// constructor
 	OfxhClipImageDescriptor( const std::string& name );
@@ -105,7 +109,15 @@ public:
 		return ( OfxImageClipHandle ) this;
 	}
 
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhClipDescriptor);
+	}
 };
+
 
 /**
  * a clip image instance
@@ -451,5 +463,7 @@ private:
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipImageDescriptor)
 
 #endif

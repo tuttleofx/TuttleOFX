@@ -11,6 +11,7 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/serialization.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -21,8 +22,10 @@ namespace tuttle {
 namespace host {
 namespace core {
 
+namespace {
 MemoryPool pool;
 MemoryCache cache;
+}
 
 Core::Core()
 	: _imageEffectPluginCache( _host ),
@@ -54,7 +57,7 @@ void Core::preload()
 	_pluginCache.writePluginCache( ofs );
 	ofs.close();
 
-	
+	/*
 //	typedef boost::archive::binary_oarchive OArchive;
 //	typedef boost::archive::binary_iarchive IArchive;
 //	typedef boost::archive::text_oarchive OArchive;
@@ -64,10 +67,9 @@ void Core::preload()
 
 	std::ofstream ofsb( "tuttlePluginCacheSerialize.xml" );
 	OArchive oArchive( ofsb );
-	oArchive.register_type( static_cast<ofx::imageEffect::OfxhImageEffectPlugin*>(NULL) );
-	boost::serialization::void_cast_register( static_cast<ofx::imageEffect::OfxhImageEffectPlugin*>(NULL),static_cast<ofx::OfxhPlugin*>(NULL) );
 	oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
 	ofsb.close();
+	*/
 }
 
 }

@@ -38,7 +38,7 @@
 #include "OfxhHost.hpp"
 
 #include <boost/scoped_ptr.hpp>
-#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/ptr_container/serialize_ptr_map.hpp>
 
 #include <string>
 #include <set>
@@ -58,7 +58,8 @@ class OfxhImageEffectPluginCache;
 class OfxhImageEffectPlugin : public OfxhPlugin
 {
 typedef OfxhImageEffectPlugin This;
-OfxhImageEffectPluginCache& _pc;
+
+OfxhImageEffectPluginCache* _pc;
 
 /// map to store contexts in
 typedef boost::ptr_map<const std::string, OfxhImageEffectNodeDescriptor> ContextMap;
@@ -73,6 +74,8 @@ boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
 // context independent
 /// @todo tuttle: ???
 boost::scoped_ptr<OfxhImageEffectNodeDescriptor> _baseDescriptor;     ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
+
+	OfxhImageEffectPlugin();
 
 public:
 	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl );
@@ -136,141 +139,17 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
+//		ar.register_type( static_cast<OfxhImageEffectNodeDescriptor*>(NULL) );
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPlugin);
-//		ar & BOOST_SERIALIZATION_NVP(_); /// @todo tuttle: ???
+		ar & BOOST_SERIALIZATION_NVP(_contexts);
 	}
 };
 
-class OfxhMajorPlugin
-{
-std::string _id;
-int _major;
-
-public:
-	OfxhMajorPlugin( const std::string& id, int major ) : _id( id ),
-		_major( major ) {}
-
-	OfxhMajorPlugin( OfxhImageEffectPlugin* iep ) : _id( iep->getIdentifier() ),
-		_major( iep->getVersionMajor() ) {}
-
-	const std::string& getId() const
-	{
-		return _id;
-	}
-
-	int getMajor() const
-	{
-		return _major;
-	}
-
-	bool operator<( const OfxhMajorPlugin& other ) const
-	{
-		if( _id < other._id )
-			return true;
-
-		if( _id > other._id )
-			return false;
-
-		if( _major < other._major )
-			return true;
-
-		return false;
-	}
-
-};
-
-/// implementation of the specific Image Effect handler API cache.
-class OfxhImageEffectPluginCache : public APICache::OfxhPluginAPICacheI
-{
-public:
-private:
-	/// all plugins
-	std::vector<OfxhImageEffectPlugin*> _plugins;
-
-	/// latest version of each plugin by ID
-	std::map<std::string, OfxhImageEffectPlugin*> _pluginsByID;
-
-	/// latest minor version of each plugin by (ID,major)
-	std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*> _pluginsByIDMajor;
-
-	/// xml parsing state
-	OfxhImageEffectPlugin* _currentPlugin;
-	/// xml parsing state
-	property::OfxhProperty* _currentProp;
-
-	OfxhImageEffectNodeDescriptor* _currentContext;
-	attribute::OfxhParamDescriptor* _currentParam;
-	attribute::OfxhClipImageDescriptor* _currentClip;
-
-	/// pointer to our image effect host
-	OfxhImageEffectHost* _host;
-
-public:
-	explicit OfxhImageEffectPluginCache( OfxhImageEffectHost& host );
-	virtual ~OfxhImageEffectPluginCache();
-
-	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
-	/// pick the highest found version.
-	OfxhImageEffectPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
-
-	/// get the plugin by label.  vermaj and vermin can be specified.  if they are not it will
-	/// pick the highest found version.
-	OfxhImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 );
-
-	OfxhImageEffectHost* getHost()
-	{
-		return _host;
-	}
-
-	const std::vector<OfxhImageEffectPlugin*>& getPlugins() const;
-
-	const std::map<std::string, OfxhImageEffectPlugin*>& getPluginsByID() const;
-
-	const std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*>& getPluginsByIDMajor() const
-	{
-		return _pluginsByIDMajor;
-	}
-
-	/// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
-	void loadFromPlugin( OfxhPlugin* p ) const;
-
-	/// handler for preparing to read in a chunk of XML from the cache, set up context to do this
-	void beginXmlParsing( OfxhPlugin* p );
-
-	/// XML handler : element begins (everything is stored in elements and attributes)
-	virtual void xmlElementBegin( const std::string& el, std::map<std::string, std::string> map );
-
-	virtual void xmlCharacterHandler( const std::string& );
-
-	virtual void xmlElementEnd( const std::string& el );
-
-	virtual void endXmlParsing();
-
-	virtual void saveXML( const OfxhPlugin* const ip, std::ostream& os ) const;
-
-	void confirmPlugin( OfxhPlugin* p );
-
-	virtual bool pluginSupported( OfxhPlugin* p, std::string& reason ) const;
-
-	OfxhPlugin* newPlugin( OfxhPluginBinary* pb,
-	                       int               pi,
-	                       OfxPlugin*        pl );
-
-	OfxhPlugin* newPlugin( OfxhPluginBinary*  pb,
-	                       int                pi,
-	                       const std::string& api,
-	                       int                apiVersion,
-	                       const std::string& pluginId,
-	                       const std::string& rawId,
-	                       int                pluginMajorVersion,
-	                       int                pluginMinorVersion );
-
-	void dumpToStdOut() const;
-};
-
 }
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin)
 
 #endif

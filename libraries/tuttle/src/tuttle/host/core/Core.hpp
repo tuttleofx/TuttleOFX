@@ -5,7 +5,7 @@
 
 #include <tuttle/host/core/memory/IMemoryCache.hpp>
 #include <tuttle/host/core/HostDescriptor.hpp>
-#include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectPluginCache.hpp>
 
 #include <tuttle/common/patterns/Singleton.hpp>
 

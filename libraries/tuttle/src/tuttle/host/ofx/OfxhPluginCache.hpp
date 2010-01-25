@@ -35,14 +35,10 @@
 #include "OfxhPluginBinary.hpp"
 
 #include "expat.h"
-#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/string.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/list.hpp>
-//#include <boost/serialization/vector.hpp>
 #include <boost/ptr_container/serialize_ptr_list.hpp>
-//#include <boost/ptr_container/serialize_ptr_vector.hpp>
-#include <boost/ptr_container/ptr_list.hpp>
-//#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <string>
 //#include <vector>
@@ -193,8 +189,7 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		ar.register_type( static_cast<OfxhPluginBinary*>(NULL) );
-		
+//		ar.register_type( static_cast<OfxhPluginBinary*>(NULL) );
 		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
 		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
 		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
@@ -207,5 +202,7 @@ private:
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginCache)
 
 #endif

@@ -97,11 +97,25 @@ bool OfxhClipImageAccessor::supportsTiles() const
 	return getProperties().getIntProperty( kOfxImageEffectPropSupportsTiles ) != 0;
 }
 
+OfxhClipImageDescriptor::OfxhClipImageDescriptor()
+	: tuttle::host::ofx::attribute::OfxhClipDescriptor()
+{
+	init("");
+}
+
 /**
  * descriptor
  */
 OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 	: tuttle::host::ofx::attribute::OfxhClipDescriptor()
+{
+	init(name);
+}
+
+/**
+ * descriptor
+ */
+void OfxhClipImageDescriptor::init( const std::string& name )
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot

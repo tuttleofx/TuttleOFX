@@ -248,6 +248,12 @@ inline const char* castToAPIType( const std::string& s )
 }
 
 template<class T>
+OfxhPropertyTemplate<T>::OfxhPropertyTemplate()
+	: OfxhProperty( "", T::typeCode, 0, false )
+{
+}
+
+template<class T>
 OfxhPropertyTemplate<T>::OfxhPropertyTemplate( const std::string& name,
                                                size_t             dimension,
                                                bool               pluginReadOnly,

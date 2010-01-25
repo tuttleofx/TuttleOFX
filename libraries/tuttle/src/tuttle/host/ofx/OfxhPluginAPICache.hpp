@@ -31,9 +31,9 @@
 
 #include <string>
 #include <iostream>
-#include <ostream>
 #include <map>
 
+#include "OfxhHost.hpp"
 #include "OfxhProperty.hpp"
 
 namespace tuttle {
@@ -79,6 +79,8 @@ public:
 	/// factory method, to create a new plugin (from the
 	virtual OfxhPlugin* newPlugin( OfxhPluginBinary* pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
 	                               const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion ) = 0;
+
+	virtual OfxhHost* getHost() =0;
 
 	virtual void beginXmlParsing( OfxhPlugin* )                                           = 0;
 	virtual void xmlElementBegin( const std::string&, std::map<std::string, std::string>) = 0;

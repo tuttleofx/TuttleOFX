@@ -45,6 +45,9 @@
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
 
+#include <boost/serialization/export.hpp>
+#include <boost/ptr_container/serialize_ptr_vector.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -151,7 +154,7 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_properties);
+//		ar & BOOST_SERIALIZATION_NVP(_properties);
 	}
 };
 
@@ -181,6 +184,8 @@ private:
 		_plugin( other._plugin )
 	{}
 
+	OfxhImageEffectNodeDescriptor();
+	
 public:
 	/// used to construct the global description
 	OfxhImageEffectNodeDescriptor( OfxhPlugin* plug );
@@ -227,6 +232,17 @@ public:
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const { return _overlayDescriptor; }
 
 	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false );
+	
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+//		ar.register_type( static_cast<attribute::OfxhClipImageDescriptor*>(NULL) );
+//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase); /// fab here
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhParamDescriptorSet);
+		ar & BOOST_SERIALIZATION_NVP(_clipsByOrder);
+	}
 };
 
 /// a map used to specify needed frame ranges on set of clips
@@ -629,5 +645,7 @@ private:
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor)
 
 #endif

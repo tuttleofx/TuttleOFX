@@ -1,9 +1,11 @@
-#ifndef OFXH_PLUGINDESC_HPP
-#define OFXH_PLUGINDESC_HPP
+#ifndef _OFXH_PLUGINDESC_HPP_
+#define _OFXH_PLUGINDESC_HPP_
 
+#include <ofxCore.h>
 
-#include <boost/serialization/serialization.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/string.hpp>
 
 namespace tuttle {
 namespace host {
@@ -110,17 +112,25 @@ private:
 	{
 		ar & BOOST_SERIALIZATION_NVP(_pluginApi);
 		ar & BOOST_SERIALIZATION_NVP(_apiVersion);
-		ar & BOOST_SERIALIZATION_NVP(_identifier);
+//		ar & BOOST_SERIALIZATION_NVP(_identifier);
 		ar & BOOST_SERIALIZATION_NVP(_rawIdentifier);
 		ar & BOOST_SERIALIZATION_NVP(_versionMajor);
 		ar & BOOST_SERIALIZATION_NVP(_versionMinor);
+		
+		if( typename Archive::is_loading() )
+		{
+			_identifier = _rawIdentifier;
+			boost::to_lower( _identifier );
+		}
 	}
 };
 
+}
+}
+}
 
-}
-}
-}
+// BOOST_SERIALIZATION_ASSUME_ABSTRACT(tuttle::host::ofx::OfxhPluginDesc)
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginDesc)
 
 #endif
 

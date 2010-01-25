@@ -267,6 +267,13 @@ bool OfxhImageEffectNodeBase::isClipPreferencesSlaveParam( const std::string& s 
 ////////////////////////////////////////////////////////////////////////////////
 // descriptor
 
+OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor()
+	: OfxhImageEffectNodeBase( effectDescriptorStuff ),
+	_plugin( NULL )
+{
+	/// @todo tuttle...
+}
+
 OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( OfxhPlugin* plug )
 	: OfxhImageEffectNodeBase( effectDescriptorStuff ),
 	_plugin( plug )
@@ -425,27 +432,22 @@ void OfxhImageEffectNode::populate()
  */
 void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( core::exception::LogicError )
 {
-
-	const std::list<attribute::OfxhParamDescriptor*>& map = _descriptor.getParamList();
+	const attribute::OfxhParamDescriptorSet::ParamDescriptorList& paramDescriptors = _descriptor.getParamList();
 
 	std::map<std::string, attribute::OfxhParam*> parameters;
 
 	// Create parameters on their own groups
-	for( std::list<attribute::OfxhParamDescriptor*>::const_iterator it = map.begin(), itEnd = map.end();
+	for( attribute::OfxhParamDescriptorSet::ParamDescriptorList::const_iterator it = paramDescriptors.begin(), itEnd = paramDescriptors.end();
 	     it != itEnd;
 	     ++it )
 	{
 		attribute::OfxhParamSet* setInstance = this;
 		// SetInstance where the childrens param instances will be added
-		attribute::OfxhParamDescriptor* descriptor = ( *it );
-
-		// get the param descriptor
-		if( !descriptor )
-			throw( core::exception::LogicError( kOfxStatErrValue ) );
+		const attribute::OfxhParamDescriptor& descriptor = *it;
 
 		// name and parentName of the parameter
-		std::string name       = descriptor->getName();
-		std::string parentName = descriptor->getParentName();
+		std::string name       = descriptor.getName();
+		std::string parentName = descriptor.getParentName();
 
 		if( parentName != "" )
 		{
@@ -459,7 +461,7 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 			setInstance = this;
 
 		// get a param instance from a param descriptor. Param::Instance is automatically added into the setInstance provided.
-		attribute::OfxhParam* instance = newParam( *descriptor );
+		attribute::OfxhParam* instance = newParam( descriptor );
 		/// @todo tuttle set the groups of the ParamInstance !!!
 		parameters[name] = instance;
 

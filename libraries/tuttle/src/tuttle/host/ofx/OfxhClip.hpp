@@ -35,6 +35,7 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhProperty.hpp"
 
+#include <boost/serialization/export.hpp>
 #include <boost/utility.hpp>
 
 namespace tuttle {
@@ -74,13 +75,21 @@ public:
  * a clip descriptor
  */
 class OfxhClipDescriptor : virtual public OfxhClipAccessor,
-	public attribute::OfxhAttributeDescriptor
+	public OfxhAttributeDescriptor
 {
 public:
 	/// constructor
 	OfxhClipDescriptor();
-	OfxhClipDescriptor( const tuttle::host::ofx::property::OfxhSet& );
-	~OfxhClipDescriptor() = 0;
+	OfxhClipDescriptor( const property::OfxhSet& );
+	virtual ~OfxhClipDescriptor() = 0;
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttributeDescriptor);
+	}
 };
 
 /**
@@ -138,6 +147,8 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipDescriptor)
 
 #endif
 

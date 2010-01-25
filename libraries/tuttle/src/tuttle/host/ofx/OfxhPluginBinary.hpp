@@ -5,21 +5,23 @@
 #include "OfxhPlugin.hpp"
 #include "OfxhBinary.hpp"
 
-#include <boost/serialization/serialization.hpp>
+#include "OfxhImageEffectPlugin.hpp"
+
 #include <boost/ptr_container/serialize_ptr_vector.hpp>
+#include <boost/serialization/string.hpp>
 
 namespace tuttle {
 namespace host {
 namespace ofx {
 
 /**
- * class that represents a binary file which holds plugins
+ * class that represents a binary file which holds plugins.
+ * Has a set of plugins inside it and which it owns
+ * These are owned by a PluginCache
  */
 class OfxhPluginBinary
 {
 typedef OfxhPluginBinary This;
-/// has a set of plugins inside it and which it owns
-/// These are owned by a PluginCache
 friend class OfxhPluginHandle;
 
 protected:
@@ -30,7 +32,15 @@ protected:
 	time_t _fileModificationTime; ///< used as a time stamp to check modification times, used for caching
 	size_t _fileSize; ///< file size last time we check, used for caching
 	bool _binaryChanged; ///< whether the timestamp/filesize in this cache is different from that in the actual binary
-
+	
+private:
+	explicit OfxhPluginBinary()
+		: _fileModificationTime( 0 ),
+		_fileSize( 0 ),
+		_binaryChanged( false )
+	{
+	}
+	
 public:
 	/// create one from the cache.  this will invoke the Binary() constructor which
 	/// will stat() the file.
@@ -140,10 +150,11 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		ar.register_type( static_cast<OfxhPlugin*>(NULL) );
-//		ar.register_type( static_cast<OfxhImageEffectPlugin*>(NULL) );
+//		ar.register_type( static_cast<OfxhPlugin*>(NULL) );
+//		ar.register_type( static_cast<imageEffect::OfxhImageEffectPlugin*>(NULL) );
+//		boost::serialization::void_cast_register( static_cast<imageEffect::OfxhImageEffectPlugin*>(NULL),static_cast<OfxhPlugin*>(NULL) );
 
-//		ar & BOOST_SERIALIZATION_NVP(_binary); /// @todo tuttle: serialize !!!!!!!!!!!!!!
+		ar & BOOST_SERIALIZATION_NVP(_binary);
 		ar & BOOST_SERIALIZATION_NVP(_filePath);
 		ar & BOOST_SERIALIZATION_NVP(_bundlePath);
 //		ar & boost::serialization::make_nvp("first_plugin", getPlugin(0));
@@ -157,6 +168,8 @@ private:
 }
 }
 }
+
+// BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginBinary)
 
 #endif
 
