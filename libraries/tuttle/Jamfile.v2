@@ -9,39 +9,19 @@ import os ;
 ###############################################################################
 project
     : requirements
-        <include>src
-        <include>src/tuttle/host
-        <include>../openfxHack/include
-        <include>../../3rdParty/expat/lib
-        <define>CINTERFACE
-        <threading>multi 
-        <link>static
+		<include>src
+        <toolset>msvc:<define>CINTERFACE
     : usage-requirements
-        <include>src
-        <include>src/tuttle/host
-        <include>../openfxHack/include
-        <include>../../3rdParty/expat/lib
-        <define>CINTERFACE
+		<include>src
     : build-dir $(DIST)/tuttle/obj
     ;
 
-use-project /png  : ../../3rdParty/libpng ;
-use-project /expat  : ../../3rdParty/expat ;
+use-project /expat  			: $(3RD_PARTY)/expat ;
 use-project /ofxPluginSupport   : ../openfxHack/Support ;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
-alias headers : [ glob-tree *.hpp ] [ glob-tree *.h ] ;
-
-if [ os.name ] = NT {
-    lib shell32 ;
-    alias dl ;
-} else {
-    alias shell32 ;
-    lib dl : : <link>shared : <link>shared ;
-}
-
 lib tuttlehost :
     [ glob src/tuttle/host/*.cpp ]
     [ glob src/tuttle/host/*/*.cpp ]
@@ -51,9 +31,10 @@ lib tuttlehost :
     /boost/thread
     /boost/date_time
     /expat/<link>static
-    /png/<link>static
-    shell32
-    dl
+    :
+    <os>NT:<find-shared-library>shell32
+    <os>LINUX:<find-shared-library>dl
+    <include>../openfxHack/include
     ;
 
 lib tuttleplugin :
@@ -71,6 +52,6 @@ install dist_src
     ;
 
 install dist_include
-	: headers
+	: [ glob-tree *.h* ]
 	: <location>$(DIST)/tuttle/include
 	;

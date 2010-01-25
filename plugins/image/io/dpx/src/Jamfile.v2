@@ -1,6 +1,5 @@
 ###############################################################################
-## Main BJam makefile for Sam command line tool
-## author Nicolas Rondaud
+## Main BJam makefile for TuttleOFX dpx Plugin
 ###############################################################################
 import os ;
 
@@ -9,34 +8,25 @@ import os ;
 ###############################################################################
 project
     : requirements
-        <include>src
         <threading>multi
-    : usage-requirements
-        <include>src
-    : build-dir $(DIST)/sam/obj
+        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+    : build-dir $(DIST)/dpx/obj
     ;
 
-use-project /tuttlelib : ../../libraries/tuttle ;
+use-project /png 	: $(3RD_PARTY)/libpng ;
 
 ###############################################################################
-# tuttle library
+# Product 
 ###############################################################################
-exe sam : 
-    [ glob src/*.cpp ]
-    /boost/system
-    /boost/filesystem
-	/boost/serialization
-    /tuttlelib//tuttlehost/<link>static
-    ;
+plugin dpx : 
+        [ glob-tree *.cpp ]
+        /tuttlelib//tuttleplugin/<link>static
+        /png/<link>static
+        /boost/filesystem/<link>static
+        ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-install dist_src	
-    : sam
-      /boost/system
-      /boost/filesystem
-	  /boost/serialization
-    : <variant>debug:<location>$(DIST)/sam/bin/debug
-      <variant>release:<location>$(DIST)/sam/bin/release
-    ;
+auto_install dpx : $(DIST) ;
+

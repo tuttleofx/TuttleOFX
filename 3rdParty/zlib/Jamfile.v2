@@ -1,6 +1,5 @@
 ###############################################################################
 ## Main BJam makefile for z library
-## author Eloi Du Bois
 ###############################################################################
 
 ###############################################################################
@@ -11,6 +10,7 @@ project
         <include>.
         <threading>multi
         <link>static
+		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements
         <include>.
@@ -20,8 +20,6 @@ project
 ###############################################################################
 # z library
 ###############################################################################
-alias headers : [ glob-tree *.h ] ;
-
 lib zlib : 
     [ glob *.c ]
     ;

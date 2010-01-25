@@ -1,6 +1,5 @@
 ###############################################################################
 ## Main BJam makefile for openexr (ilmImf) library
-## author Nicolas Rondaud
 ###############################################################################
 
 use-project /base : ../ilmbase ;
@@ -18,7 +17,8 @@ project
 	 	<os>NT:<define>WIN32
 	 	<os>NT:<define>_WINDOWS
  		<threading>multi
-	        <link>static
+	    <link>static
+		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements
 		<include>./IlmImf
