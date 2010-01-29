@@ -1,0 +1,24 @@
+Import( 'project' )
+Import( 'libs' )
+
+libraries = [libs.boost_system,
+             libs.boost_filesystem,
+			 libs.dl,
+			 libs.openfxHack,
+			 libs.tuttleHost,
+			 libs.expat,
+			 libs.boost_gil,
+			 ]
+
+sourcesDir = 'src'
+samSources = project.scanFiles( [sourcesDir] )
+
+samEnv = project.createEnv( libraries )
+samEnv.Append( CPPPATH=sourcesDir )
+sam = samEnv.Program( target=project.getName(), source=samSources )
+
+samInstall = samEnv.Install( project.inOutputBin(), sam )
+samEnv.Alias('all', samInstall )
+
+
+

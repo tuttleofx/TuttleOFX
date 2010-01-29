@@ -1,0 +1,9 @@
+Import( 'project' )
+Import( 'libs' )
+
+project.createOfxPlugin( sources = project.scanFiles( ['src'] ),
+                         libs = [ libs.openfxHack,
+								  libs.openfxPluginSupportHack,
+								  libs.tuttlePlugin,
+								 ] )
+
