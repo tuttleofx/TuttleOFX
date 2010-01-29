@@ -23,8 +23,3 @@ class openfxHackChecker(libs.base.HeaderChecker):
 
 libs.openfxHack = openfxHackChecker()
 
-
-
-#subdirs = project.getSubDirsWithSConscript()
-#SConscript( dirs = subdirs )
-
