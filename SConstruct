@@ -22,7 +22,7 @@ class Tuttle( SConsProject ):
                 SConscript( dirs=self.inBuildDir(d), exports=exports )
 
     def createOptions(self, filename, args) :
-        opts = Putois.createOptions(self,filename,args)
+        opts = SConsProject.createOptions(self,filename,args)
         opts.Add( PathVariable( 'LIBRARIES',    'Directory of intern libraries', self.dir_libraries ) )
         return opts
 
