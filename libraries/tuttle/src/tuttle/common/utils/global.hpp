@@ -41,18 +41,18 @@ namespace bgil = boost::gil;
  * @def   INFOS
  * @brief informations : filename, line number, function name
  **/
-#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << std::endl << "function: " << BOOST_CURRENT_FUNCTION
+#define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << ::std::endl << "function: " << BOOST_CURRENT_FUNCTION
 
 /**
  * @param[in] ... : all parameters with an operator << defined
  * @brief terminal display
  **/
-#define COUT(... )  std::cout << __VA_ARGS__ << std::endl
+#define COUT(... )  ::std::cout << __VA_ARGS__ << ::std::endl
 
-#define COUT_VAR( a )  std::cout << # a << ": " << a << std::endl
-#define COUT_VAR2( a, b )  std::cout << # a << ": " << a << ", " << # b << ": " << b << std::endl
-#define COUT_VAR3( a, b, c )  std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << std::endl
-#define COUT_VAR4( a, b, c, d )  std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d << std::endl
+#define COUT_VAR( a )  ::std::cout << # a << ": " << a << ::std::endl
+#define COUT_VAR2( a, b )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ::std::endl
+#define COUT_VAR3( a, b, c )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ::std::endl
+#define COUT_VAR4( a, b, c, d )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d << ::std::endl
 
 /**
  * @brief terminal information display
@@ -65,27 +65,27 @@ namespace bgil = boost::gil;
  **/
 #define COUT_WITHINFOS(... )  \
     COUT_DEBUG( INFOS << \
-                std::endl << "\t" << __VA_ARGS__ )
+                ::std::endl << "\t" << __VA_ARGS__ )
 
 #define COUT_WARNING(... )  \
-    std::cerr << "Warning:" << \
-    std::endl << INFOS << \
-    std::endl << "\t" << __VA_ARGS__  << std::endl
+    ::std::cerr << "Warning:" << \
+    ::std::endl << INFOS << \
+    ::std::endl << "\t" << __VA_ARGS__  << ::std::endl
 
 #define COUT_ERROR(... )  \
-    std::cerr << "Error:" << \
-    std::endl << INFOS << \
-    std::endl << "\t" << __VA_ARGS__  << std::endl
+    ::std::cerr << "Error:" << \
+    ::std::endl << INFOS << \
+    ::std::endl << "\t" << __VA_ARGS__  << ::std::endl
 
 #define COUT_FATALERROR(... )  \
-    std::cerr << "Fatal error:" << \
-    std::endl << INFOS << \
-    std::endl << "\t" << __VA_ARGS__  << std::endl
+    ::std::cerr << "Fatal error:" << \
+    ::std::endl << INFOS << \
+    ::std::endl << "\t" << __VA_ARGS__  << ::std::endl
 
 #define COUT_EXCEPTION( e )  \
-    std::cerr << "Exception:" << \
-    std::endl << INFOS << \
-    std::endl << "\t" << e.what() << std::endl
+    ::std::cerr << "Exception:" << \
+    ::std::endl << INFOS << \
+    ::std::endl << "\t" << e.what() << ::std::endl
 
 ////////////////////////////////////////////////////////////////////////////////
 
