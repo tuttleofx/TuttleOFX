@@ -71,7 +71,7 @@ public:
 };
 
 /// base class for all params
-class OfxhParamAccessor : virtual public attribute::OfxhAttributeAccessor
+class OfxhParamAccessor : virtual public OfxhAttributeAccessor
 {
 public:
 	OfxhParamAccessor();
@@ -113,7 +113,8 @@ class OfxhParamDescriptor :
 	public OfxhAttributeDescriptor,
 	virtual public OfxhParamAccessor
 {
-OfxhParamDescriptor();
+private:
+	OfxhParamDescriptor(){}
 
 public:
 	/// make a parameter, with the given type and name
@@ -147,6 +148,7 @@ private:
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttributeDescriptor);
 	}
 };
+
 
 /// A set of parameters
 ///
@@ -416,7 +418,7 @@ protected:
 	std::vector<T*> _controls;
 
 public:
-	OfxhMultiDimParam( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhMultiDimParam( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	virtual ~OfxhMultiDimParam()
 	{
@@ -533,7 +535,7 @@ class OfxhParamGroup : public OfxhParam,
 	public OfxhParamSet
 {
 public:
-	OfxhParamGroup( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamGroup( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 	virtual ~OfxhParamGroup() {}
 
 	void deleteChildrens()
@@ -541,8 +543,8 @@ public:
 		_paramList.clear();
 	}
 
-	void                     setChildrens( const attribute::OfxhParamSet* childrens );
-	attribute::OfxhParamSet* getChildrens() const;
+	void                     setChildrens( const OfxhParamSet* childrens );
+	OfxhParamSet* getChildrens() const;
 	void                     addChildren( OfxhParam* children );
 
 	property::OfxhSet& getParamSetProps()
@@ -552,7 +554,7 @@ public:
 
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
-	virtual void paramChangedByPlugin( attribute::OfxhParam* param )
+	virtual void paramChangedByPlugin( OfxhParam* param )
 	{
 		_paramSetInstance->paramChangedByPlugin( param );
 	}
@@ -579,11 +581,11 @@ public:
 class OfxhParamPage : public OfxhParam
 {
 public:
-	OfxhParamPage( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
-	const std::map<int, attribute::OfxhParam*>& getChildren() const;
+	OfxhParamPage( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	const std::map<int, OfxhParam*>& getChildren() const;
 
 protected:
-	mutable std::map<int, attribute::OfxhParam*> _children; // if set in a notify hook, this need not be mutable
+	mutable std::map<int, OfxhParam*> _children; // if set in a notify hook, this need not be mutable
 };
 
 class OfxhParamInteger : public OfxhParam,
@@ -591,7 +593,7 @@ class OfxhParamInteger : public OfxhParam,
 {
 public:
 	typedef int BaseType;
-	OfxhParamInteger( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
+	OfxhParamInteger( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance )
 		: OfxhParam( descriptor, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
@@ -631,7 +633,7 @@ class OfxhParamChoice : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
-	OfxhParamChoice( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamChoice( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual void get( int& )               OFX_EXCEPTION_SPEC = 0;
@@ -657,7 +659,7 @@ class OfxhParamDouble : public OfxhParam,
 {
 public:
 	typedef double BaseType;
-	OfxhParamDouble( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
+	OfxhParamDouble( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance )
 		: OfxhParam( descriptor, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
@@ -696,7 +698,7 @@ class OfxhParamBoolean : public OfxhParam,
 {
 public:
 	typedef bool BaseType;
-	OfxhParamBoolean( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamBoolean( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual void get( bool& )               OFX_EXCEPTION_SPEC = 0;
@@ -724,7 +726,7 @@ std::string _returnValue; ///< location to hold temporary return value. Should d
 
 public:
 	typedef std::string BaseType;
-	OfxhParamString( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamString( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 
 	virtual void get( std::string& )               OFX_EXCEPTION_SPEC = 0;
 	virtual void get( OfxTime time, std::string& ) OFX_EXCEPTION_SPEC = 0;
@@ -747,14 +749,14 @@ public:
 class OfxhParamCustom : public OfxhParamString
 {
 public:
-	OfxhParamCustom( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParamString( descriptor, setInstance ) {}
+	OfxhParamCustom( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParamString( descriptor, setInstance ) {}
 };
 
 class OfxhParamPushButton : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
-	OfxhParamPushButton( OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamPushButton( OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
 };
 
 }
@@ -762,6 +764,16 @@ public:
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhParamDescriptor)
+// force boost::is_virtual_base_of value (used by boost::serialization)
+namespace boost{
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhParam>: public mpl::true_ {};
+
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhParamDescriptor>: public mpl::true_ {};
+}
+
+
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhParamDescriptor)
 
 #endif

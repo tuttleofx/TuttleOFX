@@ -66,7 +66,7 @@ class Tuttle( SConsProject ):
     def getOutputOfxPlugin( self ) :
         '''Retourne le nom du plugin dans le repertoire de sortie "..../bin/pluginname.ofx.bundle/Contents/ofxplatformname/pluginname.ofx" .'''
         name = self.getName()
-        return self.dir_output_bin + os.sep + name + '.ofx.bundle/Contents' + os.sep + self.getOfxPlatformName() + os.sep + name + '.ofx'
+        return os.path.join( self.dir_output_bin, name + '.ofx.bundle/Contents', self.getOfxPlatformName(), name + '.ofx' )
 
     def createOfxPlugin( self, sources=[], libs=[], dirs=[] ):
         '''

@@ -34,7 +34,9 @@
 #include "ofxAttribute.h"
 #include "OfxhProperty.hpp"
 
+#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/type_traits/is_virtual_base_of.hpp>
 
 #include <string>
 #include <cassert>
@@ -203,6 +205,8 @@ private:
 
 class OfxhAttribute : virtual public OfxhAttributeAccessor
 {
+protected:
+	OfxhAttribute(){}
 public:
 	OfxhAttribute( const property::OfxhSet& properties );
 	OfxhAttribute( const OfxhAttributeDescriptor& desc );
@@ -229,6 +233,13 @@ public:
 		return _properties;
 	}
 
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+//		ar & BOOST_SERIALIZATION_NVP(_properties);
+	}
 };
 
 }

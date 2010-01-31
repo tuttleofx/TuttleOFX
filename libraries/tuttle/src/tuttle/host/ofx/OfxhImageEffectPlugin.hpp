@@ -141,7 +141,7 @@ private:
 	{
 //		ar.register_type( static_cast<OfxhImageEffectNodeDescriptor*>(NULL) );
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPlugin);
-		ar & BOOST_SERIALIZATION_NVP(_contexts);
+//		ar & BOOST_SERIALIZATION_NVP(_contexts); ///< @todo tuttle
 	}
 };
 
@@ -150,6 +150,6 @@ private:
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin)
 
 #endif

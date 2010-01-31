@@ -35,6 +35,7 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhProperty.hpp"
 
+#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/utility.hpp>
 
@@ -53,7 +54,7 @@ namespace attribute {
  * is used to basically fetch common properties
  * by function name
  */
-class OfxhClipAccessor : virtual public attribute::OfxhAttributeAccessor
+class OfxhClipAccessor : virtual public OfxhAttributeAccessor
 {
 public:
 	/// @brief base ctor, for a descriptor
@@ -74,8 +75,9 @@ public:
 /**
  * a clip descriptor
  */
-class OfxhClipDescriptor : virtual public OfxhClipAccessor,
-	public OfxhAttributeDescriptor
+class OfxhClipDescriptor :
+	public OfxhAttributeDescriptor,
+	virtual public OfxhClipAccessor
 {
 public:
 	/// constructor
@@ -92,17 +94,19 @@ private:
 	}
 };
 
+
 /**
  * a clip instance
  */
-class OfxhClip : virtual public OfxhClipAccessor,
-	public attribute::OfxhAttribute,
+class OfxhClip :
+	public OfxhAttribute,
 	protected property::OfxhGetHook,
 	protected property::OfxhNotifyHook,
+	virtual public OfxhClipAccessor,
 	private boost::noncopyable
 {
 protected:
-	OfxhClip( const OfxhClip& other ) : attribute::OfxhAttribute( other ) {}
+	OfxhClip( const OfxhClip& other ) : OfxhAttribute( other ) {}
 
 public:
 	OfxhClip( const OfxhClipDescriptor& desc );
@@ -148,7 +152,17 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipDescriptor)
+// force boost::is_virtual_base_of value (used by boost::serialization)
+namespace boost{
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
+
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
+}
+
+
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipDescriptor)
 
 #endif
 

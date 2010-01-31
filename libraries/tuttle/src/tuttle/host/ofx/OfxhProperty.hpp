@@ -713,10 +713,10 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 //		ar.register_type(static_cast<OfxhProperty*>(NULL));
-		ar.register_type(static_cast<Int*>(NULL));
-		ar.register_type(static_cast<Double*>(NULL));
-		ar.register_type(static_cast<String*>(NULL));
-		ar.register_type(static_cast<Pointer*>(NULL));
+		//ar.register_type(static_cast<Int*>(NULL));
+		//ar.register_type(static_cast<Double*>(NULL));
+		//ar.register_type(static_cast<String*>(NULL));
+		//ar.register_type(static_cast<Pointer*>(NULL));
 		boost::serialization::void_cast_register( static_cast<Int*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<Double*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<String*>(NULL), static_cast<OfxhProperty*>(NULL) );
@@ -815,9 +815,9 @@ void OfxhSet::getPropertyRawN( const std::string& property, int count, typename 
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
 
 #endif

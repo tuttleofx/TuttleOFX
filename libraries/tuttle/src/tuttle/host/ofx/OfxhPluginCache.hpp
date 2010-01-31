@@ -203,6 +203,6 @@ private:
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginCache)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginCache)
 
 #endif

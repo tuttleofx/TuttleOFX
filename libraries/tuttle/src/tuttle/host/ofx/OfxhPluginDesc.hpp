@@ -5,6 +5,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
 
 namespace tuttle {
@@ -129,8 +130,8 @@ private:
 }
 }
 
-// BOOST_SERIALIZATION_ASSUME_ABSTRACT(tuttle::host::ofx::OfxhPluginDesc)
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginDesc)
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(tuttle::host::ofx::OfxhPluginDesc)
+//BOOST_CLASS_EXPORT(::tuttle::host::ofx::OfxhPluginDesc)
 
 #endif
 

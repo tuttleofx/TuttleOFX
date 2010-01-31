@@ -646,6 +646,6 @@ private:
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor)
 
 #endif

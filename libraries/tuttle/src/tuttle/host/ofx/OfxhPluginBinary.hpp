@@ -169,7 +169,7 @@ private:
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginBinary)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginBinary)
 
 #endif
 

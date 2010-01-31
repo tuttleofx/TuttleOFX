@@ -36,6 +36,7 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhProperty.hpp"
 
+#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <map>
@@ -464,6 +465,6 @@ private:
 }
 }
 
-// BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipImageDescriptor)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipImageDescriptor)
 
 #endif
