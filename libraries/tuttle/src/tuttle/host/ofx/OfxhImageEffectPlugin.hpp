@@ -62,7 +62,7 @@ typedef OfxhImageEffectPlugin This;
 OfxhImageEffectPluginCache* _pc;
 
 /// map to store contexts in
-typedef boost::ptr_map<const std::string, OfxhImageEffectNodeDescriptor> ContextMap;
+typedef boost::ptr_map<std::string, OfxhImageEffectNodeDescriptor> ContextMap;
 ContextMap _contexts;
 
 typedef std::set<std::string> ContextSet;
@@ -141,7 +141,7 @@ private:
 	{
 //		ar.register_type( static_cast<OfxhImageEffectNodeDescriptor*>(NULL) );
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPlugin);
-//		ar & BOOST_SERIALIZATION_NVP(_contexts); ///< @todo tuttle
+		ar & BOOST_SERIALIZATION_NVP(_contexts);
 	}
 };
 

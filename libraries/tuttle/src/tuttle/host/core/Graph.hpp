@@ -26,7 +26,7 @@ public:
 	typedef core::ProcessAttribute Attribute;
 	typedef graph::InternalGraph<graph::Vertex, graph::Edge> InternalGraph;
 	typedef graph::InternalGraph<graph::Vertex, graph::Edge>::VertexDescriptor Descriptor;
-	typedef boost::ptr_map<const std::string, Node> NodeMap;
+	typedef boost::ptr_map<std::string, Node> NodeMap;
 	typedef std::map<std::string, int> InstanceCountMap;
 
 public:

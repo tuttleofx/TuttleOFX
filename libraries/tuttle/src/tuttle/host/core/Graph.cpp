@@ -53,7 +53,8 @@ Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicE
 	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
 	node->setName( uniqueName.str() );
 
-	_nodes.insert( node->getName(), node );
+	std::string key( node->getName() ); // for constness
+	_nodes.insert( key, node );
 	addToGraph( *node );
 
 	return *node;

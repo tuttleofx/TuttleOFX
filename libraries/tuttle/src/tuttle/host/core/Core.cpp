@@ -57,7 +57,6 @@ void Core::preload()
 	_pluginCache.writePluginCache( ofs );
 	ofs.close();
 
-	/*
 //	typedef boost::archive::binary_oarchive OArchive;
 //	typedef boost::archive::binary_iarchive IArchive;
 //	typedef boost::archive::text_oarchive OArchive;
@@ -69,7 +68,6 @@ void Core::preload()
 	OArchive oArchive( ofsb );
 	oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
 	ofsb.close();
-	*/
 }
 
 }

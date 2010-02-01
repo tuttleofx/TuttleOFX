@@ -115,7 +115,7 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhClipDescriptor);
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhClipDescriptor);
 	}
 };
 
@@ -463,6 +463,16 @@ private:
 }
 }
 }
+}
+
+
+// force boost::is_virtual_base_of value (used by boost::serialization)
+namespace boost{
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClipDescriptor, tuttle::host::ofx::attribute::OfxhClipImageDescriptor>: public mpl::true_ {};
+
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
 }
 
 //BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipImageDescriptor)

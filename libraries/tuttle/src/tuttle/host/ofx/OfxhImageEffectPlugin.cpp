@@ -140,7 +140,8 @@ const OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptor() cons
 
 void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied )
 {
-	_contexts.insert( context, ied );
+	std::string key(context); // for constness
+	_contexts.insert( key, ied );
 	_knownContexts.insert( context );
 }
 
@@ -259,7 +260,8 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 
 	if( rval == kOfxStatOK || rval == kOfxStatReplyDefault )
 	{
-		_contexts.insert( context, newContext.release() );
+		std::string key(context); // for constness
+		_contexts.insert( key, newContext.release() );
 		return _contexts.at(context);
 	}
 	throw OfxhException( rval, "kOfxImageEffectActionDescribeInContext failed." );

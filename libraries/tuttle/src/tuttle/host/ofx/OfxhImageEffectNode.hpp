@@ -154,7 +154,7 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar & BOOST_SERIALIZATION_NVP(_properties);
+		ar & BOOST_SERIALIZATION_NVP(_properties);
 	}
 };
 
@@ -239,7 +239,7 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 //		ar.register_type( static_cast<attribute::OfxhClipImageDescriptor*>(NULL) );
-//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase); /// fab here
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhParamDescriptorSet);
 		ar & BOOST_SERIALIZATION_NVP(_clipsByOrder);
 	}
@@ -635,7 +635,7 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
+//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
 //		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet); /// @todo tuttle: serialize
 //		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
 	}

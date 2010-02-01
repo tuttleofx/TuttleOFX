@@ -456,7 +456,7 @@ struct OfxhPropSpec
 };
 
 /// A std::map of properties by name
-typedef boost::ptr_map<const std::string, OfxhProperty> PropertyMap;
+typedef boost::ptr_map<std::string, OfxhProperty> PropertyMap;
 
 /**
  * Class that holds a set of properties and manipulates them
@@ -717,10 +717,12 @@ private:
 		//ar.register_type(static_cast<Double*>(NULL));
 		//ar.register_type(static_cast<String*>(NULL));
 		//ar.register_type(static_cast<Pointer*>(NULL));
+		
 		boost::serialization::void_cast_register( static_cast<Int*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<Double*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<String*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<Pointer*>(NULL), static_cast<OfxhProperty*>(NULL) );
+		COUT("____________________ OfxhSet::seralize ____________________");
 		
 		ar & BOOST_SERIALIZATION_NVP(_props);
 	}
@@ -815,6 +817,10 @@ void OfxhSet::getPropertyRawN( const std::string& property, int count, typename 
 }
 }
 
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhIntValue>)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhDoubleValue>)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhStringValue>)
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhPointerValue>)
 //BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
 //BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
 //BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)

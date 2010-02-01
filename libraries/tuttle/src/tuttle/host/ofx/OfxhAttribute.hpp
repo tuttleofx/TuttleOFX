@@ -199,7 +199,7 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar & BOOST_SERIALIZATION_NVP(_properties);
+		ar & BOOST_SERIALIZATION_NVP(_properties);
 	}
 };
 
@@ -238,7 +238,7 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar & BOOST_SERIALIZATION_NVP(_properties);
+		ar & BOOST_SERIALIZATION_NVP(_properties);
 	}
 };
 

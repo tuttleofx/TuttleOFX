@@ -137,6 +137,14 @@ public:
 	//
 	//  Says whether the clip is actually connected at the moment.
 	virtual const bool getConnected() const = 0;
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttribute);
+	}
 };
 
 /**
@@ -155,7 +163,7 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 // force boost::is_virtual_base_of value (used by boost::serialization)
 namespace boost{
 template<>
-struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
 
 template<>
 struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
