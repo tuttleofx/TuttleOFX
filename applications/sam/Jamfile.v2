@@ -27,6 +27,8 @@ exe sam :
     /boost/filesystem
 	/boost/serialization
     /tuttlelib//tuttlehost/<link>static
+	:
+	<os>LINUX:<find-shared-library>dl
     ;
 
 ###############################################################################
