@@ -45,6 +45,7 @@
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
 
+#include <boost/serialization/extended_type_info.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/ptr_container/serialize_ptr_vector.hpp>
 

@@ -162,11 +162,8 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 
 // force boost::is_virtual_base_of value (used by boost::serialization)
 namespace boost{
-template<>
-struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
-
-template<>
-struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
 }
 
 

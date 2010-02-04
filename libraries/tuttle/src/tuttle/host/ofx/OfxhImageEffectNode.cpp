@@ -513,7 +513,7 @@ void OfxhImageEffectNode::notify( const std::string& name, bool singleValue, int
  */
 void OfxhImageEffectNode::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 {
-	fprintf( stderr, "failing in %s\n", "__PRETTY_FUNCTION__" );
+	COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ );
 	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 

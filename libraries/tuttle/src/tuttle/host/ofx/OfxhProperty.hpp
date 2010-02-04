@@ -35,6 +35,9 @@
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/core/Exception.hpp>
 
+#include <boost/type_traits/is_virtual_base_of.hpp>
+#include <boost/serialization/extended_type_info.hpp>
+#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/ptr_container/serialize_ptr_map.hpp>
 #include <boost/serialization/string.hpp>
@@ -302,6 +305,10 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
+		COUT("OfxhProperty::serialization");
+		COUT_VAR(_name);
+		COUT_VAR(_type);
+		COUT_VAR(_dimension);
 		ar & BOOST_SERIALIZATION_NVP(_name);
 		ar & BOOST_SERIALIZATION_NVP(_type);
 		ar & BOOST_SERIALIZATION_NVP(_dimension);
@@ -430,6 +437,8 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
+		COUT("OfxhPropertyTemplate<>::serialize");
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
 		ar & BOOST_SERIALIZATION_NVP(_value);
 		ar & BOOST_SERIALIZATION_NVP(_defaultValue);
 	}
@@ -442,6 +451,14 @@ typedef OfxhPropertyTemplate<OfxhPointerValue> Pointer; /// Our pointer property
 
 template<>
 inline String::APITypeConstless String::getAPIConstlessValue( int index ) const OFX_EXCEPTION_SPEC { return const_cast<String::APITypeConstless>( getConstlessValue( index ).c_str() ); }
+
+template<>
+template<class Archive>
+void Pointer::serialize( Archive &ar, const unsigned int version )
+{
+		COUT("OfxhPropertyTemplate<void*>::serialize");
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
+}
 
 /// A class that is used to initialize a property set. Feed in an array of these to
 /// a property and it will construct a bunch of properties. Terminate such an array
@@ -712,16 +729,18 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar.register_type(static_cast<OfxhProperty*>(NULL));
-		//ar.register_type(static_cast<Int*>(NULL));
-		//ar.register_type(static_cast<Double*>(NULL));
-		//ar.register_type(static_cast<String*>(NULL));
-		//ar.register_type(static_cast<Pointer*>(NULL));
+		/*
+		ar.register_type(static_cast<OfxhProperty*>(NULL));
+		ar.register_type(static_cast<Int*>(NULL));
+		ar.register_type(static_cast<Double*>(NULL));
+		ar.register_type(static_cast<String*>(NULL));
+		ar.register_type(static_cast<Pointer*>(NULL));
 		
 		boost::serialization::void_cast_register( static_cast<Int*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<Double*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<String*>(NULL), static_cast<OfxhProperty*>(NULL) );
 		boost::serialization::void_cast_register( static_cast<Pointer*>(NULL), static_cast<OfxhProperty*>(NULL) );
+		*/
 		COUT("____________________ OfxhSet::seralize ____________________");
 		
 		ar & BOOST_SERIALIZATION_NVP(_props);
@@ -817,13 +836,19 @@ void OfxhSet::getPropertyRawN( const std::string& property, int count, typename 
 }
 }
 
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhIntValue>)
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhDoubleValue>)
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhStringValue>)
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhPropertyTemplate<tuttle::host::ofx::property::OfxhPointerValue>)
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
+
+// force boost::is_virtual_base_of value (used by boost::serialization)
+namespace boost{
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Int>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Double>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::String>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Pointer>: public mpl::true_ {};
+}
+
+//BOOST_CLASS_EXPORT(tuttle::host::ofx::property::OfxhProperty)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
 
 #endif
