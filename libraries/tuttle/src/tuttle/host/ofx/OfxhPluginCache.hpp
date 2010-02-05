@@ -192,7 +192,7 @@ private:
 //		ar.register_type( static_cast<OfxhPluginBinary*>(NULL) );
 		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
 		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
-		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
+		//ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
 		ar & BOOST_SERIALIZATION_NVP(_binaries);
 //		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
 		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
