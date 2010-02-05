@@ -55,9 +55,9 @@ OPENEXR_URL=http://download.savannah.nongnu.org/releases/openexr/$OPENEXR_ARCHIV
 echo ">>> GETTING OPENEXR"
 getAndUncompressAndTransferToDir $OPENEXR_URL $OPENEXR_ARCHIVE $OPENEXR_FILENAME openexr
 
-BOOST_FILENAME=boost_1_41_0
+BOOST_FILENAME=boost_1_42_0
 BOOST_ARCHIVE=$BOOST_FILENAME.tar.bz2
-BOOST_URL=http://sourceforge.net/projects/boost/files/boost/1.41.0/$BOOST_ARCHIVE/download
+BOOST_URL=http://sourceforge.net/projects/boost/files/boost/1.42.0/$BOOST_ARCHIVE/download
 echo ">>> GETTING Boost"
 getAndUncompress $BOOST_URL $BOOST_ARCHIVE
 ln -s $BOOST_FILENAME boost
