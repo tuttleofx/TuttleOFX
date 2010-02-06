@@ -43,6 +43,7 @@
 #include <boost/serialization/extended_type_info.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/scoped_ptr.hpp>
 
 #include <string>
 #include <set>
@@ -145,6 +146,8 @@ private:
 	{
 //		ar.register_type( static_cast<OfxhImageEffectNodeDescriptor*>(NULL) );
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPlugin);
+		ar & BOOST_SERIALIZATION_NVP(_baseDescriptor);
+		//ar & BOOST_SERIALIZATION_NVP(_pluginHandle); // don't save this
 		ar & BOOST_SERIALIZATION_NVP(_contexts);
 	}
 };
