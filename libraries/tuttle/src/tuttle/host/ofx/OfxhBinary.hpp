@@ -167,7 +167,7 @@ private:
 		if( typename Archive::is_loading() )
 		{
 			_users = 0;
-			load();
+			init( _binaryPath );
 		}
 	}
 };

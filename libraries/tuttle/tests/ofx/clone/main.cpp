@@ -1,6 +1,7 @@
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/core/Exception.hpp>
 #include <tuttle/host/core/Core.hpp>
+#include <tuttle/host/core/ImageEffectNode.hpp>
 
 #include <iostream>
 

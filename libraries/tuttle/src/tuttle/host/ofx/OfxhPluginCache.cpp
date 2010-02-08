@@ -43,8 +43,6 @@
 
 #include <expat.h>
 
-#include <boost/lexical_cast.hpp>
-
 #include <cassert>
 #include <map>
 #include <string>
@@ -57,15 +55,6 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-
-bool OfxhPlugin::operator==( const This& other ) const
-{
-	if( OfxhPluginDesc::operator!=(other) ||
-		*(_binary) != *(other._binary) ||
-		_index != other._index )
-		return false;
-	return true;
-}
 
 
 #if defined ( __linux__ )
@@ -112,64 +101,6 @@ static const char* getArchStr()
 // Define this to enable ofx plugin cache debug messages.
 //#define CACHE_DEBUG
 
-/// try to open the plugin bundle object and query it for plugins
-
-void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
-{
-	_fileModificationTime = _binary.getTime();
-	_fileSize             = _binary.getSize();
-	_binaryChanged        = false;
-
-	_binary.load();
-
-	int ( *getNo )( void )       = ( int( * ) () )_binary.findSymbol( "OfxGetNumberOfPlugins" );
-	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_binary.findSymbol( "OfxGetPlugin" );
-
-	if( getNo == 0 || getPlug == 0 )
-	{
-		_binary.setInvalid( true );
-	}
-	else
-	{
-		int pluginCount = ( *getNo )( );
-
-		_plugins.reserve( pluginCount );
-
-		for( int i = 0; i < pluginCount; ++i )
-		{
-			OfxPlugin* plug = ( *getPlug )( i );
-
-			APICache::OfxhPluginAPICacheI* api = cache->findApiHandler( plug->pluginApi, plug->apiVersion );
-			assert( api );
-
-			_plugins.push_back( api->newPlugin( this, i, plug ) );
-		}
-	}
-	_binary.unload();
-}
-
-OfxhPluginBinary::~OfxhPluginBinary()
-{
-}
-
-OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, OfxhHost* host ) : _p( p )
-{
-	_b = p->getBinary();
-	_b->_binary.ref();
-	_op                          = 0;
-	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_b->_binary.findSymbol( "OfxGetPlugin" );
-	_op                          = getPlug( p->getIndex() );
-	if( !_op )
-	{
-		throw core::exception::LogicError( "Can't found plugin at index '"+boost::lexical_cast<std::string>(p->getIndex())+"' in plugin '" + _p->getIdentifier() + "'" );
-	}
-	_op->setHost( host->getHandle() );
-}
-
-OfxhPluginHandle::~OfxhPluginHandle()
-{
-	_b->_binary.unref();
-}
 
 #if defined ( WINDOWS )
 
@@ -320,7 +251,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				#ifdef CACHE_DEBUG
 				printf( "found non-cached binary %s\n", binpath.c_str() );
 				#endif
-				_dirty = true;
+				setDirty();
 
 				// the binary was not in the cache
 
@@ -404,7 +335,7 @@ void OfxhPluginCache::scanPluginFiles()
 		if( foundBinFiles.find( i->getFilePath() ) == foundBinFiles.end() )
 		{
 			// the binary was in the cache, but was not on the path
-			_dirty = true;
+			setDirty();
 			i      = _binaries.erase( i );
 		}
 		else
@@ -415,7 +346,7 @@ void OfxhPluginCache::scanPluginFiles()
 			if( binChanged )
 			{
 				i->loadPluginInfo( this );
-				_dirty = true;
+				setDirty();
 			}
 
 			for( int j = 0; j < i->getNPlugins(); ++j )

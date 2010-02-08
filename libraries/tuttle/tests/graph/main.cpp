@@ -57,7 +57,6 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 	//core::Core::instance().getPluginCache().scanPluginFiles();
-	std::cout << " hm. " << std::endl;
 	core::Core::instance().preload();
 	core::Core::instance().getImageEffectPluginCache().dumpToStdOut();
 

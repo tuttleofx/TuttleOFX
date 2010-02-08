@@ -1,6 +1,8 @@
 #include "Graph.hpp"
 #include "ProcessGraph.hpp"
 #include <tuttle/host/ofx/OfxhClipImage.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
+#include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>

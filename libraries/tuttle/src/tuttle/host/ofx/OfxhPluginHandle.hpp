@@ -2,11 +2,14 @@
 #define OFXH_PLUGINHANDLE_HPP
 
 #include "OfxhHost.hpp"
+#include "OfxhPlugin.hpp"
+#include "OfxhPluginBinary.hpp"
+
+#include <ofxCore.h>
 
 namespace tuttle {
 namespace host {
 namespace ofx {
-
 
 /**
  * wrapper class for Plugin/PluginBinary.  use in a RAIA fashion to make sure the binary gets unloaded when needed and not before.

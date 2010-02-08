@@ -32,9 +32,9 @@
 
 #include <tuttle/host/core/Exception.hpp>
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-
+#include "OfxhImageEffectNodeBase.hpp"
+#include "OfxhImageEffectNodeDescriptor.hpp"
+#include "OfxhImageEffectPlugin.hpp"
 #include "OfxhHost.hpp"
 #include "OfxhProperty.hpp"
 #include "OfxhClipImage.hpp"
@@ -45,209 +45,15 @@
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
 
-#include <boost/serialization/extended_type_info.hpp>
-#include <boost/serialization/export.hpp>
-#include <boost/ptr_container/serialize_ptr_vector.hpp>
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
+
 
 namespace tuttle {
 namespace host {
 namespace ofx {
-
-// forward declare
-class OfxhPlugin;
-
-namespace attribute {
-class OfxhClipDescriptor;
-class OfxhClip;
-}
-
 namespace imageEffect {
 
-class OfxhImageEffectPlugin;
-
-////////////////////////////////////////////////////////////////////////////////
-/**
- * base class to both effect descriptors and instances
- */
-class OfxhImageEffectNodeBase
-{
-protected:
-	property::OfxhSet _properties;
-
-public:
-	OfxhImageEffectNodeBase( const property::OfxhSet& set );
-	OfxhImageEffectNodeBase( const property::OfxhPropSpec* propSpec );
-	virtual ~OfxhImageEffectNodeBase();
-
-	bool operator==( const OfxhImageEffectNodeBase& other ) const;
-	bool operator!=( const OfxhImageEffectNodeBase& other ) const { return !operator==( other ); }
-
-	/// is my magic number valid?
-	virtual bool verifyMagic() { return true; }
-
-	/// obtain a handle on this for passing to the C api
-	OfxImageEffectHandle getHandle() const;
-
-	const property::OfxhSet& getProperties() const   { return _properties; }
-	property::OfxhSet&       getEditableProperties() { return _properties; }
-
-	/// name of the clip
-	const std::string& getShortLabel() const;
-
-	/// name of the clip
-	const std::string& getLabel() const;
-
-	/// name of the clip
-	const std::string& getName() const;
-
-	/// name of the clip
-	void setName( const std::string& name );
-
-	/// name of the clip
-	const std::string& getLongLabel() const;
-
-	/// is the given context supported
-	bool isContextSupported( const std::string& s ) const;
-
-	/// what is the name of the group the plug-in belongs to
-	const std::string& getPluginGrouping() const;
-
-	/// is the effect single instance
-	bool isSingleInstance() const;
-
-	/// what is the thread safety on this effect
-	const std::string& getRenderThreadSafety() const;
-
-	/// should the host attempt to managed multi-threaded rendering if it can
-	/// via tiling or some such
-	bool getHostFrameThreading() const;
-
-	/// get the overlay interact main entry if it exists
-	OfxPluginEntryPoint* getOverlayInteractMainEntry() const;
-
-	/// does the effect support images of differing sizes
-	bool supportsMultiResolution() const;
-
-	/// does the effect support tiled rendering
-	bool supportsTiles() const;
-
-	/// does this effect need random temporal access
-	bool temporalAccess() const;
-
-	/// is the given RGBA/A pixel depth supported by the effect
-	bool isPixelDepthSupported( const std::string& s ) const;
-
-	/// when field rendering, does the effect need to be called
-	/// twice to render a frame in all circumstances (with different fields)
-	bool fieldRenderTwiceAlways() const;
-
-	/// does the effect support multiple clip depths
-	bool supportsMultipleClipDepths() const;
-
-	/// does the effect support multiple clip pixel aspect ratios
-	bool supportsMultipleClipPARs() const;
-
-	/// does changing the named param re-tigger a clip preferences action
-	bool isClipPreferencesSlaveParam( const std::string& s ) const;
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
-	{
-		ar & BOOST_SERIALIZATION_NVP(_properties);
-	}
-};
-
-/**
- * an image effect plugin descriptor
- */
-class OfxhImageEffectNodeDescriptor
-	: public OfxhImageEffectNodeBase,
-	public attribute::OfxhParamDescriptorSet,
-	private boost::noncopyable
-{
-public:
-	typedef std::map<std::string, attribute::OfxhClipImageDescriptor*> ClipImageDescriptorMap;
-	typedef boost::ptr_vector<attribute::OfxhClipImageDescriptor> ClipImageDescriptorVector;
-
-protected:
-	OfxhPlugin* _plugin;      ///< the plugin I belong to
-	ClipImageDescriptorMap _clips;        ///< clips descriptors by name
-	ClipImageDescriptorVector _clipsByOrder; ///< clip descriptors in order of declaration
-	mutable interact::OfxhInteractDescriptor _overlayDescriptor; ///< descriptor to use for overlays, it has delayed description @todo tuttle: remove mutable
-	int _built;
-
-private:
-	// private CC
-	OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& other )
-		: OfxhImageEffectNodeBase( other._properties ),
-		_plugin( other._plugin )
-	{}
-
-	OfxhImageEffectNodeDescriptor();
-	
-public:
-	/// used to construct the global description
-	OfxhImageEffectNodeDescriptor( OfxhPlugin* plug );
-
-	/// used to construct a context description, 'other' is the main context
-	OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhPlugin* plug );
-
-	/// used to construct populate the cache
-	OfxhImageEffectNodeDescriptor( const std::string& bundlePath, OfxhPlugin* plug );
-
-	/// dtor
-	virtual ~OfxhImageEffectNodeDescriptor();
-
-	/// implemented for ParamDescriptorSet
-	property::OfxhSet& getParamSetProps()
-	{
-		return _properties;
-	}
-
-	/// get the plugin I belong to
-	OfxhPlugin* getPlugin() const { return _plugin; }
-
-	/// create a new clip and add this to the clip map
-	virtual attribute::OfxhClipImageDescriptor* defineClip( const std::string& name );
-
-	/// get the clips
-	const ClipImageDescriptorMap& getClips() const { return _clips; }
-
-	/// add a new clip
-	void addClip( const std::string& name, attribute::OfxhClipImageDescriptor* clip );
-
-	/// get the clips in order of construction
-	const ClipImageDescriptorVector& getClipsByOrder() const { return _clipsByOrder; }
-
-	/// get the clips in order of construction
-	ClipImageDescriptorVector& getClipsByOrder() { return _clipsByOrder; }
-
-	/**
-	 * @todo tuttle some modifs here... doc needs updates...
-	 * Get the interact description, this will also call describe on the interact
-	 * This will return NULL if there is not main entry point or if the description failed
-	 * otherwise it will return the described overlay
-	 */
-	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const { return _overlayDescriptor; }
-
-	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false );
-	
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
-	{
-//		ar.register_type( static_cast<attribute::OfxhClipImageDescriptor*>(NULL) );
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhParamDescriptorSet);
-		ar & BOOST_SERIALIZATION_NVP(_clipsByOrder);
-	}
-};
-
-/// a map used to specify needed frame ranges on set of clips
-typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
 
 /**
  *  an image effect plugin instance.
@@ -263,6 +69,11 @@ class OfxhImageEffectNode : public OfxhImageEffectNodeBase,
 	private property::OfxhNotifyHook,
 	private property::OfxhGetHook
 {
+typedef OfxhImageEffectNode This;
+public:
+	/// a map used to specify needed frame ranges on set of clips
+	typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
+	
 protected:
 	const OfxhImageEffectPlugin* _plugin;
 	std::string _context;
@@ -302,9 +113,8 @@ public:
 		copyParamsValues( other );
 	}
 
-	bool operator==( const OfxhImageEffectNode& ) const;
-
-	bool operator!=( const OfxhImageEffectNode& other ) const { return !operator==( other ); }
+	bool operator==( const This& ) const;
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	/// implemented for Param::SetInstance
 	virtual property::OfxhSet& getParamSetProps();

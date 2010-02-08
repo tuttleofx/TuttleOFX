@@ -1,3 +1,7 @@
+
+//#define BOOST_TEST_MODULE properties_tests
+#include <boost/test/unit_test.hpp>
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/core/Core.hpp>
 
@@ -8,13 +12,13 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/serialization.hpp>
-#include <fstream>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/extended_type_info.hpp>
 
+#include <fstream>
 #include <iostream>
 
-#include <boost/test/unit_test.hpp>
 using namespace boost::unit_test;
-
 
 BOOST_AUTO_TEST_SUITE( properties_tests_suite02 )
 
@@ -65,7 +69,6 @@ BOOST_AUTO_TEST_CASE( properties_serialization )
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-//    std::string testfile( boost::archive::tmpnam(NULL) );
     std::string testfile( "test_properties_serialization.xml" );
     BOOST_REQUIRE( testfile.size() );
 
@@ -74,7 +77,17 @@ BOOST_AUTO_TEST_CASE( properties_serialization )
 	oArchive << BOOST_SERIALIZATION_NVP(testSet);
 	ofsb.close();
 
-//    std::remove(testfile);
+	// new datas
+	ofx::property::OfxhSet testSet2;
+
+	std::ifstream ifsb( testfile.c_str() );
+	IArchive iArchive( ifsb );
+	iArchive >> BOOST_SERIALIZATION_NVP(testSet2);
+	ifsb.close();
+
+	BOOST_CHECK( testSet == testSet2 );
+
+    BOOST_CHECK_EQUAL( 0, std::remove( testfile.c_str() ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

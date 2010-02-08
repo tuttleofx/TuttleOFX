@@ -77,6 +77,7 @@ struct PluginCacheSupportedApi
  */
 class OfxhPluginCache
 {
+public:
 	typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
 protected:
 	tuttle::host::ofx::property::OfxhPropSpec* _hostSpec;
@@ -117,11 +118,17 @@ public:
 	{
 		return _pluginPath;
 	}
-
+	
 	/// was the cache outdated?
-	bool dirty() const
+	bool isDirty() const
 	{
 		return _dirty;
+	}
+
+	void setDirty()
+	{
+		COUT("OfxhPluginCache::setDirty()");
+		_dirty = true;
 	}
 
 	/// add a directory to the plugin path
@@ -184,18 +191,23 @@ public:
 		return _plugins;
 	}
 
+	OfxhPluginBinaryList& getBinaries()
+	{
+		return _binaries;
+	}
+	
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
 //		ar.register_type( static_cast<OfxhPluginBinary*>(NULL) );
-		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
-		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
-		//ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
+//		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
+//		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
+//		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
 		ar & BOOST_SERIALIZATION_NVP(_binaries);
 //		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
-		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
+//		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
 	}
 };
 

@@ -1,4 +1,5 @@
 #include "OfxhImageEffectPluginCache.hpp"
+#include "OfxhImageEffectPlugin.hpp"
 
 ///@todo tuttle: remove this!
 #include <tuttle/host/core/Core.hpp>
@@ -59,7 +60,10 @@ OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::str
 /// whether we support this plugin.
 bool OfxhImageEffectPluginCache::pluginSupported( tuttle::host::ofx::OfxhPlugin* p, std::string& reason ) const
 {
-	return core::Core::instance().getHost().pluginSupported( dynamic_cast<tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin*>( p ), reason );
+	OfxhImageEffectPlugin* imageEffectPlugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
+	if( ! imageEffectPlugin )
+		return false;
+	return core::Core::instance().getHost().pluginSupported( imageEffectPlugin, reason );
 }
 
 /**

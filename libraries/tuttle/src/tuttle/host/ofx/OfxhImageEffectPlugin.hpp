@@ -34,6 +34,7 @@
 #include "ofxImageEffect.h"
 #include "OfxhImageEffectHost.hpp"
 #include "OfxhImageEffectNode.hpp"
+#include "OfxhPluginHandle.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
 
@@ -100,6 +101,13 @@ public:
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
 	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==(other); }
 
+	/**
+	 * @todo tuttle: Hack please remove this !
+	 */
+	void setApiHandler( OfxhImageEffectPluginCache& api )
+	{
+		_pc = &api;
+	}
 	/// @return the API handler this plugin was constructed by
 	APICache::OfxhPluginAPICacheI& getApiHandler();
 	const APICache::OfxhPluginAPICacheI& getApiHandler() const;

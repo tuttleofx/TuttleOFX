@@ -45,17 +45,23 @@ Core::~Core()
 
 void Core::preload()
 {
+	/*
+	std::string expatCacheFile( "tuttlePluginCache.xml" );
 	// try to read an old cache
-	std::ifstream ifs( "tuttlePluginCache.xml" );
+	std::ifstream ifs( expatCacheFile.c_str() );
 	_pluginCache.readCache( ifs );
 	ifs.close();
 
 	_pluginCache.scanPluginFiles();
 
 	/// flush out the current cache
-	std::ofstream ofs( "tuttlePluginCache.xml" );
-	_pluginCache.writePluginCache( ofs );
-	ofs.close();
+	if( _pluginCache.isDirty() )
+	{
+		std::ofstream ofs( expatCacheFile.c_str() );
+		_pluginCache.writePluginCache( ofs );
+		ofs.close();
+	}
+	*/
 
 //	typedef boost::archive::binary_oarchive OArchive;
 //	typedef boost::archive::binary_iarchive IArchive;
@@ -64,10 +70,53 @@ void Core::preload()
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	std::ofstream ofsb( "tuttlePluginCacheSerialize.xml" );
-	OArchive oArchive( ofsb );
-	oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
-	ofsb.close();
+	std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
+
+	try
+	{
+		std::ifstream ifsb( cacheFile.c_str() );
+		if( ifsb.is_open() )
+		{
+			COUT("Read plugins cache.");
+			IArchive iArchive( ifsb );
+			iArchive >> BOOST_SERIALIZATION_NVP(_pluginCache);
+			ifsb.close();
+		}
+		// trying to hack, before removing PluginAPICachexxx
+		for( ofx::OfxhPluginCache::OfxhPluginBinaryList::iterator it = _pluginCache.getBinaries().begin(), itEnd = _pluginCache.getBinaries().end();
+			 it != itEnd;
+			 ++it )
+		{
+			for( ofx::OfxhPluginBinary::PluginVector::iterator i = it->getPlugins().begin(), iEnd = it->getPlugins().end();
+			 i != iEnd;
+			 ++i )
+			{
+				ofx::imageEffect::OfxhImageEffectPlugin* iePlugin = dynamic_cast<ofx::imageEffect::OfxhImageEffectPlugin*>(&(*i));
+				if( iePlugin )
+				{
+					iePlugin->setApiHandler( _imageEffectPluginCache );
+					COUT("-- setApiHandler OfxhImageEffectPlugin --" );
+				}
+			}
+		}
+	}
+	catch( std::exception& e )
+	{
+		COUT("Exception when reading cache file (" << e.what() << ")." );
+	}
+
+	_pluginCache.scanPluginFiles();
+
+	if( _pluginCache.isDirty() )
+	{
+		/// flush out the current cache
+		COUT("Write plugins cache.");
+		std::ofstream ofsb( cacheFile.c_str() );
+		OArchive oArchive( ofsb );
+		oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
+		ofsb.close();
+	}
+	
 }
 
 }

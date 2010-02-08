@@ -305,10 +305,6 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		COUT("OfxhProperty::serialization");
-		COUT_VAR(_name);
-		COUT_VAR(_type);
-		COUT_VAR(_dimension);
 		ar & BOOST_SERIALIZATION_NVP(_name);
 		ar & BOOST_SERIALIZATION_NVP(_type);
 		ar & BOOST_SERIALIZATION_NVP(_dimension);
@@ -437,7 +433,6 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		COUT("OfxhPropertyTemplate<>::serialize");
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
 		ar & BOOST_SERIALIZATION_NVP(_value);
 		ar & BOOST_SERIALIZATION_NVP(_defaultValue);
@@ -456,7 +451,6 @@ template<>
 template<class Archive>
 void Pointer::serialize( Archive &ar, const unsigned int version )
 {
-		COUT("OfxhPropertyTemplate<void*>::serialize");
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
 }
 
@@ -729,20 +723,6 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-		/*
-		ar.register_type(static_cast<OfxhProperty*>(NULL));
-		ar.register_type(static_cast<Int*>(NULL));
-		ar.register_type(static_cast<Double*>(NULL));
-		ar.register_type(static_cast<String*>(NULL));
-		ar.register_type(static_cast<Pointer*>(NULL));
-		
-		boost::serialization::void_cast_register( static_cast<Int*>(NULL), static_cast<OfxhProperty*>(NULL) );
-		boost::serialization::void_cast_register( static_cast<Double*>(NULL), static_cast<OfxhProperty*>(NULL) );
-		boost::serialization::void_cast_register( static_cast<String*>(NULL), static_cast<OfxhProperty*>(NULL) );
-		boost::serialization::void_cast_register( static_cast<Pointer*>(NULL), static_cast<OfxhProperty*>(NULL) );
-		*/
-		COUT("____________________ OfxhSet::seralize ____________________");
-		
 		ar & BOOST_SERIALIZATION_NVP(_props);
 	}
 };

@@ -1,11 +1,8 @@
 #ifndef OFXH_PLUGINBINARY_HPP
 #define OFXH_PLUGINBINARY_HPP
 
-#include "OfxhPluginHandle.hpp"
 #include "OfxhPlugin.hpp"
 #include "OfxhBinary.hpp"
-
-#include "OfxhImageEffectPlugin.hpp"
 
 #include <boost/ptr_container/serialize_ptr_vector.hpp>
 #include <boost/serialization/string.hpp>
@@ -13,6 +10,8 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
+
+class OfxhPluginHandle;
 
 /**
  * class that represents a binary file which holds plugins.
@@ -23,12 +22,14 @@ class OfxhPluginBinary
 {
 typedef OfxhPluginBinary This;
 friend class OfxhPluginHandle;
+public:
+	typedef boost::ptr_vector<OfxhPlugin> PluginVector;
 
 protected:
 	OfxhBinary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.hpp
 	std::string _filePath; ///< full path to the file
 	std::string _bundlePath; ///< path to the .bundle directory
-	boost::ptr_vector<OfxhPlugin> _plugins; ///< my plugins
+	PluginVector _plugins; ///< my plugins
 	time_t _fileModificationTime; ///< used as a time stamp to check modification times, used for caching
 	size_t _fileSize; ///< file size last time we check, used for caching
 	bool _binaryChanged; ///< whether the timestamp/filesize in this cache is different from that in the actual binary
@@ -133,6 +134,12 @@ public:
 		return (int) _plugins.size();
 	}
 
+	/// get plugins
+	PluginVector& getPlugins()
+	{
+		return _plugins;
+	}
+
 	/// get a plugin
 	OfxhPlugin& getPlugin( int idx )
 	{
@@ -150,10 +157,6 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar.register_type( static_cast<OfxhPlugin*>(NULL) );
-//		ar.register_type( static_cast<imageEffect::OfxhImageEffectPlugin*>(NULL) );
-//		boost::serialization::void_cast_register( static_cast<imageEffect::OfxhImageEffectPlugin*>(NULL),static_cast<OfxhPlugin*>(NULL) );
-
 		ar & BOOST_SERIALIZATION_NVP(_binary);
 		ar & BOOST_SERIALIZATION_NVP(_filePath);
 		ar & BOOST_SERIALIZATION_NVP(_bundlePath);
