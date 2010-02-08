@@ -21,6 +21,7 @@ class OfxhImageEffectNodeDescriptor
 	public attribute::OfxhParamDescriptorSet,
 	private boost::noncopyable
 {
+typedef OfxhImageEffectNodeDescriptor This;
 public:
 	typedef std::map<std::string, attribute::OfxhClipImageDescriptor*> ClipImageDescriptorMap;
 	typedef boost::ptr_vector<attribute::OfxhClipImageDescriptor> ClipImageDescriptorVector;
@@ -53,6 +54,9 @@ public:
 
 	/// dtor
 	virtual ~OfxhImageEffectNodeDescriptor();
+
+	bool operator==( const This& other ) const;
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	/// implemented for ParamDescriptorSet
 	property::OfxhSet& getParamSetProps()

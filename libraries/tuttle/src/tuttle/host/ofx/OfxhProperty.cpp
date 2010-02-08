@@ -638,13 +638,13 @@ void OfxhSet::clear()
 }
 
 /// hide assignment
-void OfxhSet::operator=( const OfxhSet& other )
+void OfxhSet::operator=( const This& other )
 {
 	_props      = other._props.clone();
 	_chainedSet = other._chainedSet;
 }
 
-bool OfxhSet::operator==( const OfxhSet& other ) const
+bool OfxhSet::operator==( const This& other ) const
 {
 	if( _props != other._props )
 		return false;

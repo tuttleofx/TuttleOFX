@@ -113,13 +113,21 @@ class OfxhParamDescriptor :
 	public OfxhAttributeDescriptor,
 	virtual public OfxhParamAccessor
 {
-private:
-	OfxhParamDescriptor(){}
+typedef OfxhParamDescriptor This;
+OfxhParamDescriptor(){}
 
 public:
 	/// make a parameter, with the given type and name
 	OfxhParamDescriptor( const std::string& type, const std::string& name );
 	~OfxhParamDescriptor(){}
+
+	bool operator==( const This& other ) const
+	{
+		if( OfxhAttributeDescriptor::operator!=(other) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxParamHandle getParamHandle() const
@@ -234,6 +242,7 @@ private:
 /// a set of parameters
 class OfxhParamDescriptorSet : public OfxhParamAccessorSet
 {
+typedef OfxhParamDescriptorSet This;
 public:
 	typedef std::map<std::string, OfxhParamDescriptor*> ParamDescriptorMap;
 	typedef boost::ptr_list<OfxhParamDescriptor> ParamDescriptorList;
@@ -250,6 +259,14 @@ public:
 
 	/// dtor
 	virtual ~OfxhParamDescriptorSet();
+
+	bool operator==( const This& other ) const
+	{
+		if( _paramList != other._paramList )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }

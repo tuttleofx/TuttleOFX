@@ -166,6 +166,7 @@ public:
 
 class OfxhAttributeDescriptor : virtual public OfxhAttributeAccessor
 {
+typedef OfxhAttributeDescriptor This;
 OfxhAttributeDescriptor( const OfxhAttributeDescriptor& other );
 
 public:
@@ -184,6 +185,15 @@ protected:
 	}
 
 public:
+
+	bool operator==( const This& other ) const
+	{
+		if( _properties != other._properties )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
+
 	const property::OfxhSet& getProperties() const
 	{
 		return _properties;

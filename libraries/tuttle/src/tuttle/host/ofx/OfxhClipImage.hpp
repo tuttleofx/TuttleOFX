@@ -94,6 +94,7 @@ public:
 class OfxhClipImageDescriptor : virtual public OfxhClipImageAccessor,
 	public OfxhClipDescriptor
 {
+typedef OfxhClipImageDescriptor This;
 private:
 	OfxhClipImageDescriptor();
 	void init( const std::string& name );
@@ -102,6 +103,14 @@ public:
 	OfxhClipImageDescriptor( const std::string& name );
 
 	virtual ~OfxhClipImageDescriptor() {}
+
+	bool operator==( const This& other ) const
+	{
+		if( OfxhClipDescriptor::operator!=( other ) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	/** get a handle on the clip descriptor for the C api
 	 */

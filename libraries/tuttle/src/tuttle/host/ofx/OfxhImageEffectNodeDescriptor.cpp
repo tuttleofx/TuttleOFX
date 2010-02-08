@@ -74,8 +74,18 @@ OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( const std::string&
 OfxhImageEffectNodeDescriptor::~OfxhImageEffectNodeDescriptor()
 {}
 
-/// create a new clip and add this to the clip map
+bool OfxhImageEffectNodeDescriptor::operator==( const This& other ) const
+{
+	if( attribute::OfxhParamDescriptorSet::operator!=(other) ||
+	    _clipsByOrder != other._clipsByOrder )
+		return false;
+	return true;
+}
 
+
+/**
+ * @brief create a new clip and add this to the clip map
+ */
 attribute::OfxhClipImageDescriptor* OfxhImageEffectNodeDescriptor::defineClip( const std::string& name )
 {
 	attribute::OfxhClipImageDescriptor* c = new attribute::OfxhClipImageDescriptor( name );

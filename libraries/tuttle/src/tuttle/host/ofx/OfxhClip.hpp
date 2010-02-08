@@ -79,11 +79,21 @@ class OfxhClipDescriptor :
 	public OfxhAttributeDescriptor,
 	virtual public OfxhClipAccessor
 {
+typedef OfxhClipDescriptor This;
 public:
 	/// constructor
 	OfxhClipDescriptor();
 	OfxhClipDescriptor( const property::OfxhSet& );
+
 	virtual ~OfxhClipDescriptor() = 0;
+
+	bool operator==( const This& other ) const
+	{
+		if( OfxhAttributeDescriptor::operator!=( other ) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 private:
 	friend class boost::serialization::access;
