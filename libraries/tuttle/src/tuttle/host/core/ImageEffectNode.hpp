@@ -35,6 +35,8 @@
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/ofx/OfxhAttribute.hpp>
 
+#include <boost/numeric/conversion/cast.hpp>
+
 #include <cmath>
 #include <cassert>
 
@@ -128,10 +130,10 @@ public:
 	void process( const ProcessOptions& processOptions )
 	{
 		OfxRectI roi = {
-			floor( processOptions._renderRoI.x1 ),
-			floor( processOptions._renderRoI.y1 ),
-			ceil( processOptions._renderRoI.x2 ),
-			ceil( processOptions._renderRoI.y2 )
+			boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
+			boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),
+			boost::numeric_cast<int>(ceil( processOptions._renderRoI.x2 )),
+			boost::numeric_cast<int>(ceil( processOptions._renderRoI.y2 ))
 		};
 
 		renderAction( processOptions._time,

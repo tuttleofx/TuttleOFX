@@ -5,6 +5,8 @@ namespace tuttle {
 namespace host {
 namespace core {
 
+IPool::~IPool() {}
+
 class PoolData : public IPoolData
 {
 private:
