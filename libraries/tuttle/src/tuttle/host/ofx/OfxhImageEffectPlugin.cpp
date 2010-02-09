@@ -110,8 +110,8 @@ OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 
 bool OfxhImageEffectPlugin::operator==( const OfxhImageEffectPlugin& other ) const
 {
-	if( OfxhPlugin::operator!=( static_cast<const OfxhPlugin&>(other) ) ||
-	    *_baseDescriptor == *(other._baseDescriptor) )
+	if( OfxhPlugin::operator!=( other ) ||
+	    *_baseDescriptor != *(other._baseDescriptor) )
 		return false;
 	return true;
 }

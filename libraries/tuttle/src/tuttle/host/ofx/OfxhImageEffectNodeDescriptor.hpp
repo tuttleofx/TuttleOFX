@@ -97,7 +97,6 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar.register_type( static_cast<attribute::OfxhClipImageDescriptor*>(NULL) );
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhParamDescriptorSet);
 		ar & BOOST_SERIALIZATION_NVP(_clipsByOrder);
