@@ -71,7 +71,7 @@ void Core::preload()
 	typedef boost::archive::xml_iarchive IArchive;
 
 	std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
-
+	/*
 	try
 	{
 		std::ifstream ifsb( cacheFile.c_str() );
@@ -104,6 +104,7 @@ void Core::preload()
 	{
 		COUT("Exception when reading cache file (" << e.what() << ")." );
 	}
+	*/
 
 	_pluginCache.scanPluginFiles();
 

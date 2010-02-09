@@ -1,6 +1,8 @@
 #ifndef OFXH_PLUGINBINARY_HPP
 #define OFXH_PLUGINBINARY_HPP
 
+#include <tuttle/common/utils/global.hpp>
+
 #include "OfxhPlugin.hpp"
 #include "OfxhBinary.hpp"
 
@@ -160,7 +162,6 @@ private:
 		ar & BOOST_SERIALIZATION_NVP(_binary);
 		ar & BOOST_SERIALIZATION_NVP(_filePath);
 		ar & BOOST_SERIALIZATION_NVP(_bundlePath);
-//		ar & boost::serialization::make_nvp("first_plugin", getPlugin(0));
 		ar & BOOST_SERIALIZATION_NVP(_plugins);
 		ar & BOOST_SERIALIZATION_NVP(_fileModificationTime);
 		ar & BOOST_SERIALIZATION_NVP(_fileSize);
@@ -171,8 +172,6 @@ private:
 }
 }
 }
-
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginBinary)
 
 #endif
 
