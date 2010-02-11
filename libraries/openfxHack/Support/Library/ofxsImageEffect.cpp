@@ -47,6 +47,10 @@
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
 
+FramesNeededSetter::~FramesNeededSetter() {}
+RegionOfInterestSetter::~RegionOfInterestSetter() {}
+
+
 // globals to keep consistent data structures around.
 OFX::PluginFactoryArray plugIDs;
 //Put it all into a map, so we know when to delete what!
@@ -445,7 +449,7 @@ void ImageEffectDescriptor::addSupportedContext( ContextEnum v )
 	}
 }
 
-void ImageEffectDescriptor::setOverlayInteractDescriptor( EffectOverlayDescriptor* desc )
+  void ImageEffectDescriptor::setOverlayInteractDescriptor(EffectInteractWrap* desc)
 {
 	_overlayDescriptor.reset( desc );
 	if( OFX::gHostDescription.supportsOverlays && desc->getMainEntry() )
@@ -1782,6 +1786,10 @@ bool regionOfDefinitionAction( OfxImageEffectHandle handle, OFX::PropertySet inA
 
 	// and call the plugin client code
 	OfxRectD rod;
+	rod.x1 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 0);
+	rod.y1 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 1);
+	rod.x2 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 2);
+	rod.y2 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 3);
 	bool v = effectInstance->getRegionOfDefinition( args, rod );
 
 	if( v )
@@ -1899,7 +1907,7 @@ bool framesNeededAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, O
 
 			for( i = frameRanges_.begin(); i != frameRanges_.end(); ++i )
 			{
-				if( i->first != "Output" )
+				if( i->first != kOfxImageEffectOutputClipName )
 				{
 					didSomething = true;
 

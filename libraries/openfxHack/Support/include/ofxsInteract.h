@@ -42,7 +42,7 @@
  * This file only holds code that is visible to a plugin implementation, and so hides much
  * of the direct OFX objects and any library side only functions.
  */
-#include "ofxsParam.h"
+#include "ofxsCore.h"
 
 #include <list>
 
@@ -57,6 +57,7 @@ namespace OFX {
 
 /** @brief forward declaration */
 class ImageEffect;
+  class Param;
 
 /// all image effect interacts have these argumens
 struct InteractArgs
@@ -72,7 +73,7 @@ struct DrawArgs : public InteractArgs
 {
 	DrawArgs( const PropertySet& props );
 
-	OfxPointD pixelScale;       /**< @brief The current effect time to draw at */
+	OfxPointD pixelScale;       /**< @brief The pixel scale */
 	OfxRGBColourD backGroundColour; /**< @brief The current background colour, ignore the A */
 };
 
@@ -81,7 +82,7 @@ struct PenArgs : public InteractArgs
 {
 	PenArgs( const PropertySet& props );
 
-	OfxPointD pixelScale;       /**< @brief The current effect time to draw at */
+	OfxPointD pixelScale;       /**< @brief The pixel scale */
 	OfxPointD penPosition;      /**< @brief The current pen position */
 	double penPressure;      /**< @brief The normalised pressure on the pen */
 };
@@ -223,14 +224,13 @@ class InteractDescriptor
 {
 public:
 	InteractDescriptor() : _props( 0 ) {}
-	virtual ~InteractDescriptor() {}
+	virtual ~InteractDescriptor() = 0;
 	void                         setPropertySet( OFX::PropertySet* props ) { _props = props; }
 	virtual Interact*            createInstance( OfxInteractHandle handle, ImageEffect* effect ) = 0;
 	void                         setHasAlpha();
 	bool                         getHasAlpha() const;
 	void                         setBitDepth();
 	int                          getBitDepth() const;
-	virtual OfxPluginEntryPoint* getMainEntry() = 0;
 	virtual void                 describe() {}
 
 protected:
@@ -276,9 +276,29 @@ OfxStatus interactMainEntry( const char*          actionRaw,
                              InteractDescriptor&  desc );
 }
 
+  class InteractWrap
+  {
+  public:
+    InteractWrap() {}
+    virtual ~InteractWrap() = 0;
+    virtual OfxPluginEntryPoint* getMainEntry() = 0;
+    virtual OFX::InteractDescriptor& getDescriptor() =0;
+  };
+
+  typedef InteractWrap EffectInteractWrap;
+
+  class ParamInteractWrap : public InteractWrap
+  {
+  public:
+    virtual ParamInteractDescriptor& getDescriptor() =0;
+    virtual ~ParamInteractWrap() = 0;
+  };
+
 template<class DESC>
-class InteractMainEntry
+class InteractMainEntry : public InteractWrap
 {
+  public:
+    virtual ~InteractMainEntry() = 0;
 protected:
 	static OfxStatus overlayInteractMainEntry( const char* action, const void* handle, OfxPropertySetHandle in, OfxPropertySetHandle out )
 	{
@@ -286,34 +306,43 @@ protected:
 
 		return OFX::Private::interactMainEntry( action, handle, in, out, desc );
 	}
-
 };
 
-template<class DESC, class INSTANCE>
-class DefaultEffectOverlayDescriptor : public EffectOverlayDescriptor,
-	public InteractMainEntry<DESC>
-{
-public:
-	Interact*                    createInstance( OfxInteractHandle handle, ImageEffect* effect ) { return new INSTANCE( handle, effect ); }
-	virtual OfxPluginEntryPoint* getMainEntry()                                                  { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
-};
+template<class DESC>
+InteractMainEntry<DESC>::~InteractMainEntry() {}
 
-template<class DESC, class INSTANCE>
-class DefaultParamInteractDescriptor : public ParamInteractDescriptor,
-	public InteractMainEntry<DESC>
+template<class DESC>
+class DefaultEffectOverlayWrap : public InteractMainEntry<DESC>
 {
 public:
-	Interact*                    createInstance( OfxInteractHandle handle, ImageEffect* effect ) { return new INSTANCE( handle, effect, _paramNameStatic ); }
-	virtual OfxPluginEntryPoint* getMainEntry()                                                  { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
-	virtual void                 setParamName( const std::string& pName )                        { _paramNameStatic = pName; }
+      typedef DESC Descriptor;
+      Descriptor _descriptor;
+  public:
+    OfxPluginEntryPoint* getMainEntry() { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
+
+    OFX::InteractDescriptor& getDescriptor() { return _descriptor; }
+  };
+
+  template<class DESC>
+  class DefaultParamInteractWrap : public InteractMainEntry<DESC>
+  {
+  public:
+      typedef DESC Descriptor;
+      Descriptor _descriptor;
+  public:
+	OfxPluginEntryPoint* getMainEntry()                                                  { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
+
+    OFX::InteractDescriptor& getDescriptor() { return _descriptor; }
+
+	void                 setParamName( const std::string& pName )                        { _paramNameStatic = pName; }
 
 protected:
 	static std::string _paramNameStatic;
 };
 
-template<class DESC, class INSTANCE>
-std::string OFX::DefaultParamInteractDescriptor<DESC, INSTANCE>::_paramNameStatic;
-};
+  template<class DESC> std::string OFX::DefaultParamInteractWrap<DESC>::_paramNameStatic;
+}
+
 
 #undef mDeclareProtectedAssignAndCC
 

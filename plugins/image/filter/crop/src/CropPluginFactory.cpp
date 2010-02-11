@@ -62,7 +62,7 @@ void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setRenderTwiceAlways( false );
 	desc.setSupportsMultipleClipPARs( false );
 
-	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayDescriptor<CropMarginOverlay, CropMargin >() );
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<CropMarginOverlay>() );
 }
 
 /**

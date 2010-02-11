@@ -11,7 +11,7 @@
  * Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the folloDPXReaderProcesswing disclaimer in the documentation
+ * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
  * Neither the name The Open Effects Association Ltd, nor the names of its
  * contributors may be used to endorse or promote products derived from this
@@ -347,7 +347,7 @@ protected:
 	std::map<std::string, std::string> _clipROIPropNames;
 	std::map<std::string, std::string> _clipFrameRangePropNames;
 
-	std::auto_ptr<EffectOverlayDescriptor> _overlayDescriptor;
+    std::auto_ptr<EffectInteractWrap> _overlayDescriptor;
 
 public:
 	/** @brief ctor */
@@ -418,7 +418,7 @@ public:
 	const std::map<std::string, std::string>& getClipFrameRangePropNames() const { return _clipFrameRangePropNames; }
 
 	/** @brief override this to create an interact for the effect */
-	virtual void setOverlayInteractDescriptor( EffectOverlayDescriptor* desc );
+    virtual void setOverlayInteractDescriptor(EffectInteractWrap* desc);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -694,7 +694,7 @@ class RegionOfInterestSetter
 public:
 	/** @brief function to set the RoI of a clip, pass in the clip to set the RoI of, and the RoI itself */
 	virtual void setRegionOfInterest( const Clip& clip, const OfxRectD& RoI ) = 0;
-	virtual ~RegionOfInterestSetter() {}
+	virtual ~RegionOfInterestSetter() = 0;
 };
 
 /** @brief POD struct to pass arguments into @ref OFX::ImageEffect::getFramesNeeded */
@@ -712,7 +712,7 @@ class FramesNeededSetter
 public:
 	/** @brief function to set the frames needed on a clip, the range is min <= time <= max */
 	virtual void setFramesNeeded( const Clip& clip, const OfxRangeD& range ) = 0;
-	virtual ~FramesNeededSetter() {}
+	virtual ~FramesNeededSetter() = 0;
 };
 
 /** @brief Class used to set the clip preferences of the effect.
