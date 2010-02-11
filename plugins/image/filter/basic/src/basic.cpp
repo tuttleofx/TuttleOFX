@@ -659,7 +659,7 @@ mDeclarePluginFactory( BasicExamplePluginFactory, {}, {}
 void BasicExamplePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "Gain", "Gain", "Gain" );
+	desc.setLabel( "Gain" );
 	desc.setPluginGrouping( "OFX" );
 
 	// add the supported contexts, only filter at the moment
