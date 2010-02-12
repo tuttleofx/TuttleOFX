@@ -50,6 +50,7 @@
  */
 
 #include "ofxsCore.h"
+#include "ofxsInteract.h"
 #include <memory>
 #include <iostream>
 
@@ -62,7 +63,6 @@
  */
 namespace OFX {
 
-class ParamInteractDescriptor;
 /* forward class declarations of the  descriptors */
 class ParamDescriptor;
 class ValueParamDescriptor;
@@ -204,6 +204,7 @@ public:
 
 	/** @brief set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
+	void setLabel(const std::string &label){ setLabels(label, label, label); }
 
 	/** @brief set the param hint */
 	void setHint( const std::string& hint );
@@ -245,7 +246,7 @@ protected:
 	ValueParamDescriptor( const std::string& name, ParamTypeEnum type, OfxPropertySetHandle props );
 
 	friend class ParamSetDescriptor;
-	std::auto_ptr<ParamInteractDescriptor> _interact;
+	std::auto_ptr<ParamInteractWrap> _interact;
 
 public:
 	/** @brief dtor */
@@ -266,7 +267,7 @@ public:
 	/// @brief Set whether the param should appear on any undo stack
 	void setCanUndo( bool v );
 
-	void setInteractDescriptor( ParamInteractDescriptor* desc );
+	void setInteractDescriptor( ParamInteractWrap* desc );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -693,7 +694,7 @@ protected:
 				return true;
 			}
 			else
-				return false;                                                                                                                                                                                                                                                                                                                                                                             // SHOULD THROW SOMETHING HERE!!!!!!!
+				return false; ///< @todo tuttle: SHOULD THROW SOMETHING HERE!!!!!!!
 		}
 		else
 		{

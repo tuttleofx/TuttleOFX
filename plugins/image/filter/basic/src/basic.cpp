@@ -84,6 +84,14 @@ public:
 	virtual bool penUp( const OFX::PenArgs& args );
 };
 
+class BasicOverlayDescriptor : public OFX::EffectOverlayDescriptor
+{
+public:
+    OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect *effect )
+    {
+        return new BasicInteract( handle, effect );
+    }
+};
 // //////////////////////////////////////////////////////////////////////////////
 // rendering routines
 template <class T>
@@ -648,13 +656,10 @@ using namespace OFX;
 mDeclarePluginFactory( BasicExamplePluginFactory, {}, {}
                        );
 
-class BasicExampleOverlayDescriptor : public DefaultEffectOverlayDescriptor<BasicExampleOverlayDescriptor, BasicInteract>
-{};
-
 void BasicExamplePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "Gain", "Gain", "Gain" );
+	desc.setLabel( "Gain" );
 	desc.setPluginGrouping( "OFX" );
 
 	// add the supported contexts, only filter at the moment
@@ -676,7 +681,7 @@ void BasicExamplePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setRenderTwiceAlways( false );
 	desc.setSupportsMultipleClipPARs( false );
 
-	desc.setOverlayInteractDescriptor( new BasicExampleOverlayDescriptor );
+	desc.setOverlayInteractDescriptor( new DefaultEffectOverlayWrap<BasicOverlayDescriptor> );
 }
 
 // make a double scale param

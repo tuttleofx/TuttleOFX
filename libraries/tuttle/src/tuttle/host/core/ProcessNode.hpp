@@ -15,6 +15,7 @@ class ProcessNode;
 class ProcessAttribute
 {
 public:
+	virtual ~ProcessAttribute() = 0;
 	virtual const std::string& getName() const = 0;
 	virtual const ProcessNode& getNode() const = 0;
 };

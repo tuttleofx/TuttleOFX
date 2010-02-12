@@ -12,6 +12,7 @@ namespace core {
 class IUnknown
 {
 public:
+	virtual ~IUnknown() = 0;
 	virtual void addRef()  = 0;
 	virtual void release() = 0;
 };
@@ -19,6 +20,7 @@ public:
 class IPoolData : public IUnknown
 {
 public:
+	virtual ~IPoolData () = 0;
 	virtual char*        data()               = 0;
 	virtual const char*  data() const         = 0;
 	virtual const size_t size() const         = 0;
@@ -33,6 +35,7 @@ typedef ::boost::intrusive_ptr<IPoolData> IPoolDataPtr;
 class IMemoryPool
 {
 public:
+	virtual ~IMemoryPool() = 0;
 	virtual size_t       getUsedMemorySize() const                                                = 0;
 	virtual size_t       getAllocatedMemorySize() const                                           = 0;
 	virtual size_t       getAvailableMemorySize() const                                           = 0;

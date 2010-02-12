@@ -29,12 +29,6 @@ public:
 	{
 		return new CropMargin( handle, effect );
 	}
-
-	OfxPluginEntryPoint* getMainEntry()
-	{
-		return NULL;
-	}
-
 };
 
 }
