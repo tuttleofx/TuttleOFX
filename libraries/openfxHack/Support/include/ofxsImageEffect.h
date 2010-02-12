@@ -362,6 +362,7 @@ public:
 
 	/** @brief, set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
+	void setLabel( const std::string& label ) { setLabels(label, label, label); }
 
 	/** @brief Set the plugin grouping, defaults to "" */
 	void setPluginGrouping( const std::string& group );
