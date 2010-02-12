@@ -101,13 +101,9 @@ public:
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
 	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==(other); }
 
-	/**
-	 * @todo tuttle: Hack please remove this !
-	 */
-	void setApiHandler( OfxhImageEffectPluginCache& api )
-	{
-		_pc = &api;
-	}
+	void setApiHandler( OfxhImageEffectPluginCache& api ) { _pc = &api; }
+	void setApiHandler( APICache::OfxhPluginAPICacheI& api );
+
 	/// @return the API handler this plugin was constructed by
 	APICache::OfxhPluginAPICacheI& getApiHandler();
 	const APICache::OfxhPluginAPICacheI& getApiHandler() const;

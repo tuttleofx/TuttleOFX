@@ -207,6 +207,23 @@ private:
 		ar & BOOST_SERIALIZATION_NVP(_binaries);
 //		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
 		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
+
+		if( typename Archive::is_loading() )
+		{
+			for( ofx::OfxhPluginCache::OfxhPluginBinaryList::iterator it = getBinaries().begin(), itEnd = getBinaries().end();
+				 it != itEnd;
+				 ++it )
+			{
+				for( ofx::OfxhPluginBinary::PluginVector::iterator i = it->getPlugins().begin(), iEnd = it->getPlugins().end();
+				     i != iEnd;
+				     ++i )
+				{
+					APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( i->getPluginApi(), i->getApiVersion() );
+					i->setApiHandler( *apiCache );
+					_plugins.push_back(&(*i));
+				}
+			}
+		}
 	}
 };
 

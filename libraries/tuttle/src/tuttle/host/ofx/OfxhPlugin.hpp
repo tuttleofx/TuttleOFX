@@ -47,26 +47,21 @@ public:
 		_binary( bin ),
 		_index( idx ) {}
 
-	virtual ~OfxhPlugin() {}
+	virtual ~OfxhPlugin() = 0;
 
 	bool operator==( const This& other ) const;
 	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
-	OfxhPluginBinary* getBinary()
-	{
-		return _binary;
-	}
-
-	const OfxhPluginBinary* getBinary() const
-	{
-		return _binary;
-	}
+	void setBinary( OfxhPluginBinary* binary ) { _binary = binary; }
+	OfxhPluginBinary* getBinary() { return _binary; }
+	const OfxhPluginBinary* getBinary() const { return _binary; }
 
 	int getIndex() const
 	{
 		return _index;
 	}
 
+	virtual void setApiHandler( APICache::OfxhPluginAPICacheI& ) = 0;
 	virtual APICache::OfxhPluginAPICacheI& getApiHandler() = 0;
 	virtual const APICache::OfxhPluginAPICacheI& getApiHandler() const = 0;
 

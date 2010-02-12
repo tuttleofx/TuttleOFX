@@ -166,6 +166,15 @@ private:
 		ar & BOOST_SERIALIZATION_NVP(_fileModificationTime);
 		ar & BOOST_SERIALIZATION_NVP(_fileSize);
 		ar & BOOST_SERIALIZATION_NVP(_binaryChanged);
+		if( typename Archive::is_loading() )
+		{
+			for( PluginVector::iterator it = getPlugins().begin(), itEnd = getPlugins().end();
+				 it != itEnd;
+				 ++it )
+			{
+				it->setBinary( this );
+			}
+		}
 	}
 };
 

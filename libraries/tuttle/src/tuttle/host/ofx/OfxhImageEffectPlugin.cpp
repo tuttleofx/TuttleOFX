@@ -42,10 +42,12 @@
 #include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhImageEffectNode.hpp"
-#include "OfxhPluginAPICache.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
 #include "OfxhImageEffectPlugin.hpp"
+
+#include "OfxhPluginAPICache.hpp"
+#include "OfxhImageEffectPluginCache.hpp"
 
 ///@todo tuttle: remove this !
 #include "OfxhXml.hpp"
@@ -114,6 +116,11 @@ bool OfxhImageEffectPlugin::operator==( const OfxhImageEffectPlugin& other ) con
 	    *_baseDescriptor != *(other._baseDescriptor) )
 		return false;
 	return true;
+}
+
+void OfxhImageEffectPlugin::setApiHandler( APICache::OfxhPluginAPICacheI& api )
+{
+	_pc = &dynamic_cast<OfxhImageEffectPluginCache&>(api);
 }
 
 APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler()

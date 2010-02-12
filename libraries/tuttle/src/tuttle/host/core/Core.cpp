@@ -71,7 +71,7 @@ void Core::preload()
 	typedef boost::archive::xml_iarchive IArchive;
 
 	std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
-	/*
+	
 	try
 	{
 		std::ifstream ifsb( cacheFile.c_str() );
@@ -82,29 +82,12 @@ void Core::preload()
 			iArchive >> BOOST_SERIALIZATION_NVP(_pluginCache);
 			ifsb.close();
 		}
-		// trying to hack, before removing PluginAPICachexxx
-		for( ofx::OfxhPluginCache::OfxhPluginBinaryList::iterator it = _pluginCache.getBinaries().begin(), itEnd = _pluginCache.getBinaries().end();
-			 it != itEnd;
-			 ++it )
-		{
-			for( ofx::OfxhPluginBinary::PluginVector::iterator i = it->getPlugins().begin(), iEnd = it->getPlugins().end();
-			 i != iEnd;
-			 ++i )
-			{
-				ofx::imageEffect::OfxhImageEffectPlugin* iePlugin = dynamic_cast<ofx::imageEffect::OfxhImageEffectPlugin*>(&(*i));
-				if( iePlugin )
-				{
-					iePlugin->setApiHandler( _imageEffectPluginCache );
-					COUT("-- setApiHandler OfxhImageEffectPlugin --" );
-				}
-			}
-		}
 	}
 	catch( std::exception& e )
 	{
 		COUT("Exception when reading cache file (" << e.what() << ")." );
 	}
-	*/
+	
 
 	_pluginCache.scanPluginFiles();
 
