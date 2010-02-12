@@ -7,16 +7,17 @@
 
 namespace tuttle {
 
-using namespace boost::gil;
+namespace bgil = boost::gil;
 
 struct alpha_max_filler
 {
 	template< class P>
 	inline P operator()( const P& p ) const
 	{
+		using namespace bgil;
 		gil_function_requires<ColorSpacesCompatibleConcept<
-		                          typename color_space_type<P>::type,
-		                          rgba_t> >( );
+		                      typename color_space_type<P>::type,
+		                      rgba_t> >( );
 		P p2;
 		p2[3] = channel_traits< typename channel_type< P >::type >::max_value();
 		return p2;
@@ -29,6 +30,7 @@ struct black_filler
 	template< class P>
 	inline P operator()( const P& p ) const
 	{
+		using namespace bgil;
 		P p2;
 		for( int v = 0; v < num_channels<P>::type::value; ++v )
 		{
@@ -52,6 +54,7 @@ struct image_from_view
 template<class View>
 static inline const typename View::value_type get_black( const View& view )
 {
+	using namespace bgil;
 	typename View::value_type black;
 	typedef pixel<bits8, gray_layout_t > comp_pixel_t;
 	color_convert( (const comp_pixel_t)( 0 ), black );
@@ -61,6 +64,7 @@ static inline const typename View::value_type get_black( const View& view )
 template<class View>
 static inline typename View::value_type get_white( const View& view )
 {
+	using namespace bgil;
 	typename View::value_type white;
 	color_convert( gray8_pixel_t( channel_traits< typename channel_type< View >::type >::max_value() ), white );
 	return white;
@@ -69,6 +73,7 @@ static inline typename View::value_type get_white( const View& view )
 template <class View>
 void fill_alpha_max( const View& v )
 {
+	using namespace bgil;
 	transform_pixels( v, v, alpha_max_filler() );
 }
 
@@ -78,6 +83,7 @@ void fill_alpha_max( const View& v )
 template <class View>
 void fill_black( View& v )
 {
+	using namespace bgil;
 	transform_pixels( v, v, black_filler() );
 	// Following doesn't work for built-in pixel types
 //	fill_pixels( v, get_black( v ) );
@@ -86,12 +92,14 @@ void fill_black( View& v )
 template <class View>
 inline float max_value()
 {
+	using namespace bgil;
 	return channel_traits< typename channel_type< View >::type >::max_value();
 }
 
 template <class View>
 inline float domain_max_value()
 {
+	using namespace bgil;
 	return channel_traits< typename channel_type< View >::type >::max_value() + 1.0f;
 }
 
@@ -100,6 +108,7 @@ struct color_clamper_converter
 	template <typename SrcP, typename DstP>
 	inline void operator()( const SrcP& src, DstP& dst ) const
 	{
+		using namespace bgil;
 		typedef typename color_space_type<SrcP>::type SrcColorSpace;
 		typedef typename color_space_type<DstP>::type DstColorSpace;
 		SrcP tmpPix;
@@ -118,24 +127,48 @@ struct color_clamper_converter
 };
 
 template <typename DstP, typename S_VIEW>
-inline
-typename color_converted_view_type<S_VIEW, DstP, color_clamper_converter>::type clamp( const S_VIEW& sView )
+inline typename bgil::color_converted_view_type<S_VIEW, DstP, color_clamper_converter>::type clamp( const S_VIEW& sView )
 {
+	using namespace bgil;
 	return color_converted_view<DstP>( sView, color_clamper_converter() );
 }
 
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
-point2<T> operator*( const point2<T>& p, double t ) { return point2<T >( p.x * t, p.y * t ); }
+bgil::point2<T> operator*( const bgil::point2<T>& p, double t ) { return bgil::point2<T >( p.x * t, p.y * t ); }
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
-point2<T> operator*( const point2<T>& a, const point2<T>& b ) { return point2<T>( a.x * b.x, a.y * b.y ); }
+bgil::point2<T> operator*( const bgil::point2<T>& a, const bgil::point2<T>& b ) { return bgil::point2<T>( a.x * b.x, a.y * b.y ); }
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
-point2<T>& operator*=( point2<T>& p, double t ) { p.x *= t; p.y *= t; return p; }
+bgil::point2<T>& operator*=( bgil::point2<T>& p, double t ) { p.x *= t; p.y *= t; return p; }
+/// \ingroup PointModel
+template <typename T> GIL_FORCEINLINE
+bgil::point2<double> operator/( double t, const bgil::point2<T>& p )
+{
+    bgil::point2<double> res(0,0);
+    if( p.x != 0 )
+        res.x = t / p.x;
+    if( p.y != 0 )
+        res.y = t / p.y;
+    return res;
+}
+
+
+inline bgil::point2<double> ofxToGil( const OfxPointD& p )
+{
+    return bgil::point2<double>( p.x, p.y );
+}
+
+inline bgil::point2<int> ofxToGil( const OfxPointI& p )
+{
+    return bgil::point2<int>( p.x, p.y );
+}
+
+
 
 /**
  * @brief Compute min & max value from a view
@@ -148,6 +181,7 @@ point2<T>& operator*=( point2<T>& p, double t ) { p.x *= t; p.y *= t; return p; 
 template <typename View, typename T>
 void maxmin( const View& view, T& max, T& min )
 {
+	using namespace bgil;
 	typedef typename View::x_iterator iterator;
 	typedef typename channel_type<View>::type dPix_t;
 	const int nc = view.num_channels();
@@ -187,6 +221,7 @@ void maxmin( const View& view, T& max, T& min )
 template <class S_VIEW, class D_VIEW, typename T>
 D_VIEW& normalize( const S_VIEW& src, D_VIEW& dst, const T a, const T b )
 {
+	using namespace bgil;
 	typedef typename S_VIEW::x_iterator sIterator;
 	typedef typename D_VIEW::x_iterator dIterator;
 	typedef typename channel_type<D_VIEW>::type dPix_t;
@@ -222,6 +257,7 @@ D_VIEW& normalize( const S_VIEW& src, D_VIEW& dst, const T a, const T b )
 template <class S_VIEW, class D_VIEW, typename T>
 D_VIEW& multiply( const S_VIEW& src, D_VIEW& dst, const T factor )
 {
+	using namespace bgil;
 	typedef typename S_VIEW::x_iterator sIterator;
 	typedef typename D_VIEW::x_iterator dIterator;
 	typedef typename channel_type<D_VIEW>::type dPix_t;

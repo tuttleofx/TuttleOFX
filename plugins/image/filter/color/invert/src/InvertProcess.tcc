@@ -19,6 +19,7 @@ struct inverter
 	template< class P>
 	P operator()( const P& p ) const
 	{
+		using namespace bgil;
 		P p2;
 		// @todo TODO_OFX Improve this: Don't consider alpha
 		// http://stlab.adobe.com/gil/html/color__convert_8hpp-source.html
@@ -38,8 +39,6 @@ struct inverter
 	}
 
 };
-
-using namespace boost::gil;
 
 template<class View>
 InvertProcess<View>::InvertProcess( InvertPlugin& instance )

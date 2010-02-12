@@ -20,6 +20,30 @@ OfxRectD boundingBox( const P& a, const P& b, const P& c, const P& d )
 	return bb;
 }
 
+// template<typename Scalar>
+inline OfxRectD boundingBox( const std::vector<bgil::point2<double> >& points )
+{
+    // if( !points.size() )
+    //  throw...
+    const bgil::point2<double> p( points[0] );
+    OfxRectD bounds = { p.x, p.y, p.x, p.y};
+    for( std::vector<bgil::point2<double> >::const_iterator it = points.begin(), itEnd = points.end();
+         it != itEnd;
+         ++it )
+    {
+        if( it->x < bounds.x1 )
+            bounds.x1 = it->x;
+        else if( it->x > bounds.x2 )
+            bounds.x2 = it->x;
+
+        if( it->y < bounds.y1 )
+            bounds.y1 = it->y;
+        else if( it->y > bounds.y2 )
+            bounds.y2 = it->y;
+    }
+    return bounds;
+}
+
 template<class R>
 R intersection( const R& a, const R& b )
 {
