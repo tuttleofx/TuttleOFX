@@ -165,6 +165,7 @@ private:
 /// but that adds complexity for no strong gain.
 class OfxhParamSet : public OfxhParamAccessorSet
 {
+typedef OfxhParamSet This;
 public:
 	typedef std::map<std::string, OfxhParam*> ParamMap;
 	typedef boost::ptr_list<OfxhParam> ParamList;
@@ -206,12 +207,11 @@ public:
 	OfxhParam& getParam( const std::string& name )
 	{
 		ParamMap::iterator it = _params.find( name );
-
 		if( it == _params.end() )
 			throw OfxhException( kOfxStatErrBadIndex, std::string( "Param not found. (" ) + name + ")" );
 		return *it->second;
-
 	}
+	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>(this)->getParam( name ); }
 
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.

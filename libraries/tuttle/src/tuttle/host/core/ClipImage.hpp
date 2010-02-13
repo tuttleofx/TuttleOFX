@@ -206,7 +206,7 @@ public:
 	/**
 	 * @brief override this to return the rod on the clip
 	 */
-	OfxRectD fetchRegionOfDefinition( OfxTime time );
+	OfxRectD fetchRegionOfDefinition( OfxTime time ) const;
 };
 
 }
