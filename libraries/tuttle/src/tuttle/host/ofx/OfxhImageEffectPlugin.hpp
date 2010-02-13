@@ -96,7 +96,7 @@ public:
 	                       int                         pluginMajorVersion,
 	                       int                         pluginMinorVersion );
 
-	virtual ~OfxhImageEffectPlugin();
+	~OfxhImageEffectPlugin();
 
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
 	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==(other); }
@@ -119,8 +119,6 @@ public:
 
 	void addContext( const std::string& context );
 	void addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied );
-
-	virtual void saveXML( std::ostream& os ) const;
 
 	void              initContexts();
 	const ContextSet& getContexts() const;

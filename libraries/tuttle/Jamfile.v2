@@ -16,7 +16,6 @@ project
     : build-dir $(DIST)/tuttle/obj
     ;
 
-use-project /expat  			: $(3RD_PARTY)/expat ;
 use-project /ofxPluginSupport   : ../openfxHack/Support ;
 
 ###############################################################################
@@ -31,7 +30,6 @@ lib tuttlehost :
     /boost/thread
     /boost/date_time
     /boost/serialization
-    /expat/<link>static
     :
     <os>NT:<find-shared-library>shell32
     <os>LINUX:<find-shared-library>dl

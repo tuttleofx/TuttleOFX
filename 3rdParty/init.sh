@@ -25,12 +25,6 @@ uncompress(){
 	return 1
 }
 
-EXPAT_FILENAME=expat-2.0.1
-EXPAT_ARCHIVE=$EXPAT_FILENAME.tar.gz
-EXPAT_URL=http://prdownloads.sourceforge.net/expat/$EXPAT_ARCHIVE?download
-echo ">>> GETTING EXPAT"
-getAndUncompressAndTransferToDir $EXPAT_URL $EXPAT_ARCHIVE $EXPAT_FILENAME expat
-
 ZLIB_FILENAME=zlib-1.2.3
 ZLIB_ARCHIVE=$ZLIB_FILENAME.tar.gz
 ZLIB_URL=http://prdownloads.sourceforge.net/libpng/$ZLIB_ARCHIVE?download

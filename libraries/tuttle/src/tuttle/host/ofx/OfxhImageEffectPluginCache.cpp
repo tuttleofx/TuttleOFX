@@ -12,11 +12,6 @@ namespace imageEffect {
 
 OfxhImageEffectPluginCache::OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::OfxhImageEffectHost& host )
 	: OfxhPluginAPICacheI( kOfxImageEffectPluginApi, 1, 1 ),
-	_currentPlugin( 0 ),
-	_currentProp( 0 ),
-	_currentContext( 0 ),
-	_currentParam( 0 ),
-	_currentClip( 0 ),
 	_host( &host ) {}
 
 OfxhImageEffectPluginCache::~OfxhImageEffectPluginCache() {}
@@ -161,98 +156,6 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 	{
 		throw core::exception::LogicError( "Unload failed on plugin " + op->getIdentifier() + " at initialization." );
 	}
-}
-
-/**
- * handler for preparing to read in a chunk of XML from the cache, set up context to do this
- */
-void OfxhImageEffectPluginCache::beginXmlParsing( OfxhPlugin* p )
-{
-	_currentPlugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
-}
-
-/**
- * XML handler : element begins (everything is stored in elements and attributes)
- */
-void OfxhImageEffectPluginCache::xmlElementBegin( const std::string& el, std::map<std::string, std::string> map )
-{
-	if( el == "apiproperties" )
-	{
-		return;
-	}
-
-	if( el == "context" )
-	{
-		_currentContext = core::Core::instance().getHost().makeDescriptor( _currentPlugin->getBinary()->getBundlePath(), _currentPlugin );
-		_currentPlugin->addContext( map["name"], _currentContext );
-		return;
-	}
-
-	if( el == "param" && _currentContext )
-	{
-		std::string pname = map["name"];
-		std::string ptype = map["type"];
-
-		_currentParam = _currentContext->paramDefine( ptype.c_str(), pname.c_str() );
-		return;
-	}
-
-	if( el == "clip" && _currentContext )
-	{
-		std::string cname = map["name"];
-
-		_currentClip = new attribute::OfxhClipImageDescriptor( cname );
-		_currentContext->addClip( cname, _currentClip );
-		return;
-	}
-
-	if( _currentContext && _currentParam )
-	{
-		APICache::propertySetXMLRead( el, map, _currentParam->getEditableProperties(), _currentProp );
-		return;
-	}
-
-	if( _currentContext && _currentClip )
-	{
-		APICache::propertySetXMLRead( el, map, _currentClip->getEditableProperties(), _currentProp );
-		return;
-	}
-
-	if( !_currentContext && !_currentParam )
-	{
-		APICache::propertySetXMLRead( el, map, _currentPlugin->getDescriptor().getEditableProperties(), _currentProp );
-		return;
-	}
-
-	std::cout << "element " << el << "\n";
-	assert( false );
-}
-
-void OfxhImageEffectPluginCache::xmlCharacterHandler( const std::string& ) {}
-
-void OfxhImageEffectPluginCache::xmlElementEnd( const std::string& el )
-{
-	if( el == "param" )
-	{
-		_currentParam = 0;
-	}
-
-	if( el == "context" )
-	{
-		_currentContext = 0;
-	}
-}
-
-void OfxhImageEffectPluginCache::endXmlParsing()
-{
-	_currentPlugin = 0;
-}
-
-void OfxhImageEffectPluginCache::saveXML( const OfxhPlugin* const ip, std::ostream& os ) const
-{
-	const OfxhImageEffectPlugin* const p = dynamic_cast<const OfxhImageEffectPlugin* const>( ip );
-
-	p->saveXML( os );
 }
 
 void OfxhImageEffectPluginCache::confirmPlugin( OfxhPlugin* p )

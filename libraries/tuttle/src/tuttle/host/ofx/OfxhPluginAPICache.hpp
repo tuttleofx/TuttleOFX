@@ -41,19 +41,9 @@ namespace host {
 namespace ofx {
 class OfxhPlugin;
 class OfxhPluginBinary;
-class OfxhPluginCache;
 
-namespace imageEffect {
-class ImageEffectDescriptor;
-}
-}
-}
-}
-
-namespace tuttle {
-namespace host {
-namespace ofx {
 namespace APICache {
+
 
 /// this acts as an interface for the Plugin Cache, handling api-specific cacheing
 class OfxhPluginAPICacheI
@@ -82,27 +72,10 @@ public:
 
 	virtual OfxhHost* getHost() =0;
 
-	virtual void beginXmlParsing( OfxhPlugin* )                                           = 0;
-	virtual void xmlElementBegin( const std::string&, std::map<std::string, std::string>) = 0;
-	virtual void xmlCharacterHandler( const std::string& )                                = 0;
-	virtual void xmlElementEnd( const std::string& )                                      = 0;
-	virtual void endXmlParsing()                                                          = 0;
-
-	virtual void saveXML( const OfxhPlugin* const, std::ostream& ) const = 0;
-
 	virtual void confirmPlugin( OfxhPlugin* ) = 0;
 
 	virtual bool pluginSupported( OfxhPlugin*, std::string& reason ) const = 0;
 };
-
-/// helper function to build a property set from XML. Really should be a member of the property set!!!
-void propertySetXMLRead( const std::string& el, std::map<std::string, std::string> map, property::OfxhSet& set, property::OfxhProperty*& );
-
-/// helper function to write a property set to XML. Really should be a member of the property set!!!
-void propertySetXMLWrite( std::ostream& o, const property::OfxhSet& set, int indent = 0 );
-
-/// helper function to write a single property from a set to XML. Really should be a member of the property set!!!
-void propertyXMLWrite( std::ostream& o, const property::OfxhSet& set, const std::string& name, int indent = 0 );
 
 }
 }

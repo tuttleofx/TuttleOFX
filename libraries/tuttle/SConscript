@@ -8,7 +8,6 @@ librariesPrivate = [ libs.boost_system,
                      libs.boost_serialization,
                      libs.boost_thread,
 			         libs.dl,
-			         libs.expat,
 			         libs.boost_gil
 			       ]
 
