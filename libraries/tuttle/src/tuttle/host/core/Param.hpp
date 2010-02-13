@@ -37,14 +37,14 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-class ParamString : public tuttle::host::ofx::attribute::OfxhParamString
+class ParamString : public ofx::attribute::OfxhParamString
 {
 protected:
 	ImageEffectNode& _effect;
 	std::string _value; /// @todo link de parametres
 
 public:
-	ParamString( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamString( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamString* clone() const { return new ParamString( *this ); }
 
 	const std::string& getDefault() const;
@@ -64,14 +64,14 @@ public:
 	}
 };
 
-class ParamInteger : public tuttle::host::ofx::attribute::OfxhParamInteger
+class ParamInteger : public ofx::attribute::OfxhParamInteger
 {
 protected:
 	ImageEffectNode& _effect;
 	int _value; /// @todo link de parametres
 
 public:
-	ParamInteger( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamInteger( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamInteger* clone() const { return new ParamInteger( *this ); }
 
 	int       getDefault() const;
@@ -90,14 +90,14 @@ public:
 	}
 };
 
-class ParamDouble : public tuttle::host::ofx::attribute::OfxhParamDouble
+class ParamDouble : public ofx::attribute::OfxhParamDouble
 {
 protected:
 	ImageEffectNode& _effect;
 	double _value;
 
 public:
-	ParamDouble( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamDouble( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamDouble* clone() const { return new ParamDouble( *this ); }
 
 	double    getDefault() const;
@@ -118,7 +118,7 @@ public:
 	}
 };
 
-class ParamBoolean : public tuttle::host::ofx::attribute::OfxhParamBoolean
+class ParamBoolean : public ofx::attribute::OfxhParamBoolean
 {
 protected:
 	ImageEffectNode& _effect;
@@ -126,7 +126,7 @@ protected:
 	bool _value;
 
 public:
-	ParamBoolean( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamBoolean( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	virtual ParamBoolean* clone() const { return new ParamBoolean( *this ); }
 
 	bool      getDefault() const;
@@ -145,7 +145,7 @@ public:
 	}
 };
 
-class ParamChoice : public tuttle::host::ofx::attribute::OfxhParamChoice
+class ParamChoice : public ofx::attribute::OfxhParamChoice
 {
 protected:
 	ImageEffectNode& _effect;
@@ -153,7 +153,7 @@ protected:
 	int _value;
 
 public:
-	ParamChoice( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamChoice( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamChoice* clone() const { return new ParamChoice( *this ); }
 
 	int       getDefault() const;
@@ -172,7 +172,7 @@ public:
 	}
 };
 
-class ParamRGBA : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 4 >
+class ParamRGBA : public ofx::attribute::OfxhMultiDimParam<ParamDouble, 4 >
 {
 protected:
 	ImageEffectNode& _effect;
@@ -180,7 +180,7 @@ protected:
 	OfxRGBAColourD _value;
 
 public:
-	ParamRGBA( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamRGBA( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	virtual ParamRGBA* clone() const { return new ParamRGBA( *this ); }
 
 	OfxRGBAColourD getDefault() const;
@@ -199,7 +199,7 @@ public:
 	}
 };
 
-class ParamRGB : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
+class ParamRGB : public ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
 {
 protected:
 	ImageEffectNode& _effect;
@@ -207,7 +207,7 @@ protected:
 	OfxRGBColourD _value;
 
 public:
-	ParamRGB( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamRGB( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamRGB* clone() const { return new ParamRGB( *this ); }
 
 	OfxRGBColourD getDefault() const;
@@ -226,7 +226,7 @@ public:
 	}
 };
 
-class ParamDouble2D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 2 >
+class ParamDouble2D : public ofx::attribute::OfxhMultiDimParam<ParamDouble, 2 >
 {
 protected:
 	ImageEffectNode& _effect;
@@ -234,7 +234,7 @@ protected:
 	OfxPointD _value;
 
 public:
-	ParamDouble2D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamDouble2D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamDouble2D* clone() const { return new ParamDouble2D( *this ); }
 
 	OfxPointD getDefault() const;
@@ -253,7 +253,7 @@ public:
 	}
 };
 
-class ParamInteger2D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 2 >
+class ParamInteger2D : public ofx::attribute::OfxhMultiDimParam<ParamInteger, 2 >
 {
 protected:
 	ImageEffectNode& _effect;
@@ -261,7 +261,7 @@ protected:
 	OfxPointI _value;
 
 public:
-	ParamInteger2D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamInteger2D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamInteger2D* clone() const { return new ParamInteger2D( *this ); }
 
 	OfxPointI getDefault() const;
@@ -280,7 +280,7 @@ public:
 	}
 };
 
-class ParamInteger3D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamInteger, 3 >
+class ParamInteger3D : public ofx::attribute::OfxhMultiDimParam<ParamInteger, 3 >
 {
 protected:
 	ImageEffectNode& _effect;
@@ -288,7 +288,7 @@ protected:
 	Ofx3DPointI _value;
 
 public:
-	ParamInteger3D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamInteger3D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamInteger3D* clone() const { return new ParamInteger3D( *this ); }
 
 	Ofx3DPointI getDefault() const;
@@ -307,7 +307,7 @@ public:
 	}
 };
 
-class ParamDouble3D : public tuttle::host::ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
+class ParamDouble3D : public ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
 {
 protected:
 	ImageEffectNode& _effect;
@@ -315,7 +315,7 @@ protected:
 	Ofx3DPointD _value;
 
 public:
-	ParamDouble3D( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamDouble3D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamDouble3D* clone() const { return new ParamDouble3D( *this ); }
 
 	Ofx3DPointD getDefault() const;
@@ -335,13 +335,13 @@ public:
 };
 
 
-class ParamPushButton : public tuttle::host::ofx::attribute::OfxhParamPushButton
+class ParamPushButton : public ofx::attribute::OfxhParamPushButton
 {
 protected:
 	ImageEffectNode& _effect;
 
 public:
-	ParamPushButton( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamPushButton( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamPushButton* clone() const { return new ParamPushButton( *this ); }
 
 	void          copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC {}
@@ -352,13 +352,13 @@ public:
 	}
 };
 
-class ParamGroup : public tuttle::host::ofx::attribute::OfxhParamGroup
+class ParamGroup : public ofx::attribute::OfxhParamGroup
 {
 protected:
 	ImageEffectNode& _effect;
 
 public:
-	ParamGroup( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamGroup( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamGroup* clone() const { return new ParamGroup(*this); }
 	
 	void          copy( const ParamGroup& p ) OFX_EXCEPTION_SPEC {}
@@ -369,13 +369,13 @@ public:
 	}
 };
 
-class ParamPage : public tuttle::host::ofx::attribute::OfxhParamPage
+class ParamPage : public ofx::attribute::OfxhParamPage
 {
 protected:
 	ImageEffectNode& _effect;
 
 public:
-	ParamPage( ImageEffectNode& effect, const std::string& name, tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamPage( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamPage* clone() const { return new ParamPage(*this); }
 
 	void          copy( const ParamPage& p ) OFX_EXCEPTION_SPEC {}

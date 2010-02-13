@@ -146,7 +146,6 @@ private:
 	template<class Archive>
 	void serialize( Archive &ar, const unsigned int version )
 	{
-//		ar.register_type( static_cast<OfxhImageEffectNodeDescriptor*>(NULL) );
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPlugin);
 		ar & BOOST_SERIALIZATION_NVP(_baseDescriptor);
 		//ar & BOOST_SERIALIZATION_NVP(_pluginHandle); // don't save this
