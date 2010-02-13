@@ -447,8 +447,8 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
-//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet); /// @todo tuttle: serialize
-//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet);
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
 	}
 };
 
@@ -456,7 +456,5 @@ private:
 }
 }
 }
-
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor)
 
 #endif

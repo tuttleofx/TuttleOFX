@@ -481,6 +481,4 @@ template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClipDescr
 template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
 }
 
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipImageDescriptor)
-
 #endif

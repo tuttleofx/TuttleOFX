@@ -105,7 +105,6 @@ private:
 }
 
 BOOST_SERIALIZATION_ASSUME_ABSTRACT(tuttle::host::ofx::OfxhPluginDesc)
-//BOOST_CLASS_EXPORT(::tuttle::host::ofx::OfxhPluginDesc)
 
 #endif
 
