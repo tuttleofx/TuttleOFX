@@ -51,7 +51,7 @@ ClipImage::~ClipImage()
 {}
 
 /// Return the rod on the clip cannoical coords!
-OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time )
+OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time ) const
 {
 	if( !isOutput() )
 	{
@@ -59,57 +59,13 @@ OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time )
 		{
 			throw exception::LogicError( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." );
 		}
-		return const_cast<ClipImage*>( _connectedClip )->fetchRegionOfDefinition( time ); /// @todo tuttle: hack !!!
+		return _connectedClip->fetchRegionOfDefinition( time );
 	}
 
 	OfxRectD rod;
 	OfxPointD renderScale = { 1.0, 1.0 };
 	_effect.getRegionOfDefinitionAction( time, renderScale, rod );
 	return rod;
-	/*
-	 * OfxRectD rod;
-	 * OfxPointD renderScale;
-	 *
-	 * /// @todo tuttle: strange: seams to have bug with commercial plugins (memory overflow)
-	 * ofx::property::OfxhPropSpec inStuff[] = {
-	 *   { kOfxPropTime, ofx::property::eDouble, 1, true, "0" },
-	 *   { kOfxImageEffectPropRenderScale, ofx::property::eDouble, 2, true, "0" },
-	 *   { 0 }
-	 * };
-	 *
-	 * ofx::property::OfxhPropSpec outStuff[] = {
-	 *   { kOfxImageEffectPropRegionOfDefinition, ofx::property::eDouble, 4, false, "0" },
-	 *   { 0 }
-	 * };
-	 *
-	 * ofx::property::OfxhSet inArgs(inStuff);
-	 * ofx::property::OfxhSet outArgs(outStuff);
-	 *
-	 * inArgs.setDoubleProperty(kOfxPropTime,time);
-	 *
-	 * inArgs.setDoublePropertyN(kOfxImageEffectPropRenderScale, &renderScale.x, 2);
-	 *
-	 * OfxStatus stat = _effect.mainEntry(kOfxImageEffectActionGetRegionOfDefinition, (const void*)(_effect.getHandle()), &inArgs, &outArgs);
-	 *
-	 * if( stat == kOfxStatOK )
-	 * {
-	 *   outArgs.getDoublePropertyN(kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4);
-	 * }
-	 * else if( stat == kOfxStatReplyDefault )
-	 * {
-	 *  // Rule: default is project size
-	 *  _effect.getProjectOffset( rod.x1, rod.y1 );
-	 *  _effect.getProjectSize( rod.x2, rod.y2 );
-	 *  _effect.getRenderScaleRecursive( renderScale.x, renderScale.y );
-	 *
-	 *  /// @todo tuttle: or inputs RoD if not generator ?
-	 * }
-	 * else
-	 * {
-	 *  throw exception::LogicError("fetchRegionOfDefinition error on clip : " + getFullName() );
-	 * }
-	 * return rod;
-	 */
 }
 
 /// Get the Raw Unmapped Pixel Depth from the host.

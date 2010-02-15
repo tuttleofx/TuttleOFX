@@ -47,125 +47,12 @@
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
 #include "OfxhImageEffectPlugin.hpp"
-#include "OfxhXml.hpp"
 
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace APICache {
-void propertySetXMLRead( const std::string& el,
-                         std::map<std::string, std::string> map,
-                         property::OfxhSet& set,
-                         property::OfxhProperty*& currentProp )
-{
-	if( el == "property" )
-	{
-		std::string propName = map["name"];
-		std::string propType = map["type"];
-		int dimension        = atoi( map["dimension"].c_str() );
 
-		if( set.hasProperty( propName, false ) )
-		{
-			currentProp = &set.fetchLocalProperty( propName );
-		}
-		else
-		{
-			if( propType == "int" )
-			{
-				currentProp = new property::Int( propName, dimension, false, 0 );
-			}
-			else if( propType == "string" )
-			{
-				currentProp = new property::String( propName, dimension, false, "" );
-			}
-			else if( propType == "double" )
-			{
-				currentProp = new property::Double( propName, dimension, false, 0 );
-			}
-			else if( propType == "pointer" )
-			{
-				currentProp = new property::Pointer( propName, dimension, false, 0 );
-			}
-			set.addProperty( currentProp );
-		}
-		return;
-	}
-
-	if( el == "value" && currentProp )
-	{
-		int index         = atoi( map["index"].c_str() );
-		std::string value = map["value"];
-
-		switch( currentProp->getType() )
-		{
-			case property::eInt:
-				set.setIntProperty( currentProp->getName(), atoi( value.c_str() ), index );
-				break;
-			case property::eString:
-				set.setStringProperty( currentProp->getName(), value, index );
-				break;
-			case property::eDouble:
-				set.setDoubleProperty( currentProp->getName(), atof( value.c_str() ), index );
-				break;
-			case property::ePointer:
-				break;
-			default:
-				break;
-		}
-
-		return;
-	}
-
-	std::cout << "got unrecognised key " << el << "\n";
-
-	assert( false );
-}
-
-void propertyXMLWrite( std::ostream& o, const property::OfxhProperty& prop, const std::string& indent = "" )
-{
-	if( prop.getType() != property::ePointer )
-	{
-
-		o << indent << "<property "
-		  << XML::attribute( "name", prop.getName() )
-		  << XML::attribute( "type", property::mapTypeEnumToString( prop.getType() ) )
-		  << XML::attribute( "dimension", prop.getFixedDimension() )
-		  << ">\n";
-
-		for( size_t i = 0; i < prop.getDimension(); i++ )
-		{
-			o << indent << "  <value "
-			  << XML::attribute( "index", i )
-			  << XML::attribute( "value", prop.getStringValue( i ) )
-			  << "/>\n";
-		}
-
-		o << indent << "</property>\n";
-	}
-}
-
-void propertyXMLWrite( std::ostream& o, const property::OfxhSet& set, const std::string& name, int indent )
-{
-	if( set.hasProperty( name ) )
-	{
-		const property::OfxhProperty& prop = set.fetchLocalProperty( name );
-		std::string indent_prefix( indent, ' ' );
-		propertyXMLWrite( o, prop, indent_prefix );
-	}
-}
-
-void propertySetXMLWrite( std::ostream& o, const property::OfxhSet& set, int indent )
-{
-	std::string indent_prefix( indent, ' ' );
-
-	for( property::PropertyMap::const_iterator i = set.getMap().begin();
-	     i != set.getMap().end();
-	     i++ )
-	{
-		const property::OfxhProperty& prop = *( i->second );
-		propertyXMLWrite( o, prop, indent_prefix );
-	}
-}
 
 }
 }

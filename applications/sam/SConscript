@@ -6,7 +6,6 @@ libraries = [libs.boost_system,
 			 libs.dl,
 			 libs.openfxHack,
 			 libs.tuttleHost,
-			 libs.expat,
 			 libs.boost_gil,
 			 ]
 

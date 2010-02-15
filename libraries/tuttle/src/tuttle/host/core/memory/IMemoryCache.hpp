@@ -4,10 +4,7 @@
 #include "IMemoryPool.hpp"
 #include <string>
 
-/// @todo remove this...
-#include <boost/shared_ptr.hpp>
-//#include <tuttle/host/core/ClipImage.hpp> // Image...
-///
+#include <boost/shared_ptr.hpp> ///< @todo temporary solution..
 
 namespace tuttle {
 namespace host {

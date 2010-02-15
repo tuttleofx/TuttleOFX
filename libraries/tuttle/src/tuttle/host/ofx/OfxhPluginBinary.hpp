@@ -14,6 +14,7 @@ namespace host {
 namespace ofx {
 
 class OfxhPluginHandle;
+class OfxhPluginCache;
 
 /**
  * class that represents a binary file which holds plugins.

@@ -181,7 +181,7 @@ public:
 	virtual OfxStatus mainEntry( const char*        action,
 	                             const void*        handle,
 	                             property::OfxhSet* inArgs,
-	                             property::OfxhSet* outArgs );
+	                             property::OfxhSet* outArgs ) const;
 
 	size_t upperGetDimension( const std::string& name );
 
@@ -255,20 +255,20 @@ public:
 
 	/// calculate the default rod for this effect instance
 	virtual OfxRectD calcDefaultRegionOfDefinition( OfxTime   time,
-	                                                OfxPointD renderScale );
+	                                                OfxPointD renderScale ) const;
 
 	//
 	// actions
 	//
 
 	/// this is used to populate with any extra action in argumnents that may be needed
-	virtual void setCustomInArgs( const std::string& action, property::OfxhSet& inArgs );
+	virtual void setCustomInArgs( const std::string& action, property::OfxhSet& inArgs ) const;
 
 	/// this is used to populate with any extra action out argumnents that may be needed
-	virtual void setCustomOutArgs( const std::string& action, property::OfxhSet& outArgs );
+	virtual void setCustomOutArgs( const std::string& action, property::OfxhSet& outArgs ) const;
 
 	/// this is used retrieve any out args after the action was called in mainEntry
-	virtual void examineOutArgs( const std::string& action, OfxStatus stat, const property::OfxhSet& outArgs );
+	virtual void examineOutArgs( const std::string& action, OfxStatus stat, const property::OfxhSet& outArgs ) const;
 
 	/// create an instance. This needs to be called _after_ construction and
 	/// _after_ the host populates it's params and clips with the 'correct'
@@ -337,7 +337,7 @@ public:
 	 */
 	virtual void getRegionOfDefinitionAction( OfxTime   time,
 	                                               OfxPointD renderScale,
-	                                               OfxRectD& rod ) OFX_EXCEPTION_SPEC;
+	                                               OfxRectD& rod ) const OFX_EXCEPTION_SPEC;
 
 	/**
 	 *  call the get region of interest action on the plugin for the
@@ -350,21 +350,21 @@ public:
 	virtual void getRegionOfInterestAction( OfxTime time,
 	                                             OfxPointD renderScale,
 	                                             const OfxRectD& roi,
-	                                             std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) OFX_EXCEPTION_SPEC;
+	                                             std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC;
 
 	// get frames needed to render the given frame
 	virtual void getFrameNeededAction( OfxTime   time,
-	                                        RangeMap& rangeMap ) OFX_EXCEPTION_SPEC;
+	                                        RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC;
 
 	// is identity
 	virtual void isIdentityAction( OfxTime&           time,
 	                                    const std::string& field,
 	                                    const OfxRectI&    renderRoI,
 	                                    OfxPointD          renderScale,
-	                                    std::string&       clip ) OFX_EXCEPTION_SPEC;
+	                                    std::string&       clip ) const OFX_EXCEPTION_SPEC;
 
 	// time domain
-	virtual void getTimeDomainAction( OfxRangeD& range ) OFX_EXCEPTION_SPEC;
+	virtual void getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC;
 
 	/**
 	 * Get the interact description, this will also call describe on the interact
@@ -447,8 +447,8 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
-//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet); /// @todo tuttle: serialize
-//		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet);
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
 	}
 };
 
@@ -456,7 +456,5 @@ private:
 }
 }
 }
-
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor)
 
 #endif

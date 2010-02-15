@@ -347,7 +347,7 @@ public:
 	virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage( OfxTime time, OfxRectD* optionalBounds = NULL ) = 0;
 
 	/// override this to return the rod on the clip
-	virtual OfxRectD fetchRegionOfDefinition( OfxTime time ) = 0;
+	virtual OfxRectD fetchRegionOfDefinition( OfxTime time ) const = 0;
 
 	/** given the colour component, find the nearest set of supported colour components
 	 *  override this for extra wierd custom component depths
@@ -480,7 +480,5 @@ namespace boost{
 template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClipDescriptor, tuttle::host::ofx::attribute::OfxhClipImageDescriptor>: public mpl::true_ {};
 template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
 }
-
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipImageDescriptor)
 
 #endif

@@ -218,32 +218,31 @@ const std::string ImageEffectNode::getProjectBitDepth() const
 ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
 	std::string name = descriptor.getName();
-	ofx::attribute::OfxhParamDescriptor& desc = const_cast<ofx::attribute::OfxhParamDescriptor&>(descriptor); ///< @todo tuttle: constness !!!
 	
-	if(  desc.getParamType() == kOfxParamTypeString )
-		return new ParamString( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeInteger )
-		return new ParamInteger( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeDouble )
-		return new ParamDouble( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeBoolean )
-		return new ParamBoolean( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeChoice )
-		return new ParamChoice( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeRGBA )
-		return new ParamRGBA( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeRGB )
-		return new ParamRGB( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeDouble2D )
-		return new ParamDouble2D( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeInteger2D )
-		return new ParamInteger2D( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypePushButton )
-		return new ParamPushButton( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypeGroup )
-		return new ParamGroup( *this, name,  desc );
-	else if(  desc.getParamType() == kOfxParamTypePage )
-		return new ParamPage( *this, name,  desc );
+	if(  descriptor.getParamType() == kOfxParamTypeString )
+		return new ParamString( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeInteger )
+		return new ParamInteger( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeDouble )
+		return new ParamDouble( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeBoolean )
+		return new ParamBoolean( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeChoice )
+		return new ParamChoice( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeRGBA )
+		return new ParamRGBA( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeRGB )
+		return new ParamRGB( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeDouble2D )
+		return new ParamDouble2D( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeInteger2D )
+		return new ParamInteger2D( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypePushButton )
+		return new ParamPushButton( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeGroup )
+		return new ParamGroup( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypePage )
+		return new ParamPage( *this, name,  descriptor );
 	else
 		throw( exception::LogicError( "Can't create param instance from param descriptor." ) );
 

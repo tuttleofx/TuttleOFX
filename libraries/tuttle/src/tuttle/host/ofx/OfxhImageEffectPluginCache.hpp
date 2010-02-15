@@ -34,21 +34,12 @@ private:
 	/// latest minor version of each plugin by (ID,major)
 	std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*> _pluginsByIDMajor;
 
-	/// xml parsing state
-	OfxhImageEffectPlugin* _currentPlugin;
-	/// xml parsing state
-	property::OfxhProperty* _currentProp;
-
-	OfxhImageEffectNodeDescriptor* _currentContext;
-	attribute::OfxhParamDescriptor* _currentParam;
-	attribute::OfxhClipImageDescriptor* _currentClip;
-
 	/// pointer to our image effect host
 	OfxhImageEffectHost* _host;
 
 public:
 	explicit OfxhImageEffectPluginCache( OfxhImageEffectHost& host );
-	virtual ~OfxhImageEffectPluginCache();
+	~OfxhImageEffectPluginCache();
 
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
 	/// pick the highest found version.
@@ -69,23 +60,9 @@ public:
 	/// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
 	void loadFromPlugin( OfxhPlugin* p ) const;
 
-	/// handler for preparing to read in a chunk of XML from the cache, set up context to do this
-	void beginXmlParsing( OfxhPlugin* p );
-
-	/// XML handler : element begins (everything is stored in elements and attributes)
-	virtual void xmlElementBegin( const std::string& el, std::map<std::string, std::string> map );
-
-	virtual void xmlCharacterHandler( const std::string& );
-
-	virtual void xmlElementEnd( const std::string& el );
-
-	virtual void endXmlParsing();
-
-	virtual void saveXML( const OfxhPlugin* const ip, std::ostream& os ) const;
-
 	void confirmPlugin( OfxhPlugin* p );
 
-	virtual bool pluginSupported( OfxhPlugin* p, std::string& reason ) const;
+	bool pluginSupported( OfxhPlugin* p, std::string& reason ) const;
 
 	OfxhPlugin* newPlugin( OfxhPluginBinary* pb,
 	                       int               pi,

@@ -348,17 +348,17 @@ OfxhImageEffectNode::~OfxhImageEffectNode()
 /**
  * this is used to populate with any extra action in arguments that may be needed
  */
-void OfxhImageEffectNode::setCustomInArgs( const std::string& action, property::OfxhSet& inArgs ) {}
+void OfxhImageEffectNode::setCustomInArgs( const std::string& action, property::OfxhSet& inArgs ) const {}
 
 /**
  * this is used to populate with any extra action out arguments that may be needed
  */
-void OfxhImageEffectNode::setCustomOutArgs( const std::string& action, property::OfxhSet& outArgs ) {}
+void OfxhImageEffectNode::setCustomOutArgs( const std::string& action, property::OfxhSet& outArgs ) const {}
 
 /**
  * this is used to populate with any extra action out arguments that may be needed
  */
-void OfxhImageEffectNode::examineOutArgs( const std::string& action, OfxStatus, const property::OfxhSet& outArgs ) {}
+void OfxhImageEffectNode::examineOutArgs( const std::string& action, OfxStatus, const property::OfxhSet& outArgs ) const {}
 
 /**
  * check for connection
@@ -415,7 +415,7 @@ OfxhMemory* OfxhImageEffectNode::imageMemoryAlloc( size_t nBytes )
 OfxStatus OfxhImageEffectNode::mainEntry( const char*        action,
                                           const void*        handle,
                                           property::OfxhSet* inArgs,
-                                          property::OfxhSet* outArgs )
+                                          property::OfxhSet* outArgs ) const
 {
 	if( !_plugin )
 		return kOfxStatFailed;
@@ -684,7 +684,7 @@ void OfxhImageEffectNode::endRenderAction( OfxTime   startFrame,
  * calculate the default rod for this effect instance
  */
 OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
-                                                             OfxPointD renderScale )
+                                                             OfxPointD renderScale ) const
 {
 	OfxRectD rod;
 
@@ -731,9 +731,9 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 	{
 		// general context is the union of all the non optional clips
 		bool gotOne = false;
-		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-		     it != _clips.end();
-		     it++ )
+		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
+		     it != itEnd;
+		     ++it )
 		{
 			attribute::OfxhClipImage* clip = it->second;
 			if( !clip->isOutput() && !clip->isOptional() )
@@ -759,10 +759,10 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		// retimer
 		try
 		{
-			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
-			/*attribute::ParamDoubleInstance& param = */ dynamic_cast<attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
-			rod = clip.fetchRegionOfDefinition( floor( time ) );
-			rod = rectUnion( rod, clip.fetchRegionOfDefinition( floor( time ) + 1 ) );
+			const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			/*attribute::ParamDoubleInstance& param = */ dynamic_cast<const attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
+			rod = clip.fetchRegionOfDefinition( std::floor( time ) );
+			rod = rectUnion( rod, clip.fetchRegionOfDefinition( std::floor( time ) + 1 ) );
 		}
 		catch( core::exception::LogicError& e )
 		{
@@ -782,7 +782,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
  */
 void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
                                                             OfxPointD renderScale,
-                                                            OfxRectD& rod ) OFX_EXCEPTION_SPEC
+                                                            OfxRectD& rod ) const OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec inStuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
@@ -827,7 +827,7 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
 void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
                                                           OfxPointD renderScale,
                                                           const OfxRectD& roi,
-                                                          std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) OFX_EXCEPTION_SPEC
+                                                          std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC
 {
 	// reset the map
 	rois.clear();
@@ -835,7 +835,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 	if( !supportsTiles() )
 	{
 		/// No tiling support on the effect at all. So set the roi of each input clip to be the RoD of that clip.
-		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin(), itEnd = _clips.end();
+		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
 		     it != itEnd;
 		     ++it )
 		{
@@ -863,9 +863,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		inArgs.setDoublePropertyN( kOfxImageEffectPropRegionOfInterest, &roi.x1, 4 );
 
 		property::OfxhSet outArgs;
-		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-		     it != _clips.end();
-		     it++ )
+		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
+		     it != itEnd;
+		     ++it )
 		{
 			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
 			{
@@ -894,9 +894,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 			throw OfxhException( status );
 
 		/// set the thing up
-		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-		     it != _clips.end();
-		     it++ )
+		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
+		     it != itEnd;
+		     ++it )
 		{
 			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
 			{
@@ -928,7 +928,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
  * see how many frames are needed from each clip to render the indicated frame
  */
 void OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
-                                                     RangeMap& rangeMap ) OFX_EXCEPTION_SPEC
+                                                     RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC
 {
 	OfxStatus status = kOfxStatReplyDefault;
 	property::OfxhSet outArgs;
@@ -942,9 +942,9 @@ void OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
 		property::OfxhSet inArgs( inStuff );
 		inArgs.setDoubleProperty( kOfxPropTime, time );
 
-		for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
-		     it != _clips.end();
-		     it++ )
+		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
+		     it != itEnd;
+		     ++it )
 		{
 			if( !it->second->isOutput() )
 			{
@@ -975,8 +975,8 @@ void OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
 	OfxRangeD defaultRange;
 	defaultRange.min = defaultRange.max = time;
 
-	for( ClipImageMap::iterator it = _clips.begin();
-	     it != _clips.end();
+	for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
+	     it != itEnd;
 	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;
@@ -1022,7 +1022,7 @@ void OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
                                                  const std::string& field,
                                                  const OfxRectI&    renderRoI,
                                                  OfxPointD          renderScale,
-                                                 std::string&       clip ) OFX_EXCEPTION_SPEC
+                                                 std::string&       clip ) const OFX_EXCEPTION_SPEC
 {
 	static property::OfxhPropSpec inStuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
@@ -1365,7 +1365,7 @@ const std::string& OfxhImageEffectNode::bestSupportedDepth( const std::string& d
 	return none;
 }
 
-void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) OFX_EXCEPTION_SPEC
+void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec outStuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, false, "0.0" },

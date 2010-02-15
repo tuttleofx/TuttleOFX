@@ -177,7 +177,5 @@ template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute
 }
 
 
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::attribute::OfxhClipDescriptor)
-
 #endif
 

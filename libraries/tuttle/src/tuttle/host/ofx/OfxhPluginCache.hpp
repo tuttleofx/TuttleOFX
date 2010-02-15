@@ -34,7 +34,6 @@
 #include "OfxhPluginAPICache.hpp"
 #include "OfxhPluginBinary.hpp"
 
-#include "expat.h"
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/list.hpp>
@@ -98,10 +97,6 @@ protected:
 	bool _dirty;
 	bool _enablePluginSeek; ///< Turn off to make all seekPluginFile() calls return an empty string
 
-	// temporary values
-	OfxhPluginBinary* _xmlCurrentBinary;
-	OfxhPlugin* _xmlCurrentPlugin;
-
 public:
 	/// ctor, which inits _pluginPath to default locations and not much else
 	OfxhPluginCache();
@@ -127,7 +122,7 @@ public:
 
 	void setDirty()
 	{
-		COUT("OfxhPluginCache::setDirty()");
+		//COUT("OfxhPluginCache::setDirty()");
 		_dirty = true;
 	}
 
@@ -170,11 +165,6 @@ public:
 
 	// write the plugin cache output file to the given stream
 	void writePluginCache( std::ostream& os ) const;
-
-	// callback function for the XML
-	void elementBeginCallback( void* userData, const XML_Char* name, const XML_Char** attrs );
-	void elementCharCallback( void* userData, const XML_Char* data, int len );
-	void elementEndCallback( void* userData, const XML_Char* name );
 
 	/// register an API cache handler
 	void registerAPICache( APICache::OfxhPluginAPICacheI& apiCache )
@@ -230,7 +220,5 @@ private:
 }
 }
 }
-
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhPluginCache)
 
 #endif

@@ -118,6 +118,7 @@ Export('libs')
 
 #______________________________________________________________________________#
 
+Decider('MD5-timestamp')
 
 project.begin()
 project.SConscript()

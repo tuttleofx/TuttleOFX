@@ -177,6 +177,4 @@ private:
 }
 }
 
-//BOOST_CLASS_EXPORT(tuttle::host::ofx::OfxhBinary)
-
 #endif

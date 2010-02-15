@@ -3,4 +3,4 @@ This folder is intented to receive third party libraries
 Those libraries can be automatically downloaded and uncompressed for you by using the init script
 
 /boost : unzipped boost sources ( http://sourceforge.net/projects/boost/files/ )
-/expat : unzipped expat sources ( needed by original OpenFx Host Implementation )
+

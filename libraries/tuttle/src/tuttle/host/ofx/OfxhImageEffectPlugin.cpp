@@ -50,7 +50,6 @@
 #include "OfxhImageEffectPluginCache.hpp"
 
 ///@todo tuttle: remove this !
-#include "OfxhXml.hpp"
 #include <tuttle/host/core/Core.hpp>
 
 // Disable the "this pointer used in base member initialiser list" warning in Windows
@@ -158,10 +157,6 @@ void OfxhImageEffectPlugin::addContext( const std::string& context )
 	//TCOUT( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
 }
 
-void OfxhImageEffectPlugin::saveXML( std::ostream& os ) const
-{
-	APICache::propertySetXMLWrite( os, getDescriptor().getProperties(), 6 );
-}
 
 const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 {

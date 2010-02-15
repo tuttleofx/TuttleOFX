@@ -45,24 +45,6 @@ Core::~Core()
 
 void Core::preload()
 {
-	/*
-	std::string expatCacheFile( "tuttlePluginCache.xml" );
-	// try to read an old cache
-	std::ifstream ifs( expatCacheFile.c_str() );
-	_pluginCache.readCache( ifs );
-	ifs.close();
-
-	_pluginCache.scanPluginFiles();
-
-	/// flush out the current cache
-	if( _pluginCache.isDirty() )
-	{
-		std::ofstream ofs( expatCacheFile.c_str() );
-		_pluginCache.writePluginCache( ofs );
-		ofs.close();
-	}
-	*/
-
 //	typedef boost::archive::binary_oarchive OArchive;
 //	typedef boost::archive::binary_iarchive IArchive;
 //	typedef boost::archive::text_oarchive OArchive;
