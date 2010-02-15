@@ -3,47 +3,37 @@
 
 #include <tuttle/common/utils/global.hpp>
 
- #include <boost/thread/thread.hpp>
- #include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/tss.hpp>
+#include <boost/bind.hpp>
 
-typedef struct OfxMutex
+struct OfxMutex
 {
-	boost::mutex _mutex;
-} OfxMutex;
+	boost::recursive_mutex _mutex;
+};
 
 namespace tuttle {
 namespace host {
 namespace ofx {
 
-/*
- #include <boost/thread/thread.hpp>
- #include <boost/thread/thread_group.hpp>
- #include <vector>
-// Une variable globale qui pourra être encapsulée au besoin
-boost::thread_specific_ptr<int> value;
-// Une variable globale avec son mutex, le tout devrait être dans une classe englobante
-std::vector<unsigned int> traitement;
-boost::mutex mutexTraitement;
-
-void uneFonctionPlusieursThreads()
+struct ThreadSpecificData
 {
-	{
-		boost::mutex::scoped_lock lock(mutexTraitement);
-		// Accède aux données de traitement en toute sécurité
-	}
-	value.reset(new int); // On crée des données spécifiques au thread
-	
-	// Traitement sur value
+	ThreadSpecificData( unsigned int threadIndex ):_index(0){}
+	unsigned int _index;
+};
+
+boost::thread_specific_ptr<ThreadSpecificData> ptr;
+
+static void launchThread( OfxThreadFunctionV1 func,
+                          unsigned int threadIndex,
+						  unsigned int threadMax,
+						  void*        customArg )
+{
+	ptr.reset( new ThreadSpecificData( threadIndex ) );
+	func( threadIndex, threadMax, customArg );
 }
 
-int main()
-{
-	boost::thread_group group;
-	for(unsigned int i = 0; i < 10; ++i)
-	{
-		group.create_thread(&uneFonctionPlusieursThreads);
-}
- */
 
 static OfxStatus multiThread( OfxThreadFunctionV1 func,
                               const unsigned int  nThreads,
@@ -62,7 +52,7 @@ static OfxStatus multiThread( OfxThreadFunctionV1 func,
 		boost::thread_group group;
 		for( unsigned int i = 0; i < nThreads; ++i )
 		{
-			group.create_thread(boost::bind(func, i, nThreads, customArg));
+			group.create_thread(boost::bind(launchThread, func, i, nThreads, customArg));
 		}
 		group.join_all();
 	}
@@ -71,25 +61,32 @@ static OfxStatus multiThread( OfxThreadFunctionV1 func,
 
 static OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
 {
-	*nCPUs = 1;
-//	*nCPUs = boost::thread::hardware_concurrency();
-//	COUT( "nCPUs: " << *nCPUs );
+//	*nCPUs = 1; /// @todo tuttle: needs to have an option to disable multithreading (force only one cpu).
+	*nCPUs = boost::thread::hardware_concurrency();
+	COUT( "nCPUs: " << *nCPUs );
 	return kOfxStatOK;
 }
 
 static OfxStatus multiThreadIndex( unsigned int* const threadIndex )
 {
-//	*threadIndex = boost::this_thread::get_id();
-	*threadIndex = 0;
+//	*threadIndex = boost::this_thread::get_id(); //	we don't want a global thead id, but the thead index inside a node multithread process.
+	if( ptr.get() != NULL )
+	{
+		*threadIndex = 0;
+		return kOfxStatFailed;
+	}
+	*threadIndex = ptr->_index;
 	return kOfxStatOK;
 }
 
 static int multiThreadIsSpawnedThread( void )
 {
-//	return boost::this_thread::;
-	return false;
+	return ptr.get() != NULL;
 }
 
+/**
+ * @todo tuttle: support lockCount init value.
+ */
 static OfxStatus mutexCreate( OfxMutexHandle* mutex, const int lockCount )
 {
 	*mutex = new OfxMutex();
@@ -98,6 +95,8 @@ static OfxStatus mutexCreate( OfxMutexHandle* mutex, const int lockCount )
 
 static OfxStatus mutexDestroy( OfxMutexHandle mutex )
 {
+	if( mutex == NULL )
+		return kOfxStatErrBadHandle;
 	delete mutex;
 	mutex = NULL;
 	return kOfxStatOK;
@@ -105,23 +104,27 @@ static OfxStatus mutexDestroy( OfxMutexHandle mutex )
 
 static OfxStatus mutexLock( OfxMutexHandle mutex )
 {
-	// do nothing single threaded
-	// @todo tuttle multithread
-//	boost::mutex::scoped_lock lock(mutex->_mutex);
+	if( mutex == NULL )
+		return kOfxStatErrBadHandle;
+    mutex->_mutex.lock();
 	return kOfxStatOK;
 }
 
 static OfxStatus mutexUnLock( OfxMutexHandle mutex )
 {
-	// do nothing single threaded
+	if( mutex == NULL )
+		return kOfxStatErrBadHandle;
+    mutex->_mutex.unlock();
 	return kOfxStatOK;
 }
 
 static OfxStatus mutexTryLock( OfxMutexHandle mutex )
 {
-	// do nothing single threaded
-//	boost::mutex::scoped_try_lock lock(mutex->_mutex);
-	return kOfxStatOK;
+	if( mutex == NULL )
+		return kOfxStatErrBadHandle;
+	if( mutex->_mutex.try_lock() )
+		return kOfxStatOK;
+	return kOfxStatFailed;
 }
 
 static struct OfxMultiThreadSuiteV1 gSingleThreadedSuite =
