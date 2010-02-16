@@ -59,7 +59,7 @@ void Core::preload()
 		std::ifstream ifsb( cacheFile.c_str() );
 		if( ifsb.is_open() )
 		{
-			COUT("Read plugins cache.");
+			COUT_DEBUG("Read plugins cache.");
 			IArchive iArchive( ifsb );
 			iArchive >> BOOST_SERIALIZATION_NVP(_pluginCache);
 			ifsb.close();
@@ -67,7 +67,7 @@ void Core::preload()
 	}
 	catch( std::exception& e )
 	{
-		COUT("Exception when reading cache file (" << e.what() << ")." );
+		COUT_ERROR("Exception when reading cache file (" << e.what() << ")." );
 	}
 	
 
@@ -76,7 +76,7 @@ void Core::preload()
 	if( _pluginCache.isDirty() )
 	{
 		/// flush out the current cache
-		COUT("Write plugins cache.");
+		COUT_DEBUG("Write plugins cache.");
 		std::ofstream ofsb( cacheFile.c_str() );
 		OArchive oArchive( ofsb );
 		oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
