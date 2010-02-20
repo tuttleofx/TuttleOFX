@@ -36,7 +36,7 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 	BOOST_FOREACH( std::string s, nodes )
 	{
 		outputs.push_back( _graph.getVertexDescriptor( s ) );
-		std::cout << "MY OUTPUT " << s << std::endl;
+		COUT_DEBUG( "MY OUTPUT " << s );
 	}
 
 	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graphprocess.dot" );

@@ -67,7 +67,7 @@ void Graph::addToGraph( Node& node )
 {
 	graph::Vertex v( node.getName(), node );
 
-	std::cout<< node.getName() <<std::endl;
+	COUT_DEBUG(node.getName());
 	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
