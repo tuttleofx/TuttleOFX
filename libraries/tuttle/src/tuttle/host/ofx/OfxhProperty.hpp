@@ -203,6 +203,7 @@ public:
 /// base class for all properties
 class OfxhProperty : private boost::noncopyable
 {
+typedef OfxhProperty This;
 protected:
 	std::string _name;                         ///< name of this property
 	TypeEnum _type;                            ///< type of this property
@@ -214,33 +215,43 @@ protected:
 	friend class OfxhSet;
 
 public:
-	/// ctor
 	OfxhProperty( const std::string& name,
 	              TypeEnum           type,
 	              size_t             dimension = 1,
 	              bool               pluginReadOnly = false );
 
-	/// copy ctor
-	OfxhProperty( const OfxhProperty& other );
+	OfxhProperty( const This& other );
 
-	/// dtor
-	virtual ~OfxhProperty()
-	{}
+	virtual ~OfxhProperty() = 0;
 
-	virtual bool operator==( const OfxhProperty& other ) const
+	virtual bool operator==( const This& other ) const
 	{
 		if( _name != other._name )
+		{
+			//COUT( "OfxhProperty::operator== not same name : " << _name << " != " << other._name );
 			return false;
+		}
 		if( _type != other._type )
+		{
+			//COUT( "OfxhProperty::operator== not same type : " << _type << " != " << other._type );
 			return false;
+		}
 		if( _dimension != other._dimension )
+		{
+			//COUT( "OfxhProperty::operator== not same size : " << _dimension << " != " << other._dimension );
 			return false;
-//		if( _pluginReadOnly != other._pluginReadOnly )
-//			return false;
+		}
+		if( _pluginReadOnly != other._pluginReadOnly )
+		{
+			//COUT( "OfxhProperty::operator== not sale read only : " << _pluginReadOnly << " != " << other._pluginReadOnly );
+			return false;
+		}
 		return true;
 	}
 
-	bool operator!=( const OfxhProperty& other ) const { return !operator==( other ); }
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
+
+	virtual void copyValues( const This& other ) = 0;
 
 	/// is it read only?
 	bool getPluginReadOnly() const { return _pluginReadOnly; }
@@ -326,6 +337,7 @@ inline OfxhProperty* new_clone( const OfxhProperty& p )
 template<class T>
 class OfxhPropertyTemplate : public OfxhProperty
 {
+typedef OfxhPropertyTemplate<T> This;
 public:
 	typedef typename T::Type Type;
 	typedef typename T::ReturnType ReturnType;
@@ -361,21 +373,48 @@ public:
 	bool operator==( const OfxhProperty& other ) const
 	{
 		if( getType() != other.getType() )
+		{
+			//COUT( "OfxhPropertyTemplate::operator== not same type : " << getType() << " != " << other.getType() );
 			return false;
-		return operator==( dynamic_cast<const OfxhPropertyTemplate<T>&>( other ) );
+		}
+		return operator==( dynamic_cast<const This&>( other ) );
 	}
 
-	bool operator==( const OfxhPropertyTemplate<T>& other ) const
+	bool operator==( const This& other ) const
 	{
-		if( !OfxhProperty::operator==( other ) )
+		if( OfxhProperty::operator!=( other ) )
 			return false;
 		if( getType() == ePointer )
 			return true; // we can't compare abstract pointer content, so assume true.
 		if( _value != other._value )
+		{
+			//COUT( "OfxhPropertyTemplate::operator== not same value : " );
+			//for( typename std::vector<Type>::const_iterator it = _value.begin(), itEnd = _value.end(), ito = other._value.begin(), itoEnd = other._value.end();
+			//	 it != itEnd && ito != itoEnd;
+			//     ++it, ++ito )
+			//{
+			//	COUT( *it << " != " << *ito );
+			//}
 			return false;
+		}
 //		if( _defaultValue != other._defaultValue )
 //			return false;
 		return true;
+	}
+
+	void copyValues( const OfxhProperty& other )
+	{
+		if( getType() != other.getType() )
+			throw core::exception::LogicError( "You try to copy a property value, but it is not the same property type." );
+		copyValues( dynamic_cast<const This&>( other ) );
+	}
+	
+	void copyValues( const This& other )
+	{
+		if( OfxhProperty::operator!=( other ) )
+			throw core::exception::LogicError( "You try to copy a property value, but it is not the same property." );
+		_value = other._value;
+		//_defaultValue = other._defaultValue;
 	}
 
 	/// get the vector
@@ -544,6 +583,8 @@ public:
 
 	bool operator==( const This& ) const;
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
+
+	void copyValues( const This& other );
 
 	/// dump to cout
 	void coutProperties() const;

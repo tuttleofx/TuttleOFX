@@ -190,9 +190,9 @@ public:
 	
 	void copyParamsValues( const OfxhParamSet& other );
 	
-	bool operator==( const OfxhParamSet& other ) const { return _paramList == other._paramList; }
+	bool operator==( const This& other ) const { return _paramList == other._paramList; }
 
-	bool operator!=( const OfxhParamSet& other ) const { return !operator==( other ); }
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }

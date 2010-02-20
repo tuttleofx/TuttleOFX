@@ -216,8 +216,10 @@ OfxhProperty::OfxhProperty( const OfxhProperty& other )
 	_pluginReadOnly( other._pluginReadOnly ),
 	_getHook( NULL ) {}
 
-/// call notify on the contained notify hooks
+OfxhProperty::~OfxhProperty()
+{}
 
+/// call notify on the contained notify hooks
 void OfxhProperty::notify( bool single, int indexOrN )
 {
 	std::vector<OfxhNotifyHook*>::iterator i;
@@ -663,6 +665,25 @@ bool OfxhSet::operator==( const This& other ) const
 			return false;
 	}
 	return true;
+}
+
+
+void OfxhSet::copyValues( const This& other )
+{
+	if( _props.size() != other._props.size() )
+		throw core::exception::LogicError( "You try to copy properties values, but the two lists are not identical." );
+
+	PropertyMap::const_iterator oit = other._props.begin(), oitEnd = other._props.end();
+	for( PropertyMap::iterator it = _props.begin(), itEnd = _props.end();
+	     it != itEnd && oit != oitEnd;
+	     ++it, ++oit )
+	{
+		OfxhProperty& p = *(it->second);
+		const OfxhProperty& op = *(oit->second);
+		if( p.getName() != op.getName() )
+			throw core::exception::LogicError( "You try to copy properties values, but it is not the same property in the two lists." );
+		p.copyValues(op);
+	}
 }
 
 void OfxhSet::coutProperties() const
