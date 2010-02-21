@@ -70,7 +70,7 @@ if __name__ == '__main__':
 		if not pluginGroup:
 			pluginGroup = 'tuttle'
 		defaultNamespace = className[0].lower() + className[1:]
-		namespace = raw_input( 'Namespace (default '+defaultNamespace+') ?: ')
+		namespace = raw_input( 'Namespace (default "'+defaultNamespace+'") ?: ')
 		if not namespace:
 			namespace = defaultNamespace
 		print
@@ -99,7 +99,7 @@ if __name__ == '__main__':
 				dName = dName.replace( 'L_ProjectName_', projectName.lower() )
 				dName = dName.replace( '_ProjectName_', projectName )
 				if dName[-1] == '_':
-					dName = dName[:-1]+'p'
+					dName = dName[:-1]
 				if dName != name:
 					print 'Processing: ' + name + ' to ' + dName
 					os.rename( top + '/' + name, top + '/' + dName )
