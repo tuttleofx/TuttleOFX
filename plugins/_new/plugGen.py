@@ -20,6 +20,7 @@ def walktree(top = '.', depthfirst = True):
 		yield top, names
 
 def adaptTemplate(filepath):
+	#print 'adaptTemplate: ', filepath
 	# Schmlurp whole file
 	fSource = open( filepath, 'r' )
 	source = fSource.read( )
@@ -44,9 +45,8 @@ if __name__ == '__main__':
 			className = raw_input( 'Plugin name (Capitalized, without spaces) ?: ' )
 
 		# Adapting directories.
-		currentDir = os.getcwd( ) + '/'
-		pluginDir = currentDir + '../' + className + '/'
-		pluginSrcDir = pluginDir + 'src/'
+		currentDir = os.getcwd( )
+		pluginDir = os.path.join( currentDir, '..', className )
 
 		#Remove old plugin dir
 		if os.path.exists( pluginDir ):
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 		print 'Processing files...'
 		
 		#Copy to plugin directory
-		shutil.copytree( currentDir + 'folder/', pluginDir )
+		shutil.copytree( os.path.join(currentDir, 'folder'), pluginDir )
 		for top, names in walktree( pluginDir ):
 			for name in names:
 				# Rename templates files with a correct filename
@@ -104,9 +104,8 @@ if __name__ == '__main__':
 					print 'Processing: ' + name + ' to ' + dName
 					os.rename( top + '/' + name, top + '/' + dName )
 					# Check if we need to replace things on the file
-					if any( dName.endswith(ext) for ext in ['.png', '.svg']):
+					if not any( dName.endswith(ext) for ext in ['.png', '.svg']):
 						adaptTemplate(top + '/' + dName)
-		sys.exit(0)
 
 	except ValueError, v:
 		try:
