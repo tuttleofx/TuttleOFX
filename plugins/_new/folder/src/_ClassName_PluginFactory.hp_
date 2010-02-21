@@ -1,5 +1,5 @@
-#ifndef %D_CLASSNAME%_PLUGIN_FACTORY_H
-#define %D_CLASSNAME%_PLUGIN_FACTORY_H
+#ifndef _TUTTLE_PLUGIN_%D_CLASSNAME%_PLUGIN_FACTORY_HPP_
+#define _TUTTLE_PLUGIN_%D_CLASSNAME%_PLUGIN_FACTORY_HPP_
 #include <ofxsImageEffect.h>
 
 namespace tuttle {
@@ -15,4 +15,4 @@ mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
 }
 }
 
-#endif //%D_CLASSNAME%_PLUGIN_FACTORY_H
+#endif

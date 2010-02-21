@@ -1,12 +1,5 @@
-/**
- * @file %CLASSNAME%Process.hpp
- * @brief
- * @author
- * @date    %DATE%
- *
- */
-#ifndef %D_CLASSNAME%_PROCESS_HPP
-#define %D_CLASSNAME%_PROCESS_HPP
+#ifndef _TUTTLE_PLUGIN_%D_CLASSNAME%_PROCESS_HPP_
+#define _TUTTLE_PLUGIN_%D_CLASSNAME%_PROCESS_HPP_
 
 
 #include <tuttle/common/image/gilGlobals.hpp>
@@ -58,4 +51,4 @@ public :
 
 #include "%CLASSNAME%Process.tcc"
 
-#endif  // %D_CLASSNAME%_PROCESS_HPP
+#endif

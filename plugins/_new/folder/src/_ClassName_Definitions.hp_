@@ -1,12 +1,5 @@
-/**
- * @file %CLASSNAME%Definition.hpp
- * @brief
- * @author
- * @date    %DATE%
- *
- */
-#ifndef %D_CLASSNAME%_DEFINITIONS_HPP
-#define %D_CLASSNAME%_DEFINITIONS_HPP
+#ifndef _TUTTLE_PLUGIN_%D_CLASSNAME%_DEFINITIONS_HPP_
+#define _TUTTLE_PLUGIN_%D_CLASSNAME%_DEFINITIONS_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 
@@ -24,4 +17,4 @@ const static std::string k%CLASSNAME%HelpString = "<b>%PLUGIN_LONG_LABEL%</b> pl
 }
 }
 
-#endif  // %D_CLASSNAME%_DEFINITIONS_HPP
+#endif

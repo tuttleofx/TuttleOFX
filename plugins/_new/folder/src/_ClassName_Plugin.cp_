@@ -1,11 +1,3 @@
-/**
- * @file %CLASSNAME%Plugin.cpp
- * @brief
- * @author
- * @date    %DATE%
- *
- */
-
 #include "%CLASSNAME%Plugin.hpp"
 #include "%CLASSNAME%Process.hpp"
 #include "%CLASSNAME%Definitions.hpp"

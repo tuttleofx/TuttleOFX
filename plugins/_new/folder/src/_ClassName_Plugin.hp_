@@ -1,13 +1,5 @@
-/**
- * @file %CLASSNAME%Plugin.hpp
- * @brief
- * @author
- * @date    %DATE%
- *
- */
-
-#ifndef %D_CLASSNAME%_PLUGIN_H
-#define %D_CLASSNAME%_PLUGIN_H
+#ifndef _TUTTLE_PLUGIN_%D_CLASSNAME%_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_%D_CLASSNAME%_PLUGIN_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
@@ -42,4 +34,4 @@ protected:
 }
 }
 
-#endif  // %D_CLASSNAME%_PLUGIN_H
+#endif
