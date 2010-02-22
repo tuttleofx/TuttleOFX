@@ -73,7 +73,6 @@ class Tuttle( SConsProject ):
         Cree un plugin OpenFX, a partir d'une liste de sources et d'une liste de librairies.
         '''
         pluginName = self.getName()
-        libs.append( self.libs.tuttle )
         if dirs:
             sources.extend( self.scanFiles( dirs ) )
         env_local = self.createEnv( libs )
