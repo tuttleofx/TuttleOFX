@@ -1,0 +1,18 @@
+#ifndef _TUTTLE_PLUGIN_CHECKERBOARD_PLUGIN_FACTORY_HPP_
+#define _TUTTLE_PLUGIN_CHECKERBOARD_PLUGIN_FACTORY_HPP_
+#include <ofxsImageEffect.h>
+
+namespace tuttle {
+namespace plugin {
+namespace checkerboard {
+
+static const bool   kSupportTiles                 = false;
+static const bool   kSupportTemporalClipAccess    = false;
+
+mDeclarePluginFactory( CheckerboardPluginFactory, { }, { } );
+
+}
+}
+}
+
+#endif

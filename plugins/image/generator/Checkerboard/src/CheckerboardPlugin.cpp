@@ -1,14 +1,6 @@
-/**
- * @file %CLASSNAME%Plugin.cpp
- * @brief
- * @author
- * @date    %DATE%
- *
- */
-
-#include "%CLASSNAME%Plugin.hpp"
-#include "%CLASSNAME%Process.hpp"
-#include "%CLASSNAME%Definitions.hpp"
+#include "CheckerboardPlugin.hpp"
+#include "CheckerboardProcess.hpp"
+#include "CheckerboardDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
@@ -17,23 +9,23 @@
 
 namespace tuttle {
 namespace plugin {
-namespace %NAMESPACE% {
+namespace checkerboard {
 
 using namespace boost::gil;
 
-%CLASSNAME%Plugin::%CLASSNAME%Plugin( OfxImageEffectHandle handle ) :
+CheckerboardPlugin::CheckerboardPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
 }
 
-OFX::Clip * %CLASSNAME%Plugin::getSrcClip( ) const
+OFX::Clip * CheckerboardPlugin::getSrcClip( ) const
 {
     return _srcClip;
 }
 
-OFX::Clip * %CLASSNAME%Plugin::getDstClip( ) const
+OFX::Clip * CheckerboardPlugin::getDstClip( ) const
 {
     return _dstClip;
 }
@@ -42,7 +34,7 @@ OFX::Clip * %CLASSNAME%Plugin::getDstClip( ) const
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
+void CheckerboardPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
     OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
@@ -55,19 +47,19 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                %CLASSNAME%Process<rgba8_view_t> fred( *this );
+                CheckerboardProcess<rgba8_view_t> fred( *this );
                 fred.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                %CLASSNAME%Process<rgba16_view_t> fred( *this );
+                CheckerboardProcess<rgba16_view_t> fred( *this );
                 fred.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                %CLASSNAME%Process<rgba32f_view_t> fred( *this );
+                CheckerboardProcess<rgba32f_view_t> fred( *this );
                 fred.setupAndProcess( args );
                 break;
             }
@@ -85,19 +77,19 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                %CLASSNAME%Process<gray8_view_t> fred( *this );
+                CheckerboardProcess<gray8_view_t> fred( *this );
                 fred.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                %CLASSNAME%Process<gray16_view_t> fred( *this );
+                CheckerboardProcess<gray16_view_t> fred( *this );
                 fred.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                %CLASSNAME%Process<gray32f_view_t> fred( *this );
+                CheckerboardProcess<gray32f_view_t> fred( *this );
                 fred.setupAndProcess( args );
                 break;
             }
@@ -111,13 +103,13 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
     }
 }
 
-void %CLASSNAME%Plugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void CheckerboardPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-    if( paramName == k%CLASSNAME%HelpButton )
+    if( paramName == kCheckerboardHelpButton )
     {
         sendMessage( OFX::Message::eMessageMessage,
                      "", // No XML resources
-                     k%CLASSNAME%HelpString );
+                     kCheckerboardHelpString );
     }
 }
 

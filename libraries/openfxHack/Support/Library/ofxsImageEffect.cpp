@@ -592,16 +592,12 @@ Image::Image( OfxPropertySetHandle props )
 
 	// and fetch all the properties
 	_pixelData = _imageProps.propGetPointer( kOfxImagePropData );
-	COUT( "_pixelData: " << _pixelData );
 
 	_rowBytes = _imageProps.propGetInt( kOfxImagePropRowBytes );
-	COUT( "_rowBytes: " << _rowBytes );
 	_pixelAspectRatio = _imageProps.propGetDouble( kOfxImagePropPixelAspectRatio );
-	COUT( "_pixelAspectRatio: " << _pixelAspectRatio );
 
 	std::string str = _imageProps.propGetString( kOfxImageEffectPropComponents );
 	_pixelComponents = mapStrToPixelComponentEnum( str );
-	COUT( "_pixelComponents: " << str );
 
 	str         = _imageProps.propGetString( kOfxImageEffectPropPixelDepth );
 	_pixelDepth = mapStrToBitDepthEnum( str );
@@ -633,14 +629,10 @@ Image::Image( OfxPropertySetHandle props )
 	_regionOfDefinition.x2 = _imageProps.propGetInt( kOfxImagePropRegionOfDefinition, 2 );
 	_regionOfDefinition.y2 = _imageProps.propGetInt( kOfxImagePropRegionOfDefinition, 3 );
 
-	COUT( "ROD: x1:" << _regionOfDefinition.x1 << " y1:" << _regionOfDefinition.y1 << " x2:" << _regionOfDefinition.x2 << " y2:" << _regionOfDefinition.y2 );
-
 	_bounds.x1 = _imageProps.propGetInt( kOfxImagePropBounds, 0 );
 	_bounds.y1 = _imageProps.propGetInt( kOfxImagePropBounds, 1 );
 	_bounds.x2 = _imageProps.propGetInt( kOfxImagePropBounds, 2 );
 	_bounds.y2 = _imageProps.propGetInt( kOfxImagePropBounds, 3 );
-
-	COUT( "bounds: x1:" << _bounds.x1 << " y1:" << _bounds.y1 << " x2:" << _bounds.x2 << " y2:" << _bounds.y2 );
 
 	str = _imageProps.propGetString( kOfxImagePropField );
 	if( str == kOfxImageFieldNone )
@@ -666,14 +658,12 @@ Image::Image( OfxPropertySetHandle props )
 	}
 
 	_uniqueID = _imageProps.propGetString( kOfxImagePropUniqueIdentifier );
-	COUT( "uniqueID: " << _uniqueID );
 
 	//	std::string tuttleFullName = _imageProps.propGetString( "TuttleFullName" );
 	//	COUT("tuttleFullName: " << tuttleFullName );
 
 	_renderScale.x = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	_renderScale.y = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
-	COUT( "renderScale: x:" << _renderScale.x << " y:" << _renderScale.y );
 }
 
 Image::~Image()

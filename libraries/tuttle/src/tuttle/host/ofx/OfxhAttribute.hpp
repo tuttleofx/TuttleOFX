@@ -215,12 +215,21 @@ private:
 
 class OfxhAttribute : virtual public OfxhAttributeAccessor
 {
+typedef OfxhAttribute This;
 protected:
 	OfxhAttribute(){}
 public:
 	OfxhAttribute( const property::OfxhSet& properties );
 	OfxhAttribute( const OfxhAttributeDescriptor& desc );
 	virtual ~OfxhAttribute() = 0;
+
+	virtual bool operator==( const This& other ) const
+	{
+		if( _properties != other._properties )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 protected:
 	property::OfxhSet _properties;
@@ -243,6 +252,10 @@ public:
 		return _properties;
 	}
 
+	virtual void copyValues( const This& other )
+	{
+		_properties.copyValues(other._properties);
+	}
 private:
 	friend class boost::serialization::access;
 	template<class Archive>

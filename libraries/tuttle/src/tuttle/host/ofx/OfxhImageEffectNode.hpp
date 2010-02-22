@@ -111,6 +111,7 @@ public:
 	void copyAttributesValues( const OfxhImageEffectNode& other )
 	{
 		copyParamsValues( other );
+		copyClipsValues( other );
 	}
 
 	bool operator==( const This& ) const;

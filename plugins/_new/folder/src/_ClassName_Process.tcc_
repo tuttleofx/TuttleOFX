@@ -1,12 +1,3 @@
-/**
- * @file %CLASSNAME%Process.tcc
- * @brief
- * @author
- * @date    %DATE%
- *
- */
-
-
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -26,7 +17,6 @@ namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
-using namespace boost::gil;
 
 template<class View>
 %CLASSNAME%Process<View>::%CLASSNAME%Process( %CLASSNAME%Plugin &instance )
@@ -39,6 +29,7 @@ template<class View>
 template<class View>
 void %CLASSNAME%Process<View>::setupAndProcess( const OFX::RenderArguments &args )
 {
+	using namespace boost::gil;
     try
     {
         boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip( )->fetchImage( args.time ) );
@@ -91,21 +82,16 @@ void %CLASSNAME%Process<View>::setupAndProcess( const OFX::RenderArguments &args
 template<class View>
 void %CLASSNAME%Process<View>::multiThreadProcessImages( OfxRectI procWindow )
 {
-    try
-    {
-        View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
-                                  procWindow.x2 - procWindow.x1,
-                                  procWindow.y2 - procWindow.y1 );
-        View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
-                                  procWindow.x2 - procWindow.x1,
-                                  procWindow.y2 - procWindow.y1 );
-        // Put your computations here
-        copy_pixels( src, dst );
-    }
-    catch( PluginException& e )
-    {
-        COUT_EXCEPTION( e );
-    }
+	using namespace boost::gil;
+	
+	// Put your computations here
+	View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
+							  procWindow.x2 - procWindow.x1,
+							  procWindow.y2 - procWindow.y1 );
+	View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
+							  procWindow.x2 - procWindow.x1,
+							  procWindow.y2 - procWindow.y1 );
+	copy_pixels( src, dst );
 }
 
 }

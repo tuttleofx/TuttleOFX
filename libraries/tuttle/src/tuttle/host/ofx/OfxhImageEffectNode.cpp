@@ -129,8 +129,8 @@ void OfxhImageEffectNode::initHook()
 
 OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectNode& other )
 : OfxhImageEffectNodeBase( other.getProperties() )
-//, attribute::OfxhParamSet( other )
-//, attribute::OfxhClipImageSet( other )
+//, attribute::OfxhParamSet( other ) // done in populate function
+//, attribute::OfxhClipImageSet( other ) // done in populate function
 , _plugin( other.getPlugin() )
 , _context( other.getContext() )
 , _descriptor( other.getDescriptor() )

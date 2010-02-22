@@ -136,6 +136,7 @@ private:
 class OfxhClipImage : virtual public OfxhClipImageAccessor,
 	public attribute::OfxhClip
 {
+typedef OfxhClipImage This;
 protected:
 	imageEffect::OfxhImageEffectNode& _effectInstance; ///< effect instance
 
@@ -145,9 +146,13 @@ public:
 
 	virtual ~OfxhClipImage() {}
 
-	/// @todo tuttle !!!!!!!!!!!!!!!!
-	bool operator==( const OfxhClipImage& other ) const { return true; }
-	bool operator!=( const OfxhClipImage& other ) const { return !operator==( other ); }
+	bool operator==( const This& other ) const
+	{
+		if( OfxhClip::operator!=(other) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	virtual OfxhClipImage* clone() const                    = 0;
 	virtual std::string    getFullName() const              = 0;
@@ -365,6 +370,7 @@ inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 
 class OfxhClipImageSet //: public ClipAccessorSet
 {
+	typedef OfxhClipImageSet This;
 public:
 	typedef std::map<std::string, OfxhClipImage*> ClipImageMap;
 	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
@@ -386,9 +392,11 @@ public:
 	/// dtor.
 	virtual ~OfxhClipImageSet();
 
-	bool operator==( const OfxhClipImageSet& other ) const;
-	bool operator!=( const OfxhClipImageSet& other ) const { return !operator==( other ); }
+	bool operator==( const This& other ) const;
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
+	void copyClipsValues( const OfxhClipImageSet& other );
+	
 	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC;
 
 	const ClipImageMap& getClips() const

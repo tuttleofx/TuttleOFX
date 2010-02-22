@@ -115,6 +115,7 @@ class OfxhClip :
 	virtual public OfxhClipAccessor,
 	private boost::noncopyable
 {
+typedef OfxhClip This;
 protected:
 	OfxhClip( const OfxhClip& other ) : OfxhAttribute( other ) {}
 
@@ -124,6 +125,14 @@ public:
 
 	/// clone this clip
 	virtual OfxhClip* clone() const = 0;
+	
+	virtual bool operator==( const This& other ) const
+	{
+		if( OfxhAttribute::operator!=(other) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	void initHook( const property::OfxhPropSpec* propSpec );
 
