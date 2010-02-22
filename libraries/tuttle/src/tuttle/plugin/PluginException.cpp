@@ -17,30 +17,7 @@ std::string stringify( double x )
 
 PluginException::PluginException()
 {}
-/*
-PluginException::PluginException( const char* format, ... )
-{
- #ifndef __GNUC__
-	size_t n = _snprintf( NULL, 0, format );
- #else
-	int n = snprintf( NULL, 0, "%s", format );
- #endif
-	if( n > 0 )
-	{
-		char* message = new char[n];
-		std::va_list ap;
-		va_start( ap, format );
- #ifndef __GNUC__
-		vsprintf_s( message, n, format, ap );
- #else
-		vsprintf( message, format, ap );
- #endif
-		va_end( ap );
-		_err = message;
-		delete message;
-	}
-}
- */
+
 PluginException::~PluginException() throw( )
 {
 	// Nothing

@@ -13,7 +13,7 @@ namespace plugin {
  * @param[in]       numSteps   number of steps
  *
  */
-void Progress::progressBegin( const int numSteps, const char* msg )
+void Progress::progressBegin( const int numSteps, const std::string& msg )
 {
 	_counter = 0.0;
 	#ifndef WITHOUT_OFX
