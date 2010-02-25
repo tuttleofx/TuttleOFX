@@ -588,7 +588,7 @@ void ChoiceParamDescriptor::setDefault( int v )
 }
 
 /** @brief how many options do we have */
-int ChoiceParamDescriptor::getNOptions( void )
+int ChoiceParamDescriptor::getNOptions( void ) const
 {
 	int nCurrentValues = _paramProps.propGetDimension( kOfxParamPropChoiceOption );
 
@@ -1006,7 +1006,7 @@ std::string Param::getScriptName( void ) const
 }
 
 /** @brief get the group param that is the parent of this one */
-GroupParam* Param::getParent( void ) const
+const GroupParam* Param::getParent( void ) const
 {
 	std::string v = _paramProps.propGetString( kOfxParamPropParent );
 
@@ -1071,7 +1071,7 @@ CacheInvalidationEnum ValueParam::getCacheInvalidation( void ) const
 }
 
 /** @brief if the param is animating, the number of keys in it, otherwise 0 */
-unsigned int ValueParam::getNumKeys( void )
+unsigned int ValueParam::getNumKeys( void ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetNumKeys )
 		throwHostMissingSuiteException( "paramGetNumKeys" );
@@ -1082,7 +1082,7 @@ unsigned int ValueParam::getNumKeys( void )
 }
 
 /** @brief get the time of the nth key, nth must be between 0 and getNumKeys-1 */
-double ValueParam::getKeyTime( int nthKey ) throw( OFX::Exception::Suite, std::out_of_range )
+double ValueParam::getKeyTime( int nthKey ) const throw( OFX::Exception::Suite, std::out_of_range )
 {
 	if( !OFX::Private::gParamSuite->paramGetKeyTime )
 		throwHostMissingSuiteException( "paramGetKeyTime" );
@@ -1098,7 +1098,7 @@ double ValueParam::getKeyTime( int nthKey ) throw( OFX::Exception::Suite, std::o
 
 /** @brief find the index of a key by a time */
 int ValueParam::getKeyIndex( double        time,
-                             KeySearchEnum searchDir )
+                             KeySearchEnum searchDir ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetKeyIndex )
 		throwHostMissingSuiteException( "paramGetKeyIndex" );
@@ -1166,27 +1166,27 @@ void IntParam::setDisplayRange( int min, int max )
 }
 
 /** @brief het the default value */
-void IntParam::getDefault( int& v )
+void IntParam::getDefault( int& v ) const
 {
 	v = _paramProps.propGetInt( kOfxParamPropDefault );
 }
 
 /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-void IntParam::getRange( int& min, int& max )
+void IntParam::getRange( int& min, int& max ) const
 {
 	min = _paramProps.propGetInt( kOfxParamPropMin );
 	max = _paramProps.propGetInt( kOfxParamPropMax );
 }
 
 /** @brief set the display min and max, default is to be the same as the range param */
-void IntParam::getDisplayRange( int& min, int& max )
+void IntParam::getDisplayRange( int& min, int& max ) const
 {
 	min = _paramProps.propGetInt( kOfxParamPropDisplayMin );
 	max = _paramProps.propGetInt( kOfxParamPropDisplayMax );
 }
 
 /** @brief get value */
-void IntParam::getValue( int& v )
+void IntParam::getValue( int& v ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &v );
 
@@ -1194,7 +1194,7 @@ void IntParam::getValue( int& v )
 }
 
 /** @brief get the value at a time */
-void IntParam::getValueAtTime( double t, int& v )
+void IntParam::getValueAtTime( double t, int& v ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &v );
 
@@ -1254,7 +1254,7 @@ void Int2DParam::setDisplayRange( int xmin, int ymin,
 }
 
 /** @brief het the default value */
-void Int2DParam::getDefault( int& x, int& y )
+void Int2DParam::getDefault( int& x, int& y ) const
 {
 	x = _paramProps.propGetInt( kOfxParamPropDefault, 0 );
 	y = _paramProps.propGetInt( kOfxParamPropDefault, 1 );
@@ -1262,7 +1262,7 @@ void Int2DParam::getDefault( int& x, int& y )
 
 /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
 void Int2DParam::getRange( int& xmin, int& ymin,
-                           int& xmax, int& ymax )
+                           int& xmax, int& ymax ) const
 {
 	xmin = _paramProps.propGetInt( kOfxParamPropMin, 0 );
 	ymin = _paramProps.propGetInt( kOfxParamPropMin, 1 );
@@ -1272,7 +1272,7 @@ void Int2DParam::getRange( int& xmin, int& ymin,
 
 /** @brief set the display min and max, default is to be the same as the range param */
 void Int2DParam::getDisplayRange( int& xmin, int& ymin,
-                                  int& xmax, int& ymax )
+                                  int& xmax, int& ymax ) const
 {
 	xmin = _paramProps.propGetInt( kOfxParamPropDisplayMin, 0 );
 	ymin = _paramProps.propGetInt( kOfxParamPropDisplayMin, 1 );
@@ -1281,7 +1281,7 @@ void Int2DParam::getDisplayRange( int& xmin, int& ymin,
 }
 
 /** @brief get value */
-void Int2DParam::getValue( int& x, int& y )
+void Int2DParam::getValue( int& x, int& y ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &x, &y );
 
@@ -1289,7 +1289,7 @@ void Int2DParam::getValue( int& x, int& y )
 }
 
 /** @brief get the value at a time */
-void Int2DParam::getValueAtTime( double t, int& x, int& y )
+void Int2DParam::getValueAtTime( double t, int& x, int& y ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &x, &y );
 
@@ -1354,7 +1354,7 @@ void Int3DParam::setDisplayRange( int xmin, int ymin, int zmin,
 }
 
 /** @brief het the default value */
-void Int3DParam::getDefault( int& x, int& y, int& z )
+void Int3DParam::getDefault( int& x, int& y, int& z ) const
 {
 	x = _paramProps.propGetInt( kOfxParamPropDefault, 0 );
 	y = _paramProps.propGetInt( kOfxParamPropDefault, 1 );
@@ -1363,7 +1363,7 @@ void Int3DParam::getDefault( int& x, int& y, int& z )
 
 /** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
 void Int3DParam::getRange( int& xmin, int& ymin, int& zmin,
-                           int& xmax, int& ymax, int& zmax )
+                           int& xmax, int& ymax, int& zmax ) const
 {
 	xmin = _paramProps.propGetInt( kOfxParamPropMin, 0 );
 	ymin = _paramProps.propGetInt( kOfxParamPropMin, 1 );
@@ -1375,7 +1375,7 @@ void Int3DParam::getRange( int& xmin, int& ymin, int& zmin,
 
 /** @brief set the display min and max, default is to be the same as the range param */
 void Int3DParam::getDisplayRange( int& xmin, int& ymin, int& zmin,
-                                  int& xmax, int& ymax, int& zmax )
+                                  int& xmax, int& ymax, int& zmax ) const
 {
 	xmin = _paramProps.propGetInt( kOfxParamPropDisplayMin, 0 );
 	ymin = _paramProps.propGetInt( kOfxParamPropDisplayMin, 1 );
@@ -1386,7 +1386,7 @@ void Int3DParam::getDisplayRange( int& xmin, int& ymin, int& zmin,
 }
 
 /** @brief get value */
-void Int3DParam::getValue( int& x, int& y, int& z )
+void Int3DParam::getValue( int& x, int& y, int& z ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &x, &y, &z );
 
@@ -1394,7 +1394,7 @@ void Int3DParam::getValue( int& x, int& y, int& z )
 }
 
 /** @brief get the value at a time */
-void Int3DParam::getValueAtTime( double t, int& x, int& y, int& z )
+void Int3DParam::getValueAtTime( double t, int& x, int& y, int& z ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &x, &y, &z );
 
@@ -1439,19 +1439,19 @@ void BaseDoubleParam::setDigits( int v )
 }
 
 /** @brief set the sensitivity of any gui slider */
-void BaseDoubleParam::getIncrement( double& v )
+void BaseDoubleParam::getIncrement( double& v ) const
 {
 	v = _paramProps.propGetDouble( kOfxParamPropIncrement );
 }
 
 /** @brief set the number of digits printed after a decimal point in any gui */
-void BaseDoubleParam::getDigits( int& v )
+void BaseDoubleParam::getDigits( int& v ) const
 {
 	v = _paramProps.propGetInt( kOfxParamPropDigits );
 }
 
 /** @brief set the number of digits printed after a decimal point in any gui */
-void BaseDoubleParam::getDoubleType( DoubleTypeEnum& v )
+void BaseDoubleParam::getDoubleType( DoubleTypeEnum& v ) const
 {
 	std::string str = _paramProps.propGetString( kOfxParamPropDoubleType );
 
@@ -1510,27 +1510,27 @@ void DoubleParam::setDisplayRange( double min, double max )
 }
 
 /** @brief het the default value */
-void DoubleParam::getDefault( double& v )
+void DoubleParam::getDefault( double& v ) const
 {
 	v = _paramProps.propGetDouble( kOfxParamPropDefault );
 }
 
 /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-void DoubleParam::getRange( double& min, double& max )
+void DoubleParam::getRange( double& min, double& max ) const
 {
 	min = _paramProps.propGetDouble( kOfxParamPropMin );
 	max = _paramProps.propGetDouble( kOfxParamPropMax );
 }
 
 /** @brief set the display min and max, default is to be the same as the range param */
-void DoubleParam::getDisplayRange( double& min, double& max )
+void DoubleParam::getDisplayRange( double& min, double& max ) const
 {
 	min = _paramProps.propGetDouble( kOfxParamPropDisplayMin );
 	max = _paramProps.propGetDouble( kOfxParamPropDisplayMax );
 }
 
 /** @brief get value */
-void DoubleParam::getValue( double& v )
+void DoubleParam::getValue( double& v ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &v );
 
@@ -1538,7 +1538,7 @@ void DoubleParam::getValue( double& v )
 }
 
 /** @brief get the value at a time */
-void DoubleParam::getValueAtTime( double t, double& v )
+void DoubleParam::getValueAtTime( double t, double& v ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &v );
 
@@ -1563,7 +1563,7 @@ void DoubleParam::setValueAtTime( double t, double v )
 }
 
 /** @brief get the value at a time */
-void DoubleParam::differentiate( double t, double& v )
+void DoubleParam::differentiate( double t, double& v ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetDerivative )
 		throwHostMissingSuiteException( "paramGetDerivative" );
@@ -1572,7 +1572,7 @@ void DoubleParam::differentiate( double t, double& v )
 }
 
 /** @brief get the value at a time */
-void DoubleParam::integrate( double t1, double t2, double& v )
+void DoubleParam::integrate( double t1, double t2, double& v ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetIntegral )
 		throwHostMissingSuiteException( "paramGetIntegral" );
@@ -1616,7 +1616,7 @@ void Double2DParam::setDisplayRange( double xmin, double ymin,
 }
 
 /** @brief het the default value */
-void Double2DParam::getDefault( double& x, double& y )
+void Double2DParam::getDefault( double& x, double& y ) const
 {
 	x = _paramProps.propGetDouble( kOfxParamPropDefault, 0 );
 	y = _paramProps.propGetDouble( kOfxParamPropDefault, 1 );
@@ -1624,7 +1624,7 @@ void Double2DParam::getDefault( double& x, double& y )
 
 /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
 void Double2DParam::getRange( double& xmin, double& ymin,
-                              double& xmax, double& ymax )
+                              double& xmax, double& ymax ) const
 {
 	xmin = _paramProps.propGetDouble( kOfxParamPropMin, 0 );
 	ymin = _paramProps.propGetDouble( kOfxParamPropMin, 1 );
@@ -1634,7 +1634,7 @@ void Double2DParam::getRange( double& xmin, double& ymin,
 
 /** @brief set the display min and max, default is to be the same as the range param */
 void Double2DParam::getDisplayRange( double& xmin, double& ymin,
-                                     double& xmax, double& ymax )
+                                     double& xmax, double& ymax ) const
 {
 	xmin = _paramProps.propGetDouble( kOfxParamPropDisplayMin, 0 );
 	ymin = _paramProps.propGetDouble( kOfxParamPropDisplayMin, 1 );
@@ -1643,7 +1643,7 @@ void Double2DParam::getDisplayRange( double& xmin, double& ymin,
 }
 
 /** @brief get value */
-void Double2DParam::getValue( double& x, double& y )
+void Double2DParam::getValue( double& x, double& y ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &x, &y );
 
@@ -1651,7 +1651,7 @@ void Double2DParam::getValue( double& x, double& y )
 }
 
 /** @brief get the value at a time */
-void Double2DParam::getValueAtTime( double t, double& x, double& y )
+void Double2DParam::getValueAtTime( double t, double& x, double& y ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &x, &y );
 
@@ -1676,7 +1676,7 @@ void Double2DParam::setValueAtTime( double t, double x, double y )
 }
 
 /** @brief get the value at a time */
-void Double2DParam::differentiate( double t, double& x, double& y )
+void Double2DParam::differentiate( double t, double& x, double& y ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetDerivative )
 		throwHostMissingSuiteException( "paramGetDerivative" );
@@ -1685,7 +1685,7 @@ void Double2DParam::differentiate( double t, double& x, double& y )
 }
 
 /** @brief get the value at a time */
-void Double2DParam::integrate( double t1, double t2, double& x, double& y )
+void Double2DParam::integrate( double t1, double t2, double& x, double& y ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetIntegral )
 		throwHostMissingSuiteException( "paramGetIntegral" );
@@ -1734,7 +1734,7 @@ void Double3DParam::setDisplayRange( double xmin, double ymin, double zmin,
 }
 
 /** @brief het the default value */
-void Double3DParam::getDefault( double& x, double& y, double& z )
+void Double3DParam::getDefault( double& x, double& y, double& z ) const
 {
 	x = _paramProps.propGetDouble( kOfxParamPropDefault, 0 );
 	y = _paramProps.propGetDouble( kOfxParamPropDefault, 1 );
@@ -1743,7 +1743,7 @@ void Double3DParam::getDefault( double& x, double& y, double& z )
 
 /** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
 void Double3DParam::getRange( double& xmin, double& ymin, double& zmin,
-                              double& xmax, double& ymax, double& zmax )
+                              double& xmax, double& ymax, double& zmax ) const
 {
 	xmin = _paramProps.propGetDouble( kOfxParamPropMin, 0 );
 	ymin = _paramProps.propGetDouble( kOfxParamPropMin, 1 );
@@ -1755,7 +1755,7 @@ void Double3DParam::getRange( double& xmin, double& ymin, double& zmin,
 
 /** @brief set the display min and max, default is to be the same as the range param */
 void Double3DParam::getDisplayRange( double& xmin, double& ymin, double& zmin,
-                                     double& xmax, double& ymax, double& zmax )
+                                     double& xmax, double& ymax, double& zmax ) const
 {
 	xmin = _paramProps.propGetDouble( kOfxParamPropDisplayMin, 0 );
 	ymin = _paramProps.propGetDouble( kOfxParamPropDisplayMin, 1 );
@@ -1766,7 +1766,7 @@ void Double3DParam::getDisplayRange( double& xmin, double& ymin, double& zmin,
 }
 
 /** @brief get value */
-void Double3DParam::getValue( double& x, double& y, double& z )
+void Double3DParam::getValue( double& x, double& y, double& z ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &x, &y, &z );
 
@@ -1774,7 +1774,7 @@ void Double3DParam::getValue( double& x, double& y, double& z )
 }
 
 /** @brief get the value at a time */
-void Double3DParam::getValueAtTime( double t, double& x, double& y, double& z )
+void Double3DParam::getValueAtTime( double t, double& x, double& y, double& z ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &x, &y, &z );
 
@@ -1799,7 +1799,7 @@ void Double3DParam::setValueAtTime( double t, double x, double y, double z )
 }
 
 /** @brief get the value at a time */
-void Double3DParam::differentiate( double t, double& x, double& y, double& z )
+void Double3DParam::differentiate( double t, double& x, double& y, double& z ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetDerivative )
 		throwHostMissingSuiteException( "paramGetDerivative" );
@@ -1808,7 +1808,7 @@ void Double3DParam::differentiate( double t, double& x, double& y, double& z )
 }
 
 /** @brief get the value at a time */
-void Double3DParam::integrate( double t1, double t2, double& x, double& y, double& z )
+void Double3DParam::integrate( double t1, double t2, double& x, double& y, double& z ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetIntegral )
 		throwHostMissingSuiteException( "paramGetIntegral" );
@@ -1832,7 +1832,7 @@ void RGBParam::setDefault( double r, double g, double b )
 }
 
 /** @brief het the default value */
-void RGBParam::getDefault( double& r, double& g, double& b )
+void RGBParam::getDefault( double& r, double& g, double& b ) const
 {
 	r = _paramProps.propGetDouble( kOfxParamPropDefault, 0 );
 	g = _paramProps.propGetDouble( kOfxParamPropDefault, 1 );
@@ -1840,7 +1840,7 @@ void RGBParam::getDefault( double& r, double& g, double& b )
 }
 
 /** @brief get value */
-void RGBParam::getValue( double& r, double& g, double& b )
+void RGBParam::getValue( double& r, double& g, double& b ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &r, &g, &b );
 
@@ -1848,7 +1848,7 @@ void RGBParam::getValue( double& r, double& g, double& b )
 }
 
 /** @brief get the value at a time */
-void RGBParam::getValueAtTime( double t, double& r, double& g, double& b )
+void RGBParam::getValueAtTime( double t, double& r, double& g, double& b ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &r, &g, &b );
 
@@ -1889,7 +1889,7 @@ void RGBAParam::setDefault( double r, double g, double b, double a )
 }
 
 /** @brief het the default value */
-void RGBAParam::getDefault( double& r, double& g, double& b, double& a )
+void RGBAParam::getDefault( double& r, double& g, double& b, double& a ) const
 {
 	r = _paramProps.propGetDouble( kOfxParamPropDefault, 0 );
 	g = _paramProps.propGetDouble( kOfxParamPropDefault, 1 );
@@ -1898,7 +1898,7 @@ void RGBAParam::getDefault( double& r, double& g, double& b, double& a )
 }
 
 /** @brief get value */
-void RGBAParam::getValue( double& r, double& g, double& b, double& a )
+void RGBAParam::getValue( double& r, double& g, double& b, double& a ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &r, &g, &b, &a );
 
@@ -1906,7 +1906,7 @@ void RGBAParam::getValue( double& r, double& g, double& b, double& a )
 }
 
 /** @brief get the value at a time */
-void RGBAParam::getValueAtTime( double t, double& r, double& g, double& b, double& a )
+void RGBAParam::getValueAtTime( double t, double& r, double& g, double& b, double& a ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &r, &g, &b, &a );
 
@@ -1945,13 +1945,13 @@ void StringParam::setDefault( const std::string& v )
 }
 
 /** @brief het the default value */
-void StringParam::getDefault( std::string& v )
+void StringParam::getDefault( std::string& v ) const
 {
 	v = _paramProps.propGetString( kOfxParamPropDefault );
 }
 
 /** @brief get value */
-void StringParam::getValue( std::string& v )
+void StringParam::getValue( std::string& v ) const
 {
 	char* cStr;
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &cStr );
@@ -1961,7 +1961,7 @@ void StringParam::getValue( std::string& v )
 }
 
 /** @brief get the value at a time */
-void StringParam::getValueAtTime( double t, std::string& v )
+void StringParam::getValueAtTime( double t, std::string& v ) const
 {
 	char* cStr;
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &cStr );
@@ -2002,13 +2002,13 @@ void BooleanParam::setDefault( bool v )
 }
 
 /** @brief het the default value */
-void BooleanParam::getDefault( bool& v )
+void BooleanParam::getDefault( bool& v ) const
 {
 	v = _paramProps.propGetInt( kOfxParamPropDefault ) != 0;
 }
 
 /** @brief get value */
-void BooleanParam::getValue( bool& v )
+void BooleanParam::getValue( bool& v ) const
 {
 	int iVal;
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &iVal );
@@ -2018,7 +2018,7 @@ void BooleanParam::getValue( bool& v )
 }
 
 /** @brief get the value at a time */
-void BooleanParam::getValueAtTime( double t, bool& v )
+void BooleanParam::getValueAtTime( double t, bool& v ) const
 {
 	int iVal;
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &iVal );
@@ -2061,13 +2061,13 @@ void ChoiceParam::setDefault( int v )
 }
 
 /** @brief het the default value */
-void ChoiceParam::getDefault( int& v )
+void ChoiceParam::getDefault( int& v ) const
 {
 	v = _paramProps.propGetInt( kOfxParamPropDefault );
 }
 
 /** @brief get value */
-void ChoiceParam::getValue( int& v )
+void ChoiceParam::getValue( int& v ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &v );
 
@@ -2075,7 +2075,7 @@ void ChoiceParam::getValue( int& v )
 }
 
 /** @brief get the value at a time */
-void ChoiceParam::getValueAtTime( double t, int& v )
+void ChoiceParam::getValueAtTime( double t, int& v ) const
 {
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &v );
 
@@ -2100,7 +2100,7 @@ void ChoiceParam::setValueAtTime( double t, int v )
 }
 
 /** @brief how many options do we have */
-int ChoiceParam::getNOptions( void )
+int ChoiceParam::getNOptions( void ) const
 {
 	int nCurrentValues = _paramProps.propGetDimension( kOfxParamPropChoiceOption );
 
@@ -2136,13 +2136,13 @@ void CustomParam::setDefault( const std::string& v )
 }
 
 /** @brief het the default value */
-void CustomParam::getDefault( std::string& v )
+void CustomParam::getDefault( std::string& v ) const
 {
 	v = _paramProps.propGetString( kOfxParamPropDefault );
 }
 
 /** @brief get value */
-void CustomParam::getValue( std::string& v )
+void CustomParam::getValue( std::string& v ) const
 {
 	char* cStr;
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValue( _paramHandle, &cStr );
@@ -2152,7 +2152,7 @@ void CustomParam::getValue( std::string& v )
 }
 
 /** @brief get the value at a time */
-void CustomParam::getValueAtTime( double t, std::string& v )
+void CustomParam::getValueAtTime( double t, std::string& v ) const
 {
 	char* cStr;
 	OfxStatus stat = OFX::Private::gParamSuite->paramGetValueAtTime( _paramHandle, t, &cStr );
@@ -2244,7 +2244,7 @@ ParamSet::~ParamSet()
 }
 
 /** @brief calls the raw OFX routine to fetch a param */
-void ParamSet::fetchRawParam( const std::string& name, ParamTypeEnum paramType, OfxParamHandle& handle ) const
+void ParamSet::fetchRawParam( const std::string& name, ParamTypeEnum paramType, OfxParamHandle& handle )
 {
 	OfxPropertySetHandle propHandle;
 
@@ -2286,7 +2286,7 @@ bool ParamSet::paramExists( const std::string& name ) const
 	return true;
 }
 
-Param* ParamSet::getParam( const std::string& name ) const
+Param* ParamSet::getParam( const std::string& name )
 {
 	OfxParamHandle handle;
 	OfxPropertySetHandle propHandle;
@@ -2398,7 +2398,7 @@ Param* ParamSet::getParam( const std::string& name ) const
 }
 
 /** @brief if a param has been fetched in this set, go find it */
-Param* ParamSet::findPreviouslyFetchedParam( const std::string& name ) const
+Param* ParamSet::findPreviouslyFetchedParam( const std::string& name )
 {
 	// search
 	std::map<std::string, Param*>::const_iterator search;
@@ -2409,7 +2409,7 @@ Param* ParamSet::findPreviouslyFetchedParam( const std::string& name ) const
 }
 
 /** @brief Fetch an integer param, only callable from describe in context */
-IntParam* ParamSet::fetchIntParam( const std::string& name ) const
+IntParam* ParamSet::fetchIntParam( const std::string& name )
 {
 	IntParam* param = NULL;
 
@@ -2418,7 +2418,7 @@ IntParam* ParamSet::fetchIntParam( const std::string& name ) const
 }
 
 /** @brief Fetch a 2D integer param */
-Int2DParam* ParamSet::fetchInt2DParam( const std::string& name ) const
+Int2DParam* ParamSet::fetchInt2DParam( const std::string& name )
 {
 	Int2DParam* param = NULL;
 
@@ -2427,7 +2427,7 @@ Int2DParam* ParamSet::fetchInt2DParam( const std::string& name ) const
 }
 
 /** @brief Fetch a 3D integer param */
-Int3DParam* ParamSet::fetchInt3DParam( const std::string& name ) const
+Int3DParam* ParamSet::fetchInt3DParam( const std::string& name )
 {
 	Int3DParam* param = NULL;
 
@@ -2436,7 +2436,7 @@ Int3DParam* ParamSet::fetchInt3DParam( const std::string& name ) const
 }
 
 /** @brief Fetch an double param, only callable from describe in context */
-DoubleParam* ParamSet::fetchDoubleParam( const std::string& name ) const
+DoubleParam* ParamSet::fetchDoubleParam( const std::string& name )
 {
 	DoubleParam* param = NULL;
 
@@ -2445,7 +2445,7 @@ DoubleParam* ParamSet::fetchDoubleParam( const std::string& name ) const
 }
 
 /** @brief Fetch a 2D double param */
-Double2DParam* ParamSet::fetchDouble2DParam( const std::string& name ) const
+Double2DParam* ParamSet::fetchDouble2DParam( const std::string& name )
 {
 	Double2DParam* param = NULL;
 
@@ -2454,7 +2454,7 @@ Double2DParam* ParamSet::fetchDouble2DParam( const std::string& name ) const
 }
 
 /** @brief Fetch a 3D double param */
-Double3DParam* ParamSet::fetchDouble3DParam( const std::string& name ) const
+Double3DParam* ParamSet::fetchDouble3DParam( const std::string& name )
 {
 	Double3DParam* param = NULL;
 
@@ -2463,7 +2463,7 @@ Double3DParam* ParamSet::fetchDouble3DParam( const std::string& name ) const
 }
 
 /** @brief Fetch a string param */
-StringParam* ParamSet::fetchStringParam( const std::string& name ) const
+StringParam* ParamSet::fetchStringParam( const std::string& name )
 {
 	StringParam* param = NULL;
 
@@ -2472,7 +2472,7 @@ StringParam* ParamSet::fetchStringParam( const std::string& name ) const
 }
 
 /** @brief Fetch a RGBA param */
-RGBAParam* ParamSet::fetchRGBAParam( const std::string& name ) const
+RGBAParam* ParamSet::fetchRGBAParam( const std::string& name )
 {
 	RGBAParam* param = NULL;
 
@@ -2481,7 +2481,7 @@ RGBAParam* ParamSet::fetchRGBAParam( const std::string& name ) const
 }
 
 /** @brief Fetch an RGB  param */
-RGBParam* ParamSet::fetchRGBParam( const std::string& name ) const
+RGBParam* ParamSet::fetchRGBParam( const std::string& name )
 {
 	RGBParam* param = NULL;
 
@@ -2490,7 +2490,7 @@ RGBParam* ParamSet::fetchRGBParam( const std::string& name ) const
 }
 
 /** @brief Fetch a Boolean  param */
-BooleanParam* ParamSet::fetchBooleanParam( const std::string& name ) const
+BooleanParam* ParamSet::fetchBooleanParam( const std::string& name )
 {
 	BooleanParam* param = NULL;
 
@@ -2499,7 +2499,7 @@ BooleanParam* ParamSet::fetchBooleanParam( const std::string& name ) const
 }
 
 /** @brief Fetch a Choice param */
-ChoiceParam* ParamSet::fetchChoiceParam( const std::string& name ) const
+ChoiceParam* ParamSet::fetchChoiceParam( const std::string& name )
 {
 	ChoiceParam* param = NULL;
 
@@ -2508,7 +2508,7 @@ ChoiceParam* ParamSet::fetchChoiceParam( const std::string& name ) const
 }
 
 /** @brief Fetch a group param */
-GroupParam* ParamSet::fetchGroupParam( const std::string& name ) const
+GroupParam* ParamSet::fetchGroupParam( const std::string& name )
 {
 	GroupParam* param = NULL;
 
@@ -2517,7 +2517,7 @@ GroupParam* ParamSet::fetchGroupParam( const std::string& name ) const
 }
 
 /** @brief Fetch a Page param */
-PageParam* ParamSet::fetchPageParam( const std::string& name ) const
+PageParam* ParamSet::fetchPageParam( const std::string& name )
 {
 	PageParam* param = NULL;
 
@@ -2526,7 +2526,7 @@ PageParam* ParamSet::fetchPageParam( const std::string& name ) const
 }
 
 /** @brief Fetch a push button  param */
-PushButtonParam* ParamSet::fetchPushButtonParam( const std::string& name ) const
+PushButtonParam* ParamSet::fetchPushButtonParam( const std::string& name )
 {
 	PushButtonParam* param = NULL;
 
@@ -2535,7 +2535,7 @@ PushButtonParam* ParamSet::fetchPushButtonParam( const std::string& name ) const
 }
 
 /** @brief Fetch a custom param */
-CustomParam* ParamSet::fetchCustomParam( const std::string& name ) const
+CustomParam* ParamSet::fetchCustomParam( const std::string& name )
 {
 	CustomParam* param = NULL;
 
