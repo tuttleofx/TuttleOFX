@@ -120,7 +120,7 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	mergeFunction->appendOption( "xor: A(1-b)+B(1-a)" );
 	mergeFunction->setDefault( eMergeFunctionPlus );
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kMergeHelpButton );
+	desc.definePushButtonParam( kMergeHelpButton );
 }
 
 /**

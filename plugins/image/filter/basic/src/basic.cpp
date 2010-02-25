@@ -424,6 +424,9 @@ void BasicPlugin::render( const OFX::RenderArguments& args )
 				setupAndProcess( fred, args );
 			}
 			break;
+
+			default:
+				std::cerr << "Bit depth unsupported." << std::endl;
 		}
 	}
 	else
@@ -447,6 +450,9 @@ void BasicPlugin::render( const OFX::RenderArguments& args )
 				setupAndProcess( fred, args );
 			}
 			break;
+
+			default:
+				std::cerr << "Bit depth unsupported." << std::endl;
 		}
 	}
 }

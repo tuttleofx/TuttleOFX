@@ -4,10 +4,27 @@
 #include "ViewsMerging.hpp"
 #include "hsl.hpp"
 #include <boost/math/constants/constants.hpp>
+#include <boost/type_traits/is_signed.hpp>
 #include <cmath>
 
 namespace boost {
 namespace gil {
+
+template<bool is_signed, typename Channel>
+struct is_negative_impl { static bool process( const Channel& v ) { return v < 0; } };
+
+template<typename Channel>
+struct is_negative_impl<false, Channel>
+{
+	// if unsigned value can't be negative
+	static bool process( const Channel& ) { return false; }
+};
+
+template<typename Channel>
+bool is_negative( const Channel& v )
+{
+	return is_negative_impl<boost::is_signed<typename boost::gil::channel_traits<Channel>::value_type>::value, Channel>::process(v);
+}
 
 /******************************************************************************
 * Functors that doesn't need alpha                                           *
@@ -74,10 +91,12 @@ struct FunctorDivide
 	template <typename Channel>
 	inline void operator()( const Channel& A, const Channel& B, Channel& dst )
 	{
-		if( A < 0 && B < 0 )
+		if( is_negative(A) && is_negative(B) )
+		{
 			dst = Channel( 0 );
-		else
-			dst = (Channel)( A / B );
+			return;
+		}
+		dst = (Channel)( A / B );
 	}
 
 };
@@ -133,10 +152,12 @@ struct FunctorMultiply
 	template <typename Channel>
 	inline void operator()( const Channel& A, const Channel& B, Channel& dst )
 	{
-		if( A < 0 && B < 0 )
+		if( is_negative(A) && is_negative(B) )
+		{
 			dst = (Channel)( 0 );
-		else
-			dst = (Channel)( A * B );
+			return;
+		}
+		dst = (Channel)( A * B );
 	}
 
 };
@@ -293,7 +314,7 @@ struct FunctorColorBurn
 		if( B != 0 )
 		{
 			dst = max - Channel( ( max - A ) / B );
-			if( dst < 0 )
+			if( is_negative(dst) )
 				dst = 0;
 		}
 		else
@@ -362,7 +383,7 @@ struct FunctorFreeze
 		else
 		{
 			dst = max - ( Channel ) std::sqrt( (float)max - A ) / B;
-			if( dst < 0 )
+			if( is_negative(dst) )
 				dst = 0;
 		}
 	}

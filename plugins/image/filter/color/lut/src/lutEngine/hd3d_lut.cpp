@@ -27,18 +27,4 @@ Lut3D::Lut3D( Lut3D const& lut3d )
 	_data         = lut3d._data;
 }
 
-inline Color Lut3D::getColor( Color const& color ) const
-{
-	Color out( _interpolator->interpolate( this, color ) );
-
-	return ( out );
-}
-
-inline Color Lut3D::getColor( double _r, double _g, double _b ) const
-{
-	Color out( _interpolator->interpolate( this, _r, _g, _b ) );
-
-	return ( out );
-}
-
 }
