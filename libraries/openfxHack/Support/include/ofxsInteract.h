@@ -111,50 +111,11 @@ struct FocusArgs : public InteractArgs
 	OfxRGBColourD backGroundColour; /**< @brief The current background colour, ignore the A */
 };
 
-/** @brief Wraps up an OFX interact object for an Image Effect. It won't work for any other plug-in type at present (it would need to be broken into a hierarchy of classes).
- */
-class Interact
+class InteractI
 {
-protected:
-	OfxInteractHandle _interactHandle;    /**< @brief The handle for this interact */
-	PropertySet _interactProperties; /**< @brief The property set on this interact */
-	std::list<Param*> _slaveParams;       /**< @brief List of params we are currently slaved to */
-	ImageEffect* _effect;                   /**< @brief The instance we are associated with */
-
 public:
-	/** @brief ctor */
-	Interact( OfxInteractHandle handle );
-
-	/** @brief virtual destructor */
-	virtual ~Interact();
-
-	PropertySet& getProperties() { return _interactProperties; }
-
-	/** @brief The bitdepth of each component in the openGL frame buffer */
-	int getBitDepth( void ) const;
-
-	/** @brief Does the openGL frame buffer have an alpha */
-	bool hasAlpha( void ) const;
-
-	/** @brief Returns the size of a real screen pixel under the interact's cannonical projection */
-	OfxPointD getPixelScale( void ) const;
-
-	/** @brief the background colour */
-	OfxRGBColourD getBackgroundColour( void ) const;
-
-	/** @brief Set a param that the interact should be redrawn on if its value changes */
-	void addParamToSlaveTo( Param* p );
-
-	/** @brief Remova a param that the interact should be redrawn on if its value changes */
-	void removeParamToSlaveTo( Param* p );
-
-	/** @brief Request a redraw */
-	void requestRedraw( void ) const;
-
-	/** @brief Swap a buffer in the case of a double bufferred interact, this is possibly a silly one */
-	void swapBuffers( void ) const;
-
-	////////////////////////////////////////////////////////////////////////////////
+	virtual ~InteractI() = 0;
+		////////////////////////////////////////////////////////////////////////////////
 	// override the below in derived classes to do something useful
 
 	/** @brief the function called to draw in the interact */
@@ -207,6 +168,50 @@ public:
 
 	/** @brief Called when the interact is loses input focus */
 	virtual void loseFocus( const FocusArgs& args );
+};
+
+/** @brief Wraps up an OFX interact object for an Image Effect. It won't work for any other plug-in type at present (it would need to be broken into a hierarchy of classes).
+ */
+class Interact : public InteractI
+{
+protected:
+	OfxInteractHandle _interactHandle;    /**< @brief The handle for this interact */
+	PropertySet _interactProperties; /**< @brief The property set on this interact */
+	std::list<Param*> _slaveParams;       /**< @brief List of params we are currently slaved to */
+	ImageEffect* _effect;                   /**< @brief The instance we are associated with */
+
+public:
+	/** @brief ctor */
+	Interact( OfxInteractHandle handle );
+
+	/** @brief virtual destructor */
+	virtual ~Interact() = 0;
+
+	PropertySet& getProperties() { return _interactProperties; }
+
+	/** @brief The bitdepth of each component in the openGL frame buffer */
+	int getBitDepth( void ) const;
+
+	/** @brief Does the openGL frame buffer have an alpha */
+	bool hasAlpha( void ) const;
+
+	/** @brief Returns the size of a real screen pixel under the interact's cannonical projection */
+	OfxPointD getPixelScale( void ) const;
+
+	/** @brief the background colour */
+	OfxRGBColourD getBackgroundColour( void ) const;
+
+	/** @brief Set a param that the interact should be redrawn on if its value changes */
+	void addParamToSlaveTo( Param* p );
+
+	/** @brief Remova a param that the interact should be redrawn on if its value changes */
+	void removeParamToSlaveTo( Param* p );
+
+	/** @brief Request a redraw */
+	void requestRedraw( void ) const;
+
+	/** @brief Swap a buffer in the case of a double bufferred interact, this is possibly a silly one */
+	void swapBuffers( void ) const;
 };
 
 /** @brief an interact for an image effect overlay */

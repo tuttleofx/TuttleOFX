@@ -96,7 +96,85 @@ static ImageEffect* retrieveEffectFromInteractHandle( OfxInteractHandle handle )
 	return OFX::Private::retrieveImageEffectPointer( effectHandle );
 }
 
-/** @brief ctor */
+
+InteractI::~InteractI()
+{}
+
+/** @brief the function called to draw in the interact */
+bool InteractI::draw( const DrawArgs& args )
+{
+	return false;
+}
+
+/** @brief the function called to handle pen motion in the interact
+ *
+ * returns true if the interact trapped the action in some sense. This will block the action being passed to
+ * any other interact that may share the viewer.
+ */
+bool InteractI::penMotion( const PenArgs& args )
+{
+	return false;
+}
+
+/** @brief the function called to handle pen down events in the interact
+ *
+ * returns true if the interact trapped the action in some sense. This will block the action being passed to
+ * any other interact that may share the viewer.
+ */
+bool InteractI::penDown( const PenArgs& args )
+{
+	return false;
+}
+
+/** @brief the function called to handle pen up events in the interact
+ *
+ * returns true if the interact trapped the action in some sense. This will block the action being passed to
+ * any other interact that may share the viewer.
+ */
+bool InteractI::penUp( const PenArgs& args )
+{
+	return false;
+}
+
+/** @brief the function called to handle key down events in the interact
+ *
+ * returns true if the interact trapped the action in some sense. This will block the action being passed to
+ * any other interact that may share the viewer.
+ */
+bool InteractI::keyDown( const KeyArgs& args )
+{
+	return false;
+}
+
+/** @brief the function called to handle key up events in the interact
+ *
+ * returns true if the interact trapped the action in some sense. This will block the action being passed to
+ * any other interact that may share the viewer.
+ */
+bool InteractI::keyUp( const KeyArgs& args )
+{
+	return false;
+}
+
+/** @brief the function called to handle key down repeat events in the interact
+ *
+ * returns true if the interact trapped the action in some sense. This will block the action being passed to
+ * any other interact that may share the viewer.
+ */
+bool InteractI::keyRepeat( const KeyArgs& args )
+{
+	return false;
+}
+
+/** @brief Called when the interact is given input focus */
+void InteractI::gainFocus( const FocusArgs& args )
+{}
+
+/** @brief Called when the interact is loses input focus */
+void InteractI::loseFocus( const FocusArgs& args )
+{}
+
+
 Interact::Interact( OfxInteractHandle handle )
 	: _interactHandle( handle ),
 	_effect( 0 )
@@ -115,7 +193,6 @@ Interact::Interact( OfxInteractHandle handle )
 	_effect = retrieveEffectFromInteractHandle( handle );
 }
 
-/** @brief ctor */
 Interact::~Interact()
 {}
 
@@ -203,80 +280,6 @@ OfxRGBColourD Interact::getBackgroundColour( void ) const
 {
 	return OFX::getBackgroundColour( _interactProperties );
 }
-
-/** @brief the function called to draw in the interact */
-bool Interact::draw( const DrawArgs& args )
-{
-	return false;
-}
-
-/** @brief the function called to handle pen motion in the interact
- *
- * returns true if the interact trapped the action in some sense. This will block the action being passed to
- * any other interact that may share the viewer.
- */
-bool Interact::penMotion( const PenArgs& args )
-{
-	return false;
-}
-
-/** @brief the function called to handle pen down events in the interact
- *
- * returns true if the interact trapped the action in some sense. This will block the action being passed to
- * any other interact that may share the viewer.
- */
-bool Interact::penDown( const PenArgs& args )
-{
-	return false;
-}
-
-/** @brief the function called to handle pen up events in the interact
- *
- * returns true if the interact trapped the action in some sense. This will block the action being passed to
- * any other interact that may share the viewer.
- */
-bool Interact::penUp( const PenArgs& args )
-{
-	return false;
-}
-
-/** @brief the function called to handle key down events in the interact
- *
- * returns true if the interact trapped the action in some sense. This will block the action being passed to
- * any other interact that may share the viewer.
- */
-bool Interact::keyDown( const KeyArgs& args )
-{
-	return false;
-}
-
-/** @brief the function called to handle key up events in the interact
- *
- * returns true if the interact trapped the action in some sense. This will block the action being passed to
- * any other interact that may share the viewer.
- */
-bool Interact::keyUp( const KeyArgs& args )
-{
-	return false;
-}
-
-/** @brief the function called to handle key down repeat events in the interact
- *
- * returns true if the interact trapped the action in some sense. This will block the action being passed to
- * any other interact that may share the viewer.
- */
-bool Interact::keyRepeat( const KeyArgs& args )
-{
-	return false;
-}
-
-/** @brief Called when the interact is given input focus */
-void Interact::gainFocus( const FocusArgs& args )
-{}
-
-/** @brief Called when the interact is loses input focus */
-void Interact::loseFocus( const FocusArgs& args )
-{}
 
 ////////////////////////////////////////////////////////////////////////////////
 // overlay interact guff
