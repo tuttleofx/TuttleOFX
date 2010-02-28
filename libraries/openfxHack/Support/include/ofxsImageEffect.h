@@ -590,7 +590,10 @@ public:
 	OfxRangeD getUnmappedFrameRange( void ) const;
 
 	/** @brief get the RoD for this clip in the cannonical coordinate system */
-	OfxRectD getRegionOfDefinition( double t );
+	OfxRectD getCanonicalRod( double t ) const;
+
+	/** @brief get the RoD for this clip in pixel space */
+	OfxRectI getPixelRod( double t ) const;
 
 	/** @brief fetch an image
 	 *

@@ -1,14 +1,7 @@
-/**
- * @author Eloi Du Bois.
- * @date   2009/10/11
- *
- */
-
 #include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPluginFactory.hpp"
 #include "EXRReaderPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <string>

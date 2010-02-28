@@ -1,14 +1,5 @@
-/**
- * @file InvertPluginFactory.cpp
- * @brief   Multithreaded image inverter
- * @author  Eloi Du Bois
- * @date    01/10/09 12:01
- *
- */
-
 #include "InvertPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <string>

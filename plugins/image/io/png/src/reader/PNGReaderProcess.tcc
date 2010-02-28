@@ -1,6 +1,5 @@
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cassert>
@@ -16,6 +15,7 @@
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
 
 #include "PNGReaderDefinitions.hpp"
+#include "PNGReaderProcess.hpp"
 
 namespace tuttle {
 namespace plugin {
@@ -32,48 +32,36 @@ typedef any_image < boost::mpl::vector
 
 template<class View>
 PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
-	: tuttle::plugin::ImageGilProcessor<View>( instance ),
-	tuttle::plugin::Progress( instance ),
+	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
-	_filepath = instance.fetchStringParam( kInputFilename );
-	assert( _filepath != NULL );
+	assert( _plugin._filepath != NULL );
 }
 
 template<class View>
-void PNGReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
+void PNGReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	try
-	{
-		std::string sFilepath;
-		// Fetch output image
-		_filepath->getValue( sFilepath );
-		if( bfs::exists( sFilepath ) )
-		{
-			point2<ptrdiff_t> pngDims = png_read_dimensions( sFilepath );
-			double par                = _plugin.getDstClip()->getPixelAspectRatio();
-			OfxRectD reqRect          = { 0, 0, pngDims.x * par, pngDims.y };
-			boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-			OfxRectI bounds = dst->getBounds();
-			if( !dst.get() )
-				throw( ImageNotReadyException() );
-			// Build destination view
-			this->_dstView = interleaved_view( std::abs( bounds.x2 - bounds.x1 ), std::abs( bounds.y2 - bounds.y1 ),
-			                                   static_cast<value_t*>( dst->getPixelData() ),
-			                                   dst->getRowBytes() );
+	std::string sFilepath = _plugin._filepath->getValue();
+	if( ! bfs::exists( sFilepath ) )
+		throw( PluginException( "Unable to open : " + sFilepath ) );
+	point2<std::ptrdiff_t> pngDims = png_read_dimensions( sFilepath );
+	double par                = _plugin.getDstClip()->getPixelAspectRatio();
+	OfxRectD reqRect          = { 0, 0, pngDims.x * par, pngDims.y };
 
-			// Set the render window
-			this->setRenderWindow( args.renderWindow );
-			// Call the base class process member
-			this->process();
-		}
-		else
-			throw PluginException( "Unable to open : " + sFilepath );
-	}
-	catch( PluginException& e )
-	{
-		COUT_EXCEPTION( e );
-	}
+	// Fetch output image
+	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
+	OfxRectI bounds = dst->getBounds();
+	if( !dst.get() )
+		throw( ImageNotReadyException() );
+
+	COUT_VAR4(reqRect.x1,reqRect.y1,reqRect.x2,reqRect.y2);
+	OfxRectD canonicalRod = _plugin.getDstClip()->getCanonicalRod(args.time);
+	COUT_VAR4(canonicalRod.x1,canonicalRod.y1,canonicalRod.x2,canonicalRod.y2);
+	OfxRectI pixelRod = _plugin.getDstClip()->getPixelRod(args.time);
+	COUT_VAR4(pixelRod.x1,pixelRod.y1,pixelRod.x2,pixelRod.y2);
+	
+	// Build destination view
+	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 
 /**
@@ -83,18 +71,9 @@ void PNGReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  * @param[in] procWindow  Processing window
  */
 template<class View>
-void PNGReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
+void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
-	try
-	{
-		std::string filepath;
-		this->_filepath->getValue( filepath );
-		readImage( this->_dstView, filepath );
-	}
-	catch( PluginException& e )
-	{
-		COUT_EXCEPTION( e );
-	}
+	readImage( this->_dstView, _plugin._filepath->getValue() );
 }
 
 /*
@@ -119,11 +98,18 @@ void PNGReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
  * @return Result view of the blurring process
  */
 template<class View>
-View& PNGReaderProcess<View>::readImage( View& dst, std::string& filepath ) throw( PluginException )
+View& PNGReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
 {
 	any_image_t anyImg;
-
-	png_read_image( filepath, anyImg );
+	try
+	{
+		png_read_image( filepath, anyImg );
+	}
+	catch( PluginException& e )
+	{
+		COUT_EXCEPTION( e );
+		return dst;
+	}
 	copy_and_convert_pixels( subimage_view( flipped_up_down_view( view( anyImg ) ), 0, 0, dst.width(), dst.height() ), dst );
 	return dst;
 }

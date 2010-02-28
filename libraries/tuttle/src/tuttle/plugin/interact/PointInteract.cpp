@@ -3,6 +3,7 @@
 #include "interact.hpp"
 #include "overlay.hpp"
 
+#include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/image/gilGlobals.hpp>
 
 namespace tuttle {

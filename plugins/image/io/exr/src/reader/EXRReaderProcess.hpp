@@ -9,7 +9,6 @@
 #include "../half/gilHalf.hpp"
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -28,12 +27,10 @@ namespace reader {
  *
  */
 template<class View>
-class EXRReaderProcess
-: public tuttle::plugin::ImageGilProcessor<View>
-, public tuttle::plugin::Progress
+class EXRReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	typedef typename View::value_type value_t;
+	typedef typename View::value_type Pixel;
 	OFX::StringParam*   _filepath;                      ///< File path
 	OFX::ChoiceParam*   _outComponents;                 ///< Components list
 	EXRReaderPlugin&    _plugin;                        ///< Rendering plugin
@@ -48,11 +45,9 @@ protected:
 public:
 	EXRReaderProcess<View>( EXRReaderPlugin & instance );
 
-	// set up and run a processor
-	void setupAndProcess( const OFX::RenderArguments& args );
+	void setup( const OFX::RenderArguments& args );
 
-	// Do some processing
-	void multiThreadProcessImages( OfxRectI procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindow );
 
 	// Read exr image
 	template<class DView>

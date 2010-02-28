@@ -1,18 +1,9 @@
-/**
- * @file CropPluginFactory.cpp
- * @brief
- * @author
- * @date    01/10/09 14:14
- *
- */
-
 #include <ofxsParam.h>
 
 #include "CropDefinitions.hpp"
 #include "CropPlugin.hpp"
 #include "CropMargin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <string>

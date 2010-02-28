@@ -3,7 +3,6 @@
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -22,10 +21,10 @@ namespace writer {
  *
  */
 template<class View>
-class PNGWriterProcess : public tuttle::plugin::ImageGilProcessor<View>,
-	public tuttle::plugin::Progress
+class PNGWriterProcess : public ImageGilProcessor<View>
 {
-typedef typename View::value_type value_t;
+public:
+	typedef typename View::value_type Pixel;
 
 protected:
 	OFX::StringParam*   _filepath;      ///< File path
@@ -34,15 +33,12 @@ protected:
 	View _dstView;      ///< Input view
 
 public:
-	PNGWriterProcess<View>( PNGWriterPlugin & instance );
+	PNGWriterProcess( PNGWriterPlugin & instance );
 
-	// set up and run a processor
-	void setupAndProcess( const OFX::RenderArguments& args );
+	void setup( const OFX::RenderArguments& args );
 
-	// Do some processing
-	void multiThreadProcessImages( OfxRectI procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindow );
 
-	//
 	static void writeImage( View& src, std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 

@@ -1,16 +1,8 @@
-/**
- * @file CropProcess.hpp
- * @brief
- * @author
- * @date    01/10/09 14:14
- *
- */
-#ifndef VOLET_PROCESS_HPP
-#define VOLET_PROCESS_HPP
+#ifndef _VOLET_PROCESS_HPP_
+#define _VOLET_PROCESS_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -27,11 +19,10 @@ namespace crop {
  *
  */
 template<class View>
-class CropProcess : public tuttle::plugin::ImageGilProcessor<View>,
-	public tuttle::plugin::Progress
+class CropProcess : public ImageGilProcessor<View>
 {
-typedef typename View::value_type value_t;
-
+public:
+	typedef typename View::value_type Pixel;
 protected:
 	CropPlugin&          _plugin;        ///< Rendering plugin
 	View _srcView;      ///< Source view
@@ -49,11 +40,9 @@ protected:
 public:
 	CropProcess<View>( CropPlugin & instance );
 
-	// set up and run a processor
-	void setupAndProcess( const OFX::RenderArguments& args );
+	void setup( const OFX::RenderArguments& args );
 
-	// Do some processing
-	void multiThreadProcessImages( OfxRectI procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindow );
 
 private:
 	OfxRectD getCrop() const;
@@ -65,5 +54,5 @@ private:
 
 #include "CropProcess.tcc"
 
-#endif  // VOLET_PROCESS_HPP
+#endif
 

@@ -157,13 +157,11 @@ template <class PIX, int nComponents, int max>
 class ImageScaler : public ImageScalerBase
 {
 public:
-	// ctor
 	ImageScaler( OFX::ImageEffect& instance )
 		: ImageScalerBase( instance )
 	{}
 
-	// and do some processing
-	void multiThreadProcessImages( OfxRectI procWindow )
+	void multiThreadProcessImages( const OfxRectI& procWindow )
 	{
 		float scales[4];
 
@@ -378,7 +376,7 @@ void BasicPlugin::setupAndProcess( ImageScalerBase& processor, const OFX::Render
 bool BasicPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	// our RoD is the same as the 'Source' clip's, we are not interested in the mask
-	rod = srcClip_->getRegionOfDefinition( args.time );
+	rod = srcClip_->getCanonicalRod( args.time );
 
 	// say we set it
 	return true;

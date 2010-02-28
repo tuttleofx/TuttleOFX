@@ -5,7 +5,6 @@
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -24,11 +23,9 @@ namespace reader {
  *
  */
 template<class View>
-class DPXReaderProcess : public tuttle::plugin::ImageGilProcessor<View>,
-	public tuttle::plugin::Progress
+class DPXReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	typedef typename View::value_type value_t;
 	OFX::StringParam*   _filepath;      ///< File path
 	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
 
@@ -36,13 +33,11 @@ protected:
 	void bitStreamToView( DST_V& dst, const int nc, const int channelSize );
 
 public:
-	DPXReaderProcess<View>( DPXReaderPlugin & instance );
+	DPXReaderProcess( DPXReaderPlugin & instance );
 
-	// set up and run a processor
-	void setupAndProcess( const OFX::RenderArguments& args );
+	void setup( const OFX::RenderArguments& args );
 
-	// Do some processing
-	void multiThreadProcessImages( OfxRectI procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindow );
 
 	// Read dpx image
 	View& readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException );

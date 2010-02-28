@@ -28,7 +28,7 @@ public:
 	bool         getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void         getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
-protected:
+public:
 	point2<ptrdiff_t>    _pngDims;       ///< Png dimensions
 	OFX::StringParam* _filepath;
 	// do not need to delete these, the ImageEffect is managing them for us

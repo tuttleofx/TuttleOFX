@@ -1,15 +1,7 @@
-/**
- * @file MergeProcess.hpp
- * @brief
- * @author
- * @date    27/11/09 13:42
- *
- */
 #ifndef MERGE_PROCESS_HPP
 #define MERGE_PROCESS_HPP
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
@@ -32,24 +24,19 @@ namespace merge {
  *
  */
 template<class View, class Functor>
-class MergeProcess : public tuttle::plugin::ImageGilProcessor<View>,
-	public tuttle::plugin::Progress
+class MergeProcess : public ImageGilProcessor<View>
 {
-typedef typename View::value_type value_t;
-
 protected:
-	MergePlugin&   _plugin;   ///< Rendering plugin
+	MergePlugin& _plugin; ///< Rendering plugin
 	View _srcViewA; ///< Source view A
 	View _srcViewB; ///< Source view B
 
 public:
-	MergeProcess<View, Functor>( MergePlugin & instance );
+	MergeProcess( MergePlugin & instance );
 
-	// set up and run a processor
-	void setupAndProcess( const OFX::RenderArguments& args );
+	void setup( const OFX::RenderArguments& args );
 
-	// Do some processing
-	void multiThreadProcessImages( OfxRectI procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindow );
 };
 
 }

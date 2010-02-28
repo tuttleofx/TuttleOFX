@@ -1391,20 +1391,23 @@ protected:
 	friend class ParamSet;
 
 public:
+	/** @brief get the default value */
+	void getDefault( std::string& v ) const;
+	std::string getDefault() const { std::string s; getDefault(s); return s; }
+
 	/** @brief set the default value */
 	void setDefault( const std::string& v );
 
-	/** @brief get the default value */
-	void getDefault( std::string& v ) const;
-
 	/** @brief get value */
 	void getValue( std::string& v ) const;
-
-	/** @brief get the value at a time */
-	void getValueAtTime( double t, std::string& v ) const;
+	std::string getValue() const { std::string s; getValue(s); return s; }
 
 	/** @brief set value */
 	void setValue( const std::string& v );
+
+	/** @brief get the value at a time */
+	void getValueAtTime( double t, std::string& v ) const;
+	std::string getValueAtTime( double t ) const { std::string s; getValueAtTime( t, s ); return s; }
 
 	/** @brief set the value at a time, implicitly adds a keyframe */
 	void setValueAtTime( double t, const std::string& v );

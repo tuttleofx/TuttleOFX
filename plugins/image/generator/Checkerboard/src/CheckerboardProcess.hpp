@@ -4,7 +4,6 @@
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
@@ -28,21 +27,18 @@ namespace checkerboard {
  *
  */
 template<class View>
-class CheckerboardProcess : public tuttle::plugin::ImageGilProcessor<View>, public tuttle::plugin::Progress
+class CheckerboardProcess : public ImageGilProcessor<View>
 {
-    typedef typename View::value_type value_t;
 protected :
     CheckerboardPlugin&    _plugin;        ///< Rendering plugin
     View                  _srcView;       ///< Source view
 
 public :
-    CheckerboardProcess<View>(CheckerboardPlugin &instance);
+    CheckerboardProcess(CheckerboardPlugin &instance);
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+    void setup(const OFX::RenderArguments &args);
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+    void multiThreadProcessImages( const OfxRectI& procWindow);
 };
 
 }

@@ -4,7 +4,6 @@
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/common/image/gilViewTypes.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
@@ -33,8 +32,7 @@ namespace reader {
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
-	: tuttle::plugin::ImageGilProcessor<View>( instance ),
-	tuttle::plugin::Progress( instance ),
+	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
 	_filepath = instance.fetchStringParam( kInputFilename );
@@ -42,43 +40,27 @@ DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
 }
 
 template<class View>
-void DPXReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
+void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	try
-	{
-		std::string sFilepath;
-		// Fetch output image
-		_filepath->getValue( sFilepath );
-		if( bfs::exists( sFilepath ) )
-		{
-			_plugin.getDpxImg().read( sFilepath, true );
+	std::string sFilepath;
+	// Fetch output image
+	_filepath->getValue( sFilepath );
+	if( ! bfs::exists( sFilepath ) )
+		throw tuttle::plugin::PluginException( "Unable to open : " + sFilepath );
+	_plugin.getDpxImg().read( sFilepath, true );
 
-			point2<ptrdiff_t> imageDims( _plugin.getDpxImg().width(),
-			                             _plugin.getDpxImg().height() );
+	point2<ptrdiff_t> imageDims( _plugin.getDpxImg().width(),
+								 _plugin.getDpxImg().height() );
 
-			double par       = _plugin.getDstClip()->getPixelAspectRatio();
-			OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-			boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-			OfxRectI bounds = dst->getBounds();
-			if( !dst.get() )
-				throw( tuttle::plugin::ImageNotReadyException() );
-			// Build destination view
-			this->_dstView = interleaved_view( std::abs( bounds.x2 - bounds.x1 ), std::abs( bounds.y2 - bounds.y1 ),
-			                                   static_cast<value_t*>( dst->getPixelData() ),
-			                                   dst->getRowBytes() );
-
-			// Set the render window
-			this->setRenderWindow( args.renderWindow );
-			// Call the base class process member
-			this->process();
-		}
-		else
-			throw tuttle::plugin::PluginException( "Unable to open : " + sFilepath );
-	}
-	catch( tuttle::plugin::PluginException& e )
-	{
-		COUT_EXCEPTION( e );
-	}
+	double par       = _plugin.getDstClip()->getPixelAspectRatio();
+	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
+	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
+	OfxRectI bounds = dst->getBounds();
+	if( !dst.get() )
+		throw( tuttle::plugin::ImageNotReadyException() );
+	
+	// Build destination view
+	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 
 /**
@@ -88,7 +70,7 @@ void DPXReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  * @param[in] procWindow  Processing window
  */
 template<class View>
-void DPXReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
+void DPXReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	try
 	{

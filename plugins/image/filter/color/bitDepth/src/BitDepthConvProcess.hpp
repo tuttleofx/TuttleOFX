@@ -11,7 +11,6 @@
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
@@ -29,27 +28,21 @@ namespace tuttle {
 namespace plugin {
 namespace bitDepthConvert {
 
-/**
- * @brief Base class
- *
- */
 template<class SView, class DView>
-class BitDepthConvProcess : public tuttle::plugin::ImageGilProcessor<DView>, public tuttle::plugin::Progress
+class BitDepthConvProcess : public ImageGilProcessor<DView>
 {
-	typedef typename SView::value_type svalue_t;
-	typedef typename DView::value_type dvalue_t;
+	typedef typename SView::value_type sPixel;
+	typedef typename DView::value_type dPixel;
 protected :
-    BitDepthConvPlugin&    _plugin;        ///< Rendering plugin
-    SView                  _srcView;       ///< Source view
+    BitDepthConvPlugin& _plugin;        ///< Rendering plugin
+    SView               _srcView;       ///< Source view
 
 public :
-    BitDepthConvProcess<SView, DView>(BitDepthConvPlugin &instance);
+    BitDepthConvProcess( BitDepthConvPlugin& instance );
 
-    // set up and run a processor
-    void setupAndProcess(const OFX::RenderArguments &args);
+    void setup( const OFX::RenderArguments& args );
 
-    // Do some processing
-    void multiThreadProcessImages(OfxRectI procWindow);
+    void multiThreadProcessImages( const OfxRectI& procWindow );
 };
 
 }

@@ -1,10 +1,10 @@
 #include "DPXWriterDefinitions.hpp"
 #include "DPXWriterProcess.hpp"
+#include "DPXWriterPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/common/image/gilViewTypes.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
@@ -26,8 +26,7 @@ using namespace boost::gil;
 
 template<class View>
 DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
-: tuttle::plugin::ImageGilProcessor<View>( instance )
-, tuttle::plugin::Progress( instance )
+: ImageGilProcessor<View>( instance )
 , _plugin( instance )
 {
 	_filepath       = instance.fetchStringParam( kOutputFilename );
@@ -37,49 +36,21 @@ DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
 }
 
 template<class View>
-void DPXWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
+void DPXWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	try
-	{
-		boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
-		if( !src.get() )
-			throw( ImageNotReadyException() );
-		OfxRectI sBounds                      = src->getBounds();
-		OFX::BitDepthEnum srcBitDepth         = src->getPixelDepth();
-		OFX::PixelComponentEnum srcComponents = src->getPixelComponents();
+	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
+	if( !src.get() )
+		throw( ImageNotReadyException() );
+	_srcView = this->getView( src.get(), _plugin.getSrcClip()->getPixelRod(args.time) );
+	
+	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
+	if( !dst.get() )
+		throw( ImageNotReadyException() );
+	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
-		// Build source view
-		this->_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
-		                                   static_cast < value_t* >( src->getPixelData() ),
-		                                   src->getRowBytes() );
-
-		boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-		if( !dst.get() )
-			throw( ImageNotReadyException() );
-		OfxRectI dBounds                      = dst->getBounds();
-		OFX::BitDepthEnum dstBitDepth         = dst->getPixelDepth();
-		OFX::PixelComponentEnum dstComponents = dst->getPixelComponents();
-
-		// Make sure bit depths are same
-		if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
-		{
-			throw( BitDepthMismatchException() );
-		}
-
-		// Build destination view
-		this->_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-		                                   static_cast < value_t* >( dst->getPixelData() ),
-		                                   dst->getRowBytes() );
-
-		// Set the render window
-		this->setRenderWindow( args.renderWindow );
-		// Call the base class process member
-		this->process();
-	}
-	catch( PluginException e )
-	{
-		COUT_EXCEPTION( e );
-	}
+	// Make sure bit depths are same
+	if( src->getPixelDepth() != dst->getPixelDepth() || src->getPixelComponents() != dst->getPixelComponents() )
+		throw( BitDepthMismatchException() );
 }
 
 /**
@@ -89,7 +60,7 @@ void DPXWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  * @param[in] procWindow  Processing window
  */
 template<class View>
-void DPXWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
+void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	try
 	{
@@ -184,7 +155,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 			}
 		}
 	}
-	catch( PluginException err )
+	catch( PluginException& err )
 	{
 		COUT_EXCEPTION( err );
 	}

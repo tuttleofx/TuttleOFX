@@ -4,7 +4,6 @@
 #include <tuttle/common/image/gilGlobals.hpp>
 #include "EXRReaderProcess.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
@@ -33,8 +32,7 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
-	: tuttle::plugin::ImageGilProcessor<View>( instance ),
-	tuttle::plugin::Progress( instance ),
+	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
 	_filepath      = instance.fetchStringParam( kInputFilename );
@@ -43,44 +41,26 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 }
 
 template<class View>
-void EXRReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
+void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	try
-	{
-		std::string sFilepath;
-		// Fetch output image
-		_filepath->getValue( sFilepath );
-		if( bfs::exists( sFilepath ) )
-		{
-			_exrImage.reset( new Imf::InputFile( sFilepath.c_str() ) );
-			const Imf::Header& h = _exrImage->header();
-			typename Imath::V2i imageDims = h.dataWindow().size();
-			imageDims.x++;
-			imageDims.y++;
+	std::string sFilepath;
+	// Fetch output image
+	_filepath->getValue( sFilepath );
+	if( ! bfs::exists( sFilepath ) )
+		throw tuttle::plugin::PluginException( "Unable to open : " + sFilepath );
+	_exrImage.reset( new Imf::InputFile( sFilepath.c_str() ) );
+	const Imf::Header& h = _exrImage->header();
+	typename Imath::V2i imageDims = h.dataWindow().size();
+	imageDims.x++;
+	imageDims.y++;
 
-			double par       = _plugin.getDstClip()->getPixelAspectRatio();
-			OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-			boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-			OfxRectI bounds = dst->getBounds();
-			if( !dst.get() )
-				throw( tuttle::plugin::ImageNotReadyException() );
-			// Build destination view
-			this->_dstView = interleaved_view( std::abs( bounds.x2 - bounds.x1 ), std::abs( bounds.y2 - bounds.y1 ),
-			                                   static_cast<value_t*>( dst->getPixelData() ),
-			                                   dst->getRowBytes() );
-
-			// Set the render window
-			this->setRenderWindow( args.renderWindow );
-			// Call the base class process member
-			this->process();
-		}
-		else
-			throw tuttle::plugin::PluginException( "Unable to open : " + sFilepath );
-	}
-	catch( tuttle::plugin::PluginException& e )
-	{
-		COUT_EXCEPTION( e );
-	}
+	double par       = _plugin.getDstClip()->getPixelAspectRatio();
+	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
+	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
+	OfxRectI bounds = dst->getBounds();
+	if( !dst.get() )
+		throw( tuttle::plugin::ImageNotReadyException() );
+	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 
 /**
@@ -90,7 +70,7 @@ void EXRReaderProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  * @param[in] procWindow  Processing window
  */
 template<class View>
-void EXRReaderProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
+void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	try
 	{
@@ -272,7 +252,6 @@ template<class View>
 template<class DView>
 void EXRReaderProcess<View>::sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n )
 {
-	typedef typename View::value_type dPix_t;
 	switch( slice->type )
 	{
 		case Imf::HALF:

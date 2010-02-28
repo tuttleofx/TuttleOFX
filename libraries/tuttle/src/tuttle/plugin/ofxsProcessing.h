@@ -94,7 +94,7 @@ public:
 	virtual void preProcess( void ) {}
 
 	/** @brief this is called by multiThreadFunction to actually process images, override in derived classes */
-	virtual void multiThreadProcessImages( OfxRectI window ) = 0;
+	virtual void multiThreadProcessImages( const OfxRectI& window ) = 0;
 
 	/** @brief called before any MP is done */
 	virtual void postProcess( void ) {}

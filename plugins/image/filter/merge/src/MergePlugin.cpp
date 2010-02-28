@@ -420,8 +420,8 @@ void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std:
 
 bool MergePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const OfxRectD irod = intersection(_srcClipA->getRegionOfDefinition(args.time),
-									   _srcClipB->getRegionOfDefinition(args.time));
+	const OfxRectD irod = intersection(_srcClipA->getCanonicalRod(args.time),
+									   _srcClipB->getCanonicalRod(args.time));
 	// Intersection of A & B
 	rod.x1 = irod.x1;
 	rod.x2 = irod.x2;

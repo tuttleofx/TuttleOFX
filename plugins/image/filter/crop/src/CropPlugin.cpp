@@ -138,7 +138,7 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 		OFX::IntParam* downBand  = fetchIntParam( kParamDown );
 		OFX::IntParam* leftBand  = fetchIntParam( kParamLeft );
 		OFX::IntParam* rightBand = fetchIntParam( kParamRight );
-		OfxRectD rod             = _srcClip->getRegionOfDefinition( timeLineGetTime() );
+		OfxRectD rod             = _srcClip->getCanonicalRod( timeLineGetTime() );
 		double par               = _srcClip->getPixelAspectRatio();
 		int w                    = (int)std::abs( rod.x2 - rod.x1 );
 		int h                    = (int)std::abs( rod.y2 - rod.y1 );
@@ -201,7 +201,7 @@ OfxRectD CropPlugin::getCropRect( OfxRectD *clipROD /* = NULL */ )
 {
 	OfxRectD tmp;
 	if (!clipROD) {
-		tmp = getSrcClip()->getRegionOfDefinition( timeLineGetTime() );
+		tmp = getSrcClip()->getCanonicalRod( timeLineGetTime() );
 		clipROD = &tmp;
 	}
 	OfxRectD rect;
@@ -222,10 +222,10 @@ bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& 
 {
 	OFX::BooleanParam* bop = fetchBooleanParam( kParamFillMode );
 	if ( bop->getValue() == false ) {
-		OfxRectD rect = getSrcClip()->getRegionOfDefinition( args.time );
+		OfxRectD rect = getSrcClip()->getCanonicalRod( args.time );
 		rod = getCropRect( &rect );
 	} else {
-		rod = getSrcClip()->getRegionOfDefinition(args.time);
+		rod = getSrcClip()->getCanonicalRod(args.time);
 	}
 	return true;
 }

@@ -1,17 +1,8 @@
-/**
- * @file DPXWriterPluginFactory.cpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
-
 #include "DPXWriterPluginFactory.hpp"
 #include "DPXWriterPlugin.hpp"
 #include "DPXWriterDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <string>

@@ -4,7 +4,6 @@
 #include <tuttle/common/image/gilGlobals.hpp>
 #include "../half/gilHalf.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
@@ -26,8 +25,7 @@ using namespace boost::gil;
 
 template<class View>
 EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin& instance )
-: tuttle::plugin::ImageGilProcessor<View>( instance )
-, tuttle::plugin::Progress( instance )
+: ImageGilProcessor<View>( instance )
 , _plugin( instance )
 {
 	_filepath       = instance.fetchStringParam( kOutputFilename );
@@ -36,49 +34,24 @@ EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin& instance )
 }
 
 template<class View>
-void EXRWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
+void EXRWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	try
-	{
-		boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
-		if( !src.get() )
-			throw( ImageNotReadyException() );
-		OfxRectI sBounds                      = src->getBounds();
-		OFX::BitDepthEnum srcBitDepth         = src->getPixelDepth();
-		OFX::PixelComponentEnum srcComponents = src->getPixelComponents();
+	// source view
+	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
+	if( !src.get() )
+		throw( ImageNotReadyException() );
+	this->_srcView = this->getView( src.get(), _plugin.getSrcClip()->getPixelRod(args.time) );
 
-		// Build source view
-		this->_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
-		                                   static_cast < value_t* >( src->getPixelData() ),
-		                                   src->getRowBytes() );
+	// destination view
+	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
+	if( !dst.get() )
+		throw( ImageNotReadyException() );
+	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
-		boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-		if( !dst.get() )
-			throw( ImageNotReadyException() );
-		OfxRectI dBounds                      = dst->getBounds();
-		OFX::BitDepthEnum dstBitDepth         = dst->getPixelDepth();
-		OFX::PixelComponentEnum dstComponents = dst->getPixelComponents();
-
-		// Make sure bit depths are same
-		if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
-		{
-			throw( BitDepthMismatchException() );
-		}
-
-		// Build destination view
-		this->_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-		                                   static_cast < value_t* >( dst->getPixelData() ),
-		                                   dst->getRowBytes() );
-
-		// Set the render window
-		this->setRenderWindow( args.renderWindow );
-		// Call the base class process member
-		this->process();
-	}
-	catch( PluginException e )
-	{
-		COUT_EXCEPTION( e );
-	}
+	// Make sure bit depths are same
+	if( src->getPixelDepth() != dst->getPixelDepth() ||
+		src->getPixelComponents() != dst->getPixelComponents() )
+		throw( BitDepthMismatchException() );
 }
 
 /**
@@ -88,7 +61,7 @@ void EXRWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  * @param[in] procWindow  Processing window
  */
 template<class View>
-void EXRWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
+void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	try
 	{
@@ -173,24 +146,11 @@ void EXRWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
 		// @todo: This is sometimes not neccessary... Checkbox it.
 		copy_and_convert_pixels( src, dst );
 	}
-	catch( PluginException err )
+	catch( PluginException& err )
 	{
 		COUT_EXCEPTION( err );
 	}
 }
-
-/**
- * @brief Function called to apply an anisotropic blur
- *
- * @param[out]  dst     Destination image view
- * @param[in]   amplitude     Amplitude of the anisotropic blur
- * @param dl    spatial discretization.
- * @param da    angular discretization.
- * @param gauss_prec    precision of the gaussian function
- * @param fast_approx   Tell to use the fast approximation or not.
- *
- * @return Result view of the blurring process
- */
 
 template<class View>
 template<class Pixel>

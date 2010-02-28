@@ -1938,16 +1938,16 @@ StringParam::StringParam( const ParamSet* paramSet, const std::string& name, Ofx
 	: ValueParam( paramSet, name, eStringParam, handle )
 {}
 
-/** @brief set the default value */
-void StringParam::setDefault( const std::string& v )
-{
-	_paramProps.propSetString( kOfxParamPropDefault, v );
-}
-
 /** @brief het the default value */
 void StringParam::getDefault( std::string& v ) const
 {
 	v = _paramProps.propGetString( kOfxParamPropDefault );
+}
+
+/** @brief set the default value */
+void StringParam::setDefault( const std::string& v )
+{
+	_paramProps.propSetString( kOfxParamPropDefault, v );
 }
 
 /** @brief get value */
@@ -1960,6 +1960,14 @@ void StringParam::getValue( std::string& v ) const
 	v = cStr;
 }
 
+/** @brief set value */
+void StringParam::setValue( const std::string& v )
+{
+	OfxStatus stat = OFX::Private::gParamSuite->paramSetValue( _paramHandle, v.c_str() );
+
+	throwSuiteStatusException( stat );
+}
+
 /** @brief get the value at a time */
 void StringParam::getValueAtTime( double t, std::string& v ) const
 {
@@ -1968,14 +1976,6 @@ void StringParam::getValueAtTime( double t, std::string& v ) const
 
 	throwSuiteStatusException( stat );
 	v = cStr;
-}
-
-/** @brief set value */
-void StringParam::setValue( const std::string& v )
-{
-	OfxStatus stat = OFX::Private::gParamSuite->paramSetValue( _paramHandle, v.c_str() );
-
-	throwSuiteStatusException( stat );
 }
 
 /** @brief set the value at a time, implicitly adds a keyframe */

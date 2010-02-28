@@ -34,7 +34,6 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	core::Core::instance().preload();
 	OfxhImageEffectPlugin* plugin = core::Core::instance().getImageEffectPluginById("fr.hd3d.tuttle.invert");
 
-	COUT("Begin test_imageEffectPlugin_serialization");
 //	typedef boost::archive::binary_oarchive OArchive;
 //	typedef boost::archive::binary_iarchive IArchive;
 //	typedef boost::archive::text_oarchive OArchive;

@@ -1,16 +1,7 @@
-/**
- * @file LutPluginFactory.cpp
- * @brief
- * @author
- * @date    01/10/09 12:01
- *
- */
-
 #include "LutPlugin.hpp"
 #include "LutDefinitions.hpp"
 
 #include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/Progress.hpp"
 #include "tuttle/plugin/PluginException.hpp"
 
 #include <string>

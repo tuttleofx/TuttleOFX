@@ -45,7 +45,7 @@ public:
 
 	~Progress() {}
 
-	void progressBegin( const int numSteps, const std::string& msg );
+	void progressBegin( const int numSteps, const std::string& msg = "" );
 	void progressEnd();
 	bool progressForward( const int nSteps = 1 ); //throw(PluginException);
 };

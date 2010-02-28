@@ -3,7 +3,6 @@
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ImfOutputFile.h>
@@ -34,11 +33,8 @@ namespace writer {
  *
  */
 template<class View>
-class EXRWriterProcess : public tuttle::plugin::ImageGilProcessor<View>,
-	public tuttle::plugin::Progress
+class EXRWriterProcess : public ImageGilProcessor<View>
 {
-typedef typename View::value_type value_t;
-
 protected:
 	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
 	OFX::StringParam*     _filepath;      ///< File path
@@ -50,13 +46,11 @@ protected:
 	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException );
 
 public:
-	EXRWriterProcess<View>( EXRWriterPlugin & instance );
+	EXRWriterProcess( EXRWriterPlugin & instance );
 
-	// set up and run a processor
-	void setupAndProcess( const OFX::RenderArguments& args );
+	void setup( const OFX::RenderArguments& args );
 
-	// Do some processing
-	void multiThreadProcessImages( OfxRectI procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindow );
 };
 
 }

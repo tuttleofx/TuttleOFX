@@ -3,7 +3,6 @@
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -22,26 +21,19 @@ namespace reader {
  *
  */
 template<class View>
-class PNGReaderProcess : public tuttle::plugin::ImageGilProcessor<View>,
-	public tuttle::plugin::Progress
+class PNGReaderProcess : public ImageGilProcessor<View>
 {
-typedef typename View::value_type value_t;
-
 protected:
-	OFX::StringParam*   _filepath;      ///< File path
 	PNGReaderPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-	PNGReaderProcess<View>( PNGReaderPlugin & instance );
+	PNGReaderProcess( PNGReaderPlugin& instance );
 
-	// set up and run a processor
-	void setupAndProcess( const OFX::RenderArguments& args );
+	void setup( const OFX::RenderArguments& args );
 
-	// Do some processing
-	void multiThreadProcessImages( OfxRectI procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindow );
 
-	//
-	View& readImage( View& dst, std::string& filepath ) throw( PluginException );
+	View& readImage( View& dst, const std::string& filepath ) throw( PluginException );
 };
 
 }

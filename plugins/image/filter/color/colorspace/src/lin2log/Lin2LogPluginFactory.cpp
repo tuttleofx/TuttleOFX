@@ -1,17 +1,8 @@
-/**
- * @file Lin2LogPluginFactory.cpp
- * @brief
- * @author
- * @date    08/01/10 15:19
- *
- */
-
 #include "Lin2LogPluginFactory.hpp"
 #include "Lin2LogPlugin.hpp"
 #include "Lin2LogDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <string>

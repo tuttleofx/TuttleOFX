@@ -44,6 +44,8 @@
 #include <sstream>
 #include <string>
 
+#include <boost/numeric/conversion/cast.hpp>
+
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
 
@@ -890,7 +892,7 @@ OfxRangeD Clip::getUnmappedFrameRange( void ) const
 }
 
 /** @brief get the RoD for this clip in the cannonical coordinate system */
-OfxRectD Clip::getRegionOfDefinition( double t )
+OfxRectD Clip::getCanonicalRod( double t ) const
 {
 	OfxRectD bounds;
 	OfxStatus stat = OFX::Private::gEffectSuite->clipGetRegionOfDefinition( _clipHandle, t, &bounds );
@@ -901,6 +903,22 @@ OfxRectD Clip::getRegionOfDefinition( double t )
 	}
 	throwSuiteStatusException( stat );
 	return bounds;
+}
+
+/** @brief get the RoD for this clip in pixel space */
+OfxRectI Clip::getPixelRod( double t ) const
+{
+	OfxRectD rod = getCanonicalRod(t);
+	double ratio = getPixelAspectRatio();
+	if( ratio == 0 )
+		ratio = 1;
+
+	OfxRectI pixRod;
+	pixRod.y1 = boost::numeric_cast<int>(rod.y1);
+	pixRod.y2 = boost::numeric_cast<int>(rod.y2);
+	pixRod.x1 = boost::numeric_cast<int>(rod.x1 / ratio);
+	pixRod.x2 = boost::numeric_cast<int>(rod.x2 / ratio);
+	return pixRod;
 }
 
 /** @brief fetch an image */

@@ -3,7 +3,6 @@
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cmath>
@@ -24,48 +23,35 @@ using namespace boost::gil;
 
 template<class View>
 PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
-	: tuttle::plugin::ImageGilProcessor<View>( instance ),
-	tuttle::plugin::Progress( instance ),
+	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
 	_filepath = instance.fetchStringParam( kOutputFilename );
 }
 
 template<class View>
-void PNGWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
+void PNGWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	try
-	{
-		// Fetch input image
-		boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
-		if( !src.get() )
-			throw( tuttle::plugin::ImageNotReadyException() );
-		OfxRectI sBounds = src->getBounds();
+	// Fetch input image
+	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
+	if( !src.get() )
+		throw( tuttle::plugin::ImageNotReadyException() );
+	OfxRectI sBounds = src->getBounds();
 
-		// Build destination view
-		_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
-		                             static_cast<value_t*>( src->getPixelData() ),
-		                             src->getRowBytes() );
+	// Build destination view
+	_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
+								 static_cast<Pixel*>( src->getPixelData() ),
+								 src->getRowBytes() );
 
-		boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-		if( !dst.get() )
-			throw( tuttle::plugin::ImageNotReadyException() );
-		OfxRectI dBounds = dst->getBounds();
+	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
+	if( !dst.get() )
+		throw( tuttle::plugin::ImageNotReadyException() );
+	OfxRectI dBounds = dst->getBounds();
 
-		// Build destination view
-		_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-		                             static_cast<value_t*>( dst->getPixelData() ),
-		                             dst->getRowBytes() );
-
-		// Set the render window
-		this->setRenderWindow( args.renderWindow );
-		// Call the base class process member
-		this->process();
-	}
-	catch( tuttle::plugin::PluginException& e )
-	{
-		COUT_EXCEPTION( e );
-	}
+	// Build destination view
+	_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
+								 static_cast<Pixel*>( dst->getPixelData() ),
+								 dst->getRowBytes() );
 }
 
 /**
@@ -77,7 +63,7 @@ void PNGWriterProcess<View>::setupAndProcess( const OFX::RenderArguments& args )
  * @warning no multithread here !
  */
 template<class View>
-void PNGWriterProcess<View>::multiThreadProcessImages( OfxRectI procWindow )
+void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	try
 	{
