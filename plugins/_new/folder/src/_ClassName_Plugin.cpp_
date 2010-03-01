@@ -20,14 +20,20 @@ ImageEffect( handle )
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
 }
 
-OFX::Clip * %CLASSNAME%Plugin::getSrcClip( ) const
+OFX::Clip* %CLASSNAME%Plugin::getSrcClip( ) const
 {
     return _srcClip;
 }
 
-OFX::Clip * %CLASSNAME%Plugin::getDstClip( ) const
+OFX::Clip* %CLASSNAME%Plugin::getDstClip( ) const
 {
     return _dstClip;
+}
+
+%CLASSNAME%Params %CLASSNAME%Plugin::getParams() const
+{
+	%CLASSNAME%Params params;
+	return params;
 }
 
 /**
@@ -47,20 +53,20 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                %CLASSNAME%Process<rgba8_view_t> fred( *this );
-                fred.setupAndProcess( args );
+                %CLASSNAME%Process<rgba8_view_t> p( *this );
+                p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                %CLASSNAME%Process<rgba16_view_t> fred( *this );
-                fred.setupAndProcess( args );
+                %CLASSNAME%Process<rgba16_view_t> p( *this );
+                p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                %CLASSNAME%Process<rgba32f_view_t> fred( *this );
-                fred.setupAndProcess( args );
+                %CLASSNAME%Process<rgba32f_view_t> p( *this );
+                p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthNone :
@@ -77,20 +83,20 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                %CLASSNAME%Process<gray8_view_t> fred( *this );
-                fred.setupAndProcess( args );
+                %CLASSNAME%Process<gray8_view_t> p( *this );
+                p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                %CLASSNAME%Process<gray16_view_t> fred( *this );
-                fred.setupAndProcess( args );
+                %CLASSNAME%Process<gray16_view_t> p( *this );
+                p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                %CLASSNAME%Process<gray32f_view_t> fred( *this );
-                fred.setupAndProcess( args );
+                %CLASSNAME%Process<gray32f_view_t> p( *this );
+                p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthNone :

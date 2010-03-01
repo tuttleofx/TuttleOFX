@@ -1,76 +1,37 @@
-#include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/PluginException.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-
 
 namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
-
 template<class View>
 %CLASSNAME%Process<View>::%CLASSNAME%Process( %CLASSNAME%Plugin &instance )
-: tuttle::plugin::ImageGilProcessor<View>( instance )
-, tuttle::plugin::Progress( instance )
+: ImageGilProcessor<View>( instance )
 , _plugin( instance )
 {
 }
 
 template<class View>
-void %CLASSNAME%Process<View>::setupAndProcess( const OFX::RenderArguments &args )
+void %CLASSNAME%Process<View>::setup( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
-    try
-    {
-        boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip( )->fetchImage( args.time ) );
-        if( !src.get( ) )
-            throw( ImageNotReadyException( ) );
-        OfxRectI sBounds = src->getBounds( );
-        OFX::BitDepthEnum srcBitDepth = src->getPixelDepth( );
-        OFX::PixelComponentEnum srcComponents = src->getPixelComponents( );
+	// source view
+	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip( )->fetchImage( args.time ) );
+	if( !src.get( ) )
+		throw( ImageNotReadyException( ) );
+	this->_srcView = this->getView( src.get(), _plugin.getSrcClip( )->getPixelRod(args.time) );
 
-        // Build source view
-        this->_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
-                                           static_cast < value_t* > ( src->getPixelData( ) ),
-                                           src->getRowBytes( ) );
+	// destination view
+	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time ) );
+	if( !dst.get( ) )
+	    throw( ImageNotReadyException( ) );
+	this->_dstView = this->getView( dst.get(), _plugin.getDstClip( )->getPixelRod(args.time) );
 
-        boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time ) );
-        if( !dst.get( ) )
-            throw( ImageNotReadyException( ) );
-        OfxRectI dBounds = dst->getBounds( );
-        OFX::BitDepthEnum dstBitDepth = dst->getPixelDepth( );
-        OFX::PixelComponentEnum dstComponents = dst->getPixelComponents( );
-
-        // Make sure bit depths are same
-        if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
-        {
-            throw( BitDepthMismatchException( ) );
-        }
-
-        // Build destination view
-        this->_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-                                           static_cast < value_t* > ( dst->getPixelData( ) ),
-                                           dst->getRowBytes( ) );
-
-        // Set the render window
-        this->setRenderWindow( args.renderWindow );
-        // Call the base class process member
-        this->process( );
-    }
-    catch( PluginException& e )
-    {
-        COUT_EXCEPTION( e );
-    }
+	// Make sure bit depths are same
+	if( src->getPixelDepth( ) != dst->getPixelDepth( ) ||
+	    src->getPixelComponents( ) != dst->getPixelComponents( ) )
+	{
+	    throw( BitDepthMismatchException( ) );
+	}
 }
 
 /**
@@ -80,11 +41,10 @@ void %CLASSNAME%Process<View>::setupAndProcess( const OFX::RenderArguments &args
  * @param[in] procWindow  Processing window
  */
 template<class View>
-void %CLASSNAME%Process<View>::multiThreadProcessImages( OfxRectI procWindow )
+void %CLASSNAME%Process<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
 	
-	// Put your computations here
 	View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
 							  procWindow.x2 - procWindow.x1,
 							  procWindow.y2 - procWindow.y1 );
