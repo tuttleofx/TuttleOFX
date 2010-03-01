@@ -32,7 +32,7 @@ libs.openfxPluginSupportHack = openfxPluginSupportHackChecker()
 target = 'openfxPluginSupportHack'
 sources = project.scanFiles( ['Library'] )
 
-env = project.createEnv( libs=[libs.openfxHack] )
+env = project.createEnv( libs=[libs.openfxHack,libs.boost] )
 env.Append( CPPPATH = ['include'] )
 env.Append( CCFLAGS = [project.CC['sharedobject']] )
 env.Replace( OBJSUFFIX='.os' )

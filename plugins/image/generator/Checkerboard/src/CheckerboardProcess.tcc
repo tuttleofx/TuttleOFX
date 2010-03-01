@@ -1,17 +1,22 @@
+#include "CheckerboardProcess.hpp"
+
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
+
+#include <ofxsImageEffect.h>
+#include <ofxsMultiThread.h>
+
+#include <boost/gil/gil_all.hpp>
+
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
 #include <vector>
 #include <iostream>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
 
-#include "CheckerboardProcess.hpp"
 
 
 namespace tuttle {
@@ -58,7 +63,7 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments &args )
 	OfxRectD rod = _plugin.getDstClip( )->getCanonicalRod( args.time );
 	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	Point tileSize( dims.x / params._boxes.x, dims.x / params._boxes.y );
-	double yshift = ( dims.x - dims.y ) * 0.5;
+	int yshift = boost::numeric_cast<int>(( dims.x - dims.y ) * 0.5);
 	
 	CheckerboardVirtualView checker( Point( dims.x, dims.x ), Locator( Point( 0, 0 ), Point( 1, 1 ), CheckerboardFunctorT( tileSize, params._color1, params._color2 ) ) );
 	_srcView = subimage_view<>( checker, 0, yshift, dims.x, dims.y );
