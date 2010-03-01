@@ -1362,12 +1362,15 @@ public:
 
 	/** @brief get default value */
 	void getDefault( double& r, double& g, double& b, double& a ) const;
+	OfxRGBAColourD getDefault() const { OfxRGBAColourD c; getDefault(c.r, c.g, c.b, c.a); return c; }
 
 	/** @brief get value */
 	void getValue( double& r, double& g, double& b, double& a ) const;
+	OfxRGBAColourD getValue() const { OfxRGBAColourD c; getValue(c.r, c.g, c.b, c.a); return c; }
 
 	/** @brief get the value at a time */
 	void getValueAtTime( double t, double& r, double& g, double& b, double& a ) const;
+	OfxRGBAColourD getValueAtTime( double t ) const { OfxRGBAColourD c; getValueAtTime(t, c.r, c.g, c.b, c.a); return c; }
 
 	/** @brief set value */
 	void setValue( double r, double g, double b, double a );

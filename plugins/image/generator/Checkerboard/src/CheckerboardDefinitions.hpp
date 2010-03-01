@@ -8,9 +8,9 @@ namespace tuttle {
 namespace plugin {
 namespace checkerboard {
 
-const static std::string kCheckerboardHelpButton = "Help";
-
-const static std::string kCheckerboardHelpString = "<b>Checkerboard</b> plugin is used to ???.  <br />";
+const static std::string kCheckerboardBoxes = "boxes";
+const static std::string kCheckerboardColor1 = "color1";
+const static std::string kCheckerboardColor2 = "color2";
 
 
 }

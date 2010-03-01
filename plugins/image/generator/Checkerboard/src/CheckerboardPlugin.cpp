@@ -18,6 +18,9 @@ ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _boxes = fetchInt2DParam( kCheckerboardBoxes );
+    _color1 = fetchRGBAParam( kCheckerboardColor1 );
+    _color2 = fetchRGBAParam( kCheckerboardColor2 );
 }
 
 OFX::Clip * CheckerboardPlugin::getSrcClip( ) const
@@ -103,15 +106,9 @@ void CheckerboardPlugin::render( const OFX::RenderArguments &args )
     }
 }
 
-void CheckerboardPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-    if( paramName == kCheckerboardHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kCheckerboardHelpString );
-    }
-}
+//void CheckerboardPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+//{
+//}
 
 }
 }

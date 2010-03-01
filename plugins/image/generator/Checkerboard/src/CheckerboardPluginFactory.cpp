@@ -23,8 +23,7 @@ namespace checkerboard {
  * @param[in, out]   desc     Effect descriptor
  */
 using namespace OFX;
-void
-CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     // basic labels
     desc.setLabels( "Checkerboard", "Checkerboard",
@@ -54,23 +53,32 @@ CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void
-CheckerboardPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
+void CheckerboardPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
                                              OFX::ContextEnum context )
 {
-    OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+    OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( ePixelComponentRGBA );
     srcClip->addSupportedComponent( ePixelComponentAlpha );
     srcClip->setSupportsTiles( kSupportTiles );
 
     // Create the mandated output clip
-    OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+    OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
     dstClip->addSupportedComponent( ePixelComponentRGBA );
     dstClip->addSupportedComponent( ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
-    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kCheckerboardHelpButton );
-    helpButton->setScriptName( "help" );
+    OFX::Int2DParamDescriptor *boxes = desc.defineInt2DParam( kCheckerboardBoxes );
+	boxes->setDefault(10, 10);
+	boxes->setLabel( "boxes number" );
+    boxes->setHint( "Number of boxes of the checkerboard." );
+
+    OFX::RGBAParamDescriptor* color1 = desc.defineRGBAParam( kCheckerboardColor1 );
+	color1->setDefault(0, 0, 0, 1);
+	color1->setLabel( "color1" );
+
+    OFX::RGBAParamDescriptor* color2 = desc.defineRGBAParam( kCheckerboardColor2 );
+	color1->setDefault(1, 1, 1, 1);
+	color1->setLabel( "color2" );
 }
 
 /**
@@ -79,8 +87,7 @@ CheckerboardPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect*
-CheckerboardPluginFactory::createInstance(OfxImageEffectHandle handle,
+OFX::ImageEffect* CheckerboardPluginFactory::createInstance(OfxImageEffectHandle handle,
                                             OFX::ContextEnum context)
 {
     return new CheckerboardPlugin(handle);

@@ -52,22 +52,31 @@ struct image_from_view
  * @brief Get black color value
  */
 template<class View>
-static inline const typename View::value_type get_black( const View& view )
+static inline const typename View::value_type get_black()
 {
 	using namespace bgil;
 	typename View::value_type black;
-	typedef pixel<bits8, gray_layout_t > comp_pixel_t;
-	color_convert( (const comp_pixel_t)( 0 ), black );
+	color_convert( gray32f_pixel_t( 0.0 ), black );
 	return black;
+}
+template<class View>
+static inline const typename View::value_type get_black( const View& )
+{
+	return get_black<View>();
 }
 
 template<class View>
-static inline typename View::value_type get_white( const View& view )
+static inline typename View::value_type get_white()
 {
 	using namespace bgil;
 	typename View::value_type white;
-	color_convert( gray8_pixel_t( channel_traits< typename channel_type< View >::type >::max_value() ), white );
+	color_convert( gray32f_pixel_t( 1.0 ), white );
 	return white;
+}
+template<class View>
+static inline typename View::value_type get_white( const View& )
+{
+	return get_white<View>();
 }
 
 template <class View>
