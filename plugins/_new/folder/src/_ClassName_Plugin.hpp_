@@ -15,8 +15,7 @@ struct %CLASSNAME%Params
 };
 
 /**
- * @brief
- *
+ * @brief %CLASSNAME% plugin
  */
 class %CLASSNAME%Plugin : public OFX::ImageEffect
 {

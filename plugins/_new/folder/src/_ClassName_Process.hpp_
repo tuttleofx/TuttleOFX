@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_%D_CLASSNAME%_PROCESS_HPP_
 
 #include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -17,27 +17,22 @@
 #include <iostream>
 
 
-
 namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
 /**
- * @brief %CLASSNAME%
+ * @brief %CLASSNAME% process
  *
  */
 template<class View>
-class %CLASSNAME%Process : public ImageGilProcessor<View>
+class %CLASSNAME%Process : public ImageGilFilterProcessor<View>
 {
 protected :
     %CLASSNAME%Plugin&    _plugin;        ///< Rendering plugin
-    View                  _srcView;       ///< Source view
 
 public:
     %CLASSNAME%Process( %CLASSNAME%Plugin& instance );
-
-    // set up and run a processor
-    void setup( const OFX::RenderArguments& args );
 
     // Do some processing
     void multiThreadProcessImages( const OfxRectI& procWindow );
