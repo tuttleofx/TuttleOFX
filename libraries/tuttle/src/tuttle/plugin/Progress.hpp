@@ -43,7 +43,7 @@ public:
 	Progress() {}
 	#endif
 
-	~Progress() {}
+	virtual ~Progress() {}
 
 	void progressBegin( const int numSteps, const std::string& msg = "" );
 	void progressEnd();

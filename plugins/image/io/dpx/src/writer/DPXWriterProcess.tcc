@@ -1,20 +1,6 @@
 #include "DPXWriterDefinitions.hpp"
-#include "DPXWriterProcess.hpp"
 #include "DPXWriterPlugin.hpp"
 
-#include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/common/image/gilViewTypes.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
 #include <boost/cstdint.hpp>
 
 namespace tuttle {
@@ -26,31 +12,13 @@ using namespace boost::gil;
 
 template<class View>
 DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
-: ImageGilProcessor<View>( instance )
+: ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
 	_filepath       = instance.fetchStringParam( kOutputFilename );
 	_bitDepth       = instance.fetchChoiceParam( kParamBitDepth );
 	_componentsType = instance.fetchChoiceParam( kParamComponentsType );
 	_compressed     = instance.fetchBooleanParam( kParamCompressed );
-}
-
-template<class View>
-void DPXWriterProcess<View>::setup( const OFX::RenderArguments& args )
-{
-	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
-	if( !src.get() )
-		throw( ImageNotReadyException() );
-	_srcView = this->getView( src.get(), _plugin.getSrcClip()->getPixelRod(args.time) );
-	
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !dst.get() )
-		throw( ImageNotReadyException() );
-	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
-
-	// Make sure bit depths are same
-	if( src->getPixelDepth() != dst->getPixelDepth() || src->getPixelComponents() != dst->getPixelComponents() )
-		throw( BitDepthMismatchException() );
 }
 
 /**

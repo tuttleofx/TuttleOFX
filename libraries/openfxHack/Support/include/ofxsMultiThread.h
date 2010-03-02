@@ -60,10 +60,7 @@ private:
 	static void staticMultiThreadFunction( unsigned int threadIndex, unsigned int threadMax, void* customArg );
 
 public:
-	/** @brief ctor */
 	Processor();
-
-	/** @brief dtor */
 	virtual ~Processor();
 
 	/** @brief function that will be called in each thread. ID is from 0..nThreads-1 nThreads are the number of threads it is being run over */

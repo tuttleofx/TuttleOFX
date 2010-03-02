@@ -54,18 +54,17 @@ void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 
 	double par       = _plugin.getDstClip()->getPixelAspectRatio();
 	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-	OfxRectI bounds = dst->getBounds();
-	if( !dst.get() )
+	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
+	OfxRectI bounds = this->_dst->getBounds();
+	if( !this->_dst.get() )
 		throw( tuttle::plugin::ImageNotReadyException() );
 	
 	// Build destination view
-	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
+ * @brief Function called by rendering thread each time a process must be done.
  *
  * @param[in] procWindow  Processing window
  */
@@ -84,18 +83,6 @@ void DPXReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	}
 }
 
-/**
- * @brief Function called to apply an anisotropic blur
- *
- * @param[out]  dst     Destination image view
- * @param[in]   amplitude     Amplitude of the anisotropic blur
- * @param dl    spatial discretization.
- * @param da    angular discretization.
- * @param gauss_prec    precision of the gaussian function
- * @param fast_approx   Tell to use the fast approximation or not.
- *
- * @return Result view of the blurring process
- */
 template<class View>
 View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException )
 {

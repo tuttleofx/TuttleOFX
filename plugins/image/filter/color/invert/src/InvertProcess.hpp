@@ -4,7 +4,7 @@
 #include "InvertPlugin.hpp"
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -17,16 +17,13 @@ namespace plugin {
 namespace invert {
 
 template<class View>
-class InvertProcess : public ImageGilProcessor<View>
+class InvertProcess : public ImageGilFilterProcessor<View>
 {
 protected:
 	InvertPlugin& _plugin;  ///< Rendering plugin
-	View          _srcView; ///< Source view
 
 public:
 	InvertProcess( InvertPlugin & instance );
-
-	void setup( const OFX::RenderArguments& args );
 
 	void multiThreadProcessImages( const OfxRectI& procWindow );
 };

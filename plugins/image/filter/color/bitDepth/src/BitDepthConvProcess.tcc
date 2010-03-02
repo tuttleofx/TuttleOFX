@@ -2,6 +2,8 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
+#include "BitDepthConvPlugin.hpp"
+
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
@@ -30,23 +32,21 @@ BitDepthConvProcess<SView, DView>::BitDepthConvProcess( BitDepthConvPlugin &inst
 template<class SView, class DView>
 void BitDepthConvProcess<SView, DView>::setup( const OFX::RenderArguments &args )
 {
-	// source view
-	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip( )->fetchImage( args.time ) );
-	if( !src.get( ) )
-		throw( ImageNotReadyException( ) );
-	OfxRectI sBounds = src->getBounds( );
-	this->_srcView = interleaved_view( std::abs( sBounds.x2 - sBounds.x1 ), std::abs( sBounds.y2 - sBounds.y1 ),
-									   static_cast < sPixel* > ( src->getPixelData( ) ),
-									   src->getRowBytes( ) );
-
 	// destination view
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time ) );
-	if( !dst.get( ) )
+	_dst.reset( _plugin.getDstClip( )->fetchImage( args.time ) );
+	if( !_dst.get( ) )
 		throw( ImageNotReadyException( ) );
-	OfxRectI dBounds = dst->getBounds( );
-	this->_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-									   static_cast < dPixel* > ( dst->getPixelData( ) ),
-									   dst->getRowBytes( ) );
+	if( _dst->getRowBytes( ) <= 0 )
+		throw( WrongRowBytesException( ) );
+	this->_dstView = getView<DView>( _dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+
+	// source view
+	_src.reset( _plugin.getSrcClip( )->fetchImage( args.time ) );
+	if( !_src.get( ) )
+		throw( ImageNotReadyException( ) );
+	if( _src->getRowBytes( ) <= 0 )
+		throw( WrongRowBytesException( ) );
+	this->_srcView = getView<SView>( _src.get(), _plugin.getSrcClip( )->getPixelRod(args.time) );
 }
 
 /**

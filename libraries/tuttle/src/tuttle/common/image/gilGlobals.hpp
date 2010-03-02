@@ -1,7 +1,10 @@
-#ifndef GIL_GLOBALS_HPP
-#define GIL_GLOBALS_HPP
+#ifndef _GIL_GLOBALS_HPP_
+#define _GIL_GLOBALS_HPP_
 
 #include "tuttle/common/math/minmax.hpp"
+
+#include <ofxCore.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/type_traits.hpp>
 

@@ -25,33 +25,12 @@ using namespace boost::gil;
 
 template<class View>
 EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin& instance )
-: ImageGilProcessor<View>( instance )
+: ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
 	_filepath       = instance.fetchStringParam( kOutputFilename );
 	_bitDepth       = instance.fetchChoiceParam( kParamBitDepth );
 	_componentsType = instance.fetchChoiceParam( kParamComponentsType );
-}
-
-template<class View>
-void EXRWriterProcess<View>::setup( const OFX::RenderArguments& args )
-{
-	// source view
-	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
-	if( !src.get() )
-		throw( ImageNotReadyException() );
-	this->_srcView = this->getView( src.get(), _plugin.getSrcClip()->getPixelRod(args.time) );
-
-	// destination view
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !dst.get() )
-		throw( ImageNotReadyException() );
-	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
-
-	// Make sure bit depths are same
-	if( src->getPixelDepth() != dst->getPixelDepth() ||
-		src->getPixelComponents() != dst->getPixelComponents() )
-		throw( BitDepthMismatchException() );
 }
 
 /**

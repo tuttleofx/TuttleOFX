@@ -1,5 +1,5 @@
-#ifndef PNG_WRITER_PLUGIN_HPP
-#define PNG_WRITER_PLUGIN_HPP
+#ifndef _PNG_WRITER_PLUGIN_HPP_
+#define _PNG_WRITER_PLUGIN_HPP_
 
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
@@ -12,8 +12,7 @@ namespace writer {
 using namespace boost::gil;
 
 /**
- * @brief Class used to denoise with partial derivated equations
- *
+ * @brief Png writer
  */
 class PNGWriterPlugin : public OFX::ImageEffect
 {

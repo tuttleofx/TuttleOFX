@@ -34,6 +34,9 @@ CropProcess<View>::CropProcess( CropPlugin& instance )
 template<class View>
 void CropProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	/// @todo tuttle: needs to be rewrite
+	/// use ImageGilFilterProcessor<View>::setup(args);
+	
 	// SOURCE
 	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
 	_renderScale = src->getRenderScale();

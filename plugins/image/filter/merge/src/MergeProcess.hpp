@@ -1,5 +1,5 @@
-#ifndef MERGE_PROCESS_HPP
-#define MERGE_PROCESS_HPP
+#ifndef _MERGE_PROCESS_HPP_
+#define _MERGE_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -20,8 +20,7 @@ namespace plugin {
 namespace merge {
 
 /**
- * @brief Base class
- *
+ * @brief Merge process
  */
 template<class View, class Functor>
 class MergeProcess : public ImageGilProcessor<View>
@@ -30,6 +29,9 @@ protected:
 	MergePlugin& _plugin; ///< Rendering plugin
 	View _srcViewA; ///< Source view A
 	View _srcViewB; ///< Source view B
+	boost::scoped_ptr<OFX::Image> _srcA;
+	boost::scoped_ptr<OFX::Image> _srcB;
+	boost::scoped_ptr<OFX::Image> _dst;
 
 public:
 	MergeProcess( MergePlugin & instance );
@@ -45,4 +47,4 @@ public:
 
 #include "MergeProcess.tcc"
 
-#endif  // MERGE_PROCESS_HPP
+#endif

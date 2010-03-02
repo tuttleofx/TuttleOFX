@@ -77,8 +77,8 @@ void CheckerboardPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	color1->setLabel( "color1" );
 
     OFX::RGBAParamDescriptor* color2 = desc.defineRGBAParam( kCheckerboardColor2 );
-	color1->setDefault(1, 1, 1, 1);
-	color1->setLabel( "color2" );
+	color2->setDefault(1, 1, 1, 1);
+	color2->setLabel( "color2" );
 }
 
 /**

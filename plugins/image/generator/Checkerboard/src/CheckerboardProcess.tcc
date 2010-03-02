@@ -64,9 +64,11 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments &args )
 	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	Point tileSize( dims.x / params._boxes.x, dims.x / params._boxes.y );
 	int yshift = boost::numeric_cast<int>(( dims.x - dims.y ) * 0.5);
-	
+
+	// create a squared checkerboard
 	CheckerboardVirtualView checker( Point( dims.x, dims.x ), Locator( Point( 0, 0 ), Point( 1, 1 ), CheckerboardFunctorT( tileSize, params._color1, params._color2 ) ) );
-	_srcView = subimage_view<>( checker, 0, yshift, dims.x, dims.y );
+	// create a subview depending on the image ratio
+	_srcView = subimage_view<>( checker, 0, yshift, boost::numeric_cast<int>(dims.x), boost::numeric_cast<int>(dims.y) );
 }
 
 /**

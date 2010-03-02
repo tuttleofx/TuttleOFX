@@ -1,7 +1,7 @@
-#ifndef DPX_READER_PROCESS_HPP
-#define DPX_READER_PROCESS_HPP
+#ifndef _DPX_READER_PROCESS_HPP_
+#define _DPX_READER_PROCESS_HPP_
 
-#include "../dpxEngine/dpxImage.hpp"
+#include <dpxEngine/dpxImage.hpp>
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -19,8 +19,7 @@ namespace dpx {
 namespace reader {
 
 /**
- * @brief Base class for the denoising processor
- *
+ * @brief Base class to read dpx files
  */
 template<class View>
 class DPXReaderProcess : public ImageGilProcessor<View>

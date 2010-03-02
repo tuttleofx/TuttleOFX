@@ -37,7 +37,6 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 {
 	_filepath      = instance.fetchStringParam( kInputFilename );
 	_outComponents = instance.fetchChoiceParam( kOutputComponents );
-	assert( _filepath != NULL );
 }
 
 template<class View>

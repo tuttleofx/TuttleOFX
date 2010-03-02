@@ -1,28 +1,21 @@
-/**
- * @file BitDepthConvProcess.hpp
- * @brief
- * @author
- * @date    08/01/10 17:46
- *
- */
-#ifndef BITDEPTHCONV_PROCESS_HPP
-#define BITDEPTHCONV_PROCESS_HPP
+#ifndef _BITDEPTHCONV_PROCESS_HPP_
+#define _BITDEPTHCONV_PROCESS_HPP_
 
-
-#include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/common/image/gilGlobals.hpp>
+
+#include <ofxsImageEffect.h>
+#include <ofxsMultiThread.h>
+
+#include <boost/scoped_ptr.hpp>
 
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
 #include <vector>
 #include <iostream>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -36,6 +29,8 @@ class BitDepthConvProcess : public ImageGilProcessor<DView>
 protected :
     BitDepthConvPlugin& _plugin;        ///< Rendering plugin
     SView               _srcView;       ///< Source view
+	boost::scoped_ptr<OFX::Image> _src;
+	boost::scoped_ptr<OFX::Image> _dst;
 
 public :
     BitDepthConvProcess( BitDepthConvPlugin& instance );
@@ -51,4 +46,4 @@ public :
 
 #include "BitDepthConvProcess.tcc"
 
-#endif  // BITDEPTHCONV_PROCESS_HPP
+#endif

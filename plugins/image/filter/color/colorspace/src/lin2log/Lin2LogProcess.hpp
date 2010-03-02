@@ -2,7 +2,7 @@
 #define _LIN2LOG_PROCESS_HPP_
 
 #include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -23,20 +23,16 @@ namespace colorspace {
 namespace lin2log {
 
 /**
- * @brief Base class
- *
+ * @brief Lin to log process
  */
 template<class View>
-class Lin2LogProcess : public ImageGilProcessor<View>
+class Lin2LogProcess : public ImageGilFilterProcessor<View>
 {
 protected :
     Lin2LogPlugin& _plugin;        ///< Rendering plugin
-    View           _srcView;       ///< Source view
 
 public :
     Lin2LogProcess( Lin2LogPlugin &instance );
-
-    void setup( const OFX::RenderArguments& args );
 
     void multiThreadProcessImages( const OfxRectI& procWindow );
 };

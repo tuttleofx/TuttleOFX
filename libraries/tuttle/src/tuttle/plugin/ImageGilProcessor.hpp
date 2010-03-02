@@ -9,13 +9,17 @@
 
 #include <tuttle/common/image/gilGlobals.hpp>
 
+#include <boost/scoped_ptr.hpp>
+
 #include <cstdlib>
 #include <vector>
 
 namespace tuttle {
 namespace plugin {
 
-/// @brief Base class to process images with
+template<class View>
+View getView( OFX::Image* img, const OfxRectI& rod );
+
 
 /**
  * @brief Base class that can be used to process images of any type using boost::gil library view to access images.
@@ -28,12 +32,14 @@ public:
     typedef typename image_from_view<View>::type Image;
 protected:
 	OFX::ImageEffect& _effect; ///< @brief effect to render with
-	View _dstView; ///< @brief image to process into
 	OfxRectI _renderWindow; ///< @brief render window to use
+	View _dstView; ///< @brief image to process into
+	boost::scoped_ptr<OFX::Image> _dst;
 
 public:
 	/** @brief ctor */
 	ImageGilProcessor( OFX::ImageEffect& effect );
+	virtual ~ImageGilProcessor();
 
     /** @brief called before any MP is done */
     virtual void preProcess(void) { progressBegin( _renderWindow.y2 - _renderWindow.y1 ); }
@@ -54,6 +60,7 @@ public:
 		catch( ImageNotReadyException& e )
 		{
 			// stop the process but don't display an error
+			COUT_ERROR( "ImageNotReadyException" );
 			progressEnd( );
 			return;
 		}
@@ -63,12 +70,21 @@ public:
 			progressEnd( );
 			return;
 		}
+		catch( ... )
+		{
+			COUT_ERROR( "Unknown exception." );
+			progressEnd( );
+			return;
+		}
 
 		// Call the base class process member
 		this->process();
 	}
 
-	View getView( OFX::Image* img, const OfxRectI& rod );
+	View getView( OFX::Image* img, const OfxRectI& rod )
+	{
+		return tuttle::plugin::getView<View>( img, rod );
+	}
 
 	/** @brief overridden from OFX::MultiThread::Processor. This function is called once on each SMP thread by the base class */
 	void multiThreadFunction( unsigned int threadId, unsigned int nThreads )
@@ -103,6 +119,11 @@ ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
 }
 
 template <class View>
+ImageGilProcessor<View>::~ImageGilProcessor()
+{
+}
+
+template <class View>
 void ImageGilProcessor<View>::process( void )
 {
 	// is it OK ?
@@ -121,28 +142,29 @@ void ImageGilProcessor<View>::process( void )
 }
 
 template<class View>
-View ImageGilProcessor<View>::getView( OFX::Image* img, const OfxRectI& rod )
+View getView( OFX::Image* img, const OfxRectI& rod )
 {
 	using namespace boost::gil;
+    typedef typename View::value_type Pixel;
 
-	//OfxRectI srcImgRod = _src->getRegionOfDefinition();
-	OfxRectI imgBounds = img->getBounds();
-	point2<int> tileSize = point2<int>( imgBounds.x2 - imgBounds.x1,
-											 imgBounds.y2 - imgBounds.y1 );
+	//OfxRectI rod = img->getRegionOfDefinition();
+	OfxRectI bounds = img->getBounds();
+	point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
+										bounds.y2 - bounds.y1 );
 
 	// Build views
-	View srcTileView = interleaved_view( tileSize.x, tileSize.y,
-										 static_cast<Pixel*>( img->getPixelData() ),
-										 img->getRowBytes( ) );
+	View tileView = interleaved_view( tileSize.x, tileSize.y,
+									  static_cast<Pixel*>( img->getPixelData() ),
+									  img->getRowBytes( ) );
 
-	// if the tile is the full image
+	// if the tile is equals to the full image
 	// directly return the tile
-	if( imgBounds.x1 == 0 && imgBounds.y1 == 0 &&
-	    imgBounds.x2 == rod.x2 && imgBounds.y2 == rod.y2 )
-		return srcTileView;
+	if( bounds.x1 == rod.x1 && bounds.y1 == rod.y1 &&
+	    bounds.x2 == rod.x2 && bounds.y2 == rod.y2 )
+		return tileView;
 
 	// view the tile as a full image
-	return subimage_view( srcTileView, -imgBounds.x1, -imgBounds.y1, static_cast<int>(rod.x2-rod.x1), static_cast<int>(rod.y2-rod.y1) );
+	return subimage_view( tileView, -bounds.x1, -bounds.y1, rod.x2-rod.x1, rod.y2-rod.y1 );
 }
 
 

@@ -1,10 +1,10 @@
-#ifndef EXR_READER_PROCESS_HPP
-#define EXR_READER_PROCESS_HPP
+#ifndef _EXR_READER_PROCESS_HPP_
+#define _EXR_READER_PROCESS_HPP_
 
-#include <ImfInputFile.h>
-#include <ImfChannelList.h>
-#include <ImfArray.h>
-#include <ImathVec.h>
+#include <OpenEXR/ImfInputFile.h>
+#include <OpenEXR/ImfChannelList.h>
+#include <OpenEXR/ImfArray.h>
+#include <OpenEXR/ImathVec.h>
 
 #include "../half/gilHalf.hpp"
 #include <tuttle/common/utils/global.hpp>
@@ -23,8 +23,7 @@ namespace exr    {
 namespace reader {
 
 /**
- * @brief Base class for the denoising processor
- *
+ * @brief Exr reader
  */
 template<class View>
 class EXRReaderProcess : public ImageGilProcessor<View>

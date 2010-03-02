@@ -70,20 +70,25 @@ class Tuttle( SConsProject ):
 
     def createOfxPlugin( self, sources=[], libs=[], dirs=[] ):
         '''
-        Cree un plugin OpenFX, a partir d'une liste de sources et d'une liste de librairies.
+        Create an openfx plugin from sources files list and libraries list.
         '''
         pluginName = self.getName()
+        allSources = []
+        if sources:
+            allSources = sources
         if dirs:
-            sources.extend( self.scanFiles( dirs ) )
+            allSources.extend( self.scanFiles( dirs ) )
+
         env_local = self.createEnv( libs )
         env_local.AppendUnique( CCFLAGS = self.CC['visibilityhidden'] )
-        plugin = env_local.SharedLibrary( target=pluginName, source=sources )
+        env_local.Append( CPPPATH = dirs )
+        env_local.Append( CCPATH = dirs )
+        plugin = env_local.SharedLibrary( target=pluginName, source=allSources )
         env_local.InstallAs( self.getOutputOfxPlugin(), plugin )
         
         resources_dir =  self.getRealAbsoluteCwd() + os.sep + 'Resources'
         if os.path.isdir( resources_dir ) :
             plugin_resources = Command( self.getOutputOfxResources(), resources_dir, Copy("$TARGET", "$SOURCE"))
-            #Copy( self.getOutputOfxResources(), resources_dir )
             env_local.Alias( pluginName,   plugin_resources )
         
         env_local.Alias( pluginName,   self.getOutputOfxPlugin() )
@@ -97,7 +102,7 @@ class Tuttle( SConsProject ):
                 mode = 'Release'
             visual_project = env_local.MSVSProject(
                 target = 'visual' + os.sep + pluginName + env_local['MSVSPROJECTSUFFIX'],
-                srcs = sources,
+                srcs = allSources,
                 #incs = barincs,
                 #localincs = barlocalincs,
                 #resources = barresources,

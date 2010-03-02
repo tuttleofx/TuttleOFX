@@ -1,5 +1,5 @@
-#ifndef PNG_READER_PLUGIN_H
-#define PNG_READER_PLUGIN_H
+#ifndef _PNG_READER_PLUGIN_HPP_
+#define _PNG_READER_PLUGIN_HPP_
 
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
@@ -12,7 +12,7 @@ namespace reader {
 using namespace boost::gil;
 
 /**
- * @brief Class used to denoise with partial derivated equations
+ * @brief Png reader
  *
  */
 class PNGReaderPlugin : public OFX::ImageEffect

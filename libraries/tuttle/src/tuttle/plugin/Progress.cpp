@@ -33,7 +33,7 @@ void Progress::progressBegin( const int numSteps, const std::string& msg )
  *         false = continu rendering
  *
  */
-bool Progress::progressForward( const int nSteps /* = 1*/ ) //throw(PluginException)
+bool Progress::progressForward( const int nSteps ) //throw(PluginException)
 {
 	#ifndef WITHOUT_OFX
 	_mutex.lock();

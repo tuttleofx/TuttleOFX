@@ -1,7 +1,7 @@
 Import( 'project' )
 Import( 'libs' )
 
-project.createOfxPlugin( sources = project.scanFiles( ['src'] ),
+project.createOfxPlugin( dirs = ['src'],
                          libs = [libs.boost_system,
 						         libs.openfxHack,
 								 libs.openfxPluginSupportHack,

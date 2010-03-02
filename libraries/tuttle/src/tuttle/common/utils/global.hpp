@@ -37,6 +37,8 @@ namespace bgil = boost::gil;
 // Define functions to display infos in the console
 #include <iostream>
 
+#ifndef COUT
+
 /**
  * @def   INFOS
  * @brief informations : filename, line number, function name
@@ -86,6 +88,8 @@ namespace bgil = boost::gil;
     ::std::cerr << "Exception:" << \
     ::std::endl << INFOS << \
     ::std::endl << "\t" << e.what() << ::std::endl
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 

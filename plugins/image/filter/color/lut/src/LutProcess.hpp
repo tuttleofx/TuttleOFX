@@ -4,7 +4,7 @@
 #include "LutPlugin.hpp"
 
 #include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
+#include "tuttle/plugin/ImageGilFilterProcessor.hpp"
 #include "tuttle/plugin/PluginException.hpp"
 #include "lutEngine/lut_reader.h"
 #include "lutEngine/hd3d_lut.h"
@@ -19,21 +19,17 @@ namespace plugin {
 namespace lut {
 
 /**
- * @brief Base class
- *
+ * @brief Lut process
  */
 template<class View>
-class LutProcess : public ImageGilProcessor<View>
+class LutProcess : public ImageGilFilterProcessor<View>
 {
 private:
 	Lut3D *_lut3D;               ///< Lut3D
 	LutPlugin&  _plugin;        ///< Rendering plugin
-	View _srcView;              ///< Source view
 
 public:
 	LutProcess<View>( LutPlugin & instance );
-
-	void setup( const OFX::RenderArguments& args );
 
 	void multiThreadProcessImages( const OfxRectI& procWindow );
 

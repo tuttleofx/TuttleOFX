@@ -1,12 +1,10 @@
-#ifndef DPX_READER_PLUGIN_HPP
-#define DPX_READER_PLUGIN_HPP
+#ifndef _DPX_READER_PLUGIN_HPP_
+#define _DPX_READER_PLUGIN_HPP_
 
-#include "../dpxEngine/dpxImage.hpp"
+#include <dpxEngine/dpxImage.hpp>
+#include <tuttle/common/image/gilGlobals.hpp>
 
 #include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
-
-namespace bgil = boost::gil;
 
 namespace tuttle {
 namespace plugin {
@@ -14,8 +12,7 @@ namespace dpx {
 namespace reader {
 
 /**
- * @brief Class used to denoise with partial derivated equations
- *
+ * @brief Dpx reader
  */
 class DPXReaderPlugin : public OFX::ImageEffect
 {

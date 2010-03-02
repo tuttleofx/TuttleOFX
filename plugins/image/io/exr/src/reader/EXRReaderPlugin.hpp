@@ -1,5 +1,5 @@
-#ifndef EXR_READER_PLUGIN_H
-#define EXR_READER_PLUGIN_H
+#ifndef _EXR_READER_PLUGIN_HPP_
+#define _EXR_READER_PLUGIN_HPP_
 
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
@@ -13,8 +13,7 @@ namespace exr {
 namespace reader {
 
 /**
- * @brief Class used to denoise with partial derivated equations
- *
+ * @brief Exr reader
  */
 class EXRReaderPlugin : public OFX::ImageEffect
 {
