@@ -46,9 +46,13 @@ inline bool double2DSetValue( OFX::Double2DParam* p, const OfxPointD& value, con
 	return double2DSetValue( *p, value, moveType );
 }
 
-inline EMoveType clicDouble2D( const OfxPointD& point, const OfxPointD& mouse, const double marge )
+template<class Point>
+inline EMoveType clicPoint( const Point& point, const Point& mouse, const double marge )
 {
-	OfxPointD dist = { std::abs(point.x - mouse.x), std::abs(point.y - mouse.y) };
+	Point dist;
+	dist.x = std::abs(point.x - mouse.x);
+	dist.y = std::abs(point.y - mouse.y);
+	
 	double marge2 = marge*2;
 	if( dist.x < marge2 && dist.y < marge2 )
 		return eMoveTypeXY;
@@ -68,7 +72,7 @@ inline EMoveType clicDouble2D( const OfxPointD& point, const OfxPointD& mouse, c
 inline EMoveType clicDouble2D( const OFX::Double2DParam& point, const OfxPointD& mouse, const double marge )
 {
 	OfxPointD p = point.getValue();
-	return clicDouble2D( p, mouse, marge );
+	return clicPoint<>( p, mouse, marge );
 }
 inline EMoveType clicDouble2D( const OFX::Double2DParam* point, const OfxPointD& mouse, const double marge )
 {

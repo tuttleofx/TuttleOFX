@@ -32,7 +32,7 @@ inline void displayPointRect( const Point2& p, const double marge )
 
 inline void displayRect( const OfxRectD& r, const double marge = 0 )
 {
-	glBegin( GL_LINE_STRIP );
+	glBegin( GL_LINE_LOOP );
 	glVertex2f( r.x1 - marge, r.y1 - marge );
 	glVertex2f( r.x2 + marge, r.y1 - marge );
 	glVertex2f( r.x2 + marge, r.y2 + marge );

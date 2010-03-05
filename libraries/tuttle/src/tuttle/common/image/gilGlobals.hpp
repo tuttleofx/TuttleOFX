@@ -8,6 +8,8 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/type_traits.hpp>
 
+#include <ostream>
+
 namespace tuttle {
 
 namespace bgil = boost::gil;
@@ -156,6 +158,10 @@ bgil::point2<T> operator*( const bgil::point2<T>& a, const bgil::point2<T>& b ) 
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
+bgil::point2<T> operator/( const bgil::point2<T>& a, const bgil::point2<T>& b ) { return bgil::point2<T>( a.x / b.x, a.y / b.y ); }
+/// \ingroup PointModel
+template <typename T>
+GIL_FORCEINLINE
 bgil::point2<T>& operator*=( bgil::point2<T>& p, double t ) { p.x *= t; p.y *= t; return p; }
 /// \ingroup PointModel
 template <typename T> GIL_FORCEINLINE
@@ -167,6 +173,12 @@ bgil::point2<double> operator/( double t, const bgil::point2<T>& p )
     if( p.y != 0 )
         res.y = t / p.y;
     return res;
+}
+
+template <typename T>
+std::ostream& operator<<( std::ostream& out, const bgil::point2<T>& p )
+{
+	return out << "x:" << p.x << " y:" << p.y;
 }
 
 
