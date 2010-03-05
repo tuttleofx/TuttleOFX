@@ -244,6 +244,15 @@ protected:
 
 typedef InteractDescriptor EffectOverlayDescriptor;
 
+class NoOverlayDescriptor : public OFX::EffectOverlayDescriptor
+{
+public:
+    OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect *effect )
+    {
+        return new OFX::OverlayInteract( handle );
+    }
+};
+
 class ParamInteractDescriptor : public InteractDescriptor
 {
 public:
