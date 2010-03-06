@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX %L_CLASSNAME% Plugin
+## Main BJam makefile for TuttleOFX Checkerboard Plugin
 ###############################################################################
 import os ;
 
@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/%L_CLASSNAME%/obj
+    : build-dir $(DIST)/plugins/Checkerboard/obj
     ;
 
 ###############################################################################
@@ -27,7 +27,7 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 # Product 
 ###############################################################################
-plugin %L_CLASSNAME% : 
+plugin Checkerboard : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
     /supportlib
@@ -39,9 +39,9 @@ plugin %L_CLASSNAME% :
 ###############################################################################
 alias install : install-plug ;
 install install-plug
-	:	%L_CLASSNAME%
-	:	<os>NT:<location>$(DIST)/plugins/%L_CLASSNAME%/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/%L_CLASSNAME%/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/%L_CLASSNAME%/bundle/%L_CLASSNAME%.ofx.bundle/Contents/MacOS
+	:	Checkerboard
+	:	<os>NT:<location>$(DIST)/plugins/Checkerboard/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/Checkerboard/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/Checkerboard/bundle/%L_CLASSNAME%.ofx.bundle/Contents/MacOS
 	;
 

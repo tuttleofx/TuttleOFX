@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX crop Plugin
+## Main BJam makefile for TuttleOFX Lut Plugin
 ###############################################################################
 import os ;
 
@@ -10,14 +10,17 @@ project
     : requirements	
         <include>src
         <threading>multi
-    : build-dir $(DIST)/crop/obj
+    : build-dir $(DIST)/Lut/obj
     ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin crop : 
+plugin Lut :
     [ glob src/*.cpp ]
+    [ glob src/lutEngine/*.cpp ]
+    /boost/filesystem/<link>static
+    /boost/regex/<link>static
     /tuttlelib//tuttleplugin/<link>static
 	:
 	<os>NT:<find-shared-library>opengl32
@@ -27,5 +30,5 @@ plugin crop :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install crop : $(DIST) ;
+auto_install Lut : $(DIST) ;
 

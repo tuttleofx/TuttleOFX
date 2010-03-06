@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Invert Plugin
+## Main BJam makefile for TuttleOFX Png Plugin
 ###############################################################################
 import os ;
 
@@ -7,25 +7,25 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>src
-  				<threading>multi 
-    : build-dir $(DIST)/invert/obj
+    : requirements
+        <threading>multi
+    : build-dir $(DIST)/Png/obj
     ;
+
+use-project /Png 	: $(3RD_PARTY)/libpng ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin invert : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
-    ;
+plugin Png : 
+        [ glob-tree *.cpp ]
+        /tuttlelib//tuttleplugin/<link>static
+        /boost/filesystem/<link>static
+		/boost/system/<link>static
+        /png/<link>static
+        ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install invert : $(DIST) ;
-
+auto_install Png : $(DIST) ;

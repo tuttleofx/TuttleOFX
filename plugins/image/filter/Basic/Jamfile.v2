@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX exr Plugin
+## Main BJam makefile for TuttleOFX Basic Plugin
 ###############################################################################
 import os ;
 
@@ -7,27 +7,24 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <threading>multi
-        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/exr/obj
+    : requirements	
+				<include>src
+  				<threading>multi 
+    : build-dir $(DIST)/Basic/obj
     ;
-
-use-project /libexr : $(3RD_PARTY)/openexr ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin exr : 
-        [ glob-tree *.cpp ]
-        /tuttlelib//tuttleplugin/<link>static
-        /boost/filesystem/<link>static
-		/boost/system/<link>static
-        /libexr/<link>static
-        ;
+plugin Basic : 
+				[ glob src/*.cpp ]
+			    /tuttlelib//tuttleplugin/<link>static
+				:
+				<os>NT:<find-shared-library>opengl32
+				<os>MACOSX:<linkflags>"-framework OpenGL"
+				;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install exr : $(DIST) ;
-
+auto_install Basic : $(DIST) ;

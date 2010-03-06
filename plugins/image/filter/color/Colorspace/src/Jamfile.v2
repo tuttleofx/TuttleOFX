@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX lut Plugin
+## Main BJam makefile for TuttleOFX Colorspace Plugin
 ###############################################################################
 import os ;
 
@@ -7,28 +7,21 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
+    : requirements
         <include>src
         <threading>multi
-    : build-dir $(DIST)/lut/obj
+    : build-dir $(DIST)/Colorspace/obj
     ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin lut :
-    [ glob src/*.cpp ]
-    [ glob src/lutEngine/*.cpp ]
-    /boost/filesystem/<link>static
-    /boost/regex/<link>static
-    /tuttlelib//tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
-    ;
+plugin Colorspace : 
+        [ glob-tree *.cpp ]
+        /tuttlelib//tuttleplugin/<link>static
+        ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install lut : $(DIST) ;
-
+auto_install Colorspace : $(DIST) ;

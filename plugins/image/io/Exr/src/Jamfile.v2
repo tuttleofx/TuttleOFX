@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX dpx Plugin
+## Main BJam makefile for TuttleOFX Exr Plugin
 ###############################################################################
 import os ;
 
@@ -10,23 +10,24 @@ project
     : requirements
         <threading>multi
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/dpx/obj
+    : build-dir $(DIST)/Exr/obj
     ;
 
-use-project /png 	: $(3RD_PARTY)/libpng ;
+use-project /libexr : $(3RD_PARTY)/openexr ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin dpx : 
+plugin Exr : 
         [ glob-tree *.cpp ]
         /tuttlelib//tuttleplugin/<link>static
-        /png/<link>static
         /boost/filesystem/<link>static
+		/boost/system/<link>static
+        /libexr/<link>static
         ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install dpx : $(DIST) ;
+auto_install Exr : $(DIST) ;
 

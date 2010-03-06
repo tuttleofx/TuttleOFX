@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX paramMath Plugin
+## Main BJam makefile for TuttleOFX Crop Plugin
 ###############################################################################
 import os ;
 
@@ -10,13 +10,13 @@ project
     : requirements	
         <include>src
         <threading>multi
-    : build-dir $(DIST)/paramMath/obj
+    : build-dir $(DIST)/Crop/obj
     ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin paramMath : 
+plugin Crop : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
 	:
@@ -27,5 +27,5 @@ plugin paramMath :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install paramMath : $(DIST) ;
+auto_install Crop : $(DIST) ;
 
