@@ -40,6 +40,16 @@ def adaptTemplate(filepath):
 
 if __name__ == '__main__':
 	try:
+		api = 'ImageEffectApi'
+		while True:
+			api_input = raw_input( 'api (default: "'+api+'") ?: ' )
+			if api_input.find( ' ' ) != -1  or not os.path.isdir(os.path.join(os.getcwd(),api_input)):
+				print 'Not valid api name.'
+			else:
+				if api_input:
+					api = api_input
+				break
+
 		className = ''
 		while not className or className.find( ' ' ) != -1  or className[0].isupper( ) == False:
 			className = raw_input( 'Plugin name (Capitalized, without spaces) ?: ' )
@@ -89,7 +99,7 @@ if __name__ == '__main__':
 		print 'Processing files...'
 		
 		#Copy to plugin directory
-		shutil.copytree( os.path.join(currentDir, 'folder'), pluginDir )
+		shutil.copytree( os.path.join(currentDir, api), pluginDir )
 		for top, names in walktree( pluginDir ):
 			for name in names:
 				# Rename templates files with a correct filename
