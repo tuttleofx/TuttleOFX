@@ -11,3 +11,4 @@ tuttlePluginCache.xml
 
 # removing dist folder : folder receiving the compilation products
 /dist
+/.dist
