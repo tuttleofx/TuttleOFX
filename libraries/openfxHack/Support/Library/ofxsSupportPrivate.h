@@ -50,9 +50,10 @@ namespace OFX {
 /** @brief turns a field string into and enum */
 FieldEnum mapStrToFieldEnum( const std::string& str )  throw( std::invalid_argument );
 
-////////////////////////////////////////////////////////////////////////////////
 /** @brief map a std::string to a context enum */
-ContextEnum mapToContextEnum( const std::string& s ) throw( std::invalid_argument );
+ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argument );
+
+////////////////////////////////////////////////////////////////////////////////
 
 namespace Private {
 /** @brief Pointer to the host */
