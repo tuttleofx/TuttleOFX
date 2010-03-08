@@ -110,12 +110,15 @@ if __name__ == '__main__':
 				dName = dName.replace( '_ProjectName_', projectName )
 				if dName[-1] == '_':
 					dName = dName[:-1]
+				inputFile = os.path.join(top, name)
+				outputFile = os.path.join(top, dName)
 				if dName != name:
+					os.rename( inputFile, outputFile )
+				# Check if we need to replace things on the file
+				if os.path.isfile(outputFile):
 					print 'Processing: ' + name + ' to ' + dName
-					os.rename( top + '/' + name, top + '/' + dName )
-					# Check if we need to replace things on the file
 					if not any( dName.endswith(ext) for ext in ['.png', '.svg']):
-						adaptTemplate(top + '/' + dName)
+						adaptTemplate( outputFile )
 
 	except ValueError, v:
 		try:

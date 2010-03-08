@@ -111,11 +111,11 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
 
 void %CLASSNAME%Plugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-    if( paramName == k%CLASSNAME%HelpButton )
+    if( paramName == kHelpButton )
     {
         sendMessage( OFX::Message::eMessageMessage,
                      "", // No XML resources
-                     k%CLASSNAME%HelpString );
+                     kHelpString );
     }
 }
 
