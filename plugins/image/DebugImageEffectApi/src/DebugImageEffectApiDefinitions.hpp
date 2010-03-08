@@ -12,6 +12,8 @@ const static std::string kHostInfos = "hostInfos";
 const static std::string kCurrentTime = "currentTime";
 const static std::string kBeginTime = "beginTime";
 const static std::string kEndTime = "endTime";
+const static std::string kGoTo = "goTo";
+const static std::string kUpdate = "update";
 
 }
 }

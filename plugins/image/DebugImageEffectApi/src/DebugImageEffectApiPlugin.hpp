@@ -30,10 +30,15 @@ public:
 	
 	DebugImageEffectApiParams getParams() const;
 	
-protected:
+public:
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip           *_srcClip;       ///< Source image clip
     OFX::Clip           *_dstClip;       ///< Destination image clip
+	
+	OFX::StringParam* _hostInfos;
+	OFX::DoubleParam* _currentTime;
+	OFX::DoubleParam* _beginTime;
+	OFX::DoubleParam* _endTime;
 };
 
 }

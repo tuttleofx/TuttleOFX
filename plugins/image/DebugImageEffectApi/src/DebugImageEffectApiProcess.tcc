@@ -10,6 +10,13 @@ DebugImageEffectApiProcess<View>::DebugImageEffectApiProcess( DebugImageEffectAp
 {
 }
 
+template<class View>
+void DebugImageEffectApiProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	ImageGilFilterProcessor<View>::setup(args);
+	_plugin._currentTime->setValue( args.time );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  *
