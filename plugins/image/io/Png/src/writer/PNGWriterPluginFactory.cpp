@@ -73,13 +73,13 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
 	assert(filename);
-	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
+	filename->setLabel( "Output filename" );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
 	assert(renderButton);
-	renderButton->setLabels( kRenderLabel, kRenderLabel, "Render step" );
+	renderButton->setLabels( "Render", "Render", "Render step" );
 }
 
 /**

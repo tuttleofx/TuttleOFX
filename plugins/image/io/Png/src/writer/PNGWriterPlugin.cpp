@@ -119,9 +119,6 @@ void PNGWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		std::string str;
 		_filepath->getValue( str );
 	}
-	else if (paramName == kPNGWriterHelpButton ) {
-		_bRenderOnce = false;
-	}
 }
 
 }
