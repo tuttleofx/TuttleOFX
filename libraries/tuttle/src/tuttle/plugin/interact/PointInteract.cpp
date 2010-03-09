@@ -13,6 +13,7 @@ namespace interact {
 PointInteract::PointInteract( const InteractInfos& infos, OFX::Double2DParam* param, bool normalized )
 : _infos(infos)
 , _param(param)
+, _offset(0,0)
 , _normalized(normalized)
 {
 }
@@ -40,12 +41,13 @@ bool PointInteract::draw( const OFX::DrawArgs& args )
 	glDisable(GL_LINE_STIPPLE);
 }
 
-EMoveType PointInteract::selectIfIntesect( const Point2& point )
+EMoveType PointInteract::selectIfIntesect( const Point2& mouse )
 {
 	Point2 p( ofxToGil( _param->getValue() ) );
-	EMoveType m = clicPoint( p, point, _infos._marge );
+	_offset = p - mouse;
+	EMoveType m = clicPoint( p, mouse, _infos._marge );
 	COUT("selectIfIntesect");
-	COUT_VAR(point);
+	COUT_VAR(mouse);
 	COUT_VAR(p);
 	switch(m)
 	{
@@ -65,26 +67,33 @@ EMoveType PointInteract::selectIfIntesect( const Point2& point )
 	return m;
 }
 
-bool PointInteract::selectIfIsIn( const OfxRectD& )
+bool PointInteract::selectIfIsIn( const OfxRectD& rect )
 {
+	Point2 p( ofxToGil( _param->getValue() ) );
+	if( p.x >= rect.x1 && p.x <= rect.x2 &&
+	    p.y >= rect.y1 && p.y <= rect.y2 )
+	{
+		_offset = Point2(0,0);
+		return true;
+	}
 	return false;
 }
 
 bool PointInteract::moveXYSelected( const Point2& point )
 {
-	_param->setValue( point.x, point.y );
+	_param->setValue( point.x + _offset.x, point.y + _offset.y );
 	return true;
 }
 
 bool PointInteract::moveXSelected( const Point2& point )
 {
-	_param->setValue( point.x, _param->getValue().y );
+	_param->setValue( point.x + _offset.x, _param->getValue().y );
 	return true;
 }
 
 bool PointInteract::moveYSelected( const Point2& point )
 {
-	_param->setValue( _param->getValue().x, point.y );
+	_param->setValue( _param->getValue().x, point.y + _offset.y );
 	return true;
 }
 
