@@ -6,9 +6,6 @@ namespace tuttle {
 namespace plugin {
 namespace timeShift {
 
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
 mDeclarePluginFactory( TimeShiftPluginFactory, { }, { } );
 
 }
