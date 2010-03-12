@@ -64,24 +64,25 @@ void Processor::staticMultiThreadFunction( unsigned int threadIndex, unsigned in
 }
 
 /** @brief Function to pass to the multi thread suite */
-void Processor::multiThread( unsigned int nCPUs )
+void Processor::multiThread( const unsigned int nCPUs )
 {
+	unsigned int realNbCPUs = nCPUs;
 	// if 0, use all the CPUs we can
-	if( nCPUs == 0 )
-		nCPUs = OFX::MultiThread::getNumCPUs();
+	if( realNbCPUs == 0 )
+		realNbCPUs = OFX::MultiThread::getNumCPUs();
 
-	if( nCPUs == 0 )
+	if( realNbCPUs == 0 )
 	{
 		COUT_ERROR( "Run process on 0 cpus... it seems to be a problem." );
 	}
-	else if( nCPUs == 1 ) // if 1 cpu, don't bother with the threading
+	else if( realNbCPUs == 1 ) // if 1 cpu, don't bother with the threading
 	{
 		multiThreadFunction( 0, 1 );
 	}
 	else
 	{
 		// OK do it
-		OfxStatus stat = OFX::Private::gThreadSuite->multiThread( staticMultiThreadFunction, nCPUs, (void*)this );
+		OfxStatus stat = OFX::Private::gThreadSuite->multiThread( staticMultiThreadFunction, realNbCPUs, (void*)this );
 
 		// did we do it?
 		throwSuiteStatusException( stat );
