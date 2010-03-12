@@ -179,7 +179,7 @@ void AverageProcess<View>::setup( const OFX::RenderArguments &args )
 	typedef pixel<typename channel_type<View>::type, layout<gray_t> > PixelGray;
 
 	// declare values and init
-	Pixel firstPixel = this->_srcView[0]; // for initialization only
+	Pixel firstPixel = this->_srcView(_processParams._rect.x1, _processParams._rect.y1); // for initialization only
 	PixelGray firstPixelGray;
 	color_convert( firstPixel, firstPixelGray );
 
@@ -236,38 +236,41 @@ void AverageProcess<View>::setup( const OFX::RenderArguments &args )
 	pixel_divides_scalar_assign_t<double, Pixel32f>()( rectSize.y, average ); // _average /= rectSize.y;
 
 
-	rgba32f_pixel_t rgbaParamAverage;
-	color_convert( average, rgbaParamAverage );
-
+	rgba32f_pixel_t paramRgbaValue;
+	color_convert( average, paramRgbaValue );
 	_plugin._outputAverage->setValueAtTime( args.time,
-	                                        get_color( rgbaParamAverage, red_t() ),
-	                                        get_color( rgbaParamAverage, green_t() ),
-	                                        get_color( rgbaParamAverage, blue_t() ),
-	                                        get_color( rgbaParamAverage, alpha_t() )
+	                                        get_color( paramRgbaValue, red_t() ),
+	                                        get_color( paramRgbaValue, green_t() ),
+	                                        get_color( paramRgbaValue, blue_t() ),
+	                                        get_color( paramRgbaValue, alpha_t() )
 	                                      );
+	color_convert( minChannel, paramRgbaValue );
 	_plugin._outputChannelMin->setValueAtTime( args.time,
-	                                        get_color( minChannel, red_t() ),
-	                                        get_color( minChannel, green_t() ),
-	                                        get_color( minChannel, blue_t() ),
-	                                        get_color( minChannel, alpha_t() )
+	                                        get_color( paramRgbaValue, red_t() ),
+	                                        get_color( paramRgbaValue, green_t() ),
+	                                        get_color( paramRgbaValue, blue_t() ),
+	                                        get_color( paramRgbaValue, alpha_t() )
 	                                      );
+	color_convert( maxChannel, paramRgbaValue );
 	_plugin._outputChannelMax->setValueAtTime( args.time,
-	                                        get_color( maxChannel, red_t() ),
-	                                        get_color( maxChannel, green_t() ),
-	                                        get_color( maxChannel, blue_t() ),
-	                                        get_color( maxChannel, alpha_t() )
+	                                        get_color( paramRgbaValue, red_t() ),
+	                                        get_color( paramRgbaValue, green_t() ),
+	                                        get_color( paramRgbaValue, blue_t() ),
+	                                        get_color( paramRgbaValue, alpha_t() )
 	                                      );
+	color_convert( minLuminosity, paramRgbaValue );
 	_plugin._outputLuminosityMin->setValueAtTime( args.time,
-	                                        get_color( minLuminosity, red_t() ),
-	                                        get_color( minLuminosity, green_t() ),
-	                                        get_color( minLuminosity, blue_t() ),
-	                                        get_color( minLuminosity, alpha_t() )
+	                                        get_color( paramRgbaValue, red_t() ),
+	                                        get_color( paramRgbaValue, green_t() ),
+	                                        get_color( paramRgbaValue, blue_t() ),
+	                                        get_color( paramRgbaValue, alpha_t() )
 	                                      );
+	color_convert( maxLuminosity, paramRgbaValue );
 	_plugin._outputLuminosityMax->setValueAtTime( args.time,
-	                                        get_color( maxLuminosity, red_t() ),
-	                                        get_color( maxLuminosity, green_t() ),
-	                                        get_color( maxLuminosity, blue_t() ),
-	                                        get_color( maxLuminosity, alpha_t() )
+	                                        get_color( paramRgbaValue, red_t() ),
+	                                        get_color( paramRgbaValue, green_t() ),
+	                                        get_color( paramRgbaValue, blue_t() ),
+	                                        get_color( paramRgbaValue, alpha_t() )
 	                                      );
 	
 	switch( _processParams._chooseOutput )
@@ -278,16 +281,16 @@ void AverageProcess<View>::setup( const OFX::RenderArguments &args )
 			color_convert( average, _outputPixel );
 			break;
 		case eChooseOutputChannelMin:
-			color_convert( minChannel, _outputPixel );
+			_outputPixel = minChannel;
 			break;
 		case eChooseOutputChannelMax:
-			color_convert( maxChannel, _outputPixel );
+			_outputPixel = maxChannel;
 			break;
 		case eChooseOutputLuminosityMin:
-			color_convert( minLuminosity, _outputPixel );
+			_outputPixel = minLuminosity;
 			break;
 		case eChooseOutputLuminosityMax:
-			color_convert( maxLuminosity, _outputPixel );
+			_outputPixel = maxLuminosity;
 			break;
 	}
 }
