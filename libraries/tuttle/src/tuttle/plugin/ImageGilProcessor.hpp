@@ -30,6 +30,8 @@ class ImageGilProcessor : public OFX::MultiThread::Processor, public tuttle::plu
 public:
     typedef typename View::value_type Pixel;
     typedef typename image_from_view<View>::type Image;
+private:
+	unsigned int _nbThreads;
 protected:
 	OFX::ImageEffect& _effect; ///< @brief effect to render with
 	OfxRectI _renderWindow; ///< @brief render window to use
@@ -41,6 +43,10 @@ public:
 	ImageGilProcessor( OFX::ImageEffect& effect );
 	virtual ~ImageGilProcessor();
 
+	void setNoMultiThreading() { _nbThreads = 1; }
+	void setNbThreads( const unsigned int nbThreads ) { _nbThreads = nbThreads; }
+	void setNbThreadsAuto() { _nbThreads = 0; }
+	
     /** @brief called before any MP is done */
     virtual void preProcess(void) { progressBegin( _renderWindow.y2 - _renderWindow.y1 ); }
 
@@ -113,6 +119,7 @@ public:
 template <class View>
 ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
 	: Progress( effect )
+	, _nbThreads( 0 ) // auto, maximum allowable number of CPUs will be used
 	, _effect( effect )
 {
 	_renderWindow.x1 = _renderWindow.y1 = _renderWindow.x2 = _renderWindow.y2 = 0;
@@ -135,7 +142,7 @@ void ImageGilProcessor<View>::process( void )
 	preProcess();
 
 	// call the base multi threading code, should put a pre & post thread calls in too
-	multiThread();
+	multiThread( _nbThreads );
 
 	// call the post MP pass
 	postProcess();

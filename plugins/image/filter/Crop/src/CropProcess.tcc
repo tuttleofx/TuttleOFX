@@ -68,7 +68,7 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 			args.renderWindow.x1, args.renderWindow.y1,
 			args.renderWindow.x2, args.renderWindow.y2
 		};
-		OfxRectD finalProcWin = intersection( croppedRect, dProcRenderRect );
+		OfxRectD finalProcWin = rectanglesIntersection( croppedRect, dProcRenderRect );
 		if( finalProcWin.x1 < finalProcWin.x2 && finalProcWin.y1 < finalProcWin.y2 )
 		{
 			imResized.recreate( int(finalProcWin.x2 - finalProcWin.x1),
@@ -170,7 +170,7 @@ void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	if( croppedRect.x1 < croppedRect.x2 && croppedRect.y1 < croppedRect.y2 )
 	{
 		OfxRectD dProcWinRect  = { procWindow.x1, procWindow.y1, procWindow.x2, procWindow.y2 };
-		OfxRectD finalProcWin  = intersection( croppedRect, dProcWinRect );
+		OfxRectD finalProcWin  = rectanglesIntersection( croppedRect, dProcWinRect );
 		OfxRectI iFinalProcWin = { (int)finalProcWin.x1, (int)finalProcWin.y1, (int)finalProcWin.x2, (int)finalProcWin.y2 };
 
 		// If no image copy is needed, fill destination with black
