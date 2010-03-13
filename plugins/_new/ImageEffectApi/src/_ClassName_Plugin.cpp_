@@ -30,9 +30,9 @@ OFX::Clip* %CLASSNAME%Plugin::getDstClip( ) const
     return _dstClip;
 }
 
-%CLASSNAME%Params %CLASSNAME%Plugin::getParams() const
+%CLASSNAME%ProcessParams %CLASSNAME%Plugin::getProcessParams() const
 {
-	%CLASSNAME%Params params;
+	%CLASSNAME%ProcessParams params;
 	return params;
 }
 

@@ -21,6 +21,7 @@ private:
 	const InteractInfos& _infos;
 	OFX::Double2DParam* _param;
 	OFX::Double2DParam* _relativeParam;
+	Point2 _offset;
 	bool _normalized;
 
 public:

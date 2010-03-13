@@ -9,7 +9,7 @@ namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
-struct %CLASSNAME%Params
+struct %CLASSNAME%ProcessParams
 {
 	
 };
@@ -25,15 +25,15 @@ public:
     OFX::Clip *getDstClip( ) const;
 
 public:
-    virtual void render( const OFX::RenderArguments &args );
+    void render( const OFX::RenderArguments &args );
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 	
-	%CLASSNAME%Params getParams() const;
+	%CLASSNAME%ProcessParams getProcessParams() const;
 	
-protected:
+public:
     // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip           *_srcClip;       ///< Source image clip
-    OFX::Clip           *_dstClip;       ///< Destination image clip
+    OFX::Clip* _srcClip; ///< Source image clip
+    OFX::Clip* _dstClip; ///< Destination image clip
 };
 
 }
