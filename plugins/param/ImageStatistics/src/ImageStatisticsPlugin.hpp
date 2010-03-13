@@ -1,29 +1,29 @@
-#ifndef _TUTTLE_PLUGIN_AVERAGE_PLUGIN_HPP_
-#define _TUTTLE_PLUGIN_AVERAGE_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_IMAGESTATISTICS_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_IMAGESTATISTICS_PLUGIN_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
 
-#include "AverageDefinitions.hpp"
+#include "ImageStatisticsDefinitions.hpp"
 
 namespace tuttle {
 namespace plugin {
 namespace average {
 
-struct AverageProcessParams
+struct ImageStatisticsProcessParams
 {
 	OfxRectD _rect; ///< the selected rectangle, clipped to the image rod
 	EChooseOutput _chooseOutput;
 };
 
 /**
- * @brief Average plugin
+ * @brief ImageStatistics plugin
  */
-class AveragePlugin : public OFX::ImageEffect
+class ImageStatisticsPlugin : public OFX::ImageEffect
 {
 public:
-    AveragePlugin( OfxImageEffectHandle handle );
+    ImageStatisticsPlugin( OfxImageEffectHandle handle );
 
 public:
     void render( const OFX::RenderArguments &args );
@@ -32,7 +32,7 @@ public:
 
     void getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois );
 
-	AverageProcessParams getProcessParams( const OfxRectD& srcRod ) const;
+	ImageStatisticsProcessParams getProcessParams( const OfxRectD& srcRod ) const;
 	
 public:
     // do not need to delete these, the ImageEffect is managing them for us

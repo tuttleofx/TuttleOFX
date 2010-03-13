@@ -1,5 +1,5 @@
-#include "AveragePlugin.hpp"
-#include "AverageProcess.hpp"
+#include "ImageStatisticsPlugin.hpp"
+#include "ImageStatisticsProcess.hpp"
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 
@@ -150,7 +150,7 @@ namespace plugin {
 namespace average {
 
 template<class View>
-AverageProcess<View>::AverageProcess( AveragePlugin &instance )
+ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin &instance )
 : ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
@@ -158,7 +158,7 @@ AverageProcess<View>::AverageProcess( AveragePlugin &instance )
 }
 
 template<class View>
-void AverageProcess<View>::setup( const OFX::RenderArguments &args )
+void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
 	using namespace boost::gil::detail;
@@ -299,7 +299,7 @@ void AverageProcess<View>::setup( const OFX::RenderArguments &args )
  * @param[in] procWindow  Processing window
  */
 template<class View>
-void AverageProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
 	if( _processParams._chooseOutput == eChooseOutputSource )

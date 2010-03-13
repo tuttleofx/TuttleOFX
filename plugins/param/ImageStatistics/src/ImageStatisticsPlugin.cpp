@@ -1,6 +1,6 @@
-#include "AveragePlugin.hpp"
-#include "AverageProcess.hpp"
-#include "AverageDefinitions.hpp"
+#include "ImageStatisticsPlugin.hpp"
+#include "ImageStatisticsProcess.hpp"
+#include "ImageStatisticsDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/math/rectOp.hpp>
@@ -14,7 +14,7 @@ namespace average {
 
 using namespace boost::gil;
 
-AveragePlugin::AveragePlugin( OfxImageEffectHandle handle ) :
+ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
@@ -30,9 +30,9 @@ ImageEffect( handle )
 	_outputLuminosityMax = fetchRGBAParam( kOutputLuminosityMax );
 }
 
-AverageProcessParams AveragePlugin::getProcessParams( const OfxRectD& srcRod ) const
+ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectD& srcRod ) const
 {
-	AverageProcessParams params;
+	ImageStatisticsProcessParams params;
 	OfxPointD cornerA = _cornerA->getValue();
 	OfxPointD cornerB = _cornerB->getValue();
 	OfxPointD rodSize;
@@ -49,7 +49,7 @@ AverageProcessParams AveragePlugin::getProcessParams( const OfxRectD& srcRod ) c
 	return params;
 }
 
-//bool AveragePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
+//bool ImageStatisticsPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 //{
 //	identityClip = _srcClip;
 //	identityTime = args.time;
@@ -57,7 +57,7 @@ AverageProcessParams AveragePlugin::getProcessParams( const OfxRectD& srcRod ) c
 //}
 
 
-void AveragePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois )
+void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois )
 {
     OfxRectD srcRealRoi = getProcessParams( _srcClip->getCanonicalRod(args.time) )._rect;
 	
@@ -68,7 +68,7 @@ void AveragePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments 
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void AveragePlugin::render( const OFX::RenderArguments &args )
+void ImageStatisticsPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
     OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
@@ -81,19 +81,19 @@ void AveragePlugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                AverageProcess<rgba8_view_t> p( *this );
+                ImageStatisticsProcess<rgba8_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                AverageProcess<rgba16_view_t> p( *this );
+                ImageStatisticsProcess<rgba16_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                AverageProcess<rgba32f_view_t> p( *this );
+                ImageStatisticsProcess<rgba32f_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
@@ -111,19 +111,19 @@ void AveragePlugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                AverageProcess<gray8_view_t> p( *this );
+                ImageStatisticsProcess<gray8_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                AverageProcess<gray16_view_t> p( *this );
+                ImageStatisticsProcess<gray16_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                AverageProcess<gray32f_view_t> p( *this );
+                ImageStatisticsProcess<gray32f_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
@@ -137,7 +137,7 @@ void AveragePlugin::render( const OFX::RenderArguments &args )
     }
 }
 
-void AveragePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
 }
 

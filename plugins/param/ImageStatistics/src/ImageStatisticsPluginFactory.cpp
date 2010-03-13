@@ -1,6 +1,6 @@
-#include "AveragePluginFactory.hpp"
-#include "AveragePlugin.hpp"
-#include "AverageDefinitions.hpp"
+#include "ImageStatisticsPluginFactory.hpp"
+#include "ImageStatisticsPlugin.hpp"
+#include "ImageStatisticsDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -23,11 +23,11 @@ namespace average {
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void AveragePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	// basic labels
-	desc.setLabels( "Average", "Average",
-		            "Average" );
+	desc.setLabels( "ImageStatistics", "ImageStatistics",
+		            "ImageStatistics" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment
@@ -52,7 +52,7 @@ void AveragePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void AveragePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                   OFX::ContextEnum context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -118,10 +118,10 @@ void AveragePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* AveragePluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* ImageStatisticsPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::ContextEnum context )
 {
-	return new AveragePlugin(handle);
+	return new ImageStatisticsPlugin(handle);
 }
 
 }
@@ -133,7 +133,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::average::AveragePluginFactory p("fr.tuttle.average", 1, 0);
+	static tuttle::plugin::average::ImageStatisticsPluginFactory p("fr.tuttle.average", 1, 0);
 	ids.push_back(&p);
 }
 
