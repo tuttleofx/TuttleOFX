@@ -46,13 +46,13 @@ protected :
     CheckerboardVirtualView _srcView;       ///< Source view
 
 public :
-    CheckerboardProcess(CheckerboardPlugin &instance);
+    CheckerboardProcess( CheckerboardPlugin& instance );
 
-    void setup(const OFX::RenderArguments &args);
+    void setup( const OFX::RenderArguments& args );
 
 	CheckerboardParams<View> getParams();
 
-    void multiThreadProcessImages( const OfxRectI& procWindow);
+    void multiThreadProcessImages( const OfxRectI& procWindow );
 };
 
 }

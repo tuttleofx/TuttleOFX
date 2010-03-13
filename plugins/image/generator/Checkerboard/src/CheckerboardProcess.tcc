@@ -72,8 +72,7 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments &args )
 }
 
 /**
- * @brief Function called by rendering thread each time 
- *        a process must be done.
+ * @brief Function called by rendering thread each time a process must be done.
  *
  * @param[in] procWindow  Processing window
  */
@@ -94,6 +93,8 @@ void CheckerboardProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 		{
 			*dst_it = *src_it;
 		}
+		if( this->progressForward() )
+			return;
 	}
 }
 
