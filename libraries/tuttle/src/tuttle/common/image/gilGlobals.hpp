@@ -154,18 +154,22 @@ bgil::point2<T> operator*( const bgil::point2<T>& p, const double t ) { return b
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
+bgil::point2<T>& operator*=( bgil::point2<T>& p, const double t ) { p.x *= t; p.y *= t; return p; }
+/// \ingroup PointModel
+template <typename T>
+GIL_FORCEINLINE
 bgil::point2<T> operator*( const bgil::point2<T>& a, const bgil::point2<T>& b ) { return bgil::point2<T>( a.x * b.x, a.y * b.y ); }
+/// \ingroup PointModel
+template <typename T>
+GIL_FORCEINLINE
+bgil::point2<T>& operator*=( bgil::point2<T>& a, const bgil::point2<T>& b ) { a.x *= b.x; a.y *= b.y; return a; }
 /// \ingroup PointModel
 template <typename T>
 GIL_FORCEINLINE
 bgil::point2<T> operator/( const bgil::point2<T>& a, const bgil::point2<T>& b ) { return bgil::point2<T>( a.x / b.x, a.y / b.y ); }
 /// \ingroup PointModel
-template <typename T>
-GIL_FORCEINLINE
-bgil::point2<T>& operator*=( bgil::point2<T>& p, const double t ) { p.x *= t; p.y *= t; return p; }
-/// \ingroup PointModel
 template <typename T> GIL_FORCEINLINE
-bgil::point2<double> operator/( double t, const bgil::point2<T>& p )
+bgil::point2<double> operator/( const double t, const bgil::point2<T>& p )
 {
     bgil::point2<double> res(0,0);
     if( p.x != 0 )

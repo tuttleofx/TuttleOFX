@@ -2,74 +2,10 @@
 #include "ImageStatisticsProcess.hpp"
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
 
 namespace boost {
 namespace gil {
-namespace detail {
-
-////////////////////////////////////////////////////////////////////////////////
-
-/// \ingroup ChannelNumericOperations
-/// \brief ch2 += ch1
-/// structure for adding one channel to another
-/// this is a generic implementation; user should specialize it for better performance
-template <typename ChannelSrc,typename ChannelDst>
-struct channel_plus_assign_t : public std::binary_function<ChannelSrc,ChannelDst,ChannelDst>
-{
-    typename channel_traits<ChannelDst>::reference
-	operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
-                typename channel_traits<ChannelDst>::reference ch2 ) const
-	{
-        return ch2 += ChannelDst( ch1 );
-    }
-};
-
-/// \ingroup PixelNumericOperations
-/// \brief p2 += p1
-template <typename PixelSrc, // models pixel concept
-          typename PixelDst> // models pixel value concept
-struct pixel_plus_assign_t
-{
-    PixelDst& operator()( const PixelSrc& p1,
-                          PixelDst& p2 ) const
-	{
-        static_for_each( p1, p2,
-                         channel_plus_assign_t<typename channel_type<PixelSrc>::type,
-                                                 typename channel_type<PixelDst>::type>() );
-        return p2;
-    }
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-/// \ingroup ChannelNumericOperations
-/// \brief ch /= s
-/// structure for dividing a channel by a scalar
-/// this is a generic implementation; user should specialize it for better performance
-template <typename Scalar, typename ChannelDst>
-struct channel_divides_scalar_assign_t : public std::binary_function<Scalar,ChannelDst,ChannelDst>
-{
-    typename channel_traits<ChannelDst>::reference
-	operator()( const Scalar& s,
-	            typename channel_traits<ChannelDst>::reference ch ) const
-	{
-        return ch /= ChannelDst(s);
-    }
-};
-
-/// \ingroup PixelNumericOperations
-/// \brief p /= s
-template <typename Scalar, // models a scalar type
-	      typename PixelDst>  // models pixel concept
-struct pixel_divides_scalar_assign_t
-{
-    PixelDst& operator()( const Scalar& s,
-	                      PixelDst& p ) const
-	{
-        static_for_each( p, std::bind1st( channel_divides_scalar_assign_t<Scalar, typename channel_type<PixelDst>::type>(), s ) );
-		return p;
-    }
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -108,7 +44,6 @@ struct pixel_assign_min_t
 
 /// \ingroup ChannelNumericOperations
 /// \brief ch2 = max( ch1, ch2 )
-/// structure for adding one channel to another
 /// this is a generic implementation; user should specialize it for better performance
 template <typename ChannelSrc,typename ChannelDst>
 struct channel_assign_max_t : public std::binary_function<ChannelSrc,ChannelDst,ChannelDst>
@@ -141,7 +76,6 @@ struct pixel_assign_max_t
 
 }
 }
-}
 
 
 
@@ -161,7 +95,6 @@ template<class View>
 void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
-	using namespace boost::gil::detail;
 
 	ImageGilFilterProcessor<View>::setup( args );
 
