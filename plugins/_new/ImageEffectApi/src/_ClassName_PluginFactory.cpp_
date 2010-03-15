@@ -1,4 +1,3 @@
-#include "%CLASSNAME%PluginFactory.hpp"
 #include "%CLASSNAME%Plugin.hpp"
 #include "%CLASSNAME%Definitions.hpp"
 
@@ -19,9 +18,14 @@ namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
+static const bool kSupportTiles = false;
+
+mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
+
+
 /**
  * @brief Function called to describe the plugin main features.
- * @param[in, out]   desc     Effect descriptor
+ * @param[in, out] desc Effect descriptor
  */
 void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
@@ -32,6 +36,7 @@ void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextGeneral );
+	desc.addSupportedContext( OFX::eContextFilter );
 
 	// add supported pixel depths
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
@@ -39,13 +44,7 @@ void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( true );
-	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -73,14 +72,14 @@ void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 
 /**
  * @brief Function called to create a plugin effect instance
- * @param[in] handle  effect handle
- * @param[in] context    Application context
+ * @param[in] handle  Effect handle
+ * @param[in] context Application context
  * @return  plugin instance
  */
 OFX::ImageEffect* %CLASSNAME%PluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::ContextEnum context )
 {
-	return new %CLASSNAME%Plugin(handle);
+	return new %CLASSNAME%Plugin( handle );
 }
 
 }
@@ -92,8 +91,8 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::%NAMESPACE%::%CLASSNAME%PluginFactory p("%PLUGIN_UNIQUE_ID%", 1, 0);
-	ids.push_back(&p);
+	static tuttle::plugin::%NAMESPACE%::%CLASSNAME%PluginFactory p( "%PLUGIN_UNIQUE_ID%", 1, 0 );
+	ids.push_back( &p );
 }
 
 }

@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_DEBUGIMAGEEFFECTAPI_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_DEBUGIMAGEEFFECTAPI_PROCESS_HPP_
 
+#include "DebugImageEffectApiPlugin.hpp"
+
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -33,6 +35,8 @@ protected :
 
 public:
     DebugImageEffectApiProcess( DebugImageEffectApiPlugin& instance );
+
+	void setup( const OFX::RenderArguments& args );
 
     // Do some processing
     void multiThreadProcessImages( const OfxRectI& procWindow );

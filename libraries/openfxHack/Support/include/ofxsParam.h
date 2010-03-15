@@ -191,14 +191,14 @@ public:
 	/** @brief dtor */
 	virtual ~ParamDescriptor();
 
-	ParamTypeEnum getType( void ) const { return _paramType; }
+	inline ParamTypeEnum getType( void ) const { return _paramType; }
 
 	/** @brief name */
-	const std::string& getName( void ) const { return _paramName; }
+	inline const std::string& getName( void ) const { return _paramName; }
 
 	/** @brief Get the property set */
-	PropertySet& getPropertySet() { return _paramProps; }
-	const PropertySet& getPropertySet() const { return _paramProps; }
+	inline PropertySet& getPropertySet() { return _paramProps; }
+	inline const PropertySet& getPropertySet() const { return _paramProps; }
 
 	/** @brief set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
@@ -215,6 +215,7 @@ public:
 
 	/** @brief set the group param that is the parent of this one, default is to be ungrouped at the root level */
 	void setParent( const GroupParamDescriptor& v );
+	inline void setParent( const GroupParamDescriptor* v ) { setParent(*v); }
 
 	/** @brief whether the param is enabled, defaults to true */
 	void setEnabled( bool v );

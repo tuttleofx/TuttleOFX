@@ -64,13 +64,13 @@ public:
 	virtual ~Processor();
 
 	/** @brief function that will be called in each thread. ID is from 0..nThreads-1 nThreads are the number of threads it is being run over */
-	virtual void multiThreadFunction( unsigned int threadID, unsigned int nThreads ) = 0;
+	virtual void multiThreadFunction( const unsigned int threadID, const unsigned int nThreads ) = 0;
 
 	/** @brief call this to kick off multi threading
 	 *
 	 * The nCPUs is 0, the maximum allowable number of CPUs will be used.
 	 */
-	virtual void multiThread( unsigned int nCPUs = 0 );
+	virtual void multiThread( const unsigned int nCPUs = 0 );
 };
 
 /** @brief Has the current thread been spawned from an MP */

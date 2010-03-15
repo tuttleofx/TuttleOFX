@@ -93,6 +93,8 @@ enum ContextEnum
 	eContextRetimer
 };
 
+const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invalid_argument );
+
 /** @brief Enumerates the pixel depths supported */
 enum BitDepthEnum
 {
@@ -103,6 +105,8 @@ enum BitDepthEnum
 	eBitDepthCustom ///< some non standard bit depth
 };
 
+const std::string mapBitDepthEnumToStr( const BitDepthEnum& e );
+
 /** @brief Enumerates the component types supported */
 enum PixelComponentEnum
 {
@@ -111,6 +115,8 @@ enum PixelComponentEnum
 	ePixelComponentAlpha,
 	ePixelComponentCustom ///< some non standard pixel type
 };
+
+std::string mapPixelComponentEnumToStr( const PixelComponentEnum& e );
 
 /** @brief Enumerates the ways a fielded image can be extracted from a clip */
 enum FieldExtractionEnum
@@ -137,12 +143,17 @@ enum FieldEnum
 	eFieldUpper   /**< @brief only the spatially upper field is present  */
 };
 
+std::string mapFieldEnumToStr( const FieldEnum& e );
+
 enum PreMultiplicationEnum
 {
 	eImageOpaque,          /**< @brief the image is opaque and so has no premultiplication state */
 	eImagePreMultiplied,   /**< @brief the image is premultiplied by it's alpha */
 	eImageUnPreMultiplied, /**< @brief the image is unpremultiplied */
 };
+
+std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e );
+
 
 class PluginFactory
 {
@@ -261,8 +272,8 @@ struct ImageEffectHostDescription
 		PixelComponentArray _supportedComponents;
 		typedef std::vector<ContextEnum> ContextArray;
 		ContextArray _supportedContexts;
-		typedef std::vector<BitDepthEnum> PixelDepthArray;
-		PixelDepthArray _supportedPixelDepths;
+		typedef std::vector<BitDepthEnum> BitDepthArray;
+		BitDepthArray _supportedPixelDepths;
 		bool supportsProgressSuite;
 		bool supportsTimeLineSuite;
 };
@@ -436,6 +447,7 @@ protected:
 	void* _pixelData;                   /**< @brief the base address of the image */
 	PixelComponentEnum _pixelComponents;     /**< @brief get the components in the image */
 	int _rowBytes;                    /**< @brief the number of bytes per scanline */
+
 	int _pixelBytes;                  /**< @brief the number of bytes per pixel */
 	BitDepthEnum _pixelDepth;                 /**< @brief get the pixel depth */
 	PreMultiplicationEnum _preMultiplication; /**< @brief premultiplication on the image */

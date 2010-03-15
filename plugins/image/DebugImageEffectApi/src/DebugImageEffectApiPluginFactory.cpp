@@ -69,6 +69,7 @@ void DebugImageEffectApiPluginFactory::describeInContext( OFX::ImageEffectDescri
 
 	OFX::StringParamDescriptor* hostInfos = desc.defineStringParam( kHostInfos );
 	hostInfos->setLabel("Host infos");
+	hostInfos->setStringType( OFX::eStringTypeMultiLine );
 	hostInfos->setEvaluateOnChange(false);
 
 	OFX::DoubleParamDescriptor* currentTime = desc.defineDoubleParam( kCurrentTime );
@@ -85,6 +86,12 @@ void DebugImageEffectApiPluginFactory::describeInContext( OFX::ImageEffectDescri
 	endTime->setLabel("End time");
 	endTime->setDefault(0);
 	endTime->setEvaluateOnChange(false);
+
+	OFX::PushButtonParamDescriptor* goTo = desc.definePushButtonParam( kGoTo );
+	goTo->setLabel("Go to");
+
+	OFX::PushButtonParamDescriptor* update = desc.definePushButtonParam( kUpdate );
+	update->setLabel("Update");
 }
 
 /**

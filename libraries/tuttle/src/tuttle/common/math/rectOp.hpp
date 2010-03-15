@@ -1,15 +1,18 @@
 #ifndef _RECTOP_HPP
 #define _RECTOP_HPP
+
+#include "minmax.hpp"
+
+#include <ofxCore.h>
+#include <boost/gil/utilities.hpp>
+
 #include <cmath>
 #include <algorithm>
-#include "minmax.hpp"
-#include "ofxCore.h"
-#include <boost/gil/utilities.hpp>
 
 namespace tuttle {
 
 template<class P>
-OfxRectD boundingBox( const P& a, const P& b, const P& c, const P& d )
+OfxRectD pointsBoundingBox( const P& a, const P& b, const P& c, const P& d )
 {
 	OfxRectD bb;
 
@@ -20,14 +23,14 @@ OfxRectD boundingBox( const P& a, const P& b, const P& c, const P& d )
 	return bb;
 }
 
-// template<typename Scalar>
-inline OfxRectD boundingBox( const std::vector<bgil::point2<double> >& points )
+template<typename Point2>
+inline OfxRectD pointsBoundingBox( const std::vector<Point2>& points )
 {
     // if( !points.size() )
     //  throw...
-    const bgil::point2<double> p( points[0] );
+    const Point2 p( points[0] );
     OfxRectD bounds = { p.x, p.y, p.x, p.y};
-    for( std::vector<bgil::point2<double> >::const_iterator it = points.begin(), itEnd = points.end();
+    for( typename std::vector<Point2>::const_iterator it = points.begin(), itEnd = points.end();
          it != itEnd;
          ++it )
     {
@@ -45,15 +48,13 @@ inline OfxRectD boundingBox( const std::vector<bgil::point2<double> >& points )
 }
 
 template<class R>
-R intersection( const R& a, const R& b )
+R rectanglesIntersection( const R& a, const R& b )
 {
-	using std::min;
-	using std::max;
 	R bb;
-	bb.x1 = max( a.x1, b.x1 );
-	bb.x2 = max( bb.x1, min( a.x2, b.x2 ) );
-	bb.y1 = max( a.y1, b.y1 );
-	bb.y2 = max( bb.y1, min( a.y2, b.y2 ) );
+	bb.x1 = std::max( a.x1, b.x1 );
+	bb.x2 = std::max( bb.x1, std::min( a.x2, b.x2 ) );
+	bb.y1 = std::max( a.y1, b.y1 );
+	bb.y2 = std::max( bb.y1, std::min( a.y2, b.y2 ) );
 	/*    if ( bb.y2 < bb.y1 || bb.x2 < bb.x1 ) {
 	 *      bb.x1 = 0;
 	 *      bb.x2 = 0;
@@ -66,5 +67,5 @@ R intersection( const R& a, const R& b )
 
 }
 
-#endif // _RECTOP_HPP
+#endif
 

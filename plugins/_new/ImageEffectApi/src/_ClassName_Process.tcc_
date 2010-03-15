@@ -20,6 +20,22 @@ void %CLASSNAME%Process<View>::multiThreadProcessImages( const OfxRectI& procWin
 {
 	using namespace boost::gil;
 	
+	for( int y = procWindow.y1;
+			 y < procWindow.y2;
+			 ++y )
+	{
+		typename View::x_iterator src_it = this->_srcView.x_at( procWindow.x1, y );
+		typename View::x_iterator dst_it = this->_dstView.x_at( procWindow.x1, y );
+		for( int x = procWindow.x1;
+			 x < procWindow.x2;
+			 ++x, ++src_it, ++dst_it )
+		{
+			(*dst_it) = (*src_it);
+		}
+		if( this->progressForward() )
+			return;
+	}
+	/*
 	View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
 							  procWindow.x2 - procWindow.x1,
 							  procWindow.y2 - procWindow.y1 );
@@ -27,6 +43,8 @@ void %CLASSNAME%Process<View>::multiThreadProcessImages( const OfxRectI& procWin
 							  procWindow.x2 - procWindow.x1,
 							  procWindow.y2 - procWindow.y1 );
 	copy_pixels( src, dst );
+	*/
+
 }
 
 }

@@ -1,11 +1,9 @@
 #ifndef _TUTTLE_PLUGIN_INTERACTOBJECT_HPP_
 #define	_TUTTLE_PLUGIN_INTERACTOBJECT_HPP_
 
-#include <ofxsInteract.h>
-
-#include <boost/gil/utilities.hpp>
-
 #include "interact.hpp"
+#include <ofxsInteract.h>
+#include <boost/gil/utilities.hpp>
 
 namespace tuttle {
 namespace plugin {

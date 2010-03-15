@@ -103,50 +103,77 @@
 #include <exception>
 #include <stdexcept>
 #include <sstream>
+#include <ostream>
 
 #ifdef OFX_CLIENT_EXCEPTION_HEADER
  #include OFX_CLIENT_EXCEPTION_HEADER
 #endif
 
-inline bool operator==( const OfxRangeI& a, const OfxRangeI& b )
+
+inline bool operator==( const OfxRangeI& a, const OfxRangeI& b ) { return a.min == b.min && a.max == b.max; }
+inline bool operator!=( const OfxRangeI& a, const OfxRangeI& b ) { return a.min != b.min || a.max != b.max; }
+
+inline bool operator==( const OfxRangeD& a, const OfxRangeD& b ) { return a.min == b.min && a.max == b.max; }
+inline bool operator!=( const OfxRangeD& a, const OfxRangeD& b ) { return a.min != b.min || a.max != b.max; }
+
+inline bool operator==( const OfxPointI& a, const OfxPointI& b ) { return a.x == b.x && a.y == b.y; }
+inline bool operator!=( const OfxPointI& a, const OfxPointI& b ) { return a.x != b.x || a.y != b.y; }
+
+inline OfxPointD& operator+=( OfxPointD& p1, const OfxPointD& p2 ) { p1.x+=p2.x; p1.y+=p2.y; return p1; }
+inline OfxPointD& operator+=( OfxPointD& p, const double v ) { p.x+=v; p.y+=v; return p; }
+inline OfxPointD& operator-=( OfxPointD& p1, const OfxPointD& p2 ) { p1.x-=p2.x; p1.y-=p2.y; return p1; }
+inline OfxPointD& operator-=( OfxPointD& p, const double v ) { p.x-=v; p.y-=v; return p; }
+inline OfxPointD& operator/=( OfxPointD& p1, const OfxPointD& p2 ) { p1.x/=p2.x; p1.y/=p2.y; return p1; }
+inline OfxPointD& operator/=( OfxPointD& p, const double v ) { p.x/=v; p.y/=v; return p; }
+inline OfxPointD& operator*=( OfxPointD& p1, const OfxPointD& p2 ) { p1.x*=p2.x; p1.y*=p2.y; return p1; }
+inline OfxPointD& operator*=( OfxPointD& p, const double v ) { p.x *= v; p.y *= v; return p; }
+
+inline bool operator==( const OfxPointD& p1, const OfxPointD& p2 ) { return (p1.x==p2.x && p1.y==p2.y); }
+inline bool operator!=( const OfxPointD& p1, const OfxPointD& p2 ) { return  p1.x!=p2.x || p1.y!=p2.y; }
+inline OfxPointD operator+( const OfxPointD& p1, const OfxPointD& p2 ) { OfxPointD r = {p1.x+p2.x,p1.y+p2.y}; return r; }
+inline OfxPointD operator-( const OfxPointD& p ) { OfxPointD r = {-p.x,-p.y}; return r; }
+inline OfxPointD operator-( const OfxPointD& p1, const OfxPointD& p2 ) { OfxPointD r = {p1.x-p2.x,p1.y-p2.y}; return r; }
+inline OfxPointD operator/( const OfxPointD& p, const double t ) { OfxPointD r; if( t==0 ) { r.x=0; r.y=0; } else { r.x=p.x/t; r.y=p.y/t; } return r; }
+inline OfxPointD operator*( const double t, const OfxPointD& p ) { OfxPointD r = {p.x*t,p.y*t}; return r; }
+inline OfxPointD operator*( const OfxPointD& p, const double t ) { OfxPointD r = { p.x * t, p.y * t }; return r; }
+inline OfxPointD operator*( const OfxPointD& a, const OfxPointD& b ) { OfxPointD r = { a.x * b.x, a.y * b.y }; return r; }
+inline OfxPointD operator/( const OfxPointD& a, const OfxPointD& b ) { OfxPointD r = { a.x / b.x, a.y / b.y }; return r; }
+inline OfxPointD operator/( const double t, const OfxPointD& p )
 {
-	if( a.min == b.min &&
-	    a.max == b.max )
-		return true;
-	return false;
+    OfxPointD res = { 0.0, 0.0 };
+    if( p.x != 0 )
+        res.x = t / p.x;
+    if( p.y != 0 )
+        res.y = t / p.y;
+    return res;
 }
 
-inline bool operator!=( const OfxRangeI& a, const OfxRangeI& b ) { return !( a == b ); }
-
-inline bool operator==( const OfxRangeD& a, const OfxRangeD& b )
+inline std::ostream& operator<<( std::ostream& out, const OfxPointI& p )
 {
-	if( a.min == b.min &&
-	    a.max == b.max )
-		return true;
-	return false;
+	return out << "x:" << p.x << " y:" << p.y;
+}
+inline std::ostream& operator<<( std::ostream& out, const OfxPointD& p )
+{
+	return out << "x:" << p.x << " y:" << p.y;
+}
+inline std::ostream& operator<<( std::ostream& out, const OfxRangeI& r )
+{
+	return out << "min:" << r.min << " max:" << r.max;
+}
+inline std::ostream& operator<<( std::ostream& out, const OfxRangeD& r )
+{
+	return out << "min:" << r.min << " max:" << r.max;
+}
+inline std::ostream& operator<<( std::ostream& out, const OfxRectI& r )
+{
+	return out << "x1:" << r.x1 << " y1:" << r.y1 << "x2:" << r.x2 << " y2:" << r.y2;
+}
+inline std::ostream& operator<<( std::ostream& out, const OfxRectD& r )
+{
+	return out << "x1:" << r.x1 << " y1:" << r.y1 << "x2:" << r.x2 << " y2:" << r.y2;
 }
 
-inline bool operator!=( const OfxRangeD& a, const OfxRangeD& b ) { return !( a == b ); }
 
-inline bool operator==( const OfxPointI& a, const OfxPointI& b )
-{
-	if( a.x == b.x &&
-	    a.y == b.y )
-		return true;
-	return false;
-}
-
-inline bool operator!=( const OfxPointI& a, const OfxPointI& b ) { return !( a == b ); }
-
-inline bool operator==( const OfxPointD& a, const OfxPointD& b )
-{
-	if( a.x == b.x &&
-	    a.y == b.y )
-		return true;
-	return false;
-}
-
-inline bool operator!=( const OfxPointD& a, const OfxPointD& b ) { return !( a == b ); }
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC( CLASS ) \

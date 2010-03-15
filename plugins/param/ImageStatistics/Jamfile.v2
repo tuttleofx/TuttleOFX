@@ -1,0 +1,47 @@
+###############################################################################
+## Main BJam makefile for TuttleOFX Average Plugin
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements	
+				<include>src
+  				<threading>multi 
+  				<os>NT:<define>_WINDOWS
+    : build-dir $(DIST)/plugins/Average/obj
+    ;
+
+###############################################################################
+# Dependencies
+###############################################################################
+if [ os.name ] = NT	
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX 
+	{	alias opengl : ; }
+else if [ os.name ] = MACOSX 
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
+
+###############################################################################
+# Product 
+###############################################################################
+plugin Average : 
+    [ glob src/*.cpp ]
+    /tuttlelib//tuttleplugin/<link>static
+    /supportlib
+    opengl
+    ;
+
+###############################################################################
+# Automatic install
+###############################################################################
+alias install : install-plug ;
+install install-plug
+	:	Average
+	:	<os>NT:<location>$(DIST)/plugins/Average/bundle/Average.ofx.bundle/Contents/Win32
+		<os>LINUX:<location>$(DIST)/plugins/Average/bundle/Average.ofx.bundle/Contents/Linux
+		<os>MACOSX:<location>$(DIST)/plugins/Average/bundle/Average.ofx.bundle/Contents/MacOS
+	;
+

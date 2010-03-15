@@ -100,7 +100,7 @@ EffectDescriptorMap gEffectDescriptors;
 };
 
 /** @brief map a std::string to a context */
-ContextEnum mapToContextEnum( const std::string& s ) throw( std::invalid_argument )
+ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argument )
 {
 	if( s == kOfxImageEffectContextGenerator )
 		return eContextGenerator;
@@ -142,7 +142,7 @@ const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invali
 	throw std::invalid_argument( "Unknown image effect context enum." );
 }
 
-const char* mapToMessageTypeEnum( OFX::Message::MessageTypeEnum type )
+const std::string mapMessageTypeEnumToStr( OFX::Message::MessageTypeEnum type )
 {
 	if( type == OFX::Message::eMessageFatal )
 		return kOfxMessageFatal;
@@ -158,7 +158,7 @@ const char* mapToMessageTypeEnum( OFX::Message::MessageTypeEnum type )
 	return 0;
 }
 
-OFX::Message::MessageReplyEnum mapToMessageReplyEnum( OfxStatus stat )
+OFX::Message::MessageReplyEnum mapStatusToMessageReplyEnum( OfxStatus stat )
 {
 	if( stat == kOfxStatOK )
 		return OFX::Message::eMessageReplyOK;
@@ -173,7 +173,7 @@ OFX::Message::MessageReplyEnum mapToMessageReplyEnum( OfxStatus stat )
 }
 
 /** @brief map a std::string to a context */
-InstanceChangeReason mapToInstanceChangedReason( const std::string& s ) throw( std::invalid_argument )
+InstanceChangeReason mapStrToInstanceChangedReason( const std::string& s ) throw( std::invalid_argument )
 {
 	if( s == kOfxChangePluginEdited )
 		return eChangePluginEdit;
@@ -186,7 +186,7 @@ InstanceChangeReason mapToInstanceChangedReason( const std::string& s ) throw( s
 }
 
 /** @brief turns a bit depth string into and enum */
-static BitDepthEnum mapStrToBitDepthEnum( const std::string& str ) throw( std::invalid_argument )
+BitDepthEnum mapStrToBitDepthEnum( const std::string& str ) throw( std::invalid_argument )
 {
 	if( str == kOfxBitDepthByte )
 	{
@@ -210,8 +210,25 @@ static BitDepthEnum mapStrToBitDepthEnum( const std::string& str ) throw( std::i
 	}
 }
 
+const std::string mapBitDepthEnumToStr( const BitDepthEnum& e )
+{
+	switch(e)
+	{
+		case eBitDepthUByte:
+			return kOfxBitDepthByte;
+		case eBitDepthUShort:
+			return kOfxBitDepthShort;
+		case eBitDepthFloat:
+			return kOfxBitDepthFloat;
+		case eBitDepthNone:
+			return kOfxBitDepthNone;
+		case eBitDepthCustom:
+			return "eBitDepthCustom";
+	}
+}
+
 /** @brief turns a pixel component string into and enum */
-static PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str ) throw( std::invalid_argument )
+PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str ) throw( std::invalid_argument )
 {
 	if( str == kOfxImageComponentRGBA )
 	{
@@ -231,8 +248,23 @@ static PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str ) t
 	}
 }
 
+std::string mapPixelComponentEnumToStr( const PixelComponentEnum& e )
+{
+	switch(e)
+	{
+		case ePixelComponentRGBA:
+			return kOfxImageComponentRGBA;
+		case ePixelComponentAlpha:
+			return kOfxImageComponentAlpha;
+		case ePixelComponentNone:
+			return kOfxImageComponentNone;
+		case ePixelComponentCustom:
+			return "ePixelComponentCustom";
+	}
+}
+
 /** @brief turns a premultiplication string into and enum */
-static PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str ) throw( std::invalid_argument )
+PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str ) throw( std::invalid_argument )
 {
 	if( str == kOfxImageOpaque )
 	{
@@ -249,6 +281,19 @@ static PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& s
 	else
 	{
 		throw std::invalid_argument( "" );
+	}
+}
+
+std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e )
+{
+	switch( e )
+	{
+		case eImageOpaque:
+			return kOfxImageOpaque;
+		case eImagePreMultiplied:
+			return kOfxImagePreMultiplied;
+		case eImageUnPreMultiplied:
+			return kOfxImageUnPreMultiplied;
 	}
 }
 
@@ -274,6 +319,21 @@ FieldEnum mapStrToFieldEnum( const std::string& str )  throw( std::invalid_argum
 	else
 	{
 		throw std::invalid_argument( "" );
+	}
+}
+
+std::string mapFieldEnumToStr( const FieldEnum& e )
+{
+	switch( e )
+	{
+		case eFieldNone:
+			return kOfxImageFieldNone;
+		case eFieldBoth:
+			return kOfxImageFieldBoth;
+		case eFieldLower:
+			return kOfxImageFieldLower;
+		case eFieldUpper:
+			return kOfxImageFieldUpper;
 	}
 }
 
@@ -974,7 +1034,7 @@ ImageEffect::ImageEffect( OfxImageEffectHandle handle )
 
 	// fetch the context
 	std::string ctxt = _effectProps.propGetString( kOfxImageEffectPropContext );
-	_context = mapToContextEnum( ctxt );
+	_context = mapStrToContextEnum( ctxt );
 
 	// the param set daddy-oh
 	OfxParamSetHandle paramSet;
@@ -1081,8 +1141,8 @@ OFX::Message::MessageReplyEnum ImageEffect::sendMessage( OFX::Message::MessageTy
 	{
 		throwHostMissingSuiteException( "message" );
 	}
-	OfxStatus stat = OFX::Private::gMessageSuite->message( _effectHandle, mapToMessageTypeEnum( type ), id.c_str(), msg.c_str() );
-	return mapToMessageReplyEnum( stat );
+	OfxStatus stat = OFX::Private::gMessageSuite->message( _effectHandle, mapMessageTypeEnumToStr( type ).c_str(), id.c_str(), msg.c_str() );
+	return mapStatusToMessageReplyEnum( stat );
 }
 
 /** @brief Fetch the named clip from this instance */
@@ -1306,11 +1366,11 @@ void ImageEffect::timeLineGotoTime( double t )
 /// get the first and last times available on the effect's timeline
 void ImageEffect:: timeLineGetBounds( double& t1, double& t2 )
 {
+	t1 = t2 = 0;
 	if( OFX::Private::gTimeLineSuite )
 	{
 		OFX::Private::gTimeLineSuite->getTimeBounds( (void*) _effectHandle, &t1, &t2 );
 	}
-	t1 = t2 = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1518,7 +1578,7 @@ void fetchHostDescription( OfxHost* host )
 
 		int numContexts = hostProps.propGetDimension( kOfxImageEffectPropSupportedContexts );
 		for( int i = 0; i < numContexts; ++i )
-			gHostDescription._supportedContexts.push_back( mapToContextEnum( hostProps.propGetString( kOfxImageEffectPropSupportedContexts, i ) ) );
+			gHostDescription._supportedContexts.push_back( mapStrToContextEnum( hostProps.propGetString( kOfxImageEffectPropSupportedContexts, i ) ) );
 
 		int numPixelDepths = hostProps.propGetDimension( kOfxImageEffectPropSupportedPixelDepths );
 		for( int i = 0; i < numPixelDepths; ++i )
@@ -1682,7 +1742,7 @@ void checkMainHandles( const std::string& action,  const void* handle,
 }
 
 /** @brief Fetches the arguments used in a render action 'inargs' property set into a POD struct */
-static void getRenderActionArguments( RenderArguments& args,  OFX::PropertySet inArgs )
+void getRenderActionArguments( RenderArguments& args,  OFX::PropertySet inArgs )
 {
 	args.time = inArgs.propGetDouble( kOfxPropTime );
 
@@ -2012,7 +2072,7 @@ void beginInstanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet i
 	ImageEffect* effectInstance = retrieveImageEffectPointer( handle );
 
 	std::string reasonStr       = inArgs.propGetString( kOfxPropChangeReason );
-	InstanceChangeReason reason = mapToInstanceChangedReason( reasonStr );
+	InstanceChangeReason reason = mapStrToInstanceChangedReason( reasonStr );
 
 	// and call the plugin client code
 	effectInstance->beginChanged( reason );
@@ -2028,7 +2088,7 @@ void instanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs
 	// why did it change
 	std::string reasonStr = inArgs.propGetString( kOfxPropChangeReason );
 
-	args.reason        = mapToInstanceChangedReason( reasonStr );
+	args.reason        = mapStrToInstanceChangedReason( reasonStr );
 	args.time          = inArgs.propGetDouble( kOfxPropTime );
 	args.renderScale.x = inArgs.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	args.renderScale.y = inArgs.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
@@ -2059,7 +2119,7 @@ void endInstanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet inA
 	ImageEffect* effectInstance = retrieveImageEffectPointer( handle );
 
 	std::string reasonStr       = inArgs.propGetString( kOfxPropChangeReason );
-	InstanceChangeReason reason = mapToInstanceChangedReason( reasonStr );
+	InstanceChangeReason reason = mapStrToInstanceChangedReason( reasonStr );
 
 	// and call the plugin client code
 	effectInstance->endChanged( reason );
@@ -2150,7 +2210,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 			// figure the context and map it to an enum
 			std::string contextStr = inArgs.propGetString( kOfxImageEffectPropContext );
-			ContextEnum context    = mapToContextEnum( contextStr );
+			ContextEnum context    = mapStrToContextEnum( contextStr );
 
 			// validate the host
 			OFX::Validation::validatePluginDescriptorProperties( fetchEffectProps( handle ) );
@@ -2173,7 +2233,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 			// get the context and turn it into an enum
 			std::string str     = effectProps.propGetString( kOfxImageEffectPropContext );
-			ContextEnum context = mapToContextEnum( str );
+			ContextEnum context = mapStrToContextEnum( str );
 
 			// make the image effect instance for this context
 			/*ImageEffect *instance = */ factory->createInstance( handle, context );

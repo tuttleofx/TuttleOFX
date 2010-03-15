@@ -120,6 +120,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 				_selected.push_back( &(*it) );
 				_moveType = m;
 				result = true;
+				break;
 			}
 		}
 	}
