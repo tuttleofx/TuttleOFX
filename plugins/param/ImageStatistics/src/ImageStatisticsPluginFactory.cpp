@@ -1,6 +1,6 @@
-#include "ImageStatisticsPluginFactory.hpp"
 #include "ImageStatisticsPlugin.hpp"
 #include "ImageStatisticsDefinitions.hpp"
+#include "ImageStatisticsOverlayInteract.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -17,7 +17,11 @@
 
 namespace tuttle {
 namespace plugin {
-namespace average {
+namespace imageStatistics {
+
+static const bool kSupportTiles = false;
+
+mDeclarePluginFactory( ImageStatisticsPluginFactory, { }, { } );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -40,11 +44,10 @@ void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( true );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
+	
+    desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<ImageStatisticsEffectOverlayDescriptor>() );
 }
 
 /**
@@ -68,13 +71,15 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 
 	OFX::Double2DParamDescriptor* cornerA = desc.defineDouble2DParam( kCornerA );
 	cornerA->setLabel( "A" );
-	cornerA->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    cornerA->setDefault( 0.4, 0.4 );
+	cornerA->setDoubleType( OFX::eDoubleTypePlain );
+//	cornerA->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+    cornerA->setDefault( -0.5, -0.5 );
 
 	OFX::Double2DParamDescriptor* cornerB = desc.defineDouble2DParam( kCornerB );
 	cornerB->setLabel( "B" );
-	cornerB->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    cornerB->setDefault( 0.6, 0.6 );
+	cornerB->setDoubleType( OFX::eDoubleTypePlain );
+//	cornerB->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+    cornerB->setDefault( 0.5, 0.5 );
 
 	OFX::ChoiceParamDescriptor* chooseOutput = desc.defineChoiceParam( kChooseOutput );
 	chooseOutput->setLabel( "Choose output" );
@@ -133,7 +138,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::average::ImageStatisticsPluginFactory p("fr.tuttle.average", 1, 0);
+	static tuttle::plugin::imageStatistics::ImageStatisticsPluginFactory p("fr.tuttle.imagestatistics", 1, 0);
 	ids.push_back(&p);
 }
 

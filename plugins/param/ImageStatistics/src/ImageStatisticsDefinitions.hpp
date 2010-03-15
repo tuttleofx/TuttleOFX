@@ -6,7 +6,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace average {
+namespace imageStatistics {
 
 const static std::string kCornerA = "cornerA";
 const static std::string kCornerB = "cornerB";

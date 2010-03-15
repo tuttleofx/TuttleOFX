@@ -97,6 +97,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 {
 	bool result = false;
 	_mouseDown = true;
+	_moveType = eMoveTypeNone;
 	_params.beginEditBlock("InteractObjectsGroup");
 
 //		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
@@ -117,10 +118,20 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 			EMoveType m;
 			if( (m = it->selectIfIntesect( penPosition )) != eMoveTypeNone )
 			{
-				_selected.push_back( &(*it) );
-				_moveType = m;
+				if( _moveType == eMoveTypeNone )
+				{
+					_selected.push_back( &(*it) );
+					_moveType = m;
+				}
+				else if( m == eMoveTypeXY ) // if we already register an object X or Y and we found an XY intersection
+				{
+					_selected.clear();
+					_selected.push_back( &(*it) );
+					_moveType = m;
+				}
 				result = true;
-				break;
+				if( m == eMoveTypeXY )
+					break;
 			}
 		}
 	}
