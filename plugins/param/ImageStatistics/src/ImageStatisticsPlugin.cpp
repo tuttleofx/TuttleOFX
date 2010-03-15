@@ -2,6 +2,7 @@
 #include "ImageStatisticsProcess.hpp"
 #include "ImageStatisticsDefinitions.hpp"
 
+#include <tuttle/plugin/interact/InteractInfos.hpp>
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 #include <ofxsImageEffect.h>
@@ -10,7 +11,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace average {
+namespace imageStatistics {
 
 using namespace boost::gil;
 
@@ -38,8 +39,8 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 	OfxPointD rodSize;
 	rodSize.x = srcRod.x2 - srcRod.x1;
 	rodSize.y = srcRod.y2 - srcRod.y1;
-	cornerA *= rodSize; // XY normalized to canonical
-	cornerB *= rodSize;
+	cornerA = interact::pointNormalizedXXcToCanonicalXY( cornerA, rodSize); // XX centered normalized to canonical
+	cornerB = interact::pointNormalizedXXcToCanonicalXY( cornerB, rodSize);
 	params._rect.x1 = std::min( cornerA.x, cornerB.x );
 	params._rect.y1 = std::min( cornerA.y, cornerB.y );
 	params._rect.x2 = std::max( cornerA.x, cornerB.x );

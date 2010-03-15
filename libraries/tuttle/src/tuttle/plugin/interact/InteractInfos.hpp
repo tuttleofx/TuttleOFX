@@ -14,6 +14,54 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
+template<typename Value, typename Point>
+Value canonicalXXToNormalizedXX( const Value& v, const Point& imgSize ) { return v / imgSize.x; }
+template<typename Value, typename Point>
+Value normalizedXXToCanonicalXX( const Value& v, const Point& imgSize ) { return v * imgSize.x; }
+
+template<typename Point>
+Point pointCanonicalXYToNormalizedXY( const Point& point, const Point& imgSize ) { return point / imgSize; }
+template<typename Point>
+Point pointNormalizedXYToCanonicalXY( const Point& point, const Point& imgSize ) { return point * imgSize; }
+
+//	template<typename Point>
+//    Point pointCanonicalXYToNormalizedXX( const Point& point, const Point& imgSize )
+//	{
+//		COUT( "canonicalXY : " << point.x << ", " << point.y );
+//		Point p( point.x / imgSize.x, ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x) );
+//		COUT( "normalizedXX : " << p.x << ", " << p.y );
+//		return p;
+//	}
+
+template<typename Point>
+Point pointCanonicalXYToNormalizedXXc( const Point& point, const Point& imgSize )
+{
+	Point p;
+	p.x = (point.x/imgSize.x)-0.5;
+	p.y = ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x) - 0.5;
+	return p;
+}
+
+//template<typename Point>
+//Point pointNormalizedXXToCanonicalXY( const Point& point, const Point& imgSize )
+//{
+//	Point p;
+//	p.x = point.x * imgSize.x;
+//	p.y = (point.y * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
+//	return p;
+//}
+
+template<typename Point>
+Point pointNormalizedXXcToCanonicalXY( const Point& point, const Point& imgSize )
+{
+	Point p;
+	p.x = (point.x+0.5) * imgSize.x;
+	p.y = ((point.y+0.5) * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
+	return p;
+}
+
+
+
 class InteractInfos
 {
 	typedef boost::gil::point2<double> Point2;
@@ -24,7 +72,7 @@ public:
 	, _lastPenPos(0,0)
     , _penDown(false)
 	, _imgSize( ofxToGil(effect->getProjectSize()) )
-    , _marge(0.02)
+    , _marge(0.01)
     {
     }
 	
@@ -36,38 +84,34 @@ public:
 	double _marge;
 
 	template<typename Value>
-    Value canonicalXXToNormalizedXX( const Value& v ) const { return v / _imgSize.x; }
+    Value canonicalXXToNormalizedXX( const Value& point ) const { return interact::canonicalXXToNormalizedXX( point, _imgSize ); }
 	template<typename Value>
-    Value normalizedXXToCanonicalXX( const Value& v ) const { return v * _imgSize.x; }
+    Value normalizedXXToCanonicalXX( const Value& point ) const { return interact::normalizedXXToCanonicalXX( point, _imgSize ); }
 
 	template<typename Value>
-    Value pointCanonicalXYToNormalizedXY( const Value& v ) const { return v / _imgSize; }
+    Value pointCanonicalXYToNormalizedXY( const Value& point ) const { return interact::pointCanonicalXYToNormalizedXY( point, _imgSize ); }
 	template<typename Point>
-    Point pointNormalizedXYToCanonicalXY( const Point& point ) const { return point * _imgSize; }
+    Point pointNormalizedXYToCanonicalXY( const Point& point ) const { return interact::pointNormalizedXYToCanonicalXY( point, _imgSize ); }
 
 //	template<typename Point>
 //    Point pointCanonicalXYToNormalizedXX( const Point& point ) const
 //	{
-//		COUT( "canonicalXY : " << point.x << ", " << point.y );
-//		Point p( point.x / _imgSize.x, ((point.y+((_imgSize.x-_imgSize.y)*0.5)) / _imgSize.x) );
-//		COUT( "normalizedXX : " << p.x << ", " << p.y );
-//		return p;
-//	}
-//	template<typename Point>
-//    Point pointNormalizedXXToCanonicalXY( const Point& point ) const
-//	{
-//		return Point( point.x * _imgSize.x, (point.y * _imgSize.x)-((_imgSize.x-_imgSize.y)*0.5) );
+//		return interact::pointCanonicalXYToNormalizedXX( point, _imgSize );
 //	}
 	template<typename Point>
     Point pointCanonicalXYToNormalizedXXc( const Point& point ) const
 	{
-		Point p( (point.x/_imgSize.x)-0.5, ((point.y+((_imgSize.x-_imgSize.y)*0.5)) / _imgSize.x) - 0.5 );
-		return p;
+		return interact::pointCanonicalXYToNormalizedXXc( point, _imgSize );
 	}
+//	template<typename Point>
+//    Point pointNormalizedXXToCanonicalXY( const Point& point ) const
+//	{
+//		return interact::pointNormalizedXXToCanonicalXY( point, _imgSize );
+//	}
 	template<typename Point>
     Point pointNormalizedXXcToCanonicalXY( const Point& point ) const
 	{
-		return Point( (point.x+0.5) * _imgSize.x, ((point.y+0.5) * _imgSize.x)-((_imgSize.x-_imgSize.y)*0.5) );
+		return interact::pointNormalizedXXcToCanonicalXY( point, _imgSize );
 	}
 };
 

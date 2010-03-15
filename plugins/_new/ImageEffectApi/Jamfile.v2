@@ -2,7 +2,7 @@
 ## Main BJam makefile for TuttleOFX %CLASSNAME% Plugin
 ###############################################################################
 import os ;
-
+ 
 ###############################################################################
 # Global project requirements
 ###############################################################################
@@ -11,9 +11,9 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/%CLASSNAME%/obj
+    : build-dir $(DIST)/%CLASSNAME%/obj
     ;
-
+ 
 ###############################################################################
 # Dependencies
 ###############################################################################
@@ -23,25 +23,18 @@ else if [ os.name ] = LINUX
 	{	alias opengl : ; }
 else if [ os.name ] = MACOSX 
 	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
-
+ 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin %CLASSNAME% : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-    /supportlib
     opengl
     ;
-
+ 
 ###############################################################################
 # Automatic install
 ###############################################################################
-alias install : install-plug ;
-install install-plug
-	:	%CLASSNAME%
-	:	<os>NT:<location>$(DIST)/plugins/%CLASSNAME%/bundle/%CLASSNAME%.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/%CLASSNAME%/bundle/%CLASSNAME%.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/%CLASSNAME%/bundle/%CLASSNAME%.ofx.bundle/Contents/MacOS
-	;
-
+auto_install %CLASSNAME% : $(DIST) ;
+ 

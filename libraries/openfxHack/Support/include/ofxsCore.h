@@ -131,13 +131,29 @@ inline OfxPointD& operator*=( OfxPointD& p, const double v ) { p.x *= v; p.y *= 
 inline bool operator==( const OfxPointD& p1, const OfxPointD& p2 ) { return (p1.x==p2.x && p1.y==p2.y); }
 inline bool operator!=( const OfxPointD& p1, const OfxPointD& p2 ) { return  p1.x!=p2.x || p1.y!=p2.y; }
 inline OfxPointD operator+( const OfxPointD& p1, const OfxPointD& p2 ) { OfxPointD r = {p1.x+p2.x,p1.y+p2.y}; return r; }
+inline OfxPointD operator+( const OfxPointD& p, const double t ) { OfxPointD r = { p.x + t, p.y + t }; return r; }
 inline OfxPointD operator-( const OfxPointD& p ) { OfxPointD r = {-p.x,-p.y}; return r; }
 inline OfxPointD operator-( const OfxPointD& p1, const OfxPointD& p2 ) { OfxPointD r = {p1.x-p2.x,p1.y-p2.y}; return r; }
-inline OfxPointD operator/( const OfxPointD& p, const double t ) { OfxPointD r; if( t==0 ) { r.x=0; r.y=0; } else { r.x=p.x/t; r.y=p.y/t; } return r; }
-inline OfxPointD operator*( const double t, const OfxPointD& p ) { OfxPointD r = {p.x*t,p.y*t}; return r; }
+inline OfxPointD operator-( const OfxPointD& p, const double t ) { OfxPointD r = { p.x - t, p.y - t }; return r; }
+inline OfxPointD operator*( const double t, const OfxPointD& p ) { OfxPointD r = { p.x * t, p.y * t }; return r; }
 inline OfxPointD operator*( const OfxPointD& p, const double t ) { OfxPointD r = { p.x * t, p.y * t }; return r; }
 inline OfxPointD operator*( const OfxPointD& a, const OfxPointD& b ) { OfxPointD r = { a.x * b.x, a.y * b.y }; return r; }
 inline OfxPointD operator/( const OfxPointD& a, const OfxPointD& b ) { OfxPointD r = { a.x / b.x, a.y / b.y }; return r; }
+inline OfxPointD operator/( const OfxPointD& p, const double t )
+{
+	OfxPointD r;
+	if( t==0 )
+	{
+		r.x=0;
+		r.y=0;
+	}
+	else
+	{
+		r.x=p.x/t;
+		r.y=p.y/t;
+	}
+	return r;
+}
 inline OfxPointD operator/( const double t, const OfxPointD& p )
 {
     OfxPointD res = { 0.0, 0.0 };
@@ -166,11 +182,11 @@ inline std::ostream& operator<<( std::ostream& out, const OfxRangeD& r )
 }
 inline std::ostream& operator<<( std::ostream& out, const OfxRectI& r )
 {
-	return out << "x1:" << r.x1 << " y1:" << r.y1 << "x2:" << r.x2 << " y2:" << r.y2;
+	return out << "x1:" << r.x1 << " y1:" << r.y1 << " x2:" << r.x2 << " y2:" << r.y2;
 }
 inline std::ostream& operator<<( std::ostream& out, const OfxRectD& r )
 {
-	return out << "x1:" << r.x1 << " y1:" << r.y1 << "x2:" << r.x2 << " y2:" << r.y2;
+	return out << "x1:" << r.x1 << " y1:" << r.y1 << " x2:" << r.x2 << " y2:" << r.y2;
 }
 
 

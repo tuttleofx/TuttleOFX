@@ -9,6 +9,7 @@ import os ;
 project
     : requirements
         <threading>multi
+		<include>.
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
     : build-dir $(DIST)/Dpx/obj
     ;
@@ -23,6 +24,7 @@ plugin Dpx :
         /tuttlelib//tuttleplugin/<link>static
         /png/<link>static
         /boost/filesystem/<link>static
+		/boost/system/<link>static
         ;
 
 ###############################################################################

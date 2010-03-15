@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/DebugImageEffectApi/obj
+    : build-dir $(DIST)/DebugImageEffectApi/obj
     ;
 
 ###############################################################################
@@ -30,18 +30,11 @@ else if [ os.name ] = MACOSX
 plugin DebugImageEffectApi :
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-    /supportlib
     opengl
     ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-alias install : install-plug ;
-install install-plug
-	:	DebugImageEffectApi
-	:	<os>NT:<location>$(DIST)/plugins/DebugImageEffectApi/bundle/DebugImageEffectApi.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/DebugImageEffectApi/bundle/DebugImageEffectApi.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/DebugImageEffectApi/bundle/DebugImageEffectApi.ofx.bundle/Contents/MacOS
-	;
+auto_install DebugImageEffectApi : $(DIST) ;
 

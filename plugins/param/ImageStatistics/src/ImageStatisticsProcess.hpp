@@ -19,7 +19,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace average {
+namespace imageStatistics {
 
 /**
  * @brief Compute the image average
