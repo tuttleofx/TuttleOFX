@@ -10,9 +10,8 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
-PointInteract::PointInteract( const InteractInfos& infos, OFX::Double2DParam* param, bool normalized )
+PointInteract::PointInteract( const InteractInfos& infos, const bool normalized )
 : _infos(infos)
-, _param(param)
 , _offset(0,0)
 , _normalized(normalized)
 {
@@ -20,16 +19,12 @@ PointInteract::PointInteract( const InteractInfos& infos, OFX::Double2DParam* pa
 
 PointInteract::~PointInteract( ) { }
 
-bool PointInteract::draw( const OFX::DrawArgs& args )
+bool PointInteract::draw( const OFX::DrawArgs& args ) const
 {
 	typedef boost::gil::point2<double> Point2;
 	double margeCanonical = _infos.normalizedXXToCanonicalXX( _infos._marge );
 	
-	Point2 p( _infos.pointNormalizedXXcToCanonicalXY( ofxToGil( _param->getValue() ) ) );
-
-//	COUT( "PointInteract::draw" );
-//	COUT_VAR( _infos._imgSize );
-//	COUT_VAR( p );
+	Point2 p( _infos.pointNormalizedXXcToCanonicalXY( getPoint() ) );
 
 	glEnable( GL_LINE_STIPPLE );
 	glColor3d(1.0,1.0,1.0);
@@ -43,7 +38,7 @@ bool PointInteract::draw( const OFX::DrawArgs& args )
 
 EMoveType PointInteract::selectIfIntesect( const Point2& mouse )
 {
-	Point2 p( ofxToGil( _param->getValue() ) );
+	Point2 p = getPoint();
 	_offset = p - mouse;
 	EMoveType m = clicPoint( p, mouse, _infos._marge );
 	COUT("selectIfIntesect");
@@ -69,7 +64,7 @@ EMoveType PointInteract::selectIfIntesect( const Point2& mouse )
 
 bool PointInteract::selectIfIsIn( const OfxRectD& rect )
 {
-	Point2 p( ofxToGil( _param->getValue() ) );
+	Point2 p = getPoint();
 	if( p.x >= rect.x1 && p.x <= rect.x2 &&
 	    p.y >= rect.y1 && p.y <= rect.y2 )
 	{
@@ -81,21 +76,22 @@ bool PointInteract::selectIfIsIn( const OfxRectD& rect )
 
 bool PointInteract::moveXYSelected( const Point2& point )
 {
-	_param->setValue( point.x + _offset.x, point.y + _offset.y );
+	setPoint( point.x + _offset.x, point.y + _offset.y );
 	return true;
 }
 
 bool PointInteract::moveXSelected( const Point2& point )
 {
-	_param->setValue( point.x + _offset.x, _param->getValue().y );
+	setPoint( point.x + _offset.x, getPoint().y );
 	return true;
 }
 
 bool PointInteract::moveYSelected( const Point2& point )
 {
-	_param->setValue( _param->getValue().x, point.y + _offset.y );
+	setPoint( getPoint().x, point.y + _offset.y );
 	return true;
 }
+
 
 }
 }

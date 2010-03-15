@@ -21,7 +21,7 @@ public:
 	virtual ~InteractObject() = 0;
 
 	/** @brief the function called to draw in the interact */
-	virtual bool draw( const OFX::DrawArgs& args ){ return false; }
+	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
 
 	virtual EMoveType selectIfIntesect( const Point2& ){ return eMoveTypeNone; }
 	virtual bool selectIfIsIn( const OfxRectD& ){ return false; }

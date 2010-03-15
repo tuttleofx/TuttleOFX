@@ -157,14 +157,17 @@ void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs &args, co
 	if( paramName == kNbPoints )
 	{
 		unsigned int nbPoints = boost::numeric_cast<unsigned int>( _nbPoints->getValue() );
-		Double2DParamVector::iterator it = _points.begin();
-		for( unsigned int i = 0; i < nbPoints; ++i, ++it )
+		Double2DParamVector::iterator it_point = _points.begin();
+		RGBAParamVector::iterator it_color = _colors.begin();
+		for( unsigned int i = 0; i < nbPoints; ++i, ++it_point )
 		{
-			(*it)->setIsSecret( false );
+			(*it_point)->setIsSecret( false );
+			(*it_color)->setIsSecret( false );
 		}
-		for( unsigned int i = nbPoints; i < kMaxNbPoints; ++i, ++it )
+		for( unsigned int i = nbPoints; i < kMaxNbPoints; ++i, ++it_point )
 		{
-			(*it)->setIsSecret( true );
+			(*it_point)->setIsSecret( true );
+			(*it_color)->setIsSecret( true );
 		}
 	}
 	else if( boost::starts_with( paramName, kPoint ) )

@@ -9,7 +9,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace average {
+namespace imageStatistics {
 
 struct ImageStatisticsProcessParams
 {

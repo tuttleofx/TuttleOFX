@@ -81,7 +81,7 @@ struct pixel_assign_max_t
 
 namespace tuttle {
 namespace plugin {
-namespace average {
+namespace imageStatistics {
 
 template<class View>
 ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin &instance )
