@@ -71,32 +71,33 @@ void VideoFFmpegReader::open( const std::string &filename )
 	else if( codecContext->sample_aspect_ratio.num )
 		_aspect = av_q2d( codecContext->sample_aspect_ratio );
 
-	_data.resize( width( ) * height( )*3 );
+	_data.resize( width( ) * height( ) * 3 );
 
 	// hack so seeking works from our intended position.
 	if( !strcmp( codecContext->codec->name, "mjpeg" ) || !strcmp( codecContext->codec->name, "dvvideo" ) )
 	{
-		std::cout << "ffmpegReader: WARNING offsetTime specifique pour le codec : " << codecContext->codec->name << std::endl;
+		std::cerr << "ffmpegReader: [WARNING] codec is using a specific offsetTime" << codecContext->codec->name << std::endl;
 		_offsetTime = false;
 	}
 
-	std::cout << "MetaData::CREATOR: " << _context->author << std::endl;
-	std::cout << "MetaData::COPYRIGHT: " << _context->copyright << std::endl;
-	std::cout << "MetaData::COMMENT: " << _context->comment << std::endl;
-	std::cout << "MetaData::PROJECT: " << _context->album << std::endl;
-	std::cout << "MetaData::FILE_CREATION_TIME: " << double(_context->timestamp ) << std::endl;
-	std::cout << "ffmpeg/num_streams: " << _context->nb_streams << std::endl;
-	std::cout << "MetaData::FRAME_RATE: " << fps( ) << std::endl;
-	std::cout << "ffmpeg/codec/codecName: " << codecContext->codec->name << std::endl;
 	/*
-			meta.setData(MetaData::CREATOR, context_->author);
-			meta.setData(MetaData::COPYRIGHT, context_->copyright);
-			meta.setData(MetaData::COMMENT, context_->comment);
-			meta.setData(MetaData::PROJECT, context_->album);
-			meta.setData(MetaData::FILE_CREATION_TIME, double(context_->timestamp));
-			meta.setData("ffmpeg/num_streams", context_->nb_streams);
-			meta.setData(MetaData::FRAME_RATE, fps());
-			meta.setData("ffmpeg/codec/codecName", codecContext->codec->name);
+		std::cout << "MetaData::CREATOR: " << _context->author << std::endl;
+		std::cout << "MetaData::COPYRIGHT: " << _context->copyright << std::endl;
+		std::cout << "MetaData::COMMENT: " << _context->comment << std::endl;
+		std::cout << "MetaData::PROJECT: " << _context->album << std::endl;
+		std::cout << "MetaData::FILE_CREATION_TIME: " << double(_context->timestamp ) << std::endl;
+		std::cout << "ffmpeg/num_streams: " << _context->nb_streams << std::endl;
+		std::cout << "MetaData::FRAME_RATE: " << fps( ) << std::endl;
+		std::cout << "ffmpeg/codec/codecName: " << codecContext->codec->name << std::endl;
+
+		meta.setData(MetaData::CREATOR, context_->author);
+		meta.setData(MetaData::COPYRIGHT, context_->copyright);
+		meta.setData(MetaData::COMMENT, context_->comment);
+		meta.setData(MetaData::PROJECT, context_->album);
+		meta.setData(MetaData::FILE_CREATION_TIME, double(context_->timestamp));
+		meta.setData("ffmpeg/num_streams", context_->nb_streams);
+		meta.setData(MetaData::FRAME_RATE, fps());
+		meta.setData("ffmpeg/codec/codecName", codecContext->codec->name);
 	 */
 	_isOpen = 1;
 }
@@ -113,7 +114,6 @@ void VideoFFmpegReader::close( )
 
 int VideoFFmpegReader::read( const int frame )
 {
-	std::cout << "ffmpegReader: open() : _lastDecodedPos:" << _lastDecodedPos << " frame: " << frame << std::endl;
 	if( _lastDecodedPos + 1 != frame )
 	{
 		seek( 0 );
@@ -127,8 +127,6 @@ int VideoFFmpegReader::read( const int frame )
 	//	int i = 0;
 	while( error >= 0 && !hasPicture )
 	{
-		//		std::cout << "A while i=" << i++ << "error=" << error << " hasPicture:" << hasPicture << std::endl;
-		//		std::cout << "av_read_frame" << std::endl;
 		error = av_read_frame( _context, &_pkt );
 		if( error < 0 ) // on error or end of file
 			return 1;
@@ -137,26 +135,23 @@ int VideoFFmpegReader::read( const int frame )
 			hasPicture = decodeImage( frame );
 
 		av_free_packet( &_pkt );
-		//		std::cout << "B while i=" << i++ << "error=" << error << " hasPicture:" << hasPicture << std::endl;
 	}
 	return 0;
 }
 
 bool VideoFFmpegReader::setupStreamInfo( )
 {
-	std::cout << "ffmpegReader: _context->nb_streams: " << _context->nb_streams << std::endl;
-
 	for( unsigned int i = 0; i < _context->nb_streams; ++i )
 	{
 		AVCodecContext *codecContext = _context->streams[i]->codec;
 		if( codecContext->codec_id == CODEC_ID_NONE )
 		{
-			std::cout << "ffmpegReader: Can't find decoder codec_id: CODEC_ID_NONE codecType:" << codecType_toString( codecContext->codec_type ) << std::endl;
+			std::cerr << "ffmpegReader: Can't find decoder codec_id: CODEC_ID_NONE codecType:" << codecType_toString( codecContext->codec_type ) << std::endl;
 			continue;
 		}
 		if( avcodec_find_decoder( codecContext->codec_id ) == NULL )
 		{
-			std::cout << "ffmpegReader: Can't find decoder codec_id: " << codecContext->codec_id << " codecType:" << codecType_toString( codecContext->codec_type ) << std::endl;
+			std::cerr << "ffmpegReader: Can't find decoder codec_id: " << codecContext->codec_id << " codecType:" << codecType_toString( codecContext->codec_type ) << std::endl;
 			continue;
 		}
 
@@ -273,7 +268,6 @@ bool VideoFFmpegReader::seek( size_t pos )
 	}
 
 	avcodec_flush_buffers( getVideoStream( )->codec );
-	std::cout << "ffmpegReader: av_seek_frame " << pos << std::endl;
 	if( av_seek_frame( _context, -1, offset, AVSEEK_FLAG_BACKWARD ) < 0 )
 		return false;
 
@@ -321,20 +315,18 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	// patched to use swscale instead of img_convert:
 	PixelFormat in_pixelFormat = codecContext->pix_fmt; // pixel format source
 	PixelFormat out_pixelFormat = PIX_FMT_RGB24; // pixel format dest
-	std::cout << "ffmpegReader: input format: " << pixelFormat_toString( in_pixelFormat ) << std::endl;
-	std::cout << "ffmpegReader: output format: " << pixelFormat_toString( out_pixelFormat ) << std::endl;
 
 	_sws_context = sws_getCachedContext( _sws_context, width( ), height( ), in_pixelFormat, width( ), height( ), out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
 
 	if( !_sws_context )
 	{
-		std::cout << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
+		std::cerr << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
 		return false;
 	}
 	int error = sws_scale( _sws_context, _avFrame->data, _avFrame->linesize, 0, height( ), output.data, output.linesize );
 	if( error < 0 )
 	{
-		std::cout << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
+		std::cerr << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
 		return false;
 	}
 	//	std::cout << "decodeImage " << frame << " OK" << std::endl;
