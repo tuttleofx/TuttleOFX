@@ -18,7 +18,7 @@ namespace tuttle {
 namespace plugin {
 namespace colorGradient {
 
-static const bool   kSupportTiles = false;
+static const bool   kSupportTiles = true;
 
 mDeclarePluginFactory( ColorGradientPluginFactory, { }, { } );
 
