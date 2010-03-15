@@ -28,4 +28,3 @@ plugin Math :
 # Automatic install
 ###############################################################################
 auto_install Math : $(DIST) ;
-

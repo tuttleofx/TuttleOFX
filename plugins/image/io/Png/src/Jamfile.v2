@@ -12,7 +12,7 @@ project
     : build-dir $(DIST)/Png/obj
     ;
 
-use-project /Png 	: $(3RD_PARTY)/libpng ;
+use-project /png 	: $(3RD_PARTY)/libpng ;
 
 ###############################################################################
 # Product 
@@ -20,8 +20,8 @@ use-project /Png 	: $(3RD_PARTY)/libpng ;
 plugin Png : 
         [ glob-tree *.cpp ]
         /tuttlelib//tuttleplugin/<link>static
-        /boost/filesystem/<link>static
-		/boost/system/<link>static
+        /boost//filesystem/<link>static
+		/boost//system/<link>static
         /png/<link>static
         ;
 

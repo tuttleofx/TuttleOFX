@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/TimeShift/obj
+    : build-dir $(DIST)/TimeShift/obj
     ;
 
 ###############################################################################
@@ -30,18 +30,11 @@ else if [ os.name ] = MACOSX
 plugin TimeShift : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-    /supportlib
     opengl
     ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-alias install : install-plug ;
-install install-plug
-	:	TimeShift
-	:	<os>NT:<location>$(DIST)/plugins/TimeShift/bundle/TimeShift.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/TimeShift/bundle/TimeShift.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/TimeShift/bundle/TimeShift.ofx.bundle/Contents/MacOS
-	;
+auto_install TimeShift : $(DIST) ;
 

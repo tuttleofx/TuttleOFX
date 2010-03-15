@@ -1,9 +1,9 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/filter ;
+path-constant DIST : $(DIST)/generator ;
 
-for local l in [ glob * ]
+for local l in [ glob * : generator ]
 {
    build-project $(l) ;
 }

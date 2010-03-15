@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/ColorGradient/obj
+    : build-dir $(DIST)/ColorGradient/obj
     ;
 
 ###############################################################################
@@ -30,18 +30,11 @@ else if [ os.name ] = MACOSX
 plugin ColorGradient :
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-    /supportlib
     opengl
     ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-alias install : install-plug ;
-install install-plug
-	:	ColorGradient
-	:	<os>NT:<location>$(DIST)/plugins/ColorGradient/bundle/ColorGradient.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/ColorGradient/bundle/ColorGradient.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/ColorGradient/bundle/ColorGradient.ofx.bundle/Contents/MacOS
-	;
+auto_install ColorGradient : $(DIST) ;
 

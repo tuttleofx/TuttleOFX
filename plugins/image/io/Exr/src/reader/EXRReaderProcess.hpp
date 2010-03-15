@@ -1,10 +1,10 @@
 #ifndef _EXR_READER_PROCESS_HPP_
 #define _EXR_READER_PROCESS_HPP_
 
-#include <OpenEXR/ImfInputFile.h>
-#include <OpenEXR/ImfChannelList.h>
-#include <OpenEXR/ImfArray.h>
-#include <OpenEXR/ImathVec.h>
+#include <ImfInputFile.h>
+#include <ImfChannelList.h>
+#include <ImfArray.h>
+#include <ImathVec.h>
 
 #include "../half/gilHalf.hpp"
 #include <tuttle/common/utils/global.hpp>

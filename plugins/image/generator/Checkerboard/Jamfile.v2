@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/plugins/Checkerboard/obj
+    : build-dir $(DIST)/Checkerboard/obj
     ;
 
 ###############################################################################
@@ -30,18 +30,11 @@ else if [ os.name ] = MACOSX
 plugin Checkerboard : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-    /supportlib
     opengl
     ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-alias install : install-plug ;
-install install-plug
-	:	Checkerboard
-	:	<os>NT:<location>$(DIST)/plugins/Checkerboard/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Win32
-		<os>LINUX:<location>$(DIST)/plugins/Checkerboard/bundle/%L_CLASSNAME%.ofx.bundle/Contents/Linux
-		<os>MACOSX:<location>$(DIST)/plugins/Checkerboard/bundle/%L_CLASSNAME%.ofx.bundle/Contents/MacOS
-	;
+auto_install Checkerboard : $(DIST) ;
 

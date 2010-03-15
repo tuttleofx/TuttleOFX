@@ -22,7 +22,8 @@ if ! [ type.registered PLUGIN ]
 ###############################################################################
 project
     : requirements
-        <threading>multi
+        <include>$(3RD_PARTY)/boost_gil_extensions
+		<threading>multi
         <os>NT:<define>_WINDOWS
     ;        
         
