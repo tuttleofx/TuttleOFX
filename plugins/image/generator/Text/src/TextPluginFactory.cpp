@@ -66,8 +66,9 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kHelpButton );
-	helpButton->setLabel( "Help" );
+	OFX::StringParamDescriptor *text = desc.defineStringParam( kText );
+	text->setLabel( "Text" );
+	text->setStringType( OFX::eStringTypeMultiLine );
 }
 
 /**

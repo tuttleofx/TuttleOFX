@@ -18,21 +18,14 @@ ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
-}
 
-OFX::Clip* TextPlugin::getSrcClip( ) const
-{
-    return _srcClip;
-}
-
-OFX::Clip* TextPlugin::getDstClip( ) const
-{
-    return _dstClip;
+	_text = fetchStringParam( kText );
 }
 
 TextProcessParams TextPlugin::getProcessParams() const
 {
 	TextProcessParams params;
+	_text->getValue( params._text );
 	return params;
 }
 
@@ -53,10 +46,10 @@ void TextPlugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                TextProcess<rgb8_view_t> p( *this );
+                TextProcess<rgba8_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
-            }/*
+            }
             case OFX::eBitDepthUShort :
             {
                 TextProcess<rgba16_view_t> p( *this );
@@ -74,9 +67,9 @@ void TextPlugin::render( const OFX::RenderArguments &args )
                 return;
             case OFX::eBitDepthCustom :
                 COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;*/
+                return;
         }
-    }/*
+    }
     else if( dstComponents == OFX::ePixelComponentAlpha )
     {
         switch( dstBitDepth )
@@ -106,16 +99,6 @@ void TextPlugin::render( const OFX::RenderArguments &args )
                 COUT_FATALERROR( "BitDepthCustom not recognize." );
                 return;
         }
-    }*/
-}
-
-void TextPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-    if( paramName == kHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kHelpString );
     }
 }
 

@@ -1,30 +1,11 @@
 
 #define white 255
 #define gray 170
+
+
+#include "TextPlugin.hpp"
+#include "TextProcess.hpp"
 #define black 0
-
-namespace boost {
-namespace gil {
-
-struct make_glyph
-{
-	FT_Face _face;
-	text_pixel_t _color;
-
-	make_glyph( FT_Face face, text_pixel_t color ) : _face( face ), _color( color ) { }
-
-	boost::shared_ptr<glyph_t> operator( )(char ch)
-	{
-		glyph_t* u = new glyph_t( );
-		u->ch = ch;
-		u->color = _color;
-		u->face = _face;
-		return boost::shared_ptr<glyph_t > ( u );
-	}
-};
-
-}
-}
 
 namespace tuttle {
 namespace plugin {
@@ -42,8 +23,8 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 
 	int fontW = 20; // fontSize
 	int fontH = fontW * 1; // * ratio
-	bgil::text_pixel_t backgroundColor( gray, gray, gray );
-	bgil::text_pixel_t foregroundColor( white, black, black );
+	text_pixel_t backgroundColor( gray, gray, gray );
+	text_pixel_t foregroundColor( white, black, black );
 
 	std::string fontPath = "/usr/share/fonts/truetype/msttcorefonts/arial.ttf";
 
@@ -70,8 +51,8 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 
 	//Step 3. Make Glyphs Array ------------------
 
-	std::string str = "Hello World test !";
-	std::transform( str.begin( ), str.end( ), std::back_inserter( _glyphs ), bgil::make_glyph( face, foregroundColor ) );
+	TextProcessParams params = _plugin.getProcessParams();
+	std::transform( params._text.begin( ), params._text.end( ), std::back_inserter( _glyphs ), make_glyph( face, foregroundColor ) );
 
 	//Step 4. Make Metrics Array --------------------
 
@@ -97,13 +78,13 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 							  procWindow.x2 - procWindow.x1,
 							  procWindow.y2 - procWindow.y1 );
 
-
 	/*
 	View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
 							  procWindow.x2 - procWindow.x1,
 							  procWindow.y2 - procWindow.y1 );
 	copy_pixels( src, dst );
 	 */
+	
 	for( int y = procWindow.y1;
 		 y < procWindow.y2;
 		 ++y )
@@ -133,9 +114,9 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	//Step 7. Render Glyphs ------------------------
 
 	std::for_each( _glyphs.begin( ), _glyphs.end( ), _kerning.begin( ),
-				 bgil::render_gray_glyph<View>
-				 (
-				   bgil::subimage_view( dst, x, y, width, height )
+				   bgil::render_gray_glyph<View>
+				   (
+				    bgil::subimage_view( dst, x, y, width, height )
 				   )
 				 );
 

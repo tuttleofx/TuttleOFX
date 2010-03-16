@@ -11,7 +11,7 @@ namespace text {
 
 struct TextProcessParams
 {
-	
+	std::string _text;
 };
 
 /**
@@ -21,12 +21,9 @@ class TextPlugin : public OFX::ImageEffect
 {
 public:
     TextPlugin( OfxImageEffectHandle handle );
-    OFX::Clip *getSrcClip( ) const;
-    OFX::Clip *getDstClip( ) const;
 
 public:
     void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 	
 	TextProcessParams getProcessParams() const;
 	
@@ -34,6 +31,7 @@ public:
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip* _srcClip; ///< Source image clip
     OFX::Clip* _dstClip; ///< Destination image clip
+	OFX::StringParam* _text; ///< the text to rasterize in the image
 };
 
 }
