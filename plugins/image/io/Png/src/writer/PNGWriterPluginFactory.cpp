@@ -19,35 +19,27 @@ namespace plugin {
 namespace png {
 namespace writer {
 
-using namespace OFX;
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
 void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "PNGWriter", "PNGWriter",
 	                "PNG File writer" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
+	// plugin flags
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( false );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -59,26 +51,26 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::ContextEnum            context )
 {
 	ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	assert(srcClip);
+	assert( srcClip );
 	srcClip->addSupportedComponent( ePixelComponentRGBA );
 	srcClip->addSupportedComponent( ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	assert(dstClip);
+	assert( dstClip );
 	dstClip->addSupportedComponent( ePixelComponentRGBA );
 	dstClip->addSupportedComponent( ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
 	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	assert(filename);
+	assert( filename );
 	filename->setLabel( "Output filename" );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
 
 	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
-	assert(renderButton);
+	assert( renderButton );
 	renderButton->setLabels( "Render", "Render", "Render step" );
 }
 

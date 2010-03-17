@@ -8,9 +8,6 @@ namespace dpx {
 namespace writer {
 
 static const bool kSupportTiles              = false;
-static const bool kSupportTemporalClipAccess = false;
-
-using namespace OFX;
 
 mDeclarePluginFactory( DPXWriterPluginFactory, {}, {} );
 

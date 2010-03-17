@@ -28,28 +28,21 @@ mDeclarePluginFactory( InvertPluginFactory, {}, {}
  */
 void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "Invert", "Image inverter",
 	                "Image inverter" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
-	desc.addSupportedContext( eContextFilter );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( true );
-	desc.setSupportsMultiResolution( false );
+	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( false );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -61,14 +54,14 @@ void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
-	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );

@@ -25,12 +25,11 @@ namespace debugImageEffectApi {
  */
 void DebugImageEffectApiPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	// basic labels
 	desc.setLabels( "DebugImageEffectApi", "DebugImageEffectApi",
 		            "Plugin which displays informations about the host and all plugin inputs." );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
+	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
@@ -38,7 +37,7 @@ void DebugImageEffectApiPluginFactory::describe( OFX::ImageEffectDescriptor &des
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
+	// plugin flags
 	desc.setSingleInstance( false );
 	desc.setHostFrameThreading( true );
 	desc.setSupportsMultiResolution( false );

@@ -29,11 +29,10 @@ mDeclarePluginFactory( ColorGradientPluginFactory, { }, { } );
  */
 void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	// basic labels
 	desc.setLabel( "ColorGradient" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
+	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
 
@@ -42,7 +41,7 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
+	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
 }
 
@@ -52,7 +51,7 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                  OFX::ContextEnum context )
+                                                    OFX::ContextEnum context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );

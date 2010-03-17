@@ -30,28 +30,21 @@ mDeclarePluginFactory( CropPluginFactory, {}, {}
  */
 void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "Crop", "Crop",
-	                "image crop" );
+	                "Image crop" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
+	// add the supported contexts
 	desc.addSupportedContext( eContextFilter );
+	desc.addSupportedContext( eContextGeneral );
 
 	// add supported pixel depths
 	desc.addSupportedBitDepth( eBitDepthUByte );
 	desc.addSupportedBitDepth( eBitDepthUShort );
 	desc.addSupportedBitDepth( eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( true );
-	desc.setSupportsMultiResolution( false );
+	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( false );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 
 	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<CropMarginOverlay>() );
 }
@@ -77,19 +70,19 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::BooleanParamDescriptor* bop = desc.defineBooleanParam( kParamFillMode );
-	bop->setLabels(kParamFillModeLabel, kParamFillModeLabel, kParamFillModeLabel);
+	bop->setLabels( kParamFillModeLabel, kParamFillModeLabel, kParamFillModeLabel );
 	bop->setScriptName( "BandsOperations" );
-	bop->setHint("Fill bands with black color or repeat last pixel and reset Rod.");
-	bop->setDefault(true);
+	bop->setHint( "Fill bands with black color or repeat last pixel and reset Rod." );
+	bop->setDefault( true );
 
 	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamPresets );
 	format->setLabels( kParamPresetsLabel, kParamPresetsLabel, kParamPresetsLabel );
 	format->setScriptName( "formats" );
-	format->appendOption( "1 : 1,33 (4/3) bands" );
-	format->appendOption( "1 : 1,77 (16/9e) bands" );
-	format->appendOption( "1 : 1,85 bands" );
-	format->appendOption( "1 : 2,35 (Cinemascope) bands" );
-	format->appendOption( "1 : 2,40 bands" );
+	format->appendOption( "1.33 (4/3) bands" );
+	format->appendOption( "1.77 (16/9e) bands" );
+	format->appendOption( "1.85 bands" );
+	format->appendOption( "2.35 (Cinemascope) bands" );
+	format->appendOption( "2.40 bands" );
 	format->setDefault( 0 );
 
 	OFX::BooleanParamDescriptor* shape = desc.defineBooleanParam( kParamDisplayRect );

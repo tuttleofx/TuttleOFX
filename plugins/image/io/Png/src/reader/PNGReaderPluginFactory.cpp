@@ -25,27 +25,22 @@ namespace reader {
  */
 void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "PNGReader", "PNGReader",
 	                "PNG File reader" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGenerator );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGenerator );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthFloat );
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
+	// plugin flags
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( false );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -57,18 +52,18 @@ void PNGReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::ContextEnum            context )
 {
 	// Create the mandated output clip
-	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	assert( dstClip );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
 	assert( filename );
 	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
-	filename->setStringType( eStringTypeFilePath );
-	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+	filename->setStringType( OFX::eStringTypeFilePath );
+	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 }
 
 /**

@@ -1,12 +1,5 @@
-/**
- * @file MergeProcess.hpp
- * @brief
- * @author
- * @date    27/11/09 13:42
- *
- */
-#ifndef MERGE_DEFINITIONS_HPP
-#define MERGE_DEFINITIONS_HPP
+#ifndef _MERGE_DEFINITIONS_HPP_
+#define _MERGE_DEFINITIONS_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 
@@ -20,9 +13,6 @@ const static std::string kMergeSourceB         = "SourceB";
 const static std::string kMergeHelpButton      = "Help";
 const static std::string kMergeFunction        = "mergingFunction";
 const static std::string kMergeFunctionLabel   = "Merging function";
-
-static const bool kSupportTiles              = false;
-static const bool kSupportTemporalClipAccess = false;
 
 // Plugin internal data
 const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used to merge two clips A and B.  <br />";
@@ -53,4 +43,4 @@ enum EMergeFunction
 }
 }
 
-#endif  // MERGE_DEFINITIONS_HPP
+#endif

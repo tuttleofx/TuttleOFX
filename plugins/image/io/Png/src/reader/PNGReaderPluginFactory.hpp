@@ -7,8 +7,6 @@ namespace plugin {
 namespace png {
 namespace reader {
 
-using namespace OFX;
-
 static const bool kSupportTiles = false;
 
 mDeclarePluginFactory( PNGReaderPluginFactory, {}, {} );

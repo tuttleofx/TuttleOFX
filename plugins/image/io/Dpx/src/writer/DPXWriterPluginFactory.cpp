@@ -23,30 +23,23 @@ namespace writer {
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
 void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "DPXWriter", "DPXWriter",
 	                "DPX File writer" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
+	// plugin flags
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -60,20 +53,20 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	// Dpx only supports RGB(A)
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	// Dpx only supports RGB(A)
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
 	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
-	filename->setStringType( eStringTypeFilePath );
-	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+	filename->setStringType( OFX::eStringTypeFilePath );
+	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamBitDepth );
 	bitDepth->setLabels( kParamBitDepthLabel, kParamBitDepthLabel, kParamBitDepthLabel );
@@ -94,7 +87,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	compressed->setLabels( kParamCompressedLabel, kParamCompressedLabel, "Remove unused bits (bit streaming)" );
 	compressed->setDefault( false );
 
-	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
+	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
 	renderButton->setLabels( kRenderLabel, kRenderLabel, "Step rendering" );
 	renderButton->setHint( "Avoid to render the same image" );
 	renderButton->setScriptName( "renderButton" );

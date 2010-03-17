@@ -7,8 +7,7 @@ namespace plugin {
 namespace ffmpeg {
 namespace writer {
 
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
+static const bool kSupportTiles = false;
 
 mDeclarePluginFactory( FFMpegWriterPluginFactory, { }, { } );
 

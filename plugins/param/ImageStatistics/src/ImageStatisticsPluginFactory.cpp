@@ -29,12 +29,11 @@ mDeclarePluginFactory( ImageStatisticsPluginFactory, { }, { } );
  */
 void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "ImageStatistics", "ImageStatistics",
 		            "ImageStatistics" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
+	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
 
@@ -43,7 +42,7 @@ void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
+	// plugin flags
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 	

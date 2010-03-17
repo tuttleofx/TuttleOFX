@@ -7,10 +7,7 @@ namespace plugin {
 namespace dpx {
 namespace reader {
 
-using namespace OFX;
-
 static const bool kSupportTiles              = false;
-static const bool kSupportTemporalClipAccess = false;
 
 mDeclarePluginFactory( DPXReaderPluginFactory, {}, {} );
 

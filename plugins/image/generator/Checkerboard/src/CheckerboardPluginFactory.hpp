@@ -7,7 +7,6 @@ namespace plugin {
 namespace checkerboard {
 
 static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
 
 mDeclarePluginFactory( CheckerboardPluginFactory, { }, { } );
 
