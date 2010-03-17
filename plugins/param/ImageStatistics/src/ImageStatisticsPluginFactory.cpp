@@ -90,7 +90,6 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	chooseOutput->appendOption( kChooseOutputLuminosityMin );
 	chooseOutput->appendOption( kChooseOutputLuminosityMax );
 	chooseOutput->setDefault( 0 );
-	chooseOutput->setEvaluateOnChange( false );
 
 	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kOutputGroup );
 	outputGroup->setLabel( "Output" );
@@ -98,23 +97,28 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	OFX::RGBAParamDescriptor* outputAverage = desc.defineRGBAParam( kOutputAverage );
 	outputAverage->setLabel( "Average" );
 	outputAverage->setParent( outputGroup );
+	outputAverage->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputChannelMin = desc.defineRGBAParam( kOutputChannelMin );
 	outputChannelMin->setLabel( "Channels' min" );
 	outputChannelMin->setHint( "Minimum value per channel" );
 	outputChannelMin->setParent( outputGroup );
+	outputChannelMin->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputChannelMax = desc.defineRGBAParam( kOutputChannelMax );
 	outputChannelMax->setLabel( "Channels' max" );
 	outputChannelMax->setParent( outputGroup );
+	outputChannelMax->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputLuminosityMin = desc.defineRGBAParam( kOutputLuminosityMin );
 	outputLuminosityMin->setLabel( "Luminosity min" );
 	outputLuminosityMin->setParent( outputGroup );
+	outputLuminosityMin->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputLuminosityMax = desc.defineRGBAParam( kOutputLuminosityMax );
 	outputLuminosityMax->setLabel( "Luminosity max" );
 	outputLuminosityMax->setParent( outputGroup );
+	outputLuminosityMax->setEvaluateOnChange( false );
 }
 
 /**
