@@ -29,7 +29,6 @@ mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
  */
 void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "%PLUGIN_LABEL%", "%PLUGIN_LABEL%",
 		            "%PLUGIN_LONG_LABEL%" );
 	desc.setPluginGrouping( "%PLUGIN_GROUP%" );
@@ -43,7 +42,7 @@ void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
+	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
 }
 

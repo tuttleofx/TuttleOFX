@@ -29,9 +29,7 @@ mDeclarePluginFactory( TextPluginFactory, { }, { } );
  */
 void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
-	desc.setLabels( "Text", "Text",
-		            "Text" );
+	desc.setLabel( "Text" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment
@@ -43,8 +41,9 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
+	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
+	desc.setSupportsMultiResolution( false );
 }
 
 /**
