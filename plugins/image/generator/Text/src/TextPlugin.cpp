@@ -20,12 +20,22 @@ ImageEffect( handle )
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
 
 	_text = fetchStringParam( kText );
+	_font = fetchStringParam( kFont );
+	_fontSize = fetchIntParam( kFontSize );
+	_fontColor = fetchRGBAParam( kFontColor );
 }
 
 TextProcessParams TextPlugin::getProcessParams() const
 {
 	TextProcessParams params;
 	_text->getValue( params._text );
+	_font->getValue( params._font );
+
+	params._fontX = _fontSize->getValue();
+	params._fontY = params._fontX * 1; // * ratio
+
+	params._fontColor = _fontColor->getValue();
+
 	return params;
 }
 
