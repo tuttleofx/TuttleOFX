@@ -1,25 +1,6 @@
 Import( 'project' )
 Import( 'libs' )
 
+project.ObjectLibrary( 'openfxHack', includes=[project.getRealAbsoluteCwd('include')] )
 
-class openfxHackChecker(libs.base.HeaderChecker):
-
-    def __init__( self ):
-        self.libname = 'openfxHack'
-        self.name    = self.libname
-        self.language = 'c++'
-
-    def configure(self, putois, env):
-        if not self.enabled(env):
-            return True
-        env.Append( CPPPATH = [ putois.inTopDir('libraries/openfxHack/include') ] )
-        return True
-
-    def check(self, conf):
-        if not self.enabled(conf.env):
-            return True
-        self.checkDone = True
-        return True
-
-libs.openfxHack = openfxHackChecker()
 

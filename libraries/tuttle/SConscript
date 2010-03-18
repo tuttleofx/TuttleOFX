@@ -1,88 +1,25 @@
 Import( 'project' )
 Import( 'libs' )
 
-librariesPublic  = [ libs.openfxHack,
-                   ]
-librariesPrivate = [ libs.dl,
-			         libs.boost_gil,
-                     libs.boost_filesystem,
-                     libs.boost_serialization,
-                     libs.boost_thread,
-			       ]
-
-libraries = librariesPrivate + librariesPublic
-
 tuttleCommonSources = project.scanFiles( ['src/tuttle/common'] )
 
-tuttleHostSources = project.scanFiles( ['src/tuttle/host'] ) + tuttleCommonSources
-tuttleHostEnv = project.createEnv( libraries )
-tuttleHostEnv.Append( CPPPATH=['src'] )
-#tuttleHostEnv.Append( LIBS=[ 'tuttleCommon' ] )
-tuttleHost = tuttleHostEnv.StaticLibrary( target='tuttleHost', source=tuttleHostSources )
-tuttleHostInstall = tuttleHostEnv.Install( project.inOutputLib(), tuttleHost )
+project.StaticSharedLibrary( 'tuttlePlugin',
+                             sources=project.scanFiles( ['src/tuttle/host'] ) + tuttleCommonSources,
+                             includes=['src'],
+                             libraries=[ libs.openfxPluginSupportHack,
+                                         libs.openfxHack,
+                                        ]
+                            )
 
-
-tuttlePluginSources = project.scanFiles( ['src/tuttle/plugin'] ) + tuttleCommonSources
-tuttlePluginEnv = project.createEnv( libraries+[libs.openfxPluginSupportHack] )
-tuttlePluginEnv.Append( CCFLAGS=project.CC['sharedobject'] )
-tuttlePluginEnv.Replace( OBJSUFFIX='.os' )
-tuttlePluginEnv.Append( CPPPATH=['src'] )
-#tuttlePluginEnv.Append( LIBS=[ 'tuttleCommon' ] )
-tuttlePlugin = tuttlePluginEnv.StaticLibrary( target='tuttlePlugin', source=tuttlePluginSources )
-tuttlePluginInstall = tuttlePluginEnv.Install( project.inOutputLib(), tuttlePlugin )
-
-
-
-class tuttlePluginChecker(libs.base.LibWithHeaderChecker):
-
-    def __init__( self ):
-        self.libname = 'tuttlePlugin'
-        self.name    = self.libname
-        self.language = 'c++'
-
-    def configure(self, putois, env):
-        if not self.enabled(env):
-            return True
-        env.Append( CPPPATH = [ putois.inTopDir('libraries/tuttle/src') ] )
-        return True
-
-    def postconfigure(self, putois, env):
-        '''Don't check for local lib, so we only add it.'''
-        env.Append( LIBS    = [ self.libname ] )
-
-    def check(self, conf):
-        if not self.enabled(conf.env):
-            return True
-        self.checkDone = True
-        return True
-
-libs.tuttlePlugin = tuttlePluginChecker()
-
-
-class tuttleHostChecker(libs.base.LibWithHeaderChecker):
-
-    def __init__( self ):
-        self.libname = 'tuttleHost'
-        self.name    = self.libname
-        self.language = 'c++'
-        self.dependencies = libraries + [libs.png]
-
-    def configure(self, putois, env):
-        if not self.enabled(env):
-            return True
-        env.Append( CPPPATH = [ putois.inTopDir('libraries/tuttle/src') ] )
-        return True
-
-    def postconfigure(self, putois, env):
-        '''Don't check for local lib, so we only add it.'''
-        env.Append( LIBS    = [ self.libname ] )
-
-    def check(self, conf):
-        if not self.enabled(conf.env):
-            return True
-        self.checkDone = True
-        return True
-
-libs.tuttleHost = tuttleHostChecker()
-
+project.StaticLibrary( 'tuttleHost',
+                       sources=project.scanFiles( ['src/tuttle/plugin'] ) + tuttleCommonSources,
+                       includes=['src'],
+                       libraries=[ libs.dl,
+                                   libs.boost_filesystem,
+                                   libs.boost_serialization,
+                                   libs.boost_thread,
+			                       libs.boost_gil,
+                                   libs.png,
+                                  ]
+                      )
 

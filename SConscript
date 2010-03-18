@@ -1,33 +1,19 @@
 Import( 'project' )
 Import( 'libs' )
 
-class TuttleProjectChecker(libs.base.BaseLibChecker):
-	'''
-	Global configuration for all the project.
-	'''
 
-	def __init__( self ):
-		self.name  = 'tuttle'
+tuttleFlags = { 'LIBPATH': [ project.inOutputLib() ] }
 
-	def initOptions(self, putois, opts):
-		opts.Add( BoolVariable( 'with_'+self.name, 'enabled compilation with '+self.name, True  ) )
-		return True
+if 'sharedNoUndefined' in project.CC:
+	tuttleFlags['SHLINKFLAGS'] = [project.CC['sharedNoUndefined']]
+if 'visibilityhidden' in project.CC:
+	tuttleFlags['SHCCFLAGS'] = [project.CC['visibilityhidden']]
 
-	def configure(self, putois, env):
-		if not self.enabled(env):
-			return True
-		env.Append( CPPPATH = [ env['EXTLIBRARIES'], env['LIBRARIES'] ] )
-		env.Append( LIBPATH = [ putois.inOutputLib() ] )
-		if 'sharedNoUndefined' in project.CC:
-			env.Append( SHLINKFLAGS = [project.CC['sharedNoUndefined']] )
-		if 'visibilityhidden' in project.CC:
-			env.Append( SHCCFLAGS = [project.CC['visibilityhidden']] )
-		return True
+tuttle = project.ObjectLibrary( 'tuttle', includes=[ project.env['EXTLIBRARIES'], project.env['LIBRARIES'] ], envFlags=tuttleFlags )
+
+project.commonLibs.append( tuttle )
 
 
-libs.tuttleProject = TuttleProjectChecker()
-
-project.commonLibs.append(libs.tuttleProject)
 
 SConscript( project.scanFiles( ['libraries', 'plugins', 'applications'], accept=['SConscript'] ) )
 

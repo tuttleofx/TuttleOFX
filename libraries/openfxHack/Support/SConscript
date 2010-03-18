@@ -1,44 +1,9 @@
 Import( 'project' )
 Import( 'libs' )
 
-
-class openfxPluginSupportHackChecker(libs.base.LibWithHeaderChecker):
-
-    def __init__( self ):
-        self.libname = 'openfxPluginSupportHack'
-        self.name    = self.libname
-        self.language = 'c++'
-
-    def configure(self, putois, env):
-        if not self.enabled(env):
-            return True
-        env.Append( CPPPATH = [ putois.inTopDir('libraries/openfxHack/Support/include') ] )
-        return True
-
-    def postconfigure(self, putois, env):
-        '''We don't test lib in check, so we add it in postconfigure.'''
-        env.Append( LIBS = [ self.libname ] )
-
-    def check(self, conf):
-        if not self.enabled(conf.env):
-            return True
-        self.checkDone = True
-        return True
-
-libs.openfxPluginSupportHack = openfxPluginSupportHackChecker()
-
-
-
-target = 'openfxPluginSupportHack'
-sources = project.scanFiles( ['Library'] )
-
-env = project.createEnv( libs=[libs.openfxHack,libs.boost] )
-env.Append( CPPPATH = ['include'] )
-env.Append( CCFLAGS = [project.CC['sharedobject']] )
-env.Replace( OBJSUFFIX='.os' )
-
-# Compilation
-openfxPluginSupport         = env.StaticLibrary( target=target, source=sources )
-openfxPluginSupport_install = env.Install( project.inOutputLib(), openfxPluginSupport )
-
+project.StaticSharedLibrary( 'openfxPluginSupportHack',
+                             dirs=['Library'],
+                             includes=['include'],
+                             libraries=[libs.openfxHack, libs.boost]
+                            )
 
