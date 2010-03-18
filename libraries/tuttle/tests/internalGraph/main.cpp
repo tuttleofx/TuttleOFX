@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( internalGraph_add_one_vertex )
 	vDescriptor_t ADesc = graph.addVertex( A );
 
 	BOOST_CHECK_EQUAL( graph.getVertexCount(), 1 );
-	BOOST_CHECK_EQUAL( graph.instance( ADesc ).name(), string( "nodeA" ) );
+	BOOST_CHECK_EQUAL( graph.instance( ADesc ).getName(), string( "nodeA" ) );
 
 }
 

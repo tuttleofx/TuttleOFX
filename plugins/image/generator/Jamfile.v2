@@ -3,7 +3,7 @@
 ###############################################################################
 path-constant DIST : $(DIST)/generator ;
 
-for local l in [ glob * : generator ]
+for local l in [ glob * : Text ]
 {
    build-project $(l) ;
 }
