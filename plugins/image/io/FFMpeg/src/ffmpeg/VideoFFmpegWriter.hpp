@@ -21,7 +21,7 @@ public:
 	explicit VideoFFmpegWriter();
 	~VideoFFmpegWriter( );
 
-	virtual bool movie( ) const
+	bool movie( ) const
 	{
 		return true;
 	}
