@@ -35,9 +35,9 @@ int main( int argc, char** argv )
 	tuttle::host::core::Core::instance().preload();
 
 	// get some plugins examples
-	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.exrreader" );
-	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.invert" );
-	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.hd3d.tuttle.pngwriter" );
+	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginR = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.tuttle.exrreader" );
+	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginI = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.tuttle.invert" );
+	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* pluginW = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.tuttle.pngwriter" );
 
 	//tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 

@@ -106,7 +106,7 @@ public:
 	 *  constructed
 	 */
 	void populate();
-	void      populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( core::exception::LogicError );
+	void populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor );
 
 	void copyAttributesValues( const OfxhImageEffectNode& other )
 	{

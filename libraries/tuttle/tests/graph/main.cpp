@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 //
 //	core::Graph g;
-//	BOOST_CHECK_NO_THROW(core::EffectInstance* invert = g.createNode( "fr.hd3d.tuttle.invert" ));
+//	BOOST_CHECK_NO_THROW(core::EffectInstance* invert = g.createNode( "fr.tuttle.invert" ));
 //}
 
 //BOOST_AUTO_TEST_CASE( graph_copy )
@@ -33,11 +33,11 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	core::Core::instance().preload();
 //
 //	core::Graph g;
-//	core::Graph::Node& read1  = g.createNode( "fr.hd3d.tuttle.pngreader" );
-//	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-//	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
+//	core::Graph::Node& read1  = g.createNode( "fr.tuttle.pngreader" );
+//	core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+//	core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 //	core::Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	core::Graph::Node& write1 = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+//	core::Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
 //
 //	g.connect( read1, invert1 );
 //	g.connect( invert1, invert2 );
@@ -63,19 +63,19 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	TCOUT( "__________________________________________________1" );
 
 	core::Graph g;
-	core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
-	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
-	core::Graph::Node& read3   = g.createNode( "fr.hd3d.tuttle.exrreader" );
-	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& invert4 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& crop1   = g.createNode( "fr.hd3d.tuttle.crop" );
-	core::Graph::Node& merge1  = g.createNode( "fr.hd3d.tuttle.merge" );
-	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
-	core::Graph::Node& write4  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
-	core::Graph::Node& write2  = g.createNode( "fr.hd3d.tuttle.dpxwriter" );
-	core::Graph::Node& write3  = g.createNode( "fr.hd3d.tuttle.exrwriter" );
+	core::Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
+	core::Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
+	core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
+	core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
+	core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
+	core::Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
+	core::Graph::Node& write4  = g.createNode( "fr.tuttle.pngwriter" );
+	core::Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
+	core::Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
 
 	TCOUT( "__________________________________________________2" );
 	// Setup parameters
@@ -132,13 +132,13 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 //	core::Core::instance().preload();
 //
 //	core::Graph g;
-//	core::Graph::Node& read1  = g.createNode( "fr.hd3d.tuttle.pngreader" );
-////	core::Graph::Node& read2  = g.createNode( "fr.hd3d.tuttle.pngreader" );
-//	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-//	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-////	core::Graph::Node& merge1 = g.createNode( "fr.hd3d.tuttle.merge" );
+//	core::Graph::Node& read1  = g.createNode( "fr.tuttle.pngreader" );
+////	core::Graph::Node& read2  = g.createNode( "fr.tuttle.pngreader" );
+//	core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+//	core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+////	core::Graph::Node& merge1 = g.createNode( "fr.tuttle.merge" );
 //	core::Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	core::Graph::Node& write1 = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+//	core::Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
 //
 //	g.connect( read1, invert1 );
 //	g.connect( invert1, invert2 );

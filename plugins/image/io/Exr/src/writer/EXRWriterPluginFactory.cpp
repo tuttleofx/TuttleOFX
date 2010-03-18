@@ -20,9 +20,6 @@ namespace exr {
 namespace writer {
 
 static const bool kSupportTiles              = false;
-static const bool kSupportTemporalClipAccess = false;
-
-using namespace OFX;
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -31,27 +28,21 @@ using namespace OFX;
 using namespace OFX;
 void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "EXRWriter", "EXRWriter",
 	                "EXR File writer" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
+	// plugin flags
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**

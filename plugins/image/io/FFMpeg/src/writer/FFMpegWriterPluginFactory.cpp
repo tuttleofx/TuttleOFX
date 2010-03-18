@@ -29,12 +29,11 @@ using namespace OFX;
  */
 void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	// basic labels
 	desc.setLabels( "ffmpeg", "ffmpeg",
 		            "ffmpeg video io" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
+	// add the supported contexts
 	desc.addSupportedContext( eContextGeneral );
 
 	// add supported pixel depths
@@ -42,14 +41,10 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( eBitDepthUShort );
 	desc.addSupportedBitDepth( eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( true );
+	// plugin flags
+	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**

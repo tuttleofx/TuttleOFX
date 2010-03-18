@@ -7,8 +7,7 @@ namespace plugin {
 namespace exr {
 namespace writer {
 
-mDeclarePluginFactory( EXRWriterPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( EXRWriterPluginFactory, {}, {} );
 
 }
 }

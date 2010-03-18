@@ -7,7 +7,6 @@ namespace plugin {
 namespace bitDepthConvert {
 
 static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
 
 mDeclarePluginFactory( BitDepthConvPluginFactory, { }, { } );
 

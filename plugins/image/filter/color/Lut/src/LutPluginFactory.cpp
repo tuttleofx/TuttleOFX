@@ -25,30 +25,22 @@ mDeclarePluginFactory( LutPluginFactory, {}, {} );
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
 void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "Lut", "Lut", "Image Luter" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
-	desc.addSupportedContext( eContextFilter );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGeneral );
+	desc.addSupportedContext( OFX::eContextFilter );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( true );
-	desc.setSupportsMultiResolution( false );
+	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( false );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -60,22 +52,22 @@ void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX:
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
-	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor *filename = desc.defineStringParam( kInputFilename );
+	OFX::StringParamDescriptor *filename = desc.defineStringParam( kInputFilename );
 	assert(filename);
 	filename->setDefault("");
 	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
-	filename->setStringType( eStringTypeFilePath );
+	filename->setStringType( OFX::eStringTypeFilePath );
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );
 	helpButton->setScriptName( "help" );
@@ -102,7 +94,7 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::lut::LutPluginFactory p( "fr.hd3d.tuttle.lut", 1, 0 );
+	static tuttle::plugin::lut::LutPluginFactory p( "fr.tuttle.lut", 1, 0 );
 
 	ids.push_back( &p );
 }

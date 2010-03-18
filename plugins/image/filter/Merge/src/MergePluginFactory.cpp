@@ -19,34 +19,28 @@ namespace merge {
 
 mDeclarePluginFactory( MergePluginFactory, {}, {} );
 
+static const bool kSupportTiles = false;
+
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
 void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "Merge", "Merge",
 	                "Clip merge" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( false );
-	desc.setSupportsMultiResolution( false );
+	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -60,23 +54,23 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ClipDescriptor* srcClipA = desc.defineClip( kMergeSourceA );
 
 	assert( srcClipA );
-	srcClipA->addSupportedComponent( ePixelComponentRGBA );
-	srcClipA->addSupportedComponent( ePixelComponentAlpha );
+	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipA->setSupportsTiles( kSupportTiles );
-	srcClipA->setOptional(false);
+	srcClipA->setOptional( false );
 
 	OFX::ClipDescriptor* srcClipB = desc.defineClip( kMergeSourceB );
 	assert( srcClipB );
-	srcClipB->addSupportedComponent( ePixelComponentRGBA );
-	srcClipB->addSupportedComponent( ePixelComponentAlpha );
+	srcClipB->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClipB->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipB->setSupportsTiles( kSupportTiles );
-	srcClipB->setOptional(false);
+	srcClipB->setOptional( false );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	assert( dstClip );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Define some merging function
@@ -143,7 +137,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::merge::MergePluginFactory p( "fr.hd3d.tuttle.merge", 1, 0 );
+	static tuttle::plugin::merge::MergePluginFactory p( "fr.tuttle.merge", 1, 0 );
 
 	ids.push_back( &p );
 }

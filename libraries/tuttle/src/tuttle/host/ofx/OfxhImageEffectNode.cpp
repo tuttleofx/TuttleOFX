@@ -156,7 +156,7 @@ void OfxhImageEffectNode::populate()
 /**
  * @todo tuttle: move this in ParamSet !
  */
-void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) throw( core::exception::LogicError )
+void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor )
 {
 	const attribute::OfxhParamDescriptorSet::ParamDescriptorList& paramDescriptors = _descriptor.getParamList();
 

@@ -662,11 +662,10 @@ mDeclarePluginFactory( BasicExamplePluginFactory, {}, {}
 
 void BasicExamplePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabel( "Gain" );
 	desc.setPluginGrouping( "OFX" );
 
-	// add the supported contexts, only filter at the moment
+	// add the supported contexts
 	desc.addSupportedContext( eContextFilter );
 	desc.addSupportedContext( eContextGeneral );
 	desc.addSupportedContext( eContextPaint );
@@ -676,7 +675,7 @@ void BasicExamplePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( eBitDepthUShort );
 	desc.addSupportedBitDepth( eBitDepthFloat );
 
-	// set a few flags
+	// plugin flags
 	desc.setSingleInstance( false );
 	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( true );

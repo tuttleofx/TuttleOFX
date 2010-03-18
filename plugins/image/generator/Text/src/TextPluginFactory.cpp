@@ -35,7 +35,7 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabel( "Text" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
+	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
 

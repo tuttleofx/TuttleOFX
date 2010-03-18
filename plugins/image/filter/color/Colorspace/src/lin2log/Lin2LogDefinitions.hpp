@@ -16,9 +16,7 @@ namespace plugin {
 namespace colorspace {
 namespace lin2log {
 
-static const bool   kSupportTiles                 = false;
-static const bool   kSupportTemporalClipAccess    = false;
-
+static const bool kSupportTiles = false;
 
 const static std::string kLin2LogHelpButton = "Help";
 

@@ -20,8 +20,6 @@ namespace plugin {
 namespace ffmpeg {
 namespace reader {
 
-using namespace OFX;
-
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -29,27 +27,22 @@ using namespace OFX;
  */
 void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	// basic labels
 	desc.setLabels( "ffmpeg", "ffmpeg",
 		            "ffmpeg video io" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
-	desc.addSupportedContext( eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setSingleInstance( false );
-	desc.setHostFrameThreading( true );
+	// plugin flags
+	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setTemporalClipAccess( kSupportTemporalClipAccess );
-	desc.setRenderTwiceAlways( false );
-	desc.setSupportsMultipleClipPARs( false );
 }
 
 /**
@@ -58,17 +51,17 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                  OFX::ContextEnum context )
+                                                   OFX::ContextEnum context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
-	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kFFMpegHelpButton );

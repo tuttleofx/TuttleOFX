@@ -25,12 +25,11 @@ namespace timeShift {
  */
 void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "TimeShift", "TimeShift",
 		            "TimeShift" );
 	desc.setPluginGrouping( "tuttle" );
 
-	// add the supported contexts, only filter at the moment
+	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
 
@@ -39,8 +38,8 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// set a few flags
-	desc.setTemporalClipAccess(1);
+	// plugin flags
+	desc.setTemporalClipAccess(true);
 }
 
 /**

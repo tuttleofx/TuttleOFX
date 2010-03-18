@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	using namespace tuttle::host::ofx::imageEffect;
 	
 	core::Core::instance().preload();
-	OfxhImageEffectPlugin* plugin = core::Core::instance().getImageEffectPluginById("fr.hd3d.tuttle.invert");
+	OfxhImageEffectPlugin* plugin = core::Core::instance().getImageEffectPluginById("fr.tuttle.invert");
 
 //	typedef boost::archive::binary_oarchive OArchive;
 //	typedef boost::archive::binary_iarchive IArchive;
