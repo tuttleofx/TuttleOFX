@@ -12,6 +12,10 @@ namespace text {
 struct TextProcessParams
 {
 	std::string _text;
+	std::string _font;
+	int _fontX;
+	int _fontY;
+	OfxRGBAColourD _fontColor;
 };
 
 /**
@@ -32,6 +36,9 @@ public:
     OFX::Clip* _srcClip; ///< Source image clip
     OFX::Clip* _dstClip; ///< Destination image clip
 	OFX::StringParam* _text; ///< the text to rasterize in the image
+	OFX::StringParam* _font;
+	OFX::IntParam* _fontSize;
+	OFX::RGBAParam* _fontColor;
 };
 
 }

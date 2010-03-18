@@ -5,14 +5,17 @@
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
+#include <ofxsImageEffect.h>
+#include <ofxsMultiThread.h>
+
+#include <boost/gil/gil_all.hpp>
+#include <boost/scoped_ptr.hpp>
+
 #include <string>
 #include <iostream>
 #include <stdio.h>
 #include <cmath>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <limits>
 
 namespace tuttle {
 namespace plugin {
@@ -68,6 +71,22 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::StringParamDescriptor *text = desc.defineStringParam( kText );
 	text->setLabel( "Text" );
 	text->setStringType( OFX::eStringTypeMultiLine );
+
+	OFX::StringParamDescriptor *font = desc.defineStringParam( kFont );
+	font->setLabel( "Font file" );
+	font->setStringType( OFX::eStringTypeFilePath );
+	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/arial.ttf" );
+
+	OFX::IntParamDescriptor* size = desc.defineIntParam( kFontSize );
+	size->setLabel( "Size" );
+	size->setDefault( 18 );
+	size->setRange( 0, std::numeric_limits<int>::max() );
+	size->setDisplayRange( 0, 60 );
+
+	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kFontColor );
+	color->setLabel( "Color" );
+	color->setDefault( 1.0, 1.0, 1.0, 1.0 );
+
 }
 
 /**

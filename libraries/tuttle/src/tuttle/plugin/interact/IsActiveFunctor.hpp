@@ -10,6 +10,7 @@ namespace interact {
 
 struct IsActiveFunctor
 {
+	virtual ~IsActiveFunctor() = 0;
 	virtual bool active() const = 0;
 };
 

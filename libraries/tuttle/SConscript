@@ -3,12 +3,11 @@ Import( 'libs' )
 
 librariesPublic  = [ libs.openfxHack,
                    ]
-librariesPrivate = [ libs.boost_system,
+librariesPrivate = [ libs.dl,
+			         libs.boost_gil,
                      libs.boost_filesystem,
                      libs.boost_serialization,
                      libs.boost_thread,
-			         libs.dl,
-			         libs.boost_gil
 			       ]
 
 libraries = librariesPrivate + librariesPublic

@@ -21,12 +21,10 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 
-	int fontW = 20; // fontSize
-	int fontH = fontW * 1; // * ratio
+	TextProcessParams params = _plugin.getProcessParams();
+
 	text_pixel_t backgroundColor( gray, gray, gray );
 	text_pixel_t foregroundColor( white, black, black );
-
-	std::string fontPath = "/usr/share/fonts/truetype/msttcorefonts/arial.ttf";
 
 	//Step 1. Create bgil image
 	//Step 2. Initialize freetype
@@ -46,12 +44,11 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	FT_Init_FreeType( &library );
 
 	FT_Face face;
-	FT_New_Face( library, fontPath.c_str(), 0, &face );
-	FT_Set_Pixel_Sizes( face, fontW, fontH );
+	FT_New_Face( library, params._font.c_str(), 0, &face );
+	FT_Set_Pixel_Sizes( face, params._fontX, params._fontY );
 
 	//Step 3. Make Glyphs Array ------------------
 
-	TextProcessParams params = _plugin.getProcessParams();
 	std::transform( params._text.begin( ), params._text.end( ), std::back_inserter( _glyphs ), make_glyph( face, foregroundColor ) );
 
 	//Step 4. Make Metrics Array --------------------
