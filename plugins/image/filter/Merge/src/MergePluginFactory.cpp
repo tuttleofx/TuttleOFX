@@ -137,7 +137,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::merge::MergePluginFactory p( "fr.hd3d.tuttle.merge", 1, 0 );
+	static tuttle::plugin::merge::MergePluginFactory p( "fr.tuttle.merge", 1, 0 );
 
 	ids.push_back( &p );
 }

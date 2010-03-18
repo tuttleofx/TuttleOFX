@@ -94,7 +94,7 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::lut::LutPluginFactory p( "fr.hd3d.tuttle.lut", 1, 0 );
+	static tuttle::plugin::lut::LutPluginFactory p( "fr.tuttle.lut", 1, 0 );
 
 	ids.push_back( &p );
 }

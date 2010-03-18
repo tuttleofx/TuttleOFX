@@ -89,7 +89,7 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::invert::InvertPluginFactory p( "fr.hd3d.tuttle.invert", 1, 0 );
+	static tuttle::plugin::invert::InvertPluginFactory p( "fr.tuttle.invert", 1, 0 );
 
 	ids.push_back( &p );
 }

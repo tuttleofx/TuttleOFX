@@ -137,7 +137,7 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::crop::CropPluginFactory p( "fr.hd3d.tuttle.crop", 1, 0 );
+	static tuttle::plugin::crop::CropPluginFactory p( "fr.tuttle.crop", 1, 0 );
 
 	ids.push_back( &p );
 }

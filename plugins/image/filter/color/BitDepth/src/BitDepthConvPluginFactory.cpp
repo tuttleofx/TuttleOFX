@@ -101,7 +101,7 @@ namespace Plugin {
 
 void getPluginIDs(OFX::PluginFactoryArray &ids)
 {
-	static tuttle::plugin::bitDepthConvert::BitDepthConvPluginFactory p("fr.hd3d.tuttle.bitdepthconv", 1, 0);
+	static tuttle::plugin::bitDepthConvert::BitDepthConvPluginFactory p("fr.tuttle.bitdepth", 1, 0);
 	ids.push_back(&p);
 }
 
