@@ -15,7 +15,7 @@ public:
 		: _name( name ) {}
 
 	DummyEdge( const DummyEdge& e )
-		: _name( e.name() ) {}
+		: _name( e.getName() ) {}
 
 	virtual ~DummyEdge()
 	{}
@@ -25,11 +25,11 @@ public:
 	{
 		if( this == &e )
 			return *this;
-		_name = e.name();
+		_name = e.getName();
 		return *this;
 	}
 
-	const std::string& name() const                   { return _name; }
+	const std::string& getName() const                   { return _name; }
 	void               setName( const std::string s ) { _name = s; }
 
 	friend std::ostream& operator<<( std::ostream& os, const DummyEdge& v );
