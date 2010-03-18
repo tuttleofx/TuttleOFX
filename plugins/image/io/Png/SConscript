@@ -2,11 +2,11 @@ Import( 'project' )
 Import( 'libs' )
 
 project.createOfxPlugin( dirs = ['src'],
-                         libs = [ libs.boost_system,
-						          libs.boost_filesystem,
-								  libs.openfxHack,
+                         libs = [ libs.openfxHack,
 								  libs.openfxPluginSupportHack,
 								  libs.tuttlePlugin,
 								  libs.boost_gil,
-								  libs.png] )
+								  libs.png,
+                                  libs.boost_filesystem,
+                                 ] )
 

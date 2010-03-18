@@ -80,7 +80,6 @@ class Tuttle( SConsProject ):
             allSources.extend( self.scanFiles( dirs ) )
 
         env_local = self.createEnv( libs )
-        env_local.AppendUnique( CCFLAGS = self.CC['visibilityhidden'] )
         env_local.Append( CPPPATH = dirs )
         env_local.Append( CCPATH = dirs )
         plugin = env_local.SharedLibrary( target=pluginName, source=allSources )

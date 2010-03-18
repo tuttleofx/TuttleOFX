@@ -5,5 +5,6 @@ project.createOfxPlugin( dirs = ['src'],
                          libs = [ libs.openfxHack,
 								  libs.openfxPluginSupportHack,
 								  libs.tuttlePlugin,
+								  libs.gl,
 								 ] )
 
