@@ -4,17 +4,19 @@ Import( 'libs' )
 tuttleCommonSources = project.scanFiles( ['src/tuttle/common'] )
 
 project.StaticSharedLibrary( 'tuttlePlugin',
-                             sources=project.scanFiles( project.getRealAbsoluteCwd(['src/tuttle/host']) ) + tuttleCommonSources,
-                             includes=['src'],
+                             sources=project.scanFiles( ['src/tuttle/plugin'] ) + tuttleCommonSources,
+                             includes=['src','src/tuttle/host/core'],
                              libraries=[ libs.openfxPluginSupportHack,
                                          libs.openfxHack,
+                                         libs.boost,
                                         ]
                             )
 
 project.StaticLibrary( 'tuttleHost',
-                       sources=project.scanFiles( project.getRealAbsoluteCwd(['src/tuttle/plugin']) ) + tuttleCommonSources,
+                       sources=project.scanFiles( ['src/tuttle/host'] ) + tuttleCommonSources,
                        includes=['src'],
-                       libraries=[ libs.dl,
+                       libraries=[ libs.openfxHack,
+                                   libs.dl,
                                    libs.boost_filesystem,
                                    libs.boost_serialization,
                                    libs.boost_thread,

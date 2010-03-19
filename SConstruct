@@ -81,7 +81,6 @@ class Tuttle( SConsProject ):
 
         env_local = self.createEnv( libs )
         env_local.Append( CPPPATH = dirs )
-        env_local.Append( CCPATH = dirs )
         plugin = env_local.SharedLibrary( target=pluginName, source=allSources )
         env_local.InstallAs( self.getOutputOfxPlugin(), plugin )
         
