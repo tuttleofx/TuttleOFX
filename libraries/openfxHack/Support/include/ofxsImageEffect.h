@@ -11,7 +11,7 @@
  * Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the folloDPXReaderProcesswing disclaimer in the documentation
+ * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
  * Neither the name The Open Effects Association Ltd, nor the names of its
  * contributors may be used to endorse or promote products derived from this
@@ -93,6 +93,8 @@ enum ContextEnum
 	eContextRetimer
 };
 
+const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invalid_argument );
+
 /** @brief Enumerates the pixel depths supported */
 enum BitDepthEnum
 {
@@ -103,6 +105,8 @@ enum BitDepthEnum
 	eBitDepthCustom ///< some non standard bit depth
 };
 
+const std::string mapBitDepthEnumToStr( const BitDepthEnum& e );
+
 /** @brief Enumerates the component types supported */
 enum PixelComponentEnum
 {
@@ -111,6 +115,8 @@ enum PixelComponentEnum
 	ePixelComponentAlpha,
 	ePixelComponentCustom ///< some non standard pixel type
 };
+
+std::string mapPixelComponentEnumToStr( const PixelComponentEnum& e );
 
 /** @brief Enumerates the ways a fielded image can be extracted from a clip */
 enum FieldExtractionEnum
@@ -137,12 +143,17 @@ enum FieldEnum
 	eFieldUpper   /**< @brief only the spatially upper field is present  */
 };
 
+std::string mapFieldEnumToStr( const FieldEnum& e );
+
 enum PreMultiplicationEnum
 {
 	eImageOpaque,          /**< @brief the image is opaque and so has no premultiplication state */
 	eImagePreMultiplied,   /**< @brief the image is premultiplied by it's alpha */
 	eImageUnPreMultiplied, /**< @brief the image is unpremultiplied */
 };
+
+std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e );
+
 
 class PluginFactory
 {
@@ -261,8 +272,8 @@ struct ImageEffectHostDescription
 		PixelComponentArray _supportedComponents;
 		typedef std::vector<ContextEnum> ContextArray;
 		ContextArray _supportedContexts;
-		typedef std::vector<BitDepthEnum> PixelDepthArray;
-		PixelDepthArray _supportedPixelDepths;
+		typedef std::vector<BitDepthEnum> BitDepthArray;
+		BitDepthArray _supportedPixelDepths;
 		bool supportsProgressSuite;
 		bool supportsTimeLineSuite;
 };
@@ -347,7 +358,7 @@ protected:
 	std::map<std::string, std::string> _clipROIPropNames;
 	std::map<std::string, std::string> _clipFrameRangePropNames;
 
-	std::auto_ptr<EffectOverlayDescriptor> _overlayDescriptor;
+    std::auto_ptr<EffectInteractWrap> _overlayDescriptor;
 
 public:
 	/** @brief ctor */
@@ -362,6 +373,7 @@ public:
 
 	/** @brief, set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
+	void setLabel( const std::string& label ) { setLabels(label, label, label); }
 
 	/** @brief Set the plugin grouping, defaults to "" */
 	void setPluginGrouping( const std::string& group );
@@ -418,7 +430,7 @@ public:
 	const std::map<std::string, std::string>& getClipFrameRangePropNames() const { return _clipFrameRangePropNames; }
 
 	/** @brief override this to create an interact for the effect */
-	virtual void setOverlayInteractDescriptor( EffectOverlayDescriptor* desc );
+    virtual void setOverlayInteractDescriptor(EffectInteractWrap* desc);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -435,6 +447,7 @@ protected:
 	void* _pixelData;                   /**< @brief the base address of the image */
 	PixelComponentEnum _pixelComponents;     /**< @brief get the components in the image */
 	int _rowBytes;                    /**< @brief the number of bytes per scanline */
+
 	int _pixelBytes;                  /**< @brief the number of bytes per pixel */
 	BitDepthEnum _pixelDepth;                 /**< @brief get the pixel depth */
 	PreMultiplicationEnum _preMultiplication; /**< @brief premultiplication on the image */
@@ -589,7 +602,10 @@ public:
 	OfxRangeD getUnmappedFrameRange( void ) const;
 
 	/** @brief get the RoD for this clip in the cannonical coordinate system */
-	OfxRectD getRegionOfDefinition( double t );
+	OfxRectD getCanonicalRod( double t ) const;
+
+	/** @brief get the RoD for this clip in pixel space */
+	OfxRectI getPixelRod( double t ) const;
 
 	/** @brief fetch an image
 	 *
@@ -694,7 +710,7 @@ class RegionOfInterestSetter
 public:
 	/** @brief function to set the RoI of a clip, pass in the clip to set the RoI of, and the RoI itself */
 	virtual void setRegionOfInterest( const Clip& clip, const OfxRectD& RoI ) = 0;
-	virtual ~RegionOfInterestSetter() {}
+	virtual ~RegionOfInterestSetter() = 0;
 };
 
 /** @brief POD struct to pass arguments into @ref OFX::ImageEffect::getFramesNeeded */
@@ -712,7 +728,7 @@ class FramesNeededSetter
 public:
 	/** @brief function to set the frames needed on a clip, the range is min <= time <= max */
 	virtual void setFramesNeeded( const Clip& clip, const OfxRangeD& range ) = 0;
-	virtual ~FramesNeededSetter() {}
+	virtual ~FramesNeededSetter() = 0;
 };
 
 /** @brief Class used to set the clip preferences of the effect.

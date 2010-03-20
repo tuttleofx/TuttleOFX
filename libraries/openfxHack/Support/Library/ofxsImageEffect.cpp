@@ -44,8 +44,14 @@
 #include <sstream>
 #include <string>
 
+#include <boost/numeric/conversion/cast.hpp>
+
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
+
+FramesNeededSetter::~FramesNeededSetter() {}
+RegionOfInterestSetter::~RegionOfInterestSetter() {}
+
 
 // globals to keep consistent data structures around.
 OFX::PluginFactoryArray plugIDs;
@@ -94,7 +100,7 @@ EffectDescriptorMap gEffectDescriptors;
 };
 
 /** @brief map a std::string to a context */
-ContextEnum mapToContextEnum( const std::string& s ) throw( std::invalid_argument )
+ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argument )
 {
 	if( s == kOfxImageEffectContextGenerator )
 		return eContextGenerator;
@@ -136,7 +142,7 @@ const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invali
 	throw std::invalid_argument( "Unknown image effect context enum." );
 }
 
-const char* mapToMessageTypeEnum( OFX::Message::MessageTypeEnum type )
+const std::string mapMessageTypeEnumToStr( OFX::Message::MessageTypeEnum type )
 {
 	if( type == OFX::Message::eMessageFatal )
 		return kOfxMessageFatal;
@@ -152,7 +158,7 @@ const char* mapToMessageTypeEnum( OFX::Message::MessageTypeEnum type )
 	return 0;
 }
 
-OFX::Message::MessageReplyEnum mapToMessageReplyEnum( OfxStatus stat )
+OFX::Message::MessageReplyEnum mapStatusToMessageReplyEnum( OfxStatus stat )
 {
 	if( stat == kOfxStatOK )
 		return OFX::Message::eMessageReplyOK;
@@ -167,7 +173,7 @@ OFX::Message::MessageReplyEnum mapToMessageReplyEnum( OfxStatus stat )
 }
 
 /** @brief map a std::string to a context */
-InstanceChangeReason mapToInstanceChangedReason( const std::string& s ) throw( std::invalid_argument )
+InstanceChangeReason mapStrToInstanceChangedReason( const std::string& s ) throw( std::invalid_argument )
 {
 	if( s == kOfxChangePluginEdited )
 		return eChangePluginEdit;
@@ -180,7 +186,7 @@ InstanceChangeReason mapToInstanceChangedReason( const std::string& s ) throw( s
 }
 
 /** @brief turns a bit depth string into and enum */
-static BitDepthEnum mapStrToBitDepthEnum( const std::string& str ) throw( std::invalid_argument )
+BitDepthEnum mapStrToBitDepthEnum( const std::string& str ) throw( std::invalid_argument )
 {
 	if( str == kOfxBitDepthByte )
 	{
@@ -204,8 +210,25 @@ static BitDepthEnum mapStrToBitDepthEnum( const std::string& str ) throw( std::i
 	}
 }
 
+const std::string mapBitDepthEnumToStr( const BitDepthEnum& e )
+{
+	switch(e)
+	{
+		case eBitDepthUByte:
+			return kOfxBitDepthByte;
+		case eBitDepthUShort:
+			return kOfxBitDepthShort;
+		case eBitDepthFloat:
+			return kOfxBitDepthFloat;
+		case eBitDepthNone:
+			return kOfxBitDepthNone;
+		case eBitDepthCustom:
+			return "eBitDepthCustom";
+	}
+}
+
 /** @brief turns a pixel component string into and enum */
-static PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str ) throw( std::invalid_argument )
+PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str ) throw( std::invalid_argument )
 {
 	if( str == kOfxImageComponentRGBA )
 	{
@@ -225,8 +248,23 @@ static PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str ) t
 	}
 }
 
+std::string mapPixelComponentEnumToStr( const PixelComponentEnum& e )
+{
+	switch(e)
+	{
+		case ePixelComponentRGBA:
+			return kOfxImageComponentRGBA;
+		case ePixelComponentAlpha:
+			return kOfxImageComponentAlpha;
+		case ePixelComponentNone:
+			return kOfxImageComponentNone;
+		case ePixelComponentCustom:
+			return "ePixelComponentCustom";
+	}
+}
+
 /** @brief turns a premultiplication string into and enum */
-static PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str ) throw( std::invalid_argument )
+PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str ) throw( std::invalid_argument )
 {
 	if( str == kOfxImageOpaque )
 	{
@@ -243,6 +281,19 @@ static PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& s
 	else
 	{
 		throw std::invalid_argument( "" );
+	}
+}
+
+std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e )
+{
+	switch( e )
+	{
+		case eImageOpaque:
+			return kOfxImageOpaque;
+		case eImagePreMultiplied:
+			return kOfxImagePreMultiplied;
+		case eImageUnPreMultiplied:
+			return kOfxImageUnPreMultiplied;
 	}
 }
 
@@ -268,6 +319,21 @@ FieldEnum mapStrToFieldEnum( const std::string& str )  throw( std::invalid_argum
 	else
 	{
 		throw std::invalid_argument( "" );
+	}
+}
+
+std::string mapFieldEnumToStr( const FieldEnum& e )
+{
+	switch( e )
+	{
+		case eFieldNone:
+			return kOfxImageFieldNone;
+		case eFieldBoth:
+			return kOfxImageFieldBoth;
+		case eFieldLower:
+			return kOfxImageFieldLower;
+		case eFieldUpper:
+			return kOfxImageFieldUpper;
 	}
 }
 
@@ -445,7 +511,7 @@ void ImageEffectDescriptor::addSupportedContext( ContextEnum v )
 	}
 }
 
-void ImageEffectDescriptor::setOverlayInteractDescriptor( EffectOverlayDescriptor* desc )
+  void ImageEffectDescriptor::setOverlayInteractDescriptor(EffectInteractWrap* desc)
 {
 	_overlayDescriptor.reset( desc );
 	if( OFX::gHostDescription.supportsOverlays && desc->getMainEntry() )
@@ -588,16 +654,12 @@ Image::Image( OfxPropertySetHandle props )
 
 	// and fetch all the properties
 	_pixelData = _imageProps.propGetPointer( kOfxImagePropData );
-	COUT( "_pixelData: " << _pixelData );
 
 	_rowBytes = _imageProps.propGetInt( kOfxImagePropRowBytes );
-	COUT( "_rowBytes: " << _rowBytes );
 	_pixelAspectRatio = _imageProps.propGetDouble( kOfxImagePropPixelAspectRatio );
-	COUT( "_pixelAspectRatio: " << _pixelAspectRatio );
 
 	std::string str = _imageProps.propGetString( kOfxImageEffectPropComponents );
 	_pixelComponents = mapStrToPixelComponentEnum( str );
-	COUT( "_pixelComponents: " << str );
 
 	str         = _imageProps.propGetString( kOfxImageEffectPropPixelDepth );
 	_pixelDepth = mapStrToBitDepthEnum( str );
@@ -629,14 +691,10 @@ Image::Image( OfxPropertySetHandle props )
 	_regionOfDefinition.x2 = _imageProps.propGetInt( kOfxImagePropRegionOfDefinition, 2 );
 	_regionOfDefinition.y2 = _imageProps.propGetInt( kOfxImagePropRegionOfDefinition, 3 );
 
-	COUT( "ROD: x1:" << _regionOfDefinition.x1 << " y1:" << _regionOfDefinition.y1 << " x2:" << _regionOfDefinition.x2 << " y2:" << _regionOfDefinition.y2 );
-
 	_bounds.x1 = _imageProps.propGetInt( kOfxImagePropBounds, 0 );
 	_bounds.y1 = _imageProps.propGetInt( kOfxImagePropBounds, 1 );
 	_bounds.x2 = _imageProps.propGetInt( kOfxImagePropBounds, 2 );
 	_bounds.y2 = _imageProps.propGetInt( kOfxImagePropBounds, 3 );
-
-	COUT( "bounds: x1:" << _bounds.x1 << " y1:" << _bounds.y1 << " x2:" << _bounds.x2 << " y2:" << _bounds.y2 );
 
 	str = _imageProps.propGetString( kOfxImagePropField );
 	if( str == kOfxImageFieldNone )
@@ -662,14 +720,12 @@ Image::Image( OfxPropertySetHandle props )
 	}
 
 	_uniqueID = _imageProps.propGetString( kOfxImagePropUniqueIdentifier );
-	COUT( "uniqueID: " << _uniqueID );
 
 	//	std::string tuttleFullName = _imageProps.propGetString( "TuttleFullName" );
 	//	COUT("tuttleFullName: " << tuttleFullName );
 
 	_renderScale.x = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	_renderScale.y = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
-	COUT( "renderScale: x:" << _renderScale.x << " y:" << _renderScale.y );
 }
 
 Image::~Image()
@@ -896,7 +952,7 @@ OfxRangeD Clip::getUnmappedFrameRange( void ) const
 }
 
 /** @brief get the RoD for this clip in the cannonical coordinate system */
-OfxRectD Clip::getRegionOfDefinition( double t )
+OfxRectD Clip::getCanonicalRod( double t ) const
 {
 	OfxRectD bounds;
 	OfxStatus stat = OFX::Private::gEffectSuite->clipGetRegionOfDefinition( _clipHandle, t, &bounds );
@@ -907,6 +963,22 @@ OfxRectD Clip::getRegionOfDefinition( double t )
 	}
 	throwSuiteStatusException( stat );
 	return bounds;
+}
+
+/** @brief get the RoD for this clip in pixel space */
+OfxRectI Clip::getPixelRod( double t ) const
+{
+	OfxRectD rod = getCanonicalRod(t);
+	double ratio = getPixelAspectRatio();
+	if( ratio == 0 )
+		ratio = 1;
+
+	OfxRectI pixRod;
+	pixRod.y1 = boost::numeric_cast<int>(rod.y1);
+	pixRod.y2 = boost::numeric_cast<int>(rod.y2);
+	pixRod.x1 = boost::numeric_cast<int>(rod.x1 / ratio);
+	pixRod.x2 = boost::numeric_cast<int>(rod.x2 / ratio);
+	return pixRod;
 }
 
 /** @brief fetch an image */
@@ -962,7 +1034,7 @@ ImageEffect::ImageEffect( OfxImageEffectHandle handle )
 
 	// fetch the context
 	std::string ctxt = _effectProps.propGetString( kOfxImageEffectPropContext );
-	_context = mapToContextEnum( ctxt );
+	_context = mapStrToContextEnum( ctxt );
 
 	// the param set daddy-oh
 	OfxParamSetHandle paramSet;
@@ -1069,8 +1141,8 @@ OFX::Message::MessageReplyEnum ImageEffect::sendMessage( OFX::Message::MessageTy
 	{
 		throwHostMissingSuiteException( "message" );
 	}
-	OfxStatus stat = OFX::Private::gMessageSuite->message( _effectHandle, mapToMessageTypeEnum( type ), id.c_str(), msg.c_str() );
-	return mapToMessageReplyEnum( stat );
+	OfxStatus stat = OFX::Private::gMessageSuite->message( _effectHandle, mapMessageTypeEnumToStr( type ).c_str(), id.c_str(), msg.c_str() );
+	return mapStatusToMessageReplyEnum( stat );
 }
 
 /** @brief Fetch the named clip from this instance */
@@ -1294,11 +1366,11 @@ void ImageEffect::timeLineGotoTime( double t )
 /// get the first and last times available on the effect's timeline
 void ImageEffect:: timeLineGetBounds( double& t1, double& t2 )
 {
+	t1 = t2 = 0;
 	if( OFX::Private::gTimeLineSuite )
 	{
 		OFX::Private::gTimeLineSuite->getTimeBounds( (void*) _effectHandle, &t1, &t2 );
 	}
-	t1 = t2 = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1506,7 +1578,7 @@ void fetchHostDescription( OfxHost* host )
 
 		int numContexts = hostProps.propGetDimension( kOfxImageEffectPropSupportedContexts );
 		for( int i = 0; i < numContexts; ++i )
-			gHostDescription._supportedContexts.push_back( mapToContextEnum( hostProps.propGetString( kOfxImageEffectPropSupportedContexts, i ) ) );
+			gHostDescription._supportedContexts.push_back( mapStrToContextEnum( hostProps.propGetString( kOfxImageEffectPropSupportedContexts, i ) ) );
 
 		int numPixelDepths = hostProps.propGetDimension( kOfxImageEffectPropSupportedPixelDepths );
 		for( int i = 0; i < numPixelDepths; ++i )
@@ -1670,7 +1742,7 @@ void checkMainHandles( const std::string& action,  const void* handle,
 }
 
 /** @brief Fetches the arguments used in a render action 'inargs' property set into a POD struct */
-static void getRenderActionArguments( RenderArguments& args,  OFX::PropertySet inArgs )
+void getRenderActionArguments( RenderArguments& args,  OFX::PropertySet inArgs )
 {
 	args.time = inArgs.propGetDouble( kOfxPropTime );
 
@@ -1782,6 +1854,10 @@ bool regionOfDefinitionAction( OfxImageEffectHandle handle, OFX::PropertySet inA
 
 	// and call the plugin client code
 	OfxRectD rod;
+	rod.x1 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 0);
+	rod.y1 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 1);
+	rod.x2 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 2);
+	rod.y2 = outArgs.propGetDouble(kOfxImageEffectPropRegionOfDefinition, 3);
 	bool v = effectInstance->getRegionOfDefinition( args, rod );
 
 	if( v )
@@ -1899,7 +1975,7 @@ bool framesNeededAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, O
 
 			for( i = frameRanges_.begin(); i != frameRanges_.end(); ++i )
 			{
-				if( i->first != "Output" )
+				if( i->first != kOfxImageEffectOutputClipName )
 				{
 					didSomething = true;
 
@@ -1996,7 +2072,7 @@ void beginInstanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet i
 	ImageEffect* effectInstance = retrieveImageEffectPointer( handle );
 
 	std::string reasonStr       = inArgs.propGetString( kOfxPropChangeReason );
-	InstanceChangeReason reason = mapToInstanceChangedReason( reasonStr );
+	InstanceChangeReason reason = mapStrToInstanceChangedReason( reasonStr );
 
 	// and call the plugin client code
 	effectInstance->beginChanged( reason );
@@ -2012,7 +2088,7 @@ void instanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs
 	// why did it change
 	std::string reasonStr = inArgs.propGetString( kOfxPropChangeReason );
 
-	args.reason        = mapToInstanceChangedReason( reasonStr );
+	args.reason        = mapStrToInstanceChangedReason( reasonStr );
 	args.time          = inArgs.propGetDouble( kOfxPropTime );
 	args.renderScale.x = inArgs.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	args.renderScale.y = inArgs.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
@@ -2043,7 +2119,7 @@ void endInstanceChangedAction( OfxImageEffectHandle handle, OFX::PropertySet inA
 	ImageEffect* effectInstance = retrieveImageEffectPointer( handle );
 
 	std::string reasonStr       = inArgs.propGetString( kOfxPropChangeReason );
-	InstanceChangeReason reason = mapToInstanceChangedReason( reasonStr );
+	InstanceChangeReason reason = mapStrToInstanceChangedReason( reasonStr );
 
 	// and call the plugin client code
 	effectInstance->endChanged( reason );
@@ -2134,7 +2210,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 			// figure the context and map it to an enum
 			std::string contextStr = inArgs.propGetString( kOfxImageEffectPropContext );
-			ContextEnum context    = mapToContextEnum( contextStr );
+			ContextEnum context    = mapStrToContextEnum( contextStr );
 
 			// validate the host
 			OFX::Validation::validatePluginDescriptorProperties( fetchEffectProps( handle ) );
@@ -2157,7 +2233,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 			// get the context and turn it into an enum
 			std::string str     = effectProps.propGetString( kOfxImageEffectPropContext );
-			ContextEnum context = mapToContextEnum( str );
+			ContextEnum context = mapStrToContextEnum( str );
 
 			// make the image effect instance for this context
 			/*ImageEffect *instance = */ factory->createInstance( handle, context );

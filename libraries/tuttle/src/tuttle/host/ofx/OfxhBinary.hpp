@@ -29,6 +29,12 @@
 #ifndef OFXH_BINARY_H
 #define OFXH_BINARY_H
 
+#include <tuttle/common/utils/global.hpp>
+
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include <string>
 #include <iostream>
 
@@ -75,6 +81,7 @@ namespace ofx {
 /// class representing a DLL/Shared Object/etc
 class OfxhBinary
 {
+	typedef OfxhBinary This;
 /// destruction will close the library and invalidate
 /// any function pointers returned by lookupSymbol()
 
@@ -91,12 +98,29 @@ protected:
 	size_t _size;
 	int _users;
 
+private:
+	void init( const std::string& binaryPath );
+	
 public:
+	OfxhBinary();
+
 	/// create object representing the binary.  will stat() it,
 	/// and this fails, will set binary to be invalid.
 	OfxhBinary( const std::string& binaryPath );
 
 	~OfxhBinary() { unload(); }
+
+	bool operator==( const This& other ) const
+	{
+		if( _binaryPath != other._binaryPath ||
+			_invalid != other._invalid ||
+			_exists != other._exists ||
+			_time != other._time ||
+			_size != other._size )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	bool isLoaded() const { return _dlHandle != 0; }
 
@@ -128,6 +152,25 @@ public:
 	/// look up a symbol in the binary file and return it as a pointer.
 	/// returns null pointer if not found, or if the library is not loaded.
 	void* findSymbol( const std::string& symbol );
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_binaryPath);
+		ar & BOOST_SERIALIZATION_NVP(_invalid);
+		ar & BOOST_SERIALIZATION_NVP(_exists);
+		ar & BOOST_SERIALIZATION_NVP(_size);
+		ar & BOOST_SERIALIZATION_NVP(_time);
+//		ar & BOOST_SERIALIZATION_NVP(_users);
+
+		if( typename Archive::is_loading() )
+		{
+			_users = 0;
+			init( _binaryPath );
+		}
+	}
 };
 
 }

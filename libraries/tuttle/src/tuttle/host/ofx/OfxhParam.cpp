@@ -1032,7 +1032,6 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 		p.copy(op);
 	}
 	initMapFromList();
-//	operator=( other );
 }
 
 void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC

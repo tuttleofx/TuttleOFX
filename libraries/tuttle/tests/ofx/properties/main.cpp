@@ -1,10 +1,11 @@
+
+#define BOOST_TEST_MODULE properties_tests
+#include <boost/test/unit_test.hpp>
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/core/Core.hpp>
 
 #include <iostream>
-
-#define BOOST_TEST_MODULE properties_tests
-#include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 

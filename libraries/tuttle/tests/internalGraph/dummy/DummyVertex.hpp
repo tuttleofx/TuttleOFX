@@ -18,7 +18,7 @@ public:
 		: _name( name ) {}
 
 	DummyVertex( DummyVertex& v )
-		: _name( v.name() ) {}
+		: _name( v.getName() ) {}
 
 	virtual ~DummyVertex()
 	{}
@@ -28,11 +28,11 @@ public:
 	{
 		if( this == &v )
 			return *this;
-		_name = v.name();
+		_name = v.getName();
 		return *this;
 	}
 
-	const std::string&           name() const { return _name; }
+	const std::string&           getName() const { return _name; }
 	friend std::ostream& operator<<( std::ostream& os, const DummyVertex& v );
 
 private:

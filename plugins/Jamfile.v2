@@ -4,6 +4,8 @@
 ###############################################################################
 import type ;
 
+path-constant DIST : $(DIST)/plugins ;
+
 ###############################################################################
 # Registering plugin files as shared library
 # Plugins will be *.ofx files under windows and linux
@@ -16,15 +18,38 @@ if ! [ type.registered PLUGIN ]
 }
 
 ###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements
+        <include>$(3RD_PARTY)/boost_gil_extensions
+		<threading>multi
+        <os>NT:<define>_WINDOWS
+    ;        
+        
+###############################################################################
+# Automatic Install for plugins
+###############################################################################
+rule auto_install ( target : path )
+{
+    install install_$(target)
+	:	$(target)
+	:	<os>NT:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Win32
+		<os>LINUX,<address-model>32:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Linux
+		<os>LINUX,<address-model>64:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Linux-x86-64
+		<os>MACOSX:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/MacOS
+	;
+}
+
+###############################################################################
 # Common dependencies
 ###############################################################################
-use-project /supportlib : ../libraries/openfxHack/Support ;
 use-project /tuttlelib : ../libraries/tuttle ;
 
 ###############################################################################
 # Build all plugins
 ###############################################################################
-for local l in [ glob * : _* ]
+for local l in [ glob * : _* param private ]
 {
    build-project $(l) ;
 }

@@ -107,6 +107,7 @@ boost::uint8_t* Image::pixel( int x, int y )
 template < class VIEW_T >
 VIEW_T Image::gilViewFromImage( Image* img )
 {
+	using namespace bgil;
 	OfxRectI bounds = img->getBounds();
 
 	typedef typename VIEW_T::value_type value_t;
@@ -121,6 +122,7 @@ template < class D_VIEW, class S_VIEW >
 void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
                   const OfxPointI& srcCorner, const OfxPointI& count )
 {
+	using namespace bgil;
 	if( src.width() >= ( count.x - srcCorner.x ) &&
 	    src.height() >= ( count.y - srcCorner.y ) &&
 	    dst.width() >= ( count.x - dstCorner.x ) &&
@@ -199,6 +201,7 @@ template < class S_VIEW >
 void Image::copy( Image* dst, S_VIEW& src, const OfxPointI& dstCorner,
                   const OfxPointI& srcCorner, const OfxPointI& count )
 {
+	using namespace bgil;
 	// Create destination
 	switch( dst->getComponentsType() )
 	{
@@ -261,6 +264,7 @@ void Image::copy( Image* dst, S_VIEW& src, const OfxPointI& dstCorner,
 void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
                   const OfxPointI& srcCorner, const OfxPointI& count )
 {
+	using namespace bgil;
 	switch( src->getComponentsType() )
 	{
 		case ofx::imageEffect::ePixelComponentRGBA:

@@ -97,11 +97,25 @@ bool OfxhClipImageAccessor::supportsTiles() const
 	return getProperties().getIntProperty( kOfxImageEffectPropSupportsTiles ) != 0;
 }
 
+OfxhClipImageDescriptor::OfxhClipImageDescriptor()
+	: tuttle::host::ofx::attribute::OfxhClipDescriptor()
+{
+	init("");
+}
+
 /**
  * descriptor
  */
 OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 	: tuttle::host::ofx::attribute::OfxhClipDescriptor()
+{
+	init(name);
+}
+
+/**
+ * descriptor
+ */
+void OfxhClipImageDescriptor::init( const std::string& name )
 {
 	/// properties common to the desciptor and instance
 	/// the desc and set them, the instance cannot
@@ -240,9 +254,27 @@ void OfxhClipImageSet::initMapFromList()
 OfxhClipImageSet::~OfxhClipImageSet()
 {}
 
-bool OfxhClipImageSet::operator==( const OfxhClipImageSet& other ) const
+bool OfxhClipImageSet::operator==( const This& other ) const
 {
 	return _clipsByOrder == other._clipsByOrder;
+}
+
+void OfxhClipImageSet::copyClipsValues( const OfxhClipImageSet& other )
+{
+	if( _clipsByOrder.size() != other._clipsByOrder.size() )
+		throw core::exception::LogicError( "You try to copy clips values, but the two lists are not identical." );
+
+	ClipImageVector::const_iterator oit = other._clipsByOrder.begin(), oitEnd = other._clipsByOrder.end();
+	for( ClipImageVector::iterator it = _clipsByOrder.begin(), itEnd = _clipsByOrder.end();
+	     it != itEnd && oit != oitEnd;
+	     ++it, ++oit )
+	{
+		OfxhClipImage& c = *it;
+		const OfxhClipImage& oc = *oit;
+		if( c.getName() != oc.getName() )
+			throw core::exception::LogicError( "You try to copy clips values, but it is not the same clips in the two lists." );
+		c.copyValues(oc);
+	}
 }
 
 void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC

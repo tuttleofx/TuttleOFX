@@ -36,6 +36,8 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhProperty.hpp"
 
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/export.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <map>
 #include <stdexcept>
@@ -90,13 +92,25 @@ public:
  * a clip image descriptor
  */
 class OfxhClipImageDescriptor : virtual public OfxhClipImageAccessor,
-	public attribute::OfxhClipDescriptor
+	public OfxhClipDescriptor
 {
+typedef OfxhClipImageDescriptor This;
+private:
+	OfxhClipImageDescriptor();
+	void init( const std::string& name );
 public:
 	/// constructor
 	OfxhClipImageDescriptor( const std::string& name );
 
 	virtual ~OfxhClipImageDescriptor() {}
+
+	bool operator==( const This& other ) const
+	{
+		if( OfxhClipDescriptor::operator!=( other ) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
 	/** get a handle on the clip descriptor for the C api
 	 */
@@ -105,7 +119,15 @@ public:
 		return ( OfxImageClipHandle ) this;
 	}
 
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhClipDescriptor);
+	}
 };
+
 
 /**
  * a clip image instance
@@ -114,6 +136,7 @@ public:
 class OfxhClipImage : virtual public OfxhClipImageAccessor,
 	public attribute::OfxhClip
 {
+typedef OfxhClipImage This;
 protected:
 	imageEffect::OfxhImageEffectNode& _effectInstance; ///< effect instance
 
@@ -123,9 +146,13 @@ public:
 
 	virtual ~OfxhClipImage() {}
 
-	/// @todo tuttle !!!!!!!!!!!!!!!!
-	bool operator==( const OfxhClipImage& other ) const { return true; }
-	bool operator!=( const OfxhClipImage& other ) const { return !operator==( other ); }
+	bool operator==( const This& other ) const
+	{
+		if( OfxhClip::operator!=(other) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	virtual OfxhClipImage* clone() const                    = 0;
 	virtual std::string    getFullName() const              = 0;
@@ -325,7 +352,7 @@ public:
 	virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage( OfxTime time, OfxRectD* optionalBounds = NULL ) = 0;
 
 	/// override this to return the rod on the clip
-	virtual OfxRectD fetchRegionOfDefinition( OfxTime time ) = 0;
+	virtual OfxRectD fetchRegionOfDefinition( OfxTime time ) const = 0;
 
 	/** given the colour component, find the nearest set of supported colour components
 	 *  override this for extra wierd custom component depths
@@ -343,6 +370,7 @@ inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 
 class OfxhClipImageSet //: public ClipAccessorSet
 {
+	typedef OfxhClipImageSet This;
 public:
 	typedef std::map<std::string, OfxhClipImage*> ClipImageMap;
 	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
@@ -364,9 +392,11 @@ public:
 	/// dtor.
 	virtual ~OfxhClipImageSet();
 
-	bool operator==( const OfxhClipImageSet& other ) const;
-	bool operator!=( const OfxhClipImageSet& other ) const { return !operator==( other ); }
+	bool operator==( const This& other ) const;
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
+	void copyClipsValues( const OfxhClipImageSet& other );
+	
 	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC;
 
 	const ClipImageMap& getClips() const
@@ -450,6 +480,13 @@ private:
 }
 }
 }
+}
+
+
+// force boost::is_virtual_base_of value (used by boost::serialization)
+namespace boost{
+template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClipDescriptor, tuttle::host::ofx::attribute::OfxhClipImageDescriptor>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
 }
 
 #endif

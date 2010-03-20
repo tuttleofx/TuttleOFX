@@ -1,7 +1,18 @@
 #include "Core.hpp"
 
+#include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
+
 #include <tuttle/host/core/memory/MemoryPool.hpp>
 #include <tuttle/host/core/memory/MemoryCache.hpp>
+
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/serialization.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -12,11 +23,9 @@ namespace host {
 namespace core {
 
 namespace {
-
 MemoryPool pool;
 MemoryCache cache;
-
-}  // namespace
+}
 
 Core::Core()
 	: _imageEffectPluginCache( _host ),
@@ -36,18 +45,44 @@ Core::~Core()
 
 void Core::preload()
 {
+//	typedef boost::archive::binary_oarchive OArchive;
+//	typedef boost::archive::binary_iarchive IArchive;
+//	typedef boost::archive::text_oarchive OArchive;
+//	typedef boost::archive::text_iarchive IArchive;
+	typedef boost::archive::xml_oarchive OArchive;
+	typedef boost::archive::xml_iarchive IArchive;
 
-	// try to read an old cache
-	std::ifstream ifs( "tuttlePluginCache.xml" );
+	std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
+	
+	try
+	{
+		std::ifstream ifsb( cacheFile.c_str() );
+		if( ifsb.is_open() )
+		{
+			COUT_DEBUG("Read plugins cache.");
+			IArchive iArchive( ifsb );
+			iArchive >> BOOST_SERIALIZATION_NVP(_pluginCache);
+			ifsb.close();
+		}
+	}
+	catch( std::exception& e )
+	{
+		COUT_ERROR("Exception when reading cache file (" << e.what() << ")." );
+	}
+	
 
-	_pluginCache.readCache( ifs );
 	_pluginCache.scanPluginFiles();
-	ifs.close();
 
-	/// flush out the current cache
-	std::ofstream of( "tuttlePluginCache.xml" );
-	_pluginCache.writePluginCache( of );
-	of.close();
+	if( _pluginCache.isDirty() )
+	{
+		/// flush out the current cache
+		COUT_DEBUG("Write plugins cache.");
+		std::ofstream ofsb( cacheFile.c_str() );
+		OArchive oArchive( ofsb );
+		oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
+		ofsb.close();
+	}
+	
 }
 
 }

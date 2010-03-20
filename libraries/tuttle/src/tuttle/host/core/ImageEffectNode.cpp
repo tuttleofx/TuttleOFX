@@ -215,34 +215,34 @@ const std::string ImageEffectNode::getProjectBitDepth() const
 }
 
 // make a parameter instance
-tuttle::host::ofx::attribute::OfxhParam* ImageEffectNode::newParam( tuttle::host::ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
+ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
 	std::string name = descriptor.getName();
-
-	if( descriptor.getParamType() == kOfxParamTypeString )
-		return new ParamString( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeInteger )
-		return new ParamInteger( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeDouble )
-		return new ParamDouble( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeBoolean )
-		return new ParamBoolean( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeChoice )
-		return new ParamChoice( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeRGBA )
-		return new ParamRGBA( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeRGB )
-		return new ParamRGB( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeDouble2D )
-		return new ParamDouble2D( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeInteger2D )
-		return new ParamInteger2D( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypePushButton )
-		return new ParamPushButton( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypeGroup )
-		return new ParamGroup( *this, name, descriptor );
-	else if( descriptor.getParamType() == kOfxParamTypePage )
-		return new ParamPage( *this, name, descriptor );
+	
+	if(  descriptor.getParamType() == kOfxParamTypeString )
+		return new ParamString( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeInteger )
+		return new ParamInteger( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeDouble )
+		return new ParamDouble( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeBoolean )
+		return new ParamBoolean( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeChoice )
+		return new ParamChoice( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeRGBA )
+		return new ParamRGBA( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeRGB )
+		return new ParamRGB( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeDouble2D )
+		return new ParamDouble2D( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeInteger2D )
+		return new ParamInteger2D( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypePushButton )
+		return new ParamPushButton( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypeGroup )
+		return new ParamGroup( *this, name,  descriptor );
+	else if(  descriptor.getParamType() == kOfxParamTypePage )
+		return new ParamPage( *this, name,  descriptor );
 	else
 		throw( exception::LogicError( "Can't create param instance from param descriptor." ) );
 
@@ -262,16 +262,22 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 
 /// Start doing progress.
 void ImageEffectNode::progressStart( const std::string& message )
-{}
+{
+	COUT_INFOS;
+}
 
 /// finish yer progress
 void ImageEffectNode::progressEnd()
-{}
+{
+	COUT_INFOS;
+}
 
 /// set the progress to some level of completion, returns
 /// false if you should abandon processing, true to continue
 bool ImageEffectNode::progressUpdate( double t )
 {
+	COUT_INFOS;
+	/// @todo tuttle: bug before here...
 	return true;
 }
 

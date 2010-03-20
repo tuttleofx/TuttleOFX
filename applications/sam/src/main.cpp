@@ -6,6 +6,7 @@ int main( int argc, char** argv )
 	try
 	{
 		using namespace tuttle::host;
+		TCOUT( "__________________________________________________0" );		
 		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//core::Core::instance().getPluginCache().scanPluginFiles();
 		core::Core::instance().preload();
@@ -14,19 +15,20 @@ int main( int argc, char** argv )
 		TCOUT( "__________________________________________________1" );
 
 		core::Graph g;
-		core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
-		core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
-		core::Graph::Node& read3   = g.createNode( "fr.hd3d.tuttle.exrreader" );
-		core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-		core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-		core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
-		core::Graph::Node& invert4 = g.createNode( "fr.hd3d.tuttle.invert" );
-		core::Graph::Node& crop1   = g.createNode( "fr.hd3d.tuttle.crop" );
-		core::Graph::Node& merge1  = g.createNode( "fr.hd3d.tuttle.merge" );
-		core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
-		core::Graph::Node& write4  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
-		core::Graph::Node& write2  = g.createNode( "fr.hd3d.tuttle.dpxwriter" );
-		core::Graph::Node& write3  = g.createNode( "fr.hd3d.tuttle.exrwriter" );
+		core::Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
+		core::Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
+		core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
+		core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+//		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.imagestatistics" );
+		core::Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
+		core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
+	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
+		core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
+		core::Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
+		core::Graph::Node& write4  = g.createNode( "fr.tuttle.pngwriter" );
+		core::Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
+		core::Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
 
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
@@ -68,7 +70,7 @@ int main( int argc, char** argv )
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
-		g.compute( outputs, 0, 1 );
+		g.compute( outputs, 0, 5 );
 	}
 	catch( tuttle::host::core::exception::LogicError& e )
 	{

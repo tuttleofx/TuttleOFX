@@ -1,0 +1,43 @@
+#ifndef _TUTTLE_PLUGIN_%D_CLASSNAME%_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_%D_CLASSNAME%_PLUGIN_HPP_
+
+#include <tuttle/common/utils/global.hpp>
+#include <ofxsImageEffect.h>
+#include <boost/gil/gil_all.hpp>
+
+namespace tuttle {
+namespace plugin {
+namespace %NAMESPACE% {
+
+struct %CLASSNAME%ProcessParams
+{
+	
+};
+
+/**
+ * @brief %CLASSNAME% plugin
+ */
+class %CLASSNAME%Plugin : public OFX::ImageEffect
+{
+public:
+    %CLASSNAME%Plugin( OfxImageEffectHandle handle );
+    OFX::Clip *getSrcClip( ) const;
+    OFX::Clip *getDstClip( ) const;
+
+public:
+    void render( const OFX::RenderArguments &args );
+    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	
+	%CLASSNAME%ProcessParams getProcessParams() const;
+	
+public:
+    // do not need to delete these, the ImageEffect is managing them for us
+    OFX::Clip* _srcClip; ///< Source image clip
+    OFX::Clip* _dstClip; ///< Destination image clip
+};
+
+}
+}
+}
+
+#endif

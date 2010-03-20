@@ -25,12 +25,6 @@ uncompress(){
 	return 1
 }
 
-EXPAT_FILENAME=expat-2.0.1
-EXPAT_ARCHIVE=$EXPAT_FILENAME.tar.gz
-EXPAT_URL=http://prdownloads.sourceforge.net/expat/$EXPAT_ARCHIVE?download
-echo ">>> GETTING EXPAT"
-getAndUncompressAndTransferToDir $EXPAT_URL $EXPAT_ARCHIVE $EXPAT_FILENAME expat
-
 ZLIB_FILENAME=zlib-1.2.3
 ZLIB_ARCHIVE=$ZLIB_FILENAME.tar.gz
 ZLIB_URL=http://prdownloads.sourceforge.net/libpng/$ZLIB_ARCHIVE?download
@@ -55,9 +49,9 @@ OPENEXR_URL=http://download.savannah.nongnu.org/releases/openexr/$OPENEXR_ARCHIV
 echo ">>> GETTING OPENEXR"
 getAndUncompressAndTransferToDir $OPENEXR_URL $OPENEXR_ARCHIVE $OPENEXR_FILENAME openexr
 
-BOOST_FILENAME=boost_1_41_0
+BOOST_FILENAME=boost_1_42_0
 BOOST_ARCHIVE=$BOOST_FILENAME.tar.bz2
-BOOST_URL=http://sourceforge.net/projects/boost/files/boost/1.41.0/$BOOST_ARCHIVE/download
+BOOST_URL=http://sourceforge.net/projects/boost/files/boost/1.42.0/$BOOST_ARCHIVE/download
 echo ">>> GETTING Boost"
 getAndUncompress $BOOST_URL $BOOST_ARCHIVE
 ln -s $BOOST_FILENAME boost

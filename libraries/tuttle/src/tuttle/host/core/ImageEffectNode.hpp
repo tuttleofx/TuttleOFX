@@ -35,6 +35,8 @@
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/ofx/OfxhAttribute.hpp>
 
+#include <boost/numeric/conversion/cast.hpp>
+
 #include <cmath>
 #include <cassert>
 
@@ -59,7 +61,7 @@ public:
 
 	bool operator==( const ImageEffectNode& other ) const;
 
-	const EProcessNodeType getProcessNodeType() const { return eImageEffect; }
+	const EProcessNodeType getProcessNodeType() const { return eImageEffectNode; }
 
 	void connect( const ProcessNode& sourceEffect, ProcessAttribute& attr );
 
@@ -128,10 +130,10 @@ public:
 	void process( const ProcessOptions& processOptions )
 	{
 		OfxRectI roi = {
-			floor( processOptions._renderRoI.x1 ),
-			floor( processOptions._renderRoI.y1 ),
-			ceil( processOptions._renderRoI.x2 ),
-			ceil( processOptions._renderRoI.y2 )
+			boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
+			boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),
+			boost::numeric_cast<int>(ceil( processOptions._renderRoI.x2 )),
+			boost::numeric_cast<int>(ceil( processOptions._renderRoI.y2 ))
 		};
 
 		renderAction( processOptions._time,
@@ -227,7 +229,7 @@ public:
 	/// make a parameter instance
 	///
 	/// Client host code needs to implement this
-	ofx::attribute::OfxhParam* newParam( ofx::attribute::OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC;
+	ofx::attribute::OfxhParam* newParam( const ofx::attribute::OfxhParamDescriptor& Descriptor ) OFX_EXCEPTION_SPEC;
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin
 	///

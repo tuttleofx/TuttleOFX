@@ -13,7 +13,7 @@ namespace plugin {
  * @param[in]       numSteps   number of steps
  *
  */
-void Progress::progressBegin( const int numSteps, const char* msg )
+void Progress::progressBegin( const int numSteps, const std::string& msg )
 {
 	_counter = 0.0;
 	#ifndef WITHOUT_OFX
@@ -33,7 +33,7 @@ void Progress::progressBegin( const int numSteps, const char* msg )
  *         false = continu rendering
  *
  */
-bool Progress::progressForward( const int nSteps /* = 1*/ ) //throw(PluginException)
+bool Progress::progressForward( const int nSteps ) //throw(PluginException)
 {
 	#ifndef WITHOUT_OFX
 	_mutex.lock();
@@ -50,7 +50,7 @@ bool Progress::progressForward( const int nSteps /* = 1*/ ) //throw(PluginExcept
 	return false;
 	#else
 	_counter += _stepSize * static_cast<double>( nSteps );
-	COUT( "progress: " << _counter );
+	COUT_DEBUG( "progress: " << _counter );
 	return false;
 	#endif
 }

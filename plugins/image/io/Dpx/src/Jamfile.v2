@@ -1,0 +1,34 @@
+###############################################################################
+## Main BJam makefile for TuttleOFX Dpx Plugin
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements
+        <threading>multi
+		<include>.
+        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+    : build-dir $(DIST)/Dpx/obj
+    ;
+
+use-project /png 	: $(3RD_PARTY)/libpng ;
+
+###############################################################################
+# Product 
+###############################################################################
+plugin Dpx : 
+        [ glob-tree *.cpp ]
+        /tuttlelib//tuttleplugin/<link>static
+        /png/<link>static
+        /boost/filesystem/<link>static
+		/boost/system/<link>static
+        ;
+
+###############################################################################
+# Automatic install
+###############################################################################
+auto_install Dpx : $(DIST) ;
+

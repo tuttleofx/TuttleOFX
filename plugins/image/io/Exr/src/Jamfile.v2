@@ -1,0 +1,33 @@
+###############################################################################
+## Main BJam makefile for TuttleOFX Exr Plugin
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements
+        <threading>multi
+        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+    : build-dir $(DIST)/Exr/obj
+    ;
+
+use-project /libexr : $(3RD_PARTY)/openexr ;
+
+###############################################################################
+# Product 
+###############################################################################
+plugin Exr : 
+        [ glob-tree *.cpp ]
+        /tuttlelib//tuttleplugin/<link>static
+        /boost//filesystem/<link>static
+		/boost//system/<link>static
+        /libexr/<link>static
+        ;
+
+###############################################################################
+# Automatic install
+###############################################################################
+auto_install Exr : $(DIST) ;
+

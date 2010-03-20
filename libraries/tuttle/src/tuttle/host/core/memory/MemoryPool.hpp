@@ -16,10 +16,14 @@ class PoolData; ///< forward declaration
 class IPool
 {
 public:
+	virtual ~IPool() = 0;
 	virtual void referenced( PoolData* ) = 0;
 	virtual void released( PoolData* )   = 0;
 };
 
+/**
+ * @todo tuttle: virtual destructor or nothing in virtual
+ */
 class MemoryPool : public IMemoryPool,
 	public IPool
 {

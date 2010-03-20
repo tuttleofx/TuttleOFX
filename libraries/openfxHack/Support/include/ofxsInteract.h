@@ -42,7 +42,7 @@
  * This file only holds code that is visible to a plugin implementation, and so hides much
  * of the direct OFX objects and any library side only functions.
  */
-#include "ofxsParam.h"
+#include "ofxsCore.h"
 
 #include <list>
 
@@ -57,6 +57,7 @@ namespace OFX {
 
 /** @brief forward declaration */
 class ImageEffect;
+  class Param;
 
 /// all image effect interacts have these argumens
 struct InteractArgs
@@ -72,7 +73,7 @@ struct DrawArgs : public InteractArgs
 {
 	DrawArgs( const PropertySet& props );
 
-	OfxPointD pixelScale;       /**< @brief The current effect time to draw at */
+	OfxPointD pixelScale;       /**< @brief The pixel scale */
 	OfxRGBColourD backGroundColour; /**< @brief The current background colour, ignore the A */
 };
 
@@ -81,7 +82,7 @@ struct PenArgs : public InteractArgs
 {
 	PenArgs( const PropertySet& props );
 
-	OfxPointD pixelScale;       /**< @brief The current effect time to draw at */
+	OfxPointD pixelScale;       /**< @brief The pixel scale */
 	OfxPointD penPosition;      /**< @brief The current pen position */
 	double penPressure;      /**< @brief The normalised pressure on the pen */
 };
@@ -110,50 +111,11 @@ struct FocusArgs : public InteractArgs
 	OfxRGBColourD backGroundColour; /**< @brief The current background colour, ignore the A */
 };
 
-/** @brief Wraps up an OFX interact object for an Image Effect. It won't work for any other plug-in type at present (it would need to be broken into a hierarchy of classes).
- */
-class Interact
+class InteractI
 {
-protected:
-	OfxInteractHandle _interactHandle;    /**< @brief The handle for this interact */
-	PropertySet _interactProperties; /**< @brief The property set on this interact */
-	std::list<Param*> _slaveParams;       /**< @brief List of params we are currently slaved to */
-	ImageEffect* _effect;                   /**< @brief The instance we are associated with */
-
 public:
-	/** @brief ctor */
-	Interact( OfxInteractHandle handle );
-
-	/** @brief virtual destructor */
-	virtual ~Interact();
-
-	PropertySet& getProperties() { return _interactProperties; }
-
-	/** @brief The bitdepth of each component in the openGL frame buffer */
-	int getBitDepth( void ) const;
-
-	/** @brief Does the openGL frame buffer have an alpha */
-	bool hasAlpha( void ) const;
-
-	/** @brief Returns the size of a real screen pixel under the interact's cannonical projection */
-	OfxPointD getPixelScale( void ) const;
-
-	/** @brief the background colour */
-	OfxRGBColourD getBackgroundColour( void ) const;
-
-	/** @brief Set a param that the interact should be redrawn on if its value changes */
-	void addParamToSlaveTo( Param* p );
-
-	/** @brief Remova a param that the interact should be redrawn on if its value changes */
-	void removeParamToSlaveTo( Param* p );
-
-	/** @brief Request a redraw */
-	void requestRedraw( void ) const;
-
-	/** @brief Swap a buffer in the case of a double bufferred interact, this is possibly a silly one */
-	void swapBuffers( void ) const;
-
-	////////////////////////////////////////////////////////////////////////////////
+	virtual ~InteractI() = 0;
+		////////////////////////////////////////////////////////////////////////////////
 	// override the below in derived classes to do something useful
 
 	/** @brief the function called to draw in the interact */
@@ -208,6 +170,50 @@ public:
 	virtual void loseFocus( const FocusArgs& args );
 };
 
+/** @brief Wraps up an OFX interact object for an Image Effect. It won't work for any other plug-in type at present (it would need to be broken into a hierarchy of classes).
+ */
+class Interact : public InteractI
+{
+protected:
+	OfxInteractHandle _interactHandle;    /**< @brief The handle for this interact */
+	PropertySet _interactProperties; /**< @brief The property set on this interact */
+	std::list<Param*> _slaveParams;       /**< @brief List of params we are currently slaved to */
+	ImageEffect* _effect;                   /**< @brief The instance we are associated with */
+
+public:
+	/** @brief ctor */
+	Interact( OfxInteractHandle handle );
+
+	/** @brief virtual destructor */
+	virtual ~Interact() = 0;
+
+	PropertySet& getProperties() { return _interactProperties; }
+
+	/** @brief The bitdepth of each component in the openGL frame buffer */
+	int getBitDepth( void ) const;
+
+	/** @brief Does the openGL frame buffer have an alpha */
+	bool hasAlpha( void ) const;
+
+	/** @brief Returns the size of a real screen pixel under the interact's cannonical projection */
+	OfxPointD getPixelScale( void ) const;
+
+	/** @brief the background colour */
+	OfxRGBColourD getBackgroundColour( void ) const;
+
+	/** @brief Set a param that the interact should be redrawn on if its value changes */
+	void addParamToSlaveTo( Param* p );
+
+	/** @brief Remova a param that the interact should be redrawn on if its value changes */
+	void removeParamToSlaveTo( Param* p );
+
+	/** @brief Request a redraw */
+	void requestRedraw( void ) const;
+
+	/** @brief Swap a buffer in the case of a double bufferred interact, this is possibly a silly one */
+	void swapBuffers( void ) const;
+};
+
 /** @brief an interact for an image effect overlay */
 class OverlayInteract : public Interact
 {
@@ -223,14 +229,13 @@ class InteractDescriptor
 {
 public:
 	InteractDescriptor() : _props( 0 ) {}
-	virtual ~InteractDescriptor() {}
+	virtual ~InteractDescriptor() = 0;
 	void                         setPropertySet( OFX::PropertySet* props ) { _props = props; }
 	virtual Interact*            createInstance( OfxInteractHandle handle, ImageEffect* effect ) = 0;
 	void                         setHasAlpha();
 	bool                         getHasAlpha() const;
 	void                         setBitDepth();
 	int                          getBitDepth() const;
-	virtual OfxPluginEntryPoint* getMainEntry() = 0;
 	virtual void                 describe() {}
 
 protected:
@@ -238,6 +243,15 @@ protected:
 };
 
 typedef InteractDescriptor EffectOverlayDescriptor;
+
+class NoOverlayDescriptor : public OFX::EffectOverlayDescriptor
+{
+public:
+    OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect *effect )
+    {
+        return new OFX::OverlayInteract( handle );
+    }
+};
 
 class ParamInteractDescriptor : public InteractDescriptor
 {
@@ -276,9 +290,29 @@ OfxStatus interactMainEntry( const char*          actionRaw,
                              InteractDescriptor&  desc );
 }
 
+  class InteractWrap
+  {
+  public:
+    InteractWrap() {}
+    virtual ~InteractWrap() = 0;
+    virtual OfxPluginEntryPoint* getMainEntry() = 0;
+    virtual OFX::InteractDescriptor& getDescriptor() =0;
+  };
+
+  typedef InteractWrap EffectInteractWrap;
+
+  class ParamInteractWrap : public InteractWrap
+  {
+  public:
+    virtual ParamInteractDescriptor& getDescriptor() =0;
+    virtual ~ParamInteractWrap() = 0;
+  };
+
 template<class DESC>
-class InteractMainEntry
+class InteractMainEntry : public InteractWrap
 {
+  public:
+    virtual ~InteractMainEntry() = 0;
 protected:
 	static OfxStatus overlayInteractMainEntry( const char* action, const void* handle, OfxPropertySetHandle in, OfxPropertySetHandle out )
 	{
@@ -286,34 +320,43 @@ protected:
 
 		return OFX::Private::interactMainEntry( action, handle, in, out, desc );
 	}
-
 };
 
-template<class DESC, class INSTANCE>
-class DefaultEffectOverlayDescriptor : public EffectOverlayDescriptor,
-	public InteractMainEntry<DESC>
-{
-public:
-	Interact*                    createInstance( OfxInteractHandle handle, ImageEffect* effect ) { return new INSTANCE( handle, effect ); }
-	virtual OfxPluginEntryPoint* getMainEntry()                                                  { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
-};
+template<class DESC>
+InteractMainEntry<DESC>::~InteractMainEntry() {}
 
-template<class DESC, class INSTANCE>
-class DefaultParamInteractDescriptor : public ParamInteractDescriptor,
-	public InteractMainEntry<DESC>
+template<class DESC>
+class DefaultEffectOverlayWrap : public InteractMainEntry<DESC>
 {
 public:
-	Interact*                    createInstance( OfxInteractHandle handle, ImageEffect* effect ) { return new INSTANCE( handle, effect, _paramNameStatic ); }
-	virtual OfxPluginEntryPoint* getMainEntry()                                                  { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
-	virtual void                 setParamName( const std::string& pName )                        { _paramNameStatic = pName; }
+      typedef DESC Descriptor;
+      Descriptor _descriptor;
+  public:
+    OfxPluginEntryPoint* getMainEntry() { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
+
+    OFX::InteractDescriptor& getDescriptor() { return _descriptor; }
+  };
+
+  template<class DESC>
+  class DefaultParamInteractWrap : public InteractMainEntry<DESC>
+  {
+  public:
+      typedef DESC Descriptor;
+      Descriptor _descriptor;
+  public:
+	OfxPluginEntryPoint* getMainEntry()                                                  { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
+
+    OFX::InteractDescriptor& getDescriptor() { return _descriptor; }
+
+	void                 setParamName( const std::string& pName )                        { _paramNameStatic = pName; }
 
 protected:
 	static std::string _paramNameStatic;
 };
 
-template<class DESC, class INSTANCE>
-std::string OFX::DefaultParamInteractDescriptor<DESC, INSTANCE>::_paramNameStatic;
-};
+  template<class DESC> std::string OFX::DefaultParamInteractWrap<DESC>::_paramNameStatic;
+}
+
 
 #undef mDeclareProtectedAssignAndCC
 

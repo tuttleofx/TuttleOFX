@@ -1,12 +1,5 @@
-/*
- * File:   gilViewTypes.hpp
- * Author: Administrateur
- *
- * Created on 23 novembre 2009, 11:11
- */
-
-#ifndef _GILVIEWTYPES_HPP
-#define _GILVIEWTYPES_HPP
+#ifndef _GILVIEWTYPES_HPP_
+#define _GILVIEWTYPES_HPP_
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/gil/gil_all.hpp>

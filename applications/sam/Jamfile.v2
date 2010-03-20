@@ -21,13 +21,14 @@ use-project /tuttlelib : ../../libraries/tuttle ;
 ###############################################################################
 # tuttle library
 ###############################################################################
-alias headers : [ glob-tree *.hpp ] ;
-
 exe sam : 
     [ glob src/*.cpp ]
     /boost/system
     /boost/filesystem
+	/boost/serialization
     /tuttlelib//tuttlehost/<link>static
+	:
+	<os>LINUX:<find-shared-library>dl
     ;
 
 ###############################################################################
@@ -37,11 +38,7 @@ install dist_src
     : sam
       /boost/system
       /boost/filesystem
+	  /boost/serialization
     : <variant>debug:<location>$(DIST)/sam/bin/debug
       <variant>release:<location>$(DIST)/sam/bin/release
     ;
-
-install dist_include
-	: headers
-	: <location>$(DIST)/sam/include
-	;

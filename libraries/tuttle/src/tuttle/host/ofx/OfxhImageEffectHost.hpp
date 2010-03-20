@@ -37,7 +37,7 @@ class OfxhImageEffectNodeDescriptor;
 /**
  * An image effect host, passed to the setHost function of all image effect plugins
  */
-class OfxhImageEffectHost : public tuttle::host::ofx::OfxhAbstractHost
+class OfxhImageEffectHost : public OfxhHost
 {
 public:
 	OfxhImageEffectHost();

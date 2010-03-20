@@ -3,6 +3,7 @@
 #include "OfxhCore.hpp"
 
 #include <cstdarg>
+#include <cstdio>
 
 namespace tuttle {
 namespace host {

@@ -16,6 +16,8 @@
  #include <ofxsMultiThread.h>
 #endif
 
+#include <string>
+
 namespace tuttle {
 namespace plugin {
 
@@ -41,9 +43,9 @@ public:
 	Progress() {}
 	#endif
 
-	~Progress() {}
+	virtual ~Progress() {}
 
-	void progressBegin( const int numSteps, const char* msg );
+	void progressBegin( const int numSteps, const std::string& msg = "" );
 	void progressEnd();
 	bool progressForward( const int nSteps = 1 ); //throw(PluginException);
 };

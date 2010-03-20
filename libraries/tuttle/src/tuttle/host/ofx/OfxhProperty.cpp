@@ -216,8 +216,10 @@ OfxhProperty::OfxhProperty( const OfxhProperty& other )
 	_pluginReadOnly( other._pluginReadOnly ),
 	_getHook( NULL ) {}
 
-/// call notify on the contained notify hooks
+OfxhProperty::~OfxhProperty()
+{}
 
+/// call notify on the contained notify hooks
 void OfxhProperty::notify( bool single, int indexOrN )
 {
 	std::vector<OfxhNotifyHook*>::iterator i;
@@ -245,6 +247,12 @@ inline double castToAPIType( double d )
 inline const char* castToAPIType( const std::string& s )
 {
 	return s.c_str();
+}
+
+template<class T>
+OfxhPropertyTemplate<T>::OfxhPropertyTemplate()
+	: OfxhProperty( "", T::typeCode, 0, false )
+{
 }
 
 template<class T>
@@ -543,20 +551,20 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 	{
 		throw OfxhException( kOfxStatErrExists, std::string( "Tried to add a duplicate property to a Property::Set (" ) + spec.name + ")" );
 	}
-
+	std::string key( spec.name ); // for constness
 	switch( spec.type )
 	{
 		case eInt:
-			_props.insert( spec.name, new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atoi( spec.defaultValue ) : 0 ) );
+			_props.insert( key, new Int( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atoi( spec.defaultValue ) : 0 ) );
 			break;
 		case eDouble:
-			_props.insert( spec.name, new Double( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atof( spec.defaultValue ) : 0 ) );
+			_props.insert( key, new Double( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? atof( spec.defaultValue ) : 0 ) );
 			break;
 		case eString:
-			_props.insert( spec.name, new String( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? spec.defaultValue : "" ) );
+			_props.insert( key, new String( spec.name, spec.dimension, spec.readonly, spec.defaultValue ? spec.defaultValue : "" ) );
 			break;
 		case ePointer:
-			_props.insert( spec.name, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
+			_props.insert( key, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
 			break;
 		case eNone:
 			throw OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString(spec.type) + ")" );
@@ -596,7 +604,8 @@ bool OfxhSet::hasProperty( const std::string& propName, bool followChain ) const
  */
 void OfxhSet::addProperty( OfxhProperty* prop )
 {
-	_props.insert( prop->getName(), prop );
+	std::string key(prop->getName()); // for constness
+	_props.insert( key, prop );
 }
 
 /**
@@ -631,13 +640,13 @@ void OfxhSet::clear()
 }
 
 /// hide assignment
-void OfxhSet::operator=( const OfxhSet& other )
+void OfxhSet::operator=( const This& other )
 {
 	_props      = other._props.clone();
 	_chainedSet = other._chainedSet;
 }
 
-bool OfxhSet::operator==( const OfxhSet& other ) const
+bool OfxhSet::operator==( const This& other ) const
 {
 	if( _props != other._props )
 		return false;
@@ -656,6 +665,25 @@ bool OfxhSet::operator==( const OfxhSet& other ) const
 			return false;
 	}
 	return true;
+}
+
+
+void OfxhSet::copyValues( const This& other )
+{
+	if( _props.size() != other._props.size() )
+		throw core::exception::LogicError( "You try to copy properties values, but the two lists are not identical." );
+
+	PropertyMap::const_iterator oit = other._props.begin(), oitEnd = other._props.end();
+	for( PropertyMap::iterator it = _props.begin(), itEnd = _props.end();
+	     it != itEnd && oit != oitEnd;
+	     ++it, ++oit )
+	{
+		OfxhProperty& p = *(it->second);
+		const OfxhProperty& op = *(oit->second);
+		if( p.getName() != op.getName() )
+			throw core::exception::LogicError( "You try to copy properties values, but it is not the same property in the two lists." );
+		p.copyValues(op);
+	}
 }
 
 void OfxhSet::coutProperties() const

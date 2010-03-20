@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
 //
 //	core::Graph g;
-//	BOOST_CHECK_NO_THROW(core::EffectInstance* invert = g.createNode( "fr.hd3d.tuttle.invert" ));
+//	BOOST_CHECK_NO_THROW(core::EffectInstance* invert = g.createNode( "fr.tuttle.invert" ));
 //}
 
 //BOOST_AUTO_TEST_CASE( graph_copy )
@@ -33,11 +33,11 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	core::Core::instance().preload();
 //
 //	core::Graph g;
-//	core::Graph::Node& read1  = g.createNode( "fr.hd3d.tuttle.pngreader" );
-//	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-//	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
+//	core::Graph::Node& read1  = g.createNode( "fr.tuttle.pngreader" );
+//	core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+//	core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 //	core::Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	core::Graph::Node& write1 = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+//	core::Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
 //
 //	g.connect( read1, invert1 );
 //	g.connect( invert1, invert2 );
@@ -57,46 +57,45 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 	//core::Core::instance().getPluginCache().scanPluginFiles();
-	std::cout << " hm. " << std::endl;
 	core::Core::instance().preload();
 	core::Core::instance().getImageEffectPluginCache().dumpToStdOut();
 
 	TCOUT( "__________________________________________________1" );
 
 	core::Graph g;
-	core::Graph::Node& read1   = g.createNode( "fr.hd3d.tuttle.pngreader" );
-	core::Graph::Node& read2   = g.createNode( "fr.hd3d.tuttle.dpxreader" );
-	core::Graph::Node& read3   = g.createNode( "fr.hd3d.tuttle.exrreader" );
-	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& invert3 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& invert4 = g.createNode( "fr.hd3d.tuttle.invert" );
-	core::Graph::Node& crop1   = g.createNode( "fr.hd3d.tuttle.crop" );
-	core::Graph::Node& merge1  = g.createNode( "fr.hd3d.tuttle.merge" );
-	core::Graph::Node& write1  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
-	core::Graph::Node& write4  = g.createNode( "fr.hd3d.tuttle.pngwriter" );
-	core::Graph::Node& write2  = g.createNode( "fr.hd3d.tuttle.dpxwriter" );
-	core::Graph::Node& write3  = g.createNode( "fr.hd3d.tuttle.exrwriter" );
+	core::Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
+	core::Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
+	core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
+	core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
+	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
+	core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
+	core::Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
+	core::Graph::Node& write4  = g.createNode( "fr.tuttle.pngwriter" );
+	core::Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
+	core::Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
 
 	TCOUT( "__________________________________________________2" );
 	// Setup parameters
-	read1.getParam( "Input filename" ).set( "input.png" );
-	read2.getParam( "Input filename" ).set( "input.dpx" );
-	read3.getParam( "Input filename" ).set( "input.exr" );
+	read1.getParam( "filename" ).set( "input.png" );
+	read2.getParam( "filename" ).set( "input.dpx" );
+	read3.getParam( "filename" ).set( "input.exr" );
 //	crop1.getParam( "Down" ).set( 400 );
-	write1.getParam( "Output filename" ).set( "output1.png" );
-	write2.getParam( "Output filename" ).set( "output2.dpx" );
-	write3.getParam( "Output filename" ).set( "output3.exr" );
-	write4.getParam( "Output filename" ).set( "output4.png" );
+	write1.getParam( "filename" ).set( "output1.png" );
+	write2.getParam( "filename" ).set( "output2.dpx" );
+	write3.getParam( "filename" ).set( "output3.exr" );
+	write4.getParam( "filename" ).set( "output4.png" );
 	OfxPointD renderScale = { 1.0, 1.0 };
-	read1.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	read2.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	read3.paramInstanceChangedAction( "Input filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	read1.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	read2.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	read3.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 //	crop1.paramInstanceChangedAction( "Down", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	write1.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	write2.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	write3.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	write4.paramInstanceChangedAction( "Output filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	write1.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	write2.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	write3.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
+	write4.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
 	TCOUT( "__________________________________________________3" );
 	g.connect( read1, invert1 );
@@ -133,13 +132,13 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 //	core::Core::instance().preload();
 //
 //	core::Graph g;
-//	core::Graph::Node& read1  = g.createNode( "fr.hd3d.tuttle.pngreader" );
-////	core::Graph::Node& read2  = g.createNode( "fr.hd3d.tuttle.pngreader" );
-//	core::Graph::Node& invert1 = g.createNode( "fr.hd3d.tuttle.invert" );
-//	core::Graph::Node& invert2 = g.createNode( "fr.hd3d.tuttle.invert" );
-////	core::Graph::Node& merge1 = g.createNode( "fr.hd3d.tuttle.merge" );
+//	core::Graph::Node& read1  = g.createNode( "fr.tuttle.pngreader" );
+////	core::Graph::Node& read2  = g.createNode( "fr.tuttle.pngreader" );
+//	core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+//	core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+////	core::Graph::Node& merge1 = g.createNode( "fr.tuttle.merge" );
 //	core::Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	core::Graph::Node& write1 = g.createNode( "fr.hd3d.tuttle.pngwriter" );
+//	core::Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
 //
 //	g.connect( read1, invert1 );
 //	g.connect( invert1, invert2 );

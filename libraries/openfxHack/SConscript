@@ -1,0 +1,6 @@
+Import( 'project' )
+Import( 'libs' )
+
+project.ObjectLibrary( 'openfxHack', includes=[project.getRealAbsoluteCwd('include')] )
+
+

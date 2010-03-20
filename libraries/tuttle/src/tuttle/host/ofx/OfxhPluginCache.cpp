@@ -38,12 +38,7 @@
 #include "OfxhPluginAPICache.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
-#include "OfxhXml.hpp"
 #include "OfxhUtilities.hpp"
-
-#include <expat.h>
-
-#include <boost/lexical_cast.hpp>
 
 #include <cassert>
 #include <map>
@@ -57,6 +52,7 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
+
 
 #if defined ( __linux__ )
 
@@ -102,70 +98,6 @@ static const char* getArchStr()
 // Define this to enable ofx plugin cache debug messages.
 //#define CACHE_DEBUG
 
-/// try to open the plugin bundle object and query it for plugins
-
-void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
-{
-	_fileModificationTime = _binary.getTime();
-	_fileSize             = _binary.getSize();
-	_binaryChanged        = false;
-
-	_binary.load();
-
-	int ( *getNo )( void )       = ( int( * ) () )_binary.findSymbol( "OfxGetNumberOfPlugins" );
-	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_binary.findSymbol( "OfxGetPlugin" );
-
-	if( getNo == 0 || getPlug == 0 )
-	{
-		_binary.setInvalid( true );
-	}
-	else
-	{
-		int pluginCount = ( *getNo )( );
-
-		_plugins.reserve( pluginCount );
-
-		for( int i = 0; i < pluginCount; i++ )
-		{
-			OfxPlugin* plug = ( *getPlug )( i );
-
-			APICache::OfxhPluginAPICacheI* api = cache->findApiHandler( plug->pluginApi, plug->apiVersion );
-			assert( api );
-
-			_plugins.push_back( api->newPlugin( this, i, plug ) );
-		}
-	}
-	_binary.unload();
-}
-
-OfxhPluginBinary::~OfxhPluginBinary()
-{
-	std::vector<OfxhPlugin*>::iterator i = _plugins.begin();
-	while( i != _plugins.end() )
-	{
-		delete *i;
-		i++;
-	}
-}
-
-OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin* p, tuttle::host::ofx::OfxhAbstractHost* host ) : _p( p )
-{
-	_b = p->getBinary();
-	_b->_binary.ref();
-	_op                          = 0;
-	OfxPlugin* ( *getPlug )(int) = ( OfxPlugin * ( * )( int ) )_b->_binary.findSymbol( "OfxGetPlugin" );
-	_op                          = getPlug( p->getIndex() );
-	if( !_op )
-	{
-		throw core::exception::LogicError( "Can't found plugin at index 'todo' in plugin '" + _p->getIdentifier() + "'" ); // p->getIndex()
-	}
-	_op->setHost( host->getHandle() );
-}
-
-OfxhPluginHandle::~OfxhPluginHandle()
-{
-	_b->_binary.unref();
-}
 
 #if defined ( WINDOWS )
 
@@ -205,9 +137,7 @@ std::string OFXGetEnv( const char* e )
 }
 
 OfxhPluginCache::OfxhPluginCache()
-	: _xmlCurrentBinary( 0 ),
-	_xmlCurrentPlugin( 0 ),
-	_ignoreCache( false ),
+	: _ignoreCache( false ),
 	_cacheVersion( "" ),
 	_dirty( false ),
 	_enablePluginSeek( true )
@@ -248,11 +178,6 @@ OfxhPluginCache::OfxhPluginCache()
 
 OfxhPluginCache::~OfxhPluginCache()
 {
-	for( std::list<OfxhPluginBinary*>::iterator it = _binaries.begin(); it != _binaries.end(); ++it )
-	{
-		delete ( *it );
-	}
-	_binaries.clear();
 }
 
 void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
@@ -272,7 +197,7 @@ void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
 void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse )
 {
 	#ifdef CACHE_DEBUG
-	printf( "looking in %s for plugins\n", dir.c_str() );
+	COUT( "looking in " << dir << " for plugins" );
 	#endif
 
 	#if defined ( WINDOWS )
@@ -319,9 +244,9 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
 			{
 				#ifdef CACHE_DEBUG
-				printf( "found non-cached binary %s\n", binpath.c_str() );
+				COUT( "found non-cached binary " << binpath );
 				#endif
-				_dirty = true;
+				setDirty();
 
 				// the binary was not in the cache
 
@@ -329,7 +254,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				_binaries.push_back( pb );
 				_knownBinFiles.insert( binpath );
 
-				for( int j = 0; j < pb->getNPlugins(); j++ )
+				for( int j = 0; j < pb->getNPlugins(); ++j )
 				{
 					OfxhPlugin* plug                         = &pb->getPlugin( j );
 					const APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
@@ -339,7 +264,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 			else
 			{
 				#ifdef CACHE_DEBUG
-				printf( "found cached binary %s\n", binpath.c_str() );
+				COUT( "found cached binary " << binpath );
 				#endif
 			}
 		}
@@ -375,7 +300,7 @@ std::string OfxhPluginCache::seekPluginFile( const std::string& baseName ) const
 
 	for( std::list<std::string>::const_iterator paths = _pluginDirs.begin();
 	     paths != _pluginDirs.end();
-	     paths++ )
+	     ++paths )
 	{
 		std::string candidate = *paths + DIRSEP + baseName;
 		FILE* f               = fopen( candidate.c_str(), "r" );
@@ -394,37 +319,34 @@ void OfxhPluginCache::scanPluginFiles()
 
 	for( std::list<std::string>::iterator paths = _pluginPath.begin();
 	     paths != _pluginPath.end();
-	     paths++ )
+	     ++paths )
 	{
 		scanDirectory( foundBinFiles, *paths, _nonrecursePath.find( *paths ) == _nonrecursePath.end() );
 	}
 
-	std::list<OfxhPluginBinary*>::iterator i = _binaries.begin();
+	OfxhPluginBinaryList::iterator i = _binaries.begin();
 	while( i != _binaries.end() )
 	{
-		OfxhPluginBinary* pb = *i;
-
-		if( foundBinFiles.find( pb->getFilePath() ) == foundBinFiles.end() )
+		if( foundBinFiles.find( i->getFilePath() ) == foundBinFiles.end() )
 		{
 			// the binary was in the cache, but was not on the path
-			_dirty = true;
+			setDirty();
 			i      = _binaries.erase( i );
-			delete pb;
 		}
 		else
 		{
-			bool binChanged = pb->hasBinaryChanged();
+			bool binChanged = i->hasBinaryChanged();
 
 			// the binary was in the cache, but the binary has changed and thus we need to reload
 			if( binChanged )
 			{
-				pb->loadPluginInfo( this );
-				_dirty = true;
+				i->loadPluginInfo( this );
+				setDirty();
 			}
 
-			for( int j = 0; j < pb->getNPlugins(); ++j )
+			for( int j = 0; j < i->getNPlugins(); ++j )
 			{
-				OfxhPlugin* plug                   = &pb->getPlugin( j );
+				OfxhPlugin* plug                   = &i->getPlugin( j );
 				APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
 
 				if( binChanged )
@@ -451,265 +373,6 @@ void OfxhPluginCache::scanPluginFiles()
 	}
 }
 
-static OfxhPluginCache* gPluginCachePtr; ///< @warning for xml... implies that PluginCache is singleton... (only one instanciation in the Core which is a Singleton class)
-
-/// callback for XML parser
-
-static void elementBeginHandler( void* userData, const XML_Char* name, const XML_Char** atts )
-{
-	gPluginCachePtr->elementBeginCallback( userData, name, atts );
-}
-
-/// callback for XML parser
-
-static void elementCharHandler( void* userData, const XML_Char* data, int len )
-{
-	gPluginCachePtr->elementCharCallback( userData, data, len );
-}
-
-/// callback for XML parser
-
-static void elementEndHandler( void* userData, const XML_Char* name )
-{
-	gPluginCachePtr->elementEndCallback( userData, name );
-}
-
-static bool mapHasAll( const std::map<std::string, std::string>& attmap, const char** atts )
-{
-	while( *atts )
-	{
-		if( attmap.find( *atts ) == attmap.end() )
-		{
-			return false;
-		}
-		++atts;
-	}
-	return true;
-}
-
-void OfxhPluginCache::elementBeginCallback( void* userData, const XML_Char* name, const XML_Char** atts )
-{
-	if( _ignoreCache )
-	{
-		return;
-	}
-
-	std::string ename = name;
-	std::map<std::string, std::string> attmap;
-
-	while( *atts )
-	{
-		attmap[atts[0]] = atts[1];
-		atts           += 2;
-	}
-
-	/// XXX: validate in general
-
-	if( ename == "cache" )
-	{
-		std::string cacheversion = attmap["version"];
-		if( cacheversion != _cacheVersion )
-		{
-			#ifdef CACHE_DEBUG
-			printf( "mismatched version, ignoring cache (got '%s', wanted '%s')\n",
-			        cacheversion.c_str(),
-			        _cacheVersion.c_str() );
-			#endif
-			_ignoreCache = true;
-		}
-	}
-
-	if( ename == "binary" )
-	{
-		const char* binAtts[] = { "path", "bundlepath", "mtime", "size", NULL };
-
-		if( !mapHasAll( attmap, binAtts ) )
-		{
-			// no path: bad XML
-		}
-
-		std::string fname = attmap["path"];
-		std::string bname = attmap["bundle_path"];
-		time_t mtime      = boost::lexical_cast<time_t>( attmap["mtime"] );
-		size_t size       = boost::lexical_cast<size_t>( attmap["size"] );
-
-		_xmlCurrentBinary = new OfxhPluginBinary( fname, bname, mtime, size );
-		_binaries.push_back( _xmlCurrentBinary );
-		_knownBinFiles.insert( fname );
-		return;
-	}
-
-	if( ename == "plugin" && _xmlCurrentBinary && !_xmlCurrentBinary->hasBinaryChanged() )
-	{
-		const char* plugAtts[] = { "api", "name", "index", "api_version", "major_version", "minor_version", NULL };
-
-		if( !mapHasAll( attmap, plugAtts ) )
-		{
-			// no path: bad XML
-		}
-
-		std::string api           = attmap["api"];
-		std::string rawIdentifier = attmap["name"];
-
-		std::string identifier = rawIdentifier;
-
-		for( size_t i = 0; i < identifier.size(); ++i )
-		{
-			identifier[i] = tolower( identifier[i] );
-		}
-
-		int idx           = boost::lexical_cast<int>( attmap["index"] );
-		int api_version   = boost::lexical_cast<int>( attmap["api_version"] );
-		int major_version = boost::lexical_cast<int>( attmap["major_version"] );
-		int minor_version = boost::lexical_cast<int>( attmap["minor_version"] );
-
-		APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( api, api_version );
-		if( apiCache )
-		{
-
-			OfxhPlugin* pe = apiCache->newPlugin( _xmlCurrentBinary, idx, api, api_version, identifier, rawIdentifier, major_version, minor_version );
-			_xmlCurrentBinary->addPlugin( pe );
-			_xmlCurrentPlugin = pe;
-			apiCache->beginXmlParsing( pe );
-		}
-
-		return;
-	}
-
-	if( _xmlCurrentPlugin )
-	{
-		APICache::OfxhPluginAPICacheI& api = _xmlCurrentPlugin->getApiHandler();
-		api.xmlElementBegin( name, attmap );
-	}
-
-}
-
-void OfxhPluginCache::elementCharCallback( void* userData, const XML_Char* data, int size )
-{
-	if( _ignoreCache )
-	{
-		return;
-	}
-
-	std::string s( data, size );
-	if( _xmlCurrentPlugin )
-	{
-		APICache::OfxhPluginAPICacheI& api = _xmlCurrentPlugin->getApiHandler();
-		api.xmlCharacterHandler( s );
-	}
-	else
-	{
-		/// XXX: we only want whitespace
-	}
-}
-
-void OfxhPluginCache::elementEndCallback( void* userData, const XML_Char* name )
-{
-	if( _ignoreCache )
-	{
-		return;
-	}
-
-	std::string ename = name;
-
-	/// XXX: validation?
-
-	if( ename == "plugin" )
-	{
-		if( _xmlCurrentPlugin )
-		{
-			APICache::OfxhPluginAPICacheI& api = _xmlCurrentPlugin->getApiHandler();
-			api.endXmlParsing();
-		}
-		_xmlCurrentPlugin = 0;
-		return;
-	}
-
-	if( ename == "bundle" )
-	{
-		_xmlCurrentBinary = 0;
-		return;
-	}
-
-	if( _xmlCurrentPlugin )
-	{
-		APICache::OfxhPluginAPICacheI& api = _xmlCurrentPlugin->getApiHandler();
-		api.xmlElementEnd( name );
-	}
-}
-
-void OfxhPluginCache::readCache( std::istream& ifs )
-{
-	gPluginCachePtr = this; // Hack for xml...
-	XML_Parser xP = XML_ParserCreate( NULL );
-	XML_SetElementHandler( xP, elementBeginHandler, elementEndHandler );
-	XML_SetCharacterDataHandler( xP, elementCharHandler );
-
-	while( ifs.good() )
-	{
-		char buf[1001] = { 0 };
-		ifs.read( buf, 1000 );
-
-		if( buf[0] == 0 )
-		{
-			XML_Parse( xP, "", 0, XML_TRUE );
-			break;
-		}
-
-		int p = XML_Parse( xP, buf, int(strlen( buf ) ), XML_FALSE );
-
-		if( p == XML_STATUS_ERROR )
-		{
-			std::cout << "xml error : " << XML_GetErrorCode( xP ) << std::endl;
-			/// XXX: do something here
-			break;
-		}
-	}
-
-	XML_ParserFree( xP );
-
-	gPluginCachePtr = NULL;
-}
-
-void OfxhPluginCache::writePluginCache( std::ostream& os ) const
-{
-	#ifdef CACHE_DEBUG
-	printf( "writing pluginCache with version = %s\n", _cacheVersion.c_str() );
-	#endif
-
-	os << "<cache version=\"" << _cacheVersion << "\">\n";
-	for( std::list<OfxhPluginBinary*>::const_iterator i = _binaries.begin(); i != _binaries.end(); ++i )
-	{
-		OfxhPluginBinary* b = *i;
-		os << "<bundle>\n";
-		os << "  <binary "
-		   << XML::attribute( "bundle_path", b->getBundlePath() )
-		   << XML::attribute( "path", b->getFilePath() )
-		   << XML::attribute( "mtime", int(b->getFileModificationTime() ) )
-		   << XML::attribute( "size", int(b->getFileSize() ) ) << "/>\n";
-
-		for( int j = 0; j < b->getNPlugins(); ++j )
-		{
-			OfxhPlugin* p = &b->getPlugin( j );
-			os << "  <plugin "
-			   << XML::attribute( "name", p->getRawIdentifier() )
-			   << XML::attribute( "index", p->getIndex() )
-			   << XML::attribute( "api", p->getPluginApi() )
-			   << XML::attribute( "api_version", p->getApiVersion() )
-			   << XML::attribute( "major_version", p->getVersionMajor() )
-			   << XML::attribute( "minor_version", p->getVersionMinor() )
-			   << ">\n";
-
-			const APICache::OfxhPluginAPICacheI& api = p->getApiHandler();
-			os << "    <apiproperties>\n";
-			api.saveXML( p, os );
-			os << "    </apiproperties>\n";
-			os << "  </plugin>\n";
-		}
-		os << "</bundle>\n";
-	}
-	os << "</cache>\n";
-}
 
 APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler( const std::string& api, int version )
 {

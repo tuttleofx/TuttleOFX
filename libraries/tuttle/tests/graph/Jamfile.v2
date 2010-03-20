@@ -13,12 +13,12 @@ project
 					<threading>multi
     ;
 
-use-project /tuttle 	: ../.. ;
-
 alias dependencies
     : 
 		/boost//unit_test_framework
-		/tuttle//tuttlehost/<link>static
+		/tuttle//tuttlehost
+    :
+    <os>LINUX:<find-shared-library>dl
     ; 
 
 run   main.cpp dependencies ;

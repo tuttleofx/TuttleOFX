@@ -32,9 +32,15 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhException.hpp"
 
+#include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/core/Exception.hpp>
 
-#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/type_traits/is_virtual_base_of.hpp>
+#include <boost/serialization/extended_type_info.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/ptr_container/serialize_ptr_map.hpp>
+#include <boost/serialization/string.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <string>
@@ -42,7 +48,6 @@
 #include <map>
 #include <algorithm>
 #include <sstream>
-#include <iostream>
 #include <stdexcept>
 
 namespace tuttle {
@@ -198,6 +203,7 @@ public:
 /// base class for all properties
 class OfxhProperty : private boost::noncopyable
 {
+typedef OfxhProperty This;
 protected:
 	std::string _name;                         ///< name of this property
 	TypeEnum _type;                            ///< type of this property
@@ -209,33 +215,43 @@ protected:
 	friend class OfxhSet;
 
 public:
-	/// ctor
 	OfxhProperty( const std::string& name,
 	              TypeEnum           type,
 	              size_t             dimension = 1,
 	              bool               pluginReadOnly = false );
 
-	/// copy ctor
-	OfxhProperty( const OfxhProperty& other );
+	OfxhProperty( const This& other );
 
-	/// dtor
-	virtual ~OfxhProperty()
-	{}
+	virtual ~OfxhProperty() = 0;
 
-	virtual bool operator==( const OfxhProperty& other ) const
+	virtual bool operator==( const This& other ) const
 	{
 		if( _name != other._name )
+		{
+			//COUT( "OfxhProperty::operator== not same name : " << _name << " != " << other._name );
 			return false;
+		}
 		if( _type != other._type )
+		{
+			//COUT( "OfxhProperty::operator== not same type : " << _type << " != " << other._type );
 			return false;
+		}
 		if( _dimension != other._dimension )
+		{
+			//COUT( "OfxhProperty::operator== not same size : " << _dimension << " != " << other._dimension );
 			return false;
-//		if( _pluginReadOnly != other._pluginReadOnly )
-//			return false;
+		}
+		if( _pluginReadOnly != other._pluginReadOnly )
+		{
+			//COUT( "OfxhProperty::operator== not sale read only : " << _pluginReadOnly << " != " << other._pluginReadOnly );
+			return false;
+		}
 		return true;
 	}
 
-	bool operator!=( const OfxhProperty& other ) const { return !operator==( other ); }
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
+
+	virtual void copyValues( const This& other ) = 0;
 
 	/// is it read only?
 	bool getPluginReadOnly() const { return _pluginReadOnly; }
@@ -293,6 +309,18 @@ public:
 
 	// get a string representing the value of this property at element nth
 	virtual std::string getStringValue( int nth ) const = 0;
+
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_name);
+		ar & BOOST_SERIALIZATION_NVP(_type);
+		ar & BOOST_SERIALIZATION_NVP(_dimension);
+		ar & BOOST_SERIALIZATION_NVP(_pluginReadOnly);
+	}
 };
 
 inline OfxhProperty* new_clone( const OfxhProperty& p )
@@ -309,6 +337,7 @@ inline OfxhProperty* new_clone( const OfxhProperty& p )
 template<class T>
 class OfxhPropertyTemplate : public OfxhProperty
 {
+typedef OfxhPropertyTemplate<T> This;
 public:
 	typedef typename T::Type Type;
 	typedef typename T::ReturnType ReturnType;
@@ -323,6 +352,8 @@ protected:
 	std::vector<Type> _defaultValue;
 
 public:
+	OfxhPropertyTemplate();
+
 	/// constructor
 	OfxhPropertyTemplate( const std::string& name,
 	                      size_t             dimension,
@@ -342,21 +373,48 @@ public:
 	bool operator==( const OfxhProperty& other ) const
 	{
 		if( getType() != other.getType() )
+		{
+			//COUT( "OfxhPropertyTemplate::operator== not same type : " << getType() << " != " << other.getType() );
 			return false;
-		return operator==( dynamic_cast<const OfxhPropertyTemplate<T>&>( other ) );
+		}
+		return operator==( dynamic_cast<const This&>( other ) );
 	}
 
-	bool operator==( const OfxhPropertyTemplate<T>& other ) const
+	bool operator==( const This& other ) const
 	{
-		if( !OfxhProperty::operator==( other ) )
+		if( OfxhProperty::operator!=( other ) )
 			return false;
 		if( getType() == ePointer )
 			return true; // we can't compare abstract pointer content, so assume true.
 		if( _value != other._value )
+		{
+			//COUT( "OfxhPropertyTemplate::operator== not same value : " );
+			//for( typename std::vector<Type>::const_iterator it = _value.begin(), itEnd = _value.end(), ito = other._value.begin(), itoEnd = other._value.end();
+			//	 it != itEnd && ito != itoEnd;
+			//     ++it, ++ito )
+			//{
+			//	COUT( *it << " != " << *ito );
+			//}
 			return false;
+		}
 //		if( _defaultValue != other._defaultValue )
 //			return false;
 		return true;
+	}
+
+	void copyValues( const OfxhProperty& other )
+	{
+		if( getType() != other.getType() )
+			throw core::exception::LogicError( "You try to copy a property value, but it is not the same property type." );
+		copyValues( dynamic_cast<const This&>( other ) );
+	}
+	
+	void copyValues( const This& other )
+	{
+		if( OfxhProperty::operator!=( other ) )
+			throw core::exception::LogicError( "You try to copy a property value, but it is not the same property." );
+		_value = other._value;
+		//_defaultValue = other._defaultValue;
 	}
 
 	/// get the vector
@@ -407,6 +465,17 @@ public:
 	ReturnType getConstlessValueRaw( int index = 0 ) const OFX_EXCEPTION_SPEC;
 	/// @todo tuttle remove ReturnType, only use Type
 	inline APITypeConstless getAPIConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC { return getConstlessValue( index ); }
+
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
+		ar & BOOST_SERIALIZATION_NVP(_value);
+		ar & BOOST_SERIALIZATION_NVP(_defaultValue);
+	}
 };
 
 typedef OfxhPropertyTemplate<OfxhIntValue>     Int;     /// Our int property
@@ -416,6 +485,13 @@ typedef OfxhPropertyTemplate<OfxhPointerValue> Pointer; /// Our pointer property
 
 template<>
 inline String::APITypeConstless String::getAPIConstlessValue( int index ) const OFX_EXCEPTION_SPEC { return const_cast<String::APITypeConstless>( getConstlessValue( index ).c_str() ); }
+
+template<>
+template<class Archive>
+void Pointer::serialize( Archive &ar, const unsigned int version )
+{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
+}
 
 /// A class that is used to initialize a property set. Feed in an array of these to
 /// a property and it will construct a bunch of properties. Terminate such an array
@@ -430,7 +506,7 @@ struct OfxhPropSpec
 };
 
 /// A std::map of properties by name
-typedef boost::ptr_map<const std::string, OfxhProperty> PropertyMap;
+typedef boost::ptr_map<std::string, OfxhProperty> PropertyMap;
 
 /**
  * Class that holds a set of properties and manipulates them
@@ -439,6 +515,7 @@ typedef boost::ptr_map<const std::string, OfxhProperty> PropertyMap;
  */
 class OfxhSet
 {
+typedef OfxhSet This;
 private:
 	static const int kMagic = 0x12082007; ///< magic number for property sets, and Connie's birthday :-)
 	const int _magic; ///< to check for handles being nice
@@ -502,10 +579,12 @@ public:
 	}
 
 	/// hide assignment
-	void operator=( const OfxhSet& );
+	void operator=( const This& );
 
-	bool operator==( const OfxhSet& ) const;
-	bool operator!=( const OfxhSet& other ) const { return !operator==( other ); }
+	bool operator==( const This& ) const;
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
+
+	void copyValues( const This& other );
 
 	/// dump to cout
 	void coutProperties() const;
@@ -680,6 +759,14 @@ public:
 
 	/// is this a nice property set, or a dodgy pointer passed back to us
 	bool verifyMagic() { return this != NULL && _magic == kMagic; }
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_NVP(_props);
+	}
 };
 
 /// set a particular property
@@ -770,5 +857,19 @@ void OfxhSet::getPropertyRawN( const std::string& property, int count, typename 
 }
 }
 }
+
+
+// force boost::is_virtual_base_of value (used by boost::serialization)
+namespace boost{
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Int>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Double>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::String>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Pointer>: public mpl::true_ {};
+}
+
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
+BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
 
 #endif

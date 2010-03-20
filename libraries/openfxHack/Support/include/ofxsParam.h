@@ -50,6 +50,7 @@
  */
 
 #include "ofxsCore.h"
+#include "ofxsInteract.h"
 #include <memory>
 #include <iostream>
 
@@ -62,7 +63,6 @@
  */
 namespace OFX {
 
-class ParamInteractDescriptor;
 /* forward class declarations of the  descriptors */
 class ParamDescriptor;
 class ValueParamDescriptor;
@@ -191,19 +191,18 @@ public:
 	/** @brief dtor */
 	virtual ~ParamDescriptor();
 
-	ParamTypeEnum getType( void ) const { return _paramType; }
+	inline ParamTypeEnum getType( void ) const { return _paramType; }
 
 	/** @brief name */
-	const std::string& getName( void ) const { return _paramName; }
+	inline const std::string& getName( void ) const { return _paramName; }
 
 	/** @brief Get the property set */
-	PropertySet& getPropertySet()
-	{
-		return _paramProps;
-	}
+	inline PropertySet& getPropertySet() { return _paramProps; }
+	inline const PropertySet& getPropertySet() const { return _paramProps; }
 
 	/** @brief set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
+	void setLabel(const std::string &label){ setLabels(label, label, label); }
 
 	/** @brief set the param hint */
 	void setHint( const std::string& hint );
@@ -216,6 +215,7 @@ public:
 
 	/** @brief set the group param that is the parent of this one, default is to be ungrouped at the root level */
 	void setParent( const GroupParamDescriptor& v );
+	inline void setParent( const GroupParamDescriptor* v ) { setParent(*v); }
 
 	/** @brief whether the param is enabled, defaults to true */
 	void setEnabled( bool v );
@@ -245,7 +245,7 @@ protected:
 	ValueParamDescriptor( const std::string& name, ParamTypeEnum type, OfxPropertySetHandle props );
 
 	friend class ParamSetDescriptor;
-	std::auto_ptr<ParamInteractDescriptor> _interact;
+	std::auto_ptr<ParamInteractWrap> _interact;
 
 public:
 	/** @brief dtor */
@@ -266,7 +266,7 @@ public:
 	/// @brief Set whether the param should appear on any undo stack
 	void setCanUndo( bool v );
 
-	void setInteractDescriptor( ParamInteractDescriptor* desc );
+	void setInteractDescriptor( ParamInteractWrap* desc );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -581,7 +581,7 @@ public:
 	void appendOption( const std::string& v );
 
 	/** @brief how many options do we have */
-	int getNOptions( void );
+	int getNOptions( void ) const;
 
 	/** @brief clear all the options so as to add some new ones in */
 	void resetOptions( void );
@@ -693,7 +693,7 @@ protected:
 				return true;
 			}
 			else
-				return false;                                                                                                                                                                                                                                                                                                                                                                             // SHOULD THROW SOMETHING HERE!!!!!!!
+				return false; ///< @todo tuttle: SHOULD THROW SOMETHING HERE!!!!!!!
 		}
 		else
 		{
@@ -843,7 +843,7 @@ public:
 	std::string getScriptName( void ) const;
 
 	/** @brief get the group param that is the parent of this one */
-	GroupParam* getParent( void ) const;
+	const GroupParam* getParent( void ) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -883,14 +883,14 @@ public:
 	CacheInvalidationEnum getCacheInvalidation( void ) const;
 
 	/** @brief if the param is animating, the number of keys in it, otherwise 0 */
-	unsigned int getNumKeys( void );
+	unsigned int getNumKeys( void ) const;
 
 	/** @brief get the time of the nth key, nth must be between 0 and getNumKeys-1 */
-	double getKeyTime( int nthKey ) throw( OFX::Exception::Suite, std::out_of_range );
+	double getKeyTime( int nthKey ) const throw( OFX::Exception::Suite, std::out_of_range );
 
 	/** @brief find the index of a key by a time */
 	int getKeyIndex( double        time,
-	                 KeySearchEnum searchDir );
+	                 KeySearchEnum searchDir ) const;
 
 	/** @brief deletes a key at the given time */
 	void deleteKeyAtTime( double time );
@@ -924,28 +924,28 @@ public:
 	void setDisplayRange( int min, int max );
 
 	/** @brief het the default value */
-	void getDefault( int& v );
+	void getDefault( int& v ) const;
 
 	/** @brief het the default value */
-	int getDefault( void ) { int v; getDefault( v ); return v; }
+	int getDefault( void ) const { int v; getDefault( v ); return v; }
 
 	/** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
-	void getRange( int& min, int& max );
+	void getRange( int& min, int& max ) const;
 
 	/** @brief set the display min and max, default is to be the same as the range param */
-	void getDisplayRange( int& min, int& max );
+	void getDisplayRange( int& min, int& max ) const;
 
 	/** @brief get value */
-	void getValue( int& v );
+	void getValue( int& v ) const;
 
 	/** @brief and a nicer one */
-	int getValue( void ) { int v; getValue( v ); return v; }
+	int getValue( void ) const { int v; getValue( v ); return v; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, int& v );
+	void getValueAtTime( double t, int& v ) const;
 
 	/** @brief and a nicer one */
-	int getValueAtTime( double t ) { int v; getValueAtTime( t, v ); return v; }
+	int getValueAtTime( double t ) const { int v; getValueAtTime( t, v ); return v; }
 
 	/** @brief set value */
 	void setValue( int v );
@@ -984,30 +984,30 @@ public:
 	                      int maxX, int maxY );
 
 	/** @brief het the default value */
-	void getDefault( int& x, int& y );
+	void getDefault( int& x, int& y ) const;
 
 	/** @brief get the default value */
-	OfxPointI getDefault( void ) { OfxPointI v; getDefault( v.x, v.y ); return v; }
+	OfxPointI getDefault( void ) const { OfxPointI v; getDefault( v.x, v.y ); return v; }
 
 	/** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
 	void getRange( int& minX, int& minY,
-	               int& maxX, int& maxY );
+	               int& maxX, int& maxY ) const;
 
 	/** @brief set the display min and max, default is to be the same as the range param */
 	void getDisplayRange( int& minX, int& minY,
-	                      int& maxX, int& maxY );
+	                      int& maxX, int& maxY ) const;
 
 	/** @brief get value */
-	void getValue( int& x, int& y );
+	void getValue( int& x, int& y ) const;
 
 	/** @brief get the  value */
-	OfxPointI getValue( void ) { OfxPointI v; getValue( v.x, v.y ); return v; }
+	OfxPointI getValue( void ) const { OfxPointI v; getValue( v.x, v.y ); return v; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, int& x, int& y );
+	void getValueAtTime( double t, int& x, int& y ) const;
 
 	/** @brief get the  value */
-	OfxPointI getValueAtTime( double t ) { OfxPointI v; getValueAtTime( t, v.x, v.y ); return v; }
+	OfxPointI getValueAtTime( double t ) const { OfxPointI v; getValueAtTime( t, v.x, v.y ); return v; }
 
 	/** @brief set value */
 	void setValue( int x, int y );
@@ -1049,21 +1049,21 @@ public:
 	                      int maxX, int maxY, int maxZ );
 
 	/** @brief het the default value */
-	void getDefault( int& x, int& y, int& z );
+	void getDefault( int& x, int& y, int& z ) const;
 
 	/** @brief set the hard min/max range, default is INT_MIN, INT_MAX */
 	void getRange( int& minX, int& minY, int& minZ,
-	               int& maxX, int& maxY, int& maxZ );
+	               int& maxX, int& maxY, int& maxZ ) const;
 
 	/** @brief set the display min and max, default is to be the same as the range param */
 	void getDisplayRange( int& minX, int& minY, int& minZ,
-	                      int& maxX, int& maxY, int& maxZ );
+	                      int& maxX, int& maxY, int& maxZ ) const;
 
 	/** @brief get value */
-	void getValue( int& x, int& y, int& z );
+	void getValue( int& x, int& y, int& z ) const;
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, int& x, int& y, int& z );
+	void getValueAtTime( double t, int& x, int& y, int& z ) const;
 
 	/** @brief set value */
 	void setValue( int x, int y, int z );
@@ -1094,13 +1094,13 @@ public:
 	void setDigits( int v );
 
 	/** @brief get the sensitivity of any gui slider */
-	void getIncrement( double& v );
+	void getIncrement( double& v ) const;
 
 	/** @brief get the number of digits printed after a decimal point in any gui */
-	void getDigits( int& v );
+	void getDigits( int& v ) const;
 
 	/** @brief get the type of the double param */
-	void getDoubleType( DoubleTypeEnum& v );
+	void getDoubleType( DoubleTypeEnum& v ) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1131,28 +1131,28 @@ public:
 	void setDisplayRange( double min, double max );
 
 	/** @brief het the default value */
-	void getDefault( double& v );
+	void getDefault( double& v ) const;
 
 	/** @brief het the default value */
-	double getDefault( void ) { double v; getDefault( v ); return v; }
+	double getDefault( void ) const { double v; getDefault( v ); return v; }
 
 	/** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
-	void getRange( double& min, double& max );
+	void getRange( double& min, double& max ) const;
 
 	/** @brief set the display min and max, default is to be the same as the range param */
-	void getDisplayRange( double& min, double& max );
+	void getDisplayRange( double& min, double& max ) const;
 
 	/** @brief get value */
-	void getValue( double& v );
+	void getValue( double& v ) const;
 
 	/** @brief get value */
-	double getValue( void ) { double v; getValue( v ); return v; }
+	double getValue( void ) const { double v; getValue( v ); return v; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, double& v );
+	void getValueAtTime( double t, double& v ) const;
 
 	/** @brief get value */
-	double getValueAtTime( double t ) { double v; getValueAtTime( t, v ); return v; }
+	double getValueAtTime( double t ) const { double v; getValueAtTime( t, v ); return v; }
 
 	/** @brief set value */
 	void setValue( double v );
@@ -1161,16 +1161,16 @@ public:
 	void setValueAtTime( double t, double v );
 
 	/** @brief differentiate the param */
-	void differentiate( double t, double& v );
+	void differentiate( double t, double& v ) const;
 
 	/** @brief differentiate the param  */
-	double differentiate( double t ) { double v; differentiate( t, v ); return v; }
+	double differentiate( double t ) const { double v; differentiate( t, v ); return v; }
 
 	/** @brief integrate the param */
-	void integrate( double t1, double t2, double& v );
+	void integrate( double t1, double t2, double& v ) const;
 
 	/** @brief integrate the param */
-	double integrate( double t1, double t2 ) { double v; integrate( t1, t2, v ); return v; }
+	double integrate( double t1, double t2 ) const { double v; integrate( t1, t2, v ); return v; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1200,27 +1200,27 @@ public:
 	                      double maxX, double maxY );
 
 	/** @brief get the default value */
-	void getDefault( double& x, double& y );
+	void getDefault( double& x, double& y ) const;
 
 	/** @brief get the default value */
-	inline OfxPointD getDefault() { OfxPointD v; getDefault( v.x, v.y ); return v; }
+	inline OfxPointD getDefault() const { OfxPointD v; getDefault( v.x, v.y ); return v; }
 
 	/** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
 	void getRange( double& minX, double& minY,
-	               double& maxX, double& maxY );
+	               double& maxX, double& maxY ) const;
 
 	/** @brief set the display min and max, default is to be the same as the range param */
 	void getDisplayRange( double& minX, double& minY,
-	                      double& maxX, double& maxY );
+	                      double& maxX, double& maxY ) const;
 
 	/** @brief get value */
-	void getValue( double& x, double& y );
+	void getValue( double& x, double& y ) const;
 
 	/** @brief get value */
-	inline OfxPointD getValue() { OfxPointD v; getValue( v.x, v.y ); return v; }
+	inline OfxPointD getValue() const { OfxPointD v; getValue( v.x, v.y ); return v; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, double& x, double& y );
+	void getValueAtTime( double t, double& x, double& y ) const;
 
 	/** @brief set value */
 	void setValue( double x, double y );
@@ -1235,16 +1235,16 @@ public:
 	inline void setValueAtTime( double t, const OfxPointD& p ) { setValueAtTime( t, p.x, p.y ); }
 
 	/** @brief differentiate the param */
-	void differentiate( double t, double& x, double& y );
+	void differentiate( double t, double& x, double& y ) const;
 
 	/** @brief differentiate the param  */
-	OfxPointD differentiate( double t ) { OfxPointD v; differentiate( t, v.x, v.y ); return v; }
+	OfxPointD differentiate( double t ) const { OfxPointD v; differentiate( t, v.x, v.y ); return v; }
 
 	/** @brief integrate the param */
-	void integrate( double t1, double t2, double& x, double& y );
+	void integrate( double t1, double t2, double& x, double& y ) const;
 
 	/** @brief integrate the param */
-	OfxPointD integrate( double t1, double t2 ) { OfxPointD v; integrate( t1, t2, v.x, v.y ); return v; }
+	OfxPointD integrate( double t1, double t2 ) const { OfxPointD v; integrate( t1, t2, v.x, v.y ); return v; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1274,21 +1274,21 @@ public:
 	                      double maxX, double maxY, double maxZ );
 
 	/** @brief het the default value */
-	void getDefault( double& x, double& y, double& z );
+	void getDefault( double& x, double& y, double& z ) const;
 
 	/** @brief set the hard min/max range, default is DOUBLE_MIN, DOUBLE_MAX */
 	void getRange( double& minX, double& minY, double& minZ,
-	               double& maxX, double& maxY, double& maxZ );
+	               double& maxX, double& maxY, double& maxZ ) const;
 
 	/** @brief set the display min and max, default is to be the same as the range param */
 	void getDisplayRange( double& minX, double& minY, double& minZ,
-	                      double& maxX, double& maxY, double& maxZ );
+	                      double& maxX, double& maxY, double& maxZ ) const;
 
 	/** @brief get value */
-	void getValue( double& x, double& y, double& z );
+	void getValue( double& x, double& y, double& z ) const;
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, double& x, double& y, double& z );
+	void getValueAtTime( double t, double& x, double& y, double& z ) const;
 
 	/** @brief set value */
 	void setValue( double x, double y, double z );
@@ -1297,16 +1297,16 @@ public:
 	void setValueAtTime( double t, double x, double y, double z );
 
 	/** @brief differentiate the param */
-	void differentiate( double t, double& x, double& y, double& z );
+	void differentiate( double t, double& x, double& y, double& z ) const;
 
 	/** @brief differentiate the param  */
-	Ofx3DPointD differentiate( double t ) { Ofx3DPointD v; differentiate( t, v.x, v.y, v.z ); return v; }
+	Ofx3DPointD differentiate( double t ) const { Ofx3DPointD v; differentiate( t, v.x, v.y, v.z ); return v; }
 
 	/** @brief integrate the param */
-	void integrate( double t1, double t2, double& x, double& y, double& z );
+	void integrate( double t1, double t2, double& x, double& y, double& z ) const;
 
 	/** @brief integrate the param */
-	Ofx3DPointD integrate( double t1, double t2 ) { Ofx3DPointD v; integrate( t1, t2, v.x, v.y, v.z ); return v; }
+	Ofx3DPointD integrate( double t1, double t2 ) const { Ofx3DPointD v; integrate( t1, t2, v.x, v.y, v.z ); return v; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1328,13 +1328,13 @@ public:
 	void setDefault( double r, double g, double b );
 
 	/** @brief get default value */
-	void getDefault( double& r, double& g, double& b );
+	void getDefault( double& r, double& g, double& b ) const;
 
 	/** @brief get value */
-	void getValue( double& r, double& g, double& b );
+	void getValue( double& r, double& g, double& b ) const;
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, double& r, double& g, double& b );
+	void getValueAtTime( double t, double& r, double& g, double& b ) const;
 
 	/** @brief set value */
 	void setValue( double r, double g, double b );
@@ -1362,13 +1362,16 @@ public:
 	void setDefault( double r, double g, double b, double a );
 
 	/** @brief get default value */
-	void getDefault( double& r, double& g, double& b, double& a );
+	void getDefault( double& r, double& g, double& b, double& a ) const;
+	OfxRGBAColourD getDefault() const { OfxRGBAColourD c; getDefault(c.r, c.g, c.b, c.a); return c; }
 
 	/** @brief get value */
-	void getValue( double& r, double& g, double& b, double& a );
+	void getValue( double& r, double& g, double& b, double& a ) const;
+	OfxRGBAColourD getValue() const { OfxRGBAColourD c; getValue(c.r, c.g, c.b, c.a); return c; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, double& r, double& g, double& b, double& a );
+	void getValueAtTime( double t, double& r, double& g, double& b, double& a ) const;
+	OfxRGBAColourD getValueAtTime( double t ) const { OfxRGBAColourD c; getValueAtTime(t, c.r, c.g, c.b, c.a); return c; }
 
 	/** @brief set value */
 	void setValue( double r, double g, double b, double a );
@@ -1392,20 +1395,23 @@ protected:
 	friend class ParamSet;
 
 public:
+	/** @brief get the default value */
+	void getDefault( std::string& v ) const;
+	std::string getDefault() const { std::string s; getDefault(s); return s; }
+
 	/** @brief set the default value */
 	void setDefault( const std::string& v );
 
-	/** @brief get the default value */
-	void getDefault( std::string& v );
-
 	/** @brief get value */
-	void getValue( std::string& v );
-
-	/** @brief get the value at a time */
-	void getValueAtTime( double t, std::string& v );
+	void getValue( std::string& v ) const;
+	std::string getValue() const { std::string s; getValue(s); return s; }
 
 	/** @brief set value */
 	void setValue( const std::string& v );
+
+	/** @brief get the value at a time */
+	void getValueAtTime( double t, std::string& v ) const;
+	std::string getValueAtTime( double t ) const { std::string s; getValueAtTime( t, s ); return s; }
 
 	/** @brief set the value at a time, implicitly adds a keyframe */
 	void setValueAtTime( double t, const std::string& v );
@@ -1431,10 +1437,10 @@ public:
 	void setDefault( int v );
 
 	/** @brief get the default value */
-	void getDefault( int& v );
+	void getDefault( int& v ) const;
 
 	/** @brief how many options do we have */
-	int getNOptions( void );
+	int getNOptions( void ) const;
 
 	/** @brief append an option, default is to have not there */
 	void appendOption( const std::string& v );
@@ -1443,13 +1449,13 @@ public:
 	void resetOptions( void );
 
 	/** @brief get value */
-	void getValue( int& v );
+	void getValue( int& v ) const;
 
 	/** @brief get value */
-	inline int getValue() { int v; getValue( v ); return v; }
+	inline int getValue() const { int v; getValue( v ); return v; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, int& v );
+	void getValueAtTime( double t, int& v ) const;
 
 	/** @brief set value */
 	void setValue( int v );
@@ -1478,22 +1484,22 @@ public:
 	void setDefault( bool v );
 
 	/** @brief get the default value */
-	void getDefault( bool& v );
+	void getDefault( bool& v ) const;
 
 	/** @brief get the default value */
-	bool getDefault( void ) { bool v; getDefault( v ); return v; }
+	bool getDefault( void ) const { bool v; getDefault( v ); return v; }
 
 	/** @brief get value */
-	void getValue( bool& v );
+	void getValue( bool& v ) const;
 
 	/** @brief get value */
-	bool getValue( void ) { bool v; getValue( v ); return v; }
+	bool getValue( void ) const { bool v; getValue( v ); return v; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, bool& v );
+	void getValueAtTime( double t, bool& v ) const;
 
 	/** @brief get value */
-	bool getValueAtTime( double t ) { bool v; getValueAtTime( t, v ); return v; }
+	bool getValueAtTime( double t ) const { bool v; getValueAtTime( t, v ); return v; }
 
 	/** @brief set value */
 	void setValue( bool v );
@@ -1558,19 +1564,19 @@ public:
 	void setDefault( const std::string& v );
 
 	/** @brief get the default value of the param */
-	void getDefault( std::string& v );
+	void getDefault( std::string& v ) const;
 
 	/** @brief get value */
-	void getValue( std::string& v );
+	void getValue( std::string& v ) const;
 
 	/** @brief get value */
-	inline std::string getValue() { std::string v; getValue( v ); return v; }
+	inline std::string getValue() const { std::string v; getValue( v ); return v; }
 
 	/** @brief get the value at a time */
-	void getValueAtTime( double t, std::string& v );
+	void getValueAtTime( double t, std::string& v ) const;
 
 	/** @brief get the value at a time */
-	inline std::string getValueAtTime( double t ) { std::string v; getValueAtTime( t, v ); return v; }
+	inline std::string getValueAtTime( double t ) const { std::string v; getValueAtTime( t, v ); return v; }
 
 	/** @brief set value */
 	void setValue( const std::string& v );
@@ -1601,6 +1607,7 @@ public:
 /** @brief A set of parameters in a plugin instance */
 class ParamSet
 {
+	typedef ParamSet This;
 protected:
 	mDeclareProtectedAssignAndCC( ParamSet );
 	ParamTypeEnum getParamType( const std::string& name ) const;
@@ -1616,14 +1623,14 @@ private:
 	mutable std::map<std::string, Param*> _fetchedParams;
 
 	/** @brief see if we have a param of the given name in out map */
-	Param* findPreviouslyFetchedParam( const std::string& name ) const;
+	Param* findPreviouslyFetchedParam( const std::string& name );
 
 	/** @brief calls the raw OFX routine to define a param */
-	void fetchRawParam( const std::string& name, ParamTypeEnum paramType, OfxParamHandle& handle ) const;
+	void fetchRawParam( const std::string& name, ParamTypeEnum paramType, OfxParamHandle& handle );
 
 	/** @brief Fetch a param of the given name and type */
 	template <class T>
-	void fetchParam( const std::string& name, ParamTypeEnum paramType, T*& paramPtr ) const
+	void fetchParam( const std::string& name, ParamTypeEnum paramType, T*& paramPtr )
 	{
 		paramPtr = NULL;
 
@@ -1669,52 +1676,53 @@ public:
 	/// close an undoblock
 	void endEditBlock();
 
-	Param* getParam( const std::string& name ) const;
+	Param* getParam( const std::string& name );
 
 	/** @brief Fetch an integer param */
-	IntParam* fetchIntParam( const std::string& name ) const;
+	IntParam* fetchIntParam( const std::string& name );
 
 	/** @brief Fetch a 2D integer param */
-	Int2DParam* fetchInt2DParam( const std::string& name ) const;
+	Int2DParam* fetchInt2DParam( const std::string& name );
 
 	/** @brief Fetch a 3D integer param */
-	Int3DParam* fetchInt3DParam( const std::string& name ) const;
+	Int3DParam* fetchInt3DParam( const std::string& name );
 
 	/** @brief Fetch an double param */
-	DoubleParam* fetchDoubleParam( const std::string& name ) const;
+	DoubleParam* fetchDoubleParam( const std::string& name );
 
 	/** @brief Fetch a 2D double param */
-	Double2DParam* fetchDouble2DParam( const std::string& name ) const;
+	Double2DParam* fetchDouble2DParam( const std::string& name );
 
 	/** @brief Fetch a 3D double param */
-	Double3DParam* fetchDouble3DParam( const std::string& name ) const;
+	Double3DParam* fetchDouble3DParam( const std::string& name );
 
 	/** @brief Fetch a string param */
-	StringParam* fetchStringParam( const std::string& name ) const;
+	StringParam* fetchStringParam( const std::string& name );
 
 	/** @brief Fetch a RGBA param */
-	RGBAParam* fetchRGBAParam( const std::string& name ) const;
+	RGBAParam* fetchRGBAParam( const std::string& name );
 
 	/** @brief Fetch an RGB  param */
-	RGBParam* fetchRGBParam( const std::string& name ) const;
+	RGBParam* fetchRGBParam( const std::string& name );
 
 	/** @brief Fetch a Boolean  param */
-	BooleanParam* fetchBooleanParam( const std::string& name ) const;
+	BooleanParam* fetchBooleanParam( const std::string& name );
 
 	/** @brief Fetch a Choice param */
-	ChoiceParam* fetchChoiceParam( const std::string& name ) const;
+	ChoiceParam* fetchChoiceParam( const std::string& name );
 
 	/** @brief Fetch a group param */
-	GroupParam* fetchGroupParam( const std::string& name ) const;
+	GroupParam* fetchGroupParam( const std::string& name );
+	const GroupParam* fetchGroupParam( const std::string& name ) const { return const_cast<This&>(*this).fetchGroupParam(name); }
 
 	/** @brief Fetch a page param */
-	PageParam* fetchPageParam( const std::string& name ) const;
+	PageParam* fetchPageParam( const std::string& name );
 
 	/** @brief Fetch a push button param */
-	PushButtonParam* fetchPushButtonParam( const std::string& name ) const;
+	PushButtonParam* fetchPushButtonParam( const std::string& name );
 
 	/** @brief Fetch a custom param */
-	CustomParam* fetchCustomParam( const std::string& name ) const;
+	CustomParam* fetchCustomParam( const std::string& name );
 };
 
 };

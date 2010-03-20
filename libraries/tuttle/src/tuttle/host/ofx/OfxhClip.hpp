@@ -35,6 +35,8 @@
 #include "OfxhUtilities.hpp"
 #include "OfxhProperty.hpp"
 
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/export.hpp>
 #include <boost/utility.hpp>
 
 namespace tuttle {
@@ -52,7 +54,7 @@ namespace attribute {
  * is used to basically fetch common properties
  * by function name
  */
-class OfxhClipAccessor : virtual public attribute::OfxhAttributeAccessor
+class OfxhClipAccessor : virtual public OfxhAttributeAccessor
 {
 public:
 	/// @brief base ctor, for a descriptor
@@ -73,27 +75,49 @@ public:
 /**
  * a clip descriptor
  */
-class OfxhClipDescriptor : virtual public OfxhClipAccessor,
-	public attribute::OfxhAttributeDescriptor
+class OfxhClipDescriptor :
+	public OfxhAttributeDescriptor,
+	virtual public OfxhClipAccessor
 {
+typedef OfxhClipDescriptor This;
 public:
 	/// constructor
 	OfxhClipDescriptor();
-	OfxhClipDescriptor( const tuttle::host::ofx::property::OfxhSet& );
-	~OfxhClipDescriptor() = 0;
+	OfxhClipDescriptor( const property::OfxhSet& );
+
+	virtual ~OfxhClipDescriptor() = 0;
+
+	bool operator==( const This& other ) const
+	{
+		if( OfxhAttributeDescriptor::operator!=( other ) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==(other); }
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttributeDescriptor);
+	}
 };
+
 
 /**
  * a clip instance
  */
-class OfxhClip : virtual public OfxhClipAccessor,
-	public attribute::OfxhAttribute,
+class OfxhClip :
+	public OfxhAttribute,
 	protected property::OfxhGetHook,
 	protected property::OfxhNotifyHook,
+	virtual public OfxhClipAccessor,
 	private boost::noncopyable
 {
+typedef OfxhClip This;
 protected:
-	OfxhClip( const OfxhClip& other ) : attribute::OfxhAttribute( other ) {}
+	OfxhClip( const OfxhClip& other ) : OfxhAttribute( other ) {}
 
 public:
 	OfxhClip( const OfxhClipDescriptor& desc );
@@ -101,6 +125,14 @@ public:
 
 	/// clone this clip
 	virtual OfxhClip* clone() const = 0;
+	
+	virtual bool operator==( const This& other ) const
+	{
+		if( OfxhAttribute::operator!=(other) )
+			return false;
+		return true;
+	}
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	void initHook( const property::OfxhPropSpec* propSpec );
 
@@ -124,6 +156,14 @@ public:
 	//
 	//  Says whether the clip is actually connected at the moment.
 	virtual const bool getConnected() const = 0;
+
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize( Archive &ar, const unsigned int version )
+	{
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttribute);
+	}
 };
 
 /**
@@ -138,6 +178,13 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 }
 }
 }
+
+// force boost::is_virtual_base_of value (used by boost::serialization)
+namespace boost{
+template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
+template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
+}
+
 
 #endif
 

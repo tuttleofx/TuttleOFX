@@ -4,6 +4,8 @@ namespace tuttle {
 namespace host {
 namespace core {
 
+ProcessAttribute::~ProcessAttribute() {}
+
 ProcessNode::~ProcessNode() {}
 
 } // namespace core
