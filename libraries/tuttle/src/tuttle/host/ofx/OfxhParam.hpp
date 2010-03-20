@@ -56,10 +56,10 @@ class OfxhParam;
 class OfxhParamSet;
 
 /// base class to the param set instance and param set descriptor
-class OfxhParamAccessorSet
+class OfxhParamSetAccessor
 {
 public:
-	virtual ~OfxhParamAccessorSet() = 0;
+	virtual ~OfxhParamSetAccessor() = 0;
 
 	/// obtain a handle on this set for passing to the C api
 	virtual OfxParamSetHandle getParamSetHandle() const = 0;
@@ -163,7 +163,7 @@ private:
 /// As we are the owning object we delete the params inside ourselves. It was tempting
 /// to make params autoref objects and have shared ownership with the client code
 /// but that adds complexity for no strong gain.
-class OfxhParamSet : public OfxhParamAccessorSet
+class OfxhParamSet : public OfxhParamSetAccessor
 {
 typedef OfxhParamSet This;
 public:
@@ -240,9 +240,9 @@ private:
 };
 
 /// a set of parameters
-class OfxhParamDescriptorSet : public OfxhParamAccessorSet
+class OfxhParamSetDescriptor : public OfxhParamSetAccessor
 {
-typedef OfxhParamDescriptorSet This;
+typedef OfxhParamSetDescriptor This;
 public:
 	typedef std::map<std::string, OfxhParamDescriptor*> ParamDescriptorMap;
 	typedef boost::ptr_list<OfxhParamDescriptor> ParamDescriptorList;
@@ -251,14 +251,14 @@ public:
 
 private:
 /// CC doesn't exist
-OfxhParamDescriptorSet( const OfxhParamDescriptorSet& );
+OfxhParamSetDescriptor( const OfxhParamSetDescriptor& );
 
 public:
 	/// default ctor
-	OfxhParamDescriptorSet();
+	OfxhParamSetDescriptor();
 
 	/// dtor
-	virtual ~OfxhParamDescriptorSet();
+	virtual ~OfxhParamSetDescriptor();
 
 	bool operator==( const This& other ) const
 	{
@@ -281,7 +281,8 @@ public:
 	/// define a param
 	virtual OfxhParamDescriptor* paramDefine( const char* paramType,
 	                                          const char* name );
-
+	
+private:
 	/// add a param in
 	virtual void addParam( const std::string& name, OfxhParamDescriptor* p );
 
@@ -297,8 +298,8 @@ private:
 /// plugin parameter instance
 class OfxhParam :
 	public OfxhAttribute,
-	protected property::OfxhNotifyHook,
 	virtual public OfxhParamAccessor,
+	protected property::OfxhNotifyHook,
 	private boost::noncopyable
 {
 OfxhParam();

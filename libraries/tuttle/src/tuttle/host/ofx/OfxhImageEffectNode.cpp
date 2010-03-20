@@ -158,12 +158,12 @@ void OfxhImageEffectNode::populate()
  */
 void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor )
 {
-	const attribute::OfxhParamDescriptorSet::ParamDescriptorList& paramDescriptors = _descriptor.getParamList();
+	const attribute::OfxhParamSetDescriptor::ParamDescriptorList& paramDescriptors = _descriptor.getParamList();
 
 	std::map<std::string, attribute::OfxhParam*> parameters;
 
 	// Create parameters on their own groups
-	for( attribute::OfxhParamDescriptorSet::ParamDescriptorList::const_iterator it = paramDescriptors.begin(), itEnd = paramDescriptors.end();
+	for( attribute::OfxhParamSetDescriptor::ParamDescriptorList::const_iterator it = paramDescriptors.begin(), itEnd = paramDescriptors.end();
 	     it != itEnd;
 	     ++it )
 	{

@@ -13,7 +13,7 @@ static OfxStatus paramDefine( OfxParamSetHandle     paramSet,
 {
 	try
 	{
-		OfxhParamDescriptorSet* paramSetDescriptor = reinterpret_cast<OfxhParamDescriptorSet*>( paramSet );
+		OfxhParamSetDescriptor* paramSetDescriptor = reinterpret_cast<OfxhParamSetDescriptor*>( paramSet );
 		if( !paramSetDescriptor )
 			return kOfxStatErrBadHandle;
 
@@ -42,7 +42,7 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 {
 	try
 	{
-		OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
+		OfxhParamSetAccessor* baseSet = reinterpret_cast<OfxhParamSetAccessor*>( paramSet );
 		if( !baseSet )
 			return kOfxStatErrBadHandle;
 
@@ -66,7 +66,7 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 			return kOfxStatOK;
 		}
 
-		OfxhParamDescriptorSet* setDescriptor = dynamic_cast<OfxhParamDescriptorSet*>( baseSet );
+		OfxhParamSetDescriptor* setDescriptor = dynamic_cast<OfxhParamSetDescriptor*>( baseSet );
 		if( !setDescriptor )
 		{
 			const std::map<std::string, OfxhParamDescriptor*>& params      = setDescriptor->getParams();
@@ -103,7 +103,7 @@ static OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
 {
 	try
 	{
-		OfxhParamAccessorSet* baseSet = reinterpret_cast<OfxhParamAccessorSet*>( paramSet );
+		OfxhParamSetAccessor* baseSet = reinterpret_cast<OfxhParamSetAccessor*>( paramSet );
 		if( !baseSet )
 			return kOfxStatErrBadHandle;
 

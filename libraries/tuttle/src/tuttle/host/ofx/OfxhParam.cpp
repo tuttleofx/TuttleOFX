@@ -470,16 +470,16 @@ void OfxhParamDescriptor::addNumericParamProps( const std::string& type, propert
 	}
 }
 
-OfxhParamAccessorSet::~OfxhParamAccessorSet() {}
+OfxhParamSetAccessor::~OfxhParamSetAccessor() {}
 
 /// obtain a handle on this set for passing to the C api
 
-OfxhParamDescriptorSet::OfxhParamDescriptorSet() {}
+OfxhParamSetDescriptor::OfxhParamSetDescriptor() {}
 
-OfxhParamDescriptorSet::~OfxhParamDescriptorSet()
+OfxhParamSetDescriptor::~OfxhParamSetDescriptor()
 {}
 
-void OfxhParamDescriptorSet::addParam( const std::string& name, OfxhParamDescriptor* p )
+void OfxhParamSetDescriptor::addParam( const std::string& name, OfxhParamDescriptor* p )
 {
 	_paramList.push_back( p );
 	_paramMap[name] = p;
@@ -487,7 +487,7 @@ void OfxhParamDescriptorSet::addParam( const std::string& name, OfxhParamDescrip
 
 /// define a param on this effect
 
-OfxhParamDescriptor* OfxhParamDescriptorSet::paramDefine( const char* paramType,
+OfxhParamDescriptor* OfxhParamSetDescriptor::paramDefine( const char* paramType,
                                                           const char* name )
 {
 	if( !isStandardType( paramType ) )

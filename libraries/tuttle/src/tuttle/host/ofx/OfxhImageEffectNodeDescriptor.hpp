@@ -18,7 +18,7 @@ namespace imageEffect {
  */
 class OfxhImageEffectNodeDescriptor
 	: public OfxhImageEffectNodeBase,
-	public attribute::OfxhParamDescriptorSet,
+	public attribute::OfxhParamSetDescriptor,
 	private boost::noncopyable
 {
 typedef OfxhImageEffectNodeDescriptor This;
@@ -98,7 +98,7 @@ private:
 	void serialize( Archive &ar, const unsigned int version )
 	{
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhParamDescriptorSet);
+		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhParamSetDescriptor);
 		ar & BOOST_SERIALIZATION_NVP(_clipsByOrder);
 	}
 };

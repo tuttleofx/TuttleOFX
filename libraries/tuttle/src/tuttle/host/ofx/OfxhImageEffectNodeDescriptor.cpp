@@ -77,7 +77,7 @@ OfxhImageEffectNodeDescriptor::~OfxhImageEffectNodeDescriptor()
 bool OfxhImageEffectNodeDescriptor::operator==( const This& other ) const
 {
 	if( OfxhImageEffectNodeBase::operator!=(other) ||
-	    attribute::OfxhParamDescriptorSet::operator!=(other) ||
+	    attribute::OfxhParamSetDescriptor::operator!=(other) ||
 	    _clipsByOrder != other._clipsByOrder )
 		return false;
 	return true;
