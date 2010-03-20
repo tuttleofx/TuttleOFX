@@ -243,7 +243,7 @@ OfxhParamDescriptor::OfxhParamDescriptor( const std::string& type, const std::st
 /**
  * make a parameter, with the given type and name
  */
-void OfxhParamDescriptor::addStandardParamProps( const std::string& type )
+void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 {
 	property::TypeEnum propType = property::eString;
 	int propDim                 = 1;
@@ -272,9 +272,9 @@ void OfxhParamDescriptor::addStandardParamProps( const std::string& type )
 	};
 
 	if( propType != property::eNone )
-		addValueParamProps( type, propType, propDim );
+		initValueParamProps( type, propType, propDim );
 	else
-		addNoValueParamProps();
+		initNoValueParamProps();
 
 	if( type == kOfxParamTypeString )
 	{
@@ -283,12 +283,12 @@ void OfxhParamDescriptor::addStandardParamProps( const std::string& type )
 
 	if( isDoubleParam( type ) || isIntParam( type ) || isColourParam( type ) )
 	{
-		addNumericParamProps( type, propType, propDim );
+		initNumericParamProps( type, propType, propDim );
 	}
 
 	if( type != kOfxParamTypeGroup && type != kOfxParamTypePage )
 	{
-		addInteractParamProps( type );
+		initInteractParamProps( type );
 	}
 
 	if( type == kOfxParamTypeChoice )
@@ -310,7 +310,7 @@ void OfxhParamDescriptor::addStandardParamProps( const std::string& type )
 /**
  * add standard properties to a params that can take an interact
  */
-void OfxhParamDescriptor::addInteractParamProps( const std::string& type )
+void OfxhParamDescriptor::initInteractParamProps( const std::string& type )
 {
 	static const property::OfxhPropSpec allButGroupPageProps[] = {
 		{ kOfxParamPropInteractV1, property::ePointer, 1, false, 0 },
@@ -327,7 +327,7 @@ void OfxhParamDescriptor::addInteractParamProps( const std::string& type )
 /**
  * add standard properties to a value holding param
  */
-void OfxhParamDescriptor::addValueParamProps( const std::string& type, property::TypeEnum valueType, int dim )
+void OfxhParamDescriptor::initValueParamProps( const std::string& type, property::TypeEnum valueType, int dim )
 {
 	static const property::OfxhPropSpec invariantProps[] = {
 		{ kOfxParamPropAnimates, property::eInt, 1, false, "1" },
@@ -350,7 +350,7 @@ void OfxhParamDescriptor::addValueParamProps( const std::string& type, property:
 	getEditableProperties().addProperties( variantProps );
 }
 
-void OfxhParamDescriptor::addNoValueParamProps()
+void OfxhParamDescriptor::initNoValueParamProps()
 {
 	static const property::OfxhPropSpec invariantProps[] = {
 		{ kOfxParamPropAnimates, property::eInt, 1, false, "0" },
@@ -370,7 +370,7 @@ void OfxhParamDescriptor::addNoValueParamProps()
 /**
  * add standard properties to a value holding param
  */
-void OfxhParamDescriptor::addNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim )
+void OfxhParamDescriptor::initNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim )
 {
 	static std::string dbl_minstr, dbl_maxstr, int_minstr, int_maxstr;
 	bool doneOne = false;
@@ -494,7 +494,7 @@ OfxhParamDescriptor* OfxhParamSetDescriptor::paramDefine( const char* paramType,
 		throw OfxhException( std::string( "The param type '" ) + paramType + "' is not recognize, the param '" + name + "' can't be created." );
 
 	OfxhParamDescriptor* desc = new OfxhParamDescriptor( paramType, name );
-	desc->addStandardParamProps( paramType );
+	desc->initStandardParamProps( paramType );
 	addParam( name, desc );
 	return desc;
 }

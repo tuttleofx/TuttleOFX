@@ -136,17 +136,18 @@ public:
 	}
 
 	/// add standard param props, will call the below
-	void addStandardParamProps( const std::string& type );
+	void initStandardParamProps( const std::string& type );
 
+private:
 	/// add standard properties to a params that can take an interact
-	void addInteractParamProps( const std::string& type );
+	void initInteractParamProps( const std::string& type );
 
 	/// add standard properties to a value holding param
-	void addValueParamProps( const std::string& type, property::TypeEnum valueType, int dim );
-	void addNoValueParamProps();
+	void initValueParamProps( const std::string& type, property::TypeEnum valueType, int dim );
+	void initNoValueParamProps();
 
 	/// add standard properties to a value holding param
-	void addNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim );
+	void initNumericParamProps( const std::string& type, property::TypeEnum valueType, int dim );
 
 private:
 	friend class boost::serialization::access;

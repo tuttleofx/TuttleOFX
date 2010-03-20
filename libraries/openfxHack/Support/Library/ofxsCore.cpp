@@ -102,9 +102,10 @@ void* allocate( size_t nBytes, ImageEffect* effect = 0 ) throw( std::bad_alloc )
 /** @brief free n previously allocated memory */
 void free( void* ptr ) throw( )
 {
-	if( ptr )
-		// note we are ignore errors, this could be bad, but we don't throw on a destruction
-		OFX::Private::gMemorySuite->memoryFree( ptr );
+	// C++ standard ensures it is safe to delete the NULL pointer.
+	// Please note errors are ignored, this could be a bad thing however
+	// standard requires a no throw destructor so we do.
+	OFX::Private::gMemorySuite->memoryFree( ptr );
 }
 
 };
