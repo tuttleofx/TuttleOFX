@@ -18,7 +18,7 @@ Graph::Graph()
 Graph::~Graph()
 {}
 
-Graph::Node& Graph::createNode( const std::string& id ) throw( exception::LogicError )
+Graph::Node& Graph::createNode( const std::string& id )
 {
 	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 

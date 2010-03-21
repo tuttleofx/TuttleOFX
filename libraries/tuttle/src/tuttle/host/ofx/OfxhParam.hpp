@@ -319,10 +319,10 @@ protected:
 	}
 
 public:
-	virtual ~OfxhParam() = 0;
-
 	/// make a parameter, with the given type and name
-	explicit OfxhParam( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance );
+	explicit OfxhParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance );
+
+	virtual ~OfxhParam() = 0;
 
 	/// clone this parameter
 	virtual OfxhParam* clone() const = 0;
@@ -436,7 +436,10 @@ protected:
 	std::vector<T*> _controls;
 
 public:
-	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance )
+	{
+		COUT_INFOS;
+	}
 
 	virtual ~OfxhMultiDimParam()
 	{
@@ -553,7 +556,7 @@ class OfxhParamGroup : public OfxhParam,
 	public OfxhParamSet
 {
 public:
-	OfxhParamGroup( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamGroup( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 	virtual ~OfxhParamGroup() {}
 
 	void deleteChildrens()
@@ -599,7 +602,7 @@ public:
 class OfxhParamPage : public OfxhParam
 {
 public:
-	OfxhParamPage( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamPage( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 	const std::map<int, OfxhParam*>& getChildren() const;
 
 protected:
@@ -611,8 +614,8 @@ class OfxhParamInteger : public OfxhParam,
 {
 public:
 	typedef int BaseType;
-	OfxhParamInteger( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance )
-		: OfxhParam( descriptor, setInstance )
+	OfxhParamInteger( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
+		: OfxhParam( descriptor, name, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
@@ -651,7 +654,7 @@ class OfxhParamChoice : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
-	OfxhParamChoice( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamChoice( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual void get( int& )               OFX_EXCEPTION_SPEC = 0;
@@ -677,8 +680,8 @@ class OfxhParamDouble : public OfxhParam,
 {
 public:
 	typedef double BaseType;
-	OfxhParamDouble( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance )
-		: OfxhParam( descriptor, setInstance )
+	OfxhParamDouble( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
+		: OfxhParam( descriptor, name, setInstance )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
@@ -716,7 +719,7 @@ class OfxhParamBoolean : public OfxhParam,
 {
 public:
 	typedef bool BaseType;
-	OfxhParamBoolean( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamBoolean( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 
 	// Deriving implementatation needs to overide these
 	virtual void get( bool& )               OFX_EXCEPTION_SPEC = 0;
@@ -744,7 +747,7 @@ std::string _returnValue; ///< location to hold temporary return value. Should d
 
 public:
 	typedef std::string BaseType;
-	OfxhParamString( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamString( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 
 	virtual void get( std::string& )               OFX_EXCEPTION_SPEC = 0;
 	virtual void get( OfxTime time, std::string& ) OFX_EXCEPTION_SPEC = 0;
@@ -767,14 +770,14 @@ public:
 class OfxhParamCustom : public OfxhParamString
 {
 public:
-	OfxhParamCustom( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParamString( descriptor, setInstance ) {}
+	OfxhParamCustom( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParamString( descriptor, name, setInstance ) {}
 };
 
 class OfxhParamPushButton : public OfxhParam,
 	public OfxhKeyframeParam
 {
 public:
-	OfxhParamPushButton( const OfxhParamDescriptor& descriptor, OfxhParamSet& setInstance ) : OfxhParam( descriptor, setInstance ) {}
+	OfxhParamPushButton( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 };
 
 }

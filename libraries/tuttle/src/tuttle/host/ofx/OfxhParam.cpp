@@ -505,25 +505,25 @@ OfxhParamDescriptor* OfxhParamSetDescriptor::paramDefine( const char* paramType,
 //
 
 /**
- * the description of a plugin parameter
- */
-OfxhParam::~OfxhParam() {}
-
-/**
  * make a parameter, with the given type and name
  */
-OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, attribute::OfxhParamSet& setInstance )
+OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, const std::string& name, attribute::OfxhParamSet& setInstance )
 	: attribute::OfxhAttribute( descriptor ),
 	_paramSetInstance( &setInstance ),
 	_parentInstance( 0 )
 {
 	// parameter has to be owned by paramSet
-	setInstance.addParam( descriptor.getName(), this ); ///< @todo tuttle move this from here (introduce too many problems), no good reason to be here.
+	setInstance.addParam( name, this ); ///< @todo tuttle move this from here (introduce too many problems), no good reason to be here.
 
 	getEditableProperties().addNotifyHook( kOfxParamPropEnabled, this );
 	getEditableProperties().addNotifyHook( kOfxParamPropSecret, this );
 	getEditableProperties().addNotifyHook( kOfxPropLabel, this );
 }
+
+/**
+ * the description of a plugin parameter
+ */
+OfxhParam::~OfxhParam() {}
 
 /**
  * callback which should set enabled state as appropriate
@@ -1037,7 +1037,9 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {
 	if( _params.find( name ) != _params.end() )
-		throw OfxhException( kOfxStatErrExists );
+	{
+		throw OfxhException( kOfxStatErrExists, "Trying to add a new parameter which already exists." );
+	}
 	_params[name] = instance;
 	_paramList.push_back( instance );
 }

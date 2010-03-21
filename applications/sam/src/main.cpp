@@ -1,8 +1,26 @@
 
 #include <tuttle/host/core/Graph.hpp>
 
+
+void sam_terminate(void)
+{
+	std::cerr << "Sorry, Sam has encountered a fatal error." << std::endl;
+	std::cerr << "Please report this bug." << std::endl;
+	exit(-1);
+}
+
+void sam_unexpected(void)
+{
+	std::cerr << "Sorry, Sam has encountered an unexpected exception." << std::endl;
+	std::cerr << "Please report this bug." << std::endl;
+	throw std::runtime_error ( "Sorry, Sam has encountered an unexpected exception.\nPlease report this bug." ) ;
+}
+
+
 int main( int argc, char** argv )
 {
+	std::set_terminate( &sam_terminate );
+	std::set_unexpected( &sam_unexpected );
 	try
 	{
 		using namespace tuttle::host;
@@ -19,8 +37,8 @@ int main( int argc, char** argv )
 		core::Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
 		core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
 		core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-//		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.imagestatistics" );
+//		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.imagestatistics" );
 		core::Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
 		core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
 	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );

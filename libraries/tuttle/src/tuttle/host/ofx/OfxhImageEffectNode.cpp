@@ -174,7 +174,7 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 		// name and parentName of the parameter
 		std::string name       = descriptor.getName();
 		std::string parentName = descriptor.getParentName();
-
+		
 		if( parentName != "" )
 		{
 			attribute::OfxhParamGroup* parentGroup = dynamic_cast<attribute::OfxhParamGroup*>( parameters[parentName] );
@@ -190,9 +190,7 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 		attribute::OfxhParam* instance = newParam( descriptor );
 		/// @todo tuttle set the groups of the ParamInstance !!!
 		parameters[name] = instance;
-
 	}
-
 }
 
 /**

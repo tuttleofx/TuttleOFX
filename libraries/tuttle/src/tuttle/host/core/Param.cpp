@@ -63,7 +63,7 @@ namespace core {
 ParamString::ParamString( ImageEffectNode&                                   effect,
                           const std::string&                                 name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamString( descriptor, effect ),
+	: ofx::attribute::OfxhParamString( descriptor, name, effect ),
 	_effect( effect )
 {
 	_value = getDefault();
@@ -100,7 +100,7 @@ void ParamString::set( OfxTime time, const char* v ) OFX_EXCEPTION_SPEC
 ParamInteger::ParamInteger( ImageEffectNode&                                   effect,
                             const std::string&                                 name,
                             const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamInteger( descriptor, effect ),
+	: ofx::attribute::OfxhParamInteger( descriptor, name, effect ),
 	_effect( effect )
 {
 	_value = getDefault();
@@ -138,9 +138,8 @@ void ParamInteger::set( OfxTime time, const int& v ) OFX_EXCEPTION_SPEC
 ParamDouble::ParamDouble( ImageEffectNode&                                   effect,
                           const std::string&                                 name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamDouble( descriptor, effect ),
+	: ofx::attribute::OfxhParamDouble( descriptor, name, effect ),
 	_effect( effect )
-
 {
 	_value = getDefault();
 }
@@ -186,7 +185,7 @@ void ParamDouble::integrate( OfxTime time1, OfxTime time2, double& ) OFX_EXCEPTI
 ParamBoolean::ParamBoolean( ImageEffectNode&                                   effect,
                             const std::string&                                 name,
                             const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamBoolean( descriptor, effect ),
+	: ofx::attribute::OfxhParamBoolean( descriptor, name, effect ),
 	_effect( effect )
 
 {
@@ -224,7 +223,7 @@ void ParamBoolean::set( OfxTime time, bool v ) OFX_EXCEPTION_SPEC
 ParamChoice::ParamChoice( ImageEffectNode&                                   effect,
                           const std::string&                                 name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamChoice( descriptor, effect ),
+	: ofx::attribute::OfxhParamChoice( descriptor, name, effect ),
 	_effect( effect )
 
 {
@@ -262,7 +261,7 @@ void ParamChoice::set( OfxTime time, int v ) OFX_EXCEPTION_SPEC
 ParamRGBA::ParamRGBA( ImageEffectNode&                                   effect,
                       const std::string&                                 name,
                       const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 4>( descriptor, effect ),
+	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 4>( descriptor, name, effect ),
 	_effect( effect )
 
 {
@@ -320,7 +319,7 @@ void ParamRGBA::set( OfxTime time, double r, double g, double b, double a ) OFX_
 ParamRGB::ParamRGB( ImageEffectNode&                                   effect,
                     const std::string&                                 name,
                     const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, effect ),
+	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, name, effect ),
 	_effect( effect )
 
 {
@@ -372,19 +371,18 @@ void ParamRGB::set( OfxTime time, double r, double g, double b ) OFX_EXCEPTION_S
 ParamDouble2D::ParamDouble2D( ImageEffectNode&                                   effect,
                               const std::string&                                 name,
                               const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 2>( descriptor, effect ),
+	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 2>( descriptor, name, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new ParamDouble( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".y_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".x", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".y", descriptor ) );
 	_value = getDefault();
 }
 
 OfxPointD ParamDouble2D::getDefault() const
 {
 	OfxPointD point;
-
 	getProperties().getDoublePropertyN( kOfxParamPropDefault, &point.x, 2 );
 	return point;
 }
@@ -419,12 +417,12 @@ void ParamDouble2D::set( OfxTime time, double x, double y ) OFX_EXCEPTION_SPEC
 ParamInteger2D::ParamInteger2D( ImageEffectNode&                                   effect,
                                 const std::string&                                 name,
                                 const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhMultiDimParam<ParamInteger, 2>( descriptor, effect ),
+	: ofx::attribute::OfxhMultiDimParam<ParamInteger, 2>( descriptor, name, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new ParamInteger( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new ParamInteger( effect, name + ".y_", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".x", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".y", descriptor ) );
 	_value = getDefault();
 }
 
@@ -466,13 +464,13 @@ void ParamInteger2D::set( OfxTime time, int x, int y ) OFX_EXCEPTION_SPEC
 ParamInteger3D::ParamInteger3D( ImageEffectNode&                                   effect,
                                 const std::string&                                 name,
                                 const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhMultiDimParam<ParamInteger, 3>( descriptor, effect ),
+	: ofx::attribute::OfxhMultiDimParam<ParamInteger, 3>( descriptor, name, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new ParamInteger( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new ParamInteger( effect, name + ".y_", descriptor ) );
-	_controls.push_back( new ParamInteger( effect, name + ".z_", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".x", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".y", descriptor ) );
+	_controls.push_back( new ParamInteger( effect, name + ".z", descriptor ) );
 	_value = getDefault();
 }
 
@@ -517,13 +515,13 @@ void ParamInteger3D::set( OfxTime time, int x, int y, int z ) OFX_EXCEPTION_SPEC
 ParamDouble3D::ParamDouble3D( ImageEffectNode&                                   effect,
                               const std::string&                                 name,
                               const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, effect ),
+	: ofx::attribute::OfxhMultiDimParam<ParamDouble, 3>( descriptor, name, effect ),
 	_effect( effect )
 
 {
-	_controls.push_back( new ParamDouble( effect, name + ".x_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".y_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".z_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".x", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".y", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".z", descriptor ) );
 	_value = getDefault();
 }
 
@@ -568,7 +566,7 @@ void ParamDouble3D::set( OfxTime time, double x, double y, double z ) OFX_EXCEPT
 ParamPushButton::ParamPushButton( ImageEffectNode&                                   effect,
                                   const std::string&                                 name,
                                   const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamPushButton( descriptor, effect ),
+	: ofx::attribute::OfxhParamPushButton( descriptor, name, effect ),
 	_effect( effect )
 {}
 
@@ -578,7 +576,7 @@ ParamPushButton::ParamPushButton( ImageEffectNode&                              
 ParamGroup::ParamGroup( ImageEffectNode&                                   effect,
 					  const std::string&                                 name,
 					  const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamGroup( descriptor, effect ),
+	: ofx::attribute::OfxhParamGroup( descriptor, name, effect ),
 	_effect( effect )
 {}
 
@@ -588,7 +586,7 @@ ParamGroup::ParamGroup( ImageEffectNode&                                   effec
 ParamPage::ParamPage( ImageEffectNode&                                   effect,
                                   const std::string&                                 name,
                                   const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamPage( descriptor, effect ),
+	: ofx::attribute::OfxhParamPage( descriptor, name, effect ),
 	_effect( effect )
 {}
 

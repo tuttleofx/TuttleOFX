@@ -74,6 +74,9 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 	copyAttributesValues( other );
 }
 
+ImageEffectNode::~ImageEffectNode()
+{
+}
 void ImageEffectNode::connect( const ProcessNode& sourceEffect, ProcessAttribute& attr )
 {
 	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>( sourceEffect );
@@ -218,36 +221,37 @@ const std::string ImageEffectNode::getProjectBitDepth() const
 ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
 	std::string name = descriptor.getName();
-	
-	if(  descriptor.getParamType() == kOfxParamTypeString )
-		return new ParamString( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeInteger )
-		return new ParamInteger( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeDouble )
-		return new ParamDouble( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeBoolean )
-		return new ParamBoolean( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeChoice )
-		return new ParamChoice( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeRGBA )
-		return new ParamRGBA( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeRGB )
-		return new ParamRGB( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeDouble2D )
-		return new ParamDouble2D( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeInteger2D )
-		return new ParamInteger2D( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypePushButton )
-		return new ParamPushButton( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypeGroup )
-		return new ParamGroup( *this, name,  descriptor );
-	else if(  descriptor.getParamType() == kOfxParamTypePage )
-		return new ParamPage( *this, name,  descriptor );
-	else
-		throw( exception::LogicError( "Can't create param instance from param descriptor." ) );
-
-	throw( exception::LogicError( "Can't create param instance from param descriptor." ) );
-
+	try {
+		if( descriptor.getParamType() == kOfxParamTypeString )
+			return new ParamString( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeInteger )
+			return new ParamInteger( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeDouble )
+			return new ParamDouble( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeBoolean )
+			return new ParamBoolean( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeChoice )
+			return new ParamChoice( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeRGBA )
+			return new ParamRGBA( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeRGB )
+			return new ParamRGB( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeDouble2D )
+			return new ParamDouble2D( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeInteger2D )
+			return new ParamInteger2D( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypePushButton )
+			return new ParamPushButton( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeGroup )
+			return new ParamGroup( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypePage )
+			return new ParamPage( *this, name,  descriptor );
+	}
+	catch( exception::LogicError& e ) // map intern exception to ofx::OfxhException
+	{
+		throw( ofx::OfxhException( e.ofxStatus(), e.what() ) );
+	}
+	throw( ofx::OfxhException( kOfxStatErrUnknown, "Can't create param instance from param descriptor, type not recognized." ) );
 }
 
 void ImageEffectNode::editBegin( const std::string& name ) OFX_EXCEPTION_SPEC

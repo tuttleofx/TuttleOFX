@@ -34,7 +34,7 @@ public:
 	Graph( const Graph& other );
 	~Graph();
 
-	Node& createNode( const std::string& id ) throw( exception::LogicError );
+	Node& createNode( const std::string& id );
 	void  deleteNode( const Node& node ) throw( exception::LogicError );
 
 	void connect( const Node& out, const Node& in ) throw( exception::LogicError );

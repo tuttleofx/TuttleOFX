@@ -56,6 +56,8 @@ public:
 	                 const std::string&                               context );
 
 	ImageEffectNode( const ImageEffectNode& other );
+	
+	~ImageEffectNode();
 
 	ImageEffectNode* clone() const { return new ImageEffectNode( *this ); }
 
