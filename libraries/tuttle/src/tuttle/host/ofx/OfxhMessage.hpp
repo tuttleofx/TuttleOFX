@@ -2,6 +2,7 @@
 #define _TUTTLE_HOST_OFX_MESSAGE_HPP_
 
 #include "OfxhException.hpp"
+#include "OfxhIObject.hpp"
 #include <cstdarg>
 #include <string>
 
@@ -9,7 +10,7 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-class OfxhIMessage
+class OfxhIMessage : virtual public OfxhIObject
 {
 public:
 	virtual ~OfxhIMessage() {}

@@ -30,7 +30,8 @@
 #ifndef _OfxhTimeline_h_
 #define _OfxhTimeline_h_
 
-#include "ofxTimeLine.h"
+#include "OfxhIObject.hpp"
+#include <ofxTimeLine.h>
 
 namespace tuttle {
 namespace host {
@@ -40,7 +41,7 @@ namespace ofx {
  * Things that implement timeline controls derive from this ABC and implement the following
  * functions.
  */
-class OfxhITimeline
+class OfxhITimeline : virtual public OfxhIObject
 {
 public:
 	virtual ~OfxhITimeline() {}
