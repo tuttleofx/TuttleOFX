@@ -443,11 +443,7 @@ public:
 
 	virtual ~OfxhMultiDimParam()
 	{
-		for( typename std::vector<T*>::iterator it = _controls.begin();
-		     it != _controls.end(); ++it )
-		{
-			delete *it;
-		}
+		// _controls are parameters which are declares in setInstance which owns all parameters
 	}
 
 	// Deriving implementatation needs to overide these

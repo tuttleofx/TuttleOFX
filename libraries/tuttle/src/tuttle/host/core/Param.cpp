@@ -265,10 +265,10 @@ ParamRGBA::ParamRGBA( ImageEffectNode&                                   effect,
 	_effect( effect )
 
 {
-	_controls.push_back( new ParamDouble( effect, name + ".r_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".g_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".b_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".a_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".r", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".g", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".b", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".a", descriptor ) );
 
 	_value = getDefault();
 }
@@ -323,9 +323,9 @@ ParamRGB::ParamRGB( ImageEffectNode&                                   effect,
 	_effect( effect )
 
 {
-	_controls.push_back( new ParamDouble( effect, name + ".r_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".g_", descriptor ) );
-	_controls.push_back( new ParamDouble( effect, name + ".b_", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".r", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".g", descriptor ) );
+	_controls.push_back( new ParamDouble( effect, name + ".b", descriptor ) );
 	_value = getDefault();
 }
 

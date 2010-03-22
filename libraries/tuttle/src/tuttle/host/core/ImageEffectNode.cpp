@@ -251,7 +251,7 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 	{
 		throw( ofx::OfxhException( e.ofxStatus(), e.what() ) );
 	}
-	throw( ofx::OfxhException( kOfxStatErrUnknown, "Can't create param instance from param descriptor, type not recognized." ) );
+	throw( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
 }
 
 void ImageEffectNode::editBegin( const std::string& name ) OFX_EXCEPTION_SPEC
