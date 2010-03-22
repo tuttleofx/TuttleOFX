@@ -30,6 +30,7 @@
 #ifndef _OfxhProgress_h_
 #define _OfxhProgress_h_
 
+#include "OfxhIObject.hpp"
 #include <string>
 
 namespace tuttle {
@@ -38,7 +39,7 @@ namespace ofx {
 
 /// Things that display progress derive from this ABC and implement the following
 /// functions.
-class OfxhIProgress
+class OfxhIProgress : virtual public OfxhIObject
 {
 public:
 	virtual ~OfxhIProgress() {}

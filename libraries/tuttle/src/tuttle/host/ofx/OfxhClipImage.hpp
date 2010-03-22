@@ -30,11 +30,13 @@
 #ifndef _TUTTLE_HOST_OFX_CLIPIMAGE_HPP_
 #define _TUTTLE_HOST_OFX_CLIPIMAGE_HPP_
 
-#include "ofxImageEffect.h"
+#include "OfxhIObject.hpp"
 #include "OfxhClip.hpp"
 #include "OfxhImage.hpp"
 #include "OfxhUtilities.hpp"
 #include "OfxhProperty.hpp"
+
+#include <ofxImageEffect.h>
 
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
@@ -368,7 +370,7 @@ inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 	return a.clone();
 }
 
-class OfxhClipImageSet //: public ClipAccessorSet
+class OfxhClipImageSet : virtual public OfxhIObject//, public ClipAccessorSet
 {
 	typedef OfxhClipImageSet This;
 public:

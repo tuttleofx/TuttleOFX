@@ -11,7 +11,7 @@ namespace ofx {
 
 static OfxStatus message( void* handle, const char* type, const char* id, const char* format, ... )
 {
-	OfxhIMessage* effectInstance = reinterpret_cast<OfxhIMessage*>( handle );
+	OfxhIMessage* effectInstance = dynamic_cast<OfxhIMessage*>( reinterpret_cast<OfxhIObject*>( handle ) );
 
 	if( effectInstance )
 	{

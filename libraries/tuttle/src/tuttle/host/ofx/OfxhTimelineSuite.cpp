@@ -1,4 +1,5 @@
 #include "OfxhTimelineSuite.hpp"
+#include "OfxhIObject.hpp"
 #include "OfxhTimeline.hpp"
 #include "OfxhException.hpp"
 
@@ -13,7 +14,7 @@ static OfxStatus TimelineGetTime( void* effectInstance, double* time )
 {
 	try
 	{
-		OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+		OfxhITimeline* me = dynamic_cast<OfxhITimeline*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
 
@@ -38,7 +39,7 @@ static OfxStatus TimelineGotoTime( void* effectInstance, double time )
 {
 	try
 	{
-		OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+		OfxhITimeline* me = dynamic_cast<OfxhITimeline*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
 
@@ -63,7 +64,7 @@ static OfxStatus TimelineGetBounds( void* effectInstance, double* firstTime, dou
 {
 	try
 	{
-		OfxhITimeline* me = reinterpret_cast<OfxhITimeline*>( effectInstance );
+		OfxhITimeline* me = dynamic_cast<OfxhITimeline*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
 

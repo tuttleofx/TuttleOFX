@@ -31,6 +31,7 @@
 #define _TUTTLE_HOST_OFX_PARAM_HPP_
 
 #include "OfxhCore.hpp"
+#include "OfxhIObject.hpp"
 #include "OfxhProperty.hpp"
 #include "OfxhAttribute.hpp"
 #include "OfxhException.hpp"
@@ -164,7 +165,7 @@ private:
 /// As we are the owning object we delete the params inside ourselves. It was tempting
 /// to make params autoref objects and have shared ownership with the client code
 /// but that adds complexity for no strong gain.
-class OfxhParamSet : public OfxhParamSetAccessor
+class OfxhParamSet : public OfxhParamSetAccessor, virtual public OfxhIObject
 {
 typedef OfxhParamSet This;
 public:

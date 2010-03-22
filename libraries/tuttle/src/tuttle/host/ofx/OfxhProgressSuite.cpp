@@ -1,4 +1,5 @@
 #include "OfxhProgressSuite.hpp"
+#include "OfxhIObject.hpp"
 #include "OfxhProgress.hpp"
 #include "OfxhException.hpp"
 
@@ -11,7 +12,7 @@ static OfxStatus ProgressStart( void*       effectInstance,
 {
 	try
 	{
-		OfxhIProgress* me = reinterpret_cast<OfxhIProgress*>( effectInstance );
+		OfxhIProgress* me = dynamic_cast<OfxhIProgress*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
 		
@@ -35,7 +36,7 @@ static OfxStatus ProgressEnd( void* effectInstance )
 {
 	try
 	{
-		OfxhIProgress* me = reinterpret_cast<OfxhIProgress*>( effectInstance );
+		OfxhIProgress* me = dynamic_cast<OfxhIProgress*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
 
@@ -59,7 +60,7 @@ static OfxStatus ProgressUpdate( void* effectInstance, double progress )
 {
 	try
 	{
-		OfxhIProgress* me = reinterpret_cast<OfxhIProgress*>( effectInstance );
+		OfxhIProgress* me = dynamic_cast<OfxhIProgress*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
 		

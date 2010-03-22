@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_BASE_HPP_
 #define _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_BASE_HPP_
 
+#include "OfxhIObject.hpp"
 #include "OfxhProperty.hpp"
 
 #include <boost/serialization/extended_type_info.hpp>
@@ -24,7 +25,7 @@ namespace imageEffect {
 /**
  * base class to both effect descriptors and instances
  */
-class OfxhImageEffectNodeBase
+class OfxhImageEffectNodeBase : virtual public OfxhIObject
 {
 protected:
 	property::OfxhSet _properties;
