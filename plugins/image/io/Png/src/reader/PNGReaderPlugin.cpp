@@ -136,13 +136,6 @@ void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 }
 
-void PNGReaderPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-{
-	const OfxRectD roi = { 0.0, 0.0, _pngDims.x * _dstClip->getPixelAspectRatio(), _pngDims.y };
-
-	rois.setRegionOfInterest( *_dstClip, roi );
-}
-
 bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	rod.x1 = 0;
