@@ -54,7 +54,9 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 
 			// if we can't find it return an error...
 			if( it == params.end() )
-				return kOfxStatErrUnknown;
+			{
+				throw( OfxhException( kOfxStatErrUnknown, std::string("Can't find parameter : ") + name ) );
+			}
 
 			// get the param
 			*param = ( it->second )->getParamHandle();
@@ -90,6 +92,7 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 	}
 	catch( OfxhException& e )
 	{
+		COUT_EXCEPTION( e );
 		return e.getStatus();
 	}
 	catch( ... )
