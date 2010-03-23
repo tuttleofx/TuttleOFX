@@ -44,9 +44,9 @@ int main( int argc, char** argv )
 	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
 		core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
 		core::Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
-		core::Graph::Node& write4  = g.createNode( "fr.tuttle.pngwriter" );
 		core::Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
 		core::Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
+		core::Graph::Node& write4  = g.createNode( "fr.tuttle.ffmpegwriter" );
 
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
@@ -57,7 +57,7 @@ int main( int argc, char** argv )
 		write1.getParam( "filename" ).set( "output1.png" );
 		write2.getParam( "filename" ).set( "output2.dpx" );
 		write3.getParam( "filename" ).set( "output3.exr" );
-		write4.getParam( "filename" ).set( "output4.png" );
+		write4.getParam( "filename" ).set( "output4.avi" );
 		OfxPointD renderScale = { 1.0, 1.0 };
 		read1.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 		read2.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );

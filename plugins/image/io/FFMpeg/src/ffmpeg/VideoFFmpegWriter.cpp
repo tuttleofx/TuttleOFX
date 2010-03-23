@@ -1,5 +1,7 @@
 #include "VideoFFmpegWriter.hpp"
 
+#include <tuttle/common/utils/global.hpp>
+
 VideoFFmpegWriter::VideoFFmpegWriter( )
 : _avformatOptions( 0 )
 , _sws_context( NULL )
@@ -11,8 +13,8 @@ VideoFFmpegWriter::VideoFFmpegWriter( )
 , _aspectRatio( 1 )
 , _out_pixelFormat( PIX_FMT_YUV420P )
 , _fps( 25.0f )
-, _format( 0 )
-, _codec( 0 )
+, _format( "default" )
+, _codec( "default" )
 , _bitrate( 400000 )
 , _bitrateTolerance( 4000 * 10000 )
 , _gopSize( 12 )
@@ -40,7 +42,6 @@ VideoFFmpegWriter::VideoFFmpegWriter( )
 		}
 		fmt = av_oformat_next( fmt );
 	}
-//	_formatsShortNames.push_back( 0 );
 
 	_codecsLongNames.push_back( std::string( "default" ) );
 	_codecsShortNames.push_back( std::string( "default" ) );
@@ -57,8 +58,6 @@ VideoFFmpegWriter::VideoFFmpegWriter( )
 		}
 		c = av_codec_next( c );
 	}
-//	_codecsLongNames.push_back( 0 );
-//	_codecsShortNames.push_back( 0 );
 }
 
 VideoFFmpegWriter::~VideoFFmpegWriter( )
@@ -72,21 +71,14 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 	_error = IGNORE_FINISH;
 
 	AVOutputFormat* fmt = 0;
-	if( !_format )
+	COUT_VAR( _format );
+	fmt = guess_format( _format.c_str(), NULL, NULL );
+	if( !fmt )
 	{
 		fmt = guess_format( NULL, filename( ).c_str( ), NULL );
 		if( !fmt )
 		{
-			std::cout << "ffmpegWriter: could not deduce output format from file extension" << std::endl;
-			return false;
-		}
-	}
-	else
-	{
-		fmt = guess_format( _formatsShortNames[_format].c_str(), NULL, NULL );
-		if( !fmt )
-		{
-			std::cout << "ffmpegWriter: could not deduce output format" << std::endl;
+			std::cerr << "ffmpegWriter: could not deduce output format from file extension." << std::endl;
 			return false;
 		}
 	}
@@ -102,17 +94,16 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 		_stream = av_new_stream( _avformatOptions, 0 );
 		if( !_stream )
 		{
-			std::cout << "ffmpegWriter: out of memory" << std::endl;
+			std::cout << "ffmpegWriter: out of memory." << std::endl;
 			return false;
 		}
 
 		CodecID codecId = fmt->video_codec;
-		if( _codec )
-		{
-			AVCodec* userCodec = avcodec_find_encoder_by_name( _codecsShortNames[_codec].c_str() );
-			if( userCodec )
-				codecId = userCodec->id;
-		}
+		COUT_VAR( _codec );
+		AVCodec* userCodec = avcodec_find_encoder_by_name( _codec.c_str() );
+		if( userCodec )
+			codecId = userCodec->id;
+
 		_stream->codec->codec_id = codecId;
 		_stream->codec->codec_type = CODEC_TYPE_VIDEO;
 		_stream->codec->bit_rate = _bitrate;
@@ -135,7 +126,7 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 
 		if( av_set_parameters( _avformatOptions, NULL ) < 0 )
 		{
-			std::cout << "ffmpegWriter: unable to set parameters" << std::endl;
+			std::cout << "ffmpegWriter: unable to set parameters." << std::endl;
 			freeFormat( );
 			return false;
 		}
@@ -145,14 +136,14 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 		AVCodec* videoCodec = avcodec_find_encoder( codecId );
 		if( !videoCodec )
 		{
-			std::cout << "ffmpegWriter: unable to find codec" << std::endl;
+			std::cout << "ffmpegWriter: unable to find codec." << std::endl;
 			freeFormat( );
 			return false;
 		}
 
 		if( avcodec_open( _stream->codec, videoCodec ) < 0 )
 		{
-			std::cout << "ffmpegWriter: unable to open codec" << std::endl;
+			std::cout << "ffmpegWriter: unable to open codec." << std::endl;
 			freeFormat( );
 			return false;
 		}
@@ -161,7 +152,7 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 		{
 			if( url_fopen( &_avformatOptions->pb, filename( ).c_str( ), URL_WRONLY ) < 0 )
 			{
-				std::cout << "ffmpegWriter: unable to open file" << std::endl;
+				std::cout << "ffmpegWriter: unable to open file." << std::endl;
 				return false;
 			}
 		}
@@ -188,13 +179,13 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 
 	if( !_sws_context )
 	{
-		std::cout << "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")" << std::endl;
+		std::cout << "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." << std::endl;
 		return false;
 	}
 	int error = sws_scale( _sws_context, in_frame->data, in_frame->linesize, 0, height( ), out_frame->data, out_frame->linesize );
 	if( error < 0 )
 	{
-		std::cout << "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")" << std::endl;
+		std::cout << "ffmpeg-conversion failed (" << in_pixelFormat << "->" << _out_pixelFormat << ")." << std::endl;
 		return false;
 	}
 
@@ -243,7 +234,7 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 
 	if( ret )
 	{
-		std::cout << "ffmpegWriter: error writing frame to file" << std::endl;
+		std::cout << "ffmpegWriter: error writing frame to file." << std::endl;
 		return false;
 	}
 
@@ -261,37 +252,6 @@ void VideoFFmpegWriter::finish( )
 	freeFormat( );
 }
 
-/*
-void VideoFfmpegWriter::knobs( Knob_Callback f )
-{
-	static std::vector<const char*> formatsAliases;
-
-	formatsAliases.resize( _formatsLongNames.size( ) );
-	for( int i = 0; i < static_cast<int> ( _formatsLongNames.size( ) ); ++i )
-		formatsAliases[i] = _formatsLongNames[i].c_str( );
-	formatsAliases.push_back( 0 );
-
-	Enumeration_knob( f, &_format, &formatsAliases[0], "format" );
-	Float_knob( f, &_fps, IRange( 0.0, 100.0f ), "fps" );
-
-	BeginClosedGroup( f, "Advanced" );
-
-	Enumeration_knob( f, &_codec, &_codecsLongNames[0], "codec" );
-	Int_knob( f, &_bitrate, IRange( 0.0, 400000 ), "bitrate" );
-	SetFlags( f, Knob::SLIDER | Knob::LOG_SLIDER );
-	Int_knob( f, &_bitrateTolerance, IRange( 0, 4000 * 10000 ), "bitrateTol", "bitrate tolerance" );
-	SetFlags( f, Knob::SLIDER | Knob::LOG_SLIDER );
-	Int_knob( f, &_gopSize, IRange( 0, 30 ), "gopSize", "GOP size" );
-	SetFlags( f, Knob::SLIDER | Knob::LOG_SLIDER );
-	Int_knob( f, &_bFrames, IRange( 0, 30 ), "bFrames", "B Frames" );
-	SetFlags( f, Knob::SLIDER | Knob::LOG_SLIDER );
-
-	static const char* mbDecisionTypes[] = { "FF_MB_DECISION_SIMPLE", "FF_MB_DECISION_BITS", "FF_MB_DECISION_RD", 0 };
-	Enumeration_knob( f, &_mbDecision, mbDecisionTypes, "mbDecision", "macro block decision mode" );
-
-	EndGroup( f );
-}
- */
 void VideoFFmpegWriter::freeFormat( )
 {
 	for( int i = 0; i < static_cast<int> ( _avformatOptions->nb_streams ); ++i )

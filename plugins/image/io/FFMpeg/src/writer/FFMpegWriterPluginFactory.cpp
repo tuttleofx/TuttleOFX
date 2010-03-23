@@ -2,6 +2,8 @@
 #include "FFMpegWriterPlugin.hpp"
 #include "FFMpegWriterDefinitions.hpp"
 
+#include <ffmpeg/VideoFFmpegWriter.hpp>
+
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -55,6 +57,8 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
                                                   OFX::ContextEnum context )
 {
+	VideoFFmpegWriter writer;
+	
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( ePixelComponentRGBA );
 	srcClip->addSupportedComponent( ePixelComponentAlpha );
@@ -67,10 +71,46 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
+	StringParamDescriptor* filename = desc.defineStringParam( kFilename );
+	filename->setLabel( "filename" );
 	filename->setStringType( eStringTypeFilePath );
 	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+
+	ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kFormatLong );
+	formatLong->setLabel( "format" );
+	for( std::vector<std::string>::const_iterator it = writer.getFormatsLong().begin(), itEnd = writer.getFormatsLong().end();
+		it != itEnd;
+		 ++it )
+	{
+		formatLong->appendOption( *it );
+	}
+	ChoiceParamDescriptor* format = desc.defineChoiceParam( kFormat );
+	format->setIsSecret( true );
+	for( std::vector<std::string>::const_iterator it = writer.getFormatsShort().begin(), itEnd = writer.getFormatsShort().end();
+		it != itEnd;
+		 ++it )
+	{
+		format->appendOption( *it );
+	}
+	format->setDefault( 2 );
+
+	ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kCodecLong );
+	codecLong->setLabel( "codec" );
+	for( std::vector<std::string>::const_iterator it = writer.getCodecsLong().begin(), itEnd = writer.getCodecsLong().end();
+		it != itEnd;
+		 ++it )
+	{
+		codecLong->appendOption( *it );
+	}
+	ChoiceParamDescriptor* codec = desc.defineChoiceParam( kCodec );
+	codec->setIsSecret( true );
+	for( std::vector<std::string>::const_iterator it = writer.getCodecsShort().begin(), itEnd = writer.getCodecsShort().end();
+		it != itEnd;
+		 ++it )
+	{
+		codec->appendOption( *it );
+	}
+	codec->setDefault( 2 );
 
 	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
 	helpButton->setScriptName( "help" );

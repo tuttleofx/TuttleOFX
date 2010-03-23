@@ -26,14 +26,17 @@ namespace writer {
  *
  */
 template<class View>
-class FFMpegProcess : public ImageGilFilterProcessor<View>
+class FFMpegWriterProcess : public ImageGilFilterProcessor<View>
 {
 protected :
     FFMpegWriterPlugin&	_plugin;		///< Rendering plugin
-
+	VideoFFmpegWriter _writer;
+	FFMpegProcessParams _params;
+	
 public:
-    FFMpegProcess( FFMpegWriterPlugin& instance );
-
+    FFMpegWriterProcess( FFMpegWriterPlugin& instance );
+	void preProcess();
+	void postProcess();
     // Do some processing
     void multiThreadProcessImages( const OfxRectI& procWindow );
 };

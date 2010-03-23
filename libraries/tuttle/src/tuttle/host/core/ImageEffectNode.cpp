@@ -267,21 +267,18 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 /// Start doing progress.
 void ImageEffectNode::progressStart( const std::string& message )
 {
-	COUT_INFOS;
 }
 
 /// finish yer progress
 void ImageEffectNode::progressEnd()
 {
-	COUT_INFOS;
 }
 
 /// set the progress to some level of completion, returns
 /// false if you should abandon processing, true to continue
-bool ImageEffectNode::progressUpdate( double t )
+bool ImageEffectNode::progressUpdate( double progress )
 {
-	COUT_INFOS;
-	/// @todo tuttle: bug before here...
+	COUT_VAR(progress);
 	return true;
 }
 

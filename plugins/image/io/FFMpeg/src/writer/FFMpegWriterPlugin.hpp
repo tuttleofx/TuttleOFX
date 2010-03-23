@@ -13,9 +13,11 @@ namespace plugin {
 namespace ffmpeg {
 namespace writer {
 
-struct FFMpegParams
+struct FFMpegProcessParams
 {
 	std::string _filepath;      ///< Ffmpeg filepath
+	int _format;
+	int _codec;
 };
 
 /**
@@ -27,12 +29,12 @@ public:
     FFMpegWriterPlugin( OfxImageEffectHandle handle );
     OFX::Clip *getSrcClip( ) const;
     OFX::Clip *getDstClip( ) const;
-	VideoFFmpegWriter & getWriter();
+//	VideoFFmpegWriter & getWriter();
 
 public:
     virtual void render( const OFX::RenderArguments &args );
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
-	FFMpegParams getParams() const;
+	FFMpegProcessParams getProcessParams() const;
 	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
@@ -43,7 +45,11 @@ protected:
     OFX::Clip           *_dstClip;       ///< Destination image clip
 	boost::scoped_ptr<std::string> _openedSource;  ///< Opened video file source
 	OFX::StringParam    *_filepath;      ///< Ffmpeg filepath
-	VideoFFmpegWriter	_writer;
+	OFX::ChoiceParam    *_format;
+	OFX::ChoiceParam    *_formatLong;
+	OFX::ChoiceParam    *_codec;
+	OFX::ChoiceParam    *_codecLong;
+//	VideoFFmpegWriter	_writer;
 };
 
 }

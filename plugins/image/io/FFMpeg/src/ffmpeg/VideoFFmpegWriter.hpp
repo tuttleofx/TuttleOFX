@@ -3,6 +3,8 @@
 
 #include "FFmpeg.hpp"
 
+#include <tuttle/common/utils/global.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -28,7 +30,6 @@ public:
 
 	int execute( uint8_t* in_buffer, int in_width, int height, PixelFormat in_fmt = PIX_FMT_RGB24 );
 	void finish( );
-//	void knobs( Knob_Callback f );
 
 private:
 	void freeFormat( );
@@ -79,9 +80,52 @@ public:
 	{
 		return _framerate;
 	}
+	const std::string& getFormat() const
+	{
+		return _format;
+	}
+	const std::vector<std::string>& getFormatsShort() const
+	{
+		return _formatsShortNames;
+	}
+	const std::vector<std::string>& getFormatsLong() const
+	{
+		return _formatsLongNames;
+	}
+	void setFormat( const unsigned int id )
+	{
+		_format = _formatsShortNames[id];
+		COUT("setFormat");
+		COUT_VAR(_format);
+	}
+	void setFormat( const std::string& format )
+	{
+		_format = format;
+	}
+	const std::string& getCodec() const
+	{
+		return _codec;
+	}
+	const std::vector<std::string>& getCodecsShort() const
+	{
+		return _codecsShortNames;
+	}
+	const std::vector<std::string>& getCodecsLong() const
+	{
+		return _codecsLongNames;
+	}
+	void setCodec( const unsigned int id )
+	{
+		_codec = _codecsShortNames[id];
+		COUT("setCodec");
+		COUT_VAR(_codec);
+	}
+	void setCodec( const std::string& codec )
+	{
+		_codec = codec;
+	}
 
-public:
-//private:
+private:
 	AVCodecContext* _avctxOptions[CODEC_TYPE_NB];
 	AVFormatContext* _avformatOptions;
 	struct SwsContext * _sws_context; ///< contexte de transformation swscale
@@ -100,8 +144,8 @@ public:
 	PixelFormat _out_pixelFormat;
 	// knobs variables
 	float _fps;
-	int _format;
-	int _codec;
+	std::string _format;
+	std::string _codec;
 	int _bitrate;
 	int _bitrateTolerance;
 	int _gopSize;
@@ -110,5 +154,5 @@ public:
 };
 
 
-#endif //__CLIPVIDEOFFMPEGWRITER_HPP__
+#endif
 

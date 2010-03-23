@@ -6,7 +6,6 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
-#include <boost/filesystem.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -14,7 +13,6 @@ namespace ffmpeg {
 namespace writer {
 
 using namespace boost::gil;
-using namespace boost::filesystem;
 
 FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 : ImageEffect( handle )
@@ -24,7 +22,11 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath = fetchStringParam( kOutputFilename );
+	_filepath = fetchStringParam( kFilename );
+	_format = fetchChoiceParam( kFormat );
+	_formatLong = fetchChoiceParam( kFormatLong );
+	_codec = fetchChoiceParam( kCodec );
+	_codecLong = fetchChoiceParam( kCodecLong );
 }
 
 OFX::Clip* FFMpegWriterPlugin::getSrcClip( ) const
@@ -37,18 +39,14 @@ OFX::Clip* FFMpegWriterPlugin::getDstClip( ) const
     return _dstClip;
 }
 
-FFMpegParams FFMpegWriterPlugin::getParams() const
+FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 {
-	FFMpegParams params;
+	FFMpegProcessParams params;
 	_filepath->getValue( params._filepath );
+	_format->getValue( params._format );
+	_codec->getValue( params._codec );
 	return params;
 }
-
-VideoFFmpegWriter & FFMpegWriterPlugin::getWriter()
-{
-	return _writer;
-}
-
 
 /**
  * @brief The overridden render function
@@ -67,19 +65,19 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                FFMpegProcess<rgba8_view_t> p( *this );
+                FFMpegWriterProcess<rgba8_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                FFMpegProcess<rgba16_view_t> p( *this );
+                FFMpegWriterProcess<rgba16_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                FFMpegProcess<rgba32f_view_t> p( *this );
+                FFMpegWriterProcess<rgba32f_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
@@ -97,19 +95,19 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments &args )
         {
             case OFX::eBitDepthUByte :
             {
-                FFMpegProcess<gray8_view_t> p( *this );
+                FFMpegWriterProcess<gray8_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthUShort :
             {
-                FFMpegProcess<gray16_view_t> p( *this );
+                FFMpegWriterProcess<gray16_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
             case OFX::eBitDepthFloat :
             {
-                FFMpegProcess<gray32f_view_t> p( *this );
+                FFMpegWriterProcess<gray32f_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
             }
@@ -131,22 +129,21 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, con
                      "", // No XML resources
                      kFFMpegHelpString );
     }
-	else if( paramName == kOutputFilename )
+	else if( paramName == kFormatLong )
 	{
-		std::string sFilepath;
-		_filepath->getValue( sFilepath );
-		// Check if exist
-		if( exists( sFilepath ) )
-		{
-			// Close last opened file
-			if ( _openedSource.get() )
-			{
-				_writer.finish();
-			}
-			// Open new source
-			_openedSource.reset( new std::string( sFilepath ) );
-			_writer.filename(sFilepath);
-		}
+		_format->setValue( _formatLong->getValue() );
+	}
+	else if( paramName == kFormat )
+	{
+		_formatLong->setValue( _format->getValue() );
+	}
+	else if( paramName == kCodecLong )
+	{
+		_codec->setValue( _codecLong->getValue() );
+	}
+	else if( paramName == kCodec )
+	{
+		_codecLong->setValue( _codec->getValue() );
 	}
 }
 
@@ -156,7 +153,7 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
 {
-	_writer.finish();
+//	_writer.finish();
 }
 
 void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
@@ -165,7 +162,7 @@ void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 	{
 		clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
 		clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
-		clipPreferences.setPixelAspectRatio( *_dstClip, _writer.aspectRatio() );
+//		clipPreferences.setPixelAspectRatio( *_dstClip, _writer.aspectRatio() );
 //		clipPreferences.setOutputFrameRate( _writer.fps() );
 /*
 		// Setup fielding

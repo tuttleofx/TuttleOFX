@@ -1,10 +1,10 @@
+#include "TextPlugin.hpp"
+#include "TextProcess.hpp"
+
+#include <boost/filesystem.hpp>
 
 #define white 255
 #define gray 170
-
-
-#include "TextPlugin.hpp"
-#include "TextProcess.hpp"
 #define black 0
 
 namespace tuttle {
@@ -22,6 +22,11 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 
 	TextProcessParams params = _plugin.getProcessParams();
+
+	if( !boost::filesystem::exists( params._font ) )
+	{
+		return;
+	}
 
 	text_pixel_t backgroundColor( gray, gray, gray );
 	text_pixel_t foregroundColor( white, black, black );

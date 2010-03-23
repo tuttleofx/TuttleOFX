@@ -48,10 +48,10 @@ public:
 	void setNbThreadsAuto() { _nbThreads = 0; }
 	
     /** @brief called before any MP is done */
-    virtual void preProcess(void) { progressBegin( _renderWindow.y2 - _renderWindow.y1 ); }
+    virtual void preProcess() { progressBegin( _renderWindow.y2 - _renderWindow.y1 ); }
 
     /** @brief called before any MP is done */
-    virtual void postProcess(void) { progressEnd(); }
+    virtual void postProcess() { progressEnd(); }
 
 	virtual void setup( const OFX::RenderArguments& args ){}
 
