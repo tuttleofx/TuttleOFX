@@ -32,7 +32,8 @@ mDeclarePluginFactory( TextPluginFactory, { }, { } );
  */
 void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabel( "Text" );
+	desc.setLabels( "TuttleText", "Text",
+				   "Text" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

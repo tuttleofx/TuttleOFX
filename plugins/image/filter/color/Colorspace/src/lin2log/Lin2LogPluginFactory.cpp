@@ -26,7 +26,7 @@ namespace lin2log {
 void Lin2LogPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     // basic labels
-    desc.setLabels( "lin2log", "lin2log",
+    desc.setLabels( "TuttleLin2log", "Lin2log",
                     "Linear to logarithmic convertion" );
     desc.setPluginGrouping( "tuttle" );
 

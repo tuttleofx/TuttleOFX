@@ -25,7 +25,7 @@ namespace debugImageEffectApi {
  */
 void DebugImageEffectApiPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "DebugImageEffectApi", "DebugImageEffectApi",
+	desc.setLabels( "TuttleDebugImageEffectApi", "DebugImageEffectApi",
 		            "Plugin which displays informations about the host and all plugin inputs." );
 	desc.setPluginGrouping( "tuttle" );
 

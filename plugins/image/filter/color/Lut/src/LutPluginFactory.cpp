@@ -27,7 +27,7 @@ mDeclarePluginFactory( LutPluginFactory, {}, {} );
  */
 void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Lut", "Lut", "Image Luter" );
+	desc.setLabels( "TuttleLut", "Lut", "Color transformation through CLUT file" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

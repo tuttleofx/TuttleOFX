@@ -25,7 +25,7 @@ namespace log2lin {
  */
 void Log2LinPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-    desc.setLabels( "log2lin", "log2lin",
+    desc.setLabels( "TuttleLog2lin", "Log2lin",
                     "Logarithmic to linear convertion" );
     desc.setPluginGrouping( "tuttle" );
 

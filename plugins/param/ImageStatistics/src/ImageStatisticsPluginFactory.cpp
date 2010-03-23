@@ -29,8 +29,8 @@ mDeclarePluginFactory( ImageStatisticsPluginFactory, { }, { } );
  */
 void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "ImageStatistics", "ImageStatistics",
-		            "ImageStatistics" );
+	desc.setLabels( "TuttleImageStatistics", "ImageStatistics",
+		            "Image statistics" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

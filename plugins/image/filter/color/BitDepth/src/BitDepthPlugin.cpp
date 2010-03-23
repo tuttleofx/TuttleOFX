@@ -1,14 +1,6 @@
-/**
- * @file BitDepthConvPlugin.cpp
- * @brief
- * @author
- * @date    08/01/10 17:46
- *
- */
-
-#include "BitDepthConvPlugin.hpp"
-#include "BitDepthConvProcess.hpp"
-#include "BitDepthConvDefinitions.hpp"
+#include "BitDepthPlugin.hpp"
+#include "BitDepthProcess.hpp"
+#include "BitDepthDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
@@ -17,12 +9,12 @@
 
 namespace tuttle {
 namespace plugin {
-namespace bitDepthConvert {
+namespace bitDepth {
 
 using namespace boost;
 using namespace boost::gil;
 
-BitDepthConvPlugin::BitDepthConvPlugin( OfxImageEffectHandle handle ) :
+BitDepthPlugin::BitDepthPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
@@ -30,12 +22,12 @@ ImageEffect( handle )
 	_outBitDepth = fetchChoiceParam( kOutputBitDepth );
 }
 
-OFX::Clip * BitDepthConvPlugin::getSrcClip( ) const
+OFX::Clip * BitDepthPlugin::getSrcClip( ) const
 {
     return _srcClip;
 }
 
-OFX::Clip * BitDepthConvPlugin::getDstClip( ) const
+OFX::Clip * BitDepthPlugin::getDstClip( ) const
 {
     return _dstClip;
 }
@@ -44,7 +36,7 @@ OFX::Clip * BitDepthConvPlugin::getDstClip( ) const
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void BitDepthConvPlugin::render( const OFX::RenderArguments &args )
+void BitDepthPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
     const OFX::BitDepthEnum srcBitDepth = _srcClip->getPixelDepth( );
@@ -117,7 +109,7 @@ void BitDepthConvPlugin::render( const OFX::RenderArguments &args )
  * @param[in]   args     Rendering parameters
  */
 template<class sview_t>
-void BitDepthConvPlugin::setupDestView( const OFX::RenderArguments &args )
+void BitDepthPlugin::setupDestView( const OFX::RenderArguments &args )
 {
 	const OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
     const OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
@@ -127,19 +119,19 @@ void BitDepthConvPlugin::setupDestView( const OFX::RenderArguments &args )
 		{
 			case OFX::eBitDepthUByte:
 			{
-				BitDepthConvProcess<sview_t, rgba8_view_t> fred( *this );
+				BitDepthProcess<sview_t, rgba8_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				return;
 			}
 			case OFX::eBitDepthUShort:
 			{
-				BitDepthConvProcess<sview_t, rgba16_view_t> fred( *this );
+				BitDepthProcess<sview_t, rgba16_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				return;
 			}
 			case OFX::eBitDepthFloat:
 			{
-				BitDepthConvProcess<sview_t, rgba32f_view_t> fred( *this );
+				BitDepthProcess<sview_t, rgba32f_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				return;
 			}
@@ -157,19 +149,19 @@ void BitDepthConvPlugin::setupDestView( const OFX::RenderArguments &args )
 		{
 			case OFX::eBitDepthUByte:
 			{
-				BitDepthConvProcess<sview_t, gray8_view_t> fred( *this );
+				BitDepthProcess<sview_t, gray8_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				return;
 			}
 			case OFX::eBitDepthUShort:
 			{
-				BitDepthConvProcess<sview_t, gray16_view_t> fred( *this );
+				BitDepthProcess<sview_t, gray16_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				return;
 			}
 			case OFX::eBitDepthFloat:
 			{
-				BitDepthConvProcess<sview_t, gray32f_view_t> fred( *this );
+				BitDepthProcess<sview_t, gray32f_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				return;
 			}
@@ -185,17 +177,17 @@ void BitDepthConvPlugin::setupDestView( const OFX::RenderArguments &args )
 	}
 }
 
-void BitDepthConvPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void BitDepthPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-    if( paramName == kBitDepthConvHelpButton )
+    if( paramName == kBitDepthHelpButton )
     {
         sendMessage( OFX::Message::eMessageMessage,
                      "", // No XML resources
-                     kBitDepthConvHelpString );
+                     kBitDepthHelpString );
     }
 }
 
-void BitDepthConvPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
 	clipPreferences.setClipBitDepth( *_dstClip, (OFX::BitDepthEnum)(_outBitDepth->getValue() + 1) );

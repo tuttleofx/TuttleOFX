@@ -1,5 +1,5 @@
-#ifndef _BITDEPTHCONV_PROCESS_HPP_
-#define _BITDEPTHCONV_PROCESS_HPP_
+#ifndef _BITDEPTH_PROCESS_HPP_
+#define _BITDEPTH_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -19,21 +19,21 @@
 
 namespace tuttle {
 namespace plugin {
-namespace bitDepthConvert {
+namespace bitDepth {
 
 template<class SView, class DView>
-class BitDepthConvProcess : public ImageGilProcessor<DView>
+class BitDepthProcess : public ImageGilProcessor<DView>
 {
 	typedef typename SView::value_type sPixel;
 	typedef typename DView::value_type dPixel;
 protected :
-    BitDepthConvPlugin& _plugin;        ///< Rendering plugin
+    BitDepthPlugin& _plugin;        ///< Rendering plugin
     SView               _srcView;       ///< Source view
 	boost::scoped_ptr<OFX::Image> _src;
 	boost::scoped_ptr<OFX::Image> _dst;
 
 public :
-    BitDepthConvProcess( BitDepthConvPlugin& instance );
+    BitDepthProcess( BitDepthPlugin& instance );
 
     void setup( const OFX::RenderArguments& args );
 
@@ -44,6 +44,6 @@ public :
 }
 }
 
-#include "BitDepthConvProcess.tcc"
+#include "BitDepthProcess.tcc"
 
 #endif

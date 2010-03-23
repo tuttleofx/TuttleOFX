@@ -65,7 +65,8 @@ mDeclarePluginFactory(ParamMathPluginFactory<IntParam>, {}, {});
 template <class ParamType>
 void ParamMathPluginFactory::describe(OFX::ImageEffectDescriptor &desc)
 {
-    desc.setLabels("MathParam", "MathParam", "Math Param");
+    desc.setLabels( "TuttleMathParam", "MathParam",
+				    "Math Param" );
     desc.setPluginGrouping("tuttle");
 
     OFX::ChoiceParamDescriptor *op = desc.defineChoiceParam( "operation" );

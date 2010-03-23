@@ -25,8 +25,8 @@ namespace writer {
  */
 void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "DPXWriter", "DPXWriter",
-	                "DPX File writer" );
+	desc.setLabels( "TuttleDpxWriter", "DpxWriter",
+	                "Dpx file writer" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

@@ -15,12 +15,9 @@ namespace tuttle {
 namespace plugin {
 namespace invert {
 
-using namespace OFX;
-
 static const bool kSupportTiles = true;
 
-mDeclarePluginFactory( InvertPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( InvertPluginFactory, {}, {} );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -28,7 +25,7 @@ mDeclarePluginFactory( InvertPluginFactory, {}, {}
  */
 void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Invert", "Image inverter",
+	desc.setLabels( "TuttleInvert", "Invert",
 	                "Image inverter" );
 	desc.setPluginGrouping( "tuttle" );
 

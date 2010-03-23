@@ -25,11 +25,10 @@ static const bool kSupportTiles              = false;
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-using namespace OFX;
 void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "EXRWriter", "EXRWriter",
-	                "EXR File writer" );
+	desc.setLabels( "TuttleExrWriter", "ExrWriter",
+	                "Exr file writer" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
@@ -54,43 +53,37 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::ContextEnum            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	assert(srcClip);
 	// Exr only supports RGB(A)
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	assert(dstClip);
 	// Exr only supports RGB(A)
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	assert(filename);
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
 	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
-	filename->setStringType( eStringTypeFilePath );
-	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+	filename->setStringType( OFX::eStringTypeFilePath );
+	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamBitDepth );
-	assert(bitDepth);
 	bitDepth->setLabels( kParamBitDepthLabel, kParamBitDepthLabel, "Output bit depth" );
-	bitDepth->appendOption( "half float output" );
-	bitDepth->appendOption( "float output" );
-	bitDepth->appendOption( "32 bits output" );
+	bitDepth->appendOption( "half float" );
+	bitDepth->appendOption( "float" );
+	bitDepth->appendOption( "32 bits" );
 	bitDepth->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-	assert(componentsType);
 	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, "Output component type" );
-	componentsType->appendOption( "gray  output" );
-	componentsType->appendOption( "rgb  output" );
-	componentsType->appendOption( "rgba output" );
+	componentsType->appendOption( "gray" );
+	componentsType->appendOption( "rgb" );
+	componentsType->appendOption( "rgba" );
 	componentsType->setDefault( 2 );
 
-	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
-	assert(renderButton);
+	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
 	renderButton->setScriptName( "renderButton" );
 }
 

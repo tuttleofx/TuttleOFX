@@ -27,8 +27,8 @@ static const bool kSupportTiles = false;
  */
 void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Merge", "Merge",
-	                "Clip merge" );
+	desc.setLabels( "TuttleMerge", "Merge",
+	                "Merge two images" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

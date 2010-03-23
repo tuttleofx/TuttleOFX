@@ -25,8 +25,8 @@ namespace reader {
  */
 void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "PNGReader", "PNGReader",
-	                "PNG File reader" );
+	desc.setLabels( "TuttlePngReader", "PngReader",
+	                "Png file reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

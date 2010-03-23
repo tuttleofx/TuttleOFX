@@ -25,8 +25,8 @@ namespace writer {
  */
 void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "PNGWriter", "PNGWriter",
-	                "PNG File writer" );
+	desc.setLabels( "TuttlePngWriter", "PngWriter",
+	                "Png file writer" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
@@ -50,27 +50,23 @@ void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                 OFX::ContextEnum            context )
 {
-	ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	assert( srcClip );
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
-	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	assert( dstClip );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	assert( filename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
 	filename->setLabel( "Output filename" );
-	filename->setStringType( eStringTypeFilePath );
-	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+	filename->setStringType( OFX::eStringTypeFilePath );
+	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
-	PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
-	assert( renderButton );
+	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
 	renderButton->setLabels( "Render", "Render", "Render step" );
 }
 

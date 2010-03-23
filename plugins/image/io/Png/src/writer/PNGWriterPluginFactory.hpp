@@ -7,8 +7,6 @@ namespace plugin {
 namespace png {
 namespace writer {
 
-using namespace OFX;
-
 static const bool kSupportTiles = false;
 
 mDeclarePluginFactory( PNGWriterPluginFactory, {}, {} );

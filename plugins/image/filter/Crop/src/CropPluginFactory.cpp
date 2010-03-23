@@ -19,10 +19,8 @@ namespace tuttle {
 namespace plugin {
 namespace crop {
 
-using namespace OFX;
 
-mDeclarePluginFactory( CropPluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( CropPluginFactory, {}, {} );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -30,18 +28,18 @@ mDeclarePluginFactory( CropPluginFactory, {}, {}
  */
 void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Crop", "Crop",
+	desc.setLabels( "TuttleCrop", "Crop",
 	                "Image crop" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
-	desc.addSupportedContext( eContextFilter );
-	desc.addSupportedContext( eContextGeneral );
+	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
@@ -59,14 +57,14 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
-	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::BooleanParamDescriptor* bop = desc.defineBooleanParam( kParamFillMode );
@@ -131,10 +129,9 @@ OFX::ImageEffect* CropPluginFactory::createInstance( OfxImageEffectHandle handle
 }
 }
 
-namespace OFX
-{
-namespace Plugin
-{
+namespace OFX {
+namespace Plugin {
+
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
 	static tuttle::plugin::crop::CropPluginFactory p( "fr.tuttle.crop", 1, 0 );

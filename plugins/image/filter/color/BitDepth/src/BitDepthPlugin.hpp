@@ -1,13 +1,5 @@
-/**
- * @file BitDepthConvPlugin.hpp
- * @brief
- * @author
- * @date    08/01/10 17:46
- *
- */
-
-#ifndef BITDEPTHCONV_PLUGIN_H
-#define BITDEPTHCONV_PLUGIN_H
+#ifndef _BITDEPTH_PLUGIN_HPP_
+#define _BITDEPTH_PLUGIN_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
@@ -15,20 +7,20 @@
 
 namespace tuttle {
 namespace plugin {
-namespace bitDepthConvert {
+namespace bitDepth {
 
 /**
  * @brief
  *
  */
-class BitDepthConvPlugin : public OFX::ImageEffect
+class BitDepthPlugin : public OFX::ImageEffect
 {
 private:
 	template<class sview_t>
 	void setupDestView( const OFX::RenderArguments &args );
 
 public:
-    BitDepthConvPlugin( OfxImageEffectHandle handle );
+    BitDepthPlugin( OfxImageEffectHandle handle );
     OFX::Clip *getSrcClip( ) const;
     OFX::Clip *getDstClip( ) const;
 
@@ -48,4 +40,4 @@ protected:
 }
 }
 
-#endif  // BITDEPTHCONV_PLUGIN_H
+#endif

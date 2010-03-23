@@ -2,6 +2,9 @@
 #include "ImageStatisticsProcess.hpp"
 #include "ImageStatisticsDefinitions.hpp"
 
+
+#include <boost/numeric/conversion/cast.hpp>
+
 #include <tuttle/plugin/interact/InteractInfos.hpp>
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/math/rectOp.hpp>
@@ -31,7 +34,7 @@ ImageEffect( handle )
 	_outputLuminosityMax = fetchRGBAParam( kOutputLuminosityMax );
 }
 
-ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectD& srcRod ) const
+ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectI& srcRod ) const
 {
 	ImageStatisticsProcessParams params;
 	OfxPointD cornerA = _cornerA->getValue();
@@ -41,28 +44,24 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 	rodSize.y = srcRod.y2 - srcRod.y1;
 	cornerA = interact::pointNormalizedXXcToCanonicalXY( cornerA, rodSize); // XX centered normalized to canonical
 	cornerB = interact::pointNormalizedXXcToCanonicalXY( cornerB, rodSize);
-	params._rect.x1 = std::min( cornerA.x, cornerB.x );
-	params._rect.y1 = std::min( cornerA.y, cornerB.y );
-	params._rect.x2 = std::max( cornerA.x, cornerB.x );
-	params._rect.y2 = std::max( cornerA.y, cornerB.y );
+	params._rect.x1 = boost::numeric_cast<int>( std::min( cornerA.x, cornerB.x ) );
+	params._rect.y1 = boost::numeric_cast<int>( std::min( cornerA.y, cornerB.y ) );
+	params._rect.x2 = boost::numeric_cast<int>( std::max( cornerA.x, cornerB.x ) );
+	params._rect.y2 = boost::numeric_cast<int>( std::max( cornerA.y, cornerB.y ) );
 	params._rect = rectanglesIntersection( params._rect, srcRod );
-	params._chooseOutput = static_cast<EChooseOutput>(_chooseOutput->getValue());
+	params._chooseOutput = static_cast<EChooseOutput>( _chooseOutput->getValue() );
 	return params;
 }
 
-//bool ImageStatisticsPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
-//{
-//	identityClip = _srcClip;
-//	identityTime = args.time;
-//	return true;
-//}
-
-
 void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois )
 {
-    OfxRectD srcRealRoi = getProcessParams( _srcClip->getCanonicalRod(args.time) )._rect;
-	
-    rois.setRegionOfInterest( *_srcClip, srcRealRoi );
+    OfxRectI srcRealRoi = getProcessParams( _srcClip->getPixelRod(args.time) )._rect; // we need the selected rectangle
+    OfxRectD srcRealRoiD;
+	srcRealRoiD.x1 = srcRealRoi.x1;
+	srcRealRoiD.y1 = srcRealRoi.y1;
+	srcRealRoiD.x2 = srcRealRoi.x2;
+	srcRealRoiD.y2 = srcRealRoi.y2;
+    rois.setRegionOfInterest( *_srcClip, srcRealRoiD );
 }
 
 /**

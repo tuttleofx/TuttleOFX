@@ -27,8 +27,8 @@ namespace reader {
  */
 void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "ffmpeg", "ffmpeg",
-		            "ffmpeg video io" );
+	desc.setLabels( "TuttleFfmpeg", "Ffmpeg",
+		            "Ffmpeg video io" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

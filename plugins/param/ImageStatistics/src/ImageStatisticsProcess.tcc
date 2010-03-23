@@ -99,7 +99,7 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	ImageGilFilterProcessor<View>::setup( args );
 
 	// recovery parameters values
-	OfxRectD srcRod = this->_srcClip->getCanonicalRod( args.time );
+	OfxRectI srcRod = this->_srcClip->getPixelRod( args.time );
 	_processParams = _plugin.getProcessParams( srcRod );
 
 	Point2 rectSize( std::abs( _processParams._rect.x2 - _processParams._rect.x1 ),

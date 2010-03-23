@@ -25,7 +25,7 @@ namespace timeShift {
  */
 void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TimeShift", "TimeShift",
+	desc.setLabels( "TuttleTimeShift", "TimeShift",
 		            "TimeShift" );
 	desc.setPluginGrouping( "tuttle" );
 

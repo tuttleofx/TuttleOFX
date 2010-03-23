@@ -22,26 +22,23 @@ namespace plugin {
 namespace ffmpeg {
 namespace writer {
 
-using namespace OFX;
-
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
 void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "ffmpeg", "ffmpeg",
-		            "ffmpeg video io" );
+	desc.setLabels( "TuttleFfmpeg", "Ffmpeg",
+		            "Ffmpeg video io" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
-	desc.addSupportedContext( eContextGeneral );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-	desc.addSupportedBitDepth( eBitDepthUByte );
-	desc.addSupportedBitDepth( eBitDepthUShort );
-	desc.addSupportedBitDepth( eBitDepthFloat );
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
 	desc.setHostFrameThreading( false );
@@ -60,23 +57,23 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	VideoFFmpegWriter writer;
 	
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( ePixelComponentRGBA );
-	srcClip->addSupportedComponent( ePixelComponentAlpha );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( ePixelComponentRGBA );
-	dstClip->addSupportedComponent( ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	StringParamDescriptor* filename = desc.defineStringParam( kFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kFilename );
 	filename->setLabel( "filename" );
-	filename->setStringType( eStringTypeFilePath );
-	filename->setCacheInvalidation( eCacheInvalidateValueAll );
+	filename->setStringType( OFX::eStringTypeFilePath );
+	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
-	ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kFormatLong );
+	OFX::ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kFormatLong );
 	formatLong->setLabel( "format" );
 	for( std::vector<std::string>::const_iterator it = writer.getFormatsLong().begin(), itEnd = writer.getFormatsLong().end();
 		it != itEnd;
@@ -84,7 +81,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		formatLong->appendOption( *it );
 	}
-	ChoiceParamDescriptor* format = desc.defineChoiceParam( kFormat );
+	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kFormat );
 	format->setIsSecret( true );
 	for( std::vector<std::string>::const_iterator it = writer.getFormatsShort().begin(), itEnd = writer.getFormatsShort().end();
 		it != itEnd;
@@ -94,7 +91,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	}
 	format->setDefault( 2 );
 
-	ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kCodecLong );
+	OFX::ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kCodecLong );
 	codecLong->setLabel( "codec" );
 	for( std::vector<std::string>::const_iterator it = writer.getCodecsLong().begin(), itEnd = writer.getCodecsLong().end();
 		it != itEnd;
@@ -102,7 +99,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		codecLong->appendOption( *it );
 	}
-	ChoiceParamDescriptor* codec = desc.defineChoiceParam( kCodec );
+	OFX::ChoiceParamDescriptor* codec = desc.defineChoiceParam( kCodec );
 	codec->setIsSecret( true );
 	for( std::vector<std::string>::const_iterator it = writer.getCodecsShort().begin(), itEnd = writer.getCodecsShort().end();
 		it != itEnd;

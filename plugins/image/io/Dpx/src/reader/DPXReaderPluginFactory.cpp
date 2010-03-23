@@ -25,8 +25,8 @@ namespace reader {
  */
 void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "DPXReader", "DPXReader",
-	                "DPX File reader" );
+	desc.setLabels( "TuttleDpxReader", "DpxReader",
+	                "Dpx file reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

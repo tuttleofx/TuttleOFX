@@ -1,14 +1,5 @@
-/**
- * @file BitDepthConvPluginFactory.cpp
- * @brief
- * @author
- * @date    08/01/10 17:46
- *
- */
- 
-#include "BitDepthConvPluginFactory.hpp"
-#include "BitDepthConvPlugin.hpp"
-#include "BitDepthConvDefinitions.hpp"
+#include "BitDepthPlugin.hpp"
+#include "BitDepthDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -24,15 +15,20 @@
 
 namespace tuttle {
 namespace plugin {
-namespace bitDepthConvert {
+namespace bitDepth {
+
+static const bool   kSupportTiles                 = false;
+
+mDeclarePluginFactory( BitDepthPluginFactory, { }, { } );
+
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void BitDepthConvPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void BitDepthPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-    desc.setLabels( "bitDepthConvert", "bitDepthConvert",
+    desc.setLabels( "TuttleBitDepth", "BitDepth",
                     "Bit depth convertor" );
     desc.setPluginGrouping( "tuttle" );
 
@@ -54,7 +50,7 @@ void BitDepthConvPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void BitDepthConvPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
+void BitDepthPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
                                                    OFX::ContextEnum context )
 {
     OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -76,7 +72,7 @@ void BitDepthConvPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	outBitDepth->appendOption("float (32 bits)");
 	outBitDepth->setDefault(3);
 
-    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kBitDepthConvHelpButton );
+    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kBitDepthHelpButton );
     helpButton->setScriptName( "&Help" );
 }
 
@@ -86,10 +82,10 @@ void BitDepthConvPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* BitDepthConvPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* BitDepthPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                              OFX::ContextEnum context )
 {
-    return new BitDepthConvPlugin( handle );
+    return new BitDepthPlugin( handle );
 }
 
 }
@@ -101,7 +97,7 @@ namespace Plugin {
 
 void getPluginIDs(OFX::PluginFactoryArray &ids)
 {
-	static tuttle::plugin::bitDepthConvert::BitDepthConvPluginFactory p("fr.tuttle.bitdepth", 1, 0);
+	static tuttle::plugin::bitDepth::BitDepthPluginFactory p("fr.tuttle.bitdepth", 1, 0);
 	ids.push_back(&p);
 }
 

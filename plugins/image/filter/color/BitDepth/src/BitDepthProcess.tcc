@@ -2,7 +2,7 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
-#include "BitDepthConvPlugin.hpp"
+#include "BitDepthPlugin.hpp"
 
 #include <cstdlib>
 #include <cassert>
@@ -13,24 +13,24 @@
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
-#include "BitDepthConvDefinitions.hpp"
+#include "BitDepthDefinitions.hpp"
 
 
 namespace tuttle {
 namespace plugin {
-namespace bitDepthConvert {
+namespace bitDepth {
 
 using namespace boost::gil;
 
 template<class SView, class DView>
-BitDepthConvProcess<SView, DView>::BitDepthConvProcess( BitDepthConvPlugin &instance )
+BitDepthProcess<SView, DView>::BitDepthProcess( BitDepthPlugin &instance )
 : ImageGilProcessor<DView>( instance )
 , _plugin( instance )
 {
 }
 
 template<class SView, class DView>
-void BitDepthConvProcess<SView, DView>::setup( const OFX::RenderArguments &args )
+void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments &args )
 {
 	// destination view
 	_dst.reset( _plugin.getDstClip( )->fetchImage( args.time ) );
@@ -56,7 +56,7 @@ void BitDepthConvProcess<SView, DView>::setup( const OFX::RenderArguments &args 
  * @param[in] procWindow  Processing window
  */
 template<class SView, class DView>
-void BitDepthConvProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& procWindow )
+void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	SView src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
 							   procWindow.x2 - procWindow.x1,

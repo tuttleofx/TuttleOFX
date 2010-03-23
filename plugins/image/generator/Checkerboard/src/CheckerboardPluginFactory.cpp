@@ -24,7 +24,7 @@ namespace checkerboard {
  */
 void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-    desc.setLabels( "Checkerboard", "Checkerboard",
+    desc.setLabels( "TuttleCheckerboard", "Checkerboard",
                     "Checkerboard" );
     desc.setPluginGrouping( "tuttle" );
 

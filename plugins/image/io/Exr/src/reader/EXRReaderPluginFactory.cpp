@@ -26,8 +26,8 @@ static const bool kSupportTiles              = false;
  */
 void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "EXRReader", "EXRReader",
-	                "EXR File reader" );
+	desc.setLabels( "TuttleExrReader", "ExrReader",
+	                "Exr file reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
