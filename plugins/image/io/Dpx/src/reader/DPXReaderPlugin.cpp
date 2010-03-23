@@ -20,8 +20,8 @@ using namespace boost::gil;
 const static std::string kDpxReaderHelpString = "<b>DPX Reader</b> file reader.  <br />";
 
 DPXReaderPlugin::DPXReaderPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle ),
-	_dstClip( 0 )
+: ImageEffect( handle )
+, _dstClip( 0 )
 {
 	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kInputFilename );

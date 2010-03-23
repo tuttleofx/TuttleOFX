@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_FFMPEG_READER_PROCESS_HPP_
 
 #include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
@@ -26,7 +26,7 @@ namespace reader {
  *
  */
 template<class View>
-class FFMpegReaderProcess : public ImageGilFilterProcessor<View>
+class FFMpegReaderProcess : public ImageGilProcessor<View>
 {
 protected :
     FFMpegReaderPlugin&	_plugin;		///< Rendering plugin

@@ -11,8 +11,7 @@ namespace reader {
 
 const static std::string kFFMpegHelpButton = "Help";
 
-static const std::string kInputFilename       = "filename";
-static const std::string kInputFilenameLabel  = "Input filename";
+static const std::string kFilename    = "filename";
 
 const static std::string kFFMpegHelpString = "<b>ffmpeg video io</b> plugin is used to read video files.  <br />";
 

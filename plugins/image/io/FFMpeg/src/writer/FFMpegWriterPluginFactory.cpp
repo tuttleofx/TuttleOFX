@@ -28,8 +28,8 @@ namespace writer {
  */
 void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "TuttleFfmpeg", "Ffmpeg",
-		            "Ffmpeg video io" );
+	desc.setLabels( "TuttleFfmpegWriter", "FfmpegWriter",
+		            "Ffmpeg video writer" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts

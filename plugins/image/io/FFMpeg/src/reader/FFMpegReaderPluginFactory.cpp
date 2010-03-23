@@ -27,11 +27,12 @@ namespace reader {
  */
 void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "TuttleFfmpeg", "Ffmpeg",
-		            "Ffmpeg video io" );
+	desc.setLabels( "TuttleFfmpegReader", "FfmpegReader",
+		            "Ffmpeg video reader" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
@@ -53,16 +54,16 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
                                                    OFX::ContextEnum context )
 {
-	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
-
 	// Create the mandated output clip
 	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
+
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kFilename );
+	filename->setLabel( "filename" );
+	filename->setStringType( OFX::eStringTypeFilePath );
+	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
 	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
 	helpButton->setScriptName( "help" );

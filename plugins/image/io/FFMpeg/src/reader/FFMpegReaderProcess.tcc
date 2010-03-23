@@ -5,7 +5,7 @@ namespace reader {
 
 template<class View>
 FFMpegReaderProcess<View>::FFMpegReaderProcess( FFMpegReaderPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
+: ImageGilProcessor<View>( instance )
 , _plugin( instance )
 {
 }
@@ -15,22 +15,23 @@ void FFMpegReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	std::string sFilepath;
 	// Fetch output image
-	if ( !_plugin.getReader().read((int)args.time) )
-	{
-		boost::gil::point2<ptrdiff_t> imageDims( _plugin.getReader().width(),
-									 _plugin.getReader().height() );
+	if( _plugin.getReader().read((int)args.time) )
+		throw( tuttle::plugin::ExceptionAbort() );
+	boost::gil::point2<ptrdiff_t> imageDims( _plugin.getReader().width(),
+								 _plugin.getReader().height() );
 
-		double par       = _plugin.getDstClip()->getPixelAspectRatio();
-		OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-		this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-		OfxRectI bounds = this->_dst->getBounds();
-		if( !this->_dst.get() )
-			throw( tuttle::plugin::ImageNotReadyException() );
+	double par       = _plugin._dstClip->getPixelAspectRatio();
+	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
+	this->_dst.reset( _plugin._dstClip->fetchImage( args.time, reqRect ) );
+	OfxRectI bounds = this->_dst->getBounds();
+	if( !this->_dst.get() )
+		throw( tuttle::plugin::ImageNotReadyException() );
+	if( this->_dst->getRowBytes( ) <= 0 )
+		throw( WrongRowBytesException( ) );
 
-		// Build destination view
-		this->_dstView = this->getView( this->_dst.get(),
-										_plugin.getDstClip()->getPixelRod(args.time) );
-	}
+	// Build destination view
+	this->_dstView = this->getView( this->_dst.get(),
+									_plugin._dstClip->getPixelRod(args.time) );
 }
 
 /**

@@ -22,19 +22,8 @@ FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath = fetchStringParam( kInputFilename );
-}
-
-OFX::Clip* FFMpegReaderPlugin::getSrcClip( ) const
-{
-    return _srcClip;
-}
-
-OFX::Clip* FFMpegReaderPlugin::getDstClip( ) const
-{
-    return _dstClip;
+	_filepath = fetchStringParam( kFilename );
 }
 
 FFMpegReaderParams FFMpegReaderPlugin::getParams() const
@@ -131,7 +120,7 @@ void FFMpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, con
                      "", // No XML resources
                      kFFMpegHelpString );
     }
-	else if( paramName == kInputFilename )
+	else if( paramName == kFilename )
 	{
 		std::string sFilepath;
 		_filepath->getValue( sFilepath );
@@ -156,6 +145,15 @@ bool FFMpegReaderPlugin::getTimeDomain( OfxRangeD& range )
 		range.min = 0.0;
 		range.max = (double)_reader.nbFrames();
 	}
+}
+
+bool FFMpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	rod.x1 = 0;
+	rod.x2 = _reader.width();
+	rod.y1 = 0;
+	rod.y2 = _reader.height();
+	return true;
 }
 
 void FFMpegReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
