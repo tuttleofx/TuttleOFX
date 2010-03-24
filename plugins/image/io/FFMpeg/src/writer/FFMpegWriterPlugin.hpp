@@ -16,8 +16,9 @@ namespace writer {
 struct FFMpegProcessParams
 {
 	std::string _filepath;      ///< Ffmpeg filepath
-	int _format;
-	int _codec;
+	int _format;				///< Format
+	int _codec;					///< Codec
+	int _bitrate;				///< Bit rate
 };
 
 /**
@@ -49,6 +50,7 @@ protected:
 	OFX::ChoiceParam    *_formatLong;
 	OFX::ChoiceParam    *_codec;
 	OFX::ChoiceParam    *_codecLong;
+	OFX::IntParam       *_bitRate;
 	VideoFFmpegWriter	_writer;
 };
 

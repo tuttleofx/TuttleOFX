@@ -16,6 +16,7 @@ static const std::string kFormatLong  = "formatLong";
 static const std::string kFormat      = "format";
 static const std::string kCodecLong   = "codecLong";
 static const std::string kCodec       = "codec";
+static const std::string kBitrate     = "bitrate";
 
 const static std::string kFFMpegHelpString = "<b>ffmpeg video io</b> plugin is used to output video file.  <br />";
 

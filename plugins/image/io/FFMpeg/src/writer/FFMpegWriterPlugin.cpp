@@ -29,6 +29,7 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	_formatLong = fetchChoiceParam( kFormatLong );
 	_codec = fetchChoiceParam( kCodec );
 	_codecLong = fetchChoiceParam( kCodecLong );
+	_bitRate = fetchIntParam( kBitrate );
 }
 
 OFX::Clip* FFMpegWriterPlugin::getSrcClip( ) const
@@ -52,6 +53,7 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 	_filepath->getValue( params._filepath );
 	_format->getValue( params._format );
 	_codec->getValue( params._codec );
+	_bitRate->getValue( params._bitrate );
 	return params;
 }
 
@@ -157,10 +159,10 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, con
 void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	_writer.filename( _filepath->getValue() );
-	COUT_VAR( _format->getValue() );
 	_writer.setFormat( _format->getValue() );
-	COUT_VAR( _codec->getValue() );
 	_writer.setCodec( _codec->getValue() );
+	_writer.fps( _srcClip->getFrameRate() );
+	_writer.aspectRatio( _srcClip->getPixelAspectRatio() );
 }
 
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
@@ -174,29 +176,6 @@ void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 	{
 		clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
 		clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
-//		clipPreferences.setPixelAspectRatio( *_dstClip, _writer.aspectRatio() );
-//		clipPreferences.setOutputFrameRate( _writer.fps() );
-/*
-		// Setup fielding
-		switch( _writer.interlacment() )
-		{
-			case  eInterlacmentNone:
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldNone );
-				break;
-			}
-			case  eInterlacmentUpper:
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldUpper );
-				break;
-			}
-			case  eInterlacmentLower:
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldLower );
-				break;
-			}
-		}
-*/
 	}
 }
 

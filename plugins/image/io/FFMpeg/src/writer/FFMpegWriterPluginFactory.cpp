@@ -109,6 +109,10 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	}
 	codec->setDefault( 18 );
 
+	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kBitrate );
+	bitrate->setLabel( "bitrate" );
+	bitrate->setDefault( 400000 );
+
 	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
 	helpButton->setScriptName( "help" );
 }

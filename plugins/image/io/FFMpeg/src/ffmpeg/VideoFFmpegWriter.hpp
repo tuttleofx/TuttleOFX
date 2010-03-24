@@ -45,7 +45,7 @@ public:
 		return _filename;
 	}
 
-	void width( int width )
+	void width( const int width )
 	{
 		_width = width;
 	}
@@ -54,7 +54,7 @@ public:
 		return _width;
 	}
 
-	void height( int height )
+	void height( const int height )
 	{
 		_height = height;
 	}
@@ -71,14 +71,13 @@ public:
 	{
 		return _aspectRatio;
 	}
-
-	void framerate( double framerate )
+	void fps( const double fps )
 	{
-		_framerate = framerate;
+		_fps = fps;
 	}
-	double framerate( ) const
+	double fps( ) const
 	{
-		return _framerate;
+		return _fps;
 	}
 	const std::string& getFormat() const
 	{
@@ -92,11 +91,15 @@ public:
 	{
 		return _formatsLongNames;
 	}
+
+	void setBitrate( const int bitrate )
+	{
+		_bitrate = bitrate;
+	}
+
 	void setFormat( const unsigned int id )
 	{
 		_format = _formatsShortNames[id];
-		COUT("setFormat");
-		COUT_VAR(_format);
 	}
 	void setFormat( const std::string& format )
 	{
@@ -117,8 +120,6 @@ public:
 	void setCodec( const unsigned int id )
 	{
 		_codec = _codecsShortNames[id];
-		COUT("setCodec");
-		COUT_VAR(_codec);
 	}
 	void setCodec( const std::string& codec )
 	{
@@ -140,7 +141,6 @@ private:
 	int _width;
 	int _height;
 	double _aspectRatio;
-	double _framerate; // not used....
 	PixelFormat _out_pixelFormat;
 	// knobs variables
 	float _fps;
