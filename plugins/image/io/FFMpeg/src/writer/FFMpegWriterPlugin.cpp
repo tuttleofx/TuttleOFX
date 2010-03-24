@@ -2,6 +2,8 @@
 #include "FFMpegWriterProcess.hpp"
 #include "FFMpegWriterDefinitions.hpp"
 
+#include <ffmpeg/VideoFFmpegWriter.hpp>
+
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -37,6 +39,11 @@ OFX::Clip* FFMpegWriterPlugin::getSrcClip( ) const
 OFX::Clip* FFMpegWriterPlugin::getDstClip( ) const
 {
     return _dstClip;
+}
+
+VideoFFmpegWriter & FFMpegWriterPlugin::getWriter( )
+{
+    return _writer;
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
@@ -149,11 +156,16 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, con
 
 void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
+	_writer.filename( _filepath->getValue() );
+	COUT_VAR( _format->getValue() );
+	_writer.setFormat( _format->getValue() );
+	COUT_VAR( _codec->getValue() );
+	_writer.setCodec( _codec->getValue() );
 }
 
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
 {
-//	_writer.finish();
+	_writer.finish();
 }
 
 void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )

@@ -13,33 +13,6 @@ FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin &instance )
 , _plugin( instance )
 , _params( _plugin.getProcessParams() )
 {
-	COUT_INFOS;
-}
-
-
-template<class View>
-void FFMpegWriterProcess<View>::preProcess()
-{
-	COUT_INFOS;
-	ImageGilProcessor<View>::preProcess();
-	/*
-	if( !boost::filesystem::exists( _params._filepath ) )
-	{
-		return;
-	}
-	*/
-	_writer.filename( _params._filepath );
-	COUT_VAR( _params._format );
-	_writer.setFormat( _params._format );
-	COUT_VAR( _params._codec );
-	_writer.setCodec( _params._codec );
-}
-
-template<class View>
-void FFMpegWriterProcess<View>::postProcess()
-{
-	ImageGilProcessor<View>::postProcess();
-	_writer.finish();
 }
 
 /**
@@ -51,19 +24,19 @@ template<class View>
 void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
-
-	_writer.width( this->_srcView.width() );
-	_writer.height( this->_srcView.height() );
+	VideoFFmpegWriter & writer = _plugin.getWriter();
+	writer.width( this->_srcView.width() );
+	writer.height( this->_srcView.height() );
 
 	rgb8_image_t img( this->_srcView.dimensions() );
 	rgb8_view_t vw( view(img) );
 	// Convert pixels in PIX_FMT_RGB24
-	copy_and_convert_pixels( this->_srcView, vw );
+	copy_and_convert_pixels( this->_srcView, flipped_up_down_view( vw ) );
 	// Convert pixels to destination
 	copy_and_convert_pixels( this->_srcView, this->_dstView );
-	uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( this->_srcView );
+	uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	// Execute writing
-	_writer.execute( pixels, this->_srcView.width(), this->_srcView.height(), PIX_FMT_RGB24 );
+	writer.execute( pixels, this->_srcView.width(), this->_srcView.height(), PIX_FMT_RGB24 );
 }
 
 }

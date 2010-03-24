@@ -48,7 +48,7 @@ void FFMpegReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 							  (const rgb8c_pixel_t*)( _plugin.getReader().data() ),
 							  _plugin.getReader().width() * 3 );
 
-	copy_and_convert_pixels(ffmpegSrcView, this->_dstView);
+	copy_and_convert_pixels(ffmpegSrcView, flipped_up_down_view( this->_dstView ) );
 }
 
 }

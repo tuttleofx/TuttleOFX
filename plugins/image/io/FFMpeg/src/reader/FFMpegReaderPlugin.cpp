@@ -73,10 +73,10 @@ void FFMpegReaderPlugin::render( const OFX::RenderArguments &args )
                 break;
             }
             case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
+                COUT_FATALERROR( "BitDepthNone not recognized." );
                 return;
             case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
+                COUT_FATALERROR( "BitDepthCustom not recognized." );
                 return;
         }
     }

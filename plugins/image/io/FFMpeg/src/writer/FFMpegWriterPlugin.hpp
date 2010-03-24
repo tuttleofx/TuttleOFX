@@ -29,7 +29,7 @@ public:
     FFMpegWriterPlugin( OfxImageEffectHandle handle );
     OFX::Clip *getSrcClip( ) const;
     OFX::Clip *getDstClip( ) const;
-//	VideoFFmpegWriter & getWriter();
+	VideoFFmpegWriter & getWriter();
 
 public:
     virtual void render( const OFX::RenderArguments &args );
@@ -49,7 +49,7 @@ protected:
 	OFX::ChoiceParam    *_formatLong;
 	OFX::ChoiceParam    *_codec;
 	OFX::ChoiceParam    *_codecLong;
-//	VideoFFmpegWriter	_writer;
+	VideoFFmpegWriter	_writer;
 };
 
 }

@@ -89,7 +89,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		format->appendOption( *it );
 	}
-	format->setDefault( 2 );
+	format->setDefault( 25 );
 
 	OFX::ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kCodecLong );
 	codecLong->setLabel( "codec" );
@@ -107,7 +107,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		codec->appendOption( *it );
 	}
-	codec->setDefault( 2 );
+	codec->setDefault( 18 );
 
 	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
 	helpButton->setScriptName( "help" );

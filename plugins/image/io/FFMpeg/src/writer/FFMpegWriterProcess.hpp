@@ -15,6 +15,8 @@
 #include <vector>
 #include <iostream>
 
+#include <ffmpeg/VideoFFmpegWriter.hpp>
+
 
 namespace tuttle {
 namespace plugin {
@@ -30,13 +32,10 @@ class FFMpegWriterProcess : public ImageGilFilterProcessor<View>
 {
 protected :
     FFMpegWriterPlugin&	_plugin;		///< Rendering plugin
-	VideoFFmpegWriter _writer;
 	FFMpegProcessParams _params;
 	
 public:
     FFMpegWriterProcess( FFMpegWriterPlugin& instance );
-	void preProcess();
-	void postProcess();
     // Do some processing
     void multiThreadProcessImages( const OfxRectI& procWindow );
 };
