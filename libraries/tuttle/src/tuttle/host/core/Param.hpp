@@ -77,8 +77,8 @@ public:
 	int       getDefault() const;
 	void get( int& ) OFX_EXCEPTION_SPEC;
 	void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC;
-	void set( const int& ) OFX_EXCEPTION_SPEC;
-	void set( OfxTime time, const int& ) OFX_EXCEPTION_SPEC;
+	void set( const int ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, const int ) OFX_EXCEPTION_SPEC;
 	void          copy( const ParamInteger& p ) OFX_EXCEPTION_SPEC
 	{
 		_value = p._value;
@@ -103,8 +103,8 @@ public:
 	double    getDefault() const;
 	void get( double& ) OFX_EXCEPTION_SPEC;
 	void get( OfxTime time, double& ) OFX_EXCEPTION_SPEC;
-	void set( const double& ) OFX_EXCEPTION_SPEC;
-	void set( OfxTime time, const double& ) OFX_EXCEPTION_SPEC;
+	void set( const double ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, const double ) OFX_EXCEPTION_SPEC;
 	void derive( OfxTime time, double& ) OFX_EXCEPTION_SPEC;
 	void integrate( OfxTime time1, OfxTime time2, double& ) OFX_EXCEPTION_SPEC;
 	void          copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC
@@ -159,8 +159,8 @@ public:
 	int       getDefault() const;
 	void get( int& ) OFX_EXCEPTION_SPEC;
 	void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC;
-	void set( int ) OFX_EXCEPTION_SPEC;
-	void set( OfxTime time, int ) OFX_EXCEPTION_SPEC;
+	void set( const int ) OFX_EXCEPTION_SPEC;
+	void set( OfxTime time, const int ) OFX_EXCEPTION_SPEC;
 	void          copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC
 	{
 		_value = p._value;

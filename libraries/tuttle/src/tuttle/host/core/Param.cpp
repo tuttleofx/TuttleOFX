@@ -122,12 +122,12 @@ void ParamInteger::get( OfxTime time, int& v ) OFX_EXCEPTION_SPEC
 	v = _value; ///< @todo: in time !
 }
 
-void ParamInteger::set( const int& v ) OFX_EXCEPTION_SPEC
+void ParamInteger::set( const int v ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 }
 
-void ParamInteger::set( OfxTime time, const int& v ) OFX_EXCEPTION_SPEC
+void ParamInteger::set( OfxTime time, const int v ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 }
@@ -159,12 +159,12 @@ void ParamDouble::get( OfxTime time, double& v ) OFX_EXCEPTION_SPEC
 	v = _value; ///< @todo: in time !
 }
 
-void ParamDouble::set( const double& v ) OFX_EXCEPTION_SPEC
+void ParamDouble::set( const double v ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 }
 
-void ParamDouble::set( OfxTime time, const double& v ) OFX_EXCEPTION_SPEC
+void ParamDouble::set( OfxTime time, const double v ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 }
@@ -245,12 +245,12 @@ void ParamChoice::get( OfxTime time, int& v ) OFX_EXCEPTION_SPEC
 	v = _value; ///< @todo: in time !
 }
 
-void ParamChoice::set( int v ) OFX_EXCEPTION_SPEC
+void ParamChoice::set( const int v ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 }
 
-void ParamChoice::set( OfxTime time, int v ) OFX_EXCEPTION_SPEC
+void ParamChoice::set( OfxTime time, const int v ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 }

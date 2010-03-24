@@ -379,8 +379,8 @@ public:
 	// deconstruct the var args lists
 
 	virtual void set( const std::string& value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
-	virtual void set( const int& value ) OFX_EXCEPTION_SPEC         { throw OfxhException( kOfxStatErrBadHandle, "Not an int parameter." ); }
-	virtual void set( const double& value ) OFX_EXCEPTION_SPEC      { throw OfxhException( kOfxStatErrBadHandle, "Not a double parameter." ); }
+	virtual void set( const int value ) OFX_EXCEPTION_SPEC         { throw OfxhException( kOfxStatErrBadHandle, "Not an int parameter." ); }
+	virtual void set( const double value ) OFX_EXCEPTION_SPEC      { throw OfxhException( kOfxStatErrBadHandle, "Not a double parameter." ); }
 
 	/// get a value, implemented by instances to deconstruct var args
 	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
@@ -621,8 +621,8 @@ public:
 	// Deriving implementatation needs to overide these
 	virtual void get( int& )               OFX_EXCEPTION_SPEC = 0;
 	virtual void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const int& )         OFX_EXCEPTION_SPEC = 0;
-	virtual void set( OfxTime time, const int& ) OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const int )         OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, const int ) OFX_EXCEPTION_SPEC = 0;
 
 	// probably derived class does not need to implement, default is an approximation
 	virtual void derive( OfxTime time, int& ) OFX_EXCEPTION_SPEC;
@@ -656,8 +656,8 @@ public:
 	// Deriving implementatation needs to overide these
 	virtual void get( int& )               OFX_EXCEPTION_SPEC = 0;
 	virtual void get( OfxTime time, int& ) OFX_EXCEPTION_SPEC = 0;
-	virtual void set( int )                OFX_EXCEPTION_SPEC = 0;
-	virtual void set( OfxTime time, int )  OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const int )                OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, const int )  OFX_EXCEPTION_SPEC = 0;
 
 	/// implementation of var args function
 	virtual void getV( va_list arg ) OFX_EXCEPTION_SPEC;
@@ -687,8 +687,8 @@ public:
 	// Deriving implementatation needs to overide these
 	virtual void get( double& )                                     OFX_EXCEPTION_SPEC = 0;
 	virtual void get( OfxTime time, double& )                       OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const double& )                               OFX_EXCEPTION_SPEC = 0;
-	virtual void set( OfxTime time, const double& )                 OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const double )                               OFX_EXCEPTION_SPEC = 0;
+	virtual void set( OfxTime time, const double )                 OFX_EXCEPTION_SPEC = 0;
 	virtual void derive( OfxTime time, double& )                    OFX_EXCEPTION_SPEC = 0;
 	virtual void integrate( OfxTime time1, OfxTime time2, double& ) OFX_EXCEPTION_SPEC = 0;
 
