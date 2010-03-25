@@ -489,6 +489,11 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
                                                            OfxTime            time,
                                                            OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
+	if ( getParams()[paramName]->changedActionInProgress() )
+	{
+		return;
+	}
+	getParams()[paramName]->changedActionBegin();
 	/*attribute::OfxhParam& param = */ getParam( paramName );
 
 	if( isClipPreferencesSlaveParam( paramName ) )
@@ -510,10 +515,13 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
 
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
+	COUT_INFOS;
 	OfxStatus status = mainEntry( kOfxActionInstanceChanged, this->getHandle(), &inArgs, 0 );
+	COUT_INFOS;
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 		throw OfxhException( status );
+	getParams()[paramName]->changedActionEnd();
 }
 
 void OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName,
@@ -708,6 +716,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		catch( core::exception::LogicError& e )
 		{
 			COUT_EXCEPTION( e );
+			COUT_ERROR( "Need a clip \"" << kOfxImageEffectSimpleSourceClipName << "\" in context : \"" << _context << "\"." );
 		}
 	}
 	else if( _context == kOfxImageEffectContextTransition )

@@ -1431,7 +1431,6 @@ protected:
 
 	// so it can make one
 	friend class ParamSet;
-
 public:
 	/** @brief set the default value */
 	void setDefault( int v );

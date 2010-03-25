@@ -530,7 +530,6 @@ OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( Ofxh
 const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const throw( OfxhException, std::bad_cast )
 {
 	PropertyMap::const_iterator i = _props.find( name );
-
 	if( i == _props.end() )
 	{
 		if( _chainedSet )

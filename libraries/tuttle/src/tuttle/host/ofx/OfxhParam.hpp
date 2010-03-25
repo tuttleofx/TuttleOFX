@@ -309,12 +309,14 @@ OfxhParam();
 protected:
 	OfxhParamSet*  _paramSetInstance;
 	OfxhParam*     _parentInstance;
+	bool           _avoidRecursion;		///< Avoid recursion when updating with paramChangedAction
 
 protected:
 	OfxhParam( const OfxhParam& other )
 		: OfxhAttribute( other ),
 		_paramSetInstance( other._paramSetInstance ),
-		_parentInstance( other._parentInstance )
+		_parentInstance( other._parentInstance ),
+		_avoidRecursion(false)
 	{
 		/// @todo tuttle : copy content, not pointer ?
 	}
@@ -342,6 +344,10 @@ public:
 	//                             OfxTime     time,
 	//                             double      renderScaleX,
 	//                             double      renderScaleY) OFX_EXCEPTION_SPEC;
+
+	void changedActionBegin() { _avoidRecursion = true; }
+	void changedActionEnd() { _avoidRecursion = false; }
+	bool changedActionInProgress() const { return _avoidRecursion; }
 
 	// get the param instance
 	OfxhParamSet* getParamSetInstance()                         { return _paramSetInstance; }
