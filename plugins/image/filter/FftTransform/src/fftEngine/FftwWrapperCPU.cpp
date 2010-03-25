@@ -59,8 +59,8 @@ bool FftwWrapperCPU::fft(const float* in, Complex* out, size_t w, size_t h)
 			for(i = 0; i < w; ++i)
 			{
 				// Change centering
-				x=i;
-				y=j;
+				x = i;
+				y = j;
 				if (i < w/2 && j<h/2)   { x=i+w/2; y=j+h/2; }
 				if (i >= w/2 && j<h/2)  { x=i-w/2; y=j+h/2; }
 				if (i < w/2 && j>=h/2)  { x=i+w/2; y=j-h/2; }

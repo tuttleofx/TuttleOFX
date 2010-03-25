@@ -125,11 +125,11 @@ void FftPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::s
                      "", // No XML resources
                      kHelpString );
     }
-	else if( paramName == kFftTypeLong )
+	else if( paramName == kFftTypeLong && args.reason == OFX::eChangeUserEdit )
 	{
 		_fftType->setValue( _fftTypeLong->getValue() );
 	}
-	else if( paramName == kFftType )
+	else if( paramName == kFftType && args.reason == OFX::eChangeUserEdit )
 	{
 		_fftTypeLong->setValue( _fftType->getValue() );
 	}

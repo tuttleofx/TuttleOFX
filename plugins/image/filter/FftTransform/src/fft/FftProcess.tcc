@@ -15,6 +15,7 @@ FftProcess<View>::FftProcess( FftPlugin &instance )
 : ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
+	this->setNoMultiThreading();
 }
 
 /**

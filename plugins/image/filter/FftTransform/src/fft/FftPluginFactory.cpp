@@ -46,7 +46,6 @@ void FftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setHostFrameThreading( kHostFrameThreading );
 }
 
 /**

@@ -138,19 +138,19 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, con
                      "", // No XML resources
                      kFFMpegHelpString );
     }
-	else if( paramName == kFormatLong )
+	else if( paramName == kFormatLong && args.reason == OFX::eChangeUserEdit  )
 	{
 		_format->setValue( _formatLong->getValue() );
 	}
-	else if( paramName == kFormat )
+	else if( paramName == kFormat && args.reason == OFX::eChangeUserEdit )
 	{
 		_formatLong->setValue( _format->getValue() );
 	}
-	else if( paramName == kCodecLong )
+	else if( paramName == kCodecLong && args.reason == OFX::eChangeUserEdit )
 	{
 		_codec->setValue( _codecLong->getValue() );
 	}
-	else if( paramName == kCodec )
+	else if( paramName == kCodec && args.reason == OFX::eChangeUserEdit )
 	{
 		_codecLong->setValue( _codec->getValue() );
 	}
