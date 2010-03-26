@@ -35,6 +35,7 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
+	this->setNoMultiThreading();
 	_filepath      = instance.fetchStringParam( kInputFilename );
 	_outComponents = instance.fetchChoiceParam( kOutputComponents );
 }

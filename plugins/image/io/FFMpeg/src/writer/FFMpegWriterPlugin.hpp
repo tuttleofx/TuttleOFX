@@ -30,7 +30,7 @@ public:
     FFMpegWriterPlugin( OfxImageEffectHandle handle );
     OFX::Clip *getSrcClip( ) const;
     OFX::Clip *getDstClip( ) const;
-	VideoFFmpegWriter & getWriter();
+	J2KWriter & getWriter();
 
 public:
     virtual void render( const OFX::RenderArguments &args );
@@ -51,7 +51,7 @@ protected:
 	OFX::ChoiceParam    *_codec;
 	OFX::ChoiceParam    *_codecLong;
 	OFX::IntParam       *_bitRate;
-	VideoFFmpegWriter	_writer;
+	J2KWriter	_writer;
 };
 
 }

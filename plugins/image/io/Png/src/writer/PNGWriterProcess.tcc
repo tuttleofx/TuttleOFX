@@ -26,6 +26,7 @@ PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
 	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
+	this->setNoMultiThreading();
 	_filepath = instance.fetchStringParam( kOutputFilename );
 }
 

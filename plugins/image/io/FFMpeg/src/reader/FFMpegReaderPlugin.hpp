@@ -25,7 +25,7 @@ class FFMpegReaderPlugin : public OFX::ImageEffect
 {
 public:
     FFMpegReaderPlugin( OfxImageEffectHandle handle );
-	VideoFFmpegReader & getReader();
+	J2KReader & getReader();
 
 public:
     virtual void render( const OFX::RenderArguments &args );
@@ -43,7 +43,7 @@ public:
     OFX::Clip* _dstClip;       ///< Destination image clip
 	boost::scoped_ptr<std::string> _openedSource;  ///< Opened video file source
 	OFX::StringParam* _filepath;      ///< Ffmpeg filepath
-	VideoFFmpegReader	_reader;
+	J2KReader	_reader;
 };
 
 }

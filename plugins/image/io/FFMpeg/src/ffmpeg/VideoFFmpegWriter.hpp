@@ -10,7 +10,7 @@
 #include <vector>
 
 
-class VideoFFmpegWriter : public FFmpeg
+class J2KWriter : public FFmpeg
 {
 private:
 
@@ -20,8 +20,8 @@ private:
 	};
 
 public:
-	explicit VideoFFmpegWriter();
-	~VideoFFmpegWriter( );
+	explicit J2KWriter();
+	~J2KWriter( );
 
 	bool movie( ) const
 	{

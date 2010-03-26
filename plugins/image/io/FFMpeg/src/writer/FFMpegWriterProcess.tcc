@@ -13,6 +13,7 @@ FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin &instance )
 , _plugin( instance )
 , _params( _plugin.getProcessParams() )
 {
+	this->setNoMultiThreading();
 }
 
 /**
@@ -24,7 +25,7 @@ template<class View>
 void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
-	VideoFFmpegWriter & writer = _plugin.getWriter();
+	J2KWriter & writer = _plugin.getWriter();
 	writer.width( this->_srcView.width() );
 	writer.height( this->_srcView.height() );
 
