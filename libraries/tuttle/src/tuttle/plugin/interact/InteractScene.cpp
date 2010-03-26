@@ -6,11 +6,10 @@ namespace plugin {
 namespace interact {
 
 InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos )
-: _params(params)
-, _infos(infos)
-, _mouseDown(false)
+: _params( params )
+, _infos( infos )
+, _mouseDown( false )
 {
-	_selected.reserve(50);
 }
 
 InteractScene::~InteractScene( ) { }
@@ -18,6 +17,7 @@ InteractScene::~InteractScene( ) { }
 
 bool InteractScene::draw( const OFX::DrawArgs& args )
 {
+	COUT_INFOS;
 	bool result = false;
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
@@ -27,11 +27,13 @@ bool InteractScene::draw( const OFX::DrawArgs& args )
 		if( itActive->active() )
 			result |= it->draw(args);
 	}
+	COUT_INFOS;
 	return result;
 }
 
 bool InteractScene::penMotion( const OFX::PenArgs& args )
 {
+	COUT_INFOS;
 //		bool result = false;
 //		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 //		     it != itEnd;
@@ -60,7 +62,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		return false;
 
 	bool moveSomething = false;
-	Point2 move = _infos.pointCanonicalXYToNormalizedXXc( ofxToGil( args.penPosition ) );
+	Point2 move = ofxToGil( args.penPosition );
 	switch( _moveType )
 	{
 		case eMoveTypeXY:
@@ -90,11 +92,13 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		case eMoveTypeNone:
 			break;
 	}
+	COUT_INFOS;
 	return moveSomething;
 }
 
 bool InteractScene::penDown( const OFX::PenArgs& args )
 {
+	COUT_INFOS;
 	bool result = false;
 	_mouseDown = true;
 	_moveType = eMoveTypeNone;
@@ -107,7 +111,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 //			result |= it->penDown(args);
 //		}
 	COUT_VAR2(args.penPosition.x, args.penPosition.y);
-	bgil::point2<double> penPosition = _infos.pointCanonicalXYToNormalizedXXc( ofxToGil( args.penPosition ) );
+	Point2 penPosition = ofxToGil( args.penPosition );
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 		 it != itEnd;
@@ -142,11 +146,13 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 //			return true;
 //		}
 	_mouseDown = result;
+	COUT_INFOS;
 	return result;
 }
 
 bool InteractScene::penUp( const OFX::PenArgs& args )
 {
+	COUT_INFOS;
 	_mouseDown = false;
 	bool result = false;
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
@@ -160,6 +166,7 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 	}
 	_params.endEditBlock();
 	_selected.clear();
+	COUT_INFOS;
 	return result;
 }
 

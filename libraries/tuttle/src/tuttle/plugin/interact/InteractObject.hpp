@@ -9,6 +9,17 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
+typedef double Scalar;
+typedef boost::gil::point2<Scalar> Point2;
+
+enum ECoordonateSystem
+{
+	eCoordonateSystemXXcn,
+//	eCoordonateSystemXXn,
+//	eCoordonateSystemXYn,
+	eCoordonateSystemXY,
+};
+
 /**
  * @brief A base class for all object to use in interact or overlay.
  * All sub classes needs to implement virtual functions from OFX::InteractI

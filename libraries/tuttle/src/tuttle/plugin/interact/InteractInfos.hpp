@@ -36,6 +36,13 @@ Point pointNormalizedXYToCanonicalXY( const Point& point, const Point& imgSize )
 template<typename Point>
 Point pointCanonicalXYToNormalizedXXc( const Point& point, const Point& imgSize )
 {
+	if( imgSize.x == 0 )
+	{
+		Point p;
+		p.x = 0;
+		p.y = 0;
+		return p;
+	}
 	Point p;
 	p.x = (point.x/imgSize.x)-0.5;
 	p.y = ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x) - 0.5;
@@ -71,7 +78,7 @@ public:
 	, _focus(false)
 	, _lastPenPos(0,0)
     , _penDown(false)
-	, _imgSize( ofxToGil(effect->getProjectSize()) )
+	, _projectSize( ofxToGil(effect->getProjectSize()) )
     , _marge(0.01)
     {
     }
@@ -80,18 +87,18 @@ public:
     bool _focus;
     Point2 _lastPenPos;
     bool _penDown;
-    Point2 _imgSize;
+    Point2 _projectSize; ///< ideally must be the RoW and not a project size...
 	double _marge;
 
 	template<typename Value>
-    Value canonicalXXToNormalizedXX( const Value& point ) const { return interact::canonicalXXToNormalizedXX( point, _imgSize ); }
+    Value canonicalXXToNormalizedXX( const Value& point ) const { return interact::canonicalXXToNormalizedXX( point, _projectSize ); }
 	template<typename Value>
-    Value normalizedXXToCanonicalXX( const Value& point ) const { return interact::normalizedXXToCanonicalXX( point, _imgSize ); }
+    Value normalizedXXToCanonicalXX( const Value& point ) const { return interact::normalizedXXToCanonicalXX( point, _projectSize ); }
 
 	template<typename Value>
-    Value pointCanonicalXYToNormalizedXY( const Value& point ) const { return interact::pointCanonicalXYToNormalizedXY( point, _imgSize ); }
+    Value pointCanonicalXYToNormalizedXY( const Value& point ) const { return interact::pointCanonicalXYToNormalizedXY( point, _projectSize ); }
 	template<typename Point>
-    Point pointNormalizedXYToCanonicalXY( const Point& point ) const { return interact::pointNormalizedXYToCanonicalXY( point, _imgSize ); }
+    Point pointNormalizedXYToCanonicalXY( const Point& point ) const { return interact::pointNormalizedXYToCanonicalXY( point, _projectSize ); }
 
 //	template<typename Point>
 //    Point pointCanonicalXYToNormalizedXX( const Point& point ) const
@@ -101,7 +108,7 @@ public:
 	template<typename Point>
     Point pointCanonicalXYToNormalizedXXc( const Point& point ) const
 	{
-		return interact::pointCanonicalXYToNormalizedXXc( point, _imgSize );
+		return interact::pointCanonicalXYToNormalizedXXc( point, _projectSize );
 	}
 //	template<typename Point>
 //    Point pointNormalizedXXToCanonicalXY( const Point& point ) const
@@ -109,9 +116,9 @@ public:
 //		return interact::pointNormalizedXXToCanonicalXY( point, _imgSize );
 //	}
 	template<typename Point>
-    Point pointNormalizedXXcToCanonicalXY( const Point& point ) const
+    Point pointNormalizedXXcnToCanonicalXY( const Point& point ) const
 	{
-		return interact::pointNormalizedXXcToCanonicalXY( point, _imgSize );
+		return interact::pointNormalizedXXcToCanonicalXY( point, _projectSize );
 	}
 };
 

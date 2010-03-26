@@ -54,13 +54,13 @@ inline EMoveType clicPoint( const Point& point, const Point& mouse, const double
 	dist.x = std::abs(point.x - mouse.x);
 	dist.y = std::abs(point.y - mouse.y);
 	
-	double doubleMarge = marge * 2.0;
-	double halfMarge = marge * 0.5;
+	double bigMarge = marge * 3.0;
+	double tinyMarge = marge * 0.5;
 	if( dist.x < marge && dist.y < marge )
 		return eMoveTypeXY;
-	if( dist.y < halfMarge && dist.x < doubleMarge )
+	if( dist.y < tinyMarge && dist.x < bigMarge )
 		return eMoveTypeX;
-	if( dist.x < halfMarge && dist.y < doubleMarge  )
+	if( dist.x < tinyMarge && dist.y < bigMarge  )
 		return eMoveTypeY;
 	return eMoveTypeNone;
 }
