@@ -213,8 +213,8 @@ const std::string ImageEffectNode::getProjectPixelComponentsType() const
  */
 const std::string ImageEffectNode::getProjectBitDepth() const
 {
-	return kOfxBitDepthByte;
-	//	return kOfxBitDepthFloat;
+	//return kOfxBitDepthByte;
+	return kOfxBitDepthFloat;
 }
 
 // make a parameter instance
