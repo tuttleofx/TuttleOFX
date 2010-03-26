@@ -42,7 +42,7 @@ OFX::Clip* FFMpegWriterPlugin::getDstClip( ) const
     return _dstClip;
 }
 
-VideoFFmpegWriter & FFMpegWriterPlugin::getWriter( )
+J2KWriter & FFMpegWriterPlugin::getWriter( )
 {
     return _writer;
 }

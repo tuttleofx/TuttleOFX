@@ -36,6 +36,7 @@ PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
 	_plugin( instance )
 {
 	assert( _plugin._filepath != NULL );
+	this->setNoMultiThreading();
 }
 
 template<class View>

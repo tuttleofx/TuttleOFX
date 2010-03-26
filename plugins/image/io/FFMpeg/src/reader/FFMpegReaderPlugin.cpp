@@ -33,7 +33,7 @@ FFMpegReaderParams FFMpegReaderPlugin::getParams() const
 	return params;
 }
 
-VideoFFmpegReader & FFMpegReaderPlugin::getReader()
+J2KReader & FFMpegReaderPlugin::getReader()
 {
 	return _reader;
 }

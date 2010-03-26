@@ -10,7 +10,7 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
-VideoFFmpegReader::VideoFFmpegReader( )
+J2KReader::J2KReader( )
 : _context( NULL )
 , _format( NULL )
 , _params( NULL )
@@ -37,7 +37,7 @@ VideoFFmpegReader::VideoFFmpegReader( )
 
 }
 
-VideoFFmpegReader::~VideoFFmpegReader( )
+J2KReader::~J2KReader( )
 {
 	close( );
 
@@ -48,7 +48,7 @@ VideoFFmpegReader::~VideoFFmpegReader( )
 
 }
 
-void VideoFFmpegReader::open( const std::string &filename )
+void J2KReader::open( const std::string &filename )
 {
 	if( isOpen( ) )
 		close( );
@@ -111,7 +111,7 @@ void VideoFFmpegReader::open( const std::string &filename )
 	_isOpen = 1;
 }
 
-void VideoFFmpegReader::close( )
+void J2KReader::close( )
 {
 	closeVideoCodec( );
 	if( _context )
@@ -121,7 +121,7 @@ void VideoFFmpegReader::close( )
 	}
 }
 
-int VideoFFmpegReader::read( const int frame )
+int J2KReader::read( const int frame )
 {
 	if( _lastDecodedPos + 1 != frame )
 	{
@@ -148,7 +148,7 @@ int VideoFFmpegReader::read( const int frame )
 	return 0;
 }
 
-bool VideoFFmpegReader::setupStreamInfo( )
+bool J2KReader::setupStreamInfo( )
 {
 	for( unsigned int i = 0; i < _context->nb_streams; ++i )
 	{
@@ -246,7 +246,7 @@ bool VideoFFmpegReader::setupStreamInfo( )
 	return true;
 }
 
-void VideoFFmpegReader::openVideoCodec( )
+void J2KReader::openVideoCodec( )
 {
 	AVStream* stream = getVideoStream( );
 	if (stream)
@@ -264,14 +264,14 @@ void VideoFFmpegReader::openVideoCodec( )
 	}
 }
 
-void VideoFFmpegReader::closeVideoCodec( )
+void J2KReader::closeVideoCodec( )
 {
 	AVStream* stream = getVideoStream( );
 	if( stream && stream->codec )
 		avcodec_close( stream->codec );
 }
 
-int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
+int64_t J2KReader::getTimeStamp( int pos ) const
 {
 	int64_t timestamp = (int64_t) ( ( (double) pos / fps( ) ) * AV_TIME_BASE );
 	if( (uint64_t) _context->start_time != AV_NOPTS_VALUE )
@@ -279,7 +279,7 @@ int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
 	return timestamp;
 }
 
-bool VideoFFmpegReader::seek( size_t pos )
+bool J2KReader::seek( size_t pos )
 {
 	int64_t offset = getTimeStamp( pos );
 	if( _offsetTime )
@@ -306,7 +306,7 @@ bool VideoFFmpegReader::seek( size_t pos )
 	return true;
 }
 
-bool VideoFFmpegReader::decodeImage( const int frame )
+bool J2KReader::decodeImage( const int frame )
 {
 	// search for our picture.
 	double pts = 0;

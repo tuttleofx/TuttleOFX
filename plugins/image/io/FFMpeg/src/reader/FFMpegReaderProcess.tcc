@@ -8,6 +8,7 @@ FFMpegReaderProcess<View>::FFMpegReaderProcess( FFMpegReaderPlugin &instance )
 : ImageGilProcessor<View>( instance )
 , _plugin( instance )
 {
+	this->setNoMultiThreading();
 }
 
 template<class View>

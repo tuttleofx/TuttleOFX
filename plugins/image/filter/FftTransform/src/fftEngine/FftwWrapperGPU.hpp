@@ -9,7 +9,7 @@
 
 #include <cstdlib>
 #include <vector>
-#include <cuda/cuda.h>
+#include <cuda.h>
 
 namespace tuttle {
 namespace filter {

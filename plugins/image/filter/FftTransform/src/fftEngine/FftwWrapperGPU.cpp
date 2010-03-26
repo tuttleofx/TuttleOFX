@@ -6,7 +6,7 @@
 #include "IfftwWrapper.hpp"
 #include <cufft.h>
 
-#include <cuda/cuda.h>
+#include <cuda.h>
 #include <cuda_runtime.h>
 #include <cutil_inline.h>
 #include <cutil_gl_inline.h>

@@ -11,11 +11,11 @@
 
 enum EIntrelacment { eInterlacmentNone, eInterlacmentUpper, eInterlacmentLower };
 
-class VideoFFmpegReader : public FFmpeg
+class J2KReader : public FFmpeg
 {
 public:
-	explicit VideoFFmpegReader( );
-	~VideoFFmpegReader( );
+	explicit J2KReader( );
+	~J2KReader( );
 
 	bool videosequence( ) const
 	{
