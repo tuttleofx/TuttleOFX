@@ -165,12 +165,13 @@ class render_glyph
 	typedef typename view_t::value_type Pixel;
 	const view_t& _view;
 	const Pixel _color;
+	const double _letterSpacing;
 	int _x;
 	
 //	render_glyph( const This& );
 	
 public:
-	render_glyph( const view_t & view, const Pixel& color ) : _view( view ), _color(color), _x( 0 ) { }
+	render_glyph( const view_t & view, const Pixel& color, const double letterSpacing ) : _view( view ), _color(color), _letterSpacing(letterSpacing), _x( 0 ) { }
 
 	template <typename glyph_t>
 		void operator( )( const glyph_t& glyph, int kerning = 0 )
@@ -198,6 +199,7 @@ public:
 		copy_and_convert_alpha_blended_pixels( color_converted_view<gray32f_pixel_t>( glyphview ), _color, subimage_view( _view, _x, y, width, height ) );
 
 		_x += xadvance;
+		_x += _letterSpacing;
 	}
 };
 

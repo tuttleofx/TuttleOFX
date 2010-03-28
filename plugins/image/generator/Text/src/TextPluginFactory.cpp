@@ -92,11 +92,16 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	position->setLabel( "Position" );
 	position->setDefault( 0.0, 0.0 );
 
+	OFX::DoubleParamDescriptor* letterSpacing = desc.defineDoubleParam( kLetterSpacing );
+	letterSpacing->setLabel( "Letter spacing" );
+	letterSpacing->setDisplayRange( -10.0, 10.0 );
+	letterSpacing->setDefault( 0.0 );
+
 	OFX::BooleanParamDescriptor* verticalFlip = desc.defineBooleanParam( kVerticalFlip );
 	verticalFlip->setLabel( "Vertical flip" );
 	verticalFlip->setDefault( false );
 	verticalFlip->setAnimates( false );
-	verticalFlip->setHint( "Some hosts use inverted images, so you can correct this problem with this flag." );
+	verticalFlip->setHint( "Some hosts use inverted images, so you can correct this problem using this flag." );
 
 }
 

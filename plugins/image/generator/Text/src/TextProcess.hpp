@@ -70,6 +70,7 @@ protected :
 	bgil::point2<int> _textCorner;
 	bgil::point2<int> _textSize;
 	Pixel _foregroundColor;
+	TextProcessParams _params;
 	
 public:
     TextProcess( TextPlugin& instance );

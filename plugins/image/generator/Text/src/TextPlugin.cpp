@@ -24,6 +24,7 @@ ImageEffect( handle )
 	_fontSize = fetchIntParam( kFontSize );
 	_fontColor = fetchRGBAParam( kFontColor );
 	_position = fetchDouble2DParam( kPosition );
+	_letterSpacing = fetchDoubleParam( kLetterSpacing );
 	_verticalFlip = fetchBooleanParam( kVerticalFlip );
 }
 
@@ -36,6 +37,7 @@ TextProcessParams TextPlugin::getProcessParams() const
 	params._fontY = params._fontX * 1; // * ratio
 	params._fontColor = _fontColor->getValue();
 	params._position = ofxToGil( _position->getValue() );
+	params._letterSpacing = _letterSpacing->getValue();
 	params._verticalFlip = _verticalFlip->getValue();
 	
 	return params;

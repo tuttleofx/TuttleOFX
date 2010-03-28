@@ -22,9 +22,9 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	using namespace boost::gil;
 	ImageGilFilterProcessor<View>::setup( args );
 
-	TextProcessParams params = _plugin.getProcessParams();
+	_params = _plugin.getProcessParams();
 
-	if( !boost::filesystem::exists( params._font ) )
+	if( !boost::filesystem::exists( _params._font ) )
 	{
 		return;
 	}
@@ -54,16 +54,16 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	FT_Init_FreeType( &library );
 
 	FT_Face face;
-	FT_New_Face( library, params._font.c_str(), 0, &face );
-	FT_Set_Pixel_Sizes( face, params._fontX, params._fontY );
+	FT_New_Face( library, _params._font.c_str(), 0, &face );
+	FT_Set_Pixel_Sizes( face, _params._fontX, _params._fontY );
 
 	//Step 3. Make Glyphs Array ------------------
-	rgba32f_pixel_t rgba32f_foregroundColor( params._fontColor.r,
-									         params._fontColor.g,
-									         params._fontColor.b,
-									         params._fontColor.a );
+	rgba32f_pixel_t rgba32f_foregroundColor( _params._fontColor.r,
+									         _params._fontColor.g,
+									         _params._fontColor.b,
+									         _params._fontColor.a );
 	color_convert( rgba32f_foregroundColor, _foregroundColor );
-	std::transform( params._text.begin(), params._text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
+	std::transform( _params._text.begin(), _params._text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
 	//Step 4. Make Metrics Array --------------------
 	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _metrics ), bgil::make_metric() );
@@ -74,17 +74,20 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 6. Get Coordinates (x,y) ----------------
 	_textSize.x = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), bgil::make_width() );
 	_textSize.y = std::for_each( _metrics.begin(), _metrics.end(), bgil::make_height() );
-	_textCorner.x = ( this->_dstView.width() - _textSize.x ) * 0.5 + params._position.x;
-	_textCorner.y = ( this->_dstView.height() - _textSize.y ) * 0.5 + params._position.y;
+	_textCorner.x = ( this->_dstView.width() - _textSize.x ) * 0.5;
+	_textCorner.y = ( this->_dstView.height() - _textSize.y ) * 0.5;
 
-	if( params._verticalFlip )
+	if( _params._verticalFlip )
 	{
 		_dstViewForGlyphs = flipped_up_down_view( this->_dstView );
+		_textCorner.y -= _params._position.y;
 	}
 	else
 	{
 		_dstViewForGlyphs = this->_dstView;
+		_textCorner.y += _params._position.y;
 	}
+	_textCorner.x += _params._position.x;
 }
 
 /**
@@ -119,7 +122,7 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	//Step 7. Render Glyphs ------------------------
 	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y );
 	std::for_each( _glyphs.begin(), _glyphs.end(), _kerning.begin(),
-				   render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor )
+				   render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor, _params._letterSpacing )
 				 );
 
 }
