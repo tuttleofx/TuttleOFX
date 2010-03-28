@@ -20,7 +20,7 @@ PointInteract::~PointInteract( ) { }
 
 bool PointInteract::draw( const OFX::DrawArgs& args ) const
 {
-	double margeCanonical = getMarge();
+	double margeCanonical = getMarge() * args.pixelScale.x;
 	
 	Point2 p( getPoint() );
 
@@ -34,15 +34,13 @@ bool PointInteract::draw( const OFX::DrawArgs& args ) const
 	glDisable(GL_LINE_STIPPLE);
 }
 
-EMoveType PointInteract::selectIfIntesect( const Point2& mouse )
+EMoveType PointInteract::selectIfIntesect( const OFX::PenArgs& args )
 {
+	const Point2 mouse = ofxToGil( args.penPosition );
 	Point2 p = getPoint();
 	_offset = p - mouse;
-	COUT( "PointInteract::selectIfIntesect : " );
-	COUT_VAR( p );
-	COUT_VAR( mouse );
-	COUT_VAR( _infos._marge );
-	EMoveType m = clicPoint( p, mouse, getMarge() );
+	double margeCanonical = getMarge() * args.pixelScale.x;
+	EMoveType m = clicPoint( p, mouse, margeCanonical );
 	switch(m)
 	{
 		case eMoveTypeXY:

@@ -34,7 +34,7 @@ public:
 	/** @brief the function called to draw in the interact */
 	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
 
-	virtual EMoveType selectIfIntesect( const Point2& ){ return eMoveTypeNone; }
+	virtual EMoveType selectIfIntesect( const OFX::PenArgs& args ){ return eMoveTypeNone; }
 	virtual bool selectIfIsIn( const OfxRectD& ){ return false; }
 	virtual void unselect(){}
 

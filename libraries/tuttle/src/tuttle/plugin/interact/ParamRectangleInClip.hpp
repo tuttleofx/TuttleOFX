@@ -51,71 +51,72 @@ private:
 public:
 	bool draw( const OFX::DrawArgs& args ) const;
 
-	ESelectType selectType( const Point2& ) const;
+	ESelectType selectType( const OFX::PenArgs& args ) const;
 
-	EMoveType selectIfIntesect( const Point2& );
+	EMoveType selectIfIntesect( const OFX::PenArgs& args );
 	bool selectIfIsIn( const OfxRectD& );
 
 	Point2 getPoint() const
 	{
 		if( ! _relativeClip->isConnected() )
 			return Point2(0, 0); // throw to stop overlay ?
-		return ofxToGil( interact::pointCanonicalXYToNormalizedXXc( ( _paramB->getValue() + _paramA->getValue() ) * 0.5, _relativeClip->getCanonicalRodSize( this->getTime() ) ) );
+		return ofxToGil( interact::pointNormalizedXXcToCanonicalXY( ( _paramB->getValue() + _paramA->getValue() ) * 0.5, _relativeClip->getCanonicalRodSize( this->getTime() ) ) );
 	}
 	void setPoint( const Scalar& x, const Scalar& y )
 	{
-		OfxPointD imgSize = _relativeClip->getCanonicalRodSize( this->getTime() );
-		OfxPointD pA = interact::pointCanonicalXYToNormalizedXXc( _paramA->getValue(), imgSize );
-		OfxPointD pB = interact::pointCanonicalXYToNormalizedXXc( _paramB->getValue(), imgSize );
+		Point2 imgSize = ofxToGil( _relativeClip->getCanonicalRodSize( this->getTime() ) );
+		Point2 mouse( x, y );
+		mouse = interact::pointCanonicalXYToNormalizedXXc( mouse, imgSize );
+		Point2 currentPos = interact::pointCanonicalXYToNormalizedXXc( getPoint(), imgSize );
+		OfxPointD pA = _paramA->getValue();
+		OfxPointD pB = _paramB->getValue();
 		switch( _selectType )
 		{
 			case eSelectTypeT:
 			{
-				_paramB->setValue( pB.x, y );
+				_paramB->setValue( pB.x, mouse.y );
 				break;
 			}
 			case eSelectTypeL:
 			{
-				_paramA->setValue( x, pA.y );
+				_paramA->setValue( mouse.x, pA.y );
 				break;
 			}
 			case eSelectTypeR:
 			{
-				_paramB->setValue( x, pB.y );
+				_paramB->setValue( mouse.x, pB.y );
 				break;
 			}
 			case eSelectTypeB:
 			{
-				_paramA->setValue( pA.x, y );
+				_paramA->setValue( pA.x, mouse.y );
 				break;
 			}
 			case eSelectTypeTL:
 			{
-				_paramA->setValue( x, pA.y );
-				_paramB->setValue( pB.x, y );
+				_paramA->setValue( mouse.x, pA.y );
+				_paramB->setValue( pB.x, mouse.y );
 				break;
 			}
 			case eSelectTypeTR:
 			{
-				_paramB->setValue( x, y );
+				_paramB->setValue( mouse.x, mouse.y );
 				break;
 			}
 			case eSelectTypeBL:
 			{
-				_paramA->setValue( x, y );
+				_paramA->setValue( mouse.x, mouse.y );
 				break;
 			}
 			case eSelectTypeBR:
 			{
-				_paramA->setValue( pA.x, y );
-				_paramB->setValue( x, pB.y );
+				_paramA->setValue( pA.x, mouse.y );
+				_paramB->setValue( mouse.x, pB.y );
 				break;
 			}
 			case eSelectTypeC:
 			{
-				Point2 shift( getPoint() );
-				shift.x = x - shift.x;
-				shift.y = y - shift.y;
+				Point2 shift = mouse - currentPos;
 				_paramA->setValue( pA.x + shift.x, pA.y + shift.y );
 				_paramB->setValue( pB.x + shift.x, pB.y + shift.y );
 				break;
@@ -135,6 +136,7 @@ ParamRectangleInClip<coord>::ParamRectangleInClip( const InteractInfos& infos, O
 : PointInteract( infos )
 , _paramA( paramA )
 , _paramB( paramB )
+, _relativeClip( relativeClip )
 {
 }
 
@@ -152,51 +154,56 @@ bool ParamRectangleInClip<coord>::draw( const OFX::DrawArgs& args ) const
 }
 
 template<ECoordonateSystem coord>
-typename ParamRectangleInClip<coord>::ESelectType ParamRectangleInClip<coord>::selectType( const Point2& p ) const
+typename ParamRectangleInClip<coord>::ESelectType ParamRectangleInClip<coord>::selectType( const OFX::PenArgs& args ) const
 {
-	Point2 a = ofxToGil( _paramA->getValue() );
-	Point2 b = ofxToGil( _paramB->getValue() );
+	const Point2 p = ofxToGil( args.penPosition );
+	double scale = args.pixelScale.x;
+	double margeCanonical = getMarge() * scale;
+	OfxPointD imgSize = _relativeClip->getCanonicalRodSize( this->getTime() );
+	Point2 a = ofxToGil( interact::pointNormalizedXXcToCanonicalXY( _paramA->getValue(), imgSize ) );
+	Point2 b = ofxToGil( interact::pointNormalizedXXcToCanonicalXY( _paramB->getValue(), imgSize ) );
 	Point2 min, max;
 	min.x = std::min( a.x, b.x );
 	min.y = std::min( a.y, b.y );
 	max.x = std::max( a.x, b.x );
 	max.y = std::max( a.y, b.y );
 
-	if( std::abs( a.x - p.x ) < this->getMarge() )
+	if( std::abs( a.x - p.x ) < margeCanonical )
 	{
-		if( std::abs( b.y - p.y ) < this->getMarge() )
+		if( std::abs( b.y - p.y ) < margeCanonical )
 			return eSelectTypeTL;
-		else if( std::abs( a.y - p.y ) < this->getMarge() )
+		else if( std::abs( a.y - p.y ) < margeCanonical )
 			return eSelectTypeBL;
 		else if( p.y > min.y && p.y < max.y )
 			return eSelectTypeL;
 	}
-	else if( std::abs( b.x - p.x ) < this->getMarge() )
+	else if( std::abs( b.x - p.x ) < margeCanonical )
 	{
-		if( std::abs( a.y - p.y ) < this->getMarge() )
+		if( std::abs( a.y - p.y ) < margeCanonical )
 			return eSelectTypeBR;
-		else if( std::abs( b.y - p.y ) < this->getMarge() )
+		else if( std::abs( b.y - p.y ) < margeCanonical )
 			return eSelectTypeTR;
 		else if( p.y > min.y && p.y < max.y )
 			return eSelectTypeR;
 	}
-	else if( std::abs( b.y - p.y ) < this->getMarge() && p.x > min.x && p.x < max.x )
+	else if( std::abs( b.y - p.y ) < margeCanonical && p.x > min.x && p.x < max.x )
 		return eSelectTypeT;
-	else if( std::abs( a.y - p.y ) < this->getMarge() && p.x > min.x && p.x < max.x )
+	else if( std::abs( a.y - p.y ) < margeCanonical && p.x > min.x && p.x < max.x )
 		return eSelectTypeB;
 	return eSelectTypeNone;
 }
 
 template<ECoordonateSystem coord>
-EMoveType ParamRectangleInClip<coord>::selectIfIntesect( const Point2& mouse )
+EMoveType ParamRectangleInClip<coord>::selectIfIntesect( const OFX::PenArgs& args )
 {
+	const Point2 mouse = ofxToGil( args.penPosition );
 	Point2 center( (ofxToGil( _paramB->getValue() ) + ofxToGil( _paramA->getValue() )) * 0.5 );
 	this->_offset.x = 0;
 	this->_offset.y = 0;
-	_selectType = selectType( mouse );
+	_selectType = selectType( args );
 	if( _selectType != eSelectTypeNone )
 		return eMoveTypeXY;
-	EMoveType m = PointInteract::selectIfIntesect( mouse );
+	EMoveType m = PointInteract::selectIfIntesect( args );
 	if( m != eMoveTypeNone )
 		_selectType = eSelectTypeC;
 	return m;
