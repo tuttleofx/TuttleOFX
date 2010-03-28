@@ -36,13 +36,13 @@ struct make_metric
 {
 
 	template <typename glyph_t >
-		FT_Glyph_Metrics operator( )( glyph_t glyph )
+		FT_Glyph_Metrics operator( )( const glyph_t& glyph )
 	{
-		BOOST_ASSERT( glyph->face );
+		BOOST_ASSERT( glyph.face );
 		int load_flags = FT_LOAD_DEFAULT;
-		int index = FT_Get_Char_Index( glyph->face, glyph->ch );
-		FT_Load_Glyph( glyph->face, index, load_flags );
-		return glyph->face->glyph->metrics;
+		int index = FT_Get_Char_Index( glyph.face, glyph.ch );
+		FT_Load_Glyph( glyph.face, index, load_flags );
+		return glyph.face->glyph->metrics;
 	}
 };
 
@@ -53,14 +53,14 @@ struct make_kerning
 	make_kerning( ) : left_glyph( 0 ) { }
 
 	template <typename glyph_t>
-		int operator( )( glyph_t glyph )
+		int operator( )( const glyph_t& glyph )
 	{
-		int right_glyph = FT_Get_Char_Index( glyph->face, glyph->ch );
-		if( !FT_HAS_KERNING( glyph->face ) || !left_glyph || !right_glyph )
+		int right_glyph = FT_Get_Char_Index( glyph.face, glyph.ch );
+		if( !FT_HAS_KERNING( glyph.face ) || !left_glyph || !right_glyph )
 			return 0;
 
 		FT_Vector delta;
-		FT_Get_Kerning( glyph->face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &delta );
+		FT_Get_Kerning( glyph.face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &delta );
 		left_glyph = right_glyph;
 		return delta.x >> 6;
 	}
@@ -159,33 +159,35 @@ struct make_glyph_height
 };
 
 template <typename view_t>
-class render_gray_glyph
+class render_glyph
 {
-	typedef render_gray_glyph<view_t> This;
-	int _x;
+	typedef render_glyph<view_t> This;
+	typedef typename view_t::value_type Pixel;
 	const view_t& _view;
+	const Pixel _color;
+	int _x;
 	
-//	render_gray_glyph( const This& );
+//	render_glyph( const This& );
 	
 public:
-	render_gray_glyph( const view_t & view ) : _view( view ), _x( 0 ) { }
+	render_glyph( const view_t & view, const Pixel& color ) : _view( view ), _color(color), _x( 0 ) { }
 
 	template <typename glyph_t>
-		void operator( )( glyph_t glyph, int kerning = 0 )
+		void operator( )( const glyph_t& glyph, int kerning = 0 )
 	{
 		_x += kerning;
 
-		FT_GlyphSlot slot = glyph->face->glyph;
+		FT_GlyphSlot slot = glyph.face->glyph;
 
 		int load_flags = FT_LOAD_DEFAULT;
-		int index = FT_Get_Char_Index( glyph->face, glyph->ch );
-		FT_Load_Glyph( glyph->face, index, load_flags );
+		int index = FT_Get_Char_Index( glyph.face, glyph.ch );
+		FT_Load_Glyph( glyph.face, index, load_flags );
 		FT_Render_Glyph( slot, FT_RENDER_MODE_NORMAL );
 
-		int y = _view.height( ) - ( glyph->face->glyph->metrics.horiBearingY >> 6 );
-		int width = glyph->face->glyph->metrics.width >> 6;
-		int height = glyph->face->glyph->metrics.height >> 6;
-		int xadvance = glyph->face->glyph->advance.x >> 6;
+		int y = _view.height( ) - ( glyph.face->glyph->metrics.horiBearingY >> 6 );
+		int width = glyph.face->glyph->metrics.width >> 6;
+		int height = glyph.face->glyph->metrics.height >> 6;
+		int xadvance = glyph.face->glyph->advance.x >> 6;
 
 		BOOST_ASSERT( width == slot->bitmap.width );
 		BOOST_ASSERT( height == slot->bitmap.rows );
@@ -193,8 +195,7 @@ public:
 		typedef gray8_pixel_t pixel_t;
 		gray8c_view_t glyphview = interleaved_view( width, height, (pixel_t*) slot->bitmap.buffer, sizeof(unsigned char) * slot->bitmap.width );
 
-//		copy_and_convert_alpha_blended_pixels( glyph->color, color_converted_view<gray32f_pixel_t>( glyphview ), subimage_view( _view, _x, y, width, height ) );
-		copy_and_convert_alpha_blended_pixels( glyph->color, glyphview, subimage_view( _view, _x, y, width, height ) );
+		copy_and_convert_alpha_blended_pixels( color_converted_view<gray32f_pixel_t>( glyphview ), _color, subimage_view( _view, _x, y, width, height ) );
 
 		_x += xadvance;
 	}

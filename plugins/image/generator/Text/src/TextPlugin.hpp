@@ -16,6 +16,8 @@ struct TextProcessParams
 	int _fontX;
 	int _fontY;
 	OfxRGBAColourD _fontColor;
+	boost::gil::point2<double> _position;
+	bool _verticalFlip;
 };
 
 /**
@@ -39,6 +41,8 @@ public:
 	OFX::StringParam* _font;
 	OFX::IntParam* _fontSize;
 	OFX::RGBAParam* _fontColor;
+	OFX::Double2DParam* _position;
+	OFX::BooleanParam* _verticalFlip;
 };
 
 }

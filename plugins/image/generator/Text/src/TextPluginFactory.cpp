@@ -88,6 +88,16 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	color->setLabel( "Color" );
 	color->setDefault( 1.0, 1.0, 1.0, 1.0 );
 
+	OFX::Double2DParamDescriptor* position = desc.defineDouble2DParam( kPosition );
+	position->setLabel( "Position" );
+	position->setDefault( 0.0, 0.0 );
+
+	OFX::BooleanParamDescriptor* verticalFlip = desc.defineBooleanParam( kVerticalFlip );
+	verticalFlip->setLabel( "Vertical flip" );
+	verticalFlip->setDefault( false );
+	verticalFlip->setAnimates( false );
+	verticalFlip->setHint( "Some hosts use inverted images, so you can correct this problem with this flag." );
+
 }
 
 /**

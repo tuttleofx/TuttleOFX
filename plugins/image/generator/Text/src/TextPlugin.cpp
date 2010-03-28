@@ -23,19 +23,21 @@ ImageEffect( handle )
 	_font = fetchStringParam( kFont );
 	_fontSize = fetchIntParam( kFontSize );
 	_fontColor = fetchRGBAParam( kFontColor );
+	_position = fetchDouble2DParam( kPosition );
+	_verticalFlip = fetchBooleanParam( kVerticalFlip );
 }
 
 TextProcessParams TextPlugin::getProcessParams() const
 {
 	TextProcessParams params;
-	_text->getValue( params._text );
-	_font->getValue( params._font );
-
+	params._text = _text->getValue();
+	params._font = _font->getValue();
 	params._fontX = _fontSize->getValue();
 	params._fontY = params._fontX * 1; // * ratio
-
 	params._fontColor = _fontColor->getValue();
-
+	params._position = ofxToGil( _position->getValue() );
+	params._verticalFlip = _verticalFlip->getValue();
+	
 	return params;
 }
 

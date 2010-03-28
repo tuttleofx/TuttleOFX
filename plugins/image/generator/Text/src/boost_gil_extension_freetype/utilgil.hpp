@@ -6,6 +6,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt.)
 
 #include <boost/gil/image.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
 
 enum
 {
@@ -34,8 +36,8 @@ struct make_special_interval
 
 		if( r )
 		{
-			pos++;
-			r--;
+			++pos;
+			--r;
 		}
 
 		return out;
@@ -56,25 +58,44 @@ struct make_alpha_blend
 	}
 };
 
-template <typename Color, typename GlyphView, typename View> inline
-void copy_and_convert_alpha_blended_pixels( const Color& color, const GlyphView& glyphView, const View& imgView )
+template<typename GlyphView, typename View> inline
+void copy_and_convert_alpha_blended_pixels( const GlyphView& glyphView, const typename View::value_type& glyphColor, const View& dstView )
 {
-//	typedef pixel<bits32f, layout<typename color_space_type<view_t>::type> > Pixel32f;
+	using namespace boost::gil;
+//	typedef typename GlyphView::value_type GlyphPixel;
+	typedef typename View::value_type Pixel;
+
+//	typedef pixel<bits32f, layout<typename color_space_type<GlyphView>::type> > GlyphPixel32f;
 //	typedef pixel<typename channel_type<view_t>::type, layout<gray_t> > PixelGray;
-//	Pixel32f dstColor;
-//	color_convert( color, dstColor );
+
+//	BOOST_STATIC_ASSERT(( boost::is_same<typename color_space_type<glyphView>::type, gray_t>::value ));
+//	BOOST_STATIC_ASSERT(( boost::is_same<typename channel_type<glyphView>::type, bits32f>::value ));
 
 	for( int y = 0;
-		 y < imgView.height();
+		 y < dstView.height();
 		 ++y )
 	{
 		typename GlyphView::x_iterator it_glyph = glyphView.x_at( 0, y );
-		typename View::x_iterator it_img = imgView.x_at( 0, y );
+		typename View::x_iterator it_img = dstView.x_at( 0, y );
 		for( int x = 0;
-			 x < imgView.width();
+			 x < dstView.width();
 			 ++x, ++it_glyph, ++it_img )
 		{
-			color_convert( *it_glyph, *it_img );
+			Pixel pColor = glyphColor;
+			pixel_multiplies_scalar_assign_t<float, Pixel>()
+				(
+					get_color( *it_glyph, gray_color_t() ),
+					pColor
+				);
+			pixel_plus_assign_t<Pixel, Pixel>()
+				(
+					pColor,
+					*it_img
+				);
+//			COUT_VAR( get_color( *it_glyph, gray_color_t() ) );
+//			COUT_VAR( (*it_img)[0] );
+//			COUT_VAR( (int)(color[0]) );
+//			COUT_VAR( (int)(pColor[0]) );
 		}
 	}
 }

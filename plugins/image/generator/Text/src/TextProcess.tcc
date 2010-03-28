@@ -2,10 +2,7 @@
 #include "TextProcess.hpp"
 
 #include <boost/filesystem.hpp>
-
-#define white 255
-#define gray 170
-#define black 0
+#include <boost/ptr_container/ptr_inserter.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -14,11 +11,15 @@ namespace text {
 template<class View>
 TextProcess<View>::TextProcess( TextPlugin &instance )
 : ImageGilFilterProcessor<View>( instance )
-, _plugin( instance ) { }
+, _plugin( instance )
+{
+	this->setNoMultiThreading();
+}
 
 template<class View>
 void TextProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	using namespace boost::gil;
 	ImageGilFilterProcessor<View>::setup( args );
 
 	TextProcessParams params = _plugin.getProcessParams();
@@ -27,9 +28,6 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		return;
 	}
-
-	text_pixel_t backgroundColor( gray, gray, gray );
-	text_pixel_t foregroundColor( white, black, black );
 
 	//Step 1. Create bgil image
 	//Step 2. Initialize freetype
@@ -41,10 +39,17 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 8. Save GIL Image
 
 	//Step 1. Create bgil image -----------
-	//bgil::fill_pixels( bgil::view( this->_dstView ), backgroundColor );
+	if( ! this->_srcClip->isConnected() )
+	{
+//		rgba32f_pixel_t backgroundColor( params._backgroundColor.r,
+//									     params._backgroundColor.g,
+//									     params._backgroundColor.b,
+//									     params._backgroundColor.a );
+		rgba32f_pixel_t backgroundColor( 0, 0, 0, 0 );
+		fill_pixels( this->_dstView, backgroundColor );
+	}
 
 	//Step 2. Initialize freetype ---------------
-
 	FT_Library library;
 	FT_Init_FreeType( &library );
 
@@ -53,18 +58,33 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	FT_Set_Pixel_Sizes( face, params._fontX, params._fontY );
 
 	//Step 3. Make Glyphs Array ------------------
-
-	std::transform( params._text.begin( ), params._text.end( ), std::back_inserter( _glyphs ), make_glyph( face, foregroundColor ) );
+	rgba32f_pixel_t rgba32f_foregroundColor( params._fontColor.r,
+									         params._fontColor.g,
+									         params._fontColor.b,
+									         params._fontColor.a );
+	color_convert( rgba32f_foregroundColor, _foregroundColor );
+	std::transform( params._text.begin(), params._text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
 	//Step 4. Make Metrics Array --------------------
-
-	std::transform( _glyphs.begin( ), _glyphs.end( ), std::back_inserter( _metrics ), bgil::make_metric( ) );
+	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _metrics ), bgil::make_metric() );
 
 	//Step 5. Make Kerning Array ----------------
+	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _kerning ), bgil::make_kerning() );
 
-	std::transform( _glyphs.begin( ), _glyphs.end( ), std::back_inserter( _kerning ), bgil::make_kerning( ) );
+	//Step 6. Get Coordinates (x,y) ----------------
+	_textSize.x = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), bgil::make_width() );
+	_textSize.y = std::for_each( _metrics.begin(), _metrics.end(), bgil::make_height() );
+	_textCorner.x = ( this->_dstView.width() - _textSize.x ) * 0.5 + params._position.x;
+	_textCorner.y = ( this->_dstView.height() - _textSize.y ) * 0.5 + params._position.y;
 
-
+	if( params._verticalFlip )
+	{
+		_dstViewForGlyphs = flipped_up_down_view( this->_dstView );
+	}
+	else
+	{
+		_dstViewForGlyphs = this->_dstView;
+	}
 }
 
 /**
@@ -79,13 +99,6 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
 							  procWindow.x2 - procWindow.x1,
 							  procWindow.y2 - procWindow.y1 );
-
-	/*
-	View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
-							  procWindow.x2 - procWindow.x1,
-							  procWindow.y2 - procWindow.y1 );
-	copy_pixels( src, dst );
-	 */
 	
 	for( int y = procWindow.y1;
 		 y < procWindow.y2;
@@ -97,29 +110,16 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 			 x < procWindow.x2;
 			 ++x, ++src_it, ++dst_it )
 		{
-			( *dst_it ) = ( *src_it );
+			*dst_it = *src_it;
 		}
-		if( this->progressForward( ) )
+		if( this->progressForward() )
 			return;
 	}
-	
 
-	//Step 6. Get Coordinates (x,y) ----------------
-	int width = std::for_each( _metrics.begin( ), _metrics.end( ), _kerning.begin( ), bgil::make_width( ) );
-	int height = std::for_each( _metrics.begin( ), _metrics.end( ), bgil::make_height( ) );
-	int x = ( this->_dstView.width( ) - width ) / 2.0;
-	int y = ( this->_dstView.height( ) - height ) / 2.0;
-
-	x -= procWindow.x1;
-	y -= procWindow.y1;
-	
 	//Step 7. Render Glyphs ------------------------
-
-	std::for_each( _glyphs.begin( ), _glyphs.end( ), _kerning.begin( ),
-				   bgil::render_gray_glyph<View>
-				   (
-				    bgil::subimage_view( dst, x, y, width, height )
-				   )
+	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y );
+	std::for_each( _glyphs.begin(), _glyphs.end(), _kerning.begin(),
+				   render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor )
 				 );
 
 }
