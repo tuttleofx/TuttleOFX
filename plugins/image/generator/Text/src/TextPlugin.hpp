@@ -40,8 +40,9 @@ public:
     OFX::Clip* _dstClip; ///< Destination image clip
 	OFX::StringParam* _text; ///< the text to rasterize in the image
 	OFX::StringParam* _font;
-	OFX::IntParam* _fontSize;
-	OFX::RGBAParam* _fontColor;
+	OFX::IntParam* _size;
+	OFX::DoubleParam* _ratio;
+	OFX::RGBAParam* _color;
 	OFX::Double2DParam* _position;
 	OFX::DoubleParam* _letterSpacing;
 	OFX::BooleanParam* _verticalFlip;
