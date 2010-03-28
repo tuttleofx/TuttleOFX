@@ -37,6 +37,7 @@ protected:
 	OfxRectI _renderWindow; ///< @brief render window to use
 	View _dstView; ///< @brief image to process into
 	boost::scoped_ptr<OFX::Image> _dst;
+	OfxRectI _dstPixelRod;
 
 public:
 	/** @brief ctor */
@@ -62,6 +63,11 @@ public:
 		try
 		{
 			setup( args );
+			_dstPixelRod = _dst->getRegionOfDefinition();
+			_renderWindow.x1 -= _dstPixelRod.x1; // in output clip coordonates
+			_renderWindow.y1 -= _dstPixelRod.y1;
+			_renderWindow.x2 -= _dstPixelRod.x1;
+			_renderWindow.y2 -= _dstPixelRod.y1;
 		}
 		catch( ImageNotReadyException& e )
 		{
@@ -171,7 +177,7 @@ View getView( OFX::Image* img, const OfxRectI& rod )
 		return tileView;
 
 	// view the tile as a full image
-	return subimage_view( tileView, -bounds.x1, -bounds.y1, rod.x2-rod.x1, rod.y2-rod.y1 );
+	return subimage_view( tileView, rod.x1-bounds.x1, rod.y1-bounds.y1, rod.x2-rod.x1, rod.y2-rod.y1 );
 }
 
 
