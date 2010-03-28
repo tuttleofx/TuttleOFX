@@ -247,18 +247,23 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				COUT( "found non-cached binary " << binpath );
 				#endif
 				setDirty();
-
-				// the binary was not in the cache
-
-				OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlename, this );
-				_binaries.push_back( pb );
-				_knownBinFiles.insert( binpath );
-
-				for( int j = 0; j < pb->getNPlugins(); ++j )
+				try
 				{
-					OfxhPlugin* plug                         = &pb->getPlugin( j );
-					const APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
-					api.loadFromPlugin( plug );
+					// the binary was not in the cache
+					OfxhPluginBinary* pb = new OfxhPluginBinary( binpath, bundlename, this );
+					_binaries.push_back( pb );
+					_knownBinFiles.insert( binpath );
+
+					for( int j = 0; j < pb->getNPlugins(); ++j )
+					{
+						OfxhPlugin* plug                         = &pb->getPlugin( j );
+						const APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
+						api.loadFromPlugin( plug );
+					}
+				}
+				catch( core::exception::LogicError& e )
+				{
+					COUT_EXCEPTION(e);
 				}
 			}
 			else

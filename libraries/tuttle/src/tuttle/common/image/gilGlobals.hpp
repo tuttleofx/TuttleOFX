@@ -191,10 +191,23 @@ inline bgil::point2<double> ofxToGil( const OfxPointD& p )
     return bgil::point2<double>( p.x, p.y );
 }
 
+inline OfxPointD gilToOfx( const bgil::point2<double>& p )
+{
+	OfxPointD r = { p.x, p.y };
+    return r;
+}
+
 inline bgil::point2<int> ofxToGil( const OfxPointI& p )
 {
     return bgil::point2<int>( p.x, p.y );
 }
+
+inline OfxPointI gilToOfx( const bgil::point2<int>& p )
+{
+	OfxPointI r = { p.x, p. y };
+    return r;
+}
+
 
 
 
