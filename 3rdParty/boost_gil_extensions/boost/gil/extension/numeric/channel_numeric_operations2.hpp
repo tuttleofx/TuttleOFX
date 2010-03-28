@@ -55,7 +55,7 @@ struct channel_multiplies_assign_t : public std::binary_function<ChannelSrc,Chan
     typename channel_traits<ChannelDst>::reference
 	operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
                 typename channel_traits<ChannelDst>::reference ch2 ) const {
-        return ch2 *= ChannelDst( ch1 );
+        return ch2 *= ch1;
     }
 };
 
@@ -68,7 +68,7 @@ struct channel_divides_assign_t : public std::binary_function<ChannelSrc,Channel
     typename channel_traits<ChannelDst>::reference
 	operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
                 typename channel_traits<ChannelDst>::reference ch2 ) const {
-        return ch2 /= ChannelDst( ch1 );
+        return ch2 /= ch1;
     }
 };
 
@@ -108,7 +108,7 @@ struct channel_multiplies_scalar_assign_t : public std::binary_function<Scalar,C
     typename channel_traits<ChannelDst>::reference
 	operator()( const Scalar& s,
 	            typename channel_traits<ChannelDst>::reference ch ) const {
-        return ch *= ChannelDst(s);
+        return ch *= s;
     }
 };
 
@@ -121,7 +121,7 @@ struct channel_divides_scalar_assign_t : public std::binary_function<Scalar,Chan
     typename channel_traits<ChannelDst>::reference
 	operator()( const Scalar& s,
 	            typename channel_traits<ChannelDst>::reference ch ) const {
-        return ch /= ChannelDst(s);
+        return ch /= s;
     }
 };
 
