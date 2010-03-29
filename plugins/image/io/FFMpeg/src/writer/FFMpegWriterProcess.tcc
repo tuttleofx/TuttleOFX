@@ -25,7 +25,7 @@ template<class View>
 void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
-	J2KWriter & writer = _plugin.getWriter();
+	VideoFFmpegWriter & writer = _plugin.getWriter();
 	writer.width( this->_srcView.width() );
 	writer.height( this->_srcView.height() );
 

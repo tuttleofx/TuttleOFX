@@ -44,7 +44,6 @@ class OfxhPluginBinary;
 
 namespace APICache {
 
-
 /// this acts as an interface for the Plugin Cache, handling api-specific cacheing
 class OfxhPluginAPICacheI
 {

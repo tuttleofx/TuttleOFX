@@ -510,7 +510,8 @@ OfxhParamDescriptor* OfxhParamSetDescriptor::paramDefine( const char* paramType,
 OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, const std::string& name, attribute::OfxhParamSet& setInstance )
 	: attribute::OfxhAttribute( descriptor ),
 	_paramSetInstance( &setInstance ),
-	_parentInstance( 0 )
+	_parentInstance( NULL ),
+	_avoidRecursion( false )
 {
 	// parameter has to be owned by paramSet
 	setInstance.addParam( name, this ); ///< @todo tuttle move this from here (introduce too many problems), no good reason to be here.

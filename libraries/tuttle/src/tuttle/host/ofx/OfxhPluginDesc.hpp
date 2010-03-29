@@ -12,6 +12,24 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
+struct OfxhPluginIdent
+{
+	OfxhPluginIdent(): _versionMinor(0), _versionMajor(0) {}
+	OfxhPluginIdent(const std::string & identifier, const std::string & rawId, int verMin, int verMax)
+	: _identifier(identifier), _rawIdentifier(rawId), _versionMinor(verMin), _versionMajor(verMax)
+	{
+	}
+	bool operator<(const OfxhPluginIdent & d2) const { return _identifier < d2._identifier ||
+															  (_identifier == d2._identifier && _versionMajor < d2._versionMajor ) ||
+			                                                  (_identifier == d2._identifier && _versionMajor == d2._versionMajor && _versionMinor < d2._versionMinor ); }
+	bool operator!=(const OfxhPluginIdent & d2) const { return _identifier != d2._identifier &&
+															   _rawIdentifier != d2._rawIdentifier &&
+			                                                   _versionMinor != d2._versionMinor &&
+			                                                   _versionMajor != d2._versionMajor; }
+	std::string _identifier;
+	std::string _rawIdentifier;
+	int _versionMinor, _versionMajor;
+};
 
 /**
  * C++ version of the information kept inside an OfxPlugin struct
@@ -23,10 +41,7 @@ protected:
 	std::string _pluginApi; ///< the API I implement
 	int _apiVersion; ///< the version of the API
 
-	std::string _identifier; ///< the identifier of the plugin
-	std::string _rawIdentifier; ///< the original identifier of the plugin
-	int _versionMajor; ///< the plugin major version
-	int _versionMinor; ///< the plugin minor version
+	OfxhPluginIdent _ident; ///< The plugin identity
 
 public:
 	OfxhPluginDesc();
@@ -60,24 +75,34 @@ public:
 		return _apiVersion;
 	}
 
+	const OfxhPluginIdent & getIdentity() const 
+	{
+		return _ident;
+	}
+
+	OfxhPluginIdent & getIdentity()
+	{
+		return _ident;
+	}
+
 	const std::string& getIdentifier() const
 	{
-		return _identifier;
+		return _ident._identifier;
 	}
 
 	const std::string& getRawIdentifier() const
 	{
-		return _rawIdentifier;
+		return _ident._rawIdentifier;
 	}
 
 	int getVersionMajor() const
 	{
-		return _versionMajor;
+		return _ident._versionMajor;
 	}
 
 	int getVersionMinor() const
 	{
-		return _versionMinor;
+		return _ident._versionMinor;
 	}
 	
 private:
@@ -87,15 +112,15 @@ private:
 	{
 		ar & BOOST_SERIALIZATION_NVP(_pluginApi);
 		ar & BOOST_SERIALIZATION_NVP(_apiVersion);
-//		ar & BOOST_SERIALIZATION_NVP(_identifier);
-		ar & BOOST_SERIALIZATION_NVP(_rawIdentifier);
-		ar & BOOST_SERIALIZATION_NVP(_versionMajor);
-		ar & BOOST_SERIALIZATION_NVP(_versionMinor);
+//		ar & BOOST_SERIALIZATION_NVP(_ident._identifier);
+		ar & BOOST_SERIALIZATION_NVP(_ident._rawIdentifier);
+		ar & BOOST_SERIALIZATION_NVP(_ident._versionMajor);
+		ar & BOOST_SERIALIZATION_NVP(_ident._versionMinor);
 		
 		if( typename Archive::is_loading() )
 		{
-			_identifier = _rawIdentifier;
-			boost::to_lower( _identifier );
+			_ident._identifier = _ident._rawIdentifier;
+			boost::to_lower( _ident._identifier );
 		}
 	}
 };

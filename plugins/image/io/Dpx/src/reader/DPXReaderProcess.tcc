@@ -46,20 +46,23 @@ void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	// Fetch output image
 	_filepath->getValue( sFilepath );
 	if( ! bfs::exists( sFilepath ) )
-		throw tuttle::plugin::PluginException( "Unable to open : " + sFilepath );
+	{
+		throw( PluginException( "Unable to open : " + sFilepath ) );
+	}
 	_plugin.getDpxImg().read( sFilepath, true );
 
 	point2<ptrdiff_t> imageDims( _plugin.getDpxImg().width(),
 								 _plugin.getDpxImg().height() );
+	double par                = _plugin.getDstClip()->getPixelAspectRatio();
+	OfxRectD reqRect          = { 0, 0, imageDims.x * par, imageDims.y };
 
-	double par       = _plugin.getDstClip()->getPixelAspectRatio();
-	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
+	// Fetch output image
 	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-	OfxRectI bounds = this->_dst->getBounds();
-	if( !this->_dst.get() )
-		throw( tuttle::plugin::ImageNotReadyException() );
-	
-	// Build destination view
+	if( !this->_dst.get( ) )
+	    throw( ImageNotReadyException( ) );
+	if( this->_dst->getRowBytes( ) <= 0 )
+		throw( WrongRowBytesException( ) );
+	// Create destination view
 	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 

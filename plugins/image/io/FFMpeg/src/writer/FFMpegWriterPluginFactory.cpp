@@ -54,7 +54,7 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
                                                   OFX::ContextEnum context )
 {
-	J2KWriter writer;
+	VideoFFmpegWriter writer;
 	
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
