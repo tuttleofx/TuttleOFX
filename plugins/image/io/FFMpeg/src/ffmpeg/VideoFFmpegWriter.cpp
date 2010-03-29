@@ -2,7 +2,7 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-J2KWriter::J2KWriter( )
+VideoFFmpegWriter::VideoFFmpegWriter( )
 : _avformatOptions( 0 )
 , _sws_context( NULL )
 , _stream( 0 )
@@ -60,13 +60,13 @@ J2KWriter::J2KWriter( )
 	}
 }
 
-J2KWriter::~J2KWriter( )
+VideoFFmpegWriter::~VideoFFmpegWriter( )
 {
 	for( int i = 0; i < CODEC_TYPE_NB; ++i )
 		av_free( _avctxOptions[i] );
 }
 
-int J2KWriter::execute( uint8_t* in_buffer, int in_width, int in_height, PixelFormat in_pixelFormat )
+int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height, PixelFormat in_pixelFormat )
 {
 	_error = IGNORE_FINISH;
 
@@ -242,7 +242,7 @@ int J2KWriter::execute( uint8_t* in_buffer, int in_width, int in_height, PixelFo
 	return true;
 }
 
-void J2KWriter::finish( )
+void VideoFFmpegWriter::finish( )
 {
 	if( _error == IGNORE_FINISH ) return;
 	av_write_trailer( _avformatOptions );
@@ -252,7 +252,7 @@ void J2KWriter::finish( )
 	freeFormat( );
 }
 
-void J2KWriter::freeFormat( )
+void VideoFFmpegWriter::freeFormat( )
 {
 	for( int i = 0; i < static_cast<int> ( _avformatOptions->nb_streams ); ++i )
 		av_freep( &_avformatOptions->streams[i] );
