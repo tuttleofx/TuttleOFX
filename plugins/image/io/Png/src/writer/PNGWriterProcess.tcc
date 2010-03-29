@@ -44,15 +44,15 @@ void PNGWriterProcess<View>::setup( const OFX::RenderArguments& args )
 								 static_cast<Pixel*>( src->getPixelData() ),
 								 src->getRowBytes() );
 
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !dst.get() )
+	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
+	if( !this->_dst.get() )
 		throw( tuttle::plugin::ImageNotReadyException() );
-	OfxRectI dBounds = dst->getBounds();
+	OfxRectI dBounds = this->_dst->getBounds();
 
 	// Build destination view
 	_dstView = interleaved_view( std::abs( dBounds.x2 - dBounds.x1 ), std::abs( dBounds.y2 - dBounds.y1 ),
-								 static_cast<Pixel*>( dst->getPixelData() ),
-								 dst->getRowBytes() );
+								 static_cast<Pixel*>( this->_dst->getPixelData() ),
+								 this->_dst->getRowBytes() );
 }
 
 /**

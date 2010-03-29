@@ -42,27 +42,26 @@ PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
 template<class View>
 void PNGReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	std::string sFilepath = _plugin._filepath->getValue();
+	std::string sFilepath;
+	// Fetch output image
+	_plugin._filepath->getValue( sFilepath );
 	if( ! bfs::exists( sFilepath ) )
+	{
 		throw( PluginException( "Unable to open : " + sFilepath ) );
-	point2<std::ptrdiff_t> pngDims = png_read_dimensions( sFilepath );
+	}
+
+	point2<ptrdiff_t> imageDims = png_read_dimensions( sFilepath );
 	double par                = _plugin.getDstClip()->getPixelAspectRatio();
-	OfxRectD reqRect          = { 0, 0, pngDims.x * par, pngDims.y };
+	OfxRectD reqRect          = { 0, 0, imageDims.x * par, imageDims.y };
 
 	// Fetch output image
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-	OfxRectI bounds = dst->getBounds();
-	if( !dst.get() )
-		throw( ImageNotReadyException() );
-
-	COUT_VAR4(reqRect.x1,reqRect.y1,reqRect.x2,reqRect.y2);
-	OfxRectD canonicalRod = _plugin.getDstClip()->getCanonicalRod(args.time);
-	COUT_VAR4(canonicalRod.x1,canonicalRod.y1,canonicalRod.x2,canonicalRod.y2);
-	OfxRectI pixelRod = _plugin.getDstClip()->getPixelRod(args.time);
-	COUT_VAR4(pixelRod.x1,pixelRod.y1,pixelRod.x2,pixelRod.y2);
-	
-	// Build destination view
-	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
+	if( !this->_dst.get( ) )
+	    throw( ImageNotReadyException( ) );
+	if( this->_dst->getRowBytes( ) <= 0 )
+		throw( WrongRowBytesException( ) );
+	// Create destination view
+	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 
 /**
