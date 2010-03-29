@@ -195,7 +195,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 {
 	if( getPluginHandle() )
 	{
-		//COUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._apiName );
+		//COUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
 		return;
 	}
 	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( this, getApiHandler().getHost() ) );

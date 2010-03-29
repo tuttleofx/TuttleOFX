@@ -16,10 +16,8 @@ OfxhPluginDesc::OfxhPluginDesc( const std::string& api,
 				int versionMinor )
 : _pluginApi( api ),
 _apiVersion( apiVersion ),
-_identifier( identifier ),
-_rawIdentifier( rawIdentifier ),
-_versionMajor( versionMajor ),
-_versionMinor( versionMinor ) { }
+_ident( identifier, rawIdentifier, versionMinor, versionMajor )
+{ }
 
 /**
  * constructor for the case where we have already loaded the plugin binary and
@@ -28,22 +26,16 @@ _versionMinor( versionMinor ) { }
 OfxhPluginDesc::OfxhPluginDesc( OfxPlugin* ofxPlugin )
 : _pluginApi( ofxPlugin->pluginApi ),
 _apiVersion( ofxPlugin->apiVersion ),
-_identifier( ofxPlugin->pluginIdentifier ),
-_rawIdentifier( ofxPlugin->pluginIdentifier ),
-_versionMajor( ofxPlugin->pluginVersionMajor ),
-_versionMinor( ofxPlugin->pluginVersionMinor )
+_ident( ofxPlugin->pluginIdentifier, ofxPlugin->pluginIdentifier, ofxPlugin->pluginVersionMinor, ofxPlugin->pluginVersionMajor )
 {
-	boost::to_lower( _identifier );
+	boost::to_lower( _ident._identifier );
 }
 
 bool OfxhPluginDesc::operator==( const This& other ) const
 {
 	if( _pluginApi != other._pluginApi ||
 		_apiVersion != other._apiVersion ||
-		_identifier != other._identifier ||
-		_rawIdentifier != other._rawIdentifier ||
-		_versionMajor != other._versionMajor ||
-		_versionMinor != other._versionMinor )
+		_ident != other._ident )
 		return false;
 	return true;
 }

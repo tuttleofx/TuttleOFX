@@ -358,13 +358,24 @@ void OfxhPluginCache::scanPluginFiles()
 
 				if( api.pluginSupported( plug, reason ) )
 				{
+					// Check if the same plugin has already been loaded
+					if (_loadedMap.find(plug->getIdentity()) == _loadedMap.end())
+					{
+						_loadedMap[plug->getIdentity()] = true;
+					}
+					else
+					{
+						COUT_WARNING( "Warning! Plugin: " <<
+							          plug->getRawIdentifier() <<
+							          " loaded twice!" );
+					}
 					_plugins.push_back( plug );
 					api.confirmPlugin( plug );
 				}
 				else
 				{
-					std::cerr << "ignoring plugin " << plug->getIdentifier() <<
-					" as unsupported (" << reason << ")" << std::endl;
+					COUT_ERROR("Ignoring plugin " << plug->getIdentifier() <<
+					" as unsupported (" << reason << ")");
 				}
 			}
 

@@ -2500,7 +2500,7 @@ OFX::OfxPlugInfo generatePlugInfo( OFX::PluginFactory* factory, std::string& new
 	newID = factory->getUID();
 	std::auto_ptr<OfxPlugin> ofxPlugin( new OfxPlugin() );
 	ofxPlugin->pluginApi          = kOfxImageEffectPluginApi;
-	ofxPlugin->apiVersion         = 1;
+	ofxPlugin->apiVersion         = kOfxImageEffectPluginApiVersion;
 	ofxPlugin->pluginIdentifier   = factory->getID().c_str();
 	ofxPlugin->pluginVersionMajor = factory->getMajorVersion();
 	ofxPlugin->pluginVersionMinor = factory->getMinorVersion();

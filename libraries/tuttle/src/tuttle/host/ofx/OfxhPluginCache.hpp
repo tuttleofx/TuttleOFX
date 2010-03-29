@@ -86,6 +86,7 @@ protected:
 	std::list<std::string> _pluginDirs; ///< list of directories we found
 	OfxhPluginBinaryList _binaries; ///< all the binaries we know about, we own these
 	std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
+	std::map<OfxhPluginIdent, bool> _loadedMap;	///< Used to check if a plugin is loaded twice
 	std::set<std::string> _knownBinFiles;
 
 	std::list<PluginCacheSupportedApi> _apiHandlers;

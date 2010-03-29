@@ -445,7 +445,6 @@ protected:
 public:
 	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance )
 	{
-		COUT_INFOS;
 	}
 
 	virtual ~OfxhMultiDimParam()
