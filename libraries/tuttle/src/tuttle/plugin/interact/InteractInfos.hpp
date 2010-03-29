@@ -34,7 +34,7 @@ Point pointNormalizedXYToCanonicalXY( const Point& point, const Point& imgSize )
 //	}
 
 template<typename Point>
-Point pointCanonicalXYToNormalizedXXc( const Point& point, const Point& imgSize )
+Point pointCanonicalXYToNormalizedXX( const Point& point, const Point& imgSize )
 {
 	if( imgSize.x == 0 )
 	{
@@ -44,19 +44,37 @@ Point pointCanonicalXYToNormalizedXXc( const Point& point, const Point& imgSize 
 		return p;
 	}
 	Point p;
-	p.x = (point.x/imgSize.x)-0.5;
-	p.y = ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x) - 0.5;
+	p.x = (point.x/imgSize.x);
+	p.y = ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x);
 	return p;
 }
 
-//template<typename Point>
-//Point pointNormalizedXXToCanonicalXY( const Point& point, const Point& imgSize )
-//{
-//	Point p;
-//	p.x = point.x * imgSize.x;
-//	p.y = (point.y * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
-//	return p;
-//}
+template<typename Point>
+Point pointCanonicalXYToNormalizedXXc( const Point& point, const Point& imgSize )
+{
+	Point p( pointCanonicalXYToNormalizedXX( point, imgSize ) );
+	p.x -= 0.5;
+	p.y -= 0.5;
+	return p;
+}
+
+template<typename Point>
+Point pointNormalizedXXToCanonicalXX( const Point& point, const Point& imgSize )
+{
+	Point p;
+	p.x = point.x * imgSize.x;
+	p.y = point.y * imgSize.x;
+	return p;
+}
+
+template<typename Point>
+Point pointNormalizedXXToCanonicalXY( const Point& point, const Point& imgSize )
+{
+	Point p;
+	p.x = point.x * imgSize.x;
+	p.y = (point.y * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
+	return p;
+}
 
 template<typename Point>
 Point pointNormalizedXXcToCanonicalXY( const Point& point, const Point& imgSize )
