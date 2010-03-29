@@ -11,6 +11,7 @@
 #include <boost/gil/typedefs.hpp>
 #include "boost_gil_extension_freetype/freegil.hpp"
 
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/scoped_ptr.hpp>
 
 #include <cstdlib>
@@ -34,28 +35,29 @@ template<class View>
 class TextProcess : public ImageGilFilterProcessor<View>
 {
 public:
+	typedef typename View::value_type Pixel;
 	typedef rgb8_pixel_t text_pixel_t;
 	struct glyph_t
 	{
 		char ch;
 		FT_Face face;
-		text_pixel_t color;
 	};
 
+	/**
+	 * to be used with boost::ptr_container
+	 */
 	struct make_glyph
 	{
 		FT_Face _face;
-		text_pixel_t _color;
 
-		make_glyph( FT_Face face, text_pixel_t color ) : _face( face ), _color( color ) { }
+		make_glyph( FT_Face face ) : _face( face ) { }
 
-		boost::shared_ptr<glyph_t> operator( )(char ch)
+		glyph_t* operator( )(char ch)
 		{
 			glyph_t* u = new glyph_t( );
 			u->ch = ch;
-			u->color = _color;
 			u->face = _face;
-			return boost::shared_ptr<glyph_t > ( u );
+			return u;
 		}
 	};
 	
@@ -63,14 +65,18 @@ protected :
     TextPlugin&    _plugin;        ///< Rendering plugin
 	std::vector<FT_Glyph_Metrics> _metrics;
 	std::vector<int> _kerning;
-	std::vector<boost::shared_ptr<glyph_t> > _glyphs;
+	boost::ptr_vector<glyph_t> _glyphs;
+	View _dstViewForGlyphs;
+	bgil::point2<int> _textCorner;
+	bgil::point2<int> _textSize;
+	Pixel _foregroundColor;
+	TextProcessParams _params;
 	
 public:
     TextProcess( TextPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
 
-    // Do some processing
     void multiThreadProcessImages( const OfxRectI& procWindow );
 };
 

@@ -10,10 +10,9 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
-PointInteract::PointInteract( const InteractInfos& infos, const bool normalized )
+PointInteract::PointInteract( const InteractInfos& infos )
 : _infos(infos)
 , _offset(0,0)
-, _normalized(normalized)
 {
 }
 
@@ -21,29 +20,27 @@ PointInteract::~PointInteract( ) { }
 
 bool PointInteract::draw( const OFX::DrawArgs& args ) const
 {
-	typedef boost::gil::point2<double> Point2;
-	double margeCanonical = _infos.normalizedXXToCanonicalXX( _infos._marge );
+	double margeCanonical = getMarge() * args.pixelScale.x;
 	
-	Point2 p( _infos.pointNormalizedXXcToCanonicalXY( getPoint() ) );
+	Point2 p( getPoint() );
 
 	glEnable( GL_LINE_STIPPLE );
 	glColor3d(1.0,1.0,1.0);
 	glLineStipple(1, 0xAAAA);
 	overlay::displayPointRect( p, margeCanonical );
 	glLineStipple(1, 0xFFFF);
-	overlay::displayCross( p, 2.0 * margeCanonical );
+	overlay::displayCross( p, 3.0 * margeCanonical );
 	
 	glDisable(GL_LINE_STIPPLE);
 }
 
-EMoveType PointInteract::selectIfIntesect( const Point2& mouse )
+EMoveType PointInteract::selectIfIntesect( const OFX::PenArgs& args )
 {
+	const Point2 mouse = ofxToGil( args.penPosition );
 	Point2 p = getPoint();
 	_offset = p - mouse;
-	EMoveType m = clicPoint( p, mouse, _infos._marge );
-	COUT("selectIfIntesect");
-	COUT_VAR(mouse);
-	COUT_VAR(p);
+	double margeCanonical = getMarge() * args.pixelScale.x;
+	EMoveType m = clicPoint( p, mouse, margeCanonical );
 	switch(m)
 	{
 		case eMoveTypeXY:

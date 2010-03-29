@@ -33,7 +33,7 @@ int main( int argc, char** argv )
 		TCOUT( "__________________________________________________1" );
 
 		core::Graph g;
-		core::Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
+		core::Graph::Node& read1   = g.createNode( "fr.tuttle.ffmpegreader" );
 		core::Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
 		core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
 		core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
@@ -50,7 +50,7 @@ int main( int argc, char** argv )
 
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
-		read1.getParam( "filename" ).set( "input.png" );
+		read1.getParam( "filename" ).set( "input1.avi" );
 		read2.getParam( "filename" ).set( "input.dpx" );
 		read3.getParam( "filename" ).set( "input.exr" );
 	//	crop1.getParam( "Down" ).set( 400 );

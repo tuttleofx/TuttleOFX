@@ -12,23 +12,21 @@ namespace interact {
 class PointInteract : public InteractObject
 {
 public:
-	typedef double Scalar;
-	typedef boost::gil::point2<Scalar> Point2;
-public:
-	PointInteract( const InteractInfos& infos, const bool normalized = true );
+	PointInteract( const InteractInfos& infos );
 	virtual ~PointInteract() = 0;
 	
 protected:
 	const InteractInfos& _infos;
 	Point2 _offset;
-	bool _normalized;
 
 public:
+	double getTime() const { _infos._effect->timeLineGetTime(); }
 	virtual Point2 getPoint() const = 0;
 	virtual void setPoint( const Scalar& x, const Scalar& y ) = 0;
+	virtual double getMarge() const { return _infos._marge * _infos._projectSize.x; }
 	
 	virtual bool draw( const OFX::DrawArgs& args ) const;
-	virtual EMoveType selectIfIntesect( const Point2& );
+	virtual EMoveType selectIfIntesect( const OFX::PenArgs& args );
 	virtual bool selectIfIsIn( const OfxRectD& );
 	virtual bool moveXYSelected( const Point2& );
 	virtual bool moveXSelected( const Point2& );

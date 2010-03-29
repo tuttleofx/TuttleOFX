@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <cmath>
 #include <limits>
+#include <boost/numeric/conversion/cast.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -78,15 +79,36 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	font->setStringType( OFX::eStringTypeFilePath );
 	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/arial.ttf" );
 
-	OFX::IntParamDescriptor* size = desc.defineIntParam( kFontSize );
+	OFX::IntParamDescriptor* size = desc.defineIntParam( kSize );
 	size->setLabel( "Size" );
 	size->setDefault( 18 );
 	size->setRange( 0, std::numeric_limits<int>::max() );
 	size->setDisplayRange( 0, 60 );
 
-	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kFontColor );
+	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kRatio );
+	ratio->setLabel( "Ratio" );
+	ratio->setRange( 0.0, std::numeric_limits<double>::max() );
+	ratio->setDisplayRange( 0.0, 2.0 );
+	ratio->setDefault( 1.0 );
+
+	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kColor );
 	color->setLabel( "Color" );
 	color->setDefault( 1.0, 1.0, 1.0, 1.0 );
+
+	OFX::Double2DParamDescriptor* position = desc.defineDouble2DParam( kPosition );
+	position->setLabel( "Position" );
+	position->setDefault( 0.0, 0.0 );
+
+	OFX::DoubleParamDescriptor* letterSpacing = desc.defineDoubleParam( kLetterSpacing );
+	letterSpacing->setLabel( "Letter spacing" );
+	letterSpacing->setDisplayRange( -10.0, 10.0 );
+	letterSpacing->setDefault( 0.0 );
+
+	OFX::BooleanParamDescriptor* verticalFlip = desc.defineBooleanParam( kVerticalFlip );
+	verticalFlip->setLabel( "Vertical flip" );
+	verticalFlip->setDefault( false );
+	verticalFlip->setAnimates( false );
+	verticalFlip->setHint( "Some hosts use inverted images, so you can correct this problem using this flag." );
 
 }
 

@@ -47,6 +47,42 @@ inline OfxRectD pointsBoundingBox( const std::vector<Point2>& points )
     return bounds;
 }
 
+template<class Point2>
+Point2 pointsMinXY( const std::vector<Point2>& points )
+{
+    // if( !points.size() )
+    //  throw...
+	Point2 p = points[0];
+	for( typename std::vector<Point2>::const_iterator it = points.begin()+1, itEnd = points.end();
+         it != itEnd;
+         ++it )
+    {
+		if( it->x < p.x )
+			p.x = it->x;
+		if( it->y < p.y )
+			p.y = it->y;
+	}
+	return p;
+}
+
+template<class Point2>
+Point2 pointsMaxXY( const std::vector<Point2>& points )
+{
+    // if( !points.size() )
+    //  throw...
+	Point2 p = points[0];
+	for( typename std::vector<Point2>::const_iterator it = points.begin()+1, itEnd = points.end();
+         it != itEnd;
+         ++it )
+    {
+		if( it->x > p.x )
+			p.x = it->x;
+		if( it->y > p.y )
+			p.y = it->y;
+	}
+	return p;
+}
+
 template<class R>
 R rectanglesIntersection( const R& a, const R& b )
 {

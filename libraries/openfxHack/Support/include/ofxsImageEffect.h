@@ -603,9 +603,21 @@ public:
 
 	/** @brief get the RoD for this clip in the cannonical coordinate system */
 	OfxRectD getCanonicalRod( double t ) const;
+	OfxPointD getCanonicalRodSize( double t ) const
+	{
+		OfxRectD r = getCanonicalRod( t );
+		OfxPointD p = {r.x2-r.x1, r.y2-r.y1};
+		return p;
+	}
 
 	/** @brief get the RoD for this clip in pixel space */
 	OfxRectI getPixelRod( double t ) const;
+	OfxPointI getPixelRodSize( double t ) const
+	{
+		OfxRectI r = getPixelRod( t );
+		OfxPointI p = {r.x2-r.x1, r.y2-r.y1};
+		return p;
+	}
 
 	/** @brief fetch an image
 	 *

@@ -6,11 +6,10 @@ namespace plugin {
 namespace interact {
 
 InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos )
-: _params(params)
-, _infos(infos)
-, _mouseDown(false)
+: _params( params )
+, _infos( infos )
+, _mouseDown( false )
 {
-	_selected.reserve(50);
 }
 
 InteractScene::~InteractScene( ) { }
@@ -60,7 +59,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		return false;
 
 	bool moveSomething = false;
-	Point2 move = _infos.pointCanonicalXYToNormalizedXXc( ofxToGil( args.penPosition ) );
+	Point2 move = ofxToGil( args.penPosition );
 	switch( _moveType )
 	{
 		case eMoveTypeXY:
@@ -106,8 +105,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 //		{
 //			result |= it->penDown(args);
 //		}
-	COUT_VAR2(args.penPosition.x, args.penPosition.y);
-	bgil::point2<double> penPosition = _infos.pointCanonicalXYToNormalizedXXc( ofxToGil( args.penPosition ) );
+	Point2 penPosition = ofxToGil( args.penPosition );
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 		 it != itEnd;
@@ -116,7 +114,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 		if( itActive->active() )
 		{
 			EMoveType m;
-			if( (m = it->selectIfIntesect( penPosition )) != eMoveTypeNone )
+			if( (m = it->selectIfIntesect( args )) != eMoveTypeNone )
 			{
 				if( _moveType == eMoveTypeNone )
 				{
