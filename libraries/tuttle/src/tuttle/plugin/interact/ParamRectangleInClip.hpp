@@ -60,14 +60,14 @@ public:
 	{
 		if( ! _relativeClip->isConnected() )
 			return Point2(0, 0); // throw to stop overlay ?
-		return ofxToGil( interact::pointNormalizedXXcToCanonicalXY( ( _paramB->getValue() + _paramA->getValue() ) * 0.5, _relativeClip->getCanonicalRodSize( this->getTime() ) ) );
+		return ofxToGil( pointNormalizedXXcToCanonicalXY( ( _paramB->getValue() + _paramA->getValue() ) * 0.5, _relativeClip->getCanonicalRodSize( this->getTime() ) ) );
 	}
 	void setPoint( const Scalar& x, const Scalar& y )
 	{
-		Point2 imgSize = ofxToGil( _relativeClip->getCanonicalRodSize( this->getTime() ) );
+		OfxRectD imgRod = _relativeClip->getCanonicalRod( this->getTime() );
 		Point2 mouse( x, y );
-		mouse = interact::pointCanonicalXYToNormalizedXXc( mouse, imgSize );
-		Point2 currentPos = interact::pointCanonicalXYToNormalizedXXc( getPoint(), imgSize );
+		mouse = pointCanonicalXYToNormalizedXXc( mouse, imgRod );
+		Point2 currentPos = pointCanonicalXYToNormalizedXXc( getPoint(), imgRod );
 		OfxPointD pA = _paramA->getValue();
 		OfxPointD pB = _paramB->getValue();
 		switch( _selectType )
@@ -147,9 +147,9 @@ template<ECoordonateSystem coord>
 bool ParamRectangleInClip<coord>::draw( const OFX::DrawArgs& args ) const
 {
 	PointInteract::draw( args );
-	OfxPointD imgSize = _relativeClip->getCanonicalRodSize( this->getTime() );
-	Point2 pA( ofxToGil( interact::pointNormalizedXXcToCanonicalXY( _paramA->getValue(), imgSize ) ) );
-	Point2 pB( ofxToGil( interact::pointNormalizedXXcToCanonicalXY( _paramB->getValue(), imgSize ) ) );
+	OfxRectD imgRod = _relativeClip->getCanonicalRod( this->getTime() );
+	Point2 pA( ofxToGil( pointNormalizedXXcToCanonicalXY( _paramA->getValue(), imgRod ) ) );
+	Point2 pB( ofxToGil( pointNormalizedXXcToCanonicalXY( _paramB->getValue(), imgRod ) ) );
 	overlay::displayRect( pA, pB );
 }
 
@@ -159,9 +159,9 @@ typename ParamRectangleInClip<coord>::ESelectType ParamRectangleInClip<coord>::s
 	const Point2 p = ofxToGil( args.penPosition );
 	double scale = args.pixelScale.x;
 	double margeCanonical = getMarge() * scale;
-	OfxPointD imgSize = _relativeClip->getCanonicalRodSize( this->getTime() );
-	Point2 a = ofxToGil( interact::pointNormalizedXXcToCanonicalXY( _paramA->getValue(), imgSize ) );
-	Point2 b = ofxToGil( interact::pointNormalizedXXcToCanonicalXY( _paramB->getValue(), imgSize ) );
+	OfxRectD imgRod = _relativeClip->getCanonicalRod( this->getTime() );
+	Point2 a = ofxToGil( pointNormalizedXXcToCanonicalXY( _paramA->getValue(), imgRod ) );
+	Point2 b = ofxToGil( pointNormalizedXXcToCanonicalXY( _paramB->getValue(), imgRod ) );
 	Point2 min, max;
 	min.x = std::min( a.x, b.x );
 	min.y = std::min( a.y, b.y );

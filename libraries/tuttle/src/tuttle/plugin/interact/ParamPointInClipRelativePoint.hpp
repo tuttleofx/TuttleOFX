@@ -39,10 +39,9 @@ ParamPointInClipRelativePoint<coord>::~ParamPointInClipRelativePoint( ) { }
 template<>
 Point2 ParamPointInClipRelativePoint<eCoordonateSystemXXcn>::getPoint() const
 {
-	OfxPointD rod = this->_relativeClip->getCanonicalRodSize( this->getTime() );
+	OfxRectD rod = this->_relativeClip->getCanonicalRod( this->getTime() );
 	Point2 relativePoint = _relativePoint->getPoint();
-	OfxPointD pointData = this->_param->getValue();
-	Point2 point = ofxToGil( interact::pointNormalizedXXToCanonicalXX( this->_param->getValue(), rod ) );
+	Point2 point = ofxToGil( pointNormalizedXXToCanonicalXX( this->_param->getValue(), rod ) );
 	Point2 res = relativePoint + point;
 	return res;
 }
@@ -52,9 +51,9 @@ void ParamPointInClipRelativePoint<eCoordonateSystemXXcn>::setPoint( const Scala
 {
 	if( _relativeClip->isConnected() )
 	{
-		Point2 rod = ofxToGil( this->_relativeClip->getCanonicalRodSize( this->getTime() ) );
-		Point2 point = interact::pointCanonicalXYToNormalizedXX( Point2(x,y), rod );
-		Point2 relativePoint = interact::pointCanonicalXYToNormalizedXX( _relativePoint->getPoint(), rod );
+		OfxRectD rod = this->_relativeClip->getCanonicalRod( this->getTime() );
+		Point2 point = pointCanonicalXYToNormalizedXX( Point2(x,y), rod );
+		Point2 relativePoint = pointCanonicalXYToNormalizedXX( _relativePoint->getPoint(), rod );
 		_param->setValue( point.x - relativePoint.x, point.y - relativePoint.y );
 		return;
 	}

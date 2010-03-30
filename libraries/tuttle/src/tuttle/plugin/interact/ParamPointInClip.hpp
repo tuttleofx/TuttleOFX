@@ -5,6 +5,8 @@
 #include "InteractObject.hpp"
 #include "PointInteract.hpp"
 #include "interact.hpp"
+#include <tuttle/plugin/coordonateSystem.hpp>
+
 #include <ofxsParam.h>
 
 namespace tuttle {
@@ -47,7 +49,7 @@ Point2 ParamPointInClip<eCoordonateSystemXXcn>::getPoint() const
 {
 	if( _relativeClip->isConnected() )
 	{
-		Point2 p = ofxToGil( interact::pointNormalizedXXcToCanonicalXY( _param->getValue(), _relativeClip->getCanonicalRodSize( this->getTime() ) ) );
+		Point2 p = ofxToGil( pointNormalizedXXcToCanonicalXY( _param->getValue(), _relativeClip->getCanonicalRod( this->getTime() ) ) );
 		return p;
 	}
 	return Point2( 0, 0 );
@@ -59,7 +61,7 @@ void ParamPointInClip<eCoordonateSystemXXcn>::setPoint( const Scalar& x, const S
 	if( _relativeClip->isConnected() )
 	{
 		OfxPointD p = { x, y };
-		p = interact::pointCanonicalXYToNormalizedXXc( p, _relativeClip->getCanonicalRodSize( this->getTime() ) );
+		p = pointCanonicalXYToNormalizedXXc( p, _relativeClip->getCanonicalRod( this->getTime() ) );
 		_param->setValue( p.x, p.y );
 		return;
 	}
