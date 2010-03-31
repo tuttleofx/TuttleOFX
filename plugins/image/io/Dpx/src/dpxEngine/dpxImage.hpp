@@ -9,6 +9,7 @@
 #define DPX_IMAGE_HPP
 
 #include <boost/cstdint.hpp>
+#include <boost/detail/endian.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/shared_array.hpp>
@@ -45,7 +46,7 @@ struct FileInformation
 	char project[200];      // project name
 	char copyright[200];    // right to use or copyright info
 	boost::uint32_t key;    // encryption ( FFFFFFFF = unencrypted )
-	char Reserved[104];     // reserved field TBD (need to pad)
+	char reserved[104];     // reserved field TBD (need to pad)
 };
 
 struct ImageInformation
@@ -174,9 +175,13 @@ public:
 	inline void setBigEndian( const bool swap )
 	{
 		if( swap )
+		{
 			_fileInfo.magic_num = DPX_MAGIC_SWAP;
+		}
 		else
+		{
 			_fileInfo.magic_num = DPX_MAGIC;
+		}
 	}
 
 	inline void setWidth( const boost::uint32_t pixelsPerLine )
@@ -240,12 +245,12 @@ public:
 		_imageInfo.image_element[i].data_offset = offset;
 	}
 
+	void swapHeader();
 };
 
 class DpxImage
 {
 private:
-	bool _bigEndian;
 	DpxHeader _header;
 	size_t _dataSize;                               /// raw data size given by dataSize()
 	boost::shared_array<boost::uint8_t> _data;      /// raw data
@@ -253,6 +258,7 @@ private:
 
 	void            readHeader( fs::ifstream& f );
 	boost::uint8_t* reinterpretEndianness() const;
+	void readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t & bufpos);
 
 public:
 	enum EDPX_CompType

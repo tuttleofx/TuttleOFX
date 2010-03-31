@@ -125,8 +125,8 @@ bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
-	clipPreferences.setPixelAspectRatio( *_dstClip, 720.0 / 720.0 );
+	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
+	clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
 }
 
 }

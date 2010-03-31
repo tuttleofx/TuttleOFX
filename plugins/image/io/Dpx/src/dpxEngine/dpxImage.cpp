@@ -3,9 +3,11 @@
 
 #include <vector>
 #include <boost/cstdint.hpp>
+#include <boost/detail/endian.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/detail/endian.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <string>
 #include <cstring>
@@ -59,7 +61,6 @@ inline boost::uint16_t reverseBytes( boost::uint16_t v )
 //////////////////////////////////// END CUT
 
 DpxImage::DpxImage()
-	: _bigEndian( false )
 {}
 
 DpxImage::~DpxImage()
@@ -83,23 +84,33 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 
 	// initialize raw data
 	_dataSize = dataSize();
-	// read and throws away characters until 'offset' characters have been read
-	f.ignore( _header.dataOffset() - f.tellg() );
-	// Data have to be packed on uint32_t size to allow indianess fast
-	// reinterpretation
-	_data.reset( new uint8_t[ _dataSize + ( _dataSize % sizeof( uint32_t ) ) ] );
-	// read data
-	if( !f.read( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
+	if (_dataSize != 0)
+	{
+		// read and throws away characters until 'offset' characters have been read
+		f.ignore( _header.dataOffset() - f.tellg() );
+		// Data have to be packed on uint32_t size to allow indianess fast
+		// reinterpretation
+		_data.reset( new uint8_t[ _dataSize + ( _dataSize % sizeof( uint32_t ) ) ] );
+		// read data
+		if( !f.read( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
+		{
+			std::ostringstream msg;
+			msg << "Unable to read data ";
+			msg << "( " << filename << " )" ;
+			throw std::exception();
+		}
+		if( reinterpretation )
+			_indyData.reset( reinterpretEndianness() );
+		else
+			_indyData = _data;
+	}
+	else
 	{
 		std::ostringstream msg;
-		msg << "Unable to read data ";
+		msg << "Unhandled dpx data type.";
 		msg << "( " << filename << " )" ;
 		throw std::exception();
 	}
-	if( reinterpretation )
-		_indyData.reset( reinterpretEndianness() );
-	else
-		_indyData = _data;
 	f.close();
 }
 
@@ -126,15 +137,11 @@ void DpxImage::readHeader( const path& filename )
 void DpxImage::readHeader( ifstream& f )
 {
 	FileInformation* gen;
-	ImageInformation* imgif;
-	ImageOrientation* imgor;
-	MotionPictureFilm* mp;
-	TelevisionHeader* tv;
 
 	// reads beginning data from _header (we need to get the
 	// header size given in file)...
 	f.seekg( 0, std::ios::beg );
-	if( !f.read( reinterpret_cast<char*>( &_header ), 32 ) )
+	if( !f.read( reinterpret_cast<char*>( &_header ), 36 ) )
 	{
 		std::ostringstream msg;
 		msg << "Unable to read header...";
@@ -144,98 +151,45 @@ void DpxImage::readHeader( ifstream& f )
 
 	// ...file information
 	gen            = &( _header._fileInfo );
-	gen->magic_num =   gen->magic_num;
-	_bigEndian     = ( gen->magic_num == DPX_MAGIC_SWAP );
-	if( _bigEndian )
-	{
-		//
-		// "BIG ENDIAN"
-		//
-		gen->magic_num    =   swapEndian<unsigned long>( gen->magic_num );
-		gen->offset       =   swapEndian<unsigned long>( gen->offset );
-		gen->file_size    =   swapEndian<unsigned long>( gen->file_size );
-		gen->ditto_key    =   swapEndian<unsigned long>( 1 );
-		gen->gen_hdr_size =   swapEndian<unsigned long>( gen->gen_hdr_size );
-		gen->ind_hdr_size =   swapEndian<unsigned long>( gen->ind_hdr_size );
-	}
-	size_t hdrSize = ( gen->gen_hdr_size > 0 ? gen->gen_hdr_size : sizeof( DpxHeader ) ) - 32;
+	_header._fileInfo.magic_num = gen->magic_num;
+	size_t hdrSize = 0;
 
+	if( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
+	{
+		uint32_t genhdrsize = swapEndian<uint32_t>( gen->gen_hdr_size );
+		hdrSize = ( genhdrsize > 0 ? genhdrsize : sizeof( DpxHeader ) ) - 36;
+	}
+	else
+	{
+		hdrSize = ( gen->gen_hdr_size > 0 ? gen->gen_hdr_size : sizeof( DpxHeader ) ) - 36;
+	}
+	// Read meta dynamic infos
+	scoped_array<uint8_t> _hdrBuffer(new uint8_t[hdrSize]);
 	// reads data from _header...
-	if( !f.read( reinterpret_cast<char*>( &_header ) + 32, hdrSize ) )
+	if( !f.read( (char*)_hdrBuffer.get(), hdrSize ) )
 	{
 		std::ostringstream msg;
 		msg << "DPX: Unable to read header...";
 		std::cerr << msg << std::endl;
 		throw std::exception();
 	}
+	// Read dynamic data
+	size_t bufpos = 0;
+	readDynamicHdrData((uint8_t*)gen->file_name, sizeof(gen->file_name), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->create_time, sizeof(gen->create_time), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->creator, sizeof(gen->creator), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->project, sizeof(gen->project), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->copyright, sizeof(gen->copyright), _hdrBuffer.get(), bufpos);
+	memcpy(&gen->key, _hdrBuffer.get() + bufpos, sizeof(uint32_t));
+	bufpos += sizeof(uint32_t);
+	memcpy(&gen->reserved, _hdrBuffer.get() + bufpos, sizeof(gen->reserved));
+	bufpos += sizeof(gen->reserved);
+	// Copy the remaining header infos
+	memcpy(&(_header._imageInfo), _hdrBuffer.get() + bufpos, hdrSize - bufpos);
 
-	if( _bigEndian )
+	if ( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
 	{
-		//
-		// "BIG ENDIAN"
-		//
-		gen->user_data_size =   swapEndian<unsigned long>( gen->user_data_size );
-		gen->key            =   swapEndian<unsigned long>( gen->key );
-
-		// ...image information
-		imgif                   = &( _header._imageInfo );
-		imgif->orientation      = swapEndian<short>( imgif->orientation );
-		imgif->element_number   = swapEndian<short>( imgif->element_number );
-		imgif->pixelsPerLine    = swapEndian<unsigned long>( imgif->pixelsPerLine );
-		imgif->linesPerImageEle = swapEndian<unsigned long>( imgif->linesPerImageEle );
-		for( int i = 0; i < 8; i++ )
-		{
-			imgif->image_element[i].data_sign         = swapEndian<unsigned long>( imgif->image_element[i].data_sign );
-			imgif->image_element[i].ref_low_data      = swapEndian<unsigned long>( imgif->image_element[i].ref_low_data );
-			imgif->image_element[i].ref_low_quantity  = swapEndian<float>( imgif->image_element[i].ref_low_quantity );
-			imgif->image_element[i].ref_high_data     = swapEndian<unsigned long>( imgif->image_element[i].ref_high_data );
-			imgif->image_element[i].ref_high_quantity = swapEndian<float>( imgif->image_element[i].ref_high_quantity );
-			imgif->image_element[i].packing           = swapEndian<short>( imgif->image_element[i].packing );
-			imgif->image_element[i].encoding          = swapEndian<short>( imgif->image_element[i].encoding );
-			imgif->image_element[i].data_offset       = swapEndian<unsigned long>( imgif->image_element[i].data_offset );
-			imgif->image_element[i].eol_padding       = swapEndian<unsigned long>( imgif->image_element[i].eol_padding );
-			imgif->image_element[i].eo_image_padding  = swapEndian<unsigned long>( imgif->image_element[i].eo_image_padding );
-		}
-
-		// ...file orientation
-		imgor                  = &( _header._imageOrientation );
-		imgor->x_offset        =   swapEndian<unsigned long>( imgor->x_offset );
-		imgor->y_offset        =   swapEndian<unsigned long>( imgor->y_offset );
-		imgor->x_center        =   swapEndian<unsigned long>( imgor->x_center );
-		imgor->y_center        =   swapEndian<unsigned long>( imgor->y_center );
-		imgor->x_orig_size     =   swapEndian<unsigned long>( imgor->x_orig_size );
-		imgor->y_orig_size     =   swapEndian<unsigned long>( imgor->y_orig_size );
-		imgor->border[0]       =   swapEndian<short>( imgor->border[0] );
-		imgor->border[1]       =   swapEndian<short>( imgor->border[1] );
-		imgor->border[2]       =   swapEndian<short>( imgor->border[2] );
-		imgor->border[3]       =   swapEndian<short>( imgor->border[3] );
-		imgor->pixel_aspect[0] =   swapEndian<unsigned long>( imgor->pixel_aspect[0] );
-		imgor->pixel_aspect[1] =   swapEndian<unsigned long>( imgor->pixel_aspect[1] );
-
-		// ...motion picture film _header
-		mp                 =   &( _header._motionPicture );
-		mp->prefix         =   swapEndian<unsigned long>( mp->prefix );
-		mp->count          =   swapEndian<unsigned long>( mp->count );
-		mp->frame_position =   swapEndian<unsigned long>( mp->frame_position );
-		mp->sequence_len   =   swapEndian<unsigned long>( mp->sequence_len );
-		mp->held_count     =   swapEndian<unsigned long>( mp->held_count );
-		mp->frame_rate     =   swapEndian<float>( mp->frame_rate );
-		mp->shutter_angle  =   swapEndian<float>( mp->shutter_angle );
-
-		// ...television _header
-		tv                    =   &( _header._television );
-		tv->tim_code          =   swapEndian<unsigned long>( tv->tim_code );
-		tv->userBits          =   swapEndian<unsigned long>( tv->userBits );
-		tv->hor_sample_rate   =   swapEndian<float>( tv->hor_sample_rate );
-		tv->ver_sample_rate   =   swapEndian<float>( tv->ver_sample_rate );
-		tv->frame_rate        =   swapEndian<float>( tv->frame_rate );
-		tv->time_offset       =   swapEndian<float>( tv->time_offset );
-		tv->gamma             =   swapEndian<float>( tv->gamma );
-		tv->black_level       =   swapEndian<float>( tv->black_level );
-		tv->black_gain        =   swapEndian<float>( tv->black_gain );
-		tv->break_point       =   swapEndian<float>( tv->break_point );
-		tv->white_level       =   swapEndian<float>( tv->white_level );
-		tv->integration_times =   swapEndian<float>( tv->integration_times );
+		_header.swapHeader();
 	}
 
 	if( _header._imageInfo.orientation > 1 )
@@ -267,6 +221,95 @@ void DpxImage::readHeader( ifstream& f )
 	}
 }
 
+void DpxHeader::swapHeader()
+{
+	//
+	// "BIG ENDIAN"
+	//
+	_fileInfo.offset         =   swapEndian<uint32_t>( _fileInfo.offset );
+	_fileInfo.file_size      =   swapEndian<uint32_t>( _fileInfo.file_size );
+	_fileInfo.ditto_key      =   swapEndian<uint32_t>( 1 );
+	_fileInfo.gen_hdr_size   =   swapEndian<uint32_t>( _fileInfo.gen_hdr_size );
+	_fileInfo.ind_hdr_size   =   swapEndian<uint32_t>( _fileInfo.ind_hdr_size );
+	_fileInfo.user_data_size =   swapEndian<boost::uint32_t>( _fileInfo.user_data_size );
+	_fileInfo.key            =   swapEndian<boost::uint32_t>( _fileInfo.key );
+
+	// ...image information
+	_imageInfo.orientation      = swapEndian<boost::uint16_t>( _imageInfo.orientation );
+	_imageInfo.element_number   = swapEndian<boost::uint16_t>( _imageInfo.element_number );
+	_imageInfo.pixelsPerLine    = swapEndian<boost::uint32_t>( _imageInfo.pixelsPerLine );
+	_imageInfo.linesPerImageEle = swapEndian<boost::uint32_t>( _imageInfo.linesPerImageEle );
+
+	for( size_t i = 0; i < 8; ++i )
+	{
+		_imageInfo.image_element[i].data_sign         = swapEndian<uint32_t>( _imageInfo.image_element[i].data_sign );
+		_imageInfo.image_element[i].ref_low_data      = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_low_data );
+		_imageInfo.image_element[i].ref_low_quantity  = swapEndian<float>( _imageInfo.image_element[i].ref_low_quantity );
+		_imageInfo.image_element[i].ref_high_data     = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_high_data );
+		_imageInfo.image_element[i].ref_high_quantity = swapEndian<float>(_imageInfo.image_element[i].ref_high_quantity );
+		_imageInfo.image_element[i].packing           = swapEndian<short>(_imageInfo.image_element[i].packing );
+		_imageInfo.image_element[i].encoding          = swapEndian<short>(_imageInfo.image_element[i].encoding );
+		_imageInfo.image_element[i].data_offset       = swapEndian<uint32_t>(_imageInfo.image_element[i].data_offset );
+		_imageInfo.image_element[i].eol_padding       = swapEndian<uint32_t>(_imageInfo.image_element[i].eol_padding );
+		_imageInfo.image_element[i].eo_image_padding  = swapEndian<uint32_t>(_imageInfo.image_element[i].eo_image_padding );
+	}
+
+	//..file orientation
+	_imageOrientation.x_offset        =   swapEndian<uint32_t>(_imageOrientation.x_offset );
+	_imageOrientation.y_offset        =   swapEndian<uint32_t>(_imageOrientation.y_offset );
+	_imageOrientation.x_center        =   swapEndian<uint32_t>(_imageOrientation.x_center );
+	_imageOrientation.y_center        =   swapEndian<uint32_t>(_imageOrientation.y_center );
+	_imageOrientation.x_orig_size     =   swapEndian<uint32_t>(_imageOrientation.x_orig_size );
+	_imageOrientation.y_orig_size     =   swapEndian<uint32_t>(_imageOrientation.y_orig_size );
+	_imageOrientation.border[0]       =   swapEndian<short>(_imageOrientation.border[0] );
+	_imageOrientation.border[1]       =   swapEndian<short>(_imageOrientation.border[1] );
+	_imageOrientation.border[2]       =   swapEndian<short>(_imageOrientation.border[2] );
+	_imageOrientation.border[3]       =   swapEndian<short>(_imageOrientation.border[3] );
+	_imageOrientation.pixel_aspect[0] =   swapEndian<uint32_t>(_imageOrientation.pixel_aspect[0] );
+	_imageOrientation.pixel_aspect[1] =   swapEndian<uint32_t>(_imageOrientation.pixel_aspect[1] );
+
+	//..motion picture film 
+	_motionPicture.prefix         =   swapEndian<uint32_t>(_motionPicture.prefix );
+	_motionPicture.count          =   swapEndian<uint32_t>(_motionPicture.count );
+	_motionPicture.frame_position =   swapEndian<uint32_t>(_motionPicture.frame_position );
+	_motionPicture.sequence_len   =   swapEndian<uint32_t>(_motionPicture.sequence_len );
+	_motionPicture.held_count     =   swapEndian<uint32_t>(_motionPicture.held_count );
+	_motionPicture.frame_rate     =   swapEndian<float>(_motionPicture.frame_rate );
+	_motionPicture.shutter_angle  =   swapEndian<float>(_motionPicture.shutter_angle );
+
+	//..television 
+	_television.tim_code          =   swapEndian<uint32_t>(_television.tim_code );
+	_television.userBits          =   swapEndian<uint32_t>(_television.userBits );
+	_television.hor_sample_rate   =   swapEndian<float>(_television.hor_sample_rate );
+	_television.ver_sample_rate   =   swapEndian<float>(_television.ver_sample_rate );
+	_television.frame_rate        =   swapEndian<float>(_television.frame_rate );
+	_television.time_offset       =   swapEndian<float>(_television.time_offset );
+	_television.gamma             =   swapEndian<float>(_television.gamma );
+	_television.black_level       =   swapEndian<float>(_television.black_level );
+	_television.black_gain        =   swapEndian<float>(_television.black_gain );
+	_television.break_point       =   swapEndian<float>(_television.break_point );
+	_television.white_level       =   swapEndian<float>(_television.white_level );
+	_television.integration_times =   swapEndian<float>(_television.integration_times );
+}
+
+void DpxImage::readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t & bufpos)
+{
+	// Strings always
+	buffer += bufpos;
+	strncpy((char*)dst, (char*)buffer, maxLen);
+	int startPos = bufpos;
+	bufpos += strnlen((char*)dst, 100);
+	// First skip 0x00 and following 0xFF caracters
+	while( buffer[bufpos] == 0x00 && (bufpos - startPos) < maxLen )
+	{
+		bufpos++;
+	}
+	while( buffer[bufpos] == 0xFF && (bufpos - startPos) < maxLen )
+	{
+		bufpos++;
+	}
+}
+
 void DpxImage::write( const path& filename )
 {
 	//
@@ -287,10 +330,12 @@ void DpxImage::write( const path& filename )
 	// Pad with zeros untill we get at the right offset
 	std::vector<uint8_t> zeros( _header.dataOffset() - f.tellp() );
 	if( zeros.size() )
+	{
 		if( !f.write( reinterpret_cast<char*>( &zeros[0] ), zeros.size() ) )
 		{
 			throw std::exception();
 		}
+	}
 
 	// write image data
 	if( !f.write( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
@@ -305,32 +350,37 @@ void DpxImage::write( const path& filename )
 
 void DpxImage::writeHeader( ofstream& f )
 {
-	// write data
-	if( !f.write( reinterpret_cast<char*>( &_header._fileInfo ), sizeof( FileInformation ) ) )
+	// Write data
+	DpxHeader header = _header;
+	if ( header.bigEndian() )
+	{
+		header.swapHeader();
+	}
+	if( !f.write( reinterpret_cast<char*>( &header._fileInfo ), sizeof( FileInformation ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (FileInformation)" ;
 		throw std::exception();
 	}
-	if( !f.write( reinterpret_cast<char*>( &_header._imageInfo ), sizeof( ImageInformation ) ) )
+	if( !f.write( reinterpret_cast<char*>( &header._imageInfo ), sizeof( ImageInformation ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (ImageInformation)" ;
 		throw std::exception();
 	}
-	if( !f.write( reinterpret_cast<char*>( &_header._imageOrientation ), sizeof( ImageOrientation ) ) )
+	if( !f.write( reinterpret_cast<char*>( &header._imageOrientation ), sizeof( ImageOrientation ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (ImageOrientation)" ;
 		throw std::exception();
 	}
-	if( !f.write( reinterpret_cast<char*>( &_header._motionPicture ), sizeof( MotionPictureFilm ) ) )
+	if( !f.write( reinterpret_cast<char*>( &header._motionPicture ), sizeof( MotionPictureFilm ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (MotionPictureFilm)" ;
 		throw std::exception();
 	}
-	if( !f.write( reinterpret_cast<char*>( &_header._television ), sizeof( TelevisionHeader ) ) )
+	if( !f.write( reinterpret_cast<char*>( &header._television ), sizeof( TelevisionHeader ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (TelevisionHeader)" ;
@@ -343,7 +393,7 @@ uint8_t* DpxImage::reinterpretEndianness() const
 	// Do we need reinterpretation ?
 	uint8_t* pData = _data.get();
 
-	if( _bigEndian && BOOST_BYTE_ORDER == 1234 )
+	if( _header.bigEndian() && BOOST_BYTE_ORDER == 1234 )
 	{
 		switch( _header.bitSize() )
 		{
@@ -516,6 +566,7 @@ const DpxImage::EDPX_CompType DpxImage::componentsType() const
 		else if( bitSize == 16 )
 			type = eCompTypeA16B16G16R16;
 	}
+
 	return type;
 }
 

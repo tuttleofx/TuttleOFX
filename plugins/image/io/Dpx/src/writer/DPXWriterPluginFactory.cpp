@@ -74,7 +74,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( "12 bits output" );
 	bitDepth->appendOption( "10 bits output" );
 	bitDepth->appendOption( "8 bits output" );
-	bitDepth->setDefault( 0 );
+	bitDepth->setDefault( 3 );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
 	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, kParamComponentsTypeLabel );

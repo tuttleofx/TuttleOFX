@@ -161,7 +161,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 							++dit;
 						}
 					}
-					copy_and_convert_pixels( vw16, dst );
+					copy_and_convert_pixels( vw16, flipped_up_down_view( dst ) );
 					break;
 				}
 			}
@@ -253,7 +253,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 							++dit;
 						}
 					}
-					copy_and_convert_pixels( vw16, dst );
+					copy_and_convert_pixels( vw16, flipped_up_down_view( dst ) );
 					break;
 				}
 			}
