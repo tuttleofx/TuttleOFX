@@ -69,7 +69,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				switch( compType )
 				{
 					case 0:
-						// Todo to get it working:
+						///@todo to get it working:
 						// swap half byte then swap shorts (16 bits)
 						// ex: 0405 -> 4050 -> 5040
 						// or: roll short by 4 bits right.
@@ -141,8 +141,6 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  *
  * @return Result view of the blurring process
  */
-
-//// TODO: FINISH REFACTORING !
 template<class View>
 template<class CONV_IMAGE>
 void DPXWriterProcess<View>::writeImage( View& src, std::string& filepath, int bitDepth, tuttle::io::DpxImage::EDPX_CompType eCompType, int packing ) throw( tuttle::plugin::PluginException )
@@ -153,11 +151,11 @@ void DPXWriterProcess<View>::writeImage( View& src, std::string& filepath, int b
 	typename CONV_IMAGE::view_t vw( view( img ) );
 	copy_and_convert_pixels( flippedView, vw );
 	boost::uint8_t* pData = (boost::uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
-	// always little endian (don't kid around ;) ).
+	// Little endian
 	_dpxHeader.setBigEndian( false );
-	// 16 bits default
+	// bitDepth
 	_dpxHeader.setBitSize( bitDepth );
-	// 1 rgba element
+	// 1 rgb? element
 	_dpxHeader.setElementNumber( 1 );
 	_dpxHeader.setElementOffset( sizeof( tuttle::io::DpxHeader ), 0 );
 	_dpxHeader.setWidth( src.width() );
