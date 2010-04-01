@@ -42,8 +42,8 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 	OfxPointD rodSize;
 	rodSize.x = srcRod.x2 - srcRod.x1;
 	rodSize.y = srcRod.y2 - srcRod.y1;
-	cornerA = interact::pointNormalizedXXcToCanonicalXY( cornerA, rodSize); // XX centered normalized to canonical
-	cornerB = interact::pointNormalizedXXcToCanonicalXY( cornerB, rodSize);
+	cornerA = pointNormalizedXXcToCanonicalXY( cornerA, rodSize); // XX centered normalized to canonical
+	cornerB = pointNormalizedXXcToCanonicalXY( cornerB, rodSize);
 	params._rect.x1 = boost::numeric_cast<int>( std::min( cornerA.x, cornerB.x ) );
 	params._rect.y1 = boost::numeric_cast<int>( std::min( cornerA.y, cornerB.y ) );
 	params._rect.x2 = boost::numeric_cast<int>( std::max( cornerA.x, cornerB.x ) );

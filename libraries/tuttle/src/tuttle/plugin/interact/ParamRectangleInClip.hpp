@@ -60,14 +60,17 @@ public:
 	{
 		if( ! _relativeClip->isConnected() )
 			return Point2(0, 0); // throw to stop overlay ?
-		return ofxToGil( pointNormalizedXXcToCanonicalXY( ( _paramB->getValue() + _paramA->getValue() ) * 0.5, _relativeClip->getCanonicalRodSize( this->getTime() ) ) );
+		OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+		Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+		return pointNormalizedXXcToCanonicalXY( ofxToGil( ( _paramB->getValue() + _paramA->getValue() ) * 0.5 ), rodSize ) + Point2( rod.x1, rod.y1 );
 	}
 	void setPoint( const Scalar& x, const Scalar& y )
 	{
 		OfxRectD imgRod = _relativeClip->getCanonicalRod( this->getTime() );
-		Point2 mouse( x, y );
-		mouse = pointCanonicalXYToNormalizedXXc( mouse, imgRod );
-		Point2 currentPos = pointCanonicalXYToNormalizedXXc( getPoint(), imgRod );
+		Point2 imgRodSize( imgRod.x2-imgRod.x1, imgRod.y2-imgRod.y1 );
+		Point2 mouse( x-imgRod.x1, y-imgRod.y1 );
+		mouse = pointCanonicalXYToNormalizedXXc( mouse, imgRodSize );
+		Point2 currentPos = pointCanonicalXYToNormalizedXXc( getPoint(), imgRodSize );
 		OfxPointD pA = _paramA->getValue();
 		OfxPointD pB = _paramB->getValue();
 		switch( _selectType )
@@ -147,9 +150,10 @@ template<ECoordonateSystem coord>
 bool ParamRectangleInClip<coord>::draw( const OFX::DrawArgs& args ) const
 {
 	PointInteract::draw( args );
-	OfxRectD imgRod = _relativeClip->getCanonicalRod( this->getTime() );
-	Point2 pA( ofxToGil( pointNormalizedXXcToCanonicalXY( _paramA->getValue(), imgRod ) ) );
-	Point2 pB( ofxToGil( pointNormalizedXXcToCanonicalXY( _paramB->getValue(), imgRod ) ) );
+	OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+	Point2 pA( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
+	Point2 pB( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
 	overlay::displayRect( pA, pB );
 }
 
@@ -159,9 +163,10 @@ typename ParamRectangleInClip<coord>::ESelectType ParamRectangleInClip<coord>::s
 	const Point2 p = ofxToGil( args.penPosition );
 	double scale = args.pixelScale.x;
 	double margeCanonical = getMarge() * scale;
-	OfxRectD imgRod = _relativeClip->getCanonicalRod( this->getTime() );
-	Point2 a = ofxToGil( pointNormalizedXXcToCanonicalXY( _paramA->getValue(), imgRod ) );
-	Point2 b = ofxToGil( pointNormalizedXXcToCanonicalXY( _paramB->getValue(), imgRod ) );
+	OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+	Point2 a = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
+	Point2 b = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
 	Point2 min, max;
 	min.x = std::min( a.x, b.x );
 	min.y = std::min( a.y, b.y );

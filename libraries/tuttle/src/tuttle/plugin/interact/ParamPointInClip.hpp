@@ -49,7 +49,9 @@ Point2 ParamPointInClip<eCoordonateSystemXXcn>::getPoint() const
 {
 	if( _relativeClip->isConnected() )
 	{
-		Point2 p = ofxToGil( pointNormalizedXXcToCanonicalXY( _param->getValue(), _relativeClip->getCanonicalRod( this->getTime() ) ) );
+		OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+		OfxPointD rodSize = { rod.x2-rod.x1, rod.y2-rod.y1 };
+		Point2 p = ofxToGil( pointNormalizedXXcToCanonicalXY( _param->getValue(), rodSize ) ) + Point2( rod.x1, rod.y1 );
 		return p;
 	}
 	return Point2( 0, 0 );
@@ -60,8 +62,10 @@ void ParamPointInClip<eCoordonateSystemXXcn>::setPoint( const Scalar& x, const S
 {
 	if( _relativeClip->isConnected() )
 	{
-		OfxPointD p = { x, y };
-		p = pointCanonicalXYToNormalizedXXc( p, _relativeClip->getCanonicalRod( this->getTime() ) );
+		OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+		Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+		Point2 p( x-rod.x1, y-rod.y1 );
+		p = pointCanonicalXYToNormalizedXXc( p, rodSize );
 		_param->setValue( p.x, p.y );
 		return;
 	}

@@ -26,11 +26,8 @@ Point pointNormalizedXYToCanonicalXY( const Point& point, const Point& imgSize )
 //	}
 
 template<typename Point>
-Point pointCanonicalXYToNormalizedXX( const Point& point, const OfxRectD& rect )
+Point pointCanonicalXYToNormalizedXX( const Point& point, const Point& imgSize )
 {
-	Point imgSize;
-	imgSize.x = rect.x2 - rect.x1;
-	imgSize.y = rect.y2 - rect.y1;
 	if( imgSize.x == 0 )
 	{
 		Point p;
@@ -45,20 +42,17 @@ Point pointCanonicalXYToNormalizedXX( const Point& point, const OfxRectD& rect )
 }
 
 template<typename Point>
-Point pointCanonicalXYToNormalizedXXc( const Point& point, const OfxRectD& rect )
+Point pointCanonicalXYToNormalizedXXc( const Point& point, const Point& imgSize )
 {
-	Point p( pointCanonicalXYToNormalizedXX( point, rect ) );
+	Point p( pointCanonicalXYToNormalizedXX( point, imgSize ) );
 	p.x -= 0.5;
 	p.y -= 0.5;
 	return p;
 }
 
 template<typename Point>
-Point pointNormalizedXXToCanonicalXX( const Point& point, const OfxRectD& rect )
+Point pointNormalizedXXToCanonicalXX( const Point& point, const Point& imgSize )
 {
-	Point imgSize;
-	imgSize.x = rect.x2 - rect.x1;
-	imgSize.y = rect.y2 - rect.y1;
 	Point p;
 	p.x = point.x * imgSize.x;
 	p.y = point.y * imgSize.x;
@@ -66,11 +60,8 @@ Point pointNormalizedXXToCanonicalXX( const Point& point, const OfxRectD& rect )
 }
 
 template<typename Point>
-Point pointNormalizedXXToCanonicalXY( const Point& point, const OfxRectD& rect )
+Point pointNormalizedXXToCanonicalXY( const Point& point, const Point& imgSize )
 {
-	Point imgSize;
-	imgSize.x = rect.x2 - rect.x1;
-	imgSize.y = rect.y2 - rect.y1;
 	Point p;
 	p.x = point.x * imgSize.x;
 	p.y = (point.y * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
@@ -78,11 +69,8 @@ Point pointNormalizedXXToCanonicalXY( const Point& point, const OfxRectD& rect )
 }
 
 template<typename Point>
-Point pointNormalizedXXcToCanonicalXY( const Point& point, const OfxRectD& rect )
+Point pointNormalizedXXcToCanonicalXY( const Point& point, const Point& imgSize )
 {
-	Point imgSize;
-	imgSize.x = rect.x2 - rect.x1;
-	imgSize.y = rect.y2 - rect.y1;
 	Point p;
 	p.x = (point.x+0.5) * imgSize.x;
 	p.y = ((point.y+0.5) * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
