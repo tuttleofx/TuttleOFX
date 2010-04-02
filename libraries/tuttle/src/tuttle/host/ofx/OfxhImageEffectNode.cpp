@@ -1094,22 +1094,7 @@ bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 	bool pluginSupports = supportsMultipleClipDepths();
 
 	/// no support, so no
-	if( !hostSupports || !pluginSupports )
-		return false;
-
-	/// if filter context, no support, tempted to change this though
-	if( _context == kOfxImageEffectContextFilter )
-		return false;
-
-	/// if filter context, no support
-	if( _context == kOfxImageEffectContextGenerator ||
-	    _context == kOfxImageEffectContextTransition ||
-	    _context == kOfxImageEffectContextPaint ||
-	    _context == kOfxImageEffectContextRetimer )
-		return false;
-
-	/// OK we're cool
-	return true;
+	return hostSupports && pluginSupports;
 }
 
 /**
@@ -1247,13 +1232,15 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 		property::OfxhPropSpec specComp = { componentParamName.c_str(), property::eString, 0, false, "" }; // note the support for multi-planar clips
 		outArgs.createProperty( specComp );
 		// as it is variable dimension, there is no default value, so we have to set it explicitly
-		outArgs.setStringProperty( componentParamName.c_str(), clip->getComponents().c_str() );
+		outArgs.setStringProperty( componentParamName, clip->getComponents() );
+
 		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::eString, 1, !multiBitDepth, clip->getPixelDepth().c_str() };
 		outArgs.createProperty( specDep );
-		outArgs.setStringProperty( depthParamName.c_str(), clip->getPixelDepth().c_str() );
+		outArgs.setStringProperty( depthParamName, clip->getPixelDepth() );
+
 		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::eDouble, 1, false, "1" };
 		outArgs.createProperty( specPAR );
-		outArgs.setDoubleProperty( parParamName.c_str(), 1.0 ); // Default pixel aspect ratio is set to 1.0
+		outArgs.setDoubleProperty( parParamName, 1.0 ); // Default pixel aspect ratio is set to 1.0
 	}
 }
 
@@ -1366,7 +1353,7 @@ const std::string& OfxhImageEffectNode::bestSupportedDepth( const std::string& d
 			return floats;
 	}
 
-	/// WTF? Something wrong here
+	/// Something wrong here
 	return none;
 }
 

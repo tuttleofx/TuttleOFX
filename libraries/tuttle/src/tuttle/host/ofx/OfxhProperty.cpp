@@ -391,7 +391,7 @@ typename T::ReturnType OfxhPropertyTemplate<T>::getConstlessValueRaw( int index 
  * get multiple values, without going through the getHook
  */
 template<class T>
-void OfxhPropertyTemplate<T>::getValueNRaw( APIType* value, int count ) const OFX_EXCEPTION_SPEC
+void OfxhPropertyTemplate<T>::getValueNRaw( APIType* value, const int count ) const OFX_EXCEPTION_SPEC
 {
 	size_t size = count;
 
@@ -410,7 +410,7 @@ void OfxhPropertyTemplate<T>::getValueNRaw( APIType* value, int count ) const OF
  * set one value
  */
 template<class T>
-void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, int index, OfxhProperty::EModifiedBy who ) OFX_EXCEPTION_SPEC
+void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int index, const OfxhProperty::EModifiedBy who ) OFX_EXCEPTION_SPEC
 {
 	if( index < 0 || ( (size_t) index > _value.size() && _dimension ) )
 	{
@@ -434,7 +434,7 @@ void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, int index
  * set multiple values
  */
 template<class T>
-void OfxhPropertyTemplate<T>::setValueN( const typename T::APIType* value, int count, OfxhProperty::EModifiedBy who ) OFX_EXCEPTION_SPEC
+void OfxhPropertyTemplate<T>::setValueN( const typename T::APIType* value, const int count, const OfxhProperty::EModifiedBy who ) OFX_EXCEPTION_SPEC
 {
 	if( _dimension && ( (size_t) count > _value.size() ) )
 	{

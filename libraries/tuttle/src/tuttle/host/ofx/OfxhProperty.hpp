@@ -451,13 +451,13 @@ public:
 	#pragma warning( default : 4181 )
 	#endif
 	// get multiple values, without going through the getHook
-	void getValueNRaw( APIType* value, int count ) const OFX_EXCEPTION_SPEC;
+	void getValueNRaw( APIType* value, const int count ) const OFX_EXCEPTION_SPEC;
 
 	/// set one value
-	void setValue( const Type& value, int index = 0, OfxhProperty::EModifiedBy who = OfxhProperty::eModifiedByHost ) OFX_EXCEPTION_SPEC;
+	void setValue( const Type& value, const int index = 0, const OfxhProperty::EModifiedBy who = OfxhProperty::eModifiedByHost ) OFX_EXCEPTION_SPEC;
 
 	/// set multiple values
-	void setValueN( const APIType* value, int count, OfxhProperty::EModifiedBy who = OfxhProperty::eModifiedByHost ) OFX_EXCEPTION_SPEC;
+	void setValueN( const APIType* value, const int count, const OfxhProperty::EModifiedBy who = OfxhProperty::eModifiedByHost ) OFX_EXCEPTION_SPEC;
 
 	/// reset
 	void reset() OFX_EXCEPTION_SPEC;

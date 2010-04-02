@@ -1,7 +1,7 @@
 #include "OfxhPropertySuite.hpp"
 #include "OfxhProperty.hpp"
 
-#define DEBUG_PROPERTIES true
+//#define DEBUG_PROPERTIES true
 
 namespace tuttle {
 namespace host {
@@ -24,7 +24,7 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
 
-		OfxhPropertyTemplate<T> prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
+		OfxhPropertyTemplate<T>& prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
 
 		if( prop.getPluginReadOnly() )
 		{
@@ -71,7 +71,7 @@ static OfxStatus propSetN( OfxPropertySetHandle properties,
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
 
-		OfxhPropertyTemplate<T> prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
+		OfxhPropertyTemplate<T>& prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
 		
 		if( prop.getPluginReadOnly() )
 		{
@@ -192,11 +192,11 @@ static OfxStatus propReset( OfxPropertySetHandle properties, const char* propert
 
 		OfxhProperty& prop = thisSet->fetchLocalProperty( property );
 
-		if( prop.getPluginReadOnly() )
-		{
-			COUT_ERROR("Plugin is trying to reset a read-only property " << property );
-			return kOfxStatErrValue;
-		}
+//		if( prop.getPluginReadOnly() )
+//		{
+//			COUT_ERROR("Plugin is trying to reset a read-only property " << property );
+//			return kOfxStatErrValue;
+//		}
 		
 		prop.reset();
 

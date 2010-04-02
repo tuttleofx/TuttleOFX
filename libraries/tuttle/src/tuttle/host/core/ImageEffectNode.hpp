@@ -112,16 +112,9 @@ public:
 		                   processOptions._renderScale );
 	}
 
-	void preProcess_initialize( ProcessOptions& processOptions )
-	{
-		getRegionOfInterestAction( processOptions._time,
-		                           processOptions._renderScale,
-		                           processOptions._renderRoI,
-		                           processOptions._inputsRoI );
-	}
-
 	void preProcess_finish( ProcessOptions& processOptions )
 	{
+		TCOUT( "preProcess_finish: " << getName() );
 		getClipPreferencesAction();
 		getRegionOfDefinitionAction( processOptions._time,
 		                             processOptions._renderScale,
@@ -129,8 +122,18 @@ public:
 		processOptions._renderRoI = processOptions._renderRoD;
 	}
 
+	void preProcess_initialize( ProcessOptions& processOptions )
+	{
+		TCOUT( "preProcess_initialize: " << getName() );
+		getRegionOfInterestAction( processOptions._time,
+		                           processOptions._renderScale,
+		                           processOptions._renderRoI,
+		                           processOptions._inputsRoI );
+	}
+
 	void process( const ProcessOptions& processOptions )
 	{
+		TCOUT( "process: " << getName() );
 		OfxRectI roi = {
 			boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
 			boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),

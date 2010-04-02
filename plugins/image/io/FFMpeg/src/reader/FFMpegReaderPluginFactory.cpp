@@ -40,6 +40,8 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
+	desc.setSupportsMultipleClipDepths( true );
+	
 	// plugin flags
 	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );

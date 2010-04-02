@@ -70,9 +70,9 @@ public:
 //		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
 		getEditableProperties().eraseProperty( kOfxImagePropBounds );
 		getEditableProperties().eraseProperty( kOfxImagePropData );
-		getEditableProperties().eraseProperty( kOfxImagePropField );
+//		getEditableProperties().eraseProperty( kOfxImagePropField );
 //		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
-		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
+//		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
 		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
 //		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
 

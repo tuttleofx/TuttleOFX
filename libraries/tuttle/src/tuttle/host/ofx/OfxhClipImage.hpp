@@ -135,8 +135,9 @@ private:
  * a clip image instance
  * @todo tuttle: template this class with the Node Type, so replace OfxhImageEffectNode by template parameter
  */
-class OfxhClipImage : virtual public OfxhClipImageAccessor,
-	public attribute::OfxhClip
+class OfxhClipImage : 
+	public attribute::OfxhClip,
+	virtual public OfxhClipImageAccessor
 {
 typedef OfxhClipImage This;
 protected:

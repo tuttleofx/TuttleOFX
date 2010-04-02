@@ -119,6 +119,8 @@ bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	rod.x2 = _imageDims.x * _dstClip->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = _imageDims.y;
+	TCOUT( "DPXReaderPlugin::getRegionOfDefinition" );
+	TCOUT_VAR( rod );
 	return true;
 }
 
