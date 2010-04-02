@@ -1,7 +1,7 @@
 #include "OfxhPropertySuite.hpp"
 #include "OfxhProperty.hpp"
 
-//#define DEBUG_PROPERTIES true
+#define DEBUG_PROPERTIES true
 
 namespace tuttle {
 namespace host {
@@ -24,7 +24,16 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
 
-		thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property ).setValue( value, index );
+		OfxhPropertyTemplate<T> prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
+
+		if( prop.getPluginReadOnly() )
+		{
+			COUT_ERROR("Plugin is trying to set a property (" << property << " at index " << index << ") which is read-only.");
+			return kOfxStatErrValue;
+		}
+		
+		prop.setValue( value, index, OfxhProperty::eModifiedByPlugin );
+
 		//		#ifdef DEBUG_PROPERTIES
 		//		std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
 		//		#endif
@@ -62,7 +71,16 @@ static OfxStatus propSetN( OfxPropertySetHandle properties,
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
 
-		thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property ).setValueN( values, count );
+		OfxhPropertyTemplate<T> prop = thisSet->fetchLocalTypedProperty<OfxhPropertyTemplate<T> >( property );
+		
+		if( prop.getPluginReadOnly() )
+		{
+			COUT_ERROR("Plugin is trying to set property " << property << " of size " << count << ") which is read-only.");
+			return kOfxStatErrValue;
+		}
+		
+		prop.setValueN( values, count, OfxhProperty::eModifiedByPlugin );
+
 		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
@@ -108,7 +126,7 @@ static OfxStatus propGet( OfxPropertySetHandle          properties,
 		#endif
 		return e.getStatus();
 	}
-	catch(... )
+	catch( ... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -171,7 +189,17 @@ static OfxStatus propReset( OfxPropertySetHandle properties, const char* propert
 		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
-		thisSet->fetchLocalProperty( property ).reset();
+
+		OfxhProperty& prop = thisSet->fetchLocalProperty( property );
+
+		if( prop.getPluginReadOnly() )
+		{
+			COUT_ERROR("Plugin is trying to reset a read-only property " << property );
+			return kOfxStatErrValue;
+		}
+		
+		prop.reset();
+
 		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
