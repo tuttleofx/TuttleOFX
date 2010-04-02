@@ -90,8 +90,16 @@ void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicEr
 
 void Graph::connect( const Node& out, const Attribute& inAttr ) throw( exception::LogicError )
 {
-	graph::Edge e( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
+	if (_nodesDescriptor.find(inAttr.getNode().getName()) == _nodesDescriptor.end())
+	{
+		throw exception::LogicError( "Node descriptor " + inAttr.getName() + " not found when connecting !" );
+	}
+	if (_nodesDescriptor.find(out.getName()) == _nodesDescriptor.end())
+	{
+		throw exception::LogicError( "Node descriptor " + out.getName() + " not found when connecting !" );
+	}
 
+	graph::Edge e( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
 	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[inAttr.getNode().getName()], e );
 }
 

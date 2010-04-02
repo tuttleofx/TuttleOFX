@@ -159,7 +159,7 @@ public:
 	virtual OfxhClipImage* clone() const                    = 0;
 	virtual std::string    getFullName() const              = 0;
 	virtual std::string    getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
-
+ 
 	/**
 	 * get a handle on the clip descriptor for the C api
 	 */

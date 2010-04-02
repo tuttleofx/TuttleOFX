@@ -416,7 +416,7 @@ public:
 	 * The host still needs to call this explicitly just after the effect is wired
 	 * up.
 	 */
-	virtual void getClipPreferences() OFX_EXCEPTION_SPEC;
+	virtual void getClipPreferencesAction() OFX_EXCEPTION_SPEC;
 
 	/**
 	 *  calls getClipPreferences only if the prefs are dirty
@@ -427,7 +427,7 @@ public:
 	{
 		if( areClipPrefsDirty() )
 		{
-			getClipPreferences();
+			getClipPreferencesAction();
 			return true;
 		}
 		return false;

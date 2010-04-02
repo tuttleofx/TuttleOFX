@@ -74,12 +74,12 @@ const std::string& ParamString::getDefault() const
 	return getProperties().getStringProperty( kOfxParamPropDefault );
 }
 
-void ParamString::get( std::string& v ) OFX_EXCEPTION_SPEC
+void ParamString::get( std::string& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamString::get( OfxTime time, std::string& v ) OFX_EXCEPTION_SPEC
+void ParamString::get( const OfxTime time, std::string& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
@@ -89,7 +89,7 @@ void ParamString::set( const char* v ) OFX_EXCEPTION_SPEC
 	_value = std::string( v );
 }
 
-void ParamString::set( OfxTime time, const char* v ) OFX_EXCEPTION_SPEC
+void ParamString::set( const OfxTime time, const char* v ) OFX_EXCEPTION_SPEC
 {
 	_value = std::string( v ); ///< @todo: in time !
 }
@@ -112,22 +112,22 @@ int ParamInteger::getDefault() const
 	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
-void ParamInteger::get( int& v ) OFX_EXCEPTION_SPEC
+void ParamInteger::get( int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamInteger::get( OfxTime time, int& v ) OFX_EXCEPTION_SPEC
+void ParamInteger::get( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamInteger::set( const int v ) OFX_EXCEPTION_SPEC
+void ParamInteger::set( const int &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 }
 
-void ParamInteger::set( OfxTime time, const int v ) OFX_EXCEPTION_SPEC
+void ParamInteger::set( const OfxTime time, const int &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 }
@@ -149,32 +149,32 @@ double ParamDouble::getDefault() const
 	return getProperties().getDoubleProperty( kOfxParamPropDefault );
 }
 
-void ParamDouble::get( double& v ) OFX_EXCEPTION_SPEC
+void ParamDouble::get( double& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamDouble::get( OfxTime time, double& v ) OFX_EXCEPTION_SPEC
+void ParamDouble::get( const OfxTime time, double& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamDouble::set( const double v ) OFX_EXCEPTION_SPEC
+void ParamDouble::set( const double &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 }
 
-void ParamDouble::set( OfxTime time, const double v ) OFX_EXCEPTION_SPEC
+void ParamDouble::set( const OfxTime time, const double &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 }
 
-void ParamDouble::derive( OfxTime time, double& ) OFX_EXCEPTION_SPEC
+void ParamDouble::derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC
 {
 	throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-void ParamDouble::integrate( OfxTime time1, OfxTime time2, double& ) OFX_EXCEPTION_SPEC
+void ParamDouble::integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC
 {
 	throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
 }
@@ -197,22 +197,22 @@ bool ParamBoolean::getDefault() const
 	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault ) != 0 );
 }
 
-void ParamBoolean::get( bool& v ) OFX_EXCEPTION_SPEC
+void ParamBoolean::get( bool& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamBoolean::get( OfxTime time, bool& v ) OFX_EXCEPTION_SPEC
+void ParamBoolean::get( const OfxTime time, bool& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamBoolean::set( bool v ) OFX_EXCEPTION_SPEC
+void ParamBoolean::set( const bool &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 }
 
-void ParamBoolean::set( OfxTime time, bool v ) OFX_EXCEPTION_SPEC
+void ParamBoolean::set( const OfxTime time, const bool &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 }
@@ -235,22 +235,22 @@ int ParamChoice::getDefault() const
 	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
-void ParamChoice::get( int& v ) OFX_EXCEPTION_SPEC
+void ParamChoice::get( int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamChoice::get( OfxTime time, int& v ) OFX_EXCEPTION_SPEC
+void ParamChoice::get( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamChoice::set( const int v ) OFX_EXCEPTION_SPEC
+void ParamChoice::set( const int &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 }
 
-void ParamChoice::set( OfxTime time, const int v ) OFX_EXCEPTION_SPEC
+void ParamChoice::set( const OfxTime time, const int &v ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 }
@@ -281,7 +281,7 @@ OfxRGBAColourD ParamRGBA::getDefault() const
 	return color;
 }
 
-void ParamRGBA::get( double& r, double& g, double& b, double& a ) OFX_EXCEPTION_SPEC
+void ParamRGBA::get( double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
 {
 	r = _value.r;
 	g = _value.g;
@@ -289,7 +289,7 @@ void ParamRGBA::get( double& r, double& g, double& b, double& a ) OFX_EXCEPTION_
 	a = _value.a;
 }
 
-void ParamRGBA::get( OfxTime time, double& r, double& g, double& b, double& a ) OFX_EXCEPTION_SPEC
+void ParamRGBA::get( const OfxTime time, double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
 {
 	r = _value.r;
 	g = _value.g;
@@ -297,7 +297,7 @@ void ParamRGBA::get( OfxTime time, double& r, double& g, double& b, double& a ) 
 	a = _value.a;
 }
 
-void ParamRGBA::set( double r, double g, double b, double a ) OFX_EXCEPTION_SPEC
+void ParamRGBA::set( const double &r, const double &g, const double &b, const double &a ) OFX_EXCEPTION_SPEC
 {
 	_value.r = r;
 	_value.g = g;
@@ -305,7 +305,7 @@ void ParamRGBA::set( double r, double g, double b, double a ) OFX_EXCEPTION_SPEC
 	_value.a = a;
 }
 
-void ParamRGBA::set( OfxTime time, double r, double g, double b, double a ) OFX_EXCEPTION_SPEC
+void ParamRGBA::set( const OfxTime time, const double &r, const double &g, const double &b, const double &a ) OFX_EXCEPTION_SPEC
 {
 	_value.r = r;
 	_value.g = g;
@@ -337,28 +337,28 @@ OfxRGBColourD ParamRGB::getDefault() const
 	return color;
 }
 
-void ParamRGB::get( double& r, double& g, double& b ) OFX_EXCEPTION_SPEC
+void ParamRGB::get( double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
 {
 	r = _value.r;
 	g = _value.g;
 	b = _value.b;
 }
 
-void ParamRGB::get( OfxTime time, double& r, double& g, double& b ) OFX_EXCEPTION_SPEC
+void ParamRGB::get( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
 {
 	r = _value.r;
 	g = _value.g;
 	b = _value.b;
 }
 
-void ParamRGB::set( double r, double g, double b ) OFX_EXCEPTION_SPEC
+void ParamRGB::set( const double &r, const double &g, const double &b ) OFX_EXCEPTION_SPEC
 {
 	_value.r = r;
 	_value.g = g;
 	_value.b = b;
 }
 
-void ParamRGB::set( OfxTime time, double r, double g, double b ) OFX_EXCEPTION_SPEC
+void ParamRGB::set( const OfxTime time, const double &r, const double &g, const double &b ) OFX_EXCEPTION_SPEC
 {
 	_value.r = r;
 	_value.g = g;
@@ -387,25 +387,25 @@ OfxPointD ParamDouble2D::getDefault() const
 	return point;
 }
 
-void ParamDouble2D::get( double& x, double& y ) OFX_EXCEPTION_SPEC
+void ParamDouble2D::get( double& x, double& y ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 }
 
-void ParamDouble2D::get( OfxTime time, double& x, double& y ) OFX_EXCEPTION_SPEC
+void ParamDouble2D::get( const OfxTime time, double& x, double& y ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 }
 
-void ParamDouble2D::set( double x, double y ) OFX_EXCEPTION_SPEC
+void ParamDouble2D::set( const double &x, const double &y ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;
 }
 
-void ParamDouble2D::set( OfxTime time, double x, double y ) OFX_EXCEPTION_SPEC
+void ParamDouble2D::set( const OfxTime time, const double &x, const double &y ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;
@@ -434,25 +434,25 @@ OfxPointI ParamInteger2D::getDefault() const
 	return point;
 }
 
-void ParamInteger2D::get( int& x, int& y ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::get( int& x, int& y ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 }
 
-void ParamInteger2D::get( OfxTime time, int& x, int& y ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::get( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 }
 
-void ParamInteger2D::set( int x, int y ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::set( const int &x, const int &y ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;
 }
 
-void ParamInteger2D::set( OfxTime time, int x, int y ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::set( const OfxTime time, const int &x, const int &y ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;
@@ -482,28 +482,28 @@ Ofx3DPointI ParamInteger3D::getDefault() const
 	return point;
 }
 
-void ParamInteger3D::get( int& x, int& y, int& z ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::get( int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 	z = _value.z;
 }
 
-void ParamInteger3D::get( OfxTime time, int& x, int& y, int& z ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::get( const OfxTime time, int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 	z = _value.z;
 }
 
-void ParamInteger3D::set( int x, int y, int z ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::set( const int &x, const int &y, const int &z ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;
 	_value.z = z;
 }
 
-void ParamInteger3D::set( OfxTime time, int x, int y, int z ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::set( const OfxTime time, const int &x, const int &y, const int &z ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;
@@ -533,28 +533,28 @@ Ofx3DPointD ParamDouble3D::getDefault() const
 	return point;
 }
 
-void ParamDouble3D::get( double& x, double& y, double& z ) OFX_EXCEPTION_SPEC
+void ParamDouble3D::get( double& x, double& y, double& z ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 	z = _value.z;
 }
 
-void ParamDouble3D::get( OfxTime time, double& x, double& y, double& z ) OFX_EXCEPTION_SPEC
+void ParamDouble3D::get( const OfxTime time, double& x, double& y, double& z ) const OFX_EXCEPTION_SPEC
 {
 	x = _value.x;
 	y = _value.y;
 	z = _value.z;
 }
 
-void ParamDouble3D::set( double x, double y, double z ) OFX_EXCEPTION_SPEC
+void ParamDouble3D::set( const double &x, const double &y, const double &z ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;
 	_value.z = z;
 }
 
-void ParamDouble3D::set( OfxTime time, double x, double y, double z ) OFX_EXCEPTION_SPEC
+void ParamDouble3D::set( const OfxTime time, const double &x, const double &y, const double &z ) OFX_EXCEPTION_SPEC
 {
 	_value.x = x;
 	_value.y = y;

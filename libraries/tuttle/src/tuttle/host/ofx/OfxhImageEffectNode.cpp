@@ -1133,7 +1133,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	{
 		attribute::OfxhClipImage* clip = it->second;
 
-		// If not output clip
+		// If input clip
 		if( !clip->isOutput() )
 		{
 			frameRate = maximum( frameRate, clip->getFrameRate() );
@@ -1179,12 +1179,10 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 		const std::string& rawDepth = clip->getUnmappedBitDepth();
 		if( isChromaticComponent( rawComp ) )
 		{
-
 			if( clip->isOutput() )
 			{
 				depth = deepestBitDepth;
 				comp  = clip->findSupportedComp( mostComponents );
-
 				clip->setPixelDepth( depth );
 				clip->setComponents( comp );
 			}
@@ -1275,7 +1273,7 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 		std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
 		clip->setPixelDepth( outArgs.getStringProperty( depthParamName ) );
 		clip->setComponents( outArgs.getStringProperty( componentParamName ) );
-		clip->setPixelAspectRatio( outArgs.getDoubleProperty( parParamName.c_str() ) );
+		clip->setPixelAspectRatio( outArgs.getDoubleProperty( parParamName ) );
 	}
 
 	_outputFrameRate         = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRate );
@@ -1292,7 +1290,7 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
  * flag when clip prefs is dirty.
  * call the clip preferences action
  */
-void OfxhImageEffectNode::getClipPreferences() OFX_EXCEPTION_SPEC
+void OfxhImageEffectNode::getClipPreferencesAction() OFX_EXCEPTION_SPEC
 {
 	/// create the out args with the stuff that does not depend on individual clips
 	property::OfxhSet outArgs;

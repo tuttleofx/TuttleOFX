@@ -45,13 +45,37 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_preCompute_visitor : public boost::dfs_visitor<>
+struct dfs_preCompute_finish_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preCompute_visitor( TGraph& graph, ProcessOptions& defaultOptions )
+		dfs_preCompute_finish_visitor( TGraph& graph, ProcessOptions& defaultOptions )
+			: _graph(graph.getGraph())
+			, _defaultOptions(defaultOptions)
+		{}
+
+		template<class VertexDescriptor, class Graph>
+		void finish_vertex( VertexDescriptor v, Graph& g )
+		{
+			Vertex& vertex = get( vertex_properties, _graph )[v];
+			vertex.getProcessNode()->preProcess_finish( vertex.getProcessOptions() );
+		}
+
+	private:
+		GraphContainer& _graph;
+		ProcessOptions& _defaultOptions;
+};
+
+template<class TGraph>
+struct dfs_preCompute_initialize_visitor : public boost::dfs_visitor<>
+{
+	public:
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+
+		dfs_preCompute_initialize_visitor( TGraph& graph, ProcessOptions& defaultOptions )
 			: _graph(graph.getGraph())
 			, _defaultOptions(defaultOptions)
 		{}
@@ -64,18 +88,8 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 			          << vertex << std::endl;
 
 			vertex.setProcessOptions( _defaultOptions );
-			
-			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
-		}
 
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[PRECOMPUTE] finish_vertex "
-			          << vertex << std::endl;
-			
-			vertex.getProcessNode()->preProcess_finish( vertex.getProcessOptions() );
+			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
 		}
 
 	private:

@@ -105,7 +105,6 @@ public:
 	void begin( ProcessOptions& processOptions )
 	{
 		//		createInstanceAction();
-		getClipPreferences();
 		beginRenderAction( processOptions._startFrame,
 		                   processOptions._endFrame,
 		                   processOptions._step,
@@ -115,18 +114,19 @@ public:
 
 	void preProcess_initialize( ProcessOptions& processOptions )
 	{
-		getRegionOfDefinitionAction( processOptions._time,
-		                             processOptions._renderScale,
-		                             processOptions._renderRoD );
-		processOptions._renderRoI = processOptions._renderRoD;
-	}
-
-	void preProcess_finish( ProcessOptions& processOptions )
-	{
 		getRegionOfInterestAction( processOptions._time,
 		                           processOptions._renderScale,
 		                           processOptions._renderRoI,
 		                           processOptions._inputsRoI );
+	}
+
+	void preProcess_finish( ProcessOptions& processOptions )
+	{
+		getClipPreferencesAction();
+		getRegionOfDefinitionAction( processOptions._time,
+		                             processOptions._renderScale,
+		                             processOptions._renderRoD );
+		processOptions._renderRoI = processOptions._renderRoD;
 	}
 
 	void process( const ProcessOptions& processOptions )

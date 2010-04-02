@@ -79,8 +79,10 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 			optimizedGraph.dfs( connectClipsVisitor, outputNode );
 
 			TCOUT( "---------------------------------------- precompute" );
-			core::dfs_preCompute_visitor<Graph::InternalGraph> preComputeVisitor( optimizedGraph, defaultOptions );
-			optimizedGraph.dfs( preComputeVisitor, outputNode );
+			core::dfs_preCompute_finish_visitor<Graph::InternalGraph> preComputeFinishVisitor( optimizedGraph, defaultOptions );
+			optimizedGraph.dfs( preComputeFinishVisitor, outputNode );
+			core::dfs_preCompute_initialize_visitor<Graph::InternalGraph> preComputeInitializeVisitor( optimizedGraph, defaultOptions );
+			optimizedGraph.dfs( preComputeInitializeVisitor, outputNode );
 
 			TCOUT( "---------------------------------------- compute" );
 			core::dfs_compute_visitor<Graph::InternalGraph> computeVisitor( optimizedGraph );

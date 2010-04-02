@@ -480,7 +480,7 @@ static OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
 static OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
                                    OfxTime        time,
                                    int            direction,
-                                   int*           index )
+                                   int*   index )
 {
 	try
 	{

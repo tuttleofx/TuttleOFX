@@ -60,20 +60,22 @@ public:
 		}
 		_connectedClip = &other;
 		//getEditableProperties().clear();
-		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedPixelDepth );
-		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedComponents );
-		getEditableProperties().eraseProperty( kOfxImageClipPropContinuousSamples );
-		getEditableProperties().eraseProperty( kOfxImageClipPropFieldExtraction );
-		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
-		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
-		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
+
+//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedPixelDepth );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedComponents );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropContinuousSamples );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldExtraction );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
+//		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
+//		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
 		getEditableProperties().eraseProperty( kOfxImagePropBounds );
 		getEditableProperties().eraseProperty( kOfxImagePropData );
 		getEditableProperties().eraseProperty( kOfxImagePropField );
-		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
+//		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
 		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
 		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
-		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
+//		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
+
 		getEditableProperties().setChainedSet( &other.getProperties() );
 
 		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );

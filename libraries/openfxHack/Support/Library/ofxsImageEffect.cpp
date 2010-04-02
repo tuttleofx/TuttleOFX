@@ -1410,6 +1410,10 @@ void ClipPreferencesSetter::setClipComponents( Clip& clip, PixelComponentEnum co
 /** @brief, force the host to set a clip's mapped bit depth be \em bitDepth */
 void ClipPreferencesSetter::setClipBitDepth( Clip& clip, BitDepthEnum bitDepth )
 {
+	if( ! _imageEffectHostDescription->supportsMultipleClipDepths )
+		//throw( std::logic_error("Host doesn't support multiple bit depths.") );
+		return;
+
 	doneSomething_ = true;
 	const std::string& propName = extractValueForName( clipDepthPropNames_, clip.name() );
 
@@ -1436,6 +1440,10 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, BitDepthEnum bitDepth )
 /** @brief, force the host to set a clip's mapped Pixel Aspect Ratio to be \em PAR */
 void ClipPreferencesSetter::setPixelAspectRatio( Clip& clip, double PAR )
 {
+	if( ! _imageEffectHostDescription->supportsMultipleClipPARs )
+		return;
+//		throw( std::logic_error("Host doesn't support multiple Pixel Aspect Ratios.") );
+
 	doneSomething_ = true;
 	const std::string& propName = extractValueForName( clipPARPropNames_, clip.name() );
 	outArgs_.propSetDouble( propName.c_str(), PAR );
@@ -1444,6 +1452,10 @@ void ClipPreferencesSetter::setPixelAspectRatio( Clip& clip, double PAR )
 /** @brief Allows an effect to change the output frame rate */
 void ClipPreferencesSetter::setOutputFrameRate( double v )
 {
+	if( ! _imageEffectHostDescription->supportsSetableFrameRate )
+		return;
+//		throw( std::logic_error("Host doesn't support setable frame rate.") );
+	
 	doneSomething_ = true;
 	outArgs_.propSetDouble( kOfxImageEffectPropFrameRate, v );
 }

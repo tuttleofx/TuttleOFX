@@ -756,6 +756,9 @@ const StringStringMap& clipPARPropNames_;
 const std::string& extractValueForName( const StringStringMap& m, const std::string& name );
 
 public:
+	ImageEffectHostDescription* _imageEffectHostDescription;
+	
+public:
 	ClipPreferencesSetter( OFX::PropertySet       props,
 	                       const StringStringMap& depthPropNames,
 	                       const StringStringMap& componentPropNames,
@@ -765,7 +768,9 @@ public:
 		clipDepthPropNames_( depthPropNames ),
 		clipComponentPropNames_( componentPropNames ),
 		clipPARPropNames_( PARPropNames )
-	{}
+	{
+			_imageEffectHostDescription = getImageEffectHostDescription();
+	}
 
 	bool didSomething( void ) const { return doneSomething_; }
 
