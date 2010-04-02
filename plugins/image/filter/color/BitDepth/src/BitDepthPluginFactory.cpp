@@ -70,7 +70,7 @@ void BitDepthPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
 	outBitDepth->appendOption("byte (8 bits)");
 	outBitDepth->appendOption("short (16 bits)");
 	outBitDepth->appendOption("float (32 bits)");
-	outBitDepth->setDefault(3);
+	outBitDepth->setDefault(2);
 
     OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kBitDepthHelpButton );
     helpButton->setScriptName( "&Help" );

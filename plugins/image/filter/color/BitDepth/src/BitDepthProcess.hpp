@@ -30,7 +30,6 @@ protected :
     BitDepthPlugin& _plugin;        ///< Rendering plugin
     SView               _srcView;       ///< Source view
 	boost::scoped_ptr<OFX::Image> _src;
-	boost::scoped_ptr<OFX::Image> _dst;
 
 public :
     BitDepthProcess( BitDepthPlugin& instance );

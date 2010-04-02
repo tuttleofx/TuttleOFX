@@ -38,6 +38,7 @@ protected:
 	View _dstView; ///< @brief image to process into
 	boost::scoped_ptr<OFX::Image> _dst;
 	OfxRectI _dstPixelRod;
+	OFX::RenderArguments _renderArgs;
 
 public:
 	/** @brief ctor */
@@ -59,6 +60,7 @@ public:
 	/** @brief fetch output and inputs clips */
 	virtual void setupAndProcess( const OFX::RenderArguments& args )
 	{
+		_renderArgs = args;
 		_renderWindow = args.renderWindow;
 		try
 		{
