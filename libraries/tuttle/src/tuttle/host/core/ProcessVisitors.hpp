@@ -84,7 +84,7 @@ struct dfs_preProcess_initialize_visitor : public boost::dfs_visitor<>
 		void discover_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[PRECOMPUTE] discover_vertex "
+			std::cout << "[PREPROCESS] discover_vertex "
 			          << vertex << std::endl;
 
 			vertex.setProcessOptions( _defaultOptions );
@@ -112,7 +112,7 @@ struct dfs_process_visitor : public boost::dfs_visitor<>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[COMPUTE] finish_vertex "
+			std::cout << "[PROCESS] finish_vertex "
 			          << vertex << std::endl;
 
 			vertex.getProcessNode()->process( vertex.getProcessOptions() );
@@ -137,7 +137,7 @@ struct dfs_postProcess_visitor : public boost::dfs_visitor<>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[POSTCOMPUTE] initialize_vertex "
+			std::cout << "[POSTPROCESS] initialize_vertex "
 			          << vertex << std::endl;
 		}
 
@@ -145,7 +145,7 @@ struct dfs_postProcess_visitor : public boost::dfs_visitor<>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[POSTCOMPUTE] finish_vertex "
+			std::cout << "[POSTPROCESS] finish_vertex "
 			          << vertex << std::endl;
 
 			vertex.getProcessNode()->postProcess( vertex.getProcessOptions() );
