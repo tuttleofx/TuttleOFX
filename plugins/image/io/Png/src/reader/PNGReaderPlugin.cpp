@@ -149,7 +149,7 @@ void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
 	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
-	clipPreferences.setPixelAspectRatio( *_dstClip, 720.0 / 720.0 );
+	clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
 }
 
 }

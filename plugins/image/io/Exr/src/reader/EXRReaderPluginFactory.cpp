@@ -31,7 +31,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextGenerator );
+	desc.addSupportedContext( OFX::eContextReader );
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths

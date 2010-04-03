@@ -97,6 +97,12 @@ typedef struct OfxImageMemoryStruct* OfxImageMemoryHandle;
 /** @brief Use to define the retimer effect context  See \ref ImageEffectContexts */
 #define kOfxImageEffectContextRetimer "OfxImageEffectContextRetimer"
 
+/** @brief Use to define the reader effect context  See \ref ImageEffectContexts */
+#define kOfxImageEffectContextReader "OfxImageEffectContextReader"
+
+/** @brief Use to define the writer effect context  See \ref ImageEffectContexts */
+#define kOfxImageEffectContextWriter "OfxImageEffectContextWriter"
+
 /** @brief Used as a value for ::kOfxPropType on image effect host handles */
 #define kOfxTypeImageEffectHost "OfxTypeImageEffectHost"
 

@@ -28,7 +28,15 @@ Graph::Node& Graph::createNode( const std::string& id )
 	plug->loadAndDescribeActions();
 
 	ofx::imageEffect::OfxhImageEffectNode* plugInst = NULL;
-	if( plug->supportsContext( kOfxImageEffectContextGenerator ) )
+	if( plug->supportsContext( kOfxImageEffectContextReader ) )
+	{
+		plugInst = plug->createInstance( kOfxImageEffectContextReader );
+	}
+	else if( plug->supportsContext( kOfxImageEffectContextWriter ) )
+	{
+		plugInst = plug->createInstance( kOfxImageEffectContextWriter );
+	}
+	else if( plug->supportsContext( kOfxImageEffectContextGenerator ) )
 	{
 		plugInst = plug->createInstance( kOfxImageEffectContextGenerator );
 	}

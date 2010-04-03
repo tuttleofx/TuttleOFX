@@ -695,7 +695,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 	OfxRectD rod;
 
 	// figure out the default contexts
-	if( _context == kOfxImageEffectContextGenerator )
+	if( _context == kOfxImageEffectContextGenerator ||
+	    _context == kOfxImageEffectContextReader )
 	{
 		// generator is the extent
 		rod.x1 = rod.y1 = 0;
@@ -705,7 +706,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		/// @todo tuttle: maybe RoD problems with Generator and Read here... to check !
 	}
 	else if( _context == kOfxImageEffectContextFilter ||
-	         _context == kOfxImageEffectContextPaint )
+	         _context == kOfxImageEffectContextPaint  ||
+	         _context == kOfxImageEffectContextWriter )
 	{
 		try
 		{
@@ -846,7 +848,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		     it != itEnd;
 		     ++it )
 		{
-			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
+			if( !it->second->isOutput() ||
+			    getContext() == kOfxImageEffectContextGenerator || /// @todo tuttle: why particular case for generator and reader ?? maybe we can remove this !
+			    getContext() == kOfxImageEffectContextReader )
 			{
 				/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
 				OfxRectD roi = it->second->fetchRegionOfDefinition( time );
@@ -874,7 +878,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		     it != itEnd;
 		     ++it )
 		{
-			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
+			if( !it->second->isOutput() ||
+			    getContext() == kOfxImageEffectContextGenerator ||
+			    getContext() == kOfxImageEffectContextReader )
 			{
 				property::OfxhPropSpec s;
 				std::string name = "OfxImageClipPropRoI_" + it->first;
@@ -905,7 +911,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		     it != itEnd;
 		     ++it )
 		{
-			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
+			if( !it->second->isOutput() ||
+			    getContext() == kOfxImageEffectContextGenerator ||
+			    getContext() == kOfxImageEffectContextReader )
 			{
 				OfxRectD rod = it->second->fetchRegionOfDefinition( time );
 				if( it->second->supportsTiles() )

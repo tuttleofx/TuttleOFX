@@ -63,7 +63,9 @@ OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time ) const
 	}
 
 	OfxRectD rod;
-	_effect.getProperties().getDoublePropertyN( kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4 );
+	OfxPointD renderScale = { 1.0, 1.0 };
+	_effect.getRegionOfDefinitionAction( time, renderScale, rod );
+//	_effect.getProperties().getDoublePropertyN( kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4 );
 	return rod;
 }
 

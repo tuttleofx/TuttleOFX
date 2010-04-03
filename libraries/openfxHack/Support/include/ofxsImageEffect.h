@@ -90,7 +90,9 @@ enum ContextEnum
 	eContextTransition,
 	eContextPaint,
 	eContextGeneral,
-	eContextRetimer
+	eContextRetimer,
+	eContextReader,
+	eContextWriter,
 };
 
 const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invalid_argument );

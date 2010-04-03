@@ -114,6 +114,10 @@ ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argu
 		return eContextGeneral;
 	if( s == kOfxImageEffectContextRetimer )
 		return eContextRetimer;
+	if( s == kOfxImageEffectContextReader )
+		return eContextReader;
+	if( s == kOfxImageEffectContextWriter )
+		return eContextWriter;
 	OFX::Log::error( true, "Unknown image effect context '%s'", s.c_str() );
 	throw std::invalid_argument( s );
 }
@@ -135,6 +139,10 @@ const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invali
 			return kOfxImageEffectContextGeneral;
 		case eContextRetimer:
 			return kOfxImageEffectContextRetimer;
+		case eContextReader:
+			return kOfxImageEffectContextReader;
+		case eContextWriter:
+			return kOfxImageEffectContextWriter;
 		case eContextNone:
 			return "ContextNone...";
 	}
@@ -505,6 +513,12 @@ void ImageEffectDescriptor::addSupportedContext( ContextEnum v )
 			break;
 		case eContextRetimer:
 			_effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextRetimer, n );
+			break;
+		case eContextReader:
+			_effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextReader, n );
+			break;
+		case eContextWriter:
+			_effectProps.propSetString( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextWriter, n );
 			break;
 		case eContextNone:
 			break;

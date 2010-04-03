@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 
 	//	BOOST_CHECK_THROW( plugin->getProperties().fetchPointerProperty( kOfxPropInstanceData ), core::exception::LogicError );
 
-	boost::scoped_ptr<tuttle::host::core::ImageEffectNode> ofxinst( dynamic_cast< tuttle::host::core::ImageEffectNode* >( plugin->createInstance( kOfxImageEffectContextGenerator ) ) );
+	boost::scoped_ptr<tuttle::host::core::ImageEffectNode> ofxinst( dynamic_cast< tuttle::host::core::ImageEffectNode* >( plugin->createInstance( kOfxImageEffectContextReader ) ) );
 	ofxinst->setName( "pluginTest" );
 	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
 
