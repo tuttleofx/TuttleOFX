@@ -316,13 +316,13 @@ private:
 		throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " multidimentional parameter." ); \
 	}\
 	public:\
-	inline virtual Type get##Name( const unsigned int index) const OFX_EXCEPTION_SPEC \
+	inline Type get##Name( const std::size_t index ) const OFX_EXCEPTION_SPEC \
 	{\
 		Type dst;\
 		getAt( dst, index );\
 		return dst;\
 	}\
-	inline virtual Type get##Name( const OfxTime time, const unsigned int index) const OFX_EXCEPTION_SPEC \
+	inline Type get##Name( const OfxTime time, const std::size_t index ) const OFX_EXCEPTION_SPEC \
 	{\
 		Type dst;\
 		getAt( time, dst, index );\
@@ -340,8 +340,8 @@ private:
 		get( time, dst );\
 		return dst;\
 	}\
-	inline virtual void set( const Type &value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); } \
-	inline virtual void set( const OfxTime time, const Type &value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); }\
+	inline virtual void set( const Type& value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); } \
+	inline virtual void set( const OfxTime time, const Type& value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); }\
 
 
 /// plugin parameter instance
@@ -516,39 +516,39 @@ public:
 
 protected:
 	// Deriving implementatation needs to overide these
-	inline virtual void getAt( BaseType& dst, const unsigned int index ) const OFX_EXCEPTION_SPEC
+	inline virtual void getAt( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->get( dst );
 	}
 
-	inline virtual void getAt( const OfxTime time, BaseType& dst, const unsigned int index ) const OFX_EXCEPTION_SPEC
+	inline virtual void getAt( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->get( time, dst );
 	}
 
 public:
-	inline virtual void setAt( const BaseType& value, const unsigned int index ) OFX_EXCEPTION_SPEC
+	inline virtual void setAt( const BaseType& value, const std::size_t index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->set( value );
 	}
 
-	inline virtual void setAt( const OfxTime time, const BaseType& value, const unsigned int index ) OFX_EXCEPTION_SPEC
+	inline virtual void setAt( const OfxTime time, const BaseType& value, const std::size_t index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->set( time, value );
 	}
 
 	// derived class does not need to implement, default is an approximation
-	inline virtual void deriveAt( const OfxTime time, BaseType& dst, const unsigned int index ) const OFX_EXCEPTION_SPEC
+	inline virtual void deriveAt( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->derive( time, dst );
 	}
 
-	inline virtual void integrateAt( const OfxTime time1, const OfxTime time2, BaseType& dst, const unsigned int index ) const OFX_EXCEPTION_SPEC
+	inline virtual void integrateAt( const OfxTime time1, const OfxTime time2, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->integrate( time1, time2, dst );
