@@ -75,7 +75,6 @@ public:
 
 	void begin( ProcessOptions& processOptions )
 	{
-		//		createInstanceAction();
 		beginRenderAction( processOptions._startFrame,
 		                   processOptions._endFrame,
 		                   processOptions._step,

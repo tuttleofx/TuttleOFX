@@ -45,13 +45,13 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_preCompute_finish_visitor : public boost::dfs_visitor<>
+struct dfs_preProcess_finish_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preCompute_finish_visitor( TGraph& graph, ProcessOptions& defaultOptions )
+		dfs_preProcess_finish_visitor( TGraph& graph, ProcessOptions& defaultOptions )
 			: _graph(graph.getGraph())
 			, _defaultOptions(defaultOptions)
 		{}
@@ -69,13 +69,13 @@ struct dfs_preCompute_finish_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_preCompute_initialize_visitor : public boost::dfs_visitor<>
+struct dfs_preProcess_initialize_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preCompute_initialize_visitor( TGraph& graph, ProcessOptions& defaultOptions )
+		dfs_preProcess_initialize_visitor( TGraph& graph, ProcessOptions& defaultOptions )
 			: _graph(graph.getGraph())
 			, _defaultOptions(defaultOptions)
 		{}
@@ -98,13 +98,13 @@ struct dfs_preCompute_initialize_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_compute_visitor : public boost::dfs_visitor<>
+struct dfs_process_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_compute_visitor( TGraph& graph )
+		dfs_process_visitor( TGraph& graph )
 			: _graph(graph.getGraph())
 		{}
 
@@ -123,13 +123,13 @@ struct dfs_compute_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_postCompute_visitor : public boost::dfs_visitor<>
+struct dfs_postProcess_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_postCompute_visitor( TGraph& graph )
+		dfs_postProcess_visitor( TGraph& graph )
 			: _graph(graph.getGraph())
 		{}
 

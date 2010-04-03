@@ -111,7 +111,7 @@ void Graph::compute( const std::list<std::string>& nodes, const int tBegin, cons
 	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graph.dot" );
 
 	ProcessGraph process( *this );
-	process.compute( nodes, tBegin, tEnd );
+	process.process( nodes, tBegin, tEnd );
 }
 
 void Graph::dumpToStdOut()

@@ -86,7 +86,7 @@ public:
 
 	void setUnconnected() { _connectedClip = NULL; setConnected( false ); }
 
-	std::string getFullName() const { return _effect.getName() + "." + getName(); }
+	std::string getFullName() const { return getNode().getName() + "." + getName(); }
 
 	std::string getConnectedClipFullName() const
 	{
@@ -130,7 +130,7 @@ public:
 	 *      - kOfxImagePreMultiplied - the image is premultiplied by it's alpha
 	 *      - kOfxImageUnPreMultiplied - the image is unpremultiplied
 	 */
-	const std::string& getPremult() const { return _effect.getOutputPreMultiplication(); }
+	const std::string& getPremult() const { return getNode().getOutputPreMultiplication(); }
 
 	/**
 	 * @brief Field Order - Which spatial field occurs temporally first in a frame.
@@ -163,10 +163,7 @@ public:
 	 */
 	double getFrameRate() const
 	{
-		/// our clip is pretending to be progressive PAL SD by default
-		double val = _effect.getFrameRate();
-
-		return val;
+		return getNode().getFrameRate();
 	}
 
 	/**
@@ -179,7 +176,7 @@ public:
 	 * @brief Unmapped Frame Rate
 	 * The unmaped frame range over which an output clip has images.
 	 */
-	const double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
+	const double getUnmappedFrameRate() const { return getNode().getFrameRate(); }
 
 	/**
 	 * @brief Unmapped Frame Range -
