@@ -32,7 +32,7 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
 			return kOfxStatErrValue;
 		}
 		
-		prop.setValue( value, index, OfxhProperty::eModifiedByPlugin );
+		prop.setValue( value, index, eModifiedByPlugin );
 
 		//		#ifdef DEBUG_PROPERTIES
 		//		std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
@@ -79,7 +79,7 @@ static OfxStatus propSetN( OfxPropertySetHandle properties,
 			return kOfxStatErrValue;
 		}
 		
-		prop.setValueN( values, count, OfxhProperty::eModifiedByPlugin );
+		prop.setValueN( values, count, eModifiedByPlugin );
 
 		return kOfxStatOK;
 	}

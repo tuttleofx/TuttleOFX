@@ -29,7 +29,6 @@ public:
 	OfxRectD _renderRoI;
 	OfxPointD _renderScale;
 
-	OfxRectD _renderRoD;
 	std::map<tuttle::host::ofx::attribute::OfxhClipImage*, OfxRectD> _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
 };
 

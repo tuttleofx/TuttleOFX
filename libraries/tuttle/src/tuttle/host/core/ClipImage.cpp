@@ -62,11 +62,13 @@ OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time ) const
 		return _connectedClip->fetchRegionOfDefinition( time );
 	}
 
-	OfxRectD rod;
-	OfxPointD renderScale = { 1.0, 1.0 };
-	_effect.getRegionOfDefinitionAction( time, renderScale, rod );
-//	_effect.getProperties().getDoublePropertyN( kOfxImageEffectPropRegionOfDefinition, &rod.x1, 4 );
-	return rod;
+	/// @todo tuttle: renderscale, time, ?
+
+	if( time != _effect.getCurrentTime() )
+	{
+		throw( exception::LogicError( "Access to another time than current is not supported at the moment." ) );
+	}
+	return _effect.getRegionOfDefinition();
 }
 
 /// Get the Raw Unmapped Pixel Depth

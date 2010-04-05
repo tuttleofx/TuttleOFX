@@ -410,7 +410,7 @@ void OfxhPropertyTemplate<T>::getValueNRaw( APIType* value, const int count ) co
  * set one value
  */
 template<class T>
-void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int index, const OfxhProperty::EModifiedBy who ) OFX_EXCEPTION_SPEC
+void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int index, const EModifiedBy who ) OFX_EXCEPTION_SPEC
 {
 	if( index < 0 || ( (size_t) index > _value.size() && _dimension ) )
 	{
@@ -434,7 +434,7 @@ void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int
  * set multiple values
  */
 template<class T>
-void OfxhPropertyTemplate<T>::setValueN( const typename T::APIType* value, const int count, const OfxhProperty::EModifiedBy who ) OFX_EXCEPTION_SPEC
+void OfxhPropertyTemplate<T>::setValueN( const typename T::APIType* value, const int count, const EModifiedBy who ) OFX_EXCEPTION_SPEC
 {
 	if( _dimension && ( (size_t) count > _value.size() ) )
 	{
@@ -706,7 +706,7 @@ void OfxhSet::coutProperties() const
 		std::cout << "    " << it->first << " ";
 		std::cout << "(type:" << mapTypeEnumToString( prop.getType() )
 			<< " dim:" << prop.getDimension() << " ro:" << prop.getPluginReadOnly()
-			<< " modifiedBy:" << (prop.getModifiedBy() == OfxhProperty::eModifiedByHost ? "host" : "plugin")
+			<< " modifiedBy:" << (prop.getModifiedBy() == eModifiedByHost ? "host" : "plugin")
 			<< ") : [";
 		int i = 0;
 		for( ; i < (int)( prop.getDimension() ) - 1; ++i )

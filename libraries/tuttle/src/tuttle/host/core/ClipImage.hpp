@@ -103,6 +103,11 @@ public:
 			return _connectedClip->getFullName();
 		}
 	}
+	
+	const ClipImage& getConnectedClip() const
+	{
+		return *_connectedClip;
+	}
 
 	/**
 	 * @brief Get the Raw Unmapped Pixel Depth from the host
@@ -163,7 +168,7 @@ public:
 	 */
 	double getFrameRate() const
 	{
-		return getNode().getFrameRate();
+		return _effect.getFrameRate();
 	}
 
 	/**
@@ -176,7 +181,7 @@ public:
 	 * @brief Unmapped Frame Rate
 	 * The unmaped frame range over which an output clip has images.
 	 */
-	const double getUnmappedFrameRate() const { return getNode().getFrameRate(); }
+	const double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
 
 	/**
 	 * @brief Unmapped Frame Range -

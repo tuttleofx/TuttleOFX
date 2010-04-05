@@ -20,6 +20,8 @@ class ImageEffectNode : public ProcessNode,
 {
 protected:
 	OfxPointD _frameRange;
+	OfxRectD _rod;
+	OfxTime _currentTime;
 
 public:
 	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin*         plugin,
@@ -73,8 +75,14 @@ public:
 
 	const ProcessAttribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>(this)->getSingleInputAttribute(); };
 
+	OfxRectD getRegionOfDefinition() const { return _rod; }
+
+	OfxTime getCurrentTime() const { return _currentTime; }
+
 	void begin( ProcessOptions& processOptions )
 	{
+		TCOUT( "begin: " << getName() );
+		checkClipsConnections();
 		beginRenderAction( processOptions._startFrame,
 		                   processOptions._endFrame,
 		                   processOptions._step,
@@ -85,20 +93,31 @@ public:
 	void preProcess_finish( ProcessOptions& processOptions )
 	{
 		TCOUT( "preProcess_finish: " << getName() );
+		setCurrentTime( processOptions._time );
 		getClipPreferencesAction();
+
+		initClipsFromReadsToWrites();
+
+		OfxRectD rod;
 		getRegionOfDefinitionAction( processOptions._time,
-		                             processOptions._renderScale,
-		                             processOptions._renderRoD );
-		processOptions._renderRoI = processOptions._renderRoD;
+									 processOptions._renderScale,
+									 rod );
+		setRegionOfDefinition( rod );
+		processOptions._renderRoI = rod;
+		COUT_VAR( rod );
 	}
 
 	void preProcess_initialize( ProcessOptions& processOptions )
 	{
 		TCOUT( "preProcess_initialize: " << getName() );
+		
+		initClipsFromWritesToReads();
+		
 		getRegionOfInterestAction( processOptions._time,
 		                           processOptions._renderScale,
 		                           processOptions._renderRoI,
 		                           processOptions._inputsRoI );
+		COUT_VAR( processOptions._renderRoI );
 	}
 
 	void process( const ProcessOptions& processOptions )
@@ -118,10 +137,13 @@ public:
 	}
 
 	void postProcess( ProcessOptions& processOptions )
-	{}
+	{
+		TCOUT( "postProcess: " << getName() );
+	}
 
 	void end( ProcessOptions& processOptions )
 	{
+		TCOUT( "end: " << getName() );
 		endRenderAction( processOptions._startFrame,
 		                 processOptions._endFrame,
 		                 processOptions._step,
@@ -267,6 +289,22 @@ public:
 	                             OfxTime   step,
 	                             bool      interactive,
 	                             OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
+
+private:
+
+	void setRegionOfDefinition( const OfxRectD& rod )
+	{
+		_rod = rod;
+	}
+
+	void setCurrentTime( const OfxTime time )
+	{
+		_currentTime = time;
+	}
+
+	void checkClipsConnections() const;
+	void initClipsFromReadsToWrites();
+	void initClipsFromWritesToReads();
 };
 
 }

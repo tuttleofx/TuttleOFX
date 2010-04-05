@@ -1102,7 +1102,22 @@ bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 	bool pluginSupports = supportsMultipleClipDepths();
 
 	/// no support, so no
-	return hostSupports && pluginSupports;
+	if( !hostSupports || !pluginSupports )
+		return false;
+
+	// in the standard, it's written that only general context can handle multiple clip depth...
+	// but we remove this restriction...
+
+//	if( _context == kOfxImageEffectContextFilter )
+//		return false;
+//
+//	if( _context == kOfxImageEffectContextGenerator ||
+//	_context == kOfxImageEffectContextTransition ||
+//	_context == kOfxImageEffectContextPaint ||
+//	_context == kOfxImageEffectContextRetimer )
+//		return false;
+
+	return true;
 }
 
 /**
@@ -1254,21 +1269,25 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 
 void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outArgs )
 {
-
-	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
+	for( ClipImageMap::iterator it = _clips.begin();
 	     it != _clips.end();
 	     it++ )
 	{
-
 		attribute::OfxhClipImage* clip = it->second;
 
 		// Properties setup
 		std::string componentParamName = "OfxImageClipPropComponents_" + it->first;
 		std::string depthParamName     = "OfxImageClipPropDepth_" + it->first;
 		std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
-		clip->setPixelDepth( outArgs.getStringProperty( depthParamName ) );
-		clip->setComponents( outArgs.getStringProperty( componentParamName ) );
-		clip->setPixelAspectRatio( outArgs.getDoubleProperty( parParamName ) );
+
+		const property::String& propPixelDepth = outArgs.fetchStringProperty( depthParamName );
+		clip->setPixelDepth( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
+		
+		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
+		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
+		
+		const property::Double& propPixelAspectRatio = outArgs.fetchDoubleProperty( parParamName );
+		clip->setPixelAspectRatio( propPixelAspectRatio.getValue(), propPixelAspectRatio.getModifiedBy() );	
 	}
 
 	_outputFrameRate         = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRate );

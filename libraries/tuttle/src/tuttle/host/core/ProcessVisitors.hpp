@@ -60,6 +60,7 @@ struct dfs_preProcess_finish_visitor : public boost::dfs_visitor<>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
+			vertex.setProcessOptions( _defaultOptions );
 			vertex.getProcessNode()->preProcess_finish( vertex.getProcessOptions() );
 		}
 
@@ -86,8 +87,6 @@ struct dfs_preProcess_initialize_visitor : public boost::dfs_visitor<>
 			Vertex& vertex = get( vertex_properties, _graph )[v];
 			std::cout << "[PREPROCESS] discover_vertex "
 			          << vertex << std::endl;
-
-			vertex.setProcessOptions( _defaultOptions );
 
 			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
 		}

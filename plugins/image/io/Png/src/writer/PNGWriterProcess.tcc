@@ -19,7 +19,6 @@ namespace plugin {
 namespace png {
 namespace writer {
 
-using namespace boost::gil;
 
 template<class View>
 PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
@@ -33,6 +32,7 @@ PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
 template<class View>
 void PNGWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	using namespace boost::gil;
 	// Fetch input image
 	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
 	if( !src.get() )
@@ -56,16 +56,14 @@ void PNGWriterProcess<View>::setup( const OFX::RenderArguments& args )
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
+ * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindow  Processing window
- *
  * @warning no multithread here !
  */
 template<class View>
 void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
+	using namespace boost::gil;
 	try
 	{
 		std::string filepath;
@@ -80,20 +78,12 @@ void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 }
 
 /**
- * @brief Function called to apply an anisotropic blur
- *
- * @param[out]  dst     Destination image view
- * @param[in]   amplitude     Amplitude of the anisotropic blur
- * @param dl    spatial discretization.
- * @param da    angular discretization.
- * @param gauss_prec    precision of the gaussian function
- * @param fast_approx   Tell to use the fast approximation or not.
- *
- * @return Result view of the blurring process
+ * 
  */
 template<class View>
 void PNGWriterProcess<View>::writeImage( View& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
 {
+	using namespace boost::gil;
 	View flippedView = flipped_up_down_view( src );
 
 	png_write_view( filepath, clamp<rgb8_pixel_t>( flippedView ) );

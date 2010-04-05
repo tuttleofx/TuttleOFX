@@ -107,6 +107,14 @@ void PNGWriterPlugin::render( const OFX::RenderArguments& args )
 					return;
 			}
 		}
+		else if( dstComponents == OFX::ePixelComponentCustom )
+		{
+			COUT_FATALERROR( "Custom pixel component is not recognize !" );
+		}
+		else if( dstComponents == OFX::ePixelComponentNone )
+		{
+			COUT_FATALERROR( "Pixel component is None !" );
+		}
 		_bRenderOnce = false;
 	}
 }

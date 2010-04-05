@@ -283,6 +283,126 @@ void ImageEffectNode::beginRenderAction( OfxTime   startFrame,
 	OfxhImageEffectNode::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
 
+void ImageEffectNode::checkClipsConnections() const
+{
+	for( ClipImageMap::const_iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		const ClipImage& clip = dynamic_cast<const ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() && !clip.isOptional() ) // a non optionl input clip is unconnected
+		{
+			throw( exception::LogicError( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
+		}
+	}
+}
+
+void ImageEffectNode::initClipsFromReadsToWrites()
+{
+	std::string biggestBitDepth = kOfxBitDepthNone;
+	std::string mostChromaticComponents = kOfxImageComponentNone;
+	ClipImage& outputClip = dynamic_cast<ClipImage&>( getOutputClip() );
+
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() ) // filter for clip.isMask() and clip.isOptional() ?
+		{
+			const ClipImage& linkClip = clip.getConnectedClip();
+			biggestBitDepth         = ofx::findDeepestBitDepth( linkClip.getPixelDepth(), biggestBitDepth );
+			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
+		}
+	}
+//	if( ! this->isSupportedPixelDepth( biggestBitDepth ) )
+//	{
+//		throw( exception::LogicError("Pixel Depth not supported.") );
+//	}
+	if( supportsMultipleClipDepths() )
+	{
+		for( ClipImageMap::iterator it = _clips.begin();
+			 it != _clips.end();
+			 ++it )
+		{
+			ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+			if( !clip.isOutput() && clip.getConnected() )
+			{
+				const ClipImage& linkClip = clip.getConnectedClip();
+				const std::string& pixelDepth = linkClip.getPixelDepth();
+//				if( this->isSupportedPixelDepth( pixelDepth ) )
+				clip.setPixelDepthIfNotModifiedByPlugin( pixelDepth );
+			}
+		}
+	}
+	else
+	{
+		for( ClipImageMap::iterator it = _clips.begin();
+			 it != _clips.end();
+			 ++it )
+		{
+			ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+			if( !clip.isOutput() && clip.getConnected() )
+			{
+//				const ClipImage& linkClip = clip.getConnectedClip();
+//				if( linkClip.getNode().isSupportedPixelDepth( biggestBitDepth ) )
+				clip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
+			}
+		}
+	}
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() )
+		{
+			const ClipImage& linkClip = clip.getConnectedClip();
+			if( clip.isSupportedComponent( mostChromaticComponents ) )
+				clip.setComponentsIfNotModifiedByPlugin( linkClip.getComponents() );
+		}
+	}
+	outputClip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
+	if( outputClip.isSupportedComponent( mostChromaticComponents ) )
+		outputClip.setComponentsIfNotModifiedByPlugin( mostChromaticComponents );
+
+	/// @todo multiple PAR
+	if( supportsMultipleClipPARs() )
+	{
+
+	}
+	else
+	{
+
+	}
+}
+
+void ImageEffectNode::initClipsFromWritesToReads()
+{
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() )
+		{
+
+		}
+
+		const ofx::property::String& propPixelDepth = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
+		const ofx::property::String& propComponent = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
+		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
+		COUT( "-- " << "clip: " << " = " << clip.getFullName() );
+		COUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
+			<< " : " << (propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+		COUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
+			<< " : " << (propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+		COUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
+			<< " : " << (propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+	}
+}
+
+
 }
 }
 }

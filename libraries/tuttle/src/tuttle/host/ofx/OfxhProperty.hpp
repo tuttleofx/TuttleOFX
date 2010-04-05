@@ -200,17 +200,16 @@ public:
 	virtual void notify( const std::string& name, bool singleValue, int indexOrN ) OFX_EXCEPTION_SPEC = 0;
 };
 
+enum EModifiedBy
+{
+	eModifiedByHost = 0,
+	eModifiedByPlugin
+};
 
 /// base class for all properties
 class OfxhProperty : private boost::noncopyable
 {
 typedef OfxhProperty This;
-public:
-	enum EModifiedBy
-	{
-		eModifiedByHost = 0,
-		eModifiedByPlugin
-	};
 protected:
 	std::string _name;                         ///< name of this property
 	TypeEnum _type;                            ///< type of this property
@@ -454,10 +453,10 @@ public:
 	void getValueNRaw( APIType* value, const int count ) const OFX_EXCEPTION_SPEC;
 
 	/// set one value
-	void setValue( const Type& value, const int index = 0, const OfxhProperty::EModifiedBy who = OfxhProperty::eModifiedByHost ) OFX_EXCEPTION_SPEC;
+	void setValue( const Type& value, const int index = 0, const EModifiedBy who = eModifiedByHost ) OFX_EXCEPTION_SPEC;
 
 	/// set multiple values
-	void setValueN( const APIType* value, const int count, const OfxhProperty::EModifiedBy who = OfxhProperty::eModifiedByHost ) OFX_EXCEPTION_SPEC;
+	void setValueN( const APIType* value, const int count, const EModifiedBy who = eModifiedByHost ) OFX_EXCEPTION_SPEC;
 
 	/// reset
 	void reset() OFX_EXCEPTION_SPEC;
