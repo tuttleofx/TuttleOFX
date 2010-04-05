@@ -172,28 +172,6 @@ OfxhClipImage::OfxhClipImage( const OfxhClipImage& other )
 	, _effectInstance( other._effectInstance ) ///< @todo tuttle bad link in copy....
 {}
 
-OfxStatus OfxhClipImage::instanceChangedAction( std::string why,
-                                                OfxTime     time,
-                                                OfxPointD   renderScale )
-{
-	property::OfxhPropSpec stuff[] = {
-		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
-		{ kOfxPropName, property::eString, 1, true, getName().c_str() },
-		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
-		{ kOfxPropTime, property::eDouble, 1, true, "0" },
-		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
-		{ 0 }
-	};
-
-	property::OfxhSet inArgs( stuff );
-
-	// add the second dimension of the render scale
-	inArgs.setDoubleProperty( kOfxPropTime, time );
-	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
-
-	return _effectInstance.mainEntry( kOfxActionInstanceChanged, _effectInstance.getHandle(), &inArgs, 0 );
-}
-
 /// given the colour component, find the nearest set of supported colour components
 
 const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) const

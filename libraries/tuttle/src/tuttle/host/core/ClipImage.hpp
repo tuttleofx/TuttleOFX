@@ -168,7 +168,7 @@ public:
 	 */
 	double getFrameRate() const
 	{
-		return _effect.getFrameRate();
+		return getNode().getFrameRate();
 	}
 
 	/**
@@ -181,7 +181,7 @@ public:
 	 * @brief Unmapped Frame Rate
 	 * The unmaped frame range over which an output clip has images.
 	 */
-	const double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
+	const double getUnmappedFrameRate() const { return getNode().getFrameRate(); }
 
 	/**
 	 * @brief Unmapped Frame Range -

@@ -530,11 +530,29 @@ void OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName
                                                           OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
 	_clipPrefsDirty = true;
-	std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.find( clipName );
+	ClipImageMap::iterator it = _clips.find( clipName );
 	if( it == _clips.end() )
 		throw OfxhException( kOfxStatFailed );
 
-	it->second->instanceChangedAction( why, time, renderScale );
+	property::OfxhPropSpec stuff[] = {
+		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
+		{ kOfxPropName, property::eString, 1, true, it->second->getName().c_str() },
+		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
+		{ kOfxPropTime, property::eDouble, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ 0 }
+	};
+
+	property::OfxhSet inArgs( stuff );
+
+	// add the second dimension of the render scale
+	inArgs.setDoubleProperty( kOfxPropTime, time );
+	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
+
+	OfxStatus status = mainEntry( kOfxActionInstanceChanged, getHandle(), &inArgs, 0 );
+
+	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
+		throw OfxhException( status );
 }
 
 void OfxhImageEffectNode::endInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC

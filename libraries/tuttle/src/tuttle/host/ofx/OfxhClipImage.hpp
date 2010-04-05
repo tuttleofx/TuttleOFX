@@ -169,11 +169,6 @@ public:
 		return ( OfxImageClipHandle ) this;
 	}
 
-	/// instance changed action
-	OfxStatus instanceChangedAction( std::string why,
-	                                 OfxTime     time,
-	                                 OfxPointD   renderScale );
-
 	/**
 	 *  Pixel Depth - fetch depth of all chromatic component in this clip
 	 *

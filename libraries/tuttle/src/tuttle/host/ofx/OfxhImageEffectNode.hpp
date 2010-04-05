@@ -97,6 +97,7 @@ public:
 
 	virtual ~OfxhImageEffectNode();
 
+protected:
 	void initHook();
 	
 	/**
@@ -108,6 +109,7 @@ public:
 	void populate();
 	void populateParams( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor );
 
+public:
 	void copyAttributesValues( const OfxhImageEffectNode& other )
 	{
 		copyParamsValues( other );
@@ -172,7 +174,7 @@ public:
 
 	/// make a clip
 	//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;
-
+protected:
 	virtual void vmessage( const char* type,
 	                            const char* id,
 	                            const char* format,
@@ -184,6 +186,7 @@ public:
 	                             property::OfxhSet* inArgs,
 	                             property::OfxhSet* outArgs ) const;
 
+public:
 	size_t upperGetDimension( const std::string& name );
 
 	/// overridden from Property::Notify
@@ -250,6 +253,7 @@ public:
 	/// the clip preferences logic to still work
 	virtual bool isChromaticComponent( const std::string& str ) const;
 
+protected:
 	/// function to check for multiple bit depth support
 	/// The answer will depend on host, plugin and context
 	virtual bool canCurrentlyHandleMultipleClipDepths() const;
@@ -271,6 +275,7 @@ public:
 	/// this is used retrieve any out args after the action was called in mainEntry
 	virtual void examineOutArgs( const std::string& action, OfxStatus stat, const property::OfxhSet& outArgs ) const;
 
+public:
 	/// create an instance. This needs to be called _after_ construction and
 	/// _after_ the host populates it's params and clips with the 'correct'
 	/// values (either persisted ones or the defaults)
@@ -378,12 +383,13 @@ public:
 		/// @todo tuttle initOverlayDescriptor... !!! Correct the constness
 		//_descriptor->initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
 	}
-
+	
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const
 	{
 		return _descriptor.getOverlayDescriptor();
 	}
 
+private:
 	/// Setup the default clip preferences on the clips
 	virtual void setDefaultClipPreferences();
 
@@ -394,6 +400,7 @@ public:
 	/// stuff with wierd components etc... Calls setDefaultClipPreferences
 	virtual void setupClipPreferencesArgs( property::OfxhSet& args );
 
+public:
 	/**
 	 * Run the clip preferences action from the effect.
 	 *
@@ -433,6 +440,7 @@ public:
 		return false;
 	}
 
+protected:
 	/// find the best supported bit depth for the given one. Override this if you define
 	/// more depths
 	virtual const std::string& bestSupportedDepth( const std::string& depth ) const;
