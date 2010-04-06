@@ -307,22 +307,22 @@ private:
 	{\
 		throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); \
 	}\
-	inline virtual void getAt( Type&, const unsigned int ) const OFX_EXCEPTION_SPEC \
+	inline virtual void getAt( Type&, const std::size_t ) const OFX_EXCEPTION_SPEC \
 	{\
 		throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " multidimentional parameter." ); \
 	}\
-	inline virtual void getAt( const OfxTime, Type&, const unsigned int ) const OFX_EXCEPTION_SPEC \
+	inline virtual void getAt( const OfxTime, Type&, const std::size_t ) const OFX_EXCEPTION_SPEC \
 	{\
 		throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " multidimentional parameter." ); \
 	}\
 	public:\
-	inline Type get##Name( const std::size_t index ) const OFX_EXCEPTION_SPEC \
+	inline Type get##Name##At( const std::size_t index ) const OFX_EXCEPTION_SPEC \
 	{\
 		Type dst;\
 		getAt( dst, index );\
 		return dst;\
 	}\
-	inline Type get##Name( const OfxTime time, const std::size_t index ) const OFX_EXCEPTION_SPEC \
+	inline Type get##Name##At( const OfxTime time, const std::size_t index ) const OFX_EXCEPTION_SPEC \
 	{\
 		Type dst;\
 		getAt( time, dst, index );\

@@ -449,6 +449,12 @@ protected:
 	/// more chromatic components
 	virtual const std::string& findMostChromaticComponents( const std::string& a, const std::string& b ) const;
 
+	/** is the given bit depth supported
+	 */
+	bool isSupportedPixelDepth( const std::string& depth ) const
+	{
+		return getProperties().findStringPropValueIndex( kOfxImageEffectPropSupportedPixelDepths, depth ) != -1;
+	}
 
 private:
 	friend class boost::serialization::access;

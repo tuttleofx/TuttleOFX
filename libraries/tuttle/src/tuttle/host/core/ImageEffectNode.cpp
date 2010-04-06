@@ -302,6 +302,7 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 	std::string biggestBitDepth = kOfxBitDepthNone;
 	std::string mostChromaticComponents = kOfxImageComponentNone;
 	ClipImage& outputClip = dynamic_cast<ClipImage&>( getOutputClip() );
+	bool inputClipsFound = false;
 
 	for( ClipImageMap::iterator it = _clips.begin();
 		 it != _clips.end();
@@ -310,15 +311,16 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 		ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
 		if( !clip.isOutput() && clip.getConnected() ) // filter for clip.isMask() and clip.isOptional() ?
 		{
+			inputClipsFound = true;
 			const ClipImage& linkClip = clip.getConnectedClip();
 			biggestBitDepth         = ofx::findDeepestBitDepth( linkClip.getPixelDepth(), biggestBitDepth );
 			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
 		}
 	}
-//	if( ! this->isSupportedPixelDepth( biggestBitDepth ) )
-//	{
-//		throw( exception::LogicError("Pixel Depth not supported.") );
-//	}
+	if( inputClipsFound && ! this->isSupportedPixelDepth( biggestBitDepth ) )
+	{
+		throw( exception::LogicError("Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
+	}
 	if( supportsMultipleClipDepths() )
 	{
 		for( ClipImageMap::iterator it = _clips.begin();
@@ -330,7 +332,10 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 			{
 				const ClipImage& linkClip = clip.getConnectedClip();
 				const std::string& pixelDepth = linkClip.getPixelDepth();
-//				if( this->isSupportedPixelDepth( pixelDepth ) )
+				if( !this->isSupportedPixelDepth( pixelDepth ) )
+				{
+					throw( exception::LogicError("Pixel depth " + pixelDepth + " used by input not supported on node : " + getName()) );
+				}
 				clip.setPixelDepthIfNotModifiedByPlugin( pixelDepth );
 			}
 		}
@@ -344,8 +349,11 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 			ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
 			if( !clip.isOutput() && clip.getConnected() )
 			{
-//				const ClipImage& linkClip = clip.getConnectedClip();
-//				if( linkClip.getNode().isSupportedPixelDepth( biggestBitDepth ) )
+				const ClipImage& linkClip = clip.getConnectedClip();
+				if( ! linkClip.getNode().isSupportedPixelDepth( biggestBitDepth ) )
+				{
+					throw( exception::LogicError("Biggest pixel depth " + biggestBitDepth + " not supported on node : " + getName()) );
+				}
 				clip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
 			}
 		}
