@@ -31,7 +31,6 @@ protected:
 	View _srcViewB; ///< Source view B
 	boost::scoped_ptr<OFX::Image> _srcA;
 	boost::scoped_ptr<OFX::Image> _srcB;
-	boost::scoped_ptr<OFX::Image> _dst;
 
 public:
 	MergeProcess( MergePlugin & instance );

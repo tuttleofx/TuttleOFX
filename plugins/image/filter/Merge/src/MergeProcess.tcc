@@ -44,18 +44,18 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
 	// destination view
-	_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !_dst.get() )
+	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
+	if( !this->_dst.get() )
 		throw( ImageNotReadyException() );
-	if( _dst->getRowBytes( ) <= 0 )
+	if( this->_dst->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( _dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
 	// Make sure bit depths are the same
-	if( _srcA->getPixelDepth() != _dst->getPixelDepth() ||
-	    _srcB->getPixelDepth() != _dst->getPixelDepth() ||
-		_srcA->getPixelComponents() != _dst->getPixelComponents() ||
-	    _srcB->getPixelComponents() != _dst->getPixelComponents() )
+	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
+	    _srcB->getPixelDepth() != this->_dst->getPixelDepth() ||
+		_srcA->getPixelComponents() != this->_dst->getPixelComponents() ||
+	    _srcB->getPixelComponents() != this->_dst->getPixelComponents() )
 	{
 		throw( BitDepthMismatchException() );
 	}

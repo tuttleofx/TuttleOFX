@@ -119,16 +119,47 @@ bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	rod.x2 = _imageDims.x * _dstClip->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = _imageDims.y;
-	TCOUT( "DPXReaderPlugin::getRegionOfDefinition" );
-	TCOUT_VAR( rod );
 	return true;
 }
 
 void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
-	clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
+	std::string sFilepath;
+	_filepath->getValue( sFilepath );
+	if( exists( sFilepath ) )
+	{
+		_dpxImg.readHeader( sFilepath );
+		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+		switch(_dpxImg.componentsType())
+		{
+			case DpxImage::eCompTypeR8G8B8:
+			case DpxImage::eCompTypeR8G8B8A8:
+			case DpxImage::eCompTypeA8B8G8R8:
+			{
+				bd = OFX::eBitDepthUByte;
+				break;
+			}
+			case DpxImage::eCompTypeR10G10B10:
+			case DpxImage::eCompTypeR10G10B10A10:
+			case DpxImage::eCompTypeA10B10G10R10:
+			case DpxImage::eCompTypeR12G12B12:
+			case DpxImage::eCompTypeR12G12B12A12:
+			case DpxImage::eCompTypeA12B12G12R12:
+			case DpxImage::eCompTypeR16G16B16:
+			case DpxImage::eCompTypeR16G16B16A16:
+			case DpxImage::eCompTypeA16B16G16R16:
+			{
+				bd = OFX::eBitDepthUShort;
+				break;
+			}
+			default:
+				bd = OFX::eBitDepthFloat;
+		}
+
+		clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
+		clipPreferences.setClipBitDepth( *_dstClip, bd );
+		clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
+	}
 }
 
 }
