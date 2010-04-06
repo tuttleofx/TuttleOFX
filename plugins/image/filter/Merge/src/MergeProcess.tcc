@@ -53,7 +53,6 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	{
 		throw( BitDepthMismatchException() );
 	}
-
 }
 
 /**
@@ -64,6 +63,7 @@ template<class View, class Functor>
 void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
+
 	View srcViewA = subimage_view( this->_srcViewA,
 							   procWindow.x1,
 							   procWindow.y1,

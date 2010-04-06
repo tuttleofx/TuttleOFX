@@ -190,7 +190,8 @@ void BitDepthPlugin::changedParam( const OFX::InstanceChangedArgs &args, const s
 void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_dstClip, (OFX::BitDepthEnum)(_outBitDepth->getValue() + 1) );
+	if( _outBitDepth->getValue() != 0 )
+		clipPreferences.setClipBitDepth( *_dstClip, (OFX::BitDepthEnum)(_outBitDepth->getValue()) );
 }
 
 }

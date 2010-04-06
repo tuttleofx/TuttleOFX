@@ -44,6 +44,7 @@ int main( int argc, char** argv )
 		core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
 	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
 		core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
+		core::Graph::Node& bitdepth1  = g.createNode( "fr.tuttle.bitdepth" );
 		core::Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
 		core::Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
 		core::Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
@@ -79,7 +80,8 @@ int main( int argc, char** argv )
 		g.connect( invert4, write2 );
 		g.connect( invert1, write3 );
 
-		g.connect( invert1, merge1.getProcessAttribute("SourceA") );
+		g.connect( invert1, bitdepth1);
+		g.connect( bitdepth1, merge1.getProcessAttribute("SourceA") );
 		g.connect( read3, merge1.getProcessAttribute("SourceB") );
 	//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
