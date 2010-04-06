@@ -46,10 +46,10 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
 
 	// Make sure bit depths are the same
-	if( _srcA->getPixelDepth() != _dst->getPixelDepth() ||
-	    _srcB->getPixelDepth() != _dst->getPixelDepth() ||
-		_srcA->getPixelComponents() != _dst->getPixelComponents() ||
-	    _srcB->getPixelComponents() != _dst->getPixelComponents() )
+	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
+	    _srcB->getPixelDepth() != this->_dst->getPixelDepth() ||
+		_srcA->getPixelComponents() != this->_dst->getPixelComponents() ||
+	    _srcB->getPixelComponents() != this->_dst->getPixelComponents() )
 	{
 		throw( BitDepthMismatchException() );
 	}
@@ -64,7 +64,22 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 template<class View, class Functor>
 void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
-	merge_pixels( _srcViewA, _srcViewB, this->_dstView, Functor() );
+	View srcViewA = subimage_view( this->_srcViewA,
+							   procWindow.x1,
+							   procWindow.y1,
+							   procWindow.x2 - procWindow.x1,
+							   procWindow.y2 - procWindow.y1 );
+	View srcViewB = subimage_view( this->_srcViewB,
+							   procWindow.x1,
+							   procWindow.y1,
+							   procWindow.x2 - procWindow.x1,
+							   procWindow.y2 - procWindow.y1 );
+	View dstView = subimage_view( this->_dstView,
+							  procWindow.x1,
+							  procWindow.y1,
+							  procWindow.x2 - procWindow.x1,
+							  procWindow.y2 - procWindow.y1 );
+	merge_pixels( srcViewA, srcViewB, dstView, Functor() );
 }
 
 }

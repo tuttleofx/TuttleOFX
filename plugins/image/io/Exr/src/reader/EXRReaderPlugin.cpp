@@ -218,7 +218,7 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
+	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
 	clipPreferences.setPixelAspectRatio( *_dstClip, 720.0 / 720.0 );
 }
 

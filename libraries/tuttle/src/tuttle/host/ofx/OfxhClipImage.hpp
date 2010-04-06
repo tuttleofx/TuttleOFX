@@ -135,8 +135,9 @@ private:
  * a clip image instance
  * @todo tuttle: template this class with the Node Type, so replace OfxhImageEffectNode by template parameter
  */
-class OfxhClipImage : virtual public OfxhClipImageAccessor,
-	public attribute::OfxhClip
+class OfxhClipImage : 
+	public attribute::OfxhClip,
+	virtual public OfxhClipImageAccessor
 {
 typedef OfxhClipImage This;
 protected:
@@ -159,7 +160,7 @@ public:
 	virtual OfxhClipImage* clone() const                    = 0;
 	virtual std::string    getFullName() const              = 0;
 	virtual std::string    getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
-
+ 
 	/**
 	 * get a handle on the clip descriptor for the C api
 	 */
@@ -167,11 +168,6 @@ public:
 	{
 		return ( OfxImageClipHandle ) this;
 	}
-
-	/// instance changed action
-	OfxStatus instanceChangedAction( std::string why,
-	                                 OfxTime     time,
-	                                 OfxPointD   renderScale );
 
 	/**
 	 *  Pixel Depth - fetch depth of all chromatic component in this clip
@@ -189,9 +185,17 @@ public:
 	/** set the current pixel depth
 	 * called by clip preferences action
 	 */
-	void setPixelDepth( const std::string& s )
+	void setPixelDepth( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
-		getEditableProperties().setStringProperty( kOfxImageEffectPropPixelDepth, s );
+		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+		prop.setValue( s, 0, modifiedBy );
+	}
+
+	void setPixelDepthIfNotModifiedByPlugin( const std::string& s )
+	{
+		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+		if( prop.getModifiedBy() != property::eModifiedByPlugin )
+			prop.setValue( s );
 	}
 
 	/** Pixel Aspect Ratio
@@ -206,9 +210,10 @@ public:
 	 * set the current pixel aspect ratio
 	 * called by clip preferences action
 	 */
-	void setPixelAspectRatio( const double& s )
+	void setPixelAspectRatio( const double& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
-		getEditableProperties().setDoubleProperty( kOfxImagePropPixelAspectRatio, s );
+		property::Double& prop = getEditableProperties().fetchLocalDoubleProperty( kOfxImagePropPixelAspectRatio );
+		prop.setValue( s, 0, modifiedBy );
 	}
 
 	/** Components that can be fetched from this clip -
@@ -227,9 +232,17 @@ public:
 	 * set the current set of components
 	 * called by clip preferences action
 	 */
-	void setComponents( const std::string& s )
+	void setComponents( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
-		getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, s );
+		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
+		prop.setValue( s, 0, modifiedBy );
+	}
+
+	void setComponentsIfNotModifiedByPlugin( const std::string& s )
+	{
+		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
+		if( prop.getModifiedBy() != property::eModifiedByPlugin )
+			prop.setValue( s );
 	}
 
 	/** Get the Raw Unmapped Pixel Depth from the host for chromatic planes

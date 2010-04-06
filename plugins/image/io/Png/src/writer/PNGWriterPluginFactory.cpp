@@ -30,6 +30,7 @@ void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextWriter );
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths

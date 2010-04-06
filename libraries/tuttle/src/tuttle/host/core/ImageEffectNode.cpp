@@ -1,32 +1,3 @@
-/*
- * Software License :
- *
- * Copyright (c) 2007, The Open Effects Association Ltd. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * Neither the name The Open Effects Association Ltd, nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #include <iostream>
 #include <fstream>
 
@@ -311,6 +282,134 @@ void ImageEffectNode::beginRenderAction( OfxTime   startFrame,
 	_frameRange.y = endFrame;
 	OfxhImageEffectNode::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
+
+void ImageEffectNode::checkClipsConnections() const
+{
+	for( ClipImageMap::const_iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		const ClipImage& clip = dynamic_cast<const ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() && !clip.isOptional() ) // a non optionl input clip is unconnected
+		{
+			throw( exception::LogicError( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
+		}
+	}
+}
+
+void ImageEffectNode::initClipsFromReadsToWrites()
+{
+	std::string biggestBitDepth = kOfxBitDepthNone;
+	std::string mostChromaticComponents = kOfxImageComponentNone;
+	ClipImage& outputClip = dynamic_cast<ClipImage&>( getOutputClip() );
+	bool inputClipsFound = false;
+
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() ) // filter for clip.isMask() and clip.isOptional() ?
+		{
+			inputClipsFound = true;
+			const ClipImage& linkClip = clip.getConnectedClip();
+			biggestBitDepth         = ofx::findDeepestBitDepth( linkClip.getPixelDepth(), biggestBitDepth );
+			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
+		}
+	}
+	if( inputClipsFound && ! this->isSupportedPixelDepth( biggestBitDepth ) )
+	{
+		throw( exception::LogicError("Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
+	}
+	if( supportsMultipleClipDepths() )
+	{
+		for( ClipImageMap::iterator it = _clips.begin();
+			 it != _clips.end();
+			 ++it )
+		{
+			ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+			if( !clip.isOutput() && clip.getConnected() )
+			{
+				const ClipImage& linkClip = clip.getConnectedClip();
+				const std::string& pixelDepth = linkClip.getPixelDepth();
+				if( !this->isSupportedPixelDepth( pixelDepth ) )
+				{
+					throw( exception::LogicError("Pixel depth " + pixelDepth + " used by input not supported on node : " + getName()) );
+				}
+				clip.setPixelDepthIfNotModifiedByPlugin( pixelDepth );
+			}
+		}
+	}
+	else
+	{
+		for( ClipImageMap::iterator it = _clips.begin();
+			 it != _clips.end();
+			 ++it )
+		{
+			ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+			if( !clip.isOutput() && clip.getConnected() )
+			{
+				const ClipImage& linkClip = clip.getConnectedClip();
+				if( ! linkClip.getNode().isSupportedPixelDepth( biggestBitDepth ) )
+				{
+					throw( exception::LogicError("Biggest pixel depth " + biggestBitDepth + " not supported on node : " + getName()) );
+				}
+				clip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
+			}
+		}
+	}
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() )
+		{
+			const ClipImage& linkClip = clip.getConnectedClip();
+			if( clip.isSupportedComponent( mostChromaticComponents ) )
+				clip.setComponentsIfNotModifiedByPlugin( linkClip.getComponents() );
+		}
+	}
+	outputClip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
+	if( outputClip.isSupportedComponent( mostChromaticComponents ) )
+		outputClip.setComponentsIfNotModifiedByPlugin( mostChromaticComponents );
+
+	/// @todo multiple PAR
+	if( supportsMultipleClipPARs() )
+	{
+
+	}
+	else
+	{
+
+	}
+}
+
+void ImageEffectNode::initClipsFromWritesToReads()
+{
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		ClipImage& clip = dynamic_cast<ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.getConnected() )
+		{
+
+		}
+
+		const ofx::property::String& propPixelDepth = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
+		const ofx::property::String& propComponent = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
+		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
+		COUT( "-- " << "clip: " << " = " << clip.getFullName() );
+		COUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
+			<< " : " << (propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+		COUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
+			<< " : " << (propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+		COUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
+			<< " : " << (propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+	}
+}
+
 
 }
 }

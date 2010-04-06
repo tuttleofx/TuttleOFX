@@ -67,6 +67,7 @@ void BitDepthPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
 	OFX::ChoiceParamDescriptor* outBitDepth = desc.defineChoiceParam( kOutputBitDepth );
 	assert( outBitDepth );
 	outBitDepth->setLabels(kOutputBitDepthLabel, kOutputBitDepthLabel, kOutputBitDepthLabel);
+	outBitDepth->appendOption("auto");
 	outBitDepth->appendOption("byte (8 bits)");
 	outBitDepth->appendOption("short (16 bits)");
 	outBitDepth->appendOption("float (32 bits)");

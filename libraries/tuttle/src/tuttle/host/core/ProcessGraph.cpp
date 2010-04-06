@@ -19,6 +19,9 @@ ProcessGraph::ProcessGraph( Graph& graph )
 ProcessGraph::~ProcessGraph()
 {}
 
+/**
+ * @brief The graph copy needs to link on vertex owns in ProcessGraph (_nodes) and not link to Vertex inside Graph.
+ */
 void ProcessGraph::relink()
 {
 	Graph::InternalGraph::vertex_range_t vrange = _graph.getVertices();
@@ -30,7 +33,7 @@ void ProcessGraph::relink()
 	}
 }
 
-void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
+void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
 	std::list<Graph::Descriptor> outputs;
 	BOOST_FOREACH( std::string s, nodes )
@@ -78,17 +81,19 @@ void ProcessGraph::compute( const std::list<std::string>& nodes, const int tBegi
 			core::dfs_connectClips_visitor<Graph::InternalGraph> connectClipsVisitor( optimizedGraph );
 			optimizedGraph.dfs( connectClipsVisitor, outputNode );
 
-			TCOUT( "---------------------------------------- precompute" );
-			core::dfs_preCompute_visitor<Graph::InternalGraph> preComputeVisitor( optimizedGraph, defaultOptions );
-			optimizedGraph.dfs( preComputeVisitor, outputNode );
+			TCOUT( "---------------------------------------- preprocess" );
+			core::dfs_preProcess_finish_visitor<Graph::InternalGraph> preProcessFinishVisitor( optimizedGraph, defaultOptions );
+			optimizedGraph.dfs( preProcessFinishVisitor, outputNode );
+			core::dfs_preProcess_initialize_visitor<Graph::InternalGraph> preProcessInitializeVisitor( optimizedGraph, defaultOptions );
+			optimizedGraph.dfs( preProcessInitializeVisitor, outputNode );
 
-			TCOUT( "---------------------------------------- compute" );
-			core::dfs_compute_visitor<Graph::InternalGraph> computeVisitor( optimizedGraph );
-			optimizedGraph.dfs( computeVisitor, outputNode );
+			TCOUT( "---------------------------------------- process" );
+			core::dfs_process_visitor<Graph::InternalGraph> processVisitor( optimizedGraph );
+			optimizedGraph.dfs( processVisitor, outputNode );
 
-			TCOUT( "---------------------------------------- postcompute" );
-			core::dfs_postCompute_visitor<Graph::InternalGraph> postComputeVisitor( optimizedGraph );
-			optimizedGraph.dfs( postComputeVisitor, outputNode );
+			TCOUT( "---------------------------------------- postprocess" );
+			core::dfs_postProcess_visitor<Graph::InternalGraph> postProcessVisitor( optimizedGraph );
+			optimizedGraph.dfs( postProcessVisitor, outputNode );
 		}
 	}
 

@@ -1,32 +1,3 @@
-/*
- * Software License :
- *
- * Copyright (c) 2007, The Open Effects Association Ltd. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * Neither the name The Open Effects Association Ltd, nor the names of its
- *    contributors may be used to endorse or promote products derived from this
- *    software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #ifndef _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 #define _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 
@@ -49,6 +20,8 @@ class ImageEffectNode : public ProcessNode,
 {
 protected:
 	OfxPointD _frameRange;
+	OfxRectD _rod;
+	OfxTime _currentTime;
 
 public:
 	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin*         plugin,
@@ -102,10 +75,14 @@ public:
 
 	const ProcessAttribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>(this)->getSingleInputAttribute(); };
 
+	OfxRectD getRegionOfDefinition() const { return _rod; }
+
+	OfxTime getCurrentTime() const { return _currentTime; }
+
 	void begin( ProcessOptions& processOptions )
 	{
-		//		createInstanceAction();
-		getClipPreferences();
+		TCOUT( "begin: " << getName() );
+		checkClipsConnections();
 		beginRenderAction( processOptions._startFrame,
 		                   processOptions._endFrame,
 		                   processOptions._step,
@@ -113,24 +90,39 @@ public:
 		                   processOptions._renderScale );
 	}
 
-	void preProcess_initialize( ProcessOptions& processOptions )
-	{
-		getRegionOfDefinitionAction( processOptions._time,
-		                             processOptions._renderScale,
-		                             processOptions._renderRoD );
-		processOptions._renderRoI = processOptions._renderRoD;
-	}
-
 	void preProcess_finish( ProcessOptions& processOptions )
 	{
+		TCOUT( "preProcess_finish: " << getName() );
+		setCurrentTime( processOptions._time );
+		getClipPreferencesAction();
+
+		initClipsFromReadsToWrites();
+
+		OfxRectD rod;
+		getRegionOfDefinitionAction( processOptions._time,
+									 processOptions._renderScale,
+									 rod );
+		setRegionOfDefinition( rod );
+		processOptions._renderRoI = rod;
+		COUT_VAR( rod );
+	}
+
+	void preProcess_initialize( ProcessOptions& processOptions )
+	{
+		TCOUT( "preProcess_initialize: " << getName() );
+		
+		initClipsFromWritesToReads();
+		
 		getRegionOfInterestAction( processOptions._time,
 		                           processOptions._renderScale,
 		                           processOptions._renderRoI,
 		                           processOptions._inputsRoI );
+		COUT_VAR( processOptions._renderRoI );
 	}
 
 	void process( const ProcessOptions& processOptions )
 	{
+		TCOUT( "process: " << getName() );
 		OfxRectI roi = {
 			boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
 			boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),
@@ -145,10 +137,13 @@ public:
 	}
 
 	void postProcess( ProcessOptions& processOptions )
-	{}
+	{
+		TCOUT( "postProcess: " << getName() );
+	}
 
 	void end( ProcessOptions& processOptions )
 	{
+		TCOUT( "end: " << getName() );
 		endRenderAction( processOptions._startFrame,
 		                 processOptions._endFrame,
 		                 processOptions._step,
@@ -294,6 +289,22 @@ public:
 	                             OfxTime   step,
 	                             bool      interactive,
 	                             OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
+
+private:
+
+	void setRegionOfDefinition( const OfxRectD& rod )
+	{
+		_rod = rod;
+	}
+
+	void setCurrentTime( const OfxTime time )
+	{
+		_currentTime = time;
+	}
+
+	void checkClipsConnections() const;
+	void initClipsFromReadsToWrites();
+	void initClipsFromWritesToReads();
 };
 
 }

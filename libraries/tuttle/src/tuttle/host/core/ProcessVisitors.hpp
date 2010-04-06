@@ -45,36 +45,22 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_preCompute_visitor : public boost::dfs_visitor<>
+struct dfs_preProcess_finish_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preCompute_visitor( TGraph& graph, ProcessOptions& defaultOptions )
+		dfs_preProcess_finish_visitor( TGraph& graph, ProcessOptions& defaultOptions )
 			: _graph(graph.getGraph())
 			, _defaultOptions(defaultOptions)
 		{}
 
 		template<class VertexDescriptor, class Graph>
-		void discover_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[PRECOMPUTE] discover_vertex "
-			          << vertex << std::endl;
-
-			vertex.setProcessOptions( _defaultOptions );
-			
-			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
-		}
-
-		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[PRECOMPUTE] finish_vertex "
-			          << vertex << std::endl;
-			
+			vertex.setProcessOptions( _defaultOptions );
 			vertex.getProcessNode()->preProcess_finish( vertex.getProcessOptions() );
 		}
 
@@ -84,13 +70,40 @@ struct dfs_preCompute_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_compute_visitor : public boost::dfs_visitor<>
+struct dfs_preProcess_initialize_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_compute_visitor( TGraph& graph )
+		dfs_preProcess_initialize_visitor( TGraph& graph, ProcessOptions& defaultOptions )
+			: _graph(graph.getGraph())
+			, _defaultOptions(defaultOptions)
+		{}
+
+		template<class VertexDescriptor, class Graph>
+		void discover_vertex( VertexDescriptor v, Graph& g )
+		{
+			Vertex& vertex = get( vertex_properties, _graph )[v];
+			std::cout << "[PREPROCESS] discover_vertex "
+			          << vertex << std::endl;
+
+			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
+		}
+
+	private:
+		GraphContainer& _graph;
+		ProcessOptions& _defaultOptions;
+};
+
+template<class TGraph>
+struct dfs_process_visitor : public boost::dfs_visitor<>
+{
+	public:
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+
+		dfs_process_visitor( TGraph& graph )
 			: _graph(graph.getGraph())
 		{}
 
@@ -98,7 +111,7 @@ struct dfs_compute_visitor : public boost::dfs_visitor<>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[COMPUTE] finish_vertex "
+			std::cout << "[PROCESS] finish_vertex "
 			          << vertex << std::endl;
 
 			vertex.getProcessNode()->process( vertex.getProcessOptions() );
@@ -109,13 +122,13 @@ struct dfs_compute_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_postCompute_visitor : public boost::dfs_visitor<>
+struct dfs_postProcess_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_postCompute_visitor( TGraph& graph )
+		dfs_postProcess_visitor( TGraph& graph )
 			: _graph(graph.getGraph())
 		{}
 
@@ -123,7 +136,7 @@ struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[POSTCOMPUTE] initialize_vertex "
+			std::cout << "[POSTPROCESS] initialize_vertex "
 			          << vertex << std::endl;
 		}
 
@@ -131,7 +144,7 @@ struct dfs_postCompute_visitor : public boost::dfs_visitor<>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[POSTCOMPUTE] finish_vertex "
+			std::cout << "[POSTPROCESS] finish_vertex "
 			          << vertex << std::endl;
 
 			vertex.getProcessNode()->postProcess( vertex.getProcessOptions() );

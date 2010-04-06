@@ -62,27 +62,26 @@ OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time ) const
 		return _connectedClip->fetchRegionOfDefinition( time );
 	}
 
-	OfxRectD rod;
-	OfxPointD renderScale = { 1.0, 1.0 };
-	_effect.getRegionOfDefinitionAction( time, renderScale, rod );
-	return rod;
+	/// @todo tuttle: renderscale, time, ?
+
+	if( time != _effect.getCurrentTime() )
+	{
+		throw( exception::LogicError( "Access to another time than current is not supported at the moment." ) );
+	}
+	return _effect.getRegionOfDefinition();
 }
 
-/// Get the Raw Unmapped Pixel Depth from the host.
+/// Get the Raw Unmapped Pixel Depth
 const std::string& ClipImage::getUnmappedBitDepth() const
 {
-	static const std::string v( _effect.getProjectBitDepth() );
-
-	return v;
+	return getProperties().getStringProperty( kOfxImageClipPropUnmappedPixelDepth );
 }
 
 /// Get the Raw Unmapped Components from the host.
 
 const std::string& ClipImage::getUnmappedComponents() const
 {
-	static const std::string v( _effect.getProjectPixelComponentsType() );
-
-	return v;
+	return getProperties().getStringProperty( kOfxImageClipPropUnmappedComponents );
 }
 
 // Frame Range (startFrame, endFrame) -
@@ -91,8 +90,8 @@ const std::string& ClipImage::getUnmappedComponents() const
 
 void ClipImage::getFrameRange( double& startFrame, double& endFrame ) const
 {
-	startFrame = 0.0;
-	endFrame   = 1.0;
+	startFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
+	endFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
 }
 
 // Unmapped Frame Range -
@@ -102,8 +101,8 @@ void ClipImage::getFrameRange( double& startFrame, double& endFrame ) const
 
 void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const
 {
-	unmappedStartFrame = 0;
-	unmappedEndFrame   = 1;
+	unmappedStartFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 0 );
+	unmappedEndFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 1 );
 }
 
 /// override this to fill in the image at the given time.

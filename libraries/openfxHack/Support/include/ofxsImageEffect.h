@@ -90,7 +90,9 @@ enum ContextEnum
 	eContextTransition,
 	eContextPaint,
 	eContextGeneral,
-	eContextRetimer
+	eContextRetimer,
+	eContextReader,
+	eContextWriter,
 };
 
 const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invalid_argument );
@@ -756,6 +758,9 @@ const StringStringMap& clipPARPropNames_;
 const std::string& extractValueForName( const StringStringMap& m, const std::string& name );
 
 public:
+	ImageEffectHostDescription* _imageEffectHostDescription;
+	
+public:
 	ClipPreferencesSetter( OFX::PropertySet       props,
 	                       const StringStringMap& depthPropNames,
 	                       const StringStringMap& componentPropNames,
@@ -765,7 +770,9 @@ public:
 		clipDepthPropNames_( depthPropNames ),
 		clipComponentPropNames_( componentPropNames ),
 		clipPARPropNames_( PARPropNames )
-	{}
+	{
+			_imageEffectHostDescription = getImageEffectHostDescription();
+	}
 
 	bool didSomething( void ) const { return doneSomething_; }
 

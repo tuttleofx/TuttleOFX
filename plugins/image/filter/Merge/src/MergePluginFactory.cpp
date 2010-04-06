@@ -52,7 +52,6 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                             OFX::ContextEnum            context )
 {
 	OFX::ClipDescriptor* srcClipA = desc.defineClip( kMergeSourceA );
-
 	assert( srcClipA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );

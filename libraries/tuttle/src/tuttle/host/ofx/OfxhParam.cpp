@@ -549,7 +549,7 @@ void OfxhParam::setDisplayRange() {}
 /**
  * get a value, implemented by instances to deconstruct var args
  */
-void OfxhParam::getV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParam::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getValue failed (paramName:") + getName() + ")" );
 }
@@ -557,7 +557,7 @@ void OfxhParam::getV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * get a value, implemented by instances to deconstruct var args
  */
-void OfxhParam::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParam::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrUnsupported );
 }
@@ -573,7 +573,7 @@ void OfxhParam::setV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * key a value, implemented by instances to deconstruct var args
  */
-void OfxhParam::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParam::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrUnsupported );
 }
@@ -581,7 +581,7 @@ void OfxhParam::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * derive a value, implemented by instances to deconstruct var args
  */
-void OfxhParam::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParam::deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrUnsupported );
 }
@@ -589,7 +589,7 @@ void OfxhParam::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * integrate a value, implemented by instances to deconstruct var args
  */
-void OfxhParam::integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParam::integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrUnsupported );
 }
@@ -657,12 +657,12 @@ void OfxhKeyframeParam::getKeyTime( int nth, OfxTime& time ) const OFX_EXCEPTION
 	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-void OfxhKeyframeParam::getKeyIndex( OfxTime time, int direction, int& index ) const OFX_EXCEPTION_SPEC
+void OfxhKeyframeParam::getKeyIndex( const OfxTime time, int direction, const std::size_t index ) const OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
 
-void OfxhKeyframeParam::deleteKey( OfxTime time ) OFX_EXCEPTION_SPEC
+void OfxhKeyframeParam::deleteKey( const OfxTime time ) OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrMissingHostFeature );
 }
@@ -724,7 +724,7 @@ const std::map<int, attribute::OfxhParam*>& OfxhParamPage::getChildren() const
 //
 /// implementation of var args function
 
-void OfxhParamChoice::getV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamChoice::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -734,7 +734,7 @@ void OfxhParamChoice::getV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamChoice::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamChoice::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -754,7 +754,7 @@ void OfxhParamChoice::setV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamChoice::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamChoice::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
@@ -765,12 +765,12 @@ void OfxhParamChoice::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 // IntegerInstance
 //
 
-void OfxhParamInteger::derive( OfxTime time, int& ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::derive( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrUnsupported );
 }
 
-void OfxhParamInteger::integrate( OfxTime time1, OfxTime time2, int& ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::integrate( const OfxTime time1, const OfxTime time2, int& ) const OFX_EXCEPTION_SPEC
 {
 	throw OfxhException( kOfxStatErrUnsupported );
 }
@@ -778,7 +778,7 @@ void OfxhParamInteger::integrate( OfxTime time1, OfxTime time2, int& ) OFX_EXCEP
 /**
  * implementation of var args function
  */
-void OfxhParamInteger::getV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -788,7 +788,7 @@ void OfxhParamInteger::getV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamInteger::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -808,7 +808,7 @@ void OfxhParamInteger::setV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamInteger::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
@@ -818,7 +818,7 @@ void OfxhParamInteger::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamInteger::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -828,7 +828,7 @@ void OfxhParamInteger::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamInteger::integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
@@ -842,7 +842,7 @@ void OfxhParamInteger::integrateV( OfxTime time1, OfxTime time2, va_list arg ) O
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::getV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -852,7 +852,7 @@ void OfxhParamDouble::getV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -872,7 +872,7 @@ void OfxhParamDouble::setV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	double value = va_arg( arg, double );
 
@@ -882,7 +882,7 @@ void OfxhParamDouble::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -892,7 +892,7 @@ void OfxhParamDouble::deriveV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::integrateV( OfxTime time1, OfxTime time2, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
@@ -906,7 +906,7 @@ void OfxhParamDouble::integrateV( OfxTime time1, OfxTime time2, va_list arg ) OF
 /**
  * implementation of var args function
  */
-void OfxhParamBoolean::getV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamBoolean::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	bool v;
 	get( v );
@@ -918,7 +918,7 @@ void OfxhParamBoolean::getV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamBoolean::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamBoolean::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	bool v;
 	get( time, v );
@@ -939,7 +939,7 @@ void OfxhParamBoolean::setV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamBoolean::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamBoolean::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	bool value = va_arg( arg, int ) != 0;
 	set( time, value );
@@ -948,7 +948,7 @@ void OfxhParamBoolean::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 ////////////////////////////////////////////////////////////////////////////////
 // string param
 
-void OfxhParamString::getV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamString::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	const char** value = va_arg( arg, const char** );
 	get( _returnValue ); /// @todo tuttle: "I so don't like this, temp storage should be delegated to the implementation"
@@ -959,7 +959,7 @@ void OfxhParamString::getV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamString::getV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamString::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	const char** value = va_arg( arg, const char** );
 	get( time, _returnValue ); // I so don't like this, temp storage should be delegated to the implementation
@@ -979,7 +979,7 @@ void OfxhParamString::setV( va_list arg ) OFX_EXCEPTION_SPEC
 /**
  * implementation of var args function
  */
-void OfxhParamString::setV( OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamString::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 {
 	char* value = va_arg( arg, char* );
 	set( time, value );

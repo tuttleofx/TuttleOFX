@@ -53,7 +53,9 @@ enum ContextEnum
 	eContextTransition,
 	eContextPaint,
 	eContextGeneral,
-	eContextRetimer
+	eContextRetimer,
+	eContextReader,
+	eContextWriter
 };
 
 /** @brief Enumerates the pixel depths supported */

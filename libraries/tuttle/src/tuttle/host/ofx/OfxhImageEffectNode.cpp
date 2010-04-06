@@ -530,11 +530,29 @@ void OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName
                                                           OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
 	_clipPrefsDirty = true;
-	std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.find( clipName );
+	ClipImageMap::iterator it = _clips.find( clipName );
 	if( it == _clips.end() )
 		throw OfxhException( kOfxStatFailed );
 
-	it->second->instanceChangedAction( why, time, renderScale );
+	property::OfxhPropSpec stuff[] = {
+		{ kOfxPropType, property::eString, 1, true, kOfxTypeClip },
+		{ kOfxPropName, property::eString, 1, true, it->second->getName().c_str() },
+		{ kOfxPropChangeReason, property::eString, 1, true, why.c_str() },
+		{ kOfxPropTime, property::eDouble, 1, true, "0" },
+		{ kOfxImageEffectPropRenderScale, property::eDouble, 2, true, "0" },
+		{ 0 }
+	};
+
+	property::OfxhSet inArgs( stuff );
+
+	// add the second dimension of the render scale
+	inArgs.setDoubleProperty( kOfxPropTime, time );
+	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
+
+	OfxStatus status = mainEntry( kOfxActionInstanceChanged, getHandle(), &inArgs, 0 );
+
+	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
+		throw OfxhException( status );
 }
 
 void OfxhImageEffectNode::endInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC
@@ -695,7 +713,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 	OfxRectD rod;
 
 	// figure out the default contexts
-	if( _context == kOfxImageEffectContextGenerator )
+	if( _context == kOfxImageEffectContextGenerator ||
+	    _context == kOfxImageEffectContextReader )
 	{
 		// generator is the extent
 		rod.x1 = rod.y1 = 0;
@@ -705,7 +724,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		/// @todo tuttle: maybe RoD problems with Generator and Read here... to check !
 	}
 	else if( _context == kOfxImageEffectContextFilter ||
-	         _context == kOfxImageEffectContextPaint )
+	         _context == kOfxImageEffectContextPaint  ||
+	         _context == kOfxImageEffectContextWriter )
 	{
 		try
 		{
@@ -846,7 +866,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		     it != itEnd;
 		     ++it )
 		{
-			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
+			if( !it->second->isOutput() ||
+			    getContext() == kOfxImageEffectContextGenerator || /// @todo tuttle: why particular case for generator and reader ?? maybe we can remove this !
+			    getContext() == kOfxImageEffectContextReader )
 			{
 				/// @todo tuttle: how to support size on generators... check if this is correct in all cases.
 				OfxRectD roi = it->second->fetchRegionOfDefinition( time );
@@ -874,7 +896,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		     it != itEnd;
 		     ++it )
 		{
-			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
+			if( !it->second->isOutput() ||
+			    getContext() == kOfxImageEffectContextGenerator ||
+			    getContext() == kOfxImageEffectContextReader )
 			{
 				property::OfxhPropSpec s;
 				std::string name = "OfxImageClipPropRoI_" + it->first;
@@ -905,7 +929,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 		     it != itEnd;
 		     ++it )
 		{
-			if( !it->second->isOutput() || getContext() == kOfxImageEffectContextGenerator )
+			if( !it->second->isOutput() ||
+			    getContext() == kOfxImageEffectContextGenerator ||
+			    getContext() == kOfxImageEffectContextReader )
 			{
 				OfxRectD rod = it->second->fetchRegionOfDefinition( time );
 				if( it->second->supportsTiles() )
@@ -1097,18 +1123,18 @@ bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 	if( !hostSupports || !pluginSupports )
 		return false;
 
-	/// if filter context, no support, tempted to change this though
-	if( _context == kOfxImageEffectContextFilter )
-		return false;
+	// in the standard, it's written that only general context can handle multiple clip depth...
+	// but we remove this restriction...
 
-	/// if filter context, no support
-	if( _context == kOfxImageEffectContextGenerator ||
-	    _context == kOfxImageEffectContextTransition ||
-	    _context == kOfxImageEffectContextPaint ||
-	    _context == kOfxImageEffectContextRetimer )
-		return false;
+//	if( _context == kOfxImageEffectContextFilter )
+//		return false;
+//
+//	if( _context == kOfxImageEffectContextGenerator ||
+//	_context == kOfxImageEffectContextTransition ||
+//	_context == kOfxImageEffectContextPaint ||
+//	_context == kOfxImageEffectContextRetimer )
+//		return false;
 
-	/// OK we're cool
 	return true;
 }
 
@@ -1133,7 +1159,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	{
 		attribute::OfxhClipImage* clip = it->second;
 
-		// If not output clip
+		// If input clip
 		if( !clip->isOutput() )
 		{
 			frameRate = maximum( frameRate, clip->getFrameRate() );
@@ -1179,12 +1205,10 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 		const std::string& rawDepth = clip->getUnmappedBitDepth();
 		if( isChromaticComponent( rawComp ) )
 		{
-
 			if( clip->isOutput() )
 			{
 				depth = deepestBitDepth;
 				comp  = clip->findSupportedComp( mostComponents );
-
 				clip->setPixelDepth( depth );
 				clip->setComponents( comp );
 			}
@@ -1249,33 +1273,39 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 		property::OfxhPropSpec specComp = { componentParamName.c_str(), property::eString, 0, false, "" }; // note the support for multi-planar clips
 		outArgs.createProperty( specComp );
 		// as it is variable dimension, there is no default value, so we have to set it explicitly
-		outArgs.setStringProperty( componentParamName.c_str(), clip->getComponents().c_str() );
+		outArgs.setStringProperty( componentParamName, clip->getComponents() );
+
 		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::eString, 1, !multiBitDepth, clip->getPixelDepth().c_str() };
 		outArgs.createProperty( specDep );
-		outArgs.setStringProperty( depthParamName.c_str(), clip->getPixelDepth().c_str() );
+		outArgs.setStringProperty( depthParamName, clip->getPixelDepth() );
+
 		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::eDouble, 1, false, "1" };
 		outArgs.createProperty( specPAR );
-		outArgs.setDoubleProperty( parParamName.c_str(), 1.0 ); // Default pixel aspect ratio is set to 1.0
+		outArgs.setDoubleProperty( parParamName, 1.0 ); // Default pixel aspect ratio is set to 1.0
 	}
 }
 
 void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outArgs )
 {
-
-	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
+	for( ClipImageMap::iterator it = _clips.begin();
 	     it != _clips.end();
 	     it++ )
 	{
-
 		attribute::OfxhClipImage* clip = it->second;
 
 		// Properties setup
 		std::string componentParamName = "OfxImageClipPropComponents_" + it->first;
 		std::string depthParamName     = "OfxImageClipPropDepth_" + it->first;
 		std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
-		clip->setPixelDepth( outArgs.getStringProperty( depthParamName ) );
-		clip->setComponents( outArgs.getStringProperty( componentParamName ) );
-		clip->setPixelAspectRatio( outArgs.getDoubleProperty( parParamName.c_str() ) );
+
+		const property::String& propPixelDepth = outArgs.fetchStringProperty( depthParamName );
+		clip->setPixelDepth( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
+		
+		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
+		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
+		
+		const property::Double& propPixelAspectRatio = outArgs.fetchDoubleProperty( parParamName );
+		clip->setPixelAspectRatio( propPixelAspectRatio.getValue(), propPixelAspectRatio.getModifiedBy() );	
 	}
 
 	_outputFrameRate         = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRate );
@@ -1292,7 +1322,7 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
  * flag when clip prefs is dirty.
  * call the clip preferences action
  */
-void OfxhImageEffectNode::getClipPreferences() OFX_EXCEPTION_SPEC
+void OfxhImageEffectNode::getClipPreferencesAction() OFX_EXCEPTION_SPEC
 {
 	/// create the out args with the stuff that does not depend on individual clips
 	property::OfxhSet outArgs;
@@ -1368,7 +1398,7 @@ const std::string& OfxhImageEffectNode::bestSupportedDepth( const std::string& d
 			return floats;
 	}
 
-	/// WTF? Something wrong here
+	/// Something wrong here
 	return none;
 }
 

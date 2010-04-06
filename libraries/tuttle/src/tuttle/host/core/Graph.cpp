@@ -28,13 +28,21 @@ Graph::Node& Graph::createNode( const std::string& id )
 	plug->loadAndDescribeActions();
 
 	ofx::imageEffect::OfxhImageEffectNode* plugInst = NULL;
-	if( plug->supportsContext( kOfxImageEffectContextFilter ) )
+	if( plug->supportsContext( kOfxImageEffectContextReader ) )
 	{
-		plugInst = plug->createInstance( kOfxImageEffectContextFilter );
+		plugInst = plug->createInstance( kOfxImageEffectContextReader );
+	}
+	else if( plug->supportsContext( kOfxImageEffectContextWriter ) )
+	{
+		plugInst = plug->createInstance( kOfxImageEffectContextWriter );
 	}
 	else if( plug->supportsContext( kOfxImageEffectContextGenerator ) )
 	{
 		plugInst = plug->createInstance( kOfxImageEffectContextGenerator );
+	}
+	else if( plug->supportsContext( kOfxImageEffectContextFilter ) )
+	{
+		plugInst = plug->createInstance( kOfxImageEffectContextFilter );
 	}
 	else if( plug->supportsContext( kOfxImageEffectContextGeneral ) )
 	{
@@ -90,8 +98,16 @@ void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicEr
 
 void Graph::connect( const Node& out, const Attribute& inAttr ) throw( exception::LogicError )
 {
-	graph::Edge e( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
+	if (_nodesDescriptor.find(inAttr.getNode().getName()) == _nodesDescriptor.end())
+	{
+		throw exception::LogicError( "Node descriptor " + inAttr.getName() + " not found when connecting !" );
+	}
+	if (_nodesDescriptor.find(out.getName()) == _nodesDescriptor.end())
+	{
+		throw exception::LogicError( "Node descriptor " + out.getName() + " not found when connecting !" );
+	}
 
+	graph::Edge e( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
 	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[inAttr.getNode().getName()], e );
 }
 
@@ -103,7 +119,7 @@ void Graph::compute( const std::list<std::string>& nodes, const int tBegin, cons
 	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graph.dot" );
 
 	ProcessGraph process( *this );
-	process.compute( nodes, tBegin, tEnd );
+	process.process( nodes, tBegin, tEnd );
 }
 
 void Graph::dumpToStdOut()

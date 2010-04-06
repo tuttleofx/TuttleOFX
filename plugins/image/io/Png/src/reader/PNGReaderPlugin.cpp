@@ -13,6 +13,7 @@
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
+#include "PngEngine/png_adds.hpp"
 
 using namespace boost::filesystem;
 
@@ -147,9 +148,24 @@ bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
+	OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+	std::string sFilepath;
+	_filepath->getValue( sFilepath );
+	switch( png_read_precision( sFilepath ))
+	{
+		case 8:
+			bd = OFX::eBitDepthUByte;
+			break;
+		case 16:
+			bd = OFX::eBitDepthUShort;
+			break;
+		default:
+			bd = OFX::eBitDepthFloat;
+			break;
+	}
 	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
-	clipPreferences.setPixelAspectRatio( *_dstClip, 720.0 / 720.0 );
+	clipPreferences.setClipBitDepth( *_dstClip, bd );
+	clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
 }
 
 }

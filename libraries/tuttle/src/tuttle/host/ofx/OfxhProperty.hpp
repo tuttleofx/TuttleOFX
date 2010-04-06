@@ -200,6 +200,12 @@ public:
 	virtual void notify( const std::string& name, bool singleValue, int indexOrN ) OFX_EXCEPTION_SPEC = 0;
 };
 
+enum EModifiedBy
+{
+	eModifiedByHost = 0,
+	eModifiedByPlugin
+};
+
 /// base class for all properties
 class OfxhProperty : private boost::noncopyable
 {
@@ -209,6 +215,7 @@ protected:
 	TypeEnum _type;                            ///< type of this property
 	size_t _dimension;                         ///< the fixed dimension of this property
 	bool _pluginReadOnly;                      ///< set is forbidden through suite: value may still change between get() calls
+	EModifiedBy _modifiedBy;                   ///< who set this property most recently
 	std::vector<OfxhNotifyHook*> _notifyHooks; ///< hooks to call whenever the property is set
 	OfxhGetHook* _getHook;                     ///< if we are not storing props locally, they are stored via fetching from here
 
@@ -258,6 +265,9 @@ public:
 
 	/// change the state of readonlyness
 	void setPluginReadOnly( bool v ) { _pluginReadOnly = v; }
+
+	void setModifiedBy( const EModifiedBy who ) { _modifiedBy = who; }
+	EModifiedBy getModifiedBy() const { return _modifiedBy; }
 
 	/// override this to return a clone of the property
 	virtual OfxhProperty* clone() const = 0;
@@ -414,6 +424,7 @@ public:
 		if( OfxhProperty::operator!=( other ) )
 			throw core::exception::LogicError( "You try to copy a property value, but it is not the same property." );
 		_value = other._value;
+		_modifiedBy = other._modifiedBy;
 		//_defaultValue = other._defaultValue;
 	}
 
@@ -439,13 +450,13 @@ public:
 	#pragma warning( default : 4181 )
 	#endif
 	// get multiple values, without going through the getHook
-	void getValueNRaw( APIType* value, int count ) const OFX_EXCEPTION_SPEC;
+	void getValueNRaw( APIType* value, const int count ) const OFX_EXCEPTION_SPEC;
 
 	/// set one value
-	void setValue( const Type& value, int index = 0 ) OFX_EXCEPTION_SPEC;
+	void setValue( const Type& value, const int index = 0, const EModifiedBy who = eModifiedByHost ) OFX_EXCEPTION_SPEC;
 
 	/// set multiple values
-	void setValueN( const APIType* value, int count ) OFX_EXCEPTION_SPEC;
+	void setValueN( const APIType* value, const int count, const EModifiedBy who = eModifiedByHost ) OFX_EXCEPTION_SPEC;
 
 	/// reset
 	void reset() OFX_EXCEPTION_SPEC;

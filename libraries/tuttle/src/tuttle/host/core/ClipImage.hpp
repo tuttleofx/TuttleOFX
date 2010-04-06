@@ -60,20 +60,22 @@ public:
 		}
 		_connectedClip = &other;
 		//getEditableProperties().clear();
-		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedPixelDepth );
-		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedComponents );
-		getEditableProperties().eraseProperty( kOfxImageClipPropContinuousSamples );
-		getEditableProperties().eraseProperty( kOfxImageClipPropFieldExtraction );
-		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
-		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
-		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
+
+//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedPixelDepth );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedComponents );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropContinuousSamples );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldExtraction );
+//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
+//		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
+//		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
 		getEditableProperties().eraseProperty( kOfxImagePropBounds );
 		getEditableProperties().eraseProperty( kOfxImagePropData );
-		getEditableProperties().eraseProperty( kOfxImagePropField );
-		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
-		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
+//		getEditableProperties().eraseProperty( kOfxImagePropField );
+//		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
+//		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
 		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
-		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
+//		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
+
 		getEditableProperties().setChainedSet( &other.getProperties() );
 
 		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
@@ -84,7 +86,7 @@ public:
 
 	void setUnconnected() { _connectedClip = NULL; setConnected( false ); }
 
-	std::string getFullName() const { return _effect.getName() + "." + getName(); }
+	std::string getFullName() const { return getNode().getName() + "." + getName(); }
 
 	std::string getConnectedClipFullName() const
 	{
@@ -100,6 +102,11 @@ public:
 			}
 			return _connectedClip->getFullName();
 		}
+	}
+	
+	const ClipImage& getConnectedClip() const
+	{
+		return *_connectedClip;
 	}
 
 	/**
@@ -128,7 +135,7 @@ public:
 	 *      - kOfxImagePreMultiplied - the image is premultiplied by it's alpha
 	 *      - kOfxImageUnPreMultiplied - the image is unpremultiplied
 	 */
-	const std::string& getPremult() const { return _effect.getOutputPreMultiplication(); }
+	const std::string& getPremult() const { return getNode().getOutputPreMultiplication(); }
 
 	/**
 	 * @brief Field Order - Which spatial field occurs temporally first in a frame.
@@ -161,10 +168,7 @@ public:
 	 */
 	double getFrameRate() const
 	{
-		/// our clip is pretending to be progressive PAL SD by default
-		double val = _effect.getFrameRate();
-
-		return val;
+		return getNode().getFrameRate();
 	}
 
 	/**
@@ -177,7 +181,7 @@ public:
 	 * @brief Unmapped Frame Rate
 	 * The unmaped frame range over which an output clip has images.
 	 */
-	const double getUnmappedFrameRate() const { return _effect.getFrameRate(); }
+	const double getUnmappedFrameRate() const { return getNode().getFrameRate(); }
 
 	/**
 	 * @brief Unmapped Frame Range -

@@ -52,9 +52,9 @@ int main( int argc, char** argv )
 
 	typedef boost::ptr_vector< tuttle::host::core::ImageEffectNode > EffectInstVector;
 	EffectInstVector vPluginsInst;
-	tuttle::host::core::ImageEffectNode* ofxinstR = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginR->createInstance( kOfxImageEffectContextGenerator ) );
+	tuttle::host::core::ImageEffectNode* ofxinstR = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginR->createInstance( kOfxImageEffectContextReader ) );
 	tuttle::host::core::ImageEffectNode* ofxinstI = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginI->createInstance( kOfxImageEffectContextFilter ) );
-	tuttle::host::core::ImageEffectNode* ofxinstW = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginW->createInstance( kOfxImageEffectContextGeneral ) );
+	tuttle::host::core::ImageEffectNode* ofxinstW = dynamic_cast< tuttle::host::core::ImageEffectNode* >( pluginW->createInstance( kOfxImageEffectContextWriter ) );
 	ofxinstR->setName( "pluginR" );
 	ofxinstI->setName( "pluginI" );
 	ofxinstW->setName( "pluginW" );
