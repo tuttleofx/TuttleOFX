@@ -20,7 +20,6 @@ namespace tuttle {
 namespace plugin {
 namespace bitDepth {
 
-using namespace boost::gil;
 
 template<class SView, class DView>
 BitDepthProcess<SView, DView>::BitDepthProcess( BitDepthPlugin &instance )
@@ -44,14 +43,13 @@ void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments &args )
 }
 
 /**
- * @brief Function called by rendering thread each time 
- *        a process must be done.
- *
+ * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindow  Processing window
  */
 template<class SView, class DView>
 void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
+	using namespace boost::gil;
 	SView src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
