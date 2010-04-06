@@ -34,18 +34,18 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
 	// destination view
-	_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !_dst.get() )
+	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
+	if( !this->_dst.get() )
 		throw( ImageNotReadyException() );
-	if( _dst->getRowBytes( ) <= 0 )
+	if( this->_dst->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( _dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
 	// Make sure bit depths are the same
-	if( _srcA->getPixelDepth() != _dst->getPixelDepth() ||
-	    _srcB->getPixelDepth() != _dst->getPixelDepth() ||
-		_srcA->getPixelComponents() != _dst->getPixelComponents() ||
-	    _srcB->getPixelComponents() != _dst->getPixelComponents() )
+	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
+	    _srcB->getPixelDepth() != this->_dst->getPixelDepth() ||
+		_srcA->getPixelComponents() != this->_dst->getPixelComponents() ||
+	    _srcB->getPixelComponents() != this->_dst->getPixelComponents() )
 	{
 		throw( BitDepthMismatchException() );
 	}
@@ -61,23 +61,23 @@ template<class View>
 void DiffProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
-	rgba32f_pixel_t paramRgbaValue;
 	View _srcA = subimage_view( this->_srcViewA,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
-							   procWindow.x2 - procWindow.x1,
-							   procWindow.y2 - procWindow.y1 );
+							    procWindow.x1 - this->_renderWindow.x1,
+							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x2 - procWindow.x1,
+							    procWindow.y2 - procWindow.y1 );
 	View _srcB = subimage_view( this->_srcViewB,
+							    procWindow.x1 - this->_renderWindow.x1,
+							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x2 - procWindow.x1,
+							    procWindow.y2 - procWindow.y1 );
+	View _dst = subimage_view( this->_dstView,
 							   procWindow.x1 - this->_renderWindow.x1,
 							   procWindow.y1 - this->_renderWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
-	View _dst = subimage_view( this->_dstView,
-							  procWindow.x1 - this->_renderWindow.x1,
-							  procWindow.y1 - this->_renderWindow.y1,
-							  procWindow.x2 - procWindow.x1,
-							  procWindow.y2 - procWindow.y1 );
 
+	rgba32f_pixel_t paramRgbaValue;
 	color_convert( psnr(_srcA, _srcB, _dst), paramRgbaValue );
 	_plugin._qualityMesure->setValueAtTime( this->_renderArgs.time,
 	                                        get_color( paramRgbaValue, red_t() ),
@@ -87,36 +87,119 @@ void DiffProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	                                      );
 }
 
-template<class View>
-typename DiffProcess<View>::PixelF DiffProcess<View>::psnr(const View & v1, const View & v2, const View & dst)
+/**
+ * @brief Function called by rendering thread each time a process must be done.
+ *
+ * @param[in] procWindow  Processing window
+ */
+template<>
+void DiffProcess<boost::gil::rgba32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
-	size_t d = (size_t)(std::pow( 2.0, sizeof( float ) * 8.0 ) ) - 1;
-	PixelF psnr = mse( v1, v2, dst );
-	for( int i = 0; i < boost::gil::num_channels<PixelF>::type::value; ++i )
+	using namespace boost::gil;
+	rgba32f_view_t _srcA = subimage_view( this->_srcViewA,
+							    procWindow.x1 - this->_renderWindow.x1,
+							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x2 - procWindow.x1,
+							    procWindow.y2 - procWindow.y1 );
+	rgba32f_view_t _srcB = subimage_view( this->_srcViewB,
+							    procWindow.x1 - this->_renderWindow.x1,
+							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x2 - procWindow.x1,
+							    procWindow.y2 - procWindow.y1 );
+	rgba32f_view_t _dst = subimage_view( this->_dstView,
+							   procWindow.x1 - this->_renderWindow.x1,
+							   procWindow.y1 - this->_renderWindow.y1,
+							   procWindow.x2 - procWindow.x1,
+							   procWindow.y2 - procWindow.y1 );
+
+	rgba32f_pixel_t paramRgbaValue;
+	color_convert( psnr(color_converted_view<rgba16_pixel_t>(_srcA), color_converted_view<rgba16_pixel_t>(_srcB), color_converted_view<rgba16_pixel_t>(_dst)), paramRgbaValue );
+	_plugin._qualityMesure->setValueAtTime( this->_renderArgs.time,
+	                                        get_color( paramRgbaValue, red_t() ),
+	                                        get_color( paramRgbaValue, green_t() ),
+	                                        get_color( paramRgbaValue, blue_t() ),
+	                                        get_color( paramRgbaValue, alpha_t() )
+	                                      );
+}
+
+/**
+ * @brief Function called by rendering thread each time a process must be done.
+ *
+ * @param[in] procWindow  Processing window
+ */
+template<>
+void DiffProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindow )
+{
+	using namespace boost::gil;
+	rgb32f_view_t _srcA = subimage_view( this->_srcViewA,
+							    procWindow.x1 - this->_renderWindow.x1,
+							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x2 - procWindow.x1,
+							    procWindow.y2 - procWindow.y1 );
+	rgb32f_view_t _srcB = subimage_view( this->_srcViewB,
+							    procWindow.x1 - this->_renderWindow.x1,
+							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x2 - procWindow.x1,
+							    procWindow.y2 - procWindow.y1 );
+	rgb32f_view_t _dst = subimage_view( this->_dstView,
+							   procWindow.x1 - this->_renderWindow.x1,
+							   procWindow.y1 - this->_renderWindow.y1,
+							   procWindow.x2 - procWindow.x1,
+							   procWindow.y2 - procWindow.y1 );
+
+	rgba32f_pixel_t paramRgbaValue;
+	color_convert( psnr(color_converted_view<rgb16_pixel_t>(_srcA),
+	                    color_converted_view<rgb16_pixel_t>(_srcB),
+						color_converted_view<rgb16_pixel_t>(_dst)),
+				   paramRgbaValue );
+	_plugin._qualityMesure->setValueAtTime( this->_renderArgs.time,
+	                                        get_color( paramRgbaValue, red_t() ),
+	                                        get_color( paramRgbaValue, green_t() ),
+	                                        get_color( paramRgbaValue, blue_t() ),
+	                                        get_color( paramRgbaValue, alpha_t() )
+	                                      );
+}
+
+template<class View>
+template<class SView>
+boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >
+DiffProcess<View>::psnr(const SView & v1, const SView & v2, const SView & dst)
+{
+	typedef boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> > Pixel32F;
+	typedef typename boost::gil::channel_type<Pixel32F>::type Value32F;
+	typedef typename boost::gil::channel_type<typename SView::value_type>::type SValueType;
+
+	size_t d = (size_t)(std::pow( 2.0, sizeof( SValueType ) * 8.0 ) ) - 1;
+	Pixel32F psnr = mse( v1, v2, dst );
+	for( int i = 0; i < boost::gil::num_channels<Pixel32F>::type::value; ++i )
 	{
-		psnr[i] = 10.0 * std::log( ( d * d ) / psnr[i] ) / std::log( 10.0 );
+		psnr[i] = Value32F( 20.0 * std::log10( d / std::sqrt(psnr[i]) ) );
 	}
 	return psnr;
 }
 
 template<class View>
-typename DiffProcess<View>::PixelF DiffProcess<View>::mse(const View & v1, const View & v2, const View & dst)
+template<class SView>
+boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >
+DiffProcess<View>::mse(const SView & v1, const SView & v2, const SView & dst)
 {
-	PixelF veqm = tuttle::get_black<PixelF>();
+	typedef boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> > Pixel32F;
+	typedef typename boost::gil::channel_type<Pixel32F>::type Value32F;
+	Pixel32F veqm = tuttle::get_black<Pixel32F>();
 	int w = v1.width();
-	int h = v2.height();
+	int h = v1.height();
 
-	for( typename View::y_coord_t y = 0; y < h; ++y )
+	for( typename SView::y_coord_t y = 0; y < h; ++y )
 	{
-		typename View::x_iterator itA = v1.row_begin( y );
-		typename View::x_iterator itB = v2.row_begin( y );
-		typename View::x_iterator itD = dst.row_begin( y );
+		typename SView::x_iterator itA = v1.row_begin( y );
+		typename SView::x_iterator itB = v2.row_begin( y );
+		typename SView::x_iterator itD = dst.row_begin( y );
 
-		for( typename View::x_coord_t x = 0; x < w; ++x )
+		for( typename SView::x_coord_t x = 0; x < w; ++x )
 		{
-			for( int i = 0; i < boost::gil::num_channels<PixelF>::type::value; ++i)
+			for( int i = 0; i < boost::gil::num_channels<Pixel32F>::type::value; ++i)
 			{
-				double d = std::abs((*itA)[i] - (*itA)[i]);
+				Value32F d = (Value32F)std::abs(double((*itA)[i] - (*itB)[i]));
 				(*itD)[i] = (*itA)[i];
 				veqm[i] += d * d;
 			}
@@ -126,9 +209,9 @@ typename DiffProcess<View>::PixelF DiffProcess<View>::mse(const View & v1, const
 		}
 	}
 
-	for( int i = 0; i < boost::gil::num_channels<PixelF>::type::value; ++i )
+	for( int i = 0; i < boost::gil::num_channels<Pixel32F>::type::value; ++i )
 	{
-		veqm[i] /= w * h;
+		veqm[i] /= (w * h);
 	}
 	return veqm;
 }
