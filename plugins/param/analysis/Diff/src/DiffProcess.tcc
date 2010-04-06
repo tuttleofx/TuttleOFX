@@ -18,6 +18,8 @@ DiffProcess<View>::DiffProcess( DiffPlugin &instance )
 template<class View>
 void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	ImageGilProcessor<View>::setup( args );
+
 	// sources view
 	// clip A
 	_srcA.reset( _plugin.getSrcClipA()->fetchImage( args.time ) );
@@ -33,13 +35,6 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	if( _srcB->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
-	// destination view
-	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !this->_dst.get() )
-		throw( ImageNotReadyException() );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
 	// Make sure bit depths are the same
 	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
@@ -49,7 +44,6 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		throw( BitDepthMismatchException() );
 	}
-	this->_renderArgs = args;
 }
 
 /**
@@ -62,18 +56,18 @@ void DiffProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
 	View _srcA = subimage_view( this->_srcViewA,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
 	View _srcB = subimage_view( this->_srcViewB,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
 	View _dst = subimage_view( this->_dstView,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
 
@@ -97,18 +91,18 @@ void DiffProcess<boost::gil::rgba32f_view_t>::multiThreadProcessImages( const Of
 {
 	using namespace boost::gil;
 	rgba32f_view_t _srcA = subimage_view( this->_srcViewA,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
 	rgba32f_view_t _srcB = subimage_view( this->_srcViewB,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
 	rgba32f_view_t _dst = subimage_view( this->_dstView,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
 
@@ -132,18 +126,18 @@ void DiffProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( const Ofx
 {
 	using namespace boost::gil;
 	rgb32f_view_t _srcA = subimage_view( this->_srcViewA,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
 	rgb32f_view_t _srcB = subimage_view( this->_srcViewB,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
 	rgb32f_view_t _dst = subimage_view( this->_dstView,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
 
