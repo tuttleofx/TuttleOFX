@@ -28,6 +28,7 @@ MergeProcess<View, Functor>::MergeProcess( MergePlugin& instance )
 template<class View, class Functor>
 void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 {
+	ImageGilProcessor<View>::setup( args );
 	// sources view
 	// clip A
 	_srcA.reset( _plugin.getSrcClipA()->fetchImage( args.time ) );
@@ -43,13 +44,6 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	if( _srcB->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
-	// destination view
-	_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !_dst.get() )
-		throw( ImageNotReadyException() );
-	if( _dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( _dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
 	// Make sure bit depths are the same
 	if( _srcA->getPixelDepth() != _dst->getPixelDepth() ||
@@ -59,7 +53,6 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	{
 		throw( BitDepthMismatchException() );
 	}
-
 }
 
 /**
@@ -71,23 +64,7 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 template<class View, class Functor>
 void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
-	using namespace hsl_color_space;
-	View _srcA = subimage_view( this->_srcViewA,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
-							   procWindow.x2 - procWindow.x1,
-							   procWindow.y2 - procWindow.y1 );
-	View _srcB = subimage_view( this->_srcViewB,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
-							   procWindow.x2 - procWindow.x1,
-							   procWindow.y2 - procWindow.y1 );
-	View _dst = subimage_view( this->_dstView,
-							  procWindow.x1 - this->_renderWindow.x1,
-							  procWindow.y1 - this->_renderWindow.y1,
-							  procWindow.x2 - procWindow.x1,
-							  procWindow.y2 - procWindow.y1 );
-	merge_pixels( _srcA, _srcB, _dst, Functor() );
+	merge_pixels( _srcViewA, _srcViewB, this->_dstView, Functor() );
 }
 
 }
