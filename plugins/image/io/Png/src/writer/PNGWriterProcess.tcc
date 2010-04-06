@@ -19,7 +19,6 @@ namespace plugin {
 namespace png {
 namespace writer {
 
-
 template<class View>
 PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
 	: ImageGilProcessor<View>( instance ),
@@ -85,8 +84,35 @@ void PNGWriterProcess<View>::writeImage( View& src, std::string& filepath ) thro
 {
 	using namespace boost::gil;
 	View flippedView = flipped_up_down_view( src );
+	typedef typename boost::gil::channel_type<typename View::value_type>::type ValueType;
+	// Always drop alpha channel
+	typedef typename boost::gil::pixel<ValueType, rgb_layout_t > PixelType;
 
-	png_write_view( filepath, clamp<rgb8_pixel_t>( flippedView ) );
+	png_write_view( filepath, color_converted_view<PixelType>( flippedView ) );
+}
+
+template<>
+void PNGWriterProcess<gray32f_view_t>::writeImage( gray32f_view_t& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
+{
+	using namespace boost::gil;
+	gray32f_view_t flippedView = flipped_up_down_view( src );
+	png_write_view( filepath, color_converted_view<gray16_pixel_t>( flippedView ) );
+}
+
+template<>
+void PNGWriterProcess<rgb32f_view_t>::writeImage( rgb32f_view_t& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
+{
+	using namespace boost::gil;
+	rgb32f_view_t flippedView = flipped_up_down_view( src );
+	png_write_view( filepath, color_converted_view<rgb16_pixel_t>( flippedView ) );
+}
+
+template<>
+void PNGWriterProcess<rgba32f_view_t>::writeImage( rgba32f_view_t& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
+{
+	using namespace boost::gil;
+	rgba32f_view_t flippedView = flipped_up_down_view( src );
+	png_write_view( filepath, color_converted_view<rgb16_pixel_t>( flippedView ) );
 }
 
 }
