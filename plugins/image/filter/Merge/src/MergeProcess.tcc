@@ -17,7 +17,6 @@ namespace tuttle {
 namespace plugin {
 namespace merge {
 
-using namespace boost::gil;
 
 template<class View, class Functor>
 MergeProcess<View, Functor>::MergeProcess( MergePlugin& instance )
@@ -28,6 +27,8 @@ MergeProcess<View, Functor>::MergeProcess( MergePlugin& instance )
 template<class View, class Functor>
 void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 {
+	ImageGilProcessor<View>::setup( args );
+
 	// sources view
 	// clip A
 	_srcA.reset( _plugin.getSrcClipA()->fetchImage( args.time ) );
@@ -43,19 +44,12 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	if( _srcB->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
-	// destination view
-	_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !_dst.get() )
-		throw( ImageNotReadyException() );
-	if( _dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( _dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
 	// Make sure bit depths are the same
-	if( _srcA->getPixelDepth() != _dst->getPixelDepth() ||
-	    _srcB->getPixelDepth() != _dst->getPixelDepth() ||
-		_srcA->getPixelComponents() != _dst->getPixelComponents() ||
-	    _srcB->getPixelComponents() != _dst->getPixelComponents() )
+	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
+	    _srcB->getPixelDepth() != this->_dst->getPixelDepth() ||
+		_srcA->getPixelComponents() != this->_dst->getPixelComponents() ||
+	    _srcB->getPixelComponents() != this->_dst->getPixelComponents() )
 	{
 		throw( BitDepthMismatchException() );
 	}
@@ -63,31 +57,29 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
+ * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindow  Processing window
  */
 template<class View, class Functor>
 void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
-	using namespace hsl_color_space;
-	View _srcA = subimage_view( this->_srcViewA,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+	using namespace boost::gil;
+	View srcViewA = subimage_view( this->_srcViewA,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
-	View _srcB = subimage_view( this->_srcViewB,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+	View srcViewB = subimage_view( this->_srcViewB,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
-	View _dst = subimage_view( this->_dstView,
-							  procWindow.x1 - this->_renderWindow.x1,
-							  procWindow.y1 - this->_renderWindow.y1,
+	View dstView = subimage_view( this->_dstView,
+							  procWindow.x1,
+							  procWindow.y1,
 							  procWindow.x2 - procWindow.x1,
 							  procWindow.y2 - procWindow.y1 );
-	merge_pixels( _srcA, _srcB, _dst, Functor() );
+	merge_pixels( srcViewA, srcViewB, dstView, Functor() );
 }
 
 }

@@ -23,15 +23,7 @@ IfftProcess<View>::IfftProcess( IfftPlugin &instance )
 template <class View>
 void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
-
-	// destination view
-	this->_dst.reset( _dstClip->fetchImage( args.time ) );
-	if( !this->_dst.get( ) )
-	    throw( ImageNotReadyException( ) );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( this->_dst.get(), _dstClip->getPixelRod(args.time) );
+	ImageGilProcessor<View>::setup( args );
 
 	// Re source view
 	this->_srcMod.reset( _srcClipRe->fetchImage( args.time ) );

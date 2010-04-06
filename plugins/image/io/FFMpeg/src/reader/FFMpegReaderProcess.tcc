@@ -18,26 +18,12 @@ void FFMpegReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	// Fetch output image
 	if( _plugin.getReader().read((int)args.time) )
 		throw( tuttle::plugin::ExceptionAbort() );
-	boost::gil::point2<ptrdiff_t> imageDims( _plugin.getReader().width(),
-								 _plugin.getReader().height() );
 
-	double par       = _plugin._dstClip->getPixelAspectRatio();
-	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-	this->_dst.reset( _plugin._dstClip->fetchImage( args.time, reqRect ) );
-	OfxRectI bounds = this->_dst->getBounds();
-	if( !this->_dst.get() )
-		throw( tuttle::plugin::ImageNotReadyException() );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-
-	// Build destination view
-	this->_dstView = this->getView( this->_dst.get(),
-									_plugin._dstClip->getPixelRod(args.time) );
+	ImageGilProcessor<View>::setup( args );
 }
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
  * @param[in] procWindow  Processing window
  */
 template<class View>

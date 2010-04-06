@@ -18,6 +18,8 @@ DiffProcess<View>::DiffProcess( DiffPlugin &instance )
 template<class View>
 void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	ImageGilProcessor<View>::setup( args );
+
 	// sources view
 	// clip A
 	_srcA.reset( _plugin.getSrcClipA()->fetchImage( args.time ) );
@@ -33,13 +35,6 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	if( _srcB->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
-	// destination view
-	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !this->_dst.get() )
-		throw( ImageNotReadyException() );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
 	// Make sure bit depths are the same
 	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
@@ -49,7 +44,6 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		throw( BitDepthMismatchException() );
 	}
-	this->_renderArgs = args;
 }
 
 /**
@@ -61,24 +55,24 @@ template<class View>
 void DiffProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
-	View _srcA = subimage_view( this->_srcViewA,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+	View srcViewA = subimage_view( this->_srcViewA,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
-	View _srcB = subimage_view( this->_srcViewB,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+	View srcViewB = subimage_view( this->_srcViewB,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
-	View _dst = subimage_view( this->_dstView,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+	View dstView = subimage_view( this->_dstView,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
 
 	rgba32f_pixel_t paramRgbaValue;
-	color_convert( psnr(_srcA, _srcB, _dst), paramRgbaValue );
+	color_convert( psnr(srcViewA, srcViewB, dstView), paramRgbaValue );
 	_plugin._qualityMesure->setValueAtTime( this->_renderArgs.time,
 	                                        get_color( paramRgbaValue, red_t() ),
 	                                        get_color( paramRgbaValue, green_t() ),
@@ -96,24 +90,24 @@ template<>
 void DiffProcess<boost::gil::rgba32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
-	rgba32f_view_t _srcA = subimage_view( this->_srcViewA,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+	rgba32f_view_t srcViewA = subimage_view( this->_srcViewA,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
-	rgba32f_view_t _srcB = subimage_view( this->_srcViewB,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+	rgba32f_view_t srcViewB = subimage_view( this->_srcViewB,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
-	rgba32f_view_t _dst = subimage_view( this->_dstView,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+	rgba32f_view_t dstView = subimage_view( this->_dstView,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
 
 	rgba32f_pixel_t paramRgbaValue;
-	color_convert( psnr(color_converted_view<rgba16_pixel_t>(_srcA), color_converted_view<rgba16_pixel_t>(_srcB), color_converted_view<rgba16_pixel_t>(_dst)), paramRgbaValue );
+	color_convert( psnr(color_converted_view<rgba16_pixel_t>(srcViewA), color_converted_view<rgba16_pixel_t>(srcViewB), color_converted_view<rgba16_pixel_t>(dstView)), paramRgbaValue );
 	_plugin._qualityMesure->setValueAtTime( this->_renderArgs.time,
 	                                        get_color( paramRgbaValue, red_t() ),
 	                                        get_color( paramRgbaValue, green_t() ),
@@ -131,26 +125,26 @@ template<>
 void DiffProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
 	using namespace boost::gil;
-	rgb32f_view_t _srcA = subimage_view( this->_srcViewA,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+	rgb32f_view_t srcViewA = subimage_view( this->_srcViewA,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
-	rgb32f_view_t _srcB = subimage_view( this->_srcViewB,
-							    procWindow.x1 - this->_renderWindow.x1,
-							    procWindow.y1 - this->_renderWindow.y1,
+	rgb32f_view_t srcViewB = subimage_view( this->_srcViewB,
+							    procWindow.x1,
+							    procWindow.y1,
 							    procWindow.x2 - procWindow.x1,
 							    procWindow.y2 - procWindow.y1 );
-	rgb32f_view_t _dst = subimage_view( this->_dstView,
-							   procWindow.x1 - this->_renderWindow.x1,
-							   procWindow.y1 - this->_renderWindow.y1,
+	rgb32f_view_t dstView = subimage_view( this->_dstView,
+							   procWindow.x1,
+							   procWindow.y1,
 							   procWindow.x2 - procWindow.x1,
 							   procWindow.y2 - procWindow.y1 );
 
 	rgba32f_pixel_t paramRgbaValue;
-	color_convert( psnr(color_converted_view<rgb16_pixel_t>(_srcA),
-	                    color_converted_view<rgb16_pixel_t>(_srcB),
-						color_converted_view<rgb16_pixel_t>(_dst)),
+	color_convert( psnr(color_converted_view<rgb16_pixel_t>(srcViewA),
+	                    color_converted_view<rgb16_pixel_t>(srcViewB),
+						color_converted_view<rgb16_pixel_t>(dstView)),
 				   paramRgbaValue );
 	_plugin._qualityMesure->setValueAtTime( this->_renderArgs.time,
 	                                        get_color( paramRgbaValue, red_t() ),

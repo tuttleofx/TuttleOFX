@@ -32,13 +32,7 @@ BitDepthProcess<SView, DView>::BitDepthProcess( BitDepthPlugin &instance )
 template<class SView, class DView>
 void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments &args )
 {
-	// destination view
-	this->_dst.reset( _plugin.getDstClip( )->fetchImage( args.time ) );
-	if( !this->_dst.get( ) )
-		throw( ImageNotReadyException( ) );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	this->_dstView = getView<DView>( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+	ImageGilProcessor<DView>::setup( args );
 
 	// source view
 	_src.reset( _plugin.getSrcClip( )->fetchImage( args.time ) );

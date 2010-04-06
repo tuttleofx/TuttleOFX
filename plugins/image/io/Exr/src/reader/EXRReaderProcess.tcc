@@ -2,17 +2,17 @@
 #include "EXRReaderPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
-#include "EXRReaderProcess.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
+#include "../half/gilHalf.hpp"
 
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
+#include <ImfChannelList.h>
+#include <ImfArray.h>
+#include <ImathVec.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/packed_pixel.hpp>
 
@@ -22,12 +22,17 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
+#include <vector>
+#include <iostream>
+
 namespace tuttle {
 namespace plugin {
 namespace exr {
 namespace reader {
 
-using namespace boost::gil;
 namespace bfs = boost::filesystem;
 
 template<class View>
@@ -50,34 +55,24 @@ void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		throw( PluginException( "Unable to open : " + sFilepath ) );
 	}
+
+	ImageGilProcessor<View>::setup( args );
+
 	_exrImage.reset( new Imf::InputFile( sFilepath.c_str() ) );
 	const Imf::Header& h = _exrImage->header();
 	typename Imath::V2i imageDims = h.dataWindow().size();
 	imageDims.x++;
 	imageDims.y++;
-
-	double par                = _plugin.getDstClip()->getPixelAspectRatio();
-	OfxRectD reqRect          = { 0, 0, imageDims.x * par, imageDims.y };
-
-	// Fetch output image
-	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-	if( !this->_dst.get( ) )
-	    throw( ImageNotReadyException( ) );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	// Create destination view
-	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
+ * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindow  Processing window
  */
 template<class View>
 void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 {
+	using namespace boost::gil;
 	try
 	{
 		std::string filepath;
@@ -124,16 +119,6 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 }
 
 /**
- * @brief Function called to apply an anisotropic blur
- *
- * @param[out]  dst     Destination image view
- * @param[in]   amplitude     Amplitude of the anisotropic blur
- * @param dl    spatial discretization.
- * @param da    angular discretization.
- * @param gauss_prec    precision of the gaussian function
- * @param fast_approx   Tell to use the fast approximation or not.
- *
- * @return Result view of the blurring process
  */
 template<class View>
 template<class DView>
@@ -184,6 +169,7 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
                                           DView& dst, int w, int h,
                                           int n, int left, int nc )
 {
+	using namespace boost::gil;
 	const Imf::Header& header = input.header();
 	const Imath::Box2i& dw    = header.dataWindow();
 
@@ -258,6 +244,7 @@ template<class View>
 template<class DView>
 void EXRReaderProcess<View>::sliceCopy( const Imf::Slice* slice, DView& dst, int w, int h, int n )
 {
+	using namespace boost::gil;
 	switch( slice->type )
 	{
 		case Imf::HALF:
