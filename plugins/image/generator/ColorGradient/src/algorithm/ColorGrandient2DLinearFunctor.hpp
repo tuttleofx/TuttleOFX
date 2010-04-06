@@ -59,7 +59,7 @@ public:
 		     it != itEnd;
 		     ++it )
 		{
-			(*it) *= size; // to canonical coordonates
+			(*it) *= size; // to canonical coordinates
 		}
 	}
 
