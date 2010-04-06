@@ -33,11 +33,13 @@ public:
 private:
 	unsigned int _nbThreads;
 protected:
-	OFX::ImageEffect& _effect; ///< @brief effect to render with
-	OfxRectI _renderWindow; ///< @brief render window to use
-	View _dstView; ///< @brief image to process into
+	OFX::ImageEffect& _effect; ///< effect to render with
+	OFX::RenderArguments _renderArgs; ///< render arguments
+	OfxRectI _outputRenderWindow; ///< render window to use, in output clip coordinates
+    OFX::Clip* _dstClip;       ///< Destination image clip
 	boost::scoped_ptr<OFX::Image> _dst;
 	OfxRectI _dstPixelRod;
+	View _dstView; ///< image to process into
 
 public:
 	/** @brief ctor */
@@ -49,25 +51,36 @@ public:
 	void setNbThreadsAuto() { _nbThreads = 0; }
 	
     /** @brief called before any MP is done */
-    virtual void preProcess() { progressBegin( _renderWindow.y2 - _renderWindow.y1 ); }
+    virtual void preProcess() { progressBegin( _outputRenderWindow.y2 - _outputRenderWindow.y1 ); }
 
     /** @brief called before any MP is done */
     virtual void postProcess() { progressEnd(); }
 
-	virtual void setup( const OFX::RenderArguments& args ){}
+	virtual void setup( const OFX::RenderArguments& args )
+	{
+		// destination view
+		_dst.reset( _dstClip->fetchImage( args.time ) );
+		if( !_dst.get( ) )
+			throw( ImageNotReadyException( ) );
+		if( _dst->getRowBytes( ) <= 0 )
+			throw( WrongRowBytesException( ) );
+		_dstView = getView( _dst.get(), _dstClip->getPixelRod(args.time) );
+//		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
+		_dstPixelRod = _dstClip->getPixelRod(args.time);
+	}
 
 	/** @brief fetch output and inputs clips */
 	virtual void setupAndProcess( const OFX::RenderArguments& args )
 	{
-		_renderWindow = args.renderWindow;
+		_outputRenderWindow = args.renderWindow;
+		_renderArgs = args;
 		try
 		{
 			setup( args );
-			_dstPixelRod = _dst->getRegionOfDefinition();
-			_renderWindow.x1 -= _dstPixelRod.x1; // in output clip coordonates
-			_renderWindow.y1 -= _dstPixelRod.y1;
-			_renderWindow.x2 -= _dstPixelRod.x1;
-			_renderWindow.y2 -= _dstPixelRod.y1;
+			_outputRenderWindow.x1 -= _dstPixelRod.x1; // to output clip coordinates
+			_outputRenderWindow.y1 -= _dstPixelRod.y1;
+			_outputRenderWindow.x2 -= _dstPixelRod.x1;
+			_outputRenderWindow.y2 -= _dstPixelRod.y1;
 		}
 		catch( ImageNotReadyException& e )
 		{
@@ -93,6 +106,9 @@ public:
 		this->process();
 	}
 
+	/**
+	 * @brief Return a full gil view of an image.
+	 */
 	View getView( OFX::Image* img, const OfxRectI& rod )
 	{
 		return tuttle::plugin::getView<View>( img, rod );
@@ -102,12 +118,12 @@ public:
 	void multiThreadFunction( unsigned int threadId, unsigned int nThreads )
 	{
 		// slice the y range into the number of threads it has
-		int dy = std::abs( _renderWindow.y2 - _renderWindow.y1 );
-		int y1 = _renderWindow.y1 + threadId * dy / nThreads;
+		int dy = std::abs( _outputRenderWindow.y2 - _outputRenderWindow.y1 );
+		int y1 = _outputRenderWindow.y1 + threadId * dy / nThreads;
 		int step = ( threadId + 1 ) * dy / nThreads;
-		int y2   = _renderWindow.y1 + ( step < dy ? step : dy );
+		int y2   = _outputRenderWindow.y1 + ( step < dy ? step : dy );
 
-		OfxRectI win = _renderWindow;
+		OfxRectI win = _outputRenderWindow;
 		win.y1 = y1;
 		win.y2 = y2;
 
@@ -128,7 +144,9 @@ ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
 	, _nbThreads( 0 ) // auto, maximum allowable number of CPUs will be used
 	, _effect( effect )
 {
-	_renderWindow.x1 = _renderWindow.y1 = _renderWindow.x2 = _renderWindow.y2 = 0;
+	_outputRenderWindow.x1 = _outputRenderWindow.y1 = _outputRenderWindow.x2 = _outputRenderWindow.y2 = 0;
+
+    _dstClip = effect.fetchClip( kOfxImageEffectOutputClipName );
 }
 
 template <class View>
@@ -140,7 +158,7 @@ template <class View>
 void ImageGilProcessor<View>::process( void )
 {
 	// is it OK ?
-	if( _renderWindow.x2 - _renderWindow.x1 == 0 || _renderWindow.y2 - _renderWindow.y1 == 0 )
+	if( _outputRenderWindow.x2 - _outputRenderWindow.x1 == 0 || _outputRenderWindow.y2 - _outputRenderWindow.y1 == 0 )
 	{
 		throw PluginException( "RenderWindow empty !" );
 	}
@@ -154,6 +172,14 @@ void ImageGilProcessor<View>::process( void )
 	postProcess();
 }
 
+/**
+ * @brief Return a full gil view of an image.
+ *        If we only have a tiled image, we use subimage_view to fit to the rod.
+ * @param img the ofx image object
+ * @param rod normally we don't need this parameter because we can get it from the image,
+ *            but there is a bug in nuke (which return the bounds),
+ *            so we need to use the rod of the clip and not from the image.
+ */
 template<class View>
 View getView( OFX::Image* img, const OfxRectI& rod )
 {
