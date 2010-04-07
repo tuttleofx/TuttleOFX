@@ -44,7 +44,7 @@ protected:
 public:
 	DPXWriterProcess( DPXWriterPlugin & instance );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

@@ -36,8 +36,8 @@ protected :
 	
 public:
     FFMpegWriterProcess( FFMpegWriterPlugin& instance );
-    // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindow );
+    
+    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

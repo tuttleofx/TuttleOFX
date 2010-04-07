@@ -1,21 +1,12 @@
 #ifndef _BITDEPTH_PROCESS_HPP_
 #define _BITDEPTH_PROCESS_HPP_
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
 #include <boost/scoped_ptr.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-
 
 namespace tuttle {
 namespace plugin {
@@ -28,15 +19,18 @@ class BitDepthProcess : public ImageGilProcessor<DView>
 	typedef typename DView::value_type dPixel;
 protected :
     BitDepthPlugin& _plugin;        ///< Rendering plugin
-    SView               _srcView;       ///< Source view
+    OFX::Clip* _srcClip;       ///< Source image clip
 	boost::scoped_ptr<OFX::Image> _src;
+	OfxRectI _srcPixelRod;
+	SView _srcView; ///< @brief source clip (filters have only one input)
+
 
 public :
     BitDepthProcess( BitDepthPlugin& instance );
 
     void setup( const OFX::RenderArguments& args );
 
-    void multiThreadProcessImages( const OfxRectI& procWindow );
+    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

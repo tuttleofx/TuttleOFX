@@ -30,7 +30,7 @@ protected :
 public :
     Log2LinProcess( Log2LinPlugin &instance );
 
-    void multiThreadProcessImages( const OfxRectI& procWindow );
+    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

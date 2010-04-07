@@ -40,7 +40,7 @@ public:
 
 	void setup( const OFX::RenderArguments& args );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	// Read exr image
 	template<class DView>

@@ -36,7 +36,7 @@ public:
 
 	void setup( const OFX::RenderArguments& args );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	// Read dpx image
 	View& readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException );

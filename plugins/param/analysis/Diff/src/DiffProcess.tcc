@@ -28,6 +28,9 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	if( _srcA->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewA = this->getView( _srcA.get(), _plugin.getSrcClipA()->getPixelRod(args.time) );
+//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
+	_srcPixelRodA = _plugin.getSrcClipA()->getPixelRod(args.time);
+	
 	// clip B
 	_srcB.reset( _plugin.getSrcClipB()->fetchImage( args.time ) );
 	if( !_srcB.get() )
@@ -35,6 +38,8 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	if( _srcB->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
+//	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
+	_srcPixelRodB = _plugin.getSrcClipB()->getPixelRod(args.time);
 
 	// Make sure bit depths are the same
 	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||
@@ -48,28 +53,29 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void DiffProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void DiffProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							     procWindowRoW.y2 - procWindowRoW.y1 };
 	View srcViewA = subimage_view( this->_srcViewA,
-							    procWindow.x1,
-							    procWindow.y1,
-							    procWindow.x2 - procWindow.x1,
-							    procWindow.y2 - procWindow.y1 );
+							       procWindowRoW.x1 - _srcPixelRodA.x1,
+							       procWindowRoW.y1 - _srcPixelRodA.y1,
+							       procWindowSize.x,
+							       procWindowSize.y );
 	View srcViewB = subimage_view( this->_srcViewB,
-							    procWindow.x1,
-							    procWindow.y1,
-							    procWindow.x2 - procWindow.x1,
-							    procWindow.y2 - procWindow.y1 );
+							       procWindowRoW.x1 - _srcPixelRodB.x1,
+							       procWindowRoW.y1 - _srcPixelRodB.y1,
+							       procWindowSize.x,
+							       procWindowSize.y );
 	View dstView = subimage_view( this->_dstView,
-							   procWindow.x1,
-							   procWindow.y1,
-							   procWindow.x2 - procWindow.x1,
-							   procWindow.y2 - procWindow.y1 );
+							      procWindowRoW.x1 - this->_dstPixelRod.x1,
+							      procWindowRoW.y1 - this->_dstPixelRod.y1,
+							      procWindowSize.x,
+							      procWindowSize.y );
 
 	rgba32f_pixel_t paramRgbaValue;
 	color_convert( psnr(srcViewA, srcViewB, dstView), paramRgbaValue );
@@ -81,30 +87,27 @@ void DiffProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	                                      );
 }
 
-/**
- * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
- */
 template<>
-void DiffProcess<boost::gil::rgba32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindow )
+void DiffProcess<boost::gil::rgba32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							     procWindowRoW.y2 - procWindowRoW.y1 };
 	rgba32f_view_t srcViewA = subimage_view( this->_srcViewA,
-							    procWindow.x1,
-							    procWindow.y1,
-							    procWindow.x2 - procWindow.x1,
-							    procWindow.y2 - procWindow.y1 );
+							                 procWindowRoW.x1 - _srcPixelRodA.x1,
+							                 procWindowRoW.y1 - _srcPixelRodA.y1,
+							                 procWindowSize.x,
+							                 procWindowSize.y );
 	rgba32f_view_t srcViewB = subimage_view( this->_srcViewB,
-							    procWindow.x1,
-							    procWindow.y1,
-							    procWindow.x2 - procWindow.x1,
-							    procWindow.y2 - procWindow.y1 );
+							                 procWindowRoW.x1 - _srcPixelRodB.x1,
+							                 procWindowRoW.y1 - _srcPixelRodB.y1,
+							                 procWindowSize.x,
+							                 procWindowSize.y );
 	rgba32f_view_t dstView = subimage_view( this->_dstView,
-							   procWindow.x1,
-							   procWindow.y1,
-							   procWindow.x2 - procWindow.x1,
-							   procWindow.y2 - procWindow.y1 );
+							                procWindowRoW.x1 - this->_dstPixelRod.x1,
+							                procWindowRoW.y1 - this->_dstPixelRod.y1,
+							                procWindowSize.x,
+							                procWindowSize.y );
 
 	rgba32f_pixel_t paramRgbaValue;
 	color_convert( psnr(color_converted_view<rgba16_pixel_t>(srcViewA), color_converted_view<rgba16_pixel_t>(srcViewB), color_converted_view<rgba16_pixel_t>(dstView)), paramRgbaValue );
@@ -116,30 +119,27 @@ void DiffProcess<boost::gil::rgba32f_view_t>::multiThreadProcessImages( const Of
 	                                      );
 }
 
-/**
- * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
- */
 template<>
-void DiffProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindow )
+void DiffProcess<boost::gil::rgb32f_view_t>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							     procWindowRoW.y2 - procWindowRoW.y1 };
 	rgb32f_view_t srcViewA = subimage_view( this->_srcViewA,
-							    procWindow.x1,
-							    procWindow.y1,
-							    procWindow.x2 - procWindow.x1,
-							    procWindow.y2 - procWindow.y1 );
+							                procWindowRoW.x1 - _srcPixelRodA.x1,
+							                procWindowRoW.y1 - _srcPixelRodA.y1,
+							                procWindowSize.x,
+							                procWindowSize.y );
 	rgb32f_view_t srcViewB = subimage_view( this->_srcViewB,
-							    procWindow.x1,
-							    procWindow.y1,
-							    procWindow.x2 - procWindow.x1,
-							    procWindow.y2 - procWindow.y1 );
+							                procWindowRoW.x1 - _srcPixelRodB.x1,
+							                procWindowRoW.y1 - _srcPixelRodB.y1,
+							                procWindowSize.x,
+							                procWindowSize.y );
 	rgb32f_view_t dstView = subimage_view( this->_dstView,
-							   procWindow.x1,
-							   procWindow.y1,
-							   procWindow.x2 - procWindow.x1,
-							   procWindow.y2 - procWindow.y1 );
+							               procWindowRoW.x1 - this->_dstPixelRod.x1,
+							               procWindowRoW.y1 - this->_dstPixelRod.y1,
+							               procWindowSize.x,
+							               procWindowSize.y );
 
 	rgba32f_pixel_t paramRgbaValue;
 	color_convert( psnr(color_converted_view<rgb16_pixel_t>(srcViewA),

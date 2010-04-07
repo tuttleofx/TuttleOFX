@@ -7,7 +7,7 @@ namespace colorGradient {
 
 template<class View, template<typename> class ColorGradientFunctor>
 ColorGradientProcess<View, ColorGradientFunctor>::ColorGradientProcess( ColorGradientPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
+: ImageGilProcessor<View>( instance )
 , _plugin( instance )
 {
 }
@@ -16,12 +16,7 @@ template<class View, template<typename> class ColorGradientFunctor>
 void ColorGradientProcess<View, ColorGradientFunctor>::setup( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
-
-	// destination view
-	boost::scoped_ptr<OFX::Image> dst( _plugin._dstClip->fetchImage( args.time ) );
-	if( !dst.get( ) )
-		throw( ImageNotReadyException( ) );
-	this->_dstView = this->getView( dst.get( ), _plugin._dstClip->getPixelRod( args.time ) );
+	ImageGilProcessor<View>::setup( args );
 
 	boost::function_requires<PixelLocatorConcept<Locator> >( );
 	gil_function_requires < StepIteratorConcept<typename Locator::x_iterator> >( );
@@ -40,22 +35,22 @@ void ColorGradientProcess<View, ColorGradientFunctor>::setup( const OFX::RenderA
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View, template<typename> class ColorGradientFunctor>
-void ColorGradientProcess<View, ColorGradientFunctor>::multiThreadProcessImages( const OfxRectI& procWindow )
+void ColorGradientProcess<View, ColorGradientFunctor>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
-	for( int y = procWindow.y1;
-		 y < procWindow.y2;
+	for( int y = procWindowOutput.y1;
+		 y < procWindowOutput.y2;
 		 ++y )
 	{
-		typename ColorGradientVirtualView::x_iterator src_it = this->_srcView.x_at( procWindow.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindow.x1, y );
-		for( int x = procWindow.x1;
-			 x < procWindow.x2;
+		typename ColorGradientVirtualView::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
+		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
+		for( int x = procWindowOutput.x1;
+			 x < procWindowOutput.x2;
 			 ++x, ++src_it, ++dst_it )
 		{
 			*dst_it = *src_it;

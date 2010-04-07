@@ -1,14 +1,10 @@
 #ifndef _VOLET_PROCESS_HPP_
 #define _VOLET_PROCESS_HPP_
 
+#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -19,13 +15,12 @@ namespace crop {
  *
  */
 template<class View>
-class CropProcess : public ImageGilProcessor<View>
+class CropProcess : public ImageGilFilterProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
 protected:
 	CropPlugin&          _plugin;        ///< Rendering plugin
-	View _srcView;      ///< Source view
 	OfxRectI _srcBounds;    ///< Current source bounds
 	OfxRectI _srcROD;       ///< Current source bounds
 	OfxRectD _clipROD;      ///< Source clip region of definition
@@ -42,7 +37,7 @@ public:
 
 	void setup( const OFX::RenderArguments& args );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 private:
 	OfxRectD getCrop() const;

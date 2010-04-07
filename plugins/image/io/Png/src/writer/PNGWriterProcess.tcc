@@ -35,12 +35,13 @@ void PNGWriterProcess<View>::setup( const OFX::RenderArguments& args )
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  * @warning no multithread here !
  */
 template<class View>
-void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
 	try
 	{

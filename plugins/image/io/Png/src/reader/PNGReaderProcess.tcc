@@ -1,21 +1,17 @@
+#include "PNGReaderDefinitions.hpp"
+#include "PNGReaderProcess.hpp"
+
 #include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/scoped_ptr.hpp>
 #include <boost/gil/gil_all.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/extension/io/png_dynamic_io.hpp>
+#include <boost/filesystem/fstream.hpp>
 
-#include "PNGReaderDefinitions.hpp"
-#include "PNGReaderProcess.hpp"
+#include <boost/scoped_ptr.hpp>
+#include <boost/assert.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -54,14 +50,14 @@ void PNGReaderProcess<View>::setup( const OFX::RenderArguments& args )
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @brief Function called by rendering thread each time a process must be done.
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	// no tiles and no multithreading supported
+	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	readImage( this->_dstView, _plugin._filepath->getValue() );
 }
 
@@ -74,17 +70,8 @@ void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  * };
  *
  */
+
 /**
- * @brief Function called to apply an anisotropic blur
- *
- * @param[out]  dst     Destination image view
- * @param[in]   amplitude     Amplitude of the anisotropic blur
- * @param dl    spatial discretization.
- * @param da    angular discretization.
- * @param gauss_prec    precision of the gaussian function
- * @param fast_approx   Tell to use the fast approximation or not.
- *
- * @return Result view of the blurring process
  */
 template<class View>
 View& PNGReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )

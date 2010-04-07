@@ -172,8 +172,8 @@ void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs &args, co
 	}
 	else if( boost::starts_with( paramName, kPoint ) )
 	{
-		OFX::Double2DParam* param = fetchDouble2DParam( paramName );
-		try {
+		try
+		{
 			unsigned int n = boost::lexical_cast<unsigned int>( paramName.c_str() + kPoint.size() );
 			OFX::Double2DParam* param = _points[n];
 			OfxPointD p = param->getValue();

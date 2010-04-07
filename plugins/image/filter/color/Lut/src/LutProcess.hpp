@@ -31,7 +31,7 @@ private:
 public:
 	LutProcess<View>( LutPlugin & instance );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	// Lut3D Transform
 	void applyLut( View& dst, View& src, const OfxRectI& procWindow );

@@ -34,8 +34,7 @@ protected :
 public:
     %CLASSNAME%Process( %CLASSNAME%Plugin& instance );
 
-    // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindow );
+    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

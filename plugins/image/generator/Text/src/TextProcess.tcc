@@ -92,25 +92,28 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
-							  procWindow.x2 - procWindow.x1,
-							  procWindow.y2 - procWindow.y1 );
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							     procWindowRoW.y2 - procWindowRoW.y1 };
 	
-	for( int y = procWindow.y1;
-		 y < procWindow.y2;
+	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+							  procWindowSize.x,
+							  procWindowSize.y );
+	
+	for( int y = procWindowOutput.y1;
+		 y < procWindowOutput.y2;
 		 ++y )
 	{
-		typename View::x_iterator src_it = this->_srcView.x_at( procWindow.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindow.x1, y );
-		for( int x = procWindow.x1;
-			 x < procWindow.x2;
+		typename View::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
+		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
+		for( int x = procWindowOutput.x1;
+			 x < procWindowOutput.x2;
 			 ++x, ++src_it, ++dst_it )
 		{
 			*dst_it = *src_it;

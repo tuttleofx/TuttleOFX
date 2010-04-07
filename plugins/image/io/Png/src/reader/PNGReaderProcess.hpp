@@ -31,7 +31,7 @@ public:
 
 	void setup( const OFX::RenderArguments& args );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	View& readImage( View& dst, const std::string& filepath ) throw( PluginException );
 };

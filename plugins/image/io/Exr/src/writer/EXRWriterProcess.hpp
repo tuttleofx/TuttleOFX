@@ -46,7 +46,7 @@ protected:
 public:
 	EXRWriterProcess( EXRWriterPlugin & instance );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

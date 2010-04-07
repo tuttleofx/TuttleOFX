@@ -43,7 +43,7 @@ public:
 	void setup( const OFX::RenderArguments &args );
 
     // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindow );
+    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

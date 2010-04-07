@@ -7,7 +7,6 @@
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <cstdlib>
-#include <cassert>
 #include <cmath>
 #include <vector>
 #include <iostream>
@@ -15,6 +14,7 @@
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 #include <boost/cstdint.hpp>
+#include <boost/assert.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -35,22 +35,17 @@ EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin& instance )
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @brief Function called by rendering thread each time a process must be done.
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	// no tiles and no multithreading supported
+	BOOST_ASSERT(( procWindowRoW == this->_dstPixelRod ));
+	BOOST_ASSERT(( this->_srcPixelRod == this->_dstPixelRod ));
 	try
 	{
-		View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
-		                          procWindow.x2 - procWindow.x1,
-		                          procWindow.y2 - procWindow.y1 );
-		View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
-		                          procWindow.x2 - procWindow.x1,
-		                          procWindow.y2 - procWindow.y1 );
 		std::string filepath;
 		this->_filepath->getValue( filepath );
 
@@ -62,7 +57,8 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						//						writeImage<gray16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
+						throw( PluginException( "ExrWriter: Gray not supported!" ) );
+						// writeImage<gray16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
 						break;
 					}
 					case eRGB:
@@ -84,7 +80,8 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						//						writeImage<gray32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
+						throw( PluginException( "ExrWriter: Gray not supported!" ) );
+						// writeImage<gray32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
 					case eRGB:
@@ -106,7 +103,8 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						//						writeImage<gray32_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
+						throw( PluginException( "ExrWriter: Gray not supported!" ) );
+						// writeImage<gray32_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
 					case eRGB:
@@ -124,7 +122,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 		}
 		// @todo: This is sometimes not neccessary... Checkbox it.
-		copy_and_convert_pixels( src, dst );
+		copy_and_convert_pixels( this->_srcView, this->_dstView );
 	}
 	catch( PluginException& err )
 	{

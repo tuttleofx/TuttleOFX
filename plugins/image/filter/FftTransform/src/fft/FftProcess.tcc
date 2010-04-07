@@ -21,10 +21,10 @@ FftProcess<View>::FftProcess( FftPlugin &instance )
 /**
  * @brief Function called by rendering thread each time a process must be done.
  *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void FftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void FftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 

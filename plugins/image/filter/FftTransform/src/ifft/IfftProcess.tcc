@@ -4,6 +4,7 @@
 
 #include "IfftProcess.hpp"
 #include "IfftDefinitions.hpp"
+
 namespace tuttle {
 namespace plugin {
 namespace fftTransform {
@@ -55,10 +56,10 @@ void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 /**
  * @brief Function called by rendering thread each time a process must be done.
  *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void IfftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void IfftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 	

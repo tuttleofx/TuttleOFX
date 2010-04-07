@@ -229,22 +229,23 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 }
 
 /**
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	if( _processParams._chooseOutput == eChooseOutputSource )
 	{
-		for( int y = procWindow.y1;
-			 y < procWindow.y2;
+		for( int y = procWindowOutput.y1;
+			 y < procWindowOutput.y2;
 			 ++y )
 		{
-			typename View::x_iterator src_it = this->_srcView.x_at( procWindow.x1, y );
-			typename View::x_iterator dst_it = this->_dstView.x_at( procWindow.x1, y );
-			for( int x = procWindow.x1;
-				 x < procWindow.x2;
+			typename View::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
+			typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
+			for( int x = procWindowOutput.x1;
+				 x < procWindowOutput.x2;
 				 ++x, ++src_it, ++dst_it )
 			{
 				(*dst_it) = (*src_it);
@@ -255,13 +256,13 @@ void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 	}
 	else
 	{
-		for( int y = procWindow.y1;
-			 y < procWindow.y2;
+		for( int y = procWindowOutput.y1;
+			 y < procWindowOutput.y2;
 			 ++y )
 		{
-			typename View::x_iterator dst_it = this->_dstView.x_at( procWindow.x1, y );
-			for( int x = procWindow.x1;
-				 x < procWindow.x2;
+			typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
+			for( int x = procWindowOutput.x1;
+				 x < procWindowOutput.x2;
 				 ++x, ++dst_it )
 			{
 				( *dst_it ) = _outputPixel;

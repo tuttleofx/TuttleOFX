@@ -31,13 +31,15 @@ protected:
 	View _srcViewB; ///< Source view B
 	boost::scoped_ptr<OFX::Image> _srcA;
 	boost::scoped_ptr<OFX::Image> _srcB;
+	OfxRectI _srcPixelRodA;
+	OfxRectI _srcPixelRodB;
 
 public:
 	MergeProcess( MergePlugin & instance );
 
 	void setup( const OFX::RenderArguments& args );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

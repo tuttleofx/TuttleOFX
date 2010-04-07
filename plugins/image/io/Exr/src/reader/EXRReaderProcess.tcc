@@ -20,13 +20,8 @@
 #include <boost/cstdint.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/assert.hpp>
 #include <boost/filesystem/fstream.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
 
 namespace tuttle {
 namespace plugin {
@@ -67,12 +62,13 @@ void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	try
 	{
 		std::string filepath;

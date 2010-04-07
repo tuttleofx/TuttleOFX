@@ -34,7 +34,7 @@ protected :
 public :
     Lin2LogProcess( Lin2LogPlugin &instance );
 
-    void multiThreadProcessImages( const OfxRectI& procWindow );
+    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

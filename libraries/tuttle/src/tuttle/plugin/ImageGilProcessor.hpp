@@ -35,7 +35,6 @@ private:
 protected:
 	OFX::ImageEffect& _effect; ///< effect to render with
 	OFX::RenderArguments _renderArgs; ///< render arguments
-	OfxRectI _outputRenderWindow; ///< render window to use, in output clip coordinates
     OFX::Clip* _dstClip;       ///< Destination image clip
 	boost::scoped_ptr<OFX::Image> _dst;
 	OfxRectI _dstPixelRod;
@@ -51,7 +50,7 @@ public:
 	void setNbThreadsAuto() { _nbThreads = 0; }
 	
     /** @brief called before any MP is done */
-    virtual void preProcess() { progressBegin( _outputRenderWindow.y2 - _outputRenderWindow.y1 ); }
+    virtual void preProcess() { progressBegin( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 ); }
 
     /** @brief called before any MP is done */
     virtual void postProcess() { progressEnd(); }
@@ -72,15 +71,10 @@ public:
 	/** @brief fetch output and inputs clips */
 	virtual void setupAndProcess( const OFX::RenderArguments& args )
 	{
-		_outputRenderWindow = args.renderWindow;
 		_renderArgs = args;
 		try
 		{
 			setup( args );
-			_outputRenderWindow.x1 -= _dstPixelRod.x1; // to output clip coordinates
-			_outputRenderWindow.y1 -= _dstPixelRod.y1;
-			_outputRenderWindow.x2 -= _dstPixelRod.x1;
-			_outputRenderWindow.y2 -= _dstPixelRod.y1;
 		}
 		catch( ImageNotReadyException& e )
 		{
@@ -109,7 +103,7 @@ public:
 	/**
 	 * @brief Return a full gil view of an image.
 	 */
-	View getView( OFX::Image* img, const OfxRectI& rod )
+	View getView( OFX::Image* img, const OfxRectI& rod ) const
 	{
 		return tuttle::plugin::getView<View>( img, rod );
 	}
@@ -118,21 +112,31 @@ public:
 	void multiThreadFunction( unsigned int threadId, unsigned int nThreads )
 	{
 		// slice the y range into the number of threads it has
-		int dy = std::abs( _outputRenderWindow.y2 - _outputRenderWindow.y1 );
-		int y1 = _outputRenderWindow.y1 + threadId * dy / nThreads;
+		int dy = std::abs( _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 );
+		int y1 = _renderArgs.renderWindow.y1 + threadId * dy / nThreads;
 		int step = ( threadId + 1 ) * dy / nThreads;
-		int y2   = _outputRenderWindow.y1 + ( step < dy ? step : dy );
+		int y2   = _renderArgs.renderWindow.y1 + ( step < dy ? step : dy );
 
-		OfxRectI win = _outputRenderWindow;
-		win.y1 = y1;
-		win.y2 = y2;
-
+		OfxRectI winRoW = _renderArgs.renderWindow;
+		winRoW.y1 = y1;
+		winRoW.y2 = y2;
+		
 		// and render that thread on each
-		multiThreadProcessImages( win );
+		multiThreadProcessImages( winRoW );
 	}
 
 	/** @brief this is called by multiThreadFunction to actually process images, override in derived classes */
-	virtual void multiThreadProcessImages( const OfxRectI& window ) = 0;
+	virtual void multiThreadProcessImages( const OfxRectI& windowRoW ) = 0;
+
+	OfxRectI translateRoWToOutputClipCoordinates( const OfxRectI& windowRoW ) const
+	{
+		OfxRectI windowOutput = windowRoW;
+		windowOutput.x1 -= _dstPixelRod.x1; // to output clip coordinates
+		windowOutput.y1 -= _dstPixelRod.y1;
+		windowOutput.x2 -= _dstPixelRod.x1;
+		windowOutput.y2 -= _dstPixelRod.y1;
+		return windowOutput;
+	}
 
 	/** @brief called to process everything */
 	virtual void process();
@@ -144,8 +148,11 @@ ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
 	, _nbThreads( 0 ) // auto, maximum allowable number of CPUs will be used
 	, _effect( effect )
 {
-	_outputRenderWindow.x1 = _outputRenderWindow.y1 = _outputRenderWindow.x2 = _outputRenderWindow.y2 = 0;
-
+	_renderArgs.renderWindow.x1 = _renderArgs.renderWindow.y1 = _renderArgs.renderWindow.x2 = _renderArgs.renderWindow.y2 = 0;
+	_renderArgs.renderScale.x = _renderArgs.renderScale.y = 0;
+	_renderArgs.time = -1;
+	_renderArgs.fieldToRender = OFX::eFieldNone;
+	
     _dstClip = effect.fetchClip( kOfxImageEffectOutputClipName );
 }
 
@@ -158,7 +165,8 @@ template <class View>
 void ImageGilProcessor<View>::process( void )
 {
 	// is it OK ?
-	if( _outputRenderWindow.x2 - _outputRenderWindow.x1 == 0 || _outputRenderWindow.y2 - _outputRenderWindow.y1 == 0 )
+	if( _renderArgs.renderWindow.x2 - _renderArgs.renderWindow.x1 == 0 ||
+	    _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 == 0 )
 	{
 		throw PluginException( "RenderWindow empty !" );
 	}

@@ -25,7 +25,7 @@ protected:
 public:
 	InvertProcess( InvertPlugin & instance );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }
