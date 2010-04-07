@@ -1,3 +1,5 @@
+#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 namespace tuttle {
 namespace plugin {
