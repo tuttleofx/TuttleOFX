@@ -27,18 +27,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cassert>
-#include <cstdio>
-
-// ofx
-#include "ofxCore.h"
-#include "ofxClip.h"
-
 // ofx host
 #include "OfxhBinary.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
 #include "OfxhClip.hpp"
 #include "OfxhImageEffectNode.hpp"
+
+// ofx
+#include <ofxCore.h>
+#include <ofxClip.h>
 
 namespace tuttle {
 namespace host {

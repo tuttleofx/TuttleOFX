@@ -7,7 +7,7 @@
 
 // ofx host
 #include <tuttle/host/ofx/OfxhBinary.hpp>
-#include <tuttle/host/ofx/OfxhProperty.hpp>
+#include <tuttle/host/ofx/property/OfxhSet.hpp>
 #include <tuttle/host/ofx/OfxhClip.hpp>
 #include <tuttle/host/ofx/OfxhParam.hpp>
 #include <tuttle/host/ofx/OfxhMemory.hpp>

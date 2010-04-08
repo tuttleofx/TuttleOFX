@@ -27,27 +27,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// ofx host
+#include "property/OfxhSet.hpp"
+#include "OfxhBinary.hpp"
+#include "OfxhParam.hpp"
+#include "OfxhImageEffectNode.hpp" ///@todo tuttle: remove this
+
 // ofx
 #include "ofxCore.h"
 #include "ofxImageEffect.h" ///@todo tuttle: remove this
 
-// ofx host
-#include "OfxhBinary.hpp"
-#include "OfxhProperty.hpp"
-#include "OfxhParam.hpp"
-#include "OfxhImageEffectNode.hpp" ///@todo tuttle: remove this
-
-#include <cassert>
 #include <cfloat>
 #include <climits>
-
 #ifdef _MSC_VER
 	#undef max
 	#undef min
 	#include <limits>
 #endif
-
-#include <cstdarg>
 
 namespace tuttle {
 namespace host {

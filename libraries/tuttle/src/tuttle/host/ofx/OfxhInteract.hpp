@@ -30,7 +30,10 @@
 #ifndef _TUTTLE_HOST_OFX_INTERACT_HPP_
 #define _TUTTLE_HOST_OFX_INTERACT_HPP_
 
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
+#include "property/OfxhGetHook.hpp"
+#include "property/OfxhNotifyHook.hpp"
+
 #include <ofxInteract.h>
 
 namespace tuttle {

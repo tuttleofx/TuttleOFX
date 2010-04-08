@@ -27,13 +27,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-
 // ofx host
+#include "property/OfxhSet.hpp"
 #include "OfxhBinary.hpp"
-#include "OfxhProperty.hpp"
 #include "OfxhClip.hpp"
 #include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
@@ -45,6 +41,10 @@
 #include "OfxhUtilities.hpp"
 
 #include <tuttle/host/core/Core.hpp>
+
+// ofx
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 #include <cstring>
 #include <cstdarg>

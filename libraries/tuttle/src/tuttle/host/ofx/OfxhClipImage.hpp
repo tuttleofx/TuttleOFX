@@ -30,19 +30,13 @@
 #ifndef _TUTTLE_HOST_OFX_CLIPIMAGE_HPP_
 #define _TUTTLE_HOST_OFX_CLIPIMAGE_HPP_
 
-#include "OfxhIObject.hpp"
 #include "OfxhClip.hpp"
 #include "OfxhImage.hpp"
-#include "OfxhUtilities.hpp"
-#include "OfxhProperty.hpp"
-
-#include <ofxImageEffect.h>
+#include "OfxhIObject.hpp"
 
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <map>
-#include <stdexcept>
 
 namespace tuttle {
 namespace host {

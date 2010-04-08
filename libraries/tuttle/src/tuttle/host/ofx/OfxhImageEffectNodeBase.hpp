@@ -2,7 +2,7 @@
 #define _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_BASE_HPP_
 
 #include "OfxhIObject.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
 
 #include <boost/serialization/extended_type_info.hpp>
 #include <boost/serialization/export.hpp>

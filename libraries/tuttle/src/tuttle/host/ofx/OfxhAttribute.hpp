@@ -27,19 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_ATTRIBUTE_H
-#define OFXH_ATTRIBUTE_H
+#ifndef _TUTTLE_HOST_OFX_ATTRIBUTE_HPP_
+#define _TUTTLE_HOST_OFX_ATTRIBUTE_HPP_
 
-#include "ofxCore.h"
-#include "ofxAttribute.h"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
+
+#include <ofxCore.h>
+#include <ofxAttribute.h>
 
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/type_traits/is_virtual_base_of.hpp>
 
 #include <string>
-#include <cassert>
 
 namespace tuttle {
 namespace host {

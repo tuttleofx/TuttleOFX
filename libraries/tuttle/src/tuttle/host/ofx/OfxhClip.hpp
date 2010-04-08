@@ -27,17 +27,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_CLIP_H
-#define OFXH_CLIP_H
+#ifndef _TUTTLE_HOST_OFX_CLIP_HPP_
+#define _TUTTLE_HOST_OFX_CLIP_HPP_
 
-#include "ofxImageEffect.h"
 #include "OfxhAttribute.hpp"
 #include "OfxhUtilities.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
+#include "property/OfxhGetHook.hpp"
+#include "property/OfxhNotifyHook.hpp"
 
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/export.hpp>
-#include <boost/utility.hpp>
+#include <ofxImageEffect.h>
 
 namespace tuttle {
 namespace host {

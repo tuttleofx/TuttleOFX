@@ -32,7 +32,9 @@
 
 #include "OfxhCore.hpp"
 #include "OfxhIObject.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
+#include "property/OfxhGetHook.hpp"
+#include "property/OfxhNotifyHook.hpp"
 #include "OfxhAttribute.hpp"
 #include "OfxhException.hpp"
 

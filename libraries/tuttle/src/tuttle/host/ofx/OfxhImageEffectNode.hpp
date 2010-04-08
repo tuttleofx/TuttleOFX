@@ -36,7 +36,7 @@
 #include "OfxhImageEffectNodeDescriptor.hpp"
 #include "OfxhImageEffectPlugin.hpp"
 #include "OfxhHost.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
 #include "OfxhClipImage.hpp"
 #include "OfxhMessage.hpp"
 #include "OfxhProgress.hpp"

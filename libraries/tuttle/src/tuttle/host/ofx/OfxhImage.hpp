@@ -27,13 +27,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_IMAGE_H
-#define OFXH_IMAGE_H
+#ifndef _TUTTLE_HOST_OFX_IMAGE_HPP_
+#define _TUTTLE_HOST_OFX_IMAGE_HPP_
 
-#include "ofxImageEffect.h"
 #include "OfxhUtilities.hpp"
 #include "OfxhClip.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
+
+#include <ofxImageEffect.h>
 
 namespace tuttle {
 namespace host {
