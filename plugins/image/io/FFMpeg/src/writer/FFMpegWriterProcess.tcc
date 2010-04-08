@@ -18,13 +18,14 @@ FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin &instance )
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
+	
 	VideoFFmpegWriter & writer = _plugin.getWriter();
 	writer.width( this->_srcView.width() );
 	writer.height( this->_srcView.height() );

@@ -73,22 +73,22 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments &args )
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void CheckerboardProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void CheckerboardProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	
-	for( int y = procWindow.y1;
-		 y < procWindow.y2;
+	for( int y = procWindowOutput.y1;
+		 y < procWindowOutput.y2;
 		 ++y )
 	{
-		typename CheckerboardVirtualView::x_iterator src_it = this->_srcView.x_at( procWindow.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindow.x1, y );
-		for( int x = procWindow.x1;
-			 x < procWindow.x2;
+		typename CheckerboardVirtualView::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
+		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
+		for( int x = procWindowOutput.x1;
+			 x < procWindowOutput.x2;
 			 ++x, ++src_it, ++dst_it )
 		{
 			*dst_it = *src_it;

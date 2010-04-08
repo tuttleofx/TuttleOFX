@@ -26,13 +26,14 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef OFXH_PLUGIN_CACHE_HPP
-#define OFXH_PLUGIN_CACHE_HPP
+#ifndef _TUTTLE_HOST_OFX_PLUGINCACHE_HPP_
+#define _TUTTLE_HOST_OFX_PLUGINCACHE_HPP_
 
-#include "ofxCore.h"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
 #include "OfxhPluginAPICache.hpp"
 #include "OfxhPluginBinary.hpp"
+
+#include <ofxCore.h>
 
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/set.hpp>
@@ -40,9 +41,7 @@
 #include <boost/ptr_container/serialize_ptr_list.hpp>
 
 #include <string>
-//#include <vector>
 #include <set>
-#include <iostream>
 #include <algorithm>
 
 

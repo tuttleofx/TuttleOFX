@@ -22,13 +22,12 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-using namespace boost::gil;
-namespace bfs = boost::filesystem;
-
 namespace tuttle {
 namespace plugin {
 namespace dpx {
 namespace reader {
+
+namespace bfs = boost::filesystem;
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
@@ -42,6 +41,9 @@ DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
 template<class View>
 void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	using namespace boost::gil;
+	ImageGilProcessor<View>::setup( args );
+	
 	std::string sFilepath;
 	// Fetch output image
 	_filepath->getValue( sFilepath );
@@ -50,30 +52,16 @@ void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 		throw( PluginException( "Unable to open : " + sFilepath ) );
 	}
 	_plugin.getDpxImg().read( sFilepath, true );
-
-	point2<ptrdiff_t> imageDims( _plugin.getDpxImg().width(),
-								 _plugin.getDpxImg().height() );
-	double par                = _plugin.getDstClip()->getPixelAspectRatio();
-	OfxRectD reqRect          = { 0, 0, imageDims.x * par, imageDims.y };
-
-	// Fetch output image
-	this->_dst.reset( _plugin.getDstClip()->fetchImage( args.time, reqRect ) );
-	if( !this->_dst.get( ) )
-	    throw( ImageNotReadyException( ) );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	// Create destination view
-	this->_dstView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 }
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void DPXReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void DPXReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	using namespace boost::gil;
 	try
 	{
 		std::string filepath;

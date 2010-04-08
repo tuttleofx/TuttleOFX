@@ -4,6 +4,7 @@
 
 #include "IfftProcess.hpp"
 #include "IfftDefinitions.hpp"
+
 namespace tuttle {
 namespace plugin {
 namespace fftTransform {
@@ -23,15 +24,7 @@ IfftProcess<View>::IfftProcess( IfftPlugin &instance )
 template <class View>
 void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
-
-	// destination view
-	this->_dst.reset( _dstClip->fetchImage( args.time ) );
-	if( !this->_dst.get( ) )
-	    throw( ImageNotReadyException( ) );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-	this->_dstView = this->getView( this->_dst.get(), _dstClip->getPixelRod(args.time) );
+	ImageGilProcessor<View>::setup( args );
 
 	// Re source view
 	this->_srcMod.reset( _srcClipRe->fetchImage( args.time ) );
@@ -63,10 +56,10 @@ void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 /**
  * @brief Function called by rendering thread each time a process must be done.
  *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void IfftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void IfftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 	

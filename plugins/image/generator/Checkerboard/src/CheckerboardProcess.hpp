@@ -52,7 +52,7 @@ public :
 
 	CheckerboardParams<View> getParams();
 
-    void multiThreadProcessImages( const OfxRectI& procWindow );
+    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

@@ -28,26 +28,60 @@
  */
 
 // ofx host
-#include "property/OfxhSet.hpp"
-#include "OfxhBinary.hpp"
-#include "OfxhClip.hpp"
-#include "OfxhParam.hpp"
-#include "OfxhMemory.hpp"
-#include "OfxhImageEffectNode.hpp"
-#include "OfxhPluginAPICache.hpp"
-#include "OfxhPluginCache.hpp"
-#include "OfxhHost.hpp"
-#include "OfxhImageEffectPlugin.hpp"
+#include "OfxhProperty.hpp"
+#include "OfxhGetHook.hpp"
+#include "OfxhNotifyHook.hpp"
+
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/host/core/Exception.hpp>
 
 // ofx
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#include <iostream>
+#include <cstring>
+
+//#define DEBUG_PROPERTIES true
+
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace APICache {
+namespace property {
 
+OfxhProperty::OfxhProperty( const std::string& name,
+                            TypeEnum           type,
+                            size_t             dimension,
+                            bool               pluginReadOnly )
+	: _name( name ),
+	_type( type ),
+	_dimension( dimension ),
+	_pluginReadOnly( pluginReadOnly ),
+	_modifiedBy( eModifiedByHost),
+	_getHook( NULL )
+	{}
+
+OfxhProperty::OfxhProperty( const OfxhProperty& other )
+	: _name( other._name ),
+	_type( other._type ),
+	_dimension( other._dimension ),
+	_pluginReadOnly( other._pluginReadOnly ),
+	_modifiedBy( other._modifiedBy ),
+	_getHook( NULL )
+{}
+
+OfxhProperty::~OfxhProperty()
+{}
+
+/// call notify on the contained notify hooks
+void OfxhProperty::notify( bool single, int indexOrN )
+{
+	std::vector<OfxhNotifyHook*>::iterator i;
+	for( i = _notifyHooks.begin(); i != _notifyHooks.end(); ++i )
+	{
+		( *i )->notify( _name, single, indexOrN );
+	}
+}
 
 }
 }

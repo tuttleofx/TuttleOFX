@@ -1,10 +1,11 @@
-// ofx
-#include <ofxCore.h>
-#include <ofxImageEffect.h>
+#include "ImageEffectNode.hpp"
+#include "HostDescriptor.hpp"
+#include "ClipImage.hpp"
+#include "Param.hpp"
 
 // ofx host
 #include <tuttle/host/ofx/OfxhBinary.hpp>
-#include <tuttle/host/ofx/OfxhProperty.hpp>
+#include <tuttle/host/ofx/property/OfxhSet.hpp>
 #include <tuttle/host/ofx/OfxhClip.hpp>
 #include <tuttle/host/ofx/OfxhParam.hpp>
 #include <tuttle/host/ofx/OfxhMemory.hpp>
@@ -14,16 +15,12 @@
 #include <tuttle/host/ofx/OfxhHost.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
 
-// my host
-#include "HostDescriptor.hpp"
-#include "ImageEffectNode.hpp"
-#include "ClipImage.hpp"
-#include "Param.hpp"
+// ofx
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 #include <iostream>
 #include <fstream>
-#include <cmath>
-#include <cassert>
 
 namespace tuttle {
 namespace host {

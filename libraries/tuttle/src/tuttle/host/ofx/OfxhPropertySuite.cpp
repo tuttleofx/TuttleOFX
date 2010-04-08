@@ -1,5 +1,5 @@
 #include "OfxhPropertySuite.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
 
 //#define DEBUG_PROPERTIES true
 

@@ -21,7 +21,7 @@ namespace crop {
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin& instance )
-	: ImageGilProcessor<View>( instance ),
+	: ImageGilFilterProcessor<View>( instance ),
 	_plugin( instance )
 {
 	_upBand     = instance.fetchIntParam( kParamUp );
@@ -31,34 +31,30 @@ CropProcess<View>::CropProcess( CropPlugin& instance )
 	_anamorphic = instance.fetchBooleanParam( kParamAnamorphic );
 }
 
+/**
+ * @todo tuttle: needs to be rewrite
+ */
 template<class View>
 void CropProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	/// @todo tuttle: needs to be rewrite
-	/// use ImageGilFilterProcessor<View>::setup(args);
+	ImageGilFilterProcessor<View>::setup(args);
 	
 	// SOURCE
-	boost::scoped_ptr<OFX::Image> src( _plugin.getSrcClip()->fetchImage( args.time ) );
-	_renderScale = src->getRenderScale();
+	_renderScale = this->_src->getRenderScale();
 	_par         = _plugin.getSrcClip()->getPixelAspectRatio();
-	_srcBounds   = src->getBounds();
-	_srcROD      = src->getRegionOfDefinition();
+	_srcBounds   = this->_src->getBounds();
+	_srcROD      = this->_src->getRegionOfDefinition();
 	_clipROD     = _plugin.getSrcClip()->getCanonicalRod( args.time );
-	_clipROD.x1 /= _par / src->getRenderScale().x;
-	_clipROD.x2 /= _par / src->getRenderScale().x;
-	_clipROD.y1 *= src->getRenderScale().y;
-	_clipROD.y2 *= src->getRenderScale().y;
+	_clipROD.x1 /= _par / this->_src->getRenderScale().x;
+	_clipROD.x2 /= _par / this->_src->getRenderScale().x;
+	_clipROD.y1 *= this->_src->getRenderScale().y;
+	_clipROD.y2 *= this->_src->getRenderScale().y;
 
 	point2<int> srcImgCorner = point2<int>( static_cast<int>( -_srcBounds.x1 ),
 											static_cast<int>( -_srcBounds.y1 ) );
-	if( !src.get() )
-		throw( tuttle::plugin::ImageNotReadyException() );
-	OFX::BitDepthEnum srcBitDepth         = src->getPixelDepth();
-	OFX::PixelComponentEnum srcComponents = src->getPixelComponents();
+	OFX::BitDepthEnum srcBitDepth         = this->_src->getPixelDepth();
+	OFX::PixelComponentEnum srcComponents = this->_src->getPixelComponents();
 	typename image_from_view<View>::type imResized;
-
-	// Build destination view
-	View srcTileView = this->getView( src.get(), _plugin.getSrcClip()->getPixelRod(args.time) );
 
 	// Stretch source if necessary
 	if( _anamorphic->getValue() )
@@ -71,7 +67,8 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 		OfxRectD finalProcWin = rectanglesIntersection( croppedRect, dProcRenderRect );
 		if( finalProcWin.x1 < finalProcWin.x2 && finalProcWin.y1 < finalProcWin.y2 )
 		{
-			imResized.recreate( int(finalProcWin.x2 - finalProcWin.x1),
+			View srcTileView = this->getView( this->_src.get(), _plugin.getSrcClip()->getPixelRod(args.time) );
+			imResized.recreate( int(finalProcWin.x2 - finalProcWin.x1), ///@todo tuttle: to change !
 								int(finalProcWin.y2 - finalProcWin.y1) );
 			resize_view( srcTileView, view( imResized ), bilinear_sampler() );
 			this->_srcView = subimage_view( view( imResized ),
@@ -80,37 +77,22 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 											int(_clipROD.x2 - _clipROD.x1),
 											int(_clipROD.y2 - _clipROD.y1) );
 		}
-		else
-		{
-			this->_srcView = subimage_view( srcTileView, srcImgCorner.x, srcImgCorner.y,
-											int(_clipROD.x2 - _clipROD.x1),
-											int(_clipROD.y2 - _clipROD.y1) );
-		}
-	}
-	else
-	{
-		this->_srcView = subimage_view( srcTileView, srcImgCorner.x, srcImgCorner.y,
-										int(_clipROD.x2 - _clipROD.x1),
-										int(_clipROD.y2 - _clipROD.y1) );
 	}
 
 	// DESTINATION
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
-	if( !dst.get() )
-		throw( tuttle::plugin::ImageNotReadyException() );
-	OfxRectI dstImgRod    = dst->getRegionOfDefinition();
-	OfxRectI dstImgBounds = dst->getBounds();
+	OfxRectI dstImgRod    = this->_dst->getRegionOfDefinition();
+	OfxRectI dstImgBounds = this->_dst->getBounds();
 	OfxRectD dstClipROD   = _plugin.getDstClip()->getCanonicalRod( args.time );
-	dstClipROD.x1 /= _par / src->getRenderScale().x;
-	dstClipROD.x2 /= _par / src->getRenderScale().x;
-	dstClipROD.y1 *= src->getRenderScale().y;
-	dstClipROD.y2 *= src->getRenderScale().y;
+	dstClipROD.x1 /= _par / this->_src->getRenderScale().x;
+	dstClipROD.x2 /= _par / this->_src->getRenderScale().x;
+	dstClipROD.y1 *= this->_src->getRenderScale().y;
+	dstClipROD.y2 *= this->_src->getRenderScale().y;
 
 	point2<int> dstImgCorner = point2<int>( static_cast<int>( -dstImgBounds.x1 ),
 											static_cast<int>( -dstImgBounds.y1 ) );
 
-	OFX::BitDepthEnum dstBitDepth         = dst->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = dst->getPixelComponents();
+	OFX::BitDepthEnum dstBitDepth         = this->_dst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = this->_dst->getPixelComponents();
 
 	// Make sure bit depths are same
 	if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
@@ -119,7 +101,7 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 	}
 
 	// Build destination view
-	View dstTileView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+	View dstTileView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
 
 	this->_dstView = subimage_view( dstTileView, dstImgCorner.x, dstImgCorner.y,
 									int(dstClipROD.x2 - dstClipROD.x1),
@@ -153,39 +135,38 @@ OfxRectD CropProcess<View>::getCrop() const
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @brief Function called by rendering thread each time a process must be done.
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	///@todo tuttle: is it possible to place the crop depending on the RoW and not on image source RoD ?
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	typedef typename View::x_iterator x_iterator;
-	Pixel fillingColor = get_black( _srcView );
-	int nc               = _srcView.num_channels();
-
+	Pixel fillingColor = get_black( this->_srcView );
+	
 	OfxRectD croppedRect = getCrop();
 
 	if( croppedRect.x1 < croppedRect.x2 && croppedRect.y1 < croppedRect.y2 )
 	{
-		OfxRectD dProcWinRect  = { procWindow.x1, procWindow.y1, procWindow.x2, procWindow.y2 };
+		OfxRectD dProcWinRect  = { procWindowOutput.x1, procWindowOutput.y1, procWindowOutput.x2, procWindowOutput.y2 };
 		OfxRectD finalProcWin  = rectanglesIntersection( croppedRect, dProcWinRect );
 		OfxRectI iFinalProcWin = { (int)finalProcWin.x1, (int)finalProcWin.y1, (int)finalProcWin.x2, (int)finalProcWin.y2 };
 
 		// If no image copy is needed, fill destination with black
 		if( iFinalProcWin.x1 == iFinalProcWin.x2 || iFinalProcWin.y1 == iFinalProcWin.y2 )
 		{
-			for( int y = procWindow.y1; y < procWindow.y2; y++ )
+			for( int y = procWindowOutput.y1; y < procWindowOutput.y2; ++y )
 			{
 				if( this->progressForward() )
 					return;
-				x_iterator dIt = this->_dstView.x_at( procWindow.x1, y );
+				x_iterator dIt = this->_dstView.x_at( procWindowOutput.x1, y );
 				// Right band
-				for( int x = procWindow.x1; x < procWindow.x2; x++ )
+				for( int x = procWindowOutput.x1; x < procWindowOutput.x2; ++x )
 				{
 					*dIt = fillingColor;
-					dIt++;
+					++dIt;
 				}
 			}
 		}
@@ -193,65 +174,62 @@ void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 		{
 			// Fill bands
 			// bottom band
-			for( int y = procWindow.y1; y < iFinalProcWin.y1; y++ )
+			for( int y = procWindowOutput.y1; y < iFinalProcWin.y1; ++y )
 			{
 				if( this->progressForward() )
 					return;
-				x_iterator dIt = this->_dstView.x_at( procWindow.x1, y );
+				x_iterator dIt = this->_dstView.x_at( procWindowOutput.x1, y );
 				// Here goes the image pixel copy
-				for( int x = procWindow.x1; x < procWindow.x2; x++ )
+				for( int x = procWindowOutput.x1; x < procWindowOutput.x2; ++x )
 				{
 					*dIt = fillingColor;
-					dIt++;
+					++dIt;
 				}
 			}
 
 			// Top band
-			for( int y = iFinalProcWin.y2; y < procWindow.y2; y++ )
+			for( int y = iFinalProcWin.y2; y < procWindowOutput.y2; ++y )
 			{
 				if( this->progressForward() )
 					return;
-				x_iterator dIt = this->_dstView.x_at( procWindow.x1, y );
+				x_iterator dIt = this->_dstView.x_at( procWindowOutput.x1, y );
 				// Here goes the image pixel copy
-				for( int x = procWindow.x1; x < procWindow.x2; x++ )
+				for( int x = procWindowOutput.x1; x < procWindowOutput.x2; ++x )
 				{
 					*dIt = fillingColor;
-					dIt++;
+					++dIt;
 				}
 			}
 
 			// Image copy
-			for( int y = iFinalProcWin.y1; y < iFinalProcWin.y2; y++ )
+			for( int y = iFinalProcWin.y1; y < iFinalProcWin.y2; ++y )
 			{
 				if( this->progressForward() )
 					return;
-				x_iterator sIt = _srcView.x_at( procWindow.x1, y );
-				x_iterator dIt = this->_dstView.x_at( procWindow.x1, y );
+				x_iterator sIt = this->_srcView.x_at( procWindowOutput.x1, y );
+				x_iterator dIt = this->_dstView.x_at( procWindowOutput.x1, y );
 
 				// Left band
-				for( int x = procWindow.x1; x < iFinalProcWin.x1; x++ )
+				for( int x = procWindowOutput.x1; x < iFinalProcWin.x1; ++x )
 				{
 					*dIt = fillingColor;
-					dIt++;
-					sIt++;
+					++dIt;
+					++sIt;
 				}
 
 				// Here goes the image pixel copy
-				for( int x = iFinalProcWin.x1; x < iFinalProcWin.x2; x++ )
+				for( int x = iFinalProcWin.x1; x < iFinalProcWin.x2; ++x )
 				{
-					for( int c = 0; c < nc; c++ )
-					{
-						( *dIt )[c] = ( *sIt )[c];
-					}
-					dIt++;
-					sIt++;
+					( *dIt ) = ( *sIt );
+					++dIt;
+					++sIt;
 				}
 
 				// Right band
-				for( int x = iFinalProcWin.x2; x < procWindow.x2; x++ )
+				for( int x = iFinalProcWin.x2; x < procWindowOutput.x2; ++x )
 				{
 					*dIt = fillingColor;
-					dIt++;
+					++dIt;
 				}
 			}
 		}

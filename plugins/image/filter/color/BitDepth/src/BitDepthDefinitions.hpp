@@ -19,4 +19,4 @@ const static std::string kBitDepthHelpString = "<b>Bit depth convertor</b> plugi
 }
 }
 
-#endif  // BITDEPTH_DEFINITIONS_HPP
+#endif

@@ -35,13 +35,15 @@ protected :
 	View _srcViewB; ///< Source view B
 	boost::scoped_ptr<OFX::Image> _srcA;
 	boost::scoped_ptr<OFX::Image> _srcB;
+	OfxRectI _srcPixelRodA;
+	OfxRectI _srcPixelRodB;
 
 public:
 	DiffProcess( DiffPlugin& instance );
 	void setup( const OFX::RenderArguments& args );
 
 	// Do some processing
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 	template<class SView>
 	boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >
 	mse(const SView & v1, const SView & v2, const SView & dst);

@@ -1,21 +1,15 @@
 #ifndef _EXR_READER_PROCESS_HPP_
 #define _EXR_READER_PROCESS_HPP_
 
-#include <ImfInputFile.h>
-#include <ImfChannelList.h>
-#include <ImfArray.h>
-#include <ImathVec.h>
-
-#include "../half/gilHalf.hpp"
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
+
+#include <ImfInputFile.h>
+
 #include <boost/scoped_ptr.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -46,7 +40,7 @@ public:
 
 	void setup( const OFX::RenderArguments& args );
 
-	void multiThreadProcessImages( const OfxRectI& procWindow );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	// Read exr image
 	template<class DView>

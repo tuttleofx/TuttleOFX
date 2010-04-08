@@ -2,6 +2,7 @@
 #include "DPXWriterPlugin.hpp"
 
 #include <boost/cstdint.hpp>
+#include <boost/assert.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -22,22 +23,18 @@ DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @brief Function called by rendering thread each time a process must be done.
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	using namespace boost::gil;
+	// no tiles and no multithreading supported
+	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
+	BOOST_ASSERT( this->_srcPixelRod == this->_dstPixelRod );
 	try
 	{
-		View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
-		                          procWindow.x2 - procWindow.x1,
-		                          procWindow.y2 - procWindow.y1 );
-		View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
-		                          procWindow.x2 - procWindow.x1,
-		                          procWindow.y2 - procWindow.y1 );
 		std::string filepath;
 		int bitDepth, compType;
 		this->_filepath->getValue( filepath );
@@ -51,15 +48,15 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				switch( compType )
 				{
 					case 0: {
-						writeImage<rgb16_image_t>( src, filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
+						writeImage<rgb16_image_t>( this->_srcView, filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
 						break;
 					}
 					case 1: {
-						writeImage<rgba16_image_t>( src, filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
+						writeImage<rgba16_image_t>( this->_srcView, filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
 						break;
 					}
 					case 2: {
-						writeImage<abgr16_image_t>( src, filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
+						writeImage<abgr16_image_t>( this->_srcView, filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
 						break;
 					}
 				}
@@ -110,13 +107,13 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				switch( compType )
 				{
 					case 0:
-						writeImage<rgb8_image_t>( src, filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8, packing );
+						writeImage<rgb8_image_t>( this->_srcView, filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8, packing );
 						break;
 					case 1:
-						writeImage<rgba8_image_t>( src, filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8A8, packing );
+						writeImage<rgba8_image_t>( this->_srcView, filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8A8, packing );
 						break;
 					case 2:
-						writeImage<abgr8_image_t>( src, filepath, 8, tuttle::io::DpxImage::eCompTypeA8B8G8R8, packing );
+						writeImage<abgr8_image_t>( this->_srcView, filepath, 8, tuttle::io::DpxImage::eCompTypeA8B8G8R8, packing );
 						break;
 				}
 				break;
@@ -130,16 +127,6 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 }
 
 /**
- * @brief Function called to apply an anisotropic blur
- *
- * @param[out]  dst     Destination image view
- * @param[in]   amplitude     Amplitude of the anisotropic blur
- * @param dl    spatial discretization.
- * @param da    angular discretization.
- * @param gauss_prec    precision of the gaussian function
- * @param fast_approx   Tell to use the fast approximation or not.
- *
- * @return Result view of the blurring process
  */
 template<class View>
 template<class CONV_IMAGE>

@@ -161,7 +161,7 @@ public:
 		: ImageScalerBase( instance )
 	{}
 
-	void multiThreadProcessImages( const OfxRectI& procWindow )
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW )
 	{
 		float scales[4];
 
@@ -172,14 +172,14 @@ public:
 
 		float maskScale = 1.0f;
 
-		for( int y = procWindow.y1; y < procWindow.y2; y++ )
+		for( int y = procWindowRoW.y1; y < procWindowRoW.y2; y++ )
 		{
 			if( _effect.abort() )
 				break;
 
-			PIX* dstPix = (PIX*) _dstImg->getPixelAddress( procWindow.x1, y );
+			PIX* dstPix = (PIX*) _dstImg->getPixelAddress( procWindowRoW.x1, y );
 
-			for( int x = procWindow.x1; x < procWindow.x2; x++ )
+			for( int x = procWindowRoW.x1; x < procWindowRoW.x2; x++ )
 			{
 
 				PIX* srcPix = ( PIX* )( _srcImg ? _srcImg->getPixelAddress( x, y ) : 0 );

@@ -110,6 +110,11 @@
 #endif
 
 
+inline bool operator==( const OfxRectI& a, const OfxRectI& b ) { return a.x1 == b.x1 && a.y1 == b.y1 &&
+	                                                                    a.x2 == b.x2 && a.y2 == b.y2; }
+inline bool operator!=( const OfxRectI& a, const OfxRectI& b ) { return a.x1 != b.x1 || a.y1 != b.y1 ||
+	                                                                    a.x2 != b.x2 || a.y2 != b.y2; }
+
 inline bool operator==( const OfxRangeI& a, const OfxRangeI& b ) { return a.min == b.min && a.max == b.max; }
 inline bool operator!=( const OfxRangeI& a, const OfxRangeI& b ) { return a.min != b.min || a.max != b.max; }
 

@@ -35,7 +35,7 @@ public:
 	template <class Point>
 	Point pointOrthogonalProjection( const Point& p ) const
 	{
-		// compute coordonates of M, the orthogonal projection of p on current line
+		// compute coordinates of M, the orthogonal projection of p on current line
 		Point res;
 		res.y = ( -( _a * p.x ) - ( _a * _AB.y * p.y / _AB.x ) - _c ) / ( _b - ( _a * _AB.y / _AB.x ) );
 		res.x = ( -_c - _b * res.y ) / _a;
@@ -81,7 +81,7 @@ public:
 		assert( _points.size( ) == _colors.size( ) );
 		assert( _points.size( ) >= 2 );
 		
-		_pB = _points[0] * size; // to canonical coordonates
+		_pB = _points[0] * size; // to canonical coordinates
 		_pC = _points[1] * size;
 		_droiteEquation = LineEquation( _pB, _pC );
 

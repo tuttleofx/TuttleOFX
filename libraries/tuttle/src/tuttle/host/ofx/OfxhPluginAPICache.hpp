@@ -26,15 +26,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef OFX_PLUGIN_API_CACHE
-#define OFX_PLUGIN_API_CACHE
-
-#include <string>
-#include <iostream>
-#include <map>
+#ifndef _TUTTLE_HOST_OFX_PLUGINAPICACHE_HPP_
+#define _TUTTLE_HOST_OFX_PLUGINAPICACHE_HPP_
 
 #include "OfxhHost.hpp"
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
+
+#include <string>
 
 namespace tuttle {
 namespace host {

@@ -25,7 +25,6 @@ namespace tuttle {
 namespace plugin {
 namespace lut {
 
-using namespace boost::gil;
 using namespace boost::filesystem;
 
 template<class View>
@@ -37,20 +36,20 @@ LutProcess<View>::LutProcess( LutPlugin& instance )
 }
 
 /**
- * @brief Function called by rendering thread each time
- *        a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @brief Function called by rendering thread each time a process must be done.
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void LutProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void LutProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	applyLut( this->_dstView, this->_srcView, procWindow );
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	applyLut( this->_dstView, this->_srcView, procWindowOutput );
 }
 
 template<class View>
 void LutProcess<View>::applyLut( View& dst, View& src, const OfxRectI& procWindow )
 {
+	using namespace boost::gil;
 	typedef typename View::x_iterator vIterator;
 	typedef typename channel_type<View>::type Pixel;
 

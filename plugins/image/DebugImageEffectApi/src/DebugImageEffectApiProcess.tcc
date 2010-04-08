@@ -19,20 +19,23 @@ void DebugImageEffectApiProcess<View>::setup( const OFX::RenderArguments& args )
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void DebugImageEffectApiProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void DebugImageEffectApiProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	
-	View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
-							  procWindow.x2 - procWindow.x1,
-							  procWindow.y2 - procWindow.y1 );
-	View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
-							  procWindow.x2 - procWindow.x1,
-							  procWindow.y2 - procWindow.y1 );
+	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+							     procWindowRoW.y2 - procWindowRoW.y1 };
+
+	View src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
+							  procWindowSize.x,
+							  procWindowSize.y );
+	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+							  procWindowSize.x,
+							  procWindowSize.y );
+
 	copy_pixels( src, dst );
 }
 

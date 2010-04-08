@@ -150,7 +150,7 @@ bool FFMpegReaderPlugin::getTimeDomain( OfxRangeD& range )
 bool FFMpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	rod.x1 = 0;
-	rod.x2 = _reader.width();
+	rod.x2 = _reader.width() * _reader.aspectRatio();
 	rod.y1 = 0;
 	rod.y2 = _reader.height();
 	return true;

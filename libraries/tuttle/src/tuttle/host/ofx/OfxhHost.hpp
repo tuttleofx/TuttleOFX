@@ -29,15 +29,13 @@
 #ifndef _TUTTLE_HOST_OFX_HOST_HPP_
 #define _TUTTLE_HOST_OFX_HOST_HPP_
 
-#include "OfxhProperty.hpp"
+#include "property/OfxhSet.hpp"
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-#include "ofxTimeLine.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
+#include <ofxTimeLine.h>
 
-#include <map>
 #include <string>
-#include <cstdarg>
 
 namespace tuttle {
 namespace host {

@@ -27,17 +27,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cassert>
-
-#include <string>
-#include <map>
-
-// ofx
-#include "ofxImageEffect.h"
-
 // ofx host
+#include "property/OfxhSet.hpp"
 #include "OfxhBinary.hpp"
-#include "OfxhProperty.hpp"
 #include "OfxhClip.hpp"
 #include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
@@ -51,6 +43,12 @@
 
 ///@todo tuttle: remove this !
 #include <tuttle/host/core/Core.hpp>
+
+// ofx
+#include <ofxImageEffect.h>
+
+#include <string>
+#include <map>
 
 // Disable the "this pointer used in base member initialiser list" warning in Windows
 namespace tuttle {

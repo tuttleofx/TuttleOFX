@@ -18,32 +18,20 @@ void FFMpegReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	// Fetch output image
 	if( _plugin.getReader().read((int)args.time) )
 		throw( tuttle::plugin::ExceptionAbort() );
-	boost::gil::point2<ptrdiff_t> imageDims( _plugin.getReader().width(),
-								 _plugin.getReader().height() );
 
-	double par       = _plugin._dstClip->getPixelAspectRatio();
-	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-	this->_dst.reset( _plugin._dstClip->fetchImage( args.time, reqRect ) );
-	OfxRectI bounds = this->_dst->getBounds();
-	if( !this->_dst.get() )
-		throw( tuttle::plugin::ImageNotReadyException() );
-	if( this->_dst->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
-
-	// Build destination view
-	this->_dstView = this->getView( this->_dst.get(),
-									_plugin._dstClip->getPixelRod(args.time) );
+	ImageGilProcessor<View>::setup( args );
 }
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
- *
- * @param[in] procWindow  Processing window
+ * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void FFMpegReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
+void FFMpegReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
+	
 	rgb8c_view_t ffmpegSrcView =
 			interleaved_view( _plugin.getReader().width(), _plugin.getReader().height(),
 							  (const rgb8c_pixel_t*)( _plugin.getReader().data() ),
