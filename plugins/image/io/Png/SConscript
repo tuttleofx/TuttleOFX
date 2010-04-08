@@ -8,5 +8,6 @@ project.createOfxPlugin( dirs = ['src'],
 								  libs.boost_gil,
 								  libs.png,
                                   libs.boost_filesystem,
+								  libs.boost_regex,
                                  ] )
 

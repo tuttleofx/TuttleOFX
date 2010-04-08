@@ -9,7 +9,6 @@
 
 #include <tuttle/common/patterns/Singleton.hpp>
 
-#include <stdexcept>
 
 namespace tuttle {
 namespace host {

@@ -8,5 +8,6 @@ project.createOfxPlugin( dirs = ['src'],
 								  libs.openexr,
 								  libs.boost_gil,
 								  libs.boost_filesystem,
+								  libs.boost_regex,
                                  ] )
 

@@ -100,16 +100,19 @@ static const char* getArchStr()
 
 #if defined ( WINDOWS )
 
+#ifndef _MSC_VER
+ #define SHGFP_TYPE_CURRENT 0
+#endif
+
 const TCHAR* getStdOFXPluginPath( const std::string& hostId = "Plugins" )
 {
 	static TCHAR buffer[MAX_PATH];
 	static int gotIt = 0;
-
 	if( !gotIt )
 	{
 		gotIt = 1;
 		SHGetFolderPath( NULL, CSIDL_PROGRAM_FILES_COMMON, NULL, SHGFP_TYPE_CURRENT, buffer );
-		strcat_s( buffer, MAX_PATH, _T( "\\OFX\\Plugins" ) );
+		strncat( buffer, "\\OFX\\Plugins", MAX_PATH );
 	}
 	return buffer;
 }

@@ -6,14 +6,6 @@
 #include "windows/windows.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Needed for MinGW
-#ifndef _MSC_VER
- #define SHGFP_TYPE_CURRENT 0
- #define strcpy_s( dst, dst_length, src ) strcpy( dst, src )
- #define strcat_s( dst, dst_length, src ) strcat( dst, src )
-#endif
-
-////////////////////////////////////////////////////////////////////////////////
 // Assert that need to be everywhere
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
