@@ -1,6 +1,9 @@
 #include "TextPlugin.hpp"
 #include "TextProcess.hpp"
 
+#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/PluginException.hpp>
+
 #include <boost/filesystem.hpp>
 #include <boost/ptr_container/ptr_inserter.hpp>
 
