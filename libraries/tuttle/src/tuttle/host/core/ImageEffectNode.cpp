@@ -1,6 +1,3 @@
-#include <iostream>
-#include <fstream>
-
 // ofx
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
@@ -22,6 +19,11 @@
 #include "ImageEffectNode.hpp"
 #include "ClipImage.hpp"
 #include "Param.hpp"
+
+#include <iostream>
+#include <fstream>
+#include <cmath>
+#include <cassert>
 
 namespace tuttle {
 namespace host {

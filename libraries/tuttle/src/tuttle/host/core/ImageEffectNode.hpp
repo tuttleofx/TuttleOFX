@@ -8,9 +8,6 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
-#include <cmath>
-#include <cassert>
-
 namespace tuttle {
 namespace host {
 namespace core {

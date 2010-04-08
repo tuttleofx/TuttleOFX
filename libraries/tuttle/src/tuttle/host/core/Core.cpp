@@ -13,6 +13,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/serialization.hpp>
 
+#include <stdexcept>
 #include <iostream>
 #include <fstream>
 #include <vector>
