@@ -311,6 +311,7 @@ public:
 
 	/** @brief set the label properties */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
+	void setLabel( const std::string& label ) { setLabels( label, label, label ); }
 
 	/** @brief set how fielded images are extracted from the clip defaults to eFieldExtractDoubled */
 	void setFieldExtraction( FieldExtractionEnum v );
