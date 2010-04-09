@@ -31,19 +31,15 @@ PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
 	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
-	assert( _plugin._filepath != NULL );
 	this->setNoMultiThreading();
 }
 
 template<class View>
 void PNGReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	std::string sFilepath;
-	// Fetch output image
-	_plugin._filepath->getValue( sFilepath );
-	if( ! bfs::exists( sFilepath ) )
+	if( ! bfs::exists( _plugin.getParams(args.time)._filepath ) )
 	{
-		throw( PluginException( "Unable to open : " + sFilepath ) );
+		throw( PluginException( "Unable to open : " + _plugin.getParams(args.time)._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -58,18 +54,8 @@ void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin._filepath->getValue() );
+	readImage( this->_dstView, _plugin.getParams(this->_renderArgs.time)._filepath );
 }
-
-/*
- * struct FunctorPlus {
- *  template <typename DstV, typename SrcAV, typename SrcBV>
- *  static DstV merge()(const SrcAV & srcA, const SrcBV & srcB) const {
- *      return (DstV)(srcA + srcB);
- *  }
- * };
- *
- */
 
 /**
  */

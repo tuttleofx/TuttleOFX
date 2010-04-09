@@ -36,24 +36,20 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 	_plugin( instance )
 {
 	this->setNoMultiThreading();
-	_filepath      = instance.fetchStringParam( kInputFilename );
-	_outComponents = instance.fetchChoiceParam( kOutputComponents );
 }
 
 template<class View>
 void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	std::string sFilepath;
-	// Fetch output image
-	_filepath->getValue( sFilepath );
-	if( ! bfs::exists( sFilepath ) )
+	EXRReaderParams params = _plugin.getParams(args.time);
+	if( ! bfs::exists( params._filepath ) )
 	{
-		throw( PluginException( "Unable to open : " + sFilepath ) );
+		throw( PluginException( "Unable to open : " + params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
 
-	_exrImage.reset( new Imf::InputFile( sFilepath.c_str() ) );
+	_exrImage.reset( new Imf::InputFile( params._filepath.c_str() ) );
 	const Imf::Header& h = _exrImage->header();
 	typename Imath::V2i imageDims = h.dataWindow().size();
 	imageDims.x++;
@@ -68,11 +64,10 @@ template<class View>
 void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	EXRReaderParams params = _plugin.getParams(this->_renderArgs.time);
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	try
 	{
-		std::string filepath;
-		this->_filepath->getValue( filepath );
 		typedef pixel<typename channel_type< typename View::value_type >::type, rgb_layout_t > rgb_pixel_t;
 		typedef pixel<typename channel_type< typename View::value_type >::type, rgba_layout_t > rgba_pixel_t;
 		typedef pixel<typename channel_type< typename View::value_type >::type, gray_layout_t > gray_pixel_t;
@@ -80,13 +75,13 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		typedef image<rgba_pixel_t, false> rgba_image_t;
 		typedef image<gray_pixel_t, false> gray_image_t;
 
-		switch( (ECompType)_outComponents->getValue() )
+		switch( (ECompType)params._outComponents )
 		{
 			case eGray:
 			{
 				gray_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename gray_image_t::view_t dv( view( img ) );
-				readImage( flipped_up_down_view( color_converted_view<gray_pixel_t>( this->_dstView ) ), filepath );
+				readImage( flipped_up_down_view( color_converted_view<gray_pixel_t>( this->_dstView ) ), params._filepath );
 				copy_and_convert_pixels( dv, this->_dstView );
 				break;
 			}
@@ -94,15 +89,16 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				rgb_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename rgb_image_t::view_t dv( view( img ) );
-				readImage( flipped_up_down_view( dv ), filepath );
+				readImage( flipped_up_down_view( dv ), params._filepath );
 				copy_and_convert_pixels( dv, this->_dstView );
+				fill_alpha_max(this->_dstView);
 				break;
 			}
 			case eRGBA:
 			{
 				rgba_image_t img( this->_dstView.width(), this->_dstView.height() );
 				typename rgba_image_t::view_t dv( view( img ) );
-				readImage( flipped_up_down_view( dv ), filepath );
+				readImage( flipped_up_down_view( dv ), params._filepath );
 				copy_and_convert_pixels( dv, this->_dstView );
 				break;
 			}
@@ -118,13 +114,15 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  */
 template<class View>
 template<class DView>
-void EXRReaderProcess<View>::readImage( DView dst, std::string& filepath ) throw( tuttle::plugin::PluginException )
+void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath ) throw( tuttle::plugin::PluginException )
 {
 	using namespace std;
 	using namespace boost;
 	using namespace mpl;
 	using namespace boost::gil;
 	using namespace Imf;
+
+	EXRReaderParams params = _plugin.getParams(this->_renderArgs.time);
 
 	Imf::InputFile in( filepath.c_str() );
 	Imf::FrameBuffer frameBuffer;
@@ -135,7 +133,7 @@ void EXRReaderProcess<View>::readImage( DView dst, std::string& filepath ) throw
 	imageDims.y++;  // Height
 
 	// Get number of output components
-	switch( (ECompType)_outComponents->getValue() )
+	switch( (ECompType)params._outComponents )
 	{
 		case eGray:
 		{

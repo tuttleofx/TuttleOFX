@@ -24,7 +24,6 @@ PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
 	_plugin( instance )
 {
 	this->setNoMultiThreading();
-	_filepath = instance.fetchStringParam( kOutputFilename );
 }
 
 template<class View>
@@ -45,9 +44,7 @@ void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	using namespace boost::gil;
 	try
 	{
-		std::string filepath;
-		this->_filepath->getValue( filepath );
-		writeImage( this->_srcView, filepath );
+		writeImage( this->_srcView, _plugin.getParams(this->_renderArgs.time)._filepath );
 		copy_pixels( this->_srcView, this->_dstView );
 	}
 	catch( tuttle::plugin::PluginException& e )
@@ -60,7 +57,7 @@ void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  * 
  */
 template<class View>
-void PNGWriterProcess<View>::writeImage( View& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
+void PNGWriterProcess<View>::writeImage( View& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
 {
 	using namespace boost::gil;
 	View flippedView = flipped_up_down_view( src );
@@ -72,7 +69,7 @@ void PNGWriterProcess<View>::writeImage( View& src, std::string& filepath ) thro
 }
 
 template<>
-void PNGWriterProcess<gray32f_view_t>::writeImage( gray32f_view_t& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
+void PNGWriterProcess<gray32f_view_t>::writeImage( gray32f_view_t& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
 {
 	using namespace boost::gil;
 	gray32f_view_t flippedView = flipped_up_down_view( src );
@@ -80,7 +77,7 @@ void PNGWriterProcess<gray32f_view_t>::writeImage( gray32f_view_t& src, std::str
 }
 
 template<>
-void PNGWriterProcess<rgb32f_view_t>::writeImage( rgb32f_view_t& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
+void PNGWriterProcess<rgb32f_view_t>::writeImage( rgb32f_view_t& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
 {
 	using namespace boost::gil;
 	rgb32f_view_t flippedView = flipped_up_down_view( src );
@@ -88,7 +85,7 @@ void PNGWriterProcess<rgb32f_view_t>::writeImage( rgb32f_view_t& src, std::strin
 }
 
 template<>
-void PNGWriterProcess<rgba32f_view_t>::writeImage( rgba32f_view_t& src, std::string& filepath ) throw( tuttle::plugin::PluginException )
+void PNGWriterProcess<rgba32f_view_t>::writeImage( rgba32f_view_t& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
 {
 	using namespace boost::gil;
 	rgba32f_view_t flippedView = flipped_up_down_view( src );

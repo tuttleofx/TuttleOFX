@@ -145,6 +145,7 @@ bool FFMpegReaderPlugin::getTimeDomain( OfxRangeD& range )
 		range.min = 0.0;
 		range.max = (double)_reader.nbFrames();
 	}
+	return false;
 }
 
 bool FFMpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )

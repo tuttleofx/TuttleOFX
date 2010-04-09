@@ -36,9 +36,6 @@ class EXRWriterProcess : public ImageGilFilterProcessor<View>
 {
 protected:
 	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
-	OFX::StringParam*     _filepath;      ///< File path
-	OFX::ChoiceParam*     _bitDepth;      ///< Bit depth
-	OFX::ChoiceParam*     _componentsType; ///< Components type
 
 	template<class Pixel>
 	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException );

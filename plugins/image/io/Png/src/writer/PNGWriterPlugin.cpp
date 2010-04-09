@@ -15,13 +15,13 @@ using namespace boost::gil;
 const static std::string kPngReaderHelpString = "<b>PNG Reader</b> file reader.  <br />";
 
 PNGWriterPlugin::PNGWriterPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle ),
-	_bRenderOnce( false )
+	: ImageEffect( handle )
 {
-	_srcClip      = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip      = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath     = fetchStringParam( kOutputFilename );
-	_renderButton = fetchPushButtonParam( kRender );
+	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
+	_filepath       = fetchStringParam( kOutputFilename );
+	_renderButton   = fetchPushButtonParam( kRender );
+	_renderAlways   = fetchBooleanParam( kParamRenderAlways );
 }
 
 OFX::Clip* PNGWriterPlugin::getSrcClip() const
@@ -34,13 +34,20 @@ OFX::Clip* PNGWriterPlugin::getDstClip() const
 	return _dstClip;
 }
 
+PNGWriterParams PNGWriterPlugin::getParams(const OfxTime time)
+{
+	PNGWriterParams params;
+	params._filepath = _fPattern.getFilenameAt(time);
+	return params;
+}
+
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
 void PNGWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _bRenderOnce )
+	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _srcClip->getPixelDepth();
@@ -115,17 +122,14 @@ void PNGWriterPlugin::render( const OFX::RenderArguments& args )
 		{
 			COUT_FATALERROR( "Pixel component is None !" );
 		}
-		_bRenderOnce = false;
 	}
 }
 
 void PNGWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	_bRenderOnce = true;
 	if( paramName == kOutputFilename )
 	{
-		std::string str;
-		_filepath->getValue( str );
+		_fPattern.reset(_filepath->getValue(), false, 0, 1);
 	}
 }
 

@@ -25,7 +25,6 @@ template<class View>
 class DPXReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	OFX::StringParam*   _filepath;      ///< File path
 	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
 
 	template<class T, class DST_V>

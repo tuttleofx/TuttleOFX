@@ -1,6 +1,7 @@
 #include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 #include "EXRReaderProcess.hpp"
+#include "tuttle/plugin/FilenameManager.hpp"
 
 #include <ImfInputFile.h>
 #include <ImathBox.h>
@@ -30,27 +31,27 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	_vChannelChoice.push_back( fetchChoiceParam( kOutputGreenIs ) );
 	_vChannelChoice.push_back( fetchChoiceParam( kOutputBlueIs ) );
 	_vChannelChoice.push_back( fetchChoiceParam( kOutputAlphaIs ) );
-
-	std::string sFilepath;
-	_filepath->getValue( sFilepath );
-	if( exists( sFilepath ) )
-	{
-		InputFile in( sFilepath.c_str() );
-		const Header& h             = in.header();
-		const Imath::V2i dataWindow = h.dataWindow().size();
-		_imageDims.x = dataWindow.x + 1;
-		_imageDims.y = dataWindow.y + 1;
-	}
-	else
-	{
-		_imageDims.x = 0;
-		_imageDims.y = 0;
-	}
 }
 
 OFX::Clip* EXRReaderPlugin::getDstClip() const
 {
 	return _dstClip;
+}
+
+EXRReaderParams EXRReaderPlugin::getParams(const OfxTime time)
+{
+	EXRReaderParams params;
+	params._filepath = _fPattern.getFilenameAt(time);
+	params._outComponents = _outComponents->getValue();
+	return params;
+}
+
+bool EXRReaderPlugin::getTimeDomain( OfxRangeD& range )
+{
+	OfxRangeI rangei = _fPattern.getRange();
+	range.min = (double)rangei.min;
+	range.max = (double)rangei.max;
+	return false;
 }
 
 /**
@@ -106,13 +107,12 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else if( paramName == kInputFilename )
 	{
-		std::string sFilepath;
-		_filepath->getValue( sFilepath );
+		_fPattern.reset(_filepath->getValue(), true);
 		// Check if exist
-		if( exists( sFilepath ) )
+		if( exists( _fPattern.getFilenameAt(args.time) ) )
 		{
 			// read dims
-			InputFile in( sFilepath.c_str() );
+			InputFile in( _fPattern.getFilenameAt(args.time).c_str() );
 			const Header& h             = in.header();
 			const Imath::V2i dataWindow = h.dataWindow().size();
 			_imageDims.x = dataWindow.x + 1;
@@ -217,9 +217,26 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
+
+	_fPattern.reset(_filepath->getValue(), true);
+	// Check if exist
+	if( exists( _fPattern.getCurrentFilename() ) )
+	{
+		InputFile in( _fPattern.getCurrentFilename().c_str() );
+		const Header& h             = in.header();
+		const Imath::V2i dataWindow = h.dataWindow().size();
+		_imageDims.x = dataWindow.x + 1;
+		_imageDims.y = dataWindow.y + 1;
+	}
+	else
+	{
+		_imageDims.x = 0;
+		_imageDims.y = 0;
+	}
+
 	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
 	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
-	clipPreferences.setPixelAspectRatio( *_dstClip, 720.0 / 720.0 );
+	clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
 }
 
 }

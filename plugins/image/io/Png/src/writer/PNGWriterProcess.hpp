@@ -20,7 +20,6 @@ public:
 	typedef typename View::value_type Pixel;
 
 protected:
-	OFX::StringParam*   _filepath;      ///< File path
 	PNGWriterPlugin&    _plugin;        ///< Rendering plugin
 
 public:
@@ -30,7 +29,7 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	static void writeImage( View& src, std::string& filepath ) throw( tuttle::plugin::PluginException );
+	static void writeImage( View& src, const std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 
 }

@@ -1,3 +1,4 @@
+#include "tuttle/common/utils/global.hpp"
 #include "dpxImage.hpp"
 #include "dpxUtils.hpp"
 
@@ -99,10 +100,14 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 			msg << "( " << filename << " )" ;
 			throw std::exception();
 		}
-		if( reinterpretation )
+		if( reinterpretation && isEndianReinterpNeeded() )
+		{
 			_indyData.reset( reinterpretEndianness() );
+		}
 		else
+		{
 			_indyData = _data;
+		}
 	}
 	else
 	{
@@ -159,9 +164,13 @@ void DpxImage::readHeader( ifstream& f )
 		uint32_t genhdrsize = swapEndian<uint32_t>( gen->gen_hdr_size );
 		hdrSize = ( genhdrsize > 0 ? genhdrsize : sizeof( DpxHeader ) ) - 36;
 	}
-	else
+	else if (_header._fileInfo.magic_num == DPX_MAGIC)
 	{
 		hdrSize = ( gen->gen_hdr_size > 0 ? gen->gen_hdr_size : sizeof( DpxHeader ) ) - 36;
+	}
+	else
+	{
+		throw(std::logic_error("Not a dpx image !"));
 	}
 	// Read meta dynamic infos
 	scoped_array<uint8_t> _hdrBuffer(new uint8_t[hdrSize]);
@@ -176,10 +185,15 @@ void DpxImage::readHeader( ifstream& f )
 	// Read dynamic data
 	size_t bufpos = 0;
 	readDynamicHdrData((uint8_t*)gen->file_name, sizeof(gen->file_name), _hdrBuffer.get(), bufpos);
+	bufpos += sizeof(gen->file_name);
 	readDynamicHdrData((uint8_t*)gen->create_time, sizeof(gen->create_time), _hdrBuffer.get(), bufpos);
+	bufpos += sizeof(gen->create_time);
 	readDynamicHdrData((uint8_t*)gen->creator, sizeof(gen->creator), _hdrBuffer.get(), bufpos);
+	bufpos += sizeof(gen->creator);
 	readDynamicHdrData((uint8_t*)gen->project, sizeof(gen->project), _hdrBuffer.get(), bufpos);
+	bufpos += sizeof(gen->project);
 	readDynamicHdrData((uint8_t*)gen->copyright, sizeof(gen->copyright), _hdrBuffer.get(), bufpos);
+	bufpos += sizeof(gen->copyright);
 	memcpy(&gen->key, _hdrBuffer.get() + bufpos, sizeof(uint32_t));
 	bufpos += sizeof(uint32_t);
 	memcpy(&gen->reserved, _hdrBuffer.get() + bufpos, sizeof(gen->reserved));
@@ -191,7 +205,6 @@ void DpxImage::readHeader( ifstream& f )
 	{
 		_header.swapHeader();
 	}
-
 	if( _header._imageInfo.orientation > 1 )
 	{
 		std::ostringstream msg;
@@ -292,7 +305,7 @@ void DpxHeader::swapHeader()
 	_television.integration_times =   swapEndian<float>(_television.integration_times );
 }
 
-void DpxImage::readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t & bufpos)
+size_t DpxImage::readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t bufpos)
 {
 	// Strings always
 	buffer += bufpos;
@@ -308,6 +321,7 @@ void DpxImage::readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, 
 	{
 		bufpos++;
 	}
+	return bufpos;
 }
 
 void DpxImage::write( const path& filename )
@@ -388,10 +402,28 @@ void DpxImage::writeHeader( ofstream& f )
 	}
 }
 
+bool DpxImage::isEndianReinterpNeeded() const
+{
+	if( _header.bigEndian() && BOOST_BYTE_ORDER == 1234 )
+	{
+		switch( _header.bitSize() )
+		{
+			// 8 bits doesn't need convertion
+			case 8:
+			case 16:
+				return false;
+				break;
+			default:
+				return true;
+		}
+	}
+	return false;
+}
+
 uint8_t* DpxImage::reinterpretEndianness() const
 {
 	// Do we need reinterpretation ?
-	uint8_t* pData = _data.get();
+	uint8_t* pData = NULL;
 
 	if( _header.bigEndian() && BOOST_BYTE_ORDER == 1234 )
 	{
