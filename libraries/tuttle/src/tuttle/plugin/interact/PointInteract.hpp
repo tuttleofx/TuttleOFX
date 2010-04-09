@@ -22,7 +22,7 @@ protected:
 public:
 	double getTime() const { _infos._effect->timeLineGetTime(); }
 	virtual Point2 getPoint() const = 0;
-	virtual void setPoint( const Scalar& x, const Scalar& y ) = 0;
+	virtual void setPoint( const Scalar x, const Scalar y ) = 0;
 	virtual double getMarge() const { return _infos._marge * _infos._projectSize.x; }
 	
 	virtual bool draw( const OFX::DrawArgs& args ) const;

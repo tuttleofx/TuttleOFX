@@ -1,6 +1,7 @@
 #include "ImageStatisticsOverlayInteract.hpp"
 #include "ImageStatisticsDefinitions.hpp"
 #include "ImageStatisticsPlugin.hpp"
+#include "tuttle/plugin/interact/Frame.hpp"
 #include <tuttle/plugin/interact/ParamRectangleInClip.hpp>
 #include <tuttle/common/opengl/gl.h>
 #include <tuttle/plugin/interact/interact.hpp>
@@ -35,7 +36,7 @@ ImageStatisticsOverlayInteract::ImageStatisticsOverlayInteract( OfxInteractHandl
 	_outputLuminosityMin = _plugin->fetchRGBAParam( kOutputLuminosityMin );
 	_outputLuminosityMax = _plugin->fetchRGBAParam( kOutputLuminosityMax );
 	
-	_interactScene.push_back( new interact::ParamRectangleInClip<interact::eCoordonateSystemXXcn>( _infos, _cornerA, _cornerB, _srcClip ), new interact::ActiveFunctor() );
+	_interactScene.push_back( new interact::ParamRectangleInClip<interact::FrameClip, interact::eCoordonateSystemXXcn>( _infos, _cornerA, _cornerB, interact::FrameClip(_srcClip) ), new interact::ActiveFunctor() );
 }
 
 bool ImageStatisticsOverlayInteract::draw( const OFX::DrawArgs &args )

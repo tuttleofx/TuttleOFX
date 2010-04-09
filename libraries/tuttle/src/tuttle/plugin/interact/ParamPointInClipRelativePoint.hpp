@@ -10,58 +10,68 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
-template<ECoordonateSystem coord>
-class ParamPointInClipRelativePoint : public ParamPointInClip<coord>
+template<class TFrame, ECoordonateSystem coord>
+class ParamPointInClipRelativePoint : public ParamPointInClip<TFrame, coord>
 {
 public:
-	ParamPointInClipRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, OFX::Clip* relativeClip, PointInteract* relativePoint );
-	~ParamPointInClipRelativePoint();
-	
+	ParamPointInClipRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
+	: ParamPointInClip<TFrame, coord>( infos, param, relativeFrame )
+	, _relativePoint( *relativePoint )
+	{
+	}
+	~ParamPointInClipRelativePoint(){}
+
 private:
-	PointInteract* _relativePoint;
+	const PointInteract& _relativePoint;
 
 public:
 	Point2 getPoint() const;
-	void setPoint( const Scalar& x, const Scalar& y );
+	void setPoint( const Scalar x, const Scalar y );
 };
 
-template<ECoordonateSystem coord>
-ParamPointInClipRelativePoint<coord>::ParamPointInClipRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, OFX::Clip* relativeClip, PointInteract* relativePoint )
-: ParamPointInClip<coord>( infos, param, relativeClip )
-, _relativePoint( relativePoint )
+
+template<class TFrame>
+class ParamPointInClipRelativePoint<TFrame, eCoordonateSystemXXcn> : public ParamPointInClip<TFrame, eCoordonateSystemXXcn>
 {
-}
-
-template<ECoordonateSystem coord>
-ParamPointInClipRelativePoint<coord>::~ParamPointInClipRelativePoint( ) { }
-
-
-template<>
-Point2 ParamPointInClipRelativePoint<eCoordonateSystemXXcn>::getPoint() const
-{
-	OfxRectD rod = this->_relativeClip->getCanonicalRod( this->getTime() );
-	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
-	Point2 relativePoint = _relativePoint->getPoint();
-	Point2 paramPoint = ofxToGil( this->_param->getValue() );
-	Point2 point = pointNormalizedXXToCanonicalXX( paramPoint, rodSize );
-	Point2 res = relativePoint + point;
-	return res;
-}
-
-template<>
-void ParamPointInClipRelativePoint<eCoordonateSystemXXcn>::setPoint( const Scalar& x, const Scalar& y )
-{
-	if( _relativeClip->isConnected() )
+public:
+	ParamPointInClipRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
+	: ParamPointInClip<TFrame, eCoordonateSystemXXcn>( infos, param, relativeFrame )
+	, _relativePoint( *relativePoint )
 	{
-		OfxRectD rod = this->_relativeClip->getCanonicalRod( this->getTime() );
-		Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
-		Point2 point = pointCanonicalXYToNormalizedXX( Point2(x,y), rodSize );
-		Point2 relativePoint = pointCanonicalXYToNormalizedXX( _relativePoint->getPoint(), rodSize );
-		_param->setValue( point.x - relativePoint.x, point.y - relativePoint.y );
-		return;
 	}
-	_param->setValue( 0, 0 );
-}
+	~ParamPointInClipRelativePoint(){}
+
+private:
+	const PointInteract& _relativePoint;
+
+public:
+	Point2 getPoint() const
+	{
+		OfxRectD rod = this->_relativeFrame.getFrame( this->getTime() );
+		Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+		Point2 relativePoint = _relativePoint.getPoint();
+		Point2 paramPoint = ofxToGil( this->_param.getValue() );
+		Point2 point = pointNormalizedXXToCanonicalXX( paramPoint, rodSize );
+		Point2 res = relativePoint + point;
+		return res;
+	}
+
+	void setPoint( const Scalar x, const Scalar y )
+	{
+		if( this->_relativeFrame.isEnabled() )
+		{
+			OfxRectD rod = this->_relativeFrame.getFrame( this->getTime() );
+			Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+			Point2 point = pointCanonicalXYToNormalizedXX( Point2(x,y), rodSize );
+			Point2 relativePoint = pointCanonicalXYToNormalizedXX( _relativePoint.getPoint(), rodSize );
+			this->_param.setValue( point.x - relativePoint.x, point.y - relativePoint.y );
+			return;
+		}
+		this->_param.setValue( 0, 0 );
+	}
+};
+
+
 
 }
 }
