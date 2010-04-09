@@ -71,7 +71,6 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 	_error = IGNORE_FINISH;
 
 	AVOutputFormat* fmt = 0;
-	COUT_VAR( _format );
 	fmt = guess_format( _format.c_str(), NULL, NULL );
 	if( !fmt )
 	{
@@ -99,7 +98,6 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 		}
 
 		CodecID codecId = fmt->video_codec;
-		COUT_VAR( _codec );
 		AVCodec* userCodec = avcodec_find_encoder_by_name( _codec.c_str() );
 		if( userCodec )
 			codecId = userCodec->id;
