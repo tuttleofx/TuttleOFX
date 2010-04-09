@@ -45,7 +45,6 @@ void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegi
 	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graphprocess.dot" );
 
 	// Initialize variables
-	const int numFramesToRender = tEnd - tBegin;
 	OfxPointD renderScale       = { 1.0, 1.0 };
 	OfxRectD renderWindow       = { 0, 123, 0, 123 };
 
@@ -67,7 +66,7 @@ void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegi
 
 	//--- RENDER
 	// at each frame
-	for( int t = 0; t < numFramesToRender; ++t )
+	for( int t = tBegin; t <= tEnd; ++t )
 	{
 		TCOUT( "________________________________________ frame: " << t );
 		Graph::InternalGraph optimizedGraph( _graph );

@@ -88,6 +88,10 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	compressed->setLabels( kParamCompressedLabel, kParamCompressedLabel, "Remove unused bits (bit streaming)" );
 	compressed->setDefault( false );
 
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setDefault( true );
+
 	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
 	renderButton->setLabels( kRenderLabel, kRenderLabel, "Step rendering" );
 	renderButton->setHint( "Avoid to render the same image" );

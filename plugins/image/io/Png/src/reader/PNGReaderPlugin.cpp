@@ -31,17 +31,18 @@ PNGReaderPlugin::PNGReaderPlugin( OfxImageEffectHandle handle )
 {
 	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kInputFilename );
-	std::string sFilepath;
-	_filepath->getValue( sFilepath );
-	if( exists( sFilepath ) )
-	{
-		_pngDims = png_read_dimensions( sFilepath );
-	}
 }
 
 OFX::Clip* PNGReaderPlugin::getDstClip() const
 {
 	return _dstClip;
+}
+
+PNGReaderParams PNGReaderPlugin::getParams(const OfxTime time)
+{
+	PNGReaderParams params;
+	params._filepath = _fPattern.getFilenameAt(time);
+	return params;
 }
 
 /**
@@ -127,14 +128,21 @@ void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else if( paramName == kInputFilename )
 	{
-		std::string sFilepath;
-		_filepath->getValue( sFilepath );
+		_fPattern.reset(_filepath->getValue(), true);
 		// Check if exist
-		if( exists( sFilepath ) )
+		if( exists( _fPattern.getFilenameAt(args.time) ) )
 		{
-			_pngDims = png_read_dimensions( sFilepath );
+			_pngDims = png_read_dimensions( _fPattern.getFilenameAt(args.time) );
 		}
 	}
+}
+
+bool PNGReaderPlugin::getTimeDomain( OfxRangeD& range )
+{
+	OfxRangeI rangei = _fPattern.getRange();
+	range.min = (double)rangei.min;
+	range.max = (double)rangei.max;
+	return false;
 }
 
 bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
@@ -148,24 +156,28 @@ bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	OFX::BitDepthEnum bd = OFX::eBitDepthNone;
-	std::string sFilepath;
-	_filepath->getValue( sFilepath );
-	switch( png_read_precision( sFilepath ))
+	_fPattern.reset(_filepath->getValue(), true);
+	// Check if exist
+	if( exists( _fPattern.getCurrentFilename() ) )
 	{
-		case 8:
-			bd = OFX::eBitDepthUByte;
-			break;
-		case 16:
-			bd = OFX::eBitDepthUShort;
-			break;
-		default:
-			bd = OFX::eBitDepthFloat;
-			break;
+		_pngDims = png_read_dimensions( _fPattern.getCurrentFilename() );
+		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+		switch( png_read_precision( _fPattern.getCurrentFilename() ))
+		{
+			case 8:
+				bd = OFX::eBitDepthUByte;
+				break;
+			case 16:
+				bd = OFX::eBitDepthUShort;
+				break;
+			default:
+				bd = OFX::eBitDepthFloat;
+				break;
+		}
+		clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
+		clipPreferences.setClipBitDepth( *_dstClip, bd );
+		clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
 	}
-	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_dstClip, bd );
-	clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
 }
 
 }

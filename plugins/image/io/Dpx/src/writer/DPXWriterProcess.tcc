@@ -16,10 +16,6 @@ DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
 : ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
-	_filepath       = instance.fetchStringParam( kOutputFilename );
-	_bitDepth       = instance.fetchChoiceParam( kParamBitDepth );
-	_componentsType = instance.fetchChoiceParam( kParamComponentsType );
-	_compressed     = instance.fetchBooleanParam( kParamCompressed );
 }
 
 /**
@@ -35,35 +31,31 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( this->_srcPixelRod == this->_dstPixelRod );
 	try
 	{
-		std::string filepath;
-		int bitDepth, compType;
-		this->_filepath->getValue( filepath );
-		int packing = _compressed->getValue() == false;
-		_bitDepth->getValue( bitDepth );
-		_componentsType->getValue( compType );
+		DPXWriterParams params = _plugin.getParams(this->_renderArgs.time);
+		int packing = params._compressed == false;
 
-		switch( bitDepth )
+		switch( params._bitDepth )
 		{
 			case 0: {
-				switch( compType )
+				switch( params._componentsType )
 				{
 					case 0: {
-						writeImage<rgb16_image_t>( this->_srcView, filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
+						writeImage<rgb16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
 						break;
 					}
 					case 1: {
-						writeImage<rgba16_image_t>( this->_srcView, filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
+						writeImage<rgba16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
 						break;
 					}
 					case 2: {
-						writeImage<abgr16_image_t>( this->_srcView, filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
+						writeImage<abgr16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
 						break;
 					}
 				}
 				break;
 			}
 			case 1: {
-				switch( compType )
+				switch( params._componentsType )
 				{
 					case 0:
 						///@todo to get it working:
@@ -85,7 +77,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				break;
 			}
 			case 2: {
-				switch( compType )
+				switch( params._componentsType )
 				{
 					case 0:
 						//						writeImage<rgb10_packed_image_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10, packing );
@@ -104,16 +96,16 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				break;
 			}
 			case 3: {
-				switch( compType )
+				switch( params._componentsType )
 				{
 					case 0:
-						writeImage<rgb8_image_t>( this->_srcView, filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8, packing );
+						writeImage<rgb8_image_t>( this->_srcView, params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8, packing );
 						break;
 					case 1:
-						writeImage<rgba8_image_t>( this->_srcView, filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8A8, packing );
+						writeImage<rgba8_image_t>( this->_srcView, params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8A8, packing );
 						break;
 					case 2:
-						writeImage<abgr8_image_t>( this->_srcView, filepath, 8, tuttle::io::DpxImage::eCompTypeA8B8G8R8, packing );
+						writeImage<abgr8_image_t>( this->_srcView, params._filepath, 8, tuttle::io::DpxImage::eCompTypeA8B8G8R8, packing );
 						break;
 				}
 				break;

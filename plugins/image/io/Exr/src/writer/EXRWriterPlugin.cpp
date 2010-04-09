@@ -26,10 +26,13 @@ using namespace boost::gil;
 EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
-	_srcClip      = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip      = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath     = fetchStringParam( kOutputFilename );
-	_renderButton = fetchPushButtonParam( kRender );
+	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
+	_filepath       = fetchStringParam( kOutputFilename );
+	_bitDepth       = fetchChoiceParam( kParamBitDepth );
+	_componentsType = fetchChoiceParam( kParamComponentsType );
+	_renderButton   = fetchPushButtonParam( kRender );
+	_renderAlways   = fetchBooleanParam( kParamRenderAlways );
 }
 
 OFX::Clip* EXRWriterPlugin::getSrcClip() const
@@ -42,13 +45,22 @@ OFX::Clip* EXRWriterPlugin::getDstClip() const
 	return _dstClip;
 }
 
+EXRWriterParams EXRWriterPlugin::getParams(const OfxTime time)
+{
+	EXRWriterParams params;
+	params._bitDepth = (EBitDepth)_bitDepth->getValue();
+	params._componentsType = (ECompType)_componentsType->getValue();
+	params._filepath = _fPattern.getFilenameAt(time);
+	return params;
+}
+
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
 void EXRWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _bRenderOnce )
+	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
@@ -85,22 +97,14 @@ void EXRWriterPlugin::render( const OFX::RenderArguments& args )
 					return;
 			}
 		}
-		_bRenderOnce = false;
 	}
 }
 
 void EXRWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	_bRenderOnce = false;
-	if( paramName == kRender )
+	if( paramName == kOutputFilename )
 	{
-		_bRenderOnce = true;    // Hack stuff...
-	}
-	else if( paramName == kOutputFilename )
-	{
-		std::string str;
-		_filepath->getValue( str );
-		_bRenderOnce = true;
+		_fPattern.reset(_filepath->getValue(), false, 0, 1);
 	}
 	else if( paramName == kEXRWriterHelpButton )
 	{

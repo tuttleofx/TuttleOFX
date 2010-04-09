@@ -1,6 +1,7 @@
 #include "DPXReaderDefinitions.hpp"
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderProcess.hpp"
+#include "tuttle/plugin/FilenameManager.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -25,19 +26,18 @@ DPXReaderPlugin::DPXReaderPlugin( OfxImageEffectHandle handle )
 {
 	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kInputFilename );
-	std::string sFilepath;
-	_filepath->getValue( sFilepath );
-	if( exists( sFilepath ) )
-	{
-		_dpxImg.readHeader( sFilepath );
-		_imageDims.x = _dpxImg.width();
-		_imageDims.y = _dpxImg.height();
-	}
 }
 
 OFX::Clip* DPXReaderPlugin::getDstClip() const
 {
 	return _dstClip;
+}
+
+DPXReaderParams DPXReaderPlugin::getParams(const OfxTime time)
+{
+	DPXReaderParams params;
+	params._filepath = _fPattern.getFilenameAt(time);
+	return params;
 }
 
 /**
@@ -93,17 +93,24 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else if( paramName == kInputFilename )
 	{
-		std::string sFilepath;
-		_filepath->getValue( sFilepath );
+		_fPattern.reset(_filepath->getValue(), true);
 		// Check if exist
-		if( exists( sFilepath ) )
+		if( exists( _fPattern.getFilenameAt(args.time) ) )
 		{
-			// read dims
-			_dpxImg.readHeader( sFilepath );
+			// Read dims
+			_dpxImg.readHeader( _fPattern.getFilenameAt(args.time) );
 			_imageDims.x = _dpxImg.width();
 			_imageDims.y = _dpxImg.height();
 		}
 	}
+}
+
+bool DPXReaderPlugin::getTimeDomain( OfxRangeD& range )
+{
+	OfxRangeI rangei = _fPattern.getRange();
+	range.min = (double)rangei.min;
+	range.max = (double)rangei.max;
+	return false;
 }
 
 void DPXReaderPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
@@ -124,11 +131,11 @@ bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	std::string sFilepath;
-	_filepath->getValue( sFilepath );
-	if( exists( sFilepath ) )
+	_fPattern.reset(_filepath->getValue(), true);
+	// Check if exist
+	if( exists( _fPattern.getCurrentFilename() ) )
 	{
-		_dpxImg.readHeader( sFilepath );
+		_dpxImg.readHeader( _fPattern.getCurrentFilename() );
 		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
 		switch(_dpxImg.componentsType())
 		{

@@ -24,8 +24,6 @@ class EXRReaderProcess : public ImageGilProcessor<View>
 {
 protected:
 	typedef typename View::value_type Pixel;
-	OFX::StringParam*   _filepath;                      ///< File path
-	OFX::ChoiceParam*   _outComponents;                 ///< Components list
 	EXRReaderPlugin&    _plugin;                        ///< Rendering plugin
 	boost::scoped_ptr<Imf::InputFile>   _exrImage;      ///< Pointer to an exr image
 
@@ -44,7 +42,7 @@ public:
 
 	// Read exr image
 	template<class DView>
-	void readImage( DView dst, std::string& filepath ) throw( tuttle::plugin::PluginException );
+	void readImage( DView dst, const std::string& filepath ) throw( tuttle::plugin::PluginException );
 };
 
 }

@@ -53,8 +53,8 @@ struct ImageInformation
 {
 	boost::uint16_t orientation;                        // image orientation
 	boost::uint16_t element_number;                     // number of image elements
-	boost::uint32_t pixelsPerLine;                      // or x value
-	boost::uint32_t linesPerImageEle;                   // or y value, per element
+	boost::uint32_t pixelsPerLine;                      // or w value
+	boost::uint32_t linesPerImageEle;                   // or h value, per element
 	struct _image_element
 	{
 		boost::uint32_t data_sign;             // data sign (0 = unsigned, 1 = signed )
@@ -257,8 +257,9 @@ private:
 	boost::shared_array<boost::uint8_t> _indyData;  /// right endianness reinterpreted data
 
 	void            readHeader( fs::ifstream& f );
+	bool            isEndianReinterpNeeded() const;
 	boost::uint8_t* reinterpretEndianness() const;
-	void readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t & bufpos);
+	size_t readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t bufpos);
 
 public:
 	enum EDPX_CompType
@@ -360,8 +361,10 @@ inline void DpxImage::setHeader( const DpxHeader& header )
 inline void DpxImage::setData( const boost::uint8_t* data, bool reinterpretation )
 {
 	memcpy( _data.get(), data, _dataSize );
-	if( reinterpretation )
+	if( reinterpretation  && isEndianReinterpNeeded() )
+	{
 		_indyData.reset( reinterpretEndianness() );
+	}
 	else
 		_indyData = _data;
 }

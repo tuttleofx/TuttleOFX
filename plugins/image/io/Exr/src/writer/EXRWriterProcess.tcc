@@ -3,6 +3,7 @@
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include "../half/gilHalf.hpp"
+#include "EXRWriterPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
@@ -29,9 +30,6 @@ EXRWriterProcess<View>::EXRWriterProcess( EXRWriterPlugin& instance )
 , _plugin( instance )
 {
 	this->setNoMultiThreading();
-	_filepath       = instance.fetchStringParam( kOutputFilename );
-	_bitDepth       = instance.fetchChoiceParam( kParamBitDepth );
-	_componentsType = instance.fetchChoiceParam( kParamComponentsType );
 }
 
 /**
@@ -46,14 +44,13 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT(( this->_srcPixelRod == this->_dstPixelRod ));
 	try
 	{
-		std::string filepath;
-		this->_filepath->getValue( filepath );
+		EXRWriterParams params = _plugin.getParams(this->_renderArgs.time);
 
-		switch( (EBitDepth)_bitDepth->getValue() )
+		switch( params._bitDepth )
 		{
 			case eHalfFloat:
 			{
-				switch( (ECompType)_componentsType->getValue() )
+				switch( params._componentsType )
 				{
 					case eGray:
 					{
@@ -63,12 +60,12 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					}
 					case eRGB:
 					{
-						writeImage<rgb16h_pixel_t>( this->_srcView, filepath, Imf::HALF );
+						writeImage<rgb16h_pixel_t>( this->_srcView, params._filepath, Imf::HALF );
 						break;
 					}
 					case eRGBA:
 					{
-						writeImage<rgba16h_pixel_t>( this->_srcView, filepath, Imf::HALF );
+						writeImage<rgba16h_pixel_t>( this->_srcView, params._filepath, Imf::HALF );
 						break;
 					}
 				}
@@ -76,7 +73,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 			case eFloat:
 			{
-				switch( (ECompType)_componentsType->getValue() )
+				switch( params._componentsType )
 				{
 					case eGray:
 					{
@@ -86,12 +83,12 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					}
 					case eRGB:
 					{
-						writeImage<rgb32f_pixel_t>( this->_srcView, filepath, Imf::FLOAT );
+						writeImage<rgb32f_pixel_t>( this->_srcView, params._filepath, Imf::FLOAT );
 						break;
 					}
 					case eRGBA:
 					{
-						writeImage<rgba32f_pixel_t>( this->_srcView, filepath, Imf::FLOAT );
+						writeImage<rgba32f_pixel_t>( this->_srcView, params._filepath, Imf::FLOAT );
 						break;
 					}
 				}
@@ -99,7 +96,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 			case eInt32:
 			{
-				switch( (ECompType)_componentsType->getValue() )
+				switch( params._componentsType )
 				{
 					case eGray:
 					{
@@ -109,12 +106,12 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					}
 					case eRGB:
 					{
-						writeImage<rgb32f_pixel_t>( this->_srcView, filepath, Imf::UINT );
+						writeImage<rgb32f_pixel_t>( this->_srcView, params._filepath, Imf::UINT );
 						break;
 					}
 					case eRGBA:
 					{
-						writeImage<rgba32_pixel_t>( this->_srcView, filepath, Imf::UINT );
+						writeImage<rgba32_pixel_t>( this->_srcView, params._filepath, Imf::UINT );
 						break;
 					}
 				}

@@ -221,6 +221,8 @@ public:
 	/// plug-ins changing their own values.
 	virtual void paramChangedByPlugin( OfxhParam* param ) = 0;
 
+	virtual void paramChangedByUser( OfxhParam* param ) = 0;
+
 	/// add a param
 	virtual void addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
 
@@ -646,6 +648,11 @@ public:
 	virtual void paramChangedByPlugin( OfxhParam* param )
 	{
 		_paramSetInstance->paramChangedByPlugin( param );
+	}
+
+	virtual void paramChangedByUser( OfxhParam* param )
+	{
+		_paramSetInstance->paramChangedByUser( param );
 	}
 
 	virtual OfxhParam* newParam( const OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC

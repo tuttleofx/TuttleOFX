@@ -18,6 +18,7 @@ static const std::string kParamComponentsType      = "compType";
 static const std::string kParamComponentsTypeLabel = "Components type";
 static const std::string kParamCompressed          = "Compressed";
 static const std::string kParamCompressedLabel     = "Compressed";
+static const std::string kParamRenderAlways        = "renderAlways";
 
 const static std::string kDPXWriterHelpButton = "Help";
 

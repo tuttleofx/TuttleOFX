@@ -31,10 +31,6 @@ class DPXWriterProcess : public ImageGilFilterProcessor<View>
 {
 protected:
 	DPXWriterPlugin&      _plugin;        ///< Rendering plugin
-	OFX::StringParam*     _filepath;      ///< File path
-	OFX::ChoiceParam*     _bitDepth;      ///< Bit depth
-	OFX::ChoiceParam*     _componentsType; ///< Components type
-	OFX::BooleanParam*    _compressed;    ///< Bit streaming
 	tuttle::io::DpxHeader _dpxHeader;     ///< Dpx image header
 	tuttle::io::DpxImage _dpxImg;         ///< Dpx image reader
 

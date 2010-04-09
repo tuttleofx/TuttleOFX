@@ -34,8 +34,6 @@ DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
 	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
-	_filepath = instance.fetchStringParam( kInputFilename );
-	assert( _filepath != NULL );
 }
 
 template<class View>
@@ -43,15 +41,12 @@ void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
 	ImageGilProcessor<View>::setup( args );
-	
-	std::string sFilepath;
-	// Fetch output image
-	_filepath->getValue( sFilepath );
-	if( ! bfs::exists( sFilepath ) )
+	DPXReaderParams params = _plugin.getParams(args.time);
+	if( ! bfs::exists( params._filepath ) )
 	{
-		throw( PluginException( "Unable to open : " + sFilepath ) );
+		throw( PluginException( "Unable to open : " + params._filepath ) );
 	}
-	_plugin.getDpxImg().read( sFilepath, true );
+	_plugin.getDpxImg().read( params._filepath, true );
 }
 
 /**
@@ -64,9 +59,15 @@ void DPXReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	using namespace boost::gil;
 	try
 	{
-		std::string filepath;
-		this->_filepath->getValue( filepath );
-		readImage( this->_dstView, filepath );
+		DPXReaderParams params = _plugin.getParams(this->_renderArgs.time);
+		if( bfs::exists( params._filepath ) )
+		{
+			readImage( this->_dstView, params._filepath );
+		}
+		else
+		{
+			throw( PluginException( "Unable to open : " + params._filepath ) );
+		}
 	}
 	catch( tuttle::plugin::PluginException& e )
 	{
@@ -81,6 +82,7 @@ View& DPXReaderProcess<View>::readImage( View& dst, std::string& filepath ) thro
 	using namespace boost;
 	using namespace mpl;
 	using namespace boost::gil;
+
 	switch( _plugin.getDpxImg().componentsType() )
 	{
 		case tuttle::io::DpxImage::eCompTypeR8G8B8:

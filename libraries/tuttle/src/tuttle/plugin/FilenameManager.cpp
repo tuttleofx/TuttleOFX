@@ -83,7 +83,7 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 			// Parse filenames sequence
 			regex rx = regex( "(.*\\\\/)(.*)\\\\\\[#+\\\\\\](.*\\..+)" );
 			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)";
+			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)\\$";
 			_pattern = regex_replace(escPattern, rx, o.str(), match_default | format_sed);
 		}
 	}
@@ -105,7 +105,7 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 			// Parse filenames sequence
 			regex rx = regex( "(.*\\\\/)(.*)%[0-9]+d(.*\\..+)" );
 			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)";
+			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)\\$";
 			_pattern = regex_replace(escPattern, rx, o.str(), boost::match_default | boost::format_sed);
 		}
 	}
@@ -126,7 +126,7 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 			// Parse filenames sequence
 			regex rx = regex( "(.*\\\\/)(.*?)#+(.*\\..+)" );
 			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)";
+			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)\\$";
 			_pattern = regex_replace(escPattern, rx, o.str(), boost::match_default | boost::format_sed);
 		}
 	}
@@ -147,7 +147,7 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 			// Parse filenames sequence
 			regex rx = regex( "(.*\\\\/)(.*?)@+(.*\\..+)" );
 			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)";
+			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3\\)\\$";
 			_pattern = regex_replace(escPattern, rx, o.str(), boost::match_default | boost::format_sed);
 		}
 	}
@@ -187,6 +187,7 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 		_first = g._first;
 		_last = g._last;
 		_numFill = g._numFill;
+		_currentPos = _first;
 	}
 	return false;
 }
@@ -205,14 +206,15 @@ const std::string FilenameManager::getNextFilename(const ssize_t nGroup /* = -1 
 
 const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */)
 {
-	ssize_t t = ssize_t(time);
+	_currentPos = ssize_t(time);
 	// Check for fractionnal part
-	if (time != double(t) )
+	if (time != double(_currentPos) )
 	{
 		COUT_WARNING("Warning ! Passing fractionnal time value. Frame will be overwritten.");
 	}
+
 	// Scale & translate
-	t = t * _step + _first;
+	size_t t = _currentPos * _step;
 	std::ostringstream o, pad;
 	pad << t;
 	size_t fillw = pad.str().length() + _numFill;

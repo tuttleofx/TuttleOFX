@@ -125,6 +125,8 @@ public:
 	/// implemented for Param::SetInstance
 	virtual void paramChangedByPlugin( attribute::OfxhParam* param );
 
+	virtual void paramChangedByUser( attribute::OfxhParam* param );
+
 	/// get the descriptor for this instance
 	const OfxhImageEffectNodeDescriptor& getDescriptor() const { return _descriptor; }
 

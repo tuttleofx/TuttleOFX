@@ -84,6 +84,10 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	componentsType->appendOption( "rgba" );
 	componentsType->setDefault( 2 );
 
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setDefault( true );
+
 	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
 	renderButton->setScriptName( "renderButton" );
 }
