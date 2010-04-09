@@ -89,7 +89,7 @@ public:
 
 	void preProcess_finish( ProcessOptions& processOptions )
 	{
-		TCOUT( "preProcess_finish: " << getName() );
+		TCOUT( "preProcess_finish: " << getName() << " at time: " << processOptions._time );
 		setCurrentTime( processOptions._time );
 		getClipPreferencesAction();
 

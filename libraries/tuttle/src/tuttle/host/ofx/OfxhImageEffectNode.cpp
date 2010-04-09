@@ -1438,6 +1438,18 @@ void OfxhImageEffectNode::paramChangedByPlugin( attribute::OfxhParam* param )
 	endInstanceChangedAction( kOfxChangePluginEdited );
 }
 
+void OfxhImageEffectNode::paramChangedByUser( attribute::OfxhParam* param )
+{
+	double frame = getFrameRecursive();
+	OfxPointD renderScale;
+
+	getRenderScaleRecursive( renderScale.x, renderScale.y );
+
+	beginInstanceChangedAction( kOfxChangePluginEdited );
+	paramInstanceChangedAction( param->getName(), kOfxChangeUserEdited, frame, renderScale );
+	endInstanceChangedAction( kOfxChangePluginEdited );
+}
+
 }
 }
 }

@@ -42,6 +42,18 @@ public:
 	void unconnectNode( const Node& node ) throw( exception::LogicError );
 
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
+	void compute( const std::list<std::string>& nodes, const int time ) { compute( nodes, time, time ); }
+
+	void compute( const std::string& node, const int tBegin, const int tEnd )
+	{
+		std::list<std::string> outputs;
+		outputs.push_back( node );
+		compute( outputs, tBegin, tEnd );
+	}
+	void compute( const std::string& node, const int time )
+	{
+		compute( node, time, time );
+	}
 
 	const InternalGraph&    getGraph() const         { return _graph; }
 	const NodeMap&          getNodes() const         { return _nodes; }
