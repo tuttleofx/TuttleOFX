@@ -15,11 +15,11 @@ namespace plugin {
 namespace interact {
 
 template<class TFrame, ECoordonateSystem coord>
-class ParamRectangleInClip : public PointInteract
+class ParamRectangleInFrame : public PointInteract
 {
 public:
-	ParamRectangleInClip( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeClip );
-	~ParamRectangleInClip();
+	ParamRectangleInFrame( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeClip );
+	~ParamRectangleInFrame();
 	
 private:
 	OFX::Double2DParam* _paramA; ///< same as TL (min)
@@ -138,7 +138,7 @@ public:
 
 
 template<class TFrame, ECoordonateSystem coord>
-ParamRectangleInClip<TFrame, coord>::ParamRectangleInClip( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeFrame )
+ParamRectangleInFrame<TFrame, coord>::ParamRectangleInFrame( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeFrame )
 : PointInteract( infos )
 , _paramA( paramA )
 , _paramB( paramB )
@@ -147,10 +147,10 @@ ParamRectangleInClip<TFrame, coord>::ParamRectangleInClip( const InteractInfos& 
 }
 
 template<class TFrame, ECoordonateSystem coord>
-ParamRectangleInClip<TFrame, coord>::~ParamRectangleInClip( ) { }
+ParamRectangleInFrame<TFrame, coord>::~ParamRectangleInFrame( ) { }
 
 template<class TFrame, ECoordonateSystem coord>
-bool ParamRectangleInClip<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
+bool ParamRectangleInFrame<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
 {
 	PointInteract::draw( args );
 	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
@@ -161,7 +161,7 @@ bool ParamRectangleInClip<TFrame, coord>::draw( const OFX::DrawArgs& args ) cons
 }
 
 template<class TFrame, ECoordonateSystem coord>
-typename ParamRectangleInClip<TFrame, coord>::ESelectType ParamRectangleInClip<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
+typename ParamRectangleInFrame<TFrame, coord>::ESelectType ParamRectangleInFrame<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
 	const Point2 p = ofxToGil( args.penPosition );
 	double scale = args.pixelScale.x;
@@ -202,7 +202,7 @@ typename ParamRectangleInClip<TFrame, coord>::ESelectType ParamRectangleInClip<T
 }
 
 template<class TFrame, ECoordonateSystem coord>
-EMoveType ParamRectangleInClip<TFrame, coord>::selectIfIntesect( const OFX::PenArgs& args )
+EMoveType ParamRectangleInFrame<TFrame, coord>::selectIfIntesect( const OFX::PenArgs& args )
 {
 	const Point2 mouse = ofxToGil( args.penPosition );
 	Point2 center( (ofxToGil( _paramB->getValue() ) + ofxToGil( _paramA->getValue() )) * 0.5 );
@@ -218,7 +218,7 @@ EMoveType ParamRectangleInClip<TFrame, coord>::selectIfIntesect( const OFX::PenA
 }
 
 template<class TFrame, ECoordonateSystem coord>
-bool ParamRectangleInClip<TFrame, coord>::selectIfIsIn( const OfxRectD& rect )
+bool ParamRectangleInFrame<TFrame, coord>::selectIfIsIn( const OfxRectD& rect )
 {
 	_selectType = eSelectTypeNone;
 	Point2 pA( ofxToGil( _paramA->getValue() ) );

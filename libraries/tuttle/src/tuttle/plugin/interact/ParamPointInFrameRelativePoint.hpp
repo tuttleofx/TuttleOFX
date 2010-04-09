@@ -3,7 +3,7 @@
 
 #include "InteractInfos.hpp"
 #include "InteractObject.hpp"
-#include "ParamPointInClip.hpp"
+#include "ParamPointInFrame.hpp"
 #include <ofxsParam.h>
 
 namespace tuttle {
@@ -11,15 +11,15 @@ namespace plugin {
 namespace interact {
 
 template<class TFrame, ECoordonateSystem coord>
-class ParamPointInClipRelativePoint : public ParamPointInClip<TFrame, coord>
+class ParamPointInFrameRelativePoint : public ParamPointInFrame<TFrame, coord>
 {
 public:
-	ParamPointInClipRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
-	: ParamPointInClip<TFrame, coord>( infos, param, relativeFrame )
+	ParamPointInFrameRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
+	: ParamPointInFrame<TFrame, coord>( infos, param, relativeFrame )
 	, _relativePoint( *relativePoint )
 	{
 	}
-	~ParamPointInClipRelativePoint(){}
+	~ParamPointInFrameRelativePoint(){}
 
 private:
 	const PointInteract& _relativePoint;
@@ -31,15 +31,15 @@ public:
 
 
 template<class TFrame>
-class ParamPointInClipRelativePoint<TFrame, eCoordonateSystemXXcn> : public ParamPointInClip<TFrame, eCoordonateSystemXXcn>
+class ParamPointInFrameRelativePoint<TFrame, eCoordonateSystemXXcn> : public ParamPointInFrame<TFrame, eCoordonateSystemXXcn>
 {
 public:
-	ParamPointInClipRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
-	: ParamPointInClip<TFrame, eCoordonateSystemXXcn>( infos, param, relativeFrame )
+	ParamPointInFrameRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
+	: ParamPointInFrame<TFrame, eCoordonateSystemXXcn>( infos, param, relativeFrame )
 	, _relativePoint( *relativePoint )
 	{
 	}
-	~ParamPointInClipRelativePoint(){}
+	~ParamPointInFrameRelativePoint(){}
 
 private:
 	const PointInteract& _relativePoint;

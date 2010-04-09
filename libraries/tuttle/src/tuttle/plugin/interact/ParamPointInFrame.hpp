@@ -15,16 +15,16 @@ namespace plugin {
 namespace interact {
 
 template<class TFrame, ECoordonateSystem coord>
-class ParamPointInClip : public PointInteract
+class ParamPointInFrame : public PointInteract
 {
 public:
-	ParamPointInClip( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame )
+	ParamPointInFrame( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame )
 	: PointInteract( infos )
 	, _param( *param )
 	, _relativeFrame( relativeFrame )
 	{
 	}
-	~ParamPointInClip(){}
+	~ParamPointInFrame(){}
 
 protected:
 	OFX::Double2DParam& _param;
@@ -37,16 +37,16 @@ public:
 };
 
 template<class TFrame>
-class ParamPointInClip<TFrame, eCoordonateSystemXXcn> : public PointInteract
+class ParamPointInFrame<TFrame, eCoordonateSystemXXcn> : public PointInteract
 {
 public:
-	ParamPointInClip( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame )
+	ParamPointInFrame( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame )
 	: PointInteract( infos )
 	, _param( *param )
 	, _relativeFrame( relativeFrame )
 	{
 	}
-	~ParamPointInClip(){}
+	~ParamPointInFrame(){}
 
 protected:
 	OFX::Double2DParam& _param;
