@@ -966,7 +966,7 @@ OfxRangeD Clip::getUnmappedFrameRange( void ) const
 }
 
 /** @brief get the RoD for this clip in the cannonical coordinate system */
-OfxRectD Clip::getCanonicalRod( double t ) const
+OfxRectD Clip::getCanonicalRod( OfxTime t ) const
 {
 	OfxRectD bounds;
 	OfxStatus stat = OFX::Private::gEffectSuite->clipGetRegionOfDefinition( _clipHandle, t, &bounds );
@@ -980,7 +980,7 @@ OfxRectD Clip::getCanonicalRod( double t ) const
 }
 
 /** @brief get the RoD for this clip in pixel space */
-OfxRectI Clip::getPixelRod( double t ) const
+OfxRectI Clip::getPixelRod( OfxTime t ) const
 {
 	OfxRectD rod = getCanonicalRod(t);
 	double ratio = getPixelAspectRatio();
@@ -996,7 +996,7 @@ OfxRectI Clip::getPixelRod( double t ) const
 }
 
 /** @brief fetch an image */
-Image* Clip::fetchImage( double t )
+Image* Clip::fetchImage( OfxTime t )
 {
 	OfxPropertySetHandle imageHandle;
 	OfxStatus stat = OFX::Private::gEffectSuite->clipGetImage( _clipHandle, t, NULL, &imageHandle );
@@ -1012,7 +1012,7 @@ Image* Clip::fetchImage( double t )
 }
 
 /** @brief fetch an image, with a specific region in cannonical coordinates */
-Image* Clip::fetchImage( double t, OfxRectD bounds )
+Image* Clip::fetchImage( OfxTime t, OfxRectD bounds )
 {
 	OfxPropertySetHandle imageHandle;
 	OfxStatus stat = OFX::Private::gEffectSuite->clipGetImage( _clipHandle, t, &bounds, &imageHandle );
