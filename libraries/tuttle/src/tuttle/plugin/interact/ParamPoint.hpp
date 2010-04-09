@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_PARAMPOINTINCLIP_HPP_
-#define	_TUTTLE_PLUGIN_PARAMPOINTINCLIP_HPP_
+#ifndef _TUTTLE_PLUGIN_PARAMPOINT_HPP_
+#define	_TUTTLE_PLUGIN_PARAMPOINT_HPP_
 
 #include "Frame.hpp"
 #include "InteractInfos.hpp"
@@ -15,20 +15,20 @@ namespace plugin {
 namespace interact {
 
 template<class TFrame, ECoordonateSystem coord>
-class ParamPointInFrame : public PointInteract
+class ParamPoint : public PointInteract
 {
 public:
-	ParamPointInFrame( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame )
+	ParamPoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& frame )
 	: PointInteract( infos )
 	, _param( *param )
-	, _relativeFrame( relativeFrame )
+	, _frame( frame )
 	{
 	}
-	~ParamPointInFrame(){}
+	~ParamPoint(){}
 
 protected:
 	OFX::Double2DParam& _param;
-	const TFrame _relativeFrame;
+	const TFrame _frame;
 
 public:
 	Point2 getPoint() const;
@@ -37,27 +37,27 @@ public:
 };
 
 template<class TFrame>
-class ParamPointInFrame<TFrame, eCoordonateSystemXXcn> : public PointInteract
+class ParamPoint<TFrame, eCoordonateSystemXXcn> : public PointInteract
 {
 public:
-	ParamPointInFrame( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame )
+	ParamPoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& frame )
 	: PointInteract( infos )
 	, _param( *param )
-	, _relativeFrame( relativeFrame )
+	, _frame( frame )
 	{
 	}
-	~ParamPointInFrame(){}
+	~ParamPoint(){}
 
 protected:
 	OFX::Double2DParam& _param;
-	const TFrame _relativeFrame;
+	const TFrame _frame;
 
 public:
 	Point2 getPoint() const
 	{
-		if( _relativeFrame.isEnabled() )
+		if( _frame.isEnabled() )
 		{
-			OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
+			OfxRectD rod = _frame.getFrame( this->getTime() );
 			OfxPointD rodSize = { rod.x2-rod.x1, rod.y2-rod.y1 };
 			Point2 p = ofxToGil( pointNormalizedXXcToCanonicalXY( _param.getValue(), rodSize ) ) + Point2( rod.x1, rod.y1 );
 			return p;
@@ -66,9 +66,9 @@ public:
 	}
 	void setPoint( const Scalar x, const Scalar y )
 	{
-		if( _relativeFrame.isEnabled() )
+		if( _frame.isEnabled() )
 		{
-			OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
+			OfxRectD rod = _frame.getFrame( this->getTime() );
 			Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 			Point2 p( x-rod.x1, y-rod.y1 );
 			p = pointCanonicalXYToNormalizedXXc( p, rodSize );

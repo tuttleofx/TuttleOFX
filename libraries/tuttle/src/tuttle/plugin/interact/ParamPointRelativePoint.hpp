@@ -3,7 +3,7 @@
 
 #include "InteractInfos.hpp"
 #include "InteractObject.hpp"
-#include "ParamPointInFrame.hpp"
+#include "ParamPoint.hpp"
 #include <ofxsParam.h>
 
 namespace tuttle {
@@ -11,15 +11,15 @@ namespace plugin {
 namespace interact {
 
 template<class TFrame, ECoordonateSystem coord>
-class ParamPointInFrameRelativePoint : public ParamPointInFrame<TFrame, coord>
+class ParamPointRelativePoint : public ParamPoint<TFrame, coord>
 {
 public:
-	ParamPointInFrameRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
-	: ParamPointInFrame<TFrame, coord>( infos, param, relativeFrame )
+	ParamPointRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
+	: ParamPoint<TFrame, coord>( infos, param, relativeFrame )
 	, _relativePoint( *relativePoint )
 	{
 	}
-	~ParamPointInFrameRelativePoint(){}
+	~ParamPointRelativePoint(){}
 
 private:
 	const PointInteract& _relativePoint;
@@ -31,15 +31,15 @@ public:
 
 
 template<class TFrame>
-class ParamPointInFrameRelativePoint<TFrame, eCoordonateSystemXXcn> : public ParamPointInFrame<TFrame, eCoordonateSystemXXcn>
+class ParamPointRelativePoint<TFrame, eCoordonateSystemXXcn> : public ParamPoint<TFrame, eCoordonateSystemXXcn>
 {
 public:
-	ParamPointInFrameRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
-	: ParamPointInFrame<TFrame, eCoordonateSystemXXcn>( infos, param, relativeFrame )
+	ParamPointRelativePoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& relativeFrame, const PointInteract* relativePoint )
+	: ParamPoint<TFrame, eCoordonateSystemXXcn>( infos, param, relativeFrame )
 	, _relativePoint( *relativePoint )
 	{
 	}
-	~ParamPointInFrameRelativePoint(){}
+	~ParamPointRelativePoint(){}
 
 private:
 	const PointInteract& _relativePoint;
@@ -47,7 +47,7 @@ private:
 public:
 	Point2 getPoint() const
 	{
-		OfxRectD rod = this->_relativeFrame.getFrame( this->getTime() );
+		OfxRectD rod = this->_frame.getFrame( this->getTime() );
 		Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 		Point2 relativePoint = _relativePoint.getPoint();
 		Point2 paramPoint = ofxToGil( this->_param.getValue() );
@@ -58,9 +58,9 @@ public:
 
 	void setPoint( const Scalar x, const Scalar y )
 	{
-		if( this->_relativeFrame.isEnabled() )
+		if( this->_frame.isEnabled() )
 		{
-			OfxRectD rod = this->_relativeFrame.getFrame( this->getTime() );
+			OfxRectD rod = this->_frame.getFrame( this->getTime() );
 			Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 			Point2 point = pointCanonicalXYToNormalizedXX( Point2(x,y), rodSize );
 			Point2 relativePoint = pointCanonicalXYToNormalizedXX( _relativePoint.getPoint(), rodSize );

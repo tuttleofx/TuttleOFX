@@ -1,25 +1,24 @@
-#ifndef _TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEINCLIP_HPP_
-#define	_TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEINCLIP_HPP_
+#ifndef _TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMTWOCORNERS_HPP_
+#define	_TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMTWOCORNERS_HPP_
 
 #include "Frame.hpp"
 #include "InteractInfos.hpp"
 #include "InteractObject.hpp"
 #include "PointInteract.hpp"
 #include "overlay.hpp"
+#include <tuttle/common/image/gilGlobals.hpp>
 #include <ofxsParam.h>
-
-#include <boost/shared_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace interact {
 
 template<class TFrame, ECoordonateSystem coord>
-class ParamRectangleInFrame : public PointInteract
+class ParamRectangleFromTwoCorners : public PointInteract
 {
 public:
-	ParamRectangleInFrame( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeClip );
-	~ParamRectangleInFrame();
+	ParamRectangleFromTwoCorners( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeClip );
+	~ParamRectangleFromTwoCorners();
 	
 private:
 	OFX::Double2DParam* _paramA; ///< same as TL (min)
@@ -138,7 +137,7 @@ public:
 
 
 template<class TFrame, ECoordonateSystem coord>
-ParamRectangleInFrame<TFrame, coord>::ParamRectangleInFrame( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeFrame )
+ParamRectangleFromTwoCorners<TFrame, coord>::ParamRectangleFromTwoCorners( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeFrame )
 : PointInteract( infos )
 , _paramA( paramA )
 , _paramB( paramB )
@@ -147,10 +146,10 @@ ParamRectangleInFrame<TFrame, coord>::ParamRectangleInFrame( const InteractInfos
 }
 
 template<class TFrame, ECoordonateSystem coord>
-ParamRectangleInFrame<TFrame, coord>::~ParamRectangleInFrame( ) { }
+ParamRectangleFromTwoCorners<TFrame, coord>::~ParamRectangleFromTwoCorners( ) { }
 
 template<class TFrame, ECoordonateSystem coord>
-bool ParamRectangleInFrame<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
+bool ParamRectangleFromTwoCorners<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
 {
 	PointInteract::draw( args );
 	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
@@ -161,7 +160,7 @@ bool ParamRectangleInFrame<TFrame, coord>::draw( const OFX::DrawArgs& args ) con
 }
 
 template<class TFrame, ECoordonateSystem coord>
-typename ParamRectangleInFrame<TFrame, coord>::ESelectType ParamRectangleInFrame<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
+typename ParamRectangleFromTwoCorners<TFrame, coord>::ESelectType ParamRectangleFromTwoCorners<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
 	const Point2 p = ofxToGil( args.penPosition );
 	double scale = args.pixelScale.x;
@@ -202,7 +201,7 @@ typename ParamRectangleInFrame<TFrame, coord>::ESelectType ParamRectangleInFrame
 }
 
 template<class TFrame, ECoordonateSystem coord>
-EMoveType ParamRectangleInFrame<TFrame, coord>::selectIfIntesect( const OFX::PenArgs& args )
+EMoveType ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIntesect( const OFX::PenArgs& args )
 {
 	const Point2 mouse = ofxToGil( args.penPosition );
 	Point2 center( (ofxToGil( _paramB->getValue() ) + ofxToGil( _paramA->getValue() )) * 0.5 );
@@ -218,7 +217,7 @@ EMoveType ParamRectangleInFrame<TFrame, coord>::selectIfIntesect( const OFX::Pen
 }
 
 template<class TFrame, ECoordonateSystem coord>
-bool ParamRectangleInFrame<TFrame, coord>::selectIfIsIn( const OfxRectD& rect )
+bool ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIsIn( const OfxRectD& rect )
 {
 	_selectType = eSelectTypeNone;
 	Point2 pA( ofxToGil( _paramA->getValue() ) );
