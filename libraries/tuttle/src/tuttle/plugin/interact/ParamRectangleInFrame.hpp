@@ -1,27 +1,30 @@
 #ifndef _TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEINCLIP_HPP_
 #define	_TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEINCLIP_HPP_
 
+#include "Frame.hpp"
 #include "InteractInfos.hpp"
 #include "InteractObject.hpp"
 #include "PointInteract.hpp"
 #include "overlay.hpp"
 #include <ofxsParam.h>
 
+#include <boost/shared_ptr.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace interact {
 
-template<ECoordonateSystem coord>
-class ParamRectangleInClip : public PointInteract
+template<class TFrame, ECoordonateSystem coord>
+class ParamRectangleInFrame : public PointInteract
 {
 public:
-	ParamRectangleInClip( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, OFX::Clip* relativeClip );
-	~ParamRectangleInClip();
+	ParamRectangleInFrame( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeClip );
+	~ParamRectangleInFrame();
 	
 private:
 	OFX::Double2DParam* _paramA; ///< same as TL (min)
 	OFX::Double2DParam* _paramB; ///< same as BR (max)
-	OFX::Clip* _relativeClip;
+	TFrame _relativeFrame;
 
 	/**
 	 *         T
@@ -58,15 +61,15 @@ public:
 
 	Point2 getPoint() const
 	{
-		if( ! _relativeClip->isConnected() )
+		if( ! _relativeFrame.isEnabled() )
 			return Point2(0, 0); // throw to stop overlay ?
-		OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+		OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
 		Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 		return pointNormalizedXXcToCanonicalXY( ofxToGil( ( _paramB->getValue() + _paramA->getValue() ) * 0.5 ), rodSize ) + Point2( rod.x1, rod.y1 );
 	}
-	void setPoint( const Scalar& x, const Scalar& y )
+	void setPoint( const Scalar x, const Scalar y )
 	{
-		OfxRectD imgRod = _relativeClip->getCanonicalRod( this->getTime() );
+		OfxRectD imgRod = _relativeFrame.getFrame( this->getTime() );
 		Point2 imgRodSize( imgRod.x2-imgRod.x1, imgRod.y2-imgRod.y1 );
 		Point2 mouse( x-imgRod.x1, y-imgRod.y1 );
 		mouse = pointCanonicalXYToNormalizedXXc( mouse, imgRodSize );
@@ -134,36 +137,36 @@ public:
 };
 
 
-template<ECoordonateSystem coord>
-ParamRectangleInClip<coord>::ParamRectangleInClip( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, OFX::Clip* relativeClip )
+template<class TFrame, ECoordonateSystem coord>
+ParamRectangleInFrame<TFrame, coord>::ParamRectangleInFrame( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeFrame )
 : PointInteract( infos )
 , _paramA( paramA )
 , _paramB( paramB )
-, _relativeClip( relativeClip )
+, _relativeFrame( relativeFrame )
 {
 }
 
-template<ECoordonateSystem coord>
-ParamRectangleInClip<coord>::~ParamRectangleInClip( ) { }
+template<class TFrame, ECoordonateSystem coord>
+ParamRectangleInFrame<TFrame, coord>::~ParamRectangleInFrame( ) { }
 
-template<ECoordonateSystem coord>
-bool ParamRectangleInClip<coord>::draw( const OFX::DrawArgs& args ) const
+template<class TFrame, ECoordonateSystem coord>
+bool ParamRectangleInFrame<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
 {
 	PointInteract::draw( args );
-	OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
 	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 	Point2 pA( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
 	Point2 pB( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
 	overlay::displayRect( pA, pB );
 }
 
-template<ECoordonateSystem coord>
-typename ParamRectangleInClip<coord>::ESelectType ParamRectangleInClip<coord>::selectType( const OFX::PenArgs& args ) const
+template<class TFrame, ECoordonateSystem coord>
+typename ParamRectangleInFrame<TFrame, coord>::ESelectType ParamRectangleInFrame<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
 	const Point2 p = ofxToGil( args.penPosition );
 	double scale = args.pixelScale.x;
 	double margeCanonical = getMarge() * scale;
-	OfxRectD rod = _relativeClip->getCanonicalRod( this->getTime() );
+	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
 	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 	Point2 a = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
 	Point2 b = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
@@ -198,8 +201,8 @@ typename ParamRectangleInClip<coord>::ESelectType ParamRectangleInClip<coord>::s
 	return eSelectTypeNone;
 }
 
-template<ECoordonateSystem coord>
-EMoveType ParamRectangleInClip<coord>::selectIfIntesect( const OFX::PenArgs& args )
+template<class TFrame, ECoordonateSystem coord>
+EMoveType ParamRectangleInFrame<TFrame, coord>::selectIfIntesect( const OFX::PenArgs& args )
 {
 	const Point2 mouse = ofxToGil( args.penPosition );
 	Point2 center( (ofxToGil( _paramB->getValue() ) + ofxToGil( _paramA->getValue() )) * 0.5 );
@@ -214,8 +217,8 @@ EMoveType ParamRectangleInClip<coord>::selectIfIntesect( const OFX::PenArgs& arg
 	return m;
 }
 
-template<ECoordonateSystem coord>
-bool ParamRectangleInClip<coord>::selectIfIsIn( const OfxRectD& rect )
+template<class TFrame, ECoordonateSystem coord>
+bool ParamRectangleInFrame<TFrame, coord>::selectIfIsIn( const OfxRectD& rect )
 {
 	_selectType = eSelectTypeNone;
 	Point2 pA( ofxToGil( _paramA->getValue() ) );

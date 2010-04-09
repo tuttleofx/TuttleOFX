@@ -605,8 +605,8 @@ public:
 	OfxRangeD getUnmappedFrameRange( void ) const;
 
 	/** @brief get the RoD for this clip in the cannonical coordinate system */
-	OfxRectD getCanonicalRod( double t ) const;
-	OfxPointD getCanonicalRodSize( double t ) const
+	OfxRectD getCanonicalRod( OfxTime t ) const;
+	OfxPointD getCanonicalRodSize( OfxTime t ) const
 	{
 		OfxRectD r = getCanonicalRod( t );
 		OfxPointD p = {r.x2-r.x1, r.y2-r.y1};
@@ -614,8 +614,8 @@ public:
 	}
 
 	/** @brief get the RoD for this clip in pixel space */
-	OfxRectI getPixelRod( double t ) const;
-	OfxPointI getPixelRodSize( double t ) const
+	OfxRectI getPixelRod( OfxTime t ) const;
+	OfxPointI getPixelRodSize( OfxTime t ) const
 	{
 		OfxRectI r = getPixelRod( t );
 		OfxPointI p = {r.x2-r.x1, r.y2-r.y1};
@@ -628,7 +628,7 @@ public:
 	 *
 	 * If the same image is fetched twice, it must be deleted in each case, they will not be the same pointer.
 	 */
-	Image* fetchImage( double t );
+	Image* fetchImage( OfxTime t );
 
 	/** @brief fetch an image, with a specific region in cannonical coordinates
 	 *
@@ -636,7 +636,7 @@ public:
 	 *
 	 * If the same image is fetched twice, it must be deleted in each case, they will not be the same pointer.
 	 */
-	Image* fetchImage( double t, OfxRectD bounds );
+	Image* fetchImage( OfxTime t, OfxRectD bounds );
 
 	/** @brief fetch an image, with a specific region in cannonical coordinates
 	 *
@@ -644,7 +644,7 @@ public:
 	 *
 	 * If the same image is fetched twice, it must be deleted in each case, they will not be the same pointer.
 	 */
-	Image* fetchImage( double t, OfxRectD* bounds )
+	Image* fetchImage( OfxTime t, OfxRectD* bounds )
 	{
 		if( bounds )
 			return fetchImage( t, *bounds );
