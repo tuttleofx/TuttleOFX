@@ -2,7 +2,12 @@ Import( 'project' )
 Import( 'libs' )
 
 
-tuttleFlags = { 'LIBPATH': [ project.inOutputLib() ] }
+tuttleFlags = { 'LIBPATH': [project.inOutputLib()],
+                'CCFLAGS': project.CC['warning2'],
+               }
+
+if project.env['mode'] == 'production' :
+	tuttleFlags['CCFLAGS'].append( project.CC['define']+'TUTTLE_PRODUCTION' )
 
 if 'sharedNoUndefined' in project.CC:
 	tuttleFlags['SHLINKFLAGS'] = [project.CC['sharedNoUndefined']]
