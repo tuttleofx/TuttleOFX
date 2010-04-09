@@ -79,7 +79,6 @@ public:
 	void begin( ProcessOptions& processOptions )
 	{
 		TCOUT( "begin: " << getName() );
-		checkClipsConnections();
 		beginRenderAction( processOptions._startFrame,
 		                   processOptions._endFrame,
 		                   processOptions._step,
@@ -91,6 +90,9 @@ public:
 	{
 		TCOUT( "preProcess_finish: " << getName() << " at time: " << processOptions._time );
 		setCurrentTime( processOptions._time );
+
+		checkClipsConnections();
+		
 		getClipPreferencesAction();
 
 		initClipsFromReadsToWrites();
@@ -101,7 +103,7 @@ public:
 									 rod );
 		setRegionOfDefinition( rod );
 		processOptions._renderRoI = rod;
-		COUT_VAR( rod );
+		TCOUT_VAR( rod );
 	}
 
 	void preProcess_initialize( ProcessOptions& processOptions )
@@ -114,7 +116,7 @@ public:
 		                           processOptions._renderScale,
 		                           processOptions._renderRoI,
 		                           processOptions._inputsRoI );
-		COUT_VAR( processOptions._renderRoI );
+		TCOUT_VAR( processOptions._renderRoI );
 	}
 
 	void process( const ProcessOptions& processOptions )

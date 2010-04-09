@@ -289,7 +289,7 @@ void ImageEffectNode::checkClipsConnections() const
 		 ++it )
 	{
 		const ClipImage& clip = dynamic_cast<const ClipImage&>( *(it->second) );
-		if( !clip.isOutput() && clip.getConnected() && !clip.isOptional() ) // a non optionl input clip is unconnected
+		if( !clip.isOutput() && !clip.getConnected() && !clip.isOptional() ) // a non optionl input clip is unconnected
 		{
 			throw( exception::LogicError( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
 		}
@@ -399,12 +399,12 @@ void ImageEffectNode::initClipsFromWritesToReads()
 		const ofx::property::String& propPixelDepth = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
 		const ofx::property::String& propComponent = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
 		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
-		COUT( "-- " << "clip: " << " = " << clip.getFullName() );
-		COUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
+		TCOUT( "-- " << "clip: " << " = " << clip.getFullName() );
+		TCOUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
 			<< " : " << (propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
-		COUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
+		TCOUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
 			<< " : " << (propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
-		COUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
+		TCOUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
 			<< " : " << (propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
 	}
 }

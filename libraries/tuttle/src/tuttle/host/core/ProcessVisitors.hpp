@@ -29,11 +29,10 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 			Edge& edge = get( edge_properties, _graph )[e];
 			Vertex& vertexSource = get( vertex_properties, _graph )[source( e, _graph )];
 			Vertex& vertexDest   = get( vertex_properties, _graph )[target( e, _graph )];
-			std::cout << "[CONNECT] examine_edge "
-			          << vertexSource
-			          << " TO "
-			          << vertexDest << "." << edge.inAttrName()
-			          << std::endl;
+			TCOUT("[CONNECT] examine_edge "
+			      << vertexSource
+			      << " TO "
+			      << vertexDest << "." << edge.inAttrName() );
 
 			core::ProcessNode* sourceNode = vertexSource.getProcessNode();
 			core::ProcessNode* targetNode = vertexDest.getProcessNode();
@@ -85,8 +84,7 @@ struct dfs_preProcess_initialize_visitor : public boost::dfs_visitor<>
 		void discover_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[PREPROCESS] discover_vertex "
-			          << vertex << std::endl;
+			TCOUT("[PREPROCESS] discover_vertex " << vertex);
 
 			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
 		}
@@ -111,8 +109,7 @@ struct dfs_process_visitor : public boost::dfs_visitor<>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[PROCESS] finish_vertex "
-			          << vertex << std::endl;
+			TCOUT("[PROCESS] finish_vertex " << vertex);
 
 			vertex.getProcessNode()->process( vertex.getProcessOptions() );
 		}
@@ -136,16 +133,14 @@ struct dfs_postProcess_visitor : public boost::dfs_visitor<>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[POSTPROCESS] initialize_vertex "
-			          << vertex << std::endl;
+			TCOUT("[POSTPROCESS] initialize_vertex " << vertex);
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			std::cout << "[POSTPROCESS] finish_vertex "
-			          << vertex << std::endl;
+			TCOUT("[POSTPROCESS] finish_vertex " << vertex);
 
 			vertex.getProcessNode()->postProcess( vertex.getProcessOptions() );
 		}

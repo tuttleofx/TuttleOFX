@@ -325,13 +325,13 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 		COUT_EXCEPTION( e );
-		coutProperties();
+		IF_DEBUG( coutProperties() );
 	}
 	catch(... )
 	{
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		coutProperties();
+		IF_DEBUG( coutProperties() );
 	}
 }
 

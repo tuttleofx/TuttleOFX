@@ -39,59 +39,50 @@ struct test_dfs_visitor : public boost::dfs_visitor<>
 		template<class VertexDescriptor, class Graph>
 		void initialize_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "initialize_vertex: "
-			          << get( vertex_properties, g )[v] << std::endl;
+			TCOUT("initialize_vertex: " << get( vertex_properties, g )[v]);
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void start_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "start_vertex: "
-			          << get( vertex_properties, g )[v] << std::endl;
+			TCOUT("start_vertex: " << get( vertex_properties, g )[v]);
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void discover_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "discover_vertex: "
-			          << get( vertex_properties, g )[v] << std::endl;
+			TCOUT("discover_vertex: " << get( vertex_properties, g )[v]);
 		}
 
 		template<class VertexDescriptor, class Graph>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
-			std::cout << "finish_vertex: "
-			          << get( vertex_properties, g )[v] << std::endl;
+			TCOUT("finish_vertex: " << get( vertex_properties, g )[v]);
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void examine_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "examine_edge: "
-			          << get( edge_properties, g )[e] << std::endl;
+			TCOUT("examine_edge: " << get( edge_properties, g )[e]);
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void tree_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "tree_edge: "
-			          << get( edge_properties, g )[e]
-			          << "  source: " ;
-			std::cout << get( vertex_properties, g )[source( e, g )] << std::endl;
+			TCOUT("tree_edge: " << get( edge_properties, g )[e] << "  source: ");
+			TCOUT(get( vertex_properties, g )[source( e, g )]);
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void back_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "back_edge: "
-			          << get( edge_properties, g )[e] << std::endl;
+			TCOUT("back_edge: " << get( edge_properties, g )[e]);
 		}
 
 		template<class EdgeDescriptor, class Graph>
 		void forward_or_cross_edge( EdgeDescriptor e, Graph& g )
 		{
-			std::cout << "forward_or_cross_edge: "
-			          << get( edge_properties, g )[e] << std::endl;
+			TCOUT("forward_or_cross_edge: " << get( edge_properties, g )[e] );
 		}
 
 };

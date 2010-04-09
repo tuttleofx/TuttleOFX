@@ -124,9 +124,7 @@ void Graph::compute( const std::list<std::string>& nodes, const int tBegin, cons
 
 void Graph::dumpToStdOut()
 {
-	std::cout
-	<< "graph dump" << std::endl
-	<< "\tnode count: " << "-" << std::endl;
+	TCOUT( "graph dump" << std::endl << "\tnode count: " << "-");
 	_graph.dumpToStdOut();
 }
 
