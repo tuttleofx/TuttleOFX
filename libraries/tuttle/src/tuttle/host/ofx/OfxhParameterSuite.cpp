@@ -353,7 +353,7 @@ static OfxStatus paramSetValue( OfxParamHandle paramHandle,
 		if( stat == kOfxStatOK )
 		{
 			if( paramInstance->getParamSetInstance() )
-				paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
+				paramInstance->getParamSetInstance()->paramChanged( *paramInstance, eChangePluginEdited );
 			else
 				stat = kOfxStatErrUnsupported;
 		}
@@ -405,7 +405,7 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 		if( stat == kOfxStatOK )
 		{
 			if( paramInstance->getParamSetInstance() )
-				paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
+				paramInstance->getParamSetInstance()->paramChanged( *paramInstance, eChangePluginEdited );
 			else
 				stat = kOfxStatErrUnsupported;
 		}

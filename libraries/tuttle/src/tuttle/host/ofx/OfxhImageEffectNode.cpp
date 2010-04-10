@@ -1426,7 +1426,7 @@ void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
 /**
  * implemented for Param::SetInstance
  */
-void OfxhImageEffectNode::paramChangedByPlugin( attribute::OfxhParam* param )
+void OfxhImageEffectNode::paramChanged( const attribute::OfxhParam& param, const attribute::EChange change )
 {
 	double frame = getFrameRecursive();
 	OfxPointD renderScale;
@@ -1434,19 +1434,7 @@ void OfxhImageEffectNode::paramChangedByPlugin( attribute::OfxhParam* param )
 	getRenderScaleRecursive( renderScale.x, renderScale.y );
 
 	beginInstanceChangedAction( kOfxChangePluginEdited );
-	paramInstanceChangedAction( param->getName(), kOfxChangePluginEdited, frame, renderScale );
-	endInstanceChangedAction( kOfxChangePluginEdited );
-}
-
-void OfxhImageEffectNode::paramChangedByUser( attribute::OfxhParam* param )
-{
-	double frame = getFrameRecursive();
-	OfxPointD renderScale;
-
-	getRenderScaleRecursive( renderScale.x, renderScale.y );
-
-	beginInstanceChangedAction( kOfxChangePluginEdited );
-	paramInstanceChangedAction( param->getName(), kOfxChangeUserEdited, frame, renderScale );
+	paramInstanceChangedAction( param.getName(), attribute::mapEChangeToString(change), frame, renderScale );
 	endInstanceChangedAction( kOfxChangePluginEdited );
 }
 

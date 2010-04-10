@@ -46,6 +46,37 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
+enum EChange
+{
+	eChangeTime,
+	eChangeUserEdited,
+	eChangePluginEdited,
+};
+
+inline std::string mapEChangeToString( const EChange change )
+{
+	switch( change )
+	{
+		case eChangeTime:
+			return kOfxChangeTime;
+		case eChangeUserEdited:
+			return kOfxChangeUserEdited;
+		case eChangePluginEdited:
+			return kOfxChangePluginEdited;
+	}
+}
+
+inline EChange mapStringToEChange( const std::string& change )
+{
+	if( change == kOfxChangeTime )
+		return eChangeTime;
+	if( change == kOfxChangeUserEdited )
+		return eChangeUserEdited;
+	if( change ==kOfxChangePluginEdited )
+		return eChangePluginEdited;
+}
+
+
 class OfxhAttributeAccessor
 {
 public:
