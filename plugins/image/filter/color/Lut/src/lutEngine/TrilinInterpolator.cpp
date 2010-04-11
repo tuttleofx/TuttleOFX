@@ -1,12 +1,11 @@
-#include "hd3d_trilin_interpolator.h"
-#include "hd3d_color.h"
-#include "hd3d_abstract_lut.h"
+#include "TrilinInterpolator.hpp"
+#include "Color.hpp"
+#include "AbstractLut.hpp"
 #include <cmath>
 
-using namespace std;
+namespace tuttle {
 
-namespace tuttle
-{
+using namespace std;
 
 Color TrilinInterpolator::interpolate( const AbstractLut* lut, const double x, const double y, const double z ) const
 {

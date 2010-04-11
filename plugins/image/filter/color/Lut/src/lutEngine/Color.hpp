@@ -1,11 +1,10 @@
-#ifndef HD3DCOLOR_H
-#define HD3DCOLOR_H
-#include <iostream>
+#ifndef _LUTENGINE_COLOR_HPP_
+#define _LUTENGINE_COLOR_HPP_
 
-using namespace std;
+#include <ostream>
 
-namespace tuttle
-{
+namespace tuttle {
+
 class Color
 {
 public:
@@ -35,7 +34,7 @@ public:
 	inline Color operator /=( const Color _color );
 	inline Color operator /=( double _value );
 
-	friend ostream& operator <<( ostream& o, Color const& _color );
+	friend std::ostream& operator <<( std::ostream& o, Color const& _color );
 	double x, y, z;
 };
 
@@ -149,10 +148,11 @@ inline bool Color::operator !=( const Color _color ) const
 	return !( ( *this ) == _color );
 }
 
-inline ostream& operator <<( ostream& o, Color const& _color )
+inline std::ostream& operator <<( std::ostream& o, Color const& _color )
 {
 	return o << "(" << _color.x << ", " << _color.y << ", " << _color.z << ")";
 }
 
 }
-#endif // HD3DCOLOR_H
+
+#endif

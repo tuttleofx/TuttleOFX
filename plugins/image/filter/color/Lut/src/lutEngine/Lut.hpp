@@ -1,9 +1,9 @@
-#ifndef HD3DLUT_H
-#define HD3DLUT_H
+#ifndef _LUTENGINE_LUT_HPP_
+#define _LUTENGINE_LUT_HPP_
 
-#include "hd3d_abstract_lut.h"
-#include "hd3d_color.h"
-#include "hd3d_interpolator.h"
+#include "AbstractLut.hpp"
+#include "Color.hpp"
+#include "Interpolator.hpp"
 
 namespace tuttle
 {

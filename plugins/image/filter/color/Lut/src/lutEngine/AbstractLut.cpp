@@ -1,11 +1,10 @@
-#include "hd3d_abstract_lut.h"
-#include "hd3d_interpolator.h"
-#include "hd3d_trilin_interpolator.h"
-#include "hd3d_color.h"
-#include "lut_reader.h"
+#include "AbstractLut.hpp"
+#include "Interpolator.hpp"
+#include "TrilinInterpolator.hpp"
+#include "Color.hpp"
+#include "LutReader.hpp"
 
-namespace tuttle
-{
+namespace tuttle {
 
 AbstractLut::AbstractLut()
 	: _dimSize( 0 ),
@@ -83,4 +82,4 @@ void AbstractLut::reset( size_t dimSize, double* data /* = NULL */ )
 	_interpolator = new TrilinInterpolator();
 }
 
-};
+}

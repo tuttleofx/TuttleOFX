@@ -1,17 +1,16 @@
 #include "LutPlugin.hpp"
 #include "LutDefinitions.hpp"
 
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/PluginException.hpp"
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <cmath>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
+
+#include <string>
 
 namespace tuttle {
 namespace plugin {

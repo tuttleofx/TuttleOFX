@@ -1,7 +1,6 @@
-#ifndef LUT_READER_H
-#define LUT_READER_H
+#ifndef _LUTENGINE_LUTREADER_HPP_
+#define _LUTENGINE_LUTREADER_HPP_
 
-#include <vector>
 #include <boost/filesystem/path.hpp>
 #include <boost/regex.h>
 #include <boost/spirit/include/classic.hpp>
@@ -10,13 +9,13 @@
 #include <boost/spirit/include/classic_assign_actor.hpp>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/function.hpp>
+#include <vector>
+
+namespace tuttle {
 
 using namespace std;
 using namespace boost;
 namespace fs = boost::filesystem;
-
-namespace tuttle
-{
 
 class LutReader
 {
@@ -63,6 +62,6 @@ struct gram_3dl : public boost::spirit::classic::grammar<gram_3dl>
 	LutReader& _lutReader;
 };
 
-}  // namespace tuttle
+}
 
-#endif // LUT_READER_H
+#endif

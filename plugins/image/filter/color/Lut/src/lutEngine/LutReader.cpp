@@ -1,17 +1,5 @@
-/*
- * lut_reader.cpp
- *
- *  Created on: 14 sept. 2009
- *      Author: Eloi Du Bois
- */
+#include "LutReader.hpp"
 
-#include "lut_reader.h"
-
-#include <algorithm>
-#include <sstream>
-#include <iostream>
-
-// BOOST
 #include <boost/filesystem/path.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/regex.h>
@@ -21,13 +9,16 @@
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/filesystem/fstream.hpp>
 
+#include <algorithm>
+#include <sstream>
+#include <iostream>
+
+namespace tuttle {
+
 using namespace boost;
 using namespace boost::spirit::classic;
 namespace fs = boost::filesystem;
 using namespace std;
-
-namespace tuttle
-{
 
 bool LutReader::read( const fs::path& filename )
 {

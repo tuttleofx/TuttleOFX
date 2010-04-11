@@ -1,13 +1,10 @@
-#include "hd3d_lut.h"
-#include "hd3d_trilin_interpolator.h"
-#include "lut_reader.h"
-#include <math.h>
-#include <iostream>
+#include "Lut.hpp"
+#include "TrilinInterpolator.hpp"
+#include "LutReader.hpp"
+
+namespace tuttle {
 
 using namespace std;
-
-namespace tuttle
-{
 
 Lut3D::Lut3D( Interpolator* interpolator, size_t dimSize, double* data /* = NULL*/ )
 	: AbstractLut( interpolator, dimSize, data )

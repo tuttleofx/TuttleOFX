@@ -1,18 +1,18 @@
-#ifndef _LUT_PROCESS_HPP_
-#define _LUT_PROCESS_HPP_
+#ifndef _TUTTLE_PLUGIN_LUTPROCESS_HPP_
+#define _TUTTLE_PLUGIN_LUTPROCESS_HPP_
 
 #include "LutPlugin.hpp"
+#include "lutEngine/LutReader.hpp"
+#include "lutEngine/Lut.hpp"
 
-#include "tuttle/common/utils/global.hpp"
-#include "tuttle/plugin/ImageGilFilterProcessor.hpp"
-#include "tuttle/plugin/PluginException.hpp"
-#include "lutEngine/lut_reader.h"
-#include "lutEngine/hd3d_lut.h"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/ImageGilFilterProcessor.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {

@@ -1,12 +1,11 @@
-#ifndef TRILIN_INTERPOLATOR_H
-#define TRILIN_INTERPOLATOR_H
+#ifndef _LUTENGINE_TRILININTERPOLATOR_HPP_
+#define _LUTENGINE_TRILININTERPOLATOR_HPP_
 
-#include "hd3d_interpolator.h"
-#include "hd3d_abstract_lut.h"
-#include "hd3d_color.h"
+#include "Interpolator.hpp"
+#include "AbstractLut.hpp"
+#include "Color.hpp"
 
-namespace tuttle
-{
+namespace tuttle {
 
 class TrilinInterpolator : public Interpolator
 {
@@ -15,6 +14,6 @@ public:
 	Color interpolate( const AbstractLut* lut, const double x, const double y, const double z ) const;
 };
 
-};
+}
 
-#endif //TRILIN_INTERPOLATOR_H
+#endif

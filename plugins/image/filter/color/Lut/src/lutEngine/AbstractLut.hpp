@@ -1,11 +1,11 @@
-#ifndef ABSTRACT_LUT_H
-#define ABSTRACT_LUT_H
+#ifndef _LUTENGINE_ABSTRACTLUT_HPP_
+#define _LUTENGINE_ABSTRACTLUT_HPP_
 
-#include "lut_reader.h"
-#include "hd3d_color.h"
+#include "LutReader.hpp"
+#include "Color.hpp"
 
-namespace tuttle
-{
+namespace tuttle {
+
 class Interpolator;
 class TrilinInterpolator;
 
@@ -38,6 +38,6 @@ public:
 	virtual void  setIndexedValues( int _x, int _y, int _z, double _r, double _g, double _b ) = 0;
 };
 
-};
+}
 
-#endif //ABSTRACT_LUT_H
+#endif

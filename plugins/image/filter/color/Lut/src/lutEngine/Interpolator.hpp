@@ -1,10 +1,9 @@
-#ifndef INTERPOLATOR_H
-#define INTERPOLATOR_H
+#ifndef _LUTENGINE_INTERPOLATOR_HPP_
+#define _LUTENGINE_INTERPOLATOR_HPP_
 
-#include "hd3d_color.h"
+#include "Color.hpp"
 
-namespace tuttle
-{
+namespace tuttle {
 
 class AbstractLut;
 
@@ -24,4 +23,4 @@ inline Color Interpolator::interpolate( const AbstractLut* lut, const Color& col
 
 };
 
-#endif //INTERPOLATOR_H
+#endif
