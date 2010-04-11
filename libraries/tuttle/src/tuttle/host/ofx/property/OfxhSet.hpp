@@ -31,6 +31,8 @@
 
 #include "OfxhPropertyTemplate.hpp"
 
+#include <boost/ptr_container/serialize_ptr_map.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {

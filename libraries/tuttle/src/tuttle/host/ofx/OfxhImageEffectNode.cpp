@@ -28,10 +28,7 @@
  */
 
 // ofx host
-#include "property/OfxhSet.hpp"
 #include "OfxhBinary.hpp"
-#include "OfxhClip.hpp"
-#include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhImageEffectNode.hpp"
 #include "OfxhPluginAPICache.hpp"
@@ -39,6 +36,11 @@
 #include "OfxhHost.hpp"
 #include "OfxhImageEffectPlugin.hpp"
 #include "OfxhUtilities.hpp"
+#include "attribute/OfxhClip.hpp"
+#include "attribute/OfxhParam.hpp"
+#include "attribute/OfxhParamGroup.hpp"
+#include "attribute/OfxhParamDouble.hpp"
+#include "property/OfxhSet.hpp"
 
 #include <tuttle/host/core/Core.hpp>
 

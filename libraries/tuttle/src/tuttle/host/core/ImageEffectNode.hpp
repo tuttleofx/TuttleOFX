@@ -2,9 +2,9 @@
 #define _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 
 #include "ProcessNode.hpp"
-#include <tuttle/host/ofx/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
-#include <tuttle/host/ofx/OfxhAttribute.hpp>
+#include <tuttle/host/ofx/attribute/OfxhAttribute.hpp>
+#include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
 

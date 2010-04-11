@@ -1,5 +1,8 @@
 #include "OfxhParameterSuite.hpp"
-#include "OfxhParam.hpp"
+#include "attribute/OfxhParam.hpp"
+#include "attribute/OfxhParamSet.hpp"
+#include "attribute/OfxhParamSetDescriptor.hpp"
+#include "attribute/OfxhKeyframeParam.hpp"
 
 namespace tuttle {
 namespace host {

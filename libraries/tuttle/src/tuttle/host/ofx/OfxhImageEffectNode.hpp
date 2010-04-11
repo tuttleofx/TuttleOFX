@@ -36,14 +36,14 @@
 #include "OfxhImageEffectNodeDescriptor.hpp"
 #include "OfxhImageEffectPlugin.hpp"
 #include "OfxhHost.hpp"
-#include "property/OfxhSet.hpp"
-#include "OfxhClipImage.hpp"
 #include "OfxhMessage.hpp"
 #include "OfxhProgress.hpp"
 #include "OfxhTimeline.hpp"
-#include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
+#include "property/OfxhSet.hpp"
+#include "attribute/OfxhParamSet.hpp"
+#include "attribute/OfxhClipImageSet.hpp"
 
 #include <ofxCore.h>
 #include <ofxImageEffect.h>

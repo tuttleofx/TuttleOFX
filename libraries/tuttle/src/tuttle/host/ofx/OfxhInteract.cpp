@@ -28,13 +28,13 @@
  */
 
 // ofx host
-#include "property/OfxhSet.hpp"
 #include "OfxhBinary.hpp"
-#include "OfxhClip.hpp"
-#include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhImageEffectNode.hpp"
 #include "OfxhInteract.hpp"
+#include "property/OfxhSet.hpp"
+#include "attribute/OfxhClip.hpp"
+#include "attribute/OfxhParam.hpp"
 
 // ofx
 #include <ofxKeySyms.h>

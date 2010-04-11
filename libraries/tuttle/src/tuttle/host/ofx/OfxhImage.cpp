@@ -29,9 +29,9 @@
 
 // ofx host
 #include "OfxhBinary.hpp"
-#include "OfxhClip.hpp"
 #include "OfxhImageEffectNode.hpp"
 #include "property/OfxhSet.hpp"
+#include "attribute/OfxhClip.hpp"
 
 // ofx
 #include <ofxCore.h>

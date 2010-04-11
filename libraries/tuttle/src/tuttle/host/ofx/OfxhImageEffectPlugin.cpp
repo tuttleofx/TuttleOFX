@@ -28,18 +28,17 @@
  */
 
 // ofx host
-#include "property/OfxhSet.hpp"
 #include "OfxhBinary.hpp"
-#include "OfxhClip.hpp"
-#include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhImageEffectNode.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
 #include "OfxhImageEffectPlugin.hpp"
-
 #include "OfxhPluginAPICache.hpp"
 #include "OfxhImageEffectPluginCache.hpp"
+#include "property/OfxhSet.hpp"
+#include "attribute/OfxhClip.hpp"
+#include "attribute/OfxhParam.hpp"
 
 ///@todo tuttle: remove this !
 #include <tuttle/host/core/Core.hpp>

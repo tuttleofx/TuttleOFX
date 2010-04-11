@@ -1,19 +1,19 @@
 #include "ImageEffectNode.hpp"
 #include "HostDescriptor.hpp"
-#include "ClipImage.hpp"
-#include "Param.hpp"
+#include "attribute/ClipImage.hpp"
+#include "attribute/allParams.hpp"
 
 // ofx host
 #include <tuttle/host/ofx/OfxhBinary.hpp>
-#include <tuttle/host/ofx/property/OfxhSet.hpp>
-#include <tuttle/host/ofx/OfxhClip.hpp>
-#include <tuttle/host/ofx/OfxhParam.hpp>
 #include <tuttle/host/ofx/OfxhMemory.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/ofx/OfxhPluginAPICache.hpp>
 #include <tuttle/host/ofx/OfxhPluginCache.hpp>
 #include <tuttle/host/ofx/OfxhHost.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
+#include <tuttle/host/ofx/property/OfxhSet.hpp>
+#include <tuttle/host/ofx/attribute/OfxhClip.hpp>
+#include <tuttle/host/ofx/attribute/OfxhParam.hpp>
 
 // ofx
 #include <ofxCore.h>

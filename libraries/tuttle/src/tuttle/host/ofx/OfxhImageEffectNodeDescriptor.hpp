@@ -2,8 +2,9 @@
 #define _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_DESCRIPTOR_HPP_
 
 #include "OfxhImageEffectNodeBase.hpp"
-#include "OfxhParam.hpp"
-#include "OfxhClipImage.hpp"
+#include "attribute/OfxhClipImageDescriptor.hpp"
+#include "attribute/OfxhParamDescriptor.hpp"
+#include "attribute/OfxhParamSetDescriptor.hpp"
 #include "OfxhInteract.hpp"
 
 #include <boost/ptr_container/serialize_ptr_vector.hpp>
