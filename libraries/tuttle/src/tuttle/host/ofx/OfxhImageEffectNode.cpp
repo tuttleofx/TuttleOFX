@@ -1433,14 +1433,15 @@ void OfxhImageEffectNode::paramChanged( const attribute::OfxhParam& param, const
 	if( change == attribute::eChangeNone )
 		return;
 	
-	double frame = getFrameRecursive();
+	const std::string changeStr = attribute::mapEChangeToString(change);
+	const double frame = getFrameRecursive();
 	OfxPointD renderScale;
 
 	getRenderScaleRecursive( renderScale.x, renderScale.y );
 
-	beginInstanceChangedAction( kOfxChangePluginEdited );
-	paramInstanceChangedAction( param.getName(), attribute::mapEChangeToString(change), frame, renderScale );
-	endInstanceChangedAction( kOfxChangePluginEdited );
+	beginInstanceChangedAction( changeStr );
+	paramInstanceChangedAction( param.getName(), changeStr, frame, renderScale );
+	endInstanceChangedAction( changeStr );
 }
 
 }
