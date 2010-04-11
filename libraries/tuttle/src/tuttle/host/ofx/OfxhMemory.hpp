@@ -30,6 +30,9 @@
 #ifndef _TUTTLE_HOST_OFX_MEMORY_HPP_
 #define _TUTTLE_HOST_OFX_MEMORY_HPP_
 
+#include <ofxImageEffect.h>
+#include <cstring>
+
 namespace tuttle {
 namespace host {
 namespace ofx {

@@ -42,14 +42,16 @@
  * This file only holds code that is visible to a plugin implementation, and so hides much
  * of the direct OFX objects and any library side only functions.
  */
-#include <map>
-#include <string>
-#include <sstream>
 #include "ofxsParam.h"
 #include "ofxsInteract.h"
 #include "ofxsMessage.h"
-#include "ofxProgress.h"
-#include "ofxTimeLine.h"
+
+#include <ofxProgress.h>
+#include <ofxTimeLine.h>
+
+#include <map>
+#include <string>
+#include <sstream>
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC( CLASS ) \

@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_OFX_CORE_HPP_
 #define _TUTTLE_HOST_OFX_CORE_HPP_
 
-#include "ofxCore.h"
+#include <ofxCore.h>
 
 #include <ostream>
 

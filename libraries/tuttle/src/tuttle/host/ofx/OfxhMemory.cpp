@@ -28,13 +28,11 @@
  */
 
 // ofx host
+#include "OfxhMemory.hpp"
 
 // ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-
-// ofx host
-#include "OfxhMemory.hpp"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 namespace tuttle {
 namespace host {

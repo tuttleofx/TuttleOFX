@@ -129,16 +129,17 @@ public:
 	ParamChoice( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamChoice* clone() const { return new ParamChoice( *this ); }
 
-	int       getDefault() const;
+	int getDefault() const;
 	void get( int& ) const OFX_EXCEPTION_SPEC;
 	void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
 	void set( const int& ) OFX_EXCEPTION_SPEC;
 	void set( const OfxTime time, const int& ) OFX_EXCEPTION_SPEC;
-	void          copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC
+	
+	void copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC
 	{
 		_value = p._value;
 	}
-	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
 	{
 		const ParamChoice& param = dynamic_cast<const ParamChoice&>(p);
 		copy( param );

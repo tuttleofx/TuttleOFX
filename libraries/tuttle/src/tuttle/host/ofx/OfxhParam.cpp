@@ -33,12 +33,7 @@
 #include "OfxhParam.hpp"
 #include "OfxhImageEffectNode.hpp" ///@todo tuttle: remove this
 
-// ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h" ///@todo tuttle: remove this
-
-#include <cfloat>
-#include <climits>
+#include <boost/numeric/conversion/cast.hpp>
 #ifdef _MSC_VER
 	#undef max
 	#undef min
@@ -718,8 +713,20 @@ const std::map<int, attribute::OfxhParam*>& OfxhParamPage::getChildren() const
 //
 // ChoiceInstance
 //
-/// implementation of var args function
 
+int OfxhParamChoice::getIndexFor( const std::string& key ) const
+{
+	typedef std::vector<std::string> StringVector;
+	const StringVector& values = this->getProperties().fetchStringProperty(kOfxParamPropChoiceOption).getValues();
+	StringVector::const_iterator it = std::find( values.begin(), values.end(), key );
+	if( it == values.end() )
+		throw( OfxhException( "T" ) );
+	return boost::numeric_cast<int>( std::distance( values.begin(), it ) );
+}
+
+/**
+ * implementation of var args function
+ */
 void OfxhParamChoice::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );

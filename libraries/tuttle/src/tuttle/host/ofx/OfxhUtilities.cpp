@@ -27,8 +27,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ofxCore.h"
 #include "OfxhUtilities.hpp"
+
+#include <ofxCore.h>
 
 namespace tuttle {
 namespace host {

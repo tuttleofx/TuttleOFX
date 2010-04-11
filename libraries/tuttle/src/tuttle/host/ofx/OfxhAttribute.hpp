@@ -181,11 +181,6 @@ public:
 		return getEditableProperties().setStringProperty( kOfxPropLongLabel, label );
 	}
 
-	const property::OfxhSet& getProps() const
-	{
-		return getProperties();
-	}
-
 	/** get a handle on the properties of the clip descriptor for the C api
 	 */
 	OfxPropertySetHandle getPropHandle() const

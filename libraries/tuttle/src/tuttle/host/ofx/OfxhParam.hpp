@@ -724,12 +724,23 @@ class OfxhParamChoice : public OfxhParam,
 public:
 	OfxhParamChoice( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 
+	int getIndexFor( const std::string& key ) const;
+
 	// Deriving implementatation needs to overide these
 	virtual void get( int& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void set( const int& )                OFX_EXCEPTION_SPEC = 0;
 	virtual void set( const OfxTime time, const int& )  OFX_EXCEPTION_SPEC = 0;
 
+	void set( const std::string& key ) OFX_EXCEPTION_SPEC
+	{
+		set( getIndexFor(key) );
+	}
+
+	void set( const OfxTime time, const std::string& key ) OFX_EXCEPTION_SPEC
+	{
+		set( time, getIndexFor(key) );
+	}
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
 

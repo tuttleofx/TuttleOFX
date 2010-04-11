@@ -37,8 +37,8 @@
 #include "OfxhUtilities.hpp"
 
 // ofx
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 #include <map>
 #include <string>

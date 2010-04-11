@@ -3,8 +3,8 @@
 
 #include <tuttle/host/core/Exception.hpp>
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 #include "OfxhHost.hpp"
 #include "OfxhClipImage.hpp"

@@ -86,15 +86,15 @@
  #pragma warning( disable : 4290 )
 #endif
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
-#include "ofxInteract.h"
-#include "ofxKeySyms.h"
-#include "ofxMemory.h"
-#include "ofxMessage.h"
-#include "ofxMultiThread.h"
-#include "ofxParam.h"
-#include "ofxProperty.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
+#include <ofxInteract.h>
+#include <ofxKeySyms.h>
+#include <ofxMemory.h>
+#include <ofxMessage.h>
+#include <ofxMultiThread.h>
+#include <ofxParam.h>
+#include <ofxProperty.h>
 
 #include <cassert>
 #include <vector>

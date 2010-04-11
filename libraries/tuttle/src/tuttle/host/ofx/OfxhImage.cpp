@@ -65,7 +65,7 @@ OfxhImage::OfxhImage()
 
 void OfxhImage::initClipBits( attribute::OfxhClip& instance )
 {
-	const property::OfxhSet& clipProperties = instance.getProps();
+	const property::OfxhSet& clipProperties = instance.getProperties();
 
 	// get and set the clip instance pixel depth
 	const std::string& depth = clipProperties.getStringProperty( kOfxImageEffectPropPixelDepth );
