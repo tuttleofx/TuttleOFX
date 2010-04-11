@@ -14,6 +14,7 @@ namespace attribute {
 
 enum EChange
 {
+	eChangeNone,
 	eChangeTime,
 	eChangeUserEdited,
 	eChangePluginEdited,
@@ -23,6 +24,8 @@ inline std::string mapEChangeToString( const EChange change )
 {
 	switch( change )
 	{
+		case eChangeNone:
+			return "eChangeNone";
 		case eChangeTime:
 			return kOfxChangeTime;
 		case eChangeUserEdited:
@@ -36,10 +39,12 @@ inline EChange mapStringToEChange( const std::string& change )
 {
 	if( change == kOfxChangeTime )
 		return eChangeTime;
-	if( change == kOfxChangeUserEdited )
+	else if( change == kOfxChangeUserEdited )
 		return eChangeUserEdited;
-	if( change ==kOfxChangePluginEdited )
+	else if( change == kOfxChangePluginEdited )
 		return eChangePluginEdited;
+	else
+		return eChangeNone;
 }
 
 

@@ -111,10 +111,7 @@ public:
 		return ( OfxParamHandle ) this;
 	}
 
-	// void instanceChangedAction( std::string why,
-	//                             OfxTime     time,
-	//                             double      renderScaleX,
-	//                             double      renderScaleY) OFX_EXCEPTION_SPEC;
+	void paramChanged( const attribute::EChange change );
 
 	void changedActionBegin() { _avoidRecursion = true; }
 	void changedActionEnd() { _avoidRecursion = false; }

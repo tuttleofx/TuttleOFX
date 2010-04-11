@@ -1430,6 +1430,9 @@ void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
  */
 void OfxhImageEffectNode::paramChanged( const attribute::OfxhParam& param, const attribute::EChange change )
 {
+	if( change == attribute::eChangeNone )
+		return;
+	
 	double frame = getFrameRecursive();
 	OfxPointD renderScale;
 

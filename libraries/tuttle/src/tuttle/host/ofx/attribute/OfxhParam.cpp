@@ -31,6 +31,11 @@ OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, const std::string& 
  */
 OfxhParam::~OfxhParam() {}
 
+void OfxhParam::paramChanged( const attribute::EChange change )
+{
+	_paramSetInstance->paramChanged( *this, change );
+}
+
 /**
  * callback which should set enabled state as appropriate
  */
