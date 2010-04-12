@@ -171,12 +171,12 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 		_matchList = matchingGroups(directory, regex( _pattern ) );
 		if (_matchList.size() > 1)
 		{
-			COUT_WARNING("Multiple pattern in directory: " << directory << endl << "Basing on first pattern.");
+			COUT_WARNING("Multiple sequences found in directory: " << directory << endl << "Basing on first pattern.");
 		}
 		else if (_matchList.size() == 0)
 		{
-			COUT_WARNING("No pattern was found, disabling file directory pattern searching");
-			return true;
+//			COUT_WARNING("No pattern was found, disabling file directory pattern searching");
+			return false;
 		}
 
 		FilenamesGroup g = _matchList.front();
