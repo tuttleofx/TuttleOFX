@@ -1,12 +1,10 @@
 #include "Image.hpp"
 #include "Core.hpp"
-#include "ClipImage.hpp"
+#include "attribute/ClipImage.hpp"
 
 // utilities
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/image/gilGlobals.hpp>
-
-#include <tuttle/host/ofx/OfxhClipImage.hpp>
 
 //TODO: delete this
 #ifdef _DEBUG

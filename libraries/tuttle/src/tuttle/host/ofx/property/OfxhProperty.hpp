@@ -39,7 +39,6 @@
 #include <boost/serialization/extended_type_info.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
-#include <boost/ptr_container/serialize_ptr_map.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/lexical_cast.hpp>
 

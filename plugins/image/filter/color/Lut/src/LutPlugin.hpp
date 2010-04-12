@@ -1,17 +1,10 @@
-/**
- * @file LutPlugin.hpp
- * @brief
- * @author
- * @date    01/10/09 12:01
- *
- */
+#ifndef _TUTTLE_PLUGIN_LUTPLUGIN_HPP_
+#define _TUTTLE_PLUGIN_LUTPLUGIN_HPP_
 
-#ifndef LUT_PLUGIN_H
-#define LUT_PLUGIN_H
+#include "lutEngine/LutReader.hpp"
+#include "lutEngine/Lut.hpp"
 
 #include <ofxsImageEffect.h>
-#include "lutEngine/lut_reader.h"
-#include "lutEngine/hd3d_lut.h"
 
 namespace tuttle {
 namespace plugin {
@@ -47,4 +40,4 @@ protected:
 }
 }
 
-#endif  // LUT_PLUGIN_H
+#endif

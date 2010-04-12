@@ -27,16 +27,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef OFXH_IMAGE_EFFECT_API_H
-#define OFXH_IMAGE_EFFECT_API_H
+#ifndef _TUTTLE_HOST_OFX_IMAGEEFFECT_API_HPP_
+#define _TUTTLE_HOST_OFX_IMAGEEFFECT_API_HPP_
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
 #include "OfxhImageEffectHost.hpp"
 #include "OfxhImageEffectNode.hpp"
 #include "OfxhPluginHandle.hpp"
 #include "OfxhPluginCache.hpp"
 #include "OfxhHost.hpp"
+
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/ptr_container/serialize_ptr_map.hpp>

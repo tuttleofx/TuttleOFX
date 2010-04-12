@@ -29,13 +29,13 @@
 #ifndef _OfxhUtilities_h_
 #define _OfxhUtilities_h_
 
-#include <string>
-#include <vector>
-
 #include <tuttle/common/utils/global.hpp>
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
+
+#include <string>
+#include <vector>
 
 namespace tuttle {
 namespace host {

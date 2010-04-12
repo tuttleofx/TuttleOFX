@@ -1,17 +1,10 @@
-/**
- * @file LutPlugin.cpp
- * @brief 3D-Lut ofx plugin
- * @author Eloi Du Bois
- * @date    13/11/09 13:42
- *
- */
-
 #include "LutPlugin.hpp"
 #include "LutProcess.hpp"
 #include "LutDefinitions.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {

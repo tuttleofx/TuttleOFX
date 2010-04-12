@@ -31,7 +31,7 @@
 #define _TUTTLE_HOST_OFX_IMAGE_HPP_
 
 #include "OfxhUtilities.hpp"
-#include "OfxhClip.hpp"
+#include "attribute/OfxhClip.hpp"
 #include "property/OfxhSet.hpp"
 
 #include <ofxImageEffect.h>

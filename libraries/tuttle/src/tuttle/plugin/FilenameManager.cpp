@@ -2,6 +2,7 @@
 #include "tuttle/common/utils/global.hpp"
 #include "PluginException.hpp"
 
+#include <limits>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -55,11 +56,8 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 	_currentPos = 0;
 	_matchList.clear();
 
-	// Size of max size_t in base 10.
-	size_t max = (size_t)-1;
-	std::ostringstream o;
-	o << max;
-	max = o.str().length();
+	// max number of digits for size_t
+	static const size_t max = std::numeric_limits<size_t>::digits10+1;
 
 	const regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\]");
 	const regex unesc("[\\\\]");

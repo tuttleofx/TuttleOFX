@@ -33,10 +33,10 @@
 #include "OfxhMemorySuite.hpp"
 
 // ofx
-#include "ofxCore.h"
-#include "ofxProperty.h"
-#include "ofxMultiThread.h"
-#include "ofxMemory.h"
+#include <ofxCore.h>
+#include <ofxProperty.h>
+#include <ofxMultiThread.h>
+#include <ofxMemory.h>
 
 #include <climits>
 #include <cmath>

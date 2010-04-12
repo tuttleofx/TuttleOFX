@@ -1,12 +1,12 @@
-#ifndef _TUTTLE_HOST_GRAPH_HPP_
-#define _TUTTLE_HOST_GRAPH_HPP_
+#ifndef _TUTTLE_HOST_CORE_GRAPH_HPP_
+#define _TUTTLE_HOST_CORE_GRAPH_HPP_
 
 #include "Core.hpp"
 #include "Exception.hpp"
-#include <tuttle/host/ofx/OfxhAttribute.hpp>
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/Vertex.hpp>
 #include <tuttle/host/graph/Edge.hpp>
+#include <tuttle/host/ofx/attribute/OfxhAttribute.hpp>
 
 #include <boost/ptr_container/ptr_map.hpp>
 

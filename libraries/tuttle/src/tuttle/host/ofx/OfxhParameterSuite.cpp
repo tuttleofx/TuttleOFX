@@ -1,5 +1,8 @@
 #include "OfxhParameterSuite.hpp"
-#include "OfxhParam.hpp"
+#include "attribute/OfxhParam.hpp"
+#include "attribute/OfxhParamSet.hpp"
+#include "attribute/OfxhParamSetDescriptor.hpp"
+#include "attribute/OfxhKeyframeParam.hpp"
 
 namespace tuttle {
 namespace host {
@@ -353,7 +356,7 @@ static OfxStatus paramSetValue( OfxParamHandle paramHandle,
 		if( stat == kOfxStatOK )
 		{
 			if( paramInstance->getParamSetInstance() )
-				paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
+				paramInstance->getParamSetInstance()->paramChanged( *paramInstance, eChangePluginEdited );
 			else
 				stat = kOfxStatErrUnsupported;
 		}
@@ -405,7 +408,7 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 		if( stat == kOfxStatOK )
 		{
 			if( paramInstance->getParamSetInstance() )
-				paramInstance->getParamSetInstance()->paramChangedByPlugin( paramInstance );
+				paramInstance->getParamSetInstance()->paramChanged( *paramInstance, eChangePluginEdited );
 			else
 				stat = kOfxStatErrUnsupported;
 		}

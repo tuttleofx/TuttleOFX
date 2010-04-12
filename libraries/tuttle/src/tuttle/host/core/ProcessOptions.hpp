@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_PROCESSOPTIONS_HPP_
 #define _TUTTLE_HOST_PROCESSOPTIONS_HPP_
 
-#include <tuttle/host/ofx/OfxhClipImage.hpp>
+#include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhCore.hpp>
 
 #include <string>

@@ -1,7 +1,7 @@
 #ifndef _FILENAMEMANAGER_HPP
 #define	_FILENAMEMANAGER_HPP
 
-#include "ofxCore.h"
+#include <ofxCore.h>
 
 #include <boost/regex.hpp>
 #include <boost/filesystem.hpp>
@@ -10,6 +10,7 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+
 namespace tuttle {
 namespace plugin {
 

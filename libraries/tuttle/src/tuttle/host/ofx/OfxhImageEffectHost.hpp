@@ -3,16 +3,16 @@
 
 #include <tuttle/host/core/Exception.hpp>
 
-#include "ofxCore.h"
-#include "ofxImageEffect.h"
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 #include "OfxhHost.hpp"
-#include "OfxhClipImage.hpp"
 #include "OfxhProgress.hpp"
 #include "OfxhTimeline.hpp"
-#include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
+#include "attribute/OfxhParam.hpp"
+#include "attribute/OfxhClipImage.hpp"
 
 namespace tuttle {
 namespace host {

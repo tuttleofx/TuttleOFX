@@ -2,24 +2,23 @@
 	#pragma warning( disable : 4244 )
 #endif
 
+#include "LutProcess.hpp"
+#include "LutDefinitions.hpp"
+#include "lutEngine/LutReader.hpp"
+#include "lutEngine/Lut.hpp"
+#include "lutEngine/TetraInterpolator.hpp"
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 #include <tuttle/common/image/gilGlobals.hpp>
 
-#include <cmath>
-#include <vector>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-#include "lutEngine/lut_reader.h"
-#include "lutEngine/hd3d_lut.h"
-#include "lutEngine/hd3d_tetra_interpolator.h"
-
-#include "LutProcess.hpp"
-#include "LutDefinitions.hpp"
 
 namespace tuttle {
 namespace plugin {

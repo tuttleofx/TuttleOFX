@@ -6,24 +6,10 @@
 #include "windows/windows.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Assert that need to be everywhere
+// Assert needs to be everywhere
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/current_function.hpp>
-
-namespace boost {
-template<class T>
-class scoped_ptr;
-template<class T>
-class shared_ptr;
-namespace gil {}
-}
-// some standards things inside the project
-namespace tuttle {
-using boost::scoped_ptr;
-using boost::shared_ptr;
-namespace bgil = boost::gil;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Define functions to display infos in the console

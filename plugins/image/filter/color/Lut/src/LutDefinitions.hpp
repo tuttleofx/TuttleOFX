@@ -1,5 +1,5 @@
-#ifndef LUT_DEFINITIONS_HPP
-#define LUT_DEFINITIONS_HPP
+#ifndef _TUTTLE_PLUGIN_LUTDEFINITIONS_HPP_
+#define _TUTTLE_PLUGIN_LUTDEFINITIONS_HPP_
 
 namespace tuttle {
 namespace plugin {
@@ -12,4 +12,4 @@ static const std::string kInputFilenameLabel = "3D Lut input filename";
 }
 }
 
-#endif //LUT_DEFINITIONS_HPP
+#endif

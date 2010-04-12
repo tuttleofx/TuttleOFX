@@ -28,10 +28,7 @@
  */
 
 // ofx host
-#include "property/OfxhSet.hpp"
 #include "OfxhBinary.hpp"
-#include "OfxhClip.hpp"
-#include "OfxhParam.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhImageEffectNode.hpp"
 #include "OfxhPluginAPICache.hpp"
@@ -39,6 +36,11 @@
 #include "OfxhHost.hpp"
 #include "OfxhImageEffectPlugin.hpp"
 #include "OfxhUtilities.hpp"
+#include "attribute/OfxhClip.hpp"
+#include "attribute/OfxhParam.hpp"
+#include "attribute/OfxhParamGroup.hpp"
+#include "attribute/OfxhParamDouble.hpp"
+#include "property/OfxhSet.hpp"
 
 #include <tuttle/host/core/Core.hpp>
 
@@ -1426,28 +1428,20 @@ void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
 /**
  * implemented for Param::SetInstance
  */
-void OfxhImageEffectNode::paramChangedByPlugin( attribute::OfxhParam* param )
+void OfxhImageEffectNode::paramChanged( const attribute::OfxhParam& param, const attribute::EChange change )
 {
-	double frame = getFrameRecursive();
+	if( change == attribute::eChangeNone )
+		return;
+	
+	const std::string changeStr = attribute::mapEChangeToString(change);
+	const double frame = getFrameRecursive();
 	OfxPointD renderScale;
 
 	getRenderScaleRecursive( renderScale.x, renderScale.y );
 
-	beginInstanceChangedAction( kOfxChangePluginEdited );
-	paramInstanceChangedAction( param->getName(), kOfxChangePluginEdited, frame, renderScale );
-	endInstanceChangedAction( kOfxChangePluginEdited );
-}
-
-void OfxhImageEffectNode::paramChangedByUser( attribute::OfxhParam* param )
-{
-	double frame = getFrameRecursive();
-	OfxPointD renderScale;
-
-	getRenderScaleRecursive( renderScale.x, renderScale.y );
-
-	beginInstanceChangedAction( kOfxChangePluginEdited );
-	paramInstanceChangedAction( param->getName(), kOfxChangeUserEdited, frame, renderScale );
-	endInstanceChangedAction( kOfxChangePluginEdited );
+	beginInstanceChangedAction( changeStr );
+	paramInstanceChangedAction( param.getName(), changeStr, frame, renderScale );
+	endInstanceChangedAction( changeStr );
 }
 
 }
