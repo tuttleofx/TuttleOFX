@@ -38,8 +38,8 @@ public:
     OFX::Clip* _srcClip; ///< Source image clip
     OFX::Clip* _dstClip; ///< Destination image clip
 	
-	OFX::Double2DParam* _cornerA;
-	OFX::Double2DParam* _cornerB;
+	OFX::Double2DParam* _rectCenter;
+	OFX::Double2DParam* _rectSize;
 	OFX::ChoiceParam* _chooseOutput;
 	OFX::RGBAParam* _outputAverage;
 	OFX::RGBAParam* _outputChannelMin;

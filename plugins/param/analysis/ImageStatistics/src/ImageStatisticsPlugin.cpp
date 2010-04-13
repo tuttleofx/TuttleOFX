@@ -24,8 +24,8 @@ ImageEffect( handle )
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
 
-	_cornerA = fetchDouble2DParam( kCornerA );
-	_cornerB = fetchDouble2DParam( kCornerB );
+	_rectCenter = fetchDouble2DParam( kRectCenter );
+	_rectSize = fetchDouble2DParam( kRectSize );
 	_chooseOutput = fetchChoiceParam( kChooseOutput );
 	_outputAverage = fetchRGBAParam( kOutputAverage );
 	_outputChannelMin = fetchRGBAParam( kOutputChannelMin );
@@ -37,17 +37,14 @@ ImageEffect( handle )
 ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectI& srcRod ) const
 {
 	ImageStatisticsProcessParams params;
-	OfxPointD cornerA = _cornerA->getValue();
-	OfxPointD cornerB = _cornerB->getValue();
-	OfxPointD rodSize;
-	rodSize.x = srcRod.x2 - srcRod.x1;
-	rodSize.y = srcRod.y2 - srcRod.y1;
-	cornerA = pointNormalizedXXcToCanonicalXY( cornerA, rodSize); // XX centered normalized to canonical
-	cornerB = pointNormalizedXXcToCanonicalXY( cornerB, rodSize);
-	params._rect.x1 = boost::numeric_cast<int>( std::min( cornerA.x, cornerB.x ) );
-	params._rect.y1 = boost::numeric_cast<int>( std::min( cornerA.y, cornerB.y ) );
-	params._rect.x2 = boost::numeric_cast<int>( std::max( cornerA.x, cornerB.x ) );
-	params._rect.y2 = boost::numeric_cast<int>( std::max( cornerA.y, cornerB.y ) );
+	OfxPointD rectCenter = _rectCenter->getValue();
+	OfxPointD rectSize = _rectSize->getValue();
+	rectSize.x = std::abs( rectSize.x );
+	rectSize.y = std::abs( rectSize.y );
+	params._rect.x1 = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
+	params._rect.y1 = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
+	params._rect.x2 = boost::numeric_cast<int>( rectCenter.x + rectSize.x );
+	params._rect.y2 = boost::numeric_cast<int>( rectCenter.y + rectSize.y );
 	params._rect = rectanglesIntersection( params._rect, srcRod );
 	params._chooseOutput = static_cast<EChooseOutput>( _chooseOutput->getValue() );
 	return params;
@@ -61,6 +58,7 @@ void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestAr
 	srcRealRoiD.y1 = srcRealRoi.y1;
 	srcRealRoiD.x2 = srcRealRoi.x2;
 	srcRealRoiD.y2 = srcRealRoi.y2;
+	COUT_VAR(srcRealRoiD);
     rois.setRegionOfInterest( *_srcClip, srcRealRoiD );
 }
 

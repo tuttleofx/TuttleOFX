@@ -31,35 +31,13 @@ protected:
 	const TFrame _frame;
 
 public:
-	Point2 getPoint() const;
-	void setPoint( const Scalar x, const Scalar y );
-
-};
-
-template<class TFrame>
-class ParamPoint<TFrame, eCoordonateSystemXXcn> : public PointInteract
-{
-public:
-	ParamPoint( const InteractInfos& infos, OFX::Double2DParam* param, const TFrame& frame )
-	: PointInteract( infos )
-	, _param( *param )
-	, _frame( frame )
-	{
-	}
-	~ParamPoint(){}
-
-protected:
-	OFX::Double2DParam& _param;
-	const TFrame _frame;
-
-public:
 	Point2 getPoint() const
 	{
 		if( _frame.isEnabled() )
 		{
 			OfxRectD rod = _frame.getFrame( this->getTime() );
-			OfxPointD rodSize = { rod.x2-rod.x1, rod.y2-rod.y1 };
-			Point2 p = ofxToGil( pointNormalizedXXcToCanonicalXY( _param.getValue(), rodSize ) ) + Point2( rod.x1, rod.y1 );
+			Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+			Point2 p = pointConvertCoordonateSystem<coord, eCoordonateSystemXY>( ofxToGil( _param.getValue() ), rodSize ) + Point2( rod.x1, rod.y1 );
 			return p;
 		}
 		return Point2( 0, 0 );
@@ -71,14 +49,15 @@ public:
 			OfxRectD rod = _frame.getFrame( this->getTime() );
 			Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 			Point2 p( x-rod.x1, y-rod.y1 );
-			p = pointCanonicalXYToNormalizedXXc( p, rodSize );
+			p = pointConvertCoordonateSystem<eCoordonateSystemXY, coord>( p, rodSize );
 			_param.setValue( p.x, p.y );
 			return;
 		}
 		_param.setValue( 0, 0 );
 	}
-
 };
+
+
 
 }
 }

@@ -2,6 +2,7 @@
 #include "ImageStatisticsDefinitions.hpp"
 #include "ImageStatisticsPlugin.hpp"
 #include "tuttle/plugin/interact/Frame.hpp"
+#include "tuttle/plugin/interact/ParamRectangleFromCenterSize.hpp"
 #include <tuttle/plugin/interact/ParamRectangleFromTwoCorners.hpp>
 #include <tuttle/common/opengl/gl.h>
 #include <tuttle/plugin/interact/interact.hpp>
@@ -24,19 +25,8 @@ ImageStatisticsOverlayInteract::ImageStatisticsOverlayInteract( OfxInteractHandl
 {
 	_effect = effect;
 	_plugin = static_cast<ImageStatisticsPlugin*>( _effect );
-
-    _srcClip = _plugin->fetchClip( kOfxImageEffectSimpleSourceClipName );
-
-	_cornerA = _plugin->fetchDouble2DParam( kCornerA );
-	_cornerB = _plugin->fetchDouble2DParam( kCornerB );
-	_chooseOutput = _plugin->fetchChoiceParam( kChooseOutput );
-	_outputAverage = _plugin->fetchRGBAParam( kOutputAverage );
-	_outputChannelMin = _plugin->fetchRGBAParam( kOutputChannelMin );
-	_outputChannelMax = _plugin->fetchRGBAParam( kOutputChannelMax );
-	_outputLuminosityMin = _plugin->fetchRGBAParam( kOutputLuminosityMin );
-	_outputLuminosityMax = _plugin->fetchRGBAParam( kOutputLuminosityMax );
 	
-	_interactScene.push_back( new interact::ParamRectangleFromTwoCorners<interact::FrameClip, interact::eCoordonateSystemXXcn>( _infos, _cornerA, _cornerB, interact::FrameClip(_srcClip) ), new interact::ActiveFunctor() );
+	_interactScene.push_back( new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXY>( _infos, _plugin->_rectCenter, _plugin->_rectSize, interact::FrameClip(_plugin->_srcClip) ), new interact::AlwaysActiveFunctor() );
 }
 
 bool ImageStatisticsOverlayInteract::draw( const OFX::DrawArgs &args )

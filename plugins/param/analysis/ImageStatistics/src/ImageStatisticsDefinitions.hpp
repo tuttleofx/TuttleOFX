@@ -8,8 +8,8 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-const static std::string kCornerA = "cornerA";
-const static std::string kCornerB = "cornerB";
+const static std::string kRectCenter = "rectCenter";
+const static std::string kRectSize = "rectSize";
 const static std::string kOutputGroup = "outputGroup";
 const static std::string kOutputAverage = "outputAverage";
 const static std::string kOutputChannelMin = "outputChannelMin";
