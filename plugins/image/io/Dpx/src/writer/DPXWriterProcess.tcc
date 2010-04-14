@@ -36,7 +36,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 		switch( params._bitDepth )
 		{
-			case 0: {
+			case 3: {
 				switch( params._componentsType )
 				{
 					case 0: {
@@ -54,7 +54,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case 1: {
+			case 2: {
 				switch( params._componentsType )
 				{
 					case 0:
@@ -76,7 +76,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case 2: {
+			case 1: {
 				switch( params._componentsType )
 				{
 					case 0:
@@ -95,7 +95,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case 3: {
+			case 0: {
 				switch( params._componentsType )
 				{
 					case 0:

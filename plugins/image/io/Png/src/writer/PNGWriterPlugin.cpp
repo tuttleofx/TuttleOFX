@@ -22,6 +22,8 @@ PNGWriterPlugin::PNGWriterPlugin( OfxImageEffectHandle handle )
 	_filepath       = fetchStringParam( kOutputFilename );
 	_renderButton   = fetchPushButtonParam( kRender );
 	_renderAlways   = fetchBooleanParam( kParamRenderAlways );
+	_precision      = fetchChoiceParam( kPrecision );
+	_precisionLong  = fetchChoiceParam( kPrecisionLong );
 }
 
 OFX::Clip* PNGWriterPlugin::getSrcClip() const
@@ -38,6 +40,7 @@ PNGWriterParams PNGWriterPlugin::getParams(const OfxTime time)
 {
 	PNGWriterParams params;
 	params._filepath = _fPattern.getFilenameAt(time);
+	params._precision = _precision->getValue();
 	return params;
 }
 
@@ -130,6 +133,32 @@ void PNGWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	if( paramName == kOutputFilename )
 	{
 		_fPattern.reset(_filepath->getValue(), false, 0, 1);
+	}
+	else if( paramName == kPrecisionLong && args.reason == OFX::eChangeUserEdit  )
+	{
+		_precision->setValue( _precisionLong->getValue() );
+	}
+	else if( paramName == kPrecision && args.reason == OFX::eChangeUserEdit )
+	{
+		_precisionLong->setValue( _precision->getValue() );
+	}
+}
+
+void PNGWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
+	switch(_precision->getValue())
+	{
+		case 8:
+			clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
+			break;
+		case 12:
+		case 16:
+			clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUShort );
+			break;
+		case 32:
+			clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
+			break;
 	}
 }
 

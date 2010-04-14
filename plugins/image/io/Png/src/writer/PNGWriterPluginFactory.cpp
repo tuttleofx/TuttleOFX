@@ -67,6 +67,18 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
+	OFX::ChoiceParamDescriptor* precision = desc.defineChoiceParam( kPrecision );
+	precision->setIsSecret( true );
+	precision->appendOption( "8 bits" );
+	precision->appendOption( "16 bits" );
+	precision->setDefault( 1 );
+
+	OFX::ChoiceParamDescriptor* precisionLong = desc.defineChoiceParam( kPrecisionLong );
+	precisionLong->setLabel( "Precision" );
+	precisionLong->appendOption( "8 bits" );
+	precisionLong->appendOption( "16 bits" );
+	precisionLong->setDefault( 1 );
+
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( true );

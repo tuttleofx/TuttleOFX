@@ -24,7 +24,7 @@ namespace writer {
 struct EXRWriterParams
 {
 	std::string _filepath;       ///< filepath
-	EBitDepth   _bitDepth;		 ///< Bit depth
+	EBitDepth   _precision;		 ///< Bit depth
 	ECompType   _componentsType; ///< Components type
 };
 
