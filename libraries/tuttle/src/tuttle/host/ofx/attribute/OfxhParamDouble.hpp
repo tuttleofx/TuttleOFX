@@ -17,15 +17,18 @@ class OfxhParamDouble :
     public OfxhParam,
 	public OfxhKeyframeParam
 {
+protected:
+	std::size_t _index;
+
 public:
 	typedef double BaseType;
-	OfxhParamDouble( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
+	OfxhParamDouble( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance, const std::size_t index = 0 )
 		: OfxhParam( descriptor, name, setInstance )
+		, _index(index)
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
 	}
-
 	// Deriving implementatation needs to overide these
 	virtual void get( double& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void get( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;

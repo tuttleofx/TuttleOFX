@@ -249,7 +249,7 @@ protected:
 
 public:
 	/** @brief dtor */
-	~ValueParamDescriptor();
+	virtual ~ValueParamDescriptor();
 
 	/** @brief set whether the param can animate, defaults to true in most cases */
 	void setAnimates( bool v );
@@ -862,7 +862,7 @@ protected:
 
 public:
 	/** @brief dtor */
-	~ValueParam();
+	virtual ~ValueParam();
 
 	/** @brief Set's whether the value of the param is significant (ie: affects the rendered image) */
 	void setEvaluateOnChange( bool v );

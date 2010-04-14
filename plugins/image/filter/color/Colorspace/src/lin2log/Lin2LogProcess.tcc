@@ -8,6 +8,7 @@
 #include <limits>
 #include <vector>
 #include <iostream>
+#include <cmath>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -20,28 +21,16 @@ namespace lin2log {
 
 using namespace boost::gil;
 
-static const float cineonBlackOffset = powf(10.0f, (95.0f-685.0f) / 300.0f);
+namespace {
+static const float cineonBlackOffset = std::pow(10.0f, (95.0f - 685.0f) / 300.0f);
 
 inline float toCineon(float v)
 {
 	float t = v*(1.0f-cineonBlackOffset)+cineonBlackOffset;
 	if (t <= 0.0f) return -std::numeric_limits<float>::infinity();
-	return (log10f(t)*300.0f+685.0f)/1023.0f;
+	return (std::log10(t)*300.0f+685.0f)/1023.0f;
 }
-
-struct lin2loger
-{
-	inline rgba32f_pixel_t operator()( const rgba32f_pixel_t& p ) const
-	{
-		rgba32f_pixel_t p2;
-		for( int n = 0; n < 3; ++n )
-		{
-			p2[n] = toCineon(p[n]);
-		}
-		p2[3] = p[3];
-		return p2;
-	}
-};
+}
 
 template<class View>
 Lin2LogProcess<View>::Lin2LogProcess( Lin2LogPlugin &instance )
@@ -68,8 +57,38 @@ void Lin2LogProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 							  procWindowSize.x,
 							  procWindowSize.y );
 
-	// Put your computations here
-	transform_pixels( color_converted_view<rgba32f_pixel_t>(src),  color_converted_view<rgba32f_pixel_t>(dst), lin2loger() );
+	lin2log( src, dst );
+}
+
+template<class View>
+void Lin2LogProcess<View>::lin2log(View & src, View & dst)
+{
+	typedef pixel<bits32f, layout<typename color_space_type<View>::type> > PixelF;
+	PixelF p;
+	int ncMax = num_channels<View>::value;
+	bool processAlpha = false;
+	if (!processAlpha && num_channels<View>::value == 4)
+	{
+		ncMax = 3;
+	}
+
+	for( int y = 0; y < src.height(); ++y )
+	{
+		typename View::x_iterator src_it = src.row_begin( y );
+		typename View::x_iterator dst_it = dst.row_begin( y );
+
+		for( int x = 0; x < src.width(); ++x, ++src_it, ++dst_it )
+		{
+			color_convert(*src_it, p);
+			for(int c = 0; c < ncMax; ++c)
+			{
+				p[c] = toCineon(p[c]);
+			}
+			color_convert(p, *dst_it);
+		}
+		if( this->progressForward() )
+			return;
+	}
 }
 
 }

@@ -24,6 +24,8 @@ namespace log2lin {
 template<class View>
 class Log2LinProcess : public ImageGilFilterProcessor<View>
 {
+private:
+	void log2lin(View & src, View & dst);
 protected :
     Log2LinPlugin& _plugin; ///< Rendering plugin
 

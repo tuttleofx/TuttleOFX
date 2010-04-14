@@ -15,6 +15,7 @@ using namespace boost::gil;
 struct PNGWriterParams
 {
 	std::string _filepath;      ///< filepath
+	int _precision;				///< Precision
 };
 
 /**
@@ -30,12 +31,14 @@ public:
 
 public:
 	virtual void render( const OFX::RenderArguments& args );
-	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 protected:
 	OFX::PushButtonParam* _renderButton;  ///< Render push button
 	OFX::StringParam*  _filepath;         ///< Target file path
 	OFX::BooleanParam* _renderAlways;     ///< Render always
+	OFX::ChoiceParam    *_precision;
+	OFX::ChoiceParam    *_precisionLong;
 	FilenameManager    _fPattern;         ///< Filename pattern manager
 
 // do not need to delete these, the ImageEffect is managing them for us

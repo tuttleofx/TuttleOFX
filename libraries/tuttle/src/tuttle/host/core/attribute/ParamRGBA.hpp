@@ -15,8 +15,6 @@ class ParamRGBA : public ofx::attribute::OfxhMultiDimParam<ParamDouble, 4 >
 protected:
 	ImageEffectNode& _effect;
 
-	OfxRGBAColourD _value;
-
 public:
 	ParamRGBA( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	virtual ParamRGBA* clone() const { return new ParamRGBA( *this ); }
@@ -26,15 +24,6 @@ public:
 	void get( const OfxTime time, double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC;
 	void set( const double &r, const double &g, const double &b, const double &a ) OFX_EXCEPTION_SPEC;
 	void set( const OfxTime time, const double &r, const double &g, const double &b, const double &a ) OFX_EXCEPTION_SPEC;
-	void copy( const ParamRGBA& p ) OFX_EXCEPTION_SPEC
-	{
-		_value = p._value;
-	}
-	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
-	{
-		const ParamRGBA& param = dynamic_cast<const ParamRGBA&>(p);
-		copy( param );
-	}
 };
 
 

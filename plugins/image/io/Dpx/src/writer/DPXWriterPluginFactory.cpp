@@ -69,13 +69,13 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamBitDepth );
-	bitDepth->setLabels( kParamBitDepthLabel, kParamBitDepthLabel, kParamBitDepthLabel );
-	bitDepth->appendOption( "16 bits output" );
-	bitDepth->appendOption( "12 bits output" );
-	bitDepth->appendOption( "10 bits output" );
-	bitDepth->appendOption( "8 bits output" );
-	bitDepth->setDefault( 3 );
+	OFX::ChoiceParamDescriptor* precision = desc.defineChoiceParam( kParamPrecision );
+	precision->setLabels( kParamPrecisionLabel, kParamPrecisionLabel, kParamPrecisionLabel );
+	precision->appendOption( "8 bits output" );
+	precision->appendOption( "10 bits output" );
+	precision->appendOption( "12 bits output" );
+	precision->appendOption( "16 bits output" );
+	precision->setDefault( 1 );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
 	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, kParamComponentsTypeLabel );

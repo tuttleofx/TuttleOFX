@@ -70,12 +70,12 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamBitDepth );
-	bitDepth->setLabels( kParamBitDepthLabel, kParamBitDepthLabel, "Output bit depth" );
-	bitDepth->appendOption( "half float" );
-	bitDepth->appendOption( "float" );
-	bitDepth->appendOption( "32 bits" );
-	bitDepth->setDefault( 0 );
+	OFX::ChoiceParamDescriptor* precision = desc.defineChoiceParam( kParamPrecision );
+	precision->setLabels( kParamPrecisionLabel, kParamPrecisionLabel, "Output bit depth" );
+	precision->appendOption( "half float" );
+	precision->appendOption( "float" );
+	precision->appendOption( "32 bits" );
+	precision->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
 	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, "Output component type" );

@@ -28,6 +28,9 @@ namespace lin2log {
 template<class View>
 class Lin2LogProcess : public ImageGilFilterProcessor<View>
 {
+private:
+	void lin2log(View & src, View & dst);
+
 protected :
     Lin2LogPlugin& _plugin;        ///< Rendering plugin
 

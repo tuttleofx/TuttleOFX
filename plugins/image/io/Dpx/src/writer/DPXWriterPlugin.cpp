@@ -28,7 +28,7 @@ DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath       = fetchStringParam( kOutputFilename );
-	_bitDepth       = fetchChoiceParam( kParamBitDepth );
+	_bitDepth       = fetchChoiceParam( kParamPrecision );
 	_componentsType = fetchChoiceParam( kParamComponentsType );
 	_compressed     = fetchBooleanParam( kParamCompressed );
 	_renderButton   = fetchPushButtonParam( kRender );

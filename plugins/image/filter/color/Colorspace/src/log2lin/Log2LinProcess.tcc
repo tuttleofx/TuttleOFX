@@ -19,26 +19,14 @@ namespace log2lin {
 
 using namespace boost::gil;
 
-static const float cineonBlackOffset = powf(10.0f, (95.0f-685.0f) / 300.0f);
+namespace {
+static const float cineonBlackOffset = std::pow(10.0f, (95.0f-685.0f) / 300.0f);
 
 inline float fromCineon(float x)
 {
-	return (powf(10.0f,(1023.0f*x-685.0f)/300.0f)-cineonBlackOffset)/(1.0f-cineonBlackOffset);
+	return (std::pow(10.0f,(1023.0f*x-685.0f)/300.0f)-cineonBlackOffset)/(1.0f-cineonBlackOffset);
 }
-
-struct log2liner
-{
-	inline rgba32f_pixel_t operator()( const rgba32f_pixel_t& p ) const
-	{
-		rgba32f_pixel_t p2;
-		for( int n = 0; n < 3; ++n )
-		{
-			p2[n] = fromCineon(p[n]);
-		}
-		p2[3] = p[3];
-		return p2;
-	}
-};
+}
 
 template<class View>
 Log2LinProcess<View>::Log2LinProcess( Log2LinPlugin &instance )
@@ -64,8 +52,39 @@ void Log2LinProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowR
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							  procWindowSize.x,
 							  procWindowSize.y );
-	
-	transform_pixels( color_converted_view<rgba32f_pixel_t>(src),  color_converted_view<rgba32f_pixel_t>(dst), log2liner() );
+
+	log2lin(src, dst);
+}
+
+template<class View>
+void Log2LinProcess<View>::log2lin(View & src, View & dst)
+{
+	typedef pixel<bits32f, layout<typename color_space_type<View>::type> > PixelF;
+	PixelF p;
+	int ncMax = num_channels<View>::value;
+	bool processAlpha = false;
+	if (!processAlpha && num_channels<View>::value == 4)
+	{
+		ncMax = 3;
+	}
+
+	for( int y = 0; y < src.height(); ++y )
+	{
+		typename View::x_iterator src_it = src.row_begin( y );
+		typename View::x_iterator dst_it = dst.row_begin( y );
+
+		for( int x = 0; x < src.width(); ++x, ++src_it, ++dst_it )
+		{
+			color_convert(*src_it, p);
+			for(int c = 0; c < ncMax; ++c)
+			{
+				p[c] = fromCineon(p[c]);
+			}
+			color_convert(p, *dst_it);
+		}
+		if( this->progressForward() )
+			return;
+	}
 }
 
 }

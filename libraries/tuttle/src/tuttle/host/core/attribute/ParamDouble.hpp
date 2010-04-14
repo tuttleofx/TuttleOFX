@@ -15,7 +15,7 @@ protected:
 	double _value;
 
 public:
-	ParamDouble( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamDouble( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor, const std::size_t index = 0 );
 	ParamDouble* clone() const { return new ParamDouble( *this ); }
 
 	double    getDefault() const;

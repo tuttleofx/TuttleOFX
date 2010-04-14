@@ -16,10 +16,14 @@ class OfxhParamInteger :
     public OfxhParam,
 	public OfxhKeyframeParam
 {
+protected:
+	std::size_t _index;
+
 public:
 	typedef int BaseType;
-	OfxhParamInteger( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance )
+	OfxhParamInteger( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance, const std::size_t index = 0 )
 		: OfxhParam( descriptor, name, setInstance )
+		, _index(index)
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );

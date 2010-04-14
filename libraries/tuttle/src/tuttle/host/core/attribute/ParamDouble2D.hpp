@@ -15,8 +15,6 @@ class ParamDouble2D : public ofx::attribute::OfxhMultiDimParam<ParamDouble, 2 >
 protected:
 	ImageEffectNode& _effect;
 
-	OfxPointD _value;
-
 public:
 	ParamDouble2D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamDouble2D* clone() const { return new ParamDouble2D( *this ); }
@@ -26,15 +24,6 @@ public:
 	void get( const OfxTime time, double& x, double& y ) const OFX_EXCEPTION_SPEC;
 	void set( const double &x, const double &y ) OFX_EXCEPTION_SPEC;
 	void set( const OfxTime time, const double &x, const double &y ) OFX_EXCEPTION_SPEC;
-	void copy( const ParamDouble2D& p ) OFX_EXCEPTION_SPEC
-	{
-		_value = p._value;
-	}
-	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
-	{
-		const ParamDouble2D& param = dynamic_cast<const ParamDouble2D&>(p);
-		copy( param );
-	}
 };
 
 

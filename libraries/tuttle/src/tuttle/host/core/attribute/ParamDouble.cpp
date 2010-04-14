@@ -7,8 +7,9 @@ namespace core {
 
 ParamDouble::ParamDouble( ImageEffectNode&                                   effect,
                           const std::string&                                 name,
-                          const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamDouble( descriptor, name, effect ),
+                          const ofx::attribute::OfxhParamDescriptor& descriptor,
+						  const std::size_t index )
+	: ofx::attribute::OfxhParamDouble( descriptor, name, effect, index ),
 	_effect( effect )
 {
 	_value = getDefault();
@@ -16,7 +17,7 @@ ParamDouble::ParamDouble( ImageEffectNode&                                   eff
 
 double ParamDouble::getDefault() const
 {
-	return getProperties().getDoubleProperty( kOfxParamPropDefault );
+	return getProperties().getDoubleProperty( kOfxParamPropDefault, _index );
 }
 
 void ParamDouble::get( double& v ) const OFX_EXCEPTION_SPEC

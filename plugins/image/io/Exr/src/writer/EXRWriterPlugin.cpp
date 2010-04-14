@@ -29,7 +29,7 @@ EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath       = fetchStringParam( kOutputFilename );
-	_bitDepth       = fetchChoiceParam( kParamBitDepth );
+	_bitDepth       = fetchChoiceParam( kParamPrecision );
 	_componentsType = fetchChoiceParam( kParamComponentsType );
 	_renderButton   = fetchPushButtonParam( kRender );
 	_renderAlways   = fetchBooleanParam( kParamRenderAlways );
@@ -48,7 +48,7 @@ OFX::Clip* EXRWriterPlugin::getDstClip() const
 EXRWriterParams EXRWriterPlugin::getParams(const OfxTime time)
 {
 	EXRWriterParams params;
-	params._bitDepth = (EBitDepth)_bitDepth->getValue();
+	params._precision = (EBitDepth)_bitDepth->getValue();
 	params._componentsType = (ECompType)_componentsType->getValue();
 	params._filepath = _fPattern.getFilenameAt(time);
 	return params;

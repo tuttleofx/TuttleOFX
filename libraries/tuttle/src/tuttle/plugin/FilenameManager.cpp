@@ -1,5 +1,4 @@
 #include "FilenameManager.hpp"
-#include "tuttle/common/utils/global.hpp"
 #include "PluginException.hpp"
 
 #include <limits>
@@ -9,6 +8,7 @@
 #include <iomanip>
 #include <vector>
 #include <list>
+#include <boost/filesystem/operations.hpp>
 
 using namespace boost::filesystem;
 using namespace boost;
@@ -23,7 +23,6 @@ FilenameManager::FilenameManager(const path & directory, const std::string patte
 {
 
 	path p;
-	
 	if (!directory.empty() && directory.string()[directory.string().length()-1] != '/')
 	{
 		p = directory.string() + "/";
@@ -45,8 +44,12 @@ FilenameManager::~FilenameManager()
 {
 }
 
-bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool dirbase, const size_t start, const size_t step)
+bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase, const size_t start, const size_t step)
 {
+	if(filepath.parent_path().empty())
+	{
+		filepath = boost::filesystem::initial_path().string() + "/" + filepath.string();
+	}
 	// Default
 	_pattern = filepath.filename();
 	_numFill = 0;
@@ -62,69 +65,51 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 	const regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\]");
 	const regex unesc("[\\\\]");
 	string directory = filepath.parent_path().string() + "/";
-	string escPattern = regex_replace(filepath.string(), esc, "\\\\\\1&", boost::match_default | boost::format_sed);
+	string escPattern = regex_replace(filepath.filename(), esc, "\\\\\\1&", boost::match_default | boost::format_sed);
 	_fillCar = "0";
-	// After effects style ( eg. filename_[####].png )
-	if ( regex_match(filepath.filename(), regex(".*\\[#+\\].*")) )
-	{
-		// Parse to get filling information
-		cmatch matches;
-		regex_match( filepath.string().c_str(), matches, regex("(.*\\/)(.*?)\\[(#+)\\](.*)") );
-		_prefixDir = regex_replace(std::string( matches[1].first, matches[1].second ), unesc, "\\\\\\1&", match_default | format_sed);
-		_prefixFile = regex_replace(std::string( matches[2].first, matches[2].second ), unesc, "\\\\\\1&", match_default | format_sed);
-		_fillCar = "0";
-		_numFill = (string( matches[3].first, matches[3].second )).length();
-		_postfixFile = regex_replace(string( matches[4].first, matches[4].second ), unesc, "\\\\\\1&", match_default | format_sed);
-
-		if (dirbase)
-		{
-			// Parse filenames sequence
-			regex rx = regex( "(.*\\\\/)(.*)\\\\\\[#+\\\\\\](.*\\..+)" );
-			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)\\$";
-			_pattern = regex_replace(escPattern, rx, o.str(), match_default | format_sed);
-		}
-	}
 	// Nuke style ( eg. filename_%04d.png )
-	else if ( regex_match(filepath.filename(), regex(".*%[0-9]+d.*")) )
+	if ( regex_match(filepath.filename(), regex(".*%[0-9]+d.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
-		regex_match( filepath.string().c_str(), matches, regex("(.*\\/)(.*?)%([0-9]|\\w)?([0-9]*)d(.*)") );
-		_prefixDir  = string( matches[1].first, matches[1].second );
-		_prefixFile = string( matches[2].first, matches[2].second );
-		_fillCar    = string( matches[3].first, matches[3].second );
-		istringstream strm(std::string( matches[4].first, matches[4].second ));
+		string fn = filepath.filename();
+		regex_match( fn.c_str(), matches, regex("(.*?\\.?)%([0-9]|\\w)?([0-9]*)d(\\..*)") );
+		_prefixDir  = directory;
+		_prefixFile = string( matches[1].first, matches[1].second );
+		_fillCar    = string( matches[2].first, matches[2].second );
+		istringstream strm(std::string( matches[3].first, matches[3].second ));
 		strm >> _numFill;
-		_postfixFile = std::string( matches[5].first, matches[5].second );
+		_postfixFile = std::string( matches[4].first, matches[4].second );
 
 		if (dirbase)
 		{
 			// Parse filenames sequence
-			regex rx = regex( "(.*\\\\/)(.*)%[0-9]+d(.*\\..+)" );
+			regex rx = regex("(.*)%([0-9])([0-9])+d(.*(\\\\\\.)?.*?)");
 			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)\\$";
+			o << "(\\1)(\\\\\\d{\\3, " << max << "})(\\4\\)\\$";
 			_pattern = regex_replace(escPattern, rx, o.str(), boost::match_default | boost::format_sed);
 		}
 	}
 	// Common style with padding ( eg. filename_####.png )
-	else if ( regex_match(filepath.filename(), regex(".*?#+.*")) )
+	else if ( regex_match(filepath.filename(), regex(".*?\\[?#+\\]?.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
-		regex_match( filepath.string().c_str(), matches, regex("(.*\\/)(.*?)(#+)(.*)") );
+		// Detect filename sequence based
+		string fn = filepath.filename();
+		regex_match( fn.c_str(), matches, regex("(.*?\\.?)\\[?(#+)\\]?(\\..*)") );
 		_fillCar = "0";
-		_prefixDir   = string( matches[1].first, matches[1].second );
-		_prefixFile  = string( matches[2].first, matches[2].second );
-		_numFill     = (string( matches[3].first, matches[3].second )).length();
-		_postfixFile = string( matches[4].first, matches[4].second );
+		_prefixDir   = directory;
+		_prefixFile  = string( matches[1].first, matches[1].second );
+		_numFill     = (string( matches[2].first, matches[2].second )).length();
+		_postfixFile = string( matches[3].first, matches[3].second );
 
 		if (dirbase)
 		{
 			// Parse filenames sequence
-			regex rx = regex( "(.*\\\\/)(.*?)#+(.*\\..+)" );
+			regex rx = regex("(.*?)(\\\\\\[)?#+(\\\\\\])?(.*(\\\\\\.)?.*?)");
 			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3)\\$";
+			o << "(\\1)(\\\\\\d{" << _numFill << ", " << max << "})(\\4\\)\\$";
 			_pattern = regex_replace(escPattern, rx, o.str(), boost::match_default | boost::format_sed);
 		}
 	}
@@ -133,36 +118,54 @@ bool FilenameManager::reset(const boost::filesystem::path& filepath, const bool 
 	{
 		// Parse to get filling information
 		cmatch matches;
-		regex_match( filepath.string().c_str(), matches, regex("(.*\\/)(.*?)(@+)(.*)") );
+		// Detect filename sequence based
+		string fn = filepath.filename();
+		regex_match( fn.c_str(), matches, regex("(.*?\\.?)(@+)(\\..*)") );
 		_fillCar = "0";
 		_numFill = 0;
-		_prefixDir = std::string( matches[1].first, matches[1].second );
-		_prefixFile = std::string( matches[2].first, matches[2].second );
-		_postfixFile = std::string( matches[4].first, matches[4].second );
+		_prefixDir = directory;
+		_prefixFile = std::string( matches[1].first, matches[1].second );
+		_postfixFile = std::string( matches[3].first, matches[3].second );
 
 		if (dirbase)
 		{
 			// Parse filenames sequence
-			regex rx = regex( "(.*\\\\/)(.*?)@+(.*\\..+)" );
+			regex rx = regex("(.*)@+(.*(\\\\\\.)?.*?)");
 			std::ostringstream o;
-			o << "(\\1)(\\2)\\(\\\\\\d{1, " << max << "}\\)(\\3\\)\\$";
+			o << "(\\1)(\\\\\\d{1, " << max << "})(\\2\\)\\$";
 			_pattern = regex_replace(escPattern, rx, o.str(), boost::match_default | boost::format_sed);
 		}
 	}
 	else
 	{
-		boost::cmatch matches;
-		boost::regex_match( filepath.string().c_str(), matches, regex("(.*\\/)(.*?)(\\d*)(\\..*)") );
-		_prefixDir = std::string( matches[1].first, matches[1].second );
-		_prefixFile = std::string( matches[2].first, matches[2].second );
-		_postfixFile = std::string( matches[4].first, matches[4].second );
-		string num = string( matches[3].first, matches[3].second );
-		std::istringstream strm(num);
-		strm >> _currentPos;
-		ostringstream o;
-		o << _currentPos;
-		_fillCar = "0";
-		_numFill = num.length() - o.str().length();
+		// Detect filename sequence based
+		string fn = filepath.filename();
+//		if (!boost::regex_match( fn.c_str(), matches, regex("(.*?\\.?)(\\d+)(\\..*)") ))
+//		{
+			boost::cmatch matches;
+			// Parse to get filling information
+			// Detect filename sequence based
+			regex_match( fn.c_str(), matches, regex("(.*?\\.?)(\\..*)") );
+			_prefixDir = directory;
+			_prefixFile = std::string( matches[1].first, matches[1].second );
+			_postfixFile = filepath.extension();
+			_fillCar = "";
+			_numFill = 0;
+//		}
+//		else
+//		{
+//			_prefixDir = directory;
+//			_prefixFile = std::string( matches[1].first, matches[1].second );
+//			_postfixFile = std::string( matches[3].first, matches[3].second );
+//			string num = string( matches[2].first, matches[2].second );
+//			std::istringstream strm(num);
+//			strm >> _currentPos;
+//			_fillCar = "0";
+//			_numFill = num.length();
+//			_first = _currentPos;
+//			_last = _currentPos;
+//		}
+		return false;
 	}
 	if (dirbase)
 	{
@@ -213,18 +216,41 @@ const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize
 
 	// Scale & translate
 	size_t t = _currentPos * _step;
-	std::ostringstream o, pad;
-	pad << t;
-	size_t fillw = pad.str().length() + _numFill;
+	std::ostringstream o;
+
 	if (nGroup >= 0 && nGroup < (ssize_t)_matchList.size())
 	{
-		o << _prefixDir << _prefixFile << nGroup << "_" << setw(fillw) << setfill(_fillCar[0]) << t << _postfixFile;
+		o << _prefixDir << _prefixFile << nGroup << "_";
+		if (_numFill)
+		{
+			o << setw(_numFill) << setfill(_fillCar[0]) << t;
+		}
+		else
+		{
+			if (_fillCar.length())
+			{
+				o << t;
+			}
+		}
+		o << _postfixFile;
 	}
 	else
 	{
-		o << _prefixDir << _prefixFile << setw(fillw) << setfill(_fillCar[0]) << t << _postfixFile;
+		o << _prefixDir << _prefixFile;
+		if (_numFill)
+		{
+			o << setw(_numFill) << setfill(_fillCar[0]) << t;
+		}
+		else
+		{
+			if (_fillCar.length())
+			{
+				o << t;
+			}
+		}
+		o << _postfixFile;
 	}
-
+	COUT_DEBUG(o.str());
 	return o.str();
 }
 
@@ -270,7 +296,7 @@ vector< FilenamesGroup > FilenameManager::matchingGroups(const boost::filesystem
 			// Check if file
 			if ( !is_directory( *iter ) )
 			{
-				if ( regex_match(iter->path().external_file_string(), regex) )
+				if ( regex_match(iter->path().filename(), regex) )
 				{
 					filelist.push_back( FileDesc(iter->path().external_file_string(), regex) );
 				}

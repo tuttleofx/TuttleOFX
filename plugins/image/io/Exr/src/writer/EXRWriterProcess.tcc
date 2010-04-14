@@ -46,7 +46,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	{
 		EXRWriterParams params = _plugin.getParams(this->_renderArgs.time);
 
-		switch( params._bitDepth )
+		switch( params._precision )
 		{
 			case eHalfFloat:
 			{

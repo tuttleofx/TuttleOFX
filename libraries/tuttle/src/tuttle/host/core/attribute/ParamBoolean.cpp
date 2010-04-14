@@ -7,8 +7,9 @@ namespace core {
 
 ParamBoolean::ParamBoolean( ImageEffectNode&                                   effect,
                             const std::string&                                 name,
-                            const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: ofx::attribute::OfxhParamBoolean( descriptor, name, effect ),
+                            const ofx::attribute::OfxhParamDescriptor& descriptor,
+							const std::size_t index )
+	: ofx::attribute::OfxhParamBoolean( descriptor, name, effect, index ),
 	_effect( effect )
 
 {
