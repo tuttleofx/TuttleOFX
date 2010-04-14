@@ -12,7 +12,6 @@ namespace png {
 namespace writer {
 
 using namespace boost::gil;
-const static std::string kPngReaderHelpString = "<b>PNG Reader</b> file reader.  <br />";
 
 PNGWriterPlugin::PNGWriterPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )

@@ -20,6 +20,7 @@ namespace plugin {
 ///@todo: windows filename check
 FilenameManager::FilenameManager(const path & directory, const std::string pattern,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
+: _numFill(0), _step(0), _first(0), _last(0), _currentPos(0)
 {
 
 	path p;
@@ -36,6 +37,7 @@ FilenameManager::FilenameManager(const path & directory, const std::string patte
 
 FilenameManager::FilenameManager(const boost::filesystem::path & filepath,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
+: _numFill(0), _step(0), _first(0), _last(0), _currentPos(0)
 {
 	reset(filepath, dirbase, start, step);
 }
@@ -46,6 +48,10 @@ FilenameManager::~FilenameManager()
 
 bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase, const size_t start, const size_t step)
 {
+	if (filepath.empty())
+	{
+		return true;
+	}
 	if(filepath.parent_path().empty())
 	{
 		filepath = boost::filesystem::initial_path().string() + "/" + filepath.string();
@@ -63,8 +69,8 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 	static const size_t max = std::numeric_limits<size_t>::digits10+1;
 
 	const regex esc("[\\^\\.\\$\\|\\(\\)\\[\\]\\*\\+\\?\\/\\\\]");
-	const regex unesc("[\\\\]");
 	string directory = filepath.parent_path().string() + "/";
+
 	string escPattern = regex_replace(filepath.filename(), esc, "\\\\\\1&", boost::match_default | boost::format_sed);
 	_fillCar = "0";
 	// Nuke style ( eg. filename_%04d.png )
@@ -207,6 +213,10 @@ const std::string FilenameManager::getNextFilename(const ssize_t nGroup /* = -1 
 
 const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */)
 {
+	if (_pattern == "")
+	{
+		return "";
+	}
 	_currentPos = ssize_t(time);
 	// Check for fractionnal part
 	if (time != double(_currentPos) )
@@ -250,7 +260,6 @@ const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize
 		}
 		o << _postfixFile;
 	}
-	COUT_DEBUG(o.str());
 	return o.str();
 }
 

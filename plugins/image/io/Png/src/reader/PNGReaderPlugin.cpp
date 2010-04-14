@@ -23,14 +23,19 @@ namespace png {
 namespace reader {
 
 using namespace boost::gil;
-const static std::string kPngReaderHelpString = "<b>PNG Reader</b> file reader.  <br />";
 
 PNGReaderPlugin::PNGReaderPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle ),
-	_dstClip( 0 )
+: ImageEffect( handle )
 {
+	// We want to render a sequence
+	setSequentialRender( true );
+
 	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kInputFilename );
+	if (exists(_filepath->getValue()))
+	{
+		_fPattern.reset(_filepath->getValue(), true);
+	}
 }
 
 OFX::Clip* PNGReaderPlugin::getDstClip() const
@@ -124,15 +129,13 @@ void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	{
 		sendMessage( OFX::Message::eMessageMessage,
 		             "", // No XML resources
-		             kPngReaderHelpString );
+		             kPNGReaderHelpString );
 	}
 	else if( paramName == kInputFilename )
 	{
-		_fPattern.reset(_filepath->getValue(), true);
-		// Check if exist
-		if( exists( _fPattern.getFilenameAt(args.time) ) )
+		if (exists(_filepath->getValue()) && _filepath->getValue() != _fPattern.getCurrentFilename())
 		{
-			_pngDims = png_read_dimensions( _fPattern.getFilenameAt(args.time) );
+			_fPattern.reset(_filepath->getValue(), true);
 		}
 	}
 }
@@ -156,7 +159,6 @@ bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	_fPattern.reset(_filepath->getValue(), true);
 	// Check if exist
 	if( exists( _fPattern.getCurrentFilename() ) )
 	{
