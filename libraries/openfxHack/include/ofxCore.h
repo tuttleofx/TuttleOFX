@@ -384,6 +384,9 @@ OfxExport int OfxGetNumberOfPlugins( void );
 /** @brief How time is specified within the OFX API */
 typedef double OfxTime;
 
+//#pragma pack(push)  /* push current alignment to stack */
+//#pragma pack(1)     /* set alignment to 1 byte boundary */
+
 /** @brief Defines one dimensional integer bounds */
 typedef struct OfxRangeI
 {
@@ -407,6 +410,8 @@ typedef struct OfxPointD
 {
 	double x, y;
 } OfxPointD;
+
+//#pragma pack(pop)   /* restore original alignment from stack */
 
 /** @brief Used to flag infinite rects. Set minimums to this to indicate infinite
  *

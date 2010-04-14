@@ -208,8 +208,12 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 			return new ParamRGB( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeDouble2D )
 			return new ParamDouble2D( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeDouble3D )
+			return new ParamDouble3D( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeInteger2D )
 			return new ParamInteger2D( *this, name,  descriptor );
+		else if( descriptor.getParamType() == kOfxParamTypeInteger3D )
+			return new ParamInteger3D( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypePushButton )
 			return new ParamPushButton( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeGroup )
