@@ -36,7 +36,6 @@ struct inverter
 			p2[3] = p[3];
 		return p2;
 	}
-
 };
 
 template<class View>
