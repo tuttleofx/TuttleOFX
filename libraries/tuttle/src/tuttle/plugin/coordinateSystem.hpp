@@ -120,17 +120,17 @@ inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXY, eCoordonat
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXXn, eCoordonateSystemXX>( const Point2Double& point, const Point2Double& imgSize )
 {
-	pointNormalizedXXToCanonicalXX( point, imgSize );
+	return pointNormalizedXXToCanonicalXX( point, imgSize );
 }
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXXn, eCoordonateSystemXY>( const Point2Double& point, const Point2Double& imgSize )
 {
-	pointNormalizedXXToCanonicalXY( point, imgSize );
+	return pointNormalizedXXToCanonicalXY( point, imgSize );
 }
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXXcn, eCoordonateSystemXY>( const Point2Double& point, const Point2Double& imgSize )
 {
-	pointNormalizedXXcToCanonicalXY( point, imgSize );
+	return pointNormalizedXXcToCanonicalXY( point, imgSize );
 }
 
 }

@@ -43,8 +43,8 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 	rectSize.y = std::abs( rectSize.y );
 	params._rect.x1 = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
 	params._rect.y1 = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
-	params._rect.x2 = boost::numeric_cast<int>( rectCenter.x + rectSize.x );
-	params._rect.y2 = boost::numeric_cast<int>( rectCenter.y + rectSize.y );
+	params._rect.x2 = boost::numeric_cast<int>( std::ceil(rectCenter.x + rectSize.x) );
+	params._rect.y2 = boost::numeric_cast<int>( std::ceil(rectCenter.y + rectSize.y) );
 	params._rect = rectanglesIntersection( params._rect, srcRod );
 	params._chooseOutput = static_cast<EChooseOutput>( _chooseOutput->getValue() );
 	return params;

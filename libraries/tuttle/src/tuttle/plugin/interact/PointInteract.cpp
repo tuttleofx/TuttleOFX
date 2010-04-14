@@ -41,21 +41,6 @@ EMoveType PointInteract::selectIfIntesect( const OFX::PenArgs& args )
 	_offset = p - mouse;
 	double margeCanonical = getMarge() * args.pixelScale.x;
 	EMoveType m = clicPoint( p, mouse, margeCanonical );
-	switch(m)
-	{
-		case eMoveTypeXY:
-			COUT("eMoveTypeXY");
-			break;
-		case eMoveTypeX:
-			COUT("eMoveTypeX");
-			break;
-		case eMoveTypeY:
-			COUT("eMoveTypeY");
-			break;
-		case eMoveTypeNone:
-			COUT("eMoveTypeNone");
-			break;
-	}
 	return m;
 }
 

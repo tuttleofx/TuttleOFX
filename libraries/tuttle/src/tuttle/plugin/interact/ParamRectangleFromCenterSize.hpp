@@ -55,6 +55,32 @@ private:
 		eSelectTypeBR,
 		eSelectTypeC
 	};
+	static std::string mapESelectTypeToString( const ESelectType& s )
+	{
+		switch( s )
+		{
+			case eSelectTypeNone:
+				return "eSelectTypeNone";
+			case eSelectTypeT:
+				return "eSelectTypeT";
+			case eSelectTypeL:
+				return "eSelectTypeL";
+			case eSelectTypeR:
+				return "eSelectTypeR";
+			case eSelectTypeB:
+				return "eSelectTypeB";
+			case eSelectTypeTL:
+				return "eSelectTypeTL";
+			case eSelectTypeTR:
+				return "eSelectTypeTR";
+			case eSelectTypeBL:
+				return "eSelectTypeBL";
+			case eSelectTypeBR:
+				return "eSelectTypeBR";
+			case eSelectTypeC:
+				return "eSelectTypeC";
+		}
+	}
 	ESelectType _selectType;
 	
 public:
@@ -161,8 +187,10 @@ template<class TFrame, ECoordonateSystem coord>
 typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangleFromCenterSize<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
 	const Point2 p = ofxToGil( args.penPosition );
-	const double scale = args.pixelScale.x;
-	const double margeCanonical = this->getMarge() * scale;
+	const double margeCanonical = this->getMarge() * args.pixelScale.x;
+	COUT_VAR( this->getMarge() );
+	COUT_VAR( args.pixelScale.x );
+	COUT_VAR( margeCanonical );
 	const OfxRectD rod = _frame.getFrame( this->getTime() );
 	const Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
 	const Point2 pCenter = _center.getPoint();
@@ -204,13 +232,16 @@ EMoveType ParamRectangleFromCenterSize<TFrame, coord>::selectIfIntesect( const O
 	EMoveType m = _center.selectIfIntesect( args );
 	if( m != eMoveTypeNone )
 	{
+		COUT( "intersect center.");
 		_selectType = eSelectTypeC;
 		return m;
 	}
 	// intersect borders
 	_selectType = selectType( args );
+	COUT( "_selectType : " << mapESelectTypeToString(_selectType) );
 	if( _selectType != eSelectTypeNone )
 	{
+		COUT( "intersect border.");
 		return eMoveTypeXY;
 	}
 	return eMoveTypeNone;

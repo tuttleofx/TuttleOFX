@@ -37,7 +37,8 @@ public:
 		{
 			OfxRectD rod = _frame.getFrame( this->getTime() );
 			Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
-			Point2 p = pointConvertCoordonateSystem<coord, eCoordonateSystemXY>( ofxToGil( _param.getValue() ), rodSize ) + Point2( rod.x1, rod.y1 );
+			Point2 p = pointConvertCoordonateSystem<coord, eCoordonateSystemXY>( ofxToGil( _param.getValue() ), rodSize );
+			p += Point2( rod.x1, rod.y1 );
 			return p;
 		}
 		return Point2( 0, 0 );
