@@ -13,11 +13,10 @@ class ParamBoolean : public ofx::attribute::OfxhParamBoolean
 {
 protected:
 	ImageEffectNode& _effect;
-
 	bool _value;
 
 public:
-	ParamBoolean( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamBoolean( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor, const std::size_t index = 0 );
 	virtual ParamBoolean* clone() const { return new ParamBoolean( *this ); }
 
 	bool      getDefault() const;

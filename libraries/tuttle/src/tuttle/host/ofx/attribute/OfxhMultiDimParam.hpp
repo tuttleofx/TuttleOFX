@@ -6,6 +6,7 @@
 #include "OfxhParamDescriptor.hpp"
 #include "OfxhParamSet.hpp"
 
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <string>
 #include <vector>
 
@@ -24,11 +25,13 @@ public:
 	typedef typename T::BaseType BaseType;
 
 protected:
+	///@todo: IMPORTANT FIX: make this deleted, but be careful of the common descriptor (which must not be delete).
 	std::vector<T*> _controls;
 
 public:
 	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance )
 	{
+		// _controls.reserve(DIM); /// @todo tuttle: find a way to lock the vector size to DIM...
 	}
 
 	virtual ~OfxhMultiDimParam()
@@ -56,6 +59,21 @@ protected:
 	}
 
 public:
+	void copy( const OfxhMultiDimParam& p ) OFX_EXCEPTION_SPEC
+	{
+		for(std::size_t index = 0; index < DIM; ++index)
+		{
+			BaseType dst;
+			p._controls[index]->get( dst );
+			_controls[index]->set( dst );
+		}
+	}
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	{
+		const OfxhMultiDimParam& param = dynamic_cast<const OfxhMultiDimParam&>(p);
+		copy( param );
+	}
+
 	inline virtual void setAt( const BaseType& value, const std::size_t index ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
@@ -84,62 +102,62 @@ public:
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int i = 0; i < DIM; ++i )
+		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
-			_controls[i]->get( *v );
+			_controls[index]->get( *v );
 		}
 	}
 
 	/// implementation of var args function
 	virtual void getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int i = 0; i < DIM; ++i )
+		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			_controls[i]->get( time, *v );
+			_controls[index]->get( time, *v );
 		}
 	}
 
 	/// implementation of var args function
 	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		for( int i = 0; i < DIM; ++i )
+		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[i]->set( v );
+			_controls[index]->set( v );
 		}
 	}
 
 	/// implementation of var args function
 	virtual void setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
 	{
-		for( int i = 0; i < DIM; ++i )
+		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[i]->set( time, v );
+			_controls[index]->set( time, v );
 		}
 	}
 
 	/// implementation of var args function
 	virtual void deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int i = 0; i < DIM; ++i )
+		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			_controls[i]->derive( time, *v );
+			_controls[index]->derive( time, *v );
 		}
 	}
 
 	/// implementation of var args function
 	virtual void integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int i = 0; i < DIM; ++i )
+		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
-			_controls[i]->integrate( time1, time2, *v );
+			_controls[index]->integrate( time1, time2, *v );
 		}
 	}
 

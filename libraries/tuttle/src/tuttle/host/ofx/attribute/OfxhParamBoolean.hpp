@@ -17,9 +17,15 @@ class OfxhParamBoolean :
     public OfxhParam,
 	public OfxhKeyframeParam
 {
+protected:
+	std::size_t _index;
+
 public:
 	typedef bool BaseType;
-	OfxhParamBoolean( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
+	OfxhParamBoolean( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance, const std::size_t index = 0 )
+	: OfxhParam( descriptor, name, setInstance )
+	, _index(index)
+	{}
 
 	// Deriving implementatation needs to overide these
 	virtual void get( bool& ) const OFX_EXCEPTION_SPEC = 0;
