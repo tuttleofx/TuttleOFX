@@ -96,6 +96,7 @@
 #include <ofxParam.h>
 #include <ofxProperty.h>
 
+#include <cmath>
 #include <cassert>
 #include <vector>
 #include <string>
@@ -194,7 +195,25 @@ inline std::ostream& operator<<( std::ostream& out, const OfxRectD& r )
 	return out << "x1:" << r.x1 << " y1:" << r.y1 << " x2:" << r.x2 << " y2:" << r.y2;
 }
 
+inline OfxRectI rectDoubleToInt( const OfxRectD& r  )
+{
+	OfxRectI rect;
+	rect.x1 = static_cast<int>(r.x1);
+	rect.y1 = static_cast<int>(r.y1);
+	rect.x2 = static_cast<int>(std::ceil(r.x2));
+	rect.y2 = static_cast<int>(std::ceil(r.y2));
+	return rect;
+}
 
+inline OfxRectD rectIntToDouble( const OfxRectI& r  )
+{
+	OfxRectD rect;
+	rect.x1 = r.x1;
+	rect.y1 = r.y1;
+	rect.x2 = r.x2;
+	rect.y2 = r.y2;
+	return rect;
+}
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC( CLASS ) \

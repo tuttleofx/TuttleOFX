@@ -988,10 +988,10 @@ OfxRectI Clip::getPixelRod( OfxTime t ) const
 		ratio = 1;
 
 	OfxRectI pixRod;
-	pixRod.y1 = boost::numeric_cast<int>(rod.y1);
-	pixRod.y2 = boost::numeric_cast<int>(rod.y2);
 	pixRod.x1 = boost::numeric_cast<int>(rod.x1 / ratio);
-	pixRod.x2 = boost::numeric_cast<int>(rod.x2 / ratio);
+	pixRod.y1 = boost::numeric_cast<int>(rod.y1);
+	pixRod.x2 = boost::numeric_cast<int>(std::ceil(rod.x2 / ratio));
+	pixRod.y2 = boost::numeric_cast<int>(std::ceil(rod.y2));
 	return pixRod;
 }
 

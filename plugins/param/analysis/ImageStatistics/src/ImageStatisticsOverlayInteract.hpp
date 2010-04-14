@@ -19,16 +19,6 @@ class ImageStatisticsOverlayInteract : public OFX::OverlayInteract
     typedef double Scalar;
 
 	ImageStatisticsPlugin* _plugin;
-
-	OFX::Clip *_srcClip;
-	OFX::Double2DParam* _cornerA;
-	OFX::Double2DParam* _cornerB;
-	OFX::ChoiceParam* _chooseOutput;
-	OFX::RGBAParam* _outputAverage;
-	OFX::RGBAParam* _outputChannelMin;
-	OFX::RGBAParam* _outputChannelMax;
-	OFX::RGBAParam* _outputLuminosityMin;
-	OFX::RGBAParam* _outputLuminosityMax;
 	
 	interact::InteractInfos _infos;
 	interact::InteractScene _interactScene;

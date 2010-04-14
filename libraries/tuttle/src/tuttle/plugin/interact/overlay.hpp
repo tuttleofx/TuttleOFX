@@ -20,6 +20,17 @@ inline void displayCross( const Point2& p, const double marge )
 }
 
 template<typename Point2>
+inline void displayPointRect( const Point2& p, const Point2& size )
+{
+	glBegin( GL_LINE_LOOP );
+	glVertex2f( p.x - size.x, p.y - size.y );
+	glVertex2f( p.x + size.x, p.y - size.y );
+	glVertex2f( p.x + size.x, p.y + size.y );
+	glVertex2f( p.x - size.x, p.y + size.y );
+	glEnd( );
+}
+
+template<typename Point2>
 inline void displayPointRect( const Point2& p, const double marge )
 {
 	glBegin( GL_LINE_LOOP );

@@ -14,7 +14,7 @@ struct IsActiveFunctor
 	virtual bool active() const = 0;
 };
 
-struct ActiveFunctor : virtual public IsActiveFunctor
+struct AlwaysActiveFunctor : virtual public IsActiveFunctor
 {
 	bool active() const { return true; }
 };

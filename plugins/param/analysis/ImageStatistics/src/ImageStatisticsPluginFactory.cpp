@@ -68,17 +68,17 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::Double2DParamDescriptor* cornerA = desc.defineDouble2DParam( kCornerA );
-	cornerA->setLabel( "A" );
-	cornerA->setDoubleType( OFX::eDoubleTypePlain );
-//	cornerA->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    cornerA->setDefault( -0.5, -0.5 );
+	OFX::Double2DParamDescriptor* rectCenter = desc.defineDouble2DParam( kRectCenter );
+	rectCenter->setLabel( "Center" );
+	rectCenter->setDoubleType( OFX::eDoubleTypePlain );
+//	rectCenter->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+    rectCenter->setDefault( 0.0, 0.0 );
 
-	OFX::Double2DParamDescriptor* cornerB = desc.defineDouble2DParam( kCornerB );
-	cornerB->setLabel( "B" );
-	cornerB->setDoubleType( OFX::eDoubleTypePlain );
-//	cornerB->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    cornerB->setDefault( 0.5, 0.5 );
+	OFX::Double2DParamDescriptor* rectSize = desc.defineDouble2DParam( kRectSize );
+	rectSize->setLabel( "Size" );
+	rectSize->setDoubleType( OFX::eDoubleTypePlain );
+//	rectSize->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+    rectSize->setDefault( 100, 100 );
 
 	OFX::ChoiceParamDescriptor* chooseOutput = desc.defineChoiceParam( kChooseOutput );
 	chooseOutput->setLabel( "Choose output" );

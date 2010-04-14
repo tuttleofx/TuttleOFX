@@ -203,8 +203,6 @@ typename ParamRectangleFromTwoCorners<TFrame, coord>::ESelectType ParamRectangle
 template<class TFrame, ECoordonateSystem coord>
 EMoveType ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIntesect( const OFX::PenArgs& args )
 {
-	const Point2 mouse = ofxToGil( args.penPosition );
-	Point2 center( (ofxToGil( _paramB->getValue() ) + ofxToGil( _paramA->getValue() )) * 0.5 );
 	this->_offset.x = 0;
 	this->_offset.y = 0;
 	_selectType = selectType( args );
@@ -220,10 +218,17 @@ template<class TFrame, ECoordonateSystem coord>
 bool ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIsIn( const OfxRectD& rect )
 {
 	_selectType = eSelectTypeNone;
-	Point2 pA( ofxToGil( _paramA->getValue() ) );
-	Point2 pB( ofxToGil( _paramB->getValue() ) );
-	if( rect.x1 <= pA.x  && rect.x2 >= pB.x &&
-	    rect.y1 <= pA.y  && rect.y2 >= pB.y )
+	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
+	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+	Point2 a = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
+	Point2 b = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
+	Point2 min, max;
+	min.x = std::min( a.x, b.x );
+	min.y = std::min( a.y, b.y );
+	max.x = std::max( a.x, b.x );
+	max.y = std::max( a.y, b.y );
+	if( rect.x1 <= min.x  && rect.x2 >= max.x &&
+	    rect.y1 <= min.y  && rect.y2 >= max.y )
 	{
 		_offset = Point2(0,0);
 		return true;
