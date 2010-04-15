@@ -93,14 +93,9 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else if( paramName == kInputFilename )
 	{
-		_fPattern.reset(_filepath->getValue(), true);
-		// Check if exist
-		if( exists( _fPattern.getFilenameAt(args.time) ) )
+		if (exists(_filepath->getValue()))
 		{
-			// Read dims
-			_dpxImg.readHeader( _fPattern.getFilenameAt(args.time) );
-			_imageDims.x = _dpxImg.width();
-			_imageDims.y = _dpxImg.height();
+			_fPattern.reset(_filepath->getValue(), true);
 		}
 	}
 }
@@ -131,11 +126,18 @@ bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	_fPattern.reset(_filepath->getValue(), true);
+	if (exists(_filepath->getValue()) && _filepath->getValue() != _fPattern.getCurrentFilename())
+	{
+		_fPattern.reset(_filepath->getValue(), true);
+	}
+
 	// Check if exist
 	if( exists( _fPattern.getCurrentFilename() ) )
 	{
 		_dpxImg.readHeader( _fPattern.getCurrentFilename() );
+		_imageDims.x = _dpxImg.width();
+		_imageDims.y = _dpxImg.height();
+
 		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
 		switch(_dpxImg.componentsType())
 		{

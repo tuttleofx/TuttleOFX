@@ -1,5 +1,5 @@
-#ifndef PNGWRITER_DEFINITIONS_HPP
-#define PNGWRITER_DEFINITIONS_HPP
+#ifndef PNGREADER_DEFINITIONS_HPP
+#define PNGREADER_DEFINITIONS_HPP
 
 #include <tuttle/common/utils/global.hpp>
 

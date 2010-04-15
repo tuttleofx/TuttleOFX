@@ -217,8 +217,11 @@ bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
+	if (exists(_filepath->getValue()) && _filepath->getValue() != _fPattern.getCurrentFilename())
+	{
+		_fPattern.reset(_filepath->getValue(), true);
+	}
 
-	_fPattern.reset(_filepath->getValue(), true);
 	// Check if exist
 	if( exists( _fPattern.getCurrentFilename() ) )
 	{
