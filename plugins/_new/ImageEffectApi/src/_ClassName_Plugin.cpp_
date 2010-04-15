@@ -11,23 +11,12 @@ namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
-using namespace boost::gil;
 
 %CLASSNAME%Plugin::%CLASSNAME%Plugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
-}
-
-OFX::Clip* %CLASSNAME%Plugin::getSrcClip( ) const
-{
-    return _srcClip;
-}
-
-OFX::Clip* %CLASSNAME%Plugin::getDstClip( ) const
-{
-    return _dstClip;
 }
 
 %CLASSNAME%ProcessParams %CLASSNAME%Plugin::getProcessParams() const
@@ -42,6 +31,7 @@ OFX::Clip* %CLASSNAME%Plugin::getDstClip( ) const
  */
 void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
 {
+	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
     OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
     OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
