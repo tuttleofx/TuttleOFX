@@ -98,6 +98,13 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	outputAverage->setParent( outputGroup );
 	outputAverage->setEvaluateOnChange( false );
 
+	OFX::Double3DParamDescriptor* outputAverageHsl = desc.defineDouble3DParam( kOutputAverageHsl );
+	outputAverageHsl->setLabel( "Average HSL" );
+	outputAverageHsl->setDoubleType( OFX::eDoubleTypePlain );
+	outputAverageHsl->setDimensionLabels( "h", "s", "l" );
+	outputAverageHsl->setParent( outputGroup );
+	outputAverageHsl->setEvaluateOnChange( false );
+
 	OFX::RGBAParamDescriptor* outputChannelMin = desc.defineRGBAParam( kOutputChannelMin );
 	outputChannelMin->setLabel( "Channels' min" );
 	outputChannelMin->setHint( "Minimum value per channel" );

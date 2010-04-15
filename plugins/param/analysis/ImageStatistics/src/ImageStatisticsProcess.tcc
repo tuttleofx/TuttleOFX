@@ -3,6 +3,9 @@
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
+#include <boost/gil/extension/toolbox/hsl.hpp>
+
+#include <tuttle/common/utils/global.hpp>
 
 namespace boost {
 namespace gil {
@@ -169,41 +172,52 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	pixel_divides_scalar_assign_t<double, Pixel32f>()( rectSize.y, average ); // _average /= rectSize.y;
 
 
-	rgba32f_pixel_t paramRgbaValue;
-	color_convert( average, paramRgbaValue );
+	rgba32f_pixel_t outputRgbaValue;
+	rgb32f_pixel_t outputRgbValue;
+	hsl32f_pixel_t outputHslValue;
+	
+	color_convert( average, outputRgbaValue );
 	_plugin._outputAverage->setValueAtTime( args.time,
-	                                        get_color( paramRgbaValue, red_t() ),
-	                                        get_color( paramRgbaValue, green_t() ),
-	                                        get_color( paramRgbaValue, blue_t() ),
-	                                        get_color( paramRgbaValue, alpha_t() )
+	                                        get_color( outputRgbaValue, red_t() ),
+	                                        get_color( outputRgbaValue, green_t() ),
+	                                        get_color( outputRgbaValue, blue_t() ),
+	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
-	color_convert( minChannel, paramRgbaValue );
+
+	color_convert( average, outputRgbValue );
+	color_convert( outputRgbValue, outputHslValue );
+	_plugin._outputAverageHsl->setValueAtTime( args.time,
+	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
+	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
+	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
+	                                      );
+	color_convert( minChannel, outputRgbaValue );
 	_plugin._outputChannelMin->setValueAtTime( args.time,
-	                                        get_color( paramRgbaValue, red_t() ),
-	                                        get_color( paramRgbaValue, green_t() ),
-	                                        get_color( paramRgbaValue, blue_t() ),
-	                                        get_color( paramRgbaValue, alpha_t() )
+	                                        get_color( outputRgbaValue, red_t() ),
+	                                        get_color( outputRgbaValue, green_t() ),
+	                                        get_color( outputRgbaValue, blue_t() ),
+	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
-	color_convert( maxChannel, paramRgbaValue );
+	color_convert( maxChannel, outputRgbaValue );
 	_plugin._outputChannelMax->setValueAtTime( args.time,
-	                                        get_color( paramRgbaValue, red_t() ),
-	                                        get_color( paramRgbaValue, green_t() ),
-	                                        get_color( paramRgbaValue, blue_t() ),
-	                                        get_color( paramRgbaValue, alpha_t() )
+	                                        get_color( outputRgbaValue, red_t() ),
+	                                        get_color( outputRgbaValue, green_t() ),
+	                                        get_color( outputRgbaValue, blue_t() ),
+	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
-	color_convert( minLuminosity, paramRgbaValue );
+	color_convert( minLuminosity, outputRgbaValue );
 	_plugin._outputLuminosityMin->setValueAtTime( args.time,
-	                                        get_color( paramRgbaValue, red_t() ),
-	                                        get_color( paramRgbaValue, green_t() ),
-	                                        get_color( paramRgbaValue, blue_t() ),
-	                                        get_color( paramRgbaValue, alpha_t() )
+	                                        get_color( outputRgbaValue, red_t() ),
+	                                        get_color( outputRgbaValue, green_t() ),
+	                                        get_color( outputRgbaValue, blue_t() ),
+	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
-	color_convert( maxLuminosity, paramRgbaValue );
+	color_convert( maxLuminosity, outputRgbaValue );
 	_plugin._outputLuminosityMax->setValueAtTime( args.time,
-	                                        get_color( paramRgbaValue, red_t() ),
-	                                        get_color( paramRgbaValue, green_t() ),
-	                                        get_color( paramRgbaValue, blue_t() ),
-	                                        get_color( paramRgbaValue, alpha_t() )
+	                                        get_color( outputRgbaValue, red_t() ),
+	                                        get_color( outputRgbaValue, green_t() ),
+	                                        get_color( outputRgbaValue, blue_t() ),
+	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
 	
 	switch( _processParams._chooseOutput )
