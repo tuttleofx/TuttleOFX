@@ -1,13 +1,10 @@
+#include <tuttle/common/utils/global.hpp>
 #include "MergePlugin.hpp"
 #include "MergeDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <cmath>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>

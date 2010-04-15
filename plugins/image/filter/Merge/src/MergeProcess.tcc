@@ -1,14 +1,9 @@
-#include "gil/toolbox/hsl.hpp"
 #include "gil/toolbox/ViewsMerging.hpp"
+#include <boost/gil/extension/toolbox/hsl.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
