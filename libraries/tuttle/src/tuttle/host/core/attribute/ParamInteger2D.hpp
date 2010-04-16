@@ -22,8 +22,8 @@ public:
 	OfxPointI getDefault() const;
 	void get( int& x, int& y ) const OFX_EXCEPTION_SPEC;
 	void get( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC;
-	void set( const int &x, const int &y ) OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const int &x, const int &y ) OFX_EXCEPTION_SPEC;
+	void set( const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void set( const OfxTime time, const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 };
 
 

@@ -31,7 +31,7 @@ OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, const std::string& 
  */
 OfxhParam::~OfxhParam() {}
 
-void OfxhParam::paramChanged( const attribute::EChange change )
+void OfxhParam::paramChanged( const EChange change )
 {
 	_paramSetInstance->paramChanged( *this, change );
 }

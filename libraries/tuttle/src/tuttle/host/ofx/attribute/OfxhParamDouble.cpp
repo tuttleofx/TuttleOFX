@@ -28,21 +28,21 @@ void OfxhParamDouble::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTIO
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::setV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	double value = va_arg( arg, double );
 
-	return set( value );
+	return set( value, change );
 }
 
 /**
  * implementation of var args function
  */
-void OfxhParamDouble::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamDouble::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	double value = va_arg( arg, double );
 
-	return set( time, value );
+	return set( time, value, change );
 }
 
 /**

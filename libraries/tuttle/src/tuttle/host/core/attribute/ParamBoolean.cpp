@@ -31,14 +31,16 @@ void ParamBoolean::get( const OfxTime time, bool& v ) const OFX_EXCEPTION_SPEC
 	v = _value; ///< @todo: in time !
 }
 
-void ParamBoolean::set( const bool &v ) OFX_EXCEPTION_SPEC
+void ParamBoolean::set( const bool &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
+	this->paramChanged( change );
 }
 
-void ParamBoolean::set( const OfxTime time, const bool &v ) OFX_EXCEPTION_SPEC
+void ParamBoolean::set( const OfxTime time, const bool &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
+	this->paramChanged( change );
 }
 
 

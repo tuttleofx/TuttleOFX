@@ -65,7 +65,7 @@ public:
 		{
 			BaseType dst;
 			p._controls[index]->get( dst );
-			_controls[index]->set( dst );
+			_controls[index]->set( dst, eChangeNone );
 		}
 	}
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
@@ -74,16 +74,18 @@ public:
 		copy( param );
 	}
 
-	inline virtual void setAt( const BaseType& value, const std::size_t index ) OFX_EXCEPTION_SPEC
+	inline virtual void setAt( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->set( value );
+		_controls[index]->set( value, eChangeNone );
+		this->paramChanged( change );
 	}
 
-	inline virtual void setAt( const OfxTime time, const BaseType& value, const std::size_t index ) OFX_EXCEPTION_SPEC
+	inline virtual void setAt( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->set( time, value );
+		_controls[index]->set( time, value, eChangeNone );
+		this->paramChanged( change );
 	}
 
 	// derived class does not need to implement, default is an approximation
@@ -121,23 +123,25 @@ public:
 	}
 
 	/// implementation of var args function
-	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC
+	virtual void setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[index]->set( v );
+			_controls[index]->set( v, eChangeNone );
 		}
+		this->paramChanged( change );
 	}
 
 	/// implementation of var args function
-	virtual void setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[index]->set( time, v );
+			_controls[index]->set( time, v, eChangeNone );
 		}
+		this->paramChanged( change );
 	}
 
 	/// implementation of var args function

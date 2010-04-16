@@ -21,8 +21,8 @@ public:
 	double    getDefault() const;
 	void get( double& ) const OFX_EXCEPTION_SPEC;
 	void get( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC;
-	void set( const double& ) OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const double& ) OFX_EXCEPTION_SPEC;
+	void set( const double&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void set( const OfxTime time, const double&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC;
 	void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC;
 	void          copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC

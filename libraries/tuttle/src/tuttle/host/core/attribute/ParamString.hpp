@@ -21,10 +21,8 @@ public:
 	const std::string& getDefault() const;
 	void          get( std::string& ) const OFX_EXCEPTION_SPEC;
 	void          get( const OfxTime time, std::string& ) const OFX_EXCEPTION_SPEC;
-	void          set( const char* ) OFX_EXCEPTION_SPEC;
-	void          set( const std::string& value ) OFX_EXCEPTION_SPEC { _value = value; }
-	void          set( const OfxTime time, const char* ) OFX_EXCEPTION_SPEC;
-	void          set( const OfxTime time, const std::string& value ) OFX_EXCEPTION_SPEC { _value = value; }
+	void          set( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void          set( const OfxTime time, const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void          copy( const ParamString& p ) OFX_EXCEPTION_SPEC
 	{
 		_value = p._value;

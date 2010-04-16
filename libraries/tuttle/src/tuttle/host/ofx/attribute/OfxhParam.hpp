@@ -57,8 +57,10 @@
 		get( time, dst );\
 		return dst;\
 	}\
-	inline virtual void set( const Type& value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); } \
-	inline virtual void set( const OfxTime time, const Type& value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); }\
+	inline virtual void set( const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); } \
+	inline virtual void set( const Type& value ) OFX_EXCEPTION_SPEC { set( value, eChangeUserEdited ); } \
+	inline virtual void set( const OfxTime time, const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); }\
+	inline virtual void set( const OfxTime time, const Type& value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }\
 
 namespace tuttle {
 namespace host {
@@ -111,7 +113,7 @@ public:
 		return ( OfxParamHandle ) this;
 	}
 
-	void paramChanged( const attribute::EChange change );
+	void paramChanged( const EChange change );
 
 	void changedActionBegin() { _avoidRecursion = true; }
 	void changedActionEnd() { _avoidRecursion = false; }
@@ -163,8 +165,10 @@ public:
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Double, double );
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Bool, bool );
 
-	inline virtual void set( const char* value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
-	inline virtual void set( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
+	inline virtual void set( const char* value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
+	inline virtual void set( const char* value ) OFX_EXCEPTION_SPEC { set( value, eChangeUserEdited ); }
+	inline virtual void set( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
+	inline virtual void set( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }
 
 	/// get a value, implemented by instances to deconstruct var args
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
