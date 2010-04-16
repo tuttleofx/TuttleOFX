@@ -21,8 +21,6 @@ class %CLASSNAME%Plugin : public OFX::ImageEffect
 {
 public:
     %CLASSNAME%Plugin( OfxImageEffectHandle handle );
-    OFX::Clip *getSrcClip( ) const;
-    OFX::Clip *getDstClip( ) const;
 
 public:
     void render( const OFX::RenderArguments &args );
