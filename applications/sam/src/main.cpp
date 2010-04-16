@@ -61,15 +61,6 @@ int main( int argc, char** argv )
 		write2.getParam( "filename" ).set( "output2.dpx" );
 		write3.getParam( "filename" ).set( "output3.exr" );
 		write4.getParam( "filename" ).set( "output4.avi" );
-		OfxPointD renderScale = { 1.0, 1.0 };
-		read1.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		read2.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		read3.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-	//	crop1.paramInstanceChangedAction( "Down", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write1.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write2.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write3.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
-		write4.paramInstanceChangedAction( "filename", kOfxChangeUserEdited, OfxTime( 0 ), renderScale );
 
 		TCOUT( "__________________________________________________3" );
 		g.connect( read1, invert1 );
