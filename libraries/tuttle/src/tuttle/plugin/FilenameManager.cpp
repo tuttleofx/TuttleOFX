@@ -10,12 +10,59 @@
 #include <list>
 #include <boost/filesystem/operations.hpp>
 
+namespace tuttle {
+namespace plugin {
+
 using namespace boost::filesystem;
 using namespace boost;
 using namespace std;
 
-namespace tuttle {
-namespace plugin {
+
+namespace {
+
+struct FileDesc
+{
+	FileDesc(const boost::filesystem::path & filepath, const boost::regex & regex)
+	{
+		boost::cmatch matches;
+		std::string filename = filepath.filename();
+		boost::regex_match( filename.c_str(), matches, regex );
+
+		_prefix = std::string( matches[1].first, matches[1].second );
+		_postfix = std::string( matches[3].first, matches[3].second );
+		_filenameLong = filepath.filename();
+		_sortingFilename = filepath.parent_path().string() + "/" + _prefix + _postfix;
+
+		std::string num = std::string( matches[2].first, matches[2].second );
+		std::istringstream strmLastNum(num);
+		strmLastNum >> _num;
+		_numFill = (size_t)num.length();
+	}
+	std::string _prefix;
+	std::string _postfix;
+	std::string _filenameLong;
+	std::string _sortingFilename;
+	size_t _num;
+	size_t _numFill;
+};
+
+struct FileSort
+{
+	bool operator() (const FileDesc &c1, const FileDesc &c2)
+	{
+		if (c1._sortingFilename != c2._sortingFilename)
+		{
+			return c1._sortingFilename < c2._sortingFilename;
+		}
+		else
+		{
+			return c1._num < c2._num;
+		}
+	}
+};
+
+}
+
 
 ///@todo: windows filename check
 FilenameManager::FilenameManager(const path & directory, const std::string pattern,
