@@ -62,6 +62,7 @@
 	inline virtual void set( const OfxTime time, const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); }\
 	inline virtual void set( const OfxTime time, const Type& value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }\
 
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -177,10 +178,10 @@ public:
 	virtual void getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC;
 
 	/// set a value, implemented by instances to deconstruct var args
-	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
+	virtual void setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
 
 	/// key a value, implemented by instances to deconstruct var args
-	virtual void setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
+	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
 
 	/// derive a value, implemented by instances to deconstruct var args
 	virtual void deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC;
