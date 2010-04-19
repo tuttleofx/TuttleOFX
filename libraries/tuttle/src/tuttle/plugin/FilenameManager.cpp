@@ -22,9 +22,8 @@ FilenameManager::FilenameManager(const path & directory, const std::string patte
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
 : _numFill(0), _step(0), _first(0), _last(0), _currentPos(0)
 {
-
 	path p;
-	if (!directory.empty() && directory.string()[directory.string().length()-1] != '/')
+	if (directory.string().length() >= 1 && directory.string()[directory.string().length()-1] != '/')
 	{
 		p = directory.string() + "/";
 	}
@@ -46,7 +45,7 @@ FilenameManager::~FilenameManager()
 {
 }
 
-bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase, const size_t start, const size_t step)
+bool FilenameManager::reset(path filepath, const bool dirbase, const size_t start, const size_t step)
 {
 	if (filepath.empty())
 	{
@@ -54,15 +53,16 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 	}
 	if(filepath.parent_path().empty())
 	{
-		filepath = boost::filesystem::initial_path().string() + "/" + filepath.string();
+		filepath = boost::filesystem::current_path().string() + "/" + filepath.string();
 	}
+
 	// Default
 	_pattern = filepath.filename();
 	_numFill = 0;
 	_step = step;
 	_first = start;
 	_last = start;
-	_currentPos = 0;
+	_currentPos = start;
 	_matchList.clear();
 
 	// max number of digits for size_t
@@ -73,12 +73,12 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 
 	string escPattern = regex_replace(filepath.filename(), esc, "\\\\\\1&", boost::match_default | boost::format_sed);
 	_fillCar = "0";
+	string fn = filepath.filename();
 	// Nuke style ( eg. filename_%04d.png )
-	if ( regex_match(filepath.filename(), regex(".*%[0-9]+d.*")) )
+	if ( regex_match(fn, regex(".*%[0-9]+d.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
-		string fn = filepath.filename();
 		regex_match( fn.c_str(), matches, regex("(.*?\\.?)%([0-9]|\\w)?([0-9]*)d(\\..*)") );
 		_prefixDir  = directory;
 		_prefixFile = string( matches[1].first, matches[1].second );
@@ -97,12 +97,11 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 		}
 	}
 	// Common style with padding ( eg. filename_####.png )
-	else if ( regex_match(filepath.filename(), regex(".*?\\[?#+\\]?.*")) )
+	else if ( regex_match(fn, regex(".*?\\[?#+\\]?.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
 		// Detect filename sequence based
-		string fn = filepath.filename();
 		regex_match( fn.c_str(), matches, regex("(.*?\\.?)\\[?(#+)\\]?(\\..*)") );
 		_fillCar = "0";
 		_prefixDir   = directory;
@@ -120,12 +119,11 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 		}
 	}
 	// Common style without padding ( eg. filename_@.png )
-	else if ( regex_match(filepath.filename(), regex(".*?@+.*")) )
+	else if ( regex_match(fn, regex(".*?@+.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
 		// Detect filename sequence based
-		string fn = filepath.filename();
 		regex_match( fn.c_str(), matches, regex("(.*?\\.?)(@+)(\\..*)") );
 		_fillCar = "0";
 		_numFill = 0;
@@ -145,7 +143,6 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 	else
 	{
 		// Detect filename sequence based
-		string fn = filepath.filename();
 //		if (!boost::regex_match( fn.c_str(), matches, regex("(.*?\\.?)(\\d+)(\\..*)") ))
 //		{
 			boost::cmatch matches;
@@ -196,6 +193,7 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 		_numFill = g._numFill;
 		_currentPos = _first;
 	}
+
 	return false;
 }
 

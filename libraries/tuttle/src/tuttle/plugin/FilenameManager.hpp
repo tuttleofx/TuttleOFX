@@ -82,13 +82,14 @@ public:
 	const std::string getFilenameAt(const OfxTime time, const ssize_t nGroup = -1);
 	const size_t numGroups() const;
 	const OfxRangeI getRange(const ssize_t nGroup = -1);
+	inline std::size_t step() const;
 protected:
 	std::vector< FilenamesGroup > matchingGroups(const boost::filesystem::path & directory, const boost::regex & regex);
 
 protected:
 	boost::filesystem::path _path;					///< Path
 	std::string _pattern;							///< Current pattern
-	const boost::regex _regexp;						///< Internal pattern regexp
+	boost::regex _regexp;							///< Internal pattern regexp
 	std::vector< FilenamesGroup > _matchList;		///< Currently unused, but usefull to automatically get a pattern from a directory
 	std::string _prefixDir;							///< Store directory prefix
 	std::string _prefixFile;						///< Store filename prefix
@@ -100,6 +101,12 @@ protected:
 	std::size_t _last;								///< Ending num
 	ssize_t _currentPos;							///< Used by getNextFilename()
 };
+
+inline std::size_t FilenameManager::step() const
+{
+	return _step;
+}
+
 
 }
 }
