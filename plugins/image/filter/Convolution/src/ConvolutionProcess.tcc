@@ -45,10 +45,36 @@ void ConvolutionProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							  procWindowSize.x, procWindowSize.y );
 
+	/// @todo tuttle: not correct...
     kernel_1d<double> kernel( &(_params._coef[0]), _params._coef.size(), _params._size.x );
 
     convolve_rows<Pixel>( src, kernel, dst );
     convolve_cols<Pixel>( src, kernel, dst );
+
+	/// @todo tuttle: add convolve_option
+//	switch( _params._outputType )
+//	{
+//		case :
+//			convolve_rows<Pixel>( src, kernel, dst, convolve_option_output_ignore );
+//			convolve_cols<Pixel>( src, kernel, dst, convolve_option_output_ignore );
+//			break;
+//		case :
+//			convolve_rows<Pixel>( src, kernel, dst, convolve_option_output_zero );
+//			convolve_cols<Pixel>( src, kernel, dst, convolve_option_output_zero );
+//			break;
+//		case :
+//			convolve_rows<Pixel>( src, kernel, dst, convolve_option_extend_constant );
+//			convolve_cols<Pixel>( src, kernel, dst, convolve_option_extend_constant );
+//			break;
+//		case :
+//			convolve_rows<Pixel>( src, kernel, dst, convolve_option_extend_padded );
+//			convolve_cols<Pixel>( src, kernel, dst, convolve_option_extend_padded );
+//			break;
+//		case :
+//			convolve_rows<Pixel>( src, kernel, dst, convolve_option_extend_zero );
+//			convolve_cols<Pixel>( src, kernel, dst, convolve_option_extend_zero );
+//			break;
+//	}
 }
 
 }
