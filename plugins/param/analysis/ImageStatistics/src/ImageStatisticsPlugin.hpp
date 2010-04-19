@@ -42,6 +42,7 @@ public:
 	OFX::Double2DParam* _rectSize;
 	OFX::ChoiceParam* _chooseOutput;
 	OFX::RGBAParam* _outputAverage;
+	OFX::Double3DParam* _outputAverageHsl;
 	OFX::RGBAParam* _outputChannelMin;
 	OFX::RGBAParam* _outputChannelMax;
 	OFX::RGBAParam* _outputLuminosityMin;

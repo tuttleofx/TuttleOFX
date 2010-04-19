@@ -22,8 +22,8 @@ public:
 	bool      getDefault() const;
 	void get( bool& ) const OFX_EXCEPTION_SPEC;
 	void get( const OfxTime time, bool& ) const OFX_EXCEPTION_SPEC;
-	void set( const bool& ) OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const bool& ) OFX_EXCEPTION_SPEC;
+	void set( const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void set( const OfxTime time, const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC
 	{
 		_value = p._value;

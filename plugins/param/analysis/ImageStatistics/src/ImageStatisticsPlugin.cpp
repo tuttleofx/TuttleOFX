@@ -28,6 +28,7 @@ ImageEffect( handle )
 	_rectSize = fetchDouble2DParam( kRectSize );
 	_chooseOutput = fetchChoiceParam( kChooseOutput );
 	_outputAverage = fetchRGBAParam( kOutputAverage );
+	_outputAverageHsl = fetchDouble3DParam( kOutputAverageHsl );
 	_outputChannelMin = fetchRGBAParam( kOutputChannelMin );
 	_outputChannelMax = fetchRGBAParam( kOutputChannelMax );
 	_outputLuminosityMin = fetchRGBAParam( kOutputLuminosityMin );

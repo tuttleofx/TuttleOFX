@@ -21,8 +21,8 @@ public:
 	int       getDefault() const;
 	void get( int& ) const OFX_EXCEPTION_SPEC;
 	void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
-	void set( const int &) OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const int &) OFX_EXCEPTION_SPEC;
+	void set( const int &, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void set( const OfxTime time, const int &, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void          copy( const ParamInteger& p ) OFX_EXCEPTION_SPEC
 	{
 		_value = p._value;

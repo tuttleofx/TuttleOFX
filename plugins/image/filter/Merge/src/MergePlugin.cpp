@@ -1,16 +1,9 @@
-/**
- * @file MergePlugin.cpp
- * @brief Merging ofx plugin
- * @author Eloi Du Bois
- * @date    27/11/09 13:42
- *
- */
+#include <tuttle/common/utils/global.hpp>
 
 #include "MergePlugin.hpp"
 #include "MergeProcess.hpp"
 #include "MergeDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>

@@ -15,49 +15,6 @@
 namespace tuttle {
 namespace plugin {
 
-namespace {
-struct FileDesc
-{
-	FileDesc(const boost::filesystem::path & filepath, const boost::regex & regex)
-	{
-		boost::cmatch matches;
-		std::string filename = filepath.filename();
-		boost::regex_match( filename.c_str(), matches, regex );
-
-		_prefix = std::string( matches[1].first, matches[1].second );
-		_postfix = std::string( matches[3].first, matches[3].second );
-		_filenameLong = filepath.filename();
-		_sortingFilename = filepath.parent_path().string() + "/" + _prefix + _postfix;
-
-		std::string num = std::string( matches[2].first, matches[2].second );
-		std::istringstream strmLastNum(num);
-		strmLastNum >> _num;
-		_numFill = (size_t)num.length();
-	}
-	std::string _prefix;
-	std::string _postfix;
-	std::string _filenameLong;
-	std::string _sortingFilename;
-	size_t _num;
-	size_t _numFill;
-};
-
-struct FileSort {
-	bool operator() (const FileDesc &c1, const FileDesc &c2)
-	{
-		if (c1._sortingFilename != c2._sortingFilename)
-		{
-			return c1._sortingFilename < c2._sortingFilename;
-		}
-		else
-		{
-			return c1._num < c2._num;
-		}
-	}
-};
-
-}
-
 struct FilenamesGroup
 {
 	std::vector< std::string > _filenames;
@@ -70,7 +27,8 @@ struct FilenamesGroup
 	std::string _fillCar;
 };
 
-class FilenameManager {
+class FilenameManager
+{
 public:
 	FilenameManager(): _numFill(0), _step(0), _first(0), _last(0), _currentPos(0) {}
 	FilenameManager(const boost::filesystem::path& directory, const std::string pattern, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
@@ -111,4 +69,4 @@ inline std::size_t FilenameManager::step() const
 }
 }
 
-#endif	/* _FILENAMEMANAGER_HPP */
+#endif

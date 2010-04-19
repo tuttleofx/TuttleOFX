@@ -32,8 +32,8 @@ public:
 	// Deriving implementatation needs to overide these
 	virtual void get( double& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void get( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const double& )                               OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const OfxTime time, const double& )                 OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const double&, const EChange change )                               OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const OfxTime time, const double&, const EChange change )                 OFX_EXCEPTION_SPEC = 0;
 	virtual void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC = 0;
 
@@ -44,10 +44,10 @@ public:
 	virtual void getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
+	virtual void setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual void setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
+	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
 	virtual void deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC;

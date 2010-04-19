@@ -39,21 +39,21 @@ void OfxhParamInteger::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTI
 /**
  * implementation of var args function
  */
-void OfxhParamInteger::setV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
-	return set( value );
+	return set( value, change );
 }
 
 /**
  * implementation of var args function
  */
-void OfxhParamInteger::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamInteger::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	int value = va_arg( arg, int );
 
-	return set( time, value );
+	return set( time, value, change );
 }
 
 /**

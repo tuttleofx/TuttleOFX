@@ -33,19 +33,19 @@ void OfxhParamBoolean::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTI
 /**
  * implementation of var args function
  */
-void OfxhParamBoolean::setV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamBoolean::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	bool value = va_arg( arg, int ) != 0;
-	set( value );
+	set( value, change );
 }
 
 /**
  * implementation of var args function
  */
-void OfxhParamBoolean::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParamBoolean::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	bool value = va_arg( arg, int ) != 0;
-	set( time, value );
+	set( time, value, change );
 }
 
 

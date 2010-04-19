@@ -12,6 +12,7 @@ const static std::string kRectCenter = "rectCenter";
 const static std::string kRectSize = "rectSize";
 const static std::string kOutputGroup = "outputGroup";
 const static std::string kOutputAverage = "outputAverage";
+const static std::string kOutputAverageHsl = "outputAverageHsl";
 const static std::string kOutputChannelMin = "outputChannelMin";
 const static std::string kOutputChannelMax = "outputChannelMax";
 const static std::string kOutputLuminosityMin = "outputLuminosityMin";

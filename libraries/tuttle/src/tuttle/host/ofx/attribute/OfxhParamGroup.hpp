@@ -36,7 +36,7 @@ public:
 
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
-	virtual void paramChanged( const attribute::OfxhParam& param, const attribute::EChange change )
+	virtual void paramChanged( const attribute::OfxhParam& param, const EChange change )
 	{
 		_paramSetInstance->paramChanged( param, change );
 	}

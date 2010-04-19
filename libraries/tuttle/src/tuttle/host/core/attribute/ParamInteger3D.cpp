@@ -40,18 +40,20 @@ void ParamInteger3D::get( const OfxTime time, int& x, int& y, int& z ) const OFX
 	_controls[2]->get(time, z);
 }
 
-void ParamInteger3D::set( const int &x, const int &y, const int &z ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::set( const int &x, const int &y, const int &z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(x);
-	_controls[1]->set(y);
-	_controls[2]->set(z);
+	_controls[0]->set(x, ofx::attribute::eChangeNone);
+	_controls[1]->set(y, ofx::attribute::eChangeNone);
+	_controls[2]->set(z, ofx::attribute::eChangeNone);
+	this->paramChanged( change );
 }
 
-void ParamInteger3D::set( const OfxTime time, const int &x, const int &y, const int &z ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::set( const OfxTime time, const int &x, const int &y, const int &z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(time, x);
-	_controls[1]->set(time, y);
-	_controls[2]->set(time, z);
+	_controls[0]->set(time, x, ofx::attribute::eChangeNone);
+	_controls[1]->set(time, y, ofx::attribute::eChangeNone);
+	_controls[2]->set(time, z, ofx::attribute::eChangeNone);
+	this->paramChanged( change );
 }
 
 }

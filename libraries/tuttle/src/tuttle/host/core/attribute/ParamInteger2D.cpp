@@ -36,16 +36,18 @@ void ParamInteger2D::get( const OfxTime time, int& x, int& y ) const OFX_EXCEPTI
 	_controls[1]->get(time, y);
 }
 
-void ParamInteger2D::set( const int &x, const int &y ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::set( const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(x);
-	_controls[1]->set(y);
+	_controls[0]->set(x, ofx::attribute::eChangeNone);
+	_controls[1]->set(y, ofx::attribute::eChangeNone);
+	this->paramChanged( change );
 }
 
-void ParamInteger2D::set( const OfxTime time, const int &x, const int &y ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::set( const OfxTime time, const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(time, x);
-	_controls[1]->set(time, y);
+	_controls[0]->set(time, x, ofx::attribute::eChangeNone);
+	_controls[1]->set(time, y, ofx::attribute::eChangeNone);
+	this->paramChanged( change );
 }
 
 

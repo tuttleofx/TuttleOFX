@@ -23,18 +23,19 @@ public:
 	// Deriving implementatation needs to overide these
 	virtual void get( int& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const int& )                OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const OfxTime time, const int& )  OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const int&, const EChange change )                OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const OfxTime time, const int&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
 
-	void set( const std::string& key ) OFX_EXCEPTION_SPEC
+	void set( const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		set( getIndexFor(key) );
+		set( getIndexFor(key), change );
 	}
 
-	void set( const OfxTime time, const std::string& key ) OFX_EXCEPTION_SPEC
+	void set( const OfxTime time, const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		set( time, getIndexFor(key) );
+		set( time, getIndexFor(key), change );
 	}
+	
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
 
@@ -42,10 +43,10 @@ public:
 	virtual void getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual void setV( va_list arg ) OFX_EXCEPTION_SPEC;
+	virtual void setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
-	virtual void setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC;
+	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
 };
 
 

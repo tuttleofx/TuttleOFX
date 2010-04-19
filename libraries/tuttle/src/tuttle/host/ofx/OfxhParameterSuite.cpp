@@ -340,7 +340,7 @@ static OfxStatus paramSetValue( OfxParamHandle paramHandle,
 
 		try
 		{
-			paramInstance->setV( ap );
+			paramInstance->setV( ap, eChangePluginEdited );
 		}
 		catch( OfxhException& e )
 		{
@@ -352,14 +352,6 @@ static OfxStatus paramSetValue( OfxParamHandle paramHandle,
 		}
 
 		va_end( ap );
-
-		if( stat == kOfxStatOK )
-		{
-			if( paramInstance->getParamSetInstance() )
-				paramInstance->getParamSetInstance()->paramChanged( *paramInstance, eChangePluginEdited );
-			else
-				stat = kOfxStatErrUnsupported;
-		}
 
 		return stat;
 	}
@@ -392,7 +384,7 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 
 		try
 		{
-			paramInstance->setV( time, ap );
+			paramInstance->setV( time, ap, eChangePluginEdited );
 		}
 		catch( OfxhException& e )
 		{
@@ -404,14 +396,6 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 		}
 
 		va_end( ap );
-
-		if( stat == kOfxStatOK )
-		{
-			if( paramInstance->getParamSetInstance() )
-				paramInstance->getParamSetInstance()->paramChanged( *paramInstance, eChangePluginEdited );
-			else
-				stat = kOfxStatErrUnsupported;
-		}
 
 		return stat;
 	}

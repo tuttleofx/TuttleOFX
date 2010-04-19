@@ -73,7 +73,7 @@ public:
 
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
-	virtual void paramChanged( const attribute::OfxhParam& param, const attribute::EChange change ) = 0;
+	virtual void paramChanged( const attribute::OfxhParam& param, const EChange change ) = 0;
 
 	/// add a param
 	virtual void addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
