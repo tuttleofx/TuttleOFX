@@ -61,7 +61,7 @@ void OfxhParam::setDisplayRange() {}
  */
 void OfxhParam::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getValue failed (paramName:") + getName() + ")" );
+	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV failed (paramName:") + getName() + ")" );
 }
 
 /**
@@ -69,23 +69,23 @@ void OfxhParam::getV( va_list arg ) const OFX_EXCEPTION_SPEC
  */
 void OfxhParam::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported );
+	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV at time failed (paramName:") + getName() + ")" );
 }
 
 /**
  * set a value, implemented by instances to deconstruct var args
  */
-void OfxhParam::setV( va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParam::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported );
+	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV failed (paramName:") + getName() + ")" );
 }
 
 /**
  * key a value, implemented by instances to deconstruct var args
  */
-void OfxhParam::setV( const OfxTime time, va_list arg ) OFX_EXCEPTION_SPEC
+void OfxhParam::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported );
+	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV at time failed (paramName:") + getName() + ")" );
 }
 
 /**
