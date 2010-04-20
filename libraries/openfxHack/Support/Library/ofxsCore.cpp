@@ -35,6 +35,8 @@
  */
 #include "./ofxsSupportPrivate.h"
 
+#include <sstream>
+
 namespace OFX {
 
 /** @brief Throws an @ref OFX::Exception depending on the status flag passed in */
@@ -83,7 +85,9 @@ const std::string mapStatusToString( const OfxStatus stat )
 		case kOfxStatReplyDefault: return "kOfxStatReplyDefault";
 		case kOfxStatErrImageFormat: return "kOfxStatErrImageFormat";
 	}
-	return "UNKNOWN STATUS CODE";
+	std::ostringstream o;
+	o << "UNKNOWN STATUS CODE: " << stat;
+	return o.str();
 }
 
 /** @brief namespace for memory allocation that is done via wrapping the ofx memory suite */

@@ -29,7 +29,8 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	static void writeImage( View& src, const std::string& filepath ) throw( tuttle::plugin::PluginException );
+	template<class Bits>
+	void writeImage( View& src, const std::string& filepath );
 };
 
 }

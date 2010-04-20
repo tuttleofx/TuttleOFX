@@ -30,7 +30,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "stddef.h" // for size_t
+#include <stddef.h> // for size_t
+#include <limits.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -415,15 +416,13 @@ typedef struct OfxPointD
 
 /** @brief Used to flag infinite rects. Set minimums to this to indicate infinite
  *
- * This is effectively INT_MAX.
  */
-#define kOfxFlagInfiniteMax ( (int)( ( 1 << ( sizeof( int ) * 8 - 1 ) ) - 1 ) )
+#define kOfxFlagInfiniteMax INT_MAX
 
 /** @brief Used to flag infinite rects. Set minimums to this to indicate infinite.
  *
- * This is effectively INT_MIN
  */
-#define kOfxFlagInfiniteMin ( (int)( -kOfxFlagInfiniteMax - 1 ) )
+#define kOfxFlagInfiniteMin INT_MIN
 
 /** @brief Defines two dimensional integer region
  *

@@ -37,9 +37,10 @@ PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
 template<class View>
 void PNGReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	if( ! bfs::exists( _plugin.getParams(args.time)._filepath ) )
+	PNGReaderProcessParams params = _plugin.getProcessParams(args.time);
+	if( ! bfs::exists( params._filepath ) )
 	{
-		throw( PluginException( "Unable to open : " + _plugin.getParams(args.time)._filepath ) );
+		throw( OFX::Exception::Suite(kOfxStatFailed, std::string("Unable to open : ") + params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -54,7 +55,7 @@ void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getParams(this->_renderArgs.time)._filepath );
+	readImage( this->_dstView, _plugin.getProcessParams(this->_renderArgs.time)._filepath );
 }
 
 /**

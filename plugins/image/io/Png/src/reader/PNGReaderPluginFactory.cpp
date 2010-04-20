@@ -38,9 +38,10 @@ void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
-	desc.setSupportsMultipleClipDepths( true );
 	
 	// plugin flags
+	desc.setSupportsMultipleClipDepths( true );
+	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 }
@@ -61,11 +62,38 @@ void PNGReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginReaderParamFilename );
 	assert( filename );
-	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
+	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	desc.addClipPreferencesSlaveParam( *filename );
+
+	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kTuttlePluginReaderParamExplicitConversion );
+	explicitConversion->setLabel( "Explicit conversion" );
+	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
+	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
+	explicitConversion->appendOption( kTuttlePluginBitDepth16 );
+	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
+	desc.addClipPreferencesSlaveParam( *explicitConversion );
+
+	if( ! OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
+	{
+		explicitConversion->setIsSecret( true );
+		if( OFX::getImageEffectHostDescription()->_supportedPixelDepths.size() == 1 )
+		{
+			explicitConversion->setDefault( static_cast<int>(OFX::getImageEffectHostDescription()->_supportedPixelDepths[0]) );
+		}
+		else
+		{
+			COUT_WARNING("The host doesn't support multiple clip depths, but didn't define supported pixel depth. (size: " << OFX::getImageEffectHostDescription()->_supportedPixelDepths.size() << ")" );
+			explicitConversion->setDefault( 3 );
+		}
+	}
+	else
+	{
+		explicitConversion->setDefault( 0 );
+	}
 }
 
 /**

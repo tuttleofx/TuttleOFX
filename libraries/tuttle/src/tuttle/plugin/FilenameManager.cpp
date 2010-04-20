@@ -67,7 +67,7 @@ struct FileSort
 ///@todo: windows filename check
 FilenameManager::FilenameManager(const path & directory, const std::string pattern,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
-: _numFill(0), _step(0), _first(0), _last(0), _currentPos(0)
+: _numFill(0), _step(0), _first(0), _last(0)
 {
 	path p;
 	if (directory.string().length() >= 1 && directory.string()[directory.string().length()-1] != '/')
@@ -83,7 +83,7 @@ FilenameManager::FilenameManager(const path & directory, const std::string patte
 
 FilenameManager::FilenameManager(const boost::filesystem::path & filepath,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
-: _numFill(0), _step(0), _first(0), _last(0), _currentPos(0)
+: _numFill(0), _step(0), _first(0), _last(0)
 {
 	reset(filepath, dirbase, start, step);
 }
@@ -92,11 +92,18 @@ FilenameManager::~FilenameManager()
 {
 }
 
-bool FilenameManager::reset(path filepath, const bool dirbase, const size_t start, const size_t step)
+void FilenameManager::reset(path filepath, const bool dirbase, const size_t start, const size_t step)
 {
+	_numFill = 0;
+	_step = step;
+	_first = start;
+	_last = start;
+	_matchList.clear();
+	_pattern = "";
+
 	if (filepath.empty())
 	{
-		return true;
+		return;
 	}
 	if(filepath.parent_path().empty())
 	{
@@ -105,12 +112,6 @@ bool FilenameManager::reset(path filepath, const bool dirbase, const size_t star
 
 	// Default
 	_pattern = filepath.filename();
-	_numFill = 0;
-	_step = step;
-	_first = start;
-	_last = start;
-	_currentPos = start;
-	_matchList.clear();
 
 	// max number of digits for size_t
 	static const size_t max = std::numeric_limits<size_t>::digits10+1;
@@ -209,13 +210,13 @@ bool FilenameManager::reset(path filepath, const bool dirbase, const size_t star
 //			_postfixFile = std::string( matches[3].first, matches[3].second );
 //			string num = string( matches[2].first, matches[2].second );
 //			std::istringstream strm(num);
-//			strm >> _currentPos;
+//			strm >> currentPos;
 //			_fillCar = "0";
 //			_numFill = num.length();
-//			_first = _currentPos;
-//			_last = _currentPos;
+//			_first = currentPos;
+//			_last = currentPos;
 //		}
-		return false;
+		return;
 	}
 	if (dirbase)
 	{
@@ -227,7 +228,7 @@ bool FilenameManager::reset(path filepath, const bool dirbase, const size_t star
 		else if (_matchList.size() == 0)
 		{
 //			COUT_WARNING("No pattern was found, disabling file directory pattern searching");
-			return false;
+			return;
 		}
 
 		FilenamesGroup g = _matchList.front();
@@ -238,39 +239,28 @@ bool FilenameManager::reset(path filepath, const bool dirbase, const size_t star
 		_first = g._first;
 		_last = g._last;
 		_numFill = g._numFill;
-		_currentPos = _first;
 	}
-
-	return false;
 }
 
-const std::string FilenameManager::getCurrentFilename(const ssize_t nGroup /* = -1 */)
+const std::string FilenameManager::getFirstFilename(const ssize_t nGroup /* = -1 */) const
 {
-	return getFilenameAt(double(_currentPos), nGroup);
+	return getFilenameAt(double(_first), nGroup);
 }
 
-const std::string FilenameManager::getNextFilename(const ssize_t nGroup /* = -1 */)
-{
-	string str = getCurrentFilename(nGroup);
-	_currentPos++;
-	return str;
-}
-
-const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */)
+const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */) const
 {
 	if (_pattern == "")
 	{
 		return "";
 	}
-	_currentPos = ssize_t(time);
 	// Check for fractionnal part
-	if (time != double(_currentPos) )
+	if( time != std::floor(time) )
 	{
 		COUT_WARNING("Warning ! Passing fractionnal time value. Frame will be overwritten.");
 	}
 
 	// Scale & translate
-	size_t t = _currentPos * _step;
+	ssize_t t = ssize_t(time) * _step;
 	std::ostringstream o;
 
 	if (nGroup >= 0 && nGroup < (ssize_t)_matchList.size())
@@ -313,7 +303,7 @@ const size_t FilenameManager::numGroups() const
 	return _matchList.size();
 }
 
-const OfxRangeI FilenameManager::getRange(const ssize_t nGroup /* = -1 */)
+const OfxRangeI FilenameManager::getRange(const ssize_t nGroup /* = -1 */) const
 {
 	OfxRangeI range;
 	if (nGroup >= 0 && nGroup < (ssize_t)_matchList.size())

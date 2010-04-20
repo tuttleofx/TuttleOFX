@@ -1424,9 +1424,10 @@ void ClipPreferencesSetter::setClipComponents( Clip& clip, PixelComponentEnum co
 /** @brief, force the host to set a clip's mapped bit depth be \em bitDepth */
 void ClipPreferencesSetter::setClipBitDepth( Clip& clip, BitDepthEnum bitDepth )
 {
-	if( ! _imageEffectHostDescription->supportsMultipleClipDepths )
-		//throw( std::logic_error("Host doesn't support multiple bit depths.") );
-		return;
+///@todo: check if this is really necessary
+//	if( ! _imageEffectHostDescription->supportsMultipleClipDepths )
+//		//throw( std::logic_error("Host doesn't support multiple bit depths.") );
+//		return;
 
 	doneSomething_ = true;
 	const std::string& propName = extractValueForName( clipDepthPropNames_, clip.name() );
@@ -1726,10 +1727,7 @@ ImageEffect* retrieveImageEffectPointer( OfxImageEffectHandle handle )
 
 	if( instance == NULL )
 	{
-		// need to throw something here
-		std::cerr << "Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: " << kOfxPropInstanceData << " is NULL)." << std::endl;
-		std::cerr << "The plugin will crash..." << std::endl;
-		// OFX_TODO Exception !!!!!!!!!
+		throw( OFX::Exception::Suite( kOfxStatErrBadHandle, std::string("Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: ") + kOfxPropInstanceData + " is NULL).\nThe plugin will crash...") );
 	}
 	// and dance to the music
 	return instance;
@@ -2057,7 +2055,7 @@ bool getTimeDomainAction( OfxImageEffectHandle handle, OFX::PropertySet& outArgs
 	ImageEffect* effectInstance = retrieveImageEffectPointer( handle );
 
 	// we can only be a general context effect, so check that this is true
-	OFX::Log::error( effectInstance->getContext() != eContextGeneral, "Calling kOfxImageEffectActionGetTimeDomain on an effect that is not a general context effect." );
+	OFX::Log::error( effectInstance->getContext() != eContextGeneral || effectInstance->getContext() != OFX::eContextReader, "Calling kOfxImageEffectActionGetTimeDomain on an effect that is not a general context effect." );
 
 	OfxRangeD timeDomain;
 
@@ -2433,7 +2431,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
-		std::cout << "Caught OFX::Exception::Suite" << std::endl;
+		std::cout << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
 		stat = e.status();
 	}
 
