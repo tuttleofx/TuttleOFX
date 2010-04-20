@@ -14,32 +14,28 @@ namespace writer {
 using namespace boost::gil;
 
 PNGWriterPlugin::PNGWriterPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: WriterPlugin( handle )
 {
-	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath       = fetchStringParam( kOutputFilename );
-	_renderButton   = fetchPushButtonParam( kRender );
-	_renderAlways   = fetchBooleanParam( kParamRenderAlways );
-	_precision      = fetchChoiceParam( kPrecision );
-	_precisionLong  = fetchChoiceParam( kPrecisionLong );
+	_outputRGB     = fetchBooleanParam( kParamOutputRGB );
 }
 
-OFX::Clip* PNGWriterPlugin::getSrcClip() const
+PNGWriterProcessParams PNGWriterPlugin::getParams(const OfxTime time)
 {
-	return _srcClip;
-}
-
-OFX::Clip* PNGWriterPlugin::getDstClip() const
-{
-	return _dstClip;
-}
-
-PNGWriterParams PNGWriterPlugin::getParams(const OfxTime time)
-{
-	PNGWriterParams params;
-	params._filepath = _fPattern.getFilenameAt(time);
-	params._precision = _precision->getValue();
+	PNGWriterProcessParams params;
+	params._filepath = this->_fPattern.getFilenameAt(time);
+	params._outputRGB = this->_outputRGB->getValue();
+	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
+	{
+		case eParamBitDepth8:
+			params._bitDepth = 8;
+			break;
+		case eParamBitDepth16:
+			params._bitDepth = 16;
+			break;
+		default:
+			throw( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			break;
+	}
 	return params;
 }
 
@@ -116,48 +112,10 @@ void PNGWriterPlugin::render( const OFX::RenderArguments& args )
 					return;
 			}
 		}
-		else if( dstComponents == OFX::ePixelComponentCustom )
+		else
 		{
-			COUT_FATALERROR( "Custom pixel component is not recognize !" );
+			COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
 		}
-		else if( dstComponents == OFX::ePixelComponentNone )
-		{
-			COUT_FATALERROR( "Pixel component is None !" );
-		}
-	}
-}
-
-void PNGWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
-{
-	if( paramName == kOutputFilename )
-	{
-		_fPattern.reset(_filepath->getValue(), false, 0, 1);
-	}
-	else if( paramName == kPrecisionLong && args.reason == OFX::eChangeUserEdit  )
-	{
-		_precision->setValue( _precisionLong->getValue() );
-	}
-	else if( paramName == kPrecision && args.reason == OFX::eChangeUserEdit )
-	{
-		_precisionLong->setValue( _precision->getValue() );
-	}
-}
-
-void PNGWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
-{
-	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	switch(_precision->getValue())
-	{
-		case 8:
-			clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
-			break;
-		case 12:
-		case 16:
-			clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUShort );
-			break;
-		case 32:
-			clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
-			break;
 	}
 }
 

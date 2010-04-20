@@ -1,6 +1,7 @@
 #include "PNGWriterPluginFactory.hpp"
 #include "PNGWriterDefinitions.hpp"
 #include "PNGWriterPlugin.hpp"
+#include "tuttle/plugin/context/Definition.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
@@ -39,6 +40,7 @@ void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
+	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 }
@@ -62,28 +64,29 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setLabel( "Output filename" );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginWriterParamFilename );
+	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* precision = desc.defineChoiceParam( kPrecision );
-	precision->setIsSecret( true );
-	precision->appendOption( "8 bits" );
-	precision->appendOption( "16 bits" );
-	precision->setDefault( 1 );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
+	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	bitDepth->appendOption( kTuttlePluginBitDepth16 );
+	bitDepth->setDefault( 1 );
+	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	desc.addClipPreferencesSlaveParam( *bitDepth );
 
-	OFX::ChoiceParamDescriptor* precisionLong = desc.defineChoiceParam( kPrecisionLong );
-	precisionLong->setLabel( "Precision" );
-	precisionLong->appendOption( "8 bits" );
-	precisionLong->appendOption( "16 bits" );
-	precisionLong->setDefault( 1 );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( true );
 
-	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
+	OFX::BooleanParamDescriptor* outputRGB = desc.defineBooleanParam( kParamOutputRGB );
+	outputRGB->setLabel( "Force RGB" );
+	outputRGB->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outputRGB->setDefault( false );
+
+	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
 	renderButton->setLabels( "Render", "Render", "Render step" );
 }
 

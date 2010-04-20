@@ -19,6 +19,7 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 
@@ -252,7 +253,8 @@ void ImageEffectNode::progressEnd()
 /// false if you should abandon processing, true to continue
 bool ImageEffectNode::progressUpdate( double progress )
 {
-	COUT_VAR(progress);
+//	COUT( "\033[sprogress: " << std::setw(3) << int(progress * 100)  << "\033[r");
+//	COUT_VAR( progress );
 	return true;
 }
 

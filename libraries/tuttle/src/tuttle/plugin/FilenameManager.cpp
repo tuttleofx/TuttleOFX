@@ -67,11 +67,10 @@ struct FileSort
 ///@todo: windows filename check
 FilenameManager::FilenameManager(const path & directory, const std::string pattern,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
-: _numFill(0), _step(0), _first(0), _last(0), _currentPos(0)
+: _numFill(0), _step(0), _first(0), _last(0)
 {
-
 	path p;
-	if (!directory.empty() && directory.string()[directory.string().length()-1] != '/')
+	if (directory.string().length() >= 1 && directory.string()[directory.string().length()-1] != '/')
 	{
 		p = directory.string() + "/";
 	}
@@ -84,7 +83,7 @@ FilenameManager::FilenameManager(const path & directory, const std::string patte
 
 FilenameManager::FilenameManager(const boost::filesystem::path & filepath,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
-: _numFill(0), _step(0), _first(0), _last(0), _currentPos(0)
+: _numFill(0), _step(0), _first(0), _last(0)
 {
 	reset(filepath, dirbase, start, step);
 }
@@ -93,24 +92,26 @@ FilenameManager::~FilenameManager()
 {
 }
 
-bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase, const size_t start, const size_t step)
+void FilenameManager::reset(path filepath, const bool dirbase, const size_t start, const size_t step)
 {
-	if (filepath.empty())
-	{
-		return true;
-	}
-	if(filepath.parent_path().empty())
-	{
-		filepath = boost::filesystem::initial_path().string() + "/" + filepath.string();
-	}
-	// Default
-	_pattern = filepath.filename();
 	_numFill = 0;
 	_step = step;
 	_first = start;
 	_last = start;
-	_currentPos = 0;
 	_matchList.clear();
+	_pattern = "";
+
+	if (filepath.empty())
+	{
+		return;
+	}
+	if(filepath.parent_path().empty())
+	{
+		filepath = boost::filesystem::current_path().string() + "/" + filepath.string();
+	}
+
+	// Default
+	_pattern = filepath.filename();
 
 	// max number of digits for size_t
 	static const size_t max = std::numeric_limits<size_t>::digits10+1;
@@ -120,12 +121,12 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 
 	string escPattern = regex_replace(filepath.filename(), esc, "\\\\\\1&", boost::match_default | boost::format_sed);
 	_fillCar = "0";
+	string fn = filepath.filename();
 	// Nuke style ( eg. filename_%04d.png )
-	if ( regex_match(filepath.filename(), regex(".*%[0-9]+d.*")) )
+	if ( regex_match(fn, regex(".*%[0-9]+d.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
-		string fn = filepath.filename();
 		regex_match( fn.c_str(), matches, regex("(.*?\\.?)%([0-9]|\\w)?([0-9]*)d(\\..*)") );
 		_prefixDir  = directory;
 		_prefixFile = string( matches[1].first, matches[1].second );
@@ -144,12 +145,11 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 		}
 	}
 	// Common style with padding ( eg. filename_####.png )
-	else if ( regex_match(filepath.filename(), regex(".*?\\[?#+\\]?.*")) )
+	else if ( regex_match(fn, regex(".*?\\[?#+\\]?.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
 		// Detect filename sequence based
-		string fn = filepath.filename();
 		regex_match( fn.c_str(), matches, regex("(.*?\\.?)\\[?(#+)\\]?(\\..*)") );
 		_fillCar = "0";
 		_prefixDir   = directory;
@@ -167,12 +167,11 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 		}
 	}
 	// Common style without padding ( eg. filename_@.png )
-	else if ( regex_match(filepath.filename(), regex(".*?@+.*")) )
+	else if ( regex_match(fn, regex(".*?@+.*")) )
 	{
 		// Parse to get filling information
 		cmatch matches;
 		// Detect filename sequence based
-		string fn = filepath.filename();
 		regex_match( fn.c_str(), matches, regex("(.*?\\.?)(@+)(\\..*)") );
 		_fillCar = "0";
 		_numFill = 0;
@@ -192,7 +191,6 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 	else
 	{
 		// Detect filename sequence based
-		string fn = filepath.filename();
 //		if (!boost::regex_match( fn.c_str(), matches, regex("(.*?\\.?)(\\d+)(\\..*)") ))
 //		{
 			boost::cmatch matches;
@@ -212,13 +210,13 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 //			_postfixFile = std::string( matches[3].first, matches[3].second );
 //			string num = string( matches[2].first, matches[2].second );
 //			std::istringstream strm(num);
-//			strm >> _currentPos;
+//			strm >> currentPos;
 //			_fillCar = "0";
 //			_numFill = num.length();
-//			_first = _currentPos;
-//			_last = _currentPos;
+//			_first = currentPos;
+//			_last = currentPos;
 //		}
-		return false;
+		return;
 	}
 	if (dirbase)
 	{
@@ -230,7 +228,7 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 		else if (_matchList.size() == 0)
 		{
 //			COUT_WARNING("No pattern was found, disabling file directory pattern searching");
-			return false;
+			return;
 		}
 
 		FilenamesGroup g = _matchList.front();
@@ -241,38 +239,28 @@ bool FilenameManager::reset(boost::filesystem::path filepath, const bool dirbase
 		_first = g._first;
 		_last = g._last;
 		_numFill = g._numFill;
-		_currentPos = _first;
 	}
-	return false;
 }
 
-const std::string FilenameManager::getCurrentFilename(const ssize_t nGroup /* = -1 */)
+const std::string FilenameManager::getFirstFilename(const ssize_t nGroup /* = -1 */) const
 {
-	return getFilenameAt(double(_currentPos), nGroup);
+	return getFilenameAt(double(_first), nGroup);
 }
 
-const std::string FilenameManager::getNextFilename(const ssize_t nGroup /* = -1 */)
-{
-	string str = getCurrentFilename(nGroup);
-	_currentPos++;
-	return str;
-}
-
-const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */)
+const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */) const
 {
 	if (_pattern == "")
 	{
 		return "";
 	}
-	_currentPos = ssize_t(time);
 	// Check for fractionnal part
-	if (time != double(_currentPos) )
+	if( time != std::floor(time) )
 	{
 		COUT_WARNING("Warning ! Passing fractionnal time value. Frame will be overwritten.");
 	}
 
 	// Scale & translate
-	size_t t = _currentPos * _step;
+	ssize_t t = ssize_t(time) * _step;
 	std::ostringstream o;
 
 	if (nGroup >= 0 && nGroup < (ssize_t)_matchList.size())
@@ -315,7 +303,7 @@ const size_t FilenameManager::numGroups() const
 	return _matchList.size();
 }
 
-const OfxRangeI FilenameManager::getRange(const ssize_t nGroup /* = -1 */)
+const OfxRangeI FilenameManager::getRange(const ssize_t nGroup /* = -1 */) const
 {
 	OfxRangeI range;
 	if (nGroup >= 0 && nGroup < (ssize_t)_matchList.size())

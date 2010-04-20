@@ -89,6 +89,13 @@ public:
 			progressEnd( );
 			return;
 		}
+		catch( std::exception& e )
+		{
+			//COUT_WITHINFOS( e.what() );
+			COUT_EXCEPTION( e );
+			progressEnd( );
+			return;
+		}
 		catch( ... )
 		{
 			COUT_ERROR( "Unknown exception." );

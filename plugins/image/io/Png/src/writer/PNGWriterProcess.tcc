@@ -44,7 +44,17 @@ void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	using namespace boost::gil;
 	try
 	{
-		writeImage( this->_srcView, _plugin.getParams(this->_renderArgs.time)._filepath );
+		PNGWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
+		switch(params._bitDepth)
+		{
+			case 8:
+				writeImage<bits8>( this->_srcView, params._filepath );
+				break;
+			case 16:
+				writeImage<bits16>( this->_srcView, params._filepath );
+				break;
+
+		}
 		copy_pixels( this->_srcView, this->_dstView );
 	}
 	catch( tuttle::plugin::PluginException& e )
@@ -57,39 +67,21 @@ void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  * 
  */
 template<class View>
-void PNGWriterProcess<View>::writeImage( View& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
+template<class Bits>
+void PNGWriterProcess<View>::writeImage( View& src, const std::string& filepath )
 {
 	using namespace boost::gil;
-	View flippedView = flipped_up_down_view( src );
-	typedef typename boost::gil::channel_type<typename View::value_type>::type ValueType;
-	// Always drop alpha channel
-	typedef typename boost::gil::pixel<ValueType, rgb_layout_t > PixelType;
 
-	png_write_view( filepath, color_converted_view<PixelType>( flippedView ) );
-}
-
-template<>
-void PNGWriterProcess<gray32f_view_t>::writeImage( gray32f_view_t& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
-{
-	using namespace boost::gil;
-	gray32f_view_t flippedView = flipped_up_down_view( src );
-	png_write_view( filepath, color_converted_view<gray16_pixel_t>( flippedView ) );
-}
-
-template<>
-void PNGWriterProcess<rgb32f_view_t>::writeImage( rgb32f_view_t& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
-{
-	using namespace boost::gil;
-	rgb32f_view_t flippedView = flipped_up_down_view( src );
-	png_write_view( filepath, color_converted_view<rgb16_pixel_t>( flippedView ) );
-}
-
-template<>
-void PNGWriterProcess<rgba32f_view_t>::writeImage( rgba32f_view_t& src, const std::string& filepath ) throw( tuttle::plugin::PluginException )
-{
-	using namespace boost::gil;
-	rgba32f_view_t flippedView = flipped_up_down_view( src );
-	png_write_view( filepath, color_converted_view<rgb16_pixel_t>( flippedView ) );
+	if ( _plugin.getParams(this->_renderArgs.time)._outputRGB )
+	{
+		typedef pixel<Bits, rgb_layout_t> OutPixelType;
+		png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+	}
+	else
+	{
+		typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
+		png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+	}
 }
 
 }

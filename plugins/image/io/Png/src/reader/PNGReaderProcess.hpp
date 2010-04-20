@@ -17,7 +17,6 @@ namespace png {
 namespace reader {
 
 /**
- * @brief Base class for the denoising processor
  *
  */
 template<class View>

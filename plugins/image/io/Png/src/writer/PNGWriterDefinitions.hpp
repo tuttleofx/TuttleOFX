@@ -1,18 +1,22 @@
-#ifndef PNGWRITER_DEFINITIONS_HPP
-#define PNGWRITER_DEFINITIONS_HPP
+#ifndef _PNGWRITER_DEFINITIONS_HPP_
+#define _PNGWRITER_DEFINITIONS_HPP_
 
+#include <tuttle/plugin/context/WriterDefinition.hpp>
 #include <tuttle/common/utils/global.hpp>
+
 
 namespace tuttle {
 namespace plugin {
 namespace png {
 namespace writer {
 
-static const std::string kParamRenderAlways   = "renderAlways";
-static const std::string kOutputFilename      = "filename";
-static const std::string kRender              = "render";
-static const std::string kPrecision           = "precision";
-static const std::string kPrecisionLong       = "precisionLong";
+	enum EParamBitDepth
+	{
+		eParamBitDepth8 = 0,
+		eParamBitDepth16
+	};
+
+	static const std::string kParamOutputRGB = "outputRGB";
 
 }
 }

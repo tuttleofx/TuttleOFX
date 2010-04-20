@@ -39,24 +39,24 @@
           std::endl << "\t" << __VA_ARGS__ )
 
  #define COUT_WARNING(... )  \
-    std::cerr << "Warning:" << \
+    std::cerr << "[PLUGIN] Warning:" << \
     std::endl << INFOS << \
     std::endl << "\t" << __VA_ARGS__  << std::endl
 
  #define COUT_ERROR(... )  \
-    std::cerr << "Error:" << \
+    std::cerr << "[PLUGIN] Error:" << \
     std::endl << INFOS << \
     std::endl << "\t" << __VA_ARGS__  << std::endl
 
  #define COUT_FATALERROR(... )  \
-    std::cerr << "Fatal error:" << \
+    std::cerr << "[PLUGIN] Fatal error:" << \
     std::endl << INFOS << \
     std::endl << "\t" << __VA_ARGS__  << std::endl
 
- #define COUT_EXCEPTION(... )  \
-    std::cerr << "Exception:" << \
-    std::endl << INFOS << \
-    std::endl << "\t" << __VA_ARGS__  << std::endl
+#define COUT_EXCEPTION( e )  \
+    ::std::cerr << "[PLUGIN] Exception:" << \
+    ::std::endl << INFOS << \
+    ::std::endl << "\t" << e.what() << ::std::endl
 
 #endif
 
