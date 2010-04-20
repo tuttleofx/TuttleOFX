@@ -58,10 +58,6 @@ struct default_color_converter_impl< rgb_t, hsl_t >
       bits32f temp_green = channel_convert<bits32f>( get_color( src, green_t() ));
       bits32f temp_blue  = channel_convert<bits32f>( get_color( src, blue_t()  ));
 
-	  COUT_VAR( get_color( src, red_t() ) );
-	  COUT_VAR( get_color( src, green_t() ) );
-	  COUT_VAR( get_color( src, blue_t() ) );
-	  
       bits32f hue, saturation, lightness;
 
       bits32f min_color = std::min( temp_red, std::min( temp_green, temp_blue ));
