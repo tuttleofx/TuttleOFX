@@ -1,13 +1,13 @@
-#include "DPXReaderDefinitions.hpp"
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderProcess.hpp"
-#include "tuttle/plugin/FilenameManager.hpp"
+#include "DPXReaderDefinitions.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
+#include "dpxEngine/dpxImage.hpp"
+#include "tuttle/plugin/context/ReaderPlugin.hpp"
 
 using namespace boost::filesystem;
 using namespace tuttle::io;
@@ -18,24 +18,15 @@ namespace dpx {
 namespace reader {
 
 using namespace boost::gil;
-const static std::string kDpxReaderHelpString = "<b>DPX Reader</b> file reader.  <br />";
 
 DPXReaderPlugin::DPXReaderPlugin( OfxImageEffectHandle handle )
-: ImageEffect( handle )
-, _dstClip( 0 )
+: ReaderPlugin( handle )
 {
-	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath = fetchStringParam( kInputFilename );
 }
 
-OFX::Clip* DPXReaderPlugin::getDstClip() const
+DPXReaderProcessParams DPXReaderPlugin::getProcessParams(const OfxTime time)
 {
-	return _dstClip;
-}
-
-DPXReaderParams DPXReaderPlugin::getParams(const OfxTime time)
-{
-	DPXReaderParams params;
+	DPXReaderProcessParams params;
 	params._filepath = _fPattern.getFilenameAt(time);
 	return params;
 }
@@ -89,85 +80,88 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	{
 		sendMessage( OFX::Message::eMessageMessage,
 		             "", // No XML resources
-		             kDpxReaderHelpString );
+		             kDPXReaderHelpString );
 	}
-	else if( paramName == kInputFilename )
+	else
 	{
-		if (exists(_filepath->getValue()))
-		{
-			_fPattern.reset(_filepath->getValue(), true);
-		}
+		ReaderPlugin::changedParam(args, paramName);
 	}
-}
-
-bool DPXReaderPlugin::getTimeDomain( OfxRangeD& range )
-{
-	OfxRangeI rangei = _fPattern.getRange();
-	range.min = (double)rangei.min;
-	range.max = (double)rangei.max;
-	return false;
-}
-
-void DPXReaderPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-{
-	const OfxRectD roi = { 0.0, 0.0, _imageDims.x * _dstClip->getPixelAspectRatio(), _imageDims.y };
-
-	rois.setRegionOfInterest( *_dstClip, roi );
 }
 
 bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
+	tuttle::io::DpxImage dpxImg;
+	dpxImg.readHeader( _fPattern.getFirstFilename() );
 	rod.x1 = 0;
-	rod.x2 = _imageDims.x * _dstClip->getPixelAspectRatio();
+	rod.x2 = dpxImg.width() * this->_dstClip->getPixelAspectRatio();
 	rod.y1 = 0;
-	rod.y2 = _imageDims.y;
+	rod.y2 = dpxImg.height();
 	return true;
 }
 
 void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	if (exists(_filepath->getValue()) && _filepath->getValue() != _fPattern.getCurrentFilename())
-	{
-		_fPattern.reset(_filepath->getValue(), true);
-	}
-
+	ReaderPlugin::getClipPreferences( clipPreferences );
 	// Check if exist
-	if( exists( _fPattern.getCurrentFilename() ) )
+	if( bfs::exists( _fPattern.getFirstFilename() ) )
 	{
-		_dpxImg.readHeader( _fPattern.getCurrentFilename() );
-		_imageDims.x = _dpxImg.width();
-		_imageDims.y = _dpxImg.height();
-
-		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
-		switch(_dpxImg.componentsType())
+		if ( _explicitConv->getValue() )
 		{
-			case DpxImage::eCompTypeR8G8B8:
-			case DpxImage::eCompTypeR8G8B8A8:
-			case DpxImage::eCompTypeA8B8G8R8:
+			switch( _explicitConv->getValue() )
 			{
-				bd = OFX::eBitDepthUByte;
-				break;
+				case 1:
+				{
+					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUByte );
+					break;
+				}
+				case 2:
+				{
+					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUShort );
+					break;
+				}
+				case 3:
+				{
+					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthFloat );
+					break;
+				}
 			}
-			case DpxImage::eCompTypeR10G10B10:
-			case DpxImage::eCompTypeR10G10B10A10:
-			case DpxImage::eCompTypeA10B10G10R10:
-			case DpxImage::eCompTypeR12G12B12:
-			case DpxImage::eCompTypeR12G12B12A12:
-			case DpxImage::eCompTypeA12B12G12R12:
-			case DpxImage::eCompTypeR16G16B16:
-			case DpxImage::eCompTypeR16G16B16A16:
-			case DpxImage::eCompTypeA16B16G16R16:
-			{
-				bd = OFX::eBitDepthUShort;
-				break;
-			}
-			default:
-				bd = OFX::eBitDepthFloat;
 		}
+		else
+		{
+			DpxImage dpxImg;
+			dpxImg.readHeader( _fPattern.getFirstFilename() );
 
-		clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-		clipPreferences.setClipBitDepth( *_dstClip, bd );
-		clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
+			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+			switch(dpxImg.componentsType())
+			{
+				case DpxImage::eCompTypeR8G8B8:
+				case DpxImage::eCompTypeR8G8B8A8:
+				case DpxImage::eCompTypeA8B8G8R8:
+				{
+					bd = OFX::eBitDepthUByte;
+					break;
+				}
+				case DpxImage::eCompTypeR10G10B10:
+				case DpxImage::eCompTypeR10G10B10A10:
+				case DpxImage::eCompTypeA10B10G10R10:
+				case DpxImage::eCompTypeR12G12B12:
+				case DpxImage::eCompTypeR12G12B12A12:
+				case DpxImage::eCompTypeA12B12G12R12:
+				case DpxImage::eCompTypeR16G16B16:
+				case DpxImage::eCompTypeR16G16B16A16:
+				case DpxImage::eCompTypeA16B16G16R16:
+				{
+					bd = OFX::eBitDepthUShort;
+					break;
+				}
+				default:
+					bd = OFX::eBitDepthFloat;
+			}
+
+			clipPreferences.setClipBitDepth( *_dstClip, bd );
+		}
+		clipPreferences.setClipComponents( *this->_dstClip, OFX::ePixelComponentRGBA );
+		clipPreferences.setPixelAspectRatio( *this->_dstClip, 1.0 );
 	}
 }
 

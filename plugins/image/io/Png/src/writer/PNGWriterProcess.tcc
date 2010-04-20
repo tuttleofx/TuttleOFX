@@ -26,12 +26,6 @@ PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
 	this->setNoMultiThreading();
 }
 
-template<class View>
-void PNGWriterProcess<View>::setup( const OFX::RenderArguments& args )
-{
-	ImageGilFilterProcessor<View>::setup( args );
-}
-
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW

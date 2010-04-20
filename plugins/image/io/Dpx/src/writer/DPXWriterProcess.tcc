@@ -16,6 +16,7 @@ DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
 : ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
+	this->setNoMultiThreading();
 }
 
 /**
@@ -31,30 +32,35 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( this->_srcPixelRod == this->_dstPixelRod );
 	try
 	{
-		DPXWriterParams params = _plugin.getParams(this->_renderArgs.time);
+		DPXWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
 		int packing = params._compressed == false;
 
 		switch( params._bitDepth )
 		{
-			case 3: {
+			case 16:
+			{
 				switch( params._componentsType )
 				{
-					case 0: {
+					case 0:
+					{
 						writeImage<rgb16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
 						break;
 					}
-					case 1: {
+					case 1:
+					{
 						writeImage<rgba16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
 						break;
 					}
-					case 2: {
+					case 2:
+					{
 						writeImage<abgr16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
 						break;
 					}
 				}
 				break;
 			}
-			case 2: {
+			case 12:
+			{
 				switch( params._componentsType )
 				{
 					case 0:
@@ -76,7 +82,8 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case 1: {
+			case 10:
+			{
 				switch( params._componentsType )
 				{
 					case 0:
@@ -95,7 +102,8 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case 0: {
+			case 8:
+			{
 				switch( params._componentsType )
 				{
 					case 0:
@@ -110,7 +118,10 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
+			default:
+				throw( PluginException( "DPX Writer: Unsupported bitdepth..." ) );
 		}
+		copy_pixels(this->_srcView, this->_dstView);
 	}
 	catch( PluginException& err )
 	{
@@ -121,14 +132,14 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 /**
  */
 template<class View>
-template<class CONV_IMAGE>
-void DPXWriterProcess<View>::writeImage( View& src, std::string& filepath, int bitDepth, tuttle::io::DpxImage::EDPX_CompType eCompType, int packing ) throw( tuttle::plugin::PluginException )
+template<class WImage>
+void DPXWriterProcess<View>::writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType eCompType, const int packing )
 {
 	View flippedView = flipped_up_down_view( src );
-	CONV_IMAGE img( src.width(), src.height() );
+	WImage img( src.width(), src.height() );
 
-	typename CONV_IMAGE::view_t vw( view( img ) );
-	copy_and_convert_pixels( flippedView, vw );
+	typename WImage::view_t vw( view( img ) );
+	copy_and_convert_pixels( clamp<typename WImage::view_t::value_type>(flippedView), vw );
 	boost::uint8_t* pData = (boost::uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	// Little endian
 	_dpxHeader.setBigEndian( false );

@@ -39,9 +39,9 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
-	desc.setSupportsMultipleClipDepths( true );
-	
 	// plugin flags
+	desc.setSupportsMultipleClipDepths( true );
+	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 }
@@ -62,35 +62,72 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginReaderParamFilename );
 	assert( filename );
-	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
+	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kOutputComponents );
+	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kTuttlePluginReaderParamExplicitConversion );
+	explicitConversion->setLabel( "Explicit conversion" );
+	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
+	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
+	explicitConversion->appendOption( kTuttlePluginBitDepth16 );
+	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
+	desc.addClipPreferencesSlaveParam( *explicitConversion );
+
+	if( ! OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
+	{
+		explicitConversion->setIsSecret( true );
+		if( OFX::getImageEffectHostDescription()->_supportedPixelDepths.size() == 1 )
+		{
+			explicitConversion->setDefault( static_cast<int>(OFX::getImageEffectHostDescription()->_supportedPixelDepths[0]) );
+		}
+		else
+		{
+			COUT_WARNING("The host doesn't support multiple clip depths, but didn't define supported pixel depth. (size: " << OFX::getImageEffectHostDescription()->_supportedPixelDepths.size() << ")" );
+			explicitConversion->setDefault( 3 );
+		}
+	}
+	else
+	{
+		explicitConversion->setDefault( 0 );
+	}
+
+	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kParamOutputComponents );
 	assert( outComponents );
-	outComponents->setLabels( kOutputComponentsLabel, kOutputComponentsLabel, "Label the user wants to output" );
+	outComponents->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outComponents->setEvaluateOnChange(true);
+	outComponents->setLabel( "Components to output" );
 	outComponents->setDefault(0);
 
-	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kOutputRedIs );
+	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kParamOutputRedIs );
 	assert( outRedIs );
-	outRedIs->setLabels( kOutputRedIsLabel, kOutputRedIsLabel, kOutputRedIsLabel );
+	outRedIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outRedIs->setEvaluateOnChange(true);
+	outRedIs->setLabel( "Red is" );
 	outRedIs->setDefault(0);
 
-	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kOutputGreenIs );
+	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kParamOutputGreenIs );
 	assert( outGreenIs );
-	outGreenIs->setLabels( kOutputGreenIsLabel, kOutputGreenIsLabel, kOutputGreenIsLabel );
+	outGreenIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outGreenIs->setEvaluateOnChange(true);
+	outGreenIs->setLabel( "Green is" );
 	outGreenIs->setDefault(0);
 
-	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kOutputBlueIs );
+	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kParamOutputBlueIs );
 	assert( outBlueIs );
-	outBlueIs->setLabels( kOutputBlueIsLabel, kOutputBlueIsLabel, kOutputBlueIsLabel );
+	outBlueIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outBlueIs->setEvaluateOnChange(true);
+	outBlueIs->setLabel( "Blue is" );
 	outBlueIs->setDefault(0);
 
-	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kOutputAlphaIs );
+	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kParamOutputAlphaIs );
 	assert( outAlphaIs );
-	outAlphaIs->setLabels( kOutputAlphaIsLabel, kOutputAlphaIsLabel, kOutputAlphaIsLabel );
+	outAlphaIs->setEvaluateOnChange(true);
+	outAlphaIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	outAlphaIs->setLabel( "Alpha is" );
 	outAlphaIs->setDefault(0);
 }
 

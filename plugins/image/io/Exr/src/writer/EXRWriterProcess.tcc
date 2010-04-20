@@ -138,7 +138,7 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 	image_t img( src.width(), src.height() );
 	view_t dvw( view( img ) );
 	View flippedView = flipped_up_down_view( src );
-	copy_and_convert_pixels( flippedView, dvw );
+	copy_and_convert_pixels( clamp<Pixel>(flippedView), dvw );
 	Imf::Header header( src.width(), src.height() );
 	switch( pixType )
 	{

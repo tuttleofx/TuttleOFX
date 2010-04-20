@@ -1,15 +1,8 @@
-/**
- * @file DPXWriterPlugin.cpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
-
 #include "DPXWriterPlugin.hpp"
 #include "DPXWriterProcess.hpp"
 #include "DPXWriterDefinitions.hpp"
 
+#include <dpxEngine/dpxImage.hpp>
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -23,35 +16,36 @@ namespace writer {
 using namespace boost::gil;
 
 DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+: WriterPlugin( handle )
 {
-	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath       = fetchStringParam( kOutputFilename );
-	_bitDepth       = fetchChoiceParam( kParamPrecision );
 	_componentsType = fetchChoiceParam( kParamComponentsType );
 	_compressed     = fetchBooleanParam( kParamCompressed );
-	_renderButton   = fetchPushButtonParam( kRender );
-	_renderAlways   = fetchBooleanParam( kParamRenderAlways );
 }
 
-OFX::Clip* DPXWriterPlugin::getSrcClip() const
+DPXWriterProcessParams DPXWriterPlugin::getParams(const OfxTime time)
 {
-	return _srcClip;
-}
-
-OFX::Clip* DPXWriterPlugin::getDstClip() const
-{
-	return _dstClip;
-}
-
-DPXWriterParams DPXWriterPlugin::getParams(const OfxTime time)
-{
-	DPXWriterParams params;
-	params._bitDepth = _bitDepth->getValue();
+	DPXWriterProcessParams params;
 	params._componentsType = _componentsType->getValue();
 	params._compressed = _compressed->getValue();
-	params._filepath = _fPattern.getFilenameAt(time);
+	params._filepath = this->_fPattern.getFilenameAt(time);
+	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
+	{
+		case eParamBitDepth8:
+			params._bitDepth = 8;
+			break;
+		case eParamBitDepth10:
+			params._bitDepth = 10;
+			break;
+		case eParamBitDepth12:
+			params._bitDepth = 12;
+			break;
+		case eParamBitDepth16:
+			params._bitDepth = 16;
+			break;
+		default:
+			throw( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			break;
+	}
 	return params;
 }
 
@@ -103,15 +97,15 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kOutputFilename )
-	{
-		_fPattern.reset(_filepath->getValue(), false, 0, 1);
-	}
-	else if( paramName == kDPXWriterHelpButton )
+	if( paramName == kDPXWriterHelpButton )
 	{
 		sendMessage( OFX::Message::eMessageMessage,
 		             "", // No XML resources
 		             kDPXWriterHelpString );
+	}
+	else
+	{
+		WriterPlugin::changedParam(args, paramName);
 	}
 }
 

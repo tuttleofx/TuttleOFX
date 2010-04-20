@@ -20,7 +20,7 @@ public:
 	virtual void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	virtual bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod ) = 0;
 	virtual void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences ) = 0;
-	virtual bool getTimeDomain( OfxRangeD& range ) = 0;
+	virtual bool getTimeDomain( OfxRangeD& range );
 
 protected:
 	inline bool varyOnTime() const;
