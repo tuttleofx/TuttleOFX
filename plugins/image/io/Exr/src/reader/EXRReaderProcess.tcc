@@ -41,7 +41,7 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 template<class View>
 void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	EXRReaderParams params = _plugin.getParams(args.time);
+	EXRReaderProcessParams params = _plugin.getProcessParams(args.time);
 	if( ! bfs::exists( params._filepath ) )
 	{
 		throw( PluginException( "Unable to open : " + params._filepath ) );
@@ -64,7 +64,7 @@ template<class View>
 void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	EXRReaderParams params = _plugin.getParams(this->_renderArgs.time);
+	EXRReaderProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	try
 	{
@@ -122,7 +122,7 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 	using namespace boost::gil;
 	using namespace Imf;
 
-	EXRReaderParams params = _plugin.getParams(this->_renderArgs.time);
+	EXRReaderProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 
 	Imf::InputFile in( filepath.c_str() );
 	Imf::FrameBuffer frameBuffer;

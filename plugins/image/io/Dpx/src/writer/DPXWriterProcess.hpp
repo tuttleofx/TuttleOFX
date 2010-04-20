@@ -1,7 +1,7 @@
-#ifndef DPXWRITER_PROCESS_HPP
-#define DPXWRITER_PROCESS_HPP
+#ifndef _DPXWRITER_PROCESS_HPP_
+#define _DPXWRITER_PROCESS_HPP_
 
-#include "../dpxEngine/dpxImage.hpp"
+#include <dpxEngine/dpxImage.hpp>
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
@@ -34,8 +34,8 @@ protected:
 	tuttle::io::DpxHeader _dpxHeader;     ///< Dpx image header
 	tuttle::io::DpxImage _dpxImg;         ///< Dpx image reader
 
-	template<class CONV_IMAGE>
-	void writeImage( View& src, std::string& filepath, int bitDepth, tuttle::io::DpxImage::EDPX_CompType compType, int packing ) throw( tuttle::plugin::PluginException );
+	template<class WImage>
+	void writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const int packing );
 
 public:
 	DPXWriterProcess( DPXWriterPlugin & instance );

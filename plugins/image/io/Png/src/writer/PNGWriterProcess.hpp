@@ -25,8 +25,6 @@ protected:
 public:
 	PNGWriterProcess( PNGWriterPlugin & instance );
 
-	void setup( const OFX::RenderArguments& args );
-
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	template<class Bits>

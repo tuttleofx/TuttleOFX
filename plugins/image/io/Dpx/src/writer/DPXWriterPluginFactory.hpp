@@ -1,5 +1,5 @@
-#ifndef DPX_WRITER_PLUGIN_FACTORY_HPP
-#define DPX_WRITER_PLUGIN_FACTORY_HPP
+#ifndef _DPX_WRITER_PLUGIN_FACTORY_HPP_
+#define _DPX_WRITER_PLUGIN_FACTORY_HPP_
 #include <ofxsImageEffect.h>
 
 namespace tuttle {
@@ -16,4 +16,4 @@ mDeclarePluginFactory( DPXWriterPluginFactory, {}, {} );
 }
 }
 
-#endif //DPX_WRITER_PLUGIN_FACTORY_HPP
+#endif

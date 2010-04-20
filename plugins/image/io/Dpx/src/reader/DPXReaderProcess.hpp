@@ -24,21 +24,26 @@ namespace reader {
 template<class View>
 class DPXReaderProcess : public ImageGilProcessor<View>
 {
-protected:
-	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
-
-	template<class T, class DST_V>
-	void bitStreamToView( DST_V& dst, const int nc, const int channelSize );
-
 public:
 	DPXReaderProcess( DPXReaderPlugin & instance );
+	~DPXReaderProcess();
 
 	void setup( const OFX::RenderArguments& args );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	// Read dpx image
-	View& readImage( View& dst, std::string& filepath ) throw( tuttle::plugin::PluginException );
+	View& readImage( View& dst );
+
+protected:
+	template<class T, class DST_V>
+	void bitStreamToView( DST_V& dst, const int nc, const int channelSize );
+
+
+protected:
+	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
+	tuttle::io::DpxImage _dpxImage;
+
 };
 
 }

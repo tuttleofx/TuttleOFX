@@ -38,7 +38,6 @@ void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
-	
 	// plugin flags
 	desc.setSupportsMultipleClipDepths( true );
 	desc.setRenderThreadSafety( OFX::eRenderUnsafe );

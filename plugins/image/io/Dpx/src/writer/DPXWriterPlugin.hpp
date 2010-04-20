@@ -1,54 +1,38 @@
-#ifndef DPXWRITER_PLUGIN_HPP
-#define DPXWRITER_PLUGIN_HPP
+#ifndef _DPXWRITER_PLUGIN_HPP_
+#define _DPXWRITER_PLUGIN_HPP_
 
-#include "../dpxEngine/dpxImage.hpp"
-
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
-#include <tuttle/plugin/FilenameManager.hpp>
+#include <tuttle/plugin/context/WriterPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace dpx {
 namespace writer {
 
-struct DPXWriterParams
+struct DPXWriterProcessParams
 {
-	std::string _filepath;      ///< filepath
-	int _bitDepth;				///< Bit depth
-	int _componentsType;		///< Components type
-	bool _compressed;			///< Bit streaming
+	std::string _filepath;       ///< filepath
+	int         _bitDepth;       ///< Output bit depth
+	int         _componentsType; ///< Components type
+	bool        _compressed;     ///< Bit streaming
 };
 
 /**
  * @brief
  *
  */
-class DPXWriterPlugin : public OFX::ImageEffect
+class DPXWriterPlugin : public WriterPlugin
 {
 public:
 	DPXWriterPlugin( OfxImageEffectHandle handle );
-	OFX::Clip* getSrcClip() const;
-	OFX::Clip* getDstClip() const;
-	DPXWriterParams getParams(const OfxTime time);
 
 public:
+	DPXWriterProcessParams getParams(const OfxTime time);
 	virtual void render( const OFX::RenderArguments& args );
-	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
-	OFX::PushButtonParam* _renderButton;  ///< Render push button
-	OFX::StringParam*	       _filepath;        ///< Dpx file path
-	OFX::ChoiceParam*          _bitDepth;        ///< Dpx bit depth
-	OFX::ChoiceParam*          _componentsType;  ///< Dpx components type
-	OFX::BooleanParam*         _compressed;      ///< Dpx is bit streamed
-	OFX::BooleanParam*         _renderAlways;    ///< Render always
-	FilenameManager            _fPattern;        ///< Filename pattern manager
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _srcClip;       ///< Source image clip
-	OFX::Clip* _dstClip;       ///< Ouput image clip
-
+	OFX::ChoiceParam*    _componentsType;  ///< Dpx components type
+	OFX::BooleanParam*   _compressed;      ///< Dpx is bit streamed
 };
 
 }

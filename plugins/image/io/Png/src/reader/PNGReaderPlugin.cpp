@@ -126,14 +126,6 @@ void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 }
 
-bool PNGReaderPlugin::getTimeDomain( OfxRangeD& range )
-{
-	OfxRangeI rangei = _fPattern.getRange();
-	range.min = (double)rangei.min;
-	range.max = (double)rangei.max;
-	return true;
-}
-
 bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	point2<ptrdiff_t> pngDims = png_read_dimensions( _fPattern.getFilenameAt(args.time) );

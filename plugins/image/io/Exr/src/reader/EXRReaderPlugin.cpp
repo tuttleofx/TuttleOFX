@@ -2,6 +2,8 @@
 #include "EXRReaderPlugin.hpp"
 #include "EXRReaderProcess.hpp"
 #include "tuttle/plugin/FilenameManager.hpp"
+#include "tuttle/plugin/context/ReaderPlugin.hpp"
+#include "tuttle/plugin/context/WriterDefinition.hpp"
 
 #include <ImfInputFile.h>
 #include <ImathBox.h>
@@ -17,41 +19,28 @@ namespace tuttle {
 namespace plugin {
 namespace exr {
 namespace reader {
+
+namespace bfs = boost::filesystem;
 using namespace Imf;
 using namespace boost::gil;
 
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle ),
-	_dstClip( 0 )
+: ReaderPlugin( handle )
 {
-	_dstClip       = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath      = fetchStringParam( kInputFilename );
-	_outComponents = fetchChoiceParam( kOutputComponents );
-	_vChannelChoice.push_back( fetchChoiceParam( kOutputRedIs ) );
-	_vChannelChoice.push_back( fetchChoiceParam( kOutputGreenIs ) );
-	_vChannelChoice.push_back( fetchChoiceParam( kOutputBlueIs ) );
-	_vChannelChoice.push_back( fetchChoiceParam( kOutputAlphaIs ) );
+	_outComponents = fetchChoiceParam( kParamOutputComponents );
+	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputRedIs ) );
+	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputGreenIs ) );
+	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputBlueIs ) );
+	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputAlphaIs ) );
+	updateCombos();
 }
 
-OFX::Clip* EXRReaderPlugin::getDstClip() const
+EXRReaderProcessParams EXRReaderPlugin::getProcessParams(const OfxTime time)
 {
-	return _dstClip;
-}
-
-EXRReaderParams EXRReaderPlugin::getParams(const OfxTime time)
-{
-	EXRReaderParams params;
+	EXRReaderProcessParams params;
 	params._filepath = _fPattern.getFilenameAt(time);
 	params._outComponents = _outComponents->getValue();
 	return params;
-}
-
-bool EXRReaderPlugin::getTimeDomain( OfxRangeD& range )
-{
-	OfxRangeI rangei = _fPattern.getRange();
-	range.min = (double)rangei.min;
-	range.max = (double)rangei.max;
-	return false;
 }
 
 /**
@@ -97,6 +86,18 @@ void EXRReaderPlugin::render( const OFX::RenderArguments& args )
 	}
 }
 
+bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	InputFile in( this->_fPattern.getFilenameAt(args.time).c_str() );
+	const Header& h             = in.header();
+	const Imath::V2i dataWindow = h.dataWindow().size();
+	rod.x1 = 0;
+	rod.x2 = (dataWindow.x + 1) * this->_dstClip->getPixelAspectRatio();
+	rod.y1 = 0;
+	rod.y2 = dataWindow.y + 1;
+	return true;
+}
+
 void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	if( paramName == "Help" )
@@ -105,141 +106,144 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kExrReaderHelpString );
 	}
-	else if( paramName == kInputFilename )
+	else if( paramName == kTuttlePluginReaderParamFilename )
 	{
-		_fPattern.reset(_filepath->getValue(), true);
-		// Check if exist
-		if( exists( _fPattern.getFilenameAt(args.time) ) )
-		{
-			// read dims
-			InputFile in( _fPattern.getFilenameAt(args.time).c_str() );
-			const Header& h             = in.header();
-			const Imath::V2i dataWindow = h.dataWindow().size();
-			_imageDims.x = dataWindow.x + 1;
-			_imageDims.y = dataWindow.y + 1;
-			const ChannelList& cl = h.channels();
-			int nc                = 0;
-
-			_outComponents->resetOptions();
-			// Unhide output component type setup
-			_outComponents->setIsSecret( false );
-			// Hide output channel selection till we don't select a channel.
-			for( size_t i = 0; i < _vChannelChoice.size(); ++i )
-				_vChannelChoice[i]->setIsSecret( true );
-			_vChannelNames.clear();
-			for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
-			{
-				_vChannelNames.push_back( it.name() );
-				for( size_t j = 0; j < _vChannelChoice.size(); ++j )
-					_vChannelChoice[j]->appendOption( it.name() );
-				++nc;
-				switch( nc )
-				{
-					case 1:
-					{
-						_outComponents->appendOption( "Gray" );
-						_outComponents->setValue( 0 );
-						for( size_t j = 0; j < _vChannelChoice.size(); ++j )
-							_vChannelChoice[j]->setValue( 0 );
-						break;
-					}
-					case 3:
-					{
-						_outComponents->appendOption( "RGB" );
-						_outComponents->setValue( 1 );
-						size_t nc = _vChannelChoice.size() - 1;
-						for( size_t j = 0; j < nc; ++j )
-							_vChannelChoice[nc - j - 1]->setValue( j );
-						_vChannelChoice[3]->setValue( 0 );
-						break;
-					}
-					case 4:
-					{
-						_outComponents->appendOption( "RGBA" );
-						_outComponents->setValue( 2 );
-						size_t nc = _vChannelChoice.size();
-						for( size_t j = 0; j < nc; ++j )
-							_vChannelChoice[nc - j - 1]->setValue( j );
-						break;
-					}
-				}
-			}
-		}
-		else
-		{
-			_imageDims.x = 0;
-			_imageDims.y = 0;
-		}
+		ReaderPlugin::changedParam( args, paramName );
+		updateCombos();
 	}
-	else if( paramName == kOutputComponents )
+	else if( paramName == kParamOutputComponents )
 	{
 		switch( _outComponents->getValue() )
 		{
 			case 0:
 			{
 				for( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+				{
 					_vChannelChoice[j]->setIsSecret( false );
+				}
 				_vChannelChoice[3]->setIsSecret( true );
 				break;
 			}
 			case 1:
 			{
 				for( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+				{
 					_vChannelChoice[j]->setIsSecret( true );
+				}
 				_vChannelChoice[3]->setIsSecret( false );
 				break;
 			}
 			case 2:
 			{
 				for( size_t j = 0; j < _vChannelChoice.size(); ++j )
+				{
 					_vChannelChoice[j]->setIsSecret( true );
+				}
 				break;
 			}
 		}
 	}
-}
-
-void EXRReaderPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-{
-	const OfxRectD roi = { 0.0, 0.0, _imageDims.x * _dstClip->getPixelAspectRatio(), _imageDims.y };
-
-	rois.setRegionOfInterest( *_dstClip, roi );
-}
-
-bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-{
-	rod.x1 = 0;
-	rod.x2 = _imageDims.x * _dstClip->getPixelAspectRatio();
-	rod.y1 = 0;
-	rod.y2 = _imageDims.y;
-	return true;
+	else
+	{
+		ReaderPlugin::changedParam( args, paramName );
+	}
 }
 
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	if (exists(_filepath->getValue()) && _filepath->getValue() != _fPattern.getCurrentFilename())
-	{
-		_fPattern.reset(_filepath->getValue(), true);
-	}
-
+	ReaderPlugin::getClipPreferences( clipPreferences );
 	// Check if exist
-	if( exists( _fPattern.getCurrentFilename() ) )
+	if( bfs::exists( _fPattern.getFirstFilename() ) )
 	{
-		InputFile in( _fPattern.getCurrentFilename().c_str() );
-		const Header& h             = in.header();
-		const Imath::V2i dataWindow = h.dataWindow().size();
-		_imageDims.x = dataWindow.x + 1;
-		_imageDims.y = dataWindow.y + 1;
+		if ( _explicitConv->getValue() )
+		{
+			switch( _explicitConv->getValue() )
+			{
+				case 1:
+				{
+					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUByte );
+					break;
+				}
+				case 2:
+				{
+					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUShort );
+					break;
+				}
+				case 3:
+				{
+					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthFloat );
+					break;
+				}
+			}
+		}
+		else
+		{
+			clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthFloat );
+		}
+		clipPreferences.setClipComponents( *this->_dstClip, OFX::ePixelComponentRGBA );
+		clipPreferences.setPixelAspectRatio( *this->_dstClip, 1.0 );
 	}
-	else
-	{
-		_imageDims.x = 0;
-		_imageDims.y = 0;
-	}
+}
 
-	clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthFloat );
-	clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
+void EXRReaderPlugin::updateCombos()
+{
+	if ( bfs::exists( this->_fPattern.getFirstFilename() ) )
+	{
+		// read dims
+		InputFile in( this->_fPattern.getFirstFilename().c_str() );
+		const Header& h       = in.header();
+		const ChannelList& cl = h.channels();
+		int nc                = 0;
+
+		_outComponents->resetOptions();
+		// Unhide output component type setup
+		_outComponents->setIsSecret( false );
+		// Hide output channel selection till we don't select a channel.
+		for( size_t i = 0; i < _vChannelChoice.size(); ++i )
+		{
+			_vChannelChoice[i]->setIsSecret( true );
+		}
+		_vChannelNames.clear();
+		for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
+		{
+			_vChannelNames.push_back( it.name() );
+			for( size_t j = 0; j < _vChannelChoice.size(); ++j )
+			{
+				_vChannelChoice[j]->appendOption( it.name() );
+			}
+			++nc;
+			switch( nc )
+			{
+				case 1:
+				{
+					_outComponents->appendOption( "Gray" );
+					_outComponents->setValue( 0 );
+					for( size_t j = 0; j < _vChannelChoice.size(); ++j )
+						_vChannelChoice[j]->setValue( 0 );
+					break;
+				}
+				case 3:
+				{
+					_outComponents->appendOption( "RGB" );
+					_outComponents->setValue( 1 );
+					size_t nc = _vChannelChoice.size() - 1;
+					for( size_t j = 0; j < nc; ++j )
+						_vChannelChoice[nc - j - 1]->setValue( j );
+					_vChannelChoice[3]->setValue( 0 );
+					break;
+				}
+				case 4:
+				{
+					_outComponents->appendOption( "RGBA" );
+					_outComponents->setValue( 2 );
+					size_t nc = _vChannelChoice.size();
+					for( size_t j = 0; j < nc; ++j )
+						_vChannelChoice[nc - j - 1]->setValue( j );
+					break;
+				}
+			}
+		}
+	}
 }
 
 }

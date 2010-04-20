@@ -1,6 +1,7 @@
 #include "DPXWriterPluginFactory.hpp"
 #include "DPXWriterPlugin.hpp"
 #include "DPXWriterDefinitions.hpp"
+#include "tuttle/plugin/context/WriterDefinition.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -39,6 +40,7 @@ void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
+	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 }
@@ -52,50 +54,48 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::ContextEnum            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
-	// Dpx only supports RGB(A)
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	// Dpx only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginWriterParamFilename );
+	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* precision = desc.defineChoiceParam( kParamPrecision );
-	precision->setLabels( kParamPrecisionLabel, kParamPrecisionLabel, kParamPrecisionLabel );
-	precision->appendOption( "8 bits output" );
-	precision->appendOption( "10 bits output" );
-	precision->appendOption( "12 bits output" );
-	precision->appendOption( "16 bits output" );
-	precision->setDefault( 1 );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setDefault( true );
+
+	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	renderButton->setLabels( "Render", "Render", "Render step" );
+
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
+	bitDepth->setLabel( "Bit depth" );
+	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	bitDepth->appendOption( kTuttlePluginBitDepth10 );
+	bitDepth->appendOption( kTuttlePluginBitDepth12 );
+	bitDepth->appendOption( kTuttlePluginBitDepth16 );
+	bitDepth->setDefault( 3 );
+	desc.addClipPreferencesSlaveParam( *bitDepth );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, kParamComponentsTypeLabel );
+	componentsType->setLabel( "Components type" );
 	componentsType->appendOption( "rgb  output" );
 	componentsType->appendOption( "rgba output" );
 	componentsType->appendOption( "abgr output" );
 	componentsType->setDefault( 1 );
 
 	OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
-	compressed->setLabels( kParamCompressedLabel, kParamCompressedLabel, "Remove unused bits (bit streaming)" );
+	compressed->setLabel( "Remove unused bits (bit streaming)" );
 	compressed->setDefault( false );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( true );
-
-	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
-	renderButton->setLabels( kRenderLabel, kRenderLabel, "Step rendering" );
-	renderButton->setHint( "Avoid to render the same image" );
-	renderButton->setScriptName( "renderButton" );
 }
 
 /**

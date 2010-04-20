@@ -71,6 +71,7 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	desc.addClipPreferencesSlaveParam( *filename );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
+	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
 	bitDepth->setDefault( 1 );
@@ -81,13 +82,13 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( true );
 
+	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	renderButton->setLabels( "Render", "Render", "Render step" );
+
 	OFX::BooleanParamDescriptor* outputRGB = desc.defineBooleanParam( kParamOutputRGB );
 	outputRGB->setLabel( "Force RGB" );
 	outputRGB->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	outputRGB->setDefault( false );
-
-	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
-	renderButton->setLabels( "Render", "Render", "Render step" );
 }
 
 /**

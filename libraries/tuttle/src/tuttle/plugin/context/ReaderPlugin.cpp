@@ -31,5 +31,13 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 	clipPreferences.setOutputFrameVarying( varyOnTime() );
 }
 
+bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
+{
+	OfxRangeI rangei = _fPattern.getRange();
+	range.min = (double)rangei.min;
+	range.max = (double)rangei.max;
+	return true;
+}
+
 }
 }
