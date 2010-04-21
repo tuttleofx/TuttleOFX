@@ -1,31 +1,4 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Crop Plugin
+# Call subdirectory
 ###############################################################################
-import os ;
-
-###############################################################################
-# Global project requirements
-###############################################################################
-project
-    : requirements	
-        <include>src
-        <threading>multi
-    : build-dir $(DIST)/Crop/obj
-    ;
-
-###############################################################################
-# Product 
-###############################################################################
-plugin Crop : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
-    ;
-
-###############################################################################
-# Automatic install
-###############################################################################
-auto_install Crop : $(DIST) ;
-
+build-project src ;
