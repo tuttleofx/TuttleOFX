@@ -30,6 +30,7 @@ else if [ os.name ] = MACOSX
 plugin FftTransform : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
+    /libfftw/<link>static
     opengl
     ;
  
