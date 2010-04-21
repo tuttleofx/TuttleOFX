@@ -77,14 +77,16 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth32f );
 	bitDepth->appendOption( kTuttlePluginBitDepth32 );
 	bitDepth->setDefault( 1 );
+	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *bitDepth );
 
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( true );
 
-	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
-	renderButton->setLabels( "Render", "Render", "Render step" );
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	render->setLabels( "Render", "Render", "Render step" );
+	render->setHint("Force render (writing)");
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
 	componentsType->setLabel( "Components type" );

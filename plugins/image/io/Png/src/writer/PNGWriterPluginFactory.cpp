@@ -82,8 +82,9 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( true );
 
-	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
-	renderButton->setLabels( "Render", "Render", "Render step" );
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	render->setLabels( "Render", "Render", "Render step" );
+	render->setHint("Force render (writing)");
 
 	OFX::BooleanParamDescriptor* outputRGB = desc.defineBooleanParam( kParamOutputRGB );
 	outputRGB->setLabel( "Force RGB" );
