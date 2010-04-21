@@ -9,20 +9,16 @@ namespace exr {
 namespace writer {
 
 enum ECompType { eGray, eRGB, eRGBA };
-enum EBitDepth { eHalfFloat, eFloat, eInt32 };
 
-static const std::string kOutputFilename           = "filename";
-static const std::string kOutputFilenameLabel      = "Output filename";
-static const std::string kRender                   = "render";
-static const std::string kRenderLabel              = "Render";
-static const std::string kParamPrecision           = "precision";
-static const std::string kParamPrecisionLabel      = "Precision";
+enum EParamBitDepth {
+	eParamBitDepth16f = 0,
+	eParamBitDepth32f,
+	eParamBitDepth32
+};
+
 static const std::string kParamComponentsType      = "compType";
-static const std::string kParamComponentsTypeLabel = "Components type";
-static const std::string kParamRenderAlways        = "renderAlways";
 
 const static std::string kEXRWriterHelpButton = "Help";
-
 const static std::string kEXRWriterHelpString = "<b>EXR File writer</b> plugin is used to write exr files.<br />";
 
 }

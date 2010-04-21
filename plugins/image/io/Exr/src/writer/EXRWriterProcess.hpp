@@ -34,16 +34,20 @@ namespace writer {
 template<class View>
 class EXRWriterProcess : public ImageGilFilterProcessor<View>
 {
-protected:
-	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
-
-	template<class Pixel>
-	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException );
+public:
+	typedef typename View::value_type Pixel;
 
 public:
 	EXRWriterProcess( EXRWriterPlugin & instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+
+protected:
+	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
+
+	template<class WPixel>
+	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException );
+
 };
 
 }

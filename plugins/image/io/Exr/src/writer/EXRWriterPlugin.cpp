@@ -20,35 +20,18 @@ namespace plugin {
 namespace exr {
 namespace writer {
 
-
 using namespace boost::gil;
 
 EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+: WriterPlugin( handle )
 {
-	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath       = fetchStringParam( kOutputFilename );
-	_bitDepth       = fetchChoiceParam( kParamPrecision );
 	_componentsType = fetchChoiceParam( kParamComponentsType );
-	_renderButton   = fetchPushButtonParam( kRender );
-	_renderAlways   = fetchBooleanParam( kParamRenderAlways );
 }
 
-OFX::Clip* EXRWriterPlugin::getSrcClip() const
+EXRWriterProcessParams EXRWriterPlugin::getParams(const OfxTime time)
 {
-	return _srcClip;
-}
-
-OFX::Clip* EXRWriterPlugin::getDstClip() const
-{
-	return _dstClip;
-}
-
-EXRWriterParams EXRWriterPlugin::getParams(const OfxTime time)
-{
-	EXRWriterParams params;
-	params._precision = (EBitDepth)_bitDepth->getValue();
+	EXRWriterProcessParams params;
+	params._bitDepth = (EParamBitDepth)this->_bitDepth->getValue();
 	params._componentsType = (ECompType)_componentsType->getValue();
 	params._filepath = _fPattern.getFilenameAt(time);
 	return params;
@@ -97,20 +80,10 @@ void EXRWriterPlugin::render( const OFX::RenderArguments& args )
 					return;
 			}
 		}
-	}
-}
-
-void EXRWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
-{
-	if( paramName == kOutputFilename )
-	{
-		_fPattern.reset(_filepath->getValue(), false, 0, 1);
-	}
-	else if( paramName == kEXRWriterHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kEXRWriterHelpString );
+		else
+		{
+			COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
+		}
 	}
 }
 

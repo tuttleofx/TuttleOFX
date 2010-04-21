@@ -229,7 +229,14 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 			const Imf::Slice* slice =
 			    frameBuffer.findSlice(
 			        _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()].c_str() );
-			sliceCopy( slice, dst, w, h, s );
+			if (slice)
+			{
+				sliceCopy( slice, dst, w, h, s );
+			}
+			else
+			{
+				throw(PluginException(std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!"));
+			}
 		}
 	}
 }
@@ -243,7 +250,7 @@ void EXRReaderProcess<View>::sliceCopy( const Imf::Slice* slice, DView& dst, int
 	{
 		case Imf::HALF:
 		{
-			gray16h_view_t vw( interleaved_view( w, h, (gray16h_view_t::value_type*)slice->base, w * sizeof( boost::uint16_t ) ) );
+			gray16h_view_t vw( interleaved_view( w, h, (gray16h_view_t::value_type*)slice->base, w * sizeof( half ) ) );
 			copy_and_convert_pixels( vw, nth_channel_view( dst, n ) );
 			break;
 		}

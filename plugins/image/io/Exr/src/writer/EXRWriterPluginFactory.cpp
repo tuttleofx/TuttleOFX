@@ -2,6 +2,7 @@
 #include "EXRWriterPlugin.hpp"
 #include "EXRWriterDefinitions.hpp"
 
+#include "tuttle/plugin/context/Definition.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
@@ -18,8 +19,6 @@ namespace tuttle {
 namespace plugin {
 namespace exr {
 namespace writer {
-
-static const bool kSupportTiles              = false;
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -41,6 +40,7 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
+	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 }
@@ -65,31 +65,34 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kOutputFilename );
-	filename->setLabels( kOutputFilenameLabel, kOutputFilenameLabel, kOutputFilenameLabel );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginWriterParamFilename );
+	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* precision = desc.defineChoiceParam( kParamPrecision );
-	precision->setLabels( kParamPrecisionLabel, kParamPrecisionLabel, "Output bit depth" );
-	precision->appendOption( "half float" );
-	precision->appendOption( "float" );
-	precision->appendOption( "32 bits" );
-	precision->setDefault( 0 );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
+	bitDepth->setLabel( "Bit depth" );
+	bitDepth->appendOption( kTuttlePluginBitDepth16f );
+	bitDepth->appendOption( kTuttlePluginBitDepth32f );
+	bitDepth->appendOption( kTuttlePluginBitDepth32 );
+	bitDepth->setDefault( 1 );
+	desc.addClipPreferencesSlaveParam( *bitDepth );
+
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setDefault( true );
+
+	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	renderButton->setLabels( "Render", "Render", "Render step" );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-	componentsType->setLabels( kParamComponentsTypeLabel, kParamComponentsTypeLabel, "Output component type" );
+	componentsType->setLabel( "Components type" );
 	componentsType->appendOption( "gray" );
 	componentsType->appendOption( "rgb" );
 	componentsType->appendOption( "rgba" );
 	componentsType->setDefault( 2 );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( true );
-
-	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kRender );
-	renderButton->setScriptName( "renderButton" );
+	desc.addClipPreferencesSlaveParam( *componentsType );
 }
 
 /**

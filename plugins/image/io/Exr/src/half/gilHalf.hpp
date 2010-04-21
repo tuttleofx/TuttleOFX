@@ -37,8 +37,8 @@ struct channel_traits<half> : public detail::channel_traits_impl<half, false>
 /// @typedef an half trait between 0 and 1
 ///////////////////////////////////////////////////////////////////////////////
 
-struct      half_zero { static half apply() { return 0.0f; } };
-struct      half_one  { static half apply() { return 1.0f; } };
+struct      half_zero { static half apply() { return half(0.0f); } };
+struct      half_one  { static half apply() { return half(1.0f); } };
 typedef     scoped_channel_value< half, half_zero, half_one> bits16h;
 
 inline bits16h operator+( bits16h _lhs, bits16h _rhs )
@@ -88,7 +88,6 @@ struct channel_converter_unsigned<SrcChannelV, bits16h>
 		return bits16h( float(x)
 		                / float(channel_traits<SrcChannelV>::max_value() ) );
 	}
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -110,19 +109,18 @@ struct channel_converter_unsigned<bits32f, bits16h>
 {
 	bits16h operator()( bits32f f ) const
 	{
-		if( f >= channel_traits<half>::max_value() )
+		if( f >= HALF_MAX )
 		{
-			return channel_traits<bits16h>::max_value();
+			return bits16h( half( HALF_MAX ) );
 		}
 
-		if( f <= channel_traits<half>::min_value() )
+		if( f <= HALF_MIN )
 		{
-			return channel_traits<bits16h>::min_value();
+			return bits16h( half( HALF_MIN ) );
 		}
 
 		return bits16h( half( f ) );
 	}
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -132,9 +130,8 @@ struct channel_converter_unsigned<bits16h, bits32f>
 {
 	bits32f operator()( bits16h h ) const
 	{
-		return bits32f( float(half( h ) ) );
+		return bits32f( float( half( h ) ) );
 	}
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,7 +143,6 @@ struct channel_multiplier_unsigned<bits16h>
 	{
 		return a* b;
 	}
-
 };
 
 ///////////////////////////////////////////////////////////////////////////////
