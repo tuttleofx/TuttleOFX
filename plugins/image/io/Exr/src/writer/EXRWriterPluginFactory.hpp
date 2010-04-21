@@ -7,6 +7,7 @@ namespace plugin {
 namespace exr {
 namespace writer {
 
+static const bool kSupportTiles = false;
 mDeclarePluginFactory( EXRWriterPluginFactory, {}, {} );
 
 }

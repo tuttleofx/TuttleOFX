@@ -23,11 +23,11 @@ protected:
 	inline bool varyOnTime() const;
 
 protected:
-	OFX::PushButtonParam* _renderButton;  ///< Render push button
-	OFX::StringParam*  _filepath;         ///< Target file path
-	OFX::BooleanParam* _renderAlways;     ///< Render always
-	OFX::ChoiceParam*  _bitDepth;
-	FilenameManager    _fPattern;         ///< Filename pattern manager
+	OFX::PushButtonParam* _renderButton;     ///< Render push button
+	OFX::StringParam*     _filepath;         ///< Target file path
+	OFX::BooleanParam*    _renderAlways;     ///< Render always
+	OFX::ChoiceParam*     _bitDepth;         ///< Bit depth
+	FilenameManager       _fPattern;         ///< Filename pattern manager
 
 // do not need to delete these, the ImageEffect is managing them for us
 	OFX::Clip* _srcClip;       ///< Input image clip

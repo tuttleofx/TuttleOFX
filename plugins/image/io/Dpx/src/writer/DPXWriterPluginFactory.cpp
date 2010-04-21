@@ -74,8 +74,9 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( true );
 
-	OFX::PushButtonParamDescriptor* renderButton = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
-	renderButton->setLabels( "Render", "Render", "Render step" );
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	render->setLabels( "Render", "Render", "Render step" );
+	render->setHint("Force render (writing)");
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
 	bitDepth->setLabel( "Bit depth" );
@@ -84,6 +85,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth12 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
 	bitDepth->setDefault( 3 );
+	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *bitDepth );
 
 	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );

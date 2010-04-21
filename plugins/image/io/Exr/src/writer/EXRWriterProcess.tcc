@@ -44,11 +44,10 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT(( this->_srcPixelRod == this->_dstPixelRod ));
 	try
 	{
-		EXRWriterParams params = _plugin.getParams(this->_renderArgs.time);
-
-		switch( params._precision )
+		EXRWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
+		switch( params._bitDepth )
 		{
-			case eHalfFloat:
+			case eParamBitDepth16f:
 			{
 				switch( params._componentsType )
 				{
@@ -71,7 +70,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case eFloat:
+			case eParamBitDepth32f:
 			{
 				switch( params._componentsType )
 				{
@@ -94,7 +93,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				}
 				break;
 			}
-			case eInt32:
+			case eParamBitDepth32:
 			{
 				switch( params._componentsType )
 				{
@@ -106,7 +105,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					}
 					case eRGB:
 					{
-						writeImage<rgb32f_pixel_t>( this->_srcView, params._filepath, Imf::UINT );
+						writeImage<rgb32_pixel_t>( this->_srcView, params._filepath, Imf::UINT );
 						break;
 					}
 					case eRGBA:
@@ -128,17 +127,17 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 }
 
 template<class View>
-template<class Pixel>
+template<class WPixel>
 void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException )
 {
 	size_t bitsTypeSize = 0;
 
-	typedef image<Pixel, true> image_t;
+	typedef image<WPixel, true> image_t;
 	typedef typename image_t::view_t view_t;
 	image_t img( src.width(), src.height() );
 	view_t dvw( view( img ) );
 	View flippedView = flipped_up_down_view( src );
-	copy_and_convert_pixels( clamp<Pixel>(flippedView), dvw );
+	copy_and_convert_pixels( clamp<WPixel>(flippedView), dvw );
 	Imf::Header header( src.width(), src.height() );
 	switch( pixType )
 	{
@@ -154,6 +153,7 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 		default:
 			break;
 	}
+
 	switch( dvw.num_channels() )
 	{
 		// Gray
