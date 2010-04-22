@@ -1,5 +1,5 @@
-#ifndef EXRREADER_DEFINITIONS_HPP
-#define EXRREADER_DEFINITIONS_HPP
+#ifndef _EXRREADER_DEFINITIONS_HPP_
+#define _EXRREADER_DEFINITIONS_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/context/ReaderDefinition.hpp>

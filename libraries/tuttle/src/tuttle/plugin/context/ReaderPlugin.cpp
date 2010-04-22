@@ -33,9 +33,17 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 
 bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
-	OfxRangeI rangei = _fPattern.getRange();
-	range.min = (double)rangei.min;
-	range.max = (double)rangei.max;
+	if (varyOnTime())
+	{
+		OfxRangeI rangei = _fPattern.getRange();
+		range.min = (double)rangei.min;
+		range.max = (double)rangei.max;
+	}
+	else
+	{
+		range.min = (double)kOfxFlagInfiniteMin;
+		range.max = (double)kOfxFlagInfiniteMax;
+	}
 	return true;
 }
 
