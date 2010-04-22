@@ -90,7 +90,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::%NAMESPACE%::%CLASSNAME%PluginFactory p( "%PLUGIN_UNIQUE_ID%", 1, 0 );
+	static tuttle::plugin::%NAMESPACE%::%CLASSNAME%PluginFactory p( "%PLUGIN_UNIQUE_ID%", 0, 0 );
 	ids.push_back( &p );
 }
 

@@ -19,7 +19,7 @@ protected :
     %CLASSNAME%Plugin&    _plugin;        ///< Rendering plugin
 
 public:
-    %CLASSNAME%Process( %CLASSNAME%Plugin& instance );
+    %CLASSNAME%Process( %CLASSNAME%Plugin& effect );
 
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };

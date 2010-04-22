@@ -6,9 +6,9 @@ namespace plugin {
 namespace %NAMESPACE% {
 
 template<class View>
-%CLASSNAME%Process<View>::%CLASSNAME%Process( %CLASSNAME%Plugin &instance )
-: ImageGilFilterProcessor<View>( instance )
-, _plugin( instance )
+%CLASSNAME%Process<View>::%CLASSNAME%Process( %CLASSNAME%Plugin &effect )
+: ImageGilFilterProcessor<View>( effect )
+, _plugin( effect )
 {
 }
 
