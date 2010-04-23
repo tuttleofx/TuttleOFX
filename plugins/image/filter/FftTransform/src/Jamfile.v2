@@ -27,12 +27,14 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 # Product 
 ###############################################################################
-plugin FftTransform : 
+plugin FftTransform :
+    [ glob *.cpp ] # stop spam !
+    ;
 #    [ glob src/*.cpp ]
 #    /tuttlelib//tuttleplugin/<link>static
 #    /libfftw/<link>static
 #    opengl
-    ;
+
  
 ###############################################################################
 # Automatic install
