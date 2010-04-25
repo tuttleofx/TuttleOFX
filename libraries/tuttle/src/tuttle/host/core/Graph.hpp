@@ -31,15 +31,21 @@ public:
 
 public:
 	Graph();
-	Graph( const Graph& other );
+	//Graph( const Graph& other );
 	~Graph();
+	
+	/**
+	 * @brief call Core::preload (temporary solution for python access)
+	 * @todo remove this, and expose Core in python
+	 */
+	static void preloadCore();
 
 	Node& createNode( const std::string& id );
-	void  deleteNode( const Node& node ) throw( exception::LogicError );
+	void  deleteNode( const Node& node );// throw( exception::LogicError );
 
-	void connect( const Node& out, const Node& in ) throw( exception::LogicError );
-	void connect( const Node& out, const Attribute& inAttr ) throw( exception::LogicError );
-	void unconnectNode( const Node& node ) throw( exception::LogicError );
+	void connect( const Node& out, const Node& in );// throw( exception::LogicError );
+	void connect( const Node& out, const Attribute& inAttr );// throw( exception::LogicError );
+	void unconnectNode( const Node& node );// throw( exception::LogicError );
 
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 	void compute( const std::list<std::string>& nodes, const int time ) { compute( nodes, time, time ); }
