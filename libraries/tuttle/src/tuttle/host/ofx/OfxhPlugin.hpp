@@ -24,6 +24,7 @@ private:
 	OfxhPlugin( const This& ); ///< hidden
 	OfxhPlugin& operator=( const This& ); ///< hidden
 
+#ifndef SWIG
 protected:
 	OfxhPluginBinary* _binary; ///< the file I live inside
 	int _index; ///< where I live inside that file
@@ -97,6 +98,7 @@ private:
 //		ar & BOOST_SERIALIZATION_NVP(_binary); // just a link, don't save
 		ar & BOOST_SERIALIZATION_NVP(_index);
 	}
+#endif
 };
 
 }

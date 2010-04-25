@@ -79,7 +79,7 @@ public:
 	/// dtor
 	virtual ~OfxhPluginBinary();
 
-
+#ifndef SWIG
 	bool operator==( const This& other ) const
 	{
 		if( _binary != other._binary ||
@@ -178,6 +178,7 @@ private:
 			}
 		}
 	}
+#endif
 };
 
 }

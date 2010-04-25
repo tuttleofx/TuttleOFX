@@ -27,7 +27,7 @@ public:
 	typedef OfxhParamSet This;
 	typedef std::map<std::string, OfxhParam*> ParamMap;
 	typedef boost::ptr_list<OfxhParam> ParamList;
-
+#ifndef SWIG
 protected:
 	ParamMap _params;        ///< params by name
 	ParamList _paramList;    ///< params list
@@ -95,6 +95,7 @@ public:
 
 private:
 	void initMapFromList();
+#endif
 };
 
 

@@ -68,7 +68,6 @@ public:
 	typedef OfxhImageEffectPlugin This;
 	typedef boost::ptr_map<std::string, OfxhImageEffectNodeDescriptor> ContextMap;
 	typedef std::set<std::string> ContextSet;
-	
 private:
 	OfxhImageEffectPluginCache* _pc;
 
@@ -103,6 +102,7 @@ public:
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
 	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==(other); }
 
+#ifndef SWIG
 	void setApiHandler( OfxhImageEffectPluginCache& api ) { _pc = &api; }
 	void setApiHandler( APICache::OfxhPluginAPICacheI& api );
 
@@ -153,6 +153,7 @@ private:
 		//ar & BOOST_SERIALIZATION_NVP(_pluginHandle); // don't save this
 		ar & BOOST_SERIALIZATION_NVP(_contexts);
 	}
+#endif
 };
 
 }

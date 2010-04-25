@@ -23,7 +23,6 @@ namespace imageEffect {
 /// implementation of the specific Image Effect handler API cache.
 class OfxhImageEffectPluginCache : public APICache::OfxhPluginAPICacheI
 {
-public:
 private:
 	/// all plugins
 	std::vector<OfxhImageEffectPlugin*> _plugins;
@@ -41,6 +40,7 @@ public:
 	explicit OfxhImageEffectPluginCache( OfxhImageEffectHost& host );
 	~OfxhImageEffectPluginCache();
 
+#ifndef SWIG
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
 	/// pick the highest found version.
 	OfxhImageEffectPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
@@ -76,7 +76,7 @@ public:
 	                       const std::string& rawId,
 	                       int                pluginMajorVersion,
 	                       int                pluginMinorVersion );
-
+#endif
 	void dumpToStdOut() const;
 };
 
