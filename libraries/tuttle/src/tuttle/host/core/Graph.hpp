@@ -33,12 +33,6 @@ public:
 	Graph();
 	//Graph( const Graph& other );
 	~Graph();
-	
-	/**
-	 * @brief call Core::preload (temporary solution for python access)
-	 * @todo remove this, and expose Core in python
-	 */
-	static void preloadCore();
 
 	Node& createNode( const std::string& id );
 	void  deleteNode( const Node& node );// throw( exception::LogicError );

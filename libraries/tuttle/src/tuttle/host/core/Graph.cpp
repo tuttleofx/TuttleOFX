@@ -19,11 +19,6 @@ Graph::Graph()
 Graph::~Graph()
 {}
 
-void Graph::preloadCore()
-{
-	core::Core::instance().preload();
-}
-
 Graph::Node& Graph::createNode( const std::string& id )
 {
 	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );

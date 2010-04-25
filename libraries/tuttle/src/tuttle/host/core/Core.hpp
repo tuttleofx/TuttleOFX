@@ -23,6 +23,7 @@ private:
 	Core();
 	~Core();
 
+#ifndef SWIG
 private:
 	core::Host _host;
 	ofx::imageEffect::OfxhImageEffectPluginCache _imageEffectPluginCache;
@@ -44,7 +45,7 @@ public:
 	{
 		return _imageEffectPluginCache.getPluginById( id, vermaj, vermin );
 	}
-
+#endif
 public:
 	void preload();
 

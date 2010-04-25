@@ -74,7 +74,8 @@ public:
 	typedef OfxhImageEffectNode This;
 	/// a map used to specify needed frame ranges on set of clips
 	typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
-	
+
+#ifndef SWIG
 protected:
 	const OfxhImageEffectPlugin* _plugin;
 	std::string _context;
@@ -468,6 +469,7 @@ private:
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet);
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
 	}
+#endif
 };
 
 }

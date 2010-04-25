@@ -29,7 +29,7 @@ public:
 	ImageEffectNode( const ImageEffectNode& other );
 	
 	~ImageEffectNode();
-
+#ifndef SWIG
 	ImageEffectNode* clone() const { return new ImageEffectNode( *this ); }
 
 	bool operator==( const ImageEffectNode& other ) const;
@@ -307,6 +307,7 @@ private:
 	void checkClipsConnections() const;
 	void initClipsFromReadsToWrites();
 	void initClipsFromWritesToReads();
+#endif
 };
 
 }
