@@ -10,23 +10,20 @@ import os ;
 project
     : requirements
         <include>src
-        <threading>multi
     : usage-requirements
         <include>src
     : build-dir $(DIST)/sam/obj
     ;
-
-use-project /tuttlelib : ../../libraries/tuttle ;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
 exe sam : 
     [ glob src/*.cpp ]
+    /tuttlehost/<link>static
     /boost/system
     /boost/filesystem
 	/boost/serialization
-    /tuttlelib//tuttlehost/<link>static
 	:
 	<os>LINUX:<find-shared-library>dl
     ;
