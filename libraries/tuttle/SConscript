@@ -25,3 +25,15 @@ project.StaticLibrary( 'tuttleHost',
                                   ]
                       )
 
+envSwig = project.createEnv( [libs.python, libs.tuttleHost, libs.pthread] )
+envSwig.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] )
+envSwig.AppendUnique( SWIGPATH = envSwig['CPPPATH'] )
+envSwig.AppendUnique( SWIGOUTDIR = 'tuttlePython' )
+envSwig.Replace( SHLIBPREFIX = '' )
+envSwig.Replace( LIBPREFIX = '' )
+#print "SWIGPATH from CPPPATH : ", envSwig['CPPPATH']
+
+tuttlePython = envSwig.SharedLibrary( target='_tuttle', source=['src/tuttle/host/tuttle.i'] )
+tuttlePythonInstall = envSwig.Install( '#tuttlePython', tuttlePython )
+
+envSwig.Alias( 'tuttlePython', tuttlePythonInstall )
