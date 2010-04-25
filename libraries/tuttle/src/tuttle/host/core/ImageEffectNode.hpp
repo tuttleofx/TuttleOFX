@@ -154,7 +154,7 @@ public:
 		                 processOptions._interactive,
 		                 processOptions._renderScale );
 	}
-
+#endif
 	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 
 	void dumpToStdOut() const;
@@ -179,6 +179,7 @@ public:
 	                    va_list     args ) const OFX_EXCEPTION_SPEC;
 #endif
 	
+#ifndef SWIG
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
 	// project may be a PAL SD project, but only be a letter-box within that. The project size is

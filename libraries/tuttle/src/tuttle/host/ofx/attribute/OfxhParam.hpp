@@ -156,7 +156,7 @@ public:
 	// by the various typeed param instances so that they can
 	// deconstruct the var args lists
 
-	
+#endif
 	inline virtual std::size_t getSize() const 
 	{
 		return 1;
@@ -172,6 +172,7 @@ public:
 	inline virtual void set( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
 	inline virtual void set( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }
 
+#ifndef SWIG
 	/// get a value, implemented by instances to deconstruct var args
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
 
