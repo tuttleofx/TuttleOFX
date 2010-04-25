@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 	core::Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
 	core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
-	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
+	/*core::Graph::Node& crop1   = */g.createNode( "fr.tuttle.crop" );
 	core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
 	core::Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
 	core::Graph::Node& write4  = g.createNode( "fr.tuttle.pngwriter" );

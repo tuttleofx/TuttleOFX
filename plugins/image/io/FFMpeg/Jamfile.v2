@@ -28,8 +28,8 @@ else if [ os.name ] = MACOSX
 # Product 
 ###############################################################################
 plugin FFMpeg : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
+    [ glob-tree *.cpp ]
+    /tuttleplugin/<link>static
     opengl
     ;
 

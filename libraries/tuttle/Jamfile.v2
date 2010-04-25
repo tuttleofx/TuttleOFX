@@ -1,4 +1,4 @@
- ###############################################################################
+###############################################################################
 ## Main BJam makefile for Tuttle library
 ## author Nicolas Rondaud
 ###############################################################################
@@ -16,36 +16,17 @@ project
     : build-dir $(DIST)/tuttle/obj
     ;
 
-use-project /ofxPluginSupport   : ../openfxHack/Support ;
-
 ###############################################################################
 # tuttle library
 ###############################################################################
-lib tuttlehost :
-    [ glob src/tuttle/host/*.cpp ]
-    [ glob src/tuttle/host/*/*.cpp ]
-    [ glob src/tuttle/host/*/*/*.cpp ]
-    /boost//system
-    /boost//filesystem
-    /boost//thread
-    /boost//date_time
-    /boost//serialization
-    :
-    <os>NT:<find-shared-library>shell32
-    <os>LINUX:<find-shared-library>dl
-    <include>../openfxHack/include
-    ;
-
-lib tuttleplugin :
-    [ glob src/tuttle/plugin/*.cpp ]
-    /ofxPluginSupport/<link>static
-    ;
+use-project /tuttlehost : src/tuttle/host ;
+use-project /tuttleplugin : src/tuttle/plugin ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 install dist_src
-    : tuttlehost tuttleplugin
+    : /tuttlehost /tuttleplugin
     : <variant>debug:<location>$(DIST)/tuttle/bin/debug
       <variant>release:<location>$(DIST)/tuttle/bin/release
     ;

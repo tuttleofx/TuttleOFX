@@ -1,7 +1,6 @@
 ###############################################################################
 ## Main BJam makefile for TuttleOFX Png Plugin
 ###############################################################################
-import os ;
 
 ###############################################################################
 # Global project requirements
@@ -9,6 +8,7 @@ import os ;
 project
     : requirements
         <threading>multi
+        <include>.
     : build-dir $(DIST)/Png/obj
     ;
 
@@ -19,11 +19,13 @@ use-project /png 	: $(3RD_PARTY)/libpng ;
 ###############################################################################
 plugin Png : 
         [ glob-tree *.cpp ]
-        /tuttlelib//tuttleplugin/<link>static
-        /boost//filesystem/<link>static
-		/boost//system/<link>static
+        /tuttleplugin/<link>static
+        /boost/filesystem/<link>static
+		/boost/system/<link>static
+		/boost/regex/<link>static
         /png/<link>static
         ;
+explicit Png ;
 
 ###############################################################################
 # Automatic install

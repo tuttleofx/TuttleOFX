@@ -20,9 +20,10 @@ use-project /libexr : $(3RD_PARTY)/openexr ;
 ###############################################################################
 plugin Exr : 
         [ glob-tree *.cpp ]
-        /tuttlelib//tuttleplugin/<link>static
-        /boost//filesystem/<link>static
-		/boost//system/<link>static
+        /tuttleplugin/<link>static
+        /boost/filesystem/<link>static
+		/boost/system/<link>static
+		/boost/regex/<link>static
         /libexr/<link>static
         ;
 
@@ -30,4 +31,3 @@ plugin Exr :
 # Automatic install
 ###############################################################################
 auto_install Exr : $(DIST) ;
-

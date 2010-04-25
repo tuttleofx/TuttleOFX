@@ -18,7 +18,7 @@ project
 ###############################################################################
 plugin Invert : 
     [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
+    /tuttleplugin/<link>static
 	:
 	<os>NT:<find-shared-library>opengl32
 	<os>MACOSX:<linkflags>"-framework OpenGL"
