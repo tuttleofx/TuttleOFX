@@ -114,6 +114,7 @@ public:
 		return ( OfxParamHandle ) this;
 	}
 
+#ifndef SWIG
 	void paramChanged( const EChange change );
 
 	void changedActionBegin() { _avoidRecursion = true; }
@@ -191,6 +192,7 @@ public:
 
 	/// overridden from Property::NotifyHook
 	virtual void notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC;
+#endif
 };
 
 #ifndef SWIG

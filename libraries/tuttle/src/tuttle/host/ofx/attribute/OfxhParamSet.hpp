@@ -27,7 +27,6 @@ public:
 	typedef OfxhParamSet This;
 	typedef std::map<std::string, OfxhParam*> ParamMap;
 	typedef boost::ptr_list<OfxhParam> ParamList;
-#ifndef SWIG
 protected:
 	ParamMap _params;        ///< params by name
 	ParamList _paramList;    ///< params list
@@ -71,6 +70,7 @@ public:
 	}
 	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>(this)->getParam( name ); }
 
+#ifndef SWIG
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
 	virtual void paramChanged( const attribute::OfxhParam& param, const EChange change ) = 0;

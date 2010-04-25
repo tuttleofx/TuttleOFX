@@ -5,7 +5,7 @@
 #include <tuttle/host/ofx/attribute/OfxhParamSet.hpp>
 %}
 
-%include <tuttle/host/ofx/attribute/OfxhParamSet.hpp>
+//%include <tuttle/host/ofx/attribute/OfxhParamSet.hpp>
 
 
 

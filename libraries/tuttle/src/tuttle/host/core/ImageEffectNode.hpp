@@ -29,6 +29,10 @@ public:
 	ImageEffectNode( const ImageEffectNode& other );
 	
 	~ImageEffectNode();
+
+	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
+	ofx::attribute::OfxhParam& getParam( const std::string& name ) { return ofx::attribute::OfxhParamSet::getParam( name ); }
+
 #ifndef SWIG
 	ImageEffectNode* clone() const { return new ImageEffectNode( *this ); }
 
