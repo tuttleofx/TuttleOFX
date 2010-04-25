@@ -193,6 +193,7 @@ public:
 	virtual void notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC;
 };
 
+#ifndef SWIG
 /**
  * @brief to make ParamInstance clonable (for use in boost::ptr_container)
  */
@@ -200,17 +201,19 @@ inline OfxhParam* new_clone( const OfxhParam& a )
 {
 	return a.clone();
 }
+#endif
 
-
 }
 }
 }
 }
 
+#ifndef SWIG
 // force boost::is_virtual_base_of value (used by boost::serialization)
 namespace boost{
 template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhParam>: public mpl::true_ {};
 }
+#endif
 
 
 #endif

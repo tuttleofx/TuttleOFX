@@ -1606,6 +1606,7 @@ public:
 /** @brief A set of parameters in a plugin instance */
 class ParamSet
 {
+public:
 	typedef ParamSet This;
 protected:
 	mDeclareProtectedAssignAndCC( ParamSet );

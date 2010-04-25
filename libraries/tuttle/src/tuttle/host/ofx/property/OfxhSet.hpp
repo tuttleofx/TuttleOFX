@@ -60,7 +60,8 @@ typedef boost::ptr_map<std::string, OfxhProperty> PropertyMap;
  */
 class OfxhSet
 {
-typedef OfxhSet This;
+public:
+	typedef OfxhSet This;
 private:
 	static const int kMagic = 0x12082007; ///< magic number for property sets, and Connie's birthday :-)
 	const int _magic; ///< to check for handles being nice

@@ -19,9 +19,11 @@ class OfxhParamDescriptor :
 	public OfxhAttributeDescriptor,
 	virtual public OfxhParamAccessor
 {
-typedef OfxhParamDescriptor This;
-OfxhParamDescriptor(){}
+public:
+	typedef OfxhParamDescriptor This;
 
+private:
+	OfxhParamDescriptor(){}
 public:
 	/// make a parameter, with the given type and name
 	OfxhParamDescriptor( const std::string& type, const std::string& name );

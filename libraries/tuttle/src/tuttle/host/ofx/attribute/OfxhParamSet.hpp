@@ -23,8 +23,8 @@ class OfxhParamSet :
 	public OfxhParamSetAccessor,
 	virtual public OfxhIObject
 {
-typedef OfxhParamSet This;
 public:
+	typedef OfxhParamSet This;
 	typedef std::map<std::string, OfxhParam*> ParamMap;
 	typedef boost::ptr_list<OfxhParam> ParamList;
 

@@ -22,8 +22,8 @@ class OfxhImageEffectNodeDescriptor
 	public attribute::OfxhParamSetDescriptor,
 	private boost::noncopyable
 {
-typedef OfxhImageEffectNodeDescriptor This;
 public:
+	typedef OfxhImageEffectNodeDescriptor This;
 	typedef std::map<std::string, attribute::OfxhClipImageDescriptor*> ClipImageDescriptorMap;
 	typedef boost::ptr_vector<attribute::OfxhClipImageDescriptor> ClipImageDescriptorVector;
 

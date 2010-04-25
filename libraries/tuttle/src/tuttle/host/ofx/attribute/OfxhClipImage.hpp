@@ -29,7 +29,9 @@ class OfxhClipImage :
 	public attribute::OfxhClip,
 	virtual public OfxhClipImageAccessor
 {
-typedef OfxhClipImage This;
+public:
+	typedef OfxhClipImage This;
+	
 protected:
 	imageEffect::OfxhImageEffectNode& _effectInstance; ///< effect instance
 
@@ -265,6 +267,7 @@ public:
 	virtual const std::string& findSupportedComp( const std::string& s ) const;
 };
 
+#ifndef SWIG
 /**
  * @brief to make ClipImageInstance clonable (for use in boost::ptr_container)
  */
@@ -272,7 +275,7 @@ inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 {
 	return a.clone();
 }
-
+#endif
 
 }
 }
@@ -280,9 +283,12 @@ inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 }
 
 
+#ifndef SWIG
 // force boost::is_virtual_base_of value (used by boost::serialization)
 namespace boost{
 template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
 }
+#endif
+
 
 #endif

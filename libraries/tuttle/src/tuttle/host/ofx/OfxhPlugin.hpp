@@ -18,7 +18,9 @@ class OfxhPluginBinary;
  */
 class OfxhPlugin : public OfxhPluginDesc
 {
+public:
 	typedef OfxhPlugin This;
+private:
 	OfxhPlugin( const This& ); ///< hidden
 	OfxhPlugin& operator=( const This& ); ///< hidden
 

@@ -23,10 +23,11 @@ class OfxhPluginCache;
  */
 class OfxhPluginBinary
 {
-typedef OfxhPluginBinary This;
-friend class OfxhPluginHandle;
 public:
+	typedef OfxhPluginBinary This;
 	typedef boost::ptr_vector<OfxhPlugin> PluginVector;
+
+	friend class OfxhPluginHandle;
 
 protected:
 	OfxhBinary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.hpp

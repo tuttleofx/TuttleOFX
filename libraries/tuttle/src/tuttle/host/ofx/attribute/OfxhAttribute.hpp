@@ -50,7 +50,8 @@ inline EChange mapStringToEChange( const std::string& change )
 
 class OfxhAttribute : virtual public OfxhAttributeAccessor
 {
-typedef OfxhAttribute This;
+public:
+	typedef OfxhAttribute This;
 protected:
 	OfxhAttribute(){}
 public:

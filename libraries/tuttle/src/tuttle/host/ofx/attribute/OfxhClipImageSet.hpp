@@ -19,8 +19,8 @@ class OfxhClipImageSet :
 	virtual public OfxhIObject
 	//, public ClipAccessorSet
 {
-	typedef OfxhClipImageSet This;
 public:
+	typedef OfxhClipImageSet This;
 	typedef std::map<std::string, OfxhClipImage*> ClipImageMap;
 	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
 

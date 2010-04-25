@@ -1,6 +1,4 @@
 /*
- * core.hpp
- *
  *  Created on: 7 avr. 2010
  *      Author: Guillaume Chatelet
  *
@@ -8,8 +6,8 @@
  *  This code is a subset of ofxCore.h from OpenFX plug-in mechanism ( http://openfx.sourceforge.net/ )
  */
 
-#ifndef CORE_HPP_
-#define CORE_HPP_
+#ifndef _COREPLUGIN_H_
+#define _COREPLUGIN_H_
 
 #include <stddef.h> // for size_t
 #include <limits.h>

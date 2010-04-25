@@ -81,6 +81,7 @@ namespace ofx {
 /// class representing a DLL/Shared Object/etc
 class OfxhBinary
 {
+public:
 	typedef OfxhBinary This;
 /// destruction will close the library and invalidate
 /// any function pointers returned by lookupSymbol()

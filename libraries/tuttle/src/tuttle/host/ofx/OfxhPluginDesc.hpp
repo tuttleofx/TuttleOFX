@@ -36,6 +36,7 @@ struct OfxhPluginIdent
  */
 class OfxhPluginDesc
 {
+public:
 	typedef OfxhPluginDesc This;
 protected:
 	std::string _pluginApi; ///< the API I implement

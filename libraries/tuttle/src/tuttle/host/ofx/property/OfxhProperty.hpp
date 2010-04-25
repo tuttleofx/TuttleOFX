@@ -97,7 +97,8 @@ enum EModifiedBy
 /// base class for all properties
 class OfxhProperty : private boost::noncopyable
 {
-typedef OfxhProperty This;
+public:
+	typedef OfxhProperty This;
 protected:
 	std::string _name;                         ///< name of this property
 	TypeEnum _type;                            ///< type of this property
@@ -220,10 +221,12 @@ private:
 	}
 };
 
+#ifndef SWIG
 inline OfxhProperty* new_clone( const OfxhProperty& p )
 {
 	return p.clone();
 }
+#endif
 
 }
 }

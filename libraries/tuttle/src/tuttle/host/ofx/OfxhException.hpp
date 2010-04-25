@@ -47,7 +47,7 @@ public:
 
 };
 
-#ifndef WINDOWS
+#if !defined(WINDOWS) || !defined(SWIG)
  #define OFX_EXCEPTION_SPEC throw(tuttle::host::ofx::OfxhException)
 #else
  #define OFX_EXCEPTION_SPEC

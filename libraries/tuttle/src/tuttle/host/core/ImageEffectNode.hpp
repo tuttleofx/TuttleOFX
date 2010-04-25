@@ -8,6 +8,7 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
+
 namespace tuttle {
 namespace host {
 namespace core {
@@ -166,12 +167,14 @@ public:
 	/// make a clip
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
+#ifndef SWIG
 	/// vmessage
 	void vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
 	                    va_list     args ) const OFX_EXCEPTION_SPEC;
-
+#endif
+	
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
 	// project may be a PAL SD project, but only be a letter-box within that. The project size is

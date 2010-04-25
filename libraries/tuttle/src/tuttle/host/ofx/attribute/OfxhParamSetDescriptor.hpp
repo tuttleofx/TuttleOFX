@@ -16,8 +16,8 @@ namespace attribute {
 /// a set of parameters
 class OfxhParamSetDescriptor : public OfxhParamSetAccessor
 {
-typedef OfxhParamSetDescriptor This;
 public:
+	typedef OfxhParamSetDescriptor This;
 	typedef std::map<std::string, OfxhParamDescriptor*> ParamDescriptorMap;
 	typedef boost::ptr_list<OfxhParamDescriptor> ParamDescriptorList;
 	ParamDescriptorMap _paramMap;

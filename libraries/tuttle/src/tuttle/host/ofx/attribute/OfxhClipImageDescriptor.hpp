@@ -16,7 +16,8 @@ class OfxhClipImageDescriptor :
 	virtual public OfxhClipImageAccessor,
 	public OfxhClipDescriptor
 {
-typedef OfxhClipImageDescriptor This;
+public:
+	typedef OfxhClipImageDescriptor This;
 private:
 	OfxhClipImageDescriptor();
 	void init( const std::string& name );

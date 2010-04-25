@@ -9,7 +9,10 @@ namespace ofx {
 
 class OfxhMajorPlugin
 {
-typedef OfxhMajorPlugin This;
+public:
+	typedef OfxhMajorPlugin This;
+	
+private:
 std::string _id;
 int _major;
 
