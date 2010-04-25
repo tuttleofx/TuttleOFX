@@ -1,0 +1,9 @@
+###############################################################################
+## Main BJam makefile for Tuttle library
+## author Guillaume Chatelet
+###############################################################################
+
+lib tuttleplugin :
+    [ glob-tree *.cpp ]
+    /ofxPluginSupport/<link>static
+    ;

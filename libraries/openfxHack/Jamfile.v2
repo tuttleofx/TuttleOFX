@@ -1,0 +1,11 @@
+###############################################################################
+## Main BJam makefile for Tuttle library
+## author Guillaume Chatelet
+###############################################################################
+
+project openfxHackProject
+	: requirements
+		<include>include
+	: usage-requirements
+		<include>include
+	;
