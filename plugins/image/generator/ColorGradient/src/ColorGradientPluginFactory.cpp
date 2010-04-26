@@ -109,7 +109,7 @@ namespace Plugin {
 
 void getPluginIDs(OFX::PluginFactoryArray &ids)
 {
-	static tuttle::plugin::colorGradient::ColorGradientPluginFactory p( "fr.tuttle.colorgradient", 1, 0 );
+	static tuttle::plugin::colorGradient::ColorGradientPluginFactory p( "fr.tuttle.colorgradient", 0, 0 );
 	ids.push_back( &p );
 }
 

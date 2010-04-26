@@ -106,7 +106,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::plugin::convolution::ConvolutionPluginFactory p( "fr.tuttle.convolution", 1, 0 );
+	static tuttle::plugin::convolution::ConvolutionPluginFactory p( "fr.tuttle.convolution", 0, 0 );
 	ids.push_back( &p );
 }
 

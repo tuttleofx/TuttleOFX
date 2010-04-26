@@ -29,8 +29,8 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts
+	//	desc.addSupportedContext( OFX::eContextTransition ); ///@todo tuttle: Changing inputs by SourceFrom and SourceTo and adding a Transition paramater (single double)
 	desc.addSupportedContext( OFX::eContextGeneral );
-
 	// add supported pixel depths
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
