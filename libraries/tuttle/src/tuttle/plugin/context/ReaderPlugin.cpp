@@ -10,18 +10,19 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 {
 	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kTuttlePluginReaderParamFilename );
-	_fPattern.reset(_filepath->getValue(), true);
+	_filePattern.reset(_filepath->getValue(), true);
 	_explicitConv = fetchChoiceParam( kTuttlePluginReaderParamExplicitConversion );
 }
 
-ReaderPlugin::~ReaderPlugin() {
+ReaderPlugin::~ReaderPlugin()
+ {
 }
 
 void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	if( paramName == kTuttlePluginReaderParamFilename )
 	{
-		_fPattern.reset(_filepath->getValue(), true);
+		_filePattern.reset(_filepath->getValue(), true);
 	}
 }
 
@@ -35,7 +36,7 @@ bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	if (varyOnTime())
 	{
-		OfxRangeI rangei = _fPattern.getRange();
+		OfxRangeI rangei = _filePattern.getRange();
 		range.min = (double)rangei.min;
 		range.max = (double)rangei.max;
 	}

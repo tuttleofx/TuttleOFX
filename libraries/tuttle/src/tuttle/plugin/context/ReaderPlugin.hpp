@@ -29,13 +29,13 @@ public:
 	OFX::Clip*           _dstClip;       ///< Destination image clip
 	OFX::StringParam*    _filepath;      ///< File path
 	OFX::ChoiceParam*    _explicitConv;  ///< Explicit conversion
-	FilenameManager      _fPattern;      ///< Filename pattern manager
+	FilenameManager      _filePattern;      ///< Filename pattern manager
 };
 
 inline bool ReaderPlugin::varyOnTime() const
 {
 	///@todo tuttle: do this in FilenameManager
-	return _fPattern.getFirstFilename() != _filepath->getValue();
+	return _filePattern.getFirstFilename() != _filepath->getValue();
 }
 
 }

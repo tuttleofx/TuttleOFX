@@ -27,7 +27,7 @@ protected:
 	OFX::StringParam*     _filepath;         ///< Target file path
 	OFX::BooleanParam*    _renderAlways;     ///< Render always
 	OFX::ChoiceParam*     _bitDepth;         ///< Bit depth
-	FilenameManager       _fPattern;         ///< Filename pattern manager
+	FilenameManager       _filePattern;         ///< Filename pattern manager
 
 // do not need to delete these, the ImageEffect is managing them for us
 	OFX::Clip* _srcClip;       ///< Input image clip
@@ -38,7 +38,7 @@ protected:
 inline bool WriterPlugin::varyOnTime() const
 {
 	///@todo tuttle: do this in FilenameManager
-	return _fPattern.getFirstFilename() != _filepath->getValue();
+	return _filePattern.getFirstFilename() != _filepath->getValue();
 }
 
 }

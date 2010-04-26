@@ -36,6 +36,7 @@
 #include "./ofxsSupportPrivate.h"
 
 #include <sstream>
+#include <cstddef>
 
 namespace OFX {
 
@@ -92,8 +93,9 @@ const std::string mapStatusToString( const OfxStatus stat )
 
 /** @brief namespace for memory allocation that is done via wrapping the ofx memory suite */
 namespace Memory {
+
 /** @brief allocate n bytes, returns a pointer to it */
-void* allocate( size_t nBytes, ImageEffect* effect = 0 ) throw( std::bad_alloc )
+void* allocate( const std::size_t nBytes, ImageEffect* effect ) throw( std::bad_alloc )
 {
 	void* data     = 0;
 	OfxStatus stat = OFX::Private::gMemorySuite->memoryAlloc( ( void* )( effect ? effect->getHandle() : 0 ), nBytes, &data );
@@ -112,7 +114,6 @@ void free( void* ptr ) throw( )
 	OFX::Private::gMemorySuite->memoryFree( ptr );
 }
 
-};
-
-}; // namespace OFX
+}
+}
 

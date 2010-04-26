@@ -86,6 +86,8 @@
  #pragma warning( disable : 4290 )
 #endif
 
+#include "ofxsMemory.h"
+
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 #include <ofxInteract.h>
@@ -506,18 +508,6 @@ public:
 
 };
 
-// forward decl of the image effect
-class ImageEffect;
-
-/** @brief namespace for memory allocation that is done via wrapping the ofx memory suite */
-namespace Memory {
-
-/** @brief allocate n bytes, returns a pointer to it */
-void* alloc( size_t nBytes, ImageEffect* handle = 0 ) throw( std::bad_alloc );
-
-/** @brief free n previously allocated memory */
-void free( void* ptr ) throw( );
-};
 };
 
 // undeclare the protected assign and CC macro
