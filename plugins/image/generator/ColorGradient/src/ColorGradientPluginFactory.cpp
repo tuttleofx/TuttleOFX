@@ -27,7 +27,7 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
 	desc.setLabels( "TuttleColorGradient", "ColorGradient",
 	                "Create a color gradient" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );

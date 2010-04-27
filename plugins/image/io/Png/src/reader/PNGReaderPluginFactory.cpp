@@ -27,7 +27,7 @@ void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttlePngReader", "PngReader",
 	                "Png file reader" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

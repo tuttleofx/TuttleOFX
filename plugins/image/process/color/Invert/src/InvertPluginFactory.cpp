@@ -24,7 +24,7 @@ void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleInvert", "Invert",
 	                "Image inverter" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextFilter );
