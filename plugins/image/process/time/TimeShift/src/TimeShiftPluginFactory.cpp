@@ -1,6 +1,6 @@
-#include "ColorGradientPluginFactory.hpp"
-#include "ColorGradientPlugin.hpp"
-#include "ColorGradientDefinitions.hpp"
+#include "TimeShiftPluginFactory.hpp"
+#include "TimeShiftPlugin.hpp"
+#include "TimeShiftDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
@@ -17,17 +17,17 @@
 
 namespace tuttle {
 namespace plugin {
-namespace colorGradient {
+namespace timeShift {
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleColorGradient", "ColorGradient",
-	                "Create a color gradient" );
-	desc.setPluginGrouping( "tuttle/image/generator" );
+	desc.setLabels( "TuttleTimeShift", "TimeShift",
+		            "TimeShift" );
+	desc.setPluginGrouping( "tuttle/image/process/time" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -39,7 +39,7 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setSupportsTiles( kSupportTiles );
+	desc.setTemporalClipAccess(true);
 }
 
 /**
@@ -47,41 +47,21 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                    OFX::ContextEnum context )
+void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                  OFX::ContextEnum context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::ChoiceParamDescriptor* gradientType = desc.defineChoiceParam( kGradientType );
-	gradientType->appendOption( kGradientType1DLinear );
-	gradientType->appendOption( kGradientType1DRadial );
-	gradientType->appendOption( kGradientType2D );
-	gradientType->setDefault( 0 );
-
-	OFX::IntParamDescriptor* nbPoint = desc.defineIntParam( kNbPoints );
-	nbPoint->setDefault( 2 );
-	nbPoint->setRange( 2, kMaxNbPoints );
-	nbPoint->setDisplayRange( 2, kMaxNbPoints );
-
-	for( unsigned int i = 0; i < kMaxNbPoints; ++i)
-	{
-		OFX::Double2DParamDescriptor* point = desc.defineDouble2DParam( getPointParamName(i) );
-		point->setLabel( getPointParamName(i) );
-//		point->setIsSecret( true );
-		point->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-		OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( getColorParamName(i) );
-		color->setLabel( getColorParamName(i) );
-//		color->setIsSecret( true );
-	}
+	OFX::DoubleParamDescriptor *offset = desc.defineDoubleParam( kOffset );
+	offset->setLabel( "offset" );
+	offset->setDefault( 0.0 );
 }
 
 /**
@@ -90,10 +70,10 @@ void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* ColorGradientPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* TimeShiftPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::ContextEnum context )
 {
-	return new ColorGradientPlugin(handle);
+	return new TimeShiftPlugin(handle);
 }
 
 }

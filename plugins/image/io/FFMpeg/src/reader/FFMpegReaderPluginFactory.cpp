@@ -29,7 +29,7 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
 	desc.setLabels( "TuttleFfmpegReader", "FfmpegReader",
 		            "Ffmpeg video reader" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

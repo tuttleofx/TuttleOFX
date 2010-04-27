@@ -1,3 +1,4 @@
+#include "TextPluginFactory.hpp"
 #include "TextPlugin.hpp"
 #include "TextDefinitions.hpp"
 
@@ -22,11 +23,6 @@ namespace tuttle {
 namespace plugin {
 namespace text {
 
-static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( TextPluginFactory, { }, { } );
-
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -35,7 +31,7 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleText", "Text",
 				   "Text" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -125,17 +121,5 @@ OFX::ImageEffect* TextPluginFactory::createInstance( OfxImageEffectHandle handle
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::text::TextPluginFactory p( "fr.tuttle.text", 1, 0 );
-	ids.push_back( &p );
-}
-
 }
 }

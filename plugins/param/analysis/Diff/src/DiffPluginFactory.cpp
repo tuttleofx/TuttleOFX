@@ -1,3 +1,4 @@
+#include "DiffPluginFactory.hpp"
 #include "DiffPlugin.hpp"
 #include "DiffDefinitions.hpp"
 
@@ -18,10 +19,6 @@ namespace tuttle {
 namespace plugin {
 namespace quality {
 
-static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( DiffPluginFactory, { }, { } );
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -29,7 +26,7 @@ mDeclarePluginFactory( DiffPluginFactory, { }, { } );
 void DiffPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleDiff", "TuttleDiff", "TuttleDiff" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/param/analysis" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -103,17 +100,5 @@ OFX::ImageEffect* DiffPluginFactory::createInstance( OfxImageEffectHandle handle
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::quality::DiffPluginFactory p( "fr.tuttle.diff", 1, 0 );
-	ids.push_back( &p );
-}
-
 }
 }
