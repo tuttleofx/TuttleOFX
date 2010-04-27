@@ -27,7 +27,7 @@ void DebugImageEffectApiPluginFactory::describe( OFX::ImageEffectDescriptor &des
 {
 	desc.setLabels( "TuttleDebugImageEffectApi", "DebugImageEffectApi",
 		            "Plugin which displays informations about the host and all plugin inputs." );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/param" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -106,17 +106,5 @@ OFX::ImageEffect* DebugImageEffectApiPluginFactory::createInstance( OfxImageEffe
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::debugImageEffectApi::DebugImageEffectApiPluginFactory p("fr.tuttle.debugimageeffectapi", 1, 0);
-	ids.push_back(&p);
-}
-
 }
 }
