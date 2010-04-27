@@ -1,3 +1,4 @@
+#include "BitDepthPluginFactory.hpp"
 #include "BitDepthPlugin.hpp"
 #include "BitDepthDefinitions.hpp"
 
@@ -17,11 +18,6 @@ namespace tuttle {
 namespace plugin {
 namespace bitDepth {
 
-static const bool   kSupportTiles                 = false;
-
-mDeclarePluginFactory( BitDepthPluginFactory, { }, { } );
-
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -30,7 +26,7 @@ void BitDepthPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     desc.setLabels( "TuttleBitDepth", "BitDepth",
                     "Bit depth convertor" );
-    desc.setPluginGrouping( "tuttle" );
+    desc.setPluginGrouping( "tuttle/image/process/color" );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextGeneral );
@@ -90,17 +86,5 @@ OFX::ImageEffect* BitDepthPluginFactory::createInstance( OfxImageEffectHandle ha
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs(OFX::PluginFactoryArray &ids)
-{
-	static tuttle::plugin::bitDepth::BitDepthPluginFactory p("fr.tuttle.bitdepth", 1, 0);
-	ids.push_back(&p);
-}
-
 }
 }
