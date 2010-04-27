@@ -109,16 +109,6 @@ struct channel_converter_unsigned<bits32f, bits16h>
 {
 	bits16h operator()( bits32f f ) const
 	{
-		if( f >= HALF_MAX )
-		{
-			return bits16h( half( HALF_MAX ) );
-		}
-
-		if( f <= HALF_MIN )
-		{
-			return bits16h( half( HALF_MIN ) );
-		}
-
 		return bits16h( half( f ) );
 	}
 };
