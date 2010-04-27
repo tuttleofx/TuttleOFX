@@ -1,3 +1,4 @@
+#include "ConvolutionPluginFactory.hpp"
 #include "ConvolutionPlugin.hpp"
 #include "ConvolutionDefinitions.hpp"
 
@@ -17,11 +18,6 @@
 namespace tuttle {
 namespace plugin {
 namespace convolution {
-
-static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( ConvolutionPluginFactory, { }, { } );
-
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -98,17 +94,5 @@ OFX::ImageEffect* ConvolutionPluginFactory::createInstance( OfxImageEffectHandle
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::convolution::ConvolutionPluginFactory p( "fr.tuttle.convolution", 0, 0 );
-	ids.push_back( &p );
-}
-
 }
 }
