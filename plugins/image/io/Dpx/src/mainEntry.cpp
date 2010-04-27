@@ -12,8 +12,7 @@ namespace Plugin
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
 	mAppendPluginFactory( ids, tuttle::plugin::dpx::reader::DPXReaderPluginFactory, "fr.tuttle.dpxreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::dpx::writer::DPXWriterPluginFactory, "fr.tuttle.dpxwrite" );
-	static tuttle::plugin::dpx::reader::DPXReaderPluginFactory p1( "fr.tuttle.dpxreader", 1, 0 );
+	mAppendPluginFactory( ids, tuttle::plugin::dpx::writer::DPXWriterPluginFactory, "fr.tuttle.dpxwriter" );
 }
 
 }
