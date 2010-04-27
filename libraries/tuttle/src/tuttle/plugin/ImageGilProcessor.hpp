@@ -91,7 +91,6 @@ public:
 		}
 		catch( std::exception& e )
 		{
-			//COUT_WITHINFOS( e.what() );
 			COUT_EXCEPTION( e );
 			progressEnd( );
 			return;

@@ -15,7 +15,7 @@ template <class View>
 class ImageGilFilterProcessor : public ImageGilProcessor<View>
 {
 protected:
-    OFX::Clip           *_srcClip;       ///< Source image clip
+    OFX::Clip* _srcClip;       ///< Source image clip
 	boost::scoped_ptr<OFX::Image> _src;
 	OfxRectI _srcPixelRod;
 	View _srcView; ///< @brief source clip (filters have only one input)
