@@ -11,7 +11,7 @@ namespace Plugin {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
 	mAppendPluginFactory( ids, tuttle::plugin::jpeg2000::reader::Jpeg2000ReaderPluginFactory, "fr.tuttle.duranduboi.jpeg2000reader" );
-	mAppendPluginFactoryVersions( ids, tuttle::plugin::jpeg2000::writer::Jpeg2000WriterPluginFactory, "fr.tuttle.duranduboi.jpeg2000writer" );
+	mAppendPluginFactory( ids, tuttle::plugin::jpeg2000::writer::Jpeg2000WriterPluginFactory, "fr.tuttle.duranduboi.jpeg2000writer" );
 }
 
 }

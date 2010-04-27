@@ -30,7 +30,7 @@ void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
 	desc.setLabels( "DuJpeg2000Reader", "Jpeg2000Reader",
 		            "Jpeg2000 image reader" );
-	desc.setPluginGrouping( "duplo" );
+	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

@@ -29,7 +29,7 @@ void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
 	desc.setLabels( "DuJpeg2000Writer", "Jpeg2000Writer",
 		            "Jpeg 2000 image writer" );
-	desc.setPluginGrouping( "duplo" );
+	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
