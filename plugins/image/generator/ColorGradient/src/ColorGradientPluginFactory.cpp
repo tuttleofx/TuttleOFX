@@ -1,3 +1,4 @@
+#include "ColorGradientPluginFactory.hpp"
 #include "ColorGradientPlugin.hpp"
 #include "ColorGradientDefinitions.hpp"
 
@@ -17,11 +18,6 @@
 namespace tuttle {
 namespace plugin {
 namespace colorGradient {
-
-static const bool   kSupportTiles = true;
-
-mDeclarePluginFactory( ColorGradientPluginFactory, { }, { } );
-
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -101,17 +97,5 @@ OFX::ImageEffect* ColorGradientPluginFactory::createInstance( OfxImageEffectHand
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs(OFX::PluginFactoryArray &ids)
-{
-	static tuttle::plugin::colorGradient::ColorGradientPluginFactory p( "fr.tuttle.colorgradient", 0, 0 );
-	ids.push_back( &p );
-}
-
 }
 }
