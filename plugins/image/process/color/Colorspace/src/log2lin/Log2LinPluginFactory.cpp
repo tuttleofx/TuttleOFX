@@ -27,7 +27,7 @@ void Log2LinPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     desc.setLabels( "TuttleLog2lin", "Log2lin",
                     "Logarithmic to linear convertion" );
-    desc.setPluginGrouping( "tuttle" );
+    desc.setPluginGrouping( "tuttle/image/process/color" );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextFilter );
