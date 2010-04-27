@@ -23,10 +23,11 @@ class OfxhPluginCache;
  */
 class OfxhPluginBinary
 {
-typedef OfxhPluginBinary This;
-friend class OfxhPluginHandle;
 public:
+	typedef OfxhPluginBinary This;
 	typedef boost::ptr_vector<OfxhPlugin> PluginVector;
+
+	friend class OfxhPluginHandle;
 
 protected:
 	OfxhBinary _binary; ///< our binary object, abstracted layer ontop of OS calls, defined in OfxhBinary.hpp
@@ -78,7 +79,7 @@ public:
 	/// dtor
 	virtual ~OfxhPluginBinary();
 
-
+#ifndef SWIG
 	bool operator==( const This& other ) const
 	{
 		if( _binary != other._binary ||
@@ -177,6 +178,7 @@ private:
 			}
 		}
 	}
+#endif
 };
 
 }

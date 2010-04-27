@@ -13,7 +13,8 @@ namespace host {
 namespace core {
 
 Graph::Graph()
-{}
+{
+}
 
 Graph::~Graph()
 {}
@@ -88,15 +89,15 @@ void Graph::removeFromGraph( Node& node ) throw( exception::LogicError )
 	//	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
 }
 
-void Graph::deleteNode( const Node& node ) throw( exception::LogicError )
+void Graph::deleteNode( const Node& node ) //throw( exception::LogicError )
 {}
 
-void Graph::connect( const Node& out, const Node& in ) throw( exception::LogicError )
+void Graph::connect( const Node& out, const Node& in ) //throw( exception::LogicError )
 {
 	connect( out, in.getSingleInputAttribute() );
 }
 
-void Graph::connect( const Node& out, const Attribute& inAttr ) throw( exception::LogicError )
+void Graph::connect( const Node& out, const Attribute& inAttr ) //throw( exception::LogicError )
 {
 	if (_nodesDescriptor.find(inAttr.getNode().getName()) == _nodesDescriptor.end())
 	{
@@ -111,7 +112,7 @@ void Graph::connect( const Node& out, const Attribute& inAttr ) throw( exception
 	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[inAttr.getNode().getName()], e );
 }
 
-void Graph::unconnectNode( const Node& node ) throw( exception::LogicError )
+void Graph::unconnectNode( const Node& node ) //throw( exception::LogicError )
 {}
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )

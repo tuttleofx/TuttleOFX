@@ -8,6 +8,7 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
+
 namespace tuttle {
 namespace host {
 namespace core {
@@ -29,6 +30,10 @@ public:
 	
 	~ImageEffectNode();
 
+	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
+	ofx::attribute::OfxhParam& getParam( const std::string& name ) { return ofx::attribute::OfxhParamSet::getParam( name ); }
+
+#ifndef SWIG
 	ImageEffectNode* clone() const { return new ImageEffectNode( *this ); }
 
 	bool operator==( const ImageEffectNode& other ) const;
@@ -149,7 +154,7 @@ public:
 		                 processOptions._interactive,
 		                 processOptions._renderScale );
 	}
-
+#endif
 	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 
 	void dumpToStdOut() const;
@@ -166,12 +171,15 @@ public:
 	/// make a clip
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
+#ifndef SWIG
 	/// vmessage
 	void vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
 	                    va_list     args ) const OFX_EXCEPTION_SPEC;
-
+#endif
+	
+#ifndef SWIG
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
 	// project may be a PAL SD project, but only be a letter-box within that. The project size is
@@ -304,6 +312,7 @@ private:
 	void checkClipsConnections() const;
 	void initClipsFromReadsToWrites();
 	void initClipsFromWritesToReads();
+#endif
 };
 
 }

@@ -14,11 +14,12 @@ class OfxhIMessage : virtual public OfxhIObject
 {
 public:
 	virtual ~OfxhIMessage() {}
-
+#ifndef SWIG
 	virtual void vmessage( const char* type,
 	                            const char* id,
 	                            const char* format,
 	                            va_list     args ) const OFX_EXCEPTION_SPEC = 0;
+#endif
 };
 
 }

@@ -83,13 +83,13 @@ public:
 
 	/// is my magic number valid?
 	bool verifyMagic() { return true; }
-
+#ifndef SWIG
 	/// vmessage
 	virtual OfxStatus vmessage( const char* type,
 	                            const char* id,
 	                            const char* format,
 	                            va_list     args ) const = 0;
-
+#endif
 };
 
 }

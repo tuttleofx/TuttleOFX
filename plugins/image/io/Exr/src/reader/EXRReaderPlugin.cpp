@@ -38,7 +38,7 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 EXRReaderProcessParams EXRReaderPlugin::getProcessParams(const OfxTime time)
 {
 	EXRReaderProcessParams params;
-	params._filepath = _fPattern.getFilenameAt(time);
+	params._filepath = _filePattern.getFilenameAt(time);
 	params._outComponents = _outComponents->getValue();
 	return params;
 }
@@ -88,7 +88,7 @@ void EXRReaderPlugin::render( const OFX::RenderArguments& args )
 
 bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	InputFile in( this->_fPattern.getFilenameAt(args.time).c_str() );
+	InputFile in( this->_filePattern.getFilenameAt(args.time).c_str() );
 	const Header& h             = in.header();
 	const Imath::V2i dataWindow = h.dataWindow().size();
 	rod.x1 = 0;
@@ -153,7 +153,7 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	// Check if exist
-	if( bfs::exists( _fPattern.getFirstFilename() ) )
+	if( bfs::exists( _filePattern.getFirstFilename() ) )
 	{
 		if ( _explicitConv->getValue() )
 		{
@@ -187,10 +187,10 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 void EXRReaderPlugin::updateCombos()
 {
-	if ( bfs::exists( this->_fPattern.getFirstFilename() ) )
+	if ( bfs::exists( this->_filePattern.getFirstFilename() ) )
 	{
 		// read dims
-		InputFile in( this->_fPattern.getFirstFilename().c_str() );
+		InputFile in( this->_filePattern.getFirstFilename().c_str() );
 		const Header& h       = in.header();
 		const ChannelList& cl = h.channels();
 		int nc                = 0;

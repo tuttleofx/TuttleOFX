@@ -19,8 +19,8 @@ class OfxhClipImageSet :
 	virtual public OfxhIObject
 	//, public ClipAccessorSet
 {
-	typedef OfxhClipImageSet This;
 public:
+	typedef OfxhClipImageSet This;
 	typedef std::map<std::string, OfxhClipImage*> ClipImageMap;
 	typedef boost::ptr_vector<OfxhClipImage> ClipImageVector;
 
@@ -43,7 +43,7 @@ public:
 
 	bool operator==( const This& other ) const;
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
-
+#ifndef SWIG
 	void copyClipsValues( const OfxhClipImageSet& other );
 	
 	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC;
@@ -124,6 +124,7 @@ public:
 
 private:
 	void initMapFromList();
+#endif
 };
 
 

@@ -13,8 +13,10 @@ namespace attribute {
 class OfxhAttributeDescriptor :
 	virtual public OfxhAttributeAccessor
 {
-typedef OfxhAttributeDescriptor This;
-OfxhAttributeDescriptor( const OfxhAttributeDescriptor& other );
+public:
+	typedef OfxhAttributeDescriptor This;
+private:
+	OfxhAttributeDescriptor( const OfxhAttributeDescriptor& other );
 
 public:
 	OfxhAttributeDescriptor();

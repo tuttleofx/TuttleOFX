@@ -18,7 +18,9 @@ class OfxhClipDescriptor :
 	public OfxhAttributeDescriptor,
 	virtual public OfxhClipAccessor
 {
-typedef OfxhClipDescriptor This;
+public:
+	typedef OfxhClipDescriptor This;
+	
 public:
 	/// constructor
 	OfxhClipDescriptor();

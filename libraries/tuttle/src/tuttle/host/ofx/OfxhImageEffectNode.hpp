@@ -41,6 +41,7 @@
 #include "OfxhTimeline.hpp"
 #include "OfxhMemory.hpp"
 #include "OfxhInteract.hpp"
+#include "OfxhException.hpp"
 #include "property/OfxhSet.hpp"
 #include "attribute/OfxhParamSet.hpp"
 #include "attribute/OfxhClipImageSet.hpp"
@@ -69,11 +70,12 @@ class OfxhImageEffectNode : public OfxhImageEffectNodeBase,
 	private property::OfxhNotifyHook,
 	private property::OfxhGetHook
 {
-typedef OfxhImageEffectNode This;
 public:
+	typedef OfxhImageEffectNode This;
 	/// a map used to specify needed frame ranges on set of clips
 	typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
-	
+
+#ifndef SWIG
 protected:
 	const OfxhImageEffectPlugin* _plugin;
 	std::string _context;
@@ -175,6 +177,7 @@ public:
 	/// make a clip
 	//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;
 protected:
+#ifndef SWIG
 	virtual void vmessage( const char* type,
 	                            const char* id,
 	                            const char* format,
@@ -185,6 +188,7 @@ protected:
 	                             const void*        handle,
 	                             property::OfxhSet* inArgs,
 	                             property::OfxhSet* outArgs ) const;
+#endif
 
 public:
 	size_t upperGetDimension( const std::string& name );
@@ -465,6 +469,7 @@ private:
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet);
 		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
 	}
+#endif
 };
 
 }

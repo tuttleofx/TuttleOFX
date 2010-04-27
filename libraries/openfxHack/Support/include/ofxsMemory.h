@@ -36,6 +36,8 @@
  *
  *
  */
+#include <cstddef>
+#include <new>
 
 /** @file This file contains core code that wraps the ofx memory allocator with C++ functions.
  *
@@ -52,6 +54,7 @@ class ImageEffect;
 
 /** @brief Namespace for general purpose memory allocation */
 namespace Memory {
+
 /** @brief Allocate memory.
  *
  * \arg \e nBytes        - the number of bytes to allocate
@@ -62,14 +65,14 @@ namespace Memory {
  *
  * Suceeds or throws std::bad_alloc
  */
-void* allocate( size_t       nBytes,
-                ImageEffect* handle = 0 );
+void* allocate( const std::size_t nBytes,
+                ImageEffect* handle = 0 ) throw( std::bad_alloc );
 
 /** @brief release memory
  *
  * \arg \e ptr	      - pointer previously returned by OFX::Memory::allocate
  */
-void free( void* ptr );
+void free( void* ptr ) throw ( );
 };
 
 };

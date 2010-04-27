@@ -32,7 +32,7 @@ PNGReaderPlugin::PNGReaderPlugin( OfxImageEffectHandle handle )
 PNGReaderProcessParams PNGReaderPlugin::getProcessParams(const OfxTime time)
 {
 	PNGReaderProcessParams params;
-	params._filepath = _fPattern.getFilenameAt(time);
+	params._filepath = _filePattern.getFilenameAt(time);
 	return params;
 }
 
@@ -128,7 +128,7 @@ void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	point2<ptrdiff_t> pngDims = png_read_dimensions( _fPattern.getFilenameAt(args.time) );
+	point2<ptrdiff_t> pngDims = png_read_dimensions( _filePattern.getFilenameAt(args.time) );
 	rod.x1 = 0;
 	rod.x2 = pngDims.x * this->_dstClip->getPixelAspectRatio();
 	rod.y1 = 0;
@@ -140,7 +140,7 @@ void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	// Check if exist
-	if( bfs::exists( _fPattern.getFirstFilename() ) )
+	if( bfs::exists( _filePattern.getFirstFilename() ) )
 	{
 		if ( _explicitConv->getValue() )
 		{
@@ -166,7 +166,7 @@ void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		else
 		{
 			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
-			int bitDepth = png_read_precision( _fPattern.getFirstFilename() );
+			int bitDepth = png_read_precision( _filePattern.getFirstFilename() );
 			switch( bitDepth )
 			{
 				case 8:

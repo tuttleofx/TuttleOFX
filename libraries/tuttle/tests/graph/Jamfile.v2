@@ -16,7 +16,7 @@ project
 alias dependencies
     : 
 		/boost//unit_test_framework
-		/tuttle//tuttlehost
+		/tuttlehost
     :
     <os>LINUX:<find-shared-library>dl
     ; 

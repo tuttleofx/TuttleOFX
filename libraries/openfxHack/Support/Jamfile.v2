@@ -9,12 +9,9 @@
 project
     : requirements	
 			<include>include
-			<include>../include
-			<threading>multi 
 			<link>static
 	: usage-requirements
 			<include>include
-			<include>../include
     : build-dir $(DIST)/openFX/Support/obj
     ;
 
@@ -23,7 +20,7 @@ project
 # tuttle library
 ###############################################################################
 lib Support :
-    [ glob Library/*.cpp ]
+    [ glob-tree *.cpp ]
     /boost/system
     ;
 

@@ -25,7 +25,8 @@ class OfxhClip :
 	virtual public OfxhClipAccessor,
 	private boost::noncopyable
 {
-typedef OfxhClip This;
+public:
+	typedef OfxhClip This;
 protected:
 	OfxhClip( const OfxhClip& other ) : OfxhAttribute( other ) {}
 
@@ -76,6 +77,7 @@ private:
 	}
 };
 
+#ifndef SWIG
 /**
  * @brief to make ClipInstance clonable (for use in boost::ptr_container)
  */
@@ -83,6 +85,7 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 {
 	return a.clone();
 }
+#endif
 
 }
 }

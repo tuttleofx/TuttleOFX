@@ -161,8 +161,10 @@ struct make_glyph_height
 template <typename view_t>
 class render_glyph
 {
+public:
 	typedef render_glyph<view_t> This;
 	typedef typename view_t::value_type Pixel;
+private:
 	const view_t& _view;
 	const Pixel _color;
 	const double _letterSpacing;

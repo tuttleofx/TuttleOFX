@@ -114,6 +114,7 @@ public:
 		return ( OfxParamHandle ) this;
 	}
 
+#ifndef SWIG
 	void paramChanged( const EChange change );
 
 	void changedActionBegin() { _avoidRecursion = true; }
@@ -155,7 +156,7 @@ public:
 	// by the various typeed param instances so that they can
 	// deconstruct the var args lists
 
-	
+#endif
 	inline virtual std::size_t getSize() const 
 	{
 		return 1;
@@ -171,6 +172,7 @@ public:
 	inline virtual void set( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
 	inline virtual void set( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }
 
+#ifndef SWIG
 	/// get a value, implemented by instances to deconstruct var args
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
 
@@ -191,8 +193,10 @@ public:
 
 	/// overridden from Property::NotifyHook
 	virtual void notify( const std::string& name, bool single, int num ) OFX_EXCEPTION_SPEC;
+#endif
 };
 
+#ifndef SWIG
 /**
  * @brief to make ParamInstance clonable (for use in boost::ptr_container)
  */
@@ -200,17 +204,19 @@ inline OfxhParam* new_clone( const OfxhParam& a )
 {
 	return a.clone();
 }
+#endif
 
-
 }
 }
 }
 }
 
+#ifndef SWIG
 // force boost::is_virtual_base_of value (used by boost::serialization)
 namespace boost{
 template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhParam>: public mpl::true_ {};
 }
+#endif
 
 
 #endif

@@ -64,24 +64,24 @@ class OfxhImageEffectPluginCache;
  */
 class OfxhImageEffectPlugin : public OfxhPlugin
 {
-typedef OfxhImageEffectPlugin This;
+public:
+	typedef OfxhImageEffectPlugin This;
+	typedef boost::ptr_map<std::string, OfxhImageEffectNodeDescriptor> ContextMap;
+	typedef std::set<std::string> ContextSet;
+private:
+	OfxhImageEffectPluginCache* _pc;
 
-OfxhImageEffectPluginCache* _pc;
+	/// map to store contexts in
+	ContextMap _contexts;
+	ContextSet _knownContexts;
+	boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
 
-/// map to store contexts in
-typedef boost::ptr_map<std::string, OfxhImageEffectNodeDescriptor> ContextMap;
-ContextMap _contexts;
+	// this comes off Descriptor's property set after a describe
+	// context independent
+	/// @todo tuttle: ???
+	boost::scoped_ptr<OfxhImageEffectNodeDescriptor> _baseDescriptor;     ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
 
-typedef std::set<std::string> ContextSet;
-ContextSet _knownContexts;
-
-boost::scoped_ptr<OfxhPluginHandle> _pluginHandle;
-
-// this comes off Descriptor's property set after a describe
-// context independent
-/// @todo tuttle: ???
-boost::scoped_ptr<OfxhImageEffectNodeDescriptor> _baseDescriptor;     ///< NEEDS TO BE MADE WITH A FACTORY FUNCTION ON THE HOST!!!!!!
-
+private:
 	OfxhImageEffectPlugin();
 
 public:
@@ -102,6 +102,7 @@ public:
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
 	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==(other); }
 
+#ifndef SWIG
 	void setApiHandler( OfxhImageEffectPluginCache& api ) { _pc = &api; }
 	void setApiHandler( APICache::OfxhPluginAPICacheI& api );
 
@@ -152,6 +153,7 @@ private:
 		//ar & BOOST_SERIALIZATION_NVP(_pluginHandle); // don't save this
 		ar & BOOST_SERIALIZATION_NVP(_contexts);
 	}
+#endif
 };
 
 }
@@ -159,6 +161,9 @@ private:
 }
 }
 
+#ifndef SWIG
 BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin)
+#endif
 
 #endif
+

@@ -33,7 +33,7 @@ EXRWriterProcessParams EXRWriterPlugin::getParams(const OfxTime time)
 	EXRWriterProcessParams params;
 	params._bitDepth = (EParamBitDepth)this->_bitDepth->getValue();
 	params._componentsType = (ECompType)_componentsType->getValue();
-	params._filepath = _fPattern.getFilenameAt(time);
+	params._filepath = _filePattern.getFilenameAt(time);
 	return params;
 }
 

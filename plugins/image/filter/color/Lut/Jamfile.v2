@@ -19,10 +19,10 @@ project
 plugin Lut :
     [ glob src/*.cpp ]
     [ glob src/lutEngine/*.cpp ]
-    /boost//filesystem/<link>static
-	/boost//system/<link>static
-    /boost//regex/<link>static
-    /tuttlelib//tuttleplugin/<link>static
+    /boost/filesystem/<link>static
+	/boost/system/<link>static
+    /boost/regex/<link>static
+    /tuttleplugin/<link>static
 	:
 	<os>NT:<find-shared-library>opengl32
 	<os>MACOSX:<linkflags>"-framework OpenGL"

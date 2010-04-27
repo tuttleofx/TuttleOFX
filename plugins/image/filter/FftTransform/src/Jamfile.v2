@@ -8,7 +8,7 @@ import os ;
 ###############################################################################
 project
     : requirements	
-				<include>src
+				<include>.
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
     : build-dir $(DIST)/FftTransform/obj
@@ -27,12 +27,15 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 # Product 
 ###############################################################################
-plugin FftTransform : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
-    /libfftw/<link>static
-    opengl
-    ;
+#plugin FftTransform :
+#    [ glob src/*.cpp ]
+#    /tuttleplugin/<link>static
+#    /libfftw/<link>static
+#    opengl
+#;
+
+alias FftTransform ;
+
  
 ###############################################################################
 # Automatic install

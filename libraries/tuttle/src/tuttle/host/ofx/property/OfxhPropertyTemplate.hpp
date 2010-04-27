@@ -89,8 +89,8 @@ struct OfxhStringValue
 template<class T>
 class OfxhPropertyTemplate : public OfxhProperty
 {
-typedef OfxhPropertyTemplate<T> This;
 public:
+	typedef OfxhPropertyTemplate<T> This;
 	typedef typename T::Type Type;
 	typedef typename T::ReturnType ReturnType;
 	typedef typename T::APIType APIType;
@@ -251,6 +251,7 @@ void Pointer::serialize( Archive &ar, const unsigned int version )
 }
 }
 
+#ifndef SWIG
 // force boost::is_virtual_base_of value (used by boost::serialization)
 namespace boost{
 template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Int>: public mpl::true_ {};
@@ -258,10 +259,11 @@ template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, 
 template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::String>: public mpl::true_ {};
 template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Pointer>: public mpl::true_ {};
 }
-
 BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
 BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
 BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
 BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
+#endif
 
 #endif
+
