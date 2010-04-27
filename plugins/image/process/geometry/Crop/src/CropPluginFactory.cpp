@@ -1,3 +1,4 @@
+#include "CropPluginFactory.hpp"
 #include <ofxsParam.h>
 
 #include "CropDefinitions.hpp"
@@ -19,9 +20,6 @@ namespace tuttle {
 namespace plugin {
 namespace crop {
 
-
-mDeclarePluginFactory( CropPluginFactory, {}, {} );
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -30,7 +28,7 @@ void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleCrop", "Crop",
 	                "Image crop" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextFilter );
@@ -126,18 +124,5 @@ OFX::ImageEffect* CropPluginFactory::createInstance( OfxImageEffectHandle handle
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::crop::CropPluginFactory p( "fr.tuttle.crop", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }
