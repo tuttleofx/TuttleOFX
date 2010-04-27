@@ -1,3 +1,4 @@
+#include "MergePluginFactory.hpp"
 #include <tuttle/common/utils/global.hpp>
 #include "MergePlugin.hpp"
 #include "MergeDefinitions.hpp"
@@ -14,10 +15,6 @@ namespace tuttle {
 namespace plugin {
 namespace merge {
 
-mDeclarePluginFactory( MergePluginFactory, {}, {} );
-
-static const bool kSupportTiles = false;
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -26,7 +23,7 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleMerge", "Merge",
 	                "Merge two images" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/transition" );
 
 	// add the supported contexts
 	//	desc.addSupportedContext( OFX::eContextTransition ); ///@todo tuttle: Changing inputs by SourceFrom and SourceTo and adding a Transition paramater (single double)
@@ -125,18 +122,5 @@ OFX::ImageEffect* MergePluginFactory::createInstance( OfxImageEffectHandle handl
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::merge::MergePluginFactory p( "fr.tuttle.merge", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }
