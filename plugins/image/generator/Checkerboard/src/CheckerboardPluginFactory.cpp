@@ -88,15 +88,3 @@ OFX::ImageEffect* CheckerboardPluginFactory::createInstance( OfxImageEffectHandl
 }
 }
 }
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray &ids )
-{
-	static tuttle::plugin::checkerboard::CheckerboardPluginFactory p( "fr.tuttle.checkerboard", 1, 0 );
-	ids.push_back(&p);
-}
-
-}
-}
