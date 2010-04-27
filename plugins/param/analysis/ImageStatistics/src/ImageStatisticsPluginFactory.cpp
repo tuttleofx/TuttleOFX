@@ -28,7 +28,7 @@ void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleImageStatistics", "ImageStatistics",
 		            "Image statistics" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/param/analysis" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );

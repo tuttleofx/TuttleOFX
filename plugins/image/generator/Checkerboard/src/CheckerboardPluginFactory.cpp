@@ -26,7 +26,7 @@ void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     desc.setLabels( "TuttleCheckerboard", "Checkerboard",
                     "Checkerboard" );
-    desc.setPluginGrouping( "tuttle" );
+    desc.setPluginGrouping( "tuttle/image/generator" );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextGeneral );

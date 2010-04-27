@@ -26,7 +26,7 @@ namespace quality {
 void DiffPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleDiff", "TuttleDiff", "TuttleDiff" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/param/analysis" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextGeneral );
