@@ -27,7 +27,7 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleTimeShift", "TimeShift",
 		            "TimeShift" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/time" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -77,17 +77,5 @@ OFX::ImageEffect* TimeShiftPluginFactory::createInstance( OfxImageEffectHandle h
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::timeShift::TimeShiftPluginFactory p("fr.tuttle.timeshift", 1, 0);
-	ids.push_back(&p);
-}
-
 }
 }
