@@ -1,3 +1,4 @@
+#include "LutPluginFactory.hpp"
 #include "LutPlugin.hpp"
 #include "LutDefinitions.hpp"
 
@@ -16,10 +17,6 @@ namespace tuttle {
 namespace plugin {
 namespace lut {
 
-static const bool kSupportTiles = true;
-
-mDeclarePluginFactory( LutPluginFactory, {}, {} );
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -27,7 +24,7 @@ mDeclarePluginFactory( LutPluginFactory, {}, {} );
 void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleLut", "Lut", "Color transformation through CLUT file" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -84,19 +81,5 @@ OFX::ImageEffect* LutPluginFactory::createInstance( OfxImageEffectHandle handle,
 }
 
 }
-}
-}
-
-namespace OFX
-{
-namespace Plugin
-{
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::lut::LutPluginFactory p( "fr.tuttle.lut", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }
