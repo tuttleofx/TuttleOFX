@@ -1,3 +1,4 @@
+#include "InvertPluginFactory.hpp"
 #include "InvertPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -14,10 +15,6 @@
 namespace tuttle {
 namespace plugin {
 namespace invert {
-
-static const bool kSupportTiles = true;
-
-mDeclarePluginFactory( InvertPluginFactory, {}, {} );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -77,19 +74,5 @@ OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle hand
 }
 
 }
-}
-}
-
-namespace OFX
-{
-namespace Plugin
-{
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::invert::InvertPluginFactory p( "fr.tuttle.invert", 1, 0 );
-
-	ids.push_back( &p );
-}
-
 }
 }
