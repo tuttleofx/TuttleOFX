@@ -18,15 +18,17 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-ImageStatisticsOverlayInteract::ImageStatisticsOverlayInteract( OfxInteractHandle handle, OFX::ImageEffect *effect )
+ImageStatisticsOverlayInteract::ImageStatisticsOverlayInteract( OfxInteractHandle handle, OFX::ImageEffect* effect )
 : OFX::OverlayInteract( handle )
 , _infos( effect )
 , _interactScene( *effect , _infos )
 {
 	_effect = effect;
-	_plugin = static_cast<ImageStatisticsPlugin*>( _effect );
-	
-	_interactScene.push_back( new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXY>( _infos, _plugin->_rectCenter, _plugin->_rectSize, interact::FrameClip(_plugin->_srcClip) ), new interact::AlwaysActiveFunctor() );
+	_plugin = dynamic_cast<ImageStatisticsPlugin*>( _effect );
+
+	interact::InteractObject* interactObject = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXY>( _infos, _plugin->_rectCenter, _plugin->_rectSize, interact::FrameClip(_plugin->_srcClip) );
+	interact::IsActiveFunctor* isActive = new interact::AlwaysActiveFunctor();
+	_interactScene.push_back( interactObject, isActive ); // _interactScane owns the pointers
 }
 
 bool ImageStatisticsOverlayInteract::draw( const OFX::DrawArgs &args )

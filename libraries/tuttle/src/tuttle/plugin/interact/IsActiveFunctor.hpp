@@ -14,12 +14,12 @@ struct IsActiveFunctor
 	virtual bool active() const = 0;
 };
 
-struct AlwaysActiveFunctor : virtual public IsActiveFunctor
+struct AlwaysActiveFunctor : public IsActiveFunctor
 {
 	bool active() const { return true; }
 };
 
-class IsActiveBooleanParamFunctor : virtual public IsActiveFunctor
+class IsActiveBooleanParamFunctor : public IsActiveFunctor
 {
     OFX::BooleanParam* _param;
 public:
