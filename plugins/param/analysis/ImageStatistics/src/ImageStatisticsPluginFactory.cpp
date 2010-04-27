@@ -1,3 +1,4 @@
+#include "ImageStatisticsPluginFactory.hpp"
 #include "ImageStatisticsPlugin.hpp"
 #include "ImageStatisticsDefinitions.hpp"
 #include "ImageStatisticsOverlayInteract.hpp"
@@ -18,10 +19,6 @@
 namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
-
-static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( ImageStatisticsPluginFactory, { }, { } );
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -140,17 +137,5 @@ OFX::ImageEffect* ImageStatisticsPluginFactory::createInstance( OfxImageEffectHa
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::imageStatistics::ImageStatisticsPluginFactory p("fr.tuttle.imagestatistics", 1, 0);
-	ids.push_back(&p);
-}
-
 }
 }
