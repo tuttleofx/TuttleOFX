@@ -59,12 +59,11 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
                 p.setupAndProcess( args );
                 break;
             }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToStr(dstBitDepth) << ") not recognized by the plugin." );
+				break;
+			}
         }
     }
     else if( dstComponents == OFX::ePixelComponentAlpha )
@@ -89,14 +88,17 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
                 p.setupAndProcess( args );
                 break;
             }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToStr(dstBitDepth) << ") not recognized by the plugin." );
+				break;
+			}
         }
     }
+	else
+	{
+		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToStr(dstComponents) << ") not supported by the plugin." );
+	}
 }
 
 void %CLASSNAME%Plugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
