@@ -20,13 +20,13 @@ namespace reader {
  *
  */
 template<class View>
-class PNGReaderProcess : public ImageGilProcessor<View>
+class PngReaderProcess : public ImageGilProcessor<View>
 {
 protected:
-	PNGReaderPlugin&    _plugin;        ///< Rendering plugin
+	PngReaderPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-	PNGReaderProcess( PNGReaderPlugin& instance );
+	PngReaderProcess( PngReaderPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
 
@@ -40,6 +40,6 @@ public:
 }
 }
 
-#include "PNGReaderProcess.tcc"
+#include "PngReaderProcess.tcc"
 
 #endif

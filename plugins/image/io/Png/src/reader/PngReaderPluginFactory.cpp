@@ -1,6 +1,6 @@
-#include "PNGReaderPluginFactory.hpp"
-#include "PNGReaderDefinitions.hpp"
-#include "PNGReaderPlugin.hpp"
+#include "PngReaderPluginFactory.hpp"
+#include "PngReaderDefinitions.hpp"
+#include "PngReaderPlugin.hpp"
 #include "tuttle/plugin/ImageGilProcessor.hpp"
 #include "tuttle/plugin/PluginException.hpp"
 
@@ -23,7 +23,7 @@ namespace reader {
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttlePngReader", "PngReader",
 	                "Png file reader" );
@@ -50,7 +50,7 @@ void PNGReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void PNGReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                 OFX::ContextEnum            context )
 {
 	// Create the mandated output clip
@@ -101,10 +101,10 @@ void PNGReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* PNGReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* PngReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                           OFX::ContextEnum     context )
 {
-	return new PNGReaderPlugin( handle );
+	return new PngReaderPlugin( handle );
 }
 
 }

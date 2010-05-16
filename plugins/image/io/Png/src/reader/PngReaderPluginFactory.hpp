@@ -9,7 +9,7 @@ namespace reader {
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( PNGReaderPluginFactory, {}, {} );
+mDeclarePluginFactory( PngReaderPluginFactory, {}, {} );
 
 }
 }

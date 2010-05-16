@@ -1,6 +1,6 @@
-#include "PNGWriterPluginFactory.hpp"
-#include "PNGWriterDefinitions.hpp"
-#include "PNGWriterPlugin.hpp"
+#include "PngWriterPluginFactory.hpp"
+#include "PngWriterDefinitions.hpp"
+#include "PngWriterPlugin.hpp"
 #include "tuttle/plugin/context/Definition.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -24,7 +24,7 @@ namespace writer {
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void PngWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttlePngWriter", "PngWriter",
 	                "Png file writer" );
@@ -50,7 +50,7 @@ void PNGWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                 OFX::ContextEnum            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -98,10 +98,10 @@ void PNGWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* PNGWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* PngWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                           OFX::ContextEnum     context )
 {
-	return new PNGWriterPlugin( handle );
+	return new PngWriterPlugin( handle );
 }
 
 }

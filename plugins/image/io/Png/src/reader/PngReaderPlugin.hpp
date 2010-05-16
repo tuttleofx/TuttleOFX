@@ -8,7 +8,7 @@ namespace plugin {
 namespace png {
 namespace reader {
 
-struct PNGReaderProcessParams
+struct PngReaderProcessParams
 {
 	std::string _filepath;       ///< filepath
 };
@@ -17,13 +17,13 @@ struct PNGReaderProcessParams
  * @brief Png reader
  *
  */
-class PNGReaderPlugin : public ReaderPlugin
+class PngReaderPlugin : public ReaderPlugin
 {
 public:
-	PNGReaderPlugin( OfxImageEffectHandle handle );
+	PngReaderPlugin( OfxImageEffectHandle handle );
 
 public:
-	PNGReaderProcessParams getProcessParams(const OfxTime time);
+	PngReaderProcessParams getProcessParams(const OfxTime time);
 	void render( const OFX::RenderArguments& args );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );

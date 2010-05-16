@@ -1,5 +1,5 @@
-#include "PNGWriterDefinitions.hpp"
-#include "PNGWriterPlugin.hpp"
+#include "PngWriterDefinitions.hpp"
+#include "PngWriterPlugin.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -19,7 +19,7 @@ namespace png {
 namespace writer {
 
 template<class View>
-PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
+PngWriterProcess<View>::PngWriterProcess( PngWriterPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance ),
 	_plugin( instance )
 {
@@ -32,13 +32,13 @@ PNGWriterProcess<View>::PNGWriterProcess( PNGWriterPlugin& instance )
  * @warning no multithread here !
  */
 template<class View>
-void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
 	try
 	{
-		PNGWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
+		PngWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
 		switch(params._bitDepth)
 		{
 			case 8:
@@ -62,7 +62,7 @@ void PNGWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  */
 template<class View>
 template<class Bits>
-void PNGWriterProcess<View>::writeImage( View& src, const std::string& filepath )
+void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath )
 {
 	using namespace boost::gil;
 

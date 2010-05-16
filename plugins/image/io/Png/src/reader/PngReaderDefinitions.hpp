@@ -9,8 +9,8 @@ namespace plugin {
 namespace png {
 namespace reader {
 
-static const std::string kPNGReaderHelpButton = "Help";
-static const std::string kPNGReaderHelpString = "<b>PNG File reader</b> plugin is used to read png files.  <br />";
+static const std::string kPngReaderHelpButton = "Help";
+static const std::string kPngReaderHelpString = "<b>PNG File reader</b> plugin is used to read png files.  <br />";
 
 }
 }

@@ -10,7 +10,7 @@ namespace writer {
 
 using namespace boost::gil;
 
-struct PNGWriterProcessParams
+struct PngWriterProcessParams
 {
 	std::string _filepath;      ///< filepath
 	bool        _outputRGB;		///< Force RGB
@@ -20,13 +20,13 @@ struct PNGWriterProcessParams
 /**
  * @brief Png writer
  */
-class PNGWriterPlugin : public WriterPlugin
+class PngWriterPlugin : public WriterPlugin
 {
 public:
-	PNGWriterPlugin( OfxImageEffectHandle handle );
+	PngWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	PNGWriterProcessParams getParams(const OfxTime time);
+	PngWriterProcessParams getParams(const OfxTime time);
 	virtual void render( const OFX::RenderArguments& args );
 
 public:

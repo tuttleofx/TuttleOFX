@@ -14,16 +14,16 @@ namespace writer {
  *
  */
 template<class View>
-class PNGWriterProcess : public ImageGilFilterProcessor<View>
+class PngWriterProcess : public ImageGilFilterProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
 
 protected:
-	PNGWriterPlugin&    _plugin;        ///< Rendering plugin
+	PngWriterPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-	PNGWriterProcess( PNGWriterPlugin & instance );
+	PngWriterProcess( PngWriterPlugin & instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
@@ -36,6 +36,6 @@ public:
 }
 }
 
-#include "PNGWriterProcess.tcc"
+#include "PngWriterProcess.tcc"
 
 #endif

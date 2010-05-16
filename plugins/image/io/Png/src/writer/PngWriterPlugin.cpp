@@ -1,6 +1,6 @@
-#include "PNGWriterDefinitions.hpp"
-#include "PNGWriterPlugin.hpp"
-#include "PNGWriterProcess.hpp"
+#include "PngWriterDefinitions.hpp"
+#include "PngWriterPlugin.hpp"
+#include "PngWriterProcess.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -13,15 +13,15 @@ namespace writer {
 
 using namespace boost::gil;
 
-PNGWriterPlugin::PNGWriterPlugin( OfxImageEffectHandle handle )
+PngWriterPlugin::PngWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
 	_outputRGB     = fetchBooleanParam( kParamOutputRGB );
 }
 
-PNGWriterProcessParams PNGWriterPlugin::getParams(const OfxTime time)
+PngWriterProcessParams PngWriterPlugin::getParams(const OfxTime time)
 {
-	PNGWriterProcessParams params;
+	PngWriterProcessParams params;
 	params._filepath = this->_filePattern.getFilenameAt(time);
 	params._outputRGB = this->_outputRGB->getValue();
 	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
@@ -43,7 +43,7 @@ PNGWriterProcessParams PNGWriterPlugin::getParams(const OfxTime time)
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void PNGWriterPlugin::render( const OFX::RenderArguments& args )
+void PngWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
@@ -58,19 +58,19 @@ void PNGWriterPlugin::render( const OFX::RenderArguments& args )
 			{
 				case OFX::eBitDepthUByte:
 				{
-					PNGWriterProcess<rgba8_view_t> fred( *this );
+					PngWriterProcess<rgba8_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
 				case OFX::eBitDepthUShort:
 				{
-					PNGWriterProcess<rgba16_view_t> fred( *this );
+					PngWriterProcess<rgba16_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
 				case OFX::eBitDepthFloat:
 				{
-					PNGWriterProcess<rgba32f_view_t> fred( *this );
+					PngWriterProcess<rgba32f_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
@@ -88,19 +88,19 @@ void PNGWriterPlugin::render( const OFX::RenderArguments& args )
 			{
 				case OFX::eBitDepthUByte:
 				{
-					PNGWriterProcess<gray8_view_t> fred( *this );
+					PngWriterProcess<gray8_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
 				case OFX::eBitDepthUShort:
 				{
-					PNGWriterProcess<gray16_view_t> fred( *this );
+					PngWriterProcess<gray16_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}
 				case OFX::eBitDepthFloat:
 				{
-					PNGWriterProcess<gray32f_view_t> fred( *this );
+					PngWriterProcess<gray32f_view_t> fred( *this );
 					fred.setupAndProcess( args );
 					break;
 				}

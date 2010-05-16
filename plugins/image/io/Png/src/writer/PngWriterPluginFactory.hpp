@@ -9,7 +9,7 @@ namespace writer {
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( PNGWriterPluginFactory, {}, {} );
+mDeclarePluginFactory( PngWriterPluginFactory, {}, {} );
 
 }
 }

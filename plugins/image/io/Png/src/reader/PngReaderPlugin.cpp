@@ -1,13 +1,13 @@
 /**
- * @file PNGReaderPlugin.cpp
+ * @file PngReaderPlugin.cpp
  * @brief PNG reader ofx plugin
  * @author Eloi Du Bois
  * @date    27/09/09 10:42
  *
  */
-#include "PNGReaderPlugin.hpp"
-#include "PNGReaderProcess.hpp"
-#include "PNGReaderDefinitions.hpp"
+#include "PngReaderPlugin.hpp"
+#include "PngReaderProcess.hpp"
+#include "PngReaderDefinitions.hpp"
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
@@ -24,14 +24,14 @@ namespace reader {
 namespace bfs = boost::filesystem;
 using namespace boost::gil;
 
-PNGReaderPlugin::PNGReaderPlugin( OfxImageEffectHandle handle )
+PngReaderPlugin::PngReaderPlugin( OfxImageEffectHandle handle )
 : ReaderPlugin( handle )
 {
 }
 
-PNGReaderProcessParams PNGReaderPlugin::getProcessParams(const OfxTime time)
+PngReaderProcessParams PngReaderPlugin::getProcessParams(const OfxTime time)
 {
-	PNGReaderProcessParams params;
+	PngReaderProcessParams params;
 	params._filepath = _filePattern.getFilenameAt(time);
 	return params;
 }
@@ -40,7 +40,7 @@ PNGReaderProcessParams PNGReaderPlugin::getProcessParams(const OfxTime time)
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void PNGReaderPlugin::render( const OFX::RenderArguments& args )
+void PngReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::BitDepthEnum dstBitDepth         = this->_dstClip->getPixelDepth();
@@ -52,19 +52,19 @@ void PNGReaderPlugin::render( const OFX::RenderArguments& args )
 		{
 			case OFX::eBitDepthUByte:
 			{
-				PNGReaderProcess<rgba8_view_t> fred( *this );
+				PngReaderProcess<rgba8_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
 			}
 			case OFX::eBitDepthUShort:
 			{
-				PNGReaderProcess<rgba16_view_t> fred( *this );
+				PngReaderProcess<rgba16_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
 			}
 			case OFX::eBitDepthFloat:
 			{
-				PNGReaderProcess<rgba32f_view_t> fred( *this );
+				PngReaderProcess<rgba32f_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
 			}
@@ -82,19 +82,19 @@ void PNGReaderPlugin::render( const OFX::RenderArguments& args )
 		{
 			case OFX::eBitDepthUByte:
 			{
-				PNGReaderProcess<gray8_view_t> fred( *this );
+				PngReaderProcess<gray8_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
 			}
 			case OFX::eBitDepthUShort:
 			{
-				PNGReaderProcess<gray16_view_t> fred( *this );
+				PngReaderProcess<gray16_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
 			}
 			case OFX::eBitDepthFloat:
 			{
-				PNGReaderProcess<gray32f_view_t> fred( *this );
+				PngReaderProcess<gray32f_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
 			}
@@ -112,13 +112,13 @@ void PNGReaderPlugin::render( const OFX::RenderArguments& args )
 	}
 }
 
-void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
+void PngReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == "Help" )
+	if( paramName == kPngReaderHelpButton )
 	{
 		sendMessage( OFX::Message::eMessageMessage,
 		             "", // No XML resources
-		             kPNGReaderHelpString );
+		             kPngReaderHelpString );
 	}
 	else
 	{
@@ -126,7 +126,7 @@ void PNGReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 }
 
-bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	point2<ptrdiff_t> pngDims = png_read_dimensions( _filePattern.getFilenameAt(args.time) );
 	rod.x1 = 0;
@@ -136,7 +136,7 @@ bool PNGReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	return true;
 }
 
-void PNGReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	// Check if exist

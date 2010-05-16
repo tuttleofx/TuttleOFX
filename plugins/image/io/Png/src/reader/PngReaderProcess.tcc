@@ -1,5 +1,5 @@
-#include "PNGReaderDefinitions.hpp"
-#include "PNGReaderProcess.hpp"
+#include "PngReaderDefinitions.hpp"
+#include "PngReaderProcess.hpp"
 
 #include <tuttle/common/image/gilGlobals.hpp>
 #include <tuttle/plugin/PluginException.hpp>
@@ -27,7 +27,7 @@ typedef any_image < boost::mpl::vector
                     > any_image_t;
 
 template<class View>
-PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
+PngReaderProcess<View>::PngReaderProcess( PngReaderPlugin& instance )
 	: ImageGilProcessor<View>( instance ),
 	_plugin( instance )
 {
@@ -35,9 +35,9 @@ PNGReaderProcess<View>::PNGReaderProcess( PNGReaderPlugin& instance )
 }
 
 template<class View>
-void PNGReaderProcess<View>::setup( const OFX::RenderArguments& args )
+void PngReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	PNGReaderProcessParams params = _plugin.getProcessParams(args.time);
+	PngReaderProcessParams params = _plugin.getProcessParams(args.time);
 	if( ! bfs::exists( params._filepath ) )
 	{
 		throw( OFX::Exception::Suite(kOfxStatFailed, std::string("Unable to open : ") + params._filepath ) );
@@ -51,7 +51,7 @@ void PNGReaderProcess<View>::setup( const OFX::RenderArguments& args )
  * @param[in] procWindowRoW  Processing window in RoW
  */
 template<class View>
-void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+void PngReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
@@ -61,7 +61,7 @@ void PNGReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 /**
  */
 template<class View>
-View& PNGReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
+View& PngReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
 {
 	any_image_t anyImg;
 	try
