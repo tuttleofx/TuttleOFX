@@ -109,105 +109,100 @@ void RawReaderPlugin::render( const OFX::RenderArguments& args )
 	}
 }
 
-/*
+
 void RawReaderPlugin::updateInfos()
 {
-	LibRaw _rawProcessor;
-	_p1 = _rawProcessor.imgdata.idata;
-	_size = _rawProcessor.imgdata.sizes;
-	_color = _rawProcessor.imgdata.color;
-	_thumbnail = _rawProcessor.imgdata.thumbnail;
-	_p2 = _rawProcessor.imgdata.other;
-	_out = _rawProcessor.imgdata.params;
+	RawReaderProcessParams params = getProcessParams( this->timeLineGetBounds().min );
 
-	if( ( ret =  _rawProcessor.adjust_sizes_info_only() ) )
+	LibRaw rawProcessor;
+	libraw_iparams_t& p1 = rawProcessor.imgdata.idata;
+	libraw_image_sizes_t& sizes = rawProcessor.imgdata.sizes;
+	libraw_colordata_t& color = rawProcessor.imgdata.color;
+	libraw_thumbnail_t& thumbnail = rawProcessor.imgdata.thumbnail;
+	libraw_imgother_t& p2 = rawProcessor.imgdata.other;
+	libraw_output_params_t& out = rawProcessor.imgdata.params;
+
+	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
-		printf( "Cannot decode %s: %s\n", av[i], libraw_strerror( ret ) );
-		continue;         // no recycle, open_file will recycle
+		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror(ret) );
+		return;
+	}
+	if( const int ret = rawProcessor.adjust_sizes_info_only() )
+	{
+		COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
+		return;
 	}
 
-	printf( "\nFilename: %s\n", av[i] );
-	printf( "Timestamp: %s", ctime( &( P2.timestamp ) ) );
-	printf( "Camera: %s %s\n", P1.make, P1.model );
-	if( P2.artist[0] )
-		printf( "Owner: %s\n", P2.artist );
-	if( P1.dng_version )
+	std::ostringstream ss;
+	
+	ss << "Filename: " << params._filepath << std::endl;
+	ss << "Timestamp: " << ctime( &( p2.timestamp ) ) << std::endl;
+	ss << "Camera: " << p1.make << " " << p1.model << std::endl;
+	if( p2.artist[0] )
+		ss << "Owner: " << p2.artist << std::endl;
+	if( p1.dng_version )
 	{
-		printf( "DNG Version: " );
+		ss << "DNG Version: ";
 		for( int i = 24; i >= 0; i -= 8 )
-			printf( "%d%c", P1.dng_version >> i & 255, i ? '.' : '\n' );
+			ss << (p1.dng_version >> i & 255) << (i ? '.' : '\n');
+		ss << std::endl;
 	}
-	printf( "ISO speed: %d\n", (int) P2.iso_speed );
-	printf( "Shutter: " );
-	if( P2.shutter > 0 && P2.shutter < 1 )
-		P2.shutter = ( printf( "1/" ), 1 / P2.shutter );
-	printf( "%0.1f sec\n", P2.shutter );
-	printf( "Aperture: f/%0.1f\n", P2.aperture );
-	printf( "Focal length: %0.1f mm\n", P2.focal_len );
-	if( C.profile )
-		printf( "Embedded ICC profile: yes, %d bytes\n", C.profile_length );
+	
+	ss << "ISO speed: " << (int) p2.iso_speed << std::endl;
+	ss << "Shutter: ";
+	if( p2.shutter > 0 && p2.shutter < 1 )
+		p2.shutter = 1 / p2.shutter;
+	ss << p2.shutter << " sec" << std::endl; // %0.1f
+	ss << "Aperture: f/" << p2.aperture << std::endl;
+	ss << "Focal length: " << p2.focal_len << " mm" << std::endl;
+	if( color.profile )
+		ss << "Embedded ICC profile: yes, " << color.profile_length << " bytes" << std::endl;
 	else
-		printf( "Embedded ICC profile: no\n" );
+		ss << "Embedded ICC profile: no" << std::endl;
 
-	printf( "Number of raw images: %d\n", P1.raw_count );
-	if( S.pixel_aspect != 1 )
-		printf( "Pixel Aspect Ratio: %0.6f\n", S.pixel_aspect );
-	if( T.tlength )
-		printf( "Thumb size:  %4d x %d\n", T.twidth, T.theight );
-	printf( "Full size:   %4d x %d\n", S.raw_width, S.raw_height );
+	ss << "Number of raw images: " << p1.raw_count;
+	if( sizes.pixel_aspect != 1 )
+		ss << "Pixel Aspect Ratio: " << sizes.pixel_aspect << std::endl;
+	if( thumbnail.tlength )
+		ss << "Thumb size:  " << thumbnail.twidth << " x " << thumbnail.theight << std::endl;
+	ss << "Full size:   " << sizes.raw_width << " x " << sizes.raw_height << std::endl;
 
-	printf( "Image size:  %4d x %d\n", S.width, S.height );
-	printf( "Output size: %4d x %d\n", S.iwidth, S.iheight );
-	printf( "Raw colors: %d", P1.colors );
-	if( P1.filters )
+	ss << "Image size:  " << sizes.width << " x " << sizes.height << std::endl;
+	ss << "Output size: " << sizes.iwidth << " x " << sizes.iheight << std::endl;
+	ss << "Raw colors: " << p1.colors << std::endl;
+	if( p1.filters )
 	{
-		printf( "\nFilter pattern: " );
-		if( !P1.cdesc[3] )
-			P1.cdesc[3] = 'G';
-		for( int i = 0; i < 16; i++ )
-			putchar( P1.cdesc[_rawProcessor.fc( i >> 1, i & 1 )] );
+		ss << "Filter pattern: ";
+		if( !p1.cdesc[3] )
+			p1.cdesc[3] = 'G';
+		for( int i = 0; i < 16; ++i )
+			putchar( p1.cdesc[rawProcessor.fc( i >> 1, i & 1 )] );
+		ss << std::endl;
 	}
-	printf( "\nDaylight multipliers:" );
-	for( int c = 0; c < P1.colors; c++ )
-		printf( " %f", C.pre_mul[c] );
-	if( C.cam_mul[0] > 0 )
+	ss << "Daylight multipliers: ";
+	for( int c = 0; c < p1.colors; ++c )
+		ss << " " << color.pre_mul[c];
+	ss << std::endl;
+	if( color.cam_mul[0] > 0 )
 	{
-		printf( "\nCamera multipliers:" );
-		for( int c = 0; c < 4; c++ )
-			printf( " %f", C.cam_mul[c] );
+		ss << "Camera multipliers: ";
+		for( int c = 0; c < 4; ++c )
+			ss << " " << color.cam_mul[c];
+		ss << std::endl;
 	}
 	const char* csl[] = { "U", "I", "CO", "L", "CA" };
-	printf( "\nColor sources /Legend: (U)nknown, (I)nit, (CO)nstant, (L)oaded, (CA)lculated/:\n" );
-	printf( "\tcurve=%s; rgb_cam=%s; cmatrix=%s, pre_mul=%s, cam_mul=%s",
-	        csl[C.color_flags.curve_state], csl[C.color_flags.rgb_cam_state],
-	        csl[C.color_flags.cmatrix_state], csl[C.color_flags.pre_mul_state],
-	        csl[C.color_flags.cam_mul_state] );
-	putchar( '\n' );
-	printf( "Cam->XYZ matrix:\n" );
+	ss << "Color sources /Legend: (U)nknown, (I)nit, (CO)nstant, (L)oaded, (CA)lculated/:" << std::endl;
+	ss << "\tcurve=" << csl[color.color_flags.curve_state] << ",";
+	ss << " rgb_cam=" << csl[color.color_flags.rgb_cam_state] << ",";
+	ss << " cmatrix=" << csl[color.color_flags.cmatrix_state] << ",";
+	ss << " pre_mul=" << csl[color.color_flags.pre_mul_state] << ",";
+	ss << " cam_mul="<< csl[color.color_flags.cam_mul_state] << std::endl;
+	ss << "Cam->XYZ matrix:" << std::endl;
 	for( int i = 0; i < 4; i++ )
-		printf( "%6.4f\t%6.4f\t%6.4f\n", C.cam_xyz[i][0], C.cam_xyz[i][1], C.cam_xyz[i][2] );
-}
+		ss << color.cam_xyz[i][0] << "\t" << color.cam_xyz[i][1] << "\t" << color.cam_xyz[i][2] << std::endl; // %6.4f
 
-else
-{
-	if( print_unpack )
-	{
-		char frame[32] = "";
-		if( print_frame )
-			snprintf( frame, 32, "%dx%dx%dx%d", S.left_margin, S.top_margin, S.right_margin, S.bottom_margin );
-		printf( "%s\t%s\t%s\t%s/%s\n",
-		        av[i],
-		        MyCoolRawProcessor.unpack_function_name(),
-		        frame,
-		        P1.make, P1.model );
-	}
-	else
-		printf( "%s is a %s %s image.\n", av[i], P1.make, P1.model );
+	std::cout << ss;
 }
-MyCoolRawProcessor.recycle();
-}    // endfor
-}
-*/
 
 void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
@@ -217,8 +212,10 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kRawReaderHelpString );
 	}
-//	else if( )
-//	{}
+//	else if( paramName == kRawReaderUpdateInfosButton )
+//	{
+//		updateInfos();
+//	}
 	else
 	{
 		ReaderPlugin::changedParam( args, paramName );

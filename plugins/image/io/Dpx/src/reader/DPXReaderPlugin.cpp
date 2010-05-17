@@ -9,13 +9,13 @@
 #include "dpxEngine/dpxImage.hpp"
 #include "tuttle/plugin/context/ReaderPlugin.hpp"
 
-using namespace boost::filesystem;
-using namespace tuttle::io;
-
 namespace tuttle {
 namespace plugin {
 namespace dpx {
 namespace reader {
+
+using namespace boost::filesystem;
+using namespace tuttle::io;
 
 using namespace boost::gil;
 

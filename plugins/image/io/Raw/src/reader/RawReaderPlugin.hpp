@@ -23,11 +23,14 @@ public:
 	RawReaderPlugin( OfxImageEffectHandle handle );
 
 public:
-	RawReaderProcessParams getProcessParams( const OfxTime time );
-	void                   render( const OFX::RenderArguments& args );
-	void                   changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	bool                   getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void                   getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+	RawReaderProcessParams getProcessParams(const OfxTime time);
+
+	void updateInfos();
+	
+	void render( const OFX::RenderArguments& args );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 };
 
 }

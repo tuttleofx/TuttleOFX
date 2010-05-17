@@ -1038,6 +1038,7 @@ public:
 
 	/// get the first and last times available on the effect's timeline
 	void timeLineGetBounds( double& t1, double& t2 );
+	inline OfxRangeD timeLineGetBounds() { OfxRangeD range; timeLineGetBounds( range.min, range.max ); return range; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
