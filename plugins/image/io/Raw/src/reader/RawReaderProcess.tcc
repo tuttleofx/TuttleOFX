@@ -107,7 +107,9 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 		using namespace boost::gil;
 		rgb16c_view_t imageView = interleaved_view( image->width, image->height,
 							                  (const rgb16c_pixel_t*)( image->data ),
-							                  image->data_size );
+							                  image->width * sizeof( rgb16c_pixel_t ) /*image->data_size*/ );
+		COUT_VAR( imageView.dimensions() );
+		COUT_VAR( dst.dimensions() );
 		copy_and_convert_pixels( imageView, dst );
 		free( image );
 		_rawProcessor.recycle();
