@@ -74,6 +74,8 @@ void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 			const std::string name( getCoefName(y, x) );
 			OFX::DoubleParamDescriptor* coef = desc.defineDoubleParam( name );
 			coef->setLabel( name );
+			coef->setDisplayRange( -10.0, 10.0 );
+			coef->setDefault( 0.0 );
 		}
 	}
 
