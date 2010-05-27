@@ -1,3 +1,4 @@
+#include "%CLASSNAME%PluginFactory.hpp"
 #include "%CLASSNAME%Plugin.hpp"
 #include "%CLASSNAME%Definitions.hpp"
 
@@ -5,11 +6,6 @@
 #include <tuttle/plugin/Progress.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <cmath>
-#include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -19,8 +15,6 @@ namespace plugin {
 namespace %NAMESPACE% {
 
 static const bool kSupportTiles = false;
-
-mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
 
 
 /**
@@ -85,14 +79,3 @@ OFX::ImageEffect* %CLASSNAME%PluginFactory::createInstance( OfxImageEffectHandle
 }
 }
 
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray& ids )
-{
-	static tuttle::plugin::%NAMESPACE%::%CLASSNAME%PluginFactory p( "%PLUGIN_UNIQUE_ID%", 0, 0 );
-	ids.push_back( &p );
-}
-
-}
-}
