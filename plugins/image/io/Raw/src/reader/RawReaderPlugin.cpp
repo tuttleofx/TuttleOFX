@@ -120,7 +120,7 @@ void RawReaderPlugin::updateInfos()
 	libraw_colordata_t& color = rawProcessor.imgdata.color;
 	libraw_thumbnail_t& thumbnail = rawProcessor.imgdata.thumbnail;
 	libraw_imgother_t& p2 = rawProcessor.imgdata.other;
-	libraw_output_params_t& out = rawProcessor.imgdata.params;
+//	libraw_output_params_t& out = rawProcessor.imgdata.params;
 
 	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
@@ -224,11 +224,31 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	point2<ptrdiff_t> pngDims;// = raw_read_dimensions( _filePattern.getFilenameAt( args.time ) );
+	updateInfos();
+	
+	RawReaderProcessParams params = getProcessParams( this->timeLineGetBounds().min );
+
+	LibRaw rawProcessor;
+	libraw_image_sizes_t& sizes = rawProcessor.imgdata.sizes;
+
+	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
+	{
+		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror(ret) );
+		return false;
+	}
+	if( const int ret = rawProcessor.adjust_sizes_info_only() )
+	{
+		COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
+		return false;
+	}
+
+//	point2<ptrdiff_t> dims( sizes.raw_width, sizes.raw_height );
+	point2<ptrdiff_t> dims( sizes.width, sizes.height );
+	COUT_VAR( dims );
 	rod.x1 = 0;
-	rod.x2 = pngDims.x * this->_dstClip->getPixelAspectRatio();
+	rod.x2 = dims.x * this->_dstClip->getPixelAspectRatio();
 	rod.y1 = 0;
-	rod.y2 = pngDims.y;
+	rod.y2 = dims.y;
 	return true;
 }
 
