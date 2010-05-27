@@ -1,0 +1,92 @@
+#include "BlurPluginFactory.hpp"
+#include "BlurPlugin.hpp"
+#include "BlurDefinitions.hpp"
+
+#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
+
+#include <ofxsParam.h>
+#include <ofxsMultiThread.h>
+
+#include <boost/gil/gil_all.hpp>
+#include <boost/scoped_ptr.hpp>
+
+#include <limits>
+
+namespace tuttle {
+namespace plugin {
+namespace blur {
+
+static const bool kSupportTiles = false;
+
+
+/**
+ * @brief Function called to describe the plugin main features.
+ * @param[in, out] desc Effect descriptor
+ */
+void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+{
+	desc.setLabels( "TuttleBlur", "TuttleBlur",
+		            "TuttleBlur" );
+	desc.setPluginGrouping( "tuttle" );
+
+	// add the supported contexts, only filter at the moment
+	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
+
+	// add supported pixel depths
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+
+	// plugin flags
+	desc.setSupportsTiles( kSupportTiles );
+}
+
+/**
+ * @brief Function called to describe the plugin controls and features.
+ * @param[in, out]   desc       Effect descriptor
+ * @param[in]        context    Application context
+ */
+void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                  OFX::ContextEnum context )
+{
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClip->setSupportsTiles( kSupportTiles );
+
+	// Create the mandated output clip
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
+
+	OFX::Int2DParamDescriptor* size = desc.defineInt2DParam( kParamSize );
+	size->setLabel( "Size" );
+	size->setDefault( 3, 3 );
+	size->setRange( 0.0, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
+	size->setDisplayRange( 0, 0, 10, 10 );
+
+
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
+	helpButton->setLabel( "Help" );
+}
+
+/**
+ * @brief Function called to create a plugin effect instance
+ * @param[in] handle  Effect handle
+ * @param[in] context Application context
+ * @return  plugin instance
+ */
+OFX::ImageEffect* BlurPluginFactory::createInstance( OfxImageEffectHandle handle,
+                                                            OFX::ContextEnum context )
+{
+	return new BlurPlugin( handle );
+}
+
+}
+}
+}
+
