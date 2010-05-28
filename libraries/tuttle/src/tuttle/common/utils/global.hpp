@@ -29,6 +29,8 @@
  **/
 #define COUT(... )  ::std::cout << __VA_ARGS__ << ::std::endl
 
+#define COUT_X( N, ... )  for( unsigned int i = 0; i < N; ++i ){ ::std::cout << __VA_ARGS__; } ::std::cout << __VA_ARGS__ << ::std::endl
+
 #define COUT_VAR( a )  ::std::cout << # a << ": " << a << ::std::endl
 #define COUT_VAR2( a, b )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ::std::endl
 #define COUT_VAR3( a, b, c )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ::std::endl
