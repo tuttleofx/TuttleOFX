@@ -53,6 +53,7 @@ public:
     std::size_t right_size() const {assert(_center<this->size());return this->size()-_center-1;}
           std::size_t& center()       {return _center;}
     const std::size_t& center() const {return _center;}
+    void set_center( const std::size_t center ) { _center = center; }
 };
 
 } // namespace detail

@@ -36,11 +36,12 @@ namespace boost { namespace gil {
 /// \ingroup ImageAlgorithms
 /// Boundary options for 1D correlations/convolutions
 enum convolve_boundary_option  {
-    convolve_option_output_ignore,  /// do nothing to the output
-    convolve_option_output_zero,    /// set the output to zero
-    convolve_option_extend_padded,  /// assume the source boundaries to be padded already 
-    convolve_option_extend_zero,    /// assume the source boundaries to be zero
-    convolve_option_extend_constant /// assume the source boundaries to be the boundary value
+    convolve_option_output_ignore,   /// do nothing to the output
+    convolve_option_output_zero,     /// set the output to zero
+    convolve_option_extend_padded,   /// assume the source boundaries to be padded already
+    convolve_option_extend_zero,     /// assume the source boundaries to be zero
+    convolve_option_extend_constant, /// assume the source boundaries to be the boundary value
+    convolve_option_extend_mirror    /// assume the source boundaries to be the mirror of source
 };
 
 namespace detail {
@@ -106,6 +107,15 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
                 assign_pixels(src.row_begin(rr),src.row_end(rr),it_buffer);
                 it_buffer+=width;
                 pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(src.row_end(rr)[-1],filler);
+                std::fill_n(it_buffer,ker.right_size(),filler);
+            } else if (option==convolve_option_extend_mirror) {
+                PixelAccum filler;
+                pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.row_begin(rr),filler); // todo: inverted copy
+                std::fill_n(it_buffer,ker.left_size(),filler);
+                it_buffer+=ker.left_size();
+                assign_pixels(src.row_begin(rr),src.row_end(rr),it_buffer);
+                it_buffer+=width;
+                pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(src.row_end(rr)[-1],filler); // todo: inverted copy
                 std::fill_n(it_buffer,ker.right_size(),filler);
             }
             correlator(&buffer.front(),&buffer.front()+width,

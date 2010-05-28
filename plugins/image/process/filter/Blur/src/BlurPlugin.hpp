@@ -11,7 +11,7 @@ namespace blur {
 
 struct BlurProcessParams
 {
-	
+	boost::gil::point2<double> _size;
 };
 
 /**
@@ -32,6 +32,8 @@ public:
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip* _srcClip; ///< Source image clip
     OFX::Clip* _dstClip; ///< Destination image clip
+
+	OFX::Double2DParam* _paramSize;
 };
 
 }

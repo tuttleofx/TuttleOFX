@@ -63,12 +63,12 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::Int2DParamDescriptor* size = desc.defineInt2DParam( kParamSize );
+	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );
 	size->setLabel( "Size" );
 	size->setDefault( 3, 3 );
 	size->setRange( 0.0, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
 	size->setDisplayRange( 0, 0, 10, 10 );
-
+	size->setDoubleType( OFX::eDoubleTypeScale );
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
 	helpButton->setLabel( "Help" );

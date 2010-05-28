@@ -17,11 +17,14 @@ ImageEffect( handle )
 {
     _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+
+	_paramSize = fetchDouble2DParam( kParamSize );
 }
 
 BlurProcessParams BlurPlugin::getProcessParams() const
 {
 	BlurProcessParams params;
+	params._size = ofxToGil( _paramSize->getValue() );
 	return params;
 }
 
