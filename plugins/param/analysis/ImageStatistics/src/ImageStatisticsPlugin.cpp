@@ -21,8 +21,8 @@ using namespace boost::gil;
 ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_rectCenter = fetchDouble2DParam( kRectCenter );
 	_rectSize = fetchDouble2DParam( kRectSize );
@@ -53,14 +53,14 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 
 void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois )
 {
-    OfxRectI srcRealRoi = getProcessParams( _srcClip->getPixelRod(args.time) )._rect; // we need the selected rectangle
+    OfxRectI srcRealRoi = getProcessParams( _clipSrc->getPixelRod(args.time) )._rect; // we need the selected rectangle
     OfxRectD srcRealRoiD;
 	srcRealRoiD.x1 = srcRealRoi.x1;
 	srcRealRoiD.y1 = srcRealRoi.y1;
 	srcRealRoiD.x2 = srcRealRoi.x2;
 	srcRealRoiD.y2 = srcRealRoi.y2;
 	COUT_VAR(srcRealRoiD);
-    rois.setRegionOfInterest( *_srcClip, srcRealRoiD );
+    rois.setRegionOfInterest( *_clipSrc, srcRealRoiD );
 }
 
 /**
@@ -70,8 +70,8 @@ void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestAr
 void ImageStatisticsPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

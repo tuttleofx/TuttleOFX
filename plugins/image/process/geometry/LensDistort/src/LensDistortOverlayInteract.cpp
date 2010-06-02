@@ -83,7 +83,7 @@ LensDistortOverlayInteract::LensDistortOverlayInteract( OfxInteractHandle handle
 	_effect = effect;
 	_plugin = static_cast<LensDistortPlugin*>( _effect );
 
-	const interact::FrameOptionalClip frame( _plugin->_srcRefClip, _plugin->_srcClip );
+	const interact::FrameOptionalClip frame( _plugin->_srcRefClip, _plugin->_clipSrc );
 	interact::PointInteract* centerPoint = new interact::ParamPoint<interact::FrameOptionalClip, eCoordonateSystemXXcn>( _infos, _plugin->_center, frame );
 	_interactScene.push_back( new interact::ParamPointRelativePoint<interact::FrameOptionalClip, eCoordonateSystemXXcn>( _infos, _plugin->_gridCenter, frame, centerPoint ), new interact::IsActiveBooleanParamFunctor(_plugin->_gridCenterOverlay) );
 	_interactScene.push_back( centerPoint, new interact::IsActiveBooleanParamFunctor(_plugin->_centerOverlay) );
@@ -114,18 +114,18 @@ bool LensDistortOverlayInteract::draw( const OFX::DrawArgs &args )
 	displaySomething |= _interactScene.draw( args );
 
 	// drawing
-	if( _plugin->_gridOverlay->getValue() && _plugin->_srcClip->isConnected() )
+	if( _plugin->_gridOverlay->getValue() && _plugin->_clipSrc->isConnected() )
 	{
 		displaySomething = true;
 		static const unsigned int steps = 10;
 
 		// get the project size
-		OfxRectD srcRod = _plugin->_srcClip->getCanonicalRod( args.time );
+		OfxRectD srcRod = _plugin->_clipSrc->getCanonicalRod( args.time );
 		if( _plugin->_srcRefClip->isConnected() )
 			srcRod = _plugin->_srcRefClip->getCanonicalRod( args.time );
 		
 		const Point2 imgSize( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );
-		const OfxRectD outputRod = _plugin->_dstClip->getCanonicalRod( args.time );
+		const OfxRectD outputRod = _plugin->_clipDst->getCanonicalRod( args.time );
 		//parameters
 		const Point2 gridCenter( ofxToGil( _plugin->_gridCenter->getValue( ) ) );
 		const Point2 gridScale( ofxToGil( _plugin->_gridScale->getValue( ) ) );

@@ -26,7 +26,7 @@ protected:
 	inline bool varyOnTime() const;
 
 public:
-	OFX::Clip*           _dstClip;       ///< Destination image clip
+	OFX::Clip*           _clipDst;       ///< Destination image clip
 	OFX::StringParam*    _filepath;      ///< File path
 	OFX::ChoiceParam*    _explicitConv;  ///< Explicit conversion
 	FilenameManager      _filePattern;      ///< Filename pattern manager

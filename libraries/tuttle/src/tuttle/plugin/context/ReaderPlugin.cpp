@@ -8,7 +8,7 @@ namespace bfs = boost::filesystem;
 ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 : OFX::ImageEffect( handle )
 {
-	_dstClip  = fetchClip( kOfxImageEffectOutputClipName );
+	_clipDst  = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kTuttlePluginReaderParamFilename );
 	_filePattern.reset(_filepath->getValue(), true);
 	_explicitConv = fetchChoiceParam( kTuttlePluginReaderParamExplicitConversion );

@@ -49,8 +49,8 @@ public:
 	typedef std::vector<OFX::RGBAParam*> RGBAParamVector;
 	
     // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _srcClip;       ///< Source image clip
-    OFX::Clip* _dstClip;       ///< Destination image clip
+    OFX::Clip* _clipSrc;       ///< Source image clip
+    OFX::Clip* _clipDst;       ///< Destination image clip
 	Double2DParamVector _points;
 	RGBAParamVector _colors;
 	OFX::ChoiceParam* _gradientType;

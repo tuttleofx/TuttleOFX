@@ -18,7 +18,7 @@ ImageEffect( handle )
 {
 	_srcClipA = fetchClip( kDiffSourceA );
 	_srcClipB = fetchClip( kDiffSourceB );
-    _dstClip  = fetchClip( kOfxImageEffectOutputClipName );
+    _clipDst  = fetchClip( kOfxImageEffectOutputClipName );
 	_qualityMesure = fetchRGBAParam( kOutputQualityMesure );
 }
 
@@ -34,7 +34,7 @@ OFX::Clip* DiffPlugin::getSrcClipB( ) const
 
 OFX::Clip* DiffPlugin::getDstClip( ) const
 {
-    return _dstClip;
+    return _clipDst;
 }
 
 DiffProcessParams DiffPlugin::getProcessParams() const
@@ -50,8 +50,8 @@ DiffProcessParams DiffPlugin::getProcessParams() const
 void DiffPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

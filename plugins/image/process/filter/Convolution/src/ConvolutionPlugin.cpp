@@ -17,8 +17,8 @@ namespace convolution {
 ConvolutionPlugin::ConvolutionPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_paramSize = fetchInt2DParam( kParamSize );
 
@@ -62,8 +62,8 @@ void ConvolutionPlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
@@ -139,7 +139,7 @@ void ConvolutionPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	srcRoi.x2 += halfSize.x;
 	srcRoi.y1 -= halfSize.y;
 	srcRoi.y2 += halfSize.y;
-	rois.setRegionOfInterest( *_srcClip, srcRoi );
+	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 }
 
 void ConvolutionPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )

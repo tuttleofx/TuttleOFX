@@ -22,7 +22,7 @@ FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kFilename );
 }
 
@@ -46,8 +46,8 @@ VideoFFmpegReader & FFMpegReaderPlugin::getReader()
 void FFMpegReaderPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
@@ -170,9 +170,9 @@ void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 {
 	if ( _openedSource.get() )
 	{
-		clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-		clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
-		clipPreferences.setPixelAspectRatio( *_dstClip, _reader.aspectRatio() );
+		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte );
+		clipPreferences.setPixelAspectRatio( *_clipDst, _reader.aspectRatio() );
 		clipPreferences.setOutputFrameRate( _reader.fps() );
 
 		// Setup fielding

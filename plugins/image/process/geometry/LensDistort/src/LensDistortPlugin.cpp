@@ -22,8 +22,8 @@ const static std::string kLensDistortHelpString( "<p>Apply or correct a lens dis
 LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 : ImageEffect( handle )
 {
-	_dstClip = fetchClip( kOfxImageEffectOutputClipName );
-	_srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_srcRefClip = fetchClip( kClipOptionalSourceRef );
 
 	_reverse = fetchBooleanParam( kParamReverse );
@@ -67,8 +67,8 @@ void LensDistortPlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace bgil;
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-	OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+	OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+	OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
@@ -214,7 +214,7 @@ bool LensDistortPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip 
 	}
 	if( isIdentity )
 	{
-		identityClip = _srcClip;
+		identityClip = _clipSrc;
 		identityTime = args.time;
 		return true;
 	}
@@ -224,14 +224,14 @@ bool LensDistortPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip 
 bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments &args, OfxRectD &rod )
 {
 	using namespace bgil;
-	const OfxRectD srcRod = _srcClip->getCanonicalRod( args.time );
+	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 	const Point2 srcRodCorner( srcRod.x1, srcRod.y1 );
 	const Point2 srcRodSize( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );
 	const OfxRectD srcRodInDstFrame = { 0, 0, srcRodSize.x, srcRodSize.y };
 
 	bool modified = false;
 
-	LensDistortProcessParams<Scalar> params( getProcessParams( srcRod, srcRod, _dstClip->getPixelAspectRatio(), true ) );
+	LensDistortProcessParams<Scalar> params( getProcessParams( srcRod, srcRod, _clipDst->getPixelAspectRatio(), true ) );
 	switch( static_cast<EParamResizeRod>( _resizeRod->getValue() ) )
 	{
 		case eParamResizeRodNo:
@@ -314,17 +314,17 @@ bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgu
 
 void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois )
 {
-	OfxRectD srcRod = _srcClip->getCanonicalRod( args.time );
-	OfxRectD dstRod = _dstClip->getCanonicalRod( args.time );
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	OfxRectD dstRod = _clipDst->getCanonicalRod( args.time );
 	LensDistortProcessParams<Scalar> params;
 	if( _srcRefClip->isConnected() )
 	{
 		OfxRectD srcRefRod = _srcRefClip->getCanonicalRod( args.time );
-		params = getProcessParams( srcRod, dstRod, srcRefRod, _dstClip->getPixelAspectRatio() );
+		params = getProcessParams( srcRod, dstRod, srcRefRod, _clipDst->getPixelAspectRatio() );
 	}
 	else
 	{
-		params = getProcessParams( srcRod, dstRod, _dstClip->getPixelAspectRatio() );
+		params = getProcessParams( srcRod, dstRod, _clipDst->getPixelAspectRatio() );
 	}
 
 	OfxRectD outputRoi = args.regionOfInterest;
@@ -348,7 +348,7 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	OfxRectD srcRealRoi = rectanglesIntersection(srcRoi, srcRod);
 	srcRealRoi = srcRod;
 
-	rois.setRegionOfInterest( *_srcClip, srcRealRoi );
+	rois.setRegionOfInterest( *_clipSrc, srcRealRoi );
 
 	if( _debugDisplayRoi->getValue() )
 	{

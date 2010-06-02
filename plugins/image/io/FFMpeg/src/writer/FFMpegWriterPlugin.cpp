@@ -22,8 +22,8 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 	// We want to render a sequence
 	setSequentialRender( true );
 
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath = fetchStringParam( kFilename );
 	_format = fetchChoiceParam( kFormat );
 	_formatLong = fetchChoiceParam( kFormatLong );
@@ -34,12 +34,12 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 
 OFX::Clip* FFMpegWriterPlugin::getSrcClip( ) const
 {
-    return _srcClip;
+    return _clipSrc;
 }
 
 OFX::Clip* FFMpegWriterPlugin::getDstClip( ) const
 {
-    return _dstClip;
+    return _clipDst;
 }
 
 VideoFFmpegWriter & FFMpegWriterPlugin::getWriter( )
@@ -64,8 +64,8 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 void FFMpegWriterPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
@@ -161,8 +161,8 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 	_writer.filename( _filepath->getValue() );
 	_writer.setFormat( _format->getValue() );
 	_writer.setCodec( _codec->getValue() );
-	_writer.fps( _srcClip->getFrameRate() );
-	_writer.aspectRatio( _srcClip->getPixelAspectRatio() );
+	_writer.fps( _clipSrc->getFrameRate() );
+	_writer.aspectRatio( _clipSrc->getPixelAspectRatio() );
 }
 
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
@@ -174,8 +174,8 @@ void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPre
 {
 	if ( _openedSource.get() )
 	{
-		clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-		clipPreferences.setClipBitDepth( *_dstClip, OFX::eBitDepthUByte );
+		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte );
 	}
 }
 

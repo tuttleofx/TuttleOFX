@@ -19,7 +19,7 @@ class BitDepthProcess : public ImageGilProcessor<DView>
 	typedef typename DView::value_type dPixel;
 protected :
     BitDepthPlugin& _plugin;        ///< Rendering plugin
-    OFX::Clip* _srcClip;       ///< Source image clip
+    OFX::Clip* _clipSrc;       ///< Source image clip
 	boost::scoped_ptr<OFX::Image> _src;
 	OfxRectI _srcPixelRod;
 	SView _srcView; ///< @brief source clip (filters have only one input)

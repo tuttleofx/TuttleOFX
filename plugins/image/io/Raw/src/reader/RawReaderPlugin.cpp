@@ -39,8 +39,8 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 void RawReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = this->_dstClip->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = this->_dstClip->getPixelComponents();
+	OFX::BitDepthEnum dstBitDepth         = this->_clipDst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = this->_clipDst->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
@@ -246,7 +246,7 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	point2<ptrdiff_t> dims( sizes.width, sizes.height );
 	COUT_VAR( dims );
 	rod.x1 = 0;
-	rod.x2 = dims.x * this->_dstClip->getPixelAspectRatio();
+	rod.x2 = dims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = dims.y;
 	return true;
@@ -264,17 +264,17 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			{
 				case 1:
 				{
-					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUByte );
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 					break;
 				}
 				case 2:
 				{
-					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUShort );
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 					break;
 				}
 				case 3:
 				{
-					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthFloat );
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 					break;
 				}
 			}
@@ -295,10 +295,10 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 					throw OFX::Exception::Suite( kOfxStatErrImageFormat );
 					break;
 			}
-			clipPreferences.setClipBitDepth( *this->_dstClip, bd );
+			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 		}
-		clipPreferences.setClipComponents( *this->_dstClip, OFX::ePixelComponentRGBA );
-		clipPreferences.setPixelAspectRatio( *this->_dstClip, 1.0 );
+		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 	}
 }
 

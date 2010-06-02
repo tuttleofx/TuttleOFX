@@ -26,20 +26,20 @@ using namespace boost::gil;
 CropPlugin::CropPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
-	_srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_formats = fetchChoiceParam( kParamPresets );
 	_rect    = fetchBooleanParam( kParamDisplayRect );
 }
 
 OFX::Clip* CropPlugin::getSrcClip() const
 {
-	return _srcClip;
+	return _clipSrc;
 }
 
 OFX::Clip* CropPlugin::getDstClip() const
 {
-	return _dstClip;
+	return _clipDst;
 }
 
 bool CropPlugin::displayRect()
@@ -54,8 +54,8 @@ bool CropPlugin::displayRect()
 void CropPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents();
+	OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
@@ -138,8 +138,8 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 		OFX::IntParam* downBand  = fetchIntParam( kParamDown );
 		OFX::IntParam* leftBand  = fetchIntParam( kParamLeft );
 		OFX::IntParam* rightBand = fetchIntParam( kParamRight );
-		OfxRectD rod             = _srcClip->getCanonicalRod( timeLineGetTime() );
-		double par               = _srcClip->getPixelAspectRatio();
+		OfxRectD rod             = _clipSrc->getCanonicalRod( timeLineGetTime() );
+		double par               = _clipSrc->getPixelAspectRatio();
 		int w                    = (int)std::abs( rod.x2 - rod.x1 );
 		int h                    = (int)std::abs( rod.y2 - rod.y1 );
 
