@@ -70,6 +70,13 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	size->setDisplayRange( 0, 0, 10, 10 );
 	size->setDoubleType( OFX::eDoubleTypeScale );
 
+	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
+	border->setLabel( "Border" );
+	border->appendOption( kParamBorderExtendMirror );
+	border->appendOption( kParamBorderExtendConstant );
+	border->appendOption( kParamBorderExtendBlack );
+	border->appendOption( kParamBorderOutputBlack );
+
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
 	helpButton->setLabel( "Help" );
 }

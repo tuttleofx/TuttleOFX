@@ -12,6 +12,20 @@ const static std::string kHelpButton = "Help";
 const static std::string kHelpString = "<b>TuttleBlur</b> plugin is used to ???.  <br />";
 
 const static std::string kParamSize = "size";
+const static std::string kParamBorder = "border";
+const static std::string kParamBorderExtendMirror = "Extend mirror";
+const static std::string kParamBorderExtendConstant = "Extend constant";
+const static std::string kParamBorderExtendBlack = "Extend black";
+const static std::string kParamBorderOutputBlack = "Output black";
+
+enum EBorder
+{
+	eBorderExtendMirror = 0,
+	eBorderExtendConstant,
+	eBorderExtendBlack,
+	eBorderOutputBlack
+};
+
 
 }
 }

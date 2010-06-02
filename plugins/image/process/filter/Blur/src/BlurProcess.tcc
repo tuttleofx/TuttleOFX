@@ -12,6 +12,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "BlurPlugin.hpp"
+
 
 namespace tuttle {
 namespace plugin {
@@ -86,7 +88,7 @@ boost::gil::kernel_1d<typename BlurProcess<View>::Scalar> BlurProcess<View>::bui
 	std::cout << "[";
 	std::for_each(kernel.begin(), kernel.end(), std::cout << _1 << ',');
 	std::cout << "]" << std::endl;
-	return boost::gil::kernel_1d<Scalar>( &(kernel[0]), kernel.size(), rightKernel.size()+1 );
+	return boost::gil::kernel_1d<Scalar>( &(kernel[0]), kernel.size(), rightKernel.size() );
 }
 
 template <class View>
@@ -120,11 +122,37 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 							  procWindowSize.x, procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							  procWindowSize.x, procWindowSize.y );
+	View& linkSrc = src;
 
-	if( _gilKernelY.size() > 2 )
-		convolve_cols<Pixel>( src, _gilKernelY, dst );
+	convolve_boundary_option option = convolve_option_extend_mirror;
+	switch( _params._border )
+	{
+		case eBorderExtendMirror:
+			option = convolve_option_extend_mirror;
+			break;
+		case eBorderExtendConstant:
+			option = convolve_option_extend_constant;
+			break;
+		case eBorderExtendBlack:
+			option = convolve_option_extend_zero;
+			break;
+		case eBorderOutputBlack:
+			option = convolve_option_output_zero;
+			break;
+	}
+
 	if( _gilKernelX.size() > 2 )
-		convolve_rows<Pixel>( dst, _gilKernelX, dst );
+	{
+		COUT_X(10, "_row_");
+		convolve_rows<Pixel>( linkSrc, _gilKernelX, dst, option );
+		linkSrc = dst;
+	}
+	if( _gilKernelY.size() > 2 )
+	{
+		COUT_X(10, "_cols_");
+		convolve_cols<Pixel>( linkSrc, _gilKernelY, dst, option );
+		linkSrc = dst;
+	}
 }
 
 }

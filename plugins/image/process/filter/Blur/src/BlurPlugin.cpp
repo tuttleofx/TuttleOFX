@@ -15,16 +15,18 @@ namespace blur {
 BlurPlugin::BlurPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_paramSize = fetchDouble2DParam( kParamSize );
+	_paramBorder = fetchChoiceParam( kParamBorder );
 }
 
 BlurProcessParams BlurPlugin::getProcessParams() const
 {
 	BlurProcessParams params;
 	params._size = ofxToGil( _paramSize->getValue() );
+	params._border = static_cast<EBorder>( _paramBorder->getValue() );
 	return params;
 }
 
@@ -36,8 +38,8 @@ void BlurPlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
