@@ -9,9 +9,9 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 : OFX::ImageEffect( handle )
 {
 	_clipDst  = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath = fetchStringParam( kTuttlePluginReaderParamFilename );
-	_filePattern.reset(_filepath->getValue(), true);
-	_explicitConv = fetchChoiceParam( kTuttlePluginReaderParamExplicitConversion );
+	_paramFilepath = fetchStringParam( kTuttlePluginReaderParamFilename );
+	_filePattern.reset(_paramFilepath->getValue(), true);
+	_paramExplicitConv = fetchChoiceParam( kTuttlePluginReaderParamExplicitConversion );
 }
 
 ReaderPlugin::~ReaderPlugin()
@@ -22,7 +22,7 @@ void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginReaderParamFilename )
 	{
-		_filePattern.reset(_filepath->getValue(), true);
+		_filePattern.reset(_paramFilepath->getValue(), true);
 	}
 }
 
@@ -34,7 +34,7 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 
 bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
-	if (varyOnTime())
+	if( varyOnTime() )
 	{
 		OfxRangeI rangei = _filePattern.getRange();
 		range.min = (double)rangei.min;

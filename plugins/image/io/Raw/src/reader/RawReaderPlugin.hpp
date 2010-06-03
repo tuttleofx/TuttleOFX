@@ -1,6 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_RAWREADERPLUGIN_HPP_
 #define _TUTTLE_PLUGIN_RAWREADERPLUGIN_HPP_
 
+#include "RawReaderDefinitions.hpp"
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
 namespace tuttle {
@@ -11,6 +12,7 @@ namespace reader {
 struct RawReaderProcessParams
 {
 	std::string _filepath;       ///< filepath
+	EFiltering _filtering;
 };
 
 /**
@@ -31,6 +33,12 @@ public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+
+public:
+	/// @name user parameters
+	/// @{
+	OFX::ChoiceParam*    _paramFiltering;    ///< Filtering mode
+	/// @}
 };
 
 }

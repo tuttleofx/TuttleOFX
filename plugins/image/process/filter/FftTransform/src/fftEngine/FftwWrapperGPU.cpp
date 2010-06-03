@@ -13,6 +13,7 @@
 #include <cuda_gl_interop.h>
 
 namespace tuttle {
+namespace plugin {
 namespace filter {
 namespace fft {
 

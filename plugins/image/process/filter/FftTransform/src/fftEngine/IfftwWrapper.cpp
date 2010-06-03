@@ -11,6 +11,7 @@
 using namespace std;
 
 namespace tuttle {
+namespace plugin {
 namespace filter {
 namespace fft {
 

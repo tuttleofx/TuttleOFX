@@ -142,9 +142,9 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	// Check if exist
 	if( bfs::exists( _filePattern.getFirstFilename() ) )
 	{
-		if ( _explicitConv->getValue() )
+		if ( _paramExplicitConv->getValue() )
 		{
-			switch( _explicitConv->getValue() )
+			switch( _paramExplicitConv->getValue() )
 			{
 				case 1:
 				{
