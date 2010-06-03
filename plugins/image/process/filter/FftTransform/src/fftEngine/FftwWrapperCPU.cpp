@@ -6,6 +6,7 @@
 #include <fftw3.h>
 
 namespace tuttle {
+namespace plugin {
 namespace filter {
 namespace fft {
 

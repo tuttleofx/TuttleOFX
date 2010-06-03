@@ -2,12 +2,13 @@
  * This plugin uses fftw3 which is GPL licensed, thus, this (only) is GPL licensed.
  */
 
-#ifndef _IFFTWWRAPPER_HPP
-#define	_IFFTWWRAPPER_HPP
+#ifndef _TUTTLE_PLUGIN_IFFTWWRAPPER_HPP_
+#define	_TUTTLE_PLUGIN_IFFTWWRAPPER_HPP_
 
 #include <cstdlib>
 
 namespace tuttle {
+namespace plugin {
 namespace filter {
 namespace fft {
 
