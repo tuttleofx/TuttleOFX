@@ -43,8 +43,8 @@ PngReaderProcessParams PngReaderPlugin::getProcessParams(const OfxTime time)
 void PngReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = this->_dstClip->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = this->_dstClip->getPixelComponents();
+	OFX::BitDepthEnum dstBitDepth         = this->_clipDst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = this->_clipDst->getPixelComponents();
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
@@ -130,7 +130,7 @@ bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 {
 	point2<ptrdiff_t> pngDims = png_read_dimensions( _filePattern.getFilenameAt(args.time) );
 	rod.x1 = 0;
-	rod.x2 = pngDims.x * this->_dstClip->getPixelAspectRatio();
+	rod.x2 = pngDims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = pngDims.y;
 	return true;
@@ -142,23 +142,23 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	// Check if exist
 	if( bfs::exists( _filePattern.getFirstFilename() ) )
 	{
-		if ( _explicitConv->getValue() )
+		if ( _paramExplicitConv->getValue() )
 		{
-			switch( _explicitConv->getValue() )
+			switch( _paramExplicitConv->getValue() )
 			{
 				case 1:
 				{
-					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUByte );
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 					break;
 				}
 				case 2:
 				{
-					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthUShort );
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 					break;
 				}
 				case 3:
 				{
-					clipPreferences.setClipBitDepth( *this->_dstClip, OFX::eBitDepthFloat );
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 					break;
 				}
 			}
@@ -179,10 +179,10 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 					throw OFX::Exception::Suite( kOfxStatErrImageFormat );
 					break;
 			}
-			clipPreferences.setClipBitDepth( *this->_dstClip, bd );
+			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 		}
-		clipPreferences.setClipComponents( *this->_dstClip, OFX::ePixelComponentRGBA );
-		clipPreferences.setPixelAspectRatio( *this->_dstClip, 1.0 );
+		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 	}
 }
 
