@@ -58,19 +58,21 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
-	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginReaderParamFilename );
-	assert( filename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
+
+	OFX::ChoiceParamDescriptor* filtering = desc.defineChoiceParam( kParamFiltering );
+	filtering->setLabel( "Filtering" );
+	filtering->appendOption( kParamFilteringAuto );
+	filtering->appendOption( kParamFilteringNone );
 
 	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kTuttlePluginReaderParamExplicitConversion );
 	explicitConversion->setLabel( "Explicit conversion" );

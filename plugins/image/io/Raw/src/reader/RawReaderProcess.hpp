@@ -18,8 +18,6 @@ namespace reader {
 template<class View>
 class RawReaderProcess : public ImageGilProcessor<View>
 {
-protected:
-	RawReaderPlugin&    _plugin;        ///< Rendering plugin
 
 public:
 	RawReaderProcess( RawReaderPlugin& instance );
@@ -31,6 +29,9 @@ public:
 	View& readImage( View& dst, const std::string& filepath ) throw( PluginException );
 
 private:
+	RawReaderPlugin&    _plugin;        ///< Rendering plugin
+	RawReaderProcessParams _params;
+
 	LibRaw _rawProcessor;
 	libraw_iparams_t& _p1;
 	libraw_image_sizes_t& _size;
