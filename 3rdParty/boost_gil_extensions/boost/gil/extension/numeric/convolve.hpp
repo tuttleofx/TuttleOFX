@@ -57,7 +57,6 @@ template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView,
 void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const Point& dst_tl,
                         convolve_boundary_option option,
                         Correlator correlator) {
-	typedef typename Point::value_type coord_t;
 	// assert dst frame with shift is inside src frame
     assert(src.dimensions()>=dst.dimensions());
 	// dst must be contained in src
@@ -66,6 +65,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
     assert(dst_tl + dst.dimensions() <= src.dimensions());
     assert(ker.size()!=0);
 
+	typedef typename Point::value_type coord_t;
     typedef typename pixel_proxy<typename SrcView::value_type>::type PIXEL_SRC_REF;
     typedef typename pixel_proxy<typename DstView::value_type>::type PIXEL_DST_REF;
     typedef typename Kernel::value_type kernel_type;
@@ -73,7 +73,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
     if(ker.size()==1) {//reduces to a multiplication
 		view_multiplies_scalar<PixelAccum>( subimage_view(src, dst_tl, dst.dimensions()),
 			                                *ker.begin(),
-			                                subimage_view(dst, dst_tl, dst.dimensions()) );
+			                                dst );
         return;
     }
 
@@ -125,7 +125,8 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 			std::vector<PixelAccum> buffer(dst.dimensions().x+left_in+right_in);
             for(coord_t yy=0;yy<dst_size.y;++yy)
 			{
-                assign_pixels(src.x_at(dst_tl.x-left_in,yy), src.x_at(roi_br.x+right_in,yy), &buffer.front());
+				coord_t yy_src = yy + roi_br.y;
+                assign_pixels(src.x_at(dst_tl.x-left_in,yy_src), src.x_at(roi_br.x+right_in,yy_src), &buffer.front());
 
                 typename DstView::x_iterator it_dst=dst.row_begin(yy);
                 if (option==convolve_option_output_zero)
@@ -158,14 +159,15 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 		COUT_VAR(srcRoi_width);
         for(int yy=0; yy<dst_size.y; ++yy)
 		{
+			coord_t yy_src = yy + roi_br.y;
 			// fill buffer from src view depending on boundary option
             switch( option )
 			{
 				case convolve_option_extend_padded:
 				{
 					PixelAccum* it_buffer=&buffer.front();
-					assign_pixels( src.x_at(dst_tl.x-ker.left_size(),yy),
-								   src.x_at(roi_br.x+ker.right_size(),yy),
+					assign_pixels( src.x_at(dst_tl.x-ker.left_size(),yy_src),
+								   src.x_at(roi_br.x+ker.right_size(),yy_src),
 								   it_buffer );
 					break;
 				}
@@ -175,7 +177,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 					std::fill_n(it_buffer,left_out,acc_zero);
 					it_buffer+=left_out;
 
-					assign_pixels(src.x_at(srcRoi_left,yy),src.x_at(srcRoi_right,yy),it_buffer);
+					assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
 					it_buffer+=srcRoi_width;
 
 					std::fill_n(it_buffer,right_out,acc_zero);
@@ -185,14 +187,14 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 				{
 					PixelAccum* it_buffer=&buffer.front();
 					PixelAccum filler;
-					pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.x_at(srcRoi_left,yy),filler);
+					pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.x_at(srcRoi_left,yy_src),filler);
 					std::fill_n(it_buffer,left_out,filler);
 					it_buffer+=left_out;
 
-					assign_pixels(src.x_at(srcRoi_left,yy),src.x_at(srcRoi_right,yy),it_buffer);
+					assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
 					it_buffer+=srcRoi_width;
 
-					pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.x_at(srcRoi_right-1,yy),filler);
+					pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.x_at(srcRoi_right-1,yy_src),filler);
 					std::fill_n(it_buffer,right_out,filler);
 					break;
 				}
@@ -206,15 +208,15 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 					bool reverse;
 					if( nleft % 2 ) // odd
 					{
-						assign_pixels( src.at(srcRoi_right-1-left_rest,yy),
-									   src.at(srcRoi_right-1,yy),
+						assign_pixels( src.at(srcRoi_right-1-left_rest,yy_src),
+									   src.at(srcRoi_right-1,yy_src),
 									   it_buffer );
 						reverse = true; // next step reversed
 					}
 					else
 					{
-						assign_pixels( reverse_iterator(src.at(srcRoi_left+left_rest,yy)),
-									   reverse_iterator(src.at(srcRoi_left,yy)),
+						assign_pixels( reverse_iterator(src.at(srcRoi_left+left_rest,yy_src)),
+									   reverse_iterator(src.at(srcRoi_left,yy_src)),
 									   it_buffer );
 						reverse = false; // next step not reversed
 					}
@@ -230,14 +232,14 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 						
 						if( reverse )
 						{
-							assign_pixels( reverse_iterator(src.at(srcRoi_right,yy)),
-										   reverse_iterator(src.at(srcRoi_right-tmp_size,yy)),
+							assign_pixels( reverse_iterator(src.at(srcRoi_right,yy_src)),
+										   reverse_iterator(src.at(srcRoi_right-tmp_size,yy_src)),
 										   it_buffer );
 						}
 						else
 						{
-							assign_pixels( src.at(srcRoi_left,yy),
-										   src.at(srcRoi_left+tmp_size,yy),
+							assign_pixels( src.at(srcRoi_left,yy_src),
+										   src.at(srcRoi_left+tmp_size,yy_src),
 										   it_buffer );
 						}
 						it_buffer += tmp_size;
@@ -285,10 +287,28 @@ public:
 ///correlate a 1D variable-size kernel along the rows of an image
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
+void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                    convolve_boundary_option option=convolve_option_extend_zero) {
+    detail::correlate_rows_imp<PixelAccum>(src,ker,dst,dst_tl,option,detail::correlator_n<PixelAccum>(ker.size()));
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
 void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst,
                     convolve_boundary_option option=convolve_option_extend_zero) {
 	point2<std::ptrdiff_t> zero(0,0);
     detail::correlate_rows_imp<PixelAccum>(src,ker,dst,zero,option,detail::correlator_n<PixelAccum>(ker.size()));
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the columns of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                    convolve_boundary_option option=convolve_option_extend_zero) {
+    correlate_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),dst_tl,option);
 }
 
 /// \ingroup ImageAlgorithms
@@ -304,9 +324,27 @@ void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst,
 ///convolve a 1D variable-size kernel along the rows of an image
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
+void convolve_rows(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                   convolve_boundary_option option=convolve_option_extend_zero) {
+    correlate_rows<PixelAccum>(src,reverse_kernel(ker),dst,dst_tl,option);
+}
+
+/// \ingroup ImageAlgorithms
+///convolve a 1D variable-size kernel along the rows of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
 void convolve_rows(const SrcView& src, const Kernel& ker, const DstView& dst,
                    convolve_boundary_option option=convolve_option_extend_zero) {
     correlate_rows<PixelAccum>(src,reverse_kernel(ker),dst,option);
+}
+
+/// \ingroup ImageAlgorithms
+///convolve a 1D variable-size kernel along the columns of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void convolve_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                   convolve_boundary_option option=convolve_option_extend_zero) {
+    convolve_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),dst_tl,option);
 }
 
 /// \ingroup ImageAlgorithms
