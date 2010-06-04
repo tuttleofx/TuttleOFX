@@ -18,7 +18,7 @@ namespace tuttle {
 namespace plugin {
 namespace blur {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**

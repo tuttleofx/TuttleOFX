@@ -164,3 +164,4 @@ void ConvolutionPlugin::changedParam( const OFX::InstanceChangedArgs &args, cons
 }
 }
 }
+

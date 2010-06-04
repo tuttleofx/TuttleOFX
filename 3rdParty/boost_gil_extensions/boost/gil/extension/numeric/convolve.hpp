@@ -45,6 +45,20 @@ enum convolve_boundary_option  {
 };
 
 namespace detail {
+
+/// \ingroup PointModel
+template <typename T> GIL_FORCEINLINE
+bool operator>=(const point2<T>& p1, const point2<T>& p2) { return (p1.x>=p2.x && p1.y>=p2.y); }
+/// \ingroup PointModel
+template <typename T> GIL_FORCEINLINE
+bool operator<=(const point2<T>& p1, const point2<T>& p2) { return (p1.x<=p2.x && p1.y<=p2.y); }
+/// \ingroup PointModel
+template <typename T> GIL_FORCEINLINE
+bool operator>=(const point2<T>& p, const T v) { return (p.x>=v && p.y>=v); }
+/// \ingroup PointModel
+template <typename T> GIL_FORCEINLINE
+bool operator<=(const point2<T>& p, const T v) { return (p.x<=v && p.y<=v); }
+
 /// compute the correlation of 1D kernel with the rows of an image
 /// \param src source view
 /// \param dst destination view
@@ -53,8 +67,8 @@ namespace detail {
 ///        We can see it as a vector to move dst in src coordinates.
 /// \param option boundary option
 /// \param correlator correlator functor
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView,typename Point,typename Correlator>
-void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const Point& dst_tl,
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView,typename Correlator>
+void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
                         convolve_boundary_option option,
                         Correlator correlator) {
 	// assert dst frame with shift is inside src frame
@@ -62,10 +76,11 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	// dst must be contained in src
     assert(dst_tl >= 0);
     assert(dst_tl <= src.dimensions());
-    assert(dst_tl + dst.dimensions() <= src.dimensions());
+	assert(dst_tl + dst.dimensions() <= src.dimensions());
     assert(ker.size()!=0);
 
-	typedef typename Point::value_type coord_t;
+	typedef typename SrcView::point_t point_t;
+	typedef typename point_t::value_type coord_t;
     typedef typename pixel_proxy<typename SrcView::value_type>::type PIXEL_SRC_REF;
     typedef typename pixel_proxy<typename DstView::value_type>::type PIXEL_DST_REF;
     typedef typename Kernel::value_type kernel_type;
@@ -77,10 +92,10 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
         return;
     }
 
-    const Point dst_size = dst.dimensions();
+    const point_t dst_size = dst.dimensions();
     PixelAccum acc_zero; pixel_zeros_t<PixelAccum>()(acc_zero);
 
-    if (dst_size.x==0/* || roi_size==0*/)
+    if (dst_size.x==0 || dst_size.y==0)
 		return;
 
 	//  ................................................................
@@ -97,20 +112,12 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	//  .                                                              .
 	//  ................................................................
 	// < > : represents the temporary buffer
-	const Point roi_br  = dst_tl + dst.dimensions();
+	const point_t dst_br  = dst_tl + dst.dimensions();
 	const coord_t left_in   = std::min(static_cast<coord_t>(ker.left_size()), dst_tl.x);
 	const coord_t left_out  = std::abs(static_cast<coord_t>(ker.left_size()) - dst_tl.x);
-	const coord_t right_tmp = roi_br.x - dst_size.x;
+	const coord_t right_tmp = dst_br.x - dst_size.x;
 	const coord_t right_in  = std::min(static_cast<coord_t>(ker.right_size()), right_tmp);
 	const coord_t right_out = std::abs(static_cast<coord_t>(ker.right_size()) - right_tmp);
-
-	COUT_VAR(ker.size());
-	COUT_VAR(ker.left_size());
-	COUT_VAR(ker.right_size());
-	COUT_VAR(left_in);
-	COUT_VAR(left_out);
-	COUT_VAR(right_in);
-	COUT_VAR(right_out);
 
 	if (option==convolve_option_output_ignore || option==convolve_option_output_zero)
 	{
@@ -125,13 +132,12 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 			std::vector<PixelAccum> buffer(dst.dimensions().x+left_in+right_in);
             for(coord_t yy=0;yy<dst_size.y;++yy)
 			{
-				coord_t yy_src = yy + roi_br.y;
-                assign_pixels(src.x_at(dst_tl.x-left_in,yy_src), src.x_at(roi_br.x+right_in,yy_src), &buffer.front());
+				coord_t yy_src = yy + dst_tl.y;
+                assign_pixels(src.x_at(dst_tl.x-left_in,yy_src), src.x_at(dst_br.x+right_in,yy_src), &buffer.front());
 
                 typename DstView::x_iterator it_dst=dst.row_begin(yy);
                 if (option==convolve_option_output_zero)
-                    std::fill_n(it_dst,left_out,dst_zero);
-                it_dst += left_out;
+                    it_dst = std::fill_n(it_dst,left_out,dst_zero);
 
 				int buffer_dst_size = buffer.size()-left_out-right_out;
 				correlator( &buffer.front(), &buffer.front()+buffer_dst_size, // why not always use begin(), does front() have a performance impact ?
@@ -148,18 +154,11 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	{
         std::vector<PixelAccum> buffer( dst_size.x + (ker.size() - 1) );
 		const coord_t srcRoi_left = dst_tl.x - left_in;
-		const coord_t srcRoi_right = roi_br.x - right_in;
+		const coord_t srcRoi_right = dst_br.x - right_in;
 		const coord_t srcRoi_width = dst_size.x + left_in + right_in;
-		COUT_VAR2(dst_tl.x, dst_tl.y);
-		COUT_VAR2(roi_br.x, roi_br.y);
-		COUT_VAR2(dst.dimensions().x, dst.dimensions().y);
-		COUT_VAR2(dst_size.x, dst_size.y);
-		COUT_VAR(srcRoi_left);
-		COUT_VAR(srcRoi_right);
-		COUT_VAR(srcRoi_width);
         for(int yy=0; yy<dst_size.y; ++yy)
 		{
-			coord_t yy_src = yy + roi_br.y;
+			coord_t yy_src = yy + dst_tl.y;
 			// fill buffer from src view depending on boundary option
             switch( option )
 			{
@@ -167,18 +166,16 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 				{
 					PixelAccum* it_buffer=&buffer.front();
 					assign_pixels( src.x_at(dst_tl.x-ker.left_size(),yy_src),
-								   src.x_at(roi_br.x+ker.right_size(),yy_src),
+								   src.x_at(dst_br.x+ker.right_size(),yy_src),
 								   it_buffer );
 					break;
 				}
 				case convolve_option_extend_zero:
 				{
 					PixelAccum* it_buffer=&buffer.front();
-					std::fill_n(it_buffer,left_out,acc_zero);
-					it_buffer+=left_out;
+					it_buffer = std::fill_n(it_buffer,left_out,acc_zero);
 
-					assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
-					it_buffer+=srcRoi_width;
+					it_buffer = assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
 
 					std::fill_n(it_buffer,right_out,acc_zero);
 					break;
@@ -188,11 +185,9 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 					PixelAccum* it_buffer=&buffer.front();
 					PixelAccum filler;
 					pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.x_at(srcRoi_left,yy_src),filler);
-					std::fill_n(it_buffer,left_out,filler);
-					it_buffer+=left_out;
+					it_buffer = std::fill_n(it_buffer,left_out,filler);
 
-					assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
-					it_buffer+=srcRoi_width;
+					it_buffer = assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
 
 					pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.x_at(srcRoi_right-1,yy_src),filler);
 					std::fill_n(it_buffer,right_out,filler);
@@ -258,6 +253,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
         }
     }
 }
+
 template <typename PixelAccum>
 class correlator_n {
 private:
@@ -298,7 +294,7 @@ template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
 void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst,
                     convolve_boundary_option option=convolve_option_extend_zero) {
-	point2<std::ptrdiff_t> zero(0,0);
+	typename SrcView::point_t zero(0,0);
     detail::correlate_rows_imp<PixelAccum>(src,ker,dst,zero,option,detail::correlator_n<PixelAccum>(ker.size()));
 }
 
@@ -308,7 +304,7 @@ template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
 void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
                     convolve_boundary_option option=convolve_option_extend_zero) {
-    correlate_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),dst_tl,option);
+    correlate_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),typename SrcView::point_t(dst_tl.y, dst_tl.x),option);
 }
 
 /// \ingroup ImageAlgorithms
@@ -344,7 +340,7 @@ template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
 void convolve_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
                    convolve_boundary_option option=convolve_option_extend_zero) {
-    convolve_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),dst_tl,option);
+    convolve_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),typename SrcView::point_t(dst_tl.y, dst_tl.x),option);
 }
 
 /// \ingroup ImageAlgorithms
