@@ -92,12 +92,9 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
         return;
     }
 
-    const point_t dst_size = dst.dimensions();
-    PixelAccum acc_zero; pixel_zeros_t<PixelAccum>()(acc_zero);
-
-    if (dst_size.x==0 || dst_size.y==0)
+    if (dst.dimensions().x==0 || dst.dimensions().y==0)
 		return;
-
+	
 	//  ................................................................
 	//  .                     src with kernel size adds                .
 	//  .                                                              .
@@ -114,15 +111,27 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	// < > : represents the temporary buffer
 	const point_t dst_br  = dst_tl + dst.dimensions();
 	const coord_t left_in   = std::min(static_cast<coord_t>(ker.left_size()), dst_tl.x);
-	const coord_t left_out  = std::abs(static_cast<coord_t>(ker.left_size()) - dst_tl.x);
-	const coord_t right_tmp = dst_br.x - dst_size.x;
+	const coord_t left_out  = std::max(static_cast<coord_t>(ker.left_size()) - dst_tl.x, (coord_t)0);
+	const coord_t right_tmp = src.dimensions().x - dst_br.x;
 	const coord_t right_in  = std::min(static_cast<coord_t>(ker.right_size()), right_tmp);
-	const coord_t right_out = std::abs(static_cast<coord_t>(ker.right_size()) - right_tmp);
+	const coord_t right_out = std::max(static_cast<coord_t>(ker.right_size()) - right_tmp, (coord_t)0);
+
+	COUT_VAR2( src.dimensions().x, src.dimensions().y );
+	COUT_VAR2( dst.dimensions().x, dst.dimensions().y );
+	COUT_VAR2( dst_tl.x, dst_tl.y );
+	COUT_VAR2( dst_br.x, dst_br.y );
+	COUT_VAR( left_in );
+	COUT_VAR( left_out );
+	COUT_VAR( right_tmp );
+	COUT_VAR( right_in );
+	COUT_VAR( right_out );
+
+    PixelAccum acc_zero; pixel_zeros_t<PixelAccum>()(acc_zero);
 
 	if (option==convolve_option_output_ignore || option==convolve_option_output_zero)
 	{
         typename DstView::value_type dst_zero; pixel_assigns_t<PixelAccum,PIXEL_DST_REF>()(acc_zero,dst_zero);
-        if (dst_size.x<static_cast<coord_t>(ker.size()))
+        if (dst.dimensions().x<static_cast<coord_t>(ker.size()))
 		{
             if (option==convolve_option_output_zero)
                 fill_pixels(dst,dst_zero);
@@ -130,7 +139,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 		else
 		{
 			std::vector<PixelAccum> buffer(dst.dimensions().x+left_in+right_in);
-            for(coord_t yy=0;yy<dst_size.y;++yy)
+            for(coord_t yy=0;yy<dst.dimensions().y;++yy)
 			{
 				coord_t yy_src = yy + dst_tl.y;
                 assign_pixels(src.x_at(dst_tl.x-left_in,yy_src), src.x_at(dst_br.x+right_in,yy_src), &buffer.front());
@@ -152,11 +161,11 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
     }
 	else
 	{
-        std::vector<PixelAccum> buffer( dst_size.x + (ker.size() - 1) );
+        std::vector<PixelAccum> buffer( dst.dimensions().x + (ker.size() - 1) );
 		const coord_t srcRoi_left = dst_tl.x - left_in;
 		const coord_t srcRoi_right = dst_br.x - right_in;
-		const coord_t srcRoi_width = dst_size.x + left_in + right_in;
-        for(int yy=0; yy<dst_size.y; ++yy)
+		const coord_t srcRoi_width = dst.dimensions().x + left_in + right_in;
+        for(int yy=0; yy<dst.dimensions().y; ++yy)
 		{
 			coord_t yy_src = yy + dst_tl.y;
 			// fill buffer from src view depending on boundary option
@@ -247,7 +256,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 				case convolve_option_output_zero:
 					assert(false);
             }
-            correlator( &buffer.front(),&buffer.front()+dst_size.x,
+            correlator( &buffer.front(),&buffer.front()+dst.dimensions().x,
                         ker.begin(),
                         dst.row_begin(yy) );
         }
