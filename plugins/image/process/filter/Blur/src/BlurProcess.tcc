@@ -93,8 +93,8 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 		if( dst.dimensions() == this->_srcView.dimensions() ) // no tiles... easy !
 		{
 			COUT( "-- XY easy..." );
-			convolve_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, option );
-			convolve_cols<Pixel>( dst, _params._gilKernelY, dst, option );
+			correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, option );
+			correlate_cols<Pixel>( dst, _params._gilKernelY, dst, option );
 		}
 		else
 		{
@@ -113,7 +113,7 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			// |    |  :..:.............:..:   |     |
 			// |    |__________________________|     |
 			// |_____________________________________|
-			// tmp_buffer: is the temporary buffer used after the convolve_rows
+			// tmp_buffer: is the temporary buffer used after the correlate_rows
 			//             (width of procWin and height of proc_src_roi)
 			Coord top_in = std::min( numeric_cast<Coord>(_params._gilKernelY.left_size()), proc_tl.y );
 			Coord bottom_in = std::min( numeric_cast<Coord>(_params._gilKernelY.right_size()), (this->_srcPixelRod.y2-this->_srcPixelRod.y1)-(proc_tl.y+procWindowSize.y) );
@@ -138,12 +138,11 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			COUT_VAR( dst_tmp_tl );
 
 			COUT_X(10, "_row_");
-//			convolve_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, option );
-			convolve_rows<Pixel>( this->_srcView, _params._gilKernelX, view_tmp, image_tmp_tl, option );
+			correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, view_tmp, image_tmp_tl, option );
 			//COUT_X(10, "_save_row_");
 			//png_write_view( "view_tmp.png", color_converted_view<rgba8_pixel_t>(view_tmp) );
 			COUT_X(10, "_cols_");
-			convolve_cols<Pixel>( view_tmp, _params._gilKernelY, dst, dst_tmp_tl, option );
+			correlate_cols<Pixel>( view_tmp, _params._gilKernelY, dst, dst_tmp_tl, option );
 			COUT_X(10, "_end_");
 		}
 	}
@@ -151,13 +150,13 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	{
 		COUT( "-- X convolve" );
 		COUT_X(10, "_row_");
-		convolve_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, option );
+		correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, option );
 	}
 	else if( _params._gilKernelY.size() > 2 )
 	{
 		COUT( "-- Y convolve" );
 		COUT_X(10, "_cols_");
-		convolve_cols<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, option );
+		correlate_cols<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, option );
 	}
 }
 

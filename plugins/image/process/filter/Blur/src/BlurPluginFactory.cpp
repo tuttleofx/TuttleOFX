@@ -18,7 +18,7 @@ namespace tuttle {
 namespace plugin {
 namespace blur {
 
-static const bool kSupportTiles = true;
+static const bool kSupportTiles = false;
 
 
 /**
@@ -76,9 +76,6 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	border->appendOption( kParamBorderExtendConstant );
 	border->appendOption( kParamBorderExtendBlack );
 	border->appendOption( kParamBorderOutputBlack );
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
-	helpButton->setLabel( "Help" );
 }
 
 /**

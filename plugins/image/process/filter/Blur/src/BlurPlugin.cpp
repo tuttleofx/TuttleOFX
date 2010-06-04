@@ -135,7 +135,6 @@ void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &ar
 {
 	BlurProcessParams<Scalar> params = getProcessParams();
 	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-	OfxRectD dstRod = _clipDst->getCanonicalRod( args.time );
 
 	if( params._border == eBorderOutputBlack )
 			return;
@@ -149,7 +148,7 @@ void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &ar
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 
 }
-
+/*
 void BlurPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
     if( paramName == kHelpButton )
@@ -159,6 +158,7 @@ void BlurPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::
                      kHelpString );
     }
 }
+*/
 
 }
 }

@@ -53,11 +53,11 @@ bool operator>=(const point2<T>& p1, const point2<T>& p2) { return (p1.x>=p2.x &
 template <typename T> GIL_FORCEINLINE
 bool operator<=(const point2<T>& p1, const point2<T>& p2) { return (p1.x<=p2.x && p1.y<=p2.y); }
 /// \ingroup PointModel
-template <typename T> GIL_FORCEINLINE
-bool operator>=(const point2<T>& p, const T v) { return (p.x>=v && p.y>=v); }
+template <typename T, typename T2> GIL_FORCEINLINE
+bool operator>=(const point2<T>& p, const T2 v) { return (p.x>=v && p.y>=v); }
 /// \ingroup PointModel
-template <typename T> GIL_FORCEINLINE
-bool operator<=(const point2<T>& p, const T v) { return (p.x<=v && p.y<=v); }
+template <typename T, typename T2> GIL_FORCEINLINE
+bool operator<=(const point2<T>& p, const T2 v) { return (p.x<=v && p.y<=v); }
 
 /// compute the correlation of 1D kernel with the rows of an image
 /// \param src source view
@@ -359,8 +359,7 @@ GIL_FORCEINLINE
 void correlate_rows_fixed(const SrcView& src, const Kernel& ker, const DstView& dst,
                           convolve_boundary_option option=convolve_option_extend_zero) {
 	typename SrcView::point_t topleft(0,0);
-	typename SrcView::point_t dim = src.dimensions();
-    detail::correlate_rows_imp<PixelAccum>(src,ker,dst,topleft,dim,option,detail::correlator_k<Kernel::static_size,PixelAccum>());
+    detail::correlate_rows_imp<PixelAccum>(src,ker,dst,topleft,option,detail::correlator_k<Kernel::static_size,PixelAccum>());
 }
 
 /// \ingroup ImageAlgorithms

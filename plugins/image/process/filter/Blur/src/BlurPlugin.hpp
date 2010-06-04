@@ -37,7 +37,7 @@ public:
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois );
 
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+//    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 	
 	BlurProcessParams<Scalar> getProcessParams() const;
 	
