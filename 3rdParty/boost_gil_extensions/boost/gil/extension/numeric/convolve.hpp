@@ -120,6 +120,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 
 	COUT_VAR2( src.dimensions().x, src.dimensions().y );
 	COUT_VAR2( dst.dimensions().x, dst.dimensions().y );
+	COUT_VAR3( ker.size(), ker.left_size(), ker.right_size() );
 	COUT_VAR2( dst_tl.x, dst_tl.y );
 	COUT_VAR2( dst_br.x, dst_br.y );
 	COUT_VAR( left_in );
@@ -165,7 +166,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	{
         std::vector<PixelAccum> buffer( dst.dimensions().x + (ker.size() - 1) );
 		const coord_t srcRoi_left = dst_tl.x - left_in;
-		const coord_t srcRoi_right = dst_br.x - right_in;
+		const coord_t srcRoi_right = dst_br.x + right_in;
 		const coord_t srcRoi_width = dst.dimensions().x + left_in + right_in;
 		COUT_VAR( srcRoi_left );
 		COUT_VAR( srcRoi_right );
