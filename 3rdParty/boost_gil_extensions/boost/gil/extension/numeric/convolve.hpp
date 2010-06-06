@@ -28,6 +28,8 @@
 #include <boost/gil/image_view_factory.hpp>
 #include <boost/gil/algorithm.hpp>
 #include <boost/gil/metafunctions.hpp>
+#include <boost/numeric/conversion/cast.hpp>
+
 #include "pixel_numeric_operations.hpp"
 #include "algorithm.hpp"
 
@@ -110,11 +112,11 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	//  ................................................................
 	// < > : represents the temporary buffer
 	const point_t dst_br  = dst_tl + dst.dimensions();
-	const coord_t left_in   = std::min(static_cast<coord_t>(ker.left_size()), dst_tl.x);
-	const coord_t left_out  = std::max(static_cast<coord_t>(ker.left_size()) - dst_tl.x, (coord_t)0);
+	const coord_t left_in   = std::min(numeric_cast<coord_t>(ker.left_size()), dst_tl.x);
+	const coord_t left_out  = std::max(numeric_cast<coord_t>(ker.left_size()) - dst_tl.x, (coord_t)0);
 	const coord_t right_tmp = src.dimensions().x - dst_br.x;
-	const coord_t right_in  = std::min(static_cast<coord_t>(ker.right_size()), right_tmp);
-	const coord_t right_out = std::max(static_cast<coord_t>(ker.right_size()) - right_tmp, (coord_t)0);
+	const coord_t right_in  = std::min(numeric_cast<coord_t>(ker.right_size()), right_tmp);
+	const coord_t right_out = std::max(numeric_cast<coord_t>(ker.right_size()) - right_tmp, (coord_t)0);
 
 	COUT_VAR2( src.dimensions().x, src.dimensions().y );
 	COUT_VAR2( dst.dimensions().x, dst.dimensions().y );
@@ -165,6 +167,9 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 		const coord_t srcRoi_left = dst_tl.x - left_in;
 		const coord_t srcRoi_right = dst_br.x - right_in;
 		const coord_t srcRoi_width = dst.dimensions().x + left_in + right_in;
+		COUT_VAR( srcRoi_left );
+		COUT_VAR( srcRoi_right );
+		COUT_VAR( srcRoi_width );
         for(int yy=0; yy<dst.dimensions().y; ++yy)
 		{
 			coord_t yy_src = yy + dst_tl.y;
@@ -183,7 +188,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 				{
 					PixelAccum* it_buffer=&buffer.front();
 					it_buffer = std::fill_n(it_buffer,left_out,acc_zero);
-
+					
 					it_buffer = assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
 
 					std::fill_n(it_buffer,right_out,acc_zero);
@@ -206,7 +211,7 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 				{
 					PixelAccum* it_buffer = &buffer.front();
 					typedef typename SrcView::reverse_iterator reverse_iterator;
-					const unsigned int nleft = static_cast<unsigned int>(left_out / srcRoi_width);
+					const unsigned int nleft = numeric_cast<unsigned int>(left_out / srcRoi_width);
 					coord_t copy_size = buffer.size();
 					const coord_t left_rest = left_out % srcRoi_width;
 					bool reverse;

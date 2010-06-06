@@ -125,7 +125,7 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 
 			Image image_tmp( image_tmp_size ); ///< @todo tuttle: use an allocator to use memory allocated from host
 			View view_tmp = view( image_tmp );
-			Point dst_tmp_tl( 0, top_in );
+			const Point dst_tmp_tl( 0, top_in );
 
 			COUT_VAR( top_in );
 			COUT_VAR( _params._gilKernelY.left_size() );
