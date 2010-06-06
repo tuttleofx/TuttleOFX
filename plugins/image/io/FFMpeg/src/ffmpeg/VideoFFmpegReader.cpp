@@ -1,13 +1,7 @@
 #include "VideoFFmpegReader.hpp"
 
-extern "C" {
-#define __STDC_CONSTANT_MACROS
-#include <stdint.h>
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavutil/avutil.h>
-#include <libswscale/swscale.h>
-}
+#include <boost/cstdint.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 VideoFFmpegReader::VideoFFmpegReader( )
 : _context( NULL )
@@ -215,7 +209,7 @@ bool VideoFFmpegReader::setupStreamInfo( )
 	// Set the duration
 	if( _context->duration != AV_NOPTS_VALUE )
 	{
-		_nbFrames = uint64_t( ( fps( )*(double) _context->duration / (double) AV_TIME_BASE ) );
+		_nbFrames = boost::numeric_cast<boost::uint64_t>( ( fps( )*(double) _context->duration / (double) AV_TIME_BASE ) );
 	}
 	else
 	{
@@ -228,13 +222,13 @@ bool VideoFFmpegReader::setupStreamInfo( )
 		seek( 0 );
 		av_init_packet( &_pkt );
 		av_read_frame( _context, &_pkt );
-		uint64_t firstPts = _pkt.pts;
-		uint64_t maxPts = firstPts;
+		boost::uint64_t firstPts = _pkt.pts;
+		boost::uint64_t maxPts = firstPts;
 		seek( 1 << 29 );
 		av_init_packet( &_pkt );
 		while( stream && av_read_frame( _context, &_pkt ) >= 0 )
 		{
-			uint64_t currPts = av_q2d( getVideoStream( )->time_base )*( _pkt.pts - firstPts ) * fps( );
+			boost::uint64_t currPts = boost::numeric_cast<boost::uint64_t>(av_q2d( getVideoStream( )->time_base )*( _pkt.pts - firstPts ) * fps( ));
 			if( currPts > maxPts )
 				maxPts = currPts;
 		}
@@ -273,7 +267,7 @@ void VideoFFmpegReader::closeVideoCodec( )
 int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
 {
 	int64_t timestamp = (int64_t) ( ( (double) pos / fps( ) ) * AV_TIME_BASE );
-	if( (uint64_t) _context->start_time != AV_NOPTS_VALUE )
+	if( (boost::uint64_t) _context->start_time != AV_NOPTS_VALUE )
 		timestamp += _context->start_time;
 	return timestamp;
 }
@@ -289,19 +283,13 @@ bool VideoFFmpegReader::seek( size_t pos )
 	}
 
 	AVStream* stream = getVideoStream( );
-	if (stream)
-	{
-		avcodec_flush_buffers( stream->codec );
-		if( av_seek_frame( _context, -1, offset, AVSEEK_FLAG_BACKWARD ) < 0 )
-		{
-			return false;
-		}
-	}
-	else
+	if (!stream)
+		return false;
+	avcodec_flush_buffers( stream->codec );
+	if( av_seek_frame( _context, -1, offset, AVSEEK_FLAG_BACKWARD ) < 0 )
 	{
 		return false;
 	}
-
 	return true;
 }
 
@@ -309,7 +297,7 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 {
 	// search for our picture.
 	double pts = 0;
-	if( (uint64_t) _pkt.dts != AV_NOPTS_VALUE )
+	if( (boost::uint64_t) _pkt.dts != AV_NOPTS_VALUE )
 	{
 		AVStream* stream = getVideoStream( );
 		if (stream)
@@ -323,51 +311,51 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 		curPos = _lastSearchPos + 1;
 	_lastSearchPos = curPos;
 
-	if( (uint64_t) _context->start_time != AV_NOPTS_VALUE )
+	if( (boost::uint64_t) _context->start_time != AV_NOPTS_VALUE )
 		curPos -= int(_context->start_time * fps( ) / AV_TIME_BASE );
 
 	int hasPicture = 0;
 	int curSearch = 0;
 	AVStream* stream = getVideoStream( );
 	if (stream)
+		return false;
+
+	AVCodecContext* codecContext = stream->codec;
+	if( curPos >= frame )
 	{
-		AVCodecContext* codecContext = stream->codec;
-		if( curPos >= frame )
-		{
-			//		std::cout << "avcodec_decode_video" << std::endl;
-			avcodec_decode_video( codecContext, _avFrame, &hasPicture, _pkt.data, _pkt.size );
-		}
-		else if( _offsetTime )
-		{
-			//		std::cout << "avcodec_decode_video" << std::endl;
-			avcodec_decode_video( codecContext, _avFrame, &curSearch, _pkt.data, _pkt.size );
-		}
+		//		std::cout << "avcodec_decode_video" << std::endl;
+		avcodec_decode_video( codecContext, _avFrame, &hasPicture, _pkt.data, _pkt.size );
+	}
+	else if( _offsetTime )
+	{
+		//		std::cout << "avcodec_decode_video" << std::endl;
+		avcodec_decode_video( codecContext, _avFrame, &curSearch, _pkt.data, _pkt.size );
+	}
 
-		if( !hasPicture )
-			return false;
+	if( !hasPicture )
+		return false;
 
-		_lastDecodedPos = _lastSearchPos;
+	_lastDecodedPos = _lastSearchPos;
 
-		AVPicture output;
-		avpicture_fill( &output, &_data[0], PIX_FMT_RGB24, _width, _height );
+	AVPicture output;
+	avpicture_fill( &output, &_data[0], PIX_FMT_RGB24, _width, _height );
 
-		// patched to use swscale instead of img_convert:
-		PixelFormat in_pixelFormat = codecContext->pix_fmt; // pixel format source
-		PixelFormat out_pixelFormat = PIX_FMT_RGB24; // pixel format dest
+	// patched to use swscale instead of img_convert:
+	PixelFormat in_pixelFormat = codecContext->pix_fmt; // pixel format source
+	PixelFormat out_pixelFormat = PIX_FMT_RGB24; // pixel format dest
 
-		_sws_context = sws_getCachedContext( _sws_context, width( ), height( ), in_pixelFormat, width( ), height( ), out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
+	_sws_context = sws_getCachedContext( _sws_context, width( ), height( ), in_pixelFormat, width( ), height( ), out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
 
-		if( !_sws_context )
-		{
-			std::cerr << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
-			return false;
-		}
-		int error = sws_scale( _sws_context, _avFrame->data, _avFrame->linesize, 0, height( ), output.data, output.linesize );
-		if( error < 0 )
-		{
-			std::cerr << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
-			return false;
-		}
+	if( !_sws_context )
+	{
+		std::cerr << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
+		return false;
+	}
+	int error = sws_scale( _sws_context, _avFrame->data, _avFrame->linesize, 0, height( ), output.data, output.linesize );
+	if( error < 0 )
+	{
+		std::cerr << "ffmpegReader: ffmpeg-conversion failed (" << in_pixelFormat << "->" << out_pixelFormat << ")" << std::endl;
+		return false;
 	}
 
 	//	std::cout << "decodeImage " << frame << " OK" << std::endl;

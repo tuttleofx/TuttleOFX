@@ -2,6 +2,8 @@
 
 #include <tuttle/common/utils/global.hpp>
 
+#include <boost/cstdint.hpp>
+
 VideoFFmpegWriter::VideoFFmpegWriter( )
 : _avformatOptions( 0 )
 , _sws_context( NULL )
@@ -66,7 +68,7 @@ VideoFFmpegWriter::~VideoFFmpegWriter( )
 		av_free( _avctxOptions[i] );
 }
 
-int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height, PixelFormat in_pixelFormat )
+int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_height, PixelFormat in_pixelFormat )
 {
 	_error = IGNORE_FINISH;
 
@@ -167,7 +169,7 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 	AVFrame* out_frame = avcodec_alloc_frame( );
 	avcodec_get_frame_defaults( out_frame );
 	int out_picSize = avpicture_get_size( _out_pixelFormat, width( ), height( ) );
-	uint8_t* out_buffer = (uint8_t*) av_malloc( out_picSize );
+	boost::uint8_t* out_buffer = (boost::uint8_t*) av_malloc( out_picSize );
 	avpicture_fill( (AVPicture*) out_frame, out_buffer, _out_pixelFormat, width( ), height( ) );
 
 	_sws_context = sws_getCachedContext( _sws_context, in_width, in_height, in_pixelFormat, width( ), height( ), _out_pixelFormat, SWS_BICUBIC, NULL, NULL, NULL );
@@ -195,13 +197,13 @@ int VideoFFmpegWriter::execute( uint8_t* in_buffer, int in_width, int in_height,
 		av_init_packet( &pkt );
 		pkt.flags |= PKT_FLAG_KEY;
 		pkt.stream_index = _stream->index;
-		pkt.data = (uint8_t*) out_frame;
+		pkt.data = (boost::uint8_t*) out_frame;
 		pkt.size = sizeof (AVPicture );
 		ret = av_interleaved_write_frame( _avformatOptions, &pkt );
 	}
 	else
 	{
-		uint8_t* out_buffer = (uint8_t*) av_malloc( out_picSize );
+		boost::uint8_t* out_buffer = (boost::uint8_t*) av_malloc( out_picSize );
 
 		ret = avcodec_encode_video( _stream->codec, out_buffer, out_picSize, out_frame );
 
