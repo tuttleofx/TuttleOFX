@@ -140,10 +140,10 @@ void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &ar
 			return;
 
 	OfxRectD srcRoi;
-	srcRoi.x1 = srcRod.x1 - params._gilKernelX.left_size();
-	srcRoi.y1 = srcRod.y1 - params._gilKernelY.left_size();
-	srcRoi.x2 = srcRod.x2 + params._gilKernelX.right_size();
-	srcRoi.y2 = srcRod.y2 + params._gilKernelY.right_size();
+	srcRoi.x1 = srcRod.x1 - params._gilKernelX.left_size() - 50;
+	srcRoi.y1 = srcRod.y1 - params._gilKernelY.left_size() - 50;
+	srcRoi.x2 = srcRod.x2 + params._gilKernelX.right_size() + 50;
+	srcRoi.y2 = srcRod.y2 + params._gilKernelY.right_size() + 50;
 	
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 

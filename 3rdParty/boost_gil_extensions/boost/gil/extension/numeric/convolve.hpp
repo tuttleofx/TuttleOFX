@@ -118,6 +118,10 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	const coord_t right_in  = std::min(numeric_cast<coord_t>(ker.right_size()), right_tmp);
 	const coord_t right_out = std::max(numeric_cast<coord_t>(ker.right_size()) - right_tmp, (coord_t)0);
 
+	const coord_t srcRoi_left = dst_tl.x - left_in;
+	const coord_t srcRoi_right = dst_br.x + right_in;
+	const coord_t srcRoi_width = dst.dimensions().x + left_in + right_in;
+
 	COUT_VAR2( src.dimensions().x, src.dimensions().y );
 	COUT_VAR2( dst.dimensions().x, dst.dimensions().y );
 	COUT_VAR3( ker.size(), ker.left_size(), ker.right_size() );
@@ -128,6 +132,9 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	COUT_VAR( right_tmp );
 	COUT_VAR( right_in );
 	COUT_VAR( right_out );
+	COUT_VAR( srcRoi_left );
+	COUT_VAR( srcRoi_right );
+	COUT_VAR( srcRoi_width );
 
     PixelAccum acc_zero; pixel_zeros_t<PixelAccum>()(acc_zero);
 
@@ -141,36 +148,30 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
         }
 		else
 		{
-			std::vector<PixelAccum> buffer(dst.dimensions().x+left_in+right_in);
+			std::vector<PixelAccum> buffer(srcRoi_width);
             for(coord_t yy=0;yy<dst.dimensions().y;++yy)
 			{
 				coord_t yy_src = yy + dst_tl.y;
-                assign_pixels(src.x_at(dst_tl.x-left_in,yy_src), src.x_at(dst_br.x+right_in,yy_src), &buffer.front());
+                assign_pixels(src.x_at(srcRoi_left,yy_src), src.x_at(srcRoi_right,yy_src), &buffer.front());
 
-                typename DstView::x_iterator it_dst=dst.row_begin(yy);
-                if (option==convolve_option_output_zero)
-                    it_dst = std::fill_n(it_dst,left_out,dst_zero);
+//                typename DstView::x_iterator it_dst=dst.row_begin(yy);
+//                if (option==convolve_option_output_zero)
+//                    std::fill_n(it_dst,left_out,dst_zero);
+//				it_dst += left_out;
 
-				int buffer_dst_size = buffer.size()-left_out-right_out;
-				correlator( &buffer.front(), &buffer.front()+buffer_dst_size, // why not always use begin(), does front() have a performance impact ?
-                            ker.begin(), it_dst );
-                it_dst += buffer_dst_size;
+//				int buffer_dst_size = dst.dimensions().x-left_out-right_out;
+				//correlator( &buffer.front(), &buffer.front()+buffer_dst_size, // why not always use begin(), does front() have a performance impact ?
+                //            ker.begin(), it_dst );
+//                it_dst += buffer_dst_size;
 
-                if (option==convolve_option_output_zero)
-                    std::fill_n(it_dst,right_out,dst_zero);
-                //it_dst += right_out;
+//                if (option==convolve_option_output_zero)
+//                    std::fill_n(it_dst,right_out,dst_zero);
             }
         }
     }
 	else
 	{
         std::vector<PixelAccum> buffer( dst.dimensions().x + (ker.size() - 1) );
-		const coord_t srcRoi_left = dst_tl.x - left_in;
-		const coord_t srcRoi_right = dst_br.x + right_in;
-		const coord_t srcRoi_width = dst.dimensions().x + left_in + right_in;
-		COUT_VAR( srcRoi_left );
-		COUT_VAR( srcRoi_right );
-		COUT_VAR( srcRoi_width );
         for(int yy=0; yy<dst.dimensions().y; ++yy)
 		{
 			coord_t yy_src = yy + dst_tl.y;
