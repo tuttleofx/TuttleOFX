@@ -50,9 +50,9 @@ void ImageGilFilterProcessor<View>::setup( const OFX::RenderArguments& args )
 		throw( ImageNotReadyException( ) );
 	if( this->_src->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
-	this->_srcView = this->getView( this->_src.get(), _clipSrc->getPixelRod(args.time) );
 //	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRod = _clipSrc->getPixelRod(args.time);
+	this->_srcView = this->getView( this->_src.get(), _srcPixelRod );
 
 	// Make sure bit depths are same
 	if( this->_src->getPixelDepth() != this->_dst->getPixelDepth() ||

@@ -72,10 +72,10 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
 	border->setLabel( "Border" );
-	border->appendOption( kParamBorderExtendMirror );
-	border->appendOption( kParamBorderExtendConstant );
-	border->appendOption( kParamBorderExtendBlack );
-	border->appendOption( kParamBorderOutputBlack );
+	border->appendOption( kParamBorderMirror );
+	border->appendOption( kParamBorderConstant );
+	border->appendOption( kParamBorderBlack );
+	border->appendOption( kParamBorderPadded );
 }
 
 /**

@@ -119,7 +119,7 @@ bool BlurPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& 
 
 	switch( params._border )
 	{
-		case eBorderOutputBlack:
+		case eBorderPadded:
 			rod.x1 = srcRod.x1 + params._gilKernelX.left_size();
 			rod.y1 = srcRod.y1 + params._gilKernelY.left_size();
 			rod.x2 = srcRod.x2 - params._gilKernelX.right_size();
@@ -136,18 +136,26 @@ void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &ar
 	BlurProcessParams<Scalar> params = getProcessParams();
 	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 
-	if( params._border == eBorderOutputBlack )
-			return;
-
 	OfxRectD srcRoi;
-	srcRoi.x1 = srcRod.x1 - params._gilKernelX.left_size() - 50;
-	srcRoi.y1 = srcRod.y1 - params._gilKernelY.left_size() - 50;
-	srcRoi.x2 = srcRod.x2 + params._gilKernelX.right_size() + 50;
-	srcRoi.y2 = srcRod.y2 + params._gilKernelY.right_size() + 50;
-	
+	srcRoi.x1 = srcRod.x1 - params._gilKernelX.left_size();
+	srcRoi.y1 = srcRod.y1 - params._gilKernelY.left_size();
+	srcRoi.x2 = srcRod.x2 + params._gilKernelX.right_size();
+	srcRoi.y2 = srcRod.y2 + params._gilKernelY.right_size();
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-
 }
+
+
+bool BlurPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime )
+{
+	BlurProcessParams<Scalar> params = getProcessParams();
+	if( params._gilKernelX.size() > 2 || params._gilKernelY.size() > 2 )
+		return false;
+	
+	identityClip = _clipSrc;
+	identityTime = args.time;
+	return true;
+}
+
 /*
 void BlurPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {

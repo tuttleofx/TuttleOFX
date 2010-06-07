@@ -63,9 +63,9 @@ public:
 			throw( ImageNotReadyException( ) );
 		if( _dst->getRowBytes( ) <= 0 )
 			throw( WrongRowBytesException( ) );
-		_dstView = getView( _dst.get(), _clipDst->getPixelRod(args.time) );
 //		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_dstPixelRod = _clipDst->getPixelRod(args.time);
+		_dstView = getView( _dst.get(), _dstPixelRod );
 	}
 
 	/** @brief fetch output and inputs clips */

@@ -122,20 +122,6 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 	const coord_t srcRoi_right = dst_br.x + right_in;
 	const coord_t srcRoi_width = dst.dimensions().x + left_in + right_in;
 
-	COUT_VAR2( src.dimensions().x, src.dimensions().y );
-	COUT_VAR2( dst.dimensions().x, dst.dimensions().y );
-	COUT_VAR3( ker.size(), ker.left_size(), ker.right_size() );
-	COUT_VAR2( dst_tl.x, dst_tl.y );
-	COUT_VAR2( dst_br.x, dst_br.y );
-	COUT_VAR( left_in );
-	COUT_VAR( left_out );
-	COUT_VAR( right_tmp );
-	COUT_VAR( right_in );
-	COUT_VAR( right_out );
-	COUT_VAR( srcRoi_left );
-	COUT_VAR( srcRoi_right );
-	COUT_VAR( srcRoi_width );
-
     PixelAccum acc_zero; pixel_zeros_t<PixelAccum>()(acc_zero);
 
 	if (option==convolve_option_output_ignore || option==convolve_option_output_zero)
@@ -152,20 +138,22 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
             for(coord_t yy=0;yy<dst.dimensions().y;++yy)
 			{
 				coord_t yy_src = yy + dst_tl.y;
-                assign_pixels(src.x_at(srcRoi_left,yy_src), src.x_at(srcRoi_right,yy_src), &buffer.front());
+                assign_pixels( src.x_at(srcRoi_left,yy_src),
+				               src.x_at(srcRoi_right,yy_src),
+							   &buffer.front() );
 
-//                typename DstView::x_iterator it_dst=dst.row_begin(yy);
-//                if (option==convolve_option_output_zero)
-//                    std::fill_n(it_dst,left_out,dst_zero);
-//				it_dst += left_out;
+                typename DstView::x_iterator it_dst=dst.row_begin(yy);
+                if (option==convolve_option_output_zero)
+                    std::fill_n(it_dst,left_out,dst_zero);
+				it_dst += left_out;
 
-//				int buffer_dst_size = dst.dimensions().x-left_out-right_out;
-				//correlator( &buffer.front(), &buffer.front()+buffer_dst_size, // why not always use begin(), does front() have a performance impact ?
-                //            ker.begin(), it_dst );
-//                it_dst += buffer_dst_size;
+				int buffer_dst_size = dst.dimensions().x-left_out-right_out;
+				correlator( &buffer.front(), &buffer.front()+buffer_dst_size, // why not always use begin(), does front() have a performance impact ?
+                            ker.begin(), it_dst );
+                it_dst += buffer_dst_size;
 
-//                if (option==convolve_option_output_zero)
-//                    std::fill_n(it_dst,right_out,dst_zero);
+                if (option==convolve_option_output_zero)
+                    std::fill_n(it_dst,right_out,dst_zero);
             }
         }
     }
@@ -180,10 +168,9 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 			{
 				case convolve_option_extend_padded:
 				{
-					PixelAccum* it_buffer=&buffer.front();
 					assign_pixels( src.x_at(dst_tl.x-ker.left_size(),yy_src),
 								   src.x_at(dst_br.x+ker.right_size(),yy_src),
-								   it_buffer );
+								   &buffer.front() );
 					break;
 				}
 				case convolve_option_extend_zero:
