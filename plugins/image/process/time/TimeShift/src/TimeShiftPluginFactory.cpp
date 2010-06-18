@@ -62,6 +62,7 @@ void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	OFX::DoubleParamDescriptor *offset = desc.defineDoubleParam( kOffset );
 	offset->setLabel( "offset" );
 	offset->setDefault( 0.0 );
+	offset->setDisplayRange( -10, 10 );
 }
 
 /**

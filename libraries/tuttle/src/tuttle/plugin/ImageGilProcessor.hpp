@@ -79,7 +79,7 @@ public:
 		catch( ImageNotReadyException& e )
 		{
 			// stop the process but don't display an error
-			COUT_ERROR( "ImageNotReadyException" );
+			COUT_ERROR_DEBUG( "ImageNotReadyException" );
 			progressEnd( );
 			return;
 		}
