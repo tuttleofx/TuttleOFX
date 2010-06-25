@@ -22,6 +22,7 @@ class Jpeg2000ReaderPlugin : public ReaderPlugin
 public:
     Jpeg2000ReaderPlugin( OfxImageEffectHandle handle );
 	tuttle::io::J2KReader & getReader();
+	~Jpeg2000ReaderPlugin();
 
 public:
 	Jpeg2000ReaderProcessParams getProcessParams(const OfxTime time);
