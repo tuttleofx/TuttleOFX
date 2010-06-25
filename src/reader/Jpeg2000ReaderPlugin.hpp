@@ -11,7 +11,7 @@ namespace reader {
 
 struct Jpeg2000ReaderProcessParams
 {
-	std::string _filepath;      ///< Ffmpeg filepath
+	std::string _paramFilepath;      ///< Ffmpeg filepath
 };
 
 /**
@@ -33,7 +33,7 @@ public:
 
 	OFX::BitDepthEnum getParamExplicitConversion() const
 	{
-		switch( this->_explicitConv->getValue() )
+		switch( this->_paramExplicitConv->getValue() )
 		{
 			case 0:
 				return OFX::eBitDepthNone;

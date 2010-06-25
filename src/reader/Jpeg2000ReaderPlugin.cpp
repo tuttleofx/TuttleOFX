@@ -40,7 +40,7 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 	}
 	Jpeg2000ReaderProcessParams params;
 
-	params._filepath = _filePattern.getFilenameAt(time);
+	params._paramFilepath = _filePattern.getFilenameAt(time);
 	return params;
 }
 
@@ -64,8 +64,8 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 	_reader.decode();
 
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = this->_dstClip->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = this->_dstClip->getPixelComponents();
+	OFX::BitDepthEnum dstBitDepth         = this->_clipDst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = this->_clipDst->getPixelComponents();
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
@@ -164,7 +164,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 {
 	try
 	{
-		_filePattern.reset(_filepath->getValue(), true);
+		_filePattern.reset(_paramFilepath->getValue(), true);
 
 		// If pattern detected (frame varying on time)
 		clipPreferences.setOutputFrameVarying( varyOnTime() );
@@ -178,21 +178,21 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 		// If we explicitly specify which conversion we want
 		if ( getParamExplicitConversion() != OFX::eBitDepthNone )
 		{
-			clipPreferences.setClipBitDepth( *_dstClip, getParamExplicitConversion() );
-			clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
-			clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
+			clipPreferences.setClipBitDepth( *_clipDst, getParamExplicitConversion() );
+			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+			clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
 		}
 		else
 		{
-			clipPreferences.setPixelAspectRatio( *_dstClip, 1.0 );
+			clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
 			switch(fileInfo._components)
 			{
 				case 3:
 				case 4:
-					clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentRGBA );
+					clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
 					break;
 				case 1:
-					clipPreferences.setClipComponents( *_dstClip, OFX::ePixelComponentAlpha );
+					clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentAlpha );
 					break;
 				default:
 				{
@@ -200,7 +200,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 				}
 			}
 
-			clipPreferences.setClipBitDepth( *_dstClip, fileInfo._precisionType );
+			clipPreferences.setClipBitDepth( *_clipDst, fileInfo._precisionType );
 		}
 	}
 	catch(...)
