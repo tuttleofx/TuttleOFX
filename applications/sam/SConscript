@@ -8,14 +8,16 @@ libraries = [ libs.openfxHack,
 			  libs.boost_gil,
 			 ]
 
+name = project.getName()
 sourcesDir = 'src'
 samSources = project.scanFiles( [sourcesDir] )
 
 samEnv = project.createEnv( libraries )
 samEnv.Append( CPPPATH=sourcesDir )
-sam = samEnv.Program( target=project.getName(), source=samSources )
+sam = samEnv.Program( target=name, source=samSources )
 
 samInstall = samEnv.Install( project.inOutputBin(), sam )
+samEnv.Alias(name, samInstall )
 samEnv.Alias('all', samInstall )
 
 

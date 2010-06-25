@@ -9,6 +9,7 @@ namespace tuttle {
 namespace plugin {
 namespace %NAMESPACE% {
 
+template<typename Scalar>
 struct %CLASSNAME%ProcessParams
 {
 	
@@ -20,13 +21,15 @@ struct %CLASSNAME%ProcessParams
 class %CLASSNAME%Plugin : public OFX::ImageEffect
 {
 public:
+	typedef float Scalar;
+public:
     %CLASSNAME%Plugin( OfxImageEffectHandle handle );
 
 public:
     void render( const OFX::RenderArguments &args );
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 	
-	%CLASSNAME%ProcessParams getProcessParams() const;
+	%CLASSNAME%ProcessParams<Scalar> getProcessParams() const;
 	
 public:
     // do not need to delete these, the ImageEffect is managing them for us

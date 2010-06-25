@@ -36,9 +36,10 @@
 
 #include "./ofxsSupportPrivate.h"
 
-using namespace OFX::Private;
 
 namespace OFX {
+
+using namespace OFX::Private;
 
 void throwPropertyException( OfxStatus          stat,
                              const std::string& propName ) throw( std::bad_alloc,
@@ -266,4 +267,4 @@ int PropertySet::propGetInt( const char* property, int idx, bool throwOnFailure 
 	return value;
 }
 
-};
+}

@@ -19,6 +19,7 @@ namespace blur {
 
 static const double kConvolutionEpsilon = 0.05; ///< arbitrary value...
 
+
 /**
  * @brief gaussian function
  * @f[
@@ -82,6 +83,7 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size )
 //	std::cout << "]" << std::endl;
 	return boost::gil::kernel_1d<Scalar>( &(kernel[0]), kernel.size(), rightKernel.size() );
 }
+
 
 }
 }

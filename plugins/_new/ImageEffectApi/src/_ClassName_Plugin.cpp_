@@ -19,9 +19,9 @@ ImageEffect( handle )
     _dstClip = fetchClip( kOfxImageEffectOutputClipName );
 }
 
-%CLASSNAME%ProcessParams %CLASSNAME%Plugin::getProcessParams() const
+%CLASSNAME%ProcessParams<%CLASSNAME%Plugin::Scalar> %CLASSNAME%Plugin::getProcessParams() const
 {
-	%CLASSNAME%ProcessParams params;
+	%CLASSNAME%ProcessParams<Scalar> params;
 	return params;
 }
 
