@@ -26,7 +26,7 @@ void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
     desc.setLabels( "TuttleCheckerboard", "Checkerboard",
                     "Checkerboard" );
-    desc.setPluginGrouping( "tuttle" );
+    desc.setPluginGrouping( "tuttle/image/generator" );
 
     // add the supported contexts
     desc.addSupportedContext( OFX::eContextGeneral );
@@ -86,17 +86,5 @@ OFX::ImageEffect* CheckerboardPluginFactory::createInstance( OfxImageEffectHandl
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs( OFX::PluginFactoryArray &ids )
-{
-	static tuttle::plugin::checkerboard::CheckerboardPluginFactory p( "fr.tuttle.checkerboard", 1, 0 );
-	ids.push_back(&p);
-}
-
 }
 }

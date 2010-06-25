@@ -1,10 +1,9 @@
 #ifndef __VIDEOFFMPEGREADER_HPP__
 #define __VIDEOFFMPEGREADER_HPP__
 
-
 #include "FFmpeg.hpp"
-#include "string/conversion.hpp"
 
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -107,7 +106,7 @@ public:
 	{
 		if( !_videoCodec )
 			return "";
-		return(_videoCodec->long_name ) +std::string( " (" ) + std::string( _videoCodec->name ) + std::string( ", " ) + getStringFrom( static_cast<int> ( _videoCodec->id ) ) + std::string( ")" );
+		return(_videoCodec->long_name ) +std::string( " (" ) + std::string( _videoCodec->name ) + std::string( ", " ) + boost::lexical_cast<std::string>( static_cast<int>( _videoCodec->id ) ) + std::string( ")" );
 	}
 
 	std::string formatName( )

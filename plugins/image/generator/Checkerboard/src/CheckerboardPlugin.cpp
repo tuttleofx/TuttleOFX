@@ -16,8 +16,8 @@ using namespace boost::gil;
 CheckerboardPlugin::CheckerboardPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
     _boxes = fetchInt2DParam( kCheckerboardBoxes );
     _color1 = fetchRGBAParam( kCheckerboardColor1 );
     _color2 = fetchRGBAParam( kCheckerboardColor2 );
@@ -25,12 +25,12 @@ ImageEffect( handle )
 
 OFX::Clip * CheckerboardPlugin::getSrcClip( ) const
 {
-    return _srcClip;
+    return _clipSrc;
 }
 
 OFX::Clip * CheckerboardPlugin::getDstClip( ) const
 {
-    return _dstClip;
+    return _clipDst;
 }
 
 /**
@@ -40,8 +40,8 @@ OFX::Clip * CheckerboardPlugin::getDstClip( ) const
 void CheckerboardPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

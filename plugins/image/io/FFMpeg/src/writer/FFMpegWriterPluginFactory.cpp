@@ -30,7 +30,7 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
 	desc.setLabels( "TuttleFfmpegWriter", "FfmpegWriter",
 		            "Ffmpeg video writer" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );

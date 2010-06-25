@@ -1,0 +1,18 @@
+#ifndef _TUTTLE_PLUGIN_%D_CLASSNAME%PLUGINFACTORY_HPP_
+#define _TUTTLE_PLUGIN_%D_CLASSNAME%PLUGINFACTORY_HPP_
+
+#include <ofxsImageEffect.h>
+
+namespace tuttle {
+namespace plugin {
+namespace %NAMESPACE% {
+
+mDeclarePluginFactory( %CLASSNAME%PluginFactory, { }, { } );
+
+}
+}
+}
+
+#endif
+
+

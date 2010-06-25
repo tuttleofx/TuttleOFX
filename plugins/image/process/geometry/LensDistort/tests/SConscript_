@@ -1,0 +1,19 @@
+Import( 'project' )
+
+sources_libraries = project.inBuildDir( *project.scanFiles(['../../../libraries']) )
+
+sources = project.scanFiles( ['src'] ) + sources_libraries
+
+target = project.getName()
+libs = [project.libs.openfx, project.libs.boost_gil, project.libs.jpeg, project.libs.png, project.libs.tiff]
+
+env_local = project.createEnv( libs )
+env_local.AppendUnique( CPPPATH='../src' )
+env_local.AppendUnique( CPPDEFINES = [('WITHOUT_OFX','true')] )
+
+test = env_local.Program( target=target, source=sources )
+
+#pluginInstall = env_local.Install( project.getRealAbsoluteCwd(), plugin )
+#env_local.Alias( 'all', pluginInstall )
+
+env_local.Alias( 'all', test )

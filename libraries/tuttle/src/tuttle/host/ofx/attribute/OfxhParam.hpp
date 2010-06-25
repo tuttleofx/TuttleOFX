@@ -59,8 +59,18 @@
 	}\
 	inline virtual void set( const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); } \
 	inline virtual void set( const Type& value ) OFX_EXCEPTION_SPEC { set( value, eChangeUserEdited ); } \
-	inline virtual void set( const OfxTime time, const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); }\
-	inline virtual void set( const OfxTime time, const Type& value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }\
+	inline virtual void setAtTime( const OfxTime time, const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ); }\
+	inline virtual void setAtTime( const OfxTime time, const Type& value ) OFX_EXCEPTION_SPEC { setAtTime( time, value, eChangeUserEdited ); }\
+	inline virtual void setAt( const Type& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter." ); } \
+	inline virtual void setAt( const Type& value, const std::size_t index ) OFX_EXCEPTION_SPEC { setAt( value, index, eChangeUserEdited ); } \
+	inline virtual void set( const Type& value1, const Type& value2, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter (2)." ); } \
+	inline virtual void set( const Type& value1, const Type& value2 ) OFX_EXCEPTION_SPEC { set( value1, value2, eChangeUserEdited ); } \
+	inline virtual void setAtTime( const OfxTime time, const Type& value1, const Type& value2, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter (2)." ); }\
+	inline virtual void setAtTime( const OfxTime time, const Type& value1, const Type& value2 ) OFX_EXCEPTION_SPEC { setAtTime( time, value1, value2, eChangeUserEdited ); }\
+	inline virtual void set( const Type& value1, const Type& value2, const Type& value3, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter (3)." ); } \
+	inline virtual void set( const Type& value1, const Type& value2, const Type& value3 ) OFX_EXCEPTION_SPEC { set( value1, value2, value3, eChangeUserEdited ); } \
+	inline virtual void setAtTime( const OfxTime time, const Type& value1, const Type& value2, const Type& value3, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter (3)." ); }\
+	inline virtual void setAtTime( const OfxTime time, const Type& value1, const Type& value2, const Type& value3 ) OFX_EXCEPTION_SPEC { setAtTime( time, value1, value2, value3, eChangeUserEdited ); }\
 
 
 namespace tuttle {

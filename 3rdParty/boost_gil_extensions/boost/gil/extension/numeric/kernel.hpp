@@ -50,9 +50,10 @@ public:
         return *this;
     }
     std::size_t left_size() const {assert(_center<this->size());return _center;}
-    std::size_t right_size() const {assert(_center<this->size());return this->size()-_center-1;}
+    std::size_t right_size() const {assert(_center<this->size());return this->size()?this->size()-_center-1:0;}
           std::size_t& center()       {return _center;}
     const std::size_t& center() const {return _center;}
+    void set_center( const std::size_t center ) { _center = center; }
 };
 
 } // namespace detail

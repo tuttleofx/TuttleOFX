@@ -35,9 +35,10 @@ private:
 protected:
 	OFX::ImageEffect& _effect; ///< effect to render with
 	OFX::RenderArguments _renderArgs; ///< render arguments
-    OFX::Clip* _dstClip;       ///< Destination image clip
+    OFX::Clip* _clipDst;       ///< Destination image clip
 	boost::scoped_ptr<OFX::Image> _dst;
 	OfxRectI _dstPixelRod;
+	OfxPointI _dstPixelRodSize;
 	View _dstView; ///< image to process into
 
 public:
@@ -58,14 +59,26 @@ public:
 	virtual void setup( const OFX::RenderArguments& args )
 	{
 		// destination view
-		_dst.reset( _dstClip->fetchImage( args.time ) );
+		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get( ) )
 			throw( ImageNotReadyException( ) );
 		if( _dst->getRowBytes( ) <= 0 )
 			throw( WrongRowBytesException( ) );
-		_dstView = getView( _dst.get(), _dstClip->getPixelRod(args.time) );
 //		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_dstPixelRod = _dstClip->getPixelRod(args.time);
+		_dstPixelRod = _clipDst->getPixelRod(args.time);
+		_dstPixelRodSize.x = (this->_dstPixelRod.x2 - this->_dstPixelRod.x1);
+		_dstPixelRodSize.y = (this->_dstPixelRod.y2 - this->_dstPixelRod.y1);
+		_dstView = getView( _dst.get(), _dstPixelRod );
+
+#ifndef TUTTLE_PRODUCTION
+		// init dst buffer with red to highlight uninitialized pixels
+		OfxRectI dstBounds = _dst->getBounds();
+		View dstToFill = bgil::subimage_view( _dstView,
+		                                      dstBounds.x1, dstBounds.y1,
+		                                      dstBounds.x2-dstBounds.x1, dstBounds.y2-dstBounds.y1 );
+		const bgil::rgba32f_pixel_t errorColor( 1.0, 0.0, 0.0, 1.0 );
+		fill_pixels( dstToFill, errorColor );
+#endif
 	}
 
 	/** @brief fetch output and inputs clips */
@@ -79,7 +92,7 @@ public:
 		catch( ImageNotReadyException& e )
 		{
 			// stop the process but don't display an error
-			COUT_ERROR( "ImageNotReadyException" );
+			COUT_ERROR_DEBUG( "ImageNotReadyException" );
 			progressEnd( );
 			return;
 		}
@@ -91,7 +104,6 @@ public:
 		}
 		catch( std::exception& e )
 		{
-			//COUT_WITHINFOS( e.what() );
 			COUT_EXCEPTION( e );
 			progressEnd( );
 			return;
@@ -160,7 +172,7 @@ ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
 	_renderArgs.time = -1;
 	_renderArgs.fieldToRender = OFX::eFieldNone;
 	
-    _dstClip = effect.fetchClip( kOfxImageEffectOutputClipName );
+    _clipDst = effect.fetchClip( kOfxImageEffectOutputClipName );
 }
 
 template <class View>

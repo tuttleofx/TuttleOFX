@@ -1,3 +1,4 @@
+#include "ColorGradientPluginFactory.hpp"
 #include "ColorGradientPlugin.hpp"
 #include "ColorGradientDefinitions.hpp"
 
@@ -18,11 +19,6 @@ namespace tuttle {
 namespace plugin {
 namespace colorGradient {
 
-static const bool   kSupportTiles = true;
-
-mDeclarePluginFactory( ColorGradientPluginFactory, { }, { } );
-
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -31,7 +27,7 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
 	desc.setLabels( "TuttleColorGradient", "ColorGradient",
 	                "Create a color gradient" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -101,17 +97,5 @@ OFX::ImageEffect* ColorGradientPluginFactory::createInstance( OfxImageEffectHand
 }
 
 }
-}
-}
-
-namespace OFX {
-namespace Plugin {
-
-void getPluginIDs(OFX::PluginFactoryArray &ids)
-{
-	static tuttle::plugin::colorGradient::ColorGradientPluginFactory p( "fr.tuttle.colorgradient", 1, 0 );
-	ids.push_back( &p );
-}
-
 }
 }

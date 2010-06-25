@@ -30,8 +30,8 @@ protected:
 	FilenameManager       _filePattern;         ///< Filename pattern manager
 
 // do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _srcClip;       ///< Input image clip
-	OFX::Clip* _dstClip;       ///< Ouput image clip
+	OFX::Clip* _clipSrc;       ///< Input image clip
+	OFX::Clip* _clipDst;       ///< Ouput image clip
 
 };
 

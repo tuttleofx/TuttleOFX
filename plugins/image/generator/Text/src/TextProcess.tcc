@@ -42,7 +42,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 8. Save GIL Image
 
 	//Step 1. Create bgil image -----------
-	if( ! this->_srcClip->isConnected() )
+	if( ! this->_clipSrc->isConnected() )
 	{
 //		rgba32f_pixel_t backgroundColor( params._backgroundColor.r,
 //									     params._backgroundColor.g,

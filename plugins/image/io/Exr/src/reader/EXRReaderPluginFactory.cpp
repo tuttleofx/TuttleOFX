@@ -28,7 +28,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleExrReader", "ExrReader",
 	                "Exr file reader" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
