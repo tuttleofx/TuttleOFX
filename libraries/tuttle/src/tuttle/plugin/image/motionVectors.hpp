@@ -29,7 +29,8 @@ namespace bgil = boost::gil;
  */
 template< typename View> // Models RandomAccess2DImageViewConcept
 void modifyVectors( const View& xVecView, const View& yVecView,
-				    const double angle, const double intensity )
+				    const double angle, const double intensity,
+					tuttle::plugin::Progress* p )
 {
 	BOOST_ASSERT( yVecView.width() != 0 );
 	BOOST_ASSERT( yVecView.height() != 0 );
@@ -43,29 +44,36 @@ void modifyVectors( const View& xVecView, const View& yVecView,
 	const double cosAngle = std::cos( angle );
 	const double sinAngle = std::sin( angle );
 
-	typename View::iterator it_xVec = xVecView.begin();
-	typename View::iterator itEnd_xVec = xVecView.end();
-	typename View::iterator it_yVec = yVecView.begin();
-
-	for( ; it_xVec != itEnd_xVec;
-	     ++it_xVec, ++it_yVec )
+	for( int y = 0;
+			 y < xVecView.height();
+			 ++y )
 	{
-		VecPoint2 gradient;
-		gradient.x = bgil::get_color( *it_xVec, bgil::gray_color_t() );
-		gradient.y = bgil::get_color( *it_yVec, bgil::gray_color_t() );
+		typename View::x_iterator it_xVec = xVecView.row_begin(y);
+		typename View::x_iterator itEnd_xVec = xVecView.row_end(y);
+		typename View::x_iterator it_yVec = yVecView.row_begin(y);
+		for( ;
+			 it_xVec != itEnd_xVec;
+			 ++it_xVec, ++it_yVec )
+		{
+			VecPoint2 gradient;
+			gradient.x = bgil::get_color( *it_xVec, bgil::gray_color_t() );
+			gradient.y = bgil::get_color( *it_yVec, bgil::gray_color_t() );
 
-		// apply rotation on gradient vector
-		VecPoint2 motion;
-		motion.x = gradient.x * cosAngle + gradient.y * sinAngle;
-		motion.y = gradient.y * cosAngle - gradient.x * sinAngle;
+			// apply rotation on gradient vector
+			VecPoint2 motion;
+			motion.x = gradient.x * cosAngle + gradient.y * sinAngle;
+			motion.y = gradient.y * cosAngle - gradient.x * sinAngle;
 
-		motion *= intensity;
+			motion *= intensity;
 
-		bgil::get_color( *it_xVec, bgil::gray_color_t() ) = motion.x;
-		bgil::get_color( *it_yVec, bgil::gray_color_t() ) = motion.y;
+			bgil::get_color( *it_xVec, bgil::gray_color_t() ) = motion.x;
+			bgil::get_color( *it_yVec, bgil::gray_color_t() ) = motion.y;
 
-		++it_xVec;
-		++it_yVec;
+			++it_xVec;
+			++it_yVec;
+		}
+		if( p->progressForward( ) )
+			return;
 	}
 }
 
