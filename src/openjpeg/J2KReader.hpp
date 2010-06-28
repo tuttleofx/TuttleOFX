@@ -27,7 +27,7 @@ public:
 	virtual ~J2KReader();
 
 	void open(const std::string & filename);
-	void decode();
+	void decode(bool headeronly = false);
 	void close();
 	inline bool componentsConform();							///< Check if components have the same properties
 	// Getters
@@ -40,12 +40,12 @@ public:
 private:
 	OpenJpegStuffs _openjpeg;   ///< OpenJpeg 2000 structs
 	uint8_t *_fileData;			///< Image data
-	size_t   _dataLength;       ///< Data length
+	ssize_t   _dataLength;      ///< Data length
 };
 
 inline bool J2KReader::imageReady() const
 {
-	return _openjpeg.image != NULL;
+	return _openjpeg.image && _fileData;
 }
 
 inline bool J2KReader::componentsConform()
@@ -91,8 +91,7 @@ inline const size_t J2KReader::width(const size_t nc /*= 0*/) const
 	}
 	else
 	{
-		assert(nc < components());
-		return _openjpeg.image->comps[nc].w;
+		return _openjpeg.image->x1 - _openjpeg.image->x0;
 	}
 }
 
@@ -104,8 +103,7 @@ inline const size_t J2KReader::height(const size_t nc /*= 0*/) const
 	}
 	else
 	{
-		assert(nc < components());
-		return _openjpeg.image->comps[nc].h;
+		return _openjpeg.image->y1 - _openjpeg.image->y0;
 	}
 }
 

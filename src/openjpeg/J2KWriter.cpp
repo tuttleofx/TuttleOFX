@@ -26,14 +26,17 @@ J2KWriter::J2KWriter()
 , _cinemaMode(OFF)
 , _cio(NULL)
 {
+    memset(&_openjpeg, 0, sizeof(OpenJpegStuffs));
 }
 
 J2KWriter::~J2KWriter()
 {
+	close();
 }
 
 bool J2KWriter::open(const std::string & filename, const size_t w, const size_t h, const size_t nc, const size_t dprecision)
 {
+	close();
     opj_image_cmptparm_t cmptparm[nc];
     OPJ_COLOR_SPACE color_space;
     size_t j;
@@ -295,6 +298,7 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 	if (!opj_encode(cinfo, _cio, _openjpeg.image, NULL))
 	{
 		opj_cio_close(_cio);
+		_cio = NULL;
 		std::cerr << "failed to encode image!" << std::endl;
 		return true;
 	}
@@ -303,25 +307,6 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 	opj_destroy_compress(cinfo);
 
 	return false;
-}
-
-bool J2KWriter::close()
-{
-	if (_cio)
-	{
-		// Output the buffer
-		_outFile.write( (const char*)_cio->buffer, (size_t)cio_tell(_cio) );
-		// Close and free the byte stream
-		opj_cio_close( _cio );
-		_cio = NULL;
-	}
-
-	_outFile.close();
-	if ( _openjpeg.parameters.cp_comment )
-	{
-		free( _openjpeg.parameters.cp_comment );
-	}
-    return false;
 }
 
 void J2KWriter::cinemaSetupParameters( )
@@ -461,6 +446,28 @@ int J2KWriter::initialize4Kpocs(opj_poc_t *POC, int numres)
 	POC[1].compno1 = 3;
 	POC[1].prg1 = CPRL;
 	return 2;
+}
+
+bool J2KWriter::close()
+{
+	if (_cio)
+	{
+		// Output the buffer
+		_outFile.write( (const char*)_cio->buffer, (size_t)cio_tell(_cio) );
+		// Close and free the byte stream
+		opj_cio_close( _cio );
+		_cio = NULL;
+	}
+
+	_outFile.close();
+
+	if ( _openjpeg.image )
+	{
+		opj_image_destroy( _openjpeg.image );
+		_openjpeg.image = NULL;
+	}
+
+    return false;
 }
 
 }

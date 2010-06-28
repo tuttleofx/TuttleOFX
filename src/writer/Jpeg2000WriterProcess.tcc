@@ -31,7 +31,6 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	_params = _plugin.getProcessParams(this->_renderArgs.time);
-
 	_writer.setCinemaMode((OPJ_CINEMA_MODE)_params._cineProfil);
 	_writer.setLossless(_params._lossless);
 

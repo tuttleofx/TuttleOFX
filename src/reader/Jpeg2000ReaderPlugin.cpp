@@ -22,8 +22,13 @@ using namespace boost::filesystem;
 Jpeg2000ReaderPlugin::Jpeg2000ReaderPlugin( OfxImageEffectHandle handle )
 : ReaderPlugin( handle )
 {
-	memset(&_fileInfos, 0, sizeof(_fileInfos));
+	memset(&_fileInfos, 0, sizeof(FileInfo));
 	_fileInfos._failed = true;
+}
+
+Jpeg2000ReaderPlugin::~Jpeg2000ReaderPlugin()
+{
+	_reader.close();
 }
 
 Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime time)
@@ -35,7 +40,7 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 	}
 	Jpeg2000ReaderProcessParams params;
 
-	params._filepath = _filePattern.getFilenameAt(time);
+	params._paramFilepath = _filePattern.getFilenameAt(time);
 	return params;
 }
 
@@ -55,6 +60,8 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 		COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
 		return;
 	}
+	// Full image decoding
+	_reader.decode();
 
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::BitDepthEnum dstBitDepth         = this->_clipDst->getPixelDepth();
@@ -131,14 +138,19 @@ void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 	if( paramName == kTuttlePluginReaderParamFilename )
 	{
 		_reader.close();
-		_fileInfos._failed = 1;
+		_fileInfos._failed = true;
 	}
 	ReaderPlugin::changedParam(args, paramName);
 }
 
 bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	FileInfo fileInfo = retrieveFileInfo( args.time );
+	FileInfo fileInfo = retrieveFileInfo( _filePattern.getRange().min );
+	if ( fileInfo._failed )
+	{
+		COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
+		return false;
+	}
 
 	rod.x1 = 0;
 	rod.x2 = fileInfo._width;
@@ -158,6 +170,10 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 		clipPreferences.setOutputFrameVarying( varyOnTime() );
 
 		FileInfo fileInfo = retrieveFileInfo( _filePattern.getRange().min );
+		if ( fileInfo._failed )
+		{
+			throw( OFX::Exception::Suite( kOfxStatFailed, "Unable to read file infos." ) );
+		}
 
 		// If we explicitly specify which conversion we want
 		if ( getParamExplicitConversion() != OFX::eBitDepthNone )
@@ -194,15 +210,18 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 
 Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const OfxTime time )
 {
-	if( time == _fileInfos._time && _reader.imageReady() )
-		return _fileInfos;
-
-	if( _reader.imageReady() )
+	if (!_fileInfos._failed)
 	{
-		_reader.close();
-	}
+		if( time == _fileInfos._time && _reader.imageReady() )
+		{
+			return _fileInfos;
+		}
 
-	_fileInfos._failed = false;
+		if( _reader.imageReady() )
+		{
+			_reader.close();
+		}
+	}
 
 	// Open new source
 	try
@@ -214,17 +233,19 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 		_fileInfos._failed = true;
 		throw( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
 	}
+	_fileInfos._failed = false;
 	// No choice if we want to get
 	// the image dimensions later
 	try
 	{
-		_reader.decode();
+		_reader.decode(true);
 	}
 	catch(std::exception & e)
 	{
 		_fileInfos._failed = true;
 		throw( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
 	}
+
 	if( !_reader.componentsConform() )
 	{
 		_fileInfos._failed = true;
@@ -236,6 +257,7 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	_fileInfos._height = _reader.height();
 	_fileInfos._components = _reader.components();
 	_fileInfos._precision = _reader.precision();
+
 	switch( _fileInfos._precision )
 	{
 		case 8:

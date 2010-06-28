@@ -104,7 +104,6 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	cineProfil->appendOption( "2K Digital Cinema at 48 fps" );
 	cineProfil->appendOption( "4K Digital Cinema at 24 fps" );
 	cineProfil->setDefault( 0 );
-
 }
 
 /**

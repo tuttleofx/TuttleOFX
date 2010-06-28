@@ -24,7 +24,7 @@ template<class View>
 void Jpeg2000ReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	// Fetch output image
-	Jpeg2000ReaderProcessParams params = _plugin.getProcessParams(args.time);
+//	Jpeg2000ReaderProcessParams params = _plugin.getProcessParams(args.time);
 
 	boost::gil::point2<ptrdiff_t> imageDims( _plugin.getReader().width(),
                                              _plugin.getReader().height() );
