@@ -14,7 +14,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_renderButton   = fetchPushButtonParam( kTuttlePluginWriterParamRender );
 	_renderAlways   = fetchBooleanParam( kTuttlePluginWriterParamRenderAlways );
 	_bitDepth       = fetchChoiceParam( kTuttlePluginWriterParamBitDepth );
-	_filePattern.reset(_filepath->getValue(), true);
+	_filePattern.reset(_filepath->getValue(), false, 0, 1);
 }
 
 WriterPlugin::~WriterPlugin()

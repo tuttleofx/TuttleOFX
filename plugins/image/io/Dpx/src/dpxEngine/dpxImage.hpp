@@ -366,7 +366,9 @@ inline void DpxImage::setData( const boost::uint8_t* data, bool reinterpretation
 		_indyData.reset( reinterpretEndianness() );
 	}
 	else
+	{
 		_indyData = _data;
+	}
 }
 
 }  // namespace io
