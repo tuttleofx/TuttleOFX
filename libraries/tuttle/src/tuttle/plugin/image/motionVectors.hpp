@@ -68,9 +68,6 @@ void modifyVectors( const View& xVecView, const View& yVecView,
 
 			bgil::get_color( *it_xVec, bgil::gray_color_t() ) = motion.x;
 			bgil::get_color( *it_yVec, bgil::gray_color_t() ) = motion.y;
-
-			++it_xVec;
-			++it_yVec;
 		}
 		if( p->progressForward( ) )
 			return;
