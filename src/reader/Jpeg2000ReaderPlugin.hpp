@@ -32,7 +32,7 @@ public:
 
 	OFX::BitDepthEnum getParamExplicitConversion() const
 	{
-		switch( this->_explicitConv->getValue() )
+		switch( this->_paramExplicitConv->getValue() )
 		{
 			case 0:
 				return OFX::eBitDepthNone;

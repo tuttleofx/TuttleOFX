@@ -29,9 +29,9 @@ void Jpeg2000ReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	boost::gil::point2<ptrdiff_t> imageDims( _plugin.getReader().width(),
                                              _plugin.getReader().height() );
 
-	double par       = _plugin._dstClip->getPixelAspectRatio();
+	double par       = _plugin._clipDst->getPixelAspectRatio();
 	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-	this->_dst.reset( _plugin._dstClip->fetchImage( args.time, reqRect ) );
+	this->_dst.reset( _plugin._clipDst->fetchImage( args.time, reqRect ) );
 	if( !this->_dst.get() )
 	{
 		throw( tuttle::plugin::ImageNotReadyException() );
@@ -42,7 +42,7 @@ void Jpeg2000ReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	}
 
 	// Build destination view
-	this->_dstView = this->getView( this->_dst.get(), _plugin._dstClip->getPixelRod(args.time) );
+	this->_dstView = this->getView( this->_dst.get(), _plugin._clipDst->getPixelRod(args.time) );
 }
 
 /**
