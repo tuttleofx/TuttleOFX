@@ -28,7 +28,6 @@ BlurProcess<View>::BlurProcess( BlurPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
-	this->setNoMultiThreading();
 }
 
 template <class View>
