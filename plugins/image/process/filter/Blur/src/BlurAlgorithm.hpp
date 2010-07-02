@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_BLURALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_BLURALGORITHM_HPP_
 
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include <boost/gil/extension/numeric/convolve.hpp>
 
 #include <boost/units/pow.hpp>

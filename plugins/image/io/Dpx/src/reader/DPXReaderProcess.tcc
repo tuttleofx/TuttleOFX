@@ -1,8 +1,8 @@
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderDefinitions.hpp"
 
-#include <tuttle/common/image/gilGlobals.hpp>
-#include <tuttle/common/image/gilViewTypes.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/typedefs.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 

@@ -4,10 +4,11 @@
 
 // utilities
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <boost/gil/image.hpp>
+#include <boost/gil/image_view.hpp>
+#include <boost/gil/typedefs.hpp>
 
-//TODO: delete this
-#ifdef _DEBUG
+#ifdef TUTTLE_DEBUG
  #include <boost/gil/extension/io/png_io.hpp>
 #endif
 
@@ -105,7 +106,7 @@ boost::uint8_t* Image::pixel( int x, int y )
 template < class VIEW_T >
 VIEW_T Image::gilViewFromImage( Image* img )
 {
-	using namespace bgil;
+	using namespace boost::gil;
 	OfxRectI bounds = img->getBounds();
 
 	typedef typename VIEW_T::value_type value_t;
@@ -115,12 +116,11 @@ VIEW_T Image::gilViewFromImage( Image* img )
 	                         img->getRowBytes() );
 }
 
-/// @todo: put this in gilGlobals.hpp
 template < class D_VIEW, class S_VIEW >
 void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
                   const OfxPointI& srcCorner, const OfxPointI& count )
 {
-	using namespace bgil;
+	using namespace boost::gil;
 	if( src.width() >= ( count.x - srcCorner.x ) &&
 	    src.height() >= ( count.y - srcCorner.y ) &&
 	    dst.width() >= ( count.x - dstCorner.x ) &&
@@ -199,7 +199,7 @@ template < class S_VIEW >
 void Image::copy( Image* dst, S_VIEW& src, const OfxPointI& dstCorner,
                   const OfxPointI& srcCorner, const OfxPointI& count )
 {
-	using namespace bgil;
+	using namespace boost::gil;
 	// Create destination
 	switch( dst->getComponentsType() )
 	{
@@ -262,7 +262,7 @@ void Image::copy( Image* dst, S_VIEW& src, const OfxPointI& dstCorner,
 void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
                   const OfxPointI& srcCorner, const OfxPointI& count )
 {
-	using namespace bgil;
+	using namespace boost::gil;
 	switch( src->getComponentsType() )
 	{
 		case ofx::imageEffect::ePixelComponentRGBA:

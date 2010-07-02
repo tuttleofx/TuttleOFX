@@ -7,7 +7,7 @@
 #include "PluginException.hpp"
 #include "Progress.hpp"
 
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <boost/scoped_ptr.hpp>
 

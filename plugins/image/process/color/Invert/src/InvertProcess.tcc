@@ -1,7 +1,7 @@
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <cmath>
 #include <vector>

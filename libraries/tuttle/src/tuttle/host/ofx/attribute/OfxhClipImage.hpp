@@ -256,10 +256,10 @@ public:
 	 *  be 'appropriate' for the.
 	 *  If bounds is not null, fetch the indicated section of the canonical image plane.
 	 */
-	virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage( OfxTime time, OfxRectD* optionalBounds = NULL ) = 0;
+	virtual tuttle::host::ofx::imageEffect::OfxhImage* getImage( const OfxTime time, const OfxRectD* optionalBounds = NULL ) = 0;
 
 	/// override this to return the rod on the clip
-	virtual OfxRectD fetchRegionOfDefinition( OfxTime time ) const = 0;
+	virtual OfxRectD fetchRegionOfDefinition( const OfxTime time ) const = 0;
 
 	/** given the colour component, find the nearest set of supported colour components
 	 *  override this for extra wierd custom component depths

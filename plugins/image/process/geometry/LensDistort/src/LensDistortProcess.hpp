@@ -5,7 +5,7 @@
 #include "lensDistortAlgorithm.hpp"
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>

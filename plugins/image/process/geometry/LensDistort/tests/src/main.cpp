@@ -2,7 +2,7 @@
 #define WITHOUT_OFX
 
 #include <tuttle/plugin/utils/global.hpp>
-#include <tuttle/plugin/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ofx/ofxsGil.hpp>
 #include <tuttle/plugin/ofx/Progress.hpp>
 

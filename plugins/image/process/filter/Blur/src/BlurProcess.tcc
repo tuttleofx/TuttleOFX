@@ -1,7 +1,7 @@
 #include "BlurPlugin.hpp"
 #include "BlurAlgorithm.hpp"
 
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <boost/gil/extension/numeric/convolve.hpp>

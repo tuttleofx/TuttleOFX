@@ -4,7 +4,7 @@
 #include "tuttle/plugin/interact/Frame.hpp"
 #include "tuttle/plugin/interact/ParamRectangleFromCenterSize.hpp"
 #include <tuttle/plugin/interact/ParamRectangleFromTwoCorners.hpp>
-#include <tuttle/common/opengl/gl.h>
+#include <tuttle/plugin/opengl/gl.h>
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/overlay.hpp>
 

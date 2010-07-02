@@ -1,6 +1,9 @@
 Import( 'project' )
 Import( 'libs' )
 
+print '_-'*10
+print 'tuttleOpenImageIO'
+
 project.createOfxPlugin( dirs = ['src'],
                          libs = [ libs.openfxHack,
 								  libs.openfxPluginSupportHack,
