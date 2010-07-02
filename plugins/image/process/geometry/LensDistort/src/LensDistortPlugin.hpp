@@ -23,8 +23,8 @@ public:
 public:
 	///@{
     // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip *_dstClip; ///< output image clip
-    OFX::Clip *_srcClip; ///< source image clip
+    OFX::Clip *_clipDst; ///< output image clip
+    OFX::Clip *_clipSrc; ///< source image clip
     OFX::Clip *_srcRefClip; ///< source ref image clip
 	///@}
 

@@ -18,7 +18,7 @@ namespace tuttle {
 namespace plugin {
 namespace blur {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**
@@ -29,7 +29,7 @@ void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleBlur", "TuttleBlur",
 		            "TuttleBlur" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
@@ -70,8 +70,12 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	size->setDisplayRange( 0, 0, 10, 10 );
 	size->setDoubleType( OFX::eDoubleTypeScale );
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
-	helpButton->setLabel( "Help" );
+	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
+	border->setLabel( "Border" );
+	border->appendOption( kParamBorderMirror );
+	border->appendOption( kParamBorderConstant );
+	border->appendOption( kParamBorderBlack );
+	border->appendOption( kParamBorderPadded );
 }
 
 /**

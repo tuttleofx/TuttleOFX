@@ -40,7 +40,7 @@ int main( int argc, char** argv )
 		core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
 //		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.imagestatistics" );
-		core::Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
+		core::Graph::Node& blur1 = g.createNode( "fr.tuttle.blur" );
 		core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
 	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
 		core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
@@ -56,6 +56,8 @@ int main( int argc, char** argv )
 		read1.getParam( "filename" ).set( "input.png" );
 		read2.getParam( "filename" ).set( "input.dpx" );
 		read3.getParam( "filename" ).set( "input.exr" );
+//		blur1.getParam( "size" ).set( 6.5, 15.0 );
+		blur1.getParam( "size" ).setAt( 65.0, 1 );
 	//	crop1.getParam( "Down" ).set( 400 );
 		write1.getParam( "filename" ).set( "output1.png" );
 		write2.getParam( "filename" ).set( "output2.dpx" );
@@ -65,8 +67,8 @@ int main( int argc, char** argv )
 		TCOUT( "__________________________________________________3" );
 		g.connect( read1, invert1 );
 		g.connect( invert1, invert2 );
-		g.connect( invert2, invert3 );
-		g.connect( invert3, write1 );
+		g.connect( invert2, blur1 );
+		g.connect( blur1, write1 );
 		g.connect( invert1, invert4 );
 		g.connect( invert4, write2 );
 		g.connect( invert1, write3 );

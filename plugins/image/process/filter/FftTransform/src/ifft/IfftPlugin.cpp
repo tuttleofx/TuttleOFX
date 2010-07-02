@@ -24,7 +24,7 @@ ImageEffect( handle )
 {
     _srcClipMod = fetchClip( kSourcePhase );
     _srcClipPhase = fetchClip( kSourceModule );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 }
 
 OFX::Clip* IfftPlugin::getSrcClipRe( ) const
@@ -39,7 +39,7 @@ OFX::Clip* IfftPlugin::getSrcClipIm( ) const
 
 OFX::Clip* IfftPlugin::getDstClip( ) const
 {
-    return _dstClip;
+    return _clipDst;
 }
 
 FftTransformProcessParams IfftPlugin::getProcessParams() const
@@ -55,8 +55,8 @@ FftTransformProcessParams IfftPlugin::getProcessParams() const
 void IfftPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

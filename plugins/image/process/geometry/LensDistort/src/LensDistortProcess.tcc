@@ -32,16 +32,16 @@ void LensDistortProcess<View>::setup( const OFX::RenderArguments &args )
 	_interpolation = _plugin.getInterpolation();
 	_centerType = _plugin.getCenterType();
 
-	OfxRectD srcRod = rectIntToDouble( this->_srcClip->getPixelRod( args.time ) );
-	OfxRectD dstRod = rectIntToDouble( this->_dstClip->getPixelRod( args.time ) );
+	OfxRectD srcRod = rectIntToDouble( this->_clipSrc->getPixelRod( args.time ) );
+	OfxRectD dstRod = rectIntToDouble( this->_clipDst->getPixelRod( args.time ) );
 	if( _plugin._srcRefClip->isConnected() )
 	{
 		OfxRectD srcRefRod = rectIntToDouble( _plugin._srcRefClip->getPixelRod( args.time ) );
-		_p = _plugin.getProcessParams( srcRod, dstRod, srcRefRod, this->_dstClip->getPixelAspectRatio() );
+		_p = _plugin.getProcessParams( srcRod, dstRod, srcRefRod, this->_clipDst->getPixelAspectRatio() );
 	}
 	else
 	{
-		_p = _plugin.getProcessParams( srcRod, dstRod, this->_dstClip->getPixelAspectRatio() );
+		_p = _plugin.getProcessParams( srcRod, dstRod, this->_clipDst->getPixelAspectRatio() );
 	}
 }
 

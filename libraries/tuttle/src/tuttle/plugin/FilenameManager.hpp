@@ -31,7 +31,7 @@ class FilenameManager
 {
 public:
 	FilenameManager(): _numFill(0), _step(0), _first(0), _last(0) {}
-	FilenameManager(const boost::filesystem::path& directory, const std::string pattern, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
+	FilenameManager(const boost::filesystem::path& directory, const std::string & pattern, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
 	FilenameManager(const boost::filesystem::path& directory, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
 	virtual ~FilenameManager();
 	void  reset(boost::filesystem::path filepath, const bool dirbase = false, const size_t start = 0, const size_t step = 1);

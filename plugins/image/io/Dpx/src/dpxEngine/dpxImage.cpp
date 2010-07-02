@@ -155,7 +155,7 @@ void DpxImage::readHeader( ifstream& f )
 	}
 
 	// ...file information
-	gen            = &( _header._fileInfo );
+	gen = &( _header._fileInfo );
 	_header._fileInfo.magic_num = gen->magic_num;
 	size_t hdrSize = 0;
 
@@ -173,9 +173,9 @@ void DpxImage::readHeader( ifstream& f )
 		throw(std::logic_error("Not a dpx image !"));
 	}
 	// Read meta dynamic infos
-	scoped_array<uint8_t> _hdrBuffer(new uint8_t[hdrSize]);
+	scoped_array<uint8_t> hdrBuffer(new uint8_t[hdrSize]);
 	// reads data from _header...
-	if( !f.read( (char*)_hdrBuffer.get(), hdrSize ) )
+	if( !f.read( (char*)hdrBuffer.get(), hdrSize ) )
 	{
 		std::ostringstream msg;
 		msg << "DPX: Unable to read header...";
@@ -184,22 +184,22 @@ void DpxImage::readHeader( ifstream& f )
 	}
 	// Read dynamic data
 	size_t bufpos = 0;
-	readDynamicHdrData((uint8_t*)gen->file_name, sizeof(gen->file_name), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->file_name, sizeof(gen->file_name), hdrBuffer.get(), bufpos);
 	bufpos += sizeof(gen->file_name);
-	readDynamicHdrData((uint8_t*)gen->create_time, sizeof(gen->create_time), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->create_time, sizeof(gen->create_time), hdrBuffer.get(), bufpos);
 	bufpos += sizeof(gen->create_time);
-	readDynamicHdrData((uint8_t*)gen->creator, sizeof(gen->creator), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->creator, sizeof(gen->creator), hdrBuffer.get(), bufpos);
 	bufpos += sizeof(gen->creator);
-	readDynamicHdrData((uint8_t*)gen->project, sizeof(gen->project), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->project, sizeof(gen->project), hdrBuffer.get(), bufpos);
 	bufpos += sizeof(gen->project);
-	readDynamicHdrData((uint8_t*)gen->copyright, sizeof(gen->copyright), _hdrBuffer.get(), bufpos);
+	readDynamicHdrData((uint8_t*)gen->copyright, sizeof(gen->copyright), hdrBuffer.get(), bufpos);
 	bufpos += sizeof(gen->copyright);
-	memcpy(&gen->key, _hdrBuffer.get() + bufpos, sizeof(uint32_t));
+	memcpy(&gen->key, hdrBuffer.get() + bufpos, sizeof(uint32_t));
 	bufpos += sizeof(uint32_t);
-	memcpy(&gen->reserved, _hdrBuffer.get() + bufpos, sizeof(gen->reserved));
+	memcpy(&gen->reserved, hdrBuffer.get() + bufpos, sizeof(gen->reserved));
 	bufpos += sizeof(gen->reserved);
 	// Copy the remaining header infos
-	memcpy(&(_header._imageInfo), _hdrBuffer.get() + bufpos, hdrSize - bufpos);
+	memcpy(&(_header._imageInfo), hdrBuffer.get() + bufpos, hdrSize - bufpos);
 
 	if ( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
 	{
@@ -224,7 +224,9 @@ void DpxImage::readHeader( ifstream& f )
 
 	uint16_t packing = _header._imageInfo.image_element[0].packing;
 	if( packing == 256 )
+	{
 		packing = 1;
+	}
 	if( packing != 0 && packing != 1 && packing != 5 )
 	{
 		std::ostringstream msg;

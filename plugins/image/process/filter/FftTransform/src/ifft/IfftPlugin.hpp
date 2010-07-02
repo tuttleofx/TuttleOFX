@@ -41,7 +41,7 @@ public:
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip* _srcClipMod; ///< Real part source image clip
     OFX::Clip* _srcClipPhase; ///< Imaginary part source image clip
-    OFX::Clip* _dstClip; ///< Destination image clip
+    OFX::Clip* _clipDst; ///< Destination image clip
 };
 
 }

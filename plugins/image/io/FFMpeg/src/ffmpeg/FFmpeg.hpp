@@ -2,8 +2,6 @@
 #define	_FFMPEG_HPP
 
 extern "C" {
-#define __STDC_CONSTANT_MACROS
-#include <stdint.h>
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>

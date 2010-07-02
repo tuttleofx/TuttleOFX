@@ -47,7 +47,7 @@ public:
 
 	inline OFX::Clip* getDstClip() const
 	{
-		return _dstClip;
+		return _clipDst;
 	}
 
 public:
@@ -60,7 +60,7 @@ protected:
 	// do not need to delete these, the ImageEffect is managing them for us
 	OFX::Clip* _srcClipA;               ///< Source image clip A
 	OFX::Clip* _srcClipB;               ///< Source image clip B
-	OFX::Clip* _dstClip;                ///< Destination image clip
+	OFX::Clip* _clipDst;                ///< Destination image clip
 };
 
 }

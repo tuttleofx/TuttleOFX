@@ -8,13 +8,13 @@ namespace bfs = boost::filesystem;
 WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 : ImageEffect( handle )
 {
-	_srcClip        = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip        = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc        = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst        = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath       = fetchStringParam( kTuttlePluginWriterParamFilename );
 	_renderButton   = fetchPushButtonParam( kTuttlePluginWriterParamRender );
 	_renderAlways   = fetchBooleanParam( kTuttlePluginWriterParamRenderAlways );
 	_bitDepth       = fetchChoiceParam( kTuttlePluginWriterParamBitDepth );
-	_filePattern.reset(_filepath->getValue(), true);
+	_filePattern.reset(_filepath->getValue(), false, 0, 1);
 }
 
 WriterPlugin::~WriterPlugin()

@@ -18,8 +18,8 @@ using namespace boost::gil;
 DebugImageEffectApiPlugin::DebugImageEffectApiPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_hostInfos = fetchStringParam( kHostInfos );
 	_currentTime = fetchDoubleParam( kCurrentTime );
@@ -29,12 +29,12 @@ ImageEffect( handle )
 
 OFX::Clip* DebugImageEffectApiPlugin::getSrcClip( ) const
 {
-    return _srcClip;
+    return _clipSrc;
 }
 
 OFX::Clip* DebugImageEffectApiPlugin::getDstClip( ) const
 {
-    return _dstClip;
+    return _clipDst;
 }
 
 DebugImageEffectApiParams DebugImageEffectApiPlugin::getParams() const
@@ -50,8 +50,8 @@ DebugImageEffectApiParams DebugImageEffectApiPlugin::getParams() const
 void DebugImageEffectApiPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

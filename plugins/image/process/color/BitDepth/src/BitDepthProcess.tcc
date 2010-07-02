@@ -24,7 +24,7 @@ BitDepthProcess<SView, DView>::BitDepthProcess( BitDepthPlugin &instance )
 : ImageGilProcessor<DView>( instance )
 , _plugin( instance )
 {
-    _srcClip = _plugin.fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipSrc = _plugin.fetchClip( kOfxImageEffectSimpleSourceClipName );
 }
 
 template<class SView, class DView>
@@ -33,14 +33,14 @@ void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 	ImageGilProcessor<DView>::setup( args );
 
 	// source view
-	this->_src.reset( this->_srcClip->fetchImage( args.time ) );
+	this->_src.reset( this->_clipSrc->fetchImage( args.time ) );
 	if( !this->_src.get( ) )
 		throw( ImageNotReadyException( ) );
 	if( this->_src->getRowBytes( ) <= 0 )
 		throw( WrongRowBytesException( ) );
-	this->_srcView = getView<SView>( this->_src.get(), this->_srcClip->getPixelRod(args.time) );
+	this->_srcView = getView<SView>( this->_src.get(), this->_clipSrc->getPixelRod(args.time) );
 //	this->_srcPixelRod = this->_src->getRegionOfDefinition(); // bug in nuke, returns bounds
-	this->_srcPixelRod = this->_srcClip->getPixelRod(args.time);
+	this->_srcPixelRod = this->_clipSrc->getPixelRod(args.time);
 }
 
 /**

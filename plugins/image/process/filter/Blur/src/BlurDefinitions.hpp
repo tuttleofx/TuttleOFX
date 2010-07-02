@@ -8,10 +8,21 @@ namespace tuttle {
 namespace plugin {
 namespace blur {
 
-const static std::string kHelpButton = "Help";
-const static std::string kHelpString = "<b>TuttleBlur</b> plugin is used to ???.  <br />";
-
 const static std::string kParamSize = "size";
+const static std::string kParamBorder = "border";
+const static std::string kParamBorderMirror = "Mirror";
+const static std::string kParamBorderConstant = "Constant";
+const static std::string kParamBorderBlack = "Black";
+const static std::string kParamBorderPadded = "Padded";
+
+enum EBorder
+{
+	eBorderMirror = 0,
+	eBorderConstant,
+	eBorderBlack,
+	eBorderPadded
+};
+
 
 }
 }

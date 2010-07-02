@@ -46,8 +46,8 @@ void EXRWriterPlugin::render( const OFX::RenderArguments& args )
 	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
-		OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
-		OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents();
+		OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();
+		OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents();
 
 		// do the rendering
 		if( dstComponents == OFX::ePixelComponentRGBA )

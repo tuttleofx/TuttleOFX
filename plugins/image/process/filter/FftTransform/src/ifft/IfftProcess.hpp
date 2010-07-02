@@ -37,7 +37,7 @@ protected :
 	View _srcViewIm;                      ///< @brief image to get imaginary part from
 	boost::scoped_ptr<OFX::Image> _srcPhase; ///< @brief src view Im
 
-    OFX::Clip           *_dstClip;       ///< Destination image clip
+    OFX::Clip           *_clipDst;       ///< Destination image clip
 
 public:
     IfftProcess( IfftPlugin& instance );

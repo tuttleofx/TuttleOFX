@@ -29,8 +29,8 @@ public:
 
 protected:
 	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _srcClip;             ///< Source image clip
-	OFX::Clip* _dstClip;             ///< Destination image clip
+	OFX::Clip* _clipSrc;             ///< Source image clip
+	OFX::Clip* _clipDst;             ///< Destination image clip
 	OFX::StringParam* _sFilename;    ///< Filename
 	LutReader _lutReader;               ///< Reader
     Lut3D     _lut3D;

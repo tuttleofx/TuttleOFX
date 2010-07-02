@@ -2,8 +2,8 @@
  * This plugin uses fftw3 which is GPL licensed, thus, this (only) is GPL licensed.
  */
 
-#ifndef _FFTWWRAPPERGPU_HPP
-#define	_FFTWWRAPPERGPU_HPP
+#ifndef _TUTTLE_PLUGIN_FFTWWRAPPERGPU_HPP_
+#define	_TUTTLE_PLUGIN_FFTWWRAPPERGPU_HPP_
 
 #include "IfftwWrapper.hpp"
 
@@ -12,6 +12,7 @@
 #include <cuda.h>
 
 namespace tuttle {
+namespace plugin {
 namespace filter {
 namespace fft {
 

@@ -20,8 +20,8 @@ using namespace boost::gil;
 ColorGradientPlugin::ColorGradientPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_gradientType = fetchChoiceParam( kGradientType );
 	_nbPoints = fetchIntParam( kNbPoints );
@@ -66,8 +66,8 @@ template<template<typename> class Functor>
 void ColorGradientPlugin::renderFunctor( const OFX::RenderArguments &args )
 {
 //    // instantiate the render code based on the pixel depth of the dst clip
-//    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-//    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+//    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+//    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 //
 //    // do the rendering
 //    if( dstComponents == OFX::ePixelComponentRGBA )

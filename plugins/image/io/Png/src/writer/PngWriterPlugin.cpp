@@ -48,8 +48,8 @@ void PngWriterPlugin::render( const OFX::RenderArguments& args )
 	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
-		OFX::BitDepthEnum dstBitDepth         = _srcClip->getPixelDepth();
-		OFX::PixelComponentEnum dstComponents = _srcClip->getPixelComponents();
+		OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
+		OFX::PixelComponentEnum dstComponents = _clipSrc->getPixelComponents();
 
 		// do the rendering
 		if( dstComponents == OFX::ePixelComponentRGBA )

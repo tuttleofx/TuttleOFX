@@ -46,7 +46,7 @@
  * @brief terminal information display
  **/
 #define COUT_WITHINFOS(... )  \
-    COUT_DEBUG( INFOS << \
+    COUT( INFOS << \
                 ::std::endl << "\t" << __VA_ARGS__ )
 
 #define COUT_WARNING(... )  \

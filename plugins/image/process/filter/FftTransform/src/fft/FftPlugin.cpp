@@ -21,20 +21,20 @@ using namespace boost::gil;
 FftPlugin::FftPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_fftType = fetchChoiceParam( kFftType );
 	_fftTypeLong = fetchChoiceParam( kFftTypeLong );
 }
 
 OFX::Clip* FftPlugin::getSrcClip( ) const
 {
-    return _srcClip;
+    return _clipSrc;
 }
 
 OFX::Clip* FftPlugin::getDstClip( ) const
 {
-    return _dstClip;
+    return _clipDst;
 }
 
 FftTransformProcessParams FftPlugin::getProcessParams() const
@@ -51,8 +51,8 @@ FftTransformProcessParams FftPlugin::getProcessParams() const
 void FftPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

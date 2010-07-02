@@ -15,7 +15,9 @@
 #define COUT_VAR3_DEBUG( ... )
 #define COUT_VAR4_DEBUG( ... )
 #define COUT_WITHINFOS_DEBUG( ... )
+#define COUT_WARNING_DEBUG( ... )
+#define COUT_ERROR_DEBUG( ... )
+#define COUT_FATALERROR_DEBUG( ... )
 #define COUT_EXCEPTION_DEBUG( ... )
-
 
 #endif

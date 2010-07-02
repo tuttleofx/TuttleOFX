@@ -17,7 +17,7 @@ IfftProcess<View>::IfftProcess( IfftPlugin &instance )
 {
     _srcClipRe = instance.fetchClip( kSourcePhase );
     _srcClipIm = instance.fetchClip( kSourceModule );
-	_dstClip = instance.fetchClip( kOfxImageEffectOutputClipName );
+	_clipDst = instance.fetchClip( kOfxImageEffectOutputClipName );
 	this->setNoMultiThreading();
 }
 

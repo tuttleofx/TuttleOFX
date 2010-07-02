@@ -23,18 +23,18 @@ const static std::string kInvertHelpString = "<b>Image inverter</b> is used to i
 InvertPlugin::InvertPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
-	_srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 }
 
 OFX::Clip* InvertPlugin::getSrcClip() const
 {
-	return _srcClip;
+	return _clipSrc;
 }
 
 OFX::Clip* InvertPlugin::getDstClip() const
 {
-	return _dstClip;
+	return _clipDst;
 }
 
 /**
@@ -44,8 +44,8 @@ OFX::Clip* InvertPlugin::getDstClip() const
 void InvertPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents();
+	OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )

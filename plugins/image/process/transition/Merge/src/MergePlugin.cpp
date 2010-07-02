@@ -21,8 +21,8 @@ MergePlugin::MergePlugin( OfxImageEffectHandle handle )
 	_mergeFunction = fetchChoiceParam( kMergeFunction );
 	_srcClipA      = fetchClip( kMergeSourceA );
 	_srcClipB      = fetchClip( kMergeSourceB );
-	_dstClip       = fetchClip( kOfxImageEffectOutputClipName );
-	assert( _mergeFunction && _srcClipA && _srcClipB && _dstClip );
+	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
+	assert( _mergeFunction && _srcClipA && _srcClipB && _clipDst );
 }
 
 /**
@@ -31,7 +31,7 @@ MergePlugin::MergePlugin( OfxImageEffectHandle handle )
  */
 void MergePlugin::render( const OFX::RenderArguments& args )
 {
-	bool isGray = _dstClip->getPixelComponents() == OFX::ePixelComponentAlpha;
+	bool isGray = _clipDst->getPixelComponents() == OFX::ePixelComponentAlpha;
 
 	if( isGray )
 	{
@@ -337,9 +337,9 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 template< template <typename> class Functor >
 void MergePlugin::renderGray( const OFX::RenderArguments& args )
 {
-	assert( _dstClip );
+	assert( _clipDst );
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth();
+	OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth();
 	switch( dstBitDepth )
 	{
 		case OFX::eBitDepthUByte:
@@ -370,8 +370,8 @@ void MergePlugin::renderGray( const OFX::RenderArguments& args )
 template< template <typename> class Functor >
 void MergePlugin::renderRGBA( const OFX::RenderArguments& args )
 {
-	assert( _dstClip );
-	OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth();
+	assert( _clipDst );
+	OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth();
 
 	// do the rendering
 	switch( dstBitDepth )

@@ -17,19 +17,19 @@ const static std::string kLutHelpString = "<b>Image Luter</b> is used to lut com
 LutPlugin::LutPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
-	_srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_sFilename = fetchStringParam( kInputFilename );
 }
 
 OFX::Clip* LutPlugin::getSrcClip() const
 {
-	return _srcClip;
+	return _clipSrc;
 }
 
 OFX::Clip* LutPlugin::getDstClip() const
 {
-	return _dstClip;
+	return _clipDst;
 }
 
 const LutReader & LutPlugin::lutReader() const {
@@ -51,8 +51,8 @@ Lut3D & LutPlugin::lut3D() {
 void LutPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = _dstClip->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents();
+	OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents();
 
 	if (!_lutReader.readOk()) {
 		std::string str;

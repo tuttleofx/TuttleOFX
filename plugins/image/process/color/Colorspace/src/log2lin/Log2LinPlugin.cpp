@@ -25,18 +25,18 @@ using namespace boost::gil;
 Log2LinPlugin::Log2LinPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 }
 
 OFX::Clip * Log2LinPlugin::getSrcClip( ) const
 {
-    return _srcClip;
+    return _clipSrc;
 }
 
 OFX::Clip * Log2LinPlugin::getDstClip( ) const
 {
-    return _dstClip;
+    return _clipDst;
 }
 
 /**
@@ -46,8 +46,8 @@ OFX::Clip * Log2LinPlugin::getDstClip( ) const
 void Log2LinPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
