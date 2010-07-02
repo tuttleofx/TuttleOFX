@@ -1,5 +1,5 @@
 #include "BlurPlugin.hpp"
-#include "BlurAlgorithm.hpp"
+#include <tuttle/plugin/image/gil/gaussianKernel.hpp>
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/PluginException.hpp>
