@@ -7,7 +7,7 @@ namespace basicKeyer {
 
 template<class View>
 BasicKeyerProcess<View>::BasicKeyerProcess( BasicKeyerPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
+: Parent( instance )
 , _plugin( instance )
 {
 }
@@ -16,7 +16,7 @@ template<class View>
 void BasicKeyerProcess<View>::setup( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
-	ImageGilProcessor<View>::setup( args );
+	Parent::setup( args );
 
 	_params = _plugin.getProcessParams<View>();
 

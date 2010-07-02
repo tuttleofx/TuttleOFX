@@ -23,6 +23,7 @@ template<class View>
 class BasicKeyerProcess : public ImageGilFilterProcessor<View>
 {
 public:
+    typedef ImageGilFilterProcessor<View> Parent;
     typedef typename View::value_type Pixel;
 protected :
     BasicKeyerPlugin&    _plugin;        ///< Rendering plugin
