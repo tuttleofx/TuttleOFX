@@ -57,10 +57,12 @@ void OpenImageIOReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 /**
  */
 template<class View>
-View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
+View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& filepath )
 {
 	using namespace OpenImageIO;
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filepath ) );
+	if( !in )
+		throw OFX::Exception::Suite( kOfxStatErrValue );
 	ImageSpec spec;
 	in->open( filepath, spec );
 	in->read_image( TypeDesc::UINT32, &((*dst.begin())[0]) ); // get the adress of the first channel value from the first pixel
