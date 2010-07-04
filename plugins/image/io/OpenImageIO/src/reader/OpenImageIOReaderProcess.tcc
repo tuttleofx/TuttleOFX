@@ -59,19 +59,13 @@ void OpenImageIOReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 template<class View>
 View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
 {
-	/*
-	any_image_t anyImg;
-	try
-	{
-		openImageIO_read_image( filepath, anyImg );
-	}
-	catch( PluginException& e )
-	{
-		COUT_EXCEPTION( e );
-		return dst;
-	}
-	copy_and_convert_pixels( subimage_view( flipped_up_down_view( view( anyImg ) ), 0, 0, dst.width(), dst.height() ), dst );
-	*/
+	using namespace OpenImageIO;
+	boost::scoped_ptr<ImageInput> in( ImageInput::create( filepath ) );
+	ImageSpec spec;
+	in->open( filepath, spec );
+	in->read_image( TypeDesc::UINT32, &((*dst.begin())[0]) ); // get the adress of the first channel value from the first pixel
+	in->close();
+
 	return dst;
 }
 
