@@ -140,6 +140,12 @@ void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		_reader.close();
 		_fileInfos._failed = true;
 	}
+	else if( paramName == "Help" )
+    {
+        sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     kJpeg2000HelpString );
+    }
 	ReaderPlugin::changedParam(args, paramName);
 }
 

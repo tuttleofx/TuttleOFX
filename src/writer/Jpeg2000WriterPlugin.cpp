@@ -145,12 +145,20 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			_lossless->setEnabled(false);
 			// DCI needs 12b
 			_bitDepth->setValue(1);
+			_bitDepth->setEnabled(false);
 		}
 		else
 		{
 			_lossless->setEnabled(true);
+			_bitDepth->setEnabled(true);
 		}
 	}
+	else if( paramName == "Help" )
+    {
+        sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     kJ2KHelpString );
+    }
 }
 
 }

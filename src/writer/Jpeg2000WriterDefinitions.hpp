@@ -23,7 +23,7 @@ static const std::string kParamCinemaProfil       = "cinemaProfil";
 static const std::string kParamLossless           = "lossless";
 
 const static std::string kJpeg2000HelpButton = "Help";
-const static std::string kJ2KHelpString = "<b>Jpeg2000 io</b> plugin is used to output jpeg 2000 files.  <br />";
+const static std::string kJ2KHelpString = "<b>Jpeg2000 io</b> plugin is used to output jpeg 2000 files.<br />In the filename pattern, put @ where you want your incrementation to be.<br />";
 
 }
 }

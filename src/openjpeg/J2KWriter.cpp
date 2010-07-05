@@ -114,6 +114,7 @@ bool J2KWriter::open(const std::string & filename, const size_t w, const size_t 
 		cmptparm[j].w = w;
 		cmptparm[j].h = h;
     }
+
 	/* create the image*/
 	_openjpeg.image = opj_image_create( nc, &cmptparm[0], color_space );
 
