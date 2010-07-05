@@ -50,20 +50,20 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bo
 	std::vector<Scalar> rightKernel;
 	rightKernel.reserve(10);
 	int x = 1;
-	Scalar v;
+	Scalar v = gaussianValueAt<Scalar>( x, size );
 	Scalar sum = 0.0;
-	while( (v = gaussianValueAt<Scalar>( x, size )) > kConvolutionEpsilon )
+	do
 	{
 		rightKernel.push_back( v );
 		sum += v;
 		++x;
-	}
-	if( rightKernel.size() == 0 || sum == 0 )
-		return boost::gil::kernel_1d<Scalar>();
-	sum *= 2.0;
+	} while( (v = gaussianValueAt<Scalar>( x, size )) > kConvolutionEpsilon );
+
 
 	std::vector<Scalar> kernel( rightKernel.size()*2+1 );
 	Scalar kernelCenter = gaussianValueAt<Scalar>( 0, size );
+
+	sum *= 2.0;
 	sum += kernelCenter;
 
 	if( normalize )

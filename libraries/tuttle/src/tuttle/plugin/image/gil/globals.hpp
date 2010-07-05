@@ -68,9 +68,8 @@ struct image_from_view
 	typedef typename View::value_type value_type; // pixel_t
 	typedef typename boost::gil::image<value_type, boost::gil::is_planar<View>::value> type;
 };
-
-//Whaou interesting!:
 // typedef typename view_type_from_pixel<OutPixelType, boost::gil::is_planar<View>::value >::type OutView;
+
 
 /**
  * @brief Get black color value
