@@ -102,7 +102,7 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 		}
 		if( reinterpretation && isEndianReinterpNeeded() )
 		{
-			_indyData.reset( reinterpretEndianness() );
+			_indyData = reinterpretEndianness();
 		}
 		else
 		{
@@ -422,10 +422,10 @@ bool DpxImage::isEndianReinterpNeeded() const
 	return false;
 }
 
-uint8_t* DpxImage::reinterpretEndianness() const
+boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 {
 	// Do we need reinterpretation ?
-	uint8_t* pData = NULL;
+	boost::shared_array<uint8_t> pData;
 
 	if( _header.bigEndian() && BOOST_BYTE_ORDER == 1234 )
 	{
@@ -439,9 +439,9 @@ uint8_t* DpxImage::reinterpretEndianness() const
 			{
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
-				pData = new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )];
+				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
 				size_t dataSize16    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint16_t );
-				uint16_t* pData16    = (uint16_t*)pData;
+				uint16_t* pData16    = (uint16_t*)pData.get();
 				uint16_t* pSrcData16 = (uint16_t*)_data.get();
 				uint16_t* pData16End = pData16 + dataSize16;
 				do
@@ -459,9 +459,9 @@ uint8_t* DpxImage::reinterpretEndianness() const
 			{
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
-				pData = new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )];
+				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
 				size_t dataSize32    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint32_t );
-				uint32_t* pData32    = (uint32_t*)pData;
+				uint32_t* pData32    = (uint32_t*)pData.get();
 				uint32_t* pSrcData32 = (uint32_t*)_data.get();
 				uint32_t* pData32End = pData32 + dataSize32;
 				do
