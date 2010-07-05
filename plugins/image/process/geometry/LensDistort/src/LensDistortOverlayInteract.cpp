@@ -2,7 +2,7 @@
 #include "lensDistortDefinitions.hpp"
 #include "LensDistortPlugin.hpp"
 #include "lensDistortAlgorithm.hpp"
-#include <tuttle/common/opengl/gl.h>
+#include <tuttle/plugin/opengl/gl.h>
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/overlay.hpp>
 #include <tuttle/plugin/interact/ParamPoint.hpp>

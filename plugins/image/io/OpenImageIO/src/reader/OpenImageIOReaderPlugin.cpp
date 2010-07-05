@@ -4,10 +4,14 @@
 
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 
+#include <OpenImageIO/imageio.h>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -121,62 +125,118 @@ void OpenImageIOReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args
 
 bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	point2<ptrdiff_t> dims; //= openImageIO_read_dimensions( _filePattern.getFilenameAt(args.time) );
+	using namespace OpenImageIO;
+	std::string filename( _filePattern.getFilenameAt(args.time) );
+	if( ! bfs::exists( filename ) )
+	{
+		rod.x1 = 0;
+		rod.x2 = 0;
+		rod.y1 = 0;
+		rod.y2 = 0;
+		return true;
+	}
+
+	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
+	if( !in )
+		throw OFX::Exception::Suite( kOfxStatErrValue );
+	ImageSpec spec;
+	in->open( filename, spec );
+
+	point2<ptrdiff_t> dims;
 	rod.x1 = 0;
-	rod.x2 = dims.x * this->_clipDst->getPixelAspectRatio();
+	rod.x2 = spec.width * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
-	rod.y2 = dims.y;
+	rod.y2 = spec.height;
+	
+	in->close();
 	return true;
 }
 
 void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
+	using namespace OpenImageIO;
+	std::string filename( _filePattern.getFirstFilename() );
+
+	// spec.nchannels;
+//	switch( spec.format )
+//	{
+//		case TypeDesc::UINT8:
+//		case TypeDesc::UNKNOWN:
+//	}
+
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	// Check if exist
-	if( bfs::exists( _filePattern.getFirstFilename() ) )
+	if( ! bfs::exists( filename ) )
+		throw OFX::Exception::Suite( kOfxStatErrValue );
+	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
+	if( !in )
+		throw OFX::Exception::Suite( kOfxStatErrValue );
+	ImageSpec spec;
+	in->open( filename, spec );
+	if ( _paramExplicitConv->getValue() )
 	{
-		if ( _paramExplicitConv->getValue() )
+		switch( _paramExplicitConv->getValue() )
 		{
-			switch( _paramExplicitConv->getValue() )
+			case 1:
 			{
-				case 1:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-					break;
-				}
-				case 2:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-					break;
-				}
-				case 3:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-					break;
-				}
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+				break;
+			}
+			case 2:
+			{
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+				break;
+			}
+			case 3:
+			{
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+				break;
 			}
 		}
-		else
-		{
-			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
-			int bitDepth = 8; //openImageIO_read_precision( _filePattern.getFirstFilename() );
-			switch( bitDepth )
-			{
-				case 8:
-					bd = OFX::eBitDepthUByte;
-					break;
-				case 16:
-					bd = OFX::eBitDepthUShort;
-					break;
-				default:
-					throw OFX::Exception::Suite( kOfxStatErrImageFormat );
-					break;
-			}
-			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
-		}
-		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 	}
+	else
+	{
+		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+		switch( spec.format.basetype )
+		{
+//			case TypeDesc::UCHAR:
+			case TypeDesc::UINT8:
+//			case TypeDesc::CHAR:
+			case TypeDesc::INT8:
+				bd = OFX::eBitDepthUByte;
+				break;
+			case TypeDesc::HALF:
+//			case TypeDesc::USHORT:
+			case TypeDesc::UINT16:
+//			case TypeDesc::SHORT:
+			case TypeDesc::INT16:
+				bd = OFX::eBitDepthUShort;
+				break;
+//			case TypeDesc::UINT:
+			case TypeDesc::UINT32:
+//			case TypeDesc::INT:
+			case TypeDesc::INT32:
+//			case TypeDesc::ULONGLONG:
+			case TypeDesc::UINT64:
+//			case TypeDesc::LONGLONG:
+			case TypeDesc::INT64:
+			case TypeDesc::FLOAT:
+			case TypeDesc::DOUBLE:
+				bd = OFX::eBitDepthFloat;
+				break;
+			case TypeDesc::STRING:
+			case TypeDesc::PTR:
+			case TypeDesc::LASTBASE:
+			case TypeDesc::UNKNOWN:
+			case TypeDesc::NONE:
+			default:
+				throw OFX::Exception::Suite( kOfxStatErrImageFormat );
+		}
+		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
+	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+	in->close();
 }
 
 }

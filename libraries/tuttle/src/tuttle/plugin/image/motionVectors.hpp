@@ -28,7 +28,7 @@ namespace bgil = boost::gil;
  * @param [in] p inform progress
  */
 template< typename View> // Models RandomAccess2DImageViewConcept
-void modifyVectors( const View& xVecView, const View& yVecView,
+bool modifyVectors( const View& xVecView, const View& yVecView,
 				    const double angle, const double intensity,
 					tuttle::plugin::Progress* p )
 {
@@ -68,15 +68,28 @@ void modifyVectors( const View& xVecView, const View& yVecView,
 
 			bgil::get_color( *it_xVec, bgil::gray_color_t() ) = motion.x;
 			bgil::get_color( *it_yVec, bgil::gray_color_t() ) = motion.y;
-
-			++it_xVec;
-			++it_yVec;
 		}
 		if( p->progressForward( ) )
-			return;
+			return true;
 	}
+	return false;
 }
 
+template<typename GView, typename View, typename Point, typename Scalar>
+bool correlateXY( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
+                  const boost::gil::kernel_1d<Scalar>& gilKernel, const boost::gil::convolve_boundary_option boundary_option,
+                  tuttle::plugin::Progress* p )
+{
+	typedef typename GView::value_type GPixel;
+	using namespace boost::gil;
+	correlate_rows<GPixel>( color_converted_view<GPixel>(img), gilKernel, xGradientView, topleft, boundary_option );
+	if( p->progressForward( xGradientView.height() ) )
+		return true;
+	correlate_cols<GPixel>( color_converted_view<GPixel>(img), gilKernel, yGradientView, topleft, boundary_option );
+	if( p->progressForward( yGradientView.height() ) )
+		return true;
+	return false;
+}
 
 /**
  * @brief Moves the pixels based on the variation of the mask (the derivative: [-1 0 1] kernel)
@@ -85,7 +98,7 @@ template <typename Sampler, // Models SamplerConcept
 typename SrcView, // Models RandomAccess2DImageViewConcept
 typename VecView, // Models RandomAccess2DImageViewConcept
 typename DstView> // Models MutableRandomAccess2DImageViewConcept
-void motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcRod,
+bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcRod,
 							        const VecView& xVecView, const VecView& yVecView, const OfxRectI& vecRod,
 							        const DstView& dstView, const OfxRectI& dstRod,
 							        const OfxRectI& procWindowRoW,
@@ -139,12 +152,14 @@ void motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 
 	for( Coord y = procWindowRoW.y1; y < procWindowRoW.y2; ++y )
 	{
-		const Coord yDst = y + dstRod.y1;
-		const Coord yVec = y + vecRod.y1;
-		typename DstView::x_iterator xitDst = dstView.x_at( shiftProcWinDstRod.x1, yDst );
-		typename VecView::x_iterator xitxVec = xVecView.x_at( shiftProcWinVecRod.x1, yVec );
-		typename VecView::x_iterator xityVec = yVecView.x_at( shiftProcWinVecRod.x1, yVec );
-		for( Coord x = procWindowRoW.x1; x < procWindowRoW.x2; ++x )
+		const Coord yDst = y - dstRod.y1;
+		const Coord yVec = y - vecRod.y1;
+		typename DstView::x_iterator xit_dst = dstView.x_at( shiftProcWinDstRod.x1, yDst );
+		typename VecView::x_iterator xit_xVec = xVecView.x_at( shiftProcWinVecRod.x1, yVec );
+		typename VecView::x_iterator xit_yVec = yVecView.x_at( shiftProcWinVecRod.x1, yVec );
+		for( Coord x = procWindowRoW.x1;
+		     x < procWindowRoW.x2;
+		     ++x, ++xit_dst, ++xit_xVec, ++xit_yVec )
 		{
 			const Coord xDst = x + dstRod.x1;
 			const VecPoint2 pos( xDst, yDst );
@@ -158,25 +173,23 @@ void motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 			}
 			else
 			{
-				motion.x = bgil::get_color( *xitxVec, bgil::gray_color_t() );
-				motion.y = bgil::get_color( *xityVec, bgil::gray_color_t() );
+				motion.x = bgil::get_color( *xit_xVec, bgil::gray_color_t() );
+				motion.y = bgil::get_color( *xit_yVec, bgil::gray_color_t() );
 			}
 
 			// compute the pixel value according to the resample method
-			if( !bgil::sample( sampler, srcView, pos + motion, *xitDst ) )
+			if( !bgil::sample( sampler, srcView, pos + motion, *xit_dst ) )
 			{
-				*xitDst = black; // if it is outside of the source image
+				*xit_dst = black; // if it is outside of the source image
 			}
-			++xitDst;
-			++xitxVec;
-			++xityVec;
 		}
 
 		// notify the end of the line to inform the progress
 		// and allows the host to abort
 		if( p->progressForward( ) )
-			return;
+			return true;
 	}
+	return false;
 }
 
 }

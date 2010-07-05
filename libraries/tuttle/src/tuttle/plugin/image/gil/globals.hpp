@@ -14,6 +14,22 @@ namespace tuttle {
 
 namespace bgil = boost::gil;
 
+template<class View>
+View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
+{
+	using namespace boost::gil;
+    typedef typename View::value_type Pixel;
+
+	// if the tile is equals to the full image
+	// directly return the tile
+	if( bounds.x1 == rod.x1 && bounds.y1 == rod.y1 &&
+	    bounds.x2 == rod.x2 && bounds.y2 == rod.y2 )
+		return tileView;
+
+	// view the tile as a full image
+	return subimage_view( tileView, rod.x1-bounds.x1, rod.y1-bounds.y1, rod.x2-rod.x1, rod.y2-rod.y1 );
+}
+
 struct alpha_max_filler
 {
 	template< class P>

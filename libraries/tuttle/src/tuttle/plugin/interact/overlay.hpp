@@ -2,7 +2,7 @@
 #define	_TUTTLE_PLUGIN_OVERLAY_HPP_
 
 #include <ofxsInteract.h>
-#include <tuttle/common/opengl/gl.h>
+#include <tuttle/plugin/opengl/gl.h>
 
 namespace tuttle {
 namespace plugin {

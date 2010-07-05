@@ -1,10 +1,5 @@
-/*
- * @author fabien castan
- * @date   2009/09/11
- */
-
-#ifndef TUTTLE_MATH_HPP
-#define TUTTLE_MATH_HPP
+#ifndef _TUTTLE_COMMON_MATH_HPP_
+#define _TUTTLE_COMMON_MATH_HPP_
 #include <cmath>
 #include <algorithm>
 
@@ -60,5 +55,5 @@ inline T max( const T& a, const T& b, const T& c, const T& d )
 
 }
 
-#endif  /* TUTTLE_MATH_HPP */
+#endif
 

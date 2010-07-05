@@ -8,7 +8,7 @@
 #include <fftEngine/FftwWrapperCPU.hpp>
 #include <fftEngine/FftwWrapperGPU.hpp>
 
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 

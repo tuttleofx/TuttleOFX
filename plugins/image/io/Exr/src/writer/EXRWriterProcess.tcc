@@ -1,7 +1,7 @@
 #include "EXRWriterDefinitions.hpp"
 #include "EXRWriterProcess.hpp"
 
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include "../half/gilHalf.hpp"
 #include "EXRWriterPlugin.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>

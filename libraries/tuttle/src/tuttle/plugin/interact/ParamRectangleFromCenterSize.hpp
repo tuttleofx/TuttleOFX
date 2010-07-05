@@ -5,7 +5,7 @@
 #include "PointInteract.hpp"
 #include "ParamPoint.hpp"
 #include "overlay.hpp"
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include <ofxsParam.h>
 
 namespace tuttle {

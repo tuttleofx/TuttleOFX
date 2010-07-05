@@ -4,7 +4,7 @@
 #include "InteractInfos.hpp"
 #include "InteractObject.hpp"
 #include "IsActiveFunctor.hpp"
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <ofxsParam.h>
 #include <boost/ptr_container/ptr_vector.hpp>

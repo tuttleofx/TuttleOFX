@@ -2,7 +2,7 @@
 #define	_TUTTLE_PLUGIN_INTERACTINFOS_HPP_
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/coordinateSystem.hpp>
 
 #include <ofxsCore.h>

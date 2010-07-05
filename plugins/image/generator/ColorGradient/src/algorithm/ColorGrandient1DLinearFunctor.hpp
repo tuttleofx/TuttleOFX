@@ -4,7 +4,7 @@
 #include "../ColorGradientDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>

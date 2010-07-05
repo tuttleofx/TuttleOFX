@@ -1,7 +1,8 @@
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/algorithm.hpp>
 
 #include <cmath>
 #include <vector>
@@ -63,7 +64,7 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 							  procWindowSize.x,
 							  procWindowSize.y );
 
-	transform_pixels( src, dst, inverter() );
+	transform_pixels_progress( src, dst, inverter(), *this );
 }
 
 }

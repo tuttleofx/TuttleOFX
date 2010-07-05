@@ -1,6 +1,6 @@
 #include "ImageStatisticsPlugin.hpp"
 #include "ImageStatisticsProcess.hpp"
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
 #include <boost/gil/extension/toolbox/hsl.hpp>

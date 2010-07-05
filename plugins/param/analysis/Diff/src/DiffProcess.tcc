@@ -1,5 +1,5 @@
 #include <tuttle/common/math/rectOp.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include "DiffPlugin.hpp"
 

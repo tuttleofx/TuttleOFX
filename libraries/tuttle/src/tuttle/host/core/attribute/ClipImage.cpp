@@ -17,12 +17,7 @@
 #include <tuttle/host/ofx/attribute/OfxhParam.hpp>
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
-
-#include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
-
-//#define _DEBUG 1
 
 #include <iostream>
 #include <fstream>
@@ -49,7 +44,7 @@ ClipImage::~ClipImage()
 {}
 
 /// Return the rod on the clip cannoical coords!
-OfxRectD ClipImage::fetchRegionOfDefinition( OfxTime time ) const
+OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 {
 	if( !isOutput() )
 	{
@@ -109,7 +104,7 @@ void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmap
 /// on the effect instance. Outside a render call, the optionalBounds should
 /// be 'appropriate' for the.
 /// If bounds is not null, fetch the indicated section of the canonical image plane.
-tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( OfxTime time, OfxRectD* optionalBounds )
+tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime time, const OfxRectD* optionalBounds )
 {
 	OfxRectD bounds;
 

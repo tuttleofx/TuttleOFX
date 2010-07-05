@@ -4,7 +4,7 @@
 #include "overlay.hpp"
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/common/image/gilGlobals.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 namespace tuttle {
 namespace plugin {
