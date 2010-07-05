@@ -1,5 +1,5 @@
 #include "Jpeg2000ReaderPlugin.hpp"
-#include <tuttle/common/image/gilViewTypes.hpp>
+#include <tuttle/plugin/image/gil/typedefs.hpp>
 
 namespace tuttle {
 namespace plugin {

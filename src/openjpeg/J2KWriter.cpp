@@ -1,13 +1,6 @@
-/* 
- * File:   J2KWriter.cpp
- * Author: edubois
- * 
- * Created on March 26, 2010, 10:42 AM
- */
-
 #include "J2KWriter.hpp"
 #include "J2KCommon.hpp"
-#include <tuttle/common/image/gilViewTypes.hpp>
+#include <tuttle/plugin/image/gil/typedefs.hpp>
 
 #include <iostream>
 #include <cstring>
