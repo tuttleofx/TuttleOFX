@@ -76,54 +76,7 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			break;
 	}
 
-	if( _params._gilKernelX.size() > 2 && _params._gilKernelY.size() > 2 )
-	{
-		if( dst.dimensions() == this->_srcView.dimensions() ) // no tiles... easy !
-		{
-			correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, option );
-			correlate_cols<Pixel>( dst, _params._gilKernelY, dst, option );
-		}
-		else
-		{
-			// we have 2 pass, so to use tiles, we need a temporary buffer
-			// _________________src__________________
-			// |    ____________dst____________      |
-			// |    |  ....proc_src_roi.....   |     |
-			// |    |  :  :             :  :   |     |
-			// |    |  :  :_____________:  :   |     |
-			// |    |  :  |             |  :   |     |
-			// |    |  :  |   procWin   |  :   |     |
-			// |    |  :  |             |  :   |     |
-			// |    |  :  |_____________|  :   |     |
-			// |    |  :  : tmp_buffer  :  :   |     |
-			// |    |  :..:.............:..:   |     |
-			// |    |__________________________|     |
-			// |_____________________________________|
-			// tmp_buffer: is the temporary buffer used after the correlate_rows
-			//             (width of procWin and height of proc_src_roi)
-			Coord top_in = std::min( numeric_cast<Coord>(_params._gilKernelY.left_size()), proc_tl.y );
-			Coord bottom_in = std::min( numeric_cast<Coord>(_params._gilKernelY.right_size()), (this->_srcPixelRod.y2-this->_srcPixelRod.y1)-(proc_tl.y+procWindowSize.y) );
-			Point image_tmp_size( dst.dimensions() );
-			image_tmp_size.y += top_in + bottom_in;
-			Point image_tmp_tl( proc_tl );
-			image_tmp_tl.y -= top_in;
-
-			Image image_tmp( image_tmp_size ); ///< @todo tuttle: use an allocator to use memory allocated from host
-			View view_tmp = view( image_tmp );
-			const Point dst_tmp_tl( 0, top_in );
-
-			correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, view_tmp, image_tmp_tl, option );
-			correlate_cols<Pixel>( view_tmp, _params._gilKernelY, dst, dst_tmp_tl, option );
-		}
-	}
-	else if( _params._gilKernelX.size() > 2 )
-	{
-		correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, option );
-	}
-	else if( _params._gilKernelY.size() > 2 )
-	{
-		correlate_cols<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, option );
-	}
+	correlate_rows_cols<Pixel>( this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, option );
 }
 
 }
