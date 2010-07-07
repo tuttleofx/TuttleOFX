@@ -74,6 +74,7 @@ void OpenImageIOWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
+	bitDepth->appendOption( kTuttlePluginBitDepth32f );
 	bitDepth->setDefault( 1 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *bitDepth );

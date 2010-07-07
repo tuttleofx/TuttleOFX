@@ -13,7 +13,8 @@ namespace writer {
 	enum EParamBitDepth
 	{
 		eParamBitDepth8 = 0,
-		eParamBitDepth16
+		eParamBitDepth16,
+		eParamBitDepth32
 	};
 
 	static const std::string kParamOutputRGB = "outputRGB";

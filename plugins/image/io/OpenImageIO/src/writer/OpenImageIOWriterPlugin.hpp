@@ -2,19 +2,18 @@
 #define _OPENIMAGEIO_WRITER_PLUGIN_HPP_
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
+#include <OpenImageIO/typedesc.h>
 
 namespace tuttle {
 namespace plugin {
 namespace openImageIO {
 namespace writer {
 
-using namespace boost::gil;
-
 struct OpenImageIOWriterProcessParams
 {
 	std::string _filepath;      ///< filepath
 	bool        _outputRGB;		///< Force RGB
-	int         _bitDepth;      ///< Output bit depth
+	TypeDesc _bitDepth;      ///< Output bit depth
 };
 
 /**
@@ -27,7 +26,7 @@ public:
 
 public:
 	OpenImageIOWriterProcessParams getParams(const OfxTime time);
-	virtual void render( const OFX::RenderArguments& args );
+	void render( const OFX::RenderArguments& args );
 
 public:
 	OFX::BooleanParam* _outputRGB;     ///< Force RGB

@@ -38,16 +38,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	try
 	{
 		OpenImageIOWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
-		switch(params._bitDepth)
-		{
-			case 8:
-				writeImage<bits8>( this->_srcView, params._filepath );
-				break;
-			case 16:
-				writeImage<bits16>( this->_srcView, params._filepath );
-				break;
-
-		}
+		writeImage( this->_srcView, params._filepath, params._bitDepth );
 		copy_pixels( this->_srcView, this->_dstView );
 	}
 	catch( tuttle::plugin::PluginException& e )
@@ -60,22 +51,15 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
  * 
  */
 template<class View>
-template<class Bits>
-void OpenImageIOWriterProcess<View>::writeImage( View& src, const std::string& filepath )
+void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::string& filepath, const TypeDesc bitDepth )
 {
 	using namespace boost::gil;
-	/*
-	if ( _plugin.getParams(this->_renderArgs.time)._outputRGB )
-	{
-		typedef pixel<Bits, rgb_layout_t> OutPixelType;
-		openImageIO_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
-	}
-	else
-	{
-		typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-		openImageIO_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
-	}
-	*/
+	using namespace OpenImageIO;
+	boost::scoped_ptr<ImageOutput> out( ImageOutput::create( filepath ) );
+	ImageSpec spec( src.width(), src.height(), num_channels<View>::value, bitDepth );
+	out->open( filepath, spec );
+	out->write_image( TypeDesc::FLOAT, &((*src.begin())[0]) ); // get the adress of the first channel value from the first pixel
+	out->close();
 }
 
 }

@@ -2,16 +2,16 @@
 #include "OpenImageIOWriterPlugin.hpp"
 #include "OpenImageIOWriterProcess.hpp"
 
+#include <OpenImageIO/imageio.h>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace openImageIO {
 namespace writer {
 
-using namespace boost::gil;
 
 OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
@@ -27,10 +27,13 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getParams(const OfxTime 
 	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
 	{
 		case eParamBitDepth8:
-			params._bitDepth = 8;
+			params._bitDepth = TypeDesc::UINT8;
 			break;
 		case eParamBitDepth16:
-			params._bitDepth = 16;
+			params._bitDepth = TypeDesc::UINT16;
+			break;
+		case eParamBitDepth32:
+			params._bitDepth = TypeDesc::FLOAT;
 			break;
 		default:
 			throw( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
@@ -45,6 +48,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getParams(const OfxTime 
  */
 void OpenImageIOWriterPlugin::render( const OFX::RenderArguments& args )
 {
+	using namespace boost::gil;
 	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip

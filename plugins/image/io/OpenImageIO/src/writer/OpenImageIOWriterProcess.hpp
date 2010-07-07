@@ -27,8 +27,7 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	template<class Bits>
-	void writeImage( View& src, const std::string& filepath );
+	void writeImage( const View& src, const std::string& filepath, const TypeDesc bitDepth );
 };
 
 }
