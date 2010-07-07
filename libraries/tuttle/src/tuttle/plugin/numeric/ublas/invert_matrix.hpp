@@ -19,6 +19,31 @@
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
+
+template<class Matrix>
+bool invert_3x3( const Matrix &A, Matrix &result )
+{
+	using namespace boost::numeric::ublas;
+	typedef typename Matrix::value_type T;
+	T determinant =  ( + A(0,0) * ( A(1,1) * A(2,2) - A(2,1) * A(1,2) )
+					   - A(0,1) * ( A(1,0) * A(2,2) - A(1,2) * A(2,0) )
+					   + A(0,2) * ( A(1,0) * A(2,1) - A(1,1) * A(2,0) ) );
+
+	if ( determinant == 0 )
+		return false;
+
+	result(0, 0) = (   A(1, 1) * A(2, 2) - A(1, 2) * A(2, 1) ) / determinant;
+    result(1, 0) = ( - A(1, 0) * A(2, 2) + A(2, 0) * A(1, 2) ) / determinant;
+    result(2, 0) = (   A(1, 0) * A(2, 1) - A(2, 0) * A(1, 1) ) / determinant;
+    result(0, 1) = ( - A(0, 1) * A(2, 2) + A(2, 1) * A(0, 2) ) / determinant;
+    result(1, 1) = (   A(0, 0) * A(2, 2) - A(2, 0) * A(0, 2) ) / determinant;
+    result(2, 1) = ( - A(0, 0) * A(2, 1) + A(2, 0) * A(0, 1) ) / determinant;
+    result(0, 2) = (   A(0, 1) * A(1, 2) - A(1, 1) * A(0, 2) ) / determinant;
+    result(1, 2) = ( - A(0, 0) * A(1, 2) + A(1, 0) * A(0, 2) ) / determinant;
+    result(2, 2) = (   A(0, 0) * A(1, 1) - A(1, 0) * A(0, 1) ) / determinant;
+	return true;
+}
+
 // Matrix inversion routine.
 // Uses lu_factorize and lu_substitute in uBLAS to invert a matrix
 template<class Matrix>
@@ -46,6 +71,16 @@ bool invert ( const Matrix &input, Matrix &inverse )
 	return true;
 }
 
+/**
+ * Generic matrix inverter' specialization for square matrix of size 3.
+ */
+template<typename T>
+bool invert( const boost::numeric::ublas::bounded_matrix<T, 3, 3> &A,
+			 boost::numeric::ublas::bounded_matrix<T, 3, 3> &result)
+{
+	return invert_3x3( A, result );
+}
+
 template<class Matrix>
 Matrix invert( const Matrix &m, bool &is_singular )
 { 
@@ -53,6 +88,7 @@ Matrix invert( const Matrix &m, bool &is_singular )
     is_singular = ! invert( m, inv_m );
     return inv_m;
 }
+
 // http://archives.free.net.ph/message/20080909.064313.59c122c4.fr.html 
 template<class Matrix>
 double determinant( boost::numeric::ublas::matrix_expression<Matrix> const& mat_r )
@@ -80,28 +116,8 @@ double determinant( boost::numeric::ublas::matrix_expression<Matrix> const& mat_
 	}
 	return det;
 }
-//Inspired by scs_matrix.c and some other web ressources.
-template<class Matrix>
-bool invert_3x3( const Matrix& A, Matrix& result )
-{
-	using namespace boost::numeric::ublas;
-	typedef typename Matrix::value_type T;
-	T determinant =  ( + A(0,0) * ( A(1,1) * A(2,2) - A(2,1) * A(1,2) )
-					   - A(0,1) * ( A(1,0) * A(2,2) - A(1,2) * A(2,0) )
-					   + A(0,2) * ( A(1,0) * A(2,1) - A(1,1) * A(2,0) ) );
 
-	if ( determinant == 0 )
-		return false;
 
-	result(0, 0) = (   A(1, 1) * A(2, 2) - A(1, 2) * A(2, 1) ) / determinant;
-    result(1, 0) = ( - A(1, 0) * A(2, 2) + A(2, 0) * A(1, 2) ) / determinant;
-    result(2, 0) = (   A(1, 0) * A(2, 1) - A(2, 0) * A(1, 1) ) / determinant;
-    result(0, 1) = ( - A(0, 1) * A(2, 2) + A(2, 1) * A(0, 2) ) / determinant;
-    result(1, 1) = (   A(0, 0) * A(2, 2) - A(2, 0) * A(0, 2) ) / determinant;
-    result(2, 1) = ( - A(0, 0) * A(2, 1) + A(2, 0) * A(0, 1) ) / determinant;
-    result(0, 2) = (   A(0, 1) * A(1, 2) - A(1, 1) * A(0, 2) ) / determinant;
-    result(1, 2) = ( - A(0, 0) * A(1, 2) + A(1, 0) * A(0, 2) ) / determinant;
-    result(2, 2) = (   A(0, 0) * A(1, 1) - A(1, 0) * A(0, 1) ) / determinant;
-	return true;
-}
+
+
 #endif

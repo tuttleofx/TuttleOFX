@@ -392,6 +392,69 @@ void convolve_cols_fixed(const SrcView& src, const Kernel& ker, const DstView& d
     convolve_rows_fixed<PixelAccum>(transposed_view(src),ker,transposed_view(dst),option);
 }
 
+
+/// \ingroup ImageAlgorithms
+/// correlate a 2D separable variable-size kernel (kernelX and kernelY)
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_rows_cols(const SrcView& src, const Kernel& kernelX, const Kernel& kernelY, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                    convolve_boundary_option option=convolve_option_extend_zero)
+{
+    typedef typename DstView::point_t Point;
+    typedef typename DstView::coord_t Coord;
+	typedef typename view_type_from_pixel<PixelAccum, is_planar<DstView>::value >::type ViewAccum;
+	typedef image<PixelAccum, is_planar<DstView>::value> ImageAccum;
+
+	if( kernelX.size() > 2 && kernelY.size() > 2 )
+	{
+		if( dst.dimensions() == src.dimensions() ) // no tiles... easy !
+		{
+			correlate_rows<PixelAccum>( src, kernelX, dst, option );
+			correlate_cols<PixelAccum>( dst, kernelY, dst, option );
+		}
+		else
+		{
+			// we have 2 pass, so to use tiles, we need a temporary buffer
+			// _________________src______________
+			// |      ....proc_src_roi.....      |
+			// |      :  :             :  :      |
+			// |      :  :_____________:  :      |
+			// |      :  |             |  :      |
+			// |      :  |     dst     |  :      |
+			// |      :  |             |  :      |
+			// |      :  |_____________|  :      |
+			// |      :  : tmp_buffer  :  :      |
+			// |      :..:.............:..:      |
+			// |_________________________________|
+			// tmp_buffer: is the temporary buffer used after the correlate_rows
+			//             (width of procWin and height of proc_src_roi)
+			Coord top_in = std::min( numeric_cast<Coord>( kernelY.left_size()), dst_tl.y );
+			Coord bottom_in = std::min( numeric_cast<Coord>( kernelY.right_size()), src.height()-(dst_tl.y+dst.height()) );
+			Point image_tmp_size( dst.dimensions() );
+			image_tmp_size.y += top_in + bottom_in;
+			Point image_tmp_tl( dst_tl );
+			image_tmp_tl.y -= top_in;
+
+			ImageAccum image_tmp( image_tmp_size ); ///< @todo use an allocator
+			ViewAccum view_tmp = view( image_tmp );
+			const Point dst_tmp_tl( 0, top_in );
+
+			correlate_rows<PixelAccum>( src, kernelX, view_tmp, image_tmp_tl, option );
+			correlate_cols<PixelAccum>( view_tmp, kernelY, dst, dst_tmp_tl, option );
+		}
+	}
+	else if( kernelX.size() > 2 )
+	{
+		correlate_rows<PixelAccum>( src, kernelX, dst, dst_tl, option );
+	}
+	else if( kernelY.size() > 2 )
+	{
+		correlate_cols<PixelAccum>( src, kernelY, dst, dst_tl, option );
+	}
+
+}
+
+
 } }  // namespace boost::gil
 
 #endif

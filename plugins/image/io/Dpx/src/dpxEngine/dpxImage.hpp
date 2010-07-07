@@ -258,7 +258,7 @@ private:
 
 	void            readHeader( fs::ifstream& f );
 	bool            isEndianReinterpNeeded() const;
-	boost::uint8_t* reinterpretEndianness() const;
+	boost::shared_array<boost::uint8_t> reinterpretEndianness() const;
 	size_t readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t bufpos);
 
 public:
@@ -363,7 +363,7 @@ inline void DpxImage::setData( const boost::uint8_t* data, bool reinterpretation
 	memcpy( _data.get(), data, _dataSize );
 	if( reinterpretation  && isEndianReinterpNeeded() )
 	{
-		_indyData.reset( reinterpretEndianness() );
+		_indyData = reinterpretEndianness();
 	}
 	else
 	{

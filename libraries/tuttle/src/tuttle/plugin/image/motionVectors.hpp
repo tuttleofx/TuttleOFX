@@ -76,16 +76,32 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 }
 
 template<typename GView, typename View, typename Point, typename Scalar>
-bool correlateXY( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
-                  const boost::gil::kernel_1d<Scalar>& gilKernel, const boost::gil::convolve_boundary_option boundary_option,
+bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
+                  const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::convolve_boundary_option boundary_option,
                   tuttle::plugin::Progress* p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
-	correlate_rows<GPixel>( color_converted_view<GPixel>(img), gilKernel, xGradientView, topleft, boundary_option );
+	correlate_rows<GPixel>( color_converted_view<GPixel>(img), kernel, xGradientView, topleft, boundary_option );
 	if( p->progressForward( xGradientView.height() ) )
 		return true;
-	correlate_cols<GPixel>( color_converted_view<GPixel>(img), gilKernel, yGradientView, topleft, boundary_option );
+	correlate_cols<GPixel>( color_converted_view<GPixel>(img), kernel, yGradientView, topleft, boundary_option );
+	if( p->progressForward( yGradientView.height() ) )
+		return true;
+	return false;
+}
+
+template<typename GView, typename View, typename Point, typename Scalar>
+bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
+                  const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::kernel_1d<Scalar>& kernelSecondary, const boost::gil::convolve_boundary_option boundary_option,
+                  tuttle::plugin::Progress* p )
+{
+	typedef typename GView::value_type GPixel;
+	using namespace boost::gil;
+	correlate_rows_cols<GPixel>( color_converted_view<GPixel>(img), kernel, kernelSecondary, xGradientView, topleft, boundary_option );
+	if( p->progressForward( xGradientView.height() ) )
+		return true;
+	correlate_rows_cols<GPixel>( color_converted_view<GPixel>(img), kernelSecondary, kernel, yGradientView, topleft, boundary_option );
 	if( p->progressForward( yGradientView.height() ) )
 		return true;
 	return false;

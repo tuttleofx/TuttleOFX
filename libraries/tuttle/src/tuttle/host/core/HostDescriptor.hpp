@@ -46,13 +46,13 @@ public:
 	/// used to construct populate the cache
 	tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* makeDescriptor( const std::string&                                     bundlePath,
 	                                                                               tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plug ) const;
-
+#ifndef SWIG
 	/// vmessage
 	OfxStatus vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
 	                    va_list     args ) const;
-
+#endif
 };
 
 }

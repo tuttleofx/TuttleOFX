@@ -144,11 +144,10 @@ void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &ar
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 }
 
-
 bool BlurPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime )
 {
 	BlurProcessParams<Scalar> params = getProcessParams();
-	if( params._gilKernelX.size() > 2 || params._gilKernelY.size() > 2 )
+	if( params._size.x != 0 || params._size.y != 0 )
 		return false;
 	
 	identityClip = _clipSrc;
