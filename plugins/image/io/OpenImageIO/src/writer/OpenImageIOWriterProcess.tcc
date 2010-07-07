@@ -9,6 +9,10 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/mpl/map.hpp>
+#include <boost/mpl/integral_c.hpp>
+#include <boost/mpl/at.hpp>
+
 #include <cmath>
 #include <vector>
 
@@ -53,12 +57,21 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 template<class View>
 void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::string& filepath, const TypeDesc bitDepth )
 {
-	using namespace boost::gil;
+	using namespace boost;
 	using namespace OpenImageIO;
 	boost::scoped_ptr<ImageOutput> out( ImageOutput::create( filepath ) );
-	ImageSpec spec( src.width(), src.height(), num_channels<View>::value, bitDepth );
+	ImageSpec spec( src.width(), src.height(), gil::num_channels<View>::value, bitDepth );
 	out->open( filepath, spec );
-	out->write_image( TypeDesc::FLOAT, &((*src.begin())[0]) ); // get the adress of the first channel value from the first pixel
+
+	typedef mpl::map<
+      mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT8> >
+    , mpl::pair<gil::bits16, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT16> >
+    , mpl::pair<gil::bits32, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT32> >
+    , mpl::pair<gil::bits32f, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::FLOAT> >
+    > MapBits;
+	typedef typename gil::channel_type<View>::type ChannelType;
+
+	out->write_image( mpl::at<MapBits, ChannelType>::type::value, &((*src.begin())[0]) ); // get the adress of the first channel value from the first pixel
 	out->close();
 }
 
