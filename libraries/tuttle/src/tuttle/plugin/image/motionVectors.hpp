@@ -6,8 +6,6 @@
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
 #include <boost/gil/extension/numeric/sampler.hpp>
-#include <boost/gil/extension/toolbox/motion_vectors.hpp>
-//#include <boost/gil/extension/numeric/resample.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_same.hpp>
@@ -121,11 +119,11 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 							        tuttle::plugin::Progress* p,
 							        Sampler sampler = Sampler( ) )
 {
-	BOOST_ASSERT( srcView.width() == srcRod.x2 - srcView.x1 );
-	BOOST_ASSERT( srcView.height() == srcRod.y2 - srcView.y1 );
+	BOOST_ASSERT( srcView.width() == srcRod.x2 - srcRod.x1 );
+	BOOST_ASSERT( srcView.height() == srcRod.y2 - srcRod.y1 );
 
-	BOOST_ASSERT( xVecView.width() == vecRod.x2 - xVecView.x1 );
-	BOOST_ASSERT( xVecView.height() == vecRod.y2 - xVecView.y1 );
+	BOOST_ASSERT( xVecView.width() == vecRod.x2 - vecRod.x1 );
+	BOOST_ASSERT( xVecView.height() == vecRod.y2 - vecRod.y1 );
 
 	BOOST_ASSERT( yVecView.width() == xVecView.width() );
 	BOOST_ASSERT( yVecView.height() == xVecView.height() );
