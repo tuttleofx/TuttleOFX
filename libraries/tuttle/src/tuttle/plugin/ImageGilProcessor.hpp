@@ -72,7 +72,7 @@ public:
 
 #ifndef TUTTLE_PRODUCTION
 		// init dst buffer with red to highlight uninitialized pixels
-		OfxRectI dstBounds = _dst->getBounds();
+		const OfxRectI dstBounds = this->translateRoWToOutputClipCoordinates( _dst->getBounds() );
 		View dstToFill = bgil::subimage_view( _dstView,
 		                                      dstBounds.x1, dstBounds.y1,
 		                                      dstBounds.x2-dstBounds.x1, dstBounds.y2-dstBounds.y1 );
@@ -215,6 +215,8 @@ View getView( OFX::Image* img, const OfxRectI& rod )
 
 	//OfxRectI rod = img->getRegionOfDefinition();
 	OfxRectI bounds = img->getBounds();
+	COUT("getView img bounds: " << bounds);
+	COUT("getView rod: " << rod);
 	point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
 										bounds.y2 - bounds.y1 );
 
