@@ -169,6 +169,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 	for( Coord y = procWindowRoW.y1; y < procWindowRoW.y2; ++y )
 	{
 		const Coord yDst = y - dstRod.y1;
+		const Coord ySrc = y - srcRod.y1;
 		const Coord yVec = y - vecRod.y1;
 		typename DstView::x_iterator xit_dst = dstView.x_at( shiftProcWinDstRod.x1, yDst );
 		typename VecView::x_iterator xit_xVec = xVecView.x_at( shiftProcWinVecRod.x1, yVec );
@@ -177,8 +178,8 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 		     x < procWindowRoW.x2;
 		     ++x, ++xit_dst, ++xit_xVec, ++xit_yVec )
 		{
-			const Coord xDst = x + dstRod.x1;
-			const VecPoint2 pos( xDst, yDst );
+			const Coord xSrc = x - srcRod.x1;
+			const VecPoint2 pos( xSrc, ySrc );
 
 			VecPoint2 motion;
 			if( x < vecRod.x1 || x > vecRod.x2 ||
