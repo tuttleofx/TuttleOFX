@@ -183,10 +183,10 @@ public:
 	#pragma warning( disable : 4181 )
 	#endif
 	/// get one value
-	const ReturnType getValue( int index = 0 ) const OFX_EXCEPTION_SPEC;
+	ReturnType getValue( int index = 0 ) const OFX_EXCEPTION_SPEC;
 
 	/// get one value, without going through the getHook
-	const ReturnType getValueRaw( int index = 0 ) const OFX_EXCEPTION_SPEC;
+	ReturnType getValueRaw( int index = 0 ) const OFX_EXCEPTION_SPEC;
 
 	#if defined( WINDOWS ) && !defined( __GNUC__ )
 	#pragma warning( default : 4181 )

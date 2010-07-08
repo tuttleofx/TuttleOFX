@@ -116,7 +116,7 @@ OfxhPropertyTemplate<T>::OfxhPropertyTemplate( const OfxhPropertyTemplate<T>& pt
 /// get one value
 
 template<class T>
-const typename T::ReturnType OfxhPropertyTemplate<T>::getValue( int index ) const OFX_EXCEPTION_SPEC
+typename T::ReturnType OfxhPropertyTemplate<T>::getValue( int index ) const OFX_EXCEPTION_SPEC
 {
 	if( _getHook )
 	{
@@ -185,7 +185,7 @@ void OfxhPropertyTemplate<OfxhStringValue>::getValueN( OfxhStringValue::APIType*
  * get one value, without going through the getHook
  */
 template<class T>
-const typename T::ReturnType OfxhPropertyTemplate<T>::getValueRaw( int index ) const OFX_EXCEPTION_SPEC
+typename T::ReturnType OfxhPropertyTemplate<T>::getValueRaw( int index ) const OFX_EXCEPTION_SPEC
 {
 	if( index < 0 || ( (size_t) index >= _value.size() ) )
 	{
