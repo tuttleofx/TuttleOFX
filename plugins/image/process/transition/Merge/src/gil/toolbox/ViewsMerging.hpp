@@ -1,15 +1,6 @@
 #ifndef GIL_VIEWS_MERGING_HPP
 #define GIL_VIEWS_MERGING_HPP
 
-////////////////////////////////////////////////////////////////////////////////
-/// \file
-/// \brief GIL default views merging
-/// \author Eloi Du Bois
-/// \date   October 27, 2009
-///
-///
-////////////////////////////////////////////////////////////////////////////////
-
 #include <boost/static_assert.hpp>
 #include <boost/gil/gil_all.hpp>
 #include <boost/mpl/integral_c.hpp>

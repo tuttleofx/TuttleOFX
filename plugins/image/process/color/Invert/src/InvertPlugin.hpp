@@ -1,11 +1,3 @@
-/**
- * @file InvertPlugin.hpp
- * @brief
- * @author
- * @date    01/10/09 12:01
- *
- */
-
 #ifndef _TUTTLE_PLUGIN_INVERTPLUGIN_HPP_
 #define _TUTTLE_PLUGIN_INVERTPLUGIN_HPP_
 

@@ -1,11 +1,3 @@
-/**
- * @file Log2LinPlugin.cpp
- * @brief
- * @author
- * @date    08/01/10 15:39
- *
- */
-
 #include "Log2LinPlugin.hpp"
 #include "Log2LinProcess.hpp"
 #include "Log2LinDefinitions.hpp"

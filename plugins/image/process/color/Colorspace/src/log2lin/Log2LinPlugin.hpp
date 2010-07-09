@@ -1,11 +1,3 @@
-/**
- * @file Log2LinPlugin.hpp
- * @brief
- * @author
- * @date    08/01/10 15:39
- *
- */
-
 #ifndef LOG2LIN_PLUGIN_H
 #define LOG2LIN_PLUGIN_H
 
@@ -44,4 +36,4 @@ protected:
 }
 }
 
-#endif  // LOG2LIN_PLUGIN_H
+#endif

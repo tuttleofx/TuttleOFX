@@ -1,11 +1,3 @@
-/**
- * @file EXRWriterPlugin.cpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
-
 #include "EXRWriterPlugin.hpp"
 #include "EXRWriterProcess.hpp"
 #include "EXRWriterDefinitions.hpp"

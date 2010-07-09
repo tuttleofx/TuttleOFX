@@ -1,11 +1,3 @@
-/**
- * @file InvertPlugin.cpp
- * @brief
- * @author
- * @date    01/10/09 12:01
- *
- */
-
 #include "InvertPlugin.hpp"
 #include "InvertProcess.hpp"
 

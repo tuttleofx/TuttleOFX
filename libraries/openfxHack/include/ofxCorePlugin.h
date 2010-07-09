@@ -1,7 +1,4 @@
 /*
- *  Created on: 7 avr. 2010
- *      Author: Guillaume Chatelet
- *
  *  Contains the core architectural structures and function definitions for plug-in mechanism.
  *  This code is a subset of ofxCore.h from OpenFX plug-in mechanism ( http://openfx.sourceforge.net/ )
  */

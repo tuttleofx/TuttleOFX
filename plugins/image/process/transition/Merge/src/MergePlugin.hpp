@@ -1,11 +1,3 @@
-/**
- * @file MergePlugin.hpp
- * @brief
- * @author
- * @date    27/11/09 13:42
- *
- */
-
 #ifndef MERGE_PLUGIN_H
 #define MERGE_PLUGIN_H
 

@@ -1,11 +1,3 @@
-/**
- * @file CropPlugin.hpp
- * @brief
- * @author
- * @date    01/10/09 14:14
- *
- */
-
 #ifndef VOLET_PLUGIN_H
 #define VOLET_PLUGIN_H
 
@@ -47,4 +39,4 @@ protected:
 }
 }
 
-#endif  // VOLET_PLUGIN_H
+#endif

@@ -1,10 +1,3 @@
-/**
- * @file Log2LinDefinition.hpp
- * @brief
- * @author
- * @date    08/01/10 15:39
- *
- */
 #ifndef LOG2LIN_DEFINITIONS_HPP
 #define LOG2LIN_DEFINITIONS_HPP
 
@@ -29,4 +22,4 @@ const static std::string kLog2LinHelpString = "<b>Logarithmic to linear converti
 }
 }
 
-#endif  // LOG2LIN_DEFINITIONS_HPP
+#endif

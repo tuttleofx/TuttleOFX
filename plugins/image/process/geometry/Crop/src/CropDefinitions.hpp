@@ -1,10 +1,3 @@
-/**
- * @file CropDefinition.hpp
- * @brief
- * @author
- * @date    08/01/10 15:19
- *
- */
 #ifndef CROP_DEFINITIONS_HPP
 #define CROP_DEFINITIONS_HPP
 
@@ -47,4 +40,4 @@ static const std::string kCropHelpString = "<b>Crop</b> plugin is used to crop a
 }
 }
 
-#endif  // CROP_DEFINITIONS_HPP
+#endif

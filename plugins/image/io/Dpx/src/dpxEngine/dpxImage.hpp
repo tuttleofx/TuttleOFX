@@ -1,10 +1,3 @@
-/**
- * dpxImage.hpp
- *
- *  Created on: 10 nov. 2009
- *      Author: Nicolas Rondaud & Eloi Du Bois
- */
-
 #ifndef DPX_IMAGE_HPP
 #define DPX_IMAGE_HPP
 

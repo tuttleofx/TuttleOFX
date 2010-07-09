@@ -1,8 +1,6 @@
 /**
  * @brief This file provides a set of member function that
  *        are needed to manage algorithm progression.
- * @author Eloi Du Bois.
- * @date   2009/06/15
  */
 #ifndef _TUTTLE_PLUGIN_PROGRESS_HPP
 #define _TUTTLE_PLUGIN_PROGRESS_HPP

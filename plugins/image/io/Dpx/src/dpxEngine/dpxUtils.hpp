@@ -1,10 +1,3 @@
-/*
- * dpxUtils.hpp
- *
- *  Created on: 27 janv. 2009
- *      Author: Nicolas Rondaud
- */
-
 #ifndef DPX_UTILS_HPP
 #define DPX_UTILS_HPP
 

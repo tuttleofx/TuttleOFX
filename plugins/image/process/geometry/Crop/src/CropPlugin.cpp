@@ -1,11 +1,3 @@
-/**
- * @file CropPlugin.cpp
- * @brief
- * @author
- * @date    01/10/09 14:14
- *
- */
-
 #include "CropDefinitions.hpp"
 #include "CropPlugin.hpp"
 #include "CropProcess.hpp"

@@ -1,10 +1,3 @@
-/*
- * File:   gilHalf.hpp
- * Author: Mikros/duran duboi
- *
- * Created on 23 novembre 2009, 11:11
- */
-
 #ifndef _GILHALF_HPP
 #define _GILHALF_HPP
 
@@ -23,7 +16,6 @@ struct devicen_layout_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///  @brief Define channel traits to support ilm half
-///  @author juf@mikrosimage.fr @date 20/03/2008
 ///////////////////////////////////////////////////////////////////////////////
 
 template <>

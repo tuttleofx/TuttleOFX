@@ -1,10 +1,3 @@
-/* 
- * File:   png_adds.hpp
- * Author: edubois
- *
- * Created on April 6, 2010, 2:28 PM
- */
-
 #ifndef _PNG_ADDS_HPP
 #define	_PNG_ADDS_HPP
 

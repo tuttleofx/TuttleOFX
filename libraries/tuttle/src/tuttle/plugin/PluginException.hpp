@@ -1,7 +1,5 @@
 /**
  * This file helps managing exception for OfxPlugin.
- * File: PluginException.hpp
- * Author: edubois
  */
 
 #ifndef _TUTTLE_PLUGIN_EXCEPTION_HPP

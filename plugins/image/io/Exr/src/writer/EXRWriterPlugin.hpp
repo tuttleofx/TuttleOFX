@@ -1,11 +1,3 @@
-/**
- * @file EXRWriterPlugin.hpp
- * @brief
- * @author
- * @date    16/12/09 15:34
- *
- */
-
 #ifndef EXRWRITER_PLUGIN_H
 #define EXRWRITER_PLUGIN_H
 
