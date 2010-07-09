@@ -215,8 +215,6 @@ View getView( OFX::Image* img, const OfxRectI& rod )
 
 	//OfxRectI rod = img->getRegionOfDefinition();
 	OfxRectI bounds = img->getBounds();
-	COUT("getView img bounds: " << bounds);
-	COUT("getView rod: " << rod);
 	point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
 										bounds.y2 - bounds.y1 );
 
