@@ -1,10 +1,3 @@
-/* 
- * File:   J2KEngine.cpp
- * Author: edubois
- * 
- * Created on March 26, 2010, 10:19 AM
- */
-
 #include "J2KReader.hpp"
 #include "J2KCommon.hpp"
 #include "tuttle/common/utils/global.hpp"
@@ -168,3 +161,4 @@ void J2KReader::close()
 
 }
 }
+

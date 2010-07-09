@@ -1,10 +1,3 @@
-/*
- * File:   J2KWriter.hpp
- * Author: edubois
- *
- * Created on March 26, 2010, 10:42 AM
- */
-
 #ifndef _J2KWRITER_HPP
 #define	_J2KWRITER_HPP
 
@@ -68,5 +61,5 @@ inline void J2KWriter::setCinemaMode(const OPJ_CINEMA_MODE cinemaMode)
 }
 }
 
-#endif	/* _J2KWRITER_HPP */
+#endif
 

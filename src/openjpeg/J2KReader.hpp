@@ -1,12 +1,5 @@
-/* 
- * File:   J2KEngine.hpp
- * Author: edubois
- *
- * Created on March 26, 2010, 10:19 AM
- */
-
-#ifndef _J2KREADER_HPP
-#define	_J2KREADER_HPP
+#ifndef _J2KREADER_HPP_
+#define	_J2KREADER_HPP_
 
 #include "J2KCommon.hpp"
 
@@ -137,5 +130,5 @@ inline const uint8_t *J2KReader::compData(const size_t nc) const
 }
 }
 
-#endif	/* _J2KENGINE_HPP */
+#endif
 

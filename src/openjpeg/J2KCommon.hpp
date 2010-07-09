@@ -1,12 +1,5 @@
-/* 
- * File:   J2KCommon.hpp
- * Author: edubois
- *
- * Created on March 29, 2010, 3:05 PM
- */
-
-#ifndef _J2KCOMMON_HPP
-#define	_J2KCOMMON_HPP
+#ifndef _J2KCOMMON_HPP_
+#define	_J2KCOMMON_HPP_
 
 #include <openjpeg.h>
 
@@ -43,5 +36,5 @@ struct OpenJpegStuffs
 }
 }
 
-#endif	/* _J2KCOMMON_HPP */
+#endif
 
