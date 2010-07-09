@@ -59,15 +59,15 @@ void J2KReader::open(const std::string & filename)
 			{
 				if (_fileData)
 				{
-					OFX::Memory::free(_fileData);
+					OFX::memory::free(_fileData);
 				}
-				_fileData = (uint8_t*)OFX::Memory::allocate(dataLength);
+				_fileData = (uint8_t*)OFX::memory::allocate(dataLength);
 			}
             inputDataStream.read( (char*)_fileData, dataLength );
             if( inputDataStream.fail() )
             {
                 inputDataStream.close();
-				OFX::Memory::free(_fileData);
+				OFX::memory::free(_fileData);
 				_fileData = NULL;
 				_dataLength = 0;
 				throw( std::logic_error(std::string("Unable to read image data on ") + filename ) );
@@ -152,7 +152,7 @@ void J2KReader::close()
 
 	if (_fileData)
 	{
-		OFX::Memory::free(_fileData);
+		OFX::memory::free(_fileData);
 		_fileData = NULL;
 	}
 	_dataLength = 0;
