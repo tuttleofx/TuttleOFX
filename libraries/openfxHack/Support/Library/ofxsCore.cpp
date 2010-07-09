@@ -92,7 +92,7 @@ const std::string mapStatusToString( const OfxStatus stat )
 }
 
 /** @brief namespace for memory allocation that is done via wrapping the ofx memory suite */
-namespace Memory {
+namespace memory {
 
 /** @brief allocate n bytes, returns a pointer to it */
 void* allocate( const std::size_t nBytes, ImageEffect* effect ) throw( std::bad_alloc )

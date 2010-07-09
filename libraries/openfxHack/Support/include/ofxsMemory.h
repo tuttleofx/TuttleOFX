@@ -53,7 +53,7 @@ namespace OFX {
 class ImageEffect;
 
 /** @brief Namespace for general purpose memory allocation */
-namespace Memory {
+namespace memory {
 
 /** @brief Allocate memory.
  *
