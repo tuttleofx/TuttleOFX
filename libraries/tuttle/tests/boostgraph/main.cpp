@@ -47,34 +47,31 @@ inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
 namespace tuttle {
 namespace host {
 namespace graph {
-template <>
-struct GraphExporter<TestVertex, TestEdge >
+
+template<>
+void exportAsDOT<TestVertex, TestEdge>( const InternalGraph<TestVertex, TestEdge >& g, std::ostream& os )
 {
-	static void exportAsDOT( const InternalGraph<TestVertex, TestEdge >& g, const char* filename )
-	{
-		std::map<std::string, std::string> graph_attr, vertex_attr, edge_attr;
-		graph_attr["size"]       = "6,6";
-		graph_attr["rankdir"]    = "LR";
-		graph_attr["ratio"]      = "fill";
-		graph_attr["label"]      = "TuttleOFX";
-		vertex_attr["shape"]     = "circle";
-		vertex_attr["color"]     = "dodgerblue4";
-		vertex_attr["fontcolor"] = "dodgerblue4";
-		edge_attr["style"]       = "dashed";
-		edge_attr["minlen"]      = "1";
-		edge_attr["color"]       = "darkslategray";
-		edge_attr["fontcolor"]   = "darkslategray";
+	std::map<std::string, std::string> graph_attr, vertex_attr, edge_attr;
+	graph_attr["size"]       = "6,6";
+	graph_attr["rankdir"]    = "LR";
+	graph_attr["ratio"]      = "fill";
+	graph_attr["label"]      = "TuttleOFX";
+	vertex_attr["shape"]     = "circle";
+	vertex_attr["color"]     = "dodgerblue4";
+	vertex_attr["fontcolor"] = "dodgerblue4";
+	edge_attr["style"]       = "dashed";
+	edge_attr["minlen"]      = "1";
+	edge_attr["color"]       = "darkslategray";
+	edge_attr["fontcolor"]   = "darkslategray";
 
-		using namespace boost;
-		std::ofstream ofs( filename );
-		boost::write_graphviz( ofs,
-		                       g.getGraph(),
-		                       boost::make_label_writer( get( vertex_properties, g.getGraph() ) ),
-		                       boost::make_label_writer( get( edge_properties, g.getGraph() ) ),
-		                       boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
-	}
+	using namespace boost;
+	boost::write_graphviz( os,
+						   g.getGraph(),
+						   boost::make_label_writer( get( vertex_properties, g.getGraph() ) ),
+						   boost::make_label_writer( get( edge_properties, g.getGraph() ) ),
+						   boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
+}
 
-};
 
 }
 }
@@ -121,8 +118,8 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	TCOUT( "graphT:" );
 	boost::print_graph( graphT.getGraph() );
 
-	graph::GraphExporter<TestVertex, TestEdge>::exportAsDOT( graph, "boostgraphtest.dot" );
-	graph::GraphExporter<TestVertex, TestEdge>::exportAsDOT( graphT, "boostgraphTtest.dot" );
+	graph::exportAsDOT<TestVertex, TestEdge>( graph, "boostgraphtest.dot" );
+	graph::exportAsDOT<TestVertex, TestEdge>( graphT, "boostgraphTtest.dot" );
 
 	TCOUT( "__________________________________________________" );
 	TCOUT( "graph:" );
