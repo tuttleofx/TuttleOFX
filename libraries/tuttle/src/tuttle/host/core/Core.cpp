@@ -86,6 +86,16 @@ void Core::preload()
 	
 }
 
+
+std::ostream& operator<<( std::ostream& os, const Core& v )
+{
+	os << "Core {" << std::endl;
+	os << v.getImageEffectPluginCache();
+	os << "}" << std::endl;
+	return os;
+}
+
+
 }
 }
 }

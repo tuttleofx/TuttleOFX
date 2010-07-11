@@ -22,6 +22,9 @@ OfxhImageEffectPluginCache::~OfxhImageEffectPluginCache() {}
  */
 OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::string& id, int vermaj, int vermin )
 {
+	if( vermaj == -1 &&  vermin == -1 )
+		return _pluginsByID[id];
+	
 	// return the highest version one, which fits the pattern provided
 	OfxhImageEffectPlugin* sofar = 0;
 
@@ -50,15 +53,6 @@ OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::str
 		}
 	}
 	return sofar;
-}
-
-/// whether we support this plugin.
-bool OfxhImageEffectPluginCache::pluginSupported( tuttle::host::ofx::OfxhPlugin* p, std::string& reason ) const
-{
-	OfxhImageEffectPlugin* imageEffectPlugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
-	if( ! imageEffectPlugin )
-		return false;
-	return core::Core::instance().getHost().pluginSupported( imageEffectPlugin, reason );
 }
 
 /**
@@ -193,6 +187,15 @@ void OfxhImageEffectPluginCache::confirmPlugin( OfxhPlugin* p )
 	}
 }
 
+/// whether we support this plugin.
+bool OfxhImageEffectPluginCache::pluginSupported( tuttle::host::ofx::OfxhPlugin* p, std::string& reason ) const
+{
+	OfxhImageEffectPlugin* imageEffectPlugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
+	if( ! imageEffectPlugin )
+		return false;
+	return core::Core::instance().getHost().pluginSupported( imageEffectPlugin, reason );
+}
+
 OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary* pb,
                                                    int               pi,
                                                    OfxPlugin*        pl )
@@ -216,29 +219,34 @@ OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary*  pb,
 	return plugin;
 }
 
-void OfxhImageEffectPluginCache::dump() const
+
+std::ostream& operator<<( std::ostream& os, const OfxhImageEffectPluginCache& v )
 {
-	if( _pluginsByID.empty() )
-		std::cout << "No Plug-ins Found." << std::endl;
+	os << "OfxhImageEffectPluginCache {" << std::endl;
 
-	std::cout << "________________________________________________________________________________" << std::endl;
-	for( std::map<std::string, OfxhImageEffectPlugin*>::const_iterator it = _pluginsByID.begin(); it != _pluginsByID.end(); ++it )
+	if( v._pluginsByID.empty() )
+		os << "No Plug-ins Found." << std::endl;
+
+	os << "________________________________________________________________________________" << std::endl;
+	for( std::map<std::string, OfxhImageEffectPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
 	{
-		std::cout << "Plug-in:" << it->first << std::endl;
-		std::cout << "\t" << "Filepath: " << it->second->getBinary()->getFilePath();
-		std::cout << "(" << it->second->getIndex() << ")" << std::endl;
+		os << "Plug-in:" << it->first << std::endl;
+		os << "  " << "Filepath: " << it->second->getBinary()->getFilePath();
+		os << "(" << it->second->getIndex() << ")" << std::endl;
 
-		std::cout << "Contexts:" << std::endl;
+		os << "Contexts:" << std::endl;
 		const std::set<std::string>& contexts = it->second->getContexts();
 		for( std::set<std::string>::const_iterator it2 = contexts.begin(); it2 != contexts.end(); ++it2 )
-			std::cout << "\t* " << *it2 << std::endl;
+			os << "  * " << *it2 << std::endl;
 		const OfxhImageEffectNodeDescriptor& d = it->second->getDescriptor();
-		std::cout << "Inputs:" << std::endl;
+		os << "Inputs:" << std::endl;
 		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
 		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
-			std::cout << "\t\t* " << it2->first << std::endl;
-		std::cout << "________________________________________________________________________________" << std::endl;
+			os << "    * " << it2->first << std::endl;
+		os << "________________________________________________________________________________" << std::endl;
 	}
+	os << "}" << std::endl;
+	return os;
 }
 
 }

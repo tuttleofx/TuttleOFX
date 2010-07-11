@@ -365,18 +365,7 @@ void OfxhPluginCache::scanPluginFiles()
 
 				if( api.pluginSupported( plug, reason ) )
 				{
-					// Check if the same plugin has already been loaded
-					if (_loadedMap.find(plug->getIdentity()) == _loadedMap.end())
-					{
-						_loadedMap[plug->getIdentity()] = true;
-					}
-					else
-					{
-						COUT_WARNING( "Warning! Plugin: " <<
-							          plug->getRawIdentifier() <<
-							          " loaded twice!" );
-					}
-					_plugins.push_back( plug );
+					addPlugin( plug );
 					api.confirmPlugin( plug );
 				}
 				else
@@ -404,6 +393,76 @@ APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler( const std::strin
 		++i;
 	}
 	return 0;
+}
+
+
+
+/**
+ * get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
+ * pick the highest found version.
+ */
+OfxhPlugin* OfxhPluginCache::getPluginById( const std::string& id, int vermaj, int vermin )
+{
+	if( vermaj == -1 &&  vermin == -1 )
+		return _pluginsByID[id];
+
+	// return the highest version one, which fits the pattern provided
+	OfxhPlugin* sofar = 0;
+
+	for( std::list<OfxhPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
+	{
+		OfxhPlugin* p = *i;
+
+		if( p->getIdentifier() != id )
+		{
+			continue;
+		}
+
+		if( vermaj != -1 && p->getVersionMajor() != vermaj )
+		{
+			continue;
+		}
+
+		if( vermin != -1 && p->getVersionMinor() != vermin )
+		{
+			continue;
+		}
+
+		if( !sofar || p->trumps( sofar ) )
+		{
+			sofar = p;
+		}
+	}
+	return sofar;
+}
+
+std::ostream& operator<<( std::ostream& os, const OfxhPluginCache& v )
+{
+	os << "OfxhPluginCache {" << std::endl;
+
+	if( v._pluginsByID.empty() )
+		os << "No Plug-ins Found." << std::endl;
+
+	os << "________________________________________________________________________________" << std::endl;
+	for( std::map<std::string, OfxhPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
+	{
+		os << "Plug-in:" << it->first << std::endl;
+		os << "  " << "Filepath: " << it->second->getBinary()->getFilePath();
+		os << "(" << it->second->getIndex() << ")" << std::endl;
+
+//		os << "Contexts:" << std::endl;
+//		const std::set<std::string>& contexts = it->second->getContexts();
+//		for( std::set<std::string>::const_iterator it2 = contexts.begin(); it2 != contexts.end(); ++it2 )
+//			os << "  * " << *it2 << std::endl;
+//		const OfxhImageEffectNodeDescriptor& d = it->second->getDescriptor();
+//		os << "Inputs:" << std::endl;
+//		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
+//		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
+//			os << "    * " << it2->first << std::endl;
+		os << "________________________________________________________________________________" << std::endl;
+	}
+	os << "}" << std::endl;
+	return os;
 }
 
 }

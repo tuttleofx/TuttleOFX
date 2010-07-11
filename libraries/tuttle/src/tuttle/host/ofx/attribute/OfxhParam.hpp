@@ -136,7 +136,7 @@ public:
 		{
 			return self->getEditableProperties().fetchLocalProperty(name);
 		}
-		std::string __str__()
+		std::string __str__() const
 		{
 			std::stringstream s;
 			s << *self;

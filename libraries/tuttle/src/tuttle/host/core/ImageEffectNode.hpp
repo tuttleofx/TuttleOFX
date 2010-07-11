@@ -169,7 +169,7 @@ public:
 			return self->getParam(name);
 //			return self->getProcessAttribute(name); //< @todo tuttle: can be clip or params !
 		}
-		std::string __str__()
+		std::string __str__() const
 		{
 			std::stringstream s;
 			s << *self;

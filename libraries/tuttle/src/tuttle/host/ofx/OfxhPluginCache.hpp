@@ -76,6 +76,7 @@ struct PluginCacheSupportedApi
 class OfxhPluginCache
 {
 public:
+	typedef OfxhPluginCache This;
 	typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
 protected:
 	tuttle::host::ofx::property::OfxhPropSpec* _hostSpec;
@@ -85,6 +86,7 @@ protected:
 	std::list<std::string> _pluginDirs; ///< list of directories we found
 	OfxhPluginBinaryList _binaries; ///< all the binaries we know about, we own these
 	std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
+	std::map<std::string, OfxhPlugin*> _pluginsByID;
 	std::map<OfxhPluginIdent, bool> _loadedMap;	///< Used to check if a plugin is loaded twice
 	std::set<std::string> _knownBinFiles;
 
@@ -107,7 +109,60 @@ public:
 protected:
 	void scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse );
 	
+	void addPlugin( OfxhPlugin* plugin )
+	{
+		// Check if the same plugin has already been loaded
+		if (_loadedMap.find(plugin->getIdentity()) == _loadedMap.end())
+		{
+			_loadedMap[plugin->getIdentity()] = true;
+		}
+		else
+		{
+			COUT_WARNING( "Warning! Plugin: " <<
+						  plugin->getRawIdentifier() <<
+						  " loaded twice!" );
+		}
+		_plugins.push_back( plugin );
+
+		if( _pluginsByID.find( plugin->getIdentifier() ) != _pluginsByID.end() )
+		{
+			OfxhPlugin* otherPlugin = _pluginsByID[plugin->getIdentifier()];
+			if( plugin->trumps( otherPlugin ) )
+			{
+				_pluginsByID[plugin->getIdentifier()] = plugin;
+			}
+		}
+		else
+		{
+			_pluginsByID[plugin->getIdentifier()] = plugin;
+		}
+	}
+
 public:
+
+	friend std::ostream& operator<<( std::ostream& os, const This& g );
+
+#ifdef SWIG
+	%extend
+	{
+		OfxhPlugin& __getitem__( const std::string& name )
+		{
+			return *self->getPluginById( name );
+		}
+		std::string __str__() const
+		{
+			std::stringstream s;
+			s << *self;
+			return s.str();
+		}
+	}
+#endif
+
+	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
+	/// pick the highest found version.
+	OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
+	const OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>(*this).getPluginById( id, vermaj, vermin ); }
+
 	/// get the list in which plugins are sought
 	const std::list<std::string>& getPluginPath()
 	{

@@ -24,7 +24,6 @@ private:
 	OfxhPlugin( const This& ); ///< hidden
 	OfxhPlugin& operator=( const This& ); ///< hidden
 
-#ifndef SWIG
 protected:
 	OfxhPluginBinary* _binary; ///< the file I live inside
 	int _index; ///< where I live inside that file
@@ -64,10 +63,6 @@ public:
 		return _index;
 	}
 
-	virtual void setApiHandler( APICache::OfxhPluginAPICacheI& ) = 0;
-	virtual APICache::OfxhPluginAPICacheI& getApiHandler() = 0;
-	virtual const APICache::OfxhPluginAPICacheI& getApiHandler() const = 0;
-
 	bool trumps( OfxhPlugin* other )
 	{
 		int myMajor    = getVersionMajor();
@@ -88,6 +83,11 @@ public:
 
 		return false;
 	}
+
+#ifndef SWIG
+	virtual void setApiHandler( APICache::OfxhPluginAPICacheI& ) = 0;
+	virtual APICache::OfxhPluginAPICacheI& getApiHandler() = 0;
+	virtual const APICache::OfxhPluginAPICacheI& getApiHandler() const = 0;
 
 private:
 	friend class boost::serialization::access;

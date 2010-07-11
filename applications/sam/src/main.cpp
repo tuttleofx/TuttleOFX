@@ -28,7 +28,8 @@ int main( int argc, char** argv )
 		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//core::Core::instance().getPluginCache().scanPluginFiles();
 		core::Core::instance().preload();
-		core::Core::instance().getImageEffectPluginCache().dump();
+		
+		TCOUT( core::Core::instance().getImageEffectPluginCache() );
 
 		TCOUT( "__________________________________________________1" );
 
