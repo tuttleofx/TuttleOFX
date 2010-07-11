@@ -32,6 +32,7 @@ public:
 
 public:
 	OFX::BooleanParam* _premult; ///< premult output by alpha
+	OFX::IntParam* _quality; ///< quality / compression for jpeg
 };
 
 }

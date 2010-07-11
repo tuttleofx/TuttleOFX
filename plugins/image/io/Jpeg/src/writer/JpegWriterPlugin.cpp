@@ -17,12 +17,14 @@ JpegWriterPlugin::JpegWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
 	_premult = fetchBooleanParam( kParamPremult );
+	_quality = fetchIntParam( kParamQuality );
 }
 
 JpegWriterProcessParams JpegWriterPlugin::getProcessParams(const OfxTime time)
 {
 	JpegWriterProcessParams params;
 	params._filepath = this->_filePattern.getFilenameAt(time);
+	params._quality = this->_quality->getValue();
 	params._premult = this->_premult->getValue();
 	return params;
 }

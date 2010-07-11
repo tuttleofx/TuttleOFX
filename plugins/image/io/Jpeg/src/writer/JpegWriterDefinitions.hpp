@@ -12,11 +12,11 @@ namespace writer {
 
 	enum EParamBitDepth
 	{
-		eParamBitDepth8 = 0,
-		eParamBitDepth16
+		eParamBitDepth8 = 0
 	};
 
 	static const std::string kParamPremult = "premult";
+	static const std::string kParamQuality = "quality";
 
 }
 }

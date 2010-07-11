@@ -77,6 +77,16 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *bitDepth );
 
+	OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
+	premult->setLabel( "Premult" );
+	premult->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	premult->setDefault( true );
+
+	OFX::IntParamDescriptor* quality = desc.defineIntParam( kParamQuality );
+	quality->setLabel( "Quality" );
+	quality->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	quality->setDefault( 80 );
+
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( true );
@@ -84,11 +94,6 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint("Force render (writing)");
-
-	OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
-	premult->setLabel( "Premult" );
-	premult->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	premult->setDefault( true );
 }
 
 /**
