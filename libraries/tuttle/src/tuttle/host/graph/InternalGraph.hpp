@@ -1,21 +1,21 @@
 #ifndef _TUTTLE_INTERNALGRAPH_HPP_
 #define _TUTTLE_INTERNALGRAPH_HPP_
 
-#include <iostream>
-#include <algorithm>
-#include <utility>
-#include <vector>
-
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
-#include <boost/foreach.hpp>
-
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/copy.hpp>
 #include <boost/graph/transpose_graph.hpp>
 #include <boost/graph/dominator_tree.hpp>
+#include <boost/graph/graphviz.hpp>
+#include <boost/foreach.hpp>
+
+#include <iostream>
+#include <algorithm>
+#include <utility>
+#include <vector>
 
 // definition of basic boost::graph properties
 enum vertex_properties_t { vertex_properties };
@@ -38,6 +38,8 @@ class InternalGraph
 public:
 	typedef VERTEX Vertex;
 	typedef EDGE Edge;
+	typedef InternalGraph<Vertex, Edge> This;
+
 	// Directed acyclic graph
 	typedef boost::adjacency_list<
 	    boost::setS,                // disallow parallel edges
@@ -69,13 +71,13 @@ public:
 	InternalGraph() : _count( 0 )
 	{}
 
-	InternalGraph( const InternalGraph& g )
+	InternalGraph( const This& g )
 	{
-		*this = g; ///< using operator=
+		*this = g; // using operator=
 	}
 
 	// operators
-	InternalGraph& operator=( const InternalGraph& g )
+	This& operator=( const This& g )
 	{
 		if( this == &g )
 			return *this;
@@ -228,14 +230,6 @@ public:
 		return has_cycle;
 	}
 
-	void dumpToStdOut()
-	{
-		std::cout
-		<< "internalGraph dump" << std::endl
-		<< "\tvertex count: " << getVertexCount() << std::endl
-		<< "\tedge count: " << getEdgeCount() << std::endl;
-	}
-
 	template<class Visitor>
 	void dfs( Visitor vis, const VertexDescriptor& vroot )
 	{
@@ -339,6 +333,9 @@ public:
 		return vleaves;
 	}
 
+	template< typename Vertex, typename Edge >
+	friend std::ostream& operator<<( std::ostream& os, const This& g );
+	
 private:
 	void rebuildVertexDescriptorMap()
 	{
@@ -363,5 +360,7 @@ protected:
 }
 }
 }
+
+#include "InternalGraph.tcc"
 
 #endif

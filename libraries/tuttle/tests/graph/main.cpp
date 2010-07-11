@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	//core::Core::instance().getPluginCache().scanPluginFiles();
 //	core::Core::instance().preload();
 //
-//	tuttle::host::core::Core::instance().getImageEffectPluginCache().dumpToStdOut( );
+//	tuttle::host::core::Core::instance().getImageEffectPluginCache().dump( );
 //
 //	core::Graph g;
 //	BOOST_CHECK_NO_THROW(core::EffectInstance* invert = g.createNode( "fr.tuttle.invert" ));
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 	//core::Core::instance().getPluginCache().scanPluginFiles();
 	core::Core::instance().preload();
-	core::Core::instance().getImageEffectPluginCache().dumpToStdOut();
+	core::Core::instance().getImageEffectPluginCache().dump();
 
 	TCOUT( "__________________________________________________1" );
 

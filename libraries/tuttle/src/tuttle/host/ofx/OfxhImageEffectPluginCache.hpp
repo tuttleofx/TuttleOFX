@@ -77,7 +77,7 @@ public:
 	                       int                pluginMajorVersion,
 	                       int                pluginMinorVersion );
 #endif
-	void dumpToStdOut() const;
+	void dump() const;
 };
 
 }

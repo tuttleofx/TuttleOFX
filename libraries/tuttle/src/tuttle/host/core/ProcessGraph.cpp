@@ -42,7 +42,7 @@ void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegi
 		COUT_DEBUG( "MY OUTPUT " << s );
 	}
 
-	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graphprocess.dot" );
+	graph::exportAsDOT( _graph, "graphprocess.dot" );
 
 	// Initialize variables
 	OfxPointD renderScale       = { 1.0, 1.0 };

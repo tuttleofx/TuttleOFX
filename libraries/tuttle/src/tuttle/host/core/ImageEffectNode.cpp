@@ -66,7 +66,7 @@ bool ImageEffectNode::operator==( const ImageEffectNode& other ) const
 	return ofx::imageEffect::OfxhImageEffectNode::operator==( other );
 }
 
-void ImageEffectNode::dumpToStdOut() const
+void ImageEffectNode::dump() const
 {
 	std::cout << "________________________________________________________________________________" << std::endl;
 	std::cout << "Plug-in:" << this->getLabel() << std::endl;

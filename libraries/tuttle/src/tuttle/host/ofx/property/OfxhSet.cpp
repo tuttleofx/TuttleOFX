@@ -231,7 +231,7 @@ void OfxhSet::copyValues( const This& other )
 	}
 }
 
-void OfxhSet::coutProperties() const
+void OfxhSet::dump() const
 {
 	COUT( "property::Set {" );
 	for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();

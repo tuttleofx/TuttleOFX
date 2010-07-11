@@ -77,7 +77,7 @@ public:
 		getEditableProperties().setChainedSet( &other.getProperties() );
 
 		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
-		//		getProperties().coutProperties();
+		//		getProperties().dump();
 		setConnected();
 		//		TCOUT("Clip connected!");
 	}

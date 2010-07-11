@@ -117,16 +117,17 @@ void Graph::unconnectNode( const Node& node ) //throw( exception::LogicError )
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
-	graph::GraphExporter<graph::Vertex, graph::Edge>::exportAsDOT( _graph, "graph.dot" );
+	graph::exportAsDOT( _graph, "graph.dot" );
 
 	ProcessGraph process( *this );
 	process.process( nodes, tBegin, tEnd );
 }
 
-void Graph::dumpToStdOut()
+std::ostream& operator<<( std::ostream& os, const Graph& g )
 {
-	TCOUT( "graph dump" << std::endl << "\tnode count: " << "-");
-	_graph.dumpToStdOut();
+	os << "Graph" << std::endl
+	   << g.getGraph();
+	return os;
 }
 
 }

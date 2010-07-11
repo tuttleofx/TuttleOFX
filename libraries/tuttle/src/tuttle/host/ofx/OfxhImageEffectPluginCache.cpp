@@ -216,7 +216,7 @@ OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary*  pb,
 	return plugin;
 }
 
-void OfxhImageEffectPluginCache::dumpToStdOut() const
+void OfxhImageEffectPluginCache::dump() const
 {
 	if( _pluginsByID.empty() )
 		std::cout << "No Plug-ins Found." << std::endl;

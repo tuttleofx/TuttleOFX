@@ -133,7 +133,7 @@ public:
 	void copyValues( const This& other );
 
 	/// dump to cout
-	void coutProperties() const;
+	void dump() const;
 
 	/// adds a bunch of properties from PropSpec
 	void addProperties( const OfxhPropSpec* );
@@ -328,13 +328,13 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 		COUT_EXCEPTION( e );
-		IF_DEBUG( coutProperties() );
+		IF_DEBUG( dump() );
 	}
 	catch(... )
 	{
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		IF_DEBUG( coutProperties() );
+		IF_DEBUG( dump() );
 	}
 }
 
