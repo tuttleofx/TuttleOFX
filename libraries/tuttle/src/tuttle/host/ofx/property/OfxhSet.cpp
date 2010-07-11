@@ -231,31 +231,6 @@ void OfxhSet::copyValues( const This& other )
 	}
 }
 
-void OfxhSet::dump() const
-{
-	COUT( "property::Set {" );
-	for( PropertyMap::const_iterator it = _props.begin(), itEnd = _props.end();
-	     it != itEnd;
-	     ++it )
-	{
-		const OfxhProperty& prop = *( it->second );
-		std::cout << "    " << it->first << " ";
-		std::cout << "(type:" << mapTypeEnumToString( prop.getType() )
-			<< " dim:" << prop.getDimension() << " ro:" << prop.getPluginReadOnly()
-			<< " modifiedBy:" << (prop.getModifiedBy() == eModifiedByHost ? "host" : "plugin")
-			<< ") : [";
-		int i = 0;
-		for( ; i < (int)( prop.getDimension() ) - 1; ++i )
-		{
-			std::cout << prop.getStringValue( i ) << ", ";
-		}
-		if( prop.getDimension() > 0 )
-			std::cout << prop.getStringValue( i );
-		std::cout << "] " << std::endl;
-	}
-	COUT( "}" );
-}
-
 /// get a particular int property
 int OfxhSet::getIntPropertyRaw( const std::string& property, int index ) const
 {
@@ -348,6 +323,35 @@ template class OfxhPropertyTemplate<OfxhIntValue>;
 template class OfxhPropertyTemplate<OfxhDoubleValue>;
 template class OfxhPropertyTemplate<OfxhStringValue>;
 template class OfxhPropertyTemplate<OfxhPointerValue>;
+
+
+std::ostream& operator<<( std::ostream& os, const OfxhSet& v )
+{
+	os << "property::Set {" << std::endl;
+	for( PropertyMap::const_iterator it = v._props.begin(), itEnd = v._props.end();
+	     it != itEnd;
+	     ++it )
+	{
+		const OfxhProperty& prop = *( it->second );
+		os << "    " << it->first << " ";
+		os << "(type:" << mapTypeEnumToString( prop.getType() )
+			<< " dim:" << prop.getDimension() << " ro:" << prop.getPluginReadOnly()
+			<< " modifiedBy:" << (prop.getModifiedBy() == eModifiedByHost ? "host" : "plugin")
+			<< ") : [";
+		int i = 0;
+		for( ; i < (int)( prop.getDimension() ) - 1; ++i )
+		{
+			os << prop.getStringValue( i ) << ", ";
+		}
+		if( prop.getDimension() > 0 )
+			os << prop.getStringValue( i );
+		os << "] " << std::endl;
+	}
+	os << "}" << std::endl;
+	return os;
+}
+
+
 
 }
 }

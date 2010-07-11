@@ -132,8 +132,27 @@ public:
 
 	void copyValues( const This& other );
 
-	/// dump to cout
-	void dump() const;
+	friend std::ostream& operator<<( std::ostream& os, const This& g );
+
+#ifdef SWIG
+	%extend
+	{
+//		const OfxhProperty& __getitem__( const std::string& name ) const
+//		{
+//			return self->fetchProperty(name);
+//		}
+		OfxhProperty& __getitem__( const std::string& name )
+		{
+			return self->fetchLocalProperty(name);
+		}
+		std::string __str__()
+		{
+			std::stringstream s;
+			s << *self;
+			return s.str();
+		}
+	}
+#endif
 
 	/// adds a bunch of properties from PropSpec
 	void addProperties( const OfxhPropSpec* );
@@ -328,13 +347,13 @@ void OfxhSet::setProperty( const std::string& property, int index, const typenam
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
 		COUT_EXCEPTION( e );
-		IF_DEBUG( dump() );
+		//COUT_DEBUG( *this );
 	}
 	catch(... )
 	{
 		COUT_ERROR( "Property::Set::setProperty - Error on " << property << " property (value=" << value << ")." <<
 		            "on Property::Set (type:" << this->getStringProperty( kOfxPropType ) << ", name:" << this->getStringProperty( kOfxPropName ) << ")." );
-		IF_DEBUG( dump() );
+		//COUT_DEBUG( *this );
 	}
 }
 

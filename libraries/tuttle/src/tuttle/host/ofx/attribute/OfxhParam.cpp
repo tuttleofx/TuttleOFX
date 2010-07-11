@@ -155,6 +155,13 @@ OfxhParam* OfxhParam::getParentInstance()
 
 
 
+std::ostream& operator<<( std::ostream& os, const OfxhParam& v )
+{
+	os << "Param {" << std::endl;
+	os << v.getProperties();
+	os << "}" << std::endl;
+	return os;
+}
 
 }
 }

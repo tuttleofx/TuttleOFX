@@ -16,6 +16,8 @@ namespace core {
 class ImageEffectNode : public ProcessNode,
 	public ofx::imageEffect::OfxhImageEffectNode
 {
+public:
+	typedef ImageEffectNode This;
 protected:
 	OfxPointD _frameRange;
 	OfxRectD _rod;
@@ -157,7 +159,24 @@ public:
 #endif
 	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 
-	void dump() const;
+	friend std::ostream& operator<<( std::ostream& os, const This& g );
+
+#ifdef SWIG
+	%extend
+	{
+		ofx::attribute::OfxhParam& __getitem__( const std::string& name )
+		{
+			return self->getParam(name);
+//			return self->getProcessAttribute(name); //< @todo tuttle: can be clip or params !
+		}
+		std::string __str__()
+		{
+			std::stringstream s;
+			s << *self;
+			return s.str();
+		}
+	}
+#endif
 
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////

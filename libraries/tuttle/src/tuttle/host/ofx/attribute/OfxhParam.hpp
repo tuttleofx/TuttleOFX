@@ -89,6 +89,8 @@ class OfxhParam :
 	private boost::noncopyable
 {
 OfxhParam();
+public:
+	typedef OfxhParam This;
 
 protected:
 	OfxhParamSet*  _paramSetInstance;
@@ -112,17 +114,36 @@ public:
 	virtual ~OfxhParam() = 0;
 
 	/// clone this parameter
-	virtual OfxhParam* clone() const = 0;
+	virtual This* clone() const = 0;
+	
 	/**
-	 * @todo check values...
+	 * @todo tuttle: check values !!!
 	 */
-	bool operator==( const OfxhParam& p ) const { return true; }
+	bool operator==( const This& p ) const { return true; }
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxParamHandle getParamHandle() const
 	{
 		return ( OfxParamHandle ) this;
 	}
+
+	friend std::ostream& operator<<( std::ostream& os, const This& g );
+
+#ifdef SWIG
+	%extend
+	{
+		ofx::property::OfxhProperty& __getitem__( const std::string& name )
+		{
+			return self->getEditableProperties().fetchLocalProperty(name);
+		}
+		std::string __str__()
+		{
+			std::stringstream s;
+			s << *self;
+			return s.str();
+		}
+	}
+#endif
 
 #ifndef SWIG
 	void paramChanged( const EChange change );

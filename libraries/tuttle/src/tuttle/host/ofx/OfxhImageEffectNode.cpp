@@ -668,8 +668,7 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderRoI.x1, 4 );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
-	//TCOUT("OfxhImageEffect::renderAction inArgs=");
-	//inArgs.dump();
+	//TCOUT("OfxhImageEffect::renderAction inArgs=" << inArgs;
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionRender, this->getHandle(), &inArgs, 0 );
 

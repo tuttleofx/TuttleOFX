@@ -66,30 +66,6 @@ bool ImageEffectNode::operator==( const ImageEffectNode& other ) const
 	return ofx::imageEffect::OfxhImageEffectNode::operator==( other );
 }
 
-void ImageEffectNode::dump() const
-{
-	std::cout << "________________________________________________________________________________" << std::endl;
-	std::cout << "Plug-in:" << this->getLabel() << std::endl;
-	std::cout << "Description:" << this->getLongLabel() << std::endl;
-	std::cout << "Context:" << this->_context << std::endl;
-	std::cout << "Clips:" << std::endl;
-	for( ClipImageMap::const_iterator it = this->_clips.begin(), itEnd = this->_clips.end();
-	     it != itEnd;
-	     ++it )
-	{
-		std::cout << "\t\t* " << it->first << std::endl;
-	}
-	std::cout << "Params:" << std::endl;
-	for( ParamList::const_iterator it = this->_paramList.begin(), itEnd = this->_paramList.end();
-	     it != itEnd;
-	     ++it )
-	{
-		std::cout << "\t\t* " << it->getLabel() << std::endl;
-	}
-
-	std::cout << "________________________________________________________________________________" << std::endl;
-}
-
 // get a new clip instance
 tuttle::host::ofx::attribute::OfxhClipImage* ImageEffectNode::newClipImage( const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& descriptor )
 {
@@ -415,6 +391,29 @@ void ImageEffectNode::initClipsFromWritesToReads()
 	}
 }
 
+
+std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
+{
+	os << "________________________________________________________________________________" << std::endl;
+	os << "Plug-in:" << v.getLabel() << std::endl;
+	os << "Description:" << v.getLongLabel() << std::endl;
+	os << "Context:" << v._context << std::endl;
+	os << "Clips:" << std::endl;
+	for( ImageEffectNode::ClipImageMap::const_iterator it = v._clips.begin(), itEnd = v._clips.end();
+	     it != itEnd;
+	     ++it )
+	{
+		os << "  * " << it->second->getName() << std::endl;
+	}
+	os << "Params:" << std::endl;
+	for( ImageEffectNode::ParamList::const_iterator it = v._paramList.begin(), itEnd = v._paramList.end();
+	     it != itEnd;
+	     ++it )
+	{
+		os << "  * " << it->getName() << " (" << it->getLabel() << ")" << std::endl;
+	}
+	os << "________________________________________________________________________________" << std::endl;
+}
 
 }
 }
