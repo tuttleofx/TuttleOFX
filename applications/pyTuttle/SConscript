@@ -16,7 +16,7 @@ name = project.getName()
 env_appli = project.createEnv( libraries+librariesGui )
 env_appli.Append( CPPPATH=incdirs )
 appli = env_appli.Program( target=name, source=sources_common+sources_application )
-appliInstall = env_appli.Install( '#.', appli )
+appliInstall = env_appli.Install( project.inOutputBin(), appli )
 
 env_swig = project.createEnv( libraries )
 env_swig.Append( CPPPATH=incdirs )
