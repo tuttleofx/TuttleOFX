@@ -158,6 +158,8 @@
 #define kOfxKey_Escape      0xFF1B
 #define kOfxKey_Delete      0xFFFF  /* Delete, rubout */
 
+
+
 /* International & multi-key character composition */
 
 #define kOfxKey_Multi_key       0xFF20  /* Multi-key character compose */
@@ -200,6 +202,7 @@
 #define kOfxKey_Page_Down       0xFF56
 #define kOfxKey_End         0xFF57  /* EOL */
 #define kOfxKey_Begin       0xFF58  /* BOL */
+
 
 /* Misc Functions */
 
@@ -258,6 +261,8 @@
 #define kOfxKey_KP_7            0xFFB7
 #define kOfxKey_KP_8            0xFFB8
 #define kOfxKey_KP_9            0xFFB9
+
+
 
 /*
  * Auxilliary Functions; note the duplicate definitions for left and right

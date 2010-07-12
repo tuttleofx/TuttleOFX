@@ -5,6 +5,8 @@
 #include <tuttle/host/ofx/attribute/OfxhMultiDimParam.hpp>
 #include <tuttle/host/core/ImageEffectNode.hpp>
 
+#include <ofxPixels.h>
+
 namespace tuttle {
 namespace host {
 namespace core {

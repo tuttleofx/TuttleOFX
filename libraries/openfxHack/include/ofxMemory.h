@@ -82,9 +82,12 @@ typedef struct OfxMemorySuiteV1
 	OfxStatus ( *memoryFree )( void* allocatedData );
 } OfxMemorySuiteV1;
 
+
 /** @file ofxMemory.h
  *  This file contains the API for general purpose memory allocation from a host.
  */
+
+
 
 #ifdef __cplusplus
 }

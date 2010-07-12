@@ -43,6 +43,7 @@
  * of the direct OFX objects and any library side only functions.
  */
 #include "ofxsCore.h"
+#include <ofxPixels.h>
 
 #include <list>
 

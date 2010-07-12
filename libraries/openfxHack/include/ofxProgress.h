@@ -91,6 +91,8 @@ typedef struct OfxProgressSuiteV1
 	 */
 	OfxStatus ( *progressEnd )( void* effectInstance );
 
+
+
 } OfxProgressSuiteV1 ;
 
 #endif

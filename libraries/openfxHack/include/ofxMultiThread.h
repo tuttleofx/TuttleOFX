@@ -30,6 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 #include "ofxCore.h"
 
 #ifdef __cplusplus
@@ -135,7 +136,7 @@ typedef struct OfxMultiThreadSuiteV1
 	 * @returns
 	 * - kOfxStatOK - mutex is now valid and ready to go
 	 */
-	OfxStatus ( *mutexCreate )( OfxMutexHandle* mutex, const int lockCount );
+	OfxStatus ( *mutexCreate )( OfxMutexHandle* mutex, const int lockCount ); ///@todo; ofxtuttle fix: no const on mutex
 
 	/** @brief Destroy a mutex
 	 *
@@ -145,7 +146,7 @@ typedef struct OfxMultiThreadSuiteV1
 	 * - kOfxStatOK - if it destroyed the mutex
 	 * - kOfxStatErrBadHandle - if the handle was bad
 	 */
-	OfxStatus ( *mutexDestroy )( OfxMutexHandle mutex );
+	OfxStatus ( *mutexDestroy )( OfxMutexHandle mutex ); ///@todo; ofxtuttle fix: no const on mutex
 
 	/** @brief Blocking lock on the mutex
 	 *
@@ -157,7 +158,7 @@ typedef struct OfxMultiThreadSuiteV1
 	 * - kOfxStatOK - if it got the lock
 	 * - kOfxStatErrBadHandle - if the handle was bad
 	 */
-	OfxStatus ( *mutexLock )( OfxMutexHandle mutex );
+	OfxStatus ( *mutexLock )( OfxMutexHandle mutex ); ///@todo; ofxtuttle fix: no const on mutex
 
 	/** @brief Unlock the mutex
 	 *
@@ -167,7 +168,7 @@ typedef struct OfxMultiThreadSuiteV1
 	 * - kOfxStatOK if it released the lock
 	 * - kOfxStatErrBadHandle if the handle was bad
 	 */
-	OfxStatus ( *mutexUnLock )( OfxMutexHandle mutex );
+	OfxStatus ( *mutexUnLock )( OfxMutexHandle mutex ); ///@todo; ofxtuttle fix: no const on mutex
 
 	/** @brief Non blocking attempt to lock the mutex
 	 *
@@ -180,12 +181,13 @@ typedef struct OfxMultiThreadSuiteV1
 	 * - kOfxStatFailed - if it did not get the lock
 	 * - kOfxStatErrBadHandle - if the handle was bad
 	 */
-	OfxStatus ( *mutexTryLock )( OfxMutexHandle mutex );
+	OfxStatus ( *mutexTryLock )( OfxMutexHandle mutex ); ///@todo; ofxtuttle fix: no const on mutex
 
 } OfxMultiThreadSuiteV1;
 
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif

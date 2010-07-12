@@ -56,6 +56,7 @@ typedef struct OfxParamStruct* OfxParamHandle;
  */
 typedef struct OfxParamSetStruct* OfxParamSetHandle;
 
+
 /**
  * \defgroup ParamTypeDefines Parameter Type definitions
  *
@@ -273,13 +274,40 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
  */
 #define kOfxParamPropCanUndo "OfxParamPropCanUndo"
 
-/** @brief Flags whether a parameter is currently animating.
+/** @brief States whether the plugin needs to resync its private data
  *
+ *   - Type - int X 1
+ *   - Property Set - param set instance (read/write)
+ *   - Default - 0
+ *   - Valid Values - 
+ *       - 0 - no need to sync
+ *       - 1 - paramset is not synced
+ *
+ * The plugin should set this flag to true whenever any internal state has not
+ * been flushed to the set of params.
+ * 
+ * The host will examine this property each time it does a copy or save
+ * operation on the instance.
+ *  * If it is set to 1, the host will call SyncPrivateData and then set
+ *    it to zero before doing the copy/save.
+ *  * If it is set to 0, the host will assume that the param data
+ *    correctly represents the private state, and will not call
+ *    SyncPrivateData before copying/saving.
+ *  * If this property is not set, the host will always call
+ *    SyncPrivateData before copying or saving the effect (as if the
+ *    property were set to 1 -- but the host will not create or
+ *    modify the property).
+ */
+#define kOfxPropParamSetNeedsSyncing "OfxPropParamSetNeedsSyncing"
+ 
+/** @brief Flags whether a parameter is currently animating.
+ * 
  *  - Type - int x 1
  *  - Property Set - plugin parameter instance (read only)
  *  - Valid Values - 0 or 1
- *
- * Set by a host on a parameter instance to indicate if the parameter is currently animating or not.
+ * 
+ * Set by a host on a parameter instance to indicate if the parameter has a non-constant value set on it. This can
+ * be as a consequence of animation or of scripting modifying the value.
  */
 #define kOfxParamPropIsAnimating "OfxParamPropIsAnimating"
 
@@ -306,13 +334,13 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
 #define kOfxParamPropPersistant "OfxParamPropPersistant"
 
 /** @brief Flags whether changing a parameter's value forces an evalution (ie: render),
- *
+ * 
  *  - Type - int x 1
  *  - Property Set - plugin parameter descriptor (read/write) and instance (read/write only)
  *  - Default - 1
  *  - Valid Values - 0 or 1
  *
- * This is used to indicate if the value of a parameter has any affect on an effect's output, eg: the parameter may be purely for GUI purposes, and so changing it's value should not trigger a re-render.
+ * This is used to indicate if the value of a parameter has any affect on an effect's output, eg: the parameter may be purely for GUI purposes, and so changing its value should not trigger a re-render.
  */
 #define kOfxParamPropEvaluateOnChange "OfxParamPropEvaluateOnChange"
 
@@ -400,8 +428,8 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
  */
 #define kOfxParamPropDefault "OfxParamPropDefault"
 
-/** @brief Describes how the double parameter should be interpreted by a host.
- *
+/** @brief Describes how the double parameter should be interpreted by a host. 
+ * 
  * - Type - C string X 1
  * - Default - ::kOfxParamDoubleTypePlain
  * - Property Set - 1D, 2D and 3D float plugin parameter descriptor (read/write) and instance (read only),
@@ -411,12 +439,20 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
  *    - ::kOfxParamDoubleTypeScale - parameter is to be interpretted as a scale factor,
  *    - ::kOfxParamDoubleTypeTime  - parameter represents a time value (1D only),
  *    - ::kOfxParamDoubleTypeAbsoluteTime  - parameter represents an absolute time value (1D only),
+ *
  *    - ::kOfxParamDoubleTypeNormalisedX - normalised size wrt to the project's X dimension (1D only),
  *    - ::kOfxParamDoubleTypeNormalisedXAbsolute - normalised absolute position on the X axis (1D only)
  *    - ::kOfxParamDoubleTypeNormalisedY - normalised size wrt to the project's Y dimension(1D only),
  *    - ::kOfxParamDoubleTypeNormalisedYAbsolute - normalised absolute position on the Y axis (1D only)
  *    - ::kOfxParamDoubleTypeNormalisedXY - normalised to the project's X and Y size (2D only),
- *    - ::kOfxParamDoubleTypeNormalisedXYAbsolute - normalised to the projects X and Y size, and is an absolute position on the image plane.
+ *    - ::kOfxParamDoubleTypeNormalisedXYAbsolute - normalised to the projects X and Y size, and is an absolute position on the image plane,
+ *
+ *    - ::kOfxParamDoubleTypeX - size wrt to the project's X dimension (1D only), in canonical coordinates,
+ *    - ::kOfxParamDoubleTypeXAbsolute - absolute position on the X axis (1D only), in canonical coordinates,
+ *    - ::kOfxParamDoubleTypeY - size wrt to the project's Y dimension(1D only), in canonical coordinates,
+ *    - ::kOfxParamDoubleTypeYAbsolute - absolute position on the Y axis (1D only), in canonical coordinates,
+ *    - ::kOfxParamDoubleTypeXY - size in 2D (2D only), in canonical coordinates,
+ *    - ::kOfxParamDoubleTypeXYAbsolute - an absolute position on the image plane, in canonical coordinates.
  *
  * Double parameters can be interpreted in several different ways, this property tells the host how to do so and thus gives hints
  * as to the interface of the parameter.
@@ -438,23 +474,108 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
 /** @brief value for the ::kOfxParamDoubleTypeAngle property, indicating the parameter is to be interpreted as an absolute time from the start of the effect. See \ref ParameterPropertiesDoubleTypes. */
 #define kOfxParamDoubleTypeAbsoluteTime "OfxParamDoubleTypeAbsoluteTime"
 
-/** @brief value for the ::kOfxParamPropDoubleType property, indicating a size normalised to the X dimension. See \ref ParameterPropertiesDoubleTypes. */
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating a size normalised to the X dimension. See \ref ParameterPropertiesDoubleTypes.
+ * 
+ * Deprecated in favour of ::OfxParamDoubleTypeX
+ */
 #define kOfxParamDoubleTypeNormalisedX  "OfxParamDoubleTypeNormalisedX"
 
-/** @brief value for the ::kOfxParamPropDoubleType property, indicating a size normalised to the Y dimension. See \ref ParameterPropertiesDoubleTypes. */
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating a size normalised to the Y dimension. See \ref ParameterPropertiesDoubleTypes.
+ * 
+ * Deprecated in favour of ::OfxParamDoubleTypeY
+ */
 #define kOfxParamDoubleTypeNormalisedY  "OfxParamDoubleTypeNormalisedY"
 
-/** @brief value for the ::kOfxParamPropDoubleType property, indicating an absolute position normalised to the X dimension. See \ref ParameterPropertiesDoubleTypes. */
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating an absolute position normalised to the X dimension. See \ref ParameterPropertiesDoubleTypes. 
+ * 
+ * Deprecated in favour of ::OfxParamDoubleTypeXAbsolute
+*/
 #define kOfxParamDoubleTypeNormalisedXAbsolute  "OfxParamDoubleTypeNormalisedXAbsolute"
 
-/** @brief value for the ::kOfxParamPropDoubleType property, indicating an absolute position  normalised to the Y dimension. See \ref ParameterPropertiesDoubleTypes. */
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating an absolute position  normalised to the Y dimension. See \ref ParameterPropertiesDoubleTypes.
+ * 
+ * Deprecated in favour of ::OfxParamDoubleTypeYAbsolute
+ */
 #define kOfxParamDoubleTypeNormalisedYAbsolute  "OfxParamDoubleTypeNormalisedYAbsolute"
 
-/** @brief value for the ::kOfxParamPropDoubleType property, indicating normalisation to the X and Y dimension for 2D params. See \ref ParameterPropertiesDoubleTypes. */
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating normalisation to the X and Y dimension for 2D params. See \ref ParameterPropertiesDoubleTypes. 
+ * 
+ * Deprecated in favour of ::OfxParamDoubleTypeXY
+*/
 #define kOfxParamDoubleTypeNormalisedXY  "OfxParamDoubleTypeNormalisedXY"
 
-/** @brief value for the ::kOfxParamPropDoubleType property, indicating normalisation to the X and Y dimension for a 2D param that can be interpretted as an absolute spatial position. See \ref ParameterPropertiesDoubleTypes. */
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating normalisation to the X and Y dimension for a 2D param that can be interpretted as an absolute spatial position. See \ref ParameterPropertiesDoubleTypes. 
+ * 
+ * Deprecated in favour of ::kOfxParamDoubleTypeXYAbsolute 
+*/
 #define kOfxParamDoubleTypeNormalisedXYAbsolute  "OfxParamDoubleTypeNormalisedXYAbsolute"
+
+
+
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating a size in canonical coords in the X dimension. See \ref ParameterPropertiesDoubleTypes. */
+#define kOfxParamDoubleTypeX  "OfxParamDoubleTypeX"
+
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating a size in canonical coords in the Y dimension. See \ref ParameterPropertiesDoubleTypes. */
+#define kOfxParamDoubleTypeY  "OfxParamDoubleTypeY"
+
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating an absolute position in canonical coords in the X dimension. See \ref ParameterPropertiesDoubleTypes. */
+#define kOfxParamDoubleTypeXAbsolute  "OfxParamDoubleTypeXAbsolute"
+
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating an absolute position in canonical coords in the Y dimension. See \ref ParameterPropertiesDoubleTypes. */
+#define kOfxParamDoubleTypeYAbsolute  "OfxParamDoubleTypeYAbsolute"
+
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating a 2D size in canonical coords. See \ref ParameterPropertiesDoubleTypes. */
+#define kOfxParamDoubleTypeXY  "OfxParamDoubleTypeXY"
+
+/** @brief value for the ::kOfxParamPropDoubleType property, indicating a 2D position in canonical coords. See \ref ParameterPropertiesDoubleTypes. */
+#define kOfxParamDoubleTypeXYAbsolute  "OfxParamDoubleTypeXYAbsolute"
+
+/** @brief Describes in which coordinate system a spatial double parameter's default value is specified.
+ * 
+ * - Type - C string X 1
+ * - Default - kOfxParamCoordinatesCanonical
+ * - Property Set - Non normalised spatial double parameters, ie: any double param who's ::kOfxParamPropDoubleType is set to one of...
+ *    - kOfxParamDoubleTypeX 
+ *    - kOfxParamDoubleTypeXAbsolute 
+ *    - kOfxParamDoubleTypeY 
+ *    - kOfxParamDoubleTypeYAbsolute 
+ *    - kOfxParamDoubleTypeXY 
+ *    - kOfxParamDoubleTypeXYAbsolute 
+ * - Valid Values - This must be one of
+ *    - kOfxParamCoordinatesCanonical - the default is in canonical coords
+ *    - kOfxParamCoordinatesNormalised - the default is in normalised coordinates
+ *
+ * This allows a spatial param to specify what its default is, so by saying normalised and "0.5" it would be in the 'middle', by saying canonical and 100 it would be at value 100 independent of the size of the image being applied to.
+ */
+#define kOfxParamPropDefaultCoordinateSystem "OfxParamPropDefaultCoordinateSystem"
+
+/** @brief Define the canonical coordinate system */
+#define kOfxParamCoordinatesCanonical "OfxParamCoordinatesCanonical"
+
+/** @brief Define the normalised coordinate system */
+#define kOfxParamCoordinatesNormalised "OfxParamCoordinatesNormalised"
+
+/** @brief A flag to indicate if there is a host overlay UI handle for the given parameter.
+ * 
+ * - Type - int x 1
+ * - Property Set - plugin parameter descriptor (read only) 
+ * - Valid Values - 0 or 1
+ * 
+ * If set to 1, then the host is flagging that there is some sort of native user overlay interface handle available for the given parameter.
+ */
+#define kOfxParamPropHasHostOverlayHandle "OfxParamPropHasHostOverlayHandle"
+
+/** @brief A flag to indicate that the host should use a native UI overlay handle for the given parameter.
+ *
+ * - Type - int x 1
+ * - Property Set - plugin parameter descriptor (read/write only) and instance (read only)
+ * - Default - 0
+ * - Valid Values - 0 or 1
+ *
+ * If set to 1, then a plugin is flaging to the host that the host should use a native UI overlay handle for the given parameter. A plugin can use this to keep a native look and feel for parameter handles. A plugin can use ::kOfxParamPropHasHostOverlayHandle to see if handles are available on the given parameter.
+ */
+#define kOfxParamPropUseHostOverlayHandle "kOfxParamPropUseHostOverlayHandle"
+
 
 /** @brief Enables the display of a time marker on the host's time line to indicate the value of the absolute time param.
  *
@@ -506,6 +627,18 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
  */
 #define kOfxParamPropParent "OfxParamPropParent"
 
+/** @brief Whether the initial state of a group is open or closed in a hierarchical layout. 
+ *
+ * - Type - int X 1
+ * - Property Set - plugin parameter descriptor (read/write) and instance (read only)
+ * - Default - 1
+ * - Valid Values - 0 or 1
+ *
+ * This is a property on parameters of type ::kOfxParamTypeGroup, and tells the group whether it should be open or closed by default.
+ * 
+ */
+#define kOfxParamPropGroupOpen "OfxParamPropGroupOpen"
+
 /** @brief Used to enable a parameter in the user interface.
  *
  *  - Type - int X 1
@@ -517,11 +650,11 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
  */
 #define kOfxParamPropEnabled "OfxParamPropEnabled"
 
-/** @brief A private data pointer that the plug-in can store it's own data behind.
+/** @brief A private data pointer that the plug-in can store its own data behind.
  *
- *  - Type - pointer X 1
- *  - Property Set - plugin parameter instance (read/write),
- *  - Default - NULL
+ * - Type - pointer X 1
+ * - Property Set - plugin parameter instance (read/write),
+ * - Default - NULL
  *
  * This data pointer is unique to each parameter instance, so two instances of the same parameter do not share the same data pointer. Use it to hang any needed private data structures.
  */
@@ -578,13 +711,13 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
 #define kOfxParamPropDisplayMax "OfxParamPropDisplayMax"
 
 /** @brief The granularity of a slider used to represent a numeric parameter.
- *
- *  - Type - double X 1
- *  - Property Set - plugin parameter descriptor (read/write) and instance (read/write),
- *  - Default - 1
- *  - Valid Values - any greater than 0.
- *
- * This value is always in cannonical coordinates for double parameters that are normalised.
+ * 
+ * - Type - double X 1
+ * - Property Set - plugin parameter descriptor (read/write) and instance (read/write),
+ * - Default - 1
+ * - Valid Values - any greater than 0.
+ * 
+ * This value is always in canonical coordinates for double parameters that are normalised.
  */
 #define kOfxParamPropIncrement "OfxParamPropIncrement"
 
@@ -677,6 +810,7 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
  *  value to be passed to a kOfxParamPropStringMode property  */
 #define kOfxParamStringIsLabel         "OfxParamStringIsLabel"
 
+
 /** @brief Used by interpolating custom parameters to get and set interpolated values.
  *  - Type - C string X 1 or 2
  *
@@ -731,6 +865,7 @@ typedef struct OfxParamSetStruct* OfxParamSetHandle;
 typedef OfxStatus ( OfxCustomParamInterpFuncV1 )( OfxParamSetHandle    instance,
                                                   OfxPropertySetHandle inArgs,
                                                   OfxPropertySetHandle outArgs );
+
 
 /** @brief The OFX suite used to define and manipulate user visible parameters
  */
@@ -837,6 +972,7 @@ typedef struct OfxParameterSuiteV1
 	OfxStatus ( *paramGetValue )( OfxParamHandle paramHandle,
 	                              ... );
 
+
 	/** @brief Gets the value of a parameter at a specific time.
 	 *
 	 * \arg paramHandle parameter handle to fetch value from
@@ -940,6 +1076,7 @@ typedef struct OfxParameterSuiteV1
 	                                    OfxTime        time, // time in frames
 	                                    ... );
 
+
 	/** @brief Returns the number of keyframes in the parameter
 	 *
 	 * \arg paramHandle parameter handle to interogate
@@ -970,6 +1107,7 @@ typedef struct OfxParameterSuiteV1
 	OfxStatus ( *paramGetKeyTime )( OfxParamHandle paramHandle,
 	                                unsigned int   nthKey,
 	                                OfxTime*       time );
+
 
 	/** @brief Finds the index of a keyframe at/before/after a specified time.
 	 *
@@ -1039,6 +1177,7 @@ typedef struct OfxParameterSuiteV1
 	 */
 	OfxStatus ( *paramCopy )( OfxParamHandle paramTo, OfxParamHandle paramFrom, OfxTime dstOffset, OfxRangeD* frameRange );
 
+
 	/** @brief Used to group any parameter changes for undo/redo purposes
 	 *
 	 * \arg paramSet   the parameter set in which this is happening
@@ -1079,11 +1218,13 @@ typedef struct OfxParameterSuiteV1
 }
 #endif
 
+
 /** @file ofxParam.h
  *
  * This header contains the suite definition to manipulate host side parameters.
  *
  * For more details go see @ref ParametersPage
  */
+
 
 #endif

@@ -332,10 +332,14 @@ typedef struct OfxPropertySuiteV1
  */
 /*@{*/
 
+
 /*@}*/
+
+
 
 #ifdef __cplusplus
 }
 #endif
+
 
 #endif
