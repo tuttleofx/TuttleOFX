@@ -1,5 +1,5 @@
 
-#include <qt4/QtGui/qtextcursor.h>
+#include <QtGui/QTextCursor>
 
 #include "QtCommandInputEdit.hpp"
 #include <QtGui/QKeyEvent>
