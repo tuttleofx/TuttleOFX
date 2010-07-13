@@ -34,13 +34,13 @@ public:
 	{}
 
 	/// get the status
-	OfxStatus getStatus()
+	OfxStatus getStatus() const
 	{
 		return _stat;
 	}
 
 	///@todo tuttle : mapStatusEnumToStr... in tuttle common
-	const std::string getStatusStr()
+	std::string getStatusStr() const
 	{
 		return mapStatusToString( _stat );
 	}

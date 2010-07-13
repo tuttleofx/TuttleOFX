@@ -144,6 +144,12 @@ public:
 		return _plugins;
 	}
 
+	/// get plugins
+	const PluginVector& getPlugins() const
+	{
+		return _plugins;
+	}
+
 	/// get a plugin
 	OfxhPlugin& getPlugin( int idx )
 	{

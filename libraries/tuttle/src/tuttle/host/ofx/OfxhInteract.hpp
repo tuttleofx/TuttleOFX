@@ -171,7 +171,7 @@ public:
 	// don't know what to do
 	virtual void reset( const std::string& name ) OFX_EXCEPTION_SPEC;
 
-	/// the gethook virutals for  pixel scale, background colour
+	/// the gethook virtuals for  pixel scale, background colour
 	virtual double getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC;
 
 	/// for pixel scale and background colour

@@ -244,7 +244,7 @@ void OfxhImageEffectNode::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 }
 
 /**
- * get the virutals for viewport size, pixel scale, background colour
+ * get the virtuals for viewport size, pixel scale, background colour
  */
 double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC
 {
@@ -1199,7 +1199,6 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	     ++it )
 	{
 		attribute::OfxhClipImage* clip = it->second;
-		std::string comp, depth;
 
 		std::string rawComp = clip->getUnmappedComponents();
 		rawComp = clip->findSupportedComp( rawComp ); // turn that into a comp the plugin expects on that clip
@@ -1208,15 +1207,15 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 		{
 			if( clip->isOutput() )
 			{
-				depth = deepestBitDepth;
-				comp  = clip->findSupportedComp( mostComponents );
+				std::string depth = deepestBitDepth;
+				std::string comp  = clip->findSupportedComp( mostComponents );
 				clip->setPixelDepth( depth );
 				clip->setComponents( comp );
 			}
 			else
 			{
-				comp  = rawComp;
-				depth = multiBitDepth ? bestSupportedDepth( rawDepth ) : deepestBitDepth;
+				std::string comp  = rawComp;
+				std::string depth = multiBitDepth ? bestSupportedDepth( rawDepth ) : deepestBitDepth;
 
 				clip->setPixelDepth( depth );
 				clip->setComponents( comp );

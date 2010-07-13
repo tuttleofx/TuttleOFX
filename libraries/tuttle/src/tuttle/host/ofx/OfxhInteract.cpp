@@ -263,7 +263,7 @@ void OfxhInteract::initArgProp( OfxTime          time,
 	double pixelScale[2];
 
 	getPixelScale( pixelScale[0], pixelScale[1] );
-	_argProperties.setDoublePropertyN( kOfxPropEffectInstance, pixelScale, 2 );
+	_argProperties.setDoublePropertyN( kOfxInteractPropPixelScale, pixelScale, 2 ); /// ofxtuttle fix
 	_argProperties.setPointerProperty( kOfxPropEffectInstance, _effectInstance );
 	_argProperties.setPointerProperty( kOfxPropInstanceData, _properties.getPointerProperty( kOfxPropInstanceData ) );
 	_argProperties.setDoubleProperty( kOfxPropTime, time );

@@ -196,10 +196,10 @@ public:
 	/// overridden from Property::Notify
 	virtual void notify( const std::string& name, bool singleValue, int indexOrN ) OFX_EXCEPTION_SPEC;
 
-	/// overridden from gethook,  get the virutals for viewport size, pixel scale, background colour
+	/// overridden from gethook,  get the virtuals for viewport size, pixel scale, background colour
 	virtual double getDoubleProperty( const std::string& name, int index ) const OFX_EXCEPTION_SPEC;
 
-	/// overridden from gethook,  get the virutals for viewport size, pixel scale, background colour
+	/// overridden from gethook,  get the virtuals for viewport size, pixel scale, background colour
 	virtual void getDoublePropertyN( const std::string& name, double* values, int count ) const OFX_EXCEPTION_SPEC;
 
 	/// overridden from gethook, don't know what to do
@@ -270,10 +270,10 @@ protected:
 	// actions
 	//
 
-	/// this is used to populate with any extra action in argumnents that may be needed
+	/// this is used to populate with any extra action in arguments that may be needed
 	virtual void setCustomInArgs( const std::string& action, property::OfxhSet& inArgs ) const;
 
-	/// this is used to populate with any extra action out argumnents that may be needed
+	/// this is used to populate with any extra action out arguments that may be needed
 	virtual void setCustomOutArgs( const std::string& action, property::OfxhSet& outArgs ) const;
 
 	/// this is used retrieve any out args after the action was called in mainEntry
