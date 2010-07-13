@@ -38,9 +38,10 @@ void %CLASSNAME%Process<View>::multiThreadProcessImages( const OfxRectI& procWin
 			return;
 	}
 	/*
+	const OfxRectI procWindowSrc = this->translateRegion( procWindowRoW, this->_srcPixelRod );
 	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
 							     procWindowRoW.y2 - procWindowRoW.y1 };
-	View src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
+	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
 							  procWindowSize.x,
 							  procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,

@@ -400,6 +400,9 @@ GIL_FORCEINLINE
 void correlate_rows_cols(const SrcView& src, const Kernel& kernelX, const Kernel& kernelY, const DstView& dst, const typename SrcView::point_t& dst_tl,
                     convolve_boundary_option option=convolve_option_extend_zero)
 {
+	// dst with dst_tl shift must be inside src
+	BOOST_ASSERT( dst.width() + dst_tl.x <= src.width() );
+	BOOST_ASSERT( dst.height() + dst_tl.y <= src.height() );
     typedef typename DstView::point_t Point;
     typedef typename DstView::coord_t Coord;
 	typedef typename view_type_from_pixel<PixelAccum, is_planar<DstView>::value >::type ViewAccum;
@@ -429,12 +432,12 @@ void correlate_rows_cols(const SrcView& src, const Kernel& kernelX, const Kernel
 			// tmp_buffer: is the temporary buffer used after the correlate_rows
 			//             (width of procWin and height of proc_src_roi)
 			Coord top_in = std::min( numeric_cast<Coord>( kernelY.left_size()), dst_tl.y );
-			Coord bottom_in = std::min( numeric_cast<Coord>( kernelY.right_size()), src.height()-dst_tl.y );
+			Coord bottom_in = std::min( numeric_cast<Coord>( kernelY.right_size()), src.height()-(dst_tl.y+dst.height()) );
 			Point image_tmp_size( dst.dimensions() );
 			image_tmp_size.y += top_in + bottom_in;
 			Point image_tmp_tl( dst_tl );
 			image_tmp_tl.y -= top_in;
-
+			
 			ImageAccum image_tmp( image_tmp_size ); ///< @todo use an allocator
 			ViewAccum view_tmp = view( image_tmp );
 			const Point dst_tmp_tl( 0, top_in );
