@@ -429,7 +429,7 @@ void correlate_rows_cols(const SrcView& src, const Kernel& kernelX, const Kernel
 			// tmp_buffer: is the temporary buffer used after the correlate_rows
 			//             (width of procWin and height of proc_src_roi)
 			Coord top_in = std::min( numeric_cast<Coord>( kernelY.left_size()), dst_tl.y );
-			Coord bottom_in = std::min( numeric_cast<Coord>( kernelY.right_size()), src.height()-(dst_tl.y+dst.height()) );
+			Coord bottom_in = std::min( numeric_cast<Coord>( kernelY.right_size()), src.height()-dst_tl.y );
 			Point image_tmp_size( dst.dimensions() );
 			image_tmp_size.y += top_in + bottom_in;
 			Point image_tmp_tl( dst_tl );
