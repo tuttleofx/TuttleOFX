@@ -38,7 +38,7 @@ bool OfxhClipImageSet::operator==( const This& other ) const
 void OfxhClipImageSet::copyClipsValues( const OfxhClipImageSet& other )
 {
 	if( _clipsByOrder.size() != other._clipsByOrder.size() )
-		throw core::exception::LogicError( "You try to copy clips values, but the two lists are not identical." );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy clips values, but the two lists are not identical." ) );
 
 	ClipImageVector::const_iterator oit = other._clipsByOrder.begin(), oitEnd = other._clipsByOrder.end();
 	for( ClipImageVector::iterator it = _clipsByOrder.begin(), itEnd = _clipsByOrder.end();
@@ -48,7 +48,7 @@ void OfxhClipImageSet::copyClipsValues( const OfxhClipImageSet& other )
 		OfxhClipImage& c = *it;
 		const OfxhClipImage& oc = *oit;
 		if( c.getName() != oc.getName() )
-			throw core::exception::LogicError( "You try to copy clips values, but it is not the same clips in the two lists." );
+			BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy clips values, but it is not the same clips in the two lists." ) );
 		c.copyValues(oc);
 	}
 }
@@ -67,7 +67,7 @@ void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDesc
 		// foreach clip descriptor make a ClipImageInstance
 		OfxhClipImage* instance = newClipImage( *it ); //( this, *it, counter );
 		if( !instance )
-			throw OfxhException( "Error on ClipImage creation." );
+			BOOST_THROW_EXCEPTION( OfxhException( "Error on ClipImage creation." ) );
 
 		_clipsByOrder.push_back( instance );
 		_clips[name] = instance;

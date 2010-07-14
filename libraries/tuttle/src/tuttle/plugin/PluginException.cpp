@@ -1,4 +1,7 @@
 #include "PluginException.hpp"
+
+#include <boost/throw_exception.hpp>
+
 #include <cstdio>
 
 namespace tuttle {
@@ -7,11 +10,9 @@ namespace plugin {
 std::string stringify( double x )
 {
 	std::ostringstream o;
-
 	if( !( o << x ) )
-	{
-		throw BadConversion( "file:" __FILE__ ); //" function: " __PRETTY_FUNCTION__ );
-	}
+		BOOST_THROW_EXCEPTION( BadConversion() );
+
 	return o.str();
 }
 

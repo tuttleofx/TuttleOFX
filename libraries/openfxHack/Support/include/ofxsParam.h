@@ -51,6 +51,9 @@
 
 #include "ofxsCore.h"
 #include "ofxsInteract.h"
+
+#include <boost/throw_exception.hpp>
+
 #include <memory>
 #include <iostream>
 
@@ -1642,7 +1645,7 @@ private:
 				paramPtr = (T*) param; // could be a dynamic cast here
 			}
 			else
-				throw OFX::Exception::TypeRequest( "Fetching param and attempting to return the wrong type" );
+				BOOST_THROW_EXCEPTION( OFX::Exception::TypeRequest( "Fetching param and attempting to return the wrong type" ) );
 		}
 		else
 		{

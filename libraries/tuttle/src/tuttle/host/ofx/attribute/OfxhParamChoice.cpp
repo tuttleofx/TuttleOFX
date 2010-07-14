@@ -24,7 +24,7 @@ int OfxhParamChoice::getIndexFor( const std::string& key ) const
 	        errorMsg +=  *it + ", ";
 		}
 	    errorMsg += "]";	    
-		throw( OfxhException( errorMsg ) ); // @todo tuttle: use boost::exception to allows to easily write error message !
+		BOOST_THROW_EXCEPTION( OfxhException( errorMsg ) ); // @todo tuttle: use boost::exception to allows to easily write error message !
 	}
 	return boost::numeric_cast<int>( std::distance( values.begin(), itValue ) );
 }

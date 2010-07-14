@@ -84,7 +84,7 @@ inline std::string mapTypeEnumToString( const TypeEnum& e )
 		case ePointer:
 			return "pointer";
 		default:
-			throw OfxhException( kOfxStatErrValue );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
 	}
 }
 

@@ -202,7 +202,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( op == NULL )
 	{
 		_pluginHandle.reset( NULL );
-		throw core::exception::LogicError( "loadAndDescribeAction OfxPlugin NULL, on plugin " + getApiHandler()._apiName );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "loadAndDescribeAction OfxPlugin NULL, on plugin " + getApiHandler()._apiName ) );
 	}
 
 	int rval = op->mainEntry( kOfxActionLoad, 0, 0, 0 );
@@ -210,7 +210,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		_pluginHandle.reset( NULL );
-		throw core::exception::LogicError( "Load Action failed on plugin " + getApiHandler()._apiName );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Load Action failed on plugin " + getApiHandler()._apiName ) );
 	}
 
 	rval = op->mainEntry( kOfxActionDescribe, getDescriptor().getHandle(), 0, 0 );
@@ -218,7 +218,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		_pluginHandle.reset( NULL );
-		throw core::exception::LogicError( "Describe Action failed on plugin " + getApiHandler()._apiName );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Describe Action failed on plugin " + getApiHandler()._apiName ) );
 	}
 	initContexts();
 }
@@ -236,7 +236,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 	
 	if( _knownContexts.find( context ) == _knownContexts.end() )
 	{
-		throw core::exception::LogicError( "Context not found (" + context + ")" );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Context not found (" + context + ")" ) );
 	}
 	return describeInContextAction( context );
 }
@@ -263,7 +263,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 		_contexts.insert( key, newContext.release() );
 		return _contexts.at(context);
 	}
-	throw OfxhException( rval, "kOfxImageEffectActionDescribeInContext failed." );
+	BOOST_THROW_EXCEPTION( OfxhException( rval, "kOfxImageEffectActionDescribeInContext failed." ) );
 }
 
 imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const std::string& context )
@@ -276,7 +276,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	loadAndDescribeActions();
 	if( getPluginHandle() == NULL )
 	{
-		throw core::exception::LogicError( "imageEffectPlugin::createInstance, unexpected error." );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "imageEffectPlugin::createInstance, unexpected error." ) );
 	}
 	OfxhImageEffectNodeDescriptor& desc = getDescriptorInContext( context );
 	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, desc, context ); /// @todo tuttle: don't use singleton here.

@@ -8,12 +8,12 @@ namespace attribute {
 
 void OfxhParamInteger::derive( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported ) );
 }
 
 void OfxhParamInteger::integrate( const OfxTime time1, const OfxTime time2, int& ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported ) );
 }
 
 /**

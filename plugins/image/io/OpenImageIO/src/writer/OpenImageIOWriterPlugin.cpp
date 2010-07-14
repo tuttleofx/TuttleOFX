@@ -36,7 +36,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getParams(const OfxTime 
 			params._bitDepth = TypeDesc::FLOAT;
 			break;
 		default:
-			throw( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
 			break;
 	}
 	return params;

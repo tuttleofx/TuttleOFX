@@ -5,10 +5,7 @@
 #ifndef _TUTTLE_PLUGIN_EXCEPTION_HPP
 #define _TUTTLE_PLUGIN_EXCEPTION_HPP
 
-// Include standard C++ headers.
 #include <cstdarg>
-
-// Include stl lib
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -20,7 +17,7 @@ namespace plugin {
 class BadConversion : public std::runtime_error
 {
 public:
-	BadConversion( const std::string& s )
+	BadConversion( const std::string& s = "" )
 		: std::runtime_error( s ) {}
 };
 

@@ -17,7 +17,7 @@ void FFMpegReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	std::string sFilepath;
 	// Fetch output image
 	if( _plugin.getReader().read((int)args.time) )
-		throw( tuttle::plugin::ExceptionAbort() );
+		BOOST_THROW_EXCEPTION( tuttle::plugin::ExceptionAbort() );
 
 	ImageGilProcessor<View>::setup( args );
 }

@@ -40,7 +40,7 @@ void JpegReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	JpegReaderProcessParams params = _plugin.getProcessParams(args.time);
 	if( ! bfs::exists( params._filepath ) )
 	{
-		throw( OFX::Exception::Suite(kOfxStatFailed, std::string("Unable to open : ") + params._filepath ) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatFailed, std::string("Unable to open : ") + params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );

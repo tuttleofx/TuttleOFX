@@ -125,7 +125,7 @@ public:
 
 		if( has_cycle() )
 		{
-			throw std::invalid_argument( "graph: cycle detected" );
+			BOOST_THROW_EXCEPTION( std::invalid_argument( "graph: cycle detected" ) );
 		}
 
 		return addedEdge;

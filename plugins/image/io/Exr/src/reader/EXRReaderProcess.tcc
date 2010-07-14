@@ -44,7 +44,7 @@ void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	EXRReaderProcessParams params = _plugin.getProcessParams(args.time);
 	if( ! bfs::exists( params._filepath ) )
 	{
-		throw( PluginException( "Unable to open : " + params._filepath ) );
+		BOOST_THROW_EXCEPTION( PluginException( "Unable to open : " + params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -235,7 +235,7 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 			}
 			else
 			{
-				throw(PluginException(std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!"));
+				BOOST_THROW_EXCEPTION(PluginException(std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!"));
 			}
 		}
 	}

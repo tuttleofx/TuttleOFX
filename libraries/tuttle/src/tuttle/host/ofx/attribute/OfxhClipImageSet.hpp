@@ -76,7 +76,7 @@ public:
 		ClipImageMap::const_iterator it = _clips.find( name );
 
 		if( it == _clips.end() )
-			throw OfxhException( "Clip not found (" + name + ")." );
+			BOOST_THROW_EXCEPTION( OfxhException( "Clip not found (" + name + ")." ) );
 		return *it->second;
 	}
 
@@ -86,7 +86,7 @@ public:
 	void addClip( const std::string& name, OfxhClipImage* instance ) OFX_EXCEPTION_SPEC
 	{
 		if( _clips.find( name ) != _clips.end() )
-			throw OfxhException( kOfxStatErrExists );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists ) );
 		_clips[name] = instance;
 		_clipsByOrder.push_back( instance );
 	}

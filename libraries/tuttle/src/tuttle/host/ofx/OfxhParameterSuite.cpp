@@ -58,7 +58,7 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 			// if we can't find it return an error...
 			if( it == params.end() )
 			{
-				throw( OfxhException( kOfxStatErrUnknown, std::string("Can't find parameter : ") + name ) );
+				BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown, std::string("Can't find parameter : ") + name ) );
 			}
 
 			// get the param

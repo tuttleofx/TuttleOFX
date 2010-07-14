@@ -189,7 +189,7 @@ typename T::ReturnType OfxhPropertyTemplate<T>::getValueRaw( int index ) const O
 {
 	if( index < 0 || ( (size_t) index >= _value.size() ) )
 	{
-		throw OfxhException( kOfxStatErrBadIndex );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 	}
 	return _value[index];
 }
@@ -199,7 +199,7 @@ typename T::ReturnType OfxhPropertyTemplate<T>::getConstlessValueRaw( int index 
 {
 	if( index < 0 || ( (size_t) index >= _value.size() ) )
 	{
-		throw OfxhException( kOfxStatErrBadIndex );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 	}
 	return _value[index];
 }
@@ -235,7 +235,7 @@ void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int
 {
 	if( index < 0 || ( (size_t) index > _value.size() && _dimension ) )
 	{
-		throw OfxhException( kOfxStatErrBadIndex );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 	}
 
 	if( _value.size() <= (size_t) index )
@@ -259,7 +259,7 @@ void OfxhPropertyTemplate<T>::setValueN( const typename T::APIType* value, const
 {
 	if( _dimension && ( (size_t) count > _value.size() ) )
 	{
-		throw OfxhException( kOfxStatErrBadIndex );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 	}
 	if( _value.size() != (size_t) count )
 	{

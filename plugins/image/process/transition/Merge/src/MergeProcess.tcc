@@ -28,18 +28,18 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	// clip A
 	_srcA.reset( _plugin.getSrcClipA()->fetchImage( args.time ) );
 	if( !_srcA.get() )
-		throw( ImageNotReadyException() );
+		BOOST_THROW_EXCEPTION( ImageNotReadyException() );
 	if( _srcA->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
+		BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
 	this->_srcViewA = this->getView( _srcA.get(), _plugin.getSrcClipA()->getPixelRod(args.time) );
 //	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRodA = _plugin.getSrcClipA()->getPixelRod(args.time);
 	// clip B
 	_srcB.reset( _plugin.getSrcClipB()->fetchImage( args.time ) );
 	if( !_srcB.get() )
-		throw( ImageNotReadyException() );
+		BOOST_THROW_EXCEPTION( ImageNotReadyException() );
 	if( _srcB->getRowBytes( ) <= 0 )
-		throw( WrongRowBytesException( ) );
+		BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
 //	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRodB = _plugin.getSrcClipB()->getPixelRod(args.time);
@@ -50,7 +50,7 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 		_srcA->getPixelComponents() != this->_dst->getPixelComponents() ||
 	    _srcB->getPixelComponents() != this->_dst->getPixelComponents() )
 	{
-		throw( BitDepthMismatchException() );
+		BOOST_THROW_EXCEPTION( BitDepthMismatchException() );
 	}
 }
 

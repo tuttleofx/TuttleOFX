@@ -61,7 +61,7 @@ void OfxhParam::setDisplayRange() {}
  */
 void OfxhParam::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV failed (paramName:") + getName() + ")" );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV failed (paramName:") + getName() + ")" ) );
 }
 
 /**
@@ -69,7 +69,7 @@ void OfxhParam::getV( va_list arg ) const OFX_EXCEPTION_SPEC
  */
 void OfxhParam::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV at time failed (paramName:") + getName() + ")" );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV at time failed (paramName:") + getName() + ")" ) );
 }
 
 /**
@@ -77,7 +77,7 @@ void OfxhParam::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
  */
 void OfxhParam::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV failed (paramName:") + getName() + ")" );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV failed (paramName:") + getName() + ")" ) );
 }
 
 /**
@@ -85,7 +85,7 @@ void OfxhParam::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
  */
 void OfxhParam::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV at time failed (paramName:") + getName() + ")" );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV at time failed (paramName:") + getName() + ")" ) );
 }
 
 /**
@@ -93,7 +93,7 @@ void OfxhParam::setV( const OfxTime time, va_list arg, const EChange change ) OF
  */
 void OfxhParam::deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported ) );
 }
 
 /**
@@ -101,7 +101,7 @@ void OfxhParam::deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_S
  */
 void OfxhParam::integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrUnsupported );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported ) );
 }
 
 /**
@@ -132,7 +132,7 @@ void OfxhParam::notify( const std::string& name, bool single, int num ) OFX_EXCE
  */
 void OfxhParam::copy( const OfxhParam& instance, OfxTime offset ) OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrMissingHostFeature );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
 /**
@@ -140,7 +140,7 @@ void OfxhParam::copy( const OfxhParam& instance, OfxTime offset ) OFX_EXCEPTION_
  */
 void OfxhParam::copy( const OfxhParam& instance, OfxTime offset, OfxRangeD range ) OFX_EXCEPTION_SPEC
 {
-	throw OfxhException( kOfxStatErrMissingHostFeature );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
 void OfxhParam::setParentInstance( OfxhParam* instance )

@@ -69,15 +69,15 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 						// ex: 0405 -> 4050 -> 5040
 						// or: roll short by 4 bits right.
 						//						writeImage<rgb12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeR12G12B12, packing );
-						throw( PluginException( "DPX Writer: Unsupported 12 bits rgb image..." ) );
+						BOOST_THROW_EXCEPTION( PluginException( "DPX Writer: Unsupported 12 bits rgb image..." ) );
 						break;
 					case 1:
 						//						writeImage<rgba12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeR12G12B12A12, packing );
-						throw( PluginException( "DPX Writer: Unsupported 12 bits rgba image..." ) );
+						BOOST_THROW_EXCEPTION( PluginException( "DPX Writer: Unsupported 12 bits rgba image..." ) );
 						break;
 					case 2:
 						//						writeImage<abgr12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeA12B12G12R12, packing );
-						throw( PluginException( "DPX Writer: Unsupported 12 bits abgr image..." ) );
+						BOOST_THROW_EXCEPTION( PluginException( "DPX Writer: Unsupported 12 bits abgr image..." ) );
 						break;
 				}
 				break;
@@ -88,16 +88,16 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case 0:
 						//						writeImage<rgb10_packed_image_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10, packing );
-						throw( PluginException( "DPX Writer: Unsupported 10 bits rgb image..." ) );
+						BOOST_THROW_EXCEPTION( PluginException( "DPX Writer: Unsupported 10 bits rgb image..." ) );
 						break;
 					case 1:
 						// Unsupported
 						//						writeImage<rgba10_view_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10A10, packing );
-						throw( PluginException( "DPX Writer: Unsupported 10 bits rgba image..." ) );
+						BOOST_THROW_EXCEPTION( PluginException( "DPX Writer: Unsupported 10 bits rgba image..." ) );
 						break;
 					case 2:
 						//						writeImage<abgr10_view_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeA10B10G10R10, packing );
-						throw( PluginException( "DPX Writer: Unsupported 10 bits abgr image..." ) );
+						BOOST_THROW_EXCEPTION( PluginException( "DPX Writer: Unsupported 10 bits abgr image..." ) );
 						break;
 				}
 				break;
@@ -119,7 +119,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				break;
 			}
 			default:
-				throw( PluginException( "DPX Writer: Unsupported bitdepth..." ) );
+				BOOST_THROW_EXCEPTION( PluginException( "DPX Writer: Unsupported bitdepth..." ) );
 		}
 		copy_pixels(this->_srcView, this->_dstView);
 	}

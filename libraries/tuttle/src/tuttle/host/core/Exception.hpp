@@ -17,27 +17,27 @@ namespace host {
 namespace core {
 namespace exception {
 
-class LogicError : virtual public std::logic_error, virtual public boost::exception
+class LogicError : public std::logic_error, virtual public boost::exception
 {
 protected:
 	OfxStatus _status;
 
 public:
 	explicit LogicError( const std::string& msg = "" )
-	: std::logic_error( msg ),
-	boost::exception(),
+	: boost::exception(),
+	std::logic_error( msg ),
 	_status( kOfxStatErrUnknown )
 	{}
 
 	explicit LogicError( const OfxStatus& status, const std::string& msg = "" )
-	: std::logic_error( ofx::mapStatusToString( status ) + " : " + msg ),
-	boost::exception(),
+	: boost::exception(),
+	std::logic_error( ofx::mapStatusToString( status ) + " : " + msg ),
 	_status( status )
 	{}
 
 	LogicError( const LogicError& other )
-	: std::logic_error( other ),
-	boost::exception(),
+	: boost::exception(),
+	std::logic_error( other ),
 	_status( other._status )
 	{}
 

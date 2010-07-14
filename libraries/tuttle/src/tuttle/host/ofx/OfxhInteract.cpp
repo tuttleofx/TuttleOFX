@@ -182,7 +182,7 @@ size_t OfxhInteract::getDimension( const std::string& name ) const OFX_EXCEPTION
 		return 2;
 	}
 	else
-		throw OfxhException( kOfxStatErrValue );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
 }
 
 // do nothing function
@@ -196,7 +196,7 @@ double OfxhInteract::getDoubleProperty( const std::string& name, int index ) con
 	if( name == kOfxInteractPropPixelScale )
 	{
 		if( index >= 2 )
-			throw OfxhException( kOfxStatErrBadIndex );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		double first[2];
 		getPixelScale( first[0], first[1] );
 		return first[index];
@@ -204,7 +204,7 @@ double OfxhInteract::getDoubleProperty( const std::string& name, int index ) con
 	else if( name == kOfxInteractPropBackgroundColour )
 	{
 		if( index >= 3 )
-			throw OfxhException( kOfxStatErrBadIndex );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		double first[3];
 		getBackgroundColour( first[0], first[1], first[2] );
 		return first[index];
@@ -212,13 +212,13 @@ double OfxhInteract::getDoubleProperty( const std::string& name, int index ) con
 	else if( name == kOfxInteractPropViewportSize )
 	{
 		if( index >= 2 )
-			throw OfxhException( kOfxStatErrBadIndex );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		double first[2];
 		getViewportSize( first[0], first[1] );
 		return first[index];
 	}
 	else
-		throw OfxhException( kOfxStatErrUnknown );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
 }
 
 void OfxhInteract::getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC
@@ -226,23 +226,23 @@ void OfxhInteract::getDoublePropertyN( const std::string& name, double* first, i
 	if( name == kOfxInteractPropPixelScale )
 	{
 		if( n > 2 )
-			throw OfxhException( kOfxStatErrBadIndex );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		getPixelScale( first[0], first[1] );
 	}
 	else if( name == kOfxInteractPropBackgroundColour )
 	{
 		if( n > 3 )
-			throw OfxhException( kOfxStatErrBadIndex );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		getBackgroundColour( first[0], first[1], first[2] );
 	}
 	else if( name == kOfxInteractPropViewportSize )
 	{
 		if( n > 2 )
-			throw OfxhException( kOfxStatErrBadIndex );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		getViewportSize( first[0], first[1] );
 	}
 	else
-		throw OfxhException( kOfxStatErrUnknown );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
 }
 
 void OfxhInteract::getSlaveToParam( std::vector<std::string>& params ) const
@@ -299,7 +299,7 @@ void OfxhInteract::createInstanceAction() OFX_EXCEPTION_SPEC
 	else
 	{
 		_state = eFailed;
-		throw OfxhException( status );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 	}
 }
 
@@ -309,7 +309,7 @@ void OfxhInteract::drawAction( OfxTime          time,
 	initArgProp( time, renderScale );
 	OfxStatus status = callEntry( kOfxInteractActionDraw, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::penMotionAction( OfxTime          time,
@@ -322,7 +322,7 @@ void OfxhInteract::penMotionAction( OfxTime          time,
 	setPenArgProps( penPos, penPosViewport, pressure );
 	OfxStatus status = callEntry( kOfxInteractActionPenMotion, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::penUpAction( OfxTime          time,
@@ -335,7 +335,7 @@ void OfxhInteract::penUpAction( OfxTime          time,
 	setPenArgProps( penPos, penPosViewport, pressure );
 	OfxStatus status = callEntry( kOfxInteractActionPenUp, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::penDownAction( OfxTime          time,
@@ -348,7 +348,7 @@ void OfxhInteract::penDownAction( OfxTime          time,
 	setPenArgProps( penPos, penPosViewport, pressure );
 	OfxStatus status = callEntry( kOfxInteractActionPenDown, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::keyDownAction( OfxTime          time,
@@ -360,7 +360,7 @@ void OfxhInteract::keyDownAction( OfxTime          time,
 	setKeyArgProps( key, keyString );
 	OfxStatus status = callEntry( kOfxInteractActionKeyDown, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::keyUpAction( OfxTime          time,
@@ -372,7 +372,7 @@ void OfxhInteract::keyUpAction( OfxTime          time,
 	setKeyArgProps( key, keyString );
 	OfxStatus status = callEntry( kOfxInteractActionKeyUp, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::keyRepeatAction( OfxTime          time,
@@ -384,7 +384,7 @@ void OfxhInteract::keyRepeatAction( OfxTime          time,
 	setKeyArgProps( key, keyString );
 	OfxStatus status = callEntry( kOfxInteractActionKeyRepeat, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::gainFocusAction( OfxTime          time,
@@ -393,7 +393,7 @@ void OfxhInteract::gainFocusAction( OfxTime          time,
 	initArgProp( time, renderScale );
 	OfxStatus status = callEntry( kOfxInteractActionGainFocus, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 void OfxhInteract::loseFocusAction( OfxTime          time,
@@ -402,7 +402,7 @@ void OfxhInteract::loseFocusAction( OfxTime          time,
 	initArgProp( time, renderScale );
 	OfxStatus status = callEntry( kOfxInteractActionLoseFocus, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		throw OfxhException(status);
+		BOOST_THROW_EXCEPTION( OfxhException(status) );
 }
 
 }

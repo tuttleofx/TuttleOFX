@@ -65,7 +65,7 @@ public:
 	{
 		ParamMap::iterator it = _params.find( name );
 		if( it == _params.end() )
-			throw OfxhException( kOfxStatErrBadIndex, std::string( "Param not found. (" ) + name + ")" );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex, std::string( "Param not found. (" ) + name + ")" ) );
 		return *it->second;
 	}
 	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>(this)->getParam( name ); }

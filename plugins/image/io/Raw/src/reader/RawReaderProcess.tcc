@@ -63,7 +63,7 @@ void RawReaderProcess<View>::setup( const OFX::RenderArguments& args )
 
 	if( !bfs::exists( _params._filepath ) )
 	{
-		throw( OFX::Exception::Suite( kOfxStatFailed, std::string( "Unable to open : " ) + _params._filepath ) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, std::string( "Unable to open : " ) + _params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );

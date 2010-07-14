@@ -10,6 +10,7 @@
 #include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/throw_exception.hpp>
 
 #include <cstdlib>
 #include <vector>
@@ -61,9 +62,9 @@ public:
 		// destination view
 		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get( ) )
-			throw( ImageNotReadyException( ) );
+			BOOST_THROW_EXCEPTION( ImageNotReadyException( ) );
 		if( _dst->getRowBytes( ) <= 0 )
-			throw( WrongRowBytesException( ) );
+			BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
 //		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_dstPixelRod = _clipDst->getPixelRod(args.time);
 		_dstPixelRodSize.x = (this->_dstPixelRod.x2 - this->_dstPixelRod.x1);
@@ -187,7 +188,7 @@ void ImageGilProcessor<View>::process( void )
 	if( _renderArgs.renderWindow.x2 - _renderArgs.renderWindow.x1 == 0 ||
 	    _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 == 0 )
 	{
-		throw PluginException( "RenderWindow empty !" );
+		BOOST_THROW_EXCEPTION( PluginException( "RenderWindow empty !" ) );
 	}
 	// call the pre MP pass
 	preProcess();

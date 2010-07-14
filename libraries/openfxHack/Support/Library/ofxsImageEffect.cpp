@@ -119,7 +119,7 @@ ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argu
 	if( s == kOfxImageEffectContextWriter )
 		return eContextWriter;
 	OFX::Log::error( true, "Unknown image effect context '%s'", s.c_str() );
-	throw std::invalid_argument( s );
+	BOOST_THROW_EXCEPTION( std::invalid_argument( s ) );
 }
 
 /** @brief map a std::string to a context */
@@ -147,7 +147,7 @@ const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invali
 			return "ContextNone...";
 	}
 	OFX::Log::error( true, "Unknown image effect context enum '%d'", (int)s );
-	throw std::invalid_argument( "Unknown image effect context enum." );
+	BOOST_THROW_EXCEPTION( std::invalid_argument( "Unknown image effect context enum." ) );
 }
 
 const std::string mapMessageTypeEnumToStr( OFX::Message::MessageTypeEnum type )
@@ -190,7 +190,7 @@ InstanceChangeReason mapStrToInstanceChangedReason( const std::string& s ) throw
 	if( s == kOfxChangeTime )
 		return eChangeTime;
 	OFX::Log::error( true, "Unknown instance changed reason '%s'", s.c_str() );
-	throw std::invalid_argument( s );
+	BOOST_THROW_EXCEPTION( std::invalid_argument( s ) );
 }
 
 /** @brief turns a bit depth string into and enum */
@@ -288,7 +288,7 @@ PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str ) th
 	}
 	else
 	{
-		throw std::invalid_argument( "" );
+		BOOST_THROW_EXCEPTION( std::invalid_argument( "" ) );
 	}
 }
 
@@ -326,7 +326,7 @@ FieldEnum mapStrToFieldEnum( const std::string& str )  throw( std::invalid_argum
 	}
 	else
 	{
-		throw std::invalid_argument( "" );
+		BOOST_THROW_EXCEPTION( std::invalid_argument( "" ) );
 	}
 }
 
@@ -1395,7 +1395,7 @@ const std::string& ClipPreferencesSetter::extractValueForName( const StringStrin
 	StringStringMap::const_iterator it = m.find( name );
 
 	if( it == m.end() )
-		throw( Exception::PropertyUnknownToHost( name ) );
+		BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( name ) );
 	return it->second;
 }
 
@@ -1426,7 +1426,7 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, BitDepthEnum bitDepth )
 {
 ///@todo: check if this is really necessary
 //	if( ! _imageEffectHostDescription->supportsMultipleClipDepths )
-//		//throw( std::logic_error("Host doesn't support multiple bit depths.") );
+//		//BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support multiple bit depths.") );
 //		return;
 
 	doneSomething_ = true;
@@ -1457,7 +1457,7 @@ void ClipPreferencesSetter::setPixelAspectRatio( Clip& clip, double PAR )
 {
 	if( ! _imageEffectHostDescription->supportsMultipleClipPARs )
 		return;
-//		throw( std::logic_error("Host doesn't support multiple Pixel Aspect Ratios.") );
+//		BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support multiple Pixel Aspect Ratios.") );
 
 	doneSomething_ = true;
 	const std::string& propName = extractValueForName( clipPARPropNames_, clip.name() );
@@ -1469,7 +1469,7 @@ void ClipPreferencesSetter::setOutputFrameRate( double v )
 {
 	if( ! _imageEffectHostDescription->supportsSetableFrameRate )
 		return;
-//		throw( std::logic_error("Host doesn't support setable frame rate.") );
+//		BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support setable frame rate.") );
 	
 	doneSomething_ = true;
 	outArgs_.propSetDouble( kOfxImageEffectPropFrameRate, v );
@@ -1537,7 +1537,7 @@ ImageMemory::ImageMemory( size_t nBytes, ImageEffect* associatedEffect )
 
 	OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryAlloc( effectHandle, nBytes, &_handle );
 	if( stat == kOfxStatErrMemory )
-		throw std::bad_alloc();
+		BOOST_THROW_EXCEPTION( std::bad_alloc() );
 	throwSuiteStatusException( stat );
 }
 
@@ -1555,7 +1555,7 @@ void* ImageMemory::lock( void )
 	OfxStatus stat = OFX::Private::gEffectSuite->imageMemoryLock( _handle, &ptr );
 
 	if( stat == kOfxStatErrMemory )
-		throw std::bad_alloc();
+		BOOST_THROW_EXCEPTION( std::bad_alloc() );
 	throwSuiteStatusException( stat );
 	return ptr;
 }
@@ -1637,7 +1637,7 @@ void loadAction( void )
 	// fetch the suites
 	OFX::Log::error( gHost == 0, "Host pointer has not been set." );
 	if( !gHost )
-		throw OFX::Exception::Suite( kOfxStatErrBadHandle );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle ) );
 
 	if( gLoadCount == 1 )
 	{
@@ -1727,7 +1727,7 @@ ImageEffect* retrieveImageEffectPointer( OfxImageEffectHandle handle )
 
 	if( instance == NULL )
 	{
-		throw( OFX::Exception::Suite( kOfxStatErrBadHandle, std::string("Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: ") + kOfxPropInstanceData + " is NULL).\nThe plugin will crash...") );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrBadHandle, std::string("Can't retrieve ImageEffect pointer from ofxImageEffectHandle. (property: ") + kOfxPropInstanceData + " is NULL).\nThe plugin will crash...") );
 	}
 	// and dance to the music
 	return instance;
@@ -1922,7 +1922,7 @@ bool regionsOfInterestAction( OfxImageEffectHandle handle, OFX::PropertySet inAr
 		{
 			std::map<std::string, std::string>::const_iterator it = clipROIPropNames_.find( clip.name() );
 			if( it == clipROIPropNames_.end() )
-				throw( Exception::PropertyUnknownToHost( clip.name() ) );
+				BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( clip.name() ) );
 
 			// construct the name of the property
 			const std::string& propName = it->second;
@@ -2006,7 +2006,7 @@ bool framesNeededAction( OfxImageEffectHandle handle, OFX::PropertySet inArgs, O
 					// Make the property name we are setting
 					const std::map<std::string, std::string>::const_iterator it = _clipFrameRangePropNames.find( i->first );
 					if( it == _clipFrameRangePropNames.end() )
-						throw( Exception::PropertyUnknownToHost( i->first ) );
+						BOOST_THROW_EXCEPTION( Exception::PropertyUnknownToHost( i->first ) );
 
 					const std::string& propName = it->second;
 
@@ -2167,7 +2167,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		std::string action( actionRaw );
 		OfxPlugInfoMap::iterator it = plugInfoMap.find( plugname );
 		if( it == plugInfoMap.end() )
-			throw;
+			BOOST_THROW_EXCEPTION( std::logic_error( "Action not recognized: " + action ) );
 
 		OFX::PluginFactory* factory = it->second._factory;
 
@@ -2505,7 +2505,7 @@ void* fetchSuite( const char* suiteName, int suiteVersion, bool optional )
 			OFX::Log::error( suite == 0, "Could not fetch the mandatory suite '%s' version %d.", suiteName, suiteVersion );
 	}
 	if( !optional && suite == 0 )
-		throw OFX::Exception::HostInadequate( suiteName );
+		BOOST_THROW_EXCEPTION( OFX::Exception::HostInadequate( suiteName ) );
 	return suite;
 }
 
