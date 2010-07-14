@@ -258,8 +258,8 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 
 					for( int j = 0; j < pb->getNPlugins(); ++j )
 					{
-						OfxhPlugin* plug                         = &pb->getPlugin( j );
-						const APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
+						OfxhPlugin& plug                         = pb->getPlugin( j );
+						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
 						api.loadFromPlugin( plug );
 					}
 				}
@@ -353,8 +353,8 @@ void OfxhPluginCache::scanPluginFiles()
 
 			for( int j = 0; j < i->getNPlugins(); ++j )
 			{
-				OfxhPlugin* plug                   = &i->getPlugin( j );
-				APICache::OfxhPluginAPICacheI& api = plug->getApiHandler();
+				OfxhPlugin& plug                   = i->getPlugin( j );
+				APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
 
 				if( binChanged )
 				{
@@ -365,12 +365,12 @@ void OfxhPluginCache::scanPluginFiles()
 
 				if( api.pluginSupported( plug, reason ) )
 				{
-					addPlugin( plug );
+					addPlugin( &plug );
 					api.confirmPlugin( plug );
 				}
 				else
 				{
-					COUT_ERROR("Ignoring plugin " << plug->getIdentifier() <<
+					COUT_ERROR("Ignoring plugin " << plug.getIdentifier() <<
 					" as unsupported (" << reason << ")");
 				}
 			}
@@ -428,7 +428,7 @@ OfxhPlugin* OfxhPluginCache::getPluginById( const std::string& id, int vermaj, i
 			continue;
 		}
 
-		if( !sofar || p->trumps( sofar ) )
+		if( !sofar || p->trumps( *sofar ) )
 		{
 			sofar = p;
 		}
@@ -447,7 +447,7 @@ std::ostream& operator<<( std::ostream& os, const OfxhPluginCache& v )
 	for( std::map<std::string, OfxhPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
 	{
 		os << "Plug-in:" << it->first << std::endl;
-		os << "  " << "Filepath: " << it->second->getBinary()->getFilePath();
+		os << "  " << "Filepath: " << it->second->getBinary().getFilePath();
 		os << "(" << it->second->getIndex() << ")" << std::endl;
 
 //		os << "Contexts:" << std::endl;

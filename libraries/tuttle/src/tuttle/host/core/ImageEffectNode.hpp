@@ -24,7 +24,7 @@ protected:
 	OfxTime _currentTime;
 
 public:
-	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin*         plugin,
+	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
 	                 ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
 	                 const std::string&                               context );
 

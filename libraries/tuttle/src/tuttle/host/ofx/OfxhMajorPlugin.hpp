@@ -20,8 +20,8 @@ public:
 	OfxhMajorPlugin( const std::string& id, int major ) : _id( id ),
 		_major( major ) {}
 
-	OfxhMajorPlugin( OfxhPlugin* iep ) : _id( iep->getIdentifier() ),
-		_major( iep->getVersionMajor() ) {}
+	OfxhMajorPlugin( OfxhPlugin& iep ) : _id( iep.getIdentifier() ),
+		_major( iep.getVersionMajor() ) {}
 
 	const std::string& getId() const
 	{

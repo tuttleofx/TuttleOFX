@@ -81,6 +81,10 @@ public:
 	const NodeMap&          getNodes() const         { return _nodes; }
 	TUTTLE_AUTODOCUMENTATION
 	NodeMap&                getNodes()               { return _nodes; }
+	TUTTLE_AUTODOCUMENTATION
+	std::list<Node*> getNodesByContext( const std::string& type );
+	TUTTLE_AUTODOCUMENTATION
+	std::list<Node*> getNodesByPlugin( const std::string& pluginId );
 //	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
 	TUTTLE_AUTODOCUMENTATION
 	const Node& getNode( const std::string& id ) const { return _nodes.at( id ); }

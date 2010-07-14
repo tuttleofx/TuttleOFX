@@ -47,28 +47,28 @@ OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor()
 	/// @todo tuttle...
 }
 
-OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( OfxhPlugin* plug )
+OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( OfxhPlugin& plug )
 	: OfxhImageEffectNodeBase( effectDescriptorStuff ),
-	_plugin( plug )
+	_plugin( &plug )
 {
-	_properties.setStringProperty( kOfxPluginPropFilePath, plug->getBinary()->getBundlePath() );
-	tuttle::host::core::Core::instance().getHost().initDescriptor( this );
+	_properties.setStringProperty( kOfxPluginPropFilePath, plug.getBinary().getBundlePath() );
+	tuttle::host::core::Core::instance().getHost().initDescriptor( *this );
 }
 
-OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& other, OfxhPlugin* plug )
+OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& other, OfxhPlugin& plug )
 	: OfxhImageEffectNodeBase( other._properties ),
-	_plugin( plug )
+	_plugin( &plug )
 {
-	_properties.setStringProperty( kOfxPluginPropFilePath, plug->getBinary()->getBundlePath() );
-	tuttle::host::core::Core::instance().getHost().initDescriptor( this );
+	_properties.setStringProperty( kOfxPluginPropFilePath, plug.getBinary().getBundlePath() );
+	tuttle::host::core::Core::instance().getHost().initDescriptor( *this );
 }
 
-OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( const std::string& bundlePath, OfxhPlugin* plug )
+OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( const std::string& bundlePath, OfxhPlugin& plug )
 	: OfxhImageEffectNodeBase( effectDescriptorStuff ),
-	_plugin( plug )
+	_plugin( &plug )
 {
 	_properties.setStringProperty( kOfxPluginPropFilePath, bundlePath );
-	tuttle::host::core::Core::instance().getHost().initDescriptor( this );
+	tuttle::host::core::Core::instance().getHost().initDescriptor( *this );
 }
 
 OfxhImageEffectNodeDescriptor::~OfxhImageEffectNodeDescriptor()

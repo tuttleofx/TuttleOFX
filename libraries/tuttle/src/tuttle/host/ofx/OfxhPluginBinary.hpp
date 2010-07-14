@@ -174,7 +174,7 @@ private:
 				 it != itEnd;
 				 ++it )
 			{
-				it->setBinary( this );
+				it->setBinary( *this );
 			}
 		}
 	}

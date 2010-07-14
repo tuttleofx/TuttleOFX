@@ -5,6 +5,8 @@
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <sstream>
 
@@ -121,6 +123,32 @@ void Graph::compute( const std::list<std::string>& nodes, const int tBegin, cons
 
 	ProcessGraph process( *this );
 	process.process( nodes, tBegin, tEnd );
+}
+
+std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )
+{
+	std::list<Node*> selectedNodes;
+	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
+		 it != itEnd;
+		 ++it )
+	{
+		if( it->second->getContext() == context )
+			selectedNodes.push_back( it->second );
+	}
+	return selectedNodes;
+}
+
+std::list<Graph::Node*> Graph::getNodesByPlugin( const std::string& pluginId )
+{
+	std::list<Node*> selectedNodes;
+	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
+		 it != itEnd;
+		 ++it )
+	{
+		if( boost::iequals( it->second->getPlugin().getIdentifier(), pluginId) )
+			selectedNodes.push_back( it->second );
+	}
+	return selectedNodes;
 }
 
 std::ostream& operator<<( std::ostream& os, const Graph& g )

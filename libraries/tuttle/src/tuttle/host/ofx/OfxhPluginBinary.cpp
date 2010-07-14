@@ -32,12 +32,12 @@ void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 
 		for( int i = 0; i < pluginCount; ++i )
 		{
-			OfxPlugin* plug = ( *getPlug )( i );
+			OfxPlugin& plug = *( *getPlug )( i );
 
-			APICache::OfxhPluginAPICacheI* api = cache->findApiHandler( plug->pluginApi, plug->apiVersion );
+			APICache::OfxhPluginAPICacheI* api = cache->findApiHandler( plug.pluginApi, plug.apiVersion );
 			assert( api );
 
-			_plugins.push_back( api->newPlugin( this, i, plug ) );
+			_plugins.push_back( api->newPlugin( *this, i, plug ) );
 		}
 	}
 	_binary.unload();

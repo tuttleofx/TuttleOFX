@@ -58,7 +58,7 @@ public:
 	 * constructor for the case where we have already loaded the plugin binary and
 	 * are populating this object from it
 	 */
-	OfxhPluginDesc( OfxPlugin* ofxPlugin );
+	OfxhPluginDesc( OfxPlugin& ofxPlugin );
 
 	virtual ~OfxhPluginDesc();
 

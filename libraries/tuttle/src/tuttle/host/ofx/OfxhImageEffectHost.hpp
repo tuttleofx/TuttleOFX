@@ -58,7 +58,7 @@ public:
 	 *   @param desc - the descriptor for that plugin
 	 *   @param context - the context to be created in
 	 */
-	virtual OfxhImageEffectNode* newInstance( OfxhImageEffectPlugin*         plugin,
+	virtual OfxhImageEffectNode* newInstance( OfxhImageEffectPlugin&         plugin,
 	                                          OfxhImageEffectNodeDescriptor& desc,
 	                                          const std::string&             context ) const = 0;
 
@@ -75,22 +75,22 @@ public:
 	 *   @param plugin - the plugin to examine
 	 *   @param reason - set this to report the reason the plugin was not loaded
 	 */
-	virtual bool pluginSupported( OfxhImageEffectPlugin* plugin, std::string& reason ) const;
+	virtual bool pluginSupported( const OfxhImageEffectPlugin& plugin, std::string& reason ) const;
 
 	/// Override this to create a descriptor, this makes the 'root' descriptor
-	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( OfxhImageEffectPlugin* plugin ) const = 0;
+	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( OfxhImageEffectPlugin& plugin ) const = 0;
 
 	/// used to construct a context description, rootContext is the main context
-	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhImageEffectPlugin* plug ) const = 0;
+	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhImageEffectPlugin& plug ) const = 0;
 
 	/// used to construct populate the cache
-	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const std::string& bundlePath, OfxhImageEffectPlugin* plug ) const = 0;
+	virtual OfxhImageEffectNodeDescriptor* makeDescriptor( const std::string& bundlePath, OfxhImageEffectPlugin& plug ) const = 0;
 
 	/**
 	 *  Override this to initialise an image effect descriptor after it has been
 	 *  created.
 	 */
-	virtual void initDescriptor( OfxhImageEffectNodeDescriptor* desc ) const;
+	virtual void initDescriptor( OfxhImageEffectNodeDescriptor& desc ) const;
 #endif
 };
 

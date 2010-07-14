@@ -28,7 +28,7 @@ namespace host {
 namespace core {
 
 // my host support code
-ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin*         plugin,
+ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
                                   tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
                                   const std::string&                                             context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( plugin, desc, context, false )

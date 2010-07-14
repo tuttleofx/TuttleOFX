@@ -34,19 +34,19 @@ public:
 	/**
 	 * construct this based on the struct returned by the getNthPlugin() in the binary
 	 */
-	OfxhPlugin( OfxhPluginBinary* bin, int idx, OfxPlugin* o ) : OfxhPluginDesc( o ),
-		_binary( bin ),
+	OfxhPlugin( OfxhPluginBinary& bin, int idx, OfxPlugin& o ) : OfxhPluginDesc( o ),
+		_binary( &bin ),
 		_index( idx ) {}
 
 	/**
 	 * construct me from the cache
 	 */
-	OfxhPlugin( OfxhPluginBinary* bin, int idx, const std::string& api,
+	OfxhPlugin( OfxhPluginBinary& bin, int idx, const std::string& api,
 	            int apiVersion, const std::string& identifier,
 	            const std::string& rawIdentifier,
 	            int majorVersion, int minorVersion )
 		: OfxhPluginDesc( api, apiVersion, identifier, rawIdentifier, majorVersion, minorVersion ),
-		_binary( bin ),
+		_binary( &bin ),
 		_index( idx ) {}
 
 	virtual ~OfxhPlugin() = 0;
@@ -54,22 +54,22 @@ public:
 	bool operator==( const This& other ) const;
 	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
-	void setBinary( OfxhPluginBinary* binary ) { _binary = binary; }
-	OfxhPluginBinary* getBinary() { return _binary; }
-	const OfxhPluginBinary* getBinary() const { return _binary; }
+	void setBinary( OfxhPluginBinary& binary ) { _binary = &binary; }
+	OfxhPluginBinary& getBinary() { return *_binary; }
+	const OfxhPluginBinary& getBinary() const { return *_binary; }
 
 	int getIndex() const
 	{
 		return _index;
 	}
 
-	bool trumps( OfxhPlugin* other )
+	bool trumps( OfxhPlugin& other )
 	{
 		int myMajor    = getVersionMajor();
-		int theirMajor = other->getVersionMajor();
+		int theirMajor = other.getVersionMajor();
 
 		int myMinor    = getVersionMinor();
-		int theirMinor = other->getVersionMinor();
+		int theirMinor = other.getVersionMinor();
 
 		if( myMajor > theirMajor )
 		{

@@ -76,7 +76,7 @@ static const property::OfxhPropSpec effectInstanceStuff[] = {
 	{ 0 }
 };
 
-OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin*         plugin,
+OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin&         plugin,
                                           const OfxhImageEffectNodeDescriptor& descriptor,
                                           const std::string&                   context,
                                           bool                                 interactive )
@@ -92,7 +92,7 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin*         p
 {
 	_properties.setChainedSet( &descriptor.getProperties() );
 
-	_properties.setPointerProperty( kOfxImageEffectPropPluginHandle, const_cast<OfxPlugin*>( _plugin->getPluginHandle()->getOfxPlugin() ) );
+	_properties.setPointerProperty( kOfxImageEffectPropPluginHandle, const_cast<OfxPlugin*>( _plugin.getPluginHandle()->getOfxPlugin() ) );
 
 	_properties.setStringProperty( kOfxImageEffectPropContext, context );
 	_properties.setIntProperty( kOfxPropIsInteractive, interactive );
@@ -417,10 +417,7 @@ OfxStatus OfxhImageEffectNode::mainEntry( const char*        action,
                                           property::OfxhSet* inArgs,
                                           property::OfxhSet* outArgs ) const
 {
-	if( !_plugin )
-		return kOfxStatFailed;
-	
-	const OfxhPluginHandle* pHandle = _plugin->getPluginHandle();
+	const OfxhPluginHandle* pHandle = _plugin.getPluginHandle();
 	if( !pHandle )
 		return kOfxStatFailed;
 

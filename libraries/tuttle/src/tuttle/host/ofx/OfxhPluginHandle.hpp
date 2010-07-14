@@ -21,7 +21,7 @@ OfxhPluginBinary* _b;
 OfxPlugin* _op;
 
 public:
-	OfxhPluginHandle( OfxhPlugin* p, OfxhHost* _host );
+	OfxhPluginHandle( OfxhPlugin& p, OfxhHost& _host );
 	virtual ~OfxhPluginHandle();
 
 	OfxPlugin*       getOfxPlugin()       { return _op; }

@@ -68,17 +68,17 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin()
 	/// @todo tuttle
 }
 
-OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl )
+OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary& pb, int pi, OfxPlugin& pl )
 	: OfxhPlugin( pb, pi, pl )
 	, _pc( &pc )
 	, _pluginHandle( 0 )
-	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( this ) )
+	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
 }
 
 OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
-                                              OfxhPluginBinary*           pb,
+                                              OfxhPluginBinary&           pb,
                                               int                         pi,
                                               const std::string&          api,
                                               int                         apiVersion,
@@ -89,7 +89,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
 	, _pc( &pc )
 	, _pluginHandle( NULL )
-	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( this ) )
+	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
 }
@@ -195,7 +195,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 		//COUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
 		return;
 	}
-	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( this, getApiHandler().getHost() ) );
+	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( *this, getApiHandler().getHost() ) );
 
 	OfxPlugin* op = _pluginHandle->getOfxPlugin();
 
@@ -252,7 +252,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 
 	OfxhPluginHandle* ph = getPluginHandle();
 
-	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor> newContext( core::Core::instance().getHost().makeDescriptor( getDescriptor(), this ) );
+	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor> newContext( core::Core::instance().getHost().makeDescriptor( getDescriptor(), *this ) );
 	int rval = kOfxStatFailed;
 	if( ph->getOfxPlugin() )
 		rval = ph->getOfxPlugin()->mainEntry( kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0 );
@@ -279,7 +279,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 		BOOST_THROW_EXCEPTION( core::exception::LogicError( "imageEffectPlugin::createInstance, unexpected error." ) );
 	}
 	OfxhImageEffectNodeDescriptor& desc = getDescriptorInContext( context );
-	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( this, desc, context ); /// @todo tuttle: don't use singleton here.
+	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
 	instance->createInstanceAction(); /// @todo tuttle: it's not possible to move this in a constructor ?
 	return instance;
 }

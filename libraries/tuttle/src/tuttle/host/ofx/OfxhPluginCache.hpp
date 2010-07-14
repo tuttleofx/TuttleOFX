@@ -126,7 +126,7 @@ protected:
 
 		if( _pluginsByID.find( plugin->getIdentifier() ) != _pluginsByID.end() )
 		{
-			OfxhPlugin* otherPlugin = _pluginsByID[plugin->getIdentifier()];
+			OfxhPlugin& otherPlugin = *_pluginsByID[plugin->getIdentifier()];
 			if( plugin->trumps( otherPlugin ) )
 			{
 				_pluginsByID[plugin->getIdentifier()] = plugin;
