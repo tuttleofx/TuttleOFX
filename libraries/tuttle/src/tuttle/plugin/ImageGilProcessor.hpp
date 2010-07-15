@@ -66,7 +66,7 @@ public:
 		if( _dst->getRowBytes( ) <= 0 )
 			BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
 //		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
-		_dstPixelRod = _clipDst->getPixelRod(args.time);
+		_dstPixelRod = _clipDst->getPixelRod(args.time, args.renderScale);
 		_dstPixelRodSize.x = (this->_dstPixelRod.x2 - this->_dstPixelRod.x1);
 		_dstPixelRodSize.y = (this->_dstPixelRod.y2 - this->_dstPixelRod.y1);
 		_dstView = getView( _dst.get(), _dstPixelRod );
@@ -220,8 +220,11 @@ View getView( OFX::Image* img, const OfxRectI& rod )
 	using namespace boost::gil;
     typedef typename View::value_type Pixel;
 
-	//OfxRectI rod = img->getRegionOfDefinition();
+//	OfxRectI imgrod = img->getRegionOfDefinition(); // bug in nuke returns bounds... not the clip rod with renderscale...
 	OfxRectI bounds = img->getBounds();
+//	COUT_VAR( bounds );
+//	COUT_VAR( imgrod );
+//	COUT_VAR( rod );
 	point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
 										bounds.y2 - bounds.y1 );
 
