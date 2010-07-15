@@ -44,7 +44,7 @@ public:
 			case 3:
 				return OFX::eBitDepthFloat;
 			default:
-				throw(OFX::Exception::Suite( kOfxStatErrImageFormat ));
+				BOOST_THROW_EXCEPTION(OFX::Exception::Suite( kOfxStatErrImageFormat ));
 		}
 	}
 

@@ -44,12 +44,12 @@ void J2KReader::open(const std::string & filename)
             if( inputDataStream.fail() )
             {
                 inputDataStream.close();
-				throw( std::logic_error( std::string("Unable to read magic number on ") + filename ) );
+				BOOST_THROW_EXCEPTION( std::logic_error( std::string("Unable to read magic number on ") + filename ) );
             }
             if( magic != MAYBE_MAGIC && magic != MAYBE_REV_MAGIC )
             {
                 inputDataStream.close();
-				throw( std::logic_error( std::string("Invalid magic number on ") + filename ) );
+				BOOST_THROW_EXCEPTION( std::logic_error( std::string("Invalid magic number on ") + filename ) );
             }
 
             inputDataStream.seekg(0, ios::end);
@@ -70,19 +70,19 @@ void J2KReader::open(const std::string & filename)
 				OFX::memory::free(_fileData);
 				_fileData = NULL;
 				_dataLength = 0;
-				throw( std::logic_error(std::string("Unable to read image data on ") + filename ) );
+				BOOST_THROW_EXCEPTION( std::logic_error(std::string("Unable to read image data on ") + filename ) );
             }
 			inputDataStream.close();
 			_dataLength = dataLength;
          }
          else
          {
-			throw(std::logic_error(std::string("Unable to open file ") + filename));
+			BOOST_THROW_EXCEPTION(std::logic_error(std::string("Unable to open file ") + filename));
          }
 	}
 	else
 	{
-		throw(std::logic_error(std::string("File ") + filename + " doesn't exists!"));
+		BOOST_THROW_EXCEPTION(std::logic_error(std::string("File ") + filename + " doesn't exists!"));
 	}
 }
 
@@ -90,7 +90,7 @@ void J2KReader::decode(bool headeronly)
 {
 	if (!_fileData || !_dataLength)
 	{
-		throw(std::logic_error("open a file before decoding!"));
+		BOOST_THROW_EXCEPTION(std::logic_error("open a file before decoding!"));
 	}
 	else
 	{
@@ -117,14 +117,14 @@ void J2KReader::decode(bool headeronly)
 		opj_setup_decoder(dinfo, &parameters);
 		if ( !dinfo )
 		{
-			throw(std::logic_error("Failed to open decoder for image!"));
+			BOOST_THROW_EXCEPTION(std::logic_error("Failed to open decoder for image!"));
 		}
 		// open a byte stream
 		cio = opj_cio_open((opj_common_ptr)dinfo, _fileData, _dataLength);
 		if (!cio)
 		{
 			opj_destroy_decompress( dinfo );
-			throw(std::logic_error("Failed to open decoder for image!"));
+			BOOST_THROW_EXCEPTION(std::logic_error("Failed to open decoder for image!"));
 		}
 		// Start decoding to get an image
 		if (_openjpeg.image)
@@ -137,7 +137,7 @@ void J2KReader::decode(bool headeronly)
 		opj_cio_close( cio );
 		if ( !_openjpeg.image )
 		{
-			throw(std::logic_error("Failed to decode image!"));
+			BOOST_THROW_EXCEPTION(std::logic_error("Failed to decode image!"));
 		}
 	}
 }

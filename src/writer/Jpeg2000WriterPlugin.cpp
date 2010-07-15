@@ -47,7 +47,7 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 			params._bitDepth = 32;
 			break;
 		default:
-			throw( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
 			break;
 	}
 	_cineProfil->getValue( params._cineProfil );

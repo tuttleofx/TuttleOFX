@@ -36,7 +36,7 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 	OfxRangeI range = _filePattern.getRange();
 	if (varyOnTime() && (time < range.min || time > range.max) )
 	{
-		throw(OFX::Exception::Suite(kOfxStatErrBadIndex, "Time value outside bounds."));
+		BOOST_THROW_EXCEPTION(OFX::Exception::Suite(kOfxStatErrBadIndex, "Time value outside bounds."));
 	}
 	Jpeg2000ReaderProcessParams params;
 
@@ -178,7 +178,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 		FileInfo fileInfo = retrieveFileInfo( _filePattern.getRange().min );
 		if ( fileInfo._failed )
 		{
-			throw( OFX::Exception::Suite( kOfxStatFailed, "Unable to read file infos." ) );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, "Unable to read file infos." ) );
 		}
 
 		// If we explicitly specify which conversion we want
@@ -202,7 +202,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 					break;
 				default:
 				{
-					throw( OFX::Exception::Suite( kOfxStatErrImageFormat, "Unexpected number of channels, settings pixel component to custom." ) );
+					BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat, "Unexpected number of channels, settings pixel component to custom." ) );
 				}
 			}
 
@@ -237,7 +237,7 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	catch(std::exception & e)
 	{
 		_fileInfos._failed = true;
-		throw( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
 	}
 	_fileInfos._failed = false;
 	// No choice if we want to get
@@ -249,13 +249,13 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	catch(std::exception & e)
 	{
 		_fileInfos._failed = true;
-		throw( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
 	}
 
 	if( !_reader.componentsConform() )
 	{
 		_fileInfos._failed = true;
-		throw( OFX::Exception::Suite( kOfxStatErrImageFormat, "Jpeg2000 image components aren't conform.") );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat, "Jpeg2000 image components aren't conform.") );
 	}
 
 	_fileInfos._time = time;
@@ -278,7 +278,7 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 			break;
 		default:
 			_fileInfos._failed = true;
-			throw( OFX::Exception::Suite( kOfxStatErrImageFormat, std::string("Bit depth not handled ! (") + boost::lexical_cast<std::string>(_reader.precision()) + ")" ) );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat, std::string("Bit depth not handled ! (") + boost::lexical_cast<std::string>(_reader.precision()) + ")" ) );
 	}
 
 	return _fileInfos;

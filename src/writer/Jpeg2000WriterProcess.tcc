@@ -52,7 +52,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			}
 			else
 			{
-				throw(PluginException("Unable to open output file!"));
+				BOOST_THROW_EXCEPTION(PluginException("Unable to open output file!"));
 			}
 			break;
 		}
@@ -72,7 +72,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			}
 			else
 			{
-				throw(PluginException("Unable to open output file!"));
+				BOOST_THROW_EXCEPTION(PluginException("Unable to open output file!"));
 			}
 			break;
 		}
@@ -92,13 +92,13 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			}
 			else
 			{
-				throw(PluginException("Unable to open output file!"));
+				BOOST_THROW_EXCEPTION(PluginException("Unable to open output file!"));
 			}
 			break;
 		}
 		default:
 		{
-			throw(PluginException("Invalid precision!"));
+			BOOST_THROW_EXCEPTION(PluginException("Invalid precision!"));
 		}
 	}
 }
