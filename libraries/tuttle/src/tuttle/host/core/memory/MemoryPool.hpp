@@ -2,11 +2,16 @@
 #define _TUTTLE_HOST_CORE_MEMORYPOOL_HPP_
 
 #include "IMemoryPool.hpp"
-#include <climits>
+
+#include <boost/ptr_container/ptr_list.hpp>
+#include <boost/unordered_set.hpp>
+
+#include <map>
 #include <list>
 #include <sstream>
 #include <numeric>
 #include <functional>
+#include <climits>
 
 namespace tuttle {
 namespace host {
@@ -31,23 +36,25 @@ public:
 	MemoryPool( const size_t maxSize = ULONG_MAX );
 	~MemoryPool();
 
-	virtual IPoolDataPtr allocate( const size_t size ) throw( std::bad_alloc, std::length_error );
+	IPoolDataPtr allocate( const size_t size ) throw( std::bad_alloc, std::length_error );
 
-	virtual void referenced( PoolData* );
-	virtual void released( PoolData* );
+	void referenced( PoolData* );
+	void released( PoolData* );
 
-	virtual size_t getUsedMemorySize() const;
-	virtual size_t getAllocatedMemorySize() const;
-	virtual size_t getMaxMemorySize() const;
-	virtual size_t getAvailableMemorySize() const;
-	virtual size_t getWastedMemorySize() const;
+	size_t getUsedMemorySize() const;
+	size_t getAllocatedMemorySize() const;
+	size_t getMaxMemorySize() const;
+	size_t getAvailableMemorySize() const;
+	size_t getWastedMemorySize() const;
 
-	virtual void clear( size_t size );
-	virtual void clearOne();
-	virtual void clearAll();
+	void clear( size_t size );
+	void clearOne();
+	void clearAll();
 
 private:
-	typedef std::list<PoolData*> DataList;
+	typedef boost::unordered_set<PoolData*> DataList;
+	boost::ptr_list<PoolData> _allDatas; // the owner
+	std::map<char*,PoolData*> _dataMap; // the owner
 	DataList _dataUsed;
 	DataList _dataUnused;
 	const size_t _memoryAuthorized;
