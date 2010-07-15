@@ -77,7 +77,7 @@ public:
 
 #ifndef SWIG
 protected:
-	const OfxhImageEffectPlugin* _plugin;
+	const OfxhImageEffectPlugin& _plugin;
 	std::string _context;
 	const OfxhImageEffectNodeDescriptor& _descriptor;
 	bool _interactive;
@@ -90,7 +90,7 @@ protected:
 
 public:
 	/// constructor based on clip descriptor
-	OfxhImageEffectNode( const OfxhImageEffectPlugin*         plugin,
+	OfxhImageEffectNode( const OfxhImageEffectPlugin&         plugin,
 	                     const OfxhImageEffectNodeDescriptor& other,
 	                     const std::string&                   context,
 	                     bool                                 interactive );
@@ -131,7 +131,7 @@ public:
 	const OfxhImageEffectNodeDescriptor& getDescriptor() const { return _descriptor; }
 
 	/// return the plugin this instance was created with
-	const tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* getPlugin() const { return _plugin; }
+	const tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin& getPlugin() const { return _plugin; }
 
 	/// return the context this instance was created with
 	const std::string& getContext() const { return _context; }

@@ -1091,7 +1091,7 @@ double ValueParam::getKeyTime( int nthKey ) const throw( OFX::Exception::Suite, 
 
 	// oops?
 	if( stat == kOfxStatFailed )
-		throw std::out_of_range( "ValueParam::getKeyTime key index out of range" );
+		BOOST_THROW_EXCEPTION( std::out_of_range( "ValueParam::getKeyTime key index out of range" ) );
 	throwSuiteStatusException( stat );
 	return v;
 }
@@ -2258,7 +2258,7 @@ void ParamSet::fetchRawParam( const std::string& name, ParamTypeEnum paramType, 
 	std::string paramTypeStr = props.propGetString( kOfxParamPropType );
 	if( paramTypeStr != mapParamTypeEnumToString( paramType ) )
 	{
-		throw OFX::Exception::TypeRequest( "Parameter exists but is of the wrong type" );
+		BOOST_THROW_EXCEPTION( OFX::Exception::TypeRequest( "Parameter exists but is of the wrong type" ) );
 	}
 }
 

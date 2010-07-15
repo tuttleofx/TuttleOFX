@@ -58,20 +58,20 @@ public:
 
 	virtual ~OfxhPluginAPICacheI() {}
 
-	virtual void loadFromPlugin( OfxhPlugin* ) const = 0;
+	virtual void loadFromPlugin( OfxhPlugin& ) = 0;
 
 	/// factory method, to create a new plugin (from binary)
-	virtual OfxhPlugin* newPlugin( OfxhPluginBinary*, int pi, OfxPlugin* plug ) = 0;
+	virtual OfxhPlugin* newPlugin( OfxhPluginBinary&, int pi, OfxPlugin& plug ) = 0;
 
 	/// factory method, to create a new plugin (from the
-	virtual OfxhPlugin* newPlugin( OfxhPluginBinary* pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
+	virtual OfxhPlugin* newPlugin( OfxhPluginBinary& pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
 	                               const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion ) = 0;
 
-	virtual OfxhHost* getHost() =0;
+	virtual OfxhHost& getHost() =0;
 
-	virtual void confirmPlugin( OfxhPlugin* ) = 0;
+	virtual void confirmPlugin( OfxhPlugin& ) = 0;
 
-	virtual bool pluginSupported( OfxhPlugin*, std::string& reason ) const = 0;
+	virtual bool pluginSupported( const OfxhPlugin&, std::string& reason ) const = 0;
 };
 
 }

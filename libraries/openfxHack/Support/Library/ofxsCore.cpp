@@ -35,6 +35,8 @@
  */
 #include "./ofxsSupportPrivate.h"
 
+#include <boost/throw_exception.hpp>
+
 #include <sstream>
 #include <cstddef>
 
@@ -52,16 +54,16 @@ void throwSuiteStatusException( OfxStatus stat ) throw( OFX::Exception::Suite, s
 			break;
 
 		case kOfxStatErrMemory:
-			throw std::bad_alloc();
+			BOOST_THROW_EXCEPTION( std::bad_alloc() );
 
 		default:
-			throw OFX::Exception::Suite( stat, "Threw suite exception!" );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( stat, "Threw suite exception!" ) );
 	}
 }
 
 void throwHostMissingSuiteException( const std::string& name ) throw( OFX::Exception::Suite )
 {
-	throw OFX::Exception::Suite( kOfxStatErrUnsupported, "Threw suite exception! Host missing '" + name + "' suite." );
+	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrUnsupported, "Threw suite exception! Host missing '" + name + "' suite." ) );
 }
 
 /** @brief maps status to a string */
@@ -101,7 +103,7 @@ void* allocate( const std::size_t nBytes, ImageEffect* effect ) throw( std::bad_
 	OfxStatus stat = OFX::Private::gMemorySuite->memoryAlloc( ( void* )( effect ? effect->getHandle() : 0 ), nBytes, &data );
 
 	if( stat != kOfxStatOK )
-		throw std::bad_alloc();
+		BOOST_THROW_EXCEPTION( std::bad_alloc() );
 	return data;
 }
 

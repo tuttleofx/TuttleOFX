@@ -298,7 +298,7 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 					bd = OFX::eBitDepthUShort;
 					break;
 				default:
-					throw OFX::Exception::Suite( kOfxStatErrImageFormat );
+					BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
 					break;
 			}
 			clipPreferences.setClipBitDepth( *this->_clipDst, bd );

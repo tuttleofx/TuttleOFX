@@ -79,7 +79,7 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 		std::ostringstream msg;
 		msg << "Unable to open ";
 		msg << filename;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	readHeader( f );
 
@@ -98,7 +98,7 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 			std::ostringstream msg;
 			msg << "Unable to read data ";
 			msg << "( " << filename << " )" ;
-			throw std::exception();
+			BOOST_THROW_EXCEPTION( std::exception() );
 		}
 		if( reinterpretation && isEndianReinterpNeeded() )
 		{
@@ -114,7 +114,7 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 		std::ostringstream msg;
 		msg << "Unhandled dpx data type.";
 		msg << "( " << filename << " )" ;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	f.close();
 }
@@ -132,7 +132,7 @@ void DpxImage::readHeader( const path& filename )
 		msg << "Unable to open ";
 		msg << filename;
 		std::cerr << msg << std::endl;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 
 	readHeader( f );
@@ -151,7 +151,7 @@ void DpxImage::readHeader( ifstream& f )
 		std::ostringstream msg;
 		msg << "Unable to read header...";
 		std::cerr << "Unable to read dpx header..." << std::endl;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 
 	// ...file information
@@ -170,7 +170,7 @@ void DpxImage::readHeader( ifstream& f )
 	}
 	else
 	{
-		throw(std::logic_error("Not a dpx image !"));
+		BOOST_THROW_EXCEPTION(std::logic_error("Not a dpx image !"));
 	}
 	// Read meta dynamic infos
 	scoped_array<uint8_t> hdrBuffer(new uint8_t[hdrSize]);
@@ -180,7 +180,7 @@ void DpxImage::readHeader( ifstream& f )
 		std::ostringstream msg;
 		msg << "DPX: Unable to read header...";
 		std::cerr << msg << std::endl;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	// Read dynamic data
 	size_t bufpos = 0;
@@ -210,7 +210,7 @@ void DpxImage::readHeader( ifstream& f )
 		std::ostringstream msg;
 		msg << "DPX: bad orientation value";
 		std::cerr << msg << std::endl;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 
 	uint8_t bitSize = _header._imageInfo.image_element[0].bit_size;
@@ -219,7 +219,7 @@ void DpxImage::readHeader( ifstream& f )
 		std::ostringstream msg;
 		msg << "DPX: bad bit size value (= " << bitSize << ")";
 		std::cerr << msg << std::endl;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 
 	uint16_t packing = _header._imageInfo.image_element[0].packing;
@@ -232,7 +232,7 @@ void DpxImage::readHeader( ifstream& f )
 		std::ostringstream msg;
 		msg << "bad packing value";
 		std::cerr << msg << std::endl;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 }
 
@@ -339,7 +339,7 @@ void DpxImage::write( const path& filename )
 		msg << "Unable to open ";
 		msg << filename;
 		std::cerr << msg << std::endl;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	_header.setDataOffset( 2048 );
 	writeHeader( f );
@@ -349,7 +349,7 @@ void DpxImage::write( const path& filename )
 	{
 		if( !f.write( reinterpret_cast<char*>( &zeros[0] ), zeros.size() ) )
 		{
-			throw std::exception();
+			BOOST_THROW_EXCEPTION( std::exception() );
 		}
 	}
 
@@ -359,7 +359,7 @@ void DpxImage::write( const path& filename )
 		std::ostringstream msg;
 		msg << "Unable to read data ";
 		msg << "( " << filename << " )" ;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	f.close();
 }
@@ -376,31 +376,31 @@ void DpxImage::writeHeader( ofstream& f )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (FileInformation)" ;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._imageInfo ), sizeof( ImageInformation ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (ImageInformation)" ;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._imageOrientation ), sizeof( ImageOrientation ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (ImageOrientation)" ;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._motionPicture ), sizeof( MotionPictureFilm ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (MotionPictureFilm)" ;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._television ), sizeof( TelevisionHeader ) ) )
 	{
 		std::ostringstream msg;
 		msg << "DpxImage::Unable to write data (TelevisionHeader)" ;
-		throw std::exception();
+		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 }
 

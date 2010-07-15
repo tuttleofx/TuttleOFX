@@ -42,7 +42,7 @@ bool Progress::progressForward( const int nSteps ) //throw(PluginException)
 	{
 		_mutex.unlock();
 		_effect.progressEnd();
-		//        throw(ExceptionAbort( ) );
+		//        BOOST_THROW_EXCEPTION(ExceptionAbort( ) );
 		return true;
 	}
 	_effect.progressUpdate( _counter );

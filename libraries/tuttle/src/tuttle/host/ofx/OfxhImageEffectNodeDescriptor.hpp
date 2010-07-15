@@ -45,13 +45,13 @@ private:
 	
 public:
 	/// used to construct the global description
-	OfxhImageEffectNodeDescriptor( OfxhPlugin* plug );
+	OfxhImageEffectNodeDescriptor( OfxhPlugin& plug );
 
 	/// used to construct a context description, 'other' is the main context
-	OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhPlugin* plug );
+	OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& rootContext, OfxhPlugin& plug );
 
 	/// used to construct populate the cache
-	OfxhImageEffectNodeDescriptor( const std::string& bundlePath, OfxhPlugin* plug );
+	OfxhImageEffectNodeDescriptor( const std::string& bundlePath, OfxhPlugin& plug );
 
 	/// dtor
 	virtual ~OfxhImageEffectNodeDescriptor();
@@ -66,7 +66,7 @@ public:
 	}
 
 	/// get the plugin I belong to
-	OfxhPlugin* getPlugin() const { return _plugin; }
+	OfxhPlugin& getPlugin() const { return *_plugin; }
 
 	/// create a new clip and add this to the clip map
 	virtual attribute::OfxhClipImageDescriptor* defineClip( const std::string& name );

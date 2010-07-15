@@ -79,7 +79,7 @@ public:
 	OfxHost* getHandle();
 
 	/// override this to handle do post-construction initialisation on a Param::Descriptor
-	virtual void initDescriptor( attribute::OfxhParamDescriptor* ) const {}
+	virtual void initDescriptor( attribute::OfxhParamDescriptor& ) const {}
 
 	/// is my magic number valid?
 	bool verifyMagic() { return true; }

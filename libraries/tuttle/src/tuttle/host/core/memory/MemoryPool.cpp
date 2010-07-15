@@ -1,4 +1,5 @@
 #include "MemoryPool.hpp"
+#include <boost/throw_exception.hpp>
 #include <algorithm>
 
 namespace tuttle {
@@ -146,7 +147,7 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const size_t size ) throw(
 	{
 		std::stringstream s;
 		s << "MemoryPool can't allocate size:" << size << " because memorySizeAvailable=" << getAvailableMemorySize();
-		throw std::length_error( s.str() );
+		BOOST_THROW_EXCEPTION( std::length_error( s.str() ) );
 	}
 	return new PoolData( *this, size );
 }

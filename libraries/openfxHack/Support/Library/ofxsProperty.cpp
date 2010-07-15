@@ -59,15 +59,15 @@ void throwPropertyException( OfxStatus          stat,
 		case kOfxStatErrUnknown:
 		case kOfxStatErrUnsupported: // unsupported implies unknow here
 			if( OFX::PropertySet::getThrowOnUnsupportedProperties() ) // are we suppressing this?
-				throw OFX::Exception::PropertyUnknownToHost( propName );
+				BOOST_THROW_EXCEPTION( OFX::Exception::PropertyUnknownToHost( propName ) );
 			break;
 
 		case kOfxStatErrMemory:
-			throw std::bad_alloc();
+			BOOST_THROW_EXCEPTION( std::bad_alloc() );
 			break;
 
 		case kOfxStatErrValue:
-			throw  OFX::Exception::PropertyValueIllegalToHost( propName.c_str() );
+			BOOST_THROW_EXCEPTION( OFX::Exception::PropertyValueIllegalToHost( propName.c_str() ) );
 			break;
 
 		case kOfxStatErrBadHandle:

@@ -27,7 +27,7 @@ OfxhParamDescriptor* OfxhParamSetDescriptor::paramDefine( const char* paramType,
                                                           const char* name )
 {
 	if( !isStandardType( paramType ) )
-		throw OfxhException( std::string( "The param type '" ) + paramType + "' is not recognize, the param '" + name + "' can't be created." );
+		BOOST_THROW_EXCEPTION( OfxhException( std::string( "The param type '" ) + paramType + "' is not recognize, the param '" + name + "' can't be created." ) );
 
 	OfxhParamDescriptor* desc = new OfxhParamDescriptor( paramType, name );
 	desc->initStandardParamProps( paramType );

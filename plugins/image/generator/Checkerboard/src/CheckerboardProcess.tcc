@@ -51,7 +51,7 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments &args )
 	// destination view
 	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip( )->fetchImage( args.time ) );
 	if( !dst.get( ) )
-		throw( ImageNotReadyException( ) );
+		BOOST_THROW_EXCEPTION( ImageNotReadyException( ) );
 	this->_dstView = this->getView( dst.get( ), _plugin.getDstClip( )->getPixelRod( args.time ) );
 
 	boost::function_requires<PixelLocatorConcept<Locator> >( );

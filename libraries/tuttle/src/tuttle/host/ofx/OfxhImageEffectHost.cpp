@@ -61,14 +61,14 @@ OfxhImageEffectHost::~OfxhImageEffectHost()
 /**
  * optionally over-ridden function to register the creation of a new descriptor in the host app
  */
-void OfxhImageEffectHost::initDescriptor( OfxhImageEffectNodeDescriptor* desc ) const {}
+void OfxhImageEffectHost::initDescriptor( OfxhImageEffectNodeDescriptor& desc ) const {}
 
 /**
  * Use this in any dialogue etc... showing progress
  */
 void OfxhImageEffectHost::loadingStatus( const std::string& ) {}
 
-bool OfxhImageEffectHost::pluginSupported( OfxhImageEffectPlugin* plugin, std::string& reason ) const
+bool OfxhImageEffectHost::pluginSupported( const OfxhImageEffectPlugin& plugin, std::string& reason ) const
 {
 	return true;
 }

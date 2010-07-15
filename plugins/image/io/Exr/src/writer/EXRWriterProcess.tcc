@@ -53,7 +53,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						throw( PluginException( "ExrWriter: Gray not supported!" ) );
+						BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
 						break;
 					}
@@ -76,7 +76,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						throw( PluginException( "ExrWriter: Gray not supported!" ) );
+						BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
@@ -99,7 +99,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						throw( PluginException( "ExrWriter: Gray not supported!" ) );
+						BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
@@ -218,7 +218,7 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 			break;
 		}
 		default:
-			throw( PluginException( "ExrWriter: incompatible image type" ) );
+			BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: incompatible image type" ) );
 			break;
 	}
 	file.setFrameBuffer( frameBuffer );

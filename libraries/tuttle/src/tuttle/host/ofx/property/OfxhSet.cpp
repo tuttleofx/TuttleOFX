@@ -68,7 +68,7 @@ OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( Ofxh
 
 	if( i == _props.end() )
 	{
-		throw OfxhException( kOfxStatErrValue, "fetchLocalProperty: " + name + ". Property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue, "fetchLocalProperty: " + name + ". Property not found." ) ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
 	}
 	return *( i->second );
 }
@@ -82,7 +82,7 @@ const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const thro
 		{
 			return _chainedSet->fetchProperty( name );
 		}
-		throw OfxhException( kOfxStatErrValue, "fetchProperty: " + name + " property not found." ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue, "fetchProperty: " + name + " property not found." ) ); //+ " on type:" + getStringProperty(kOfxPropType) + " name:" + getStringProperty(kOfxPropName) );// " NULL, (followChain: " << followChain << ").";
 	}
 	return *( i->second );
 }
@@ -94,7 +94,7 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 {
 	if( _props.find( spec.name ) != _props.end() )
 	{
-		throw OfxhException( kOfxStatErrExists, std::string( "Tried to add a duplicate property to a Property::Set (" ) + spec.name + ")" );
+		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, std::string( "Tried to add a duplicate property to a Property::Set (" ) + spec.name + ")" ) );
 	}
 	std::string key( spec.name ); // for constness
 	switch( spec.type )
@@ -112,7 +112,7 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 			_props.insert( key, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
 			break;
 		case eNone:
-			throw OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString(spec.type) + ")" );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString(spec.type) + ")" ) );
 	}
 }
 
@@ -216,7 +216,7 @@ bool OfxhSet::operator==( const This& other ) const
 void OfxhSet::copyValues( const This& other )
 {
 	if( _props.size() != other._props.size() )
-		throw core::exception::LogicError( "You try to copy properties values, but the two lists are not identical." );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy properties values, but the two lists are not identical." ) );
 
 	PropertyMap::const_iterator oit = other._props.begin(), oitEnd = other._props.end();
 	for( PropertyMap::iterator it = _props.begin(), itEnd = _props.end();
@@ -226,7 +226,7 @@ void OfxhSet::copyValues( const This& other )
 		OfxhProperty& p = *(it->second);
 		const OfxhProperty& op = *(oit->second);
 		if( p.getName() != op.getName() )
-			throw core::exception::LogicError( "You try to copy properties values, but it is not the same property in the two lists." );
+			BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy properties values, but it is not the same property in the two lists." ) );
 		p.copyValues(op);
 	}
 }

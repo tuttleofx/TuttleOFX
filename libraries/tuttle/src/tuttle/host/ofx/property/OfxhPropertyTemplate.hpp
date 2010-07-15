@@ -157,14 +157,14 @@ public:
 	void copyValues( const OfxhProperty& other )
 	{
 		if( getType() != other.getType() )
-			throw core::exception::LogicError( "You try to copy a property value, but it is not the same property type." );
+			BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy a property value, but it is not the same property type." ) );
 		copyValues( dynamic_cast<const This&>( other ) );
 	}
 	
 	void copyValues( const This& other )
 	{
 		if( OfxhProperty::operator!=( other ) )
-			throw core::exception::LogicError( "You try to copy a property value, but it is not the same property." );
+			BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy a property value, but it is not the same property." ) );
 		_value = other._value;
 		_modifiedBy = other._modifiedBy;
 		//_defaultValue = other._defaultValue;

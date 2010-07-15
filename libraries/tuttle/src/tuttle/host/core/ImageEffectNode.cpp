@@ -28,7 +28,7 @@ namespace host {
 namespace core {
 
 // my host support code
-ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin*         plugin,
+ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
                                   tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
                                   const std::string&                                             context )
 	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( plugin, desc, context, false )
@@ -200,19 +200,19 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 	}
 	catch( exception::LogicError& e ) // map intern exception to ofx::OfxhException
 	{
-		throw( ofx::OfxhException( e.ofxStatus(), e.what() ) );
+		BOOST_THROW_EXCEPTION( ofx::OfxhException( e.ofxStatus(), e.what() ) );
 	}
-	throw( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
+	BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
 }
 
 void ImageEffectNode::editBegin( const std::string& name ) OFX_EXCEPTION_SPEC
 {
-	//throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
+	//BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
 void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 {
-	//throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
+	//BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
 /// Start doing progress.
@@ -273,7 +273,7 @@ void ImageEffectNode::checkClipsConnections() const
 		const ClipImage& clip = dynamic_cast<const ClipImage&>( *(it->second) );
 		if( !clip.isOutput() && !clip.getConnected() && !clip.isOptional() ) // a non optionl input clip is unconnected
 		{
-			throw( exception::LogicError( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
+			BOOST_THROW_EXCEPTION( exception::LogicError( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
 		}
 	}
 }
@@ -300,7 +300,7 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 	}
 	if( inputClipsFound && ! this->isSupportedPixelDepth( biggestBitDepth ) )
 	{
-		throw( exception::LogicError("Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError("Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
 	}
 	if( supportsMultipleClipDepths() )
 	{
@@ -315,7 +315,7 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 				const std::string& pixelDepth = linkClip.getPixelDepth();
 				if( !this->isSupportedPixelDepth( pixelDepth ) )
 				{
-					throw( exception::LogicError("Pixel depth " + pixelDepth + " used by input not supported on node : " + getName()) );
+					BOOST_THROW_EXCEPTION( exception::LogicError("Pixel depth " + pixelDepth + " used by input not supported on node : " + getName()) );
 				}
 				clip.setPixelDepthIfNotModifiedByPlugin( pixelDepth );
 			}
@@ -333,7 +333,7 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 				const ClipImage& linkClip = clip.getConnectedClip();
 				if( ! linkClip.getNode().isSupportedPixelDepth( biggestBitDepth ) )
 				{
-					throw( exception::LogicError("Biggest pixel depth " + biggestBitDepth + " not supported on node : " + getName()) );
+					BOOST_THROW_EXCEPTION( exception::LogicError("Biggest pixel depth " + biggestBitDepth + " not supported on node : " + getName()) );
 				}
 				clip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
 			}

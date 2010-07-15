@@ -13,7 +13,7 @@ void sam_unexpected(void)
 {
 	std::cerr << "Sorry, Sam has encountered an unexpected exception." << std::endl;
 	std::cerr << "Please report this bug." << std::endl;
-	throw std::runtime_error( "Sorry, Sam has encountered an unexpected exception.\nPlease report this bug." );
+	BOOST_THROW_EXCEPTION( std::runtime_error( "Sorry, Sam has encountered an unexpected exception.\nPlease report this bug." ) );
 }
 
 

@@ -44,12 +44,12 @@ void ParamDouble::set( const OfxTime time, const double &v, const ofx::attribute
 
 void ParamDouble::derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC
 {
-	throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
+	BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
 void ParamDouble::integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC
 {
-	throw ofx::OfxhException( kOfxStatErrMissingHostFeature );
+	BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
 

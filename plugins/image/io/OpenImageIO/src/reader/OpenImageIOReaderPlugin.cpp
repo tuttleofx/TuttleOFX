@@ -138,7 +138,7 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
 	if( !in )
-		throw OFX::Exception::Suite( kOfxStatErrValue );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
 	ImageSpec spec;
 	in->open( filename, spec );
 
@@ -167,10 +167,10 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	// Check if exist
 	if( ! bfs::exists( filename ) )
-		throw OFX::Exception::Suite( kOfxStatErrValue );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
 	if( !in )
-		throw OFX::Exception::Suite( kOfxStatErrValue );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
 	ImageSpec spec;
 	in->open( filename, spec );
 	if ( _paramExplicitConv->getValue() )
@@ -230,7 +230,7 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 			case TypeDesc::UNKNOWN:
 			case TypeDesc::NONE:
 			default:
-				throw OFX::Exception::Suite( kOfxStatErrImageFormat );
+				BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
 		}
 		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 	}

@@ -85,10 +85,10 @@ private:
 	OfxhImageEffectPlugin();
 
 public:
-	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary* pb, int pi, OfxPlugin* pl );
+	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, OfxhPluginBinary& pb, int pi, OfxPlugin& pl );
 
 	OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
-	                       OfxhPluginBinary*           pb,
+	                       OfxhPluginBinary&           pb,
 	                       int                         pi,
 	                       const std::string&          api,
 	                       int                         apiVersion,

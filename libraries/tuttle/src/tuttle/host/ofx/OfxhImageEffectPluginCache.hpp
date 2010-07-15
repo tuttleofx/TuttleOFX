@@ -54,7 +54,7 @@ public:
 	const OfxhImageEffectPlugin* getPluginByLabel( const std::string& label, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>(*this).getPluginByLabel( label, vermaj, vermin ); }
 
 #ifndef SWIG
-	OfxhImageEffectHost* getHost() { return _host; }
+	OfxhImageEffectHost& getHost() { return *_host; }
 
 	const std::vector<OfxhImageEffectPlugin*>& getPlugins() const;
 
@@ -63,17 +63,17 @@ public:
 	const std::map<OfxhMajorPlugin, OfxhImageEffectPlugin*>& getPluginsByIDMajor() const { return _pluginsByIDMajor; }
 
 	/// handle the case where the info needs filling in from the file.  runs the "describe" action on the plugin.
-	void loadFromPlugin( OfxhPlugin* p ) const;
+	void loadFromPlugin( OfxhPlugin& p );
 
-	void confirmPlugin( OfxhPlugin* p );
+	void confirmPlugin( OfxhPlugin& p );
 
-	bool pluginSupported( OfxhPlugin* p, std::string& reason ) const;
+	bool pluginSupported( const OfxhPlugin& p, std::string& reason ) const;
 
-	OfxhPlugin* newPlugin( OfxhPluginBinary* pb,
+	OfxhPlugin* newPlugin( OfxhPluginBinary& pb,
 	                       int               pi,
-	                       OfxPlugin*        pl );
+	                       OfxPlugin&        pl );
 
-	OfxhPlugin* newPlugin( OfxhPluginBinary*  pb,
+	OfxhPlugin* newPlugin( OfxhPluginBinary&  pb,
 	                       int                pi,
 	                       const std::string& api,
 	                       int                apiVersion,

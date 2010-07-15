@@ -97,7 +97,7 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 	// Make sure bit depths are same
 	if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )
 	{
-		throw( tuttle::plugin::BitDepthMismatchException() );
+		BOOST_THROW_EXCEPTION( tuttle::plugin::BitDepthMismatchException() );
 	}
 
 	// Build destination view

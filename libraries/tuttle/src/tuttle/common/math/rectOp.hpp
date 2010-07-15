@@ -27,7 +27,7 @@ template<typename Point2>
 inline OfxRectD pointsBoundingBox( const std::vector<Point2>& points )
 {
     // if( !points.size() )
-    //  throw...
+    //  BOOST_THROW_EXCEPTION...
     const Point2 p( points[0] );
     OfxRectD bounds = { p.x, p.y, p.x, p.y};
     for( typename std::vector<Point2>::const_iterator it = points.begin(), itEnd = points.end();
@@ -51,7 +51,7 @@ template<class Point2>
 Point2 pointsMinXY( const std::vector<Point2>& points )
 {
     // if( !points.size() )
-    //  throw...
+    //  BOOST_THROW_EXCEPTION...
 	Point2 p = points[0];
 	for( typename std::vector<Point2>::const_iterator it = points.begin()+1, itEnd = points.end();
          it != itEnd;
@@ -69,7 +69,7 @@ template<class Point2>
 Point2 pointsMaxXY( const std::vector<Point2>& points )
 {
     // if( !points.size() )
-    //  throw...
+    //  BOOST_THROW_EXCEPTION...
 	Point2 p = points[0];
 	for( typename std::vector<Point2>::const_iterator it = points.begin()+1, itEnd = points.end();
          it != itEnd;

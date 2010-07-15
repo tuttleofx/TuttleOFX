@@ -33,7 +33,7 @@ PngWriterProcessParams PngWriterPlugin::getParams(const OfxTime time)
 			params._bitDepth = 16;
 			break;
 		default:
-			throw( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
 			break;
 	}
 	return params;

@@ -199,12 +199,12 @@ void difference( const RGB_VIEW& src_1
 {
    if( src_1.dimensions() != src_2.dimensions() )
    {
-      throw std::runtime_error( "Source image have different dimensions." );
+      BOOST_THROW_EXCEPTION( std::runtime_error( "Source image have different dimensions." ) );
    }
 
    if( src_1.dimensions() != dst.dimensions() )
    {
-      throw std::runtime_error( "Destination image must have equal dimensions as the source images." );
+      BOOST_THROW_EXCEPTION( std::runtime_error( "Destination image must have equal dimensions as the source images." ) );
    }
 
    for( int y = 0; y < src_1.dimensions().y; ++y )

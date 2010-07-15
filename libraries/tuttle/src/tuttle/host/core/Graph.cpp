@@ -5,6 +5,8 @@
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/graph/GraphExporter.hpp>
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 #include <sstream>
 
@@ -24,7 +26,7 @@ Graph::Node& Graph::createNode( const std::string& id )
 	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 
 	if( !plug )
-		throw exception::LogicError( "Plugin not found. plug (" + id + ")" );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin not found. plug (" + id + ")" ) );
 
 	plug->loadAndDescribeActions();
 
@@ -51,14 +53,14 @@ Graph::Node& Graph::createNode( const std::string& id )
 	}
 	else
 	{
-		throw exception::LogicError( "Plugin contexts not supported by the host. (" + id + ")" );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin contexts not supported by the host. (" + id + ")" ) );
 	}
 
 	if( !plugInst )
-		throw exception::LogicError( "Plugin not found. plugInst (" + id + ")" );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin not found. plugInst (" + id + ")" ) );
 	ImageEffectNode* node = dynamic_cast<ImageEffectNode*>( plugInst );
 	if( !node )
-		throw exception::LogicError( "Plugin not found (" + id + ")." );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin not found (" + id + ")." ) );
 
 	std::stringstream uniqueName;
 	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
@@ -101,11 +103,11 @@ void Graph::connect( const Node& out, const Attribute& inAttr ) //throw( excepti
 {
 	if (_nodesDescriptor.find(inAttr.getNode().getName()) == _nodesDescriptor.end())
 	{
-		throw exception::LogicError( "Node descriptor " + inAttr.getName() + " not found when connecting !" );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Node descriptor " + inAttr.getName() + " not found when connecting !" ) );
 	}
 	if (_nodesDescriptor.find(out.getName()) == _nodesDescriptor.end())
 	{
-		throw exception::LogicError( "Node descriptor " + out.getName() + " not found when connecting !" );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Node descriptor " + out.getName() + " not found when connecting !" ) );
 	}
 
 	graph::Edge e( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
@@ -121,6 +123,32 @@ void Graph::compute( const std::list<std::string>& nodes, const int tBegin, cons
 
 	ProcessGraph process( *this );
 	process.process( nodes, tBegin, tEnd );
+}
+
+std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )
+{
+	std::list<Node*> selectedNodes;
+	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
+		 it != itEnd;
+		 ++it )
+	{
+		if( it->second->getContext() == context )
+			selectedNodes.push_back( it->second );
+	}
+	return selectedNodes;
+}
+
+std::list<Graph::Node*> Graph::getNodesByPlugin( const std::string& pluginId )
+{
+	std::list<Node*> selectedNodes;
+	for( NodeMap::iterator it = getNodes().begin(), itEnd = getNodes().end();
+		 it != itEnd;
+		 ++it )
+	{
+		if( boost::iequals( it->second->getPlugin().getIdentifier(), pluginId) )
+			selectedNodes.push_back( it->second );
+	}
+	return selectedNodes;
 }
 
 std::ostream& operator<<( std::ostream& os, const Graph& g )

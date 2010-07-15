@@ -24,7 +24,7 @@ protected:
 	OfxTime _currentTime;
 
 public:
-	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin*         plugin,
+	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
 	                 ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
 	                 const std::string&                               context );
 
@@ -72,7 +72,7 @@ public:
 		}
 		else // if( inClips.empty() )
 		{
-			throw( exception::LogicError( kOfxStatFailed, "Connection failed : no clip." ) );
+			BOOST_THROW_EXCEPTION( exception::LogicError( kOfxStatFailed, "Connection failed : no clip." ) );
 		}
 		return dynamic_cast<ProcessAttribute&>( *inAttr );
 	}

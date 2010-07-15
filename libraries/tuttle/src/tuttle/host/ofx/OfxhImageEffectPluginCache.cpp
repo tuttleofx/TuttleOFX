@@ -30,26 +30,26 @@ OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::str
 
 	for( std::vector<OfxhImageEffectPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
 	{
-		OfxhImageEffectPlugin* p = *i;
+		OfxhImageEffectPlugin& p = **i;
 
-		if( p->getIdentifier() != id )
+		if( p.getIdentifier() != id )
 		{
 			continue;
 		}
 
-		if( vermaj != -1 && p->getVersionMajor() != vermaj )
+		if( vermaj != -1 && p.getVersionMajor() != vermaj )
 		{
 			continue;
 		}
 
-		if( vermin != -1 && p->getVersionMinor() != vermin )
+		if( vermin != -1 && p.getVersionMinor() != vermin )
 		{
 			continue;
 		}
 
-		if( !sofar || p->trumps( sofar ) )
+		if( !sofar || p.trumps( *sofar ) )
 		{
-			sofar = p;
+			sofar = &p;
 		}
 	}
 	return sofar;
@@ -66,26 +66,26 @@ OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginByLabel( const std::
 
 	for( std::vector<OfxhImageEffectPlugin*>::iterator i = _plugins.begin(); i != _plugins.end(); ++i )
 	{
-		OfxhImageEffectPlugin* p = *i;
+		OfxhImageEffectPlugin& p = **i;
 
-		if( p->getDescriptor().getProperties().getStringProperty( kOfxPropLabel ) != label )
+		if( p.getDescriptor().getProperties().getStringProperty( kOfxPropLabel ) != label )
 		{
 			continue;
 		}
 
-		if( vermaj != -1 && p->getVersionMajor() != vermaj )
+		if( vermaj != -1 && p.getVersionMajor() != vermaj )
 		{
 			continue;
 		}
 
-		if( vermin != -1 && p->getVersionMinor() != vermin )
+		if( vermin != -1 && p.getVersionMinor() != vermin )
 		{
 			continue;
 		}
 
-		if( !sofar || p->trumps( sofar ) )
+		if( !sofar || p.trumps( *sofar ) )
 		{
-			sofar = p;
+			sofar = &p;
 		}
 	}
 
@@ -106,34 +106,33 @@ const std::map<std::string, OfxhImageEffectPlugin*>& OfxhImageEffectPluginCache:
  * handle the case where the info needs filling in from the file.
  * Runs the "describe" action on the plugin.
  */
-void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
+void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 {
 	std::string msg = "loading ";
 
-	msg += op->getRawIdentifier();
+	msg += op.getRawIdentifier();
 
 	_host->loadingStatus( msg );
 
-	OfxhImageEffectPlugin* p = dynamic_cast<OfxhImageEffectPlugin*>( op );
-	assert( p );
+	OfxhImageEffectPlugin& p = dynamic_cast<OfxhImageEffectPlugin&>( op );
 
-	OfxhPluginHandle plug( p, _host );
+	OfxhPluginHandle plug( p, getHost() );
 
 	int rval = plug->mainEntry( kOfxActionLoad, 0, 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		throw core::exception::LogicError( "Load failed on plugin " + op->getIdentifier() );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Load failed on plugin " + op.getIdentifier() ) );
 	}
 
-	rval = plug->mainEntry( kOfxActionDescribe, p->getDescriptor().getHandle(), 0, 0 );
+	rval = plug->mainEntry( kOfxActionDescribe, p.getDescriptor().getHandle(), 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		throw core::exception::LogicError( "Describe failed on plugin " + op->getIdentifier() );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Describe failed on plugin " + op.getIdentifier() ) );
 	}
 
-	const imageEffect::OfxhImageEffectNodeDescriptor& e = p->getDescriptor();
+	const imageEffect::OfxhImageEffectNodeDescriptor& e = p.getDescriptor();
 	const property::OfxhSet& eProps                     = e.getProperties();
 
 	int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
@@ -141,71 +140,71 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin* op ) const
 	for( int j = 0; j < size; ++j )
 	{
 		std::string context = eProps.getStringProperty( kOfxImageEffectPropSupportedContexts, j );
-		p->addContext( context );
+		p.addContext( context );
 	}
 
 	rval = plug->mainEntry( kOfxActionUnload, 0, 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		throw core::exception::LogicError( "Unload failed on plugin " + op->getIdentifier() + " at initialization." );
+		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Unload failed on plugin " + op.getIdentifier() + " at initialization." ) );
 	}
 }
 
-void OfxhImageEffectPluginCache::confirmPlugin( OfxhPlugin* p )
+void OfxhImageEffectPluginCache::confirmPlugin( OfxhPlugin& p )
 {
-	OfxhImageEffectPlugin* plugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
+	OfxhImageEffectPlugin& plugin = dynamic_cast<OfxhImageEffectPlugin&>( p );
 
-	_plugins.push_back( plugin );
+	_plugins.push_back( &plugin );
 
-	if( _pluginsByID.find( plugin->getIdentifier() ) != _pluginsByID.end() )
+	if( _pluginsByID.find( plugin.getIdentifier() ) != _pluginsByID.end() )
 	{
-		OfxhImageEffectPlugin* otherPlugin = _pluginsByID[plugin->getIdentifier()];
-		if( plugin->trumps( otherPlugin ) )
+		OfxhImageEffectPlugin& otherPlugin = *_pluginsByID[plugin.getIdentifier()];
+		if( plugin.trumps( otherPlugin ) )
 		{
-			_pluginsByID[plugin->getIdentifier()] = plugin;
+			_pluginsByID[plugin.getIdentifier()] = &plugin;
 		}
 	}
 	else
 	{
-		_pluginsByID[plugin->getIdentifier()] = plugin;
+		_pluginsByID[plugin.getIdentifier()] = &plugin;
 	}
 
 	OfxhMajorPlugin maj( plugin );
 
 	if( _pluginsByIDMajor.find( maj ) != _pluginsByIDMajor.end() )
 	{
-		OfxhImageEffectPlugin* otherPlugin = _pluginsByIDMajor[maj];
-		if( plugin->getVersionMajor() != otherPlugin->getVersionMajor() || plugin->trumps( otherPlugin ) )
+		OfxhImageEffectPlugin& otherPlugin = *_pluginsByIDMajor[maj];
+		if( plugin.getVersionMajor() != otherPlugin.getVersionMajor() || plugin.trumps( otherPlugin ) )
 		{
-			_pluginsByIDMajor[maj] = plugin;
+			_pluginsByIDMajor[maj] = &plugin;
 		}
 	}
 	else
 	{
-		_pluginsByIDMajor[maj] = plugin;
+		_pluginsByIDMajor[maj] = &plugin;
 	}
 }
 
 /// whether we support this plugin.
-bool OfxhImageEffectPluginCache::pluginSupported( tuttle::host::ofx::OfxhPlugin* p, std::string& reason ) const
+bool OfxhImageEffectPluginCache::pluginSupported( const tuttle::host::ofx::OfxhPlugin& p, std::string& reason ) const
 {
-	OfxhImageEffectPlugin* imageEffectPlugin = dynamic_cast<OfxhImageEffectPlugin*>( p );
+	const OfxhImageEffectPlugin* imageEffectPlugin = dynamic_cast<const OfxhImageEffectPlugin*>( &p );
 	if( ! imageEffectPlugin )
 		return false;
-	return core::Core::instance().getHost().pluginSupported( imageEffectPlugin, reason );
+	return core::Core::instance().getHost().pluginSupported( *imageEffectPlugin, reason );
 }
 
-OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary* pb,
+OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary& pb,
                                                    int               pi,
-                                                   OfxPlugin*        pl )
+                                                   OfxPlugin&        pl )
 {
 	OfxhImageEffectPlugin* plugin = new OfxhImageEffectPlugin( *this, pb, pi, pl );
 
 	return plugin;
 }
 
-OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary*  pb,
+OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary&  pb,
                                                    int                pi,
                                                    const std::string& api,
                                                    int                apiVersion,
@@ -231,7 +230,7 @@ std::ostream& operator<<( std::ostream& os, const OfxhImageEffectPluginCache& v 
 	for( std::map<std::string, OfxhImageEffectPlugin*>::const_iterator it = v._pluginsByID.begin(); it != v._pluginsByID.end(); ++it )
 	{
 		os << "Plug-in:" << it->first << std::endl;
-		os << "  " << "Filepath: " << it->second->getBinary()->getFilePath();
+		os << "  " << "Filepath: " << it->second->getBinary().getFilePath();
 		os << "(" << it->second->getIndex() << ")" << std::endl;
 
 		os << "Contexts:" << std::endl;
