@@ -87,14 +87,24 @@ MemoryPool::~MemoryPool()
 
 void MemoryPool::referenced( PoolData* pData )
 {
-	_dataUnused.remove( pData );
-	_dataUsed.push_front( pData );
+//	DataList::iterator it = std::find( _dataUnused.begin(), _dataUnused.end(), pData );
+	DataList::iterator it = _dataUnused.find( pData );
+	if( it != _dataUnused.end() )
+	{
+		_dataUnused.erase( it );
+	}
+	else // a really new data
+	{
+		_allDatas.push_back( pData );
+		_dataMap[pData->data()] = pData;
+	}
+	_dataUsed.insert( pData );
 }
 
 void MemoryPool::released( PoolData* pData )
 {
-	_dataUsed.remove( pData );
-	_dataUnused.push_front( pData );
+	_dataUsed.erase( pData );
+	_dataUnused.insert( pData );
 }
 
 namespace  {
@@ -125,10 +135,10 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 		return _pBestMatch;
 	}
 
-	private:
-		const size_t _size;
-		size_t _bestMatchDiff;
-		PoolData* _pBestMatch;
+private:
+	const size_t _size;
+	size_t _bestMatchDiff;
+	PoolData* _pBestMatch;
 };
 
 }  // namespace
@@ -154,12 +164,12 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const size_t size ) throw(
 
 namespace  {
 
-static size_t accumulateReservedSize( const size_t& sum, const IPoolData* pData )
+size_t accumulateReservedSize( const size_t& sum, const IPoolData* pData )
 {
 	return sum + pData->reservedSize();
 }
 
-static size_t accumulateWastedSize( const size_t& sum, const IPoolData* pData )
+size_t accumulateWastedSize( const size_t& sum, const IPoolData* pData )
 {
 	return sum + ( pData->reservedSize() - pData->size() );
 }
