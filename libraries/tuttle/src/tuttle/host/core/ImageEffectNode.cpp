@@ -89,9 +89,9 @@ int ImageEffectNode::abort()
 	return 0;
 }
 
-OfxhMemory* ImageEffectNode::newMemoryInstance( size_t nBytes )
+ofx::OfxhMemory* ImageEffectNode::newMemoryInstance( size_t nBytes )
 {
-	OfxhMemory* instance = new OfxhMemory();
+	ofx::OfxhMemory* instance = new ofx::OfxhMemory();
 	instance->alloc( nBytes );
 	return instance;
 }

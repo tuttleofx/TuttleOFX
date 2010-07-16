@@ -195,7 +195,7 @@ public:
 	/**
 	 * Allocating memory using the memoryPool
 	 */
-	OfxhMemory* OfxhImageEffectNode::newMemoryInstance( size_t nBytes );
+	ofx::OfxhMemory* newMemoryInstance( size_t nBytes );
 
 
 	/// make a clip
