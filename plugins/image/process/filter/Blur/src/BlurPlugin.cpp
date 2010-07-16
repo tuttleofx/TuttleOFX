@@ -22,10 +22,10 @@ ImageEffect( handle )
 	_paramBorder = fetchChoiceParam( kParamBorder );
 }
 
-BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams() const
+BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	BlurProcessParams<Scalar> params;
-	params._size = ofxToGil( _paramSize->getValue() );
+	params._size = ofxToGil( _paramSize->getValue() ) * ofxToGil(renderScale  );
 	params._border = static_cast<EBorder>( _paramBorder->getValue() );
 
 //	COUT_X(80, "X");
