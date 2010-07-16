@@ -187,6 +187,17 @@ public:
 	/// and  might be mapped (if the host allows such a thing)
 	const std::string& getDefaultOutputFielding() const;
 
+	/**
+	 * @return 1 to abort processing
+	 */
+	int abort();
+
+	/**
+	 * Allocating memory using the memoryPool
+	 */
+	OfxhMemory* OfxhImageEffectNode::newMemoryInstance( size_t nBytes );
+
+
 	/// make a clip
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 

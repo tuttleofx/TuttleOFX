@@ -81,6 +81,21 @@ const std::string& ImageEffectNode::getDefaultOutputFielding() const
 
 	return v;
 }
+/**
+ * @return 1 to abort processing
+ */
+int ImageEffectNode::abort()
+{
+	return 0;
+}
+
+OfxhMemory* ImageEffectNode::newMemoryInstance( size_t nBytes )
+{
+	OfxhMemory* instance = new OfxhMemory();
+	instance->alloc( nBytes );
+	return instance;
+}
+
 
 // vmessage
 void ImageEffectNode::vmessage( const char* type,

@@ -166,10 +166,10 @@ public:
 	bool isFrameVarying() const { return _frameVarying; }
 
 	/// override this to make processing abort, return 1 to abort processing
-	virtual int abort();
+	virtual int abort() = 0;
 
-	/// override this to use your own memory instance - must inherrit from memory::instance
-	virtual OfxhMemory* newMemoryInstance( size_t nBytes );
+	/// override this to use your own memory instance - must inherrit from OfxhMemory
+	virtual OfxhMemory* newMemoryInstance( size_t nBytes ) = 0;
 
 	// return an memory::instance calls makeMemoryInstance that can be overriden
 	OfxhMemory* imageMemoryAlloc( size_t nBytes );
