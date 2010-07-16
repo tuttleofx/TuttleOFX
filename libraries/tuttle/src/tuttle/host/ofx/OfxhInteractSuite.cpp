@@ -6,7 +6,9 @@ namespace host {
 namespace ofx {
 namespace interact {
 
-static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
+namespace {
+
+OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 {
 	try
 	{
@@ -28,7 +30,7 @@ static OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 	}
 }
 
-static OfxStatus interactRedraw( OfxInteractHandle handle )
+OfxStatus interactRedraw( OfxInteractHandle handle )
 {
 	try
 	{
@@ -50,7 +52,7 @@ static OfxStatus interactRedraw( OfxInteractHandle handle )
 	}
 }
 
-static OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle* property )
+OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle* property )
 {
 	try
 	{
@@ -73,11 +75,13 @@ static OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySe
 }
 
 /// the interact suite
-static OfxInteractSuiteV1 gSuite = {
+OfxInteractSuiteV1 gSuite = {
 	interactSwapBuffers,
 	interactRedraw,
 	interactGetPropertySet
 };
+
+}
 
 /// function to get the interact suite
 void* getInteractSuite( const int version )

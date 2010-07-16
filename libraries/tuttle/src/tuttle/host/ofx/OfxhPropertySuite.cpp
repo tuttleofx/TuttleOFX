@@ -8,9 +8,11 @@ namespace host {
 namespace ofx {
 namespace property {
 
+namespace {
+
 /// static functions for the suite
 template<class T>
-static OfxStatus propSet( OfxPropertySetHandle properties,
+OfxStatus propSet( OfxPropertySetHandle properties,
                           const char*          property,
                           int                  index,
                           typename T::APIType  value )
@@ -56,7 +58,7 @@ static OfxStatus propSet( OfxPropertySetHandle properties,
 /// static functions for the suite
 
 template<class T>
-static OfxStatus propSetN( OfxPropertySetHandle properties,
+OfxStatus propSetN( OfxPropertySetHandle properties,
                            const char*          property,
                            int                  count,
                            typename T::APIType* values )
@@ -96,7 +98,7 @@ static OfxStatus propSetN( OfxPropertySetHandle properties,
 /// static functions for the suite
 
 template<class T>
-static OfxStatus propGet( OfxPropertySetHandle          properties,
+OfxStatus propGet( OfxPropertySetHandle          properties,
                           const char*                   property,
                           int                           index,
                           typename T::APITypeConstless* value )
@@ -157,7 +159,7 @@ inline const char* * castToConst( char** s )
 /// static functions for the suite
 
 template<class T>
-static OfxStatus propGetN( OfxPropertySetHandle          properties,
+OfxStatus propGetN( OfxPropertySetHandle          properties,
                            const char*                   property,
                            int                           count,
                            typename T::APITypeConstless* values )
@@ -180,9 +182,10 @@ static OfxStatus propGetN( OfxPropertySetHandle          properties,
 	}
 }
 
-/// static functions for the suite
-
-static OfxStatus propReset( OfxPropertySetHandle properties, const char* property )
+/**
+ * static functions for the suite
+ */
+OfxStatus propReset( OfxPropertySetHandle properties, const char* property )
 {
 	try
 	{
@@ -212,9 +215,10 @@ static OfxStatus propReset( OfxPropertySetHandle properties, const char* propert
 	}
 }
 
-/// static functions for the suite
-
-static OfxStatus propGetDimension( OfxPropertySetHandle properties, const char* property, int* count )
+/**
+ * static functions for the suite
+ */
+OfxStatus propGetDimension( OfxPropertySetHandle properties, const char* property, int* count )
 {
 	try
 	{
@@ -232,7 +236,9 @@ static OfxStatus propGetDimension( OfxPropertySetHandle properties, const char* 
 	}
 }
 
-/// the actual suite that is passed across the API to manage properties
+/**
+ * the actual suite that is passed across the API to manage properties
+ */
 struct OfxPropertySuiteV1 gSuite =
 {
 	propSet<OfxhPointerValue>,
@@ -254,6 +260,8 @@ struct OfxPropertySuiteV1 gSuite =
 	propReset,
 	propGetDimension
 };
+
+}
 
 /// return the OFX function suite that manages properties
 void* getPropertySuite( const int version )

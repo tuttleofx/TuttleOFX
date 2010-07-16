@@ -7,7 +7,9 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-static OfxStatus memoryAlloc( void* handle, size_t bytes, void** data )
+namespace {
+
+OfxStatus memoryAlloc( void* handle, size_t bytes, void** data )
 {
 	*data = new char[ bytes ];
 	if( *data )
@@ -20,17 +22,19 @@ static OfxStatus memoryAlloc( void* handle, size_t bytes, void** data )
 	}
 }
 
-static OfxStatus memoryFree( void* data )
+OfxStatus memoryFree( void* data )
 {
 	delete[] static_cast<char*>( data );
 	return kOfxStatOK;
 }
 
-static struct OfxMemorySuiteV1 gMallocSuite =
+struct OfxMemorySuiteV1 gMallocSuite =
 {
 	memoryAlloc,
 	memoryFree
 };
+
+}
 
 void* getMemorySuite( const int version )
 {

@@ -6,7 +6,9 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-static OfxStatus getPropertySet( OfxImageEffectHandle  h1,
+namespace {
+
+OfxStatus getPropertySet( OfxImageEffectHandle  h1,
                                  OfxPropertySetHandle* h2 )
 {
 	OfxhImageEffectNodeBase* effectBase = reinterpret_cast<OfxhImageEffectNodeBase*>( h1 );
@@ -20,7 +22,7 @@ static OfxStatus getPropertySet( OfxImageEffectHandle  h1,
 	return kOfxStatOK;
 }
 
-static OfxStatus getParamSet( OfxImageEffectHandle h1,
+OfxStatus getParamSet( OfxImageEffectHandle h1,
                               OfxParamSetHandle*   h2 )
 {
 	imageEffect::OfxhImageEffectNodeBase* effectBase = reinterpret_cast<imageEffect::OfxhImageEffectNodeBase*>( h1 );
@@ -49,7 +51,7 @@ static OfxStatus getParamSet( OfxImageEffectHandle h1,
 	return kOfxStatErrBadHandle;
 }
 
-static OfxStatus clipDefine( OfxImageEffectHandle  h1,
+OfxStatus clipDefine( OfxImageEffectHandle  h1,
                              const char*           name,
                              OfxPropertySetHandle* h2 )
 {
@@ -72,7 +74,7 @@ static OfxStatus clipDefine( OfxImageEffectHandle  h1,
 	return kOfxStatErrBadHandle;
 }
 
-static OfxStatus clipGetPropertySet( OfxImageClipHandle    clip,
+OfxStatus clipGetPropertySet( OfxImageClipHandle    clip,
                                      OfxPropertySetHandle* propHandle )
 {
 	attribute::OfxhClipImage* clipInstance = reinterpret_cast<attribute::OfxhClipImage*>( clip );
@@ -91,7 +93,7 @@ static OfxStatus clipGetPropertySet( OfxImageClipHandle    clip,
 	return kOfxStatErrBadHandle;
 }
 
-static OfxStatus clipGetImage( OfxImageClipHandle    h1,
+OfxStatus clipGetImage( OfxImageClipHandle    h1,
                                OfxTime               time,
                                OfxRectD*             h2,
                                OfxPropertySetHandle* h3 )
@@ -120,7 +122,7 @@ static OfxStatus clipGetImage( OfxImageClipHandle    h1,
 	return kOfxStatErrBadHandle;
 }
 
-static OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
+OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
 {
 	property::OfxhSet* pset = reinterpret_cast<property::OfxhSet*>( h1 );
 
@@ -141,7 +143,7 @@ static OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
 		return kOfxStatErrBadHandle;
 }
 
-static OfxStatus clipGetHandle( OfxImageEffectHandle  imageEffect,
+OfxStatus clipGetHandle( OfxImageEffectHandle  imageEffect,
                                 const char*           name,
                                 OfxImageClipHandle*   clip,
                                 OfxPropertySetHandle* propertySet )
@@ -167,7 +169,7 @@ static OfxStatus clipGetHandle( OfxImageEffectHandle  imageEffect,
 	return kOfxStatErrBadHandle;
 }
 
-static OfxStatus clipGetRegionOfDefinition( OfxImageClipHandle clip,
+OfxStatus clipGetRegionOfDefinition( OfxImageClipHandle clip,
                                             OfxTime            time,
                                             OfxRectD*          bounds )
 {
@@ -189,7 +191,7 @@ static OfxStatus clipGetRegionOfDefinition( OfxImageClipHandle clip,
 
 // should processing be aborted?
 
-static int abort( OfxImageEffectHandle imageEffect )
+int abort( OfxImageEffectHandle imageEffect )
 {
 	imageEffect::OfxhImageEffectNodeBase* effectBase = reinterpret_cast<imageEffect::OfxhImageEffectNodeBase*>( imageEffect );
 
@@ -206,7 +208,7 @@ static int abort( OfxImageEffectHandle imageEffect )
 		return kOfxStatErrBadHandle;
 }
 
-static OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
+OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
                                    size_t                nBytes,
                                    OfxImageMemoryHandle* memoryHandle )
 {
@@ -234,7 +236,7 @@ static OfxStatus imageMemoryAlloc( OfxImageEffectHandle  instanceHandle,
 	return kOfxStatOK;
 }
 
-static OfxStatus imageMemoryFree( OfxImageMemoryHandle memoryHandle )
+OfxStatus imageMemoryFree( OfxImageMemoryHandle memoryHandle )
 {
 	OfxhMemory* memoryInstance = reinterpret_cast<OfxhMemory*>( memoryHandle );
 
@@ -263,7 +265,7 @@ OfxStatus imageMemoryLock( OfxImageMemoryHandle memoryHandle,
 	return kOfxStatErrBadHandle;
 }
 
-static OfxStatus imageMemoryUnlock( OfxImageMemoryHandle memoryHandle )
+OfxStatus imageMemoryUnlock( OfxImageMemoryHandle memoryHandle )
 {
 	OfxhMemory* memoryInstance = reinterpret_cast<OfxhMemory*>( memoryHandle );
 
@@ -276,7 +278,7 @@ static OfxStatus imageMemoryUnlock( OfxImageMemoryHandle memoryHandle )
 	return kOfxStatErrBadHandle;
 }
 
-static struct OfxImageEffectSuiteV1 gImageEffectSuite =
+struct OfxImageEffectSuiteV1 gImageEffectSuite =
 {
 	getPropertySet,
 	getParamSet,
@@ -292,6 +294,9 @@ static struct OfxImageEffectSuiteV1 gImageEffectSuite =
 	imageMemoryLock,
 	imageMemoryUnlock
 };
+
+
+}
 
 void* getImageEffectSuite( const int version )
 {
