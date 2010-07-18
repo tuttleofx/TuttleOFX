@@ -80,25 +80,25 @@ namespace boost {
 namespace gil  {
 
 // RGBA
-typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*0, 8, true> rgba8_quantum_packed_channel0_t;
-typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*1, 8, true> rgba8_quantum_packed_channel1_t;
-typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*2, 8, true> rgba8_quantum_packed_channel2_t;
-typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*3, 8, true> rgba8_quantum_packed_channel3_t;
+typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*0*8, 8, true> rgba8_quantum_packed_channel0_t;
+typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*1*8, 8, true> rgba8_quantum_packed_channel1_t;
+typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*2*8, 8, true> rgba8_quantum_packed_channel2_t;
+typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*3*8, 8, true> rgba8_quantum_packed_channel3_t;
 typedef mpl::vector4<rgba8_quantum_packed_channel0_t, rgba8_quantum_packed_channel1_t,
                      rgba8_quantum_packed_channel2_t, rgba8_quantum_packed_channel3_t> rgba8_quantum_packed_channels_t;
-typedef packed_pixel<uint64_t, rgba8_quantum_packed_channels_t, rgba_layout_t> rgba8_quantum_packed_pixel_t;
-typedef view_type_from_pixel<rgba8_quantum_packed_pixel_t>::type rgba8_quantum_packed_view_t;
-typedef image<rgba8_quantum_packed_pixel_t, false> rgba8_quantum_packed_image_t;
+typedef packed_pixel<uint64_t, rgba8_quantum_packed_channels_t, bgra_layout_t> bgra8_quantum_packed_pixel_t;
+typedef view_type_from_pixel<bgra8_quantum_packed_pixel_t>::type bgra8_quantum_packed_view_t;
+typedef image<bgra8_quantum_packed_pixel_t, false> bgra8_quantum_packed_image_t;
 
 // RGB
-typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*0, 8, true> rgb8_quantum_packed_channel0_t;
-typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*1, 8, true> rgb8_quantum_packed_channel1_t;
-typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*2, 8, true> rgb8_quantum_packed_channel2_t;
+typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*0*8, 8, true> rgb8_quantum_packed_channel0_t;
+typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*1*8, 8, true> rgb8_quantum_packed_channel1_t;
+typedef const packed_channel_reference<boost::uint64_t, sizeof(Magick::Quantum)*2*8, 8, true> rgb8_quantum_packed_channel2_t;
 typedef mpl::vector3<rgb8_quantum_packed_channel0_t, rgb8_quantum_packed_channel1_t,
                      rgb8_quantum_packed_channel2_t> rgb8_quantum_packed_channels_t;
-typedef packed_pixel<uint64_t, rgb8_quantum_packed_channels_t, rgb_layout_t> rgb8_quantum_packed_pixel_t;
-typedef view_type_from_pixel<rgb8_quantum_packed_pixel_t>::type rgb8_quantum_packed_view_t;
-typedef image<rgb8_quantum_packed_pixel_t, false> rgb8_quantum_packed_image_t;
+typedef packed_pixel<uint64_t, rgb8_quantum_packed_channels_t, bgr_layout_t> bgr8_quantum_packed_pixel_t;
+typedef view_type_from_pixel<bgr8_quantum_packed_pixel_t>::type bgr8_quantum_packed_view_t;
+typedef image<bgr8_quantum_packed_pixel_t, false> bgr8_quantum_packed_image_t;
 
 }
 }
@@ -146,13 +146,36 @@ void ImageMagickReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 
 
 template<class SView, class DView>
-void copy_and_convert_from_buffer( void* buffer, DView& dst )
+void copy_and_convert_from_buffer( Magick::Image& image, DView& dst )
 {
 	COUT_VAR( sizeof(typename SView::value_type) );
+	Magick::PixelPacket* buffer = image.getPixels( 0, 0, dst.width(), dst.height() );
 	SView imgView = interleaved_view( dst.width(), dst.height(),
 									 (typename SView::value_type*)( buffer ),
 									 dst.width() * sizeof(typename SView::value_type) ); //* sizeof(typename channel_type<SView>::type) );
 	boost::gil::copy_and_convert_pixels( imgView, dst );
+	
+////	Magick::ExceptionInfo *exception;
+////	MagickCore::CacheView* image_view = AcquireCacheView(image);
+//	const Magick::PixelPacket* src_pix = image.getPixels( 0, 0, dst.width(), dst.height() );
+//	for( int y = 0;
+//			 y < dst.height();
+//			 ++y )
+//	{
+//		typename DView::x_iterator dst_it = dst.x_at( 0, y );
+////		const Magick::PixelPacket* src_pix = GetCacheViewVirtualPixels(image_view,0,y,image->columns,1 /*,exception*/);
+//		for( int x = 0;
+//			 x < dst.width();
+//			 ++x, ++src_pix, ++dst_it )
+//		{
+//			get_color( (*dst_it), red_t() ) = src_pix->red;
+//			get_color( (*dst_it), green_t() ) = src_pix->green;
+//			get_color( (*dst_it), blue_t() ) = src_pix->blue;
+////			get_color( (*dst_it), alpha_t() ) = src_pix->alpha;
+//		}
+//	}
+////	image_view = DestroyCacheView(image_view);
+
 }
 
 
@@ -189,8 +212,8 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 		
 		COUT_VAR( sizeof(Magick::Quantum) );
 		COUT_VAR( sizeof(Magick::PixelPacket) );
-		
-		Magick::PixelPacket* buffer = image.getPixels( 0, 0, dst.width(), dst.height() );
+
+//		Magick::PixelPacket* buffer = image.getPixels( 0, 0, dst.width(), dst.height() );
 
 //		if( colorType != Magick::RGBColorspace &&
 //		    colorType != Magick::GRAYColorspace &&
@@ -211,18 +234,18 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 					{
 						case 8:
 						{
-							copy_and_convert_from_buffer<rgba8_quantum_packed_view_t, View>( static_cast<void*>(buffer), dst );
+							copy_and_convert_from_buffer<bgra8_quantum_packed_view_t, View>( image, dst );
 							break;
 						}
 						case 16:
 						{
-							copy_and_convert_from_buffer<rgba16_view_t, View>( static_cast<void*>(buffer), dst );
+							copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 							break;
 						}
 						case 32:
 //						{
-//							copy_and_convert_from_buffer<rgba16_view_t, View>( static_cast<void*>(buffer), dst );
-//							break;
+							copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
+							break;
 //						}
 						default:
 						{
@@ -237,18 +260,18 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 					{
 						case 8:
 						{
-							copy_and_convert_from_buffer<rgba8_quantum_packed_view_t, View>( static_cast<void*>(buffer), dst );
+							copy_and_convert_from_buffer<bgra8_quantum_packed_view_t, View>( image, dst );
 							break;
 						}
 						case 16:
 						{
-							copy_and_convert_from_buffer<rgba16_view_t, View>( static_cast<void*>(buffer), dst );
+							copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 							break;
 						}
 						case 32:
 //						{
-//							copy_and_convert_from_buffer<rgba16_view_t, View>( static_cast<void*>(buffer), dst );
-//							break;
+							copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
+							break;
 //						}
 						default:
 						{
@@ -265,17 +288,17 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				{
 					case 8:
 					{
-						copy_and_convert_from_buffer<rgba16_view_t, View>( static_cast<void*>(buffer), dst );
+						copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 						break;
 					}
 					case 16:
 					{
-						copy_and_convert_from_buffer<rgba16_view_t, View>( static_cast<void*>(buffer), dst );
+						copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 						break;
 					}
 					case 32:
 					{
-						copy_and_convert_from_buffer<rgba16_view_t, View>( static_cast<void*>(buffer), dst );
+						copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 						break;
 					}
 					default:
