@@ -7,10 +7,12 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
+namespace {
+
 /**
  * timeline suite function
  */
-static OfxStatus TimelineGetTime( void* effectInstance, double* time )
+OfxStatus TimelineGetTime( void* effectInstance, double* time )
 {
 	try
 	{
@@ -35,7 +37,7 @@ static OfxStatus TimelineGetTime( void* effectInstance, double* time )
 /**
  * timeline suite function
  */
-static OfxStatus TimelineGotoTime( void* effectInstance, double time )
+OfxStatus TimelineGotoTime( void* effectInstance, double time )
 {
 	try
 	{
@@ -60,7 +62,7 @@ static OfxStatus TimelineGotoTime( void* effectInstance, double time )
 /**
  * timeline suite function
  */
-static OfxStatus TimelineGetBounds( void* effectInstance, double* firstTime, double* lastTime )
+OfxStatus TimelineGetBounds( void* effectInstance, double* firstTime, double* lastTime )
 {
 	try
 	{
@@ -91,6 +93,8 @@ struct OfxTimeLineSuiteV1 gTimelineSuite =
 	TimelineGotoTime,
 	TimelineGetBounds
 };
+
+}
 
 void* getTimelineSuite( const int version )
 {

@@ -378,35 +378,30 @@ bool OfxhImageEffectNode::checkClipConnectionStatus() const
 
 /**
  * override this to make processing abort, return 1 to abort processing
- */
+ *
 int OfxhImageEffectNode::abort()
 {
 	return 0;
 }
+*/
 
 /**
  * override this to use your own memory instance - must inherrit from memory::instance
- */
+ *
 OfxhMemory* OfxhImageEffectNode::newMemoryInstance( size_t nBytes )
 {
-	return 0;
+	OfxhMemory* instance = new OfxhMemory();
+	instance->alloc( nBytes );
+	return instance;
 }
+*/
 
 /**
  * @return an memory::instance calls makeMemoryInstance that can be overriden
  */
 OfxhMemory* OfxhImageEffectNode::imageMemoryAlloc( size_t nBytes )
 {
-	OfxhMemory* instance = newMemoryInstance( nBytes );
-
-	if( instance )
-		return instance;
-	else
-	{
-		OfxhMemory* instance = new OfxhMemory();
-		instance->alloc( nBytes );
-		return instance;
-	}
+	return newMemoryInstance( nBytes );
 }
 
 /**

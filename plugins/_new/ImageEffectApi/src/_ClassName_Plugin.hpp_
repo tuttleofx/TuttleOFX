@@ -29,7 +29,7 @@ public:
     void render( const OFX::RenderArguments &args );
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 	
-	%CLASSNAME%ProcessParams<Scalar> getProcessParams() const;
+	%CLASSNAME%ProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 	
 public:
     // do not need to delete these, the ImageEffect is managing them for us

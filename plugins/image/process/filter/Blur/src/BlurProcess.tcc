@@ -1,22 +1,8 @@
 #include "BlurPlugin.hpp"
 #include <tuttle/plugin/image/gil/gaussianKernel.hpp>
-
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/PluginException.hpp>
-
 #include <boost/gil/extension/numeric/convolve.hpp>
-//#include <boost/gil/extension/io/png_dynamic_io.hpp> /// @todo tuttle: to remove
 
-#include <boost/units/pow.hpp>
-#include <boost/lambda/core.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/algorithm.hpp>
-#include <boost/numeric/conversion/cast.hpp>
-
-#include <cmath>
-#include <vector>
-#include <algorithm>
-
+//#include <boost/lambda/lambda.hpp>
 
 
 namespace tuttle {
@@ -34,11 +20,17 @@ template <class View>
 void BlurProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
-	_params = _plugin.getProcessParams();
+	_params = _plugin.getProcessParams( args.renderScale );
 
 //	COUT_X( 20, "_" );
 //	COUT_VAR( _params._size );
 //	COUT_VAR2( _params._gilKernelX.size(), _params._gilKernelY.size() );
+//	std::cout << "x [";
+//	std::for_each(_params._gilKernelX.begin(), _params._gilKernelX.end(), std::cout << boost::lambda::_1 << ',');
+//	std::cout << "]" << std::endl;
+//	std::cout << "y [";
+//	std::for_each(_params._gilKernelY.begin(), _params._gilKernelY.end(), std::cout << boost::lambda::_1 << ',');
+//	std::cout << "]" << std::endl;
 }
 
 /**
@@ -58,7 +50,7 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 							  procWindowSize.x, procWindowSize.y );
 	
 	Point proc_tl( procWindowRoW.x1-this->_srcPixelRod.x1, procWindowRoW.y1-this->_srcPixelRod.y1 );
-	
+
 	convolve_boundary_option option = convolve_option_extend_mirror;
 	switch( _params._border )
 	{
@@ -76,7 +68,12 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			break;
 	}
 
-	correlate_rows_cols<Pixel>( this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, option );
+	if( _params._size.x == 0 )
+		correlate_cols<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, option );
+	else if( _params._size.y == 0 )
+		correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, option );
+	else
+		correlate_rows_cols<Pixel>( this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, option );
 }
 
 }

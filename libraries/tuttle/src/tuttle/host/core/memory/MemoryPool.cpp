@@ -1,4 +1,5 @@
 #include "MemoryPool.hpp"
+#include <tuttle/common/utils/global.hpp>
 #include <boost/throw_exception.hpp>
 #include <algorithm>
 
@@ -83,7 +84,25 @@ MemoryPool::MemoryPool( const size_t maxSize )
 {}
 
 MemoryPool::~MemoryPool()
-{}
+{
+	if( ! _dataUsed.empty() )
+	{
+		COUT_ERROR( "Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
+	}
+	COUT_X( 20, "-" );
+	COUT( "~MemoryPool()" );
+	COUT_VAR( _dataUsed.size() );
+	COUT_VAR( _dataUnused.size() );
+	COUT_VAR( _allDatas.size() );
+	COUT_VAR( _memoryAuthorized );
+	COUT( "" );
+	COUT_VAR( getUsedMemorySize() );
+	COUT_VAR( getAllocatedMemorySize() );
+	COUT_VAR( getMaxMemorySize() );
+	COUT_VAR( getAvailableMemorySize() );
+	COUT_VAR( getWastedMemorySize() );
+	COUT_X( 20, "-" );
+}
 
 void MemoryPool::referenced( PoolData* pData )
 {

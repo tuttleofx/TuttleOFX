@@ -17,6 +17,8 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
+namespace {
+
 struct ThreadSpecificData
 {
 	ThreadSpecificData( unsigned int threadIndex ):_index(0){}
@@ -25,7 +27,7 @@ struct ThreadSpecificData
 
 boost::thread_specific_ptr<ThreadSpecificData> ptr;
 
-static void launchThread( OfxThreadFunctionV1 func,
+void launchThread( OfxThreadFunctionV1 func,
                           unsigned int threadIndex,
 						  unsigned int threadMax,
 						  void*        customArg )
@@ -35,7 +37,7 @@ static void launchThread( OfxThreadFunctionV1 func,
 }
 
 
-static OfxStatus multiThread( OfxThreadFunctionV1 func,
+OfxStatus multiThread( OfxThreadFunctionV1 func,
                               const unsigned int  nThreads,
                               void*               customArg )
 {
@@ -59,7 +61,7 @@ static OfxStatus multiThread( OfxThreadFunctionV1 func,
 	return kOfxStatOK;
 }
 
-static OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
+OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
 {
 	*nCPUs = 1; /// @todo tuttle: needs to have an option to disable multithreading (force only one cpu).
 //	*nCPUs = boost::thread::hardware_concurrency();
@@ -67,7 +69,7 @@ static OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
 	return kOfxStatOK;
 }
 
-static OfxStatus multiThreadIndex( unsigned int* const threadIndex )
+OfxStatus multiThreadIndex( unsigned int* const threadIndex )
 {
 //	*threadIndex = boost::this_thread::get_id(); //	we don't want a global thead id, but the thead index inside a node multithread process.
 	if( ptr.get() != NULL )
@@ -79,7 +81,7 @@ static OfxStatus multiThreadIndex( unsigned int* const threadIndex )
 	return kOfxStatOK;
 }
 
-static int multiThreadIsSpawnedThread( void )
+int multiThreadIsSpawnedThread( void )
 {
 	return ptr.get() != NULL;
 }
@@ -87,13 +89,13 @@ static int multiThreadIsSpawnedThread( void )
 /**
  * @todo tuttle: support lockCount init value.
  */
-static OfxStatus mutexCreate( OfxMutexHandle* mutex, const int lockCount )
+OfxStatus mutexCreate( OfxMutexHandle* mutex, const int lockCount )
 {
 	*mutex = new OfxMutex();
 	return kOfxStatOK;
 }
 
-static OfxStatus mutexDestroy( OfxMutexHandle mutex )
+OfxStatus mutexDestroy( OfxMutexHandle mutex )
 {
 	if( mutex == NULL )
 		return kOfxStatErrBadHandle;
@@ -102,7 +104,7 @@ static OfxStatus mutexDestroy( OfxMutexHandle mutex )
 	return kOfxStatOK;
 }
 
-static OfxStatus mutexLock( OfxMutexHandle mutex )
+OfxStatus mutexLock( OfxMutexHandle mutex )
 {
 	if( mutex == NULL )
 		return kOfxStatErrBadHandle;
@@ -110,7 +112,7 @@ static OfxStatus mutexLock( OfxMutexHandle mutex )
 	return kOfxStatOK;
 }
 
-static OfxStatus mutexUnLock( OfxMutexHandle mutex )
+OfxStatus mutexUnLock( OfxMutexHandle mutex )
 {
 	if( mutex == NULL )
 		return kOfxStatErrBadHandle;
@@ -118,7 +120,7 @@ static OfxStatus mutexUnLock( OfxMutexHandle mutex )
 	return kOfxStatOK;
 }
 
-static OfxStatus mutexTryLock( OfxMutexHandle mutex )
+OfxStatus mutexTryLock( OfxMutexHandle mutex )
 {
 	if( mutex == NULL )
 		return kOfxStatErrBadHandle;
@@ -127,7 +129,7 @@ static OfxStatus mutexTryLock( OfxMutexHandle mutex )
 	return kOfxStatFailed;
 }
 
-static struct OfxMultiThreadSuiteV1 gSingleThreadedSuite =
+struct OfxMultiThreadSuiteV1 gSingleThreadedSuite =
 {
 	multiThread,
 	multiThreadNumCPUs,
@@ -139,6 +141,8 @@ static struct OfxMultiThreadSuiteV1 gSingleThreadedSuite =
 	mutexUnLock,
 	mutexTryLock
 };
+
+}
 
 void* getMultithreadSuite( const int version )
 {

@@ -187,18 +187,27 @@ public:
 	/// and  might be mapped (if the host allows such a thing)
 	const std::string& getDefaultOutputFielding() const;
 
+#ifndef SWIG
+	/**
+	 * @return 1 to abort processing
+	 */
+	int abort();
+
+	/**
+	 * Allocating memory using the memoryPool
+	 */
+	ofx::OfxhMemory* newMemoryInstance( size_t nBytes );
+
+
 	/// make a clip
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
-#ifndef SWIG
 	/// vmessage
 	void vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
 	                    va_list     args ) const OFX_EXCEPTION_SPEC;
-#endif
 	
-#ifndef SWIG
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
 	// project may be a PAL SD project, but only be a letter-box within that. The project size is

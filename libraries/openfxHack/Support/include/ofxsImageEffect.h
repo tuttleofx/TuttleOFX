@@ -607,20 +607,36 @@ public:
 	OfxRangeD getUnmappedFrameRange( void ) const;
 
 	/** @brief get the RoD for this clip in the cannonical coordinate system */
-	OfxRectD getCanonicalRod( OfxTime t ) const;
-	OfxPointD getCanonicalRodSize( OfxTime t ) const
+	OfxRectD getCanonicalRod( const OfxTime t ) const;
+	OfxRectD getCanonicalRod( const OfxTime t, const OfxPointD& renderScale ) const;
+	OfxPointD getCanonicalRodSize( const OfxTime t ) const
 	{
-		OfxRectD r = getCanonicalRod( t );
+		OfxRectD r = getCanonicalRod(t);
 		OfxPointD p = {r.x2-r.x1, r.y2-r.y1};
+		return p;
+	}
+	OfxPointD getCanonicalRodSize( const OfxTime t, const OfxPointD& renderScale ) const
+	{
+		OfxPointD p = getCanonicalRodSize(t);
+		p.x *= renderScale.x;
+		p.y *= renderScale.y;
 		return p;
 	}
 
 	/** @brief get the RoD for this clip in pixel space */
-	OfxRectI getPixelRod( OfxTime t ) const;
-	OfxPointI getPixelRodSize( OfxTime t ) const
+	OfxRectI getPixelRod( const OfxTime t ) const;
+	OfxRectI getPixelRod( const OfxTime t, const OfxPointD& renderScale ) const;
+	OfxPointI getPixelRodSize( const OfxTime t ) const
 	{
-		OfxRectI r = getPixelRod( t );
+		OfxRectI r = getPixelRod(t);
 		OfxPointI p = {r.x2-r.x1, r.y2-r.y1};
+		return p;
+	}
+	OfxPointI getPixelRodSize( const OfxTime t, const OfxPointD& renderScale ) const
+	{
+		OfxPointI p = getPixelRodSize(t);
+		p.x *= renderScale.x;
+		p.y *= renderScale.y;
 		return p;
 	}
 
@@ -848,6 +864,9 @@ struct InstanceChangedArgs
 	double time;       /**< time of the change */
 	OfxPointD renderScale; /**< the renderscale on the instance */
 };
+
+
+static const OfxPointD kNoRenderScale = { 1.0, 1.0 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /** @brief Wraps up an effect instance, plugin implementations need to inherit from this */

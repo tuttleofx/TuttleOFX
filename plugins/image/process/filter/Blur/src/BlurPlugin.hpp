@@ -39,7 +39,7 @@ public:
 	bool isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime );
 //    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 	
-	BlurProcessParams<Scalar> getProcessParams() const;
+	BlurProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 	
 public:
     // do not need to delete these, the ImageEffect is managing them for us

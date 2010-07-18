@@ -9,7 +9,9 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-static OfxStatus paramDefine( OfxParamSetHandle     paramSet,
+namespace {
+
+OfxStatus paramDefine( OfxParamSetHandle     paramSet,
                               const char*           paramType,
                               const char*           name,
                               OfxPropertySetHandle* propertySet )
@@ -38,7 +40,7 @@ static OfxStatus paramDefine( OfxParamSetHandle     paramSet,
 	}
 }
 
-static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
+OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
                                  const char*           name,
                                  OfxParamHandle*       param,
                                  OfxPropertySetHandle* propertySet )
@@ -104,7 +106,7 @@ static OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 	}
 }
 
-static OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
+OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
                                          OfxPropertySetHandle* propHandle )
 {
 	try
@@ -127,7 +129,7 @@ static OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
 	}
 }
 
-static OfxStatus paramGetPropertySet( OfxParamHandle        param,
+OfxStatus paramGetPropertySet( OfxParamHandle        param,
                                       OfxPropertySetHandle* propHandle )
 {
 	try
@@ -154,7 +156,7 @@ static OfxStatus paramGetPropertySet( OfxParamHandle        param,
 /**
  * get the current param value
  */
-static OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
+OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 {
 	try
 	{
@@ -196,7 +198,7 @@ static OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 /**
  * get the param value at a time
  */
-static OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
+OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time,
                                       ... )
 {
@@ -240,7 +242,7 @@ static OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
 /**
  * get the param's derivative at the given time
  */
-static OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
+OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
                                      OfxTime        time,
                                      ... )
 {
@@ -281,7 +283,7 @@ static OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
 	}
 }
 
-static OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
+OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
                                    OfxTime time1, OfxTime time2,
                                    ... )
 {
@@ -325,7 +327,7 @@ static OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
 /**
  * set the param's value at the 'current' time
  */
-static OfxStatus paramSetValue( OfxParamHandle paramHandle,
+OfxStatus paramSetValue( OfxParamHandle paramHandle,
                                 ... )
 {
 	try
@@ -368,7 +370,7 @@ static OfxStatus paramSetValue( OfxParamHandle paramHandle,
 /**
  * set the param's value at the indicated time, and set a key
  */
-static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
+OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
                                       OfxTime        time, // time in frames
                                       ... )
 {
@@ -409,7 +411,7 @@ static OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 	}
 }
 
-static OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
+OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
                                   unsigned int*  numberOfKeys )
 {
 	try
@@ -436,7 +438,7 @@ static OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
 	}
 }
 
-static OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
+OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
                                   unsigned int   nthKey,
                                   OfxTime*       time )
 {
@@ -464,7 +466,7 @@ static OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
 	}
 }
 
-static OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
+OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
                                    OfxTime        time,
                                    int            direction,
                                    int*   index )
@@ -493,7 +495,7 @@ static OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
 	}
 }
 
-static OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
+OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
                                  OfxTime        time )
 {
 	try
@@ -520,7 +522,7 @@ static OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
 	}
 }
 
-static OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
+OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 {
 	try
 	{
@@ -546,7 +548,7 @@ static OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 	}
 }
 
-static OfxStatus paramCopy( OfxParamHandle paramTo,
+OfxStatus paramCopy( OfxParamHandle paramTo,
                             OfxParamHandle paramFrom,
                             OfxTime dstOffset, OfxRangeD* frameRange )
 {
@@ -577,7 +579,7 @@ static OfxStatus paramCopy( OfxParamHandle paramTo,
 	}
 }
 
-static OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char* name )
+OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char* name )
 {
 	try
 	{
@@ -598,7 +600,7 @@ static OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char* name )
 	}
 }
 
-static OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
+OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
 {
 	try
 	{
@@ -620,7 +622,7 @@ static OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
 	}
 }
 
-static OfxParameterSuiteV1 gParamSuiteV1 = {
+OfxParameterSuiteV1 gParamSuiteV1 = {
 	paramDefine,
 	paramGetHandle,
 	paramSetGetPropertySet,
@@ -640,6 +642,8 @@ static OfxParameterSuiteV1 gParamSuiteV1 = {
 	paramEditBegin,
 	paramEditEnd
 };
+
+}
 
 void* getParameterSuite( const int version )
 {

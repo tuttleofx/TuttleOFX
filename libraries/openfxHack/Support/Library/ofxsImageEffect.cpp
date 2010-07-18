@@ -966,7 +966,7 @@ OfxRangeD Clip::getUnmappedFrameRange( void ) const
 }
 
 /** @brief get the RoD for this clip in the cannonical coordinate system */
-OfxRectD Clip::getCanonicalRod( OfxTime t ) const
+OfxRectD Clip::getCanonicalRod( const OfxTime t ) const
 {
 	OfxRectD bounds;
 	OfxStatus stat = OFX::Private::gEffectSuite->clipGetRegionOfDefinition( _clipHandle, t, &bounds );
@@ -979,8 +979,18 @@ OfxRectD Clip::getCanonicalRod( OfxTime t ) const
 	return bounds;
 }
 
+OfxRectD Clip::getCanonicalRod( const OfxTime t, const OfxPointD& renderScale ) const
+{
+	OfxRectD rod = getCanonicalRod( t );
+	rod.x1 *= renderScale.x;
+	rod.y1 *= renderScale.y;
+	rod.x2 *= renderScale.x;
+	rod.y2 *= renderScale.y;
+	return rod;
+}
+
 /** @brief get the RoD for this clip in pixel space */
-OfxRectI Clip::getPixelRod( OfxTime t ) const
+OfxRectI Clip::getPixelRod( const OfxTime t ) const
 {
 	OfxRectD rod = getCanonicalRod(t);
 	double ratio = getPixelAspectRatio();
@@ -993,6 +1003,16 @@ OfxRectI Clip::getPixelRod( OfxTime t ) const
 	pixRod.x2 = boost::numeric_cast<int>(std::ceil(rod.x2 / ratio));
 	pixRod.y2 = boost::numeric_cast<int>(std::ceil(rod.y2));
 	return pixRod;
+}
+
+OfxRectI Clip::getPixelRod( const OfxTime t, const OfxPointD& renderScale ) const
+{
+	OfxRectI rod = getPixelRod( t );
+	rod.x1 *= renderScale.x;
+	rod.y1 *= renderScale.y;
+	rod.x2 *= renderScale.x;
+	rod.y2 *= renderScale.y;
+	return rod;
 }
 
 /** @brief fetch an image */

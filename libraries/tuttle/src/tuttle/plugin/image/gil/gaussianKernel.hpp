@@ -16,7 +16,7 @@
 namespace tuttle {
 namespace plugin {
 
-static const double kConvolutionEpsilon = 0.05; ///< arbitrary value...
+static const double kConvolutionEpsilon = 0.1; ///< arbitrary value...
 
 
 /**
@@ -47,6 +47,10 @@ template<typename Scalar>
 boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bool normalize = true )
 {
 	using namespace boost;
+	if( size == 0 )
+	{
+		return boost::gil::kernel_1d<Scalar>();
+	}
 	std::vector<Scalar> rightKernel;
 	rightKernel.reserve(10);
 	int x = 1;
@@ -116,6 +120,10 @@ template<typename Scalar>
 boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, const bool normalize = true )
 {
 	using namespace boost;
+	if( size == 0 )
+	{
+		return boost::gil::kernel_1d<Scalar>();
+	}
 	std::vector<Scalar> rightKernel;
 	rightKernel.reserve(10);
 	int x = 1;

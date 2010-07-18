@@ -7,7 +7,9 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-static OfxStatus ProgressStart( void*       effectInstance,
+namespace {
+
+OfxStatus ProgressStart( void*       effectInstance,
                                 const char* label )
 {
 	try
@@ -30,9 +32,10 @@ static OfxStatus ProgressStart( void*       effectInstance,
 	}
 }
 
-/// finish progressing
-
-static OfxStatus ProgressEnd( void* effectInstance )
+/**
+ * finish progressing
+ */
+OfxStatus ProgressEnd( void* effectInstance )
 {
 	try
 	{
@@ -54,9 +57,10 @@ static OfxStatus ProgressEnd( void* effectInstance )
 	}
 }
 
-/// update progressing
-
-static OfxStatus ProgressUpdate( void* effectInstance, double progress )
+/**
+ * update progressing
+ */
+OfxStatus ProgressUpdate( void* effectInstance, double progress )
 {
 	try
 	{
@@ -78,13 +82,17 @@ static OfxStatus ProgressUpdate( void* effectInstance, double progress )
 	}
 }
 
-/// our progress suite
+/**
+ * our progress suite
+ */
 struct OfxProgressSuiteV1 gProgressSuite =
 {
 	ProgressStart,
 	ProgressUpdate,
 	ProgressEnd
 };
+
+}
 
 void* getProgressSuite( const int version )
 {

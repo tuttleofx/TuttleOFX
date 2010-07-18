@@ -9,7 +9,9 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-static OfxStatus message( void* handle, const char* type, const char* id, const char* format, ... )
+namespace {
+
+OfxStatus message( void* handle, const char* type, const char* id, const char* format, ... )
 {
 	OfxhIMessage* effectInstance = dynamic_cast<OfxhIMessage*>( reinterpret_cast<OfxhIObject*>( handle ) );
 
@@ -31,10 +33,12 @@ static OfxStatus message( void* handle, const char* type, const char* id, const 
 }
 
 /// message suite for an image effect plugin
-static struct OfxMessageSuiteV1 gMessageSuite =
+struct OfxMessageSuiteV1 gMessageSuite =
 {
 	message
 };
+
+}
 
 void* getMessageSuite( const int version )
 {
