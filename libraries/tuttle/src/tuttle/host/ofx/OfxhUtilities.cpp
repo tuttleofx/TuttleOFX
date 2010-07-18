@@ -31,6 +31,8 @@
 
 #include <ofxCore.h>
 
+#include <boost/lexical_cast.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -64,7 +66,7 @@ std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 )
 	}
 }
 
-const std::string mapStatusToString( const OfxStatus& stat )
+std::string mapStatusToString( const OfxStatus stat )
 {
 	switch( stat )
 	{
@@ -85,7 +87,7 @@ const std::string mapStatusToString( const OfxStatus& stat )
 		case kOfxStatReplyDefault: return "kOfxStatReplyDefault";
 		case kOfxStatErrImageFormat: return "kOfxStatErrImageFormat";
 	}
-	return "UNKNOWN_STATUS_CODE";
+	return "UNKNOWN STATUS CODE: " + boost::lexical_cast<std::string>(stat);
 }
 
 }

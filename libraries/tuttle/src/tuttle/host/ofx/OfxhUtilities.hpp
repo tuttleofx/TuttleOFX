@@ -117,7 +117,7 @@ inline OfxRectD rectUnion( const OfxRectD& a,
 }
 
 /** @brief maps status to a string */
-const std::string mapStatusToString( const OfxStatus& stat );
+std::string mapStatusToString( const OfxStatus stat );
 
 }
 }

@@ -54,28 +54,29 @@ void throwPropertyException( OfxStatus          stat,
 		case kOfxStatReplyNo:
 		case kOfxStatReplyDefault:
 			// Throw nothing!
-			break;
+			return;
 
 		case kOfxStatErrUnknown:
 		case kOfxStatErrUnsupported: // unsupported implies unknow here
 			if( OFX::PropertySet::getThrowOnUnsupportedProperties() ) // are we suppressing this?
 				BOOST_THROW_EXCEPTION( OFX::Exception::PropertyUnknownToHost( propName ) );
-			break;
+			return;
 
 		case kOfxStatErrMemory:
 			BOOST_THROW_EXCEPTION( std::bad_alloc() );
-			break;
+			return;
 
 		case kOfxStatErrValue:
 			BOOST_THROW_EXCEPTION( OFX::Exception::PropertyValueIllegalToHost( propName.c_str() ) );
-			break;
+			return;
 
+		// in these cases and default throwSuiteStatusException
 		case kOfxStatErrBadHandle:
 		case kOfxStatErrBadIndex:
-		default:
-			throwSuiteStatusException( stat );
 			break;
 	}
+	// default case
+	throwSuiteStatusException( stat );
 }
 
 /** @brief are we logging property get/set */

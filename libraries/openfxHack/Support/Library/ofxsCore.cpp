@@ -36,14 +36,14 @@
 #include "./ofxsSupportPrivate.h"
 
 #include <boost/throw_exception.hpp>
+#include <boost/lexical_cast.hpp>
 
-#include <sstream>
 #include <cstddef>
 
 namespace OFX {
 
 /** @brief Throws an @ref OFX::Exception depending on the status flag passed in */
-void throwSuiteStatusException( OfxStatus stat ) throw( OFX::Exception::Suite, std::bad_alloc )
+void throwSuiteStatusException( const OfxStatus stat ) throw( OFX::Exception::Suite, std::bad_alloc )
 {
 	switch( stat )
 	{
@@ -51,14 +51,15 @@ void throwSuiteStatusException( OfxStatus stat ) throw( OFX::Exception::Suite, s
 		case kOfxStatReplyYes:
 		case kOfxStatReplyNo:
 		case kOfxStatReplyDefault:
-			break;
+			// Throw nothing!
+			return;
 
 		case kOfxStatErrMemory:
 			BOOST_THROW_EXCEPTION( std::bad_alloc() );
-
-		default:
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( stat, "Threw suite exception!" ) );
+			return;
 	}
+	// default case
+	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( stat, "Threw suite exception!" ) );
 }
 
 void throwHostMissingSuiteException( const std::string& name ) throw( OFX::Exception::Suite )
@@ -67,7 +68,7 @@ void throwHostMissingSuiteException( const std::string& name ) throw( OFX::Excep
 }
 
 /** @brief maps status to a string */
-const std::string mapStatusToString( const OfxStatus stat )
+std::string mapStatusToString( const OfxStatus stat )
 {
 	switch( stat )
 	{
@@ -88,9 +89,7 @@ const std::string mapStatusToString( const OfxStatus stat )
 		case kOfxStatReplyDefault: return "kOfxStatReplyDefault";
 		case kOfxStatErrImageFormat: return "kOfxStatErrImageFormat";
 	}
-	std::ostringstream o;
-	o << "UNKNOWN STATUS CODE: " << stat;
-	return o.str();
+	return "UNKNOWN STATUS CODE: " + boost::lexical_cast<std::string>(stat);
 }
 
 /** @brief namespace for memory allocation that is done via wrapping the ofx memory suite */

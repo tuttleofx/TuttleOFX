@@ -246,7 +246,7 @@ enum InstanceChangeReason
 };
 
 /** @brief maps a status to a string for debugging purposes, note a c-str for printf */
-const std::string mapStatusToString( const OfxStatus stat );
+std::string mapStatusToString( const OfxStatus stat );
 
 /** @brief namespace for OFX support lib exceptions, all derive from std::exception, calling it */
 namespace Exception {
