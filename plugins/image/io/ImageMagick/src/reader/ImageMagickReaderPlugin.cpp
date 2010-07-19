@@ -8,6 +8,8 @@
 #include <boost/filesystem.hpp>
 #include "tuttle/plugin/context/ReaderPlugin.hpp"
 
+#include <cstring>
+
 namespace tuttle {
 namespace plugin {
 namespace imagemagick {
@@ -19,6 +21,7 @@ using namespace boost::gil;
 ImageMagickReaderPlugin::ImageMagickReaderPlugin( OfxImageEffectHandle handle )
 : ReaderPlugin( handle )
 {
+	InitializeMagick( "" );
 }
 
 ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams(const OfxTime time)
@@ -120,22 +123,52 @@ void ImageMagickReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args
 
 bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	Magick::Image image;
-	image.ping( _filePattern.getFilenameAt(args.time) );
-	point2<ptrdiff_t> imagemagickDims( image.columns(), image.rows() );
+	ImageInfo* imageInfo = AcquireImageInfo();
+	GetImageInfo( imageInfo );
+	std::string filename = _filePattern.getFilenameAt(args.time);
+	strcpy( imageInfo->filename, filename.c_str() );
+	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
+	GetExceptionInfo( exceptionsInfo );
+
+	Image* image = PingImage( imageInfo, exceptionsInfo );
+
+	if( !image )
+	{
+		rod.x1 = 0;
+		rod.x2 = 0;
+		rod.y1 = 0;
+		rod.y2 = 0;
+		return true;
+	}
+	
+	point2<ptrdiff_t> imagemagickDims( image->columns, image->rows );
 	rod.x1 = 0;
 	rod.x2 = imagemagickDims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = imagemagickDims.y;
+	
+	image = DestroyImage( image );
+	imageInfo = DestroyImageInfo( imageInfo );
+	exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
+
 	return true;
 }
 
 void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
+	std::string filename = _filePattern.getFirstFilename();
 	// Check if exist
-	if( bfs::exists( _filePattern.getFirstFilename() ) )
+	if( bfs::exists( filename ) )
 	{
+		ImageInfo* imageInfo = AcquireImageInfo();
+		GetImageInfo( imageInfo );
+		strcpy( imageInfo->filename, filename.c_str() );
+		ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
+		GetExceptionInfo( exceptionsInfo );
+		
+		Image* image = PingImage( imageInfo, exceptionsInfo );
+
 		if ( _paramExplicitConv->getValue() )
 		{
 			switch( _paramExplicitConv->getValue() )
@@ -159,10 +192,27 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 		}
 		else
 		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); // by default
+			if( image )
+			{
+				unsigned long bitDepth = GetImageDepth( image, exceptionsInfo ); // if image information use it
+				if( bitDepth <= 8 )
+				{
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+				}
+				else if( bitDepth <= 16 )
+				{
+					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+				}
+			}
 		}
 		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA ); /// RGB
 		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+
+		if( image )
+			image = DestroyImage( image );
+		imageInfo = DestroyImageInfo( imageInfo );
+		exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
 	}
 }
 

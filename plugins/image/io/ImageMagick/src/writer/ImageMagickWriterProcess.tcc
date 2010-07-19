@@ -7,8 +7,6 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
-#include <Magick++.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
