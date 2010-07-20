@@ -14,7 +14,7 @@ namespace imageStatistics {
 struct ImageStatisticsProcessParams
 {
 	OfxRectI _rect; ///< the selected rectangle, clipped to the image rod
-	EChooseOutput _chooseOutput;
+	EParamChooseOutput _chooseOutput;
 };
 
 /**
@@ -38,15 +38,16 @@ public:
     OFX::Clip* _clipSrc; ///< Source image clip
     OFX::Clip* _clipDst; ///< Destination image clip
 	
-	OFX::Double2DParam* _rectCenter;
-	OFX::Double2DParam* _rectSize;
-	OFX::ChoiceParam* _chooseOutput;
-	OFX::RGBAParam* _outputAverage;
-	OFX::Double3DParam* _outputAverageHsl;
-	OFX::RGBAParam* _outputChannelMin;
-	OFX::RGBAParam* _outputChannelMax;
-	OFX::RGBAParam* _outputLuminosityMin;
-	OFX::RGBAParam* _outputLuminosityMax;
+	OFX::ChoiceParam* _paramCoordinateSystem;
+	OFX::Double2DParam* _paramRectCenter;
+	OFX::Double2DParam* _paramRectSize;
+	OFX::ChoiceParam* _paramChooseOutput;
+	OFX::RGBAParam* _paramOutputAverage;
+	OFX::Double3DParam* _paramOutputAverageHsl;
+	OFX::RGBAParam* _paramOutputChannelMin;
+	OFX::RGBAParam* _paramOutputChannelMax;
+	OFX::RGBAParam* _paramOutputLuminosityMin;
+	OFX::RGBAParam* _paramOutputLuminosityMax;
 };
 
 }

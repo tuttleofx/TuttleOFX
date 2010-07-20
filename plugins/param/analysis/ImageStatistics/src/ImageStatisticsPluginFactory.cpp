@@ -65,60 +65,66 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::Double2DParamDescriptor* rectCenter = desc.defineDouble2DParam( kRectCenter );
+	OFX::ChoiceParamDescriptor* coordSystem = desc.defineChoiceParam( kParamCoordinateSystem );
+	coordSystem->setLabel( "Coordinate system" );
+	coordSystem->appendOption( kParamCoordinateSystemNormalized );
+	coordSystem->appendOption( kParamCoordinateSystemCanonical );
+	coordSystem->setDefault( 0 );
+
+	OFX::Double2DParamDescriptor* rectCenter = desc.defineDouble2DParam( kParamRectCenter );
 	rectCenter->setLabel( "Center" );
 	rectCenter->setDoubleType( OFX::eDoubleTypePlain );
 //	rectCenter->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    rectCenter->setDefault( 0.0, 0.0 );
+    rectCenter->setDefault( 0.5, 0.5 );
 
-	OFX::Double2DParamDescriptor* rectSize = desc.defineDouble2DParam( kRectSize );
+	OFX::Double2DParamDescriptor* rectSize = desc.defineDouble2DParam( kParamRectSize );
 	rectSize->setLabel( "Size" );
 	rectSize->setDoubleType( OFX::eDoubleTypePlain );
 //	rectSize->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    rectSize->setDefault( 100, 100 );
+    rectSize->setDefault( 0.5, 0.5 );
 
-	OFX::ChoiceParamDescriptor* chooseOutput = desc.defineChoiceParam( kChooseOutput );
+	OFX::ChoiceParamDescriptor* chooseOutput = desc.defineChoiceParam( kParamChooseOutput );
 	chooseOutput->setLabel( "Choose output" );
-	chooseOutput->appendOption( kChooseOutputSource );
-	chooseOutput->appendOption( kChooseOutputAverage );
-	chooseOutput->appendOption( kChooseOutputChannelMin );
-	chooseOutput->appendOption( kChooseOutputChannelMax );
-	chooseOutput->appendOption( kChooseOutputLuminosityMin );
-	chooseOutput->appendOption( kChooseOutputLuminosityMax );
+	chooseOutput->appendOption( kParamChooseOutputSource );
+	chooseOutput->appendOption( kParamChooseOutputAverage );
+	chooseOutput->appendOption( kParamChooseOutputChannelMin );
+	chooseOutput->appendOption( kParamChooseOutputChannelMax );
+	chooseOutput->appendOption( kParamChooseOutputLuminosityMin );
+	chooseOutput->appendOption( kParamChooseOutputLuminosityMax );
 	chooseOutput->setDefault( 0 );
 
-	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kOutputGroup );
+	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kParamOutputGroup );
 	outputGroup->setLabel( "Output" );
 
-	OFX::RGBAParamDescriptor* outputAverage = desc.defineRGBAParam( kOutputAverage );
+	OFX::RGBAParamDescriptor* outputAverage = desc.defineRGBAParam( kParamOutputAverage );
 	outputAverage->setLabel( "Average" );
 	outputAverage->setParent( outputGroup );
 	outputAverage->setEvaluateOnChange( false );
 
-	OFX::Double3DParamDescriptor* outputAverageHsl = desc.defineDouble3DParam( kOutputAverageHsl );
+	OFX::Double3DParamDescriptor* outputAverageHsl = desc.defineDouble3DParam( kParamOutputAverageHsl );
 	outputAverageHsl->setLabel( "Average HSL" );
 	outputAverageHsl->setDoubleType( OFX::eDoubleTypePlain );
 	outputAverageHsl->setDimensionLabels( "h", "s", "l" );
 	outputAverageHsl->setParent( outputGroup );
 	outputAverageHsl->setEvaluateOnChange( false );
 
-	OFX::RGBAParamDescriptor* outputChannelMin = desc.defineRGBAParam( kOutputChannelMin );
+	OFX::RGBAParamDescriptor* outputChannelMin = desc.defineRGBAParam( kParamOutputChannelMin );
 	outputChannelMin->setLabel( "Channels' min" );
 	outputChannelMin->setHint( "Minimum value per channel" );
 	outputChannelMin->setParent( outputGroup );
 	outputChannelMin->setEvaluateOnChange( false );
 
-	OFX::RGBAParamDescriptor* outputChannelMax = desc.defineRGBAParam( kOutputChannelMax );
+	OFX::RGBAParamDescriptor* outputChannelMax = desc.defineRGBAParam( kParamOutputChannelMax );
 	outputChannelMax->setLabel( "Channels' max" );
 	outputChannelMax->setParent( outputGroup );
 	outputChannelMax->setEvaluateOnChange( false );
 
-	OFX::RGBAParamDescriptor* outputLuminosityMin = desc.defineRGBAParam( kOutputLuminosityMin );
+	OFX::RGBAParamDescriptor* outputLuminosityMin = desc.defineRGBAParam( kParamOutputLuminosityMin );
 	outputLuminosityMin->setLabel( "Luminosity min" );
 	outputLuminosityMin->setParent( outputGroup );
 	outputLuminosityMin->setEvaluateOnChange( false );
 
-	OFX::RGBAParamDescriptor* outputLuminosityMax = desc.defineRGBAParam( kOutputLuminosityMax );
+	OFX::RGBAParamDescriptor* outputLuminosityMax = desc.defineRGBAParam( kParamOutputLuminosityMax );
 	outputLuminosityMax->setLabel( "Luminosity max" );
 	outputLuminosityMax->setParent( outputGroup );
 	outputLuminosityMax->setEvaluateOnChange( false );

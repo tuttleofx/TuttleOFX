@@ -8,32 +8,42 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-const static std::string kRectCenter = "rectCenter";
-const static std::string kRectSize = "rectSize";
-const static std::string kOutputGroup = "outputGroup";
-const static std::string kOutputAverage = "outputAverage";
-const static std::string kOutputAverageHsl = "outputAverageHsl";
-const static std::string kOutputChannelMin = "outputChannelMin";
-const static std::string kOutputChannelMax = "outputChannelMax";
-const static std::string kOutputLuminosityMin = "outputLuminosityMin";
-const static std::string kOutputLuminosityMax = "outputLuminosityMax";
+const static std::string kParamCoordinateSystem = "coordinateSystem";
+const static std::string kParamCoordinateSystemNormalized = "coordinateSystemNormalized";
+const static std::string kParamCoordinateSystemCanonical = "coordinateSystemCanonical";
 
-const static std::string kChooseOutput = "chooseOutput";
-const static std::string kChooseOutputSource = "source";
-const static std::string kChooseOutputAverage = "average";
-const static std::string kChooseOutputChannelMin = "min values";
-const static std::string kChooseOutputChannelMax = "max values";
-const static std::string kChooseOutputLuminosityMin = "min luminosity";
-const static std::string kChooseOutputLuminosityMax = "max luminosity";
-
-enum EChooseOutput
+enum EParamCoordinateSystem
 {
-	eChooseOutputSource = 0,
-	eChooseOutputAverage,
-	eChooseOutputChannelMin,
-	eChooseOutputChannelMax,
-	eChooseOutputLuminosityMin,
-	eChooseOutputLuminosityMax
+	eParamCoordinateSystemNormalized = 0,
+	eParamCoordinateSystemCanonical
+};
+
+const static std::string kParamRectCenter = "rectCenter";
+const static std::string kParamRectSize = "rectSize";
+const static std::string kParamOutputGroup = "outputGroup";
+const static std::string kParamOutputAverage = "outputAverage";
+const static std::string kParamOutputAverageHsl = "outputAverageHsl";
+const static std::string kParamOutputChannelMin = "outputChannelMin";
+const static std::string kParamOutputChannelMax = "outputChannelMax";
+const static std::string kParamOutputLuminosityMin = "outputLuminosityMin";
+const static std::string kParamOutputLuminosityMax = "outputLuminosityMax";
+
+const static std::string kParamChooseOutput = "chooseOutput";
+const static std::string kParamChooseOutputSource = "source";
+const static std::string kParamChooseOutputAverage = "average";
+const static std::string kParamChooseOutputChannelMin = "min values";
+const static std::string kParamChooseOutputChannelMax = "max values";
+const static std::string kParamChooseOutputLuminosityMin = "min luminosity";
+const static std::string kParamChooseOutputLuminosityMax = "max luminosity";
+
+enum EParamChooseOutput
+{
+	eParamChooseOutputSource = 0,
+	eParamChooseOutputAverage,
+	eParamChooseOutputChannelMin,
+	eParamChooseOutputChannelMax,
+	eParamChooseOutputLuminosityMin,
+	eParamChooseOutputLuminosityMax
 };
 
 }

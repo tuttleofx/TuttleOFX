@@ -24,30 +24,38 @@ ImageEffect( handle )
     _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
-	_rectCenter = fetchDouble2DParam( kRectCenter );
-	_rectSize = fetchDouble2DParam( kRectSize );
-	_chooseOutput = fetchChoiceParam( kChooseOutput );
-	_outputAverage = fetchRGBAParam( kOutputAverage );
-	_outputAverageHsl = fetchDouble3DParam( kOutputAverageHsl );
-	_outputChannelMin = fetchRGBAParam( kOutputChannelMin );
-	_outputChannelMax = fetchRGBAParam( kOutputChannelMax );
-	_outputLuminosityMin = fetchRGBAParam( kOutputLuminosityMin );
-	_outputLuminosityMax = fetchRGBAParam( kOutputLuminosityMax );
+	_paramCoordinateSystem = fetchChoiceParam( kParamCoordinateSystem );
+	_paramRectCenter = fetchDouble2DParam( kParamRectCenter );
+	_paramRectSize = fetchDouble2DParam( kParamRectSize );
+	_paramChooseOutput = fetchChoiceParam( kParamChooseOutput );
+	_paramOutputAverage = fetchRGBAParam( kParamOutputAverage );
+	_paramOutputAverageHsl = fetchDouble3DParam( kParamOutputAverageHsl );
+	_paramOutputChannelMin = fetchRGBAParam( kParamOutputChannelMin );
+	_paramOutputChannelMax = fetchRGBAParam( kParamOutputChannelMax );
+	_paramOutputLuminosityMin = fetchRGBAParam( kParamOutputLuminosityMin );
+	_paramOutputLuminosityMax = fetchRGBAParam( kParamOutputLuminosityMax );
 }
 
 ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectI& srcRod ) const
 {
 	ImageStatisticsProcessParams params;
-	OfxPointD rectCenter = _rectCenter->getValue();
-	OfxPointD rectSize = _rectSize->getValue();
+	OfxPointD rectCenter = _paramRectCenter->getValue();
+	OfxPointD rectSize = _paramRectSize->getValue();
 	rectSize.x = std::abs( rectSize.x );
 	rectSize.y = std::abs( rectSize.y );
+	if( _paramCoordinateSystem->getValue() == eParamCoordinateSystemNormalized )
+	{
+		OfxPointD projectSize = this->getProjectSize();
+		rectCenter *= projectSize;
+		rectSize *= projectSize;
+	}
+
 	params._rect.x1 = boost::numeric_cast<int>( rectCenter.x - rectSize.x );
 	params._rect.y1 = boost::numeric_cast<int>( rectCenter.y - rectSize.y );
 	params._rect.x2 = boost::numeric_cast<int>( std::ceil(rectCenter.x + rectSize.x) );
 	params._rect.y2 = boost::numeric_cast<int>( std::ceil(rectCenter.y + rectSize.y) );
 	params._rect = rectanglesIntersection( params._rect, srcRod );
-	params._chooseOutput = static_cast<EChooseOutput>( _chooseOutput->getValue() );
+	params._chooseOutput = static_cast<EParamChooseOutput>( _paramChooseOutput->getValue() );
 	return params;
 }
 
@@ -138,6 +146,31 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments &args )
 
 void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
+	if( paramName == kParamCoordinateSystem )
+	{
+		OfxPointD projectSize = this->getProjectSize();
+		OfxPointD rectCenter = _paramRectCenter->getValue();
+		OfxPointD rectSize = _paramRectSize->getValue();
+		switch( _paramCoordinateSystem->getValue() )
+		{
+			case eParamCoordinateSystemCanonical:
+			{
+				rectCenter *= projectSize;
+				rectSize *= projectSize;
+				break;
+			}
+			case eParamCoordinateSystemNormalized:
+			{
+				rectCenter /= projectSize;
+				rectSize /= projectSize;
+				break;
+			}
+			default:
+				BOOST_THROW_EXCEPTION( PluginException( "Unrecognized coordinate system option." ) );
+		}
+		_paramRectCenter->setValue( rectCenter );
+		_paramRectSize->setValue( rectSize );
+	}
 }
 
 }

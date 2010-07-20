@@ -4,6 +4,7 @@
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
 #include <boost/gil/extension/toolbox/hsl.hpp>
+#include <boost/units/pow.hpp>
 
 #include <tuttle/common/utils/global.hpp>
 
@@ -94,6 +95,44 @@ ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin &ins
 	this->setNoMultiThreading( );
 }
 
+
+template<typename T>
+T standard_deviation( const T v_sum, const T v_sum_x2, const std::size_t nb )
+{
+	using namespace boost::units;
+	return std::sqrt( (v_sum_x2 - pow<2>(v_sum)) / nb );
+}
+
+/**
+ * @brief In probability theory and statistics, kurtosis is a measure of the
+ * "peakedness" of the probability distribution of a real-valued random variable.
+ *
+ * Higher kurtosis means more of the variance is the result of infrequent extreme deviations,
+ * as opposed to frequent modestly sized deviations.
+ */
+template<typename T>
+T kurtosis( const T v_mean, const T v_standard_deviation, const T v_sum, const T v_sum_x2, const T v_sum_x3, const T v_sum_x4, const std::size_t nb )
+{
+	using namespace boost::units;
+	return ( (v_sum_x4 - 4.0 * v_mean * v_sum_x3 + 6.0*pow<2>(v_mean)* v_sum_x2) / nb - 3.0*pow<4>(v_mean) ) /
+		   ( pow<4>(v_standard_deviation) ) -3.0;
+}
+
+/**
+ * @brief In probability theory and statistics, skewness is a measure of the
+ * asymmetry of the probability distribution of a real-valued random variable.
+ *
+ * A zero value indicates that the values are relatively evenly distributed
+ * on both sides of the mean, typically but not necessarily implying
+ * a symmetric distribution.
+ */
+template<typename T>
+T skewness( const T v_mean, const T v_standard_deviation, const T v_sum, const T v_sum_x2, const T v_sum_x3, const std::size_t nb )
+{
+	using namespace boost::units;
+	return ( (v_sum_x3 - 3.0*v_mean*v_sum_x2) / nb + 2.0*pow<3>(v_mean) ) / pow<3>(v_standard_deviation);
+}
+
 template<class View>
 void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 {
@@ -177,7 +216,7 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	hsl32f_pixel_t outputHslValue;
 	
 	color_convert( average, outputRgbaValue );
-	_plugin._outputAverage->setValueAtTime( args.time,
+	_plugin._paramOutputAverage->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
 	                                        get_color( outputRgbaValue, green_t() ),
 	                                        get_color( outputRgbaValue, blue_t() ),
@@ -186,34 +225,34 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 
 	color_convert( average, outputRgbValue );
 	color_convert( outputRgbValue, outputHslValue );
-	_plugin._outputAverageHsl->setValueAtTime( args.time,
+	_plugin._paramOutputAverageHsl->setValueAtTime( args.time,
 	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
 	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
 	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
 	                                      );
 	color_convert( minChannel, outputRgbaValue );
-	_plugin._outputChannelMin->setValueAtTime( args.time,
+	_plugin._paramOutputChannelMin->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
 	                                        get_color( outputRgbaValue, green_t() ),
 	                                        get_color( outputRgbaValue, blue_t() ),
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
 	color_convert( maxChannel, outputRgbaValue );
-	_plugin._outputChannelMax->setValueAtTime( args.time,
+	_plugin._paramOutputChannelMax->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
 	                                        get_color( outputRgbaValue, green_t() ),
 	                                        get_color( outputRgbaValue, blue_t() ),
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
 	color_convert( minLuminosity, outputRgbaValue );
-	_plugin._outputLuminosityMin->setValueAtTime( args.time,
+	_plugin._paramOutputLuminosityMin->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
 	                                        get_color( outputRgbaValue, green_t() ),
 	                                        get_color( outputRgbaValue, blue_t() ),
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
 	color_convert( maxLuminosity, outputRgbaValue );
-	_plugin._outputLuminosityMax->setValueAtTime( args.time,
+	_plugin._paramOutputLuminosityMax->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
 	                                        get_color( outputRgbaValue, green_t() ),
 	                                        get_color( outputRgbaValue, blue_t() ),
@@ -222,21 +261,21 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	
 	switch( _processParams._chooseOutput )
 	{
-		case eChooseOutputSource:
+		case eParamChooseOutputSource:
 			break;
-		case eChooseOutputAverage:
+		case eParamChooseOutputAverage:
 			color_convert( average, _outputPixel );
 			break;
-		case eChooseOutputChannelMin:
+		case eParamChooseOutputChannelMin:
 			_outputPixel = minChannel;
 			break;
-		case eChooseOutputChannelMax:
+		case eParamChooseOutputChannelMax:
 			_outputPixel = maxChannel;
 			break;
-		case eChooseOutputLuminosityMin:
+		case eParamChooseOutputLuminosityMin:
 			_outputPixel = minLuminosity;
 			break;
-		case eChooseOutputLuminosityMax:
+		case eParamChooseOutputLuminosityMax:
 			_outputPixel = maxLuminosity;
 			break;
 	}
@@ -250,7 +289,7 @@ void ImageStatisticsProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	if( _processParams._chooseOutput == eChooseOutputSource )
+	if( _processParams._chooseOutput == eParamChooseOutputSource )
 	{
 		for( int y = procWindowOutput.y1;
 			 y < procWindowOutput.y2;
