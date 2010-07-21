@@ -206,9 +206,6 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor &de
     OFX::GroupParamDescriptor* displayOptions = desc.defineGroupParam( kParamDisplayOptions );
     displayOptions->setLabel("Display options");
     displayOptions->setHint( "Display options (change nothing on the image)" );
-    #ifdef TUTTLE_PRODUCTION
-    displayOptions->setIsSecret(true);
-    #endif
 
     OFX::BooleanParamDescriptor* displayGrid = desc.defineBooleanParam( kParamGridOverlay );
     displayGrid->setLabel( "Display grid" );
