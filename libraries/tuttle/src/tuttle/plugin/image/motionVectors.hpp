@@ -12,10 +12,29 @@
 
 #include <cmath>
 
+namespace boost {
+namespace gil {
+
+template <typename ChannelValue>
+struct base_channel_value
+{
+	typedef ChannelValue type;
+};
+
+template <typename ChannelValue, typename MinV, typename MaxV>
+struct base_channel_value<scoped_channel_value<ChannelValue, MinV, MaxV> >
+{
+	typedef ChannelValue type;
+};
+
+}
+}
+
 namespace tuttle {
 namespace plugin {
 
 namespace bgil = boost::gil;
+
 
 /**
  * @brief change intensity and rotate vectors.
@@ -36,7 +55,7 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 	BOOST_ASSERT( yVecView.height() == xVecView.height() );
 
 	typedef typename View::point_t Point2Integer;
-	typedef typename boost::gil::channel_type<View>::type::base_channel_t VecChannel;
+	typedef typename boost::gil::base_channel_value<typename boost::gil::channel_type<View>::type>::type VecChannel;
 	typedef typename boost::gil::point2<VecChannel> VecPoint2;
 
 	const double cosAngle = std::cos( angle );
