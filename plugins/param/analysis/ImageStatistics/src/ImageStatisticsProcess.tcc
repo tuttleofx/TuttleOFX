@@ -173,9 +173,9 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	{
 		typename View::x_iterator src_it = this->_srcView.x_at( _processParams._rect.x1, y );
 		Pixel32f lineAverage;
-		pixel_assigns_t<Pixel, Pixel32f>()( *(src_it++), lineAverage ); // init with first value
+		pixel_zeros_t<Pixel32f>()( lineAverage );
 		
-		for( int x = _processParams._rect.x1+1;
+		for( int x = _processParams._rect.x1;
 			 x < _processParams._rect.x2;
 			 ++x, ++src_it )
 		{
