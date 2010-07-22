@@ -11,10 +11,79 @@
 namespace boost {
 namespace gil  {
 
-template <int N>
-struct devicen_t;
-template <int N>
-struct devicen_layout_t;
+///////////////////////////////////////////
+////
+////  Add built-in channel models for 64bits
+////
+///////////////////////////////////////////
+
+/// \defgroup bits64 bits64
+/// \ingroup ChannelModel
+/// \brief 64-bit unsigned integral channel type  (typedef from uint64_t). Models ChannelValueConcept
+
+/// \ingroup bits64
+typedef uint64_t bits64;
+
+/// \defgroup bits64s bits64s
+/// \ingroup ChannelModel
+/// \brief 64-bit signed integral channel type (typedef from int64_t). Models ChannelValueConcept
+
+/// \ingroup bits64s
+typedef int64_t  bits64s;
+
+/// \defgroup bits64f bits64f
+/// \ingroup ChannelModel
+/// \brief 64-bit floating point channel type with range [0.0f ... 1.0f]. Models ChannelValueConcept
+
+/// \ingroup bits64f
+typedef scoped_channel_value<double,float_zero,float_one> bits64f;
+
+GIL_DEFINE_BASE_TYPEDEFS(64 ,gray)
+GIL_DEFINE_BASE_TYPEDEFS(64s,gray)
+GIL_DEFINE_BASE_TYPEDEFS(64f,gray)
+GIL_DEFINE_BASE_TYPEDEFS(64 ,bgr)
+GIL_DEFINE_BASE_TYPEDEFS(64s,bgr)
+GIL_DEFINE_BASE_TYPEDEFS(64f,bgr)
+GIL_DEFINE_BASE_TYPEDEFS(64, argb)
+GIL_DEFINE_BASE_TYPEDEFS(64s,argb)
+GIL_DEFINE_BASE_TYPEDEFS(64f,argb)
+GIL_DEFINE_BASE_TYPEDEFS(64 ,abgr)
+GIL_DEFINE_BASE_TYPEDEFS(64s,abgr)
+GIL_DEFINE_BASE_TYPEDEFS(64f,abgr)
+GIL_DEFINE_BASE_TYPEDEFS(64 ,bgra)
+GIL_DEFINE_BASE_TYPEDEFS(64s,bgra)
+GIL_DEFINE_BASE_TYPEDEFS(64f,bgra)
+
+GIL_DEFINE_ALL_TYPEDEFS(64 ,rgb)
+GIL_DEFINE_ALL_TYPEDEFS(64s,rgb)
+GIL_DEFINE_ALL_TYPEDEFS(64f,rgb)
+GIL_DEFINE_ALL_TYPEDEFS(64 ,rgba)
+GIL_DEFINE_ALL_TYPEDEFS(64s,rgba)
+GIL_DEFINE_ALL_TYPEDEFS(64f,rgba)
+GIL_DEFINE_ALL_TYPEDEFS(64 ,cmyk)
+GIL_DEFINE_ALL_TYPEDEFS(64s,cmyk)
+GIL_DEFINE_ALL_TYPEDEFS(64f,cmyk)
+
+
+template <int N> struct devicen_t;
+template <int N> struct devicen_layout_t;
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64 ,dev2n, devicen_t<2>, devicen_layout_t<2>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64s,dev2n, devicen_t<2>, devicen_layout_t<2>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64f,dev2n, devicen_t<2>, devicen_layout_t<2>)
+
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64 ,dev3n, devicen_t<3>, devicen_layout_t<3>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64s,dev3n, devicen_t<3>, devicen_layout_t<3>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64f,dev3n, devicen_t<3>, devicen_layout_t<3>)
+
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64 ,dev4n, devicen_t<4>, devicen_layout_t<4>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64s,dev4n, devicen_t<4>, devicen_layout_t<4>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64f,dev4n, devicen_t<4>, devicen_layout_t<4>)
+
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64 ,dev5n, devicen_t<5>, devicen_layout_t<5>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64s,dev5n, devicen_t<5>, devicen_layout_t<5>)
+GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64f,dev5n, devicen_t<5>, devicen_layout_t<5>)
+
+
 
 /******************************************************************************
  * Bit stream
