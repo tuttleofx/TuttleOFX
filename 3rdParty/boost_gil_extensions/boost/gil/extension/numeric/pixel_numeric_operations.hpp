@@ -99,6 +99,16 @@ struct pixel_divides_scalar_t {
 };
 
 /// \ingroup PixelNumericOperations
+/// \brief construct to compute pow on a pixel
+template <typename PixelRef, int n> // models pixel concept
+struct pixel_pow_t {
+    PixelRef& operator () (PixelRef& p) const {
+        static_for_each(p,channel_pow_t<typename channel_type<PixelRef>::type, n>());
+        return p;
+    }
+};
+
+/// \ingroup PixelNumericOperations
 /// \brief construct for dividing a pixel by 2
 template <typename PixelRef> // models pixel concept
 struct pixel_halves_t {
