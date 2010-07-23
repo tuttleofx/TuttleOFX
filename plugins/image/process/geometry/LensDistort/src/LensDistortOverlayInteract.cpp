@@ -91,7 +91,7 @@ LensDistortOverlayInteract::LensDistortOverlayInteract( OfxInteractHandle handle
 
 bool LensDistortOverlayInteract::draw( const OFX::DrawArgs &args )
 {
-	typedef bgil::point2<Scalar> Point2;
+	typedef boost::gil::point2<Scalar> Point2;
 	static const float lineWidth = 2.0;
 	bool displaySomething = false;
 

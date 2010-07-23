@@ -5,6 +5,9 @@
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
 #include <boost/gil/extension/toolbox/hsl.hpp>
 #include <boost/units/pow.hpp>
+#include <boost/mpl/vector.hpp>
+#include <boost/mpl/erase.hpp>
+#include <boost/mpl/find.hpp>
 
 #include <tuttle/common/utils/global.hpp>
 
@@ -77,6 +80,102 @@ struct pixel_assign_max_t
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+
+/*
+namespace detail {
+
+// compile-time recursion for per-element operations on color bases
+template <int N>
+struct element_recursion {
+//	//static_for_each with two sources
+//    template <typename P1,typename P2,typename Op>
+//    static Op static_for_each(P1& p1, P2& p2, Op op) {
+//        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
+//        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
+//        return op2;
+//    }
+//    template <typename P1,typename P2,typename Op>
+//    static Op static_for_each(P1& p1, const P2& p2, Op op) {
+//        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
+//        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
+//        return op2;
+//    }
+    template <typename P1,typename P2,typename Op, typename ChannelFilter = mpl::vector>
+    static Op static_for_each(const P1& p1, P2& p2, Op op) {
+        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
+        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
+        return op2;
+    }
+//    template <typename P1,typename P2,typename Op>
+//    static Op static_for_each(const P1& p1, const P2& p2, Op op) {
+//        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
+//        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
+//        return op2;
+//    }
+};
+
+// Termination condition of the compile-time recursion for element operations on a color base
+template<> struct element_recursion<0> {
+    //static_for_each with two sources
+    template <typename P1,typename P2,typename Op>
+    static Op static_for_each(const P1&,const P2&,Op op){return op;}
+};
+
+}
+
+//static_for_each with two sources
+//template <typename P1,typename P2,typename Op>
+//GIL_FORCEINLINE
+//Op static_for_each(P1& p1,      P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
+//template <typename P1,typename P2,typename Op>
+//GIL_FORCEINLINE
+//Op static_for_each(P1& p1,const P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
+template <typename P1,typename P2,typename Op>
+GIL_FORCEINLINE
+Op static_for_each(const P1& p1,      P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
+//template <typename P1,typename P2,typename Op>
+//GIL_FORCEINLINE
+//Op static_for_each(const P1& p1,const P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
+
+*/
+/*
+template <typename PixelRef,  // models pixel concept
+          typename PixelRefR> // models pixel concept
+struct without_alpha_channel_t
+{
+	typedef typename color_space_type<PixelRef>::type Colorspace;
+//	typedef typename mpl::find<Colorspace, alpha_t>::type AlphaPos;
+//	typedef typename mpl::erase<Colorspace, AlphaPos>::type ColorspaceWithoutAlpha;
+//	typedef ColorspaceWithoutAlpha ColorspaceR;
+//	typedef typename mpl::if_<contains_color<PixelRef, alpha_t>,
+//           ColorspaceWithoutAlpha,
+//           PixelRef>::type ColorspaceR;
+//    typedef typename rgb_t ColorspaceR;
+	typedef pixel<typename channel_type<PixelRef>::type, layout<ColorspaceR> > PixelRefR;
+    PixelRefR operator () (const PixelRef& src,
+                           PixelRefR& dst) const
+	{
+		get_color( dst, red_t()   ) = get_color( src, red_t()   );
+		get_color( dst, green_t() ) = get_color( src, green_t() );
+		get_color( dst, blue_t()  ) = get_color( src, blue_t()  );
+        return dst;
+    }
+};
+*/
+
+/// \ingroup PixelNumericOperations
+///definition and a generic implementation for casting and assigning a pixel to another
+///user should specialize it for better performance
+template <typename PixelRef,  // models pixel concept
+          typename PixelRefR> // models pixel concept
+struct pixel_assigns_without_alpha_t {
+    PixelRefR& operator () (const PixelRef& src,
+                           PixelRefR& dst) const {
+        static_for_each(src,dst,channel_assigns_t<typename channel_type<PixelRef>::type,
+                                                  typename channel_type<PixelRefR>::type>());
+        return dst;
+    }
+};
 
 }
 }
@@ -167,6 +266,15 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	Pixel maxLuminosity = firstPixel;
 	PixelGray maxLuminosityGray = firstPixelGray;
 
+	hsl32f_pixel_t hslSum;
+	hsl32f_pixel_t hslSum_p2;
+	hsl32f_pixel_t hslSum_p3;
+	hsl32f_pixel_t hslSum_p4;
+	pixel_zeros_t<hsl32f_pixel_t>()( hslSum );
+	pixel_zeros_t<hsl32f_pixel_t>()( hslSum_p2 );
+	pixel_zeros_t<hsl32f_pixel_t>()( hslSum_p3 );
+	pixel_zeros_t<hsl32f_pixel_t>()( hslSum_p4 );
+
 	for( int y = _processParams._rect.y1;
 		 y < _processParams._rect.y2;
 		 ++y )
@@ -179,8 +287,24 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 			 x < _processParams._rect.x2;
 			 ++x, ++src_it )
 		{
+			Pixel32f pix;
+			pixel_assigns_t<Pixel, Pixel32f>()( *src_it, pix ); // pix = src_it;
+			rgb32f_pixel_t pixRgb;
+			rgba_to_rgb_t<Pixel32f>()( pix, pixRgb ); // pixRgb = pix;
+
+			hsl32f_pixel_t pixHsl;
+			color_convert( pixRgb, pixHsl );
+
+			hsl32f_pixel_t pixHsl_p2;
+			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_pow_t<hsl32f_pixel_t, 2>()( pixHsl ), pixHsl_p2 ); // pixHsl_p2 = pow<2>( pixHsl );
+//			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pix, pix ), pixPow2 ); // pixHsl_p2 = pixHsl * pixHsl;
+			hsl32f_pixel_t pixHsl_p3;
+			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl, pixHsl_p2 ), pixHsl_p3 ); // pixHsl_p3 = pixHsl * pixHsl_p2;
+			hsl32f_pixel_t pixHsl_p4;
+			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p2, pixHsl_p2 ), pixHsl_p4 ); // pixHsl_p4 = pixHsl_p2 * pixHsl_p2;
+
 			// for average : accumulate
-			pixel_plus_assign_t<Pixel, Pixel32f>()( ( *src_it ), lineAverage ); // lineAverage += src_it;
+			pixel_plus_assign_t<Pixel32f, Pixel32f>()( pix, lineAverage ); // lineAverage += pix;
 
 			// search min for each channel
 			pixel_assign_min_t<Pixel, Pixel>()( *src_it, minChannel );
@@ -223,7 +347,7 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
 
-	color_convert( average, outputRgbValue );
+	rgba_to_rgb_t<Pixel32f>()( average, outputRgbValue );
 	color_convert( outputRgbValue, outputHslValue );
 	_plugin._paramOutputAverageHsl->setValueAtTime( args.time,
 	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),

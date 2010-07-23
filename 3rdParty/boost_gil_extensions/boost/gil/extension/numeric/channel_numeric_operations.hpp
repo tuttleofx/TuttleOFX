@@ -121,11 +121,10 @@ struct channel_divides_scalar_t : public std::binary_function<Channel,Scalar,Cha
 /// \ingroup ChannelNumericOperations
 /// structure to compute pow on a channel
 /// this is a generic implementation; user should specialize it for better performance
-template <typename Channel, int n>
-struct channel_pow_t : public std::unary_function<Channel,Channel> {
-    typename channel_traits<Channel>::reference
-    operator()(typename channel_traits<Channel>::reference ch) const {
-        return boost::math::pow<n>(ch);
+template <typename Channel, int n,typename ChannelR>
+struct channel_pow_t : public std::unary_function<Channel,ChannelR> {
+    ChannelR operator()(typename channel_traits<Channel>::const_reference ch) const {
+        return boost::math::pow<n>(ChannelR(ch));
     }
 };
 
