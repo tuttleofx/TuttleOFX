@@ -93,7 +93,7 @@ PIXEL min_channel_values( const VIEW& view )
 
          for( int i = 0; i < num_channels<PIXEL>::type::value; ++i )
          {
-            if( dynamic_at_c( p, i ) < dynamic_at_c( min, i ))
+            if( dynamic_at_c( p, i ) < dynamic_at_c( min, i )) /// @todo: use ( p[i] < min[i] ), more readable...
             {
                dynamic_at_c( min, i ) = dynamic_at_c( p, i );
             }

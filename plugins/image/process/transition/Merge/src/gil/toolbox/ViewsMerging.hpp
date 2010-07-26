@@ -14,6 +14,7 @@ namespace gil {
 ///
 ////////////////////////////////////////////////////////////////////////////////
 
+/// @todo tuttle: use enum, no reason to use a type here.
 /// Functor that operates with pixels (user have to define what to do)
 /// for example: a rgb view that need yuv to merge
 typedef mpl::integral_c<char, 0>::type fun_op_pixel_t;
