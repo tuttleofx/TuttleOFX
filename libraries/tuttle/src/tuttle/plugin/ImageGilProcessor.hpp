@@ -74,10 +74,10 @@ public:
 #ifndef TUTTLE_PRODUCTION
 		// init dst buffer with red to highlight uninitialized pixels
 		const OfxRectI dstBounds = this->translateRoWToOutputClipCoordinates( _dst->getBounds() );
-		View dstToFill = bgil::subimage_view( _dstView,
+		View dstToFill = boost::gil::subimage_view( _dstView,
 		                                      dstBounds.x1, dstBounds.y1,
 		                                      dstBounds.x2-dstBounds.x1, dstBounds.y2-dstBounds.y1 );
-		const bgil::rgba32f_pixel_t errorColor( 1.0, 0.0, 0.0, 1.0 );
+		const boost::gil::rgba32f_pixel_t errorColor( 1.0, 0.0, 0.0, 1.0 );
 		fill_pixels( dstToFill, errorColor );
 #endif
 	}

@@ -32,7 +32,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		return;
 	}
 
-	//Step 1. Create bgil image
+	//Step 1. Create boost::gil image
 	//Step 2. Initialize freetype
 	//Step 3. Make Glyphs Array
 	//Step 4. Make Metrics Array
@@ -41,7 +41,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 7. Render Glyphs on GIL View
 	//Step 8. Save GIL Image
 
-	//Step 1. Create bgil image -----------
+	//Step 1. Create boost::gil image -----------
 	if( ! this->_clipSrc->isConnected() )
 	{
 //		rgba32f_pixel_t backgroundColor( params._backgroundColor.r,
@@ -69,14 +69,14 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	std::transform( _params._text.begin(), _params._text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
 	//Step 4. Make Metrics Array --------------------
-	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _metrics ), bgil::make_metric() );
+	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _metrics ), boost::gil::make_metric() );
 
 	//Step 5. Make Kerning Array ----------------
-	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _kerning ), bgil::make_kerning() );
+	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _kerning ), boost::gil::make_kerning() );
 
 	//Step 6. Get Coordinates (x,y) ----------------
-	_textSize.x = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), bgil::make_width() );
-	_textSize.y = std::for_each( _metrics.begin(), _metrics.end(), bgil::make_height() );
+	_textSize.x = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), boost::gil::make_width() );
+	_textSize.y = std::for_each( _metrics.begin(), _metrics.end(), boost::gil::make_height() );
 	_textCorner.x = ( this->_dstView.width() - _textSize.x ) * 0.5;
 	_textCorner.y = ( this->_dstView.height() - _textSize.y ) * 0.5;
 

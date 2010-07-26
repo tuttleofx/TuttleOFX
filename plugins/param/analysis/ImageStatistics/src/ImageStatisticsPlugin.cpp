@@ -111,7 +111,7 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments &args )
                 COUT_FATALERROR( "BitDepthCustom not recognize." );
                 return;
         }
-    }
+    }/*
     else if( dstComponents == OFX::ePixelComponentAlpha )
     {
         switch( dstBitDepth )
@@ -141,7 +141,7 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments &args )
                 COUT_FATALERROR( "BitDepthCustom not recognize." );
                 return;
         }
-    }
+    }*/
 }
 
 void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )

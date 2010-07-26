@@ -40,7 +40,7 @@ class CoordonatesSystemParams
 {
 public:
     typedef F Float;
-    typedef bgil::point2<Float> Point2;
+    typedef boost::gil::point2<Float> Point2;
 public:
     Point2 _imgSizeSrc;
     Point2 _imgCenterSrc;
@@ -74,7 +74,7 @@ public:
     }
 
     template<typename F2>
-    inline Point2 pixelToCenterNormalized( const bgil::point2<F2>& p ) const
+    inline Point2 pixelToCenterNormalized( const boost::gil::point2<F2>& p ) const
     {
         Point2 pp( p.x, p.y );
         return pixelToCenterNormalized( pp );
@@ -113,7 +113,7 @@ public:
     }
 
     template<typename F2>
-    inline Point2 pixelToLensCenterNormalized( const bgil::point2<F2>& p ) const
+    inline Point2 pixelToLensCenterNormalized( const boost::gil::point2<F2>& p ) const
     {
         Point2 pp( p.x, p.y );
         return pixelToLensCenterNormalized( pp );

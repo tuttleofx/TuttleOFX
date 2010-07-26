@@ -65,10 +65,44 @@ struct pixel_minus_t {
 };
 
 /// \ingroup PixelNumericOperations
+/// \brief construct for adding two pixels
+template <typename PixelRef1, // models pixel concept
+          typename PixelRef2, // models pixel concept
+          typename PixelR>    // models pixel value concept
+struct pixel_multiplies_t {
+    PixelR operator() (const PixelRef1& p1,
+                       const PixelRef2& p2) const {
+        PixelR result;
+        static_transform(p1,p2,result,
+                           channel_multiplies_t<typename channel_type<PixelRef1>::type,
+                                          typename channel_type<PixelRef2>::type,
+                                          typename channel_type<PixelR>::type>());
+        return result;
+    }
+};
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for subtracting two pixels
+template <typename PixelRef1, // models pixel concept
+          typename PixelRef2, // models pixel concept
+          typename PixelR>    // models pixel value concept
+struct pixel_divides_t {
+    PixelR operator() (const PixelRef1& p1,
+                       const PixelRef2& p2) const {
+        PixelR result;
+        static_transform(p1,p2,result,
+                           channel_divides_t<typename channel_type<PixelRef1>::type,
+                                           typename channel_type<PixelRef2>::type,
+                                           typename channel_type<PixelR>::type>());
+        return result;
+    }
+};
+
+/// \ingroup PixelNumericOperations
 /// \brief construct for multiplying scalar to a pixel
 template <typename PixelRef, // models pixel concept
           typename Scalar,   // models a scalar type
-          typename PixelR>   // models pixel value concept
+          typename PixelR=PixelRef>   // models pixel value concept
 struct pixel_multiplies_scalar_t {
     PixelR operator () (const PixelRef& p,
                         const Scalar& s) const {
@@ -85,7 +119,7 @@ struct pixel_multiplies_scalar_t {
 /// \brief construct for dividing a pixel by a scalar
 template <typename PixelRef, // models pixel concept
           typename Scalar,   // models a scalar type
-          typename PixelR>   // models pixel value concept
+          typename PixelR=PixelRef>   // models pixel value concept
 struct pixel_divides_scalar_t {
     PixelR operator () (const PixelRef& p,
                         const Scalar& s) const {
@@ -94,6 +128,19 @@ struct pixel_divides_scalar_t {
                            std::bind2nd(channel_divides_scalar_t<typename channel_type<PixelRef>::type,
                                                                  Scalar,
                                                                  typename channel_type<PixelR>::type>(),s));
+        return result;
+    }
+};
+
+/// \ingroup PixelNumericOperations
+/// \brief construct to compute pow on a pixel
+template <typename PixelRef, int n, typename PixelR=PixelRef> // models pixel concept
+struct pixel_pow_t {
+    PixelR operator () (const PixelRef& p) const {
+        PixelR result;
+        static_transform(p,result, channel_pow_t<typename channel_type<PixelRef>::type,
+						                         n,
+												 typename channel_type<PixelR>::type>());
         return result;
     }
 };
@@ -131,7 +178,7 @@ void zero_channels(Pixel& p) {
 template <typename PixelRef,  // models pixel concept
           typename PixelRefR> // models pixel concept
 struct pixel_assigns_t {
-    PixelRefR operator () (const PixelRef& src,
+    PixelRefR& operator () (const PixelRef& src,
                            PixelRefR& dst) const {
         static_for_each(src,dst,channel_assigns_t<typename channel_type<PixelRef>::type,
                                                   typename channel_type<PixelRefR>::type>());

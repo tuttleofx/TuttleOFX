@@ -56,8 +56,8 @@ protected :
 	std::vector<int> _kerning;
 	boost::ptr_vector<glyph_t> _glyphs;
 	View _dstViewForGlyphs;
-	bgil::point2<int> _textCorner;
-	bgil::point2<int> _textSize;
+	boost::gil::point2<int> _textCorner;
+	boost::gil::point2<int> _textSize;
 	Pixel _foregroundColor;
 	TextProcessParams _params;
 	

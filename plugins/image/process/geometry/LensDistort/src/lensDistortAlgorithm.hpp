@@ -22,11 +22,11 @@ namespace lens {
 
 
 template <typename F, typename F2>
-inline bgil::point2<F> transform( const NormalLensDistortParams<F>& params, const bgil::point2<F2>& src )
+inline boost::gil::point2<F> transform( const NormalLensDistortParams<F>& params, const boost::gil::point2<F2>& src )
 {
     assert( params._distort );
     assert( params._coef1 >= 0 );
-    bgil::point2<F> pc( params.pixelToLensCenterNormalized( src ) ); // centered normalized space
+    boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) ); // centered normalized space
     pc *= params._postScale;
 
     const F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center squared
@@ -39,18 +39,18 @@ inline bgil::point2<F> transform( const NormalLensDistortParams<F>& params, cons
 }
 
 template <typename F, typename F2>
-inline bgil::point2<F> transform( const NormalLensUndistortParams<F>& params, const bgil::point2<F2>& src )
+inline boost::gil::point2<F> transform( const NormalLensUndistortParams<F>& params, const boost::gil::point2<F2>& src )
 {
     assert( !params._distort );
     assert( params._coef1 >= 0 );
-    bgil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+    boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
     pc *= params._postScale;
 
     F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
     // necessary values to calculate
     if( r == 0 || params._coef1 == 0 )
     {
-        bgil::point2<F> tmp( src.x, src.y );
+        boost::gil::point2<F> tmp( src.x, src.y );
         return tmp;
     }
 
@@ -94,9 +94,9 @@ inline bgil::point2<F> transform( const NormalLensUndistortParams<F>& params, co
  * @todo support for fisheye...
  */
 template <typename F, typename F2>
-inline bgil::point2<F> transform( const FisheyeLensDistortParams<F>& params, const bgil::point2<F2>& src )
+inline boost::gil::point2<F> transform( const FisheyeLensDistortParams<F>& params, const boost::gil::point2<F2>& src )
 {
-    bgil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+    boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
     pc *= params._postScale;
 
     // F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center
@@ -106,7 +106,7 @@ inline bgil::point2<F> transform( const FisheyeLensDistortParams<F>& params, con
     F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
     if( r == 0 )
     {
-        bgil::point2<F> tmp( src.x, src.y );
+        boost::gil::point2<F> tmp( src.x, src.y );
         return tmp;
     }
     F coef = 0.5 * std::tan( r * params._coef1 ) / ( std::tan( 0.5 * params._coef1 ) * r );
@@ -120,15 +120,15 @@ inline bgil::point2<F> transform( const FisheyeLensDistortParams<F>& params, con
  * @todo support for fisheye...
  */
 template <typename F, typename F2>
-inline bgil::point2<F> transform( const FisheyeLensUndistortParams<F>& params, const bgil::point2<F2>& src )
+inline boost::gil::point2<F> transform( const FisheyeLensUndistortParams<F>& params, const boost::gil::point2<F2>& src )
 {
-    bgil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+    boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
     pc *= params._postScale;
 
     F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
     if( r == 0 || params._coef1 == 0 )
     {
-        bgil::point2<F> tmp( src.x, src.y );
+        boost::gil::point2<F> tmp( src.x, src.y );
         return tmp;
     }
     F coef = std::atan( 2.0 * r * std::tan( 0.5 * params._coef1 ) ) / params._coef1;
@@ -144,9 +144,9 @@ inline bgil::point2<F> transform( const FisheyeLensUndistortParams<F>& params, c
  * @todo support for advanced lens...
  */
 template <typename F, typename F2>
-inline bgil::point2<F> transform( const AdvancedLensDistortParams<F>& params, const bgil::point2<F2>& src )
+inline boost::gil::point2<F> transform( const AdvancedLensDistortParams<F>& params, const boost::gil::point2<F2>& src )
 {
-    bgil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+    boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
     pc *= params._postScale;
     
     F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center
@@ -202,7 +202,7 @@ OfxRectD transformValues( const Params& params, const OfxRectD& rec )
 /**
  * @param lensType
  * @param params
- * @param obj: objet to transform (can be OfxRectD, bgil::point2<>)
+ * @param obj: objet to transform (can be OfxRectD, boost::gil::point2<>)
  */
 template<class Obj>
 inline Obj transformValues( const EParamLensType lensType, const LensDistortProcessParams<double>& params, const Obj& obj )
@@ -242,9 +242,9 @@ inline Obj transformValues( const EParamLensType lensType, const LensDistortProc
  * @brief Apply the transformation on all points inside the vector
  */
 template<class Params, typename F2>
-inline void transformValuesApply( const Params& params, std::vector<bgil::point2<F2> >& vec )
+inline void transformValuesApply( const Params& params, std::vector<boost::gil::point2<F2> >& vec )
 {
-	for( typename std::vector<bgil::point2<F2> >::iterator it = vec.begin(), itEnd = vec.end();
+	for( typename std::vector<boost::gil::point2<F2> >::iterator it = vec.begin(), itEnd = vec.end();
 	 it != itEnd;
 	 ++it )
 	{
@@ -253,9 +253,9 @@ inline void transformValuesApply( const Params& params, std::vector<bgil::point2
 }
 
 template<class Params, typename F2>
-inline void transformValuesApply( const Params& params, std::vector<std::vector<bgil::point2<F2> > >& vec )
+inline void transformValuesApply( const Params& params, std::vector<std::vector<boost::gil::point2<F2> > >& vec )
 {
-	for( typename std::vector<std::vector<bgil::point2<F2> > >::iterator it = vec.begin(), itEnd = vec.end();
+	for( typename std::vector<std::vector<boost::gil::point2<F2> > >::iterator it = vec.begin(), itEnd = vec.end();
 	 it != itEnd;
 	 ++it )
 	{
@@ -310,13 +310,13 @@ void resample_pixels( const SrcView& src_view, const DstView& dst_view, const Ma
 {
     typename DstView::point_t dst_p;
     typename DstView::value_type black;
-    color_convert( bgil::rgba32f_pixel_t(0.0,0.0,0.0,0.0), black );
+    color_convert( boost::gil::rgba32f_pixel_t(0.0,0.0,0.0,0.0), black );
     for( dst_p.y = procWindow.y1; dst_p.y < procWindow.y2; ++dst_p.y )
     {
         typename DstView::x_iterator xit = dst_view.row_begin( dst_p.y );
         for( dst_p.x = procWindow.x1; dst_p.x < procWindow.x2; ++dst_p.x )
         {
-            if( !bgil::sample( sampler, src_view, transform( dst_to_src, dst_p ), xit[dst_p.x] ) )
+            if( !boost::gil::sample( sampler, src_view, transform( dst_to_src, dst_p ), xit[dst_p.x] ) )
             {
                 xit[dst_p.x] = black; // if it is outside of the source image
             }
