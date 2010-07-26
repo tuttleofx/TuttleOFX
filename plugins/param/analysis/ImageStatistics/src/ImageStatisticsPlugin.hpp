@@ -42,14 +42,22 @@ public:
 	OFX::Double2DParam* _paramRectCenter;
 	OFX::Double2DParam* _paramRectSize;
 	OFX::ChoiceParam* _paramChooseOutput;
+	
 	OFX::RGBAParam* _paramOutputAverage;
-	OFX::Double3DParam* _paramOutputAverageHsl;
 	OFX::RGBAParam* _paramOutputChannelMin;
 	OFX::RGBAParam* _paramOutputChannelMax;
 	OFX::RGBAParam* _paramOutputLuminosityMin;
 	OFX::RGBAParam* _paramOutputLuminosityMax;
-	OFX::Double3DParam* _paramOutputKurtosisHsl;
-	OFX::Double3DParam* _paramOutputSkewnessHsl;
+	OFX::RGBAParam* _paramOutputKurtosis;
+	OFX::RGBAParam* _paramOutputSkewness;
+	
+	OFX::Double3DParam* _paramOutputAverageHSL;
+	OFX::Double3DParam* _paramOutputChannelMinHSL;
+	OFX::Double3DParam* _paramOutputChannelMaxHSL;
+	OFX::Double3DParam* _paramOutputLuminosityMinHSL;
+	OFX::Double3DParam* _paramOutputLuminosityMaxHSL;
+	OFX::Double3DParam* _paramOutputKurtosisHSL;
+	OFX::Double3DParam* _paramOutputSkewnessHSL;
 };
 
 }

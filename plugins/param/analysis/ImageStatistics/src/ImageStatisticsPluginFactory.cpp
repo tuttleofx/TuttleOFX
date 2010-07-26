@@ -96,48 +96,103 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kParamOutputGroup );
 	outputGroup->setLabel( "Output" );
 
+// -----------------------------------------------------------------------------
+	
+	OFX::GroupParamDescriptor* rgbaGroup = desc.defineGroupParam( kParamOutputGroupRGBA );
+	rgbaGroup->setLabel( "RGBA" );
+	rgbaGroup->setParent( outputGroup );
+
 	OFX::RGBAParamDescriptor* outputAverage = desc.defineRGBAParam( kParamOutputAverage );
 	outputAverage->setLabel( "Average" );
-	outputAverage->setParent( outputGroup );
+	outputAverage->setParent( rgbaGroup );
 	outputAverage->setEvaluateOnChange( false );
-
-	OFX::Double3DParamDescriptor* outputAverageHsl = desc.defineDouble3DParam( kParamOutputAverageHsl );
-	outputAverageHsl->setLabel( "Average HSL" );
-	outputAverageHsl->setDoubleType( OFX::eDoubleTypePlain );
-	outputAverageHsl->setDimensionLabels( "h", "s", "l" );
-	outputAverageHsl->setParent( outputGroup );
-	outputAverageHsl->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputChannelMin = desc.defineRGBAParam( kParamOutputChannelMin );
 	outputChannelMin->setLabel( "Channels' min" );
 	outputChannelMin->setHint( "Minimum value per channel" );
-	outputChannelMin->setParent( outputGroup );
+	outputChannelMin->setParent( rgbaGroup );
 	outputChannelMin->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputChannelMax = desc.defineRGBAParam( kParamOutputChannelMax );
 	outputChannelMax->setLabel( "Channels' max" );
-	outputChannelMax->setParent( outputGroup );
+	outputChannelMax->setParent( rgbaGroup );
 	outputChannelMax->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputLuminosityMin = desc.defineRGBAParam( kParamOutputLuminosityMin );
 	outputLuminosityMin->setLabel( "Luminosity min" );
-	outputLuminosityMin->setParent( outputGroup );
+	outputLuminosityMin->setParent( rgbaGroup );
 	outputLuminosityMin->setEvaluateOnChange( false );
 
 	OFX::RGBAParamDescriptor* outputLuminosityMax = desc.defineRGBAParam( kParamOutputLuminosityMax );
 	outputLuminosityMax->setLabel( "Luminosity max" );
-	outputLuminosityMax->setParent( outputGroup );
+	outputLuminosityMax->setParent( rgbaGroup );
 	outputLuminosityMax->setEvaluateOnChange( false );
 
-	OFX::Double3DParamDescriptor* outputKurtosisHsl = desc.defineDouble3DParam( kParamOutputKurtosisHsl );
-	outputKurtosisHsl->setLabel( "Kurtosis HSL" );
-	outputKurtosisHsl->setParent( outputGroup );
-	outputKurtosisHsl->setEvaluateOnChange( false );
+	OFX::RGBAParamDescriptor* outputKurtosis = desc.defineRGBAParam( kParamOutputKurtosis );
+	outputKurtosis->setLabel( "Kurtosis" );
+	outputKurtosis->setParent( rgbaGroup );
+	outputKurtosis->setEvaluateOnChange( false );
 
-	OFX::Double3DParamDescriptor* outputSkewnessHsl = desc.defineDouble3DParam( kParamOutputSkewnessHsl );
-	outputSkewnessHsl->setLabel( "Skewness HSL" );
-	outputSkewnessHsl->setParent( outputGroup );
-	outputSkewnessHsl->setEvaluateOnChange( false );
+	OFX::RGBAParamDescriptor* outputSkewness = desc.defineRGBAParam( kParamOutputSkewness );
+	outputSkewness->setLabel( "Skewness" );
+	outputSkewness->setParent( rgbaGroup );
+	outputSkewness->setEvaluateOnChange( false );
+
+// -----------------------------------------------------------------------------
+
+	OFX::GroupParamDescriptor* hslGroup = desc.defineGroupParam( kParamOutputGroupHSL );
+	hslGroup->setLabel( "HSL" );
+	hslGroup->setParent( outputGroup );
+
+	OFX::Double3DParamDescriptor* outputAverageHSL = desc.defineDouble3DParam( kParamOutputAverageHSL );
+	outputAverageHSL->setLabel( "Average" );
+	outputAverageHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputAverageHSL->setDimensionLabels( "h", "s", "l" );
+	outputAverageHSL->setParent( hslGroup );
+	outputAverageHSL->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputChannelMinHSL = desc.defineDouble3DParam( kParamOutputChannelMinHSL );
+	outputChannelMinHSL->setLabel( "Channels' min" );
+	outputChannelMinHSL->setHint( "Minimum value per channel" );
+	outputChannelMinHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputChannelMinHSL->setDimensionLabels( "h", "s", "l" );
+	outputChannelMinHSL->setParent( hslGroup );
+	outputChannelMinHSL->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputChannelMaxHSL = desc.defineDouble3DParam( kParamOutputChannelMaxHSL );
+	outputChannelMaxHSL->setLabel( "Channels' max" );
+	outputChannelMaxHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputChannelMaxHSL->setDimensionLabels( "h", "s", "l" );
+	outputChannelMaxHSL->setParent( hslGroup );
+	outputChannelMaxHSL->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputLuminosityMinHSL = desc.defineDouble3DParam( kParamOutputLuminosityMinHSL );
+	outputLuminosityMinHSL->setLabel( "Luminosity min" );
+	outputLuminosityMinHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputLuminosityMinHSL->setDimensionLabels( "h", "s", "l" );
+	outputLuminosityMinHSL->setParent( hslGroup );
+	outputLuminosityMinHSL->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputLuminosityMaxHSL = desc.defineDouble3DParam( kParamOutputLuminosityMaxHSL );
+	outputLuminosityMaxHSL->setLabel( "Luminosity max" );
+	outputLuminosityMaxHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputLuminosityMaxHSL->setDimensionLabels( "h", "s", "l" );
+	outputLuminosityMaxHSL->setParent( hslGroup );
+	outputLuminosityMaxHSL->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputKurtosisHSL = desc.defineDouble3DParam( kParamOutputKurtosisHSL );
+	outputKurtosisHSL->setLabel( "Kurtosis" );
+	outputKurtosisHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputKurtosisHSL->setDimensionLabels( "h", "s", "l" );
+	outputKurtosisHSL->setParent( hslGroup );
+	outputKurtosisHSL->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputSkewnessHSL = desc.defineDouble3DParam( kParamOutputSkewnessHSL );
+	outputSkewnessHSL->setLabel( "Skewness" );
+	outputSkewnessHSL->setDoubleType( OFX::eDoubleTypePlain );
+	outputSkewnessHSL->setDimensionLabels( "h", "s", "l" );
+	outputSkewnessHSL->setParent( hslGroup );
+	outputSkewnessHSL->setEvaluateOnChange( false );
 }
 
 /**
