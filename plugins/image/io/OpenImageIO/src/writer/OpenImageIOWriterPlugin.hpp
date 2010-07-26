@@ -25,7 +25,7 @@ public:
 	OpenImageIOWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	OpenImageIOWriterProcessParams getParams(const OfxTime time);
+	OpenImageIOWriterProcessParams getProcessParams(const OfxTime time);
 	void render( const OFX::RenderArguments& args );
 
 public:

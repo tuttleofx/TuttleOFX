@@ -26,7 +26,7 @@ public:
 	DPXWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	DPXWriterProcessParams getParams(const OfxTime time);
+	DPXWriterProcessParams getProcessParams(const OfxTime time);
 	virtual void render( const OFX::RenderArguments& args );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 

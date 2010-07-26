@@ -20,7 +20,7 @@ EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 	_componentsType = fetchChoiceParam( kParamComponentsType );
 }
 
-EXRWriterProcessParams EXRWriterPlugin::getParams(const OfxTime time)
+EXRWriterProcessParams EXRWriterPlugin::getProcessParams(const OfxTime time)
 {
 	EXRWriterProcessParams params;
 	params._bitDepth = (EParamBitDepth)this->_bitDepth->getValue();

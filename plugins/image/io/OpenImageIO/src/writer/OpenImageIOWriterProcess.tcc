@@ -41,7 +41,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	using namespace boost::gil;
 	try
 	{
-		OpenImageIOWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
+		OpenImageIOWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 		writeImage( this->_srcView, params._filepath, params._bitDepth );
 		copy_pixels( this->_srcView, this->_dstView );
 	}

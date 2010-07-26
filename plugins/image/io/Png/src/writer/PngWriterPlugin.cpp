@@ -19,7 +19,7 @@ PngWriterPlugin::PngWriterPlugin( OfxImageEffectHandle handle )
 	_outputRGB     = fetchBooleanParam( kParamOutputRGB );
 }
 
-PngWriterProcessParams PngWriterPlugin::getParams(const OfxTime time)
+PngWriterProcessParams PngWriterPlugin::getProcessParams(const OfxTime time)
 {
 	PngWriterProcessParams params;
 	params._filepath = this->_filePattern.getFilenameAt(time);

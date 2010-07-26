@@ -26,7 +26,7 @@ public:
 	EXRWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	EXRWriterProcessParams getParams(const OfxTime time);
+	EXRWriterProcessParams getProcessParams(const OfxTime time);
 	void render( const OFX::RenderArguments& args );
 
 protected:

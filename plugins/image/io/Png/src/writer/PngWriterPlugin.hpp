@@ -26,7 +26,7 @@ public:
 	PngWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	PngWriterProcessParams getParams(const OfxTime time);
+	PngWriterProcessParams getProcessParams(const OfxTime time);
 	virtual void render( const OFX::RenderArguments& args );
 
 public:
