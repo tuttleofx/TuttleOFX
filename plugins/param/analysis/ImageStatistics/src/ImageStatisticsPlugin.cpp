@@ -34,6 +34,8 @@ ImageEffect( handle )
 	_paramOutputChannelMax = fetchRGBAParam( kParamOutputChannelMax );
 	_paramOutputLuminosityMin = fetchRGBAParam( kParamOutputLuminosityMin );
 	_paramOutputLuminosityMax = fetchRGBAParam( kParamOutputLuminosityMax );
+	_paramOutputKurtosisHsl = fetchDouble3DParam( kParamOutputKurtosisHsl );
+	_paramOutputSkewnessHsl = fetchDouble3DParam( kParamOutputSkewnessHsl );
 }
 
 ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectI& srcRod ) const

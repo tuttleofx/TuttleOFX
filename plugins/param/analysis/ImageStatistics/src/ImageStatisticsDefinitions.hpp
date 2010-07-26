@@ -27,6 +27,8 @@ const static std::string kParamOutputChannelMin = "outputChannelMin";
 const static std::string kParamOutputChannelMax = "outputChannelMax";
 const static std::string kParamOutputLuminosityMin = "outputLuminosityMin";
 const static std::string kParamOutputLuminosityMax = "outputLuminosityMax";
+const static std::string kParamOutputKurtosisHsl = "outputKurtosisHsl";
+const static std::string kParamOutputSkewnessHsl = "outputSkewnessHsl";
 
 const static std::string kParamChooseOutput = "chooseOutput";
 const static std::string kParamChooseOutputSource = "source";

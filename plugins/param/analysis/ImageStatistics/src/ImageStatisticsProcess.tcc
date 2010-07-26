@@ -81,101 +81,60 @@ struct pixel_assign_max_t
 
 ////////////////////////////////////////////////////////////////////////////////
 
-/*
-namespace detail {
+namespace details {
 
-// compile-time recursion for per-element operations on color bases
-template <int N>
-struct element_recursion {
-//	//static_for_each with two sources
-//    template <typename P1,typename P2,typename Op>
-//    static Op static_for_each(P1& p1, P2& p2, Op op) {
-//        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
-//        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
-//        return op2;
-//    }
-//    template <typename P1,typename P2,typename Op>
-//    static Op static_for_each(P1& p1, const P2& p2, Op op) {
-//        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
-//        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
-//        return op2;
-//    }
-    template <typename P1,typename P2,typename Op, typename ChannelFilter = mpl::vector>
-    static Op static_for_each(const P1& p1, P2& p2, Op op) {
-        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
-        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
-        return op2;
+template <typename Colorspace, typename ChannelType> // models pixel concept
+struct without_alpha_channel_impl_t
+{
+	typedef pixel<ChannelType, layout<Colorspace> > Pixel;
+	typedef Pixel PixelR;
+
+	BOOST_STATIC_ASSERT(( ! contains_color<Pixel, alpha_t>::value ));
+
+    PixelR operator () (const Pixel& src) const
+	{
+		return src;
     }
-//    template <typename P1,typename P2,typename Op>
-//    static Op static_for_each(const P1& p1, const P2& p2, Op op) {
-//        Op op2(element_recursion<N-1>::static_for_each(p1,p2,op));
-//        op2(semantic_at_c<N-1>(p1), semantic_at_c<N-1>(p2));
-//        return op2;
-//    }
 };
 
-// Termination condition of the compile-time recursion for element operations on a color base
-template<> struct element_recursion<0> {
-    //static_for_each with two sources
-    template <typename P1,typename P2,typename Op>
-    static Op static_for_each(const P1&,const P2&,Op op){return op;}
+template <typename ChannelType> // models pixel concept
+struct without_alpha_channel_impl_t<rgba_t, ChannelType>
+{
+	typedef rgba_t Colorspace;
+	typedef pixel<ChannelType, layout<Colorspace> > Pixel;
+	typedef pixel<ChannelType, layout<rgb_t> > PixelR;
+
+	BOOST_STATIC_ASSERT(( contains_color<Pixel, alpha_t>::value ));
+
+    PixelR operator () (const Pixel& src) const
+	{
+		PixelR dst;
+		get_color( dst, red_t() ) = get_color( src, red_t() );
+		get_color( dst, green_t() ) = get_color( src, green_t() );
+		get_color( dst, blue_t() ) = get_color( src, blue_t() );
+		return dst;
+    }
 };
 
 }
 
-//static_for_each with two sources
-//template <typename P1,typename P2,typename Op>
-//GIL_FORCEINLINE
-//Op static_for_each(P1& p1,      P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
-//template <typename P1,typename P2,typename Op>
-//GIL_FORCEINLINE
-//Op static_for_each(P1& p1,const P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
-template <typename P1,typename P2,typename Op>
-GIL_FORCEINLINE
-Op static_for_each(const P1& p1,      P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
-//template <typename P1,typename P2,typename Op>
-//GIL_FORCEINLINE
-//Op static_for_each(const P1& p1,const P2& p2, Op op)             { return detail::element_recursion<size<P1>::value>::static_for_each(p1,p2,op); }
-
-*/
-/*
-template <typename PixelRef,  // models pixel concept
-          typename PixelRefR> // models pixel concept
+template <typename Pixel> // models pixel concept
 struct without_alpha_channel_t
 {
-	typedef typename color_space_type<PixelRef>::type Colorspace;
-//	typedef typename mpl::find<Colorspace, alpha_t>::type AlphaPos;
-//	typedef typename mpl::erase<Colorspace, AlphaPos>::type ColorspaceWithoutAlpha;
-//	typedef ColorspaceWithoutAlpha ColorspaceR;
-//	typedef typename mpl::if_<contains_color<PixelRef, alpha_t>,
-//           ColorspaceWithoutAlpha,
-//           PixelRef>::type ColorspaceR;
-//    typedef typename rgb_t ColorspaceR;
-	typedef pixel<typename channel_type<PixelRef>::type, layout<ColorspaceR> > PixelRefR;
-    PixelRefR operator () (const PixelRef& src,
-                           PixelRefR& dst) const
-	{
-		get_color( dst, red_t()   ) = get_color( src, red_t()   );
-		get_color( dst, green_t() ) = get_color( src, green_t() );
-		get_color( dst, blue_t()  ) = get_color( src, blue_t()  );
-        return dst;
-    }
-};
-*/
+	typedef typename channel_type<Pixel>::type ChannelType;
+	typedef typename color_space_type<Pixel>::type Colorspace;
 
-/// \ingroup PixelNumericOperations
-///definition and a generic implementation for casting and assigning a pixel to another
-///user should specialize it for better performance
-template <typename PixelRef,  // models pixel concept
-          typename PixelRefR> // models pixel concept
-struct pixel_assigns_without_alpha_t {
-    PixelRefR& operator () (const PixelRef& src,
-                           PixelRefR& dst) const {
-        static_for_each(src,dst,channel_assigns_t<typename channel_type<PixelRef>::type,
-                                                  typename channel_type<PixelRefR>::type>());
-        return dst;
-    }
+	typedef details::without_alpha_channel_impl_t<Colorspace, ChannelType> Do;
+	typedef typename Do::PixelR PixelR;
+
+	PixelR operator () (const Pixel& src) const
+	{
+		return Do()( src );
+	}
 };
+
+
+
 
 }
 }
@@ -196,10 +155,22 @@ ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin &ins
 
 
 template<typename T>
-T standard_deviation( const T v_sum, const T v_sum_x2, const std::size_t nb )
+T standard_deviation( const T v_sum, const T v_sum_p2, const std::size_t nb )
 {
 	using namespace boost::units;
-	return std::sqrt( (v_sum_x2 - pow<2>(v_sum)) / nb );
+	return std::sqrt( (v_sum_p2 - pow<2>(v_sum)) / nb );
+}
+
+template<typename Pixel>
+Pixel pixel_standard_deviation( const Pixel& v_sum, const Pixel& v_sum_p2, const std::size_t nb )
+{
+	using namespace boost::gil;
+	Pixel res;
+	for( int i = 0; i < num_channels<Pixel>::type::value; ++i )
+	{
+		res[i] = standard_deviation( v_sum[i], v_sum_p2[i], nb );
+	}
+	return res;
 }
 
 /**
@@ -210,11 +181,23 @@ T standard_deviation( const T v_sum, const T v_sum_x2, const std::size_t nb )
  * as opposed to frequent modestly sized deviations.
  */
 template<typename T>
-T kurtosis( const T v_mean, const T v_standard_deviation, const T v_sum, const T v_sum_x2, const T v_sum_x3, const T v_sum_x4, const std::size_t nb )
+T kurtosis( const T v_mean, const T v_standard_deviation, const T v_sum, const T v_sum_p2, const T v_sum_p3, const T v_sum_p4, const std::size_t nb )
 {
 	using namespace boost::units;
-	return ( (v_sum_x4 - 4.0 * v_mean * v_sum_x3 + 6.0*pow<2>(v_mean)* v_sum_x2) / nb - 3.0*pow<4>(v_mean) ) /
+	return ( (v_sum_p4 - 4.0 * v_mean * v_sum_p3 + 6.0*pow<2>(v_mean)* v_sum_p2) / nb - 3.0*pow<4>(v_mean) ) /
 		   ( pow<4>(v_standard_deviation) ) -3.0;
+}
+
+template<typename Pixel>
+Pixel pixel_kurtosis( const Pixel& v_mean, const Pixel& v_standard_deviation, const Pixel& v_sum, const Pixel& v_sum_p2, const Pixel& v_sum_p3, const Pixel& v_sum_p4, const std::size_t nb )
+{
+	using namespace boost::gil;
+	Pixel res;
+	for( int i = 0; i < num_channels<Pixel>::type::value; ++i )
+	{
+		res[i] = kurtosis( v_mean[i], v_standard_deviation[i], v_sum[i], v_sum_p2[i], v_sum_p3[i], v_sum_p4[i], nb );
+	}
+	return res;
 }
 
 /**
@@ -226,11 +209,25 @@ T kurtosis( const T v_mean, const T v_standard_deviation, const T v_sum, const T
  * a symmetric distribution.
  */
 template<typename T>
-T skewness( const T v_mean, const T v_standard_deviation, const T v_sum, const T v_sum_x2, const T v_sum_x3, const std::size_t nb )
+T skewness( const T v_mean, const T v_standard_deviation, const T v_sum, const T v_sum_p2, const T v_sum_p3, const std::size_t nb )
 {
 	using namespace boost::units;
-	return ( (v_sum_x3 - 3.0*v_mean*v_sum_x2) / nb + 2.0*pow<3>(v_mean) ) / pow<3>(v_standard_deviation);
+	return ( (v_sum_p3 - 3.0*v_mean*v_sum_p2) / nb + 2.0*pow<3>(v_mean) ) / pow<3>(v_standard_deviation);
 }
+
+
+template<typename Pixel>
+Pixel pixel_skewness( const Pixel& v_mean, const Pixel& v_standard_deviation, const Pixel& v_sum, const Pixel& v_sum_p2, const Pixel& v_sum_p3, const std::size_t nb )
+{
+	using namespace boost::gil;
+	Pixel res;
+	for( int i = 0; i < num_channels<Pixel>::type::value; ++i )
+	{
+		res[i] = skewness( v_mean[i], v_standard_deviation[i], v_sum[i], v_sum_p2[i], v_sum_p3[i], nb );
+	}
+	return res;
+}
+
 
 template<class View>
 void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
@@ -266,14 +263,14 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	Pixel maxLuminosity = firstPixel;
 	PixelGray maxLuminosityGray = firstPixelGray;
 
-	hsl32f_pixel_t hslSum;
-	hsl32f_pixel_t hslSum_p2;
-	hsl32f_pixel_t hslSum_p3;
-	hsl32f_pixel_t hslSum_p4;
-	pixel_zeros_t<hsl32f_pixel_t>()( hslSum );
-	pixel_zeros_t<hsl32f_pixel_t>()( hslSum_p2 );
-	pixel_zeros_t<hsl32f_pixel_t>()( hslSum_p3 );
-	pixel_zeros_t<hsl32f_pixel_t>()( hslSum_p4 );
+	hsl32f_pixel_t sumHsl;
+	hsl32f_pixel_t sumHsl_p2;
+	hsl32f_pixel_t sumHsl_p3;
+	hsl32f_pixel_t sumHsl_p4;
+	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl );
+	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl_p2 );
+	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl_p3 );
+	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl_p4 );
 
 	for( int y = _processParams._rect.y1;
 		 y < _processParams._rect.y2;
@@ -290,18 +287,22 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 			Pixel32f pix;
 			pixel_assigns_t<Pixel, Pixel32f>()( *src_it, pix ); // pix = src_it;
 			rgb32f_pixel_t pixRgb;
-			rgba_to_rgb_t<Pixel32f>()( pix, pixRgb ); // pixRgb = pix;
+			pixel_assigns_t<rgb32f_pixel_t, rgb32f_pixel_t>()( without_alpha_channel_t<Pixel32f>()( pix ), pixRgb ); // pixRgb = pix;
 
 			hsl32f_pixel_t pixHsl;
-			color_convert( pixRgb, pixHsl );
-
 			hsl32f_pixel_t pixHsl_p2;
-			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_pow_t<hsl32f_pixel_t, 2>()( pixHsl ), pixHsl_p2 ); // pixHsl_p2 = pow<2>( pixHsl );
-//			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pix, pix ), pixPow2 ); // pixHsl_p2 = pixHsl * pixHsl;
 			hsl32f_pixel_t pixHsl_p3;
-			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl, pixHsl_p2 ), pixHsl_p3 ); // pixHsl_p3 = pixHsl * pixHsl_p2;
 			hsl32f_pixel_t pixHsl_p4;
+
+			color_convert( pixRgb, pixHsl );
+			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_pow_t<hsl32f_pixel_t, 2>()( pixHsl ), pixHsl_p2 ); // pixHsl_p2 = pow<2>( pixHsl );
+			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl, pixHsl_p2 ), pixHsl_p3 ); // pixHsl_p3 = pixHsl * pixHsl_p2;
 			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p2, pixHsl_p2 ), pixHsl_p4 ); // pixHsl_p4 = pixHsl_p2 * pixHsl_p2;
+
+			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl, sumHsl ); // sumHsl += pix;
+			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p2, sumHsl_p2 ); // sumHsl_p2 += pix_p2;
+			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p3, sumHsl_p3 ); // sumHsl_p3 += pix_p3;
+			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p4, sumHsl_p4 ); // sumHsl_p4 += pix_p4;
 
 			// for average : accumulate
 			pixel_plus_assign_t<Pixel32f, Pixel32f>()( pix, lineAverage ); // lineAverage += pix;
@@ -335,6 +336,30 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	pixel_divides_scalar_assign_t<double, Pixel32f>()( rectSize.y, average ); // _average /= rectSize.y;
 
 
+	std::size_t nbPixels = (_processParams._rect.x2 - _processParams._rect.x1) * (_processParams._rect.y2 - _processParams._rect.y1);
+
+	hsl32f_pixel_t stdDerivHsl = pixel_standard_deviation( sumHsl, sumHsl_p2, nbPixels );
+	hsl32f_pixel_t meanHsl = pixel_divides_scalar_t<hsl32f_pixel_t, double>()( sumHsl, nbPixels );
+	hsl32f_pixel_t kurtosisHsl = pixel_kurtosis( meanHsl, stdDerivHsl, sumHsl, sumHsl_p2, sumHsl_p3, sumHsl_p4, nbPixels );
+	hsl32f_pixel_t skewnessHsl = pixel_skewness( meanHsl, stdDerivHsl, sumHsl, sumHsl_p2, sumHsl_p3, nbPixels );
+
+	COUT_VAR( get_color( stdDerivHsl, hsl_color_space::hue_t() ) );
+	COUT_VAR( get_color( stdDerivHsl, hsl_color_space::saturation_t() ) );
+	COUT_VAR( get_color( stdDerivHsl, hsl_color_space::lightness_t() ) );
+
+	COUT_VAR( get_color( meanHsl, hsl_color_space::hue_t() ) );
+	COUT_VAR( get_color( meanHsl, hsl_color_space::saturation_t() ) );
+	COUT_VAR( get_color( meanHsl, hsl_color_space::lightness_t() ) );
+
+	COUT_VAR( get_color( kurtosisHsl, hsl_color_space::hue_t() ) );
+	COUT_VAR( get_color( kurtosisHsl, hsl_color_space::saturation_t() ) );
+	COUT_VAR( get_color( kurtosisHsl, hsl_color_space::lightness_t() ) );
+
+	COUT_VAR( get_color( skewnessHsl, hsl_color_space::hue_t() ) );
+	COUT_VAR( get_color( skewnessHsl, hsl_color_space::saturation_t() ) );
+	COUT_VAR( get_color( skewnessHsl, hsl_color_space::lightness_t() ) );
+
+	// temporary values for output
 	rgba32f_pixel_t outputRgbaValue;
 	rgb32f_pixel_t outputRgbValue;
 	hsl32f_pixel_t outputHslValue;
@@ -347,13 +372,13 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
 
-	rgba_to_rgb_t<Pixel32f>()( average, outputRgbValue );
-	color_convert( outputRgbValue, outputHslValue );
+	color_convert( meanHsl, outputHslValue );
 	_plugin._paramOutputAverageHsl->setValueAtTime( args.time,
 	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
 	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
 	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
 	                                      );
+
 	color_convert( minChannel, outputRgbaValue );
 	_plugin._paramOutputChannelMin->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
@@ -361,6 +386,7 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	                                        get_color( outputRgbaValue, blue_t() ),
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
+
 	color_convert( maxChannel, outputRgbaValue );
 	_plugin._paramOutputChannelMax->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
@@ -368,6 +394,7 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	                                        get_color( outputRgbaValue, blue_t() ),
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
+
 	color_convert( minLuminosity, outputRgbaValue );
 	_plugin._paramOutputLuminosityMin->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
@@ -375,6 +402,7 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	                                        get_color( outputRgbaValue, blue_t() ),
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
+
 	color_convert( maxLuminosity, outputRgbaValue );
 	_plugin._paramOutputLuminosityMax->setValueAtTime( args.time,
 	                                        get_color( outputRgbaValue, red_t() ),
@@ -382,7 +410,21 @@ void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 	                                        get_color( outputRgbaValue, blue_t() ),
 	                                        get_color( outputRgbaValue, alpha_t() )
 	                                      );
-	
+
+	color_convert( kurtosisHsl, outputHslValue );
+	_plugin._paramOutputKurtosisHsl->setValueAtTime( args.time,
+	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
+	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
+	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
+	                                      );
+
+	color_convert( skewnessHsl, outputHslValue );
+	_plugin._paramOutputSkewnessHsl->setValueAtTime( args.time,
+	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
+	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
+	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
+	                                      );
+
 	switch( _processParams._chooseOutput )
 	{
 		case eParamChooseOutputSource:

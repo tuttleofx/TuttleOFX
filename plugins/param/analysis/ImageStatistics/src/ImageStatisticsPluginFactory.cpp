@@ -128,6 +128,16 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	outputLuminosityMax->setLabel( "Luminosity max" );
 	outputLuminosityMax->setParent( outputGroup );
 	outputLuminosityMax->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputKurtosisHsl = desc.defineDouble3DParam( kParamOutputKurtosisHsl );
+	outputKurtosisHsl->setLabel( "Kurtosis HSL" );
+	outputKurtosisHsl->setParent( outputGroup );
+	outputKurtosisHsl->setEvaluateOnChange( false );
+
+	OFX::Double3DParamDescriptor* outputSkewnessHsl = desc.defineDouble3DParam( kParamOutputSkewnessHsl );
+	outputSkewnessHsl->setLabel( "Skewness HSL" );
+	outputSkewnessHsl->setParent( outputGroup );
+	outputSkewnessHsl->setEvaluateOnChange( false );
 }
 
 /**

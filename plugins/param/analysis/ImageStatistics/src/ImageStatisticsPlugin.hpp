@@ -48,6 +48,8 @@ public:
 	OFX::RGBAParam* _paramOutputChannelMax;
 	OFX::RGBAParam* _paramOutputLuminosityMin;
 	OFX::RGBAParam* _paramOutputLuminosityMax;
+	OFX::Double3DParam* _paramOutputKurtosisHsl;
+	OFX::Double3DParam* _paramOutputSkewnessHsl;
 };
 
 }
