@@ -7,13 +7,13 @@
 namespace tuttle {
 namespace plugin {
 namespace gamma {
-	const static std::string kMasterValue = "Master";
-	const static std::string kRedValue = "Red";
-	const static std::string kGreenValue = "Green";
-	const static std::string kBlueValue = "Blue";
-	const static std::string kAlphaValue = "Alpha";
-	const static std::string kGammaType = "GammaType";
-	const static std::string kInvert = "Invert";
+	const static std::string kMasterValue = "master";
+	const static std::string kRedValue = "red";
+	const static std::string kGreenValue = "green";
+	const static std::string kBlueValue = "blue";
+	const static std::string kAlphaValue = "alpha";
+	const static std::string kGammaType = "gammaType";
+	const static std::string kInvert = "invert";
 
 	const static std::string kGammaGlobal = "Global";
 	const static std::string kGammaChannels = "RGBA";
