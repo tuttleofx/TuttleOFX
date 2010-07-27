@@ -22,7 +22,7 @@ DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
 	_compressed     = fetchBooleanParam( kParamCompressed );
 }
 
-DPXWriterProcessParams DPXWriterPlugin::getParams(const OfxTime time)
+DPXWriterProcessParams DPXWriterPlugin::getProcessParams(const OfxTime time)
 {
 	DPXWriterProcessParams params;
 	params._componentsType = _componentsType->getValue();

@@ -32,7 +32,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( this->_srcPixelRod == this->_dstPixelRod );
 	try
 	{
-		DPXWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
+		DPXWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 		int packing = params._compressed == false;
 
 		switch( params._bitDepth )

@@ -19,7 +19,7 @@ OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 	_outputRGB     = fetchBooleanParam( kParamOutputRGB );
 }
 
-OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getParams(const OfxTime time)
+OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const OfxTime time)
 {
 	OpenImageIOWriterProcessParams params;
 	params._filepath = this->_filePattern.getFilenameAt(time);

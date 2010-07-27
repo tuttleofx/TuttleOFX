@@ -38,7 +38,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	using namespace boost::gil;
 	try
 	{
-		PngWriterProcessParams params = _plugin.getParams(this->_renderArgs.time);
+		PngWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 		switch(params._bitDepth)
 		{
 			case 8:
@@ -66,7 +66,7 @@ void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath 
 {
 	using namespace boost::gil;
 
-	if ( _plugin.getParams(this->_renderArgs.time)._outputRGB )
+	if ( _plugin.getProcessParams(this->_renderArgs.time)._outputRGB )
 	{
 		typedef pixel<Bits, rgb_layout_t> OutPixelType;
 		png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
