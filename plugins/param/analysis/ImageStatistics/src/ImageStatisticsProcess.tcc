@@ -395,9 +395,9 @@ template <typename OutputParamsRGBA, typename OutputParamsHSL>
 void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputParamsHSL& outputParamsHSL, const OfxTime time, ImageStatisticsPlugin& plugin )
 {
 	setPixelValuesAtTime( *plugin._paramOutputAverage, time, outputParamsRGBA._average );
-	COUT_VAR4( outputParamsRGBA._average[0], outputParamsRGBA._average[1], outputParamsRGBA._average[2], outputParamsRGBA._average[3] );
+//	COUT_VAR4( outputParamsRGBA._average[0], outputParamsRGBA._average[1], outputParamsRGBA._average[2], outputParamsRGBA._average[3] );
 	setPixelValuesAtTime( *plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
-	COUT_VAR4( outputParamsRGBA._channelMin[0], outputParamsRGBA._channelMin[1], outputParamsRGBA._channelMin[2], outputParamsRGBA._channelMin[3] );
+//	COUT_VAR4( outputParamsRGBA._channelMin[0], outputParamsRGBA._channelMin[1], outputParamsRGBA._channelMin[2], outputParamsRGBA._channelMin[3] );
 	setPixelValuesAtTime( *plugin._paramOutputChannelMax, time, outputParamsRGBA._channelMax );
 	setPixelValuesAtTime( *plugin._paramOutputLuminosityMin, time, outputParamsRGBA._luminosityMin );
 	setPixelValuesAtTime( *plugin._paramOutputLuminosityMax, time, outputParamsRGBA._luminosityMax );
@@ -405,9 +405,9 @@ void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputPara
 	setPixelValuesAtTime( *plugin._paramOutputSkewness, time, outputParamsRGBA._skewness );
 
 	setPixelValuesAtTime( *plugin._paramOutputAverageHSL, time, outputParamsHSL._average );
-	COUT_VAR4( outputParamsHSL._average[0], outputParamsHSL._average[1], outputParamsHSL._average[2], outputParamsHSL._average[3] );
+//	COUT_VAR4( outputParamsHSL._average[0], outputParamsHSL._average[1], outputParamsHSL._average[2], outputParamsHSL._average[3] );
 	setPixelValuesAtTime( *plugin._paramOutputChannelMinHSL, time, outputParamsHSL._channelMin );
-	COUT_VAR4( outputParamsHSL._channelMin[0], outputParamsHSL._channelMin[1], outputParamsHSL._channelMin[2], outputParamsHSL._channelMin[3] );
+//	COUT_VAR4( outputParamsHSL._channelMin[0], outputParamsHSL._channelMin[1], outputParamsHSL._channelMin[2], outputParamsHSL._channelMin[3] );
 	setPixelValuesAtTime( *plugin._paramOutputChannelMaxHSL, time, outputParamsHSL._channelMax );
 	setPixelValuesAtTime( *plugin._paramOutputLuminosityMinHSL, time, outputParamsHSL._luminosityMin );
 	setPixelValuesAtTime( *plugin._paramOutputLuminosityMaxHSL, time, outputParamsHSL._luminosityMax );
