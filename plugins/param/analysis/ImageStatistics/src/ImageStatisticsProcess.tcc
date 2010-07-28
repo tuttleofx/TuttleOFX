@@ -266,15 +266,15 @@ struct ComputeOutputParams
 
 		// declare values and init
 		Pixel firstPixel = *image.begin(); // for initialization only
-//		PixelGray firstPixelGray;
-//		color_convert( firstPixel, firstPixelGray );
+		PixelGray firstPixelGray;
+		color_convert( firstPixel, firstPixelGray );
 
 		Pixel channelMin = firstPixel;
 		Pixel channelMax = firstPixel;
-//		Pixel luminosityMin = firstPixel;
-//		PixelGray luminosityMinGray = firstPixelGray;
-//		Pixel luminosityMax = firstPixel;
-//		PixelGray luminosityMaxGray = firstPixelGray;
+		Pixel luminosityMin = firstPixel;
+		PixelGray luminosityMinGray = firstPixelGray;
+		Pixel luminosityMax = firstPixel;
+		PixelGray luminosityMaxGray = firstPixelGray;
 
 		CPixel sum;
 		CPixel sum_p2;
@@ -318,28 +318,28 @@ struct ComputeOutputParams
 				// search max for each channel
 				pixel_assign_max_t<Pixel, Pixel>()( *src_it, channelMax );
 
-//				PixelGray grayCurrentPixel; // current pixel in gray colorspace
-//				color_convert( *src_it, grayCurrentPixel );
-//
-//				// search min luminosity
-//				if( get_color( grayCurrentPixel, gray_color_t() ) < get_color( luminosityMinGray, gray_color_t() ) )
-//				{
-//					luminosityMin = *src_it;
-//					luminosityMinGray = grayCurrentPixel;
-//				}
-//				// search max luminosity
-//				if( get_color( grayCurrentPixel, gray_color_t() ) > get_color( luminosityMaxGray, gray_color_t() ) )
-//				{
-//					luminosityMax = *src_it;
-//					luminosityMaxGray = grayCurrentPixel;
-//				}
+				PixelGray grayCurrentPixel; // current pixel in gray colorspace
+				color_convert( *src_it, grayCurrentPixel );
+
+				// search min luminosity
+				if( get_color( grayCurrentPixel, gray_color_t() ) < get_color( luminosityMinGray, gray_color_t() ) )
+				{
+					luminosityMin = *src_it;
+					luminosityMinGray = grayCurrentPixel;
+				}
+				// search max luminosity
+				if( get_color( grayCurrentPixel, gray_color_t() ) > get_color( luminosityMaxGray, gray_color_t() ) )
+				{
+					luminosityMax = *src_it;
+					luminosityMaxGray = grayCurrentPixel;
+				}
 			}
 		}
 
 		output._channelMin = channelMin;
 		output._channelMax = channelMax;
-//		output._luminosityMin = luminosityMin;
-//		output._luminosityMax = luminosityMax;
+		output._luminosityMin = luminosityMin;
+		output._luminosityMax = luminosityMax;
 
 		CPixel stdDeriv = pixel_standard_deviation( sum, sum_p2, nbPixels );
 		output._average = pixel_divides_scalar_t<CPixel, double>()( sum, nbPixels );
