@@ -18,7 +18,7 @@ class FFmpeg
 {
 protected:
 	FFmpeg(){}
-	~FFmpeg(){}
+	virtual ~FFmpeg(){}
 
 public:
 	static const std::string ffmpegError_toString( int error );
@@ -33,5 +33,5 @@ private:
 };
 
 
-#endif	/* _FFMPEG_HPP */
+#endif
 
