@@ -31,9 +31,18 @@ public:
 
 	// Deriving implementatation needs to overide these
 	virtual void get( int& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
+	virtual void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void set( const int&, const EChange change )         OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+	virtual void setAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+
+	virtual void set( const bool& v, const EChange change )         OFX_EXCEPTION_SPEC
+	{
+		set( int(v), change );
+	}
+	virtual void setAtTime( const OfxTime time, const bool& v, const EChange change ) OFX_EXCEPTION_SPEC
+	{
+		setAtTime( time, int(v), change );
+	}
 
 	// probably derived class does not need to implement, default is an approximation
 	virtual void derive( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;

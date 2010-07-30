@@ -23,7 +23,7 @@ void OfxhParamInteger::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
-	return get( *value );
+	this->get( *value );
 }
 
 /**
@@ -33,7 +33,7 @@ void OfxhParamInteger::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTI
 {
 	int* value = va_arg( arg, int* );
 
-	return get( time, *value );
+	this->getAtTime( time, *value );
 }
 
 /**
@@ -43,7 +43,7 @@ void OfxhParamInteger::setV( va_list arg, const EChange change ) OFX_EXCEPTION_S
 {
 	int value = va_arg( arg, int );
 
-	return set( value, change );
+	this->set( value, change );
 }
 
 /**
@@ -53,7 +53,7 @@ void OfxhParamInteger::setV( const OfxTime time, va_list arg, const EChange chan
 {
 	int value = va_arg( arg, int );
 
-	return set( time, value, change );
+	this->setAtTime( time, value, change );
 }
 
 /**
@@ -63,7 +63,7 @@ void OfxhParamInteger::deriveV( const OfxTime time, va_list arg ) const OFX_EXCE
 {
 	int* value = va_arg( arg, int* );
 
-	return derive( time, *value );
+	this->derive( time, *value );
 }
 
 /**
@@ -73,7 +73,7 @@ void OfxhParamInteger::integrateV( const OfxTime time1, const OfxTime time2, va_
 {
 	int* value = va_arg( arg, int* );
 
-	return integrate( time1, time2, *value );
+	this->integrate( time1, time2, *value );
 }
 
 

@@ -114,7 +114,7 @@ OfxStatus clipGetImage( OfxImageClipHandle    h1,
 			return kOfxStatFailed;
 		}
 
-		*h3 = image->getPropHandle();
+		*h3 = image->getPropHandle(); // a pointer to the base class cast into OfxPropertySetHandle
 
 		return kOfxStatOK;
 	}

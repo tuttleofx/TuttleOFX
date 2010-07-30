@@ -20,29 +20,29 @@
 	{\
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ) ); \
 	}\
-	inline virtual void get( const OfxTime, Type& ) const OFX_EXCEPTION_SPEC \
+	inline virtual void getAtTime( const OfxTime, Type& ) const OFX_EXCEPTION_SPEC \
 	{\
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ) ); \
 	}\
-	inline virtual void getAt( Type&, const std::size_t ) const OFX_EXCEPTION_SPEC \
+	inline virtual void getAtIndex( Type&, const std::size_t ) const OFX_EXCEPTION_SPEC \
 	{\
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a " #Name " multidimentional parameter." ) ); \
 	}\
-	inline virtual void getAt( const OfxTime, Type&, const std::size_t ) const OFX_EXCEPTION_SPEC \
+	inline virtual void getAtTimeAndIndex( const OfxTime, Type&, const std::size_t ) const OFX_EXCEPTION_SPEC \
 	{\
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a " #Name " multidimentional parameter." ) ); \
 	}\
 	public:\
-	inline Type get##Name##At( const std::size_t index ) const OFX_EXCEPTION_SPEC \
+	inline Type get##Name##AtIndex( const std::size_t index ) const OFX_EXCEPTION_SPEC \
 	{\
 		Type dst;\
-		getAt( dst, index );\
+		getAtIndex( dst, index );\
 		return dst;\
 	}\
-	inline Type get##Name##At( const OfxTime time, const std::size_t index ) const OFX_EXCEPTION_SPEC \
+	inline Type get##Name##AtTimeAndIndex( const OfxTime time, const std::size_t index ) const OFX_EXCEPTION_SPEC \
 	{\
 		Type dst;\
-		getAt( time, dst, index );\
+		getAtTimeAndIndex( time, dst, index );\
 		return dst;\
 	}\
 	inline Type get##Name() const OFX_EXCEPTION_SPEC \
@@ -51,18 +51,18 @@
 		get( dst );\
 		return dst;\
 	}\
-	inline Type get##Name( const OfxTime time ) const OFX_EXCEPTION_SPEC \
+	inline Type get##Name##AtTime( const OfxTime time ) const OFX_EXCEPTION_SPEC \
 	{\
 		Type dst;\
-		get( time, dst );\
+		getAtTime( time, dst );\
 		return dst;\
 	}\
 	inline virtual void set( const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ) ); } \
 	inline virtual void set( const Type& value ) OFX_EXCEPTION_SPEC { set( value, eChangeUserEdited ); } \
 	inline virtual void setAtTime( const OfxTime time, const Type& value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a " #Name " parameter." ) ); }\
 	inline virtual void setAtTime( const OfxTime time, const Type& value ) OFX_EXCEPTION_SPEC { setAtTime( time, value, eChangeUserEdited ); }\
-	inline virtual void setAt( const Type& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter." ) ); } \
-	inline virtual void setAt( const Type& value, const std::size_t index ) OFX_EXCEPTION_SPEC { setAt( value, index, eChangeUserEdited ); } \
+	inline virtual void setAtIndex( const Type& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter." ) ); } \
+	inline virtual void setAtIndex( const Type& value, const std::size_t index ) OFX_EXCEPTION_SPEC { setAtIndex( value, index, eChangeUserEdited ); } \
 	inline virtual void set( const Type& value1, const Type& value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter (2)." ) ); } \
 	inline virtual void set( const Type& value1, const Type& value2 ) OFX_EXCEPTION_SPEC { set( value1, value2, eChangeUserEdited ); } \
 	inline virtual void setAtTime( const OfxTime time, const Type& value1, const Type& value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "Not a multi-" #Name " parameter (2)." ) ); }\
@@ -200,8 +200,8 @@ public:
 
 	inline virtual void set( const char* value, const EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
 	inline virtual void set( const char* value ) OFX_EXCEPTION_SPEC { set( value, eChangeUserEdited ); }
-	inline virtual void set( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
-	inline virtual void set( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }
+	inline virtual void setAtTime( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { throw OfxhException( kOfxStatErrBadHandle, "Not a string parameter." ); }
+	inline virtual void setAtTime( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC { set( time, value, eChangeUserEdited ); }
 
 #ifndef SWIG
 	/// get a value, implemented by instances to deconstruct var args

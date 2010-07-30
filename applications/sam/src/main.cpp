@@ -58,7 +58,7 @@ int main( int argc, char** argv )
 		read2.getParam( "filename" ).set( "input.dpx" );
 		read3.getParam( "filename" ).set( "input.exr" );
 //		blur1.getParam( "size" ).set( 6.5, 15.0 );
-		blur1.getParam( "size" ).setAt( 65.0, 1 );
+		blur1.getParam( "size" ).setAtTime( 65.0, 1 );
 	//	crop1.getParam( "Down" ).set( 400 );
 		write1.getParam( "filename" ).set( "output1.png" );
 		write2.getParam( "filename" ).set( "output2.dpx" );

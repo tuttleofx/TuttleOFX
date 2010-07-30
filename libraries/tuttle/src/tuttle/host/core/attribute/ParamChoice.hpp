@@ -20,10 +20,11 @@ public:
 	ParamChoice* clone() const { return new ParamChoice( *this ); }
 
 	int getDefault() const;
+	
 	void get( int& ) const OFX_EXCEPTION_SPEC;
-	void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
+	void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
 	void set( const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void setAtTime( const OfxTime time, const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	
 	void copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC
 	{

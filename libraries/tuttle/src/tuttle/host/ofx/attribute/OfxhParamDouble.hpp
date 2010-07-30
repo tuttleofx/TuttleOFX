@@ -29,11 +29,16 @@ public:
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
 	}
+	
 	// Deriving implementatation needs to overide these
 	virtual void get( double& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void get( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;
+	virtual void getAtTime( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void set( const double&, const EChange change )                               OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const OfxTime time, const double&, const EChange change )                 OFX_EXCEPTION_SPEC = 0;
+	virtual void setAtTime( const OfxTime time, const double&, const EChange change )                 OFX_EXCEPTION_SPEC = 0;
+
+	virtual void set( const int&, const EChange change )                               OFX_EXCEPTION_SPEC = 0;
+	virtual void setAtTime( const OfxTime time, const int&, const EChange change )                 OFX_EXCEPTION_SPEC = 0;
+
 	virtual void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC = 0;
 

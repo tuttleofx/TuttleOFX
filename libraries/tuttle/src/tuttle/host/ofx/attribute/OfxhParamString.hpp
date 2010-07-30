@@ -23,11 +23,12 @@ public:
 	OfxhParamString( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 
 	virtual void get( std::string& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void get( const OfxTime time, std::string& ) const OFX_EXCEPTION_SPEC = 0;
-	void set( const char*, const EChange change )                OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const char*, const EChange change )  OFX_EXCEPTION_SPEC;
+	virtual void getAtTime( const OfxTime time, std::string& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void set( const std::string&, const EChange change )                OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const OfxTime time, const std::string&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
+	virtual void setAtTime( const OfxTime time, const std::string&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
+
+	void set( const char*, const EChange change )                OFX_EXCEPTION_SPEC;
+	void setAtTime( const OfxTime time, const char*, const EChange change )  OFX_EXCEPTION_SPEC;
 
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
