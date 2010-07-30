@@ -18,16 +18,18 @@ public:
 	ParamInteger( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor, const std::size_t index = 0 );
 	ParamInteger* clone() const { return new ParamInteger( *this ); }
 
-	int       getDefault() const;
+	int getDefault() const;
+
 	void get( int& ) const OFX_EXCEPTION_SPEC;
-	void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
+	void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
 	void set( const int &, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const int &, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void          copy( const ParamInteger& p ) OFX_EXCEPTION_SPEC
+	void setAtTime( const OfxTime time, const int &, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+
+	void copy( const ParamInteger& p ) OFX_EXCEPTION_SPEC
 	{
 		_value = p._value;
 	}
-	void          copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
 	{
 		const ParamInteger& param = dynamic_cast<const ParamInteger&>(p);
 		copy( param );

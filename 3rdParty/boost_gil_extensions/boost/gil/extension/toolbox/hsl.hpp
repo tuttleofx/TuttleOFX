@@ -14,6 +14,7 @@
 /// \author Christian Henning \n
 ////////////////////////////////////////////////////////////////////////////////////////
 
+#include <boost/gil/color_convert.hpp>
 #include <boost/gil/gil_all.hpp>
 
 namespace boost { namespace gil {
@@ -148,9 +149,7 @@ struct default_color_converter_impl<hsl_t,rgb_t>
       if( std::abs( get_color( src, saturation_t() )) < 0.0001  )
       {
          // If saturation is 0, the color is a shade of gray
-         red   = get_color( src, lightness_t() );
-         green = get_color( src, lightness_t() );
-         blue  = get_color( src, lightness_t() );
+         red = green = blue = get_color( src, lightness_t() );
       }
       else
       {
@@ -254,6 +253,41 @@ struct default_color_converter_impl<hsl_t,rgb_t>
          channel_convert<typename color_element_type< P2, blue_t >::type>( blue );
    }
 };
+
+/// \ingroup ColorConvert
+///  \brief Converting HSL to any pixel type. Note: Supports homogeneous pixels only.
+///
+/// Done by an intermediate RGB conversion
+template <typename C2>
+struct default_color_converter_impl<hsl_t,C2>
+{
+    template <typename P1, typename P2>
+    void operator()(const P1& src, P2& dst) const
+	{
+        typedef hsl_t C1;
+        typedef typename channel_type<P1>::type T1;
+        typedef typename channel_type<P2>::type T2;
+		pixel<T2,rgb_layout_t> tmp;
+        default_color_converter_impl<C1,rgb_t>()(src, tmp);
+        default_color_converter_impl<rgb_t,C2>()(tmp, dst);
+    }
+};
+
+/// \ingroup ColorConvert
+/// \brief Unfortunately HSL to HSL must be explicitly provided - otherwise we get ambiguous specialization error.
+template <>
+struct default_color_converter_impl<hsl_t,hsl_t>
+{
+    template <typename P1, typename P2>
+    void operator()(const P1& src, P2& dst) const
+	{
+        static_for_each(src,dst,default_channel_converter());
+    }
+};
+
+
+
+
 
 } }  // namespace boost::gil
 

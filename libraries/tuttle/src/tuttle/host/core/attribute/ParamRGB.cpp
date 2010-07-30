@@ -32,11 +32,11 @@ void ParamRGB::get( double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
 	_controls[2]->get(b);
 }
 
-void ParamRGB::get( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
+void ParamRGB::getAtTime( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
 {
-	_controls[0]->get(time, r);
-	_controls[1]->get(time, g);
-	_controls[2]->get(time, b);
+	_controls[0]->getAtTime(time, r);
+	_controls[1]->getAtTime(time, g);
+	_controls[2]->getAtTime(time, b);
 }
 
 void ParamRGB::set( const double &r, const double &g, const double &b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
@@ -47,11 +47,11 @@ void ParamRGB::set( const double &r, const double &g, const double &b, const ofx
 	this->paramChanged( change );
 }
 
-void ParamRGB::set( const OfxTime time, const double &r, const double &g, const double &b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamRGB::setAtTime( const OfxTime time, const double &r, const double &g, const double &b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(time, r, ofx::attribute::eChangeNone);
-	_controls[1]->set(time, g, ofx::attribute::eChangeNone);
-	_controls[2]->set(time, b, ofx::attribute::eChangeNone);
+	_controls[0]->setAtTime(time, r, ofx::attribute::eChangeNone);
+	_controls[1]->setAtTime(time, g, ofx::attribute::eChangeNone);
+	_controls[2]->setAtTime(time, b, ofx::attribute::eChangeNone);
 	this->paramChanged( change );
 }
 

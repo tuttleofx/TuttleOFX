@@ -24,7 +24,7 @@ void ParamString::get( std::string& v ) const OFX_EXCEPTION_SPEC
 	v = _value;
 }
 
-void ParamString::get( const OfxTime time, std::string& v ) const OFX_EXCEPTION_SPEC
+void ParamString::getAtTime( const OfxTime time, std::string& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
@@ -35,7 +35,7 @@ void ParamString::set( const std::string& v, const ofx::attribute::EChange chang
 	this->paramChanged( change );
 }
 
-void ParamString::set( const OfxTime time, const std::string& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamString::setAtTime( const OfxTime time, const std::string& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 	this->paramChanged( change );

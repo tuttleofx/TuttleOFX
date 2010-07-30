@@ -33,11 +33,11 @@ void ParamDouble3D::get( double& x, double& y, double& z ) const OFX_EXCEPTION_S
 	_controls[2]->get(z);
 }
 
-void ParamDouble3D::get( const OfxTime time, double& x, double& y, double& z ) const OFX_EXCEPTION_SPEC
+void ParamDouble3D::getAtTime( const OfxTime time, double& x, double& y, double& z ) const OFX_EXCEPTION_SPEC
 {
-	_controls[0]->get(time, x);
-	_controls[1]->get(time, y);
-	_controls[2]->get(time, z);
+	_controls[0]->getAtTime(time, x);
+	_controls[1]->getAtTime(time, y);
+	_controls[2]->getAtTime(time, z);
 }
 
 void ParamDouble3D::set( const double &x, const double &y, const double &z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
@@ -48,11 +48,11 @@ void ParamDouble3D::set( const double &x, const double &y, const double &z, cons
 	this->paramChanged( change );
 }
 
-void ParamDouble3D::set( const OfxTime time, const double &x, const double &y, const double &z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamDouble3D::setAtTime( const OfxTime time, const double &x, const double &y, const double &z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(time, x, ofx::attribute::eChangeNone);
-	_controls[1]->set(time, y, ofx::attribute::eChangeNone);
-	_controls[2]->set(time, z, ofx::attribute::eChangeNone);
+	_controls[0]->setAtTime(time, x, ofx::attribute::eChangeNone);
+	_controls[1]->setAtTime(time, y, ofx::attribute::eChangeNone);
+	_controls[2]->setAtTime(time, z, ofx::attribute::eChangeNone);
 	this->paramChanged( change );
 }
 

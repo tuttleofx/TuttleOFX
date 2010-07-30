@@ -46,16 +46,16 @@ public:
 
 protected:
 	// Deriving implementatation needs to overide these
-	inline virtual void getAt( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void getAtIndex( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->get( dst );
 	}
 
-	inline virtual void getAt( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void getAtTimeAndIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->get( time, dst );
+		_controls[index]->getAtTime( time, dst );
 	}
 
 public:
@@ -74,28 +74,28 @@ public:
 		copy( param );
 	}
 
-	inline virtual void setAt( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->set( value, eChangeNone );
 		this->paramChanged( change );
 	}
 
-	inline virtual void setAt( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setAtTimeAndIndex( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->set( time, value, eChangeNone );
+		_controls[index]->setAtTime( time, value, eChangeNone );
 		this->paramChanged( change );
 	}
 
 	// derived class does not need to implement, default is an approximation
-	inline virtual void deriveAt( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void deriveAtIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->derive( time, dst );
 	}
 
-	inline virtual void integrateAt( const OfxTime time1, const OfxTime time2, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	inline virtual void integrateAtIndex( const OfxTime time1, const OfxTime time2, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index]->integrate( time1, time2, dst );
@@ -118,7 +118,7 @@ public:
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			_controls[index]->get( time, *v );
+			_controls[index]->getAtTime( time, *v );
 		}
 	}
 
@@ -139,7 +139,7 @@ public:
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[index]->set( time, v, eChangeNone );
+			_controls[index]->setAtTime( time, v, eChangeNone );
 		}
 		this->paramChanged( change );
 	}

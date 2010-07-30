@@ -34,9 +34,9 @@ struct dfs_connectClips_visitor : public boost::dfs_visitor<>
 			      << " TO "
 			      << vertexDest << "." << edge.inAttrName() );
 
-			core::ProcessNode* sourceNode = vertexSource.getProcessNode();
-			core::ProcessNode* targetNode = vertexDest.getProcessNode();
-			sourceNode->connect( *targetNode, sourceNode->getProcessAttribute( edge.inAttrName() ) );
+			core::ProcessNode& sourceNode = *vertexSource.getProcessNode();
+			core::ProcessNode& targetNode = *vertexDest.getProcessNode();
+			sourceNode.connect( targetNode, sourceNode.getProcessAttribute( edge.inAttrName() ) );
 		}
 
 	private:

@@ -1,6 +1,8 @@
 #include "MemoryCache.hpp"
 #include <boost/foreach.hpp>
 
+#include <functional>
+
 namespace tuttle {
 namespace host {
 namespace core {
@@ -45,7 +47,6 @@ namespace {
 
 const std::string EMPTY_STRING = "";
 
-#include <functional>
 template<typename T>
 struct FindValuePredicate : public std::unary_function<typename T::value_type, bool>
 {

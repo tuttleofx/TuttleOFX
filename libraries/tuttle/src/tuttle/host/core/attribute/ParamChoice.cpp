@@ -24,7 +24,7 @@ void ParamChoice::get( int& v ) const OFX_EXCEPTION_SPEC
 	v = _value;
 }
 
-void ParamChoice::get( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
+void ParamChoice::getAtTime( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
@@ -35,7 +35,7 @@ void ParamChoice::set( const int &v, const ofx::attribute::EChange change ) OFX_
 	this->paramChanged( change );
 }
 
-void ParamChoice::set( const OfxTime time, const int &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamChoice::setAtTime( const OfxTime time, const int &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 	this->paramChanged( change );

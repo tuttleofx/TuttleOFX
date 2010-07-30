@@ -28,14 +28,22 @@ ImageEffect( handle )
 	_paramRectCenter = fetchDouble2DParam( kParamRectCenter );
 	_paramRectSize = fetchDouble2DParam( kParamRectSize );
 	_paramChooseOutput = fetchChoiceParam( kParamChooseOutput );
+
 	_paramOutputAverage = fetchRGBAParam( kParamOutputAverage );
-	_paramOutputAverageHsl = fetchDouble3DParam( kParamOutputAverageHsl );
 	_paramOutputChannelMin = fetchRGBAParam( kParamOutputChannelMin );
 	_paramOutputChannelMax = fetchRGBAParam( kParamOutputChannelMax );
 	_paramOutputLuminosityMin = fetchRGBAParam( kParamOutputLuminosityMin );
 	_paramOutputLuminosityMax = fetchRGBAParam( kParamOutputLuminosityMax );
-	_paramOutputKurtosisHsl = fetchDouble3DParam( kParamOutputKurtosisHsl );
-	_paramOutputSkewnessHsl = fetchDouble3DParam( kParamOutputSkewnessHsl );
+	_paramOutputKurtosis = fetchRGBAParam( kParamOutputKurtosis );
+	_paramOutputSkewness = fetchRGBAParam( kParamOutputSkewness );
+	
+	_paramOutputAverageHSL = fetchDouble3DParam( kParamOutputAverageHSL );
+	_paramOutputChannelMinHSL = fetchDouble3DParam( kParamOutputChannelMinHSL );
+	_paramOutputChannelMaxHSL = fetchDouble3DParam( kParamOutputChannelMaxHSL );
+	_paramOutputLuminosityMinHSL = fetchDouble3DParam( kParamOutputLuminosityMinHSL );
+	_paramOutputLuminosityMaxHSL = fetchDouble3DParam( kParamOutputLuminosityMaxHSL );
+	_paramOutputKurtosisHSL = fetchDouble3DParam( kParamOutputKurtosisHSL );
+	_paramOutputSkewnessHSL = fetchDouble3DParam( kParamOutputSkewnessHSL );
 }
 
 ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxRectI& srcRod ) const
@@ -58,6 +66,7 @@ ImageStatisticsProcessParams ImageStatisticsPlugin::getProcessParams( const OfxR
 	params._rect.y2 = boost::numeric_cast<int>( std::ceil(rectCenter.y + rectSize.y) );
 	params._rect = rectanglesIntersection( params._rect, srcRod );
 	params._chooseOutput = static_cast<EParamChooseOutput>( _paramChooseOutput->getValue() );
+	
 	return params;
 }
 
@@ -87,7 +96,7 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments &args )
     if( dstComponents == OFX::ePixelComponentRGBA )
     {
         switch( dstBitDepth )
-        {
+        {/*
             case OFX::eBitDepthUByte :
             {
                 ImageStatisticsProcess<rgba8_view_t> p( *this );
@@ -99,7 +108,7 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments &args )
                 ImageStatisticsProcess<rgba16_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
-            }
+            }*/
             case OFX::eBitDepthFloat :
             {
                 ImageStatisticsProcess<rgba32f_view_t> p( *this );

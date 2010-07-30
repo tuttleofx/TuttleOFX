@@ -86,6 +86,8 @@ class OfxhImage : public property::OfxhSet
 protected:
 	/// called during ctors to get bits from the clip props into ours
 	void initClipBits( attribute::OfxhClip& instance );
+	static int _count; ///< temp.... for check
+	int _id; ///< temp.... for check
 	int _referenceCount; ///< reference count on this image
 
 public:
@@ -168,8 +170,16 @@ public:
 
 	PixelComponentEnum getComponentsType() const;
 
+	void addReference() {  ++_referenceCount; COUT( "+  Image::addReference, id:" << _id << ", ref:" << _referenceCount ); }
 	/// release the reference count, which, if zero, deletes this
-	bool releaseReference() { TCOUT( "Image::releaseReference from plugin." ); return _referenceCount <= 0; }
+	bool releaseReference()
+	{
+		--_referenceCount;
+		COUT( "-  Image::releaseReference, id:" << _id << ", ref:" << _referenceCount );
+		if( _referenceCount < 0 )
+			BOOST_THROW_EXCEPTION( std::logic_error("Try to release an undeclared reference to an Image.") );
+		return _referenceCount <= 0;
+	}
 };
 
 }

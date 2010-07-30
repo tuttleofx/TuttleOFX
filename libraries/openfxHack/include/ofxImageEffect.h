@@ -1134,7 +1134,7 @@ typedef struct OfxImageEffectSuiteV1
 	 * - all operations on imageHandle will be invalid
 	 *
 	 * @returns
-	 * - ::kOfxStatOK - the image was successfully fetched and returned in the handle,
+	 * - ::kOfxStatOK - the image was successfully fetched and returned in the handle, /// @todo tuttle: ofx documentation error, succesfully deleted, delete the propertySet himself or not ?
 	 * - ::kOfxStatErrBadHandle - the image handle was invalid,
 	 */
 	OfxStatus ( *clipReleaseImage )( OfxPropertySetHandle imageHandle );

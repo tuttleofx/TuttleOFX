@@ -123,7 +123,10 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	//	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
 	boost::shared_ptr<Image> image = _memoryCache.get( getConnectedClipFullName(), time );
 	//	std::cout << "got image : " << image.get() << std::endl;
-	/// @todo tuttle do something with bounds... if not the same as in cache...
+	/// @todo tuttle do something with bounds...
+	/// if bounds != cache buffer bounds:
+	///  * bounds < cache buffer: use rowSize to adjust, and modify pointer
+	///  * bounds > cache buffer: recompute / exception ?
 	if( image.get() != NULL )
 	{
 		/*
@@ -137,6 +140,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		 *  TCOUT( "return input image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
 		 * }
 		 */
+		image->addReference(); // image already in cache, we just add a reference
 		return image.get();
 	}
 	if( isOutput() )

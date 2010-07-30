@@ -46,7 +46,7 @@ void OfxhParamChoice::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTIO
 {
 	int* value = va_arg( arg, int* );
 
-	return get( time, *value );
+	return getAtTime( time, *value );
 }
 
 /**
@@ -66,7 +66,7 @@ void OfxhParamChoice::setV( const OfxTime time, va_list arg, const EChange chang
 {
 	int value = va_arg( arg, int );
 
-	return set( time, value, change );
+	return setAtTime( time, value, change );
 }
 
 

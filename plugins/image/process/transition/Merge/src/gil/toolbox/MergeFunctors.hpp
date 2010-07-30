@@ -1,8 +1,8 @@
 #ifndef GIL_FUNCTORS_HPP
 #define GIL_FUNCTORS_HPP
 
-#include "ViewsMerging.hpp"
 #include <boost/gil/extension/toolbox/hsl.hpp>
+#include "ViewsMerging.hpp"
 
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_signed.hpp>

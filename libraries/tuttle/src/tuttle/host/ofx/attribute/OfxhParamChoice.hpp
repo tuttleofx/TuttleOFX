@@ -22,18 +22,18 @@ public:
 
 	// Deriving implementatation needs to overide these
 	virtual void get( int& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void get( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
+	virtual void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void set( const int&, const EChange change )                OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const OfxTime time, const int&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
+	virtual void setAtTime( const OfxTime time, const int&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
 
 	void set( const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		set( getIndexFor(key), change );
 	}
 
-	void set( const OfxTime time, const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
+	void setAtTime( const OfxTime time, const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		set( time, getIndexFor(key), change );
+		setAtTime( time, getIndexFor(key), change );
 	}
 	
 	/// implementation of var args function

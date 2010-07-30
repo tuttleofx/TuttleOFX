@@ -24,7 +24,9 @@ VideoFFmpegReader::VideoFFmpegReader( )
 , _isOpen( 0 )
 {
 	for( int i = 0; i < CODEC_TYPE_NB; ++i )
+	{
 		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
+	}
 	_avformatOptions = avformat_alloc_context( );
 	_avFrame = avcodec_alloc_frame( );
 
@@ -41,37 +43,45 @@ VideoFFmpegReader::~VideoFFmpegReader( )
 
 }
 
-void VideoFFmpegReader::open( const std::string &filename )
+bool VideoFFmpegReader::open( const std::string &filename )
 {
 	if( isOpen( ) )
+	{
 		close( );
+	}
 
 	_isOpen = 0;
 
 	int error = av_open_input_file( &_context, filename.c_str( ), _format, 0, _params );
 	if( error < 0 )
 	{
-		std::cout << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
+		std::cerr << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
 		_isOpen = 0;
-		return;
+		return true;
 	}
 	// FIXME_GC: needs to know if it's streamable.
 	error = av_find_stream_info( _context );
 	if( error < 0 )
 	{
-		std::cout << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
-		return;
+		std::cerr << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
+		return true;
 	}
-	if( !setupStreamInfo( ) )
+
+	if( setupStreamInfo( ) )
 	{
-		std::cout << "ffmpegReader: Unable to find codec." << std::endl;
-		return;
+		std::cerr << "ffmpegReader: Unable to find codec." << std::endl;
+		return true;
 	}
+
 	AVCodecContext* codecContext = getVideoStream( )->codec;
 	if( getVideoStream( )->sample_aspect_ratio.num )
+	{
 		_aspect = av_q2d( getVideoStream( )->sample_aspect_ratio );
+	}
 	else if( codecContext->sample_aspect_ratio.num )
+	{
 		_aspect = av_q2d( codecContext->sample_aspect_ratio );
+	}
 
 	_data.resize( width( ) * height( ) * 3 );
 
@@ -101,7 +111,9 @@ void VideoFFmpegReader::open( const std::string &filename )
 		meta.setData(MetaData::FRAME_RATE, fps());
 		meta.setData("ffmpeg/codec/codecName", codecContext->codec->name);
 	 */
+
 	_isOpen = 1;
+	return false;
 }
 
 void VideoFFmpegReader::close( )
@@ -114,12 +126,17 @@ void VideoFFmpegReader::close( )
 	}
 }
 
-int VideoFFmpegReader::read( const int frame )
+bool VideoFFmpegReader::read( const int frame )
 {
-	if( _lastDecodedPos + 1 != frame )
+	const int frameNumber = frame % _nbFrames;
+	if( frameNumber != frame )
+	{
+		std::cerr << "Read outside the video range (time:" << frame << ", video size:" << _nbFrames << std::endl;
+	}
+	if( _lastDecodedPos + 1 != frameNumber )
 	{
 		seek( 0 );
-		seek( frame );
+		seek( frameNumber );
 	}
 
 	av_init_packet( &_pkt );
@@ -130,20 +147,26 @@ int VideoFFmpegReader::read( const int frame )
 	while( error >= 0 && !hasPicture )
 	{
 		error = av_read_frame( _context, &_pkt );
-		if( error < 0 ) // on error or end of file
-			return 1;
+		// on error or end of file
+		if( error < 0 )
+		{
+			return true;
+		}
 
 		if( error >= 0 && _videoIdx.size( ) && _currVideoIdx != -1 && _pkt.stream_index == _videoIdx[_currVideoIdx] )
-			hasPicture = decodeImage( frame );
+		{
+			hasPicture = decodeImage( frameNumber );
+		}
 
 		av_free_packet( &_pkt );
 	}
-	return 0;
+	return false;
 }
 
 bool VideoFFmpegReader::setupStreamInfo( )
 {
-	for( unsigned int i = 0; i < _context->nb_streams; ++i )
+	_currVideoIdx = -1;
+	for( std::size_t i = 0; i < _context->nb_streams; ++i )
 	{
 		AVCodecContext *codecContext = _context->streams[i]->codec;
 		if( codecContext->codec_id == CODEC_ID_NONE )
@@ -162,7 +185,9 @@ bool VideoFFmpegReader::setupStreamInfo( )
 			case CODEC_TYPE_VIDEO:
 				_videoIdx.push_back( i );
 				if( _currVideoIdx < 0 )
+				{
 					_currVideoIdx = 0;
+				}
 				_width = codecContext->width;
 				_height = codecContext->height;
 				break;
@@ -179,10 +204,16 @@ bool VideoFFmpegReader::setupStreamInfo( )
 	}
 
 	if( !hasVideo( ) )
-		return false;
+	{
+		return true;
+	}
 
 	AVStream* stream = getVideoStream( );
-	if ( stream->codec->coded_frame->interlaced_frame )
+	if( !stream )
+	{
+		return true;
+	}
+	if( stream->codec->coded_frame && stream->codec->coded_frame->interlaced_frame )
 	{
 		if ( stream->codec->coded_frame->top_field_first )
 		{
@@ -236,7 +267,7 @@ bool VideoFFmpegReader::setupStreamInfo( )
 		_nbFrames = maxPts;
 	}
 
-	return true;
+	return false;
 }
 
 void VideoFFmpegReader::openVideoCodec( )
@@ -272,6 +303,11 @@ int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
 	return timestamp;
 }
 
+int VideoFFmpegReader::getFrame( int64_t timestamp ) const
+{
+	return (uint64_t)((timestamp - _context->start_time) * fps() / AV_TIME_BASE);
+}
+
 bool VideoFFmpegReader::seek( size_t pos )
 {
 	int64_t offset = getTimeStamp( pos );
@@ -283,13 +319,15 @@ bool VideoFFmpegReader::seek( size_t pos )
 	}
 
 	AVStream* stream = getVideoStream( );
-	if (!stream)
+	if( !stream )
 		return false;
+
 	avcodec_flush_buffers( stream->codec );
 	if( av_seek_frame( _context, -1, offset, AVSEEK_FLAG_BACKWARD ) < 0 )
 	{
 		return false;
 	}
+
 	return true;
 }
 
@@ -317,23 +355,27 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	int hasPicture = 0;
 	int curSearch = 0;
 	AVStream* stream = getVideoStream( );
-	if (stream)
+	if( !stream )
 		return false;
 
 	AVCodecContext* codecContext = stream->codec;
 	if( curPos >= frame )
 	{
-		//		std::cout << "avcodec_decode_video" << std::endl;
-		avcodec_decode_video( codecContext, _avFrame, &hasPicture, _pkt.data, _pkt.size );
+		// std::cout << "avcodec_decode_video" << std::endl;
+		//avcodec_decode_video( codecContext, _avFrame, &hasPicture, _pkt.data, _pkt.size );
+		avcodec_decode_video2( codecContext, _avFrame, &hasPicture, &_pkt );
 	}
 	else if( _offsetTime )
 	{
-		//		std::cout << "avcodec_decode_video" << std::endl;
-		avcodec_decode_video( codecContext, _avFrame, &curSearch, _pkt.data, _pkt.size );
+		// std::cout << "avcodec_decode_video" << std::endl;
+		//avcodec_decode_video( codecContext, _avFrame, &curSearch, _pkt.data, _pkt.size );
+		avcodec_decode_video2( codecContext, _avFrame, &curSearch, &_pkt );
 	}
 
 	if( !hasPicture )
+	{
 		return false;
+	}
 
 	_lastDecodedPos = _lastSearchPos;
 
@@ -358,6 +400,6 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 		return false;
 	}
 
-	//	std::cout << "decodeImage " << frame << " OK" << std::endl;
+	// std::cout << "decodeImage " << frame << " OK" << std::endl;
 	return true;
 }

@@ -25,22 +25,23 @@ void ParamDouble::get( double& v ) const OFX_EXCEPTION_SPEC
 	v = _value;
 }
 
-void ParamDouble::get( const OfxTime time, double& v ) const OFX_EXCEPTION_SPEC
+void ParamDouble::getAtTime( const OfxTime time, double& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamDouble::set( const double &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamDouble::set( const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 	this->paramChanged( change );
 }
 
-void ParamDouble::set( const OfxTime time, const double &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamDouble::setAtTime( const OfxTime time, const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 	this->paramChanged( change );
 }
+
 
 void ParamDouble::derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC
 {

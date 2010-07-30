@@ -1,5 +1,5 @@
-#ifndef __VIDEOFFMPEGREADER_HPP__
-#define __VIDEOFFMPEGREADER_HPP__
+#ifndef _VIDEOFFMPEGREADER_HPP_
+#define _VIDEOFFMPEGREADER_HPP_
 
 #include "FFmpeg.hpp"
 
@@ -21,9 +21,9 @@ public:
 		return true;
 	}
 
-	void open( const std::string &filename );
+	bool open( const std::string &filename );
 	void close( );
-	int read( const int frame );
+	bool read( const int frame );
 
 private:
 	bool setupStreamInfo( );
@@ -41,6 +41,8 @@ private:
 	void openVideoCodec( );
 	void closeVideoCodec( );
 	int64_t getTimeStamp( int pos ) const;
+	int getFrame( int64_t timestamp ) const;
+
 	/**
 	 * @brief Seek to the nearest previous keyframe from pos.
 	 * Write in _data the image result.
@@ -163,4 +165,4 @@ public: // private:
 	EIntrelacment _interlacment;
 };
 
-#endif //__CLIPVIDEOFFMPEGREADER_HPP__
+#endif

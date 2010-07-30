@@ -22,6 +22,7 @@ class IMemoryCache
 {
 public:
 	virtual ~IMemoryCache() = 0;
+	/// @todo tuttle: use key here, instead of (name, time)
 	virtual void               put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData ) = 0;
 	virtual CACHE_ELEMENT      get( const std::string& pluginName, const double& time ) const                = 0;
 	virtual std::size_t        size() const                                                                  = 0;

@@ -51,6 +51,7 @@
 
 #include "ofxsCore.h"
 #include "ofxsInteract.h"
+#include "ofxsUtilities.h"
 
 #include <boost/throw_exception.hpp>
 
@@ -692,11 +693,15 @@ protected:
 		{
 			if( param->getType() == paramType )
 			{
+				COUT_WARNING( "Parameter already defined ! (" + name + ")" );
 				paramPtr = (T*) param; // could be a dynamic cast here
 				return true;
 			}
 			else
+			{
+				COUT_ERROR( "Parameter already defined with another type ! (" + name + ")" );
 				return false; ///< @todo tuttle: SHOULD THROW SOMETHING HERE!!!!!!!
+			}
 		}
 		else
 		{

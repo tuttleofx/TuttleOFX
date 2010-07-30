@@ -20,10 +20,11 @@ public:
 	ParamInteger2D* clone() const { return new ParamInteger2D( *this ); }
 
 	OfxPointI getDefault() const;
+
 	void get( int& x, int& y ) const OFX_EXCEPTION_SPEC;
-	void get( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC;
+	void getAtTime( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC;
 	void set( const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void set( const OfxTime time, const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void setAtTime( const OfxTime time, const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 };
 
 

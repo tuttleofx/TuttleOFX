@@ -35,12 +35,12 @@ void ParamRGBA::get( double& r, double& g, double& b, double& a ) const OFX_EXCE
 	_controls[3]->get(a);
 }
 
-void ParamRGBA::get( const OfxTime time, double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
+void ParamRGBA::getAtTime( const OfxTime time, double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
 {
-	_controls[0]->get(time, r);
-	_controls[1]->get(time, g);
-	_controls[2]->get(time, b);
-	_controls[3]->get(time, a);
+	_controls[0]->getAtTime(time, r);
+	_controls[1]->getAtTime(time, g);
+	_controls[2]->getAtTime(time, b);
+	_controls[3]->getAtTime(time, a);
 }
 
 void ParamRGBA::set( const double &r, const double &g, const double &b, const double &a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
@@ -52,12 +52,12 @@ void ParamRGBA::set( const double &r, const double &g, const double &b, const do
 	this->paramChanged( change );
 }
 
-void ParamRGBA::set( const OfxTime time, const double &r, const double &g, const double &b, const double &a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamRGBA::setAtTime( const OfxTime time, const double &r, const double &g, const double &b, const double &a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(time, r, ofx::attribute::eChangeNone);
-	_controls[1]->set(time, g, ofx::attribute::eChangeNone);
-	_controls[2]->set(time, b, ofx::attribute::eChangeNone);
-	_controls[3]->set(time, a, ofx::attribute::eChangeNone);
+	_controls[0]->setAtTime(time, r, ofx::attribute::eChangeNone);
+	_controls[1]->setAtTime(time, g, ofx::attribute::eChangeNone);
+	_controls[2]->setAtTime(time, b, ofx::attribute::eChangeNone);
+	_controls[3]->setAtTime(time, a, ofx::attribute::eChangeNone);
 	this->paramChanged( change );
 }
 

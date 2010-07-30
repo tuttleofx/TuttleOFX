@@ -41,6 +41,8 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
+int OfxhImage::_count = 0;
+
 static property::OfxhPropSpec imageStuffs[] = {
 	{ kOfxPropType, property::eString, 1, false, kOfxTypeImage },
 	{ kOfxImageEffectPropPixelDepth, property::eString, 1, true, kOfxBitDepthNone },
@@ -59,7 +61,66 @@ static property::OfxhPropSpec imageStuffs[] = {
 
 OfxhImage::OfxhImage()
 	: property::OfxhSet( imageStuffs ),
-	_referenceCount( 1 ) {}
+	_id( _count++ ),
+	_referenceCount( 1 )
+{
+	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+}
+
+/**
+ * make an image from a clip instance
+ */
+OfxhImage::OfxhImage( attribute::OfxhClip& instance )
+	: property::OfxhSet( imageStuffs ),
+	_id( _count++ ),
+	_referenceCount( 1 )
+{
+	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+	initClipBits( instance );
+}
+
+/**
+ * construction based on clip instance
+ */
+OfxhImage::OfxhImage( attribute::OfxhClip& instance,
+                      double               renderScaleX,
+                      double               renderScaleY,
+                      void*                data,
+                      const OfxRectI&      bounds,
+                      const OfxRectI&      rod,
+                      int                  rowBytes,
+                      std::string          field,
+                      std::string          uniqueIdentifier )
+	: property::OfxhSet( imageStuffs ),
+	_id( _count++ ),
+	_referenceCount( 1 )
+{
+	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+	initClipBits( instance );
+
+	// set other data
+	setDoubleProperty( kOfxImageEffectPropRenderScale, renderScaleX, 0 );
+	setDoubleProperty( kOfxImageEffectPropRenderScale, renderScaleY, 1 );
+	setPointerProperty( kOfxImagePropData, data );
+	setIntProperty( kOfxImagePropBounds, bounds.x1, 0 );
+	setIntProperty( kOfxImagePropBounds, bounds.y1, 1 );
+	setIntProperty( kOfxImagePropBounds, bounds.x2, 2 );
+	setIntProperty( kOfxImagePropBounds, bounds.y2, 3 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, rod.x1, 0 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, rod.y1, 1 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, rod.x2, 2 );
+	setIntProperty( kOfxImagePropRegionOfDefinition, rod.y2, 3 );
+	setIntProperty( kOfxImagePropRowBytes, rowBytes );
+
+	setStringProperty( kOfxImagePropField, field );
+	setStringProperty( kOfxImageClipPropFieldOrder, field );
+	setStringProperty( kOfxImagePropUniqueIdentifier, uniqueIdentifier );
+}
+
+OfxhImage::~OfxhImage()
+{
+	COUT( "-- ~OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+}
 
 /// called during ctor to get bits from the clip props into ours
 
@@ -84,52 +145,6 @@ void OfxhImage::initClipBits( attribute::OfxhClip& instance )
 
 	// get and set the clip instance pixel aspect ratio
 	setDoubleProperty( kOfxImagePropPixelAspectRatio, clipProperties.getDoubleProperty( kOfxImagePropPixelAspectRatio ) );
-}
-
-/**
- * make an image from a clip instance
- */
-OfxhImage::OfxhImage( attribute::OfxhClip& instance )
-	: property::OfxhSet( imageStuffs ),
-	_referenceCount( 1 )
-{
-	initClipBits( instance );
-}
-
-/**
- * construction based on clip instance
- */
-OfxhImage::OfxhImage( attribute::OfxhClip& instance,
-                      double               renderScaleX,
-                      double               renderScaleY,
-                      void*                data,
-                      const OfxRectI&      bounds,
-                      const OfxRectI&      rod,
-                      int                  rowBytes,
-                      std::string          field,
-                      std::string          uniqueIdentifier )
-	: property::OfxhSet( imageStuffs ),
-	_referenceCount( 1 )
-{
-	initClipBits( instance );
-
-	// set other data
-	setDoubleProperty( kOfxImageEffectPropRenderScale, renderScaleX, 0 );
-	setDoubleProperty( kOfxImageEffectPropRenderScale, renderScaleY, 1 );
-	setPointerProperty( kOfxImagePropData, data );
-	setIntProperty( kOfxImagePropBounds, bounds.x1, 0 );
-	setIntProperty( kOfxImagePropBounds, bounds.y1, 1 );
-	setIntProperty( kOfxImagePropBounds, bounds.x2, 2 );
-	setIntProperty( kOfxImagePropBounds, bounds.y2, 3 );
-	setIntProperty( kOfxImagePropRegionOfDefinition, rod.x1, 0 );
-	setIntProperty( kOfxImagePropRegionOfDefinition, rod.y1, 1 );
-	setIntProperty( kOfxImagePropRegionOfDefinition, rod.x2, 2 );
-	setIntProperty( kOfxImagePropRegionOfDefinition, rod.y2, 3 );
-	setIntProperty( kOfxImagePropRowBytes, rowBytes );
-
-	setStringProperty( kOfxImagePropField, field );
-	setStringProperty( kOfxImageClipPropFieldOrder, field );
-	setStringProperty( kOfxImagePropUniqueIdentifier, uniqueIdentifier );
 }
 
 OfxRectI OfxhImage::getBounds() const
@@ -189,7 +204,6 @@ int OfxhImage::getRowBytes() const
 	return getIntProperty( kOfxImagePropRowBytes );
 }
 
-OfxhImage::~OfxhImage() {}
 
 }
 }

@@ -48,6 +48,7 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 ImageEffectNode::~ImageEffectNode()
 {
 }
+
 void ImageEffectNode::connect( const ProcessNode& sourceEffect, ProcessAttribute& attr )
 {
 	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>( sourceEffect );

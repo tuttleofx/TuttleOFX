@@ -1,6 +1,7 @@
 #include "ImageStatisticsPlugin.hpp"
 #include "ImageStatisticsProcess.hpp"
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/typedefs.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
 #include <boost/gil/extension/toolbox/hsl.hpp>
@@ -133,8 +134,9 @@ struct without_alpha_channel_t
 	}
 };
 
-
-
+GIL_DEFINE_ALL_TYPEDEFS(64 ,hsl)
+GIL_DEFINE_ALL_TYPEDEFS(64s,hsl)
+GIL_DEFINE_ALL_TYPEDEFS(64f,hsl)
 
 }
 }
@@ -145,20 +147,13 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-template<class View>
-ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
-, _plugin( instance )
-{
-	this->setNoMultiThreading( );
-}
-
+using namespace boost::gil;
 
 template<typename T>
 T standard_deviation( const T v_sum, const T v_sum_p2, const std::size_t nb )
 {
 	using namespace boost::units;
-	return std::sqrt( (v_sum_p2 - pow<2>(v_sum)) / nb );
+	return std::sqrt( v_sum_p2/nb - pow<2>(v_sum/nb) );
 }
 
 template<typename Pixel>
@@ -215,7 +210,6 @@ T skewness( const T v_mean, const T v_standard_deviation, const T v_sum, const T
 	return ( (v_sum_p3 - 3.0*v_mean*v_sum_p2) / nb + 2.0*pow<3>(v_mean) ) / pow<3>(v_standard_deviation);
 }
 
-
 template<typename Pixel>
 Pixel pixel_skewness( const Pixel& v_mean, const Pixel& v_standard_deviation, const Pixel& v_sum, const Pixel& v_sum_p2, const Pixel& v_sum_p3, const std::size_t nb )
 {
@@ -229,220 +223,250 @@ Pixel pixel_skewness( const Pixel& v_mean, const Pixel& v_standard_deviation, co
 }
 
 
+template<class Pixel>
+struct OutputParams
+{
+	OutputParams()
+	{
+		using namespace boost::gil;
+		pixel_zeros_t<Pixel>()( _average );
+		pixel_zeros_t<Pixel>()( _channelMin );
+		pixel_zeros_t<Pixel>()( _channelMax );
+		pixel_zeros_t<Pixel>()( _luminosityMin );
+		pixel_zeros_t<Pixel>()( _luminosityMax );
+		pixel_zeros_t<Pixel>()( _kurtosis );
+		pixel_zeros_t<Pixel>()( _skewness );
+	}
+
+	Pixel _average;
+	Pixel _channelMin;
+	Pixel _channelMax;
+	Pixel _luminosityMin;
+	Pixel _luminosityMax;
+	Pixel _kurtosis;
+	Pixel _skewness;
+};
+
+template<class View, typename CType = boost::gil::bits64f>
+struct ComputeOutputParams
+{
+
+	typedef typename View::value_type Pixel;
+	typedef typename color_space_type<View>::type Colorspace;
+	typedef pixel<typename channel_type<View>::type, layout<gray_t> > PixelGray; // grayscale pixel type (using the input channel_type)
+	typedef pixel<CType, layout<Colorspace> > CPixel; // the pixel type use for computation (using input colorspace)
+
+	typedef OutputParams<CPixel> Output;
+
+	Output operator()( const View& image, ImageStatisticsPlugin& plugin )
+	{
+		OutputParams<CPixel> output;
+
+		const std::size_t nbPixels = image.width() * image.height();
+
+		// declare values and init
+		Pixel firstPixel = *image.begin(); // for initialization only
+		PixelGray firstPixelGray;
+		color_convert( firstPixel, firstPixelGray );
+
+		Pixel channelMin = firstPixel;
+		Pixel channelMax = firstPixel;
+		Pixel luminosityMin = firstPixel;
+		PixelGray luminosityMinGray = firstPixelGray;
+		Pixel luminosityMax = firstPixel;
+		PixelGray luminosityMaxGray = firstPixelGray;
+
+		CPixel sum;
+		CPixel sum_p2;
+		CPixel sum_p3;
+		CPixel sum_p4;
+		pixel_zeros_t<CPixel>()( sum );
+		pixel_zeros_t<CPixel>()( sum_p2 );
+		pixel_zeros_t<CPixel>()( sum_p3 );
+		pixel_zeros_t<CPixel>()( sum_p4 );
+
+		for( int y = 0;
+			 y < image.height();
+			 ++y )
+		{
+			typename View::x_iterator src_it = image.x_at( 0, y );
+			CPixel lineAverage;
+			pixel_zeros_t<CPixel>()( lineAverage );
+
+			for( int x = 0;
+				 x < image.width();
+				 ++x, ++src_it )
+			{
+				CPixel pix;
+				pixel_assigns_t<Pixel, CPixel>()( *src_it, pix ); // pix = src_it;
+
+				CPixel pix_p2;
+				CPixel pix_p3;
+				CPixel pix_p4;
+
+				pixel_assigns_t<CPixel, CPixel>()( pixel_pow_t<CPixel, 2>()( pix ), pix_p2 ); // pix_p2 = pow<2>( pix );
+				pixel_assigns_t<CPixel, CPixel>()( pixel_multiplies_t<CPixel, CPixel, CPixel>()( pix, pix_p2 ), pix_p3 ); // pix_p3 = pix * pix_p2;
+				pixel_assigns_t<CPixel, CPixel>()( pixel_multiplies_t<CPixel, CPixel, CPixel>()( pix_p2, pix_p2 ), pix_p4 ); // pix_p4 = pix_p2 * pix_p2;
+
+				pixel_plus_assign_t<CPixel, CPixel>()( pix, sum ); // sum += pix;
+				pixel_plus_assign_t<CPixel, CPixel>()( pix_p2, sum_p2 ); // sum_p2 += pix_p2;
+				pixel_plus_assign_t<CPixel, CPixel>()( pix_p3, sum_p3 ); // sum_p3 += pix_p3;
+				pixel_plus_assign_t<CPixel, CPixel>()( pix_p4, sum_p4 ); // sum_p4 += pix_p4;
+
+				// search min for each channel
+				pixel_assign_min_t<Pixel, Pixel>()( *src_it, channelMin );
+				// search max for each channel
+				pixel_assign_max_t<Pixel, Pixel>()( *src_it, channelMax );
+
+				PixelGray grayCurrentPixel; // current pixel in gray colorspace
+				color_convert( *src_it, grayCurrentPixel );
+
+				// search min luminosity
+				if( get_color( grayCurrentPixel, gray_color_t() ) < get_color( luminosityMinGray, gray_color_t() ) )
+				{
+					luminosityMin = *src_it;
+					luminosityMinGray = grayCurrentPixel;
+				}
+				// search max luminosity
+				if( get_color( grayCurrentPixel, gray_color_t() ) > get_color( luminosityMaxGray, gray_color_t() ) )
+				{
+					luminosityMax = *src_it;
+					luminosityMaxGray = grayCurrentPixel;
+				}
+			}
+		}
+
+		output._channelMin = channelMin;
+		output._channelMax = channelMax;
+		output._luminosityMin = luminosityMin;
+		output._luminosityMax = luminosityMax;
+
+		CPixel stdDeriv = pixel_standard_deviation( sum, sum_p2, nbPixels );
+		output._average = pixel_divides_scalar_t<CPixel, double>()( sum, nbPixels );
+		output._kurtosis = pixel_kurtosis( output._average, stdDeriv, sum, sum_p2, sum_p3, sum_p4, nbPixels );
+		output._skewness = pixel_skewness( output._average, stdDeriv, sum, sum_p2, sum_p3, nbPixels );
+
+		return output;
+	}
+};
+
+
+template <int n, typename Param, typename Pixel>
+struct setPixelValueAtTimeImpl
+{
+	void operator()( Param& param, const OfxTime time, const Pixel& pixel );
+};
+
+template <typename Param, typename Pixel>
+struct setPixelValueAtTimeImpl<3, Param, Pixel>
+{
+	void operator()( Param& param, const OfxTime time, const Pixel& pixel )
+	{
+		param.setValueAtTime( time,
+								pixel[0],
+								pixel[1],
+								pixel[2]
+							  );
+	}
+};
+
+template <typename Param, typename Pixel>
+struct setPixelValueAtTimeImpl<4, Param, Pixel>
+{
+	void operator()( Param& param, const OfxTime time, const Pixel& pixel )
+	{
+		param.setValueAtTime( time,
+								pixel[0],
+								pixel[1],
+								pixel[2],
+								pixel[3]
+							  );
+	}
+};
+
+
+template <typename Param, typename Pixel>
+void setPixelValuesAtTime( Param& param, const OfxTime time, const Pixel& pixel  )
+{
+	setPixelValueAtTimeImpl<num_channels<Pixel>::value, Param, Pixel>()( param, time, pixel );
+}
+
+template <typename OutputParamsRGBA, typename OutputParamsHSL>
+void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputParamsHSL& outputParamsHSL, const OfxTime time, ImageStatisticsPlugin& plugin )
+{
+	setPixelValuesAtTime( *plugin._paramOutputAverage, time, outputParamsRGBA._average );
+//	COUT_VAR4( outputParamsRGBA._average[0], outputParamsRGBA._average[1], outputParamsRGBA._average[2], outputParamsRGBA._average[3] );
+	setPixelValuesAtTime( *plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
+//	COUT_VAR4( outputParamsRGBA._channelMin[0], outputParamsRGBA._channelMin[1], outputParamsRGBA._channelMin[2], outputParamsRGBA._channelMin[3] );
+	setPixelValuesAtTime( *plugin._paramOutputChannelMax, time, outputParamsRGBA._channelMax );
+	setPixelValuesAtTime( *plugin._paramOutputLuminosityMin, time, outputParamsRGBA._luminosityMin );
+	setPixelValuesAtTime( *plugin._paramOutputLuminosityMax, time, outputParamsRGBA._luminosityMax );
+	setPixelValuesAtTime( *plugin._paramOutputKurtosis, time, outputParamsRGBA._kurtosis );
+	setPixelValuesAtTime( *plugin._paramOutputSkewness, time, outputParamsRGBA._skewness );
+
+	setPixelValuesAtTime( *plugin._paramOutputAverageHSL, time, outputParamsHSL._average );
+//	COUT_VAR4( outputParamsHSL._average[0], outputParamsHSL._average[1], outputParamsHSL._average[2], outputParamsHSL._average[3] );
+	setPixelValuesAtTime( *plugin._paramOutputChannelMinHSL, time, outputParamsHSL._channelMin );
+//	COUT_VAR4( outputParamsHSL._channelMin[0], outputParamsHSL._channelMin[1], outputParamsHSL._channelMin[2], outputParamsHSL._channelMin[3] );
+	setPixelValuesAtTime( *plugin._paramOutputChannelMaxHSL, time, outputParamsHSL._channelMax );
+	setPixelValuesAtTime( *plugin._paramOutputLuminosityMinHSL, time, outputParamsHSL._luminosityMin );
+	setPixelValuesAtTime( *plugin._paramOutputLuminosityMaxHSL, time, outputParamsHSL._luminosityMax );
+	setPixelValuesAtTime( *plugin._paramOutputKurtosisHSL, time, outputParamsHSL._kurtosis );
+	setPixelValuesAtTime( *plugin._paramOutputSkewnessHSL, time, outputParamsHSL._skewness );
+}
+
+
+template<class View>
+ImageStatisticsProcess<View>::ImageStatisticsProcess( ImageStatisticsPlugin &instance )
+: ImageGilFilterProcessor<View>( instance )
+, _plugin( instance )
+{
+	this->setNoMultiThreading( );
+}
+
 template<class View>
 void ImageStatisticsProcess<View>::setup( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
 
 	ImageGilFilterProcessor<View>::setup( args );
+	_processParams = _plugin.getProcessParams( this->_srcPixelRod );
 
-	// recovery parameters values
-	OfxRectI srcRod = this->_clipSrc->getPixelRod( args.time );
-	_processParams = _plugin.getProcessParams( srcRod );
-
-	Point2 rectSize( std::abs( _processParams._rect.x2 - _processParams._rect.x1 ),
-					 std::abs( _processParams._rect.y2 - _processParams._rect.y1 ) );
-
-	COUT_VAR( _processParams._rect );
-	COUT_VAR( rectSize );
-
-	typedef pixel<bits32f, layout<typename color_space_type<View>::type> > Pixel32f;
-	typedef pixel<typename channel_type<View>::type, layout<gray_t> > PixelGray;
-
-	// declare values and init
-	Pixel firstPixel = this->_srcView(_processParams._rect.x1, _processParams._rect.y1); // for initialization only
-	PixelGray firstPixelGray;
-	color_convert( firstPixel, firstPixelGray );
-
-	Pixel32f average;
-	pixel_zeros_t<Pixel32f>()( average );
-	Pixel minChannel = firstPixel;
-	Pixel maxChannel = firstPixel;
-	Pixel minLuminosity = firstPixel;
-	PixelGray minLuminosityGray = firstPixelGray;
-	Pixel maxLuminosity = firstPixel;
-	PixelGray maxLuminosityGray = firstPixelGray;
-
-	hsl32f_pixel_t sumHsl;
-	hsl32f_pixel_t sumHsl_p2;
-	hsl32f_pixel_t sumHsl_p3;
-	hsl32f_pixel_t sumHsl_p4;
-	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl );
-	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl_p2 );
-	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl_p3 );
-	pixel_zeros_t<hsl32f_pixel_t>()( sumHsl_p4 );
-
-	for( int y = _processParams._rect.y1;
-		 y < _processParams._rect.y2;
-		 ++y )
-	{
-		typename View::x_iterator src_it = this->_srcView.x_at( _processParams._rect.x1, y );
-		Pixel32f lineAverage;
-		pixel_zeros_t<Pixel32f>()( lineAverage );
-		
-		for( int x = _processParams._rect.x1;
-			 x < _processParams._rect.x2;
-			 ++x, ++src_it )
-		{
-			Pixel32f pix;
-			pixel_assigns_t<Pixel, Pixel32f>()( *src_it, pix ); // pix = src_it;
-			rgb32f_pixel_t pixRgb;
-			pixel_assigns_t<rgb32f_pixel_t, rgb32f_pixel_t>()( without_alpha_channel_t<Pixel32f>()( pix ), pixRgb ); // pixRgb = pix;
-
-			hsl32f_pixel_t pixHsl;
-			hsl32f_pixel_t pixHsl_p2;
-			hsl32f_pixel_t pixHsl_p3;
-			hsl32f_pixel_t pixHsl_p4;
-
-			color_convert( pixRgb, pixHsl );
-			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_pow_t<hsl32f_pixel_t, 2>()( pixHsl ), pixHsl_p2 ); // pixHsl_p2 = pow<2>( pixHsl );
-			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl, pixHsl_p2 ), pixHsl_p3 ); // pixHsl_p3 = pixHsl * pixHsl_p2;
-			pixel_assigns_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixel_multiplies_t<hsl32f_pixel_t, hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p2, pixHsl_p2 ), pixHsl_p4 ); // pixHsl_p4 = pixHsl_p2 * pixHsl_p2;
-
-			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl, sumHsl ); // sumHsl += pix;
-			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p2, sumHsl_p2 ); // sumHsl_p2 += pix_p2;
-			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p3, sumHsl_p3 ); // sumHsl_p3 += pix_p3;
-			pixel_plus_assign_t<hsl32f_pixel_t, hsl32f_pixel_t>()( pixHsl_p4, sumHsl_p4 ); // sumHsl_p4 += pix_p4;
-
-			// for average : accumulate
-			pixel_plus_assign_t<Pixel32f, Pixel32f>()( pix, lineAverage ); // lineAverage += pix;
-
-			// search min for each channel
-			pixel_assign_min_t<Pixel, Pixel>()( *src_it, minChannel );
-			// search max for each channel
-			pixel_assign_max_t<Pixel, Pixel>()( *src_it, maxChannel );
-			
-			PixelGray grayCurrentPixel; // current pixel in gray colorspace
-			color_convert( *src_it, grayCurrentPixel );
-			// search min luminosity
-			if( get_color( grayCurrentPixel, gray_color_t() ) < get_color( minLuminosityGray, gray_color_t() ) )
-			{
-				minLuminosity = *src_it;
-				minLuminosityGray = grayCurrentPixel;
-			}
-			// search max luminosity
-			if( get_color( grayCurrentPixel, gray_color_t() ) > get_color( maxLuminosityGray, gray_color_t() ) )
-			{
-				maxLuminosity = *src_it;
-				maxLuminosityGray = grayCurrentPixel;
-			}
-		}
-		// for average : divide by number of accumulated pixels
-		pixel_divides_scalar_assign_t<double, Pixel32f>()( rectSize.x, lineAverage ); // lineAverage /= rectSize.x;
-		// for average : accumulate each line
-		pixel_plus_assign_t<Pixel32f, Pixel32f>()( lineAverage, average ); // _average += lineAverage;
-	}
-	// for average : divide by number of accumulated lines
-	pixel_divides_scalar_assign_t<double, Pixel32f>()( rectSize.y, average ); // _average /= rectSize.y;
+	View image = subimage_view( this->_srcView,
+	                            _processParams._rect.x1,
+								_processParams._rect.y1,
+							    _processParams._rect.x2 - _processParams._rect.x1,
+							    _processParams._rect.y2 - _processParams._rect.y1 );
 
 
-	std::size_t nbPixels = (_processParams._rect.x2 - _processParams._rect.x1) * (_processParams._rect.y2 - _processParams._rect.y1);
+	typedef ComputeOutputParams<View, boost::gil::bits64f> ComputeRGBA;
+	typename ComputeRGBA::Output outputRGBA = ComputeRGBA()( image, this->_plugin );
 
-	hsl32f_pixel_t stdDerivHsl = pixel_standard_deviation( sumHsl, sumHsl_p2, nbPixels );
-	hsl32f_pixel_t meanHsl = pixel_divides_scalar_t<hsl32f_pixel_t, double>()( sumHsl, nbPixels );
-	hsl32f_pixel_t kurtosisHsl = pixel_kurtosis( meanHsl, stdDerivHsl, sumHsl, sumHsl_p2, sumHsl_p3, sumHsl_p4, nbPixels );
-	hsl32f_pixel_t skewnessHsl = pixel_skewness( meanHsl, stdDerivHsl, sumHsl, sumHsl_p2, sumHsl_p3, nbPixels );
+	typedef pixel<typename channel_type<View>::type, layout<hsl_t> > HSLPixel;
+	typedef color_converted_view_type<View,HSLPixel> HSLConverter;
+	typedef ComputeOutputParams<typename HSLConverter::type, boost::gil::bits64f> ComputeHSL;
+	typename ComputeHSL::Output outputHSL = ComputeHSL()( color_converted_view<HSLPixel>(image), this->_plugin );
 
-	COUT_VAR( get_color( stdDerivHsl, hsl_color_space::hue_t() ) );
-	COUT_VAR( get_color( stdDerivHsl, hsl_color_space::saturation_t() ) );
-	COUT_VAR( get_color( stdDerivHsl, hsl_color_space::lightness_t() ) );
-
-	COUT_VAR( get_color( meanHsl, hsl_color_space::hue_t() ) );
-	COUT_VAR( get_color( meanHsl, hsl_color_space::saturation_t() ) );
-	COUT_VAR( get_color( meanHsl, hsl_color_space::lightness_t() ) );
-
-	COUT_VAR( get_color( kurtosisHsl, hsl_color_space::hue_t() ) );
-	COUT_VAR( get_color( kurtosisHsl, hsl_color_space::saturation_t() ) );
-	COUT_VAR( get_color( kurtosisHsl, hsl_color_space::lightness_t() ) );
-
-	COUT_VAR( get_color( skewnessHsl, hsl_color_space::hue_t() ) );
-	COUT_VAR( get_color( skewnessHsl, hsl_color_space::saturation_t() ) );
-	COUT_VAR( get_color( skewnessHsl, hsl_color_space::lightness_t() ) );
-
-	// temporary values for output
-	rgba32f_pixel_t outputRgbaValue;
-	rgb32f_pixel_t outputRgbValue;
-	hsl32f_pixel_t outputHslValue;
-	
-	color_convert( average, outputRgbaValue );
-	_plugin._paramOutputAverage->setValueAtTime( args.time,
-	                                        get_color( outputRgbaValue, red_t() ),
-	                                        get_color( outputRgbaValue, green_t() ),
-	                                        get_color( outputRgbaValue, blue_t() ),
-	                                        get_color( outputRgbaValue, alpha_t() )
-	                                      );
-
-	color_convert( meanHsl, outputHslValue );
-	_plugin._paramOutputAverageHsl->setValueAtTime( args.time,
-	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
-	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
-	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
-	                                      );
-
-	color_convert( minChannel, outputRgbaValue );
-	_plugin._paramOutputChannelMin->setValueAtTime( args.time,
-	                                        get_color( outputRgbaValue, red_t() ),
-	                                        get_color( outputRgbaValue, green_t() ),
-	                                        get_color( outputRgbaValue, blue_t() ),
-	                                        get_color( outputRgbaValue, alpha_t() )
-	                                      );
-
-	color_convert( maxChannel, outputRgbaValue );
-	_plugin._paramOutputChannelMax->setValueAtTime( args.time,
-	                                        get_color( outputRgbaValue, red_t() ),
-	                                        get_color( outputRgbaValue, green_t() ),
-	                                        get_color( outputRgbaValue, blue_t() ),
-	                                        get_color( outputRgbaValue, alpha_t() )
-	                                      );
-
-	color_convert( minLuminosity, outputRgbaValue );
-	_plugin._paramOutputLuminosityMin->setValueAtTime( args.time,
-	                                        get_color( outputRgbaValue, red_t() ),
-	                                        get_color( outputRgbaValue, green_t() ),
-	                                        get_color( outputRgbaValue, blue_t() ),
-	                                        get_color( outputRgbaValue, alpha_t() )
-	                                      );
-
-	color_convert( maxLuminosity, outputRgbaValue );
-	_plugin._paramOutputLuminosityMax->setValueAtTime( args.time,
-	                                        get_color( outputRgbaValue, red_t() ),
-	                                        get_color( outputRgbaValue, green_t() ),
-	                                        get_color( outputRgbaValue, blue_t() ),
-	                                        get_color( outputRgbaValue, alpha_t() )
-	                                      );
-
-	color_convert( kurtosisHsl, outputHslValue );
-	_plugin._paramOutputKurtosisHsl->setValueAtTime( args.time,
-	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
-	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
-	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
-	                                      );
-
-	color_convert( skewnessHsl, outputHslValue );
-	_plugin._paramOutputSkewnessHsl->setValueAtTime( args.time,
-	                                        get_color( outputHslValue, hsl_color_space::hue_t() ),
-	                                        get_color( outputHslValue, hsl_color_space::saturation_t() ),
-	                                        get_color( outputHslValue, hsl_color_space::lightness_t() )
-	                                      );
+	setOutputParams( outputRGBA, outputHSL, args.time, this->_plugin );
 
 	switch( _processParams._chooseOutput )
 	{
 		case eParamChooseOutputSource:
 			break;
 		case eParamChooseOutputAverage:
-			color_convert( average, _outputPixel );
+			color_convert( outputRGBA._average, _outputPixel );
 			break;
 		case eParamChooseOutputChannelMin:
-			_outputPixel = minChannel;
+			color_convert( outputRGBA._channelMin, _outputPixel );
 			break;
 		case eParamChooseOutputChannelMax:
-			_outputPixel = maxChannel;
+			color_convert( outputRGBA._channelMax, _outputPixel );
 			break;
 		case eParamChooseOutputLuminosityMin:
-			_outputPixel = minLuminosity;
+			color_convert( outputRGBA._luminosityMin, _outputPixel );
 			break;
 		case eParamChooseOutputLuminosityMax:
-			_outputPixel = maxLuminosity;
+			color_convert( outputRGBA._luminosityMax, _outputPixel );
 			break;
 	}
 }
