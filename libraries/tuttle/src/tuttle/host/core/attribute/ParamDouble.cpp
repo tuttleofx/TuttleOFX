@@ -42,18 +42,6 @@ void ParamDouble::setAtTime( const OfxTime time, const double& v, const ofx::att
 	this->paramChanged( change );
 }
 
-void ParamDouble::set( const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
-{
-	_value = v;
-	this->paramChanged( change );
-}
-
-void ParamDouble::setAtTime( const OfxTime time, const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
-{
-	_value = v; ///< @todo: in time !
-	this->paramChanged( change );
-}
-
 
 void ParamDouble::derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC
 {

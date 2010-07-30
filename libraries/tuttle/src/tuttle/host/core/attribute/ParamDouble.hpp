@@ -25,10 +25,6 @@ public:
 	void set( const double&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void setAtTime( const OfxTime time, const double&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 
-	void set( const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void setAtTime( const OfxTime time, const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-
-
 	void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC;
 	void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC;
 	void copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC
