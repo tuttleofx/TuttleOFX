@@ -286,7 +286,7 @@ void ImageEffectNode::checkClipsConnections() const
 		 ++it )
 	{
 		const ClipImage& clip = dynamic_cast<const ClipImage&>( *(it->second) );
-		if( !clip.isOutput() && !clip.getConnected() && !clip.isOptional() ) // a non optionl input clip is unconnected
+		if( !clip.isOutput() && !clip.getConnected() && !clip.isOptional() ) // one non optional input clip is unconnected
 		{
 			BOOST_THROW_EXCEPTION( exception::LogicError( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
 		}
