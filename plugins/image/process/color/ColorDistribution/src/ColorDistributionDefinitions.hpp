@@ -7,7 +7,24 @@
 namespace tuttle {
 namespace plugin {
 namespace colorDistribution {
-const std::string kInvert = "invert";
+
+const std::string kParamIn = "in";
+const std::string kParamOut = "out";
+
+const std::string kParamDistribution_linear = "Linear";
+const std::string kParamDistribution_sRGB   = "sRGB";
+const std::string kParamDistribution_cineon = "Cineon";
+const std::string kParamDistribution_rec709 = "rec709";
+const std::string kParamDistribution_rec601 = "rec601";
+
+enum EParamDistribution
+{
+	eParamDistribution_linear = 0,
+	eParamDistribution_sRGB,
+//	eParamDistribution_cineon,
+//	eParamDistribution_rec709,
+//	eParamDistribution_rec601
+};
 
 }
 }

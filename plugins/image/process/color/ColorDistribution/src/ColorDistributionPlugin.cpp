@@ -15,16 +15,35 @@ namespace colorDistribution {
 ColorDistributionPlugin::ColorDistributionPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
-	_invert = fetchBooleanParam( kInvert );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_paramIn = fetchChoiceParam( kParamIn );
+	_paramOut = fetchChoiceParam( kParamOut );
 }
 
 ColorDistributionProcessParams<ColorDistributionPlugin::Scalar> ColorDistributionPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	ColorDistributionProcessParams<Scalar> params;
-	params.invert = _invert->getValue();
+	params._in = static_cast<EParamDistribution>( _paramIn->getValue() );
+	params._out = static_cast<EParamDistribution>( _paramOut->getValue() );
 	return params;
+}
+
+void ColorDistributionPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+{
+
+}
+
+bool ColorDistributionPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
+{
+	ColorDistributionProcessParams<Scalar> params = getProcessParams();
+	if( params._in == params._out )
+	{
+		identityClip = _clipSrc;
+		identityTime = args.time;
+		return true;
+	}
+	return false; // by default, we are not an identity operation
 }
 
 /**
@@ -35,8 +54,8 @@ void ColorDistributionPlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _dstClip->getPixelComponents( );
+    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
@@ -103,10 +122,6 @@ void ColorDistributionPlugin::render( const OFX::RenderArguments &args )
 	}
 }
 
-void ColorDistributionPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-
-}
 
 }
 }

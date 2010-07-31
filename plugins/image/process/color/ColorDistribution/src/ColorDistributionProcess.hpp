@@ -19,11 +19,19 @@ public:
 	typedef float Scalar;
 protected :
     ColorDistributionPlugin&    _plugin;        ///< Rendering plugin
-
+	ColorDistributionProcessParams<Scalar> _params;
+	
 public:
     ColorDistributionProcess( ColorDistributionPlugin& effect );
 
+	void setup( const OFX::RenderArguments &args );
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+
+private:
+	template <EParamDistribution IN> GIL_FORCEINLINE
+	void processSwitchOut(const EParamDistribution out, const View& src, const View& dst);
+
+	void processSwitchInOut( const EParamDistribution in, const EParamDistribution out, const View& src, const View& dst );
 };
 
 }

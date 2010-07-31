@@ -23,7 +23,7 @@ static const bool kSupportTiles = false;
  */
 void ColorDistributionPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "ColorDistribution", "ColorDistribution",
+	desc.setLabels( "TuttleColorDistribution", "ColorDistribution",
 		            "ColorDistribution" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
@@ -59,9 +59,26 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::BooleanParamDescriptor *invert = desc.defineBooleanParam( kInvert );
-	invert->setLabel( "Invert" );
-	invert->setDefault( false );
+	OFX::ChoiceParamDescriptor* in = desc.defineChoiceParam( kParamIn );
+	in->setLabel( "In" );
+	in->setHint( "Input color distribution." );
+	in->appendOption( kParamDistribution_linear );
+	in->appendOption( kParamDistribution_sRGB );
+//	in->appendOption( kParamDistribution_cineon );
+//	in->appendOption( kParamDistribution_rec709 );
+//	in->appendOption( kParamDistribution_rec601 );
+	in->setDefault( 0 );
+
+	OFX::ChoiceParamDescriptor* out = desc.defineChoiceParam( kParamOut );
+	out->setLabel( "Out" );
+	out->setHint( "Output color distribution." );
+	out->appendOption( kParamDistribution_linear );
+	out->appendOption( kParamDistribution_sRGB );
+//	out->appendOption( kParamDistribution_cineon );
+//	out->appendOption( kParamDistribution_rec709 );
+//	out->appendOption( kParamDistribution_rec601 );
+	out->setDefault( 0 );
+
 }
 
 /**

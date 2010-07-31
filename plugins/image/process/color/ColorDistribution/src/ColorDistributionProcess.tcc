@@ -1,15 +1,187 @@
+#include "ColorDistributionDefinitions.hpp"
+
+#include <tuttle/plugin/image/gil/algorithm.hpp>
+
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/PluginException.hpp>
+
 
 namespace tuttle {
 namespace plugin {
 namespace colorDistribution {
+
+using namespace boost::gil;
+
+/**
+ * @todo tuttle: channel type conversion to float or double...
+ *
+ */
+
+/// @brief change the color distribution
+template< typename Channel,
+	      EParamDistribution IN,
+	      EParamDistribution OUT >
+struct channel_color_distribution_t : public std::binary_function<Channel,Channel,Channel>
+{
+	BOOST_STATIC_ASSERT( sizeof(Channel) >= 0 ) ; // Error: there is no specialization for this color distribution conversion.
+};
+
+#define TUTTLE_DEFINE_SAME_COLOR_DISTRIBUTION( COLORDISTRIBUTION ) \
+template< typename Channel > \
+struct channel_color_distribution_t<Channel, COLORDISTRIBUTION, COLORDISTRIBUTION> : public std::binary_function<Channel,Channel,Channel> \
+{ \
+    typename channel_traits<Channel>::reference \
+	operator()( typename channel_traits<Channel>::const_reference ch1, \
+                typename channel_traits<Channel>::reference ch2 ) const \
+	{ \
+        BOOST_THROW_EXCEPTION( std::logic_error("This conversion is an identity conversion, you don't need to do the process.") ); \
+        return ch2 = ch1; \
+    } \
+};
+
+/**
+ * @brief Lin to sRGB
+ * Formula taken from Computational technology by Kang.
+ */
+template< typename Channel >
+struct channel_color_distribution_t<Channel, eParamDistribution_linear, eParamDistribution_sRGB> : public std::binary_function<Channel,Channel,Channel>
+{
+    typename channel_traits<Channel>::reference
+	operator()( typename channel_traits<Channel>::const_reference ch1,
+                typename channel_traits<Channel>::reference ch2 ) const
+	{
+		static const double inv_2_4 = 1.0/2.4;
+		if ( ch1 > 0.00304 )
+		{
+			ch2 = 1.055 * exp( log( ch1 ) * inv_2_4 ) - 0.055;
+		}
+		else
+		{
+			ch2 = 12.92 * ch1;
+		}
+        return ch2;
+    }
+};
+
+/**
+ * @brief sRGB to Lin
+ * Formula taken from Computational technology by Kang.
+ */
+template< typename Channel >
+struct channel_color_distribution_t<Channel, eParamDistribution_sRGB, eParamDistribution_linear> : public std::binary_function<Channel,Channel,Channel>
+{
+    typename channel_traits<Channel>::reference
+	operator()( typename channel_traits<Channel>::const_reference ch1,
+                typename channel_traits<Channel>::reference ch2 ) const
+	{
+		if ( ch1 > 0.03928 )
+		{
+			ch2 = exp( log( (ch1 + 0.055) / 1.055 ) * 2.4 );
+		}
+		else
+		{
+			ch2 = ch1 / 12.92;
+		}
+        return ch2;
+    }
+};
+
+/**
+ * @brief sRGB to custom, using intermediate linear conversion
+ */
+template< typename Channel,
+	      EParamDistribution OUT >
+struct channel_color_distribution_t<Channel, eParamDistribution_sRGB, OUT> : public std::binary_function<Channel,Channel,Channel>
+{
+	static const EParamDistribution IN = eParamDistribution_sRGB;
+    typename channel_traits<Channel>::reference
+	operator()( typename channel_traits<Channel>::const_reference ch1,
+                typename channel_traits<Channel>::reference ch2 ) const
+	{
+		channel_color_distribution_t<Channel, IN, eParamDistribution_linear>( ch1, ch2 );
+		channel_color_distribution_t<Channel, eParamDistribution_linear, OUT>( ch2, ch2 );
+        return ch2;
+    }
+};
+
+TUTTLE_DEFINE_SAME_COLOR_DISTRIBUTION( eParamDistribution_linear );
+TUTTLE_DEFINE_SAME_COLOR_DISTRIBUTION( eParamDistribution_sRGB );
+//TUTTLE_DEFINE_SAME_COLOR_DISTRIBUTION( eParamDistribution_cineon );
+//TUTTLE_DEFINE_SAME_COLOR_DISTRIBUTION( eParamDistribution_rec709 );
+//TUTTLE_DEFINE_SAME_COLOR_DISTRIBUTION( eParamDistribution_rec601 );
+
+
+template< typename Pixel,
+	      EParamDistribution IN,
+	      EParamDistribution OUT >
+struct pixel_color_distribution_t
+{
+    Pixel& operator()( const Pixel& p1,
+                          Pixel& p2 ) const
+	{
+        static_for_each( p1, p2,
+                         channel_color_distribution_t< typename channel_type<Pixel>::type,
+                                                       IN, OUT >()
+			           );
+        return p2;
+    }
+};
+
+template< EParamDistribution IN,
+	      EParamDistribution OUT >
+struct transform_pixel_color_distribution_t
+{
+	template< typename Pixel>
+    Pixel operator()( const Pixel& p1 ) const
+	{
+		Pixel p2;
+        pixel_color_distribution_t<Pixel, IN, OUT>()( p1, p2 );
+		return p2;
+    }
+};
 
 template<class View>
 ColorDistributionProcess<View>::ColorDistributionProcess( ColorDistributionPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
+}
+
+template<class View>
+void ColorDistributionProcess<View>::setup( const OFX::RenderArguments &args )
+{
+	ImageGilFilterProcessor<View>::setup( args );
+
+	_params = _plugin.getProcessParams( args.renderScale );
+	
+}
+
+template<class View>
+template <EParamDistribution IN> GIL_FORCEINLINE
+void ColorDistributionProcess<View>::processSwitchOut( const EParamDistribution out, const View& src, const View& dst )
+{
+	switch( out )
+	{
+		case eParamDistribution_linear:
+			transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, eParamDistribution_linear>(), *this );
+			break;
+		case eParamDistribution_sRGB:
+			transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, eParamDistribution_sRGB>(), *this );
+			break;
+	}
+}
+template<class View>
+void ColorDistributionProcess<View>::processSwitchInOut( const EParamDistribution in, const EParamDistribution out, const View& src, const View& dst )
+{
+	switch( in )
+	{
+		case eParamDistribution_linear:
+			processSwitchOut<eParamDistribution_linear>( out, src, dst );
+			break;
+		case eParamDistribution_sRGB:
+			processSwitchOut<eParamDistribution_sRGB>( out, src, dst );
+			break;
+	}
 }
 
 /**
@@ -21,95 +193,17 @@ void ColorDistributionProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	ColorDistributionProcessParams<ColorDistributionPlugin::Scalar>	params = _plugin.getProcessParams();
-	rgb32f_pixel_t wpix;
-	double inv24 = 1.0/2.4;
-	for( int y = procWindowOutput.y1;
-			 y < procWindowOutput.y2;
-			 ++y )
-	{
-		typename View::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
-		for( int x = procWindowOutput.x1;
-			 x < procWindowOutput.x2;
-			 ++x, ++src_it, ++dst_it )
-		{
-			color_convert(*src_it, wpix);
-
-			// Lin to sRGB
-			// Formula taken from Computational technology by Kang.
-			if ( params.invert == true )
-			{
-				if ( wpix[ 0 ] > 0.00304 )
-				{
-					 wpix[ 0 ] = 1.055 * exp( log( wpix[ 0 ] ) * inv24 ) - 0.055;
-				}
-				else
-				{
-					wpix[ 0 ] = 12.92 * wpix[ 0 ];
-				}
-				if ( wpix[ 1 ] > 0.00304 )
-				{
-					 wpix[ 1 ] = 1.055 * exp( log( wpix[ 1 ] ) * inv24 ) - 0.055;
-				}
-				else
-				{
-					wpix[ 1 ] = 12.92 * wpix[ 1 ];
-				}
-				if ( wpix[ 2 ] > 0.00304 )
-				{
-					 wpix[ 2 ] = 1.055 * exp( log( wpix[ 2 ] ) * inv24 ) - 0.055;
-				}
-				else
-				{
-					wpix[ 2 ] = 12.92 * wpix[ 2 ];
-				}
-			}
-			else
-			{
-				if ( wpix[ 0 ] > 0.03928 )
-				{
-					wpix[ 0 ] = exp( log( (wpix[ 0 ] + 0.055) / 1.055 ) * 2.4 );
-				}
-				else
-				{
-					wpix[ 0 ] = wpix[ 0 ] / 12.92;
-				}
-				if ( wpix[ 1 ] > 0.03928 )
-				{
-					wpix[ 1 ] = exp( log( (wpix[ 1 ] + 0.055) / 1.055 ) * 2.4 );
-				}
-				else
-				{
-					wpix[ 1 ] = wpix[ 1 ] / 12.92;
-				}
-				if ( wpix[ 2 ] > 0.03928 )
-				{
-					wpix[ 2 ] = exp( log( (wpix[ 2 ] + 0.055) / 1.055 ) * 2.4 );
-				}
-				else
-				{
-					wpix[ 2] = wpix[ 2 ] / 12.92;
-				}
-			}
-			color_convert(wpix, *dst_it);
-		}
-		if( this->progressForward() )
-			return;
-	}
-	/*
-	const OfxRectI procWindowSrc = this->translateRegion( procWindowRoW, this->_srcPixelRod );
 	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
 							     procWindowRoW.y2 - procWindowRoW.y1 };
-	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+
+	View src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
 							  procWindowSize.x,
 							  procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							  procWindowSize.x,
 							  procWindowSize.y );
-	copy_pixels( src, dst );
-	*/
 
+	processSwitchInOut( _params._in, _params._out, src, dst );
 }
 
 }
