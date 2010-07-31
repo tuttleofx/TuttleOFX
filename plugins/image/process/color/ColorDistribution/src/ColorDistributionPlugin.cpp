@@ -31,7 +31,12 @@ ColorDistributionProcessParams<ColorDistributionPlugin::Scalar> ColorDistributio
 
 void ColorDistributionPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-
+	if( paramName == kParamInvert )
+	{
+		int in = _paramIn->getValue();
+		_paramIn->setValue( _paramOut->getValue() );
+		_paramOut->setValue( in );
+	}
 }
 
 bool ColorDistributionPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )

@@ -26,6 +26,8 @@ enum EParamDistribution
 //	eParamDistribution_rec601
 };
 
+const std::string kParamInvert = "invert";
+
 }
 }
 }

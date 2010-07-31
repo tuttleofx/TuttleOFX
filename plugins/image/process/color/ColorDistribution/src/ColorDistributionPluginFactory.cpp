@@ -79,6 +79,8 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
 //	out->appendOption( kParamDistribution_rec601 );
 	out->setDefault( 0 );
 
+	OFX::PushButtonParamDescriptor* invert = desc.definePushButtonParam( kParamInvert );
+	invert->setLabel( "Invert" );
 }
 
 /**
