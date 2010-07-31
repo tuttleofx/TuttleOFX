@@ -31,12 +31,15 @@ typedef uint64_t bits64;
 /// \ingroup bits64s
 typedef int64_t  bits64s;
 
+struct double_zero { static double apply() { return 0.0; } };
+struct double_one { static double apply() { return  1.0; } };
+
 /// \defgroup bits64f bits64f
 /// \ingroup ChannelModel
 /// \brief 64-bit floating point channel type with range [0.0f ... 1.0f]. Models ChannelValueConcept
 
 /// \ingroup bits64f
-typedef scoped_channel_value<double,float_zero,float_one> bits64f;
+typedef scoped_channel_value<double, double_zero, double_one> bits64f;
 
 GIL_DEFINE_BASE_TYPEDEFS(64 ,gray)
 GIL_DEFINE_BASE_TYPEDEFS(64s,gray)
