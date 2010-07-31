@@ -362,14 +362,20 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	if( curPos >= frame )
 	{
 		// std::cout << "avcodec_decode_video" << std::endl;
-		//avcodec_decode_video( codecContext, _avFrame, &hasPicture, _pkt.data, _pkt.size );
+#if LIBAVCODEC_VERSION_MAJOR >= 52
+		avcodec_decode_video( codecContext, _avFrame, &hasPicture, _pkt.data, _pkt.size );
+#else
 		avcodec_decode_video2( codecContext, _avFrame, &hasPicture, &_pkt );
+#endif
 	}
 	else if( _offsetTime )
 	{
 		// std::cout << "avcodec_decode_video" << std::endl;
-		//avcodec_decode_video( codecContext, _avFrame, &curSearch, _pkt.data, _pkt.size );
+#if LIBAVCODEC_VERSION_MAJOR >= 52
+		avcodec_decode_video( codecContext, _avFrame, &curSearch, _pkt.data, _pkt.size );
+#else
 		avcodec_decode_video2( codecContext, _avFrame, &curSearch, &_pkt );
+#endif
 	}
 
 	if( !hasPicture )
