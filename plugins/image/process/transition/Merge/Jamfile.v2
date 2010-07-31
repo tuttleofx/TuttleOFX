@@ -16,13 +16,15 @@ project
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Merge : 
-    [ glob src/*.cpp ]
-    /tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
-    ;
+#plugin Merge :
+#    [ glob src/*.cpp ]
+#    /tuttleplugin/<link>static
+#	:
+#	<os>NT:<find-shared-library>opengl32
+#	<os>MACOSX:<linkflags>"-framework OpenGL"
+#    ;
+
+alias Merge ;
 
 ###############################################################################
 # Automatic install
