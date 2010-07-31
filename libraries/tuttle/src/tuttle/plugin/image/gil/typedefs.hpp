@@ -87,6 +87,18 @@ GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64s,dev5n, devicen_t<5>, devicen_layout_t<5>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL(64f,dev5n, devicen_t<5>, devicen_layout_t<5>)
 
 
+/**
+ * @return the current type T if it's a floating point type,
+ *         else return F
+ */
+template<typename T, typename F = bits32f>
+struct floating_channel_type_t
+{
+	typedef typename boost::mpl::if_< boost::is_floating_point<T>,
+								 T,
+								 F >::type type;
+};
+
 
 /******************************************************************************
  * Bit stream

@@ -1,12 +1,12 @@
 #include "ColorDistributionDefinitions.hpp"
 
-#include <tuttle/plugin/image/gil/algorithm.hpp>
-
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <tuttle/plugin/image/gil/typedefs.hpp>
+
 #include <tuttle/plugin/PluginException.hpp>
 
 #include <boost/mpl/if.hpp>
-#include <boost/type_traits/is_floating_point.hpp>
 #include <boost/static_assert.hpp>
 
 namespace tuttle {
@@ -14,18 +14,6 @@ namespace plugin {
 namespace colorDistribution {
 
 using namespace boost::gil;
-
-/**
- * @return the current type T if it's a floating point type,
- *         else return F
- */
-template<typename T, typename F = bits32f>
-struct floating_channel_type_t
-{
-	typedef typename boost::mpl::if_< boost::is_floating_point<T>,
-								 T,
-								 F >::type type;
-};
 
 /// @brief change the color distribution
 template< typename Channel,
