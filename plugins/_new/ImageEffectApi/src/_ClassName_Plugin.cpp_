@@ -25,6 +25,28 @@ ImageEffect( handle )
 	return params;
 }
 
+void %CLASSNAME%Plugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+{
+    if( paramName == kHelpButton )
+    {
+        sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     kHelpString );
+    }
+}
+
+bool %CLASSNAME%Plugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
+{
+//	%CLASSNAME%ProcessParams<Scalar> params = getProcessParams();
+//	if( params._in == params._out )
+//	{
+//		identityClip = _clipSrc;
+//		identityTime = args.time;
+//		return true;
+//	}
+	return false;
+}
+
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
@@ -101,15 +123,6 @@ void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
 	}
 }
 
-void %CLASSNAME%Plugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-    if( paramName == kHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kHelpString );
-    }
-}
 
 }
 }
