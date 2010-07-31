@@ -5,6 +5,9 @@
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
+#include <boost/mpl/if.hpp>
+#include <boost/type_traits/is_floating_point.hpp>
+#include <boost/static_assert.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -13,9 +16,16 @@ namespace colorDistribution {
 using namespace boost::gil;
 
 /**
- * @todo tuttle: channel type conversion to float or double...
- *
+ * @return the current type T if it's a floating point type,
+ *         else return F
  */
+template<typename T, typename F = bits32f>
+struct floating_channel_type_t
+{
+	typedef typename boost::mpl::if_< boost::is_floating_point<T>,
+								 T,
+								 F >::type type;
+};
 
 /// @brief change the color distribution
 template< typename Channel,
@@ -46,20 +56,24 @@ struct channel_color_distribution_t<Channel, COLORDISTRIBUTION, COLORDISTRIBUTIO
 template< typename Channel >
 struct channel_color_distribution_t<Channel, eParamDistribution_linear, eParamDistribution_sRGB> : public std::binary_function<Channel,Channel,Channel>
 {
+	typedef typename floating_channel_type_t<Channel>::type T;
+
     typename channel_traits<Channel>::reference
 	operator()( typename channel_traits<Channel>::const_reference ch1,
                 typename channel_traits<Channel>::reference ch2 ) const
 	{
 		static const double inv_2_4 = 1.0/2.4;
-		if ( ch1 > 0.00304 )
+		const T v1 = channel_convert<T>(ch1);
+		T v2;
+		if ( v1 > 0.00304 )
 		{
-			ch2 = 1.055 * exp( log( ch1 ) * inv_2_4 ) - 0.055;
+			v2 = 1.055 * exp( log( v1 ) * inv_2_4 ) - 0.055;
 		}
 		else
 		{
-			ch2 = 12.92 * ch1;
+			v2 = 12.92 * v1;
 		}
-        return ch2;
+        return ch2 = channel_convert<Channel>(v2);
     }
 };
 
@@ -70,19 +84,23 @@ struct channel_color_distribution_t<Channel, eParamDistribution_linear, eParamDi
 template< typename Channel >
 struct channel_color_distribution_t<Channel, eParamDistribution_sRGB, eParamDistribution_linear> : public std::binary_function<Channel,Channel,Channel>
 {
+	typedef typename floating_channel_type_t<Channel>::type T;
+
     typename channel_traits<Channel>::reference
 	operator()( typename channel_traits<Channel>::const_reference ch1,
                 typename channel_traits<Channel>::reference ch2 ) const
 	{
-		if ( ch1 > 0.03928 )
+		const T v1 = channel_convert<T>(ch1);
+		T v2;
+		if ( v1 > 0.03928 )
 		{
-			ch2 = exp( log( (ch1 + 0.055) / 1.055 ) * 2.4 );
+			v2 = exp( log( ( v1 + 0.055 ) / 1.055 ) * 2.4 );
 		}
 		else
 		{
-			ch2 = ch1 / 12.92;
+			v2 = v1 / 12.92;
 		}
-        return ch2;
+        return ch2 = channel_convert<Channel>(v2);
     }
 };
 
