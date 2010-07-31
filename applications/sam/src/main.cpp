@@ -53,17 +53,17 @@ int main( int argc, char** argv )
 
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
-//		read1.getParam( "filename" ).set( "input1.avi" );
-		read1.getParam( "filename" ).set( "input.png" );
-		read2.getParam( "filename" ).set( "input.dpx" );
-		read3.getParam( "filename" ).set( "input.exr" );
+//		read1.getParam( "filename" ).set( "data/input1.avi" );
+		read1.getParam( "filename" ).set( "data/input.png" );
+		read2.getParam( "filename" ).set( "data/input.dpx" );
+		read3.getParam( "filename" ).set( "data/input.exr" );
 //		blur1.getParam( "size" ).set( 6.5, 15.0 );
 		blur1.getParam( "size" ).setAtIndex( 65.0, 1 );
 	//	crop1.getParam( "Down" ).set( 400 );
-		write1.getParam( "filename" ).set( "output1.png" );
-		write2.getParam( "filename" ).set( "output2.dpx" );
-		write3.getParam( "filename" ).set( "output3.exr" );
-		write4.getParam( "filename" ).set( "output4.avi" );
+		write1.getParam( "filename" ).set( "data/output1.png" );
+		write2.getParam( "filename" ).set( "data/output2.dpx" );
+		write3.getParam( "filename" ).set( "data/output3.exr" );
+		write4.getParam( "filename" ).set( "data/output4.avi" );
 
 		TCOUT( "__________________________________________________3" );
 		g.connect( read1, invert1 );
