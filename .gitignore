@@ -6,7 +6,6 @@
 # removing dist folder : folder receiving the compilation products
 /dist
 /.dist
-/tuttlePython
 
 # datas or personal files
 /data
