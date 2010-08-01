@@ -101,19 +101,19 @@ public:
 		{
 			COUT_EXCEPTION( e );
 			progressEnd( );
-			return;
+			throw;
 		}
 		catch( std::exception& e )
 		{
 			COUT_EXCEPTION( e );
 			progressEnd( );
-			return;
+			throw;
 		}
 		catch( ... )
 		{
 			COUT_ERROR( "Unknown exception." );
 			progressEnd( );
-			return;
+			throw;
 		}
 
 		// Call the base class process member
