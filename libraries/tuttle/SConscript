@@ -1,6 +1,8 @@
 Import( 'project' )
 Import( 'libs' )
 
+import os.path
+
 tuttleCommonSources = project.scanFiles( ['src/tuttle/common'] )
 
 project.StaticSharedLibrary( 'tuttlePlugin',
@@ -25,15 +27,31 @@ project.StaticSharedLibrary( 'tuttleHost',
                                   ]
                       )
 
+pythonOutputDir = os.path.join(project.inOutputDir(),'python')
+
 envSwig = project.createEnv( [libs.python, libs.tuttleHost, libs.pthread] )
 envSwig.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] )
 envSwig.AppendUnique( SWIGPATH = envSwig['CPPPATH'] )
-envSwig.AppendUnique( SWIGOUTDIR = 'tuttlePython' )
+envSwig.AppendUnique( SWIGOUTDIR = pythonOutputDir )
 envSwig.Replace( SHLIBPREFIX = '' )
 envSwig.Replace( LIBPREFIX = '' )
 #print "SWIGPATH from CPPPATH : ", envSwig['CPPPATH']
 
 tuttlePython = envSwig.SharedLibrary( target='_tuttle', source=['src/tuttle/host/tuttle.i'] )
-tuttlePythonInstall = envSwig.Install( '#tuttlePython', tuttlePython )
 
-envSwig.Alias( 'tuttlePython', tuttlePythonInstall )
+tuttlePythonInstall = envSwig.Install( pythonOutputDir, tuttlePython )
+
+initFile = envSwig.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
+                            [ Mkdir('${TARGET.dir}'),
+						      Touch('$TARGET'),
+                            ])
+
+envSwig.Depends( tuttlePythonInstall, initFile )
+
+# todo: temporary solution needs to be checked directly
+#envSwig.Depends( tuttlePythonInstall, libs.tuttleHost )
+
+envSwig.Alias( 'python', tuttlePythonInstall )
+
+
+

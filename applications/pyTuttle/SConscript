@@ -1,6 +1,7 @@
 Import( 'project' )
 Import( 'libs' )
 
+import os.path
 
 incdirs = ['src/common', 'src/application']
 sources_common = project.scanFiles( ['src/common'], accept=['*.cpp','*.c'] )
@@ -18,18 +19,25 @@ env_appli.Append( CPPPATH=incdirs )
 appli = env_appli.Program( target=name, source=sources_common+sources_application )
 appliInstall = env_appli.Install( project.inOutputBin(), appli )
 
-env_swig = project.createEnv( libraries )
-env_swig.Append( CPPPATH=incdirs )
-env_swig.Append( SWIGFLAGS=['-python','-c++','-Wall'] )
-env_swig.Append( SWIGPATH=env_swig['CPPPATH'] )
-env_swig.Append( SWIGOUTDIR='tuttlePython' )
-swigwrap = env_swig.SharedLibrary( target='tuttlePython/_'+ name, source=sources_swig+sources_common )
+pythonOutputDir = os.path.join( project.inOutputDir(), 'python' )
+
+envSwig = project.createEnv( libraries )
+envSwig.Append( CPPPATH=incdirs )
+envSwig.Append( SWIGFLAGS=['-python','-c++','-Wall'] )
+envSwig.Append( SWIGPATH=envSwig['CPPPATH'] )
+envSwig.Append( SWIGOUTDIR=pythonOutputDir )
+envSwig.Replace( SHLIBPREFIX = '' )
+envSwig.Replace( LIBPREFIX = '' )
+swigWrap = envSwig.SharedLibrary( target='_'+name, source=sources_swig+sources_common )
+swigWrapInstall = envSwig.Install( pythonOutputDir, swigWrap )
 
 
+envSwig.Depends( appli, swigWrapInstall )
+
+#env_appli.Alias( 'all', swigWrapInstall )
 #env_appli.Alias( 'all', appliInstall )
-#env_appli.Alias( 'all', swigwrap )
 
 env_appli.Alias( name, appliInstall )
-env_appli.Alias( name, swigwrap )
+#env_appli.Alias( name, swigwrap )
 
 

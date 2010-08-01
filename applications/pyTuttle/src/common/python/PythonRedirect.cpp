@@ -41,10 +41,12 @@ bool PythonRedirect::init( )
 	std::string importCmd;
 
 	importCmd = "import sys\n";
-	importCmd += "sys.path.append('./tuttlePython/')\n";
-
 	importCmd += "import os\n"
 		"pwd = os.getcwd()\n";
+	importCmd += "try:\n";
+	importCmd += "    import tuttle\n";
+	importCmd += "except Exception, e:\n";
+	importCmd += "    print str(e)\n";
 
 	importCmd += "import ";
 	importCmd += packageName( );
