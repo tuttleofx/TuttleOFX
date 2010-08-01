@@ -36,15 +36,16 @@ private:
 	MAP::iterator       getIteratorForValue( const CACHE_ELEMENT& );
 
 public:
-	virtual void               put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData );
-	virtual CACHE_ELEMENT      get( const std::string& pluginName, const double& time ) const;
-	virtual std::size_t        size() const;
-	virtual bool               empty() const;
-	virtual bool               inCache( const CACHE_ELEMENT& ) const;
-	virtual double             getTime( const CACHE_ELEMENT& ) const;
-	virtual const std::string& getPluginName( const CACHE_ELEMENT& ) const;
-	virtual bool               remove( const CACHE_ELEMENT& );
-	virtual void               clearAll();
+	void               put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData );
+	CACHE_ELEMENT      get( const std::string& pluginName, const double& time ) const;
+	std::size_t        size() const;
+	bool               empty() const;
+	bool               inCache( const CACHE_ELEMENT& ) const;
+	double             getTime( const CACHE_ELEMENT& ) const;
+	const std::string& getPluginName( const CACHE_ELEMENT& ) const;
+	bool               remove( const CACHE_ELEMENT& );
+	void               clearUnused();
+	void               clearAll();
 };
 
 }

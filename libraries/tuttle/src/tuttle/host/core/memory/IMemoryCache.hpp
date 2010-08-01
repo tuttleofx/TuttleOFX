@@ -31,6 +31,7 @@ public:
 	virtual double             getTime( const CACHE_ELEMENT& ) const                                         = 0;
 	virtual const std::string& getPluginName( const CACHE_ELEMENT& ) const                                   = 0;
 	virtual bool               remove( const CACHE_ELEMENT& )                                                = 0;
+	virtual void               clearUnused()                                                                 = 0;
 	virtual void               clearAll()                                                                    = 0;
 };
 

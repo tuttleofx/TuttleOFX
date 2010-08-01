@@ -170,12 +170,14 @@ public:
 
 	PixelComponentEnum getComponentsType() const;
 
-	void addReference() {  ++_referenceCount; COUT( "+  Image::addReference, id:" << _id << ", ref:" << _referenceCount ); }
+	int getReference() const {  return _referenceCount; }
+	
+	void addReference() {  ++_referenceCount; COUT( "+  Image::addReference, id:" << _id << ", ref:" << getReference() ); }
 	/// release the reference count, which, if zero, deletes this
 	bool releaseReference()
 	{
 		--_referenceCount;
-		COUT( "-  Image::releaseReference, id:" << _id << ", ref:" << _referenceCount );
+		COUT( "-  Image::releaseReference, id:" << _id << ", ref:" << getReference() );
 		if( _referenceCount < 0 )
 			BOOST_THROW_EXCEPTION( std::logic_error("Try to release an undeclared reference to an Image.") );
 		return _referenceCount <= 0;

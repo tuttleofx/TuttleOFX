@@ -1,5 +1,6 @@
 #include "MemoryPool.hpp"
 #include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/system/memoryInfo.hpp>
 #include <boost/throw_exception.hpp>
 #include <algorithm>
 
@@ -17,7 +18,7 @@ private:
 	friend class MemoryPool;
 
 public:
-	PoolData( IPool& pool, const size_t size )
+	PoolData( IPool& pool, const std::size_t size )
 		: _pool( pool ),
 		_id( _count++ ),
 		_reservedSize( size ),
@@ -42,15 +43,15 @@ public:
 
 	virtual char*        data()               { return _pData; }
 	virtual const char*  data() const         { return _pData; }
-	virtual const size_t size() const         { return _size; }
-	virtual const size_t reservedSize() const { return _reservedSize; }
+	virtual const std::size_t size() const         { return _size; }
+	virtual const std::size_t reservedSize() const { return _reservedSize; }
 
 private:
-	static size_t _count; ///< unique id generator
+	static std::size_t _count; ///< unique id generator
 	IPool& _pool; ///< ref to the owner pool
-	const size_t _id; ///< unique id to identify one memory data
-	const size_t _reservedSize; ///< memory allocated
-	size_t _size; ///< memory requested
+	const std::size_t _id; ///< unique id to identify one memory data
+	const std::size_t _reservedSize; ///< memory allocated
+	std::size_t _size; ///< memory requested
 	char* const _pData; ///< own the data
 	int _refCount; ///< counter on clients currently using this data
 };
@@ -65,7 +66,7 @@ void intrusive_ptr_release( IPoolData* pData )
 	pData->release();
 }
 
-size_t PoolData::_count = 0;
+std::size_t PoolData::_count = 0;
 
 void PoolData::addRef()
 {
@@ -79,9 +80,14 @@ void PoolData::release()
 		_pool.released( this );
 }
 
-MemoryPool::MemoryPool( const size_t maxSize )
+MemoryPool::MemoryPool( const std::size_t maxSize )
 	: _memoryAuthorized( maxSize )
-{}
+{
+	if( getMaxMemorySize() == 0 )
+	{
+		updateMemoryAuthorizedWithRAM();
+	}
+}
 
 MemoryPool::~MemoryPool()
 {
@@ -130,7 +136,7 @@ namespace  {
 
 struct DataFitSize : public std::unary_function<PoolData*, void>
 {
-	DataFitSize( size_t size )
+	DataFitSize( std::size_t size )
 		: _size( size ),
 		_bestMatchDiff( ULONG_MAX ),
 		_pBestMatch( NULL )
@@ -138,11 +144,11 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 
 	void operator()( PoolData* pData )
 	{
-		const size_t dataSize = pData->reservedSize();
+		const std::size_t dataSize = pData->reservedSize();
 
 		if( _size > dataSize )
 			return;
-		const size_t diff = dataSize - _size;
+		const std::size_t diff = dataSize - _size;
 		if( diff >= _bestMatchDiff )
 			return;
 		_bestMatchDiff = diff;
@@ -155,14 +161,14 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 	}
 
 private:
-	const size_t _size;
-	size_t _bestMatchDiff;
+	const std::size_t _size;
+	std::size_t _bestMatchDiff;
 	PoolData* _pBestMatch;
 };
 
 }  // namespace
 
-boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const size_t size ) throw( std::bad_alloc, std::length_error )
+boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size ) throw( std::bad_alloc, std::length_error )
 {
 	// checking within unused data
 	PoolData* const pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
@@ -181,46 +187,52 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const size_t size ) throw(
 	return new PoolData( *this, size );
 }
 
+std::size_t MemoryPool::updateMemoryAuthorizedWithRAM()
+{
+	COUT_X( 5, " - MEMORYPOOL::updateMemoryAuthorizedWithRAM - " );
+	return _memoryAuthorized = getUsedMemorySize() + getMemoryInfo()._freeRam;
+}
+
 namespace  {
 
-size_t accumulateReservedSize( const size_t& sum, const IPoolData* pData )
+std::size_t accumulateReservedSize( const std::size_t& sum, const IPoolData* pData )
 {
 	return sum + pData->reservedSize();
 }
 
-size_t accumulateWastedSize( const size_t& sum, const IPoolData* pData )
+std::size_t accumulateWastedSize( const std::size_t& sum, const IPoolData* pData )
 {
 	return sum + ( pData->reservedSize() - pData->size() );
 }
 
 }  // namespace
 
-size_t MemoryPool::getUsedMemorySize() const
+std::size_t MemoryPool::getUsedMemorySize() const
 {
 	return std::accumulate( _dataUsed.begin(), _dataUsed.end(), 0, &accumulateReservedSize );
 }
 
-size_t MemoryPool::getAllocatedMemorySize() const
+std::size_t MemoryPool::getAllocatedMemorySize() const
 {
 	return getUsedMemorySize() + std::accumulate( _dataUnused.begin(), _dataUnused.end(), 0, &accumulateReservedSize );
 }
 
-size_t MemoryPool::getMaxMemorySize() const
+std::size_t MemoryPool::getMaxMemorySize() const
 {
 	return _memoryAuthorized;
 }
 
-size_t MemoryPool::getAvailableMemorySize() const
+std::size_t MemoryPool::getAvailableMemorySize() const
 {
 	return getMaxMemorySize() - getUsedMemorySize();
 }
 
-size_t MemoryPool::getWastedMemorySize() const
+std::size_t MemoryPool::getWastedMemorySize() const
 {
 	return std::accumulate( _dataUsed.begin(), _dataUsed.end(), 0, std::ptr_fun( &accumulateWastedSize ) );
 }
 
-void MemoryPool::clear( size_t size )
+void MemoryPool::clear( std::size_t size )
 {}
 
 void MemoryPool::clearOne()

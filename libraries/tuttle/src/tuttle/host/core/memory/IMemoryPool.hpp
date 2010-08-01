@@ -45,6 +45,7 @@ public:
 	virtual void         clearOne()                                                               = 0;
 	virtual void         clearAll()                                                               = 0;
 	virtual IPoolDataPtr allocate( const size_t size ) throw( std::bad_alloc, std::length_error ) = 0;
+	virtual std::size_t  updateMemoryAuthorizedWithRAM()                                          = 0;
 };
 
 }

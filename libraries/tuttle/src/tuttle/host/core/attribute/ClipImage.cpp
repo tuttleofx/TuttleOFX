@@ -154,14 +154,14 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		}
 		catch( std::length_error& e )
 		{
-			_memoryCache.clearAll();
+			_memoryCache.clearUnused();
 			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
 			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
 			return outputImage.get();
 		}
 		catch( std::bad_alloc& e )
 		{
-			_memoryCache.clearAll();
+			_memoryCache.clearUnused();
 			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
 			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
 			return outputImage.get();

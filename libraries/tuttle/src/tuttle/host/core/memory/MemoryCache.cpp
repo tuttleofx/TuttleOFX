@@ -1,4 +1,5 @@
 #include "MemoryCache.hpp"
+#include <tuttle/host/core/Image.hpp> // to know the function getReference()
 #include <tuttle/common/utils/global.hpp>
 #include <boost/foreach.hpp>
 
@@ -99,6 +100,21 @@ bool MemoryCache::remove( const CACHE_ELEMENT& pData )
 		return false;
 	_map.erase( itr );
 	return true;
+}
+
+void MemoryCache::clearUnused()
+{
+	for( MAP::iterator it = _map.begin();it != _map.end();)
+	{
+		if( it->second->getReference() == 0 )
+		{
+		    _map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
+		}
+		else
+		{
+		    ++it;
+		}
+	}
 }
 
 void MemoryCache::clearAll()

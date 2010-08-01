@@ -94,7 +94,10 @@ void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegi
 			core::dfs_postProcess_visitor<Graph::InternalGraph> postProcessVisitor( optimizedGraph );
 			optimizedGraph.dfs( postProcessVisitor, outputNode );
 		}
-		core::Core::instance().getMemoryCache().clearAll();
+		COUT( "---------------------------------------- clearUnused" );
+		core::Core::instance().getMemoryCache().clearUnused();
+		COUT( "---------------------------------------- updateMemoryAuthorizedWithRAM" );
+		core::Core::instance().getMemoryPool().updateMemoryAuthorizedWithRAM();
 	}
 
 	//--- END RENDER

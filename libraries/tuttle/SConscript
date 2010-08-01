@@ -3,28 +3,36 @@ Import( 'libs' )
 
 import os.path
 
-tuttleCommonSources = project.scanFiles( ['src/tuttle/common'] )
+project.StaticSharedLibrary( 'tuttleCommon',
+                             sources   = project.scanFiles( ['src/tuttle/common'] ),
+                             includes  = ['src'],
+                             libraries = [ libs.openfxHack,
+                                           libs.boost,
+                                          ]
+                            )
 
 project.StaticSharedLibrary( 'tuttlePlugin',
-                             sources=project.scanFiles( ['src/tuttle/plugin'] ) + tuttleCommonSources,
-                             includes=['src','src/tuttle/host/core'],
-                             libraries=[ libs.openfxPluginSupportHack,
-                                         libs.openfxHack,
-                                         libs.boost,
-                                        ]
+                             sources   = project.scanFiles( ['src/tuttle/plugin'] ),
+                             includes  = ['src','src/tuttle/host/core'],
+                             libraries = [ libs.tuttleCommon,
+                                           libs.openfxPluginSupportHack,
+                                           libs.openfxHack,
+                                           libs.boost,
+                                          ]
                             )
 
 project.StaticSharedLibrary( 'tuttleHost',
-                       sources=project.scanFiles( ['src/tuttle/host'] ) + tuttleCommonSources,
-                       includes=['src'],
-                       libraries=[ libs.openfxHack,
-                                   libs.dl,
-                                   libs.boost_filesystem,
-                                   libs.boost_serialization,
-                                   libs.boost_thread,
-			                       libs.boost_gil,
-                                   libs.png,
-                                  ]
+                             sources   = project.scanFiles( ['src/tuttle/host'] ),
+                             includes  = ['src'],
+                             libraries = [ libs.tuttleCommon,
+                                           libs.openfxHack,
+                                           libs.dl,
+                                           libs.boost_filesystem,
+                                           libs.boost_serialization,
+                                           libs.boost_thread,
+                                           libs.boost_gil,
+                                           libs.png,
+                                          ]
                       )
 
 pythonOutputDir = os.path.join(project.inOutputDir(),'python')
@@ -33,23 +41,20 @@ envSwig = project.createEnv( [libs.python, libs.tuttleHost, libs.pthread] )
 envSwig.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] )
 envSwig.AppendUnique( SWIGPATH = envSwig['CPPPATH'] )
 envSwig.AppendUnique( SWIGOUTDIR = pythonOutputDir )
-envSwig.Replace( SHLIBPREFIX = '' )
-envSwig.Replace( LIBPREFIX = '' )
-#print "SWIGPATH from CPPPATH : ", envSwig['CPPPATH']
+envSwig.Replace( SHLIBPREFIX = '_' )
+envSwig.Replace( LIBPREFIX = '_' )
+#print "SWIGPATH from CPPPATH : ", envSwig['SWIGPATH']
 
-tuttlePython = envSwig.SharedLibrary( target='_tuttle', source=['src/tuttle/host/tuttle.i'] )
-
-tuttlePythonInstall = envSwig.Install( pythonOutputDir, tuttlePython )
+tuttlePython = project.SharedLibrary( target='tuttle', sources=['src/tuttle/host/tuttle.i'], env=envSwig, install=False )
 
 initFile = envSwig.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
                             [ Mkdir('${TARGET.dir}'),
-						      Touch('$TARGET'),
+                              Touch('$TARGET'),
                             ])
 
+tuttlePythonInstall = envSwig.Install( pythonOutputDir, tuttlePython )
 envSwig.Depends( tuttlePythonInstall, initFile )
 
-# todo: temporary solution needs to be checked directly
-#envSwig.Depends( tuttlePythonInstall, libs.tuttleHost )
 
 envSwig.Alias( 'python', tuttlePythonInstall )
 

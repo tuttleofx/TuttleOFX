@@ -33,21 +33,22 @@ class MemoryPool : public IMemoryPool,
 	public IPool
 {
 public:
-	MemoryPool( const size_t maxSize = ULONG_MAX );
+	MemoryPool( const std::size_t maxSize = 0 );
 	~MemoryPool();
 
-	IPoolDataPtr allocate( const size_t size ) throw( std::bad_alloc, std::length_error );
+	IPoolDataPtr allocate( const std::size_t size ) throw( std::bad_alloc, std::length_error );
+	std::size_t updateMemoryAuthorizedWithRAM();
 
 	void referenced( PoolData* );
 	void released( PoolData* );
 
-	size_t getUsedMemorySize() const;
-	size_t getAllocatedMemorySize() const;
-	size_t getMaxMemorySize() const;
-	size_t getAvailableMemorySize() const;
-	size_t getWastedMemorySize() const;
+	std::size_t getUsedMemorySize() const;
+	std::size_t getAllocatedMemorySize() const;
+	std::size_t getMaxMemorySize() const;
+	std::size_t getAvailableMemorySize() const;
+	std::size_t getWastedMemorySize() const;
 
-	void clear( size_t size );
+	void clear( std::size_t size );
 	void clearOne();
 	void clearAll();
 
@@ -57,7 +58,7 @@ private:
 	std::map<char*,PoolData*> _dataMap; // the owner
 	DataList _dataUsed;
 	DataList _dataUnused;
-	const size_t _memoryAuthorized;
+	std::size_t _memoryAuthorized;
 };
 
 }
