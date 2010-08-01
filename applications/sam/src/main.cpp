@@ -86,7 +86,7 @@ int main( int argc, char** argv )
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
-		g.compute( outputs, 0, 5 );
+		g.compute( write1.getName(), 0, 0 );
 	}
 	catch( tuttle::host::core::exception::LogicError& e )
 	{

@@ -1,4 +1,5 @@
 #include "MemoryCache.hpp"
+#include <tuttle/common/utils/global.hpp>
 #include <boost/foreach.hpp>
 
 #include <functional>
@@ -102,6 +103,7 @@ bool MemoryCache::remove( const CACHE_ELEMENT& pData )
 
 void MemoryCache::clearAll()
 {
+	COUT_X( 5, " - MEMORYCACHE::CLEARALL - " );
 	_map.clear();
 }
 

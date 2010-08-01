@@ -146,14 +146,31 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	if( isOutput() )
 	{
 		// make a new ref counted image
-		boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
+		try
+		{
+			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
+			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
+			return outputImage.get();
+		}
+		catch( std::length_error& e )
+		{
+			_memoryCache.clearAll();
+			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
+			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
+			return outputImage.get();
+		}
+		catch( std::bad_alloc& e )
+		{
+			_memoryCache.clearAll();
+			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
+			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
+			return outputImage.get();
+		}
 		//		outputImage.get()->cout();
 		//		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
-		_memoryCache.put( getConnectedClipFullName(), time, outputImage );
 		//		TCOUT_VAR( _memoryCache.size() );
 		//		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
 		//		_memoryCache.get( getFullName(), time ).get()->cout();
-		return outputImage.get();
 	}
 	BOOST_THROW_EXCEPTION( exception::LogicError( "Error input clip not in cache !" ) );
 }

@@ -68,32 +68,33 @@ void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegi
 	// at each frame
 	for( int t = tBegin; t <= tEnd; ++t )
 	{
-		TCOUT( "________________________________________ frame: " << t );
+		COUT( "________________________________________ frame: " << t );
 		Graph::InternalGraph optimizedGraph( _graph );
 		defaultOptions._time = t;
 		
 		// for each outputs
 		BOOST_FOREACH( Graph::Descriptor outputNode, outputs )
 		{
-			TCOUT( "________________________________________ output node : " << optimizedGraph.instance( outputNode ).getName() );
-			TCOUT( "---------------------------------------- connectClips" );
+			COUT( "________________________________________ output node : " << optimizedGraph.instance( outputNode ).getName() );
+			COUT( "---------------------------------------- connectClips" );
 			core::dfs_connectClips_visitor<Graph::InternalGraph> connectClipsVisitor( optimizedGraph );
 			optimizedGraph.dfs( connectClipsVisitor, outputNode );
 
-			TCOUT( "---------------------------------------- preprocess" );
+			COUT( "---------------------------------------- preprocess" );
 			core::dfs_preProcess_finish_visitor<Graph::InternalGraph> preProcessFinishVisitor( optimizedGraph, defaultOptions );
 			optimizedGraph.dfs( preProcessFinishVisitor, outputNode );
 			core::dfs_preProcess_initialize_visitor<Graph::InternalGraph> preProcessInitializeVisitor( optimizedGraph, defaultOptions );
 			optimizedGraph.dfs( preProcessInitializeVisitor, outputNode );
 
-			TCOUT( "---------------------------------------- process" );
+			COUT( "---------------------------------------- process" );
 			core::dfs_process_visitor<Graph::InternalGraph> processVisitor( optimizedGraph );
 			optimizedGraph.dfs( processVisitor, outputNode );
 
-			TCOUT( "---------------------------------------- postprocess" );
+			COUT( "---------------------------------------- postprocess" );
 			core::dfs_postProcess_visitor<Graph::InternalGraph> postProcessVisitor( optimizedGraph );
 			optimizedGraph.dfs( postProcessVisitor, outputNode );
 		}
+		core::Core::instance().getMemoryCache().clearAll();
 	}
 
 	//--- END RENDER
