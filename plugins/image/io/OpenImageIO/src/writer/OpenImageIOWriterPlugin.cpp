@@ -24,7 +24,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const O
 	OpenImageIOWriterProcessParams params;
 	params._filepath = this->_filePattern.getFilenameAt(time);
 	params._outputRGB = this->_outputRGB->getValue();
-	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
+	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{
 		case eParamBitDepth8:
 			params._bitDepth = TypeDesc::UINT8;
@@ -49,7 +49,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const O
 void OpenImageIOWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
+	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();

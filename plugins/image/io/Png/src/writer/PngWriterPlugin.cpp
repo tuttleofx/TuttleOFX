@@ -4,6 +4,7 @@
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -24,7 +25,7 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams(const OfxTime time)
 	PngWriterProcessParams params;
 	params._filepath = this->_filePattern.getFilenameAt(time);
 	params._outputRGB = this->_outputRGB->getValue();
-	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
+	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{
 		case eParamBitDepth8:
 			params._bitDepth = 8;
@@ -45,7 +46,7 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams(const OfxTime time)
  */
 void PngWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
+	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();

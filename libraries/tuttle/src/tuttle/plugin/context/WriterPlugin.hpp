@@ -2,9 +2,11 @@
 #define	_TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
 
 #include "WriterDefinition.hpp"
-#include <tuttle/plugin/FilenameManager.hpp>
+
+#include <tuttle/common/clip/Sequence.hpp>
 
 #include <ofxsImageEffect.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -23,26 +25,28 @@ protected:
 	inline bool varyOnTime() const;
 
 protected:
-	OFX::PushButtonParam* _renderButton;     ///< Render push button
-	OFX::StringParam*     _filepath;         ///< Target file path
-	OFX::BooleanParam*    _renderAlways;     ///< Render always
-	OFX::ChoiceParam*     _bitDepth;         ///< Bit depth
-	FilenameManager       _filePattern;         ///< Filename pattern manager
+	common::Sequence       _filePattern;         ///< Filename pattern manager
 
-// do not need to delete these, the ImageEffect is managing them for us
+	/// @group Attributes
+	/// @{
+	OFX::PushButtonParam* _paramRenderButton;     ///< Render push button
+	OFX::StringParam*     _paramFilepath;         ///< Target file path
+	OFX::BooleanParam*    _paramRenderAlways;     ///< Render always
+	OFX::ChoiceParam*     _paramBitDepth;         ///< Bit depth
+
 	OFX::Clip* _clipSrc;       ///< Input image clip
 	OFX::Clip* _clipDst;       ///< Ouput image clip
-
+	/// @}
 };
 
 inline bool WriterPlugin::varyOnTime() const
 {
 	///@todo tuttle: do this in FilenameManager
-	return _filePattern.getFirstFilename() != _filepath->getValue();
+	return _filePattern.getFirstFilename() != _paramFilepath->getValue();
 }
 
 }
 }
 
-#endif	/* _WRITERPLUGIN_HPP */
+#endif
 

@@ -3,8 +3,10 @@
 #include "EXRWriterDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -23,7 +25,7 @@ EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
 EXRWriterProcessParams EXRWriterPlugin::getProcessParams(const OfxTime time)
 {
 	EXRWriterProcessParams params;
-	params._bitDepth = (EParamBitDepth)this->_bitDepth->getValue();
+	params._bitDepth = (EParamBitDepth)this->_paramBitDepth->getValue();
 	params._componentsType = (ECompType)_componentsType->getValue();
 	params._filepath = _filePattern.getFilenameAt(time);
 	return params;
@@ -35,7 +37,7 @@ EXRWriterProcessParams EXRWriterPlugin::getProcessParams(const OfxTime time)
  */
 void EXRWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
+	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();

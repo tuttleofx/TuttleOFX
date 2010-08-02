@@ -1,15 +1,18 @@
 #include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 #include "EXRReaderProcess.hpp"
-#include "tuttle/plugin/FilenameManager.hpp"
-#include "tuttle/plugin/context/ReaderPlugin.hpp"
-#include "tuttle/plugin/context/WriterDefinition.hpp"
+
+#include <tuttle/common/clip/Sequence.hpp>
+#include <tuttle/plugin/context/ReaderPlugin.hpp>
+#include <tuttle/plugin/context/WriterDefinition.hpp>
 
 #include <ImfInputFile.h>
 #include <ImathBox.h>
 #include <ImfChannelList.h>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 
