@@ -12,26 +12,17 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 : _nodes( graph.getNodes() )
 , _instanceCount( graph.getInstanceCount() )
 {
-	COUT( "ProcessGraph begin" );
-//	InternalGraph tmp;
-	COUT( "ProcessGraph copy" );
-	_graph.copy( graph.getGraph() );
+	_graph.copyTransposed( graph.getGraph() );
 
-	COUT( "ProcessGraph tmp add" );
 	Vertex outputVertex("TUTTLE_FAKE_OUTPUT");
 	_output = _graph.addVertex( outputVertex );
 	
-//	BOOST_FOREACH( std::string s, outputNodes )
-//	{
-//		tmp.connect( s, "TUTTLE_FAKE_OUTPUT", "NO_INPUT" );
-//		COUT_DEBUG( "MY OUTPUT " << s );
-//	}
-	COUT( "ProcessGraph copy transposed" );
-//	_graph.copyTransposed( tmp );
-//	_graph.copy( tmp );
-	COUT( "ProcessGraph relink" );
+	BOOST_FOREACH( std::string s, outputNodes )
+	{
+		_graph.connect( "TUTTLE_FAKE_OUTPUT", s, "Output" );
+		COUT_DEBUG( "MY OUTPUT: " << s );
+	}
 	relink();
-	COUT( "ProcessGraph end" );
 }
 
 ProcessGraph::~ProcessGraph()
@@ -55,9 +46,7 @@ void ProcessGraph::relink()
 void ProcessGraph::process( const int tBegin, const int tEnd )
 {
 	COUT( "process" );
-	COUT( "export dot begin" );
 	graph::exportAsDOT( _graph, "graphprocess.dot" );
-	COUT( "export dot end" );
 
 	// Initialize variables
 	OfxPointD renderScale       = { 1.0, 1.0 };

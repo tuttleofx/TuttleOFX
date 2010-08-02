@@ -299,13 +299,7 @@ public:
 	{
 		// make a transposed copy of g in _graph
 		boost::transpose_graph( g._graph, _graph );
-		rebuildVertexDescriptorMap();
-	}
-
-	void copy( const InternalGraph& g )
-	{
-		// make a transposed copy of g in _graph
-		boost::copy_graph( g._graph, _graph );
+		_count = g._count;
 		rebuildVertexDescriptorMap();
 	}
 
