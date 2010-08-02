@@ -124,16 +124,11 @@ public:
 	{
 		try
 		{
-			COUT( out );
 			VertexDescriptor& descOut = getVertexDescriptor( out );
-			COUT( in );
 			VertexDescriptor& descIn  = getVertexDescriptor( in );
 
-			COUT( "create Edge" );
 			Edge e( out, in, inAttr );
-			COUT( "add edge" );
 			addEdge( descOut, descIn, e );
-			COUT( "Edge added !" );
 		}
 		catch( boost::exception & e )
 		{

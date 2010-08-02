@@ -30,7 +30,7 @@ public:
 		Vertex& vertexSource = get( vertex_properties, _graph )[source( e, _graph )];
 		Vertex& vertexDest   = get( vertex_properties, _graph )[target( e, _graph )];
 
-		if( vertexDest.isFake() )
+		if( vertexDest.isFake() || vertexSource.isFake() )
 			return;
 
 	  TCOUT( "examine_edge" << vertexSource );
@@ -159,7 +159,7 @@ struct dfs_process_visitor : public boost::dfs_visitor<>
 		void finish_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = get( vertex_properties, _graph )[v];
-			TCOUT("[PROCESS] finish_vertex " << vertex);
+			COUT( "[PROCESS] finish_vertex " << vertex );
 			if( vertex.isFake() )
 				return;
 

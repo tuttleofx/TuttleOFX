@@ -40,7 +40,7 @@ int main( int argc, char** argv )
 		core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
 		core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
 //		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.imagestatistics" );
+		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 		core::Graph::Node& blur1 = g.createNode( "fr.tuttle.blur" );
 		core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
 	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
@@ -86,7 +86,7 @@ int main( int argc, char** argv )
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
-		g.compute( write1.getName(), 0, 0 );
+		g.compute( outputs, 0, 0 );
 	}
 	catch( tuttle::host::core::exception::LogicError& e )
 	{
