@@ -1008,10 +1008,10 @@ OfxRectI Clip::getPixelRod( const OfxTime t ) const
 OfxRectI Clip::getPixelRod( const OfxTime t, const OfxPointD& renderScale ) const
 {
 	OfxRectI rod = getPixelRod( t );
-	rod.x1 *= renderScale.x;
-	rod.y1 *= renderScale.y;
-	rod.x2 *= renderScale.x;
-	rod.y2 *= renderScale.y;
+	rod.x1 = static_cast<int>( rod.x1 * renderScale.x );
+	rod.y1 = static_cast<int>( rod.y1 * renderScale.y );
+	rod.x2 = static_cast<int>( rod.x2 * renderScale.x );
+	rod.y2 = static_cast<int>( rod.y2 * renderScale.y );
 	return rod;
 }
 

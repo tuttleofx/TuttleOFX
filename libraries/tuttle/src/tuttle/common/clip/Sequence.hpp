@@ -1,11 +1,13 @@
-#ifndef _FILENAMEMANAGER_HPP
-#define	_FILENAMEMANAGER_HPP
+#ifndef _FILENAMEMANAGER_HPP_
+#define	_FILENAMEMANAGER_HPP_
+
+#include <tuttle/common/utils/global.hpp>
 
 #include <ofxCore.h>
-#include "tuttle/common/utils/global.hpp"
 
 #include <boost/regex.hpp>
 #include <boost/filesystem.hpp>
+
 #include <sstream>
 #include <string>
 #include <vector>
@@ -13,7 +15,7 @@
 #include <iostream>
 
 namespace tuttle {
-namespace plugin {
+namespace common {
 
 struct FilenamesGroup
 {
@@ -27,13 +29,13 @@ struct FilenamesGroup
 	std::string _fillCar;
 };
 
-class FilenameManager
+class Sequence
 {
 public:
-	FilenameManager(): _numFill(0), _step(0), _first(0), _last(0) {}
-	FilenameManager(const boost::filesystem::path& directory, const std::string & pattern, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
-	FilenameManager(const boost::filesystem::path& directory, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
-	virtual ~FilenameManager();
+	Sequence(): _numFill(0), _step(0), _first(0), _last(0) {}
+	Sequence(const boost::filesystem::path& directory, const std::string & pattern, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
+	Sequence(const boost::filesystem::path& directory, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
+	virtual ~Sequence();
 	void  reset(boost::filesystem::path filepath, const bool dirbase = false, const size_t start = 0, const size_t step = 1);
 	const std::string getFirstFilename(const ssize_t nGroup = -1) const;
 	const std::string getNextFilename(const ssize_t nGroup = -1);
@@ -59,7 +61,7 @@ protected:
 	std::size_t _last;								///< Ending num
 };
 
-inline std::size_t FilenameManager::step() const
+inline std::size_t Sequence::step() const
 {
 	return _step;
 }

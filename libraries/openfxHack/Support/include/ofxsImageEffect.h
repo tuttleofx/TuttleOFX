@@ -635,8 +635,8 @@ public:
 	OfxPointI getPixelRodSize( const OfxTime t, const OfxPointD& renderScale ) const
 	{
 		OfxPointI p = getPixelRodSize(t);
-		p.x *= renderScale.x;
-		p.y *= renderScale.y;
+		p.x = static_cast<int>( p.x * renderScale.x );
+		p.y = static_cast<int>( p.y * renderScale.y );
 		return p;
 	}
 

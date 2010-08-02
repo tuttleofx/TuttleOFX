@@ -2,9 +2,11 @@
 #define	_TUTTLE_PLUGIN_CONTEXT_READERPLUGIN_HPP_
 
 #include "ReaderDefinition.hpp"
-#include <tuttle/plugin/FilenameManager.hpp>
+
+#include <tuttle/common/clip/Sequence.hpp>
 
 #include <ofxsImageEffect.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -32,7 +34,7 @@ public:
 	OFX::StringParam*    _paramFilepath;     ///< File path
 	OFX::ChoiceParam*    _paramExplicitConv; ///< Explicit conversion
 	/// @}
-	FilenameManager      _filePattern;       ///< Filename pattern manager
+	common::Sequence      _filePattern;       ///< Filename pattern manager
 };
 
 inline bool ReaderPlugin::varyOnTime() const

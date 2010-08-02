@@ -1,5 +1,6 @@
-#include "FilenameManager.hpp"
-#include "PluginException.hpp"
+#include "Sequence.hpp"
+
+#include <boost/filesystem/operations.hpp>
 
 #include <limits>
 #include <string>
@@ -8,10 +9,9 @@
 #include <iomanip>
 #include <vector>
 #include <list>
-#include <boost/filesystem/operations.hpp>
 
 namespace tuttle {
-namespace plugin {
+namespace common {
 
 using namespace boost::filesystem;
 using namespace boost;
@@ -65,7 +65,7 @@ struct FileSort
 
 
 ///@todo: windows filename check
-FilenameManager::FilenameManager(const path & directory, const std::string & pattern,
+Sequence::Sequence(const path & directory, const std::string & pattern,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
 : _numFill(0), _step(0), _first(0), _last(0)
 {
@@ -81,18 +81,18 @@ FilenameManager::FilenameManager(const path & directory, const std::string & pat
 	reset( p.string() + pattern, dirbase, start, step);
 }
 
-FilenameManager::FilenameManager(const boost::filesystem::path & filepath,
+Sequence::Sequence(const boost::filesystem::path & filepath,
                                  const bool dirbase /* = false */, const size_t start /*= 0*/, const size_t step /* = 1 */)
 : _numFill(0), _step(0), _first(0), _last(0)
 {
 	reset(filepath, dirbase, start, step);
 }
 
-FilenameManager::~FilenameManager()
+Sequence::~Sequence()
 {
 }
 
-void FilenameManager::reset(path filepath, const bool dirbase, const size_t start, const size_t step)
+void Sequence::reset(path filepath, const bool dirbase, const size_t start, const size_t step)
 {
 	_numFill = 0;
 	_step = step;
@@ -204,12 +204,12 @@ void FilenameManager::reset(path filepath, const bool dirbase, const size_t star
 	}
 }
 
-const std::string FilenameManager::getFirstFilename(const ssize_t nGroup /* = -1 */) const
+const std::string Sequence::getFirstFilename(const ssize_t nGroup /* = -1 */) const
 {
 	return getFilenameAt(double(_first), nGroup);
 }
 
-const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */) const
+const std::string Sequence::getFilenameAt(const OfxTime time, const ssize_t nGroup /* = -1 */) const
 {
 	if (_pattern == "")
 	{
@@ -260,12 +260,12 @@ const std::string FilenameManager::getFilenameAt(const OfxTime time, const ssize
 	return o.str();
 }
 
-const size_t FilenameManager::numGroups() const
+const size_t Sequence::numGroups() const
 {
 	return _matchList.size();
 }
 
-const OfxRangeI FilenameManager::getRange(const ssize_t nGroup /* = -1 */) const
+const OfxRangeI Sequence::getRange(const ssize_t nGroup /* = -1 */) const
 {
 	OfxRangeI range;
 	if (nGroup >= 0 && nGroup < (ssize_t)_matchList.size())
@@ -283,7 +283,7 @@ const OfxRangeI FilenameManager::getRange(const ssize_t nGroup /* = -1 */) const
 	return range;
 }
 
-vector< FilenamesGroup > FilenameManager::matchingGroups(const boost::filesystem::path & directory, const boost::regex & regex)
+vector< FilenamesGroup > Sequence::matchingGroups(const boost::filesystem::path & directory, const boost::regex & regex)
 {
 	vector< FilenamesGroup > groups;
 	vector<string> l;

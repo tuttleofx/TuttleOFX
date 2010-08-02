@@ -36,6 +36,7 @@ void GammaProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			 x < procWindowOutput.x2;
 			 ++x, ++src_it, ++dst_it )
 		{
+			//x^a = e^aln(x)
 			color_convert(*src_it, wpix);
 			if ( wpix[ 0 ] > 0.0 )
 			{

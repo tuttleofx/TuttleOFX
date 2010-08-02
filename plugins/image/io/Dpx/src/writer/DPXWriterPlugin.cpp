@@ -3,9 +3,12 @@
 #include "DPXWriterDefinitions.hpp"
 
 #include <dpxEngine/dpxImage.hpp>
+
 #include <tuttle/common/utils/global.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -28,7 +31,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams(const OfxTime time)
 	params._componentsType = _componentsType->getValue();
 	params._compressed = _compressed->getValue();
 	params._filepath = this->_filePattern.getFilenameAt(time);
-	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
+	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{
 		case eParamBitDepth8:
 			params._bitDepth = 8;
@@ -55,7 +58,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams(const OfxTime time)
  */
 void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
+	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();

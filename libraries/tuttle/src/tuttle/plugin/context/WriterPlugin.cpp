@@ -10,11 +10,11 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 {
 	_clipSrc        = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst        = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath       = fetchStringParam( kTuttlePluginWriterParamFilename );
-	_renderButton   = fetchPushButtonParam( kTuttlePluginWriterParamRender );
-	_renderAlways   = fetchBooleanParam( kTuttlePluginWriterParamRenderAlways );
-	_bitDepth       = fetchChoiceParam( kTuttlePluginWriterParamBitDepth );
-	_filePattern.reset(_filepath->getValue(), false, 0, 1);
+	_paramFilepath       = fetchStringParam( kTuttlePluginWriterParamFilename );
+	_paramRenderButton   = fetchPushButtonParam( kTuttlePluginWriterParamRender );
+	_paramRenderAlways   = fetchBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	_paramBitDepth       = fetchChoiceParam( kTuttlePluginWriterParamBitDepth );
+	_filePattern.reset(_paramFilepath->getValue(), false, 0, 1);
 }
 
 WriterPlugin::~WriterPlugin()
@@ -31,7 +31,7 @@ void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginWriterParamFilename )
 	{
-		_filePattern.reset(_filepath->getValue(), false, 0, 1);
+		_filePattern.reset(_paramFilepath->getValue(), false, 0, 1);
 	}
 }
 

@@ -4,6 +4,7 @@
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -35,7 +36,7 @@ JpegWriterProcessParams JpegWriterPlugin::getProcessParams(const OfxTime time)
  */
 void JpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
+	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
