@@ -32,7 +32,7 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 {
 	Jpeg2000ProcessParams params;
 	params._filepath = this->_filePattern.getFilenameAt(time);
-	switch(static_cast<EParamBitDepth>(this->_bitDepth->getValue()))
+	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{
 		case eParamBitDepth8:
 			params._bitDepth = 8;
@@ -61,7 +61,7 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
  */
 void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
 {
-	if( _renderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
+	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
 	{
 		// instantiate the render code based on the pixel depth of the dst clip
 		OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
@@ -144,13 +144,13 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		{
 			_lossless->setEnabled(false);
 			// DCI needs 12b
-			_bitDepth->setValue(1);
-			_bitDepth->setEnabled(false);
+			_paramBitDepth->setValue(1);
+			_paramBitDepth->setEnabled(false);
 		}
 		else
 		{
 			_lossless->setEnabled(true);
-			_bitDepth->setEnabled(true);
+			_paramBitDepth->setEnabled(true);
 		}
 	}
 	else if( paramName == "Help" )
