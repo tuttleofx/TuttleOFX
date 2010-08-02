@@ -157,7 +157,7 @@ void DpxImage::readHeader( ifstream& f )
 	// ...file information
 	gen = &( _header._fileInfo );
 	_header._fileInfo.magic_num = gen->magic_num;
-	size_t hdrSize = 0;
+	std::size_t hdrSize = 0;
 
 	if( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
 	{
@@ -183,7 +183,7 @@ void DpxImage::readHeader( ifstream& f )
 		BOOST_THROW_EXCEPTION( std::exception() );
 	}
 	// Read dynamic data
-	size_t bufpos = 0;
+	std::size_t bufpos = 0;
 	readDynamicHdrData((uint8_t*)gen->file_name, sizeof(gen->file_name), hdrBuffer.get(), bufpos);
 	bufpos += sizeof(gen->file_name);
 	readDynamicHdrData((uint8_t*)gen->create_time, sizeof(gen->create_time), hdrBuffer.get(), bufpos);
@@ -255,7 +255,7 @@ void DpxHeader::swapHeader()
 	_imageInfo.pixelsPerLine    = swapEndian<boost::uint32_t>( _imageInfo.pixelsPerLine );
 	_imageInfo.linesPerImageEle = swapEndian<boost::uint32_t>( _imageInfo.linesPerImageEle );
 
-	for( size_t i = 0; i < 8; ++i )
+	for( std::size_t i = 0; i < 8; ++i )
 	{
 		_imageInfo.image_element[i].data_sign         = swapEndian<uint32_t>( _imageInfo.image_element[i].data_sign );
 		_imageInfo.image_element[i].ref_low_data      = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_low_data );
@@ -307,13 +307,20 @@ void DpxHeader::swapHeader()
 	_television.integration_times =   swapEndian<float>(_television.integration_times );
 }
 
-size_t DpxImage::readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t bufpos)
+std::size_t mystrnlen (const char *string, std::size_t maxlen)
+{
+  const char *end = static_cast<const char *>( memchr( string, '\0', maxlen ) );
+  return end ? (std::size_t) ( end - string ) : maxlen;
+}
+
+std::size_t DpxImage::readDynamicHdrData(uint8_t *dst, std::size_t maxLen, uint8_t *buffer, std::size_t bufpos)
 {
 	// Strings always
 	buffer += bufpos;
-	strncpy((char*)dst, (char*)buffer, maxLen);
+//	strncpy((char*)dst, (char*)buffer, maxLen);
+	strncpy( (char *) dst, (char *) buffer, maxLen);
 	int startPos = bufpos;
-	bufpos += strnlen((char*)dst, 100);
+	bufpos += mystrnlen( (const char*) dst, maxLen);
 	// First skip 0x00 and following 0xFF caracters
 	while( buffer[bufpos] == 0x00 && (bufpos - startPos) < maxLen )
 	{
@@ -440,7 +447,7 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
 				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
-				size_t dataSize16    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint16_t );
+				std::size_t dataSize16    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint16_t );
 				uint16_t* pData16    = (uint16_t*)pData.get();
 				uint16_t* pSrcData16 = (uint16_t*)_data.get();
 				uint16_t* pData16End = pData16 + dataSize16;
@@ -460,7 +467,7 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
 				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
-				size_t dataSize32    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint32_t );
+				std::size_t dataSize32    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint32_t );
 				uint32_t* pData32    = (uint32_t*)pData.get();
 				uint32_t* pSrcData32 = (uint32_t*)_data.get();
 				uint32_t* pData32End = pData32 + dataSize32;
@@ -476,7 +483,7 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 	return pData;
 }
 
-inline const size_t DpxImage::components() const
+inline const std::size_t DpxImage::components() const
 {
 	switch( componentsType() )
 	{
@@ -500,9 +507,9 @@ inline const size_t DpxImage::components() const
 	return 0;
 }
 
-const size_t DpxImage::dataSize() const
+const std::size_t DpxImage::dataSize() const
 {
-	size_t sz               = 0;
+	std::size_t sz               = 0;
 	boost::uint16_t packing = _header.packing();
 
 	switch( componentsType() )
@@ -516,7 +523,7 @@ const size_t DpxImage::dataSize() const
 				sz = sizeof( boost::uint32_t ) * width() * height();
 			// Unpacked means that pixels are bit aligned
 			else
-				sz = ( size_t ) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
+				sz = ( std::size_t ) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
 			break;
 		case eCompTypeR8G8B8A8:
 		case eCompTypeA8B8G8R8:
@@ -549,7 +556,7 @@ const size_t DpxImage::dataSize() const
 			if( packing )
 				sz = sizeof( boost::uint64_t ) * width() * height();
 			else
-				sz = ( size_t ) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
+				sz = ( std::size_t ) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
 			break;
 		case eCompTypeR16G16B16A16:
 		case eCompTypeA16B16G16R16:
