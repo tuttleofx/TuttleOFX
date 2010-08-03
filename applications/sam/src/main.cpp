@@ -24,14 +24,14 @@ int main( int argc, char** argv )
 	try
 	{
 		using namespace tuttle::host;
-		TCOUT( "__________________________________________________0" );		
+		COUT( "__________________________________________________0" );		
 		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//core::Core::instance().getPluginCache().scanPluginFiles();
 		core::Core::instance().preload();
 		
-		TCOUT( core::Core::instance().getImageEffectPluginCache() );
+		COUT( core::Core::instance().getImageEffectPluginCache() );
 
-		TCOUT( "__________________________________________________1" );
+		COUT( "__________________________________________________1" );
 
 		core::Graph g;
 //		core::Graph::Node& read1   = g.createNode( "fr.tuttle.ffmpegreader" );
@@ -40,7 +40,7 @@ int main( int argc, char** argv )
 		core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
 		core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
 //		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.imagestatistics" );
+		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 		core::Graph::Node& blur1 = g.createNode( "fr.tuttle.blur" );
 		core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
 	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
@@ -51,7 +51,7 @@ int main( int argc, char** argv )
 		core::Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
 		core::Graph::Node& write4  = g.createNode( "fr.tuttle.ffmpegwriter" );
 
-		TCOUT( "__________________________________________________2" );
+		COUT( "__________________________________________________2" );
 		// Setup parameters
 //		read1.getParam( "filename" ).set( "data/input1.avi" );
 		read1.getParam( "filename" ).set( "data/input.png" );
@@ -65,7 +65,7 @@ int main( int argc, char** argv )
 		write3.getParam( "filename" ).set( "data/output3.exr" );
 		write4.getParam( "filename" ).set( "data/output4.avi" );
 
-		TCOUT( "__________________________________________________3" );
+		COUT( "__________________________________________________3" );
 		g.connect( read1, invert1 );
 		g.connect( invert1, invert2 );
 		g.connect( invert2, blur1 );
@@ -80,30 +80,26 @@ int main( int argc, char** argv )
 	//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
 
-		TCOUT( "__________________________________________________4" );
+		COUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
-		g.compute( write1.getName(), 0, 0 );
+		g.compute( outputs, 0, 0 );
 	}
 	catch( tuttle::host::core::exception::LogicError& e )
 	{
-		std::cout << "Tuttle Exception : main de tuttle..." << std::endl;
-		std::cout << e.what() << std::endl;
-	}
-	catch( std::exception& e )
-	{
-		std::cout << "Std Exception : main de tuttle..." << std::endl;
-		std::cout << e.what() << std::endl;
+		std::cout << "Tuttle Exception : main de sam." << std::endl;
+		std::cerr << boost::diagnostic_information(e);
 	}
 	catch(... )
 	{
-		std::cout << "Exception..." << std::endl;
+		std::cerr << "Exception ... : main de sam." << std::endl;
+		std::cerr << boost::current_exception_diagnostic_information();
+
 	}
 
-	//    COUT_INFOS;
 	return 0;
 }
 

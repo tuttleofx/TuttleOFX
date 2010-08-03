@@ -10,18 +10,28 @@ namespace core {
 class ProcessGraph
 {
 public:
-	ProcessGraph( Graph& graph );
+	typedef Graph::Node Node; /// @todo tuttle ProcessNode...
+	typedef Graph::Vertex Vertex;
+	typedef Graph::Edge Edge;
+	typedef Graph::Attribute Attribute;
+	typedef Graph::InternalGraph InternalGraph;
+	typedef Graph::Descriptor Descriptor;
+	typedef Graph::NodeMap NodeMap;
+	typedef Graph::InstanceCountMap InstanceCountMap;
+public:
+	ProcessGraph( Graph& graph, const std::list<std::string>& nodes );
 	~ProcessGraph();
 
-	void process( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
+	void process( const int tBegin, const int tEnd );
 
 private:
 	void relink();
 
-	Graph::InternalGraph _graph;
-	Graph::NodeMap& _nodes;
-	std::map<std::string, int> _instanceCount;
+	InternalGraph _graph;
+	NodeMap& _nodes;
+	InstanceCountMap _instanceCount;
 
+	Descriptor _output;
 };
 
 }

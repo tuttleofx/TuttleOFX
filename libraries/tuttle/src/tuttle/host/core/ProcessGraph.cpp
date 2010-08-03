@@ -8,11 +8,20 @@ namespace tuttle {
 namespace host {
 namespace core {
 
-ProcessGraph::ProcessGraph( Graph& graph )
+ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNodes )
 : _nodes( graph.getNodes() )
 , _instanceCount( graph.getInstanceCount() )
 {
 	_graph.copyTransposed( graph.getGraph() );
+
+	Vertex outputVertex("TUTTLE_FAKE_OUTPUT");
+	_output = _graph.addVertex( outputVertex );
+	
+	BOOST_FOREACH( std::string s, outputNodes )
+	{
+		_graph.connect( "TUTTLE_FAKE_OUTPUT", s, "Output" );
+		COUT_DEBUG( "MY OUTPUT: " << s );
+	}
 	relink();
 }
 
@@ -29,19 +38,14 @@ void ProcessGraph::relink()
 	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
-		v.setProcessNode( &_nodes.at( v.getProcessNode()->getName() ) );
+		if( !v.isFake() )
+			v.setProcessNode( &_nodes.at( v.getProcessNode()->getName() ) );
 	}
 }
 
-void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
+void ProcessGraph::process( const int tBegin, const int tEnd )
 {
-	std::list<Graph::Descriptor> outputs;
-	BOOST_FOREACH( std::string s, nodes )
-	{
-		outputs.push_back( _graph.getVertexDescriptor( s ) );
-		COUT_DEBUG( "MY OUTPUT " << s );
-	}
-
+	COUT( "process" );
 	graph::exportAsDOT( _graph, "graphprocess.dot" );
 
 	// Initialize variables
@@ -59,11 +63,13 @@ void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegi
 	defaultOptions._renderScale = renderScale;
 	defaultOptions._renderRoI   = renderWindow;
 
+	COUT( "process begin" );
 	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes )
 	{
 		p.second->begin( defaultOptions );
 	}
 
+	COUT( "process render..." );
 	//--- RENDER
 	// at each frame
 	for( int t = tBegin; t <= tEnd; ++t )
@@ -72,28 +78,27 @@ void ProcessGraph::process( const std::list<std::string>& nodes, const int tBegi
 		Graph::InternalGraph optimizedGraph( _graph );
 		defaultOptions._time = t;
 		
-		// for each outputs
-		BOOST_FOREACH( Graph::Descriptor outputNode, outputs )
-		{
-			COUT( "________________________________________ output node : " << optimizedGraph.instance( outputNode ).getName() );
-			COUT( "---------------------------------------- connectClips" );
-			core::dfs_connectClips_visitor<Graph::InternalGraph> connectClipsVisitor( optimizedGraph );
-			optimizedGraph.dfs( connectClipsVisitor, outputNode );
+		COUT( "________________________________________ output node : " << optimizedGraph.instance( _output ).getName() );
+		COUT( "---------------------------------------- connectClips" );
+		core::dfs_connectClips_visitor<Graph::InternalGraph> connectClipsVisitor( optimizedGraph );
+		optimizedGraph.dfs( connectClipsVisitor, _output );
 
-			COUT( "---------------------------------------- preprocess" );
-			core::dfs_preProcess_finish_visitor<Graph::InternalGraph> preProcessFinishVisitor( optimizedGraph, defaultOptions );
-			optimizedGraph.dfs( preProcessFinishVisitor, outputNode );
-			core::dfs_preProcess_initialize_visitor<Graph::InternalGraph> preProcessInitializeVisitor( optimizedGraph, defaultOptions );
-			optimizedGraph.dfs( preProcessInitializeVisitor, outputNode );
+		COUT( "---------------------------------------- preprocess" );
+		core::dfs_preProcess_finish_visitor<Graph::InternalGraph> preProcessFinishVisitor( optimizedGraph, defaultOptions );
+		optimizedGraph.dfs( preProcessFinishVisitor, _output );
+		core::dfs_preProcess_initialize_visitor<Graph::InternalGraph> preProcessInitializeVisitor( optimizedGraph, defaultOptions );
+		optimizedGraph.dfs( preProcessInitializeVisitor, _output );
 
-			COUT( "---------------------------------------- process" );
-			core::dfs_process_visitor<Graph::InternalGraph> processVisitor( optimizedGraph );
-			optimizedGraph.dfs( processVisitor, outputNode );
+		COUT( "---------------------------------------- process" );
+		core::dfs_process_visitor<Graph::InternalGraph> processVisitor( optimizedGraph );
+		optimizedGraph.dfs( processVisitor, _output );
 
-			COUT( "---------------------------------------- postprocess" );
-			core::dfs_postProcess_visitor<Graph::InternalGraph> postProcessVisitor( optimizedGraph );
-			optimizedGraph.dfs( postProcessVisitor, outputNode );
-		}
+		COUT( "---------------------------------------- postprocess" );
+		core::dfs_postProcess_visitor<Graph::InternalGraph> postProcessVisitor( optimizedGraph );
+		optimizedGraph.dfs( postProcessVisitor, _output );
+
+		// end of one frame
+		// do some clean memory clean, as temporary solution...
 		COUT( "---------------------------------------- clearUnused" );
 		core::Core::instance().getMemoryCache().clearUnused();
 		COUT( "---------------------------------------- updateMemoryAuthorizedWithRAM" );

@@ -12,21 +12,23 @@ namespace graph {
 class Vertex
 {
 public:
-	Vertex()
-		: _name( "Undefined" ),
-		_processNode( NULL )
+	Vertex( const std::string& name = "Undefined" )
+		: _name( name ),
+		_processNode( NULL ),
+		_fake( true )
 	{}
 
 	Vertex( const std::string& name,
 	        core::ProcessNode& processNode )
 		: _name( name ),
-		_processNode( &processNode )
+		_processNode( &processNode ),
+		_fake( false )
 	{}
 
 	Vertex( Vertex& v )
-		: _name( v._name ),
-		_processNode( v._processNode )
-	{}
+	{
+		this->operator=(v);
+	}
 
 	virtual ~Vertex()
 	{}
@@ -38,9 +40,11 @@ public:
 			return *this;
 		_name        = v._name;
 		_processNode = v._processNode;
+		_fake = v._fake;
 		return *this;
 	}
 
+	const bool                     isFake() const                         { return _fake; }
 	const std::string&             getName() const                        { return _name; }
 	core::ProcessNode*             getProcessNode()                       { return _processNode; }
 	const core::ProcessNode* const getProcessNode() const                 { return _processNode; }
@@ -55,6 +59,7 @@ private:
 	std::string _name;
 	core::ProcessNode* _processNode;
 	core::ProcessOptions _processOptions;
+	bool _fake;
 };
 
 }

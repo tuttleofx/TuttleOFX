@@ -44,7 +44,6 @@ MemoryInfo getMemoryInfo()
 	COUT( "" );
 	COUT_VAR( sys_info.sharedram * sys_info.mem_unit );
 	COUT_VAR( sys_info.bufferram * sys_info.mem_unit );
-	COUT( "plop" );
 #else
 	infos._totalRam  = 
 	infos._freeRam   = 

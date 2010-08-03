@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_INTERNALGRAPH_HPP_
 #define _TUTTLE_INTERNALGRAPH_HPP_
 
+#include <tuttle/host/core/Exception.hpp>
+
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
@@ -11,6 +13,7 @@
 #include <boost/graph/dominator_tree.hpp>
 #include <boost/graph/graphviz.hpp>
 #include <boost/foreach.hpp>
+#include <boost/exception/all.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -115,6 +118,24 @@ public:
 		_vertexDescriptorMap.erase( instance( v ).getName() );
 		clear_vertex( v, _graph );
 		remove_vertex( v, _graph );
+	}
+
+	void connect( const std::string& out, const std::string& in, const std::string& inAttr )
+	{
+		try
+		{
+			VertexDescriptor& descOut = getVertexDescriptor( out );
+			VertexDescriptor& descIn  = getVertexDescriptor( in );
+
+			Edge e( out, in, inAttr );
+			addEdge( descOut, descIn, e );
+		}
+		catch( boost::exception & e )
+		{
+			COUT_ERROR( boost::diagnostic_information(e) );
+			//e << core::exception::LogicError( "Error in InternalGraph on connecting \"" + out + "\" -> \"" + in + "::" + inAttr + "\" !" );
+			throw;
+		}
 	}
 
 	EdgeDescriptor addEdge( const VertexDescriptor& v1, const VertexDescriptor& v2, const Edge& prop )
@@ -273,13 +294,7 @@ public:
 	{
 		// make a transposed copy of g in _graph
 		boost::transpose_graph( g._graph, _graph );
-		rebuildVertexDescriptorMap();
-	}
-
-	void copy( const InternalGraph& g )
-	{
-		// make a transposed copy of g in _graph
-		boost::copy_graph( g._graph, _graph );
+		_count = g._count;
 		rebuildVertexDescriptorMap();
 	}
 
@@ -323,7 +338,6 @@ public:
 
 	std::vector<VertexDescriptor > leaves()
 	{
-
 		std::vector<VertexDescriptor > vleaves;
 		vertex_range_t vrange = getVertices();
 		for( vertex_iter it = vrange.first; it != vrange.second; ++it )

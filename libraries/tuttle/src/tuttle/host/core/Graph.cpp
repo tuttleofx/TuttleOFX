@@ -79,7 +79,8 @@ void Graph::addToGraph( Node& node )
 	graph::Vertex v( node.getName(), node );
 
 	COUT_DEBUG(node.getName());
-	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
+	
+	_graph.addVertex( v );
 }
 
 void Graph::removeFromGraph( Node& node ) throw( exception::LogicError )
@@ -88,7 +89,7 @@ void Graph::removeFromGraph( Node& node ) throw( exception::LogicError )
 	//
 	//	_nodesList.find( &node );
 	//	_nodes[node.getName()] = node;
-	//	_nodesDescriptor[node.getName()] = _graph.addVertex( v );
+	//	_graph.addVertex( v );
 }
 
 void Graph::deleteNode( const Node& node ) //throw( exception::LogicError )
@@ -101,28 +102,20 @@ void Graph::connect( const Node& out, const Node& in ) //throw( exception::Logic
 
 void Graph::connect( const Node& out, const Attribute& inAttr ) //throw( exception::LogicError )
 {
-	if (_nodesDescriptor.find(inAttr.getNode().getName()) == _nodesDescriptor.end())
-	{
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Node descriptor " + inAttr.getName() + " not found when connecting !" ) );
-	}
-	if (_nodesDescriptor.find(out.getName()) == _nodesDescriptor.end())
-	{
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Node descriptor " + out.getName() + " not found when connecting !" ) );
-	}
-
-	graph::Edge e( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
-	_graph.addEdge( _nodesDescriptor[out.getName()], _nodesDescriptor[inAttr.getNode().getName()], e );
+	_graph.connect( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
 }
 
-void Graph::unconnectNode( const Node& node ) //throw( exception::LogicError )
-{}
+//void Graph::unconnectNode( const Node& node ) //throw( exception::LogicError )
+//{}
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
 	graph::exportAsDOT( _graph, "graph.dot" );
 
-	ProcessGraph process( *this );
-	process.process( nodes, tBegin, tEnd );
+	COUT( "ProcessGraph constructor" );
+	ProcessGraph process( *this, nodes );
+	COUT( "ProcessGraph process" );
+	process.process( tBegin, tEnd );
 }
 
 std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )
