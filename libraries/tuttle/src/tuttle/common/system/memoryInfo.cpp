@@ -4,8 +4,11 @@
 
 #ifdef WINDOWS
 #include <windows.h>
-#else
+#elif LINUX
 #include <sys/sysinfo.h>
+#else
+#warning System unrecognized. Can't found memory infos.
+#include <limits>
 #endif
 
 MemoryInfo getMemoryInfo()
@@ -22,7 +25,7 @@ MemoryInfo getMemoryInfo()
 	//memory.dwAvailPageFile;
 	infos._totalSwap = memory.dwTotalVirtual;
 	infos._freeSwap = memory.dwAvailVirtual;
-#else
+#elif LINUX
 	struct sysinfo sys_info;
 	sysinfo( &sys_info );
 	
@@ -42,7 +45,11 @@ MemoryInfo getMemoryInfo()
 	COUT_VAR( sys_info.sharedram * sys_info.mem_unit );
 	COUT_VAR( sys_info.bufferram * sys_info.mem_unit );
 	COUT( "plop" );
-	
+#else
+	infos._totalRam  = 
+	infos._freeRam   = 
+	infos._totalSwap =
+	infos._freeSwap  = std::numeric_limits<std::size_t>::max();
 #endif
 	return infos;
 }

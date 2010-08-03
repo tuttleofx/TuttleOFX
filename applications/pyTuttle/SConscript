@@ -9,7 +9,7 @@ sources_application = project.scanFiles( ['src/application'], accept=['*.cpp','*
 sources_ui = project.scanFiles( ['src/application'], accept=['*.ui'] )
 sources_swig = project.scanFiles( ['src/common'], accept=['*.i'] )
 
-libraries = [libs.m, libs.pthread, libs.python, libs.tiff, libs.jpeg, libs.png ]
+libraries = [libs.boost, libs.m, libs.pthread, libs.python, libs.tiff, libs.jpeg, libs.png]
 librariesGui = [libs.qt4(modules=['QtCore', 'QtGui', 'QtOpenGL'], uiFiles=sources_ui)]
 
 name = project.getName()

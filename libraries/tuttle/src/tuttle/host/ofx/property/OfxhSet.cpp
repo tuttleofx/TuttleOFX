@@ -318,13 +318,6 @@ int OfxhSet::findStringPropValueIndex( const std::string& propName,
 	return -1;
 }
 
-// only compile this templates list
-template class OfxhPropertyTemplate<OfxhIntValue>;
-template class OfxhPropertyTemplate<OfxhDoubleValue>;
-template class OfxhPropertyTemplate<OfxhStringValue>;
-template class OfxhPropertyTemplate<OfxhPointerValue>;
-
-
 std::ostream& operator<<( std::ostream& os, const OfxhSet& v )
 {
 	os << "property::Set {" << std::endl;

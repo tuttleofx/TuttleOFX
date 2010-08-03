@@ -1,7 +1,7 @@
 #include "CropMargin.hpp"
 #include "CropPlugin.hpp"
 
-#include <GL/gl.h>
+#include <tuttle/plugin/opengl/gl.h>
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
