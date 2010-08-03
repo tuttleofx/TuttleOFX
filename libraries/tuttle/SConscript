@@ -3,36 +3,39 @@ Import( 'libs' )
 
 import os.path
 
-project.StaticSharedLibrary( 'tuttleCommon',
-                             sources   = project.scanFiles( ['src/tuttle/common'] ),
-                             includes  = ['src'],
-                             libraries = [ libs.openfxHack,
-                                           libs.boost,
-                                          ]
-                            )
+project.StaticLibrary( 'tuttleCommon',
+                       sources   = project.scanFiles( ['src/tuttle/common'] ),
+                       includes  = ['src'],
+                       libraries = [ libs.openfxHack,
+                                     libs.boost,
+                                    ],
+                       shared = True
+                      )
 
-project.StaticSharedLibrary( 'tuttlePlugin',
-                             sources   = project.scanFiles( ['src/tuttle/plugin'] ),
-                             includes  = ['src','src/tuttle/host/core'],
-                             libraries = [ libs.tuttleCommon,
-                                           libs.openfxPluginSupportHack,
-                                           libs.openfxHack,
-                                           libs.boost,
-                                          ]
-                            )
+project.StaticLibrary( 'tuttlePlugin',
+                       sources   = project.scanFiles( ['src/tuttle/plugin'] ),
+                       includes  = ['src','src/tuttle/host/core'],
+                       libraries = [ libs.tuttleCommon,
+                                     libs.openfxPluginSupportHack,
+                                     libs.openfxHack,
+                                     libs.boost,
+                                    ],
+                       shared = True
+                      )
 
-project.StaticSharedLibrary( 'tuttleHost',
-                             sources   = project.scanFiles( ['src/tuttle/host'] ),
-                             includes  = ['src'],
-                             libraries = [ libs.tuttleCommon,
-                                           libs.openfxHack,
-                                           libs.dl,
-                                           libs.boost_filesystem,
-                                           libs.boost_serialization,
-                                           libs.boost_thread,
-                                           libs.boost_gil,
-                                           libs.png,
-                                          ]
+project.StaticLibrary( 'tuttleHost',
+                       sources   = project.scanFiles( ['src/tuttle/host'] ),
+                       includes  = ['src'],
+                       libraries = [ libs.tuttleCommon,
+                                     libs.openfxHack,
+                                     libs.dl,
+                                     libs.boost_filesystem,
+                                     libs.boost_serialization,
+                                     libs.boost_thread,
+                                     libs.boost_gil,
+                                     libs.png,
+                                    ],
+                       shared = True
                       )
 
 pythonOutputDir = os.path.join(project.inOutputDir(),'python')

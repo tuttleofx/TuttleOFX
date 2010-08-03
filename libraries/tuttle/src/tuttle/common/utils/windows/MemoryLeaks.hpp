@@ -1,16 +1,25 @@
-/*
- * I think I've got a better way to detect memory leaks: the _CrtSetDbgFlag function.
+#ifndef _WINDOWSMEMORYLEAKS_HPP_
+#define _WINDOWSMEMORYLEAKS_HPP_
+
+#ifdef __WINDOWS__
+
+ #include <tuttle/patterns/StaticSingleton.hpp>
+ #include <crtdbg.h>
+
+/**
+ * @brief Class to detect memory leaks using the _CrtSetDbgFlag function (windows only).
+ *
  * It's provided by the windows API, it's easy to use and very safe.
  * You just need to call CrtSetDbgFlag anywhere in your code !
  * Here is a simple:
  *
- #include <crtdbg.h>
+ * #include <crtdbg.h>
  *
- #ifdef _DEBUG
- #define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
- #undef THIS_FILE
+ * #ifdef _DEBUG
+ * #define new new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+ * #undef THIS_FILE
  * static char THIS_FILE[] = __FILE__;
- #endif
+ * #endif
  *
  * void main()
  * {
@@ -22,19 +31,7 @@
  * And that's all !
  *
  * If your program has memory leaks, you'll be informed at the end of the program execution.
- * Check in the debug window for errors.
- * If you have errors, double click over the error message and you'll know the line where your program has allocated the memory.
- *
- * If you need more specific information, you can use this class:
  */
-#ifndef WINDOWSMEMORYLEAKS
-#define WINDOWSMEMORYLEAKS
-
-#ifdef WINDOWS
-
- #include <tuttle/patterns/StaticSingleton.hpp>
- #include <crtdbg.h>
-
 class MemoryLeaks : public StaticSingleton<MemoryLeaks>
 {
 public:

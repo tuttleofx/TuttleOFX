@@ -1,9 +1,12 @@
 Import( 'project' )
 Import( 'libs' )
 
-project.StaticSharedLibrary( 'openfxPluginSupportHack',
-                             dirs=['Library'],
-                             includes=['include'],
-                             libraries=[libs.openfxHack, libs.boost]
-                            )
+print 'openfxPluginSupportHack'
+
+project.StaticLibrary( 'openfxPluginSupportHack',
+                       dirs=['Library'],
+                       includes=['include'],
+                       libraries=[libs.openfxHack, libs.boost],
+                       shared=True
+                      )
 

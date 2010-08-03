@@ -1,13 +1,7 @@
-#ifndef TUTTLE_WINDOWS
-#define TUTTLE_WINDOWS
+#ifndef _TUTTLE_WINDOWS_H_
+#define _TUTTLE_WINDOWS_H_
 
-#ifndef WINDOWS
- #if ( defined( WIN32 ) || defined( WIN64 ) || defined( _WIN32 ) || defined( _WIN64 ) || defined( __WINDOWS__ ) || defined( __TOS_WIN__ ) || defined( __WIN32__ ) )
-  #define WINDOWS
- #endif
-#endif
-
-#ifdef WINDOWS
+#ifdef __WINDOWS__
  #ifndef __GNUC__
 
   #define _USE_MATH_DEFINES 1

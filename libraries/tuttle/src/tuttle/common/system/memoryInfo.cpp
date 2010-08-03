@@ -1,20 +1,21 @@
 
+#include "system.hpp"
 #include "memoryInfo.hpp"
 #include <tuttle/common/utils/global.hpp>
 
-#ifdef WINDOWS
+#if defined(__WINDOWS__)
 #include <windows.h>
-#elif LINUX
+#elif defined(__LINUX__)
 #include <sys/sysinfo.h>
 #else
-#warning System unrecognized. Can't found memory infos.
+#warning "System unrecognized. Can't found memory infos."
 #include <limits>
 #endif
 
 MemoryInfo getMemoryInfo()
 {
 	MemoryInfo infos;
-#ifdef WINDOWS
+#if defined(__WINDOWS__)
 	MEMORYSTATUS memory;
 	GlobalMemoryStatus( &memory );
 	
@@ -25,7 +26,7 @@ MemoryInfo getMemoryInfo()
 	//memory.dwAvailPageFile;
 	infos._totalSwap = memory.dwTotalVirtual;
 	infos._freeSwap = memory.dwAvailVirtual;
-#elif LINUX
+#elif defined(__LINUX__)
 	struct sysinfo sys_info;
 	sysinfo( &sys_info );
 	

@@ -1,5 +1,7 @@
-#ifndef __TUTTLE_DEBUG__
-#define __TUTTLE_DEBUG__
+#ifndef _TUTTLE_COMMON_DEBUG_HPP_
+#define _TUTTLE_COMMON_DEBUG_HPP_
+
+#include <tuttle/common/system/system.hpp>
 
 // pre-processeur directives :
 //	# : convert to string
@@ -37,7 +39,7 @@
 #define COUT_FATALERROR_DEBUG COUT_FATALERROR
 #define COUT_EXCEPTION_DEBUG COUT_EXCEPTION
 
-#ifdef WINDOWS
+#ifdef __WINDOWS__
  #include "windows/MemoryLeaks.hpp"
 #endif
 

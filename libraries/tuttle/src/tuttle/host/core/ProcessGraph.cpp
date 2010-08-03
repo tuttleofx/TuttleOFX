@@ -33,15 +33,30 @@ ProcessGraph::~ProcessGraph()
  */
 void ProcessGraph::relink()
 {
-	Graph::InternalGraph::vertex_range_t vrange = _graph.getVertices();
+	InternalGraph::vertex_range_t vrange = _graph.getVertices();
 
-	for( Graph::InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
+	for( InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
 		if( !v.isFake() )
 			v.setProcessNode( &_nodes.at( v.getProcessNode()->getName() ) );
 	}
 }
+
+/*
+void removeVertexAndReconnectTo( const VertexDescriptor& v, const VertexDescriptor& other )
+{
+	InternalGraph::out_edge_iterator oe, oeEnd;
+	tie(oe, oeEnd) = out_edges(v, g);
+	// InternalGraph::in_edge_iterator ie, ieEnd;
+	// tie(ie, ieEnd) = in_edges(v, g);
+
+	for( ; oe != oeEnd; ++oe )
+		source( oe )
+
+	_graph.removeVertex( v );
+}
+*/
 
 void ProcessGraph::process( const int tBegin, const int tEnd )
 {

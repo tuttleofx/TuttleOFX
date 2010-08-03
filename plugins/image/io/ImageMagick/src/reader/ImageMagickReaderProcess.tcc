@@ -77,11 +77,11 @@ struct default_color_converter_impl<RrGgBbAa_t,RrGgBbAa_t> {
 */
 
 #if( MAGICKCORE_QUANTUM_DEPTH == 8 )
-#warning MAGICKCORE_QUANTUM_DEPTH is 8
+#warning "MAGICKCORE_QUANTUM_DEPTH is 8"
 #elif( MAGICKCORE_QUANTUM_DEPTH == 16 )
-#warning MAGICKCORE_QUANTUM_DEPTH is 16
+#warning "MAGICKCORE_QUANTUM_DEPTH is 16"
 #elif( MAGICKCORE_QUANTUM_DEPTH == 32 )
-#warning MAGICKCORE_QUANTUM_DEPTH is 32
+#warning "MAGICKCORE_QUANTUM_DEPTH is 32"
 #endif
 
 namespace boost {
