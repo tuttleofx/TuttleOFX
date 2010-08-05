@@ -11,16 +11,6 @@ from sconsProject import SConsProject
 class Tuttle( SConsProject ):
 	dir_libraries  = os.getcwd() + os.sep + 'libraries'
 
-	def SConscript(self, dirs=[], exports=['project']):
-		'''
-		To include SConscript from SConstruct, this automatically define variantdirs.
-		'''
-		if not dirs:
-			SConscript( self.inBuildDir(self.getAbsoluteCwd('SConscript')), exports=exports )
-		else:
-			for d in dirs:
-				SConscript( dirs=self.inBuildDir(d), exports=exports )
-
 	def createOptions(self, filename, args) :
 		opts = SConsProject.createOptions(self,filename,args)
 		opts.Add( PathVariable( 'LIBRARIES',    'Directory of intern libraries', self.dir_libraries ) )
@@ -150,14 +140,8 @@ class Tuttle( SConsProject ):
 #______________________________________________________________________________#
 
 project = Tuttle()
-libs = project.libs
-Export('project')
-Export('libs')
-
-#______________________________________________________________________________#
-
 project.begin()
-project.SConscript()
+project.SConscript(exports={'project':project, 'libs': project.libs})
 project.end()
 
 
