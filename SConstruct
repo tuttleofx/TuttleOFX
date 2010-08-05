@@ -137,7 +137,6 @@ class Tuttle( SConsProject ):
 			envLocal.Alias( 'visualProject',   visual_project )
 
 
-#______________________________________________________________________________#
 
 project = Tuttle()
 project.begin()
