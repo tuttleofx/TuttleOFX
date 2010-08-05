@@ -45,8 +45,8 @@ envSwig.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] )
 envSwig.AppendUnique( SWIGPATH = envSwig['CPPPATH'] )
 envSwig.AppendUnique( SWIGOUTDIR = pythonOutputDir )
 envSwig.Replace( SHLIBPREFIX = '_' )
-envSwig.Replace( LIBPREFIX = '_' )
-#print "SWIGPATH from CPPPATH : ", envSwig['SWIGPATH']
+if project.macos:
+	envSwig.Replace( SHLIBSUFFIX = '.so' )
 
 tuttlePython = project.SharedLibrary( target='tuttle', sources=['src/tuttle/host/tuttle.i'], env=envSwig, install=False )
 
