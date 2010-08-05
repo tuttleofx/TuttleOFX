@@ -140,7 +140,7 @@ class Tuttle( SConsProject ):
 
 project = Tuttle()
 Export('project')
-Export(libs=project.libs)
+Export({'libs':project.libs})
 project.begin()
 project.SConscript()
 project.end()
