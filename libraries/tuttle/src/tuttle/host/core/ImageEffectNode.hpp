@@ -83,6 +83,8 @@ public:
 
 	OfxTime getCurrentTime() const { return _currentTime; }
 
+	void debugOutputImage() const;
+
 	void begin( ProcessOptions& processOptions )
 	{
 		TCOUT( "begin: " << getName() );
@@ -140,6 +142,8 @@ public:
 		              processOptions._field,
 		              roi,
 		              processOptions._renderScale );
+		
+		debugOutputImage();
 	}
 
 	void postProcess( ProcessOptions& processOptions )

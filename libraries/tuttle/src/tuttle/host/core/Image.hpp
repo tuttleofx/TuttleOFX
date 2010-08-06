@@ -39,7 +39,9 @@ public:
 	static VIEW_T gilViewFromImage( Image* img );
 
 public:
+#ifndef TUTTLE_PRODUCTION
 	void debugSaveAsPng( const std::string& filename );
+#endif
 
 private:
 	template < class S_VIEW >

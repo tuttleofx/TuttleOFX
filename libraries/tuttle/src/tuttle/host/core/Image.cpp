@@ -8,8 +8,8 @@
 #include <boost/gil/image_view.hpp>
 #include <boost/gil/typedefs.hpp>
 
-#ifdef TUTTLE_DEBUG
- #include <boost/gil/extension/io/png_io.hpp>
+#ifndef TUTTLE_PRODUCTION
+#include <boost/gil/extension/io/png_io.hpp>
 #endif
 
 namespace tuttle {
@@ -132,9 +132,10 @@ void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 	}
 }
 
-#ifdef _DEBUG
+#ifndef TUTTLE_PRODUCTION
 void Image::debugSaveAsPng( const std::string& filename )
 {
+	using namespace boost::gil;
 	switch( getComponentsType() )
 	{
 		case ofx::imageEffect::ePixelComponentRGBA:
@@ -155,7 +156,7 @@ void Image::debugSaveAsPng( const std::string& filename )
 				case ofx::imageEffect::eBitDepthFloat:
 				{
 					rgba32f_view_t view = gilViewFromImage<rgba32f_view_t >( this );
-					png_write_view( filename, clamp<rgb8_pixel_t>( view ) );
+					png_write_view( filename, color_converted_view<rgb8_pixel_t>( view ) );
 					break;
 				}
 				default:
@@ -180,7 +181,7 @@ void Image::debugSaveAsPng( const std::string& filename )
 				case ofx::imageEffect::eBitDepthFloat:
 				{
 					gray32f_view_t view = gilViewFromImage<gray32f_view_t >( this );
-					png_write_view( filename, clamp<rgb8_pixel_t>( view ) );
+					png_write_view( filename, color_converted_view<rgb8_pixel_t>( view ) );
 					break;
 				}
 				default:

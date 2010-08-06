@@ -19,6 +19,16 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
+#ifndef TUTTLE_PRODUCTION
+// to output all nodes as png for debug
+//#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
+#endif
+
+#ifndef TUTTLE_DEBUG_OUTPUT_ALL_NODES
+#include <tuttle/host/core/Core.hpp>
+#include <boost/lexical_cast.hpp>
+#endif
+
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -430,6 +440,19 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 	}
 	os << "________________________________________________________________________________" << std::endl;
 }
+
+void ImageEffectNode::debugOutputImage() const
+{
+#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
+	IMemoryCache& memoryCache( core::Core::instance().getMemoryCache() );
+
+	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + ".Output", this->getCurrentTime() );
+
+	// big hack, for debug...
+	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>(this->getCurrentTime()) + "_" + this->getName() + ".png" );
+#endif
+}
+
 
 }
 }
