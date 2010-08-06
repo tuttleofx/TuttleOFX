@@ -1,7 +1,7 @@
 /*
  * This file is part of TuttleOFX.
  * 
- * Copyright (c) 2009, 2010 Fabien Castan
+ * Copyright (c) 2009, 2010
  * Fabien Castan, Guillaume Chatelet, Eloi Du Bois, Nicolas Rondaud
  *
  * See AUTHORS file for additionnal informations about the project and the
