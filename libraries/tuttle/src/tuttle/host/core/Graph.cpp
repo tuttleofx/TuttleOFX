@@ -95,14 +95,70 @@ void Graph::removeFromGraph( Node& node ) throw( exception::LogicError )
 void Graph::deleteNode( const Node& node ) //throw( exception::LogicError )
 {}
 
-void Graph::connect( const Node& out, const Node& in ) //throw( exception::LogicError )
+void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr ) //throw( exception::LogicError )
 {
-	connect( out, in.getSingleInputAttribute() );
+	_graph.connect( outNode, inNode, kOfxSimpleSourceAttributeName );
 }
 
-void Graph::connect( const Node& out, const Attribute& inAttr ) //throw( exception::LogicError )
+void Graph::connect( const std::list<std::string>& nodes ) // throw( exception::LogicError )
 {
-	_graph.connect( out.getName(), inAttr.getNode().getName(), inAttr.getName() );
+	typedef std::list<std::string>::const_iterator ConstIterator;
+	if( nodes.size() <= 1 )
+		BOOST_THROW_EXCEPTION( exception::LogicError("Needs multiple nodes to connect the together.") );
+
+	ConstIterator itA = nodes.begin(), itB = itA;
+	++itB;
+	ConstIterator itEnd = nodes.end();
+	for( ;
+		 itB != itEnd;
+		 ++itA, ++itB )
+	{
+		this->connect( *itA, *itB );
+	}
+}
+
+void Graph::connect( const Node& outNode, const Node& inNode ) //throw( exception::LogicError )
+{
+	connect( outNode, inNode.getSingleInputAttribute() );
+}
+
+void Graph::connect( const std::list<Node*>& nodes ) // throw( exception::LogicError )
+{
+	typedef std::list<Node*>::const_iterator ConstIterator;
+	if( nodes.size() <= 1 )
+		BOOST_THROW_EXCEPTION( exception::LogicError("Needs multiple nodes to connect the together.") );
+	
+	ConstIterator itA = nodes.begin(), itB = itA;
+	++itB;
+	ConstIterator itEnd = nodes.end();
+	for( ;
+		 itB != itEnd;
+		 ++itA, ++itB )
+	{
+		this->connect( **itA, **itB );
+	}
+}
+
+void Graph::connect( const std::vector<Node*>& nodes ) // throw( exception::LogicError )
+{
+	typedef std::vector<Node*>::const_iterator ConstIterator;
+	if( nodes.size() <= 1 )
+		BOOST_THROW_EXCEPTION( exception::LogicError("Needs multiple clips to connect them !") );
+
+	ConstIterator itA = nodes.begin(), itB = itA;
+	++itB;
+	ConstIterator itEnd = nodes.end();
+	for( ;
+		 itB != itEnd;
+		 ++itA, ++itB )
+	{
+		this->connect( **itA, **itB );
+	}
+}
+
+void Graph::connect( const Node& outNode, const Attribute& inAttr ) //throw( exception::LogicError )
+{
+	_graph.connect( outNode.getName(), inAttr.getNode().getName(), inAttr.getName() );
 }
 
 //void Graph::unconnectNode( const Node& node ) //throw( exception::LogicError )

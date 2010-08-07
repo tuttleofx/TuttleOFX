@@ -1,4 +1,4 @@
-%include <tuttle/host/core/Exception.i>
+%include <tuttle/host/global.i>
 %include <tuttle/host/core/HostDescriptor.i>
 %include <tuttle/host/ofx/OfxhException.i>
 %include <tuttle/host/ofx/property/OfxhPropertyTemplate.i>

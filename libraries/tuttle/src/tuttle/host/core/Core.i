@@ -1,4 +1,4 @@
-%include <tuttle/host/core/Exception.i>
+%include <tuttle/host/global.i>
 %import <tuttle/host/ofx/OfxhPluginCache.i>
 %import <tuttle/common/patterns/Singleton.i>
 %template(SingletonCore) Singleton<tuttle::host::core::Core>;

@@ -18,15 +18,6 @@
 #include <map>
 #include <list>
 
-#ifdef SWIG
-#define TUTTLE_AUTODOCUMENTATION %feature("autodoc", "1");
-#define TUTTLE_AUTODOCUMENTATION_NOTYPES %feature("autodoc", "0");
-#define TUTTLE_DOCUMENTATION(doc) %feature("autodoc", doc);
-#else
-#define TUTTLE_AUTODOCUMENTATION
-#define TUTTLE_AUTODOCUMENTATION_NOTYPES
-#define TUTTLE_DOCUMENTATION(doc)
-#endif
 
 namespace tuttle {
 namespace host {
@@ -49,51 +40,60 @@ public:
 	//Graph( const Graph& other );
 	~Graph();
 
-	TUTTLE_AUTODOCUMENTATION
+	/**
+	 * @brief Create a new node in the current graph.
+	 * @param id is the plugin unique string identification (e.g. "fr.tuttle.blur").
+	 */
 	Node& createNode( const std::string& id );
-	TUTTLE_AUTODOCUMENTATION
+	/**
+	 * @brief Delete a node from the current graph.
+	 * This will remove all the connections.
+	 */
 	void  deleteNode( const Node& node );// throw( exception::LogicError );
-	TUTTLE_AUTODOCUMENTATION
-	void connect( const Node& out, const Node& in );// throw( exception::LogicError );
-	TUTTLE_AUTODOCUMENTATION
-	void connect( const Node& out, const Attribute& inAttr );// throw( exception::LogicError );
-//	TUTTLE_AUTODOCUMENTATION
+	/**
+	 * @brief Connect nodes (using there unique name in this graph).
+	 */
+	void connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr = kOfxSimpleSourceAttributeName ); //throw( exception::LogicError )
+	/**
+	 * @brief Connect nodes the list of nodes linearly.
+	 */
+	void connect( const std::list<std::string>& nodes );
+	void connect( const Node& outNode, const Node& inNode );// throw( exception::LogicError );
+	void connect( const std::list<Node*>& nodes );// throw( exception::LogicError );
+	void connect( const std::vector<Node*>& nodes );// throw( exception::LogicError );
+	void connect( const Node& outNode, const Attribute& inAttr );// throw( exception::LogicError );
 //	void unconnectNode( const Node& node );// throw( exception::LogicError );
 
-	TUTTLE_AUTODOCUMENTATION
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
-	TUTTLE_AUTODOCUMENTATION
 	void compute( const std::list<std::string>& nodes, const int time ) { compute( nodes, time, time ); }
 
-	TUTTLE_AUTODOCUMENTATION
 	void compute( const std::string& node, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> outputs;
 		outputs.push_back( node );
 		compute( outputs, tBegin, tEnd );
 	}
-	TUTTLE_AUTODOCUMENTATION
+	void compute( const Node& node, const int tBegin, const int tEnd )
+	{
+		compute( node.getName(), tBegin, tEnd );
+	}
 	void compute( const std::string& node, const int time )
 	{
 		compute( node, time, time );
 	}
+	void compute( const Node& node, const int time )
+	{
+		compute( node.getName(), time );
+	}
 
-	TUTTLE_AUTODOCUMENTATION
 	const InternalGraph&    getGraph() const         { return _graph; }
-	TUTTLE_AUTODOCUMENTATION
 	const NodeMap&          getNodes() const         { return _nodes; }
-	TUTTLE_AUTODOCUMENTATION
 	NodeMap&                getNodes()               { return _nodes; }
-	TUTTLE_AUTODOCUMENTATION
 	std::list<Node*> getNodesByContext( const std::string& type );
-	TUTTLE_AUTODOCUMENTATION
 	std::list<Node*> getNodesByPlugin( const std::string& pluginId );
 //	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
-	TUTTLE_AUTODOCUMENTATION
 	const Node& getNode( const std::string& id ) const { return _nodes.at( id ); }
-	TUTTLE_AUTODOCUMENTATION
 	Node&                getNode( const std::string& name )       { return getNodes().at(name); }
-	TUTTLE_AUTODOCUMENTATION
 	const InstanceCountMap& getInstanceCount() const { return _instanceCount; }
 
 public:

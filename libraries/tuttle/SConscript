@@ -44,7 +44,7 @@ project.StaticLibrary( 'tuttleHost',
 pythonOutputDir = os.path.join(project.inOutputDir(),'python')
 
 envSwig = project.createEnv( [libs.python, libs.tuttleHost, libs.pthread] )
-envSwig.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall'] )
+envSwig.AppendUnique( SWIGFLAGS = ['-python','-c++','-Wall']) # ,'-shadow','-docstring'] )
 envSwig.AppendUnique( SWIGPATH = envSwig['CPPPATH'] )
 envSwig.AppendUnique( SWIGOUTDIR = pythonOutputDir )
 envSwig.Replace( SHLIBPREFIX = '_' )

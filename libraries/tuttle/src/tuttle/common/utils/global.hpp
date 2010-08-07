@@ -81,23 +81,13 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define TCOUT COUT_DEBUG
-#define TCOUT_VAR COUT_VAR_DEBUG
-#define TCOUT_VAR2 COUT_VAR2_DEBUG
-#define TCOUT_VAR3 COUT_VAR3_DEBUG
-#define TCOUT_VAR4 COUT_VAR4_DEBUG
-#define TCOUT_INFOS COUT_INFOS_DEBUG
-#define TCOUT_WITHINFOS COUT_WITHINFOS_DEBUG
-#define TCOUT_EXCEPTION COUT_EXCEPTION_DEBUG
-
-//#ifdef SWIG
-//#define TUTTLE_AUTODOCUMENTATION %feature("autodoc", "1");
-//#define TUTTLE_AUTODOCUMENTATION_NOTYPES %feature("autodoc", "0");
-//#define TUTTLE_DOCUMENTATION(doc) %feature("autodoc", doc);
-//#else
-//#define TUTTLE_AUTODOCUMENTATION
-//#define TUTTLE_AUTODOCUMENTATION_NOTYPES
-//#define TUTTLE_DOCUMENTATION(doc)
-//#endif
+#define TCOUT COUT
+#define TCOUT_VAR COUT_VAR
+#define TCOUT_VAR2 COUT_VAR2
+#define TCOUT_VAR3 COUT_VAR3
+#define TCOUT_VAR4 COUT_VAR4
+#define TCOUT_INFOS COUT_INFOS
+#define TCOUT_WITHINFOS COUT_WITHINFOS
+#define TCOUT_EXCEPTION COUT_EXCEPTION
 
 #endif
