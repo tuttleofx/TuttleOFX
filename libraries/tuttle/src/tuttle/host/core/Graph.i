@@ -1,12 +1,18 @@
+%include <tuttle/host/global.i>
 %include <std_vector.i>
 %include <std_list.i>
 %include <std_string.i>
-%include "Exception.i"
-%include <tuttle/host/global.i>
 
 %{
 #include <tuttle/host/core/Graph.hpp>
 %}
+
+namespace std {
+   %template(StringVector) vector<string>;
+   %template(StringList) list<string>;
+   %template(NodePtrVector) vector<tuttle::host::core::Graph::Node*>;
+   %template(NodePtrList) list<tuttle::host::core::Graph::Node*>;
+}
 
 // rename the original "connect" function to reimplement it in python
 %rename(private_connect) connect;

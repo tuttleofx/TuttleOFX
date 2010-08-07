@@ -67,6 +67,18 @@ public:
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 	void compute( const std::list<std::string>& nodes, const int time ) { compute( nodes, time, time ); }
 
+	void compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
+	{
+		std::list<std::string> nodesStr;
+		//nodesStr.reserve(nodes.size());
+		BOOST_FOREACH( Node* n, nodes )
+		{
+			nodesStr.push_back( n->getName() );
+		}
+		compute( nodesStr, tBegin, tEnd );
+	}
+	void compute( const std::list<Node*>& nodes, const int time ) { compute( nodes, time, time ); }
+
 	void compute( const std::string& node, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> outputs;
