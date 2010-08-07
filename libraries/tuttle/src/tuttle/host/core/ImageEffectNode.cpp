@@ -24,7 +24,7 @@
 //#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
 #endif
 
-#ifndef TUTTLE_DEBUG_OUTPUT_ALL_NODES
+#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
 #include <tuttle/host/core/Core.hpp>
 #include <boost/lexical_cast.hpp>
 #endif

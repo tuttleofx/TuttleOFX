@@ -156,7 +156,7 @@ void Image::debugSaveAsPng( const std::string& filename )
 				case ofx::imageEffect::eBitDepthFloat:
 				{
 					rgba32f_view_t view = gilViewFromImage<rgba32f_view_t >( this );
-					png_write_view( filename, color_converted_view<rgb8_pixel_t>( view ) );
+					png_write_view( filename, color_converted_view<rgba8_pixel_t>( view ) );
 					break;
 				}
 				default:
