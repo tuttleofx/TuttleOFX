@@ -45,6 +45,7 @@
 #include <string>
 
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/exception/diagnostic_information.hpp>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
@@ -2451,28 +2452,28 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
-		std::cout << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
+		std::cerr << "Caught OFX::Exception::Suite (" << e.what() << ")" << std::endl;
 		stat = e.status();
 	}
 
 	// catch host inadequate exceptions
 	catch( OFX::Exception::HostInadequate& e )
 	{
-		std::cout << "Caught OFX::Exception::HostInadequate (" << e.what() << ")" << std::endl;
+		std::cerr << "Caught OFX::Exception::HostInadequate (" << e.what() << ")" << std::endl;
 		stat = kOfxStatErrMissingHostFeature;
 	}
 
 	// catch exception due to a property being unknown to the host, implies something wrong with host if not caught further down
 	catch( OFX::Exception::PropertyUnknownToHost& e )
 	{
-		std::cout << "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" << std::endl;
+		std::cerr << "Caught OFX::Exception::PropertyUnknownToHost (" << e.what() << ")" << std::endl;
 		stat = kOfxStatErrMissingHostFeature;
 	}
 
 	// catch memory
 	catch( std::bad_alloc& e )
 	{
-		std::cout << "Caught std::bad_alloc (" << e.what() << ")" << std::endl;
+		std::cerr << "Caught std::bad_alloc (" << e.what() << ")" << std::endl;
 		stat = kOfxStatErrMemory;
 	}
 
@@ -2480,22 +2481,28 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	#ifdef OFX_CLIENT_EXCEPTION_TYPE
 	catch( OFX_CLIENT_EXCEPTION_TYPE& e )
 	{
-		std::cout << "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" << std::endl;
+		std::cerr << "Caught OFX_CLIENT_EXCEPTION (" << e.what() << ")" << std::endl;
 		stat = OFX_CLIENT_EXCEPTION_HANDLER( e, plugname );
 	}
 	#endif
 
+	catch( boost::exception& e )
+	{
+		std::cerr << "Caught boost::exception on action " << actionRaw << std::endl;
+		std::cerr << boost::diagnostic_information(e);
+		stat = kOfxStatFailed;
+	}
 	// catch all exceptions
 	catch( std::exception& e )
 	{
-		std::cout << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
+		std::cerr << "Caught std::exception on action " << actionRaw << " (" << e.what() << ")" << std::endl;
 		stat = kOfxStatFailed;
 	}
 
 	// Catch anything else, unknown
 	catch(... )
 	{
-		std::cout << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
+		std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
 		stat = kOfxStatFailed;
 	}
 

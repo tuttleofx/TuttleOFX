@@ -51,6 +51,8 @@
 #include <cstdarg>
 #include <cstdlib>
 
+#define OFX_LOG
+
 namespace OFX {
 namespace Log {
 
@@ -75,7 +77,7 @@ void setFileName( const std::string& value )
 /** @brief Opens the log file, returns whether this was sucessful or not. */
 bool open( void )
 {
-	#ifdef DEBUG
+	#ifdef OFX_LOG
 	if( !gLogFP )
 	{
 		gLogFP = fopen( gLogFileName.c_str(), "w" );
