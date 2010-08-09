@@ -31,7 +31,7 @@ Jpeg2000WriterPlugin::Jpeg2000WriterPlugin( OfxImageEffectHandle handle )
 Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 {
 	Jpeg2000ProcessParams params;
-	params._filepath = this->_filePattern.getFilenameAt(time);
+	params._filepath = getFilenameAt(time);
 	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{
 		case eParamBitDepth8:
