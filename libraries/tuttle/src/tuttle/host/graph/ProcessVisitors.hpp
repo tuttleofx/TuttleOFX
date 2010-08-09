@@ -39,8 +39,8 @@ public:
 			  << " TO "
 			  << vertexDest << "." << edge.inAttrName() );
 
-		ProcessNode& sourceNode = *vertexSource.getProcessNode();
-		ProcessNode& targetNode = *vertexDest.getProcessNode();
+		Node& sourceNode = *vertexSource.getProcessNode();
+		Node& targetNode = *vertexDest.getProcessNode();
 		sourceNode.connect( targetNode, sourceNode.getAttribute( edge.inAttrName() ) );
 	}
 

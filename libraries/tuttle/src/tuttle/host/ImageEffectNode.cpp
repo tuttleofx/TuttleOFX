@@ -47,7 +47,7 @@ ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffec
 }
 
 ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
-	: ProcessNode( other )
+	: Node( other )
 	, tuttle::host::ofx::imageEffect::OfxhImageEffectNode( other )
 {
 	populate();
@@ -59,7 +59,7 @@ ImageEffectNode::~ImageEffectNode()
 {
 }
 
-void ImageEffectNode::connect( const ProcessNode& sourceEffect, attribute::Attribute& attr )
+void ImageEffectNode::connect( const Node& sourceEffect, attribute::Attribute& attr )
 {
 	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>( sourceEffect );
 

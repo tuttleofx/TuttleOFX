@@ -14,7 +14,7 @@
 namespace tuttle {
 namespace host {
 
-class ImageEffectNode : public ProcessNode,
+class ImageEffectNode : public Node,
 	public ofx::imageEffect::OfxhImageEffectNode
 {
 public:
@@ -44,9 +44,9 @@ public:
 
 	bool operator==( const ImageEffectNode& other ) const;
 
-	const EProcessNodeType getProcessNodeType() const { return eImageEffectNode; }
+	const ENodeType getNodeType() const { return eNodeTypeImageEffect; }
 
-	void connect( const ProcessNode& sourceEffect, attribute::Attribute& attr );
+	void connect( const Node& sourceEffect, attribute::Attribute& attr );
 
 	ofx::attribute::OfxhClipImage&       getOutputClip()       { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
 	const ofx::attribute::OfxhClipImage& getOutputClip() const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }

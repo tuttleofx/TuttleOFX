@@ -14,30 +14,31 @@ namespace attribute {
 class Attribute;
 }
 
-class ProcessNode
+class Node
 {
 public:
-	enum EProcessNodeType
+	enum ENodeType
 	{
-		eImageEffectNode,
-		eParamNode,
-		eGraphNode,
+		eNodeTypeImageEffect,
+		eNodeTypeParam,
+		eNodeTypeGraph,
 	};
 
 public:
-	ProcessNode() {}
-	ProcessNode( const ProcessNode& e ) {}
-	virtual ~ProcessNode() = 0;
-
-	virtual ProcessNode*            clone() const              = 0;
+	Node() {}
+	Node( const Node& e ) {}
+	virtual ~Node() = 0;
+	virtual Node*            clone() const              = 0;
 	virtual const std::string&      getName() const            = 0;
-	virtual const EProcessNodeType  getProcessNodeType() const = 0;
+	virtual const ENodeType  getNodeType() const = 0;
+
 	virtual attribute::Attribute& getAttribute( const std::string& name ) = 0;
 //	const attribute::Attribute& getAttribute( const std::string& name ) const { return const_cast<ProcessNode*>(this)->getAttribute( name ); }
 	virtual attribute::Attribute& getSingleInputAttribute() = 0;
 	virtual const attribute::Attribute& getSingleInputAttribute() const = 0;
 
-	virtual void connect( const ProcessNode&, attribute::Attribute& ) = 0;
+#ifndef SWIG
+	virtual void connect( const Node&, attribute::Attribute& ) = 0;
 
 	virtual void begin( graph::ProcessOptions& processOptions )                 = 0;
 	virtual void preProcess_initialize( graph::ProcessOptions& processOptions ) = 0;
@@ -45,6 +46,7 @@ public:
 	virtual void process( const graph::ProcessOptions& processOptions )         = 0;
 	virtual void postProcess( graph::ProcessOptions& processOptions )           = 0;
 	virtual void end( graph::ProcessOptions& processOptions )                   = 0;
+#endif
 };
 
 }

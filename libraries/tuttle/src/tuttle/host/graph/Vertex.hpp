@@ -19,7 +19,7 @@ public:
 	{}
 
 	Vertex( const std::string& name,
-	        ProcessNode& processNode )
+	        Node& processNode )
 		: _name( name ),
 		_processNode( &processNode ),
 		_fake( false )
@@ -46,9 +46,9 @@ public:
 
 	const bool                     isFake() const                         { return _fake; }
 	const std::string&             getName() const                        { return _name; }
-	ProcessNode*             getProcessNode()                       { return _processNode; }
-	const ProcessNode* const getProcessNode() const                 { return _processNode; }
-	void                           setProcessNode( ProcessNode* p ) { _processNode = p; }
+	Node*             getProcessNode()                       { return _processNode; }
+	const Node* const getProcessNode() const                 { return _processNode; }
+	void                           setProcessNode( Node* p ) { _processNode = p; }
 	ProcessOptions&          getProcessOptions() { return _processOptions; }
 	const ProcessOptions&    getProcessOptions() const { return _processOptions; }
 	void                           setProcessOptions( ProcessOptions& options ) { _processOptions = options; }
@@ -57,7 +57,7 @@ public:
 
 private:
 	std::string _name;
-	ProcessNode* _processNode;
+	Node* _processNode;
 	graph::ProcessOptions _processOptions;
 	bool _fake;
 };

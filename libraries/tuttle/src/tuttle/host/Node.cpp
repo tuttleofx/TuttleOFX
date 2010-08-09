@@ -3,7 +3,7 @@
 namespace tuttle {
 namespace host {
 
-ProcessNode::~ProcessNode() {}
+Node::~Node() {}
 
 }
 }
