@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/core/Core.hpp>
+#include <tuttle/host/Core.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectPlugin.hpp>
 
 
@@ -31,8 +31,8 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	using namespace tuttle::host::ofx;
 	using namespace tuttle::host::ofx::imageEffect;
 	
-	core::Core::instance().preload();
-	OfxhImageEffectPlugin* plugin = core::Core::instance().getImageEffectPluginById("fr.tuttle.invert");
+	Core::instance().preload();
+	OfxhImageEffectPlugin* plugin = Core::instance().getImageEffectPluginById("fr.tuttle.invert");
 
 //	typedef boost::archive::binary_oarchive OArchive;
 //	typedef boost::archive::binary_iarchive IArchive;

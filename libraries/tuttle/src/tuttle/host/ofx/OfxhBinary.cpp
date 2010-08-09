@@ -28,7 +28,7 @@
  */
 
 #include "OfxhBinary.hpp"
-#include "tuttle/host/core/Exception.hpp"
+#include "tuttle/host/Exception.hpp"
 
 namespace tuttle {
 namespace host {
@@ -138,7 +138,7 @@ void* OfxhBinary::findSymbol( const std::string& symbol )
 	}
 	else
 	{
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Symbol '" + symbol + "' not found in plugin file: '" + _binaryPath + "'" ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Symbol '" + symbol + "' not found in plugin file: '" + _binaryPath + "'" ) );
 	}
 }
 

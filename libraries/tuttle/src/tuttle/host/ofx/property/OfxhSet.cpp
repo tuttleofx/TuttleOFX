@@ -36,7 +36,7 @@
 #include <ofxImageEffect.h>
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/core/Exception.hpp>
+#include <tuttle/host/Exception.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -216,7 +216,7 @@ bool OfxhSet::operator==( const This& other ) const
 void OfxhSet::copyValues( const This& other )
 {
 	if( _props.size() != other._props.size() )
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy properties values, but the two lists are not identical." ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "You try to copy properties values, but the two lists are not identical." ) );
 
 	PropertyMap::const_iterator oit = other._props.begin(), oitEnd = other._props.end();
 	for( PropertyMap::iterator it = _props.begin(), itEnd = _props.end();
@@ -226,7 +226,7 @@ void OfxhSet::copyValues( const This& other )
 		OfxhProperty& p = *(it->second);
 		const OfxhProperty& op = *(oit->second);
 		if( p.getName() != op.getName() )
-			BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy properties values, but it is not the same property in the two lists." ) );
+			BOOST_THROW_EXCEPTION( exception::LogicError( "You try to copy properties values, but it is not the same property in the two lists." ) );
 		p.copyValues(op);
 	}
 }

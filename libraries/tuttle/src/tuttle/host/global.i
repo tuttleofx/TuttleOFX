@@ -1,4 +1,4 @@
-%include <tuttle/host/core/Exception.i>
+%include <tuttle/host/Exception.i>
 
 %{
 #include <tuttle/common/utils/global.hpp>

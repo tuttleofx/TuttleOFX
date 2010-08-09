@@ -30,7 +30,7 @@
 #ifndef _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_HPP_
 #define _TUTTLE_HOST_OFX_IMAGEEFFECTNODE_HPP_
 
-#include <tuttle/host/core/Exception.hpp>
+#include <tuttle/host/Exception.hpp>
 
 #include "OfxhImageEffectNodeBase.hpp"
 #include "OfxhImageEffectNodeDescriptor.hpp"

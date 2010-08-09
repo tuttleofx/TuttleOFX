@@ -1,6 +1,6 @@
 // custom host
-#include <tuttle/host/core/memory/MemoryPool.hpp>
-#include <tuttle/host/core/memory/MemoryCache.hpp>
+#include <tuttle/host/memory/MemoryPool.hpp>
+#include <tuttle/host/memory/MemoryCache.hpp>
 
 #include <iostream>
 
@@ -9,14 +9,14 @@
 
 using namespace boost::unit_test;
 using namespace std;
-using namespace tuttle::host::core;
+using namespace tuttle::host;
 
 BOOST_AUTO_TEST_SUITE( memory_tests_suite01 )
 
 BOOST_AUTO_TEST_CASE( memoryPool )
 {
 	BOOST_REQUIRE_THROW( {
-	                         MemoryPool pool( 0 );
+	                         memory::MemoryPool pool( 0 );
 	                         BOOST_CHECK_EQUAL( 0U, pool.getMaxMemorySize() );
 	                         BOOST_CHECK_EQUAL( 0U, pool.getUsedMemorySize() );
 	                         BOOST_CHECK_EQUAL( 0U, pool.getAllocatedMemorySize() );
@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 	                         pool.allocate( 10 );
 						 }, std::exception );
 
-	MemoryPool pool( 30 );
+	memory::MemoryPool pool( 30 );
 	// checking everything is clean
 	BOOST_CHECK_EQUAL( 30U, pool.getMaxMemorySize() );
 	BOOST_CHECK_EQUAL( 0U, pool.getUsedMemorySize() );
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 
 	{
 		// first allocation
-		const IPoolDataPtr pData = pool.allocate( 10 );
+		const memory::IPoolDataPtr pData = pool.allocate( 10 );
 		BOOST_CHECK_EQUAL( 10U, pool.getUsedMemorySize() );
 		BOOST_CHECK_EQUAL( 10U, pool.getAllocatedMemorySize() );
 		BOOST_CHECK_EQUAL( 0U, pool.getWastedMemorySize() );
@@ -45,14 +45,14 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 
 	{
 		// new allocation will not actually alloc but resuse memory
-		const IPoolDataPtr pData = pool.allocate( 10 );
+		const memory::IPoolDataPtr pData = pool.allocate( 10 );
 		BOOST_CHECK_EQUAL( 10U, pool.getUsedMemorySize() );
 		BOOST_CHECK_EQUAL( 10U, pool.getAllocatedMemorySize() );
 		BOOST_CHECK_EQUAL( 0U, pool.getWastedMemorySize() );
 	}
 	{
 		// same thing for a smaller allocation
-		const IPoolDataPtr pData = pool.allocate( 1 );
+		const memory::IPoolDataPtr pData = pool.allocate( 1 );
 		BOOST_CHECK_EQUAL( 1U, pData->size() );
 		BOOST_CHECK_EQUAL( 10U, pData->reservedSize() );
 		BOOST_CHECK_EQUAL( 10U, pool.getUsedMemorySize() );
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 	}
 	{
 		// asking for a bigger alloc will alloc this time
-		const IPoolDataPtr pData = pool.allocate( 15 );
+		const memory::IPoolDataPtr pData = pool.allocate( 15 );
 		BOOST_CHECK_EQUAL( 15U, pool.getUsedMemorySize() );
 		BOOST_CHECK_EQUAL( 25U, pool.getAllocatedMemorySize() );
 		BOOST_CHECK_EQUAL( 0U, pool.getWastedMemorySize() );
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 	{
 		// asking for a new block that could be satisfied by the
 		// two previously allocated block will return the smallest
-		const IPoolDataPtr pData = pool.allocate( 9 );
+		const memory::IPoolDataPtr pData = pool.allocate( 9 );
 		BOOST_CHECK_EQUAL( 10U, pData->reservedSize() );
 		BOOST_CHECK_EQUAL( 9U, pData->size() );
 		BOOST_CHECK_EQUAL( 1U, pool.getWastedMemorySize() );
@@ -87,8 +87,8 @@ BOOST_AUTO_TEST_CASE( memoryPool )
 
 BOOST_AUTO_TEST_CASE( memoryCache )
 {
-	MemoryPool pool;
-	MemoryCache cache;
+	memory::MemoryPool pool;
+	memory::MemoryCache cache;
 
 	// checking initial state
 	BOOST_CHECK_EQUAL( true, cache.empty() );
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( memoryCache )
 
 	const string plugName( "name" );
 	const double time = 10;
-	CACHE_ELEMENT pData;
+	memory::CACHE_ELEMENT pData;
 
 	// testing put function
 	cache.put( plugName, time, pData );

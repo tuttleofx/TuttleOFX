@@ -49,9 +49,9 @@ private:
 	std::string _inAttrName;
 };
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif
 

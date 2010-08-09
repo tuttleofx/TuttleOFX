@@ -1,7 +1,7 @@
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/core/Exception.hpp>
-#include <tuttle/host/core/Core.hpp>
-#include <tuttle/host/core/ImageEffectNode.hpp>
+#include <tuttle/host/Exception.hpp>
+#include <tuttle/host/Core.hpp>
+#include <tuttle/host/ImageEffectNode.hpp>
 
 #include <iostream>
 
@@ -18,19 +18,19 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 	using namespace std;
 	using namespace tuttle::host;
 
-	tuttle::host::core::Core::instance().preload();
+	tuttle::host::Core::instance().preload();
 
 	// get some plugins examples
-	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::core::Core::instance().getImageEffectPluginById( "fr.tuttle.pngreader" );
+	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::Core::instance().getImageEffectPluginById( "fr.tuttle.pngreader" );
 	BOOST_CHECK( plugin != NULL );
 
-	//	BOOST_CHECK_THROW( plugin->getProperties().fetchPointerProperty( kOfxPropInstanceData ), core::exception::LogicError );
+	//	BOOST_CHECK_THROW( plugin->getProperties().fetchPointerProperty( kOfxPropInstanceData ), exception::LogicError );
 
-	boost::scoped_ptr<tuttle::host::core::ImageEffectNode> ofxinst( dynamic_cast< tuttle::host::core::ImageEffectNode* >( plugin->createInstance( kOfxImageEffectContextReader ) ) );
+	boost::scoped_ptr<tuttle::host::ImageEffectNode> ofxinst( dynamic_cast< tuttle::host::ImageEffectNode* >( plugin->createInstance( kOfxImageEffectContextReader ) ) );
 	ofxinst->setName( "pluginTest" );
 	BOOST_CHECK( ofxinst->getProperties().fetchPointerProperty( kOfxPropInstanceData ).getValue() != NULL );
 
-	boost::scoped_ptr<tuttle::host::core::ImageEffectNode> ofxinstclone( ofxinst->clone() );
+	boost::scoped_ptr<tuttle::host::ImageEffectNode> ofxinstclone( ofxinst->clone() );
 
 	BOOST_CHECK_NE( ofxinst.get(), ofxinstclone.get() );
 	BOOST_CHECK( (*ofxinst == *ofxinstclone) );

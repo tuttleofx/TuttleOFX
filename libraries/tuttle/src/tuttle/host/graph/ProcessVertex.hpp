@@ -3,7 +3,7 @@
 
 #include "Vertex.hpp"
 
-#include <tuttle/host/core/ProcessNode.hpp>
+#include <tuttle/host/Node.hpp>
 
 #include <string>
 #include <iostream>
@@ -21,8 +21,8 @@ public:
 	~ProcessVertex() {}
 
 	const std::string&             getName() const        { return _vertex.getName(); }
-	core::ProcessNode*             getProcessNode()       { return _vertex.getProcessNode(); }
-	const core::ProcessNode* const getProcessNode() const { return _vertex.getProcessNode(); }
+	ProcessNode*             getProcessNode()       { return _vertex.getProcessNode(); }
+	const ProcessNode* const getProcessNode() const { return _vertex.getProcessNode(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const ProcessVertex& v );
 

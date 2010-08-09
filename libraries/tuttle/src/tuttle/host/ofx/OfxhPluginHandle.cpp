@@ -18,7 +18,7 @@ OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin& p, OfxhHost& host ) : _p( &p )
 	_op                          = getPlug( _p->getIndex() );
 	if( !_op )
 	{
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Can't found plugin at index '"+boost::lexical_cast<std::string>(_p->getIndex())+"' in plugin '" + _p->getIdentifier() + "'" ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Can't found plugin at index '"+boost::lexical_cast<std::string>(_p->getIndex())+"' in plugin '" + _p->getIdentifier() + "'" ) );
 	}
 	_op->setHost( host.getHandle() );
 }

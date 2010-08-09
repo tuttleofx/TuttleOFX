@@ -33,7 +33,7 @@
 #include <tuttle/host/ofx/OfxhException.hpp>
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/core/Exception.hpp>
+#include <tuttle/host/Exception.hpp>
 
 #include <boost/type_traits/is_virtual_base_of.hpp>
 #include <boost/serialization/extended_type_info.hpp>

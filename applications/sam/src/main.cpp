@@ -1,5 +1,5 @@
 
-#include <tuttle/host/core/Graph.hpp>
+#include <tuttle/host/Graph.hpp>
 
 
 void sam_terminate(void)
@@ -25,31 +25,31 @@ int main( int argc, char** argv )
 	{
 		using namespace tuttle::host;
 		COUT( "__________________________________________________0" );		
-		//core::Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
-		//core::Core::instance().getPluginCache().scanPluginFiles();
-		core::Core::instance().preload();
+		// Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
+		// Core::instance().getPluginCache().scanPluginFiles();
+		Core::instance().preload();
 		
-		COUT( core::Core::instance().getImageEffectPluginCache() );
+		COUT( Core::instance().getImageEffectPluginCache() );
 
 		COUT( "__________________________________________________1" );
 
-		core::Graph g;
-//		core::Graph::Node& read1   = g.createNode( "fr.tuttle.ffmpegreader" );
-		core::Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
-		core::Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
-		core::Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
-		core::Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-//		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-		core::Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-		core::Graph::Node& blur1 = g.createNode( "fr.tuttle.blur" );
-		core::Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
-	//	core::Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
-		core::Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
-		core::Graph::Node& bitdepth1  = g.createNode( "fr.tuttle.bitdepth" );
-		core::Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
-		core::Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
-		core::Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
-		core::Graph::Node& write4  = g.createNode( "fr.tuttle.ffmpegwriter" );
+		Graph g;
+//		Graph::Node& read1   = g.createNode( "fr.tuttle.ffmpegreader" );
+		Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
+		Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
+		Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
+		Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
+//		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+		Graph::Node& blur1 = g.createNode( "fr.tuttle.blur" );
+		Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
+	//	Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
+		Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
+		Graph::Node& bitdepth1  = g.createNode( "fr.tuttle.bitdepth" );
+		Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
+		Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
+		Graph::Node& write4  = g.createNode( "fr.tuttle.ffmpegwriter" );
 
 		COUT( "__________________________________________________2" );
 		// Setup parameters
@@ -75,8 +75,8 @@ int main( int argc, char** argv )
 		g.connect( invert1, write3 );
 
 		g.connect( invert1, bitdepth1);
-		g.connect( bitdepth1, merge1.getProcessAttribute("SourceA") );
-		g.connect( read3, merge1.getProcessAttribute("SourceB") );
+		g.connect( bitdepth1, merge1.getAttribute("SourceA") );
+		g.connect( read3, merge1.getAttribute("SourceB") );
 	//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
 
@@ -88,7 +88,7 @@ int main( int argc, char** argv )
 		outputs.push_back( write4.getName() );
 		g.compute( outputs, 0, 0 );
 	}
-	catch( tuttle::host::core::exception::LogicError& e )
+	catch( tuttle::host::exception::LogicError& e )
 	{
 		std::cout << "Tuttle Exception : main de sam." << std::endl;
 		std::cerr << boost::diagnostic_information(e);

@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_INTERNALGRAPH_HPP_
 #define _TUTTLE_INTERNALGRAPH_HPP_
 
-#include <tuttle/host/core/Exception.hpp>
+#include <tuttle/host/Exception.hpp>
 
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -72,14 +72,14 @@ public:
 
 	// constructors etc.
 	InternalGraph() : _count( 0 )
-	{}
+	{
+	}
 
 	InternalGraph( const This& g )
 	{
 		*this = g; // using operator=
 	}
 
-	// operators
 	This& operator=( const This& g )
 	{
 		if( this == &g )
@@ -91,8 +91,21 @@ public:
 		return *this;
 	}
 
+	/**
+	 * @warning unused and untested...
+	 */
+	template<typename V, typename E>
+	This& operator=( const InternalGraph<V,E>& g )
+	{
+		boost::copy_graph( g._graph, _graph );
+		_count = g._count;
+		rebuildVertexDescriptorMap();
+		return *this;
+	}
+
 	virtual ~InternalGraph()
-	{}
+	{
+	}
 
 	// structure modification methods
 	void clear()
@@ -133,7 +146,7 @@ public:
 		catch( boost::exception & e )
 		{
 			COUT_ERROR( boost::diagnostic_information(e) );
-			//e << core::exception::LogicError( "Error in InternalGraph on connecting \"" + out + "\" -> \"" + in + "::" + inAttr + "\" !" );
+			//e << exception::LogicError( "Error in InternalGraph on connecting \"" + out + "\" -> \"" + in + "::" + inAttr + "\" !" );
 			throw;
 		}
 	}
@@ -286,7 +299,6 @@ public:
 	void bfs( const VertexDescriptor& vroot )
 	{
 		test_bfs_visitor vis;
-
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
 	}
 
@@ -298,71 +310,15 @@ public:
 		rebuildVertexDescriptorMap();
 	}
 
-	void toDominatorTree()
-	{
-		typedef typename boost::property_map<GraphContainer, boost::vertex_index_t>::type IndexMap;
-		typedef typename std::vector<VertexDescriptor >::iterator VectorDescIter;
-		typedef typename boost::iterator_property_map<VectorDescIter, IndexMap > PredMap;
+	void toDominatorTree();
 
-		std::vector<VertexDescriptor> domTreePredVector;
-		IndexMap indexMap( get( boost::vertex_index, _graph ) );
-		vertex_iter uItr;
-		vertex_iter uEnd;
-		int j = 0;
-		for( boost::tie( uItr, uEnd ) = vertices( _graph ); uItr != uEnd; ++uItr, ++j )
-		{
-			put( indexMap, *uItr, j );
-		}
-
-		// Lengauer-Tarjan dominator tree algorithm
-		domTreePredVector = std::vector<VertexDescriptor>( num_vertices( _graph ), boost::graph_traits<GraphContainer>::null_vertex() );
-		PredMap domTreePredMap =
-		    boost::make_iterator_property_map( domTreePredVector.begin(), indexMap );
-
-		boost::lengauer_tarjan_dominator_tree( _graph, vertex( 0, _graph ), domTreePredMap );
-
-		for( boost::tie( uItr, uEnd ) = vertices( _graph ); uItr != uEnd; ++uItr )
-			boost::clear_vertex( *uItr, _graph );
-
-		for( boost::tie( uItr, uEnd ) = vertices( _graph ); uItr != uEnd; ++uItr )
-		{
-			if( get( domTreePredMap, *uItr ) != boost::graph_traits<GraphContainer>::null_vertex() )
-			{
-				add_edge( get( domTreePredMap, *uItr ), *uItr, _graph );
-				//get(indexMap, *uItr) indice du vertex courant
-				//get(domTreePredMap, *uItr) descriptor du dominator
-				//get(indexMap, get(domTreePredMap, *uItr)) indice du dominator
-			}
-		}
-	}
-
-	std::vector<VertexDescriptor > leaves()
-	{
-		std::vector<VertexDescriptor > vleaves;
-		vertex_range_t vrange = getVertices();
-		for( vertex_iter it = vrange.first; it != vrange.second; ++it )
-			if( out_degree( *it, _graph ) == 0 )
-				vleaves.push_back( *it );
-
-		return vleaves;
-	}
+	std::vector<VertexDescriptor> leaves();
 
 	template< typename Vertex, typename Edge >
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 	
 private:
-	void rebuildVertexDescriptorMap()
-	{
-		_vertexDescriptorMap.clear();
-		for( vertex_iter i = vertices( getGraph() ).first, iEnd = vertices( getGraph() ).second;
-		     i != iEnd;
-		     ++i )
-		{
-			//			TCOUT( "pp: "<< get(vertex_properties, graphT.getGraph())[*i]._name );
-			//			TCOUT( "pp: "<< graphT.getGraph()[*i]._name ); // if no boost::property_map
-			_vertexDescriptorMap[get( vertex_properties, getGraph() )[*i].getName()] = *i;
-		}
-	}
+	void rebuildVertexDescriptorMap();
 
 protected:
 	GraphContainer _graph;

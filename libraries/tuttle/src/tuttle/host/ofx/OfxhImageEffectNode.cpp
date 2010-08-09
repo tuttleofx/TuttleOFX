@@ -42,7 +42,7 @@
 #include "attribute/OfxhParamDouble.hpp"
 #include "property/OfxhSet.hpp"
 
-#include <tuttle/host/core/Core.hpp>
+#include <tuttle/host/Core.hpp>
 
 // ofx
 #include <ofxCore.h>
@@ -726,7 +726,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
 			rod = clip.fetchRegionOfDefinition( time );
 		}
-		catch( core::exception::LogicError& e )
+		catch( exception::LogicError& e )
 		{
 			COUT_EXCEPTION( e );
 			COUT_ERROR( "Need a clip \"" << kOfxImageEffectSimpleSourceClipName << "\" in context : \"" << _context << "\"." );
@@ -742,7 +742,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 			rod = clipFrom.fetchRegionOfDefinition( time );
 			rod = rectUnion( rod, clipTo.fetchRegionOfDefinition( time ) );
 		}
-		catch( core::exception::LogicError& e )
+		catch( exception::LogicError& e )
 		{
 			COUT_EXCEPTION( e );
 		}
@@ -784,7 +784,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 			rod = clip.fetchRegionOfDefinition( std::floor( time ) );
 			rod = rectUnion( rod, clip.fetchRegionOfDefinition( std::floor( time ) + 1 ) );
 		}
-		catch( core::exception::LogicError& e )
+		catch( exception::LogicError& e )
 		{
 			COUT_EXCEPTION( e );
 		}
@@ -1107,7 +1107,7 @@ bool OfxhImageEffectNode::isChromaticComponent( const std::string& str ) const
 bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 {
 	/// does the host support 'em
-	bool hostSupports = tuttle::host::core::Core::instance().getHost().getProperties().getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
+	bool hostSupports = tuttle::host::Core::instance().getHost().getProperties().getIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
 
 	/// does the plug-in support 'em
 	bool pluginSupports = supportsMultipleClipDepths();

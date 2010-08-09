@@ -2,7 +2,7 @@
 #include "OfxhImageEffectPlugin.hpp"
 
 ///@todo tuttle: remove this!
-#include <tuttle/host/core/Core.hpp>
+#include <tuttle/host/Core.hpp>
 
 namespace tuttle {
 namespace host {
@@ -122,14 +122,14 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Load failed on plugin " + op.getIdentifier() ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Load failed on plugin " + op.getIdentifier() ) );
 	}
 
 	rval = plug->mainEntry( kOfxActionDescribe, p.getDescriptor().getHandle(), 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Describe failed on plugin " + op.getIdentifier() ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Describe failed on plugin " + op.getIdentifier() ) );
 	}
 
 	const imageEffect::OfxhImageEffectNodeDescriptor& e = p.getDescriptor();
@@ -147,7 +147,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Unload failed on plugin " + op.getIdentifier() + " at initialization." ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Unload failed on plugin " + op.getIdentifier() + " at initialization." ) );
 	}
 }
 
@@ -192,7 +192,7 @@ bool OfxhImageEffectPluginCache::pluginSupported( const tuttle::host::ofx::OfxhP
 	const OfxhImageEffectPlugin* imageEffectPlugin = dynamic_cast<const OfxhImageEffectPlugin*>( &p );
 	if( ! imageEffectPlugin )
 		return false;
-	return core::Core::instance().getHost().pluginSupported( *imageEffectPlugin, reason );
+	return Core::instance().getHost().pluginSupported( *imageEffectPlugin, reason );
 }
 
 OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary& pb,

@@ -1,5 +1,5 @@
-#ifndef _GILVIEWTYPES_HPP_
-#define _GILVIEWTYPES_HPP_
+#ifndef _GIL_TYPEDEFS_HPP_
+#define _GIL_TYPEDEFS_HPP_
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/gil/gil_all.hpp>
@@ -263,7 +263,7 @@ GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 12, dev4n, devicen_t<4>, devicen_layout_t<4>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 12, dev5n, devicen_t<5>, devicen_layout_t<5>)
 
 }
-}  // namespace boost::gil
+}
 
-#endif  /* _GILVIEWTYPES_HPP */
+#endif
 

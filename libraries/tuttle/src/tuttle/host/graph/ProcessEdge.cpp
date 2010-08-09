@@ -10,6 +10,6 @@ std::ostream& operator<<( std::ostream& os, const ProcessEdge& v )
 	return os;
 }
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}

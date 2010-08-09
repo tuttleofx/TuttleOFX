@@ -41,7 +41,7 @@
 #include "attribute/OfxhParam.hpp"
 
 ///@todo tuttle: remove this !
-#include <tuttle/host/core/Core.hpp>
+#include <tuttle/host/Core.hpp>
 
 // ofx
 #include <ofxImageEffect.h>
@@ -72,7 +72,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc, Of
 	: OfxhPlugin( pb, pi, pl )
 	, _pc( &pc )
 	, _pluginHandle( 0 )
-	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( *this ) )
+	, _baseDescriptor( Core::instance().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
 }
@@ -89,7 +89,7 @@ OfxhImageEffectPlugin::OfxhImageEffectPlugin( OfxhImageEffectPluginCache& pc,
 	: OfxhPlugin( pb, pi, api, apiVersion, pluginId, rawId, pluginMajorVersion, pluginMinorVersion )
 	, _pc( &pc )
 	, _pluginHandle( NULL )
-	, _baseDescriptor( core::Core::instance().getHost().makeDescriptor( *this ) )
+	, _baseDescriptor( Core::instance().getHost().makeDescriptor( *this ) )
 {
 	//	loadAndDescribeActions();
 }
@@ -202,7 +202,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( op == NULL )
 	{
 		_pluginHandle.reset( NULL );
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "loadAndDescribeAction OfxPlugin NULL, on plugin " + getApiHandler()._apiName ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "loadAndDescribeAction OfxPlugin NULL, on plugin " + getApiHandler()._apiName ) );
 	}
 
 	int rval = op->mainEntry( kOfxActionLoad, 0, 0, 0 );
@@ -210,7 +210,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		_pluginHandle.reset( NULL );
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Load Action failed on plugin " + getApiHandler()._apiName ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Load Action failed on plugin " + getApiHandler()._apiName ) );
 	}
 
 	rval = op->mainEntry( kOfxActionDescribe, getDescriptor().getHandle(), 0, 0 );
@@ -218,7 +218,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		_pluginHandle.reset( NULL );
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Describe Action failed on plugin " + getApiHandler()._apiName ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Describe Action failed on plugin " + getApiHandler()._apiName ) );
 	}
 	initContexts();
 }
@@ -236,7 +236,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 	
 	if( _knownContexts.find( context ) == _knownContexts.end() )
 	{
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "Context not found (" + context + ")" ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "Context not found (" + context + ")" ) );
 	}
 	return describeInContextAction( context );
 }
@@ -252,7 +252,7 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 
 	OfxhPluginHandle* ph = getPluginHandle();
 
-	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor> newContext( core::Core::instance().getHost().makeDescriptor( getDescriptor(), *this ) );
+	std::auto_ptr<tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor> newContext( Core::instance().getHost().makeDescriptor( getDescriptor(), *this ) );
 	int rval = kOfxStatFailed;
 	if( ph->getOfxPlugin() )
 		rval = ph->getOfxPlugin()->mainEntry( kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0 );
@@ -276,10 +276,10 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	loadAndDescribeActions();
 	if( getPluginHandle() == NULL )
 	{
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "imageEffectPlugin::createInstance, unexpected error." ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "imageEffectPlugin::createInstance, unexpected error." ) );
 	}
 	OfxhImageEffectNodeDescriptor& desc = getDescriptorInContext( context );
-	imageEffect::OfxhImageEffectNode* instance = core::Core::instance().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
+	imageEffect::OfxhImageEffectNode* instance = Core::instance().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
 	instance->createInstanceAction(); /// @todo tuttle: it's not possible to move this in a constructor ?
 	return instance;
 }

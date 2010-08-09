@@ -35,7 +35,7 @@ void OfxhParamSet::operator=( const OfxhParamSet& other )
 void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 {
 	if( _paramList.size() != other._paramList.size() )
-		BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy parameters values, but the two lists are not identical." ) );
+		BOOST_THROW_EXCEPTION( exception::LogicError( "You try to copy parameters values, but the two lists are not identical." ) );
 
 	ParamList::const_iterator oit = other._paramList.begin(), oitEnd = other._paramList.end();
 	for( ParamList::iterator it = _paramList.begin(), itEnd = _paramList.end();
@@ -45,7 +45,7 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 		OfxhParam& p = *it;
 		const OfxhParam& op = *oit;
 		if( p.getName() != op.getName() )
-			BOOST_THROW_EXCEPTION( core::exception::LogicError( "You try to copy parameters values, but it is not the same parameters in the two lists." ) );
+			BOOST_THROW_EXCEPTION( exception::LogicError( "You try to copy parameters values, but it is not the same parameters in the two lists." ) );
 		p.copy(op);
 	}
 	initMapFromList();

@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/core/Core.hpp>
+#include <tuttle/host/Core.hpp>
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>

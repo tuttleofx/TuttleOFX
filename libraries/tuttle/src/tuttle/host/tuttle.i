@@ -1,10 +1,10 @@
 
 %module tuttle
 
-%include "core/Exception.i"
-%include "core/Core.i"
-%include "core/ImageEffectNode.i"
-%include "core/attribute/allParams.i"
-%include "core/Graph.i"
+%include "Exception.i"
+%include "Core.i"
+%include "ImageEffectNode.i"
+%include "attribute/allParams.i"
+%include "Graph.i"
 
 

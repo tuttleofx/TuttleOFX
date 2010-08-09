@@ -27,9 +27,9 @@ private:
 	const Edge& _edge;
 };
 
-} // namespace graph
-} // namespace host
-} // namespace tuttle
+}
+}
+}
 
 #endif
 

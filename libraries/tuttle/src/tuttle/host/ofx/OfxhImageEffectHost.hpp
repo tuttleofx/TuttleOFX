@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_OFX_IMAGEEFFECTHOST_HPP_
 #define _TUTTLE_HOST_OFX_IMAGEEFFECTHOST_HPP_
 
-#include <tuttle/host/core/Exception.hpp>
+#include <tuttle/host/Exception.hpp>
 
 #include <ofxCore.h>
 #include <ofxImageEffect.h>

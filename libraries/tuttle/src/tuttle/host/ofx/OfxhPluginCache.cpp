@@ -263,7 +263,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 						api.loadFromPlugin( plug );
 					}
 				}
-				catch( core::exception::LogicError& e )
+				catch( exception::LogicError& e )
 				{
 					COUT_EXCEPTION(e);
 				}
