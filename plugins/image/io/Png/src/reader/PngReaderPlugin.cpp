@@ -2,12 +2,16 @@
 #include "PngReaderProcess.hpp"
 #include "PngReaderDefinitions.hpp"
 
+#include "PngEngine/png_adds.hpp"
+
+#include <tuttle/plugin/context/ReaderPlugin.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
-#include "PngEngine/png_adds.hpp"
-#include "tuttle/plugin/context/ReaderPlugin.hpp"
+#include <boost/exception/all.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -25,7 +29,7 @@ PngReaderPlugin::PngReaderPlugin( OfxImageEffectHandle handle )
 PngReaderProcessParams PngReaderPlugin::getProcessParams(const OfxTime time)
 {
 	PngReaderProcessParams params;
-	params._filepath = _filePattern.getFilenameAt(time);
+	params._filepath = getFilenameAt(time);
 	return params;
 }
 
@@ -121,19 +125,32 @@ void PngReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	point2<ptrdiff_t> pngDims = png_read_dimensions( _filePattern.getFilenameAt(args.time) );
-	rod.x1 = 0;
-	rod.x2 = pngDims.x * this->_clipDst->getPixelAspectRatio();
-	rod.y1 = 0;
-	rod.y2 = pngDims.y;
+	const std::string filename( getFilenameAt(args.time) );
+	
+	try
+	{
+		point2<ptrdiff_t> pngDims = png_read_dimensions( filename );
+		rod.x1 = 0;
+		rod.x2 = pngDims.x * this->_clipDst->getPixelAspectRatio();
+		rod.y1 = 0;
+		rod.y2 = pngDims.y;
+		COUT_VAR( rod );
+	}
+	catch( boost::exception& e )
+	{
+		e << boost::errinfo_file_name(filename);
+		throw;
+	}
 	return true;
 }
 
 void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
+	const std::string filename( getFilePattern().getFirstFilename() );
+	
 	// Check if exist
-	if( bfs::exists( _filePattern.getFirstFilename() ) )
+	if( bfs::exists( filename ) )
 	{
 		if ( _paramExplicitConv->getValue() )
 		{
@@ -159,7 +176,7 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		else
 		{
 			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
-			int bitDepth = png_read_precision( _filePattern.getFirstFilename() );
+			int bitDepth = png_read_precision( filename );
 			switch( bitDepth )
 			{
 				case 8:

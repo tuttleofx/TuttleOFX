@@ -61,17 +61,16 @@ void PngReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 /**
  */
 template<class View>
-View& PngReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
+View& PngReaderProcess<View>::readImage( View& dst, const std::string& filepath )
 {
 	any_image_t anyImg;
 	try
 	{
 		png_read_image( filepath, anyImg );
 	}
-	catch( PluginException& e )
+	catch( ... )
 	{
-		COUT_EXCEPTION( e );
-		return dst;
+		BOOST_THROW_EXCEPTION( PluginException( "Unable to read image: \"" + filepath +"\"" ) );
 	}
 	copy_and_convert_pixels( subimage_view( flipped_up_down_view( view( anyImg ) ), 0, 0, dst.width(), dst.height() ), dst );
 	return dst;

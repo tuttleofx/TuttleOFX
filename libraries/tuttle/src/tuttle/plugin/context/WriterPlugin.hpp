@@ -24,9 +24,18 @@ public:
 protected:
 	inline bool varyOnTime() const;
 
-protected:
+private:
 	common::Sequence       _filePattern;         ///< Filename pattern manager
 
+public:
+	std::string getFilenameAt( const OfxTime time ) const
+	{
+		return getFilePattern().getFilenameAt( time );
+	}
+	const common::Sequence& getFilePattern() const
+	{
+		return _filePattern;
+	}
 	/// @group Attributes
 	/// @{
 	OFX::PushButtonParam* _paramRenderButton;     ///< Render push button

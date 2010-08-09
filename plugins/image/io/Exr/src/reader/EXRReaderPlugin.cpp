@@ -41,7 +41,7 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 EXRReaderProcessParams EXRReaderPlugin::getProcessParams(const OfxTime time)
 {
 	EXRReaderProcessParams params;
-	params._filepath = _filePattern.getFilenameAt(time);
+	params._filepath = getFilenameAt(time);
 	params._outComponents = _outComponents->getValue();
 	return params;
 }
@@ -91,7 +91,7 @@ void EXRReaderPlugin::render( const OFX::RenderArguments& args )
 
 bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	InputFile in( this->_filePattern.getFilenameAt(args.time).c_str() );
+	InputFile in( getFilenameAt(args.time).c_str() );
 	const Header& h             = in.header();
 	const Imath::V2i dataWindow = h.dataWindow().size();
 	rod.x1 = 0;
@@ -155,8 +155,10 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
+	const std::string filename( getFilePattern().getFirstFilename() );
+
 	// Check if exist
-	if( bfs::exists( _filePattern.getFirstFilename() ) )
+	if( bfs::exists( filename ) )
 	{
 		if ( _paramExplicitConv->getValue() )
 		{
@@ -190,10 +192,12 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 void EXRReaderPlugin::updateCombos()
 {
-	if ( bfs::exists( this->_filePattern.getFirstFilename() ) )
+	const std::string filename( getFilePattern().getFirstFilename() );
+	
+	if ( bfs::exists( filename ) )
 	{
 		// read dims
-		InputFile in( this->_filePattern.getFirstFilename().c_str() );
+		InputFile in( filename.c_str() );
 		const Header& h       = in.header();
 		const ChannelList& cl = h.channels();
 		int nc                = 0;

@@ -30,7 +30,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams(const OfxTime time)
 	DPXWriterProcessParams params;
 	params._componentsType = _componentsType->getValue();
 	params._compressed = _compressed->getValue();
-	params._filepath = this->_filePattern.getFilenameAt(time);
+	params._filepath = getFilenameAt(time);
 	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{
 		case eParamBitDepth8:

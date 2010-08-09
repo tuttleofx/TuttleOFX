@@ -27,7 +27,7 @@ DPXReaderPlugin::DPXReaderPlugin( OfxImageEffectHandle handle )
 DPXReaderProcessParams DPXReaderPlugin::getProcessParams(const OfxTime time)
 {
 	DPXReaderProcessParams params;
-	params._filepath = _filePattern.getFilenameAt(time);
+	params._filepath = getFilenameAt(time);
 	return params;
 }
 
@@ -91,7 +91,7 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	tuttle::io::DpxImage dpxImg;
-	dpxImg.readHeader( _filePattern.getFirstFilename() );
+	dpxImg.readHeader( getFilenameAt(args.time) );
 	rod.x1 = 0;
 	rod.x2 = dpxImg.width() * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
@@ -102,8 +102,10 @@ bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
+	const std::string filename( getFilePattern().getFirstFilename() );
+	
 	// Check if exist
-	if( bfs::exists( _filePattern.getFirstFilename() ) )
+	if( bfs::exists( filename ) )
 	{
 		if ( _paramExplicitConv->getValue() )
 		{
@@ -129,7 +131,7 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		else
 		{
 			DpxImage dpxImg;
-			dpxImg.readHeader( _filePattern.getFirstFilename() );
+			dpxImg.readHeader( filename );
 
 			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
 			switch(dpxImg.componentsType())

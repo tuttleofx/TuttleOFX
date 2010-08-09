@@ -36,7 +36,7 @@ bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
 	if( varyOnTime() )
 	{
-		OfxRangeI rangei = _filePattern.getRange();
+		OfxRangeI rangei = getFilePattern().getRange();
 		range.min = (double)rangei.min;
 		range.max = (double)rangei.max;
 	}

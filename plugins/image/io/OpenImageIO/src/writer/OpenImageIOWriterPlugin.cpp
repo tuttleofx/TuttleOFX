@@ -22,7 +22,7 @@ OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const OfxTime time)
 {
 	OpenImageIOWriterProcessParams params;
-	params._filepath = this->_filePattern.getFilenameAt(time);
+	params._filepath = getFilenameAt(time);
 	params._outputRGB = this->_outputRGB->getValue();
 	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{

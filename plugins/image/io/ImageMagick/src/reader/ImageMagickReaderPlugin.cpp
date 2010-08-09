@@ -27,7 +27,7 @@ ImageMagickReaderPlugin::ImageMagickReaderPlugin( OfxImageEffectHandle handle )
 ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams(const OfxTime time)
 {
 	ImageMagickReaderProcessParams params;
-	params._filepath = _filePattern.getFilenameAt(time);
+	params._filepath = getFilenameAt(time);
 	return params;
 }
 
@@ -44,7 +44,7 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
 		switch( dstBitDepth )
-		{/*
+		{
 			case OFX::eBitDepthUByte:
 			{
 				ImageMagickReaderProcess<rgba8_view_t> fred( *this );
@@ -56,7 +56,7 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 				ImageMagickReaderProcess<rgba16_view_t> fred( *this );
 				fred.setupAndProcess( args );
 				break;
-			}*/
+			}
 			case OFX::eBitDepthFloat:
 			{
 				ImageMagickReaderProcess<rgba32f_view_t> fred( *this );
@@ -125,7 +125,7 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 {
 	ImageInfo* imageInfo = AcquireImageInfo();
 	GetImageInfo( imageInfo );
-	std::string filename = _filePattern.getFilenameAt(args.time);
+	std::string filename = getFilenameAt(args.time);
 	strcpy( imageInfo->filename, filename.c_str() );
 	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
 	GetExceptionInfo( exceptionsInfo );
@@ -157,7 +157,8 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	std::string filename = _filePattern.getFirstFilename();
+	const std::string filename = getFilePattern().getFirstFilename();
+
 	// Check if exist
 	if( bfs::exists( filename ) )
 	{

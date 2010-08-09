@@ -30,7 +30,7 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 {
 	RawReaderProcessParams params;
 
-	params._filepath = _filePattern.getFilenameAt( time );
+	params._filepath = getFilenameAt( time );
 	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
 	return params;
 }
@@ -261,8 +261,10 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
+	const std::string filename( getFilePattern().getFirstFilename() );
+
 	// Check if exist
-	if( bfs::exists( _filePattern.getFirstFilename() ) )
+	if( bfs::exists( filename ) )
 	{
 		if( _paramExplicitConv->getValue() )
 		{
@@ -288,7 +290,7 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		else
 		{
 			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
-			int bitDepth         = 32; //raw_read_precision( _filePattern.getFirstFilename() );
+			int bitDepth         = 32; //raw_read_precision( filename );
 			switch( bitDepth )
 			{
 				case 8:

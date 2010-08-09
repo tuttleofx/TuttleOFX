@@ -36,9 +36,9 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
+	PngWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 	try
 	{
-		PngWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 		switch(params._bitDepth)
 		{
 			case 8:
@@ -47,14 +47,20 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			case 16:
 				writeImage<bits16>( this->_srcView, params._filepath );
 				break;
-
+			default:
+				BOOST_THROW_EXCEPTION( PluginException( "Unrecognized bit depth" ) );
+				break;
 		}
-		copy_pixels( this->_srcView, this->_dstView );
 	}
-	catch( tuttle::plugin::PluginException& e )
+	catch( PluginException& e )
 	{
-		COUT_EXCEPTION( e );
+		throw;
 	}
+	catch( ... )
+	{
+		BOOST_THROW_EXCEPTION( PluginException( "Unable to write image: \"" + params._filepath + "\"" ) );
+	}
+	copy_pixels( this->_srcView, this->_dstView );
 }
 
 /**

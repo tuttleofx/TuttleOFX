@@ -24,6 +24,16 @@ public:
 	virtual void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences ) = 0;
 	virtual bool getTimeDomain( OfxRangeD& range );
 
+public:
+	std::string getFilenameAt( const OfxTime time ) const
+	{
+		return getFilePattern().getFilenameAt( time );
+	}
+	const common::Sequence& getFilePattern() const
+	{
+		return _filePattern;
+	}
+
 protected:
 	inline bool varyOnTime() const;
 
@@ -34,6 +44,8 @@ public:
 	OFX::StringParam*    _paramFilepath;     ///< File path
 	OFX::ChoiceParam*    _paramExplicitConv; ///< Explicit conversion
 	/// @}
+	
+private:
 	common::Sequence      _filePattern;       ///< Filename pattern manager
 };
 
