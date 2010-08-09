@@ -665,7 +665,7 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 	OfxStatus status = mainEntry( kOfxImageEffectActionRender, this->getHandle(), &inArgs, 0 );
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException( status, "Error in ActionRender on plugin \"" + this->getName() + "\"." ) );
+		BOOST_THROW_EXCEPTION( OfxhException( status, "Error in ActionRender on node \"" + this->getName() + "\" at time " + boost::lexical_cast<std::string>(time) + "." ) );
 }
 
 void OfxhImageEffectNode::endRenderAction( OfxTime   startFrame,

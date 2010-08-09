@@ -17,12 +17,8 @@ public:
 	ParamPage( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamPage* clone() const { return new ParamPage(*this); }
 
-	void copy( const ParamPage& p ) OFX_EXCEPTION_SPEC {}
-	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
-	{
-		const ParamPage& param = dynamic_cast<const ParamPage&>(p);
-		copy( param );
-	}
+	void copy( const ParamPage& p ) OFX_EXCEPTION_SPEC;
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
 
 

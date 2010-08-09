@@ -17,12 +17,8 @@ public:
 	ParamPushButton( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamPushButton* clone() const { return new ParamPushButton( *this ); }
 
-	void copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC {}
-	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
-	{
-		const ParamPushButton& param = dynamic_cast<const ParamPushButton&>(p);
-		copy( param );
-	}
+	void copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC;
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
 
 

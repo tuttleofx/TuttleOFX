@@ -32,13 +32,25 @@ void ParamChoice::getAtTime( const OfxTime time, int& v ) const OFX_EXCEPTION_SP
 void ParamChoice::set( const int &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
-	this->paramChanged( change );
+	paramChanged( change );
 }
 
 void ParamChoice::setAtTime( const OfxTime time, const int &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
-	this->paramChanged( change );
+	paramChanged( change );
+}
+
+void ParamChoice::copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC
+{
+	_value = p._value;
+//	paramChanged( ofx::attribute::eChangeUserEdited );
+}
+
+void ParamChoice::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+{
+	const ParamChoice& param = dynamic_cast<const ParamChoice&>(p);
+	copy( param );
 }
 
 

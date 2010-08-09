@@ -27,15 +27,9 @@ public:
 
 	void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC;
 	void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC;
-	void copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC
-	{
-		_value = p._value;
-	}
-	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
-	{
-		const ParamDouble& param = dynamic_cast<const ParamDouble&>(p);
-		copy( param );
-	}
+
+	void copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC;
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
 
 

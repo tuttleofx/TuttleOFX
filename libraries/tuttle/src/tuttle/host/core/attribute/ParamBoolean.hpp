@@ -26,15 +26,8 @@ public:
 	void set( const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void setAtTime( const OfxTime time, const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	
-	void copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC
-	{
-		_value = p._value;
-	}
-	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
-	{
-		const ParamBoolean& param = dynamic_cast<const ParamBoolean&>(p);
-		copy( param );
-	}
+	void copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC;
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
 
 

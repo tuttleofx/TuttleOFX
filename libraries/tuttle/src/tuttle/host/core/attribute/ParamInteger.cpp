@@ -43,6 +43,18 @@ void ParamInteger::setAtTime( const OfxTime time, const int& v, const ofx::attri
 	this->paramChanged( change );
 }
 
+void ParamInteger::copy( const ParamInteger& p ) OFX_EXCEPTION_SPEC
+{
+	_value = p._value;
+//	paramChanged( ofx::attribute::eChangeUserEdited );
+}
+
+void ParamInteger::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+{
+	const ParamInteger& param = dynamic_cast<const ParamInteger&>(p);
+	copy( param );
+}
+
 
 }
 }

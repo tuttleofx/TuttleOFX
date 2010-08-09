@@ -11,6 +11,17 @@ ParamPage::ParamPage( ImageEffectNode&                                   effect,
 	_effect( effect )
 {}
 
+void ParamPage::copy( const ParamPage& p ) OFX_EXCEPTION_SPEC
+{
+//	paramChanged( ofx::attribute::eChangeUserEdited );
+}
+
+void ParamPage::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+{
+	const ParamPage& param = dynamic_cast<const ParamPage&>(p);
+	copy( param );
+}
+
 }
 }
 }

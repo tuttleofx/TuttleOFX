@@ -11,6 +11,17 @@ ParamGroup::ParamGroup( ImageEffectNode&                                   effec
 	_effect( effect )
 {}
 
+void ParamGroup::copy( const ParamGroup& p ) OFX_EXCEPTION_SPEC
+{
+	//paramChanged( ofx::attribute::eChangeUserEdited );
+}
+
+void ParamGroup::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+{
+	const ParamGroup& param = dynamic_cast<const ParamGroup&>(p);
+	copy( param );
+}
+
 }
 }
 }

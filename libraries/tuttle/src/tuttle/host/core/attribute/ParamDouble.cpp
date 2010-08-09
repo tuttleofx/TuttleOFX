@@ -53,6 +53,17 @@ void ParamDouble::integrate( const OfxTime time1, const OfxTime time2, double& )
 	BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
+void ParamDouble::copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC
+{
+	_value = p._value;
+//	paramChanged( ofx::attribute::eChangeUserEdited );
+}
+
+void ParamDouble::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
+{
+	const ParamDouble& param = dynamic_cast<const ParamDouble&>(p);
+	copy( param );
+}
 
 }
 }

@@ -17,12 +17,8 @@ public:
 	ParamGroup( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamGroup* clone() const { return new ParamGroup(*this); }
 	
-	void copy( const ParamGroup& p ) OFX_EXCEPTION_SPEC {}
-	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
-	{
-		const ParamGroup& param = dynamic_cast<const ParamGroup&>(p);
-		copy( param );
-	}
+	void copy( const ParamGroup& p ) OFX_EXCEPTION_SPEC;
+	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
 
 
