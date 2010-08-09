@@ -28,7 +28,7 @@ private:
 	void relink();
 
 	InternalGraph _graph;
-	NodeMap& _nodes;
+	NodeMap _nodes;
 	InstanceCountMap _instanceCount;
 
 	Descriptor _output;
