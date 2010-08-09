@@ -48,11 +48,12 @@ ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffec
 }
 
 ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
-	: tuttle::host::ofx::imageEffect::OfxhImageEffectNode( other )
+	: ProcessNode( other )
+	, tuttle::host::ofx::imageEffect::OfxhImageEffectNode( other )
 {
 	populate();
-	createInstanceAction();
 	copyAttributesValues( other );
+	createInstanceAction();
 }
 
 ImageEffectNode::~ImageEffectNode()

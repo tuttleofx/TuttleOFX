@@ -36,7 +36,10 @@ public:
 	ofx::attribute::OfxhParam& getParam( const std::string& name ) { return ofx::attribute::OfxhParamSet::getParam( name ); }
 
 #ifndef SWIG
-	ImageEffectNode* clone() const { return new ImageEffectNode( *this ); }
+	ImageEffectNode* clone() const
+	{
+		return new ImageEffectNode( *this );
+	}
 
 	bool operator==( const ImageEffectNode& other ) const;
 
