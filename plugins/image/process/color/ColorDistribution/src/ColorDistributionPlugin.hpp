@@ -14,7 +14,6 @@ namespace colorDistribution {
 template<typename Scalar>
 struct ColorDistributionProcessParams
 {
-	bool _invert;
 	EParamDistribution _in;
 	EParamDistribution _out;
 };

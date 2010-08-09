@@ -17,7 +17,6 @@ ImageEffect( handle )
 {
     _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_paramInvert = fetchBooleanParam( kParamInvert );
 	_paramIn = fetchChoiceParam( kParamIn );
 	_paramOut = fetchChoiceParam( kParamOut );
 }
@@ -25,7 +24,6 @@ ImageEffect( handle )
 ColorDistributionProcessParams<ColorDistributionPlugin::Scalar> ColorDistributionPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	ColorDistributionProcessParams<Scalar> params;
-	params._invert = _paramInvert->getValue();
 	params._in = static_cast<EParamDistribution>( _paramIn->getValue() );
 	params._out = static_cast<EParamDistribution>( _paramOut->getValue() );
 	return params;
