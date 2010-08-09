@@ -8,10 +8,10 @@
 %}
 
 namespace std {
-   %template(StringVector) vector<string>;
-   %template(StringList) list<string>;
-   %template(NodePtrVector) vector<tuttle::host::core::Graph::Node*>;
-   %template(NodePtrList) list<tuttle::host::core::Graph::Node*>;
+%template(StringVector) vector<string>;
+%template(StringList) list<string>;
+%template(NodePtrVector) vector<tuttle::host::core::Graph::Node*>;
+%template(NodePtrList) list<tuttle::host::core::Graph::Node*>;
 }
 
 // rename the original "connect" function to reimplement it in python
@@ -19,24 +19,23 @@ namespace std {
 
 %include <tuttle/host/core/Graph.hpp>
 
-%extend tuttle::host::core::Graph {
-
-%pythoncode
+%extend tuttle::host::core::Graph
 {
-	def connect(self, *args):
-		if not args:
-			raise RuntimeException("Nothing in list of nodes to connect.")
+	%pythoncode
+	{
+		def connect(self, *args):
+			if not args:
+				raise RuntimeException("Nothing in list of nodes to connect.")
 
-		if isinstance(args[0], list) or isinstance(args[0], tuple):
-			for a in args:
-				self.connect(*a)
-			return
+			if isinstance(args[0], list) or isinstance(args[0], tuple):
+				for a in args:
+					self.connect(*a)
+				return
 
-		if len(args) < 2:
-			raise RuntimeException("Needs multiple nodes to connect them together.")
+			if len(args) < 2:
+				raise RuntimeException("Needs multiple nodes to connect them together.")
 
-		for nA, nB in zip(args[:-1], args[1:]):
-			self.private_connect( nA, nB )
-}
-
+			for nA, nB in zip(args[:-1], args[1:]):
+				self.private_connect( nA, nB )
+	}
 }
