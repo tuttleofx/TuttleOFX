@@ -43,6 +43,7 @@ public:
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip*			_clipSrc; ///< Source image clip
     OFX::Clip*			_clipDst; ///< Destination image clip
+	OFX::BooleanParam	*_paramInvert;
 	OFX::ChoiceParam	*_paramIn;
 	OFX::ChoiceParam	*_paramOut;
 };

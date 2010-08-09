@@ -30,7 +30,7 @@ public:
 	typedef graph::Edge Edge;
 	typedef core::ImageEffectNode Node; /// @todo tuttle ProcessNode...
 	typedef core::ProcessAttribute Attribute;
-	typedef graph::InternalGraph<Vertex, Edge> InternalGraph;
+	typedef graph::InternalGraph<Vertex, Edge> InternalGraphImpl;
 	typedef graph::InternalGraph<Vertex, Edge>::VertexDescriptor Descriptor;
 	typedef boost::ptr_map<std::string, Node> NodeMap;
 	typedef std::map<std::string, int> InstanceCountMap;
@@ -98,7 +98,7 @@ public:
 		compute( node.getName(), time );
 	}
 
-	const InternalGraph&    getGraph() const         { return _graph; }
+	const InternalGraphImpl&    getGraph() const         { return _graph; }
 	const NodeMap&          getNodes() const         { return _nodes; }
 	NodeMap&                getNodes()               { return _nodes; }
 	std::list<Node*> getNodesByContext( const std::string& type );
@@ -129,7 +129,7 @@ public:
 
 
 private:
-	InternalGraph _graph;
+	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount; ///< used to assign a unique name to each node
 

@@ -33,9 +33,9 @@ ProcessGraph::~ProcessGraph()
  */
 void ProcessGraph::relink()
 {
-	InternalGraph::vertex_range_t vrange = _graph.getVertices();
+	InternalGraphImpl::vertex_range_t vrange = _graph.getVertices();
 
-	for( InternalGraph::vertex_iter it = vrange.first; it != vrange.second; ++it )
+	for( InternalGraphImpl::vertex_iter it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
 		if( !v.isFake() )
@@ -90,26 +90,26 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	for( int t = tBegin; t <= tEnd; ++t )
 	{
 		COUT( "________________________________________ frame: " << t );
-		Graph::InternalGraph optimizedGraph( _graph );
+		Graph::InternalGraphImpl optimizedGraph( _graph );
 		defaultOptions._time = t;
 		
 		COUT( "________________________________________ output node : " << optimizedGraph.instance( _output ).getName() );
 		COUT( "---------------------------------------- connectClips" );
-		core::dfs_connectClips_visitor<Graph::InternalGraph> connectClipsVisitor( optimizedGraph );
+		core::dfs_connectClips_visitor<Graph::InternalGraphImpl> connectClipsVisitor( optimizedGraph );
 		optimizedGraph.dfs( connectClipsVisitor, _output );
 
 		COUT( "---------------------------------------- preprocess" );
-		core::dfs_preProcess_finish_visitor<Graph::InternalGraph> preProcessFinishVisitor( optimizedGraph, defaultOptions );
+		core::dfs_preProcess_finish_visitor<Graph::InternalGraphImpl> preProcessFinishVisitor( optimizedGraph, defaultOptions );
 		optimizedGraph.dfs( preProcessFinishVisitor, _output );
-		core::dfs_preProcess_initialize_visitor<Graph::InternalGraph> preProcessInitializeVisitor( optimizedGraph, defaultOptions );
+		core::dfs_preProcess_initialize_visitor<Graph::InternalGraphImpl> preProcessInitializeVisitor( optimizedGraph, defaultOptions );
 		optimizedGraph.dfs( preProcessInitializeVisitor, _output );
 
 		COUT( "---------------------------------------- process" );
-		core::dfs_process_visitor<Graph::InternalGraph> processVisitor( optimizedGraph );
+		core::dfs_process_visitor<Graph::InternalGraphImpl> processVisitor( optimizedGraph );
 		optimizedGraph.dfs( processVisitor, _output );
 
 		COUT( "---------------------------------------- postprocess" );
-		core::dfs_postProcess_visitor<Graph::InternalGraph> postProcessVisitor( optimizedGraph );
+		core::dfs_postProcess_visitor<Graph::InternalGraphImpl> postProcessVisitor( optimizedGraph );
 		optimizedGraph.dfs( postProcessVisitor, _output );
 
 		// end of one frame

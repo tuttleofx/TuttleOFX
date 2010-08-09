@@ -14,7 +14,7 @@ public:
 	typedef Graph::Vertex Vertex;
 	typedef Graph::Edge Edge;
 	typedef Graph::Attribute Attribute;
-	typedef Graph::InternalGraph InternalGraph;
+	typedef Graph::InternalGraphImpl InternalGraphImpl;
 	typedef Graph::Descriptor Descriptor;
 	typedef Graph::NodeMap NodeMap;
 	typedef Graph::InstanceCountMap InstanceCountMap;
@@ -27,7 +27,7 @@ public:
 private:
 	void relink();
 
-	InternalGraph _graph;
+	InternalGraphImpl _graph;
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount;
 

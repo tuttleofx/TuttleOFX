@@ -290,7 +290,7 @@ public:
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
 	}
 
-	void copyTransposed( const InternalGraph& g )
+	void copyTransposed( const This& g )
 	{
 		// make a transposed copy of g in _graph
 		boost::transpose_graph( g._graph, _graph );
