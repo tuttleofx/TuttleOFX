@@ -29,6 +29,9 @@ struct FilenamesGroup
 	std::string _fillCar;
 };
 
+/**
+ * @brief A sequence of numeroted files.
+ */
 class Sequence
 {
 public:
@@ -36,6 +39,7 @@ public:
 	Sequence(const boost::filesystem::path& directory, const std::string & pattern, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
 	Sequence(const boost::filesystem::path& directory, const bool dirbase = false, const size_t start = 0, const size_t step = 1 );
 	virtual ~Sequence();
+
 	void  reset(boost::filesystem::path filepath, const bool dirbase = false, const size_t start = 0, const size_t step = 1);
 	const std::string getFirstFilename(const ssize_t nGroup = -1) const;
 	const std::string getNextFilename(const ssize_t nGroup = -1);
@@ -43,6 +47,7 @@ public:
 	const size_t numGroups() const;
 	const OfxRangeI getRange(const ssize_t nGroup = -1) const;
 	inline std::size_t step() const;
+
 protected:
 	std::vector< FilenamesGroup > matchingGroups(const boost::filesystem::path & directory, const boost::regex & regex);
 
