@@ -9,13 +9,13 @@ template< typename VERTEX, typename EDGE >
 void InternalGraph<VERTEX, EDGE>::toDominatorTree()
 {
 	typedef typename boost::property_map<GraphContainer, boost::vertex_index_t>::type IndexMap;
-	typedef typename std::vector<VertexDescriptor >::iterator VectorDescIter;
+	typedef typename std::vector<vertex_descriptor >::iterator VectorDescIter;
 	typedef typename boost::iterator_property_map<VectorDescIter, IndexMap > PredMap;
 
-	std::vector<VertexDescriptor> domTreePredVector;
+	std::vector<vertex_descriptor> domTreePredVector;
 	IndexMap indexMap( get( boost::vertex_index, _graph ) );
-	vertex_iter uItr;
-	vertex_iter uEnd;
+	vertex_iterator uItr;
+	vertex_iterator uEnd;
 	int j = 0;
 	for( boost::tie( uItr, uEnd ) = vertices( _graph ); uItr != uEnd; ++uItr, ++j )
 	{
@@ -23,7 +23,7 @@ void InternalGraph<VERTEX, EDGE>::toDominatorTree()
 	}
 
 	// Lengauer-Tarjan dominator tree algorithm
-	domTreePredVector = std::vector<VertexDescriptor>( num_vertices( _graph ), boost::graph_traits<GraphContainer>::null_vertex() );
+	domTreePredVector = std::vector<vertex_descriptor>( num_vertices( _graph ), boost::graph_traits<GraphContainer>::null_vertex() );
 	PredMap domTreePredMap =
 		boost::make_iterator_property_map( domTreePredVector.begin(), indexMap );
 
@@ -45,11 +45,11 @@ void InternalGraph<VERTEX, EDGE>::toDominatorTree()
 }
 
 template< typename VERTEX, typename EDGE >
-std::vector<typename InternalGraph<VERTEX, EDGE>::VertexDescriptor> InternalGraph<VERTEX, EDGE>::leaves()
+std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGraph<VERTEX, EDGE>::leaves()
 {
-	std::vector<VertexDescriptor> vleaves;
+	std::vector<vertex_descriptor> vleaves;
 	vertex_range_t vrange = getVertices();
-	for( vertex_iter it = vrange.first; it != vrange.second; ++it )
+	for( vertex_iterator it = vrange.first; it != vrange.second; ++it )
 		if( out_degree( *it, _graph ) == 0 )
 			vleaves.push_back( *it );
 
@@ -60,7 +60,7 @@ template< typename VERTEX, typename EDGE >
 void InternalGraph<VERTEX, EDGE>::rebuildVertexDescriptorMap()
 {
 	_vertexDescriptorMap.clear();
-	for( vertex_iter i = vertices( getGraph() ).first, iEnd = vertices( getGraph() ).second;
+	for( vertex_iterator i = vertices( getGraph() ).first, iEnd = vertices( getGraph() ).second;
 		 i != iEnd;
 		 ++i )
 	{

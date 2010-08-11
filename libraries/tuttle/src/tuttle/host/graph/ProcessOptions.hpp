@@ -43,8 +43,8 @@ public:
 	bool    _interactive;
 	OfxTime _time;
 
-	ProcessInfos _localUsage;
-	ProcessInfos _globalUsage;
+	ProcessInfos _localInfos;
+	ProcessInfos _globalInfos;
 
 	// imageEffect specific options
 	std::string _field;

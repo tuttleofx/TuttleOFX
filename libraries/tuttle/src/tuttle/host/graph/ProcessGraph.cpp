@@ -4,6 +4,7 @@
 
 #include <boost/foreach.hpp>
 
+
 namespace tuttle {
 namespace host {
 namespace graph {
@@ -23,6 +24,7 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 		COUT_DEBUG( "MY OUTPUT: " << s );
 	}
 	relink();
+//	removeUnconnectedVertex();
 }
 
 ProcessGraph::~ProcessGraph()
@@ -35,7 +37,7 @@ void ProcessGraph::relink()
 {
 	InternalGraphImpl::vertex_range_t vrange = _graph.getVertices();
 
-	for( InternalGraphImpl::vertex_iter it = vrange.first; it != vrange.second; ++it )
+	for( InternalGraphImpl::vertex_iterator it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
 		if( !v.isFake() )
@@ -60,6 +62,8 @@ void removeVertexAndReconnectTo( const VertexDescriptor& v, const VertexDescript
 
 void ProcessGraph::process( const int tBegin, const int tEnd )
 {
+	using namespace boost;
+	using namespace boost::graph;
 	COUT( "process" );
 	graph::exportAsDOT( _graph, "graphprocess.dot" );
 
@@ -69,6 +73,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 
 	//--- BEGIN RENDER
 	ProcessOptions defaultOptions;
+	defaultOptions._time        = tBegin;
 	defaultOptions._startFrame  = tBegin;
 	defaultOptions._endFrame    = tEnd;
 	defaultOptions._step        = 1;
@@ -79,7 +84,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	defaultOptions._renderRoI   = renderWindow;
 
 	COUT( "process begin" );
-	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes )
+	BOOST_FOREACH( NodeMap::value_type p, _nodes )
 	{
 		p.second->begin( defaultOptions );
 	}
@@ -89,31 +94,46 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	// at each frame
 	for( int t = tBegin; t <= tEnd; ++t )
 	{
-		COUT( "________________________________________ frame: " << t );
-		Graph::InternalGraphImpl optimizedGraph( _graph );
 		defaultOptions._time = t;
-		
-		COUT( "________________________________________ output node : " << optimizedGraph.instance( _output ).getName() );
+		COUT( "________________________________________ frame: " << t );
+		InternalGraphImpl renderGraph( _graph );
+
+		COUT( "________________________________________ output node : " << renderGraph.instance( _output ).getName() );
+
+		COUT( "---------------------------------------- set default options" );
+		{
+			InternalGraphImpl::vertex_iterator v_it, v_end;
+			for( tie(v_it, v_end) = renderGraph.getVertices(); v_it != v_end; ++v_it )
+			{
+				renderGraph.instance( v_it ).setProcessOptions( defaultOptions );
+			}
+		}
 		COUT( "---------------------------------------- connectClips" );
-		graph::dfs_connectClips_visitor<Graph::InternalGraphImpl> connectClipsVisitor( optimizedGraph );
-		optimizedGraph.dfs( connectClipsVisitor, _output );
+		graph::dfs_connectClips_visitor<InternalGraphImpl> connectClipsVisitor( renderGraph );
+		renderGraph.dfs( connectClipsVisitor, _output );
 
 		COUT( "---------------------------------------- preprocess" );
-		graph::dfs_preProcess_finish_visitor<Graph::InternalGraphImpl> preProcessFinishVisitor( optimizedGraph, defaultOptions );
-		optimizedGraph.dfs( preProcessFinishVisitor, _output );
-		graph::dfs_preProcess_initialize_visitor<Graph::InternalGraphImpl> preProcessInitializeVisitor( optimizedGraph, defaultOptions );
-		optimizedGraph.dfs( preProcessInitializeVisitor, _output );
+		graph::dfs_preProcess_finish_visitor<InternalGraphImpl> preProcessFinishVisitor( renderGraph );
+		renderGraph.dfs( preProcessFinishVisitor, _output );
+		graph::dfs_preProcess_initialize_visitor<InternalGraphImpl> preProcessInitializeVisitor( renderGraph );
+		renderGraph.dfs( preProcessInitializeVisitor, _output );
+
+		COUT( "---------------------------------------- optimizeGraph" );
+		graph::dfs_optimizeGraph_visitor<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
+		renderGraph.dfs( optimizeGraphVisitor, _output );
+
+		// remove isIdentity nodes
 
 		COUT( "---------------------------------------- process" );
-		graph::dfs_process_visitor<Graph::InternalGraphImpl> processVisitor( optimizedGraph );
-		optimizedGraph.dfs( processVisitor, _output );
+		graph::dfs_process_visitor<InternalGraphImpl> processVisitor( renderGraph );
+		renderGraph.dfs( processVisitor, _output );
 
 		COUT( "---------------------------------------- postprocess" );
-		graph::dfs_postProcess_visitor<Graph::InternalGraphImpl> postProcessVisitor( optimizedGraph );
-		optimizedGraph.dfs( postProcessVisitor, _output );
+		graph::dfs_postProcess_visitor<InternalGraphImpl> postProcessVisitor( renderGraph );
+		renderGraph.dfs( postProcessVisitor, _output );
 
 		// end of one frame
-		// do some clean memory clean, as temporary solution...
+		// do some clean: memory clean, as temporary solution...
 		COUT( "---------------------------------------- clearUnused" );
 		Core::instance().getMemoryCache().clearUnused();
 		COUT( "---------------------------------------- updateMemoryAuthorizedWithRAM" );
@@ -121,7 +141,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	}
 
 	//--- END RENDER
-	BOOST_FOREACH( Graph::NodeMap::value_type p, _nodes )
+	BOOST_FOREACH( NodeMap::value_type p, _nodes )
 	{
 		p.second->end( defaultOptions ); // node option... or no option here ?
 	}

@@ -55,20 +55,21 @@ public:
 	    > GraphContainer;
 
 	// a bunch of graph-specific typedefs
-	typedef typename boost::graph_traits<GraphContainer>::vertex_descriptor VertexDescriptor;
-	typedef typename boost::graph_traits<GraphContainer>::edge_descriptor EdgeDescriptor;
+	typedef typename boost::graph_traits<GraphContainer>::vertex_descriptor vertex_descriptor;
+	typedef typename boost::graph_traits<GraphContainer>::edge_descriptor edge_descriptor;
 
-	typedef typename boost::graph_traits<GraphContainer>::vertex_iterator vertex_iter;
-	typedef typename boost::graph_traits<GraphContainer>::edge_iterator edge_iter;
-	typedef typename boost::graph_traits<GraphContainer>::adjacency_iterator adjacency_iter;
-	typedef typename boost::graph_traits<GraphContainer>::out_edge_iterator out_edge_iter;
+	typedef typename boost::graph_traits<GraphContainer>::vertex_iterator vertex_iterator;
+	typedef typename boost::graph_traits<GraphContainer>::edge_iterator edge_iterator;
+	typedef typename boost::graph_traits<GraphContainer>::adjacency_iterator adjacency_iterator;
+	typedef typename boost::graph_traits<GraphContainer>::out_edge_iterator out_edge_iterator;
+	typedef typename boost::graph_traits<GraphContainer>::in_edge_iterator in_edge_iterator;
 
 	typedef typename boost::graph_traits<GraphContainer>::degree_size_type degree_t;
 
-	typedef std::pair<adjacency_iter, adjacency_iter> adjacency_vertex_range_t;
-	typedef std::pair<out_edge_iter, out_edge_iter> out_edge_range_t;
-	typedef std::pair<vertex_iter, vertex_iter> vertex_range_t;
-	typedef std::pair<edge_iter, edge_iter> edge_range_t;
+	typedef std::pair<adjacency_iterator, adjacency_iterator> adjacency_vertex_range_t;
+	typedef std::pair<out_edge_iterator, out_edge_iterator> out_edge_range_t;
+	typedef std::pair<vertex_iterator, vertex_iterator> vertex_range_t;
+	typedef std::pair<edge_iterator, edge_iterator> edge_range_t;
 
 	// constructors etc.
 	InternalGraph() : _count( 0 )
@@ -114,9 +115,9 @@ public:
 		_vertexDescriptorMap.clear();
 	}
 
-	VertexDescriptor addVertex( const Vertex& prop )
+	vertex_descriptor addVertex( const Vertex& prop )
 	{
-		VertexDescriptor v = add_vertex( _graph );
+		vertex_descriptor v = add_vertex( _graph );
 
 		instance( v )                         = prop;
 		get( boost::vertex_index, _graph )[v] = _count++;
@@ -126,7 +127,7 @@ public:
 		return v;
 	}
 
-	void removeVertex( const VertexDescriptor& v )
+	void removeVertex( const vertex_descriptor& v )
 	{
 		_vertexDescriptorMap.erase( instance( v ).getName() );
 		clear_vertex( v, _graph );
@@ -137,8 +138,8 @@ public:
 	{
 		try
 		{
-			VertexDescriptor& descOut = getVertexDescriptor( out );
-			VertexDescriptor& descIn  = getVertexDescriptor( in );
+			vertex_descriptor& descOut = getVertexDescriptor( out );
+			vertex_descriptor& descIn  = getVertexDescriptor( in );
 
 			Edge e( out, in, inAttr );
 			addEdge( descOut, descIn, e );
@@ -151,9 +152,9 @@ public:
 		}
 	}
 
-	EdgeDescriptor addEdge( const VertexDescriptor& v1, const VertexDescriptor& v2, const Edge& prop )
+	edge_descriptor addEdge( const vertex_descriptor& v1, const vertex_descriptor& v2, const Edge& prop )
 	{
-		EdgeDescriptor addedEdge = add_edge( v1, v2, _graph ).first;
+		edge_descriptor addedEdge = add_edge( v1, v2, _graph ).first;
 
 		instance( addedEdge ) = prop;
 
@@ -165,12 +166,12 @@ public:
 		return addedEdge;
 	}
 
-	VertexDescriptor& getVertexDescriptor( const std::string& vertexName )
+	vertex_descriptor& getVertexDescriptor( const std::string& vertexName )
 	{
 		return _vertexDescriptorMap[vertexName];
 	}
 
-	const VertexDescriptor& getVertexDescriptor( const std::string& vertexName ) const
+	const vertex_descriptor& getVertexDescriptor( const std::string& vertexName ) const
 	{
 		return _vertexDescriptorMap[vertexName];
 	}
@@ -186,28 +187,32 @@ public:
 	}
 
 	// property access
-	Vertex& instance( const VertexDescriptor& v )
+	Vertex& instance( const vertex_descriptor& v )
 	{
 		//typename boost::property_map<GraphContainer, vertex_properties_t>::type param = get( vertex_properties, _graph );
 		//return param[v];
 		return get( vertex_properties, _graph )[v];
 	}
 
-	const Vertex& instance( const VertexDescriptor& v ) const
+	Vertex& instance( const vertex_iterator& v ) { return instance(*v); }
+
+	const Vertex& instance( const vertex_descriptor& v ) const
 	{
 		//typename boost::property_map<GraphContainer, vertex_properties_t>::const_type param = get( vertex_properties, _graph );
 		//return param[v];
 		return get( vertex_properties, _graph )[v];
 	}
 
-	Edge& instance( const EdgeDescriptor& e )
+	const Vertex& instance( const vertex_iterator& v ) const { return instance(*v); }
+
+	Edge& instance( const edge_descriptor& e )
 	{
 		//typename boost::property_map<GraphContainer, edge_properties_t>::type param = get( edge_properties, _graph );
 		//return param[e];
 		return get( edge_properties, _graph )[e];
 	}
 
-	const Edge& instance( const EdgeDescriptor& e ) const
+	const Edge& instance( const edge_descriptor& e ) const
 	{
 		//typename boost::property_map<GraphContainer, edge_properties_t>::const_type param = get( edge_properties, _graph );
 		//return param[e];
@@ -234,7 +239,7 @@ public:
 		return vertices( _graph );
 	}
 
-	adjacency_vertex_range_t getAdjacentVertices( const VertexDescriptor& v ) const
+	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const
 	{
 		return adjacent_vertices( v, _graph );
 	}
@@ -249,7 +254,7 @@ public:
 		return num_edges( _graph );
 	}
 
-	int getVertexDegree( const VertexDescriptor& v ) const
+	int getVertexDegree( const vertex_descriptor& v ) const
 	{
 		return out_degree( v, _graph );
 	}
@@ -265,7 +270,7 @@ public:
 	}
 
 	template<class Visitor>
-	void dfs( Visitor vis, const VertexDescriptor& vroot )
+	void dfs( Visitor vis, const vertex_descriptor& vroot )
 	{
 		std::vector<boost::default_color_type > colormap( boost::num_vertices( _graph ) );
 		boost::depth_first_visit( _graph,
@@ -296,7 +301,7 @@ public:
 		boost::depth_first_search( _graph, visitor( vis ) );
 	}
 
-	void bfs( const VertexDescriptor& vroot )
+	void bfs( const vertex_descriptor& vroot )
 	{
 		test_bfs_visitor vis;
 		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
@@ -312,7 +317,7 @@ public:
 
 	void toDominatorTree();
 
-	std::vector<VertexDescriptor> leaves();
+	std::vector<vertex_descriptor> leaves();
 
 	template< typename Vertex, typename Edge >
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
@@ -322,7 +327,7 @@ private:
 
 protected:
 	GraphContainer _graph;
-	std::map<std::string, VertexDescriptor> _vertexDescriptorMap;
+	std::map<std::string, vertex_descriptor> _vertexDescriptorMap;
 	int _count; // for vertex_index
 
 };
