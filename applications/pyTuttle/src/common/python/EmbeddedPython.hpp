@@ -1,10 +1,3 @@
-/* 
- * File:   EmbededPython.hpp
- * Author: fab
- *
- * Created on 19 avril 2009, 14:24
- */
-
 #ifndef _EMBEDDEDPYTHON_HPP
 #define	_EMBEDDEDPYTHON_HPP
 
@@ -18,10 +11,10 @@
 #include <list>
 
 /**
- * @brief Centralise l'interface avec Python.
+ * @brief Centralised Python interface
  * 
- * @todo Permettre de lancer des commandes/scripts dans des contextes differents
- * @todo Permettre de creer des threads
+ * @todo launch commands or scripts inside different python contexts
+ * @todo threads creation
  */
 class EmbeddedPythonBase
 {
