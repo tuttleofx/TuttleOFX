@@ -1,3 +1,3 @@
 [submodule "tools/sconsProject"]
 	path = tools/sconsProject
-	url = git://github.com/fabiencastan/sconsProject.git
+	url = git://github.com/tuttleofx/sconsProject.git
