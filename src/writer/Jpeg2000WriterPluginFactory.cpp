@@ -84,7 +84,7 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( true );
+	renderAlways->setDefault( false );
 
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );

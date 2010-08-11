@@ -55,84 +55,15 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 	return params;
 }
 
-/**
- * @brief The overridden render function
- * @param[in]   args     Rendering parameters
- */
-void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
+bool Jpeg2000WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
+	if( OFX::getImageEffectHostDescription()->hostIsBackground || _paramRenderAlways->getValue() )
 	{
-		// instantiate the render code based on the pixel depth of the dst clip
-		OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
-		OFX::PixelComponentEnum dstComponents = _clipSrc->getPixelComponents();
-
-		// do the rendering
-		if( dstComponents == OFX::ePixelComponentRGBA )
-		{
-			switch( dstBitDepth )
-			{
-				case OFX::eBitDepthUByte:
-				{
-					Jpeg2000WriterProcess<rgba8_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					Jpeg2000WriterProcess<rgba16_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthFloat:
-				{
-					Jpeg2000WriterProcess<rgba32f_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthNone:
-					COUT_FATALERROR( "BitDepthNone not recognize." );
-					return;
-				case OFX::eBitDepthCustom:
-					COUT_FATALERROR( "BitDepthCustom not recognize." );
-					return;
-			}
-		}
-		else if( dstComponents == OFX::ePixelComponentAlpha )
-		{
-			switch( dstBitDepth )
-			{
-				case OFX::eBitDepthUByte:
-				{
-					Jpeg2000WriterProcess<gray8_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					Jpeg2000WriterProcess<gray16_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthFloat:
-				{
-					Jpeg2000WriterProcess<gray32f_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthNone:
-					COUT_FATALERROR( "BitDepthNone not recognize." );
-					return;
-				case OFX::eBitDepthCustom:
-					COUT_FATALERROR( "BitDepthCustom not recognize." );
-					return;
-			}
-		}
-		else
-		{
-			COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
-		}
+		return false;
 	}
+	identityClip = _clipSrc;
+	identityTime = args.time;
+	return true;
 }
 
 void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
@@ -159,6 +90,83 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
                      "", // No XML resources
                      kJ2KHelpString );
     }
+}
+
+/**
+ * @brief The overridden render function
+ * @param[in]   args     Rendering parameters
+ */
+void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
+{
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = _clipSrc->getPixelComponents();
+
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				Jpeg2000WriterProcess<rgba8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				Jpeg2000WriterProcess<rgba16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				Jpeg2000WriterProcess<rgba32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				Jpeg2000WriterProcess<gray8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				Jpeg2000WriterProcess<gray16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				Jpeg2000WriterProcess<gray32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
+	else
+	{
+		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
+	}
 }
 
 }

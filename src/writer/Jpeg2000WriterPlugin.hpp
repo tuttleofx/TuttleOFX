@@ -26,8 +26,12 @@ public:
 
 public:
 	Jpeg2000ProcessParams getProcessParams(const OfxTime time);
-    void render( const OFX::RenderArguments &args );
+	
 	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+
+	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
+
+    void render( const OFX::RenderArguments &args );
 
 protected:
 	OFX::ChoiceParam    *_cineProfil;
