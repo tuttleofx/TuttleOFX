@@ -38,6 +38,7 @@ int main( int argc, char** argv )
 		Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
 		Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
 		Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
+		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
 //		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
@@ -57,8 +58,9 @@ int main( int argc, char** argv )
 		read1.getParam( "filename" ).set( "data/input.png" );
 		read2.getParam( "filename" ).set( "data/input.dpx" );
 		read3.getParam( "filename" ).set( "data/input.exr" );
-//		blur1.getParam( "size" ).set( 6.5, 15.0 );
-		blur1.getParam( "size" ).setAtIndex( 65.0, 1 );
+		bitdepth.getParam( "outputBitDepth" ).set( 3 );
+		blur1.getParam( "size" ).set( 6.5, 15.0 );
+//		blur1.getParam( "size" ).setAtIndex( 65.43, 1 );
 	//	crop1.getParam( "Down" ).set( 400 );
 		write1.getParam( "filename" ).set( "data/output1.png" );
 		write2.getParam( "filename" ).set( "data/output2.dpx" );
@@ -66,7 +68,8 @@ int main( int argc, char** argv )
 		write4.getParam( "filename" ).set( "data/output4.avi" );
 
 		COUT( "__________________________________________________3" );
-		g.connect( read1, invert1 );
+		g.connect( read1, bitdepth );
+		g.connect( bitdepth, invert1 );
 		g.connect( invert1, invert2 );
 		g.connect( invert2, blur1 );
 		g.connect( blur1, write1 );
