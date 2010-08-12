@@ -10,53 +10,53 @@ ParamRGBA::ParamRGBA( ImageEffectNode& effect,
 	: Param( effect ),
 	ofx::attribute::OfxhMultiDimParam<ParamDouble, 4>( descriptor, name, effect )
 {
-	_controls.push_back( new ParamDouble( effect, name + ".r", descriptor, 0 ) );
-	_controls.push_back( new ParamDouble( effect, name + ".g", descriptor, 1 ) );
-	_controls.push_back( new ParamDouble( effect, name + ".b", descriptor, 2 ) );
-	_controls.push_back( new ParamDouble( effect, name + ".a", descriptor, 3 ) );
+	_controls.replace<0>( new ParamDouble( effect, name + ".r", descriptor, 0 ) );
+	_controls.replace<1>( new ParamDouble( effect, name + ".g", descriptor, 1 ) );
+	_controls.replace<2>( new ParamDouble( effect, name + ".b", descriptor, 2 ) );
+	_controls.replace<3>( new ParamDouble( effect, name + ".a", descriptor, 3 ) );
 }
 
 OfxRGBAColourD ParamRGBA::getDefault() const
 {
 	OfxRGBAColourD rgb;
-	rgb.r = _controls[0]->getDefault();
-	rgb.g = _controls[1]->getDefault();
-	rgb.b = _controls[2]->getDefault();
-	rgb.a = _controls[3]->getDefault();
+	rgb.r = _controls.at<0>().getDefault();
+	rgb.g = _controls.at<1>().getDefault();
+	rgb.b = _controls.at<2>().getDefault();
+	rgb.a = _controls.at<3>().getDefault();
 	return rgb;
 }
 
 void ParamRGBA::get( double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
 {
-	_controls[0]->get(r);
-	_controls[1]->get(g);
-	_controls[2]->get(b);
-	_controls[3]->get(a);
+	_controls.at<0>().get(r);
+	_controls.at<1>().get(g);
+	_controls.at<2>().get(b);
+	_controls.at<3>().get(a);
 }
 
 void ParamRGBA::getAtTime( const OfxTime time, double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
 {
-	_controls[0]->getAtTime(time, r);
-	_controls[1]->getAtTime(time, g);
-	_controls[2]->getAtTime(time, b);
-	_controls[3]->getAtTime(time, a);
+	_controls.at<0>().getAtTime(time, r);
+	_controls.at<1>().getAtTime(time, g);
+	_controls.at<2>().getAtTime(time, b);
+	_controls.at<3>().getAtTime(time, a);
 }
 
 void ParamRGBA::set( const double &r, const double &g, const double &b, const double &a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(r, ofx::attribute::eChangeNone);
-	_controls[1]->set(g, ofx::attribute::eChangeNone);
-	_controls[2]->set(b, ofx::attribute::eChangeNone);
-	_controls[3]->set(a, ofx::attribute::eChangeNone);
+	_controls.at<0>().set(r, change);
+	_controls.at<1>().set(g, change);
+	_controls.at<2>().set(b, change);
+	_controls.at<3>().set(a, change);
 	this->paramChanged( change );
 }
 
 void ParamRGBA::setAtTime( const OfxTime time, const double &r, const double &g, const double &b, const double &a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->setAtTime(time, r, ofx::attribute::eChangeNone);
-	_controls[1]->setAtTime(time, g, ofx::attribute::eChangeNone);
-	_controls[2]->setAtTime(time, b, ofx::attribute::eChangeNone);
-	_controls[3]->setAtTime(time, a, ofx::attribute::eChangeNone);
+	_controls.at<0>().setAtTime(time, r, change);
+	_controls.at<1>().setAtTime(time, g, change);
+	_controls.at<2>().setAtTime(time, b, change);
+	_controls.at<3>().setAtTime(time, a, change);
 	this->paramChanged( change );
 }
 

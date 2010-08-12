@@ -108,7 +108,9 @@ public:
 	const InstanceCountMap& getInstanceCount() const { return _instanceCount; }
 
 public:
+#ifndef SWIG
 	friend std::ostream& operator<<( std::ostream& os, const Graph& g );
+#endif
 
 #ifdef SWIG
 	%extend

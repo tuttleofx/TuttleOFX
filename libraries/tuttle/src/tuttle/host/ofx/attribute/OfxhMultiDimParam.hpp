@@ -6,7 +6,7 @@
 #include "OfxhParamDescriptor.hpp"
 #include "OfxhParamSet.hpp"
 
-#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/ptr_container/ptr_array.hpp>
 #include <string>
 #include <vector>
 
@@ -25,18 +25,15 @@ public:
 	typedef typename T::BaseType BaseType;
 
 protected:
-	///@todo: IMPORTANT FIX: make this deleted, but be careful of the common descriptor (which must not be delete).
-	std::vector<T*> _controls;
+	boost::ptr_array<T,DIM> _controls; // owns the sub-parameters
 
 public:
 	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance )
 	{
-		// _controls.reserve(DIM); /// @todo tuttle: find a way to lock the vector size to DIM...
 	}
 
 	virtual ~OfxhMultiDimParam()
 	{
-		// _controls are parameters which are declares in setInstance which owns all parameters
 	}
 
 	inline std::size_t getSize() const
@@ -49,13 +46,13 @@ protected:
 	inline virtual void getAtIndex( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->get( dst );
+		_controls[index].get( dst );
 	}
 
 	inline virtual void getAtTimeAndIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->getAtTime( time, dst );
+		_controls[index].getAtTime( time, dst );
 	}
 
 public:
@@ -63,9 +60,7 @@ public:
 	{
 		for(std::size_t index = 0; index < DIM; ++index)
 		{
-			BaseType dst;
-			p._controls[index]->get( dst );
-			_controls[index]->set( dst, eChangeNone );
+			_controls[index].copy( p._controls[index] );
 		}
 	}
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
@@ -77,14 +72,14 @@ public:
 	inline virtual void setAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->set( value, eChangeNone );
+		_controls[index].set( value, eChangeNone );
 		this->paramChanged( change );
 	}
 
 	inline virtual void setAtTimeAndIndex( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->setAtTime( time, value, eChangeNone );
+		_controls[index].setAtTime( time, value, eChangeNone );
 		this->paramChanged( change );
 	}
 
@@ -92,13 +87,13 @@ public:
 	inline virtual void deriveAtIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->derive( time, dst );
+		_controls[index].derive( time, dst );
 	}
 
 	inline virtual void integrateAtIndex( const OfxTime time1, const OfxTime time2, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index]->integrate( time1, time2, dst );
+		_controls[index].integrate( time1, time2, dst );
 	}
 
 	/// implementation of var args function
@@ -108,7 +103,7 @@ public:
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
-			_controls[index]->get( *v );
+			_controls[index].get( *v );
 		}
 	}
 
@@ -118,7 +113,7 @@ public:
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			_controls[index]->getAtTime( time, *v );
+			_controls[index].getAtTime( time, *v );
 		}
 	}
 
@@ -128,7 +123,7 @@ public:
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[index]->set( v, eChangeNone );
+			_controls[index].set( v, eChangeNone );
 		}
 		this->paramChanged( change );
 	}
@@ -139,7 +134,7 @@ public:
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[index]->setAtTime( time, v, eChangeNone );
+			_controls[index].setAtTime( time, v, eChangeNone );
 		}
 		this->paramChanged( change );
 	}
@@ -150,7 +145,7 @@ public:
 		for( int index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			_controls[index]->derive( time, *v );
+			_controls[index].derive( time, *v );
 		}
 	}
 
@@ -161,7 +156,7 @@ public:
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
-			_controls[index]->integrate( time1, time2, *v );
+			_controls[index].integrate( time1, time2, *v );
 		}
 	}
 

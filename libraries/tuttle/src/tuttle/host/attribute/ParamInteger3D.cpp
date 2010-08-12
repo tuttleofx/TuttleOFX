@@ -10,48 +10,48 @@ ParamInteger3D::ParamInteger3D( ImageEffectNode& effect,
 	: Param( effect ),
 	ofx::attribute::OfxhMultiDimParam<ParamInteger, 3>( descriptor, name, effect )
 {
-	_controls.push_back( new ParamInteger( effect, name + ".x", descriptor, 0 ) );
-	_controls.push_back( new ParamInteger( effect, name + ".y", descriptor, 1 ) );
-	_controls.push_back( new ParamInteger( effect, name + ".z", descriptor, 2 ) );
+	_controls.replace<0>( new ParamInteger( effect, name + ".x", descriptor, 0 ) );
+	_controls.replace<1>( new ParamInteger( effect, name + ".y", descriptor, 1 ) );
+	_controls.replace<2>( new ParamInteger( effect, name + ".z", descriptor, 2 ) );
 }
 
 Ofx3DPointI ParamInteger3D::getDefault() const
 {
 	Ofx3DPointI point;
 
-	point.x = _controls[0]->getDefault();
-	point.y = _controls[1]->getDefault();
-	point.z = _controls[2]->getDefault();
+	point.x = _controls.at<0>().getDefault();
+	point.y = _controls.at<1>().getDefault();
+	point.z = _controls.at<2>().getDefault();
 	return point;
 }
 
 void ParamInteger3D::get( int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
 {
-	_controls[0]->get(x);
-	_controls[1]->get(y);
-	_controls[2]->get(z);
+	_controls.at<0>().get(x);
+	_controls.at<1>().get(y);
+	_controls.at<2>().get(z);
 }
 
 void ParamInteger3D::getAtTime( const OfxTime time, int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
 {
-	_controls[0]->getAtTime(time, x);
-	_controls[1]->getAtTime(time, y);
-	_controls[2]->getAtTime(time, z);
+	_controls.at<0>().getAtTime(time, x);
+	_controls.at<1>().getAtTime(time, y);
+	_controls.at<2>().getAtTime(time, z);
 }
 
 void ParamInteger3D::set( const int &x, const int &y, const int &z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->set(x, ofx::attribute::eChangeNone);
-	_controls[1]->set(y, ofx::attribute::eChangeNone);
-	_controls[2]->set(z, ofx::attribute::eChangeNone);
+	_controls.at<0>().set(x, change);
+	_controls.at<1>().set(y, change);
+	_controls.at<2>().set(z, change);
 	this->paramChanged( change );
 }
 
 void ParamInteger3D::setAtTime( const OfxTime time, const int &x, const int &y, const int &z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls[0]->setAtTime(time, x, ofx::attribute::eChangeNone);
-	_controls[1]->setAtTime(time, y, ofx::attribute::eChangeNone);
-	_controls[2]->setAtTime(time, z, ofx::attribute::eChangeNone);
+	_controls.at<0>().setAtTime(time, x, change);
+	_controls.at<1>().setAtTime(time, y, change);
+	_controls.at<2>().setAtTime(time, z, change);
 	this->paramChanged( change );
 }
 

@@ -194,41 +194,47 @@ const std::string ImageEffectNode::getProjectBitDepth() const
 ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
 	std::string name = descriptor.getName();
-	try {
+	try
+	{
+		ofx::attribute::OfxhParam* param;
 		if( descriptor.getParamType() == kOfxParamTypeString )
-			return new attribute::ParamString( *this, name,  descriptor );
+			param = new attribute::ParamString( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeInteger )
-			return new attribute::ParamInteger( *this, name,  descriptor );
+			param = new attribute::ParamInteger( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeDouble )
-			return new attribute::ParamDouble( *this, name,  descriptor );
+			param = new attribute::ParamDouble( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeBoolean )
-			return new attribute::ParamBoolean( *this, name,  descriptor );
+			param = new attribute::ParamBoolean( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeChoice )
-			return new attribute::ParamChoice( *this, name,  descriptor );
+			param = new attribute::ParamChoice( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeRGBA )
-			return new attribute::ParamRGBA( *this, name,  descriptor );
+			param = new attribute::ParamRGBA( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeRGB )
-			return new attribute::ParamRGB( *this, name,  descriptor );
+			param = new attribute::ParamRGB( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeDouble2D )
-			return new attribute::ParamDouble2D( *this, name,  descriptor );
+			param = new attribute::ParamDouble2D( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeDouble3D )
-			return new attribute::ParamDouble3D( *this, name,  descriptor );
+			param = new attribute::ParamDouble3D( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeInteger2D )
-			return new attribute::ParamInteger2D( *this, name,  descriptor );
+			param = new attribute::ParamInteger2D( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeInteger3D )
-			return new attribute::ParamInteger3D( *this, name,  descriptor );
+			param = new attribute::ParamInteger3D( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypePushButton )
-			return new attribute::ParamPushButton( *this, name,  descriptor );
+			param = new attribute::ParamPushButton( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeGroup )
-			return new attribute::ParamGroup( *this, name,  descriptor );
+			param = new attribute::ParamGroup( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypePage )
-			return new attribute::ParamPage( *this, name,  descriptor );
+			param = new attribute::ParamPage( *this, name,  descriptor );
+		else
+		{
+			BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
+		}
+		this->addParam( name, param );
 	}
 	catch( exception::LogicError& e ) // map intern exception to ofx::OfxhException
 	{
 		BOOST_THROW_EXCEPTION( ofx::OfxhException( e.ofxStatus(), e.what() ) );
 	}
-	BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
 }
 
 void ImageEffectNode::editBegin( const std::string& name ) OFX_EXCEPTION_SPEC

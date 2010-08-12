@@ -75,6 +75,9 @@ public:
 	/// plug-ins changing their own values.
 	virtual void paramChanged( const attribute::OfxhParam& param, const EChange change ) = 0;
 
+	/// reference a param
+	virtual void referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
+
 	/// add a param
 	virtual void addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC;
 

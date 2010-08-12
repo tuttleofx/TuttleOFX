@@ -19,7 +19,7 @@ OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, const std::string& 
 	_avoidRecursion( false )
 {
 	// parameter has to be owned by paramSet
-	setInstance.addParam( name, this ); ///< @todo tuttle move this from here (introduce too many problems), no good reason to be here.
+	setInstance.referenceParam( name, this ); ///< @todo tuttle move this from here.
 
 	getEditableProperties().addNotifyHook( kOfxParamPropEnabled, this );
 	getEditableProperties().addNotifyHook( kOfxParamPropSecret, this );

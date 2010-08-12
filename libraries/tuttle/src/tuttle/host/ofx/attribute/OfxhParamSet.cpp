@@ -51,14 +51,24 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 	initMapFromList();
 }
 
+void OfxhParamSet::referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
+{
+//	if( _allParams.find( name ) != _allParams.end() )
+//	{
+//		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to reference a new parameter which already exists." ) );
+//	}
+//	_allParams[name] = instance;
+}
+
 void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {
 	if( _params.find( name ) != _params.end() )
 	{
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to add a new parameter which already exists." ) );
 	}
-	_params[name] = instance;
 	_paramList.push_back( instance );
+	_params[name] = instance;
+//	referenceParam( name, instance );
 }
 
 
