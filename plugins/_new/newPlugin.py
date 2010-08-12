@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
 		# Adapting directories.
 		currentDir = os.getcwd( )
-		pluginDir = os.path.join( currentDir, '..', className )
+		pluginDir = os.path.join( currentDir, className )
 
 		#Remove old plugin dir
 		if os.path.exists( pluginDir ):
@@ -99,7 +99,8 @@ if __name__ == '__main__':
 		print 'Processing files...'
 		
 		#Copy to plugin directory
-		shutil.copytree( os.path.join(currentDir, api), pluginDir )
+		thisScriptDir = os.path.abspath(os.path.dirname(__file__))
+		shutil.copytree( os.path.join(thisScriptDir, api), pluginDir )
 		for top, names in walktree( pluginDir ):
 			for name in names:
 				# Rename templates files with a correct filename
