@@ -186,6 +186,32 @@ public:
 		return instance( _vertexDescriptorMap[vertexName] );
 	}
 
+	const vertex_descriptor source( const edge_descriptor& e ) const
+	{
+		return boost::source( e, _graph );
+	}
+	Vertex& sourceInstance( const edge_descriptor& e )
+	{
+		return instance(source( e ));
+	}
+	const Vertex& sourceInstance( const edge_descriptor& e ) const
+	{
+		return instance(source( e ));
+	}
+	
+	const vertex_descriptor target( const edge_descriptor& e ) const
+	{
+		return boost::target( e, _graph );
+	}
+	Vertex& targetInstance( const edge_descriptor& e )
+	{
+		return instance(target( e ));
+	}
+	const Vertex& targetInstance( const edge_descriptor& e ) const
+	{
+		return instance(target( e ));
+	}
+
 	// property access
 	Vertex& instance( const vertex_descriptor& v )
 	{
@@ -194,16 +220,12 @@ public:
 		return get( vertex_properties, _graph )[v];
 	}
 
-	Vertex& instance( const vertex_iterator& v ) { return instance(*v); }
-
 	const Vertex& instance( const vertex_descriptor& v ) const
 	{
 		//typename boost::property_map<GraphContainer, vertex_properties_t>::const_type param = get( vertex_properties, _graph );
 		//return param[v];
 		return get( vertex_properties, _graph )[v];
 	}
-
-	const Vertex& instance( const vertex_iterator& v ) const { return instance(*v); }
 
 	Edge& instance( const edge_descriptor& e )
 	{

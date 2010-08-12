@@ -3,6 +3,8 @@
 
 #include <tuttle/host/Graph.hpp>
 
+#include <string>
+
 namespace tuttle {
 namespace host {
 namespace graph {
@@ -31,7 +33,7 @@ private:
 	NodeMap _nodes;
 	InstanceCountMap _instanceCount;
 
-	Descriptor _output;
+	static const std::string _outputId;
 };
 
 }

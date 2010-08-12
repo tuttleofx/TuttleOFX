@@ -32,7 +32,13 @@ struct ProcessInfos
 class ProcessOptions
 {
 public:
-	ProcessOptions() {}
+	ProcessOptions()
+	: _startFrame(123)
+	, _endFrame(123)
+	, _step(123)
+	, _interactive(123)
+	, _time(123)
+	{}
 	ProcessOptions( const ProcessOptions& other ) { operator=( other ); }
 	~ProcessOptions() {}
 
