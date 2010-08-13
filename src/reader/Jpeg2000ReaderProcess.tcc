@@ -34,11 +34,11 @@ void Jpeg2000ReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	this->_dst.reset( _plugin._clipDst->fetchImage( args.time, reqRect ) );
 	if( !this->_dst.get() )
 	{
-		BOOST_THROW_EXCEPTION( tuttle::plugin::ImageNotReadyException() );
+		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	}
 	if( this->_dst->getRowBytes( ) <= 0 )
 	{
-		BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	}
 
 	// Build destination view
@@ -110,7 +110,7 @@ void Jpeg2000ReaderProcess<View>::switchLayoutCopy()
 			break;
 		}
 		default:
-			BOOST_THROW_EXCEPTION( tuttle::plugin::PluginException("Unhandled image precision!") );
+			BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::message("Unhandled image precision!") );
 			break;
 	}
 }
