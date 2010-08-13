@@ -44,7 +44,9 @@ void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	EXRReaderProcessParams params = _plugin.getProcessParams(args.time);
 	if( ! bfs::exists( params._filepath ) )
 	{
-		BOOST_THROW_EXCEPTION( PluginException( "Unable to open : " + params._filepath ) );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::message( "Unable to open.")
+			<< boost::errinfo_file_name(params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -104,9 +106,18 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 		}
 	}
-	catch( tuttle::plugin::PluginException& e )
+	catch( boost::exception& e )
 	{
-		COUT_EXCEPTION( e );
+		e << boost::errinfo_file_name(params._filepath);
+		COUT_ERROR( boost::diagnostic_information(e) );
+//		throw;
+	}
+	catch( ... )
+	{
+//		BOOST_THROW_EXCEPTION( exception::Unknown()
+//			<< exception::message( "Unable to write image")
+//			<< boost::errinfo_file_name(params._filepath) );
+		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 }
 
@@ -114,7 +125,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  */
 template<class View>
 template<class DView>
-void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath ) throw( tuttle::plugin::PluginException )
+void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 {
 	using namespace std;
 	using namespace boost;
@@ -229,14 +240,12 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 			const Imf::Slice* slice =
 			    frameBuffer.findSlice(
 			        _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()].c_str() );
-			if (slice)
+			if( !slice )
 			{
-				sliceCopy( slice, dst, w, h, s );
+				BOOST_THROW_EXCEPTION( exception::Value()
+					<< exception::message( std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!") );
 			}
-			else
-			{
-				BOOST_THROW_EXCEPTION(PluginException(std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!"));
-			}
+			sliceCopy( slice, dst, w, h, s );
 		}
 	}
 }

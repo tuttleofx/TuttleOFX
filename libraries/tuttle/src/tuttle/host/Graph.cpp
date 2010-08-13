@@ -82,7 +82,7 @@ void Graph::addToGraph( Node& node )
 	_graph.addVertex( v );
 }
 
-void Graph::removeFromGraph( Node& node ) throw( exception::LogicError )
+void Graph::removeFromGraph( Node& node )
 {
 	//	graph::Vertex v( node.getName(), &node );
 	//
@@ -91,15 +91,15 @@ void Graph::removeFromGraph( Node& node ) throw( exception::LogicError )
 	//	_graph.addVertex( v );
 }
 
-void Graph::deleteNode( const Node& node ) //throw( exception::LogicError )
+void Graph::deleteNode( const Node& node )
 {}
 
-void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr ) //throw( exception::LogicError )
+void Graph::connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr )
 {
 	_graph.connect( outNode, inNode, kOfxSimpleSourceAttributeName );
 }
 
-void Graph::connect( const std::list<std::string>& nodes ) // throw( exception::LogicError )
+void Graph::connect( const std::list<std::string>& nodes )
 {
 	typedef std::list<std::string>::const_iterator ConstIterator;
 	if( nodes.size() <= 1 )
@@ -116,12 +116,12 @@ void Graph::connect( const std::list<std::string>& nodes ) // throw( exception::
 	}
 }
 
-void Graph::connect( const Node& outNode, const Node& inNode ) //throw( exception::LogicError )
+void Graph::connect( const Node& outNode, const Node& inNode )
 {
 	connect( outNode, inNode.getSingleInputAttribute() );
 }
 
-void Graph::connect( const std::list<Node*>& nodes ) // throw( exception::LogicError )
+void Graph::connect( const std::list<Node*>& nodes )
 {
 	typedef std::list<Node*>::const_iterator ConstIterator;
 	if( nodes.size() <= 1 )
@@ -138,7 +138,7 @@ void Graph::connect( const std::list<Node*>& nodes ) // throw( exception::LogicE
 	}
 }
 
-void Graph::connect( const std::vector<Node*>& nodes ) // throw( exception::LogicError )
+void Graph::connect( const std::vector<Node*>& nodes )
 {
 	typedef std::vector<Node*>::const_iterator ConstIterator;
 	if( nodes.size() <= 1 )
@@ -155,12 +155,12 @@ void Graph::connect( const std::vector<Node*>& nodes ) // throw( exception::Logi
 	}
 }
 
-void Graph::connect( const Node& outNode, const Attribute& inAttr ) //throw( exception::LogicError )
+void Graph::connect( const Node& outNode, const Attribute& inAttr )
 {
 	_graph.connect( outNode.getName(), inAttr.getNode().getName(), inAttr.getName() );
 }
 
-//void Graph::unconnectNode( const Node& node ) //throw( exception::LogicError )
+//void Graph::unconnectNode( const Node& node )
 //{}
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )

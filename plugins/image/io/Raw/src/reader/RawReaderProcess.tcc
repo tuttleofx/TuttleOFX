@@ -85,7 +85,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 /**
  */
 template<class View>
-View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
+View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath )
 {
 	try
 	{
@@ -173,10 +173,18 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 //		free( image );
 		_rawProcessor.recycle();
 	}
-	catch( PluginException& e )
+	catch( boost::exception& e )
 	{
-		COUT_EXCEPTION( e );
-		return dst;
+		e << boost::errinfo_file_name(filepath);
+		COUT_ERROR( boost::diagnostic_information(e) );
+//		throw;
+	}
+	catch( ... )
+	{
+//		BOOST_THROW_EXCEPTION( exception::Unknown()
+//			<< exception::message( "Unable to write image")
+//			<< boost::errinfo_file_name(filepath) );
+		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	return dst;
 }

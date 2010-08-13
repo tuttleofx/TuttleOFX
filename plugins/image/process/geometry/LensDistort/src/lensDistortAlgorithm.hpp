@@ -5,6 +5,7 @@
 
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/PluginException.hpp>
 
 #include <ofxCore.h>
 
@@ -235,6 +236,8 @@ inline Obj transformValues( const EParamLensType lensType, const LensDistortProc
                 return transformValues<AdvancedLensUndistortParams<double> >( params, obj );
         }
     }
+	BOOST_THROW_EXCEPTION( exception::Unsupported()
+		<< exception::message( "Outside of the plugin fonctionnalities." ) );
 }
 
 

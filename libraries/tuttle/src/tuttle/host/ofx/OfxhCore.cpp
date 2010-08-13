@@ -12,26 +12,34 @@ std::ostream& operator<<( std::ostream& os, const OfxPlugin& v )
 	return os;
 }
 
-std::ostream& operator<<( std::ostream& os, const OfxRectI& v )
+std::ostream& operator<<( std::ostream& out, const OfxPointI& p )
 {
-	os << "OfxRectI {" << std::endl;
-	os << "  x1: " << v.x1 << std::endl;
-	os << "  y1: " << v.y1 << std::endl;
-	os << "  x2: " << v.x2 << std::endl;
-	os << "  y2: " << v.y2 << std::endl;
-	os << "}" << std::endl;
-	return os;
+	return out << "x:" << p.x << " y:" << p.y;
 }
 
-std::ostream& operator<<( std::ostream& os, const OfxRectD& v )
+std::ostream& operator<<( std::ostream& out, const OfxPointD& p )
 {
-	os << "OfxRectD {" << std::endl;
-	os << "  x1: " << v.x1 << std::endl;
-	os << "  y1: " << v.y1 << std::endl;
-	os << "  x2: " << v.x2 << std::endl;
-	os << "  y2: " << v.y2 << std::endl;
-	os << "}" << std::endl;
-	return os;
+	return out << "x:" << p.x << " y:" << p.y;
+}
+
+std::ostream& operator<<( std::ostream& out, const OfxRangeI& r )
+{
+	return out << "min:" << r.min << " max:" << r.max;
+}
+
+std::ostream& operator<<( std::ostream& out, const OfxRangeD& r )
+{
+	return out << "min:" << r.min << " max:" << r.max;
+}
+
+std::ostream& operator<<( std::ostream& out, const OfxRectI& r )
+{
+	return out << "x1:" << r.x1 << " y1:" << r.y1 << " x2:" << r.x2 << " y2:" << r.y2;
+}
+
+std::ostream& operator<<( std::ostream& out, const OfxRectD& r )
+{
+	return out << "x1:" << r.x1 << " y1:" << r.y1 << " x2:" << r.x2 << " y2:" << r.y2;
 }
 
 /*

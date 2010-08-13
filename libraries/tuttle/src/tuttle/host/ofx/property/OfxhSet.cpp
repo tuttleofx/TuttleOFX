@@ -62,7 +62,7 @@ void OfxhSet::addNotifyHook( const std::string& s, OfxhNotifyHook* hook )
 	fetchLocalProperty( s ).addNotifyHook( hook );
 }
 
-OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( OfxhException, std::bad_cast )
+OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name )
 {
 	PropertyMap::iterator i = _props.find( name );
 
@@ -73,7 +73,7 @@ OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name ) throw( Ofxh
 	return *( i->second );
 }
 
-const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const throw( OfxhException, std::bad_cast )
+const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const
 {
 	PropertyMap::const_iterator i = _props.find( name );
 	if( i == _props.end() )

@@ -72,7 +72,7 @@ void* allocate( const std::size_t nBytes,
  *
  * \arg \e ptr	      - pointer previously returned by OFX::Memory::allocate
  */
-void free( void* ptr ) throw ( );
+void free( void* ptr ) throw();
 };
 
 };

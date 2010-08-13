@@ -43,6 +43,7 @@ public:
 	virtual void begin( graph::ProcessOptions& processOptions )                 = 0;
 	virtual void preProcess_initialize( graph::ProcessOptions& processOptions ) = 0;
 	virtual void preProcess_finish( graph::ProcessOptions& processOptions )     = 0;
+	virtual void preProcess_infos( graph::ProcessInfos& nodeInfos )             = 0;
 	virtual void process( const graph::ProcessOptions& processOptions )         = 0;
 	virtual void postProcess( graph::ProcessOptions& processOptions )           = 0;
 	virtual void end( graph::ProcessOptions& processOptions )                   = 0;

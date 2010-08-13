@@ -24,9 +24,9 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	// clip A
 	_srcA.reset( _plugin.getSrcClipA()->fetchImage( args.time ) );
 	if( !_srcA.get() )
-		BOOST_THROW_EXCEPTION( ImageNotReadyException() );
+		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcA->getRowBytes( ) <= 0 )
-		BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	this->_srcViewA = this->getView( _srcA.get(), _plugin.getSrcClipA()->getPixelRod(args.time) );
 //	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRodA = _plugin.getSrcClipA()->getPixelRod(args.time);
@@ -34,9 +34,9 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 	// clip B
 	_srcB.reset( _plugin.getSrcClipB()->fetchImage( args.time ) );
 	if( !_srcB.get() )
-		BOOST_THROW_EXCEPTION( ImageNotReadyException() );
+		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcB->getRowBytes( ) <= 0 )
-		BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
 	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod(args.time) );
 //	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRodB = _plugin.getSrcClipB()->getPixelRod(args.time);
@@ -47,7 +47,7 @@ void DiffProcess<View>::setup( const OFX::RenderArguments& args )
 		_srcA->getPixelComponents() != this->_dst->getPixelComponents() ||
 	    _srcB->getPixelComponents() != this->_dst->getPixelComponents() )
 	{
-		BOOST_THROW_EXCEPTION( BitDepthMismatchException() );
+		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch() );
 	}
 }
 

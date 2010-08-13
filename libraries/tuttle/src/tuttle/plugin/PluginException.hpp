@@ -5,6 +5,11 @@
 #ifndef _TUTTLE_PLUGIN_EXCEPTION_HPP
 #define _TUTTLE_PLUGIN_EXCEPTION_HPP
 
+#include <boost/lexical_cast.hpp>
+#include <boost/exception/diagnostic_information.hpp>
+#include <boost/exception/info.hpp>
+#include <boost/exception/errinfo_file_name.hpp>
+
 #include <cstdarg>
 #include <iostream>
 #include <sstream>
@@ -13,141 +18,49 @@
 
 namespace tuttle {
 namespace plugin {
+namespace exception {
 
-class BadConversion : public std::runtime_error
-{
-public:
-	BadConversion( const std::string& s = "" )
-		: std::runtime_error( s ) {}
-};
+typedef boost::error_info<struct tag_message,std::string> message;
 
-std::string stringify( double x );
 
-class PluginException : public std::exception
-{
-protected:
-	std::string _err;
+/// @brief Common exception for all plugins exceptions
+class Common : virtual public std::exception, virtual public boost::exception {};
 
-public:
-	PluginException();
+/// @brief Ofx standard errors
+/// @{
+class Failed : virtual public Common {};
+class Fatal : virtual public Common {};
+class Unknown : virtual public Common {};
+class MissingHostFeature : virtual Common {};
+class Unsupported : virtual public Common {};
+class Exists : virtual public Common {};
+class Format : virtual public Common {};
+class Memory : virtual public Common {};
+class BadHandle : virtual public Common {};
+class BadIndex : virtual public Common {};
+class Value : virtual public Common {};
 
-	virtual ~PluginException() throw( );
+/// @brief imageEffect specific errors
+/// @{
+class ImageFormat : virtual public Common {};
+/// @}
+/// @}
 
-	PluginException( const std::string& err );
 
-	//PluginException( const char* format, ... );
+/// @brief Other plugins exceptions
+/// @{
+class BadConversion : virtual public Value {};
+class ImageNotReady : virtual public Value {};
+class ImageNotConnected : virtual public Value {};
+class InputMismatch : virtual public Format {};
+class InOutMismatch : virtual public Format {};
+class BitDepthMismatch : virtual public ImageFormat {};
+class WrongRowBytes : virtual public ImageFormat {};
+class NullImageProvided : virtual public Value {};
+class File : virtual public Value {};
+/// @}
 
-	friend std::ostream& operator<<( std::ostream& s, const PluginException& exc )
-	{
-		s << exc._err;
-		return s;
-	}
-
-	PluginException& operator<<( const PluginException& exc );
-
-	PluginException& operator<<( const char* cString );
-
-	PluginException& operator<<( const double real );
-
-	friend PluginException operator+( const PluginException& e1, const PluginException& e2 )
-	{
-		return PluginException( e1._err + e2._err );
-	}
-
-	friend PluginException operator+( const PluginException& e1, const char* cString )
-	{
-		return PluginException( e1._err + cString );
-	}
-
-	friend PluginException operator+( const PluginException& e1, const double real )
-	{
-		return PluginException( e1._err + stringify( real ) );
-	}
-
-	virtual const char* what() const throw( );
-};
-
-class UnknownException : public PluginException
-{
-public:
-	UnknownException()
-	{
-		_err = "Unknown exception !";
-	}
-
-};
-
-class ImageNotReadyException : public PluginException
-{
-public:
-	ImageNotReadyException( const std::string& s = "" )
-	{
-		_err  = "Image not ready !";
-		_err += s;
-	}
-
-};
-
-class InputMismatchException : public PluginException
-{
-public:
-	InputMismatchException()
-	{
-		_err = "Image dimensions are not the same between input tensors and input src !";
-	}
-
-};
-
-class InOutMismatchException : public PluginException
-{
-public:
-	InOutMismatchException()
-	{
-		_err = "Image dimensions are not the same between input src and output src !";
-	}
-
-};
-
-class BitDepthMismatchException : public PluginException
-{
-public:
-	BitDepthMismatchException()
-	{
-		_err = "Bit depth mismatch !";
-	}
-
-};
-
-class WrongRowBytesException : public PluginException
-{
-public:
-	WrongRowBytesException()
-	{
-		_err = "Wrong row bytes !";
-	}
-
-};
-
-class ExceptionAbort : public PluginException
-{
-public:
-	ExceptionAbort()
-	{
-		_err = "Effect aborted !";
-	}
-
-};
-
-class NullImageProvidedException : public PluginException
-{
-public:
-	NullImageProvidedException()
-	{
-		_err = "Null image provided !";
-	}
-
-};
-
+}
 }
 }
 

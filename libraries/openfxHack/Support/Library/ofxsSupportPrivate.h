@@ -48,10 +48,10 @@
 namespace OFX {
 
 /** @brief turns a field string into and enum */
-FieldEnum mapStrToFieldEnum( const std::string& str )  throw( std::invalid_argument );
+FieldEnum mapStrToFieldEnum( const std::string& str );
 
 /** @brief map a std::string to a context enum */
-ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argument );
+ContextEnum mapStrToContextEnum( const std::string& s );
 
 ////////////////////////////////////////////////////////////////////////////////
 

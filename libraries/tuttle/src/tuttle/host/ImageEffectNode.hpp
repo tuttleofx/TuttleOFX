@@ -33,6 +33,7 @@ public:
 	
 	~ImageEffectNode();
 
+	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	ofx::attribute::OfxhParam& getParam( const std::string& name ) { return ofx::attribute::OfxhParamSet::getParam( name ); }
 
@@ -132,6 +133,13 @@ public:
 		TCOUT_VAR( processOptions._renderRoI );
 	}
 
+	void preProcess_infos( graph::ProcessInfos& nodeInfos )
+	{
+		TCOUT( "preProcess_initialize: " << getName() );
+		OfxRectD rod = getRegionOfDefinition();
+		nodeInfos._memory = (rod.x2-rod.x1)*(rod.y2-rod.y1)*4*sizeof(float)/*bit depth*/;
+	}
+
 	void process( const graph::ProcessOptions& processOptions )
 	{
 		TCOUT( "process: " << getName() );
@@ -164,10 +172,9 @@ public:
 		                 processOptions._interactive,
 		                 processOptions._renderScale );
 	}
-#endif
-	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
+#endif
 
 #ifdef SWIG
 	%extend

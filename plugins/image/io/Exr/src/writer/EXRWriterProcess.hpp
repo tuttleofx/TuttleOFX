@@ -46,7 +46,7 @@ protected:
 	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
 
 	template<class WPixel>
-	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException );
+	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType );
 
 };
 

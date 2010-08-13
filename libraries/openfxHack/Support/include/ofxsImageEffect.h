@@ -97,7 +97,7 @@ enum ContextEnum
 	eContextWriter,
 };
 
-const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invalid_argument );
+const std::string mapContextEnumToStr( const ContextEnum& s );
 
 /** @brief Enumerates the pixel depths supported */
 enum BitDepthEnum

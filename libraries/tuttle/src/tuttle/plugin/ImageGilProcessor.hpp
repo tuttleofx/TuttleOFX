@@ -62,9 +62,9 @@ public:
 		// destination view
 		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get( ) )
-			BOOST_THROW_EXCEPTION( ImageNotReadyException( ) );
+			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 		if( _dst->getRowBytes( ) <= 0 )
-			BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
+			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 //		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_dstPixelRod = _clipDst->getPixelRod(args.time, args.renderScale);
 		_dstPixelRodSize.x = (this->_dstPixelRod.x2 - this->_dstPixelRod.x1);
@@ -90,29 +90,23 @@ public:
 		{
 			setup( args );
 		}
-		catch( ImageNotReadyException& e )
+		catch( exception::ImageNotReady& e )
 		{
 			// stop the process but don't display an error
-			COUT_ERROR_DEBUG( "ImageNotReadyException" );
-			progressEnd( );
+			COUT_ERROR_DEBUG( boost::diagnostic_information(e) );
+			progressEnd();
 			return;
 		}
-		catch( PluginException& e )
+		catch( exception::Common& e )
 		{
-			COUT_EXCEPTION( e );
-			progressEnd( );
-			throw;
-		}
-		catch( std::exception& e )
-		{
-			COUT_EXCEPTION( e );
-			progressEnd( );
+			COUT_ERROR( boost::diagnostic_information(e) );
+			progressEnd();
 			throw;
 		}
 		catch( ... )
 		{
-			COUT_ERROR( "Unknown exception." );
-			progressEnd( );
+			COUT_ERROR( boost::current_exception_diagnostic_information() );
+			progressEnd();
 			throw;
 		}
 
@@ -194,7 +188,7 @@ void ImageGilProcessor<View>::process( void )
 	if( _renderArgs.renderWindow.x2 - _renderArgs.renderWindow.x1 == 0 ||
 	    _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 == 0 )
 	{
-		BOOST_THROW_EXCEPTION( PluginException( "RenderWindow empty !" ) );
+		BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::message( "RenderWindow empty !" ) );
 	}
 	// call the pre MP pass
 	preProcess();

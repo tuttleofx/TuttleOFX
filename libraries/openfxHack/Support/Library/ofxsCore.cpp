@@ -43,7 +43,7 @@
 namespace OFX {
 
 /** @brief Throws an @ref OFX::Exception depending on the status flag passed in */
-void throwSuiteStatusException( const OfxStatus stat ) throw( OFX::Exception::Suite, std::bad_alloc )
+void throwSuiteStatusException( const OfxStatus stat )
 {
 	switch( stat )
 	{
@@ -62,7 +62,7 @@ void throwSuiteStatusException( const OfxStatus stat ) throw( OFX::Exception::Su
 	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( stat, "Threw suite exception!" ) );
 }
 
-void throwHostMissingSuiteException( const std::string& name ) throw( OFX::Exception::Suite )
+void throwHostMissingSuiteException( const std::string& name )
 {
 	BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrUnsupported, "Threw suite exception! Host missing '" + name + "' suite." ) );
 }

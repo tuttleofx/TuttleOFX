@@ -145,7 +145,7 @@ void LutPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::s
 		if( exists( str ) )
 		{
 			if ( _lutReader.read( str ) )
-				BOOST_THROW_EXCEPTION( PluginException( "Unable to read lut file..." ) );
+				BOOST_THROW_EXCEPTION( exception::File() << exception::message( "Unable to read lut file..." ) );
             else
                 _lut3D.reset( new TetraInterpolator(), _lutReader );
 		}

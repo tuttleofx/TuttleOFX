@@ -6,7 +6,10 @@
 #include "ParamPoint.hpp"
 #include "overlay.hpp"
 #include <tuttle/plugin/image/gil/globals.hpp>
+
 #include <ofxsParam.h>
+
+#include <boost/lexical_cast.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -80,6 +83,7 @@ private:
 			case eSelectTypeC:
 				return "eSelectTypeC";
 		}
+		BOOST_THROW_EXCEPTION( std::invalid_argument( "ESelectType: " + boost::lexical_cast<std::string>(s) ) );
 	}
 	ESelectType _selectType;
 	
@@ -181,6 +185,7 @@ bool ParamRectangleFromCenterSize<TFrame, coord>::draw( const OFX::DrawArgs& arg
 {
 	_center.draw( args );
 	overlay::displayPointRect( _center.getPoint(), _size.getPoint() );
+	return true;
 }
 
 template<class TFrame, ECoordonateSystem coord>

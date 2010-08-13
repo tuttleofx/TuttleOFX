@@ -37,16 +37,25 @@ void ImageMagickWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
+	ImageMagickWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 	try
 	{
-		ImageMagickWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 		writeImage<bits8>( this->_srcView, params._filepath );
-		copy_pixels( this->_srcView, this->_dstView );
 	}
-	catch( tuttle::plugin::PluginException& e )
+	catch( exception::Common& e )
 	{
-		COUT_EXCEPTION( e );
+		e << boost::errinfo_file_name(params._filepath);
+		COUT_ERROR( boost::diagnostic_information(e) );
+//		throw;
 	}
+	catch( ... )
+	{
+//		BOOST_THROW_EXCEPTION( exception::Unknown()
+//			<< exception::message( "Unable to write image")
+//			<< boost::errinfo_file_name(params._filepath) );
+		COUT_ERROR( boost::current_exception_diagnostic_information() );
+	}
+	copy_pixels( this->_srcView, this->_dstView );
 }
 
 /**

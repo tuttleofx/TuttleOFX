@@ -36,7 +36,7 @@ public:
 	MemoryPool( const std::size_t maxSize = 0 );
 	~MemoryPool();
 
-	IPoolDataPtr allocate( const std::size_t size ) throw( std::bad_alloc, std::length_error );
+	IPoolDataPtr allocate( const std::size_t size );
 	std::size_t updateMemoryAuthorizedWithRAM();
 
 	void referenced( PoolData* );

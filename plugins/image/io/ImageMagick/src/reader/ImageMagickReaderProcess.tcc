@@ -170,7 +170,7 @@ void copy_and_convert_from_buffer( Image* image, DView& dst )
 /**
  */
 template<class View>
-View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& filepath ) throw( PluginException )
+View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& filepath )
 {
 	BOOST_STATIC_ASSERT( sizeof(Quantum) == 2 ); // imagemagick compiled in 16 bits not 8 !
 
@@ -238,7 +238,8 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 					COUT( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) );
-//					BOOST_THROW_EXCEPTION( PluginException( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) ) );
+//					BOOST_THROW_EXCEPTION( exception::Unsupported()
+//						<< exception::message( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
 				}
 			}
@@ -267,7 +268,8 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 					COUT( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) );
-//					BOOST_THROW_EXCEPTION( PluginException( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) ) );
+//					BOOST_THROW_EXCEPTION( exception::Unsupported()
+//						<< exception::message( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
 				}
 			}
@@ -297,7 +299,8 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 					COUT( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) );
-//					BOOST_THROW_EXCEPTION( PluginException( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) ) );
+//					BOOST_THROW_EXCEPTION( exception::Unsupported()
+//						<< exception::message( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
 				}
 			}
@@ -305,7 +308,8 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 		}
 		default:
 		{
-			BOOST_THROW_EXCEPTION( PluginException( "Unknown color type (" + boost::lexical_cast<std::string>(colorType) ) );
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::message( "Unknown color type (" + boost::lexical_cast<std::string>(colorType) ) );
 			break;
 		}
 	}

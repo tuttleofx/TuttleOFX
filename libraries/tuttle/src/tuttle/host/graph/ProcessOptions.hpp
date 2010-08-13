@@ -10,27 +10,33 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-struct ProcessInfos
+class ProcessInfos
 {
+	typedef ProcessInfos This;
+public:
 	ProcessInfos()
-	: _memory(0)
-	, _nodes(0)
+	: _nodes(0)
+	, _memory(0)
 	{}
 
-	std::size_t _memory;
 	std::size_t _nodes;
+	std::size_t _memory;
 
 	ProcessInfos& operator+=( const ProcessInfos& p )
 	{
-		_memory += p._memory;
 		_nodes += p._nodes;
+		_memory += p._memory;
 		return *this;
 	}
+
+public:
+	friend std::ostream& operator<<( std::ostream& os, const This& g );
 };
 
 
 class ProcessOptions
 {
+	typedef ProcessOptions This;
 public:
 	ProcessOptions()
 	: _startFrame(123)
@@ -38,16 +44,24 @@ public:
 	, _step(123)
 	, _interactive(123)
 	, _time(123)
-	{}
+	{
+		_localInfos._nodes = 1; // local infos can contain only 1 node by definition...
+	}
 	ProcessOptions( const ProcessOptions& other ) { operator=( other ); }
 	~ProcessOptions() {}
 
+public:
+	friend std::ostream& operator<<( std::ostream& os, const This& g );
+	
 public:
 	OfxTime _startFrame;
 	OfxTime _endFrame;
 	OfxTime _step;
 	bool    _interactive;
 	OfxTime _time;
+
+	std::size_t _nbInputs;
+	std::size_t _nbOutputs;
 
 	ProcessInfos _localInfos;
 	ProcessInfos _globalInfos;
@@ -57,7 +71,9 @@ public:
 	OfxRectD _renderRoI;
 	OfxPointD _renderScale;
 
-	std::map<tuttle::host::ofx::attribute::OfxhClipImage*, OfxRectD> _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
+	typedef std::map<tuttle::host::ofx::attribute::OfxhClipImage*, OfxRectD> MapClipImageRod;
+	MapClipImageRod _inputsRoI; ///<< in which the plugin set the RoI it needs for each input clip
+
 };
 
 }

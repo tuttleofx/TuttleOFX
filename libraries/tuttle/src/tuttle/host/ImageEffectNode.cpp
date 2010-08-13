@@ -230,6 +230,7 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 			BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
 		}
 		this->addParam( name, param );
+		return param;
 	}
 	catch( exception::LogicError& e ) // map intern exception to ofx::OfxhException
 	{
@@ -445,6 +446,7 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 		os << "  * " << it->getName() << " (" << it->getLabel() << ")" << std::endl;
 	}
 	os << "________________________________________________________________________________" << std::endl;
+	return os;
 }
 
 void ImageEffectNode::debugOutputImage() const

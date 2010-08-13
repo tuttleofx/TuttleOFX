@@ -177,7 +177,7 @@ void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 				break;
 			}
 			default:
-				BOOST_THROW_EXCEPTION( PluginException( "Unrecognized coordinate system option." ) );
+				BOOST_THROW_EXCEPTION( exception::Value() << exception::message( "Unrecognized coordinate system option." ) );
 		}
 		_paramRectCenter->setValue( rectCenter );
 		_paramRectSize->setValue( rectSize );

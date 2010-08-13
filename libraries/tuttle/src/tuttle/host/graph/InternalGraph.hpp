@@ -266,17 +266,22 @@ public:
 		return adjacent_vertices( v, _graph );
 	}
 
-	int getVertexCount() const
+	std::size_t getVertexCount() const
 	{
 		return num_vertices( _graph );
 	}
 
-	int getEdgeCount() const
+	std::size_t getEdgeCount() const
 	{
 		return num_edges( _graph );
 	}
 
-	int getVertexDegree( const vertex_descriptor& v ) const
+	degree_t getInDegree( const vertex_descriptor& v ) const
+	{
+		return in_degree( v, _graph );
+	}
+
+	degree_t getOutDegree( const vertex_descriptor& v ) const
 	{
 		return out_degree( v, _graph );
 	}

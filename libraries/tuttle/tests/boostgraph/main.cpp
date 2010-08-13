@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	using namespace tuttle::host;
 
 	typedef graph::InternalGraph<TestVertex, TestEdge> InternalGraph;
-	typedef graph::InternalGraph<TestVertex, TestEdge>::VertexDescriptor Descriptor;
+	typedef graph::InternalGraph<TestVertex, TestEdge>::vertex_descriptor Descriptor;
 	typedef std::map<std::string, int> InstanceCountMap;
 
 	std::string n1( "v1" );
@@ -131,8 +131,8 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	TCOUT( "__________________________________________________" );
 	TCOUT( "graphT:" );
 
-	std::map<std::string, InternalGraph::VertexDescriptor> mmap;
-	for( InternalGraph::vertex_iter i = vertices( graphT.getGraph() ).first, iEnd = vertices( graphT.getGraph() ).second;
+	std::map<std::string, InternalGraph::vertex_descriptor> mmap;
+	for( InternalGraph::vertex_iterator i = vertices( graphT.getGraph() ).first, iEnd = vertices( graphT.getGraph() ).second;
 	     i != iEnd;
 	     ++i )
 	{

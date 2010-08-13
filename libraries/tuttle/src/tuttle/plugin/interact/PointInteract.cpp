@@ -32,6 +32,7 @@ bool PointInteract::draw( const OFX::DrawArgs& args ) const
 	overlay::displayCross( p, 3.0 * margeCanonical );
 	
 	glDisable(GL_LINE_STIPPLE);
+	return true;
 }
 
 EMoveType PointInteract::selectIfIntesect( const OFX::PenArgs& args )

@@ -6,10 +6,12 @@
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/filesystem/fstream.hpp>
+
 #include <cmath>
 #include <vector>
 
@@ -48,17 +50,22 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				writeImage<bits16>( this->_srcView, params._filepath );
 				break;
 			default:
-				BOOST_THROW_EXCEPTION( PluginException( "Unrecognized bit depth" ) );
+				BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::message( "Unrecognized bit depth" ) );
 				break;
 		}
 	}
-	catch( PluginException& e )
+	catch( exception::Common& e )
 	{
-		throw;
+		e << boost::errinfo_file_name(params._filepath);
+		COUT_ERROR( boost::diagnostic_information(e) );
+//		throw;
 	}
 	catch( ... )
 	{
-		BOOST_THROW_EXCEPTION( PluginException( "Unable to write image: \"" + params._filepath + "\"" ) );
+//		BOOST_THROW_EXCEPTION( exception::Unknown()
+//			<< exception::message( "Unable to write image")
+//			<< boost::errinfo_file_name(params._filepath) );
+		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	copy_pixels( this->_srcView, this->_dstView );
 }

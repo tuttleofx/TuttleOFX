@@ -157,6 +157,7 @@ bool ParamRectangleFromTwoCorners<TFrame, coord>::draw( const OFX::DrawArgs& arg
 	Point2 pA( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
 	Point2 pB( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
 	overlay::displayRect( pA, pB );
+	return true;
 }
 
 template<class TFrame, ECoordonateSystem coord>

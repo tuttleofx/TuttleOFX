@@ -7,7 +7,6 @@
 
 #include <boost/throw_exception.hpp>
 #include <boost/exception/exception.hpp>
-//#include <boost/exception.hpp>
 
 #include <sstream>
 #include <stdexcept>
@@ -23,21 +22,21 @@ protected:
 
 public:
 	explicit LogicError( const std::string& msg = "" )
-	: boost::exception(),
-	std::logic_error( msg ),
-	_status( kOfxStatErrUnknown )
+	: boost::exception()
+	, std::logic_error( msg )
+	, _status( kOfxStatErrUnknown )
 	{}
 
 	explicit LogicError( const OfxStatus& status, const std::string& msg = "" )
-	: boost::exception(),
-	std::logic_error( ofx::mapStatusToString( status ) + " : " + msg ),
-	_status( status )
+	: boost::exception()
+	, std::logic_error( ofx::mapStatusToString( status ) + " : " + msg )
+	, _status( status )
 	{}
 
 	LogicError( const LogicError& other )
-	: boost::exception(),
-	std::logic_error( other ),
-	_status( other._status )
+	: boost::exception()
+	, std::logic_error( other )
+	, _status( other._status )
 	{}
 
 	virtual ~LogicError() throw() {}

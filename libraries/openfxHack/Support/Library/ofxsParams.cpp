@@ -1082,7 +1082,7 @@ unsigned int ValueParam::getNumKeys( void ) const
 }
 
 /** @brief get the time of the nth key, nth must be between 0 and getNumKeys-1 */
-double ValueParam::getKeyTime( int nthKey ) const throw( OFX::Exception::Suite, std::out_of_range )
+double ValueParam::getKeyTime( int nthKey ) const
 {
 	if( !OFX::Private::gParamSuite->paramGetKeyTime )
 		throwHostMissingSuiteException( "paramGetKeyTime" );

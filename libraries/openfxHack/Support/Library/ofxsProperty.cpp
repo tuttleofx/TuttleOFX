@@ -42,10 +42,7 @@ namespace OFX {
 using namespace OFX::Private;
 
 void throwPropertyException( OfxStatus          stat,
-                             const std::string& propName ) throw( std::bad_alloc,
-                                                                  OFX::Exception::PropertyUnknownToHost,
-                                                                  OFX::Exception::PropertyValueIllegalToHost,
-                                                                  OFX::Exception::Suite )
+                             const std::string& propName )
 {
 	switch( stat )
 	{
@@ -89,10 +86,7 @@ bool PropertySet::_gThrowOnUnsupported = true;
 PropertySet::~PropertySet() {}
 
 /** @brief, returns the dimension of the given property from this property set */
-int PropertySet::propGetDimension( const char* property, bool throwOnFailure ) const throw( std::bad_alloc,
-                                                                                            OFX::Exception::PropertyUnknownToHost,
-                                                                                            OFX::Exception::PropertyValueIllegalToHost,
-                                                                                            OFX::Exception::Suite )
+int PropertySet::propGetDimension( const char* property, bool throwOnFailure ) const
 {
 	assert( _propHandle != 0 );
 	int dimension;
@@ -108,10 +102,7 @@ int PropertySet::propGetDimension( const char* property, bool throwOnFailure ) c
 }
 
 /** @brief, resets the property to it's default value */
-void PropertySet::propReset( const char* property ) throw( std::bad_alloc,
-                                                           OFX::Exception::PropertyUnknownToHost,
-                                                           OFX::Exception::PropertyValueIllegalToHost,
-                                                           OFX::Exception::Suite )
+void PropertySet::propReset( const char* property )
 {
 	assert( _propHandle != 0 );
 	OfxStatus stat = gPropSuite->propReset( _propHandle, property );
@@ -123,10 +114,7 @@ void PropertySet::propReset( const char* property ) throw( std::bad_alloc,
 }
 
 /** @brief, Set a single dimension pointer property */
-void PropertySet::propSetPointer( const char* property, void* value, int idx, bool throwOnFailure ) throw( std::bad_alloc,
-                                                                                                           OFX::Exception::PropertyUnknownToHost,
-                                                                                                           OFX::Exception::PropertyValueIllegalToHost,
-                                                                                                           OFX::Exception::Suite )
+void PropertySet::propSetPointer( const char* property, void* value, int idx, bool throwOnFailure )
 {
 	assert( _propHandle != 0 );
 	OfxStatus stat = gPropSuite->propSetPointer( _propHandle, property, idx, value );
@@ -140,10 +128,7 @@ void PropertySet::propSetPointer( const char* property, void* value, int idx, bo
 }
 
 /** @brief, Set a single dimension string property */
-void PropertySet::propSetString( const char* property, const std::string& value, int idx, bool throwOnFailure ) throw( std::bad_alloc,
-                                                                                                                       OFX::Exception::PropertyUnknownToHost,
-                                                                                                                       OFX::Exception::PropertyValueIllegalToHost,
-                                                                                                                       OFX::Exception::Suite )
+void PropertySet::propSetString( const char* property, const std::string& value, int idx, bool throwOnFailure )
 {
 	assert( _propHandle != 0 );
 	OfxStatus stat = gPropSuite->propSetString( _propHandle, property, idx, value.c_str() );
@@ -157,10 +142,7 @@ void PropertySet::propSetString( const char* property, const std::string& value,
 }
 
 /** @brief, Set a single dimension double property */
-void PropertySet::propSetDouble( const char* property, double value, int idx, bool throwOnFailure ) throw( std::bad_alloc,
-                                                                                                           OFX::Exception::PropertyUnknownToHost,
-                                                                                                           OFX::Exception::PropertyValueIllegalToHost,
-                                                                                                           OFX::Exception::Suite )
+void PropertySet::propSetDouble( const char* property, double value, int idx, bool throwOnFailure )
 {
 	assert( _propHandle != 0 );
 	OfxStatus stat = gPropSuite->propSetDouble( _propHandle, property, idx, value );
@@ -174,10 +156,7 @@ void PropertySet::propSetDouble( const char* property, double value, int idx, bo
 }
 
 /** @brief, Set a single dimension int property */
-void PropertySet::propSetInt( const char* property, int value, int idx, bool throwOnFailure ) throw( std::bad_alloc,
-                                                                                                     OFX::Exception::PropertyUnknownToHost,
-                                                                                                     OFX::Exception::PropertyValueIllegalToHost,
-                                                                                                     OFX::Exception::Suite )
+void PropertySet::propSetInt( const char* property, int value, int idx, bool throwOnFailure )
 {
 	assert( _propHandle != 0 );
 	OfxStatus stat = gPropSuite->propSetInt( _propHandle, property, idx, value );
@@ -191,10 +170,7 @@ void PropertySet::propSetInt( const char* property, int value, int idx, bool thr
 }
 
 /** @brief Get single pointer property */
-void*  PropertySet::propGetPointer( const char* property, int idx, bool throwOnFailure ) const throw( std::bad_alloc,
-                                                                                                      OFX::Exception::PropertyUnknownToHost,
-                                                                                                      OFX::Exception::PropertyValueIllegalToHost,
-                                                                                                      OFX::Exception::Suite )
+void*  PropertySet::propGetPointer( const char* property, int idx, bool throwOnFailure ) const
 {
 	assert( _propHandle != 0 );
 	void* value    = 0;
@@ -211,10 +187,7 @@ void*  PropertySet::propGetPointer( const char* property, int idx, bool throwOnF
 }
 
 /** @brief Get single string property */
-std::string PropertySet::propGetString( const char* property, int idx, bool throwOnFailure ) const throw( std::bad_alloc,
-                                                                                                          OFX::Exception::PropertyUnknownToHost,
-                                                                                                          OFX::Exception::PropertyValueIllegalToHost,
-                                                                                                          OFX::Exception::Suite )
+std::string PropertySet::propGetString( const char* property, int idx, bool throwOnFailure ) const
 {
 	assert( _propHandle != 0 );
 	char* value    = NULL;
@@ -231,10 +204,7 @@ std::string PropertySet::propGetString( const char* property, int idx, bool thro
 }
 
 /** @brief Get single double property */
-double PropertySet::propGetDouble( const char* property, int idx, bool throwOnFailure ) const throw( std::bad_alloc,
-                                                                                                     OFX::Exception::PropertyUnknownToHost,
-                                                                                                     OFX::Exception::PropertyValueIllegalToHost,
-                                                                                                     OFX::Exception::Suite )
+double PropertySet::propGetDouble( const char* property, int idx, bool throwOnFailure ) const
 {
 	assert( _propHandle != 0 );
 	double value   = 0;
@@ -250,10 +220,7 @@ double PropertySet::propGetDouble( const char* property, int idx, bool throwOnFa
 }
 
 /** @brief Get single int property */
-int PropertySet::propGetInt( const char* property, int idx, bool throwOnFailure ) const throw( std::bad_alloc,
-                                                                                               OFX::Exception::PropertyUnknownToHost,
-                                                                                               OFX::Exception::PropertyValueIllegalToHost,
-                                                                                               OFX::Exception::Suite )
+int PropertySet::propGetInt( const char* property, int idx, bool throwOnFailure ) const
 {
 	assert( _propHandle != 0 );
 	int value      = 0;

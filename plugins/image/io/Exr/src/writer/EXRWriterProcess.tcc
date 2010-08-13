@@ -7,15 +7,17 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/PluginException.hpp>
 
+#include <ofxsImageEffect.h>
+#include <ofxsMultiThread.h>
+
+#include <boost/gil/gil_all.hpp>
+#include <boost/cstdint.hpp>
+#include <boost/assert.hpp>
+
 #include <cstdlib>
 #include <cmath>
 #include <vector>
 #include <iostream>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/assert.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -42,9 +44,9 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	// no tiles and no multithreading supported
 	BOOST_ASSERT(( procWindowRoW == this->_dstPixelRod ));
 	BOOST_ASSERT(( this->_srcPixelRod == this->_dstPixelRod ));
+	EXRWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 	try
 	{
-		EXRWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 		switch( params._bitDepth )
 		{
 			case eParamBitDepth16f:
@@ -53,7 +55,8 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: Gray not supported!" ) );
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+							<< exception::message( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
 						break;
 					}
@@ -76,7 +79,8 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: Gray not supported!" ) );
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+							<< exception::message( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
@@ -99,7 +103,8 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				{
 					case eGray:
 					{
-						BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: Gray not supported!" ) );
+						BOOST_THROW_EXCEPTION( exception::Unsupported()
+							<< exception::message( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
@@ -117,18 +122,27 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				break;
 			}
 		}
-		// @todo: This is sometimes not neccessary... Checkbox it.
-		copy_and_convert_pixels( this->_srcView, this->_dstView );
 	}
-	catch( PluginException& err )
+	catch( exception::Common& e )
 	{
-		COUT_EXCEPTION( err );
+		e << boost::errinfo_file_name(params._filepath);
+		COUT_ERROR( boost::diagnostic_information(e) );
+//		throw;
 	}
+	catch( ... )
+	{
+//		BOOST_THROW_EXCEPTION( exception::Unknown()
+//			<< exception::message( "Unable to write image")
+//			<< boost::errinfo_file_name(params._filepath) );
+		COUT_ERROR( boost::current_exception_diagnostic_information() );
+	}
+	// @todo: This is sometimes not neccessary... Checkbox it.
+	copy_and_convert_pixels( this->_srcView, this->_dstView );
 }
 
 template<class View>
 template<class WPixel>
-void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType ) throw( tuttle::plugin::PluginException )
+void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::PixelType pixType )
 {
 	size_t bitsTypeSize = 0;
 
@@ -218,7 +232,8 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 			break;
 		}
 		default:
-			BOOST_THROW_EXCEPTION( PluginException( "ExrWriter: incompatible image type" ) );
+			BOOST_THROW_EXCEPTION( exception::ImageFormat()
+				<< exception::message( "ExrWriter: incompatible image type" ) );
 			break;
 	}
 	file.setFrameBuffer( frameBuffer );

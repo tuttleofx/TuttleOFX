@@ -198,38 +198,50 @@ public:
 	dfs_optimizeGraph_visitor( TGraph& graph )
 		: _graph( graph )
 	{
+		COUT_X( 80, ":" );
 	}
 
 	template <class VertexDescriptor, class Graph>
 	void finish_vertex(VertexDescriptor v, const Graph& g)
 	{
+		using namespace boost;
 		using namespace boost::graph;
 		Vertex& vertex = _graph.instance(v);
-		TCOUT( vertex << " : " << "finish_vertex" );
 
 		out_edge_iterator oe, oeEnd;
 		tie(oe, oeEnd) = out_edges( v, _graph.getGraph() );
-		in_edge_iterator ie, ieEnd;
-		tie(ie, ieEnd) = in_edges( v, _graph.getGraph() );
+//		in_edge_iterator ie, ieEnd;
+//		tie(ie, ieEnd) = in_edges( v, _graph.getGraph() );
 		ProcessOptions& procOptions = vertex.getProcessOptions();
 
-//		vertex.getProcessNode()->preProcess_infos( procOptions._localInfos );
-		
-		COUT( "-- outputs" );
+		// compute global infos for inputs
+
+		// direct dependencies (originally the node inputs)
+		procOptions._nbInputs = _graph.getOutDegree( v );
 		for( ; oe != oeEnd; ++oe )
 		{
-			Edge& e = _graph.instance(*oe);
-			COUT_VAR( e );
-			COUT_VAR( _graph.targetInstance(*oe) );
+//			Edge& outEdge = _graph.instance(*oe);
+			Vertex& outVertex = _graph.targetInstance(*oe);
+			procOptions._globalInfos += outVertex.getProcessOptions()._localInfos;
 		}
 
-		COUT( "-- inputs" );
-		for( ; ie != ieEnd; ++ie )
+//		// direct node usages (originally the node outputs)
+		procOptions._nbOutputs = _graph.getInDegree( v );
+//		for( ; ie != ieEnd; ++ie )
+//		{
+//			Edge& e = _graph.instance(*ie);
+//		}
+
+		if( ! vertex.isFake() )
 		{
-			Edge& e = _graph.instance(*ie);
-			COUT_VAR( e );
-			COUT_VAR( _graph.sourceInstance(*ie) );
+			// compute local infos, need to be a real node !
+			vertex.getProcessNode()->preProcess_infos( procOptions._localInfos );
 		}
+
+		COUT_X( 80, "." );
+		COUT( vertex.getName() );
+		COUT( procOptions );
+		COUT_X( 80, "." );
 	}
 
 private:

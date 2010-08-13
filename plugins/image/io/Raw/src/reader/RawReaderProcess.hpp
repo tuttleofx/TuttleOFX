@@ -26,7 +26,7 @@ public:
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	View& readImage( View& dst, const std::string& filepath ) throw( PluginException );
+	View& readImage( View& dst, const std::string& filepath );
 
 private:
 	RawReaderPlugin&    _plugin;        ///< Rendering plugin

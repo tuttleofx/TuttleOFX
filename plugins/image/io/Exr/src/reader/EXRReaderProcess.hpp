@@ -42,7 +42,7 @@ public:
 
 	// Read exr image
 	template<class DView>
-	void readImage( DView dst, const std::string& filepath ) throw( tuttle::plugin::PluginException );
+	void readImage( DView dst, const std::string& filepath );
 };
 
 }

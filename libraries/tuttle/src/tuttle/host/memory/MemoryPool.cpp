@@ -164,7 +164,7 @@ private:
 
 }
 
-boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size ) throw( std::bad_alloc, std::length_error )
+boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 {
 	// checking within unused data
 	PoolData* const pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();

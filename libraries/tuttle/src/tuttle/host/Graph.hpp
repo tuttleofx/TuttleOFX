@@ -48,20 +48,20 @@ public:
 	 * @brief Delete a node from the current graph.
 	 * This will remove all the connections.
 	 */
-	void  deleteNode( const Node& node );// throw( exception::LogicError );
+	void  deleteNode( const Node& node );
 	/**
 	 * @brief Connect nodes (using there unique name in this graph).
 	 */
-	void connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr = kOfxSimpleSourceAttributeName ); //throw( exception::LogicError )
+	void connect( const std::string& outNode, const std::string& inNode, const std::string& inAttr = kOfxSimpleSourceAttributeName );
 	/**
 	 * @brief Connect nodes the list of nodes linearly.
 	 */
 	void connect( const std::list<std::string>& nodes );
-	void connect( const Node& outNode, const Node& inNode );// throw( exception::LogicError );
-	void connect( const std::list<Node*>& nodes );// throw( exception::LogicError );
-	void connect( const std::vector<Node*>& nodes );// throw( exception::LogicError );
-	void connect( const Node& outNode, const Attribute& inAttr );// throw( exception::LogicError );
-//	void unconnectNode( const Node& node );// throw( exception::LogicError );
+	void connect( const Node& outNode, const Node& inNode );
+	void connect( const std::list<Node*>& nodes );
+	void connect( const std::vector<Node*>& nodes );
+	void connect( const Node& outNode, const Attribute& inAttr );
+//	void unconnectNode( const Node& node );
 
 	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
 	void compute( const std::list<std::string>& nodes, const int time ) { compute( nodes, time, time ); }
@@ -136,7 +136,7 @@ private:
 
 private:
 	void addToGraph( Node& node );
-	void removeFromGraph( Node& node ) throw( exception::LogicError );
+	void removeFromGraph( Node& node );
 };
 
 }

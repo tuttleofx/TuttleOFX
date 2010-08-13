@@ -29,28 +29,28 @@ void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 	// Re source view
 	this->_srcMod.reset( _srcClipRe->fetchImage( args.time ) );
 	if( !this->_srcMod.get( ) )
-		BOOST_THROW_EXCEPTION( ImageNotReadyException( ) );
+		BOOST_THROW_EXCEPTION( exception::ImageNotReady( ) );
 	if( this->_srcMod->getRowBytes( ) <= 0 )
-		BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
 	this->_srcViewRe = this->getView( this->_srcMod.get(), _srcClipRe->getPixelRod(args.time) );
 
 	// Make sure bit depths are same
 	if( this->_srcMod->getPixelDepth() != this->_dst->getPixelDepth() ||
 	    this->_srcMod->getPixelComponents() != this->_dst->getPixelComponents() )
-	    BOOST_THROW_EXCEPTION( BitDepthMismatchException( ) );
+	    BOOST_THROW_EXCEPTION( exception::BitDepthMismatch( ) );
 
 	// Im source view
 	this->_srcPhase.reset( _srcClipIm->fetchImage( args.time ) );
 	if( !this->_srcPhase.get( ) )
-		BOOST_THROW_EXCEPTION( ImageNotReadyException( ) );
+		BOOST_THROW_EXCEPTION( exception::ImageNotReady( ) );
 	if( this->_srcPhase->getRowBytes( ) <= 0 )
-		BOOST_THROW_EXCEPTION( WrongRowBytesException( ) );
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes( ) );
 	this->_srcViewIm = this->getView( this->_srcPhase.get(), _srcClipIm->getPixelRod(args.time) );
 
 	// Make sure bit depths are same
 	if( this->_srcPhase->getPixelDepth() != this->_dst->getPixelDepth() ||
 	    this->_srcPhase->getPixelComponents() != this->_dst->getPixelComponents() )
-	    BOOST_THROW_EXCEPTION( BitDepthMismatchException( ) );
+	    BOOST_THROW_EXCEPTION( exception::BitDepthMismatch( ) );
 }
 
 /**

@@ -45,6 +45,7 @@
 #include <string>
 
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
@@ -101,7 +102,7 @@ EffectDescriptorMap gEffectDescriptors;
 };
 
 /** @brief map a std::string to a context */
-ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argument )
+ContextEnum mapStrToContextEnum( const std::string& s )
 {
 	if( s == kOfxImageEffectContextGenerator )
 		return eContextGenerator;
@@ -124,7 +125,7 @@ ContextEnum mapStrToContextEnum( const std::string& s ) throw( std::invalid_argu
 }
 
 /** @brief map a std::string to a context */
-const std::string mapContextEnumToStr( const ContextEnum& s ) throw( std::invalid_argument )
+const std::string mapContextEnumToStr( const ContextEnum& s )
 {
 	switch( s )
 	{
@@ -182,7 +183,7 @@ OFX::Message::MessageReplyEnum mapStatusToMessageReplyEnum( OfxStatus stat )
 }
 
 /** @brief map a std::string to a context */
-InstanceChangeReason mapStrToInstanceChangedReason( const std::string& s ) throw( std::invalid_argument )
+InstanceChangeReason mapStrToInstanceChangedReason( const std::string& s )
 {
 	if( s == kOfxChangePluginEdited )
 		return eChangePluginEdit;
@@ -195,7 +196,7 @@ InstanceChangeReason mapStrToInstanceChangedReason( const std::string& s ) throw
 }
 
 /** @brief turns a bit depth string into and enum */
-BitDepthEnum mapStrToBitDepthEnum( const std::string& str ) throw( std::invalid_argument )
+BitDepthEnum mapStrToBitDepthEnum( const std::string& str )
 {
 	if( str == kOfxBitDepthByte )
 	{
@@ -234,10 +235,11 @@ const std::string mapBitDepthEnumToStr( const BitDepthEnum& e )
 		case eBitDepthCustom:
 			return "eBitDepthCustom";
 	}
+	BOOST_THROW_EXCEPTION( std::invalid_argument( "BitDepthEnum: " + boost::lexical_cast<std::string>(e) ) );
 }
 
 /** @brief turns a pixel component string into and enum */
-PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str ) throw( std::invalid_argument )
+PixelComponentEnum mapStrToPixelComponentEnum( const std::string& str )
 {
 	if( str == kOfxImageComponentRGBA )
 	{
@@ -270,10 +272,11 @@ std::string mapPixelComponentEnumToStr( const PixelComponentEnum& e )
 		case ePixelComponentCustom:
 			return "ePixelComponentCustom";
 	}
+	BOOST_THROW_EXCEPTION( std::invalid_argument( "PixelComponentEnum: " + boost::lexical_cast<std::string>(e) ) );
 }
 
 /** @brief turns a premultiplication string into and enum */
-PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str ) throw( std::invalid_argument )
+PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str )
 {
 	if( str == kOfxImageOpaque )
 	{
@@ -287,10 +290,7 @@ PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str ) th
 	{
 		return eImageUnPreMultiplied;
 	}
-	else
-	{
-		BOOST_THROW_EXCEPTION( std::invalid_argument( "" ) );
-	}
+	BOOST_THROW_EXCEPTION( std::invalid_argument( str ) );
 }
 
 std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e )
@@ -304,10 +304,11 @@ std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e )
 		case eImageUnPreMultiplied:
 			return kOfxImageUnPreMultiplied;
 	}
+	BOOST_THROW_EXCEPTION( std::invalid_argument( "PreMultiplicationEnum: " + boost::lexical_cast<std::string>(e) ) );
 }
 
 /** @brief turns a field string into and enum */
-FieldEnum mapStrToFieldEnum( const std::string& str )  throw( std::invalid_argument )
+FieldEnum mapStrToFieldEnum( const std::string& str )
 {
 	if( str == kOfxImageFieldNone )
 	{
@@ -325,10 +326,7 @@ FieldEnum mapStrToFieldEnum( const std::string& str )  throw( std::invalid_argum
 	{
 		return eFieldUpper;
 	}
-	else
-	{
-		BOOST_THROW_EXCEPTION( std::invalid_argument( "" ) );
-	}
+	BOOST_THROW_EXCEPTION( std::invalid_argument( str ) );
 }
 
 std::string mapFieldEnumToStr( const FieldEnum& e )
@@ -344,6 +342,7 @@ std::string mapFieldEnumToStr( const FieldEnum& e )
 		case eFieldUpper:
 			return kOfxImageFieldUpper;
 	}
+	BOOST_THROW_EXCEPTION( std::invalid_argument( boost::lexical_cast<std::string>(e) ) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
