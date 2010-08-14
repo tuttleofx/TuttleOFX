@@ -31,7 +31,7 @@ namespace exception {
  */
 /// @{
 typedef boost::error_info<struct tag_message,std::string> message;
-typedef boost::error_info<struct tag_ofxStatus,OfxStatus> ofxStatus;
+typedef boost::error_info<struct tag_ofxStatus,::OfxStatus> ofxStatus;
 /// @}
 
 
