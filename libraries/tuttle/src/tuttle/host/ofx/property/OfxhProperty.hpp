@@ -83,9 +83,9 @@ inline std::string mapTypeEnumToString( const TypeEnum& e )
 			return "string";
 		case ePointer:
 			return "pointer";
-		default:
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
 	}
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
+	return "";
 }
 
 enum EModifiedBy

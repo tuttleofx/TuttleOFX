@@ -10,6 +10,8 @@
 #include <boost/exception/info.hpp>
 #include <boost/exception/errinfo_file_name.hpp>
 
+#include <ofxCorePlugin.h>
+
 #include <cstdarg>
 #include <iostream>
 #include <sstream>
@@ -20,7 +22,16 @@ namespace tuttle {
 namespace plugin {
 namespace exception {
 
+/**
+ * @brief Standard tags you can use to add informations to your exceptions.
+ *
+ * @remark We keep lower camel case for tags,
+ *	to keep a diffrence between tags and exception types
+ */
+/// @{
 typedef boost::error_info<struct tag_message,std::string> message;
+typedef boost::error_info<struct tag_ofxStatus,OfxStatus> ofxStatus;
+/// @}
 
 
 /// @brief Common exception for all plugins exceptions

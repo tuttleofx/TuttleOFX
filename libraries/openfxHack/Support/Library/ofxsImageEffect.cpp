@@ -122,6 +122,7 @@ ContextEnum mapStrToContextEnum( const std::string& s )
 		return eContextWriter;
 	OFX::Log::error( true, "Unknown image effect context '%s'", s.c_str() );
 	BOOST_THROW_EXCEPTION( std::invalid_argument( s ) );
+	return eContextGeneral;
 }
 
 /** @brief map a std::string to a context */
@@ -150,6 +151,7 @@ const std::string mapContextEnumToStr( const ContextEnum& s )
 	}
 	OFX::Log::error( true, "Unknown image effect context enum '%d'", (int)s );
 	BOOST_THROW_EXCEPTION( std::invalid_argument( "Unknown image effect context enum." ) );
+	return "";
 }
 
 const std::string mapMessageTypeEnumToStr( OFX::Message::MessageTypeEnum type )
@@ -193,6 +195,7 @@ InstanceChangeReason mapStrToInstanceChangedReason( const std::string& s )
 		return eChangeTime;
 	OFX::Log::error( true, "Unknown instance changed reason '%s'", s.c_str() );
 	BOOST_THROW_EXCEPTION( std::invalid_argument( s ) );
+	return eChangePluginEdit;
 }
 
 /** @brief turns a bit depth string into and enum */
@@ -236,6 +239,7 @@ const std::string mapBitDepthEnumToStr( const BitDepthEnum& e )
 			return "eBitDepthCustom";
 	}
 	BOOST_THROW_EXCEPTION( std::invalid_argument( "BitDepthEnum: " + boost::lexical_cast<std::string>(e) ) );
+	return kOfxBitDepthNone;
 }
 
 /** @brief turns a pixel component string into and enum */
@@ -291,6 +295,7 @@ PreMultiplicationEnum mapStrToPreMultiplicationEnum( const std::string& str )
 		return eImageUnPreMultiplied;
 	}
 	BOOST_THROW_EXCEPTION( std::invalid_argument( str ) );
+	return eImageOpaque;
 }
 
 std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e )
@@ -305,6 +310,7 @@ std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e )
 			return kOfxImageUnPreMultiplied;
 	}
 	BOOST_THROW_EXCEPTION( std::invalid_argument( "PreMultiplicationEnum: " + boost::lexical_cast<std::string>(e) ) );
+	return "";
 }
 
 /** @brief turns a field string into and enum */
@@ -327,6 +333,7 @@ FieldEnum mapStrToFieldEnum( const std::string& str )
 		return eFieldUpper;
 	}
 	BOOST_THROW_EXCEPTION( std::invalid_argument( str ) );
+	return eFieldNone;
 }
 
 std::string mapFieldEnumToStr( const FieldEnum& e )
@@ -343,6 +350,7 @@ std::string mapFieldEnumToStr( const FieldEnum& e )
 			return kOfxImageFieldUpper;
 	}
 	BOOST_THROW_EXCEPTION( std::invalid_argument( boost::lexical_cast<std::string>(e) ) );
+	return "";
 }
 
 ////////////////////////////////////////////////////////////////////////////////

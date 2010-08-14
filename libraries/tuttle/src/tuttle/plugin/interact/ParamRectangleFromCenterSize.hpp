@@ -84,6 +84,7 @@ private:
 				return "eSelectTypeC";
 		}
 		BOOST_THROW_EXCEPTION( std::invalid_argument( "ESelectType: " + boost::lexical_cast<std::string>(s) ) );
+		return "";
 	}
 	ESelectType _selectType;
 	

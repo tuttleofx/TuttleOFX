@@ -57,7 +57,7 @@ public:
 	{
 		ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
 		ofx::attribute::OfxhClipImageSet::ClipImageMap& clipsMap = getClips();
-		ofx::attribute::OfxhAttribute* inAttr;
+		ofx::attribute::OfxhAttribute* inAttr = NULL;
 
 		if( clips.size() == 1 )
 		{

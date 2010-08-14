@@ -257,13 +257,13 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 	if( ph->getOfxPlugin() )
 		rval = ph->getOfxPlugin()->mainEntry( kOfxImageEffectActionDescribeInContext, newContext->getHandle(), inarg.getHandle(), 0 );
 
-	if( rval == kOfxStatOK || rval == kOfxStatReplyDefault )
+	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		std::string key(context); // for constness
-		_contexts.insert( key, newContext.release() );
-		return _contexts.at(context);
+		BOOST_THROW_EXCEPTION( OfxhException( rval, "kOfxImageEffectActionDescribeInContext failed." ) );
 	}
-	BOOST_THROW_EXCEPTION( OfxhException( rval, "kOfxImageEffectActionDescribeInContext failed." ) );
+	std::string key(context); // for constness
+	_contexts.insert( key, newContext.release() );
+	return _contexts.at(context);
 }
 
 imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const std::string& context )
@@ -280,7 +280,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	}
 	OfxhImageEffectNodeDescriptor& desc = getDescriptorInContext( context );
 	imageEffect::OfxhImageEffectNode* instance = Core::instance().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
-	instance->createInstanceAction(); /// @todo tuttle: it's not possible to move this in a constructor ?
+	instance->createInstanceAction(); // Is it not possible to move this in a constructor ? In some cases it's interesting to initialize host side values before creation of plugin side objets (eg. node duplication or creation from file).
 	return instance;
 }
 

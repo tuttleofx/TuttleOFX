@@ -181,8 +181,8 @@ size_t OfxhInteract::getDimension( const std::string& name ) const OFX_EXCEPTION
 	{
 		return 2;
 	}
-	else
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrValue ) );
+	return 0;
 }
 
 // do nothing function
@@ -217,8 +217,8 @@ double OfxhInteract::getDoubleProperty( const std::string& name, int index ) con
 		getViewportSize( first[0], first[1] );
 		return first[index];
 	}
-	else
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
+	return 0.0;
 }
 
 void OfxhInteract::getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC
@@ -241,8 +241,7 @@ void OfxhInteract::getDoublePropertyN( const std::string& name, double* first, i
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		getViewportSize( first[0], first[1] );
 	}
-	else
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
 }
 
 void OfxhInteract::getSlaveToParam( std::vector<std::string>& params ) const

@@ -238,6 +238,7 @@ inline Obj transformValues( const EParamLensType lensType, const LensDistortProc
     }
 	BOOST_THROW_EXCEPTION( exception::Unsupported()
 		<< exception::message( "Outside of the plugin fonctionnalities." ) );
+	return obj;
 }
 
 

@@ -196,6 +196,7 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		//		_memoryCache.get( getFullName(), time ).get()->cout();
 	}
 	BOOST_THROW_EXCEPTION( exception::LogicError( "Error input clip not in cache !" ) );
+	return NULL;
 }
 
 }

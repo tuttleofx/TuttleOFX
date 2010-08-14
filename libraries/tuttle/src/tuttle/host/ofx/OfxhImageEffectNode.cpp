@@ -222,6 +222,7 @@ size_t OfxhImageEffectNode::getDimension( const std::string& name ) const OFX_EX
 {
 	COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ << " with name=" << name );
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
+	return 0;
 }
 
 size_t OfxhImageEffectNode::upperGetDimension( const std::string& name )
@@ -290,8 +291,8 @@ double OfxhImageEffectNode::getDoubleProperty( const std::string& name, int inde
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 		return getFrameRate();
 	}
-	else
-		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown ) );
+	return 0.0;
 }
 
 void OfxhImageEffectNode::getDoublePropertyN( const std::string& name, double* first, int n ) const OFX_EXCEPTION_SPEC

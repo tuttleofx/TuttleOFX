@@ -194,9 +194,9 @@ const std::string ImageEffectNode::getProjectBitDepth() const
 ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
 	std::string name = descriptor.getName();
+	ofx::attribute::OfxhParam* param = NULL;
 	try
 	{
-		ofx::attribute::OfxhParam* param;
 		if( descriptor.getParamType() == kOfxParamTypeString )
 			param = new attribute::ParamString( *this, name,  descriptor );
 		else if( descriptor.getParamType() == kOfxParamTypeInteger )
@@ -230,12 +230,12 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 			BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
 		}
 		this->addParam( name, param );
-		return param;
 	}
 	catch( exception::LogicError& e ) // map intern exception to ofx::OfxhException
 	{
 		BOOST_THROW_EXCEPTION( ofx::OfxhException( e.ofxStatus(), e.what() ) );
 	}
+	return param;
 }
 
 void ImageEffectNode::editBegin( const std::string& name ) OFX_EXCEPTION_SPEC
