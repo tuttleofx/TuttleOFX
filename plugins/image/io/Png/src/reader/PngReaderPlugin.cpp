@@ -138,7 +138,7 @@ bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	}
 	catch( boost::exception& e )
 	{
-		e << boost::errinfo_file_name(filename);
+		e << exception::filename(filename);
 		throw;
 	}
 	return true;

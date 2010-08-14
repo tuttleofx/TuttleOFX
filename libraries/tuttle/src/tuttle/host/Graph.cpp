@@ -25,7 +25,8 @@ Graph::Node& Graph::createNode( const std::string& id )
 	ofx::imageEffect::OfxhImageEffectPlugin* plug = Core::instance().getImageEffectPluginById( id );
 
 	if( !plug )
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin not found. plug (" + id + ")" ) );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user( "Plugin not found. plug (" + id + ")" ) );
 
 	plug->loadAndDescribeActions();
 
@@ -52,14 +53,17 @@ Graph::Node& Graph::createNode( const std::string& id )
 	}
 	else
 	{
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin contexts not supported by the host. (" + id + ")" ) );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user( "Plugin contexts not supported by the host. (" + id + ")" ) );
 	}
 
 	if( !plugInst )
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin not found. plugInst (" + id + ")" ) );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user( "Plugin not found. plugInst (" + id + ")" ) );
 	ImageEffectNode* node = dynamic_cast<ImageEffectNode*>( plugInst );
 	if( !node )
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Plugin not found (" + id + ")." ) );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user( "Plugin not found (" + id + ")." ) );
 
 	std::stringstream uniqueName;
 	uniqueName << node->getLabel() << ++_instanceCount[node->getLabel()];
@@ -103,7 +107,8 @@ void Graph::connect( const std::list<std::string>& nodes )
 {
 	typedef std::list<std::string>::const_iterator ConstIterator;
 	if( nodes.size() <= 1 )
-		BOOST_THROW_EXCEPTION( exception::LogicError("Needs multiple nodes to connect the together.") );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user("Needs multiple nodes to connect them together.") );
 
 	ConstIterator itA = nodes.begin(), itB = itA;
 	++itB;
@@ -125,7 +130,8 @@ void Graph::connect( const std::list<Node*>& nodes )
 {
 	typedef std::list<Node*>::const_iterator ConstIterator;
 	if( nodes.size() <= 1 )
-		BOOST_THROW_EXCEPTION( exception::LogicError("Needs multiple nodes to connect the together.") );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user("Needs multiple nodes to connect them together.") );
 	
 	ConstIterator itA = nodes.begin(), itB = itA;
 	++itB;
@@ -142,7 +148,8 @@ void Graph::connect( const std::vector<Node*>& nodes )
 {
 	typedef std::vector<Node*>::const_iterator ConstIterator;
 	if( nodes.size() <= 1 )
-		BOOST_THROW_EXCEPTION( exception::LogicError("Needs multiple clips to connect them !") );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user("Needs multiple clips to connect them together.") );
 
 	ConstIterator itA = nodes.begin(), itB = itA;
 	++itB;

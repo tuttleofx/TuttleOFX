@@ -122,14 +122,22 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Load failed on plugin " + op.getIdentifier() ) );
+		BOOST_THROW_EXCEPTION( exception::OfxCustom()
+			<< exception::ofxStatus( rval )
+			<< exception::user( "Loading plugin failed." )
+			<< exception::dev( "kOfxActionLoad failed." )
+			<< exception::pluginIdentifier( op.getIdentifier() ) );
 	}
 
 	rval = plug->mainEntry( kOfxActionDescribe, p.getDescriptor().getHandle(), 0, 0 );
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Describe failed on plugin " + op.getIdentifier() ) );
+		BOOST_THROW_EXCEPTION( exception::OfxCustom()
+			<< exception::ofxStatus( rval )
+			<< exception::user( "Loading plugin failed." )
+			<< exception::dev( "kOfxActionDescribe failed." )
+			<< exception::pluginIdentifier( op.getIdentifier() ) );
 	}
 
 	const imageEffect::OfxhImageEffectNodeDescriptor& e = p.getDescriptor();
@@ -147,7 +155,11 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Unload failed on plugin " + op.getIdentifier() + " at initialization." ) );
+		BOOST_THROW_EXCEPTION( exception::OfxCustom()
+			<< exception::ofxStatus( rval )
+			<< exception::user( "Unloading plugin failed at initialization.." )
+			<< exception::dev( "kOfxActionUnload failed." )
+			<< exception::pluginIdentifier( op.getIdentifier() ) );
 	}
 }
 

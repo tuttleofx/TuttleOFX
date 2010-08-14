@@ -231,9 +231,15 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 		}
 		this->addParam( name, param );
 	}
-	catch( exception::LogicError& e ) // map intern exception to ofx::OfxhException
+	catch( exception::Common& e )
 	{
-		BOOST_THROW_EXCEPTION( ofx::OfxhException( e.ofxStatus(), e.what() ) );
+		BOOST_THROW_EXCEPTION( ofx::OfxhException( *boost::get_error_info<exception::ofxStatus>(e),
+			                                       boost::diagnostic_information(e) ) );
+	}
+	catch( ... )
+	{
+		BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrUnknown,
+			                                       boost::current_exception_diagnostic_information() ) );
 	}
 	return param;
 }
@@ -306,7 +312,8 @@ void ImageEffectNode::checkClipsConnections() const
 		const attribute::ClipImage& clip = dynamic_cast<const attribute::ClipImage&>( *(it->second) );
 		if( !clip.isOutput() && !clip.getConnected() && !clip.isOptional() ) // one non optional input clip is unconnected
 		{
-			BOOST_THROW_EXCEPTION( exception::LogicError( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
+			BOOST_THROW_EXCEPTION( exception::Logic()
+				<< exception::user( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
 		}
 	}
 }
@@ -333,7 +340,8 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 	}
 	if( inputClipsFound && ! this->isSupportedPixelDepth( biggestBitDepth ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::LogicError("Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
+		BOOST_THROW_EXCEPTION( exception::Logic()
+			<< exception::user("Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
 	}
 	if( supportsMultipleClipDepths() )
 	{
@@ -348,7 +356,8 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 				const std::string& pixelDepth = linkClip.getPixelDepth();
 				if( !this->isSupportedPixelDepth( pixelDepth ) )
 				{
-					BOOST_THROW_EXCEPTION( exception::LogicError("Pixel depth " + pixelDepth + " used by input not supported on node : " + getName()) );
+					BOOST_THROW_EXCEPTION( exception::Logic()
+						<< exception::user("Pixel depth " + pixelDepth + " used by input not supported on node : " + getName()) );
 				}
 				clip.setPixelDepthIfNotModifiedByPlugin( pixelDepth );
 			}
@@ -366,7 +375,8 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
 				if( ! linkClip.getNode().isSupportedPixelDepth( biggestBitDepth ) )
 				{
-					BOOST_THROW_EXCEPTION( exception::LogicError("Biggest pixel depth " + biggestBitDepth + " not supported on node : " + getName()) );
+					BOOST_THROW_EXCEPTION( exception::Logic()
+						<< exception::user("Biggest pixel depth " + biggestBitDepth + " not supported on node : " + getName()) );
 				}
 				clip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
 			}

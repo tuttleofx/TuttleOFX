@@ -91,7 +91,7 @@ int main( int argc, char** argv )
 		outputs.push_back( write4.getName() );
 		g.compute( outputs, 0, 0 );
 	}
-	catch( tuttle::host::exception::LogicError& e )
+	catch( tuttle::host::exception::Common& e )
 	{
 		std::cout << "Tuttle Exception : main de sam." << std::endl;
 		std::cerr << boost::diagnostic_information(e);

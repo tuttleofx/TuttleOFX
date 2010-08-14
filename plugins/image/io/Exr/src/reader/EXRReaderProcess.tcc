@@ -46,7 +46,7 @@ void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
 			<< exception::message( "Unable to open.")
-			<< boost::errinfo_file_name(params._filepath ) );
+			<< exception::filename(params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -108,7 +108,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	}
 	catch( boost::exception& e )
 	{
-		e << boost::errinfo_file_name(params._filepath);
+		e << exception::filename(params._filepath);
 		COUT_ERROR( boost::diagnostic_information(e) );
 //		throw;
 	}
@@ -116,7 +116,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	{
 //		BOOST_THROW_EXCEPTION( exception::Unknown()
 //			<< exception::message( "Unable to write image")
-//			<< boost::errinfo_file_name(params._filepath) );
+//			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 }

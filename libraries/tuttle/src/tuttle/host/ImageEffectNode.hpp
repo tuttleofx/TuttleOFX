@@ -77,7 +77,8 @@ public:
 		}
 		else // if( inClips.empty() )
 		{
-			BOOST_THROW_EXCEPTION( exception::LogicError( kOfxStatFailed, "Connection failed : no clip." ) );
+			BOOST_THROW_EXCEPTION( exception::Logic()
+				<< exception::user( "Connection failed : no clip." ) );
 		}
 		return dynamic_cast<attribute::ClipImage&>( *inAttr );
 	}

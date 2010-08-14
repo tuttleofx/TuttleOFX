@@ -45,7 +45,7 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	}
 	catch( exception::Common& e )
 	{
-		e << boost::errinfo_file_name(params._filepath);
+		e << exception::filename(params._filepath);
 		COUT_ERROR( boost::diagnostic_information(e) );
 //		throw;
 	}
@@ -53,7 +53,7 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	{
 //		BOOST_THROW_EXCEPTION( exception::Unknown()
 //			<< exception::message( "Unable to write image")
-//			<< boost::errinfo_file_name(params._filepath) );
+//			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	copy_pixels( this->_srcView, this->_dstView );

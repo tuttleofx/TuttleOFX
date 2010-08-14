@@ -136,7 +136,10 @@ void* OfxhBinary::findSymbol( const std::string& symbol )
 		return (void*)GetProcAddress( _dlHandle, symbol.c_str() );
 		#endif
 	}
-	BOOST_THROW_EXCEPTION( exception::LogicError( "Symbol '" + symbol + "' not found in plugin file: '" + _binaryPath + "'" ) );
+	BOOST_THROW_EXCEPTION( exception::File()
+		<< exception::user( "Error while loading plugin." )
+		<< exception::filename( _binaryPath )
+		<< exception::dev( "Symbol " + quotes(symbol) + " not found." ) );
 	return NULL;
 }
 

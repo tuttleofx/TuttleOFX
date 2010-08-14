@@ -55,7 +55,8 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 	{
 		if( !getConnected() )
 		{
-			BOOST_THROW_EXCEPTION( exception::LogicError( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." ) );
+			BOOST_THROW_EXCEPTION( exception::Bug()
+				<< exception::dev( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." ) );
 		}
 		return _connectedClip->fetchRegionOfDefinition( time );
 	}
@@ -64,7 +65,8 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 
 	if( time != _effect.getCurrentTime() )
 	{
-		BOOST_THROW_EXCEPTION( exception::LogicError( "Access to another time than current is not supported at the moment." ) );
+		BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user( "Access to another time than current is not supported at the moment." ) );
 	}
 	return _effect.getRegionOfDefinition();
 }
@@ -137,7 +139,8 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		bounds.y1 = optionalBounds->y1;
 		bounds.x2 = optionalBounds->x2;
 		bounds.y2 = optionalBounds->y2;
-		//		BOOST_THROW_EXCEPTION( exception::LogicError(kOfxStatErrMissingHostFeature, "Uses optionalBounds not supported yet.") ); ///< @todo tuttle: this must be supported !
+		//BOOST_THROW_EXCEPTION( exception::MissingHostFeature()
+		//	<< exception::dev("Uses optionalBounds not supported yet.") ); ///< @todo tuttle: needs to be supported !
 		//		TCOUT("on clip: " << getFullName() << " optionalBounds="<< bounds);
 	}
 	else
@@ -195,7 +198,8 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		//		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
 		//		_memoryCache.get( getFullName(), time ).get()->cout();
 	}
-	BOOST_THROW_EXCEPTION( exception::LogicError( "Error input clip not in cache !" ) );
+	BOOST_THROW_EXCEPTION( exception::Memory()
+		<< exception::dev( "Error input clip not in cache !" ) );
 	return NULL;
 }
 

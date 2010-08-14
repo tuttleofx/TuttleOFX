@@ -132,8 +132,10 @@ public:
 
 	void copyValues( const This& other );
 
+#ifndef SWIG
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
-
+#endif
+	
 #ifdef SWIG
 	%extend
 	{

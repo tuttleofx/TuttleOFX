@@ -15,21 +15,9 @@ try
 {
 	$action
 }
-catch( tuttle::host::exception::LogicError& e )
-{
-	SWIG_exception( SWIG_RuntimeError, (std::string("LogicError: ") + e.what()).c_str() );
-}
-catch( boost::exception& e )
-{
-	SWIG_exception( SWIG_RuntimeError, ("Boost exception...\n" + boost::diagnostic_information(e)).c_str() );
-}
-catch( std::exception& e )
-{
-	SWIG_exception( SWIG_RuntimeError, (std::string("Standard c++ exception...\n") + e.what()).c_str() );
-}
 catch( ... )
 {
-	SWIG_exception( SWIG_RuntimeError, "Unknown exception..." );
+	SWIG_exception( SWIG_RuntimeError, boost::current_exception_diagnostic_information().c_str() );
 }
 
 }

@@ -48,11 +48,13 @@ public:
 	{
 		if( isOutput() )
 		{
-			BOOST_THROW_EXCEPTION( exception::LogicError( "You can't connect an output Clip !" ) );
+			BOOST_THROW_EXCEPTION( exception::Logic()
+				<< exception::user( "You can't connect an output Clip !" ) );
 		}
 		if( !other.isOutput() )
 		{
-			BOOST_THROW_EXCEPTION( exception::LogicError( "You can't connect to an input Clip !" ) );
+			BOOST_THROW_EXCEPTION( exception::Logic()
+				<< exception::user( "You can't connect to an input Clip !" ) );
 		}
 		_connectedClip = &other;
 		//getEditableProperties().clear();
@@ -94,7 +96,8 @@ public:
 		{
 			if( !getConnected() || _connectedClip->getFullName().size() == 0 )
 			{
-				BOOST_THROW_EXCEPTION( exception::LogicError( "Input clip " + getFullName() + " is not connected !" ) );
+				BOOST_THROW_EXCEPTION( exception::Logic()
+					<< exception::user( "Input clip " + getFullName() + " is not connected !" ) );
 			}
 			return _connectedClip->getFullName();
 		}

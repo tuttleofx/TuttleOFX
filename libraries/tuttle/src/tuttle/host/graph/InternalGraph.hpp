@@ -144,10 +144,9 @@ public:
 			Edge e( out, in, inAttr );
 			addEdge( descOut, descIn, e );
 		}
-		catch( boost::exception & e )
+		catch( boost::exception &e )
 		{
-			COUT_ERROR( boost::diagnostic_information(e) );
-			//e << exception::LogicError( "Error in InternalGraph on connecting \"" + out + "\" -> \"" + in + "::" + inAttr + "\" !" );
+			e << exception::user( "Error while connecting " + out + " <-- " + in + "." + inAttr );
 			throw;
 		}
 	}
@@ -160,7 +159,8 @@ public:
 
 		if( has_cycle() )
 		{
-			BOOST_THROW_EXCEPTION( std::invalid_argument( "graph: cycle detected" ) );
+			BOOST_THROW_EXCEPTION( exception::Logic()
+				<< exception::user( "Connection error because the graph becomes cyclic." ) );
 		}
 
 		return addedEdge;

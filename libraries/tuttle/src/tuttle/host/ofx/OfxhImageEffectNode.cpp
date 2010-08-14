@@ -727,10 +727,11 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
 			rod = clip.fetchRegionOfDefinition( time );
 		}
-		catch( exception::LogicError& e )
+		catch( boost::exception& e )
 		{
-			COUT_EXCEPTION( e );
-			COUT_ERROR( "Need a clip \"" << kOfxImageEffectSimpleSourceClipName << "\" in context : \"" << _context << "\"." );
+			e << exception::dev() + "Need a clip " + quotes(kOfxImageEffectSimpleSourceClipName) + ".";
+			e << exception::ofxContext( _context );
+			throw;
 		}
 	}
 	else if( _context == kOfxImageEffectContextTransition )
@@ -743,9 +744,10 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 			rod = clipFrom.fetchRegionOfDefinition( time );
 			rod = rectUnion( rod, clipTo.fetchRegionOfDefinition( time ) );
 		}
-		catch( exception::LogicError& e )
+		catch( boost::exception& e )
 		{
-			COUT_EXCEPTION( e );
+			e << exception::ofxContext( _context );
+			throw;
 		}
 	}
 	else if( _context == kOfxImageEffectContextGeneral )
@@ -785,13 +787,10 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 			rod = clip.fetchRegionOfDefinition( std::floor( time ) );
 			rod = rectUnion( rod, clip.fetchRegionOfDefinition( std::floor( time ) + 1 ) );
 		}
-		catch( exception::LogicError& e )
+		catch( boost::exception& e )
 		{
-			COUT_EXCEPTION( e );
-		}
-		catch(... )
-		{
-			COUT_ERROR( "Exception." );
+			e << exception::ofxContext( _context );
+			throw;
 		}
 	}
 

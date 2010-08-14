@@ -1,9 +1,5 @@
-/**
- * This file helps managing exception for OfxPlugin.
- */
-
-#ifndef _TUTTLE_PLUGIN_EXCEPTION_HPP
-#define _TUTTLE_PLUGIN_EXCEPTION_HPP
+#ifndef _TUTTLE_PLUGIN_EXCEPTION_HPP_
+#define _TUTTLE_PLUGIN_EXCEPTION_HPP_
 
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/diagnostic_information.hpp>
@@ -13,8 +9,6 @@
 #include <ofxCorePlugin.h>
 #include <ofxImageEffect.h>
 
-#include <cstdarg>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <stdexcept>
@@ -32,6 +26,7 @@ namespace exception {
 /// @{
 typedef boost::error_info<struct tag_message,std::string> message;
 typedef boost::error_info<struct tag_ofxStatus,::OfxStatus> ofxStatus;
+typedef boost::errinfo_file_name filename;
 /// @}
 
 
@@ -171,7 +166,7 @@ struct BadConversion : virtual public Value {};
 struct ImageNotReady : virtual public Value {};
 /**
  * @brief A non optional input clip in not connected.
- * Normally the host should not laucnh the render in this case.
+ * Normally the host should not launch the render in this case.
  * The error comes from host.
  */
 struct ImageNotConnected : virtual public Value {};
