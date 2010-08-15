@@ -29,7 +29,6 @@ Compilation
 		1) You can get all external libraries using a python script:
 			cd 3rdParty
 			python init.py
-		Then you need to compile each library.
 		2) Use libraries installed on your computer
 			In this case, you need to use the scons build system.
 	
@@ -66,7 +65,7 @@ More information
 	TuttleOfx public repository.
 		http://github.com/tuttleofx/TuttleOFX
 	
-	OpenFX plugin standard
+	OpenFX plugin standard.
 		http://openfx.sourceforge.net
 
 
