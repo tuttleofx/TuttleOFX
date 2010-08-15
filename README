@@ -1,30 +1,72 @@
 
-TuttleOFX version 1.0.0
+TuttleOFX version 0
 
-Get Ready
-=========
+	Project under early development.
 
-Executing 3rdParty/init.sh script will bring all needed libraries, compile BJam and generate a bjam.sh script in this directory.
-bjam.sh can then be used to build TuttleOFX library :
-./bjam.sh /tuttle
-and command line tool
-./bjam.sh /sam
 
-We have created a script to help you on making new plugins.
-run ./plugins/_new/plugGen.py 
-then fill needed informations.
+Presentation
+
+	Tuttle OFX is a library to connect and batch operations with OpenFx plugins.
+	It comes with a set of plugins that allows you to batch process on movies
+	and file sequences.	The python binding is a solution to easily create your
+	processing graph.
+
+
+Licence
+
+	LGPL - GNU LESSER GENERAL PUBLIC LICENSE
+	see LICENCE file
+
+
+Compilation
+
+	* Getting the source
+		git clone git://github.com/tuttleofx/TuttleOFX.git
+		cd TuttleOFX
+		git submodule update -i
+
+	* External libraries
+		1) You can get all external libraries using a python script:
+			cd 3rdParty
+			python init.py
+		Then you need to compile each library.
+		2) Use libraries installed on your computer
+			In this case, you need to use the scons build system.
+	
+	* Compilation
+		see INSTALL.bjam or INSTALL.scons file
+
+
+Plugin creation
+
+	There is a script to help you making new plugins.
+		python $TUTTLE_ROOT/plugins/_scripts/newPlugin.py
+	This script asks you informations about your plugin and create
+	a new plugin source tree in your current directory.
+
 
 Tested compilers
 
-     * Linux:
-          + GCC 4.1.2 on OpenSUSE 10.3
-     * Windows:
-          + Visual C++ 8.0 SP1 on Windows XP.
-          + GCC-MINGW 3.4.5, 4.3.0 on Windows XP.
+	* Linux
+		+ GCC 4.1.2 on OpenSUSE 11.2
+		+ GCC 4.4.2 on OpenSUSE 11.2
+		+ GCC 4.4.3 on Ubuntu 10.04
+	* MacOS
+		+ GCC 4.4.3
+	* Windows
+		+ Visual C++ 8.0 SP1 on Windows XP.
+		+ GCC-MINGW 3.4.5, 4.3.0 on Windows XP.
+
 
 More information 
 
 	Check TuttleOFX website for more information. 
-	The "Getting Started" section is a good place to start.
-
 		http://sites.google.com/site/tuttleofx
+
+	TuttleOfx public repository.
+		http://github.com/tuttleofx/TuttleOFX
+	
+	OpenFX plugin standard
+		http://openfx.sourceforge.net
+
+

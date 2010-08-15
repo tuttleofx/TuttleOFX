@@ -1,0 +1,63 @@
+### TuttleOFX compilation with scons tool ###
+
+###############
+# IN PROGRESS #
+###############
+
+
+# We call $TUTTLE the TuttleOFX root directory.
+export TUTTLE=`pwd`
+
+
+### Fetching external libraries ###
+
+# You have the choice between:
+# 1) install libraries on your system using standard packages.
+# or
+# 2) downloading all external libraries, with a dedicated script
+
+## 1) install libraries on your system using standard packages
+# You need to install all libraries by yourself, see README for the full list.
+# When all libraries are installed, create a configuration file.
+# copy an exemple
+cp $TUTTLE/tools/sconsconf/system.ubuntu $TUTTLE/`hostname`.sconsconf
+
+
+## 2) downloading all external libraries
+cd $TUTTLE/3rdParty
+# download libraries
+python init.py
+
+# now you need to compile all these libraries
+
+# copy the configuration file for local libraries
+cp $TUTTLE/tools/scons.conf/local $TUTTLE/scons.conf
+
+# edit $TUTTLE/scons.conf to set correct directories
+
+### Building
+
+scons
+
+# you can specify a particular target, like
+scons python # to compile tuttle python wrapping
+
+
+
+## Usefull scons command line options and properties ###
+
+# -h                        help: all project options
+# -H                        scons help: all scons options
+
+# you are able to compile only one directory, by compiling from this directory
+# The flag -u search a SConstruct in upper directories
+cd $TUTTLE/plugins/image/filter
+scons -u
+# other solution, from the root directory
+scons $TUTTLE/plugins/image/filter
+
+# you can add default flags to scons,
+# for example it's usefull to always add "-u" flag
+export SCONSFLAGS='-u'
+
+
