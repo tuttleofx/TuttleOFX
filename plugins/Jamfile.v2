@@ -21,7 +21,7 @@ if ! [ type.registered PLUGIN ]
 ###############################################################################
 project
     : requirements
-        <include>$(3RD_PARTY)/boost_gil_extensions
+        <include>$(3RD_PARTY)/boostHack
 		<threading>multi
         <os>NT:<define>_WINDOWS
     ;        
