@@ -2,7 +2,7 @@
 #define _MERGE_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <cstdlib>
 #include <cassert>

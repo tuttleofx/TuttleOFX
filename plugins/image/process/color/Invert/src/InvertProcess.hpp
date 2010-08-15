@@ -5,7 +5,7 @@
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>

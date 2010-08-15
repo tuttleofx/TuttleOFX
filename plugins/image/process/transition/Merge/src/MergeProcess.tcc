@@ -2,7 +2,7 @@
 #include <boost/gil/extension/toolbox/hsl.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>

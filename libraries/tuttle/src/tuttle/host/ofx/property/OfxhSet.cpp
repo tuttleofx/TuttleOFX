@@ -36,7 +36,7 @@
 #include <ofxImageEffect.h>
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/Exception.hpp>
+#include <tuttle/host/exceptions.hpp>
 
 #include <iostream>
 #include <cstring>

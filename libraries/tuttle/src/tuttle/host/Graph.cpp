@@ -26,7 +26,8 @@ Graph::Node& Graph::createNode( const std::string& id )
 
 	if( !plug )
 		BOOST_THROW_EXCEPTION( exception::Logic()
-			<< exception::user( "Plugin not found. plug (" + id + ")" ) );
+			<< exception::user( "Plugin not found." )
+			<< exception::pluginIdentifier( id ) );
 
 	plug->loadAndDescribeActions();
 

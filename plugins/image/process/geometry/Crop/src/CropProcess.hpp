@@ -3,7 +3,7 @@
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 
 namespace tuttle {

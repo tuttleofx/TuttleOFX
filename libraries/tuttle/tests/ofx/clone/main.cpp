@@ -1,5 +1,5 @@
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/Exception.hpp>
+#include <tuttle/host/exceptions.hpp>
 #include <tuttle/host/Core.hpp>
 #include <tuttle/host/ImageEffectNode.hpp>
 

@@ -3,11 +3,11 @@
 
 %module tuttlePython
 %{
-#include <tuttle/host/Exception.hpp>
+#include <tuttle/host/exceptions.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 %}
 
-%include <tuttle/host/Exception.hpp>
+%include <tuttle/host/exceptions.hpp>
 
 
 %exception {

@@ -2,7 +2,7 @@
 #include "LensDistortPlugin.hpp"
 #include "LensDistortOverlayInteract.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <string>

@@ -125,6 +125,8 @@ typedef ::boost::error_info<struct tag_devMessage,::boost::error_info_sstream> d
  * @remark Dev information.
  */
 typedef ::boost::error_info<struct tag_ofxStatus,::OfxStatus> ofxStatus;
+inline std::string to_string( const ofxStatus& e ) { return ofx::mapStatusToString(e.value()); }
+
 /**
  * @brief The ofx context name.
  * Each plugin can be instanciated in differents contexts (depending on the declaration of supported contexts).

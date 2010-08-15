@@ -5,7 +5,7 @@
 
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxCore.h>
 

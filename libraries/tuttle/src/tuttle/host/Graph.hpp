@@ -2,7 +2,7 @@
 #define _TUTTLE_HOST_CORE_GRAPH_HPP_
 
 #include "Core.hpp"
-#include "Exception.hpp"
+#include "exceptions.hpp"
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/Vertex.hpp>
 #include <tuttle/host/graph/Edge.hpp>

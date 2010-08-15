@@ -3,7 +3,7 @@
 #include "ImageMagickWriterPlugin.hpp"
 #include "tuttle/plugin/context/Definition.hpp"
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <string>
 #include <iostream>

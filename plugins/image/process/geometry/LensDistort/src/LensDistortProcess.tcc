@@ -4,7 +4,7 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <cmath>
 #include <vector>

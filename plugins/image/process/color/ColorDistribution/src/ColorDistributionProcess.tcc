@@ -4,7 +4,7 @@
 #include <tuttle/plugin/image/gil/algorithm.hpp>
 #include <tuttle/plugin/image/gil/typedefs.hpp>
 
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/static_assert.hpp>

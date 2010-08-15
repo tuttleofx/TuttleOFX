@@ -20,8 +20,8 @@ namespace exception {
 /**
  * @brief Standard tags you can use to add informations to your exceptions.
  *
- * @remark We keep lower camel case for tags,
- *	to keep a diffrence between tags and exception types
+ * @remark We use lower camel case for tags,
+ *	to keep a difference between tags and exceptions
  */
 /// @{
 typedef boost::error_info<struct tag_message,std::string> message;

@@ -8,7 +8,7 @@
 #include <tuttle/common/utils/global.hpp>
 
 #ifndef WITHOUT_OFX
- #include "PluginException.hpp"
+ #include "exceptions.hpp"
 
  #include <ofxsImageEffect.h>
  #include <ofxsMultiThread.h>

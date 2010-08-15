@@ -4,7 +4,7 @@
 #include "ofxsImageEffect.h"
 #include "ofxsMultiThread.h"
 #include "ofxsUtilities.h"
-#include "PluginException.hpp"
+#include "exceptions.hpp"
 #include "Progress.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>

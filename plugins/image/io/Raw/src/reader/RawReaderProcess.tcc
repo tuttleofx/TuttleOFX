@@ -3,7 +3,7 @@
 #include "RawReaderPlugin.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem/fstream.hpp>

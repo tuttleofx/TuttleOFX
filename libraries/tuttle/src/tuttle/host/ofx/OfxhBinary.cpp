@@ -28,7 +28,7 @@
  */
 
 #include "OfxhBinary.hpp"
-#include "tuttle/host/Exception.hpp"
+#include "tuttle/host/exceptions.hpp"
 
 namespace tuttle {
 namespace host {

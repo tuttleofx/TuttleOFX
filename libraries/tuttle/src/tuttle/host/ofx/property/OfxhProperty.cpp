@@ -33,7 +33,7 @@
 #include "OfxhNotifyHook.hpp"
 
 #include <tuttle/common/utils/global.hpp>
-#include <tuttle/host/Exception.hpp>
+#include <tuttle/host/exceptions.hpp>
 
 // ofx
 #include <ofxCore.h>

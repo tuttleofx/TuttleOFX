@@ -2,7 +2,7 @@
 #include "TextProcess.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/ptr_container/ptr_inserter.hpp>

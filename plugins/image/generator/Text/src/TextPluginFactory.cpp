@@ -4,7 +4,7 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
