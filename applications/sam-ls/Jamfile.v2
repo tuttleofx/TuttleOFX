@@ -11,13 +11,13 @@ project
         <include>src
     : usage-requirements
         <include>src
-    : build-dir $(DIST)/sam-convert/obj
+    : build-dir $(DIST)/sam-ls/obj
     ;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
-exe sam-convert : 
+exe sam-ls : 
     [ glob src/*.cpp ]
     /tuttlehost/<link>static
     /boost/system
@@ -31,10 +31,10 @@ exe sam-convert :
 # Automatic install
 ###############################################################################
 install dist_src	
-    : sam-convert
+    : sam-ls
       /boost/system
       /boost/filesystem
 	  /boost/serialization
-    : <variant>debug:<location>$(DIST)/sam-convert/bin/debug
-      <variant>release:<location>$(DIST)/sam-convert/bin/release
+    : <variant>debug:<location>$(DIST)/sam-ls/bin/debug
+      <variant>release:<location>$(DIST)/sam-ls/bin/release
     ;
