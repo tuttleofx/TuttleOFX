@@ -72,7 +72,11 @@ namespace boost {
         const value_type& value() const { return _value; }
         value_type& value() { return _value; }
 	private:
+#if BOOST_VERSION <= 104200
+        char const * tag_typeid_name() const { return tag_type_name<Tag>(); }
+#else
         std::string tag_typeid_name() const { return tag_type_name<Tag>(); }
+#endif
         std::string value_as_string() const { return _value._v.str(); }
 
         value_type _value;
