@@ -36,7 +36,7 @@ std::ostream& operator<<( std::ostream& os, const ProcessOptions& options )
 	os << "renderScale:" << options._renderScale << std::endl;
 
 	os << "clips:" << options._inputsRoI.size() << std::endl;
-	BOOST_FOREACH( ProcessOptions::MapClipImageRod::value_type item, options._inputsRoI )
+	BOOST_FOREACH( const ProcessOptions::MapClipImageRod::value_type& item, options._inputsRoI )
 	{
 		if( item.first )
 		{
