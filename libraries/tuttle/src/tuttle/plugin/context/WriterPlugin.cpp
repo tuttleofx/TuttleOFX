@@ -14,7 +14,7 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 	_paramRenderButton   = fetchPushButtonParam( kTuttlePluginWriterParamRender );
 	_paramRenderAlways   = fetchBooleanParam( kTuttlePluginWriterParamRenderAlways );
 	_paramBitDepth       = fetchChoiceParam( kTuttlePluginWriterParamBitDepth );
-	_filePattern.reset(_paramFilepath->getValue(), false, 0, 1);
+	_isSequence = _filePattern.init( _paramFilepath->getValue() );
 }
 
 WriterPlugin::~WriterPlugin()
@@ -31,7 +31,7 @@ void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 {
 	if( paramName == kTuttlePluginWriterParamFilename )
 	{
-		_filePattern.reset(_paramFilepath->getValue(), false, 0, 1);
+		_isSequence = _filePattern.init( _paramFilepath->getValue() );
 	}
 }
 

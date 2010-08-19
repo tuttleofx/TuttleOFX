@@ -20,8 +20,9 @@ int main( int argc, char** argv )
 			cout << "no path.\n" << endl;
 			return 1;
 		}
-
+		
 		boost::filesystem::path path( argv[1] );
+
 		if( fs::is_directory( path ) )
 		{
 			COUT( "-- is directory --" );
@@ -39,8 +40,8 @@ int main( int argc, char** argv )
 			cout << "path:" << path << endl;
 			Sequence clip( path );
 			COUT_VAR( clip.getDirectory() );
-			COUT_VAR( clip.getFirstFilename() );
-			COUT_VAR( clip.getLastFilename() );
+			COUT_VAR( clip.getAbsoluteFirstFilename() );
+			COUT_VAR( clip.getAbsoluteLastFilename() );
 			COUT_VAR( clip.getStep() );
 			COUT_VAR( clip.getFirstTime() );
 			COUT_VAR( clip.getLastTime() );
@@ -51,7 +52,6 @@ int main( int argc, char** argv )
 			COUT_VAR( clip.getPrefix() );
 			COUT_VAR( clip.getSuffix() );
 		}
-
 
 	}
 	catch(...)

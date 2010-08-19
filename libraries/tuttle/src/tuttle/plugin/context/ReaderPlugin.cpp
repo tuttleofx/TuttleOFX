@@ -10,19 +10,19 @@ ReaderPlugin::ReaderPlugin( OfxImageEffectHandle handle )
 {
 	_clipDst  = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath = fetchStringParam( kTuttlePluginReaderParamFilename );
-	_filePattern.reset(_paramFilepath->getValue(), true);
+	_isSequence = _filePattern.init( _paramFilepath->getValue() );
 	_paramExplicitConv = fetchChoiceParam( kTuttlePluginReaderParamExplicitConversion );
 }
 
 ReaderPlugin::~ReaderPlugin()
- {
+{
 }
 
 void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	if( paramName == kTuttlePluginReaderParamFilename )
 	{
-		_filePattern.reset(_paramFilepath->getValue(), true);
+		_isSequence = _filePattern.init( _paramFilepath->getValue() );
 	}
 }
 
@@ -34,17 +34,8 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 
 bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 {
-	if( varyOnTime() )
-	{
-		OfxRangeI rangei = getFilePattern().getRange();
-		range.min = (double)rangei.min;
-		range.max = (double)rangei.max;
-	}
-	else
-	{
-		range.min = (double)kOfxFlagInfiniteMin;
-		range.max = (double)kOfxFlagInfiniteMax;
-	}
+	range.min = getFirstTime();
+	range.max = getLastTime();
 	return true;
 }
 

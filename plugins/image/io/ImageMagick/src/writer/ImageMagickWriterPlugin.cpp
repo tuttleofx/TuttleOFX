@@ -24,7 +24,7 @@ ImageMagickWriterPlugin::ImageMagickWriterPlugin( OfxImageEffectHandle handle )
 ImageMagickWriterProcessParams ImageMagickWriterPlugin::getProcessParams(const OfxTime time)
 {
 	ImageMagickWriterProcessParams params;
-	params._filepath = getFilenameAt(time);
+	params._filepath = getAbsoluteFilenameAt(time);
 	params._quality = this->_quality->getValue();
 	params._premult = this->_premult->getValue();
 	return params;

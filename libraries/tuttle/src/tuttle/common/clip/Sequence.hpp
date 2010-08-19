@@ -27,23 +27,51 @@ class Sequence
 public:
 	typedef Sequence This;
 	typedef ssize_t Time;
+public:
+	/**
+	 * List all recognized pattern types.
+	 */
+	enum EPattern
+	{
+		ePatternNone     = 0,
+		ePatternStandard = 1,
+		ePatternCStyle   = ePatternStandard*2,
+		ePatternFrame    = ePatternCStyle*2,
+
+		ePatternDefault  = ePatternCStyle+ePatternStandard,
+		ePatternAll      = ePatternFrame+ePatternCStyle+ePatternStandard
+	};
+public:
 	Sequence();
 	/**
-	 * @param[in] file: a real file name from the sequence (eg. "/custom/dir/myImages.0010.jpg"),
-	 *                  or a sequence identifier (eg. "/custom/dir/myImages.####.jpg")
+	 * @param[in] file: a sequence identifier (eg. "/custom/dir/myImages.####.jpg")
+	 * @param[in] accept: types of recognized patterns
 	 */
-	Sequence( const boost::filesystem::path& seqPath );
+	Sequence( const boost::filesystem::path& seqPath, const EPattern& accept = ePatternDefault );
 	Sequence( const Sequence& v ) { operator=(v); }
 	virtual ~Sequence();
 
-	void init( const boost::filesystem::path& directory, const std::string& pattern );
-	inline void init( const boost::filesystem::path& seqPath );
+	/**
+	 * @brief Partial initialization, using only pattern informations.
+	 * @warning You don't have all informations like range, directory, etc.
+	 */
+	bool initFromPattern( const std::string& pattern, const EPattern& accept = ePatternDefault );
+
+	/**
+	 * @brief Init from directory and pattern.
+	 */
+	bool init( const boost::filesystem::path& directory, const std::string& pattern, const EPattern& accept = ePatternDefault );
+	/**
+	 * @brief Init from full pattern.
+	 */
+	inline bool init( const boost::filesystem::path& seqPath, const EPattern& accept = ePatternDefault );
 	
 	inline boost::filesystem::path getDirectory() const { return _directory; }
-	inline boost::filesystem::path getAbsoluteFilePathAt( const Time time ) const;
-	inline std::string getFilenameAt( const Time time ) const;
-	inline boost::filesystem::path getFirstFilename() const { return getFilenameAt( getFirstTime() ); }
-	inline boost::filesystem::path getLastFilename() const { return getFilenameAt( getLastTime() ); }
+	inline void setDirectory( const boost::filesystem::path& p ) { _directory = p; }
+	inline std::string getAbsoluteFilenameAt( const Time time ) const;
+	inline std::string getFilenameAtA( const Time time ) const;
+	inline std::string getAbsoluteFirstFilename() const { return getFilenameAtA( getFirstTime() ); }
+	inline std::string getAbsoluteLastFilename() const { return getFilenameAtA( getLastTime() ); }
 
 	inline std::pair<Time, Time> getRange() const { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }
 	inline std::size_t getStep() const { return _step; }
@@ -58,15 +86,18 @@ public:
 	inline std::string getSuffix() const { return _suffix; }
 
 	/**
-	 * @brief Check if filename is inside the sequence and return it's time value.
+	 * @brief Check if the filename is inside the sequence and return it's time value.
 	 * @param[out] time: the time extract from the filename (only if contained in the sequence)
 	 * @return if the filename is contained inside the sequence
 	 */
-	bool isInSequence( const std::string& filename, Time& time );
+	bool isIn( const std::string& filename, Time& time );
+
+	static bool isASequenceFilename( const std::string& filename );
+	static EPattern checkPattern( const std::string& pattern );
+
 
 protected:
 	inline void clear();
-	void initFromPattern( const std::string& pattern );
 	static std::size_t extractStep( const std::list<Time>& times );
 
 private:
@@ -77,7 +108,7 @@ protected:
 	boost::filesystem::path _directory;
 
 	std::string _prefix;         ///< filename prefix
-	std::string _suffix;        ///< filename suffix
+	std::string _suffix;         ///< filename suffix
 
 	bool _strictPadding;         ///< 
 	std::size_t _padding;        ///< padding, no padding if 0, fixed padding otherwise
@@ -94,24 +125,25 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, const boost::regex& filter );
 
 
-inline std::string Sequence::getFilenameAt( const Time time ) const
+inline std::string Sequence::getFilenameAtA( const Time time ) const
 {
 	std::ostringstream o;
 	o << _prefix << std::setw(_padding) << std::setfill(_fillCar) << time << _suffix;
 	return o.str();
 }
 
-inline boost::filesystem::path Sequence::getAbsoluteFilePathAt( const Time time ) const
+inline std::string Sequence::getAbsoluteFilenameAt( const Time time ) const
 {
-	return _directory / getFilenameAt( time );
+	return (_directory / getFilenameAtA( time )).file_string();
 }
 
-inline void Sequence::init( const boost::filesystem::path& seqPath )
+inline bool Sequence::init( const boost::filesystem::path& seqPath, const EPattern& accept )
 {
 	boost::filesystem::path dir = seqPath.parent_path();
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
-	this->init( dir, seqPath.filename() );
+	
+	return this->init( dir, seqPath.filename() );
 }
 
 inline void Sequence::clear()

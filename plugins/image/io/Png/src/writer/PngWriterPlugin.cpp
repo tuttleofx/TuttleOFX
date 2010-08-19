@@ -23,7 +23,7 @@ PngWriterPlugin::PngWriterPlugin( OfxImageEffectHandle handle )
 PngWriterProcessParams PngWriterPlugin::getProcessParams(const OfxTime time)
 {
 	PngWriterProcessParams params;
-	params._filepath = getFilenameAt(time);
+	params._filepath = getAbsoluteFilenameAt(time);
 	params._outputRGB = this->_outputRGB->getValue();
 	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{

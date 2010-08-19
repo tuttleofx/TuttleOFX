@@ -22,20 +22,43 @@ public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
-	inline bool varyOnTime() const;
+	inline bool varyOnTime() const { return _isSequence; }
 
 private:
+	bool                   _isSequence;          ///<
 	common::Sequence       _filePattern;         ///< Filename pattern manager
 
 public:
-	std::string getFilenameAt( const OfxTime time ) const
+	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
-		return getFilePattern().getFilenameAt( time );
+		if( _isSequence )
+			return _filePattern.getAbsoluteFilenameAt( time );
+		else
+			return _paramFilepath->getValue();
 	}
-	const common::Sequence& getFilePattern() const
+	std::string getAbsoluteFirstFilename() const
 	{
-		return _filePattern;
+		if( _isSequence )
+			return _filePattern.getAbsoluteFirstFilename();
+		else
+			return _paramFilepath->getValue();
 	}
+	OfxTime getFirstTime() const
+	{
+		if( _isSequence )
+			return _filePattern.getFirstTime();
+		else
+			return kOfxFlagInfiniteMin;
+	}
+	OfxTime getLastTime() const
+	{
+		if( _isSequence )
+			return _filePattern.getLastTime();
+		else
+			return kOfxFlagInfiniteMax;
+	}
+	
+public:
 	/// @group Attributes
 	/// @{
 	OFX::PushButtonParam* _paramRenderButton;     ///< Render push button
@@ -48,11 +71,6 @@ public:
 	/// @}
 };
 
-inline bool WriterPlugin::varyOnTime() const
-{
-	///@todo tuttle: do this in FilenameManager
-	return _filePattern.getFirstFilename() != _paramFilepath->getValue();
-}
 
 }
 }

@@ -25,17 +25,44 @@ public:
 	virtual bool getTimeDomain( OfxRangeD& range );
 
 public:
-	std::string getFilenameAt( const OfxTime time ) const
+	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
-		return getFilePattern().getFilenameAt( time );
+//		COUT_VAR( time );
+		if( _isSequence )
+		{
+//			COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
+			return _filePattern.getAbsoluteFilenameAt( time );
+		}
+		else
+		{
+//			COUT_VAR( _paramFilepath->getValue() );
+			return _paramFilepath->getValue();
+		}
 	}
-	const common::Sequence& getFilePattern() const
+	std::string getAbsoluteFirstFilename() const
 	{
-		return _filePattern;
+		if( _isSequence )
+			return _filePattern.getAbsoluteFirstFilename();
+		else
+			return _paramFilepath->getValue();
+	}
+	OfxTime getFirstTime() const
+	{
+		if( _isSequence )
+			return _filePattern.getFirstTime();
+		else
+			return kOfxFlagInfiniteMin;
+	}
+	OfxTime getLastTime() const
+	{
+		if( _isSequence )
+			return _filePattern.getLastTime();
+		else
+			return kOfxFlagInfiniteMax;
 	}
 
 protected:
-	inline bool varyOnTime() const;
+	inline bool varyOnTime() const { return _isSequence; }
 
 public:
 	OFX::Clip*           _clipDst;           ///< Destination image clip
@@ -46,14 +73,10 @@ public:
 	/// @}
 	
 private:
+	bool                  _isSequence;
 	common::Sequence      _filePattern;       ///< Filename pattern manager
 };
 
-inline bool ReaderPlugin::varyOnTime() const
-{
-	///@todo tuttle: do this in FilenameManager
-	return _filePattern.getFirstFilename() != _paramFilepath->getValue();
-}
 
 }
 }
