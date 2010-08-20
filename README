@@ -8,7 +8,7 @@ Presentation
 
 	Tuttle OFX is a library to connect and batch operations with OpenFx plugins.
 	It comes with a set of plugins that allows you to batch process on movies
-	and file sequences.	The python binding is a solution to easily create your
+	and file sequences. The python binding is a solution to easily create your
 	processing graph.
 
 
@@ -48,10 +48,10 @@ Tested compilers
 
 	* Linux
 		+ GCC 4.1.2 on OpenSUSE 11.2
-		+ GCC 4.4.2 on OpenSUSE 11.2
+		+ GCC 4.4.1 on OpenSUSE 11.2
 		+ GCC 4.4.3 on Ubuntu 10.04
 	* MacOS
-		+ GCC 4.4.3
+		+ GCC 4.2.1
 	* Windows
 		+ Visual C++ 8.0 SP1 on Windows XP.
 		+ GCC-MINGW 3.4.5, 4.3.0 on Windows XP.
@@ -67,5 +67,3 @@ More information
 	
 	OpenFX plugin standard.
 		http://openfx.sourceforge.net
-
-

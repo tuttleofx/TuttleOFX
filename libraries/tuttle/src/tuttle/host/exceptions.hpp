@@ -3,6 +3,7 @@
 
 #include <tuttle/host/ofx/OfxhUtilities.hpp>
 
+#include <boost/version.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/info.hpp>
@@ -72,10 +73,10 @@ namespace boost {
         const value_type& value() const { return _value; }
         value_type& value() { return _value; }
 	private:
-#if BOOST_VERSION <= 104200
-        char const * tag_typeid_name() const { return tag_type_name<Tag>(); }
-#else
+#if( BOOST_VERSION >= 104300 )
         std::string tag_typeid_name() const { return tag_type_name<Tag>(); }
+#else
+        char const * tag_typeid_name() const { return tag_type_name<Tag>(); }
 #endif
         std::string value_as_string() const { return _value._v.str(); }
 

@@ -20,7 +20,7 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 	Vertex outputVertex(_outputId);
 	_graph.addVertex( outputVertex );
 	
-	BOOST_FOREACH( std::string s, outputNodes )
+	BOOST_FOREACH( const std::string& s, outputNodes )
 	{
 		_graph.connect( "TUTTLE_FAKE_OUTPUT", s, "Output" );
 		COUT_DEBUG( "MY OUTPUT: " << s );
