@@ -15,42 +15,51 @@ int main( int argc, char** argv )
 
 	try
 	{
-		if( argc < 2 )
-		{
-			cout << "no path.\n" << endl;
-			return 1;
-		}
-		
-		boost::filesystem::path path( argv[1] );
+		std::vector<std::string> args;
+		args.reserve(argc-1);
 
-		if( fs::is_directory( path ) )
+		if( argc <= 1 ) // no argument
 		{
-			COUT( "-- is directory --" );
-			std::vector<Sequence> sequences = sequencesInDir( path );
-			BOOST_FOREACH( std::vector<Sequence>::value_type v, sequences )
-			{
-				COUT_X( 80, "_" );
-				cout << "Sequence:" << endl;
-				cout << v << endl;
-			}
+			args.push_back( "." );
 		}
 		else
 		{
-			COUT( "-- is pattern --" );
-			cout << "path:" << path << endl;
-			Sequence clip( path );
-			COUT_VAR( clip.getDirectory() );
-			COUT_VAR( clip.getAbsoluteFirstFilename() );
-			COUT_VAR( clip.getAbsoluteLastFilename() );
-			COUT_VAR( clip.getStep() );
-			COUT_VAR( clip.getFirstTime() );
-			COUT_VAR( clip.getLastTime() );
-			COUT_VAR( clip.getPadding() );
-			COUT_VAR( clip.isStrictPadding() );
-			COUT_VAR( clip.hasMissingFrames() );
-			COUT_VAR( clip.getIdentification() );
-			COUT_VAR( clip.getPrefix() );
-			COUT_VAR( clip.getSuffix() );
+			for( int i = 1; i<argc; ++i )
+				args.push_back( argv[i] );
+		}
+		
+		BOOST_FOREACH( boost::filesystem::path path, args )
+		{
+			//COUT( "param:" << path );
+
+			if( fs::exists( path ) )
+			{
+				if( fs::is_directory( path ) )
+				{
+					std::vector<Sequence> sequences = sequencesInDir( path );
+					BOOST_FOREACH( const std::vector<Sequence>::value_type& s, sequences )
+					{
+//						if( s.getNbFiles() != 1 )
+						COUT( s );
+					}
+				}
+				else
+				{
+//					cout << "* File: " << path << endl;
+				}
+			}
+			else
+			{
+				try
+				{
+					Sequence s( path );
+					COUT( s );
+				}
+				catch(...)
+				{
+					std::cerr << "Unrecognized pattern \"" << path << "\"" << std::endl;
+				}
+			}
 		}
 
 	}

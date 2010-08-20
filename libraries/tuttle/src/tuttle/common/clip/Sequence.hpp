@@ -5,19 +5,24 @@
 
 #include <ofxCore.h>
 
-#include <boost/regex.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
-#include <cmath>
-#include <limits>
 #include <string>
 #include <sstream>
 #include <iomanip>
 #include <vector>
+#include <list>
 #include <cstddef>
 
 namespace tuttle {
 namespace common {
+
+namespace {
+class SeqId;
+class SeqNumbers;
+}
 
 /**
  * @brief A sequence of numeroted files.
@@ -73,13 +78,29 @@ public:
 	inline std::string getAbsoluteFirstFilename() const { return getFilenameAtA( getFirstTime() ); }
 	inline std::string getAbsoluteLastFilename() const { return getFilenameAtA( getLastTime() ); }
 
+	/// @return pattern character in standard style
+	inline char getPatternCharacter() const { return isStrictPadding() ? '#' : '@'; }
+	/// @return a string pattern using standard style
+	inline std::string getStandardPattern() const { return getPrefix() + std::string(getPadding()?getPadding():1, getPatternCharacter()) + getSuffix(); }
+	/// @return a string pattern using C Style
+	inline std::string getCStylePattern() const
+	{
+		if( getPadding() )
+			return getPrefix() + "%0" + boost::lexical_cast<std::string>(getPadding()) + "d" + getSuffix();
+		else
+			return getPrefix() + "%d" + getSuffix();
+	}
+
 	inline std::pair<Time, Time> getRange() const { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }
 	inline std::size_t getStep() const { return _step; }
 	inline Time getFirstTime() const { return _firstTime; }
 	inline Time getLastTime() const { return _lastTime; }
+	inline std::size_t getDuration() const { return getLastTime()-getFirstTime()+1; }
+	inline Time getNbFiles() const { return _nbFiles; }
 	inline std::size_t getPadding() const { return _padding; }
 	inline bool isStrictPadding() const { return _strictPadding; }
-	inline bool hasMissingFrames() const { return (_nbFrames / _step) != static_cast<std::size_t>(getLastTime()-getFirstTime()); }
+	inline bool hasMissingFile() const { return getNbMissingFiles() != 0; }
+	inline std::size_t getNbMissingFiles() const { return (((getLastTime()-getFirstTime()) / getStep()) +1) - getNbFiles(); }
 	/// @brief filename without frame number
 	inline std::string getIdentification() const { return _prefix + _suffix; }
 	inline std::string getPrefix() const { return _prefix; }
@@ -92,16 +113,14 @@ public:
 	 */
 	bool isIn( const std::string& filename, Time& time );
 
-	static bool isASequenceFilename( const std::string& filename );
 	static EPattern checkPattern( const std::string& pattern );
-
 
 protected:
 	inline void clear();
-	static std::size_t extractStep( const std::list<Time>& times );
 
 private:
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
+	friend Sequence buildSequence(  const boost::filesystem::path& directory, const SeqId& id, std::list<SeqNumbers>& nums );
 	friend std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory );
 
 protected:
@@ -115,15 +134,21 @@ protected:
 	std::size_t _step;           ///< step
 	Time _firstTime;             ///< begin time
 	Time _lastTime;              ///< end time
-	std::size_t _nbFrames;       ///< number of frames
+	std::size_t _nbFiles;       ///< number of frames
 
 	static const char _fillCar = '0'; ///< Filling character
 };
 
 
+/**
+ * @brief Search all sequences in a directory.
+ */
 std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory );
+/**
+ * @brief Search all sequences in a directory, but filter all files before with a regex.
+ * @todo TODO !
+ */
 std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, const boost::regex& filter );
-
 
 inline std::string Sequence::getFilenameAtA( const Time time ) const
 {
@@ -155,7 +180,7 @@ inline void Sequence::clear()
 	_step = 1;
 	_firstTime = 0;
 	_lastTime = 0;
-	_nbFrames = 0;
+	_nbFiles = 0;
 }
 
 

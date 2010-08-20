@@ -15,6 +15,24 @@
 // Define functions to display infos in the console
 #include <iostream>
 
+
+#ifdef _DEBUG
+#    define TUTTLE_FORCEINLINE inline
+#else
+#ifdef NDEBUG
+#if   defined(_MSC_VER)
+#    define TUTTLE_FORCEINLINE __forceinline
+#elif defined(__GNUC__) && __GNUC__ > 3
+#    define TUTTLE_FORCEINLINE inline __attribute__ ((always_inline))
+#else
+#    define TUTTLE_FORCEINLINE inline
+#endif
+#else
+#    define TUTTLE_FORCEINLINE inline
+#endif
+#endif
+
+
 #ifndef COUT
 
 /**

@@ -11,7 +11,8 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/throw_exception.hpp>
-#include <boost/mem_fn.hpp>
+#include <boost/assert.hpp>
+#include <boost/progress.hpp>
 
 #include <iostream>
 #include <map>
@@ -19,6 +20,7 @@
 #include <limits>
 #include <iomanip>
 #include <list>
+#include <boost/timer.hpp>
 
 namespace tuttle {
 namespace common {
@@ -27,17 +29,9 @@ using namespace boost::lambda;
 namespace fs = boost::filesystem;
 
 namespace {
-static const boost::regex regexFileSequence(
-	"(.*)"              // anything but without priority
-	"([0-9]+)" // one frame number, can be positive or negative values ( -0012 or +0012 or 0012)
-	"(.*)"              // anything
-//	"(.*"              // anything but without priority
-//	"[_\\.]?)"          // if multiple numbers, the number surround with . _ get priority (eg. seq1shot04myimage.0123.jpg -> 0123)
-//	"([\\-\\+]?[0-9]+)" // one frame number, can be positive or negative values ( -0012 or +0012 or 0012)
-//	"([_\\.]?"          // if multiple numbers, the number surround with . _ get priority (eg. seq1shot04myimage.0123.jpg -> 0123)
-//	//".*?\\.?"            //
-//	".*?)"              // anything
-	);
+
+/// All regex to recognize a pattern
+/// @{
 
 // common used pattern with # or @
 static const boost::regex regexPatternStandard(
@@ -67,46 +61,209 @@ static const boost::regex regexPatternFrame(
 	".*?)"              // anything
 	);
 
-}
+/// @}
 
-Sequence::Sequence()
-: _strictPadding(0)
-, _padding(0)
-, _step(1)
-, _firstTime(0)
-, _lastTime(0)
-, _nbFrames(0)
-{
-}
 
-Sequence::Sequence( const boost::filesystem::path& seqPath, const EPattern& accept )
-: _strictPadding(0)
-, _padding(0)
-, _step(1)
-, _firstTime(0)
-, _lastTime(0)
-, _nbFrames(0)
+/// Internal structures to detect sequence inside a directory
+/// @{
+
+/**
+ * @brief Numbers inside a filename.
+ * Each number can be a time inside a sequence.
+ */
+class SeqNumbers
 {
-	if( ! init( seqPath, accept ) )
+public:
+	typedef SeqNumbers This;
+	typedef Sequence::Time Time;
+	typedef std::pair<Time, std::string> Pair;
+	typedef std::vector<Pair> Vec;
+public:
+	SeqNumbers()
 	{
-		BOOST_THROW_EXCEPTION( std::logic_error("Unrecognized pattern.") );
+		// we preverse reserve and take memory,
+		// that realloc and takes time.
+		_numbers.reserve(10);
 	}
+public:
+	void push_back( const std::string& s )
+	{
+		Time t;
+		try
+		{
+			t = boost::lexical_cast<Time>(s);
+		}
+		catch(...)
+		{
+			// can't retrieve the number,
+			// the number inside the string is probably
+			// ouf of range for Time type.
+			t = 0;
+		}
+		_numbers.push_back( Pair( t, s ) );
+	}
+	void clear()
+	{
+		_numbers.clear();
+	}
+	const std::string& getString( const std::size_t& i ) const { return _numbers[i].second; }
+	std::size_t getPadding( const std::size_t& i ) const
+	{
+		const std::string& s = _numbers[i].second;
+		if( s.size() == 1 )
+			return 0;
+		return s[0] == '0' ? s.size() : 0;
+	}
+	Time getTime( const std::size_t& i ) const { return _numbers[i].first; }
+	std::size_t size() const { return _numbers.size(); }
+
+	bool operator<( const This& v )
+	{
+		// can't have multiple size, if multiple size they must have a
+		// different SeqId
+		BOOST_ASSERT( _numbers.size() != v._numbers.size() );
+		for( Vec::const_iterator i = _numbers.begin(), iEnd = _numbers.end(), vi = v._numbers.begin();
+		     i != iEnd;
+		     ++i, ++vi )
+		{
+			if( i->first < vi->first )
+				return true;
+			else if( i->first > vi->first )
+				return false;
+		}
+		return false; // equals
+	}
+	friend std::ostream& operator<<( std::ostream& os, const This& p );
+private:
+	Vec _numbers;
+};
+
+std::ostream& operator<<( std::ostream& os, const SeqNumbers& p )
+{
+	os << "[";
+//	std::for_each( p._numbers.begin(), p._numbers.end(), os <<
+//		boost::bind( &SeqNumbers::Vec::value_type::second, boost::lambda::_1 ) << "," );
+	BOOST_FOREACH( const SeqNumbers::Vec::value_type& v, p._numbers )
+	{
+		os << v.second << ",";
+	}
+	os << "]";
+	return os;
 }
 
-Sequence::~Sequence()
+/**
+ * @brief Unique identification for a sequence
+ */
+class SeqId
 {
+public:
+	typedef SeqId This;
+	typedef std::list<std::string> Vec;
+
+public:
+    Vec& getId() { return _id; }
+    const Vec& getId() const { return _id; }
+
+	void clear()
+	{
+		_id.clear();
+	}
+	bool operator==( const This& v ) const
+	{
+		if( _id.size() != v._id.size() )
+		{
+			return false;
+		}
+		for( Vec::const_iterator i = _id.begin(), iEnd = _id.end(), vi = v._id.begin();
+		     i != iEnd;
+		     ++i, ++vi )
+		{
+			if( *i != *vi )
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+    std::size_t getHash() const
+    {
+        std::size_t seed = 0;
+		BOOST_FOREACH( const Vec::value_type& i, _id )
+		{
+			boost::hash_combine( seed, i );
+			boost::hash_combine( seed, 1 ); // not like the hash of the concatenation of _id
+		}
+		return seed;
+    }
+	friend std::ostream& operator<<( std::ostream& os, const This& p );
+
+private:
+	Vec _id;
+};
+
+std::ostream& operator<<( std::ostream& os, const SeqId& p )
+{
+	os << "[";
+	std::for_each( p._id.begin(), p._id.end(), os << boost::lambda::_1 << "," );
+	os << "]";
+	return os;
+}
+
+// How we can replace this with a wrapper?
+// Like boost::function, boost::bind,...
+struct SeqIdHash : std::unary_function<SeqId, std::size_t>
+{
+    std::size_t operator()(const SeqId& p) const
+    {
+        return p.getHash();
+    }
+};
+
+/**
+ * @brief Construct id and nums from a filename.
+ * @param[in] str: the string to process (filename)
+ * @param[out] id: list of strings
+ * @param[out] nums: list of integers
+ * @return number of decteted numbers
+ */
+TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, SeqId& id, SeqNumbers& nums )
+{
+	static const boost::regex re("[\\-\\+]?\\d+");
+	static const int subs[] = { -1, 0, }; // get before match and current match
+	boost::sregex_token_iterator m( str.begin(), str.end(), re, subs );
+	boost::sregex_token_iterator end;
+	while( m != end )
+	{
+		// begin with string id, can be an empty string if str begins with a number
+		id.getId().push_back( *m++ );
+		if( m != end ) // if end with a string and not a number
+		{
+			nums.push_back( *m++ );
+		}
+	}
+	if( id.getId().size() == nums.size() )
+	{
+		id.getId().push_back( "" ); // we end with an empty string
+	}
+//	TCOUT_VAR(str);
+//	TCOUT_VAR(id);
+//	TCOUT_VAR(nums);
+	return nums.size();
 }
 
 /**
  * @brief Extract step from a sorted list of time values.
  */
-std::size_t Sequence::extractStep( const std::list<Time>& times )
+std::size_t extractStep( const std::list<Sequence::Time>& times )
 {
+	if( times.size() == 1 )
+		return 1;
 	// init with first step
 	std::size_t step = *(++times.begin()) - times.front(); // times[1] - times[0]
 	// to get the step we use so smallest step, others are considered as missing frames
 	// no check if multiple steps inside a sequence... ignored case.
-	for( std::list<Time>::const_iterator itA = times.begin(), itB = ++times.begin(), itEnd = times.end();
+	for( std::list<Sequence::Time>::const_iterator itA = times.begin(), itB = ++times.begin(), itEnd = times.end();
 	     itB != itEnd;
 	     ++ itA, ++itB )
 	{
@@ -117,11 +274,60 @@ std::size_t Sequence::extractStep( const std::list<Time>& times )
 }
 
 /**
- * @return if the filename can be a inside a sequence.
+ * @brief Extract step from a sorted list of time values.
  */
-bool Sequence::isASequenceFilename( const std::string& filename )
+std::size_t extractStep( const std::list<SeqNumbers>& times, const std::size_t i )
 {
-	return boost::regex_match( filename.c_str(), regexFileSequence );
+	if( times.size() == 1 )
+		return 1;
+	// init with first step
+	std::size_t step = (*(++times.begin())).getTime(i) - times.front().getTime(i); // times[1] - times[0]
+	// to get the step we use so smallest step, others are considered as missing frames
+	// no check if multiple steps inside a sequence... ignored case.
+	for( std::list<SeqNumbers>::const_iterator itA = times.begin(), itB = ++times.begin(), itEnd = times.end();
+	     itB != itEnd;
+	     ++ itA, ++itB )
+	{
+		std::size_t localStep = itB->getTime(i) - itA->getTime(i);
+		step = std::min( step, localStep );
+	}
+	return step;
+}
+
+/// @}
+
+
+}
+
+
+
+
+Sequence::Sequence()
+: _strictPadding(0)
+, _padding(0)
+, _step(1)
+, _firstTime(0)
+, _lastTime(0)
+, _nbFiles(0)
+{
+}
+
+Sequence::Sequence( const boost::filesystem::path& seqPath, const EPattern& accept )
+: _strictPadding(0)
+, _padding(0)
+, _step(1)
+, _firstTime(0)
+, _lastTime(0)
+, _nbFiles(0)
+{
+	if( ! init( seqPath, accept ) )
+	{
+		BOOST_THROW_EXCEPTION( std::logic_error("Unrecognized pattern.") );
+	}
+}
+
+Sequence::~Sequence()
+{
 }
 
 bool Sequence::isIn( const std::string& filename, Time& time )
@@ -250,183 +456,179 @@ bool Sequence::init( const boost::filesystem::path& directory, const std::string
 
 	_firstTime = allTimes.front();
 	_lastTime = allTimes.back();
-	_nbFrames = allTimes.size();
+	_nbFiles = allTimes.size();
 
 	return true; // a real file sequence
 }
 
-
-// Internal structures to detect sequence inside a directory
-namespace {
-
 /**
- * @brief numbers inside a filename.
- * Each number can be a time inside a sequence.
+ * @brief Create a sequence
+ * @param[in] id: the sequence identifier
+ * @param[inout] nums: the list of sequence of number inside each filename
+ * @warning We modify nums in place, because we don't use it after
+ *          so there is no reason to create a copy.
+ * @return a sequence object with all informations
  */
-typedef std::vector<std::size_t> SeqNumbers;
-
-/**
- * @brief Unique identification for a sequence
- */
-class SeqId
+Sequence buildSequence( const boost::filesystem::path& directory, const SeqId& id, std::list<SeqNumbers>& nums )
 {
-public:
-	typedef SeqId This;
-	typedef std::vector<std::string> Vec;
-    Vec getId() { return _id; }
-	bool operator==( const This& v ) const
+	typedef Sequence::Time Time;
+	nums.sort();
+
+	BOOST_ASSERT( nums.size() > 1 );
+	// assert all SeqNumber has the same size...
+	BOOST_ASSERT( nums.front().size() == nums.back().size() );
+
+	std::size_t len = nums.front().size();
+//	TCOUT_VAR(len);
+
+	// detect which part is the sequence number
+	// for the moment, accept only one sequence
+	// but we can easily support multi-sequences
+	std::vector<std::size_t> allIds; // list of ids (with 0<id<len) with value changes
+	for( std::size_t i = 0; i<len; ++i )
 	{
-		if( _id.size() != v._id.size() )
-			return false;
-		for( Vec::const_iterator i = _id.begin(), iEnd = _id.end(), vi = v._id.begin();
-		     i != iEnd;
-		     ++i, ++vi )
+		const Time t = nums.front().getTime(i);
+		BOOST_FOREACH( std::list<SeqNumbers>::value_type& sn, nums )
 		{
-			if( i != vi)
-				return false;
+			if( sn.getTime(i) != t )
+			{
+				allIds.push_back( i );
+				break;
+			}
 		}
-		return true;
 	}
-    std::size_t getHash() const
-    {
-        std::size_t seed = 0;
-		BOOST_FOREACH( const Vec::value_type& i, _id )
-		{
-			boost::hash_combine( seed, i );
-			boost::hash_combine( seed, 1 ); // not like the hash of the concatenation of _id
-		}
-		return seed;
-    }
-	friend std::ostream& operator<<( std::ostream& os, const This& p );
-	
-private:
-	Vec _id;
-};
-
-std::ostream& operator<<( std::ostream& os, const SeqId& p )
-{
-	os << "[";
-	std::for_each( p._id.begin(), p._id.end(), os << boost::lambda::_1 << "," );
-	os << "]";
-	return os;
-}
-
-// How we can replace this with a wrapper?
-// Like boost::function, boost::bind,...
-struct SeqIdHash : std::unary_function<SeqId, std::size_t>
-{
-    std::size_t operator()(const SeqId& p) const
-    {
-        return p.getHash();
-    }
-};
-
-std::size_t seqConstruct( const std::string& str, SeqId& id, SeqNumbers& nums )
-{
-	static const boost::regex re("[\\-\\+]?\\d+");
-	static const int subs[] = { -1, 0, }; // get before match and current match
-	boost::sregex_token_iterator m( str.begin(), str.end(), re, subs );
-	boost::sregex_token_iterator end;
-	while( m != end )
+//	unsigned int i = 0;
+//	BOOST_FOREACH( const std::list<SeqNumbers>::value_type& sn, nums )
+//	{
+//		TCOUT( "seq " << i++ << " : " <<  sn);
+//	}
+	std::size_t idNum;
+//	TCOUT_VAR(allIds.size());
+	if( allIds.size() == 0 )
 	{
-		// begin with string id, can be an empty string if str begins with a number
-		id.getId().push_back( *m++ );
-		if( m != end )
-			nums.push_back( boost::lexical_cast<std::size_t>(*m++) );
+		idNum = 0;
 	}
-	return id.getId().size();
+	else if( allIds.size() == 1 )
+	{
+		idNum = allIds[0];
+	}
+	else
+	{
+		BOOST_FOREACH( const std::size_t& s, allIds )
+		{
+			COUT_VAR(s);
+		}
+		BOOST_THROW_EXCEPTION( std::logic_error( "Multi-sequence unsupported." ) );
+	}
+//	TCOUT_VAR( idNum );
+
+	Sequence s;
+	// fill information in the sequence...
+	s._directory = directory;
+	SeqId::Vec::const_iterator idIt = id.getId().begin();
+	for( std::size_t i = 0; i<idNum; ++i )
+	{
+		s._prefix += *idIt++;
+		s._prefix += nums.front().getString(i);
+	}
+	s._prefix += *idIt++;
+	for( std::size_t i = idNum+1; i<len; ++i )
+	{
+		s._suffix += *idIt++;
+		s._suffix += nums.front().getString(i);
+	}
+	s._suffix += *idIt++;
+	BOOST_ASSERT( idIt == id.getId().end() );
+
+	s._padding = nums.front().getPadding(idNum);
+	s._strictPadding = (s._padding != 0);
+	if( s._strictPadding )
+	{
+		BOOST_FOREACH( const std::list<SeqNumbers>::value_type& sn, nums )
+		{
+			// if multiple paddings
+//			s._padding = std::max( sn.getString(idNum).size(), s._padding );
+			if( sn.getString(idNum).size() != s._padding )
+				s._strictPadding = 0;
+//				BOOST_THROW_EXCEPTION( std::logic_error( "Multiple paddings inside the same sequence." ) );
+		}
+	}
+	s._step = extractStep( nums, idNum );
+
+	s._firstTime = nums.front().getTime(idNum);
+	s._lastTime = nums.back().getTime(idNum);
+	s._nbFiles = nums.size();
+	return s;
 }
 
-}
-
-void example()
-{
-	typedef boost::unordered_map<SeqId, std::list<SeqNumbers>, SeqIdHash> SeqIdMap;
-	SeqIdMap m;
-	SeqId id;
-	SeqNumbers nums;
-	seqConstruct("myImage.10_32.frame3.jpg", id, nums);
-
-	m.at(id).push_back( nums );
-}
 
 
 std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 {
 	typedef Sequence::Time Time;
-
-	COUT_VAR(regexFileSequence);
 	
 	std::vector<Sequence> output;
 
 	if( ! exists( directory ) )
 		return output;
 
-	typedef std::pair<Sequence, std::list<Time> > SeqTmp;
-	typedef std::map<std::string, SeqTmp> SeqTmpMap;
-	SeqTmpMap sequences;
+	typedef boost::unordered_map<SeqId, std::list<SeqNumbers>, SeqIdHash> SeqIdMap;
+	SeqIdMap sequences;
+
+//	TCOUT( "listdir begin" );
+
+	SeqId id; // an object uniquely identify a sequence
+	SeqNumbers nums; // the list of numbers inside one filename
 
 	fs::directory_iterator itEnd;
 	for( fs::directory_iterator iter(directory); iter != itEnd; ++iter )
 	{
-		// skip directories
-		if( fs::is_directory( iter->status() ) )
-			continue;
+//		if( fs::is_directory( iter->status() ) )
+//			continue; // skip directories
 
-		boost::cmatch matches;
-		if( boost::regex_match( iter->filename().c_str(), matches, regexFileSequence ) )
+		// clear previous infos
+		id.clear();
+		nums.clear(); // (clear but don't realloc the vector inside)
+
+		// if at least one number detected
+		if( seqConstruct( iter->filename(), id, nums) )
 		{
-			std::string prefix( matches[1].first, matches[1].second );
-			std::string timeStr( matches[2].first, matches[2].second );
-			std::string suffix( matches[3].first, matches[3].second );
-			std::string id( prefix+suffix );
-			COUT_VAR( iter->filename() );
-			COUT_VAR( prefix );
-			COUT_VAR( suffix );
-			COUT_VAR( timeStr );
-			Time time = boost::lexical_cast<Time>( timeStr );
-
-			SeqTmpMap::iterator it = sequences.find( id );
-			if( it == sequences.end() )
+			const SeqIdMap::iterator it( sequences.find( id ) );
+			if( it != sequences.end() ) // is already in map
 			{
-				Sequence s;
-				s._directory = directory;
-				s._prefix = prefix;
-				s._suffix = suffix;
-				s._padding = timeStr.size();
-				s._firstTime = time;
-				s._lastTime = time;
-				s._nbFrames = 1;
-				sequences[id] = SeqTmp( s, std::list<Time>() );
+				// append the list of numbers
+				sequences.at(id).push_back( nums );
 			}
 			else
 			{
-				it->second.second.push_back( time );
-				// no check for different padding... ignored case.
+				// create an entry in the map
+				std::list<SeqNumbers> li;
+				li.push_back( nums );
+				sequences.insert( SeqIdMap::value_type(id, li) );
 			}
 		}
 	}
 
-	BOOST_FOREACH( SeqTmpMap::value_type p, sequences )
-	{
-		SeqTmp& sTmp = p.second;
-		Sequence& s = sTmp.first;
-		std::list<Time>& t = sTmp.second;
-		t.sort();
-		s._firstTime = t.front();
-		s._lastTime = t.back();
-		s._nbFrames = t.size();
-		s._step = Sequence::extractStep( t );
-	}
+//	TCOUT( "listdir end" );
 
-	output.reserve( sequences.size() );
+//	TCOUT_VAR( sequences.size() );
 	
-	std::transform( sequences.begin(), sequences.end(), std::back_inserter(output),
-				 boost::bind(&SeqTmpMap::value_type::second_type::first,
-						  boost::bind(&SeqTmpMap::value_type::second, boost::lambda::_1) ) );
+	output.reserve( sequences.size() );
+
+	BOOST_FOREACH( SeqIdMap::value_type& p, sequences )
+	{
+		Sequence s = buildSequence( directory, p.first, p.second );
+
+		// don't detect sequence of directories
+		if( ! fs::is_directory( s.getAbsoluteFirstFilename() ) )
+		{
+			output.push_back( s );
+		}
+	}
 
 	return output;
 }
+
 
 
 std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, const boost::regex& filter )
@@ -434,20 +636,16 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, 
 	return sequencesInDir( directory );
 }
 
-std::ostream& operator<<( std::ostream& os, const Sequence& v )
+std::ostream& operator<<( std::ostream& os, const Sequence& s )
 {
-	os << "dir:" << v.getDirectory() << std::endl;
-	os << "first file:" << v.getAbsoluteFirstFilename() << std::endl;
-	os << "last file:" << v.getAbsoluteLastFilename() << std::endl;
-	os << "step:" << v.getStep() << std::endl;
-	os << "first time:" << v.getFirstTime() << std::endl;
-	os << "last time:" << v.getLastTime() << std::endl;
-	os << "padding:" << v.getPadding() << std::endl;
-	os << "strict padding:" << v.isStrictPadding() << std::endl;
-	os << "has missing frames:" << v.hasMissingFrames() << std::endl;
-	os << "identification:" << v.getIdentification() << std::endl;
-	os << "prefix:" << v.getPrefix() << std::endl;
-	os << "suffix:" << v.getSuffix() << std::endl;
+	os << s.getDirectory() / s.getStandardPattern()
+	   << " [" << s.getFirstTime() << ":" << s.getLastTime();
+	if( s.getStep() != 1 )
+		os << "x" << s.getStep();
+	os << "]"
+	   << " " << s.getNbFiles() << " file" << ((s.getNbFiles()>1) ?"s":"");
+	if( s.hasMissingFile() )
+	   os << ", " << s.getNbMissingFiles() << " missing file" << ((s.getNbMissingFiles()>1) ?"s":"");
 	return os;
 }
 
