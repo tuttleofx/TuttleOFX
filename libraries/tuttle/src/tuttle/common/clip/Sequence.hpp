@@ -49,27 +49,68 @@ public:
 public:
 	Sequence();
 	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 */
+	Sequence( const boost::filesystem::path& directory, const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const bool strictPadding = false )
+	{
+		init( directory, prefix, padding, suffix, firstTime, lastTime, step, strictPadding );
+	}
+	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 */
+	Sequence( const boost::filesystem::path& directory, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault )
+	{
+		init( directory, pattern, firstTime, lastTime, step, accept );
+	}
+	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 */
+	Sequence( const boost::filesystem::path& seqPath, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault )
+	{
+		init( seqPath, firstTime, lastTime, step, accept );
+	}
+	/**
+	 * @brief Construct a sequence from a pattern and detect range, nbFrames on your filesystem.
 	 * @param[in] file: a sequence identifier (eg. "/custom/dir/myImages.####.jpg")
 	 * @param[in] accept: types of recognized patterns
+	 * @warning search on your filesystem, to detect the range.
 	 */
-	Sequence( const boost::filesystem::path& seqPath, const EPattern& accept = ePatternDefault );
+	Sequence( const boost::filesystem::path& seqPath, const EPattern accept = ePatternDefault );
+	
 	Sequence( const Sequence& v ) { operator=(v); }
 	virtual ~Sequence();
 
 	/**
-	 * @brief Partial initialization, using only pattern informations.
-	 * @warning You don't have all informations like range, directory, etc.
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
 	 */
-	bool initFromPattern( const std::string& pattern, const EPattern& accept = ePatternDefault );
+	void init( const boost::filesystem::path& directory, const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const bool strictPadding = false );
+	
+	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 */
+	bool init( const boost::filesystem::path& directory, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
+	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 */
+	bool init( const boost::filesystem::path& seqPath, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
 
 	/**
 	 * @brief Init from directory and pattern.
+	 * @warning search on your filesystem, to detect the range.
 	 */
-	bool init( const boost::filesystem::path& directory, const std::string& pattern, const EPattern& accept = ePatternDefault );
+	bool initFromDetection( const boost::filesystem::path& directory, const std::string& pattern, const EPattern accept = ePatternDefault );
+	
 	/**
 	 * @brief Init from full pattern.
+	 * @warning search on your filesystem, to detect the range.
 	 */
-	inline bool init( const boost::filesystem::path& seqPath, const EPattern& accept = ePatternDefault );
+	inline bool initFromDetection( const boost::filesystem::path& seqPath, const EPattern& accept = ePatternDefault );
 	
 	inline boost::filesystem::path getDirectory() const { return _directory; }
 	inline void setDirectory( const boost::filesystem::path& p ) { _directory = p; }
@@ -117,6 +158,13 @@ public:
 
 protected:
 	inline void clear();
+	/**
+	 * @brief Partial initialization, using only pattern informations.
+	 * @warning You don't have all informations like range, directory, etc.
+	 */
+	bool initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding );
+
+
 
 private:
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
@@ -150,6 +198,12 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
  */
 std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, const boost::regex& filter );
 
+
+
+
+
+
+
 inline std::string Sequence::getFilenameAtA( const Time time ) const
 {
 	std::ostringstream o;
@@ -162,13 +216,13 @@ inline std::string Sequence::getAbsoluteFilenameAt( const Time time ) const
 	return (_directory / getFilenameAtA( time )).file_string();
 }
 
-inline bool Sequence::init( const boost::filesystem::path& seqPath, const EPattern& accept )
+inline bool Sequence::initFromDetection( const boost::filesystem::path& seqPath, const EPattern& accept )
 {
 	boost::filesystem::path dir = seqPath.parent_path();
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
 	
-	return this->init( dir, seqPath.filename() );
+	return this->initFromDetection( dir, seqPath.filename() );
 }
 
 inline void Sequence::clear()

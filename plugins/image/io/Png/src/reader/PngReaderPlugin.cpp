@@ -29,7 +29,7 @@ PngReaderPlugin::PngReaderPlugin( OfxImageEffectHandle handle )
 PngReaderProcessParams PngReaderPlugin::getProcessParams(const OfxTime time)
 {
 	PngReaderProcessParams params;
-	params._filepath = getFilenameAt(time);
+	params._filepath = getAbsoluteFilenameAt(time);
 	return params;
 }
 
@@ -125,7 +125,7 @@ void PngReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 
 bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const std::string filename( getFilenameAt(args.time) );
+	const std::string filename( getAbsoluteFilenameAt(args.time) );
 	
 	try
 	{
@@ -147,7 +147,7 @@ bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	const std::string filename( getFilePattern().getFirstFilename() );
+	const std::string filename( getAbsoluteFirstFilename() );
 	
 	// Check if exist
 	if( bfs::exists( filename ) )

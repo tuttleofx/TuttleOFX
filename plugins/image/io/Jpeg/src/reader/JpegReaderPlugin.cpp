@@ -24,7 +24,7 @@ JpegReaderPlugin::JpegReaderPlugin( OfxImageEffectHandle handle )
 JpegReaderProcessParams JpegReaderPlugin::getProcessParams(const OfxTime time)
 {
 	JpegReaderProcessParams params;
-	params._filepath = getFilenameAt(time);
+	params._filepath = getAbsoluteFilenameAt(time);
 	return params;
 }
 
@@ -120,7 +120,7 @@ void JpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const
 
 bool JpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	point2<ptrdiff_t> jpegDims = jpeg_read_dimensions( getFilenameAt(args.time) );
+	point2<ptrdiff_t> jpegDims = jpeg_read_dimensions( getAbsoluteFilenameAt(args.time) );
 	rod.x1 = 0;
 	rod.x2 = jpegDims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
@@ -131,7 +131,7 @@ bool JpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgum
 void JpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	const std::string filename( getFilePattern().getFirstFilename() );
+	const std::string filename( getAbsoluteFirstFilename() );
 	
 	// Check if exist
 	if( bfs::exists( filename ) )

@@ -30,7 +30,7 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 {
 	RawReaderProcessParams params;
 
-	params._filepath = getFilenameAt( time );
+	params._filepath = getAbsoluteFilenameAt( time );
 	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
 	return params;
 }
@@ -261,7 +261,7 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	const std::string filename( getFilePattern().getFirstFilename() );
+	const std::string filename( getAbsoluteFirstFilename() );
 
 	// Check if exist
 	if( bfs::exists( filename ) )

@@ -29,7 +29,7 @@ OpenImageIOReaderPlugin::OpenImageIOReaderPlugin( OfxImageEffectHandle handle )
 OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams(const OfxTime time)
 {
 	OpenImageIOReaderProcessParams params;
-	params._filepath = getFilenameAt(time);
+	params._filepath = getAbsoluteFilenameAt(time);
 	return params;
 }
 
@@ -126,7 +126,7 @@ void OpenImageIOReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args
 bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	using namespace OpenImageIO;
-	const std::string filename( getFilenameAt(args.time) );
+	const std::string filename( getAbsoluteFilenameAt(args.time) );
 
 	if( ! bfs::exists( filename ) )
 	{
@@ -156,7 +156,7 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	using namespace OpenImageIO;
-	const std::string filename( getFilePattern().getFirstFilename() );
+	const std::string filename( getAbsoluteFirstFilename() );
 
 	// spec.nchannels;
 //	switch( spec.format )

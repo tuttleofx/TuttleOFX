@@ -27,7 +27,7 @@ ImageMagickReaderPlugin::ImageMagickReaderPlugin( OfxImageEffectHandle handle )
 ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams(const OfxTime time)
 {
 	ImageMagickReaderProcessParams params;
-	params._filepath = getFilenameAt(time);
+	params._filepath = getAbsoluteFilenameAt(time);
 	return params;
 }
 
@@ -125,7 +125,7 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 {
 	ImageInfo* imageInfo = AcquireImageInfo();
 	GetImageInfo( imageInfo );
-	std::string filename = getFilenameAt(args.time);
+	std::string filename = getAbsoluteFilenameAt(args.time);
 	strcpy( imageInfo->filename, filename.c_str() );
 	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
 	GetExceptionInfo( exceptionsInfo );
@@ -157,7 +157,7 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	const std::string filename = getFilePattern().getFirstFilename();
+	const std::string filename = getAbsoluteFirstFilename();
 
 	// Check if exist
 	if( bfs::exists( filename ) )
