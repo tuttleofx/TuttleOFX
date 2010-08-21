@@ -29,10 +29,9 @@
 #ifndef _TUTTLE_HOST_OFX_PROPERTY_HPP_
 #define _TUTTLE_HOST_OFX_PROPERTY_HPP_
 
+#include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhUtilities.hpp>
 #include <tuttle/host/ofx/OfxhException.hpp>
-
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/host/exceptions.hpp>
 
 #include <boost/type_traits/is_virtual_base_of.hpp>

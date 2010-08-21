@@ -4,6 +4,7 @@
 #include "attribute/allParams.hpp"
 
 // ofx host
+#include <tuttle/host/ofx/OfxhUtilities.hpp>
 #include <tuttle/host/ofx/OfxhBinary.hpp>
 #include <tuttle/host/ofx/OfxhMemory.hpp>
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
@@ -227,7 +228,8 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 			param = new attribute::ParamPage( *this, name,  descriptor );
 		else
 		{
-			BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatFailed, "Can't create param instance from param descriptor, type not recognized." ) );
+			BOOST_THROW_EXCEPTION( exception::Failed()
+				<< exception::user() + "Can't create param " + quotes(name) + " instance from param descriptor, type not recognized." );
 		}
 		this->addParam( name, param );
 	}

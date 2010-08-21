@@ -239,7 +239,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 					COUT( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) );
 //					BOOST_THROW_EXCEPTION( exception::Unsupported()
-//						<< exception::message( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) ) );
+//						<< exception::user( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
 				}
 			}
@@ -269,7 +269,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 					COUT( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) );
 //					BOOST_THROW_EXCEPTION( exception::Unsupported()
-//						<< exception::message( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) ) );
+//						<< exception::user( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
 				}
 			}
@@ -300,7 +300,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
 					COUT( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) );
 //					BOOST_THROW_EXCEPTION( exception::Unsupported()
-//						<< exception::message( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) ) );
+//						<< exception::user( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
 				}
 			}
@@ -309,7 +309,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 		default:
 		{
 			BOOST_THROW_EXCEPTION( exception::Unsupported()
-				<< exception::message( "Unknown color type (" + boost::lexical_cast<std::string>(colorType) ) );
+				<< exception::user( "Unknown color type (" + boost::lexical_cast<std::string>(colorType) ) );
 			break;
 		}
 	}

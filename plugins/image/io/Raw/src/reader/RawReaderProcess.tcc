@@ -182,7 +182,7 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 	catch( ... )
 	{
 //		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::message( "Unable to write image")
+//			<< exception::user( "Unable to write image")
 //			<< exception::filename(filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}

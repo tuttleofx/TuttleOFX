@@ -70,17 +70,17 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 						// or: roll short by 4 bits right.
 						//						writeImage<rgb12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeR12G12B12, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "DPX Writer: Unsupported 12 bits rgb image..." ) );
+							<< exception::user( "DPX Writer: Unsupported 12 bits rgb image..." ) );
 						break;
 					case 1:
 						//						writeImage<rgba12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeR12G12B12A12, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "DPX Writer: Unsupported 12 bits rgba image..." ) );
+							<< exception::user( "DPX Writer: Unsupported 12 bits rgba image..." ) );
 						break;
 					case 2:
 						//						writeImage<abgr12_image_t>( src, filepath, 12, tuttle::io::DpxImage::eCompTypeA12B12G12R12, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "DPX Writer: Unsupported 12 bits abgr image..." ) );
+							<< exception::user( "DPX Writer: Unsupported 12 bits abgr image..." ) );
 						break;
 				}
 				break;
@@ -92,18 +92,18 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					case 0:
 						//						writeImage<rgb10_packed_image_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "DPX Writer: Unsupported 10 bits rgb image..." ) );
+							<< exception::user( "DPX Writer: Unsupported 10 bits rgb image..." ) );
 						break;
 					case 1:
 						// Unsupported
 						//						writeImage<rgba10_view_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10A10, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "DPX Writer: Unsupported 10 bits rgba image..." ) );
+							<< exception::user( "DPX Writer: Unsupported 10 bits rgba image..." ) );
 						break;
 					case 2:
 						//						writeImage<abgr10_view_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeA10B10G10R10, packing );
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "DPX Writer: Unsupported 10 bits abgr image..." ) );
+							<< exception::user( "DPX Writer: Unsupported 10 bits abgr image..." ) );
 						break;
 				}
 				break;
@@ -126,7 +126,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 			default:
 				BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "DPX Writer: Unsupported bitdepth..." ) );
+							<< exception::user( "DPX Writer: Unsupported bitdepth..." ) );
 		}
 	}
 	catch( exception::Common& e )
@@ -138,7 +138,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( ... )
 	{
 //		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::message( "Unable to write image")
+//			<< exception::user( "Unable to write image")
 //			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}

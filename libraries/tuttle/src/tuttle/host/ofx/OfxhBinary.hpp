@@ -29,7 +29,7 @@
 #ifndef OFXH_BINARY_H
 #define OFXH_BINARY_H
 
-#include <tuttle/common/utils/global.hpp>
+#include "OfxhCore.hpp"
 
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>

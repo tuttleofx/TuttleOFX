@@ -50,7 +50,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				writeImage<bits16>( this->_srcView, params._filepath );
 				break;
 			default:
-				BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::message( "Unrecognized bit depth" ) );
+				BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::user( "Unrecognized bit depth" ) );
 				break;
 		}
 	}
@@ -63,7 +63,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( ... )
 	{
 //		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::message( "Unable to write image")
+//			<< exception::user( "Unable to write image")
 //			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}

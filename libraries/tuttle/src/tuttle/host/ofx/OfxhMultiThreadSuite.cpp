@@ -1,8 +1,6 @@
 #include "OfxhMultiThreadSuite.hpp"
 #include "OfxhCore.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-
 #include <boost/thread/thread.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/tss.hpp>

@@ -27,18 +27,16 @@ public:
 	{
 	}
 
-	/// ctor
 	explicit OfxhException( OfxStatus stat )
 		: boost::exception()
-		, std::logic_error( mapStatusToString( stat ) )
+		, std::logic_error( ofx::mapStatusToString( stat ) )
 		, _stat( stat )
 	{
 	}
 
-	/// ctor
 	explicit OfxhException( OfxStatus stat, const std::string& what )
 		: boost::exception()
-		, std::logic_error( mapStatusToString( stat ) + " " + what )
+		, std::logic_error( ofx::mapStatusToString( stat ) + " " + what )
 		, _stat( stat )
 	{
 	}
@@ -52,7 +50,7 @@ public:
 	///@todo tuttle : mapStatusEnumToStr... in tuttle common
 	std::string getStatusStr() const
 	{
-		return mapStatusToString( _stat );
+		return ofx::mapStatusToString( _stat );
 	}
 
 };

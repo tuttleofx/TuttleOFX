@@ -1,10 +1,9 @@
 #ifndef OFXH_PLUGINBINARY_HPP
 #define OFXH_PLUGINBINARY_HPP
 
-#include <tuttle/common/utils/global.hpp>
-
 #include "OfxhPlugin.hpp"
 #include "OfxhBinary.hpp"
+#include "OfxhCore.hpp"
 
 #include <boost/ptr_container/serialize_ptr_vector.hpp>
 #include <boost/serialization/string.hpp>

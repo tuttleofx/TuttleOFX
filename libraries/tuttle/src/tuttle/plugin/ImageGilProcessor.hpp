@@ -188,7 +188,7 @@ void ImageGilProcessor<View>::process( void )
 	if( _renderArgs.renderWindow.x2 - _renderArgs.renderWindow.x1 == 0 ||
 	    _renderArgs.renderWindow.y2 - _renderArgs.renderWindow.y1 == 0 )
 	{
-		BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::message( "RenderWindow empty !" ) );
+		BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::user( "RenderWindow empty !" ) );
 	}
 	// call the pre MP pass
 	preProcess();

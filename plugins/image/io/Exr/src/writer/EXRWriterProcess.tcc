@@ -56,7 +56,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					case eGray:
 					{
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "ExrWriter: Gray not supported!" ) );
+							<< exception::user( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray16h_pixel_t>(this->_srcView, filepath, Imf::HALF);
 						break;
 					}
@@ -80,7 +80,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					case eGray:
 					{
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "ExrWriter: Gray not supported!" ) );
+							<< exception::user( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32f_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
@@ -104,7 +104,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 					case eGray:
 					{
 						BOOST_THROW_EXCEPTION( exception::Unsupported()
-							<< exception::message( "ExrWriter: Gray not supported!" ) );
+							<< exception::user( "ExrWriter: Gray not supported!" ) );
 						// writeImage<gray32_pixel_t>(this->_srcView, filepath, Imf::FLOAT);
 						break;
 					}
@@ -132,7 +132,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( ... )
 	{
 //		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::message( "Unable to write image")
+//			<< exception::user( "Unable to write image")
 //			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
@@ -233,7 +233,7 @@ void EXRWriterProcess<View>::writeImage( View& src, std::string& filepath, Imf::
 		}
 		default:
 			BOOST_THROW_EXCEPTION( exception::ImageFormat()
-				<< exception::message( "ExrWriter: incompatible image type" ) );
+				<< exception::user( "ExrWriter: incompatible image type" ) );
 			break;
 	}
 	file.setFrameBuffer( frameBuffer );

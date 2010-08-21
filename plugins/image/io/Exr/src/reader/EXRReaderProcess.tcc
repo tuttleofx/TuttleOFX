@@ -45,7 +45,7 @@ void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 	if( ! bfs::exists( params._filepath ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::message( "Unable to open.")
+			<< exception::user( "Unable to open.")
 			<< exception::filename(params._filepath ) );
 	}
 
@@ -115,7 +115,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( ... )
 	{
 //		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::message( "Unable to write image")
+//			<< exception::user( "Unable to write image")
 //			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
@@ -243,7 +243,7 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 			if( !slice )
 			{
 				BOOST_THROW_EXCEPTION( exception::Value()
-					<< exception::message( std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!") );
+					<< exception::user( std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!") );
 			}
 			sliceCopy( slice, dst, w, h, s );
 		}

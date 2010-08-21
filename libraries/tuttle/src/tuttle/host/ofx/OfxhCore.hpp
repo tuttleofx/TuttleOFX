@@ -1,18 +1,20 @@
 #ifndef _TUTTLE_HOST_OFX_CORE_HPP_
 #define _TUTTLE_HOST_OFX_CORE_HPP_
 
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/ofx/core.hpp>
+
 #include <ofxCore.h>
 
-#include <ostream>
+namespace tuttle {
+namespace host {
+namespace ofx {
 
-std::ostream& operator<<( std::ostream& os, const OfxPlugin& v );
+using namespace tuttle::ofx;
 
-std::ostream& operator<<( std::ostream& out, const OfxPointI& p );
-std::ostream& operator<<( std::ostream& out, const OfxPointD& p );
-std::ostream& operator<<( std::ostream& out, const OfxRangeI& r );
-std::ostream& operator<<( std::ostream& out, const OfxRangeD& r );
-std::ostream& operator<<( std::ostream& out, const OfxRectI& r );
-std::ostream& operator<<( std::ostream& out, const OfxRectD& r );
+}
+}
+}
 
 #endif
 

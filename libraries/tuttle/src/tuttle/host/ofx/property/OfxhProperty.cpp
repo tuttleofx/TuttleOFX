@@ -32,11 +32,10 @@
 #include "OfxhGetHook.hpp"
 #include "OfxhNotifyHook.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/exceptions.hpp>
 
 // ofx
-#include <ofxCore.h>
 #include <ofxImageEffect.h>
 
 #include <iostream>

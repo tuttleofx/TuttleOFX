@@ -528,7 +528,7 @@ Sequence buildSequence( const boost::filesystem::path& directory, const SeqId& i
 //	{
 //		TCOUT( "seq " << i++ << " : " <<  sn);
 //	}
-	std::size_t idNum;
+	std::size_t idNum = 0;
 //	TCOUT_VAR(allIds.size());
 	if( allIds.size() == 0 )
 	{
