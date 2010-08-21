@@ -1,2 +1,11 @@
+%include <tuttle/common/exceptions.i>
+%include <std_string.i>
+%include <exception.i>
 
-%include <tuttle/host/exceptions.i>
+%{
+#include <tuttle/host/exceptions.hpp>
+#include <boost/exception/diagnostic_information.hpp>
+%}
+
+%include <tuttle/host/exceptions.hpp>
+
