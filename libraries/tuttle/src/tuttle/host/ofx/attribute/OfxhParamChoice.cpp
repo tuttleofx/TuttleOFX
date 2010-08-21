@@ -23,10 +23,17 @@ int OfxhParamChoice::getIndexFor( const std::string& key ) const
 		{
 	        errorMsg +=  *it + ", ";
 		}
-	    errorMsg += "]";	    
-		BOOST_THROW_EXCEPTION( OfxhException( errorMsg ) ); // @todo tuttle: use boost::exception to allows to easily write error message !
+	    errorMsg += "]";
+		BOOST_THROW_EXCEPTION( OfxhException( errorMsg ) );
 	}
 	return boost::numeric_cast<int>( std::distance( values.begin(), itValue ) );
+}
+
+const std::string& OfxhParamChoice::getValueForId( const int id ) const
+{
+	typedef std::vector<std::string> StringVector;
+	const StringVector& values = this->getProperties().fetchStringProperty(kOfxParamPropChoiceOption).getValues();
+	return values[id];
 }
 
 /**

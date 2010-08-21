@@ -19,12 +19,26 @@ public:
 	virtual ~OfxhParamChoice() {}
 
 	int getIndexFor( const std::string& key ) const;
+	const std::string& getValueForId( const int id ) const;
 
 	// Deriving implementatation needs to overide these
 	virtual void get( int& ) const OFX_EXCEPTION_SPEC = 0;
 	virtual void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const int&, const EChange change )                OFX_EXCEPTION_SPEC = 0;
-	virtual void setAtTime( const OfxTime time, const int&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
+	virtual void set( const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+	virtual void setAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+
+	void get( std::string& key ) const OFX_EXCEPTION_SPEC
+	{
+		int id = 0;
+		get( id );
+		key = getValueForId(id);
+	}
+	void getAtTime( const OfxTime time, std::string& key ) const OFX_EXCEPTION_SPEC
+	{
+		int id = 0;
+		getAtTime( time, id );
+		key = getValueForId(id);
+	}
 
 	void set( const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
