@@ -73,9 +73,8 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
 	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
-	bitDepth->setDefault( 0 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *bitDepth );
+	bitDepth->setDefault( 0 );
 
 	OFX::BooleanParamDescriptor* premult = desc.defineBooleanParam( kParamPremult );
 	premult->setLabel( "Premult" );
@@ -87,13 +86,23 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	quality->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	quality->setDefault( 80 );
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( true );
-
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint("Force render (writing)");
+
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	renderAlways->setDefault( false );
+
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kTuttlePluginWriterParamForceNewRender );
+	forceNewRender->setLabel( "Force new render" );
+	forceNewRender->setIsSecret( true );
+	forceNewRender->setIsPersistant( false );
+	forceNewRender->setAnimates( false );
+	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	forceNewRender->setEvaluateOnChange( true );
+	forceNewRender->setDefault( 0 );
 }
 
 /**

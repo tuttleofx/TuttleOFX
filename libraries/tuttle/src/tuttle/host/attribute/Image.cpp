@@ -42,6 +42,11 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	{
 		_ncomp = 1;
 	}
+	else
+	{
+		BOOST_THROW_EXCEPTION( exception::Unsupported()
+			<< exception::user() + "Unsupported component type: " + quotes(clip.getComponents()) );
+	}
 
 	// make some memory according to the bit depth
 	if( clip.getPixelDepth() == kOfxBitDepthByte )
@@ -58,6 +63,11 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	{
 		memlen = int(_ncomp * dimensions.x * dimensions.y * sizeof( float ) );
 		rowlen = int(_ncomp * dimensions.x * sizeof( float ) );
+	}
+	else
+	{
+		BOOST_THROW_EXCEPTION( exception::Unsupported()
+			<< exception::user() + "Unsupported pixel depth: " + quotes(clip.getPixelDepth()) );
 	}
 
 	_data = _memoryPool.allocate( memlen );

@@ -70,13 +70,13 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( true );
-
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
-	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint("Force render (writing)");
+	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
+	componentsType->setLabel( "Components type" );
+	componentsType->appendOption( "rgb" );
+	componentsType->appendOption( "rgba" );
+	componentsType->appendOption( "abgr" );
+	componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	componentsType->setDefault( 1 );
 
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
 	bitDepth->setLabel( "Bit depth" );
@@ -84,20 +84,31 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->appendOption( kTuttlePluginBitDepth10 );
 	bitDepth->appendOption( kTuttlePluginBitDepth12 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
-	bitDepth->setDefault( 3 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *bitDepth );
-
-	OFX::ChoiceParamDescriptor* componentsType = desc.defineChoiceParam( kParamComponentsType );
-	componentsType->setLabel( "Components type" );
-	componentsType->appendOption( "rgb  output" );
-	componentsType->appendOption( "rgba output" );
-	componentsType->appendOption( "abgr output" );
-	componentsType->setDefault( 1 );
+	bitDepth->setDefault( 3 );
 
 	OFX::BooleanParamDescriptor* compressed = desc.defineBooleanParam( kParamCompressed );
 	compressed->setLabel( "Remove unused bits (bit streaming)" );
+	compressed->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	compressed->setDefault( false );
+
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	render->setLabels( "Render", "Render", "Render step" );
+	render->setHint("Force render (writing)");
+
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	renderAlways->setDefault( false );
+
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kTuttlePluginWriterParamForceNewRender );
+	forceNewRender->setLabel( "Force new render" );
+	forceNewRender->setIsSecret( true );
+	forceNewRender->setIsPersistant( false );
+	forceNewRender->setAnimates( false );
+	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	forceNewRender->setEvaluateOnChange( true );
+	forceNewRender->setDefault( 0 );
 }
 
 /**

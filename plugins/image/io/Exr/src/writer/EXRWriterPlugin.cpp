@@ -37,47 +37,44 @@ EXRWriterProcessParams EXRWriterPlugin::getProcessParams(const OfxTime time)
  */
 void EXRWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
-	{
-		// instantiate the render code based on the pixel depth of the dst clip
-		OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();
-		OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents();
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents();
 
-		// do the rendering
-		if( dstComponents == OFX::ePixelComponentRGBA )
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
 		{
-			switch( dstBitDepth )
+			case OFX::eBitDepthUByte:
 			{
-				case OFX::eBitDepthUByte:
-				{
-					EXRWriterProcess<rgba8_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					EXRWriterProcess<rgba16_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthFloat:
-				{
-					EXRWriterProcess<rgba32f_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthNone:
-					COUT_FATALERROR( "BitDepthNone not recognize." );
-					return;
-				case OFX::eBitDepthCustom:
-					COUT_FATALERROR( "BitDepthCustom not recognize." );
-					return;
+				EXRWriterProcess<rgba8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
 			}
+			case OFX::eBitDepthUShort:
+			{
+				EXRWriterProcess<rgba16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				EXRWriterProcess<rgba32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
 		}
-		else
-		{
-			COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
-		}
+	}
+	else
+	{
+		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
 	}
 }
 

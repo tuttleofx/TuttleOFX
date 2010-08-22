@@ -16,14 +16,14 @@ namespace writer {
 OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_outputRGB     = fetchBooleanParam( kParamOutputRGB );
+	_components     = fetchChoiceParam( kParamOutputComponents );
 }
 
 OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const OfxTime time)
 {
 	OpenImageIOWriterProcessParams params;
 	params._filepath = getAbsoluteFilenameAt(time);
-	params._outputRGB = this->_outputRGB->getValue();
+	params._components = static_cast<EParamComponents>( this->_components->getValue() );
 	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
 	{
 		case eParamBitDepth8:
@@ -49,77 +49,74 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const O
 void OpenImageIOWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-	if( _paramRenderAlways->getValue() || OFX::getImageEffectHostDescription()->hostIsBackground )
-	{
-		// instantiate the render code based on the pixel depth of the dst clip
-		OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
-		OFX::PixelComponentEnum dstComponents = _clipSrc->getPixelComponents();
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
+	OFX::PixelComponentEnum dstComponents = _clipSrc->getPixelComponents();
 
-		// do the rendering
-		if( dstComponents == OFX::ePixelComponentRGBA )
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
 		{
-			switch( dstBitDepth )
+			case OFX::eBitDepthUByte:
 			{
-				case OFX::eBitDepthUByte:
-				{
-					OpenImageIOWriterProcess<rgba8_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					OpenImageIOWriterProcess<rgba16_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthFloat:
-				{
-					OpenImageIOWriterProcess<rgba32f_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthNone:
-					COUT_FATALERROR( "BitDepthNone not recognize." );
-					return;
-				case OFX::eBitDepthCustom:
-					COUT_FATALERROR( "BitDepthCustom not recognize." );
-					return;
+				OpenImageIOWriterProcess<rgba8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
 			}
-		}
-		else if( dstComponents == OFX::ePixelComponentAlpha )
-		{
-			switch( dstBitDepth )
+			case OFX::eBitDepthUShort:
 			{
-				case OFX::eBitDepthUByte:
-				{
-					OpenImageIOWriterProcess<gray8_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthUShort:
-				{
-					OpenImageIOWriterProcess<gray16_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthFloat:
-				{
-					OpenImageIOWriterProcess<gray32f_view_t> fred( *this );
-					fred.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthNone:
-					COUT_FATALERROR( "BitDepthNone not recognize." );
-					return;
-				case OFX::eBitDepthCustom:
-					COUT_FATALERROR( "BitDepthCustom not recognize." );
-					return;
+				OpenImageIOWriterProcess<rgba16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
 			}
+			case OFX::eBitDepthFloat:
+			{
+				OpenImageIOWriterProcess<rgba32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
 		}
-		else
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
 		{
-			COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
+			case OFX::eBitDepthUByte:
+			{
+				OpenImageIOWriterProcess<gray8_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				OpenImageIOWriterProcess<gray16_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				OpenImageIOWriterProcess<gray32f_view_t> fred( *this );
+				fred.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
 		}
+	}
+	else
+	{
+		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
 	}
 }
 

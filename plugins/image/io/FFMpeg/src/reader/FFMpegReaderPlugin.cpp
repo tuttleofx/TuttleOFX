@@ -2,9 +2,13 @@
 #include "FFMpegReaderProcess.hpp"
 #include "FFMpegReaderDefinitions.hpp"
 
+#include <ffmpeg/VideoFFmpegReader.hpp>
+
 #include <tuttle/common/utils/global.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 
@@ -14,30 +18,117 @@ namespace ffmpeg {
 namespace reader {
 
 using namespace boost::gil;
-using namespace boost::filesystem;
+namespace fs = boost::filesystem;
 
 FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
 : ImageEffect( handle )
+, _errorInFile(false)
 {
 	// We want to render a sequence
 	setSequentialRender( true );
 
     _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath = fetchStringParam( kFilename );
+	_paramFilepath = fetchStringParam( kFilename );
 }
 
-FFMpegReaderParams FFMpegReaderPlugin::getParams() const
+FFMpegReaderParams FFMpegReaderPlugin::getProcessParams() const
 {
 	FFMpegReaderParams params;
-	_filepath->getValue( params._filepath );
+	_paramFilepath->getValue( params._filepath );
 	return params;
 }
 
-VideoFFmpegReader & FFMpegReaderPlugin::getReader()
+/**
+ * @brief Open the video if not already opened.
+ * @return If the video file is now open,
+ *         else the file doesn't exist, is unrecognized or is corrupted.
+ */
+bool FFMpegReaderPlugin::ensureVideoIsOpen()
 {
-	return _reader;
+	if( _reader.isOpen() )
+		return true;
+
+	// if we have not already tried
+	if( ! _errorInFile )
+	{
+		_errorInFile = ! _reader.open( _paramFilepath->getValue() );
+	}
+	return ! _errorInFile;
 }
 
+void FFMpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+{
+    if( paramName == kFFMpegHelpButton )
+    {
+        sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     kFFMpegHelpString );
+    }
+	else if( paramName == kFilename )
+	{
+		_errorInFile = false;
+	}
+}
+
+void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	clipPreferences.setOutputFrameVarying( true );
+	clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte ); /// @todo tuttle: some video format may need other bit depth (how we can detect this ?)
+
+	if( ! ensureVideoIsOpen() )
+		return;
+
+	// options depending on input file
+	clipPreferences.setPixelAspectRatio( *_clipDst, _reader.aspectRatio() );
+	clipPreferences.setOutputFrameRate( _reader.fps() );
+
+	// Setup fielding
+	switch( _reader.interlacment() )
+	{
+		case  eInterlacmentNone:
+		{
+			clipPreferences.setOutputFielding( OFX::eFieldNone );
+			break;
+		}
+		case  eInterlacmentUpper:
+		{
+			clipPreferences.setOutputFielding( OFX::eFieldUpper );
+			break;
+		}
+		case  eInterlacmentLower:
+		{
+			clipPreferences.setOutputFielding( OFX::eFieldLower );
+			break;
+		}
+	}
+}
+bool FFMpegReaderPlugin::getTimeDomain( OfxRangeD& range )
+{
+	if( ! ensureVideoIsOpen() )
+		return false;
+
+	range.min = 0.0;
+	range.max = (double)_reader.nbFrames();
+	return true;
+}
+
+bool FFMpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	if( ! ensureVideoIsOpen() )
+		return false;
+	
+	rod.x1 = 0;
+	rod.x2 = _reader.width() * _reader.aspectRatio();
+	rod.y1 = 0;
+	rod.y2 = _reader.height();
+	return true;
+}
+
+void FFMpegReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
+{
+	ensureVideoIsOpen();
+}
 
 /**
  * @brief The overridden render function
@@ -45,6 +136,8 @@ VideoFFmpegReader & FFMpegReaderPlugin::getReader()
  */
 void FFMpegReaderPlugin::render( const OFX::RenderArguments &args )
 {
+	if( ! ensureVideoIsOpen() )
+		return;
     // instantiate the render code based on the pixel depth of the dst clip
     OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
     OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
@@ -112,89 +205,9 @@ void FFMpegReaderPlugin::render( const OFX::RenderArguments &args )
     }
 }
 
-void FFMpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-    if( paramName == kFFMpegHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kFFMpegHelpString );
-    }
-	else if( paramName == kFilename )
-	{
-		std::string sFilepath;
-		_filepath->getValue( sFilepath );
-		// Check if exist
-		if( exists( sFilepath ) )
-		{
-			// Close last opened file
-			if ( _openedSource.get() )
-				_reader.close();
-			// Open new source
-			_openedSource.reset( new std::string( sFilepath ) );
-			_reader.open( sFilepath.c_str() );
-		}
-	}
-}
-
-bool FFMpegReaderPlugin::getTimeDomain( OfxRangeD& range )
-{
-	// Source opened ?
-	if ( _openedSource.get() )
-	{
-		range.min = 0.0;
-		range.max = (double)_reader.nbFrames();
-	}
-	return false;
-}
-
-bool FFMpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-{
-	rod.x1 = 0;
-	rod.x2 = _reader.width() * _reader.aspectRatio();
-	rod.y1 = 0;
-	rod.y2 = _reader.height();
-	return true;
-}
-
-void FFMpegReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
-{
-}
-
 void FFMpegReaderPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
 {
 	_reader.close();
-}
-
-void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
-{
-	if ( _openedSource.get() )
-	{
-		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte );
-		clipPreferences.setPixelAspectRatio( *_clipDst, _reader.aspectRatio() );
-		clipPreferences.setOutputFrameRate( _reader.fps() );
-
-		// Setup fielding
-		switch( _reader.interlacment() )
-		{
-			case  eInterlacmentNone:
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldNone );
-				break;
-			}
-			case  eInterlacmentUpper:
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldUpper );
-				break;
-			}
-			case  eInterlacmentLower:
-			{
-				clipPreferences.setOutputFielding( OFX::eFieldLower );
-				break;
-			}
-		}
-	}
 }
 
 }

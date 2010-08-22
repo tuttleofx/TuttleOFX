@@ -26,9 +26,8 @@ void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	
-	VideoFFmpegWriter & writer = _plugin.getWriter();
-	writer.width( this->_srcView.width() );
-	writer.height( this->_srcView.height() );
+	_plugin._writer.width( this->_srcView.width() );
+	_plugin._writer.height( this->_srcView.height() );
 
 	rgb8_image_t img( this->_srcView.dimensions() );
 	rgb8_view_t vw( view(img) );
@@ -38,8 +37,8 @@ void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 	copy_and_convert_pixels( this->_srcView, this->_dstView );
 	uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	// Execute writing
-	writer.setBitrate( _params._bitrate );
-	writer.execute( pixels, this->_srcView.width(), this->_srcView.height(), PIX_FMT_RGB24 );
+	_plugin._writer.setBitrate( _params._bitrate );
+	_plugin._writer.execute( pixels, this->_srcView.width(), this->_srcView.height(), PIX_FMT_RGB24 );
 }
 
 }

@@ -1,7 +1,14 @@
 #include "VideoFFmpegReader.hpp"
 
+#include <tuttle/common/utils/global.hpp>
+
 #include <boost/cstdint.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/filesystem.hpp>
+
+#include <stdint.h>
+
+namespace fs = boost::filesystem;
 
 VideoFFmpegReader::VideoFFmpegReader( )
 : _context( NULL )
@@ -15,13 +22,13 @@ VideoFFmpegReader::VideoFFmpegReader( )
 , _fpsDen( 0 )
 , _currVideoIdx( -1 )
 , _nbFrames( 0 )
-, _width( 0 /*720*/ )
-, _height( 0 /*576*/ )
+, _width( 0 )
+, _height( 0 )
 , _aspect( 1.0 )
 , _offsetTime( true )
 , _lastSearchPos( -1 )
 , _lastDecodedPos( -1 )
-, _isOpen( 0 )
+, _isOpen( false )
 {
 	for( int i = 0; i < CODEC_TYPE_NB; ++i )
 	{
@@ -43,7 +50,7 @@ VideoFFmpegReader::~VideoFFmpegReader( )
 
 }
 
-bool VideoFFmpegReader::open( const std::string &filename )
+bool VideoFFmpegReader::open( const std::string& filename )
 {
 	if( isOpen( ) )
 	{
@@ -52,25 +59,30 @@ bool VideoFFmpegReader::open( const std::string &filename )
 
 	_isOpen = 0;
 
+	if( ! fs::exists( filename ) )
+	{
+		std::cerr << "ffmpegReader: the file doesn't exist (\"" << filename << "\")" << std::endl;
+		return false;
+	}
 	int error = av_open_input_file( &_context, filename.c_str( ), _format, 0, _params );
 	if( error < 0 )
 	{
 		std::cerr << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
 		_isOpen = 0;
-		return true;
+		return false;
 	}
 	// FIXME_GC: needs to know if it's streamable.
 	error = av_find_stream_info( _context );
 	if( error < 0 )
 	{
 		std::cerr << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
-		return true;
+		return false;
 	}
 
-	if( setupStreamInfo( ) )
+	if( ! setupStreamInfo( ) )
 	{
 		std::cerr << "ffmpegReader: Unable to find codec." << std::endl;
-		return true;
+		return false;
 	}
 
 	AVCodecContext* codecContext = getVideoStream( )->codec;
@@ -113,11 +125,12 @@ bool VideoFFmpegReader::open( const std::string &filename )
 	 */
 
 	_isOpen = 1;
-	return false;
+	return true;
 }
 
 void VideoFFmpegReader::close( )
 {
+	_isOpen = false;
 	closeVideoCodec( );
 	if( _context )
 	{
@@ -150,7 +163,7 @@ bool VideoFFmpegReader::read( const int frame )
 		// on error or end of file
 		if( error < 0 )
 		{
-			return true;
+			return false;
 		}
 
 		if( error >= 0 && _videoIdx.size( ) && _currVideoIdx != -1 && _pkt.stream_index == _videoIdx[_currVideoIdx] )
@@ -160,7 +173,7 @@ bool VideoFFmpegReader::read( const int frame )
 
 		av_free_packet( &_pkt );
 	}
-	return false;
+	return true;
 }
 
 bool VideoFFmpegReader::setupStreamInfo( )
@@ -205,13 +218,13 @@ bool VideoFFmpegReader::setupStreamInfo( )
 
 	if( !hasVideo( ) )
 	{
-		return true;
+		return false;
 	}
 
 	AVStream* stream = getVideoStream( );
 	if( !stream )
 	{
-		return true;
+		return false;
 	}
 	if( stream->codec->coded_frame && stream->codec->coded_frame->interlaced_frame )
 	{
@@ -238,7 +251,7 @@ bool VideoFFmpegReader::setupStreamInfo( )
 	openVideoCodec( );
 
 	// Set the duration
-	if( _context->duration != AV_NOPTS_VALUE )
+	if( boost::numeric_cast<boost::uint64_t>(_context->duration) != AV_NOPTS_VALUE )
 	{
 		_nbFrames = boost::numeric_cast<boost::uint64_t>( ( fps( )*(double) _context->duration / (double) AV_TIME_BASE ) );
 	}
@@ -267,7 +280,7 @@ bool VideoFFmpegReader::setupStreamInfo( )
 		_nbFrames = maxPts;
 	}
 
-	return false;
+	return true;
 }
 
 void VideoFFmpegReader::openVideoCodec( )
@@ -297,8 +310,8 @@ void VideoFFmpegReader::closeVideoCodec( )
 
 int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
 {
-	int64_t timestamp = (int64_t) ( ( (double) pos / fps( ) ) * AV_TIME_BASE );
-	if( (boost::uint64_t) _context->start_time != AV_NOPTS_VALUE )
+	int64_t timestamp = boost::numeric_cast<int64_t>( ( (double) pos / fps( ) ) * AV_TIME_BASE );
+	if( boost::numeric_cast<boost::uint64_t>(_context->start_time) != AV_NOPTS_VALUE )
 		timestamp += _context->start_time;
 	return timestamp;
 }

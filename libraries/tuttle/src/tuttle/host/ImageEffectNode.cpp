@@ -326,6 +326,10 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 	std::string mostChromaticComponents = kOfxImageComponentNone;
 	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
 	bool inputClipsFound = false;
+	COUT_X( 10, "-_-" );
+	COUT_VAR( getName() );
+	COUT_VAR( outputClip.getPixelDepth() );
+	COUT_VAR( outputClip.getPixelAspectRatio() );
 
 	for( ClipImageMap::iterator it = _clips.begin();
 		 it != _clips.end();
@@ -336,10 +340,15 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 		{
 			inputClipsFound = true;
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			COUT_VAR( clip.getFullName() );
+			COUT_VAR( biggestBitDepth );
 			biggestBitDepth         = ofx::findDeepestBitDepth( linkClip.getPixelDepth(), biggestBitDepth );
+			COUT_VAR( biggestBitDepth );
+			COUT_VAR(  linkClip.getPixelDepth() );
 			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
 		}
 	}
+	COUT_X( 10, "-_-" );
 	if( inputClipsFound && ! this->isSupportedPixelDepth( biggestBitDepth ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Logic()

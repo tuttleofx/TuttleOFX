@@ -17,8 +17,15 @@ namespace writer {
 		eParamBitDepth32
 	};
 
-	static const std::string kParamOutputRGB = "outputRGB";
+	static const std::string kParamOutputComponents = "components";
+	static const std::string kParamOutputComponentsRGBA = "rgba";
+	static const std::string kParamOutputComponentsRGB = "rgb";
 
+	enum EParamComponents
+	{
+		eParamComponentsRGBA = 0,
+		eParamComponentsRGB
+	};
 }
 }
 }

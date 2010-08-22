@@ -3,6 +3,8 @@
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
+#include "PngWriterDefinitions.hpp"
+
 namespace tuttle {
 namespace plugin {
 namespace png {
@@ -12,9 +14,9 @@ using namespace boost::gil;
 
 struct PngWriterProcessParams
 {
-	std::string _filepath;      ///< filepath
-	bool        _outputRGB;		///< Force RGB
-	int         _bitDepth;      ///< Output bit depth
+	std::string      _filepath;   ///< filepath
+	EParamComponents _components; ///< output components
+	int              _bitDepth;   ///< Output bit depth
 };
 
 /**
@@ -30,7 +32,7 @@ public:
 	virtual void render( const OFX::RenderArguments& args );
 
 public:
-	OFX::BooleanParam* _outputRGB;     ///< Force RGB
+	OFX::ChoiceParam* _paramOutputComponents;     ///< Choose components RGBA or RGB
 };
 
 }

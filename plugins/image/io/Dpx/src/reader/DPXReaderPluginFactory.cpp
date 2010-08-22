@@ -76,22 +76,14 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
 	desc.addClipPreferencesSlaveParam( *explicitConversion );
 
-	if( !OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
+	if( OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
 	{
-		explicitConversion->setIsSecret( true );
-		if( OFX::getImageEffectHostDescription()->_supportedPixelDepths.size() == 1 )
-		{
-			explicitConversion->setDefault( static_cast<int>(OFX::getImageEffectHostDescription()->_supportedPixelDepths[0]) );
-		}
-		else
-		{
-			COUT_WARNING("The host doesn't support multiple clip depths, but didn't define supported pixel depth. (size: " << OFX::getImageEffectHostDescription()->_supportedPixelDepths.size() << ")" );
-			explicitConversion->setDefault( 3 );
-		}
+		explicitConversion->setDefault( 0 );
 	}
 	else
 	{
-		explicitConversion->setDefault( 0 );
+		explicitConversion->setIsSecret( true );
+		explicitConversion->setDefault( static_cast<int>(OFX::getImageEffectHostDescription()->getPixelDepth()) );
 	}
 }
 

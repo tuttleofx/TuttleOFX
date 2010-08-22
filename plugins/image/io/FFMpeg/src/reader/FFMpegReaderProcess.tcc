@@ -1,3 +1,8 @@
+#include "FFMpegReaderPlugin.hpp"
+#include "FFMpegReaderProcess.hpp"
+
+#include <boost/numeric/conversion/cast.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
@@ -14,10 +19,16 @@ FFMpegReaderProcess<View>::FFMpegReaderProcess( FFMpegReaderPlugin &instance )
 template<class View>
 void FFMpegReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	std::string sFilepath;
+	if( ! _plugin.ensureVideoIsOpen() )
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user("Can't open this video file")
+			<< exception::filename( _plugin._paramFilepath->getValue() ) );
+
 	// Fetch output image
-	if( _plugin.getReader().read((int)args.time) )
-		BOOST_THROW_EXCEPTION( exception::Failed() );
+	if( ! _plugin._reader.read( boost::numeric_cast<int>(args.time) ) )
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user() + "Can't open the frame at time " + args.time
+			<< exception::filename( _plugin._paramFilepath->getValue() ) );
 
 	ImageGilProcessor<View>::setup( args );
 }
@@ -33,11 +44,11 @@ void FFMpegReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	
 	rgb8c_view_t ffmpegSrcView =
-			interleaved_view( _plugin.getReader().width(), _plugin.getReader().height(),
-							  (const rgb8c_pixel_t*)( _plugin.getReader().data() ),
-							  _plugin.getReader().width() * 3 );
+			interleaved_view( _plugin._reader.width(), _plugin._reader.height(),
+							  (const rgb8c_pixel_t*)( _plugin._reader.data() ),
+							  _plugin._reader.width() * 3 );
 
-	copy_and_convert_pixels(ffmpegSrcView, flipped_up_down_view( this->_dstView ) );
+	copy_and_convert_pixels( ffmpegSrcView, flipped_up_down_view( this->_dstView ) );
 }
 
 }

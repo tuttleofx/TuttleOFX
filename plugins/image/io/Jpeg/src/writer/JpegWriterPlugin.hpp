@@ -13,7 +13,7 @@ using namespace boost::gil;
 struct JpegWriterProcessParams
 {
 	std::string _filepath;      ///< filepath
-	bool        _premult;		///< Force RGB
+	bool        _premult;		///< Premultiply by alpha or directly use RGB channels
 	int         _bitDepth;      ///< Output bit depth
 	int         _quality;
 };

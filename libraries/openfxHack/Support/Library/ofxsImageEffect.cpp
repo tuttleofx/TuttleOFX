@@ -1452,31 +1452,38 @@ void ClipPreferencesSetter::setClipComponents( Clip& clip, PixelComponentEnum co
 /** @brief, force the host to set a clip's mapped bit depth be \em bitDepth */
 void ClipPreferencesSetter::setClipBitDepth( Clip& clip, BitDepthEnum bitDepth )
 {
-///@todo: check if this is really necessary
-//	if( ! _imageEffectHostDescription->supportsMultipleClipDepths )
-//		//BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support multiple bit depths.") );
-//		return;
-
 	doneSomething_ = true;
 	const std::string& propName = extractValueForName( clipDepthPropNames_, clip.name() );
 
-	switch( bitDepth )
+	if( _imageEffectHostDescription->supportsMultipleClipDepths )
 	{
-		case eBitDepthUByte:
-			outArgs_.propSetString( propName.c_str(), kOfxBitDepthByte );
-			break;
-		case eBitDepthUShort:
-			outArgs_.propSetString( propName.c_str(), kOfxBitDepthShort );
-			break;
-		case eBitDepthFloat:
-			outArgs_.propSetString( propName.c_str(), kOfxBitDepthFloat );
-			break;
-		case eBitDepthNone:
-			outArgs_.propSetString( propName.c_str(), kOfxBitDepthNone );
-			break;
-		case eBitDepthCustom:
-			// what the good way ?
-			break;
+		switch( bitDepth )
+		{
+			case eBitDepthUByte:
+				outArgs_.propSetString( propName.c_str(), kOfxBitDepthByte );
+				break;
+			case eBitDepthUShort:
+				outArgs_.propSetString( propName.c_str(), kOfxBitDepthShort );
+				break;
+			case eBitDepthFloat:
+				outArgs_.propSetString( propName.c_str(), kOfxBitDepthFloat );
+				break;
+			case eBitDepthNone:
+				outArgs_.propSetString( propName.c_str(), kOfxBitDepthNone );
+				break;
+			case eBitDepthCustom:
+				// what the good way ?
+				break;
+		}
+	}
+	else
+	{
+		// BOOST_THROW_EXCEPTION( std::logic_error("Host doesn't support multiple bit depths.") );
+		// it's not clear what we need to to in this case...
+		// set the value supported by the host or set nothing
+		// by setting this value, we may have less problem depending on host implementations
+		outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToStr( _imageEffectHostDescription->getPixelDepth() ) );
+		return;
 	}
 }
 

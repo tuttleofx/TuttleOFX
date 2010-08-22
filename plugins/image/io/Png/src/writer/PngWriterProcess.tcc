@@ -41,7 +41,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	PngWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 	try
 	{
-		switch(params._bitDepth)
+		switch( params._bitDepth )
 		{
 			case 8:
 				writeImage<bits8>( this->_srcView, params._filepath );
@@ -50,7 +50,8 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				writeImage<bits16>( this->_srcView, params._filepath );
 				break;
 			default:
-				BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::user( "Unrecognized bit depth" ) );
+				BOOST_THROW_EXCEPTION( exception::ImageFormat()
+					<< exception::user( "Unrecognized bit depth" ) );
 				break;
 		}
 	}
@@ -78,16 +79,20 @@ template<class Bits>
 void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath )
 {
 	using namespace boost::gil;
+	PngWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 
-	if ( _plugin.getProcessParams(this->_renderArgs.time)._outputRGB )
+	switch( params._components )
 	{
-		typedef pixel<Bits, rgb_layout_t> OutPixelType;
-		png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
-	}
-	else
-	{
-		typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-		png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+		case eParamComponentsRGBA:
+		{
+			typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
+			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+		}
+		case eParamComponentsRGB:
+		{
+			typedef pixel<Bits, rgb_layout_t> OutPixelType;
+			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+		}
 	}
 }
 

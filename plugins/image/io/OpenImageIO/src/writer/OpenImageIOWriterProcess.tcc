@@ -42,6 +42,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	OpenImageIOWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
 	try
 	{
+		/// @todo tuttle: use params._components
 		writeImage( this->_srcView, params._filepath, params._bitDepth );
 	}
 	catch( exception::Common& e )

@@ -16,11 +16,6 @@ public:
 	explicit VideoFFmpegReader( );
 	~VideoFFmpegReader( );
 
-	bool videosequence( ) const
-	{
-		return true;
-	}
-
 	bool open( const std::string &filename );
 	void close( );
 	bool read( const int frame );

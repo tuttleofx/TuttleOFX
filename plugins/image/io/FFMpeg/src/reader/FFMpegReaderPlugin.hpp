@@ -25,25 +25,29 @@ class FFMpegReaderPlugin : public OFX::ImageEffect
 {
 public:
     FFMpegReaderPlugin( OfxImageEffectHandle handle );
-	VideoFFmpegReader & getReader();
 
 public:
-    virtual void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	bool ensureVideoIsOpen();
 
+	FFMpegReaderParams getProcessParams() const;
+
+    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	bool getTimeDomain( OfxRangeD& range );
-	FFMpegReaderParams getParams() const;
-	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
-	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+	bool getTimeDomain( OfxRangeD& range );
+
+	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
+    void render( const OFX::RenderArguments &args );
+	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
 public:
     // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _clipDst;       ///< Destination image clip
-	boost::scoped_ptr<std::string> _openedSource;  ///< Opened video file source
-	OFX::StringParam* _filepath;      ///< Ffmpeg filepath
-	VideoFFmpegReader	_reader;
+    OFX::Clip* _clipDst;              ///< Destination image clip
+	
+	OFX::StringParam* _paramFilepath; ///< video filepath
+	
+	bool _errorInFile;
+	VideoFFmpegReader _reader;
 };
 
 }

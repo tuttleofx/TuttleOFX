@@ -18,8 +18,10 @@ public:
 	virtual ~WriterPlugin();
 
 public:
-	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+
+	bool isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime );
 
 protected:
 	inline bool varyOnTime() const { return _isSequence; }
@@ -27,6 +29,9 @@ protected:
 private:
 	bool                   _isSequence;          ///<
 	common::Sequence       _filePattern;         ///< Filename pattern manager
+
+	bool                   _oneRender;          ///<
+	OfxTime                _oneRenderAtTime;          ///<
 
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
@@ -65,6 +70,7 @@ public:
 	OFX::StringParam*     _paramFilepath;         ///< Target file path
 	OFX::BooleanParam*    _paramRenderAlways;     ///< Render always
 	OFX::ChoiceParam*     _paramBitDepth;         ///< Bit depth
+	OFX::IntParam*        _paramForceNewRender;   ///< Hack parameter, to force a new rendering
 
 	OFX::Clip* _clipSrc;       ///< Input image clip
 	OFX::Clip* _clipDst;       ///< Ouput image clip

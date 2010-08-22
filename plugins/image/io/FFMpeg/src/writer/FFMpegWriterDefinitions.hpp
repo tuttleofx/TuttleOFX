@@ -9,14 +9,15 @@ namespace plugin {
 namespace ffmpeg {
 namespace writer {
 
-const static std::string kFFMpegHelpButton = "Help";
+const static std::string kParamFFMpegHelpButton = "Help";
 
-static const std::string kFilename    = "filename";
-static const std::string kFormatLong  = "formatLong";
-static const std::string kFormat      = "format";
-static const std::string kCodecLong   = "codecLong";
-static const std::string kCodec       = "codec";
-static const std::string kBitrate     = "bitrate";
+static const std::string kParamFilename    = "filename";
+static const std::string kParamFormatLong  = "formatLong";
+static const std::string kParamFormat      = "format";
+static const std::string kParamCodecLong   = "codecLong";
+static const std::string kParamCodec       = "codec";
+static const std::string kParamBitrate     = "bitrate";
+static const std::string kParamRenderAlways = "renderAlways";
 
 const static std::string kFFMpegHelpString = "<b>ffmpeg video io</b> plugin is used to output video file.  <br />";
 

@@ -24,27 +24,13 @@ FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
 
     _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath = fetchStringParam( kFilename );
-	_format = fetchChoiceParam( kFormat );
-	_formatLong = fetchChoiceParam( kFormatLong );
-	_codec = fetchChoiceParam( kCodec );
-	_codecLong = fetchChoiceParam( kCodecLong );
-	_bitRate = fetchIntParam( kBitrate );
-}
-
-OFX::Clip* FFMpegWriterPlugin::getSrcClip( ) const
-{
-    return _clipSrc;
-}
-
-OFX::Clip* FFMpegWriterPlugin::getDstClip( ) const
-{
-    return _clipDst;
-}
-
-VideoFFmpegWriter & FFMpegWriterPlugin::getWriter( )
-{
-    return _writer;
+	_filepath = fetchStringParam( kParamFilename );
+	_format = fetchChoiceParam( kParamFormat );
+	_formatLong = fetchChoiceParam( kParamFormatLong );
+	_codec = fetchChoiceParam( kParamCodec );
+	_codecLong = fetchChoiceParam( kParamCodecLong );
+	_bitRate = fetchIntParam( kParamBitrate );
+	_paramRenderAlways   = fetchBooleanParam( kParamRenderAlways );
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
@@ -55,6 +41,54 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 	_codec->getValue( params._codec );
 	_bitRate->getValue( params._bitrate );
 	return params;
+}
+
+void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+{
+    if( paramName == kParamFFMpegHelpButton )
+    {
+        sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     kFFMpegHelpString );
+    }
+	else if( paramName == kParamFormatLong && args.reason == OFX::eChangeUserEdit  )
+	{
+		_format->setValue( _formatLong->getValue() );
+	}
+	else if( paramName == kParamFormat && args.reason == OFX::eChangeUserEdit )
+	{
+		_formatLong->setValue( _format->getValue() );
+	}
+	else if( paramName == kParamCodecLong && args.reason == OFX::eChangeUserEdit )
+	{
+		_codec->setValue( _codecLong->getValue() );
+	}
+	else if( paramName == kParamCodec && args.reason == OFX::eChangeUserEdit )
+	{
+		_codecLong->setValue( _codec->getValue() );
+	}
+}
+
+bool FFMpegWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, OfxTime& identityTime )
+{
+	if( OFX::getImageEffectHostDescription()->hostIsBackground )
+		return false;
+
+	if( _paramRenderAlways->getValue() )
+		return false;
+
+	identityClip = _clipSrc;
+	identityTime = args.time;
+	return true;
+}
+
+void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
+{
+	_writer.filename( _filepath->getValue() );
+	_writer.setFormat( _format->getValue() );
+	_writer.setCodec( _codec->getValue() );
+	_writer.fps( _clipSrc->getFrameRate() );
+	_writer.aspectRatio( _clipSrc->getPixelAspectRatio() );
 }
 
 /**
@@ -130,53 +164,9 @@ void FFMpegWriterPlugin::render( const OFX::RenderArguments &args )
     }
 }
 
-void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-    if( paramName == kFFMpegHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kFFMpegHelpString );
-    }
-	else if( paramName == kFormatLong && args.reason == OFX::eChangeUserEdit  )
-	{
-		_format->setValue( _formatLong->getValue() );
-	}
-	else if( paramName == kFormat && args.reason == OFX::eChangeUserEdit )
-	{
-		_formatLong->setValue( _format->getValue() );
-	}
-	else if( paramName == kCodecLong && args.reason == OFX::eChangeUserEdit )
-	{
-		_codec->setValue( _codecLong->getValue() );
-	}
-	else if( paramName == kCodec && args.reason == OFX::eChangeUserEdit )
-	{
-		_codecLong->setValue( _codec->getValue() );
-	}
-}
-
-void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
-{
-	_writer.filename( _filepath->getValue() );
-	_writer.setFormat( _format->getValue() );
-	_writer.setCodec( _codec->getValue() );
-	_writer.fps( _clipSrc->getFrameRate() );
-	_writer.aspectRatio( _clipSrc->getPixelAspectRatio() );
-}
-
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )
 {
 	_writer.finish();
-}
-
-void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
-{
-	if ( _openedSource.get() )
-	{
-		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte );
-	}
 }
 
 }

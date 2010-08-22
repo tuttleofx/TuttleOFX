@@ -116,8 +116,8 @@ public:
 	inline void setDirectory( const boost::filesystem::path& p ) { _directory = p; }
 	inline std::string getAbsoluteFilenameAt( const Time time ) const;
 	inline std::string getFilenameAtA( const Time time ) const;
-	inline std::string getAbsoluteFirstFilename() const { return getFilenameAtA( getFirstTime() ); }
-	inline std::string getAbsoluteLastFilename() const { return getFilenameAtA( getLastTime() ); }
+	inline std::string getAbsoluteFirstFilename() const { return (_directory / getFilenameAtA( getFirstTime() ) ).file_string(); }
+	inline std::string getAbsoluteLastFilename() const { return (_directory / getFilenameAtA( getLastTime() ) ).file_string(); }
 
 	/// @return pattern character in standard style
 	inline char getPatternCharacter() const { return isStrictPadding() ? '#' : '@'; }

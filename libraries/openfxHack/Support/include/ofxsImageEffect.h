@@ -252,34 +252,48 @@ void* fetchSuite( const char* suiteName, int suiteVersion, bool optional = false
 /** @brief A class that lists all the properties of a host */
 struct ImageEffectHostDescription
 {
-	public:
-		std::string hostName;
-		bool hostIsBackground;
-		bool supportsOverlays;
-		bool supportsMultiResolution;
-		bool supportsTiles;
-		bool temporalClipAccess;
-		bool supportsMultipleClipDepths;
-		bool supportsMultipleClipPARs;
-		bool supportsSetableFrameRate;
-		bool supportsSetableFielding;
-		bool supportsStringAnimation;
-		bool supportsCustomInteract;
-		bool supportsChoiceAnimation;
-		bool supportsBooleanAnimation;
-		bool supportsCustomAnimation;
-		int maxParameters;
-		int maxPages;
-		int pageRowCount;
-		int pageColumnCount;
-		typedef std::vector<PixelComponentEnum> PixelComponentArray;
-		PixelComponentArray _supportedComponents;
-		typedef std::vector<ContextEnum> ContextArray;
-		ContextArray _supportedContexts;
-		typedef std::vector<BitDepthEnum> BitDepthArray;
-		BitDepthArray _supportedPixelDepths;
-		bool supportsProgressSuite;
-		bool supportsTimeLineSuite;
+public:
+	std::string hostName;
+	bool hostIsBackground;
+	bool supportsOverlays;
+	bool supportsMultiResolution;
+	bool supportsTiles;
+	bool temporalClipAccess;
+	bool supportsMultipleClipDepths;
+	bool supportsMultipleClipPARs;
+	bool supportsSetableFrameRate;
+	bool supportsSetableFielding;
+	bool supportsStringAnimation;
+	bool supportsCustomInteract;
+	bool supportsChoiceAnimation;
+	bool supportsBooleanAnimation;
+	bool supportsCustomAnimation;
+	int maxParameters;
+	int maxPages;
+	int pageRowCount;
+	int pageColumnCount;
+	typedef std::vector<PixelComponentEnum> PixelComponentArray;
+	PixelComponentArray _supportedComponents;
+	typedef std::vector<ContextEnum> ContextArray;
+	ContextArray _supportedContexts;
+	typedef std::vector<BitDepthEnum> BitDepthArray;
+	BitDepthArray _supportedPixelDepths;
+	bool supportsProgressSuite;
+	bool supportsTimeLineSuite;
+public:
+	/** @return the pixel depth used by host application, if it doesn't support multiple clip depth. */
+	BitDepthEnum getPixelDepth()
+	{
+		if( _supportedPixelDepths.size() == 1 )
+		{
+			return _supportedPixelDepths[0];
+		}
+		else
+		{
+			COUT_WARNING("The host doesn't support multiple clip depths, but didn't define supported pixel depth. (size: " << _supportedPixelDepths.size() << ")" );
+			return eBitDepthFloat;
+		}
+	}
 };
 
 /// retrieve the host description

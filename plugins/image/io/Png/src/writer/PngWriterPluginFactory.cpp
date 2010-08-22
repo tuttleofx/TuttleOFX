@@ -70,26 +70,37 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
+	OFX::ChoiceParamDescriptor* components = desc.defineChoiceParam( kParamOutputComponents );
+	components->setLabel( "Components" );
+	components->appendOption( kParamOutputComponentsRGBA );
+	components->appendOption( kParamOutputComponentsRGB );
+	components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	components->setDefault( 0 );
+
 	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
 	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
-	bitDepth->setDefault( 1 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *bitDepth );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( true );
+	bitDepth->setDefault( 1 );
 
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint("Force render (writing)");
 
-	OFX::BooleanParamDescriptor* outputRGB = desc.defineBooleanParam( kParamOutputRGB );
-	outputRGB->setLabel( "Force RGB" );
-	outputRGB->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outputRGB->setDefault( false );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	renderAlways->setDefault( false );
+
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kTuttlePluginWriterParamForceNewRender );
+	forceNewRender->setLabel( "Force new render" );
+	forceNewRender->setIsSecret( true );
+	forceNewRender->setIsPersistant( false );
+	forceNewRender->setAnimates( false );
+	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	forceNewRender->setEvaluateOnChange( true );
+	forceNewRender->setDefault( 0 );
 }
 
 /**

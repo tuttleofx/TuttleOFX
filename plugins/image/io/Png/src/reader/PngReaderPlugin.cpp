@@ -126,7 +126,13 @@ void PngReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	const std::string filename( getAbsoluteFilenameAt(args.time) );
-	
+
+	if( ! bfs::exists( filename ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::user( "File doesn't exist." )
+			<< exception::filename( filename ) );
+	}
 	try
 	{
 		point2<ptrdiff_t> pngDims = png_read_dimensions( filename );
@@ -148,52 +154,56 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
-	
-	// Check if exist
-	if( bfs::exists( filename ) )
+
+	if( ! bfs::exists( filename ) )
 	{
-		if ( _paramExplicitConv->getValue() )
-		{
-			switch( _paramExplicitConv->getValue() )
-			{
-				case 1:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-					break;
-				}
-				case 2:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-					break;
-				}
-				case 3:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-					break;
-				}
-			}
-		}
-		else
-		{
-			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
-			int bitDepth = png_read_precision( filename );
-			switch( bitDepth )
-			{
-				case 8:
-					bd = OFX::eBitDepthUByte;
-					break;
-				case 16:
-					bd = OFX::eBitDepthUShort;
-					break;
-				default:
-					BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
-					break;
-			}
-			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
-		}
-		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+		BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::user( "File doesn't exist." )
+			<< exception::filename( filename ) );
 	}
+
+	if ( _paramExplicitConv->getValue() )
+	{
+		switch( _paramExplicitConv->getValue() )
+		{
+			case 1:
+			{
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+				break;
+			}
+			case 2:
+			{
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+				break;
+			}
+			case 3:
+			{
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+				break;
+			}
+		}
+	}
+	else
+	{
+		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+		int bitDepth = png_read_precision( filename );
+		switch( bitDepth )
+		{
+			case 8:
+				bd = OFX::eBitDepthUByte;
+				break;
+			case 16:
+				bd = OFX::eBitDepthUShort;
+				break;
+			default:
+				BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
+				break;
+		}
+		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
+	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+
 }
 
 }

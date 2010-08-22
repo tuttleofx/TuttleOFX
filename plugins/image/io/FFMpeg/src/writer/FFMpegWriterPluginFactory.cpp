@@ -42,6 +42,7 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
+	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
@@ -69,12 +70,12 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamFilename );
 	filename->setLabel( "filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
-	OFX::ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kFormatLong );
+	OFX::ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kParamFormatLong );
 	formatLong->setLabel( "format" );
 	for( std::vector<std::string>::const_iterator it = writer.getFormatsLong().begin(), itEnd = writer.getFormatsLong().end();
 		it != itEnd;
@@ -82,7 +83,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		formatLong->appendOption( *it );
 	}
-	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kFormat );
+	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
 	format->setIsSecret( true );
 	for( std::vector<std::string>::const_iterator it = writer.getFormatsShort().begin(), itEnd = writer.getFormatsShort().end();
 		it != itEnd;
@@ -90,9 +91,10 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		format->appendOption( *it );
 	}
+	format->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	format->setDefault( 25 );
 
-	OFX::ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kCodecLong );
+	OFX::ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kParamCodecLong );
 	codecLong->setLabel( "codec" );
 	for( std::vector<std::string>::const_iterator it = writer.getCodecsLong().begin(), itEnd = writer.getCodecsLong().end();
 		it != itEnd;
@@ -100,7 +102,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		codecLong->appendOption( *it );
 	}
-	OFX::ChoiceParamDescriptor* codec = desc.defineChoiceParam( kCodec );
+	OFX::ChoiceParamDescriptor* codec = desc.defineChoiceParam( kParamCodec );
 	codec->setIsSecret( true );
 	for( std::vector<std::string>::const_iterator it = writer.getCodecsShort().begin(), itEnd = writer.getCodecsShort().end();
 		it != itEnd;
@@ -108,13 +110,20 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	{
 		codec->appendOption( *it );
 	}
+	codec->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	codec->setDefault( 18 );
 
-	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kBitrate );
+	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kParamBitrate );
 	bitrate->setLabel( "bitrate" );
+	bitrate->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitrate->setDefault( 400000 );
 
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	renderAlways->setDefault( false );
+
+	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kParamFFMpegHelpButton );
 	helpButton->setScriptName( "help" );
 }
 
