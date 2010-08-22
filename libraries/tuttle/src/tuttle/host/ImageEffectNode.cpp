@@ -348,8 +348,10 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
 		}
 	}
-	COUT_X( 10, "-_-" );
-	if( inputClipsFound && ! this->isSupportedPixelDepth( biggestBitDepth ) )
+
+	// bit depth
+//	COUT_X( 10, "-_-" );
+	if( inputClipsFound && ! this->isSupportedPixelDepth( biggestBitDepth ) ) /// @todo tuttle: search nearestUpperPixelDepth
 	{
 		BOOST_THROW_EXCEPTION( exception::Logic()
 			<< exception::user("Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
@@ -393,6 +395,9 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 			}
 		}
 	}
+	outputClip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
+
+	// components
 	for( ClipImageMap::iterator it = _clips.begin();
 		 it != _clips.end();
 		 ++it )
@@ -405,7 +410,6 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 				clip.setComponentsIfNotModifiedByPlugin( linkClip.getComponents() );
 		}
 	}
-	outputClip.setPixelDepthIfNotModifiedByPlugin( biggestBitDepth );
 	if( outputClip.isSupportedComponent( mostChromaticComponents ) )
 		outputClip.setComponentsIfNotModifiedByPlugin( mostChromaticComponents );
 
