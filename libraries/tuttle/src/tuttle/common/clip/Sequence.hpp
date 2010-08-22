@@ -115,9 +115,9 @@ public:
 	inline boost::filesystem::path getDirectory() const { return _directory; }
 	inline void setDirectory( const boost::filesystem::path& p ) { _directory = p; }
 	inline std::string getAbsoluteFilenameAt( const Time time ) const;
-	inline std::string getFilenameAtA( const Time time ) const;
-	inline std::string getAbsoluteFirstFilename() const { return (_directory / getFilenameAtA( getFirstTime() ) ).file_string(); }
-	inline std::string getAbsoluteLastFilename() const { return (_directory / getFilenameAtA( getLastTime() ) ).file_string(); }
+	inline std::string getFilenameAt( const Time time ) const;
+	inline std::string getAbsoluteFirstFilename() const { return (_directory / getFilenameAt( getFirstTime() ) ).file_string(); }
+	inline std::string getAbsoluteLastFilename() const { return (_directory / getFilenameAt( getLastTime() ) ).file_string(); }
 
 	/// @return pattern character in standard style
 	inline char getPatternCharacter() const { return isStrictPadding() ? '#' : '@'; }
@@ -204,7 +204,7 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, 
 
 
 
-inline std::string Sequence::getFilenameAtA( const Time time ) const
+inline std::string Sequence::getFilenameAt( const Time time ) const
 {
 	std::ostringstream o;
 	o << _prefix << std::setw(_padding) << std::setfill(_fillCar) << time << _suffix;
@@ -213,7 +213,7 @@ inline std::string Sequence::getFilenameAtA( const Time time ) const
 
 inline std::string Sequence::getAbsoluteFilenameAt( const Time time ) const
 {
-	return (_directory / getFilenameAtA( time )).file_string();
+	return (_directory / getFilenameAt( time )).file_string();
 }
 
 inline bool Sequence::initFromDetection( const boost::filesystem::path& seqPath, const EPattern& accept )
