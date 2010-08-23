@@ -50,7 +50,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			if( _writer.open(_params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb8_view_t::value_type>::type::value, 8) )
 			{
 				BOOST_THROW_EXCEPTION( exception::File()
-					<< exception::message("Unable to open output file!") ///@todo: not a very good error message...
+					<< exception::user("Unable to open output file!") ///@todo tuttle: not a very good error message...
 					<< boost::errinfo_file_name(_params._filepath) );
 			}
 			_writer.encode(pixels, 8);
@@ -69,7 +69,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			if( _writer.open(_params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb16_view_t::value_type>::type::value, 16) )
 			{
 				BOOST_THROW_EXCEPTION( exception::File()
-					<< exception::message("Unable to open output file!")
+					<< exception::user("Unable to open output file!")
 					<< boost::errinfo_file_name(_params._filepath) );
 			}
 			_writer.encode(pixels, 16);
@@ -88,7 +88,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			if( _writer.open(_params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb32_view_t::value_type>::type::value, 32) )
 			{
 				BOOST_THROW_EXCEPTION( exception::File()
-					<< exception::message("Unable to open output file!")
+					<< exception::user("Unable to open output file!")
 					<< boost::errinfo_file_name(_params._filepath) );
 			}
 			_writer.encode(pixels, 32);

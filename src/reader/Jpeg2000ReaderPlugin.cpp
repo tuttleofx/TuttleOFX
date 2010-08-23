@@ -33,14 +33,13 @@ Jpeg2000ReaderPlugin::~Jpeg2000ReaderPlugin()
 
 Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime time)
 {
-	OfxRangeI range = getFilePattern().getRange();
-	if (varyOnTime() && (time < range.min || time > range.max) )
+	if (varyOnTime() && ( time < getFirstTime() || time > getLastTime() ) )
 	{
 		BOOST_THROW_EXCEPTION(OFX::Exception::Suite(kOfxStatErrBadIndex, "Time value outside bounds."));
 	}
 	Jpeg2000ReaderProcessParams params;
 
-	params._paramFilepath = getFilenameAt(time);
+	params._paramFilepath = getAbsoluteFilenameAt(time);
 	return params;
 }
 
@@ -173,7 +172,7 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 		// If pattern detected (frame varying on time)
 		clipPreferences.setOutputFrameVarying( varyOnTime() );
 
-		FileInfo fileInfo = retrieveFileInfo( getFilePattern().getRange().min );
+		FileInfo fileInfo = retrieveFileInfo( getFirstTime() );
 		if ( fileInfo._failed )
 		{
 			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, "Unable to read file infos." ) );
@@ -230,7 +229,7 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	// Open new source
 	try
 	{
-		_reader.open( getFilenameAt(time) );
+		_reader.open( getAbsoluteFilenameAt(time) );
 	}
 	catch(std::exception & e)
 	{

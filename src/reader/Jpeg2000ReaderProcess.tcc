@@ -110,7 +110,7 @@ void Jpeg2000ReaderProcess<View>::switchLayoutCopy()
 			break;
 		}
 		default:
-			BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::message("Unhandled image precision!") );
+			BOOST_THROW_EXCEPTION( exception::ImageFormat() << exception::user("Unhandled image precision!") );
 			break;
 	}
 }

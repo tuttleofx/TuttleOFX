@@ -41,7 +41,7 @@ void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 }
