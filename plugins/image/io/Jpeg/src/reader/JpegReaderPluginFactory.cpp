@@ -40,7 +40,6 @@ void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsMultipleClipDepths( true );
-	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
 }
