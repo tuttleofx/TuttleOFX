@@ -52,7 +52,7 @@ void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::ContextEnum context )
+                                                  OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -202,7 +202,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
  * @return  plugin instance
  */
 OFX::ImageEffect* ImageStatisticsPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new ImageStatisticsPlugin(handle);
 }

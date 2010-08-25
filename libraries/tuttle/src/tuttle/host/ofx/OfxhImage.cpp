@@ -163,10 +163,10 @@ OfxRectI OfxhImage::getROD() const
 	return rod;
 }
 
-BitDepthEnum OfxhImage::getBitDepth() const
+EBitDepth OfxhImage::getBitDepth() const
 {
 	std::string depth     = getStringProperty( kOfxImageEffectPropPixelDepth );
-	BitDepthEnum bitDepth = eBitDepthNone;
+	EBitDepth bitDepth = eBitDepthNone;
 
 	if( depth == kOfxBitDepthByte )
 	{
@@ -183,10 +183,10 @@ BitDepthEnum OfxhImage::getBitDepth() const
 	return bitDepth;
 }
 
-PixelComponentEnum OfxhImage::getComponentsType() const
+EPixelComponent OfxhImage::getComponentsType() const
 {
 	std::string sType           = getStringProperty( kOfxImageEffectPropComponents );
-	PixelComponentEnum compType = ePixelComponentNone;
+	EPixelComponent compType = ePixelComponentNone;
 
 	if( sType == kOfxImageComponentRGBA )
 	{

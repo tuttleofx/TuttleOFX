@@ -53,7 +53,7 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 {
 	if( !isOutput() )
 	{
-		if( !getConnected() )
+		if( !isConnected() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Bug()
 				<< exception::dev( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." ) );
@@ -146,8 +146,8 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	else
 		bounds = fetchRegionOfDefinition( time );
 
-	//	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << getConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
-	boost::shared_ptr<Image> image = _memoryCache.get( getConnectedClipFullName(), time );
+	//	TCOUT( "--> getImage <" << getFullName() << "> connected on <" << getConnectedClipFullName() << "> with connection <" << isConnected() << "> isOutput <" << isOutput() << ">" << " bounds: " << bounds );
+	boost::shared_ptr<Image> image = _memoryCache.get( getIdentifier(), time );
 	//	std::cout << "got image : " << image.get() << std::endl;
 	/// @todo tuttle do something with bounds...
 	/// if bounds != cache buffer bounds:
@@ -175,21 +175,21 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 		try
 		{
 			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
-			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
+			_memoryCache.put( getIdentifier(), time, outputImage );
 			return outputImage.get();
 		}
 		catch( std::length_error& e )
 		{
 			_memoryCache.clearUnused();
 			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
-			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
+			_memoryCache.put( getIdentifier(), time, outputImage );
 			return outputImage.get();
 		}
 		catch( std::bad_alloc& e )
 		{
 			_memoryCache.clearUnused();
 			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
-			_memoryCache.put( getConnectedClipFullName(), time, outputImage );
+			_memoryCache.put( getIdentifier(), time, outputImage );
 			return outputImage.get();
 		}
 		//		outputImage.get()->cout();

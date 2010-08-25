@@ -53,7 +53,7 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -99,7 +99,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* RawReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new RawReaderPlugin( handle );
 }

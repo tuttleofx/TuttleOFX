@@ -20,7 +20,7 @@ enum EChange
 	eChangePluginEdited,
 };
 
-inline std::string mapEChangeToString( const EChange change )
+inline std::string mapChangeEnumToString( const EChange change )
 {
 	switch( change )
 	{
@@ -35,7 +35,7 @@ inline std::string mapEChangeToString( const EChange change )
 	}
 }
 
-inline EChange mapStringToEChange( const std::string& change )
+inline EChange mapChangeStringToEnum( const std::string& change )
 {
 	if( change == kOfxChangeTime )
 		return eChangeTime;

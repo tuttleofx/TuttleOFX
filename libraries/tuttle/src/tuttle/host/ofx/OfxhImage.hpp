@@ -34,6 +34,8 @@
 #include "attribute/OfxhClip.hpp"
 #include "property/OfxhSet.hpp"
 
+#include <tuttle/common/ofx/imageEffect.hpp>
+
 #include <ofxImageEffect.h>
 
 namespace tuttle {
@@ -41,42 +43,11 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
+using namespace ::tuttle::ofx::imageEffect;
+
 // forward declarations
 class OfxhImage;
 class OfxhImageEffectNode;
-
-/** @brief Enumerates the contexts a plugin can be used in */
-enum ContextEnum
-{
-	eContextNone,
-	eContextGenerator,
-	eContextFilter,
-	eContextTransition,
-	eContextPaint,
-	eContextGeneral,
-	eContextRetimer,
-	eContextReader,
-	eContextWriter
-};
-
-/** @brief Enumerates the pixel depths supported */
-enum BitDepthEnum
-{
-	eBitDepthNone, ///< @brief bit depth that indicates no data is present
-	eBitDepthUByte,
-	eBitDepthUShort,
-	eBitDepthFloat,
-	eBitDepthCustom ///< some non standard bit depth
-};
-
-/** @brief Enumerates the component types supported */
-enum PixelComponentEnum
-{
-	ePixelComponentNone,
-	ePixelComponentRGBA,
-	ePixelComponentAlpha,
-	ePixelComponentCustom ///< some non standard pixel type
-};
 
 /**
  *  instance of an image inside an image effect
@@ -164,11 +135,11 @@ public:
 	/// get the full region of this image
 	OfxRectI getROD() const;
 
-	BitDepthEnum getBitDepth() const;
+	EBitDepth getBitDepth() const;
 
 	int getRowBytes() const;
 
-	PixelComponentEnum getComponentsType() const;
+	EPixelComponent getComponentsType() const;
 
 	int getReference() const {  return _referenceCount; }
 	

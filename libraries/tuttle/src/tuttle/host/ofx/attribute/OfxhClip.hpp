@@ -67,7 +67,7 @@ public:
 	// Connected -
 	//
 	//  Says whether the clip is actually connected at the moment.
-	virtual const bool getConnected() const = 0;
+	virtual const bool isConnected() const = 0;
 
 private:
 	friend class boost::serialization::access;

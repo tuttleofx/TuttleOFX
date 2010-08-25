@@ -48,7 +48,7 @@ void Log2LinPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void Log2LinPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                              OFX::ContextEnum context )
+                                              OFX::EContext context )
 {
     OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
     srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -72,7 +72,7 @@ void Log2LinPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* Log2LinPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                        OFX::ContextEnum context)
+                                                        OFX::EContext context)
 {
     return new Log2LinPlugin(handle);
 }

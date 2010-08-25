@@ -5,7 +5,7 @@ namespace OFX
 {
 namespace Message
 {
-enum MessageReplyEnum
+enum EMessageReply
 {
 	eMessageReplyOK,
 	eMessageReplyYes,
@@ -13,7 +13,7 @@ enum MessageReplyEnum
 	eMessageReplyFailed
 };
 
-enum MessageTypeEnum
+enum EMessageType
 {
 	eMessageFatal,
 	eMessageError,

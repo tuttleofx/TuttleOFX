@@ -37,8 +37,8 @@ ImageMagickWriterProcessParams ImageMagickWriterPlugin::getProcessParams(const O
 void ImageMagickWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = _clipSrc->getPixelComponents();
+	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
@@ -103,7 +103,7 @@ void ImageMagickWriterPlugin::render( const OFX::RenderArguments& args )
 	}
 	else
 	{
-		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
+		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToString( dstComponents ) << ")" );
 	}
 }
 

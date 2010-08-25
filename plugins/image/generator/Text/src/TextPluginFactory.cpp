@@ -53,7 +53,7 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::ContextEnum context )
+                                                  OFX::EContext context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -115,7 +115,7 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* TextPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new TextPlugin( handle );
 }

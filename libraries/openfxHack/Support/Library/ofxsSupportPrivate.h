@@ -48,10 +48,10 @@
 namespace OFX {
 
 /** @brief turns a field string into and enum */
-FieldEnum mapStrToFieldEnum( const std::string& str );
+EField mapFieldStringToEnum( const std::string& str );
 
 /** @brief map a std::string to a context enum */
-ContextEnum mapStrToContextEnum( const std::string& s );
+EContext mapContextStringToEnum( const std::string& s );
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +103,7 @@ ImageEffect* retrieveImageEffectPointer( OfxImageEffectHandle handle );
 OFX::PropertySet fetchEffectProps( OfxImageEffectHandle handle );
 
 /** @brief the set of descriptors, one per context used by kOfxActionDescribeInContext,  'eContextNone' is the one used by the kOfxActionDescribe */
-typedef std::map<ContextEnum, ImageEffectDescriptor*> EffectContextMap;
+typedef std::map<EContext, ImageEffectDescriptor*> EffectContextMap;
 typedef std::map<std::string, EffectContextMap> EffectDescriptorMap;
 extern EffectDescriptorMap gEffectDescriptors;
 };

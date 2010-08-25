@@ -44,8 +44,8 @@ void BlurPlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
+    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
@@ -72,7 +72,7 @@ void BlurPlugin::render( const OFX::RenderArguments &args )
             }
 			default:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToStr(dstBitDepth) << ") not recognized by the plugin." );
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 				break;
 			}
         }
@@ -101,14 +101,14 @@ void BlurPlugin::render( const OFX::RenderArguments &args )
             }
 			default:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToStr(dstBitDepth) << ") not recognized by the plugin." );
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
 				break;
 			}
         }
     }
 	else
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToStr(dstComponents) << ") not supported by the plugin." );
+		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
 	}
 }
 

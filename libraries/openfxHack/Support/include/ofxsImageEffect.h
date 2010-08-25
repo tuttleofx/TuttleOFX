@@ -84,7 +84,7 @@ class ImageEffect;
 class ImageMemory;
 
 /** @brief Enumerates the contexts a plugin can be used in */
-enum ContextEnum
+enum EContext
 {
 	eContextNone,
 	eContextGenerator,
@@ -97,10 +97,10 @@ enum ContextEnum
 	eContextWriter,
 };
 
-const std::string mapContextEnumToStr( const ContextEnum& s );
+const std::string mapContextEnumToString( const EContext s );
 
 /** @brief Enumerates the pixel depths supported */
-enum BitDepthEnum
+enum EBitDepth
 {
 	eBitDepthNone, /**< @brief bit depth that indicates no data is present */
 	eBitDepthUByte,
@@ -109,10 +109,10 @@ enum BitDepthEnum
 	eBitDepthCustom ///< some non standard bit depth
 };
 
-const std::string mapBitDepthEnumToStr( const BitDepthEnum& e );
+const std::string mapBitDepthEnumToString( const EBitDepth e );
 
 /** @brief Enumerates the component types supported */
-enum PixelComponentEnum
+enum EPixelComponent
 {
 	ePixelComponentNone,
 	ePixelComponentRGBA,
@@ -120,10 +120,10 @@ enum PixelComponentEnum
 	ePixelComponentCustom ///< some non standard pixel type
 };
 
-std::string mapPixelComponentEnumToStr( const PixelComponentEnum& e );
+std::string mapPixelComponentEnumToString( const EPixelComponent e );
 
 /** @brief Enumerates the ways a fielded image can be extracted from a clip */
-enum FieldExtractionEnum
+enum EFieldExtraction
 {
 	eFieldExtractBoth,   /**< @brief extract both fields */
 	eFieldExtractSingle, /**< @brief extracts a single field, so you have a half height image */
@@ -131,7 +131,7 @@ enum FieldExtractionEnum
 };
 
 /** @brief Enumerates the kind of render thread safety a plugin has */
-enum RenderSafetyEnum
+enum ERenderSafety
 {
 	eRenderUnsafe,       /**< @brief can only render a single instance at any one time */
 	eRenderInstanceSafe, /**< @brief can call a single render on an instance, but can render multiple instances simultaneously */
@@ -139,7 +139,7 @@ enum RenderSafetyEnum
 };
 
 /** @brief Enumerates the fields present in an image */
-enum FieldEnum
+enum EField
 {
 	eFieldNone,   /**< @brief unfielded image */
 	eFieldBoth,   /**< @brief fielded image with both fields present */
@@ -147,16 +147,16 @@ enum FieldEnum
 	eFieldUpper   /**< @brief only the spatially upper field is present  */
 };
 
-std::string mapFieldEnumToStr( const FieldEnum& e );
+std::string mapFieldEnumToString( const EField e );
 
-enum PreMultiplicationEnum
+enum EPreMultiplication
 {
 	eImageOpaque,          /**< @brief the image is opaque and so has no premultiplication state */
 	eImagePreMultiplied,   /**< @brief the image is premultiplied by it's alpha */
 	eImageUnPreMultiplied, /**< @brief the image is unpremultiplied */
 };
 
-std::string mapPreMultiplicationEnumToStr( const PreMultiplicationEnum& e );
+std::string mapPreMultiplicationEnumToString( const EPreMultiplication e );
 
 
 class PluginFactory
@@ -166,8 +166,8 @@ public:
 	virtual void                 load()   {}
 	virtual void                 unload() {}
 	virtual void                 describe( OFX::ImageEffectDescriptor& desc )                               = 0;
-	virtual void                 describeInContext( OFX::ImageEffectDescriptor& desc, ContextEnum context ) = 0;
-	virtual ImageEffect*         createInstance( OfxImageEffectHandle handle, ContextEnum context )         = 0;
+	virtual void                 describeInContext( OFX::ImageEffectDescriptor& desc, EContext context ) = 0;
+	virtual ImageEffect*         createInstance( OfxImageEffectHandle handle, EContext context )         = 0;
 	virtual const std::string&   getID() const                                                              = 0;
 	virtual const std::string&   getUID() const                                                             = 0;
 	virtual unsigned int         getMajorVersion() const                                                    = 0;
@@ -235,8 +235,8 @@ public:
 		virtual void load() LOADFUNCDEF ; \
 		virtual void unload() UNLOADFUNCDEF ; \
 		virtual void describe( OFX::ImageEffectDescriptor & desc ); \
-		virtual void describeInContext( OFX::ImageEffectDescriptor & desc, OFX::ContextEnum context ); \
-		virtual OFX::ImageEffect* createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context ); \
+		virtual void describeInContext( OFX::ImageEffectDescriptor & desc, OFX::EContext context ); \
+		virtual OFX::ImageEffect* createInstance( OfxImageEffectHandle handle, OFX::EContext context ); \
 	};
 
 typedef std::vector<PluginFactory*> PluginFactoryArray;
@@ -272,17 +272,17 @@ public:
 	int maxPages;
 	int pageRowCount;
 	int pageColumnCount;
-	typedef std::vector<PixelComponentEnum> PixelComponentArray;
+	typedef std::vector<EPixelComponent> PixelComponentArray;
 	PixelComponentArray _supportedComponents;
-	typedef std::vector<ContextEnum> ContextArray;
+	typedef std::vector<EContext> ContextArray;
 	ContextArray _supportedContexts;
-	typedef std::vector<BitDepthEnum> BitDepthArray;
+	typedef std::vector<EBitDepth> BitDepthArray;
 	BitDepthArray _supportedPixelDepths;
 	bool supportsProgressSuite;
 	bool supportsTimeLineSuite;
 public:
 	/** @return the pixel depth used by host application, if it doesn't support multiple clip depth. */
-	BitDepthEnum getPixelDepth()
+	EBitDepth getPixelDepth()
 	{
 		if( _supportedPixelDepths.size() == 1 )
 		{
@@ -330,10 +330,10 @@ public:
 	void setLabel( const std::string& label ) { setLabels( label, label, label ); }
 
 	/** @brief set how fielded images are extracted from the clip defaults to eFieldExtractDoubled */
-	void setFieldExtraction( FieldExtractionEnum v );
+	void setFieldExtraction( EFieldExtraction v );
 
 	/** @brief set which components are supported, defaults to none set, this must be called at least once! */
-	void addSupportedComponent( PixelComponentEnum v );
+	void addSupportedComponent( EPixelComponent v );
 
 	/** @brief set which components are supported. This version adds by the raw C-string label, allowing you to add
 	 * custom component types */
@@ -398,10 +398,10 @@ public:
 	void setPluginGrouping( const std::string& group );
 
 	/** @brief Add a context to those supported, defaults to none, must be called at least once */
-	void addSupportedContext( ContextEnum v );
+	void addSupportedContext( EContext v );
 
 	/** @brief Add a pixel depth to those supported, defaults to none, must be called at least once */
-	void addSupportedBitDepth( BitDepthEnum v );
+	void addSupportedBitDepth( EBitDepth v );
 
 	/** @brief Is the plugin single instance only ? defaults to false */
 	void setSingleInstance( bool v );
@@ -428,7 +428,7 @@ public:
 	void setSupportsMultipleClipPARs( bool v );
 
 	/** @brief How thread safe is the plugin, defaults to eRenderInstanceSafe */
-	void setRenderThreadSafety( RenderSafetyEnum v );
+	void setRenderThreadSafety( ERenderSafety v );
 
 	/** @brief If the slave  param changes the clip preferences need to be re-evaluated */
 	void addClipPreferencesSlaveParam( ParamDescriptor& p );
@@ -464,16 +464,16 @@ protected:
 	friend class Clip;
 
 	void* _pixelData;                   /**< @brief the base address of the image */
-	PixelComponentEnum _pixelComponents;     /**< @brief get the components in the image */
+	EPixelComponent _pixelComponents;     /**< @brief get the components in the image */
 	int _rowBytes;                    /**< @brief the number of bytes per scanline */
 
 	int _pixelBytes;                  /**< @brief the number of bytes per pixel */
-	BitDepthEnum _pixelDepth;                 /**< @brief get the pixel depth */
-	PreMultiplicationEnum _preMultiplication; /**< @brief premultiplication on the image */
+	EBitDepth _pixelDepth;                 /**< @brief get the pixel depth */
+	EPreMultiplication _preMultiplication; /**< @brief premultiplication on the image */
 	OfxRectI _regionOfDefinition;          /**< @brief the RoD in pixel coordinates, this may be more or less than the bounds! */
 	OfxRectI _bounds;                      /**< @brief the bounds on the pixel data */
 	double _pixelAspectRatio;            /**< @brief the pixel aspect ratio */
-	FieldEnum _field;                        /**< @brief which field this represents */
+	EField _field;                        /**< @brief which field this represents */
 	std::string _uniqueID;                   /**< @brief the unique ID of this image */
 	OfxPointD _renderScale;                  /**< @brief any scaling factor applied to the image */
 
@@ -489,16 +489,16 @@ public:
 	PropertySet& getPropertySet() { return _imageProps; }
 
 	/** @brief get the pixel depth */
-	BitDepthEnum getPixelDepth( void ) const { return _pixelDepth; }
+	EBitDepth getPixelDepth( void ) const { return _pixelDepth; }
 
 	/** @brief get the components in the image */
-	PixelComponentEnum getPixelComponents( void ) const { return _pixelComponents; }
+	EPixelComponent getPixelComponents( void ) const { return _pixelComponents; }
 
 	/** @brief get the string representing the pixel components */
 	std::string getPixelComponentsProperty( void ) const { return _imageProps.propGetString( kOfxImageEffectPropComponents ); }
 
 	/** @brief premultiplication on the image */
-	PreMultiplicationEnum getPreMultiplication( void ) const { return _preMultiplication; }
+	EPreMultiplication getPreMultiplication( void ) const { return _preMultiplication; }
 
 	/** @brief get the scale factor that has been applied to this image */
 	OfxPointD getRenderScale( void ) const { return _renderScale; }
@@ -519,7 +519,7 @@ public:
 	int getRowBytes( void ) const { return _rowBytes; }
 
 	/** @brief get the fielding of this image */
-	FieldEnum getField( void ) const { return _field; }
+	EField getField( void ) const { return _field; }
 
 	/** @brief the unique ID of this image */
 	std::string getUniqueIdentifier( void ) const { return _uniqueID; }
@@ -576,28 +576,28 @@ public:
 	void getLabels( std::string& label, std::string& shortLabel, std::string& longLabel ) const;
 
 	/** @brief what is the pixel depth images will be given to us as */
-	BitDepthEnum getPixelDepth( void ) const;
+	EBitDepth getPixelDepth( void ) const;
 
 	/** @brief what is the components images will be given to us as */
-	PixelComponentEnum getPixelComponents( void ) const;
+	EPixelComponent getPixelComponents( void ) const;
 
 	/** @brief get the string representing the pixel components */
 	std::string getPixelComponentsProperty( void ) const { return _clipProps.propGetString( kOfxImageEffectPropComponents ); }
 
 	/** @brief what is the actual pixel depth of the clip */
-	BitDepthEnum getUnmappedPixelDepth( void ) const;
+	EBitDepth getUnmappedPixelDepth( void ) const;
 
 	/** @brief what is the component type of the clip */
-	PixelComponentEnum getUnmappedPixelComponents( void ) const;
+	EPixelComponent getUnmappedPixelComponents( void ) const;
 
 	/** @brief get the string representing the pixel components */
 	std::string getUnmappedPixelComponentsProperty( void ) const { return _clipProps.propGetString( kOfxImageClipPropUnmappedComponents ); }
 
 	/** @brief get the components in the image */
-	PreMultiplicationEnum getPreMultiplication( void ) const;
+	EPreMultiplication getPreMultiplication( void ) const;
 
 	/** @brief which spatial field comes first temporally */
-	FieldEnum getFieldOrder( void ) const;
+	EField getFieldOrder( void ) const;
 
 	/** @brief is the clip connected */
 	bool isConnected( void ) const;
@@ -714,7 +714,7 @@ struct RenderArguments
 	double time;
 	OfxPointD renderScale;
 	OfxRectI renderWindow;
-	FieldEnum fieldToRender;
+	EField fieldToRender;
 };
 
 /** @brief POD struct to pass arguments into  @ref OFX::ImageEffect::render */
@@ -815,7 +815,7 @@ public:
 	 *
 	 * See the OFX API documentation for the default values of this.
 	 */
-	void setClipComponents( Clip& clip, PixelComponentEnum comps );
+	void setClipComponents( Clip& clip, EPixelComponent comps );
 
 	/** @brief, force the host to set a clip's mapped bit depth be \em bitDepth
 	 *
@@ -823,7 +823,7 @@ public:
 	 *
 	 * See the OFX API documentation for the default values of this.
 	 */
-	void setClipBitDepth( Clip& clip, BitDepthEnum bitDepth );
+	void setClipBitDepth( Clip& clip, EBitDepth bitDepth );
 
 	/** @brief, force the host to set a clip's mapped Pixel Aspect Ratio to be \em PAR
 	 *
@@ -847,7 +847,7 @@ public:
 	 *
 	 * Defaults to the premultiplication state of ???
 	 */
-	void setOutputPremultiplication( PreMultiplicationEnum v );
+	void setOutputPremultiplication( EPreMultiplication v );
 
 	/** @brief Set whether the effect can be continously sampled.
 	 *
@@ -868,7 +868,7 @@ public:
 	 * - eFieldLower,
 	 * - eFieldUpper
 	 */
-	void setOutputFielding( FieldEnum v );
+	void setOutputFielding( EField v );
 };
 
 /** @brief POD data structure passing in the instance changed args */
@@ -900,7 +900,7 @@ private:
 	PropertySet _effectProps;
 
 	/** @brief the context of the effect */
-	ContextEnum _context;
+	EContext _context;
 
 	/** @brief Set of all previously defined parameters, defined on demand */
 	std::map<std::string, Clip*> _fetchedClips;
@@ -925,7 +925,7 @@ public:
 	OfxImageEffectHandle getHandle( void ) const { return _effectHandle; }
 
 	/** @brief the context this effect was instantiate in */
-	ContextEnum getContext( void ) const;
+	EContext getContext( void ) const;
 
 	/** @brief size of the project */
 	OfxPointD getProjectSize( void ) const;
@@ -954,7 +954,7 @@ public:
 	/** @brief Have we informed the host we want to be seqentially renderred ? */
 	bool getSequentialRender( void ) const;
 
-	OFX::Message::MessageReplyEnum sendMessage( OFX::Message::MessageTypeEnum type, const std::string& id, const std::string& msg );
+	OFX::Message::EMessageReply sendMessage( OFX::Message::EMessageType type, const std::string& id, const std::string& msg );
 
 	/** @brief Fetch the named clip from this instance
 	 *

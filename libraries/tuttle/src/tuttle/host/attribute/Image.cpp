@@ -49,17 +49,17 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	}
 
 	// make some memory according to the bit depth
-	if( clip.getPixelDepth() == kOfxBitDepthByte )
+	if( clip.getBitDepthString() == kOfxBitDepthByte )
 	{
 		memlen = _ncomp * dimensions.x * dimensions.y;
 		rowlen = _ncomp * dimensions.x;
 	}
-	else if( clip.getPixelDepth() == kOfxBitDepthShort )
+	else if( clip.getBitDepthString() == kOfxBitDepthShort )
 	{
 		memlen = _ncomp * dimensions.x * dimensions.y * sizeof( boost::uint16_t );
 		rowlen = _ncomp * dimensions.x * sizeof( boost::uint16_t );
 	}
-	else if( clip.getPixelDepth() == kOfxBitDepthFloat )
+	else if( clip.getBitDepthString() == kOfxBitDepthFloat )
 	{
 		memlen = int(_ncomp * dimensions.x * dimensions.y * sizeof( float ) );
 		rowlen = int(_ncomp * dimensions.x * sizeof( float ) );
@@ -67,7 +67,7 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	else
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()
-			<< exception::user() + "Unsupported pixel depth: " + quotes(clip.getPixelDepth()) );
+			<< exception::user() + "Unsupported pixel depth: " + quotes(clip.getBitDepthString()) );
 	}
 
 	_data = _memoryPool.allocate( memlen );

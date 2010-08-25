@@ -39,8 +39,8 @@ OFX::Clip * BitDepthPlugin::getDstClip( ) const
 void BitDepthPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    const OFX::BitDepthEnum srcBitDepth = _clipSrc->getPixelDepth( );
-    const OFX::PixelComponentEnum srcComponents = _clipSrc->getPixelComponents( );
+    const OFX::EBitDepth srcBitDepth = _clipSrc->getPixelDepth( );
+    const OFX::EPixelComponent srcComponents = _clipSrc->getPixelComponents( );
 
 	if (srcComponents == OFX::ePixelComponentRGBA)
 	{
@@ -111,8 +111,8 @@ void BitDepthPlugin::render( const OFX::RenderArguments &args )
 template<class sview_t>
 void BitDepthPlugin::setupDestView( const OFX::RenderArguments &args )
 {
-	const OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
-    const OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
+	const OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
+    const OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
 	if (dstComponents == OFX::ePixelComponentRGBA)
 	{
 		switch( dstBitDepth )
@@ -191,7 +191,7 @@ void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
 {
 //	clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
 	if( _outBitDepth->getValue() != 0 )
-		clipPreferences.setClipBitDepth( *_clipDst, (OFX::BitDepthEnum)(_outBitDepth->getValue()) );
+		clipPreferences.setClipBitDepth( *_clipDst, (OFX::EBitDepth)(_outBitDepth->getValue()) );
 }
 
 }

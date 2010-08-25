@@ -55,7 +55,7 @@ void IfftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void IfftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::ContextEnum context )
+                                                  OFX::EContext context )
 {
 	OFX::ClipDescriptor *srcClipPhase = desc.defineClip( kSourcePhase );
 	srcClipPhase->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -84,7 +84,7 @@ void IfftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* IfftPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new IfftPlugin( handle );
 }

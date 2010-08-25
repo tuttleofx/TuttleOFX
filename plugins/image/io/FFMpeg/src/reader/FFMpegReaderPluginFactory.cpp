@@ -54,7 +54,7 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                   OFX::ContextEnum context )
+                                                   OFX::EContext context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -78,7 +78,7 @@ void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
  * @return  plugin instance
  */
 OFX::ImageEffect* FFMpegReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new FFMpegReaderPlugin(handle);
 }

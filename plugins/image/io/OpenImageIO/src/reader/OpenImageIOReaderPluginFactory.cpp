@@ -45,7 +45,7 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void OpenImageIOReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -88,7 +88,7 @@ void OpenImageIOReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* OpenImageIOReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new OpenImageIOReaderPlugin( handle );
 }

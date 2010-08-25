@@ -41,8 +41,10 @@ public:
 	virtual void connect( const Node&, attribute::Attribute& ) = 0;
 
 	virtual void begin( graph::ProcessOptions& processOptions )                 = 0;
-	virtual void preProcess_initialize( graph::ProcessOptions& processOptions ) = 0;
-	virtual void preProcess_finish( graph::ProcessOptions& processOptions )     = 0;
+	virtual void preProcess1_initialize( graph::ProcessOptions& processOptions ) {}
+	virtual void preProcess1_finish( graph::ProcessOptions& processOptions ) {}
+	virtual void preProcess2_initialize( graph::ProcessOptions& processOptions ) {}
+	virtual void preProcess2_finish( graph::ProcessOptions& processOptions ) {}
 	virtual void preProcess_infos( graph::ProcessInfos& nodeInfos )             = 0;
 	virtual void process( const graph::ProcessOptions& processOptions )         = 0;
 	virtual void postProcess( graph::ProcessOptions& processOptions )           = 0;

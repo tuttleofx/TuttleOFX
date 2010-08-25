@@ -51,7 +51,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -129,7 +129,7 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* EXRReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new EXRReaderPlugin( handle );
 }

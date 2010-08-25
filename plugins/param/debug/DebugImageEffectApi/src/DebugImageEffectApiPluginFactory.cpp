@@ -53,7 +53,7 @@ void DebugImageEffectApiPluginFactory::describe( OFX::ImageEffectDescriptor &des
  * @param[in]        context    Application context
  */
 void DebugImageEffectApiPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                          OFX::ContextEnum context )
+                                                          OFX::EContext context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -100,7 +100,7 @@ void DebugImageEffectApiPluginFactory::describeInContext( OFX::ImageEffectDescri
  * @return  plugin instance
  */
 OFX::ImageEffect* DebugImageEffectApiPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                                    OFX::ContextEnum context )
+                                                                    OFX::EContext context )
 {
 	return new DebugImageEffectApiPlugin(handle);
 }

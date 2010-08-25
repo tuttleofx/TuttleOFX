@@ -38,8 +38,8 @@ OFX::Clip * Log2LinPlugin::getDstClip( ) const
 void Log2LinPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
+    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

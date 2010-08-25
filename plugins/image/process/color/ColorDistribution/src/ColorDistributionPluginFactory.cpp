@@ -46,7 +46,7 @@ void ColorDistributionPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::ContextEnum context )
+                                                  OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -90,7 +90,7 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* ColorDistributionPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new ColorDistributionPlugin( handle );
 }

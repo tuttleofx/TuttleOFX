@@ -52,8 +52,8 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 
 	point2<int> srcImgCorner = point2<int>( static_cast<int>( -_srcBounds.x1 ),
 											static_cast<int>( -_srcBounds.y1 ) );
-	OFX::BitDepthEnum srcBitDepth         = this->_src->getPixelDepth();
-	OFX::PixelComponentEnum srcComponents = this->_src->getPixelComponents();
+	OFX::EBitDepth srcBitDepth         = this->_src->getPixelDepth();
+	OFX::EPixelComponent srcComponents = this->_src->getPixelComponents();
 	typename image_from_view<View>::type imResized;
 
 	// Stretch source if necessary
@@ -91,8 +91,8 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 	point2<int> dstImgCorner = point2<int>( static_cast<int>( -dstImgBounds.x1 ),
 											static_cast<int>( -dstImgBounds.y1 ) );
 
-	OFX::BitDepthEnum dstBitDepth         = this->_dst->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = this->_dst->getPixelComponents();
+	OFX::EBitDepth dstBitDepth         = this->_dst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = this->_dst->getPixelComponents();
 
 	// Make sure bit depths are same
 	if( srcBitDepth != dstBitDepth || srcComponents != dstComponents )

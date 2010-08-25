@@ -48,7 +48,7 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                    OFX::ContextEnum context )
+                                                    OFX::EContext context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -91,7 +91,7 @@ void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &
  * @return  plugin instance
  */
 OFX::ImageEffect* ColorGradientPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new ColorGradientPlugin(handle);
 }

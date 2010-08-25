@@ -154,7 +154,7 @@ bool OfxhImageEffectNodeBase::temporalAccess() const
 
 /// is the given RGBA/A pixel depth supported by the effect
 
-bool OfxhImageEffectNodeBase::isPixelDepthSupported( const std::string& s ) const
+bool OfxhImageEffectNodeBase::isBitDepthSupported( const std::string& s ) const
 {
 	return _properties.findStringPropValueIndex( kOfxImageEffectPropSupportedPixelDepths, s ) != -1;
 }

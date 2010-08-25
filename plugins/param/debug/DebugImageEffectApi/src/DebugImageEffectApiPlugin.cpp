@@ -50,8 +50,8 @@ DebugImageEffectApiParams DebugImageEffectApiPlugin::getParams() const
 void DebugImageEffectApiPlugin::render( const OFX::RenderArguments &args )
 {
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents( );
+    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )
@@ -152,19 +152,19 @@ void DebugImageEffectApiPlugin::changedParam( const OFX::InstanceChangedArgs &ar
 		for( OFX::ImageEffectHostDescription::PixelComponentArray::const_iterator it = desc->_supportedComponents.begin(), itEnd = desc->_supportedComponents.end();
 		     it != itEnd;
 		     ++it )
-			description << OFX::mapPixelComponentEnumToStr( *it ) << ", ";
+			description << OFX::mapPixelComponentEnumToString( *it ) << ", ";
 		description << std::endl;
 		description << "_supportedContexts: ";
 		for( OFX::ImageEffectHostDescription::ContextArray::const_iterator it = desc->_supportedContexts.begin(), itEnd = desc->_supportedContexts.end();
 		     it != itEnd;
 		     ++it )
-			description << OFX::mapContextEnumToStr( *it ) << ", ";
+			description << OFX::mapContextEnumToString( *it ) << ", ";
 		description << std::endl;
 		description << "_supportedPixelDepths: ";
 		for( OFX::ImageEffectHostDescription::BitDepthArray::const_iterator it = desc->_supportedPixelDepths.begin(), itEnd = desc->_supportedPixelDepths.end();
 		     it != itEnd;
 		     ++it )
-			description << OFX::mapBitDepthEnumToStr( *it ) << ", ";
+			description << OFX::mapBitDepthEnumToString( *it ) << ", ";
 		description << std::endl;
 		description << "supportsProgressSuite: " << desc->supportsProgressSuite << std::endl;
 		description << "supportsTimeLineSuite: " << desc->supportsTimeLineSuite << std::endl;

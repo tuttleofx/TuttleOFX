@@ -48,7 +48,7 @@ void ConvolutionPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::ContextEnum context )
+                                                  OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -90,7 +90,7 @@ void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
  * @return  plugin instance
  */
 OFX::ImageEffect* ConvolutionPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new ConvolutionPlugin( handle );
 }

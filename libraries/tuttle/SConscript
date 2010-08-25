@@ -51,15 +51,19 @@ envSwig.Replace( SHLIBPREFIX = '_' )
 if project.macos:
 	envSwig.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
 
-tuttlePython = project.SharedLibrary( target='tuttle', sources=['src/tuttle/host/tuttle.i'], env=envSwig, install=False )
+tuttlePython = project.SharedLibrary( target='tuttle',
+                                      sources=['src/tuttle/host/tuttle.i'],
+                                      env=envSwig,
+                                      install=False,
+                                     )
 
 initFile = envSwig.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
                             [ Mkdir('${TARGET.dir}'),
                               Touch('$TARGET'),
                             ])
+envSwig.Depends( tuttlePython, initFile )
 
 tuttlePythonInstall = envSwig.Install( pythonOutputDir, tuttlePython )
-envSwig.Depends( tuttlePythonInstall, initFile )
 
 
 envSwig.Alias( 'python', tuttlePythonInstall )

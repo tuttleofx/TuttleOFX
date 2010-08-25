@@ -91,88 +91,16 @@ public:
 
 	void debugOutputImage() const;
 
-	void begin( graph::ProcessOptions& processOptions )
-	{
-		TCOUT( "begin: " << getName() );
-		beginRenderAction( processOptions._startFrame,
-		                   processOptions._endFrame,
-		                   processOptions._step,
-		                   processOptions._interactive,
-		                   processOptions._renderScale );
-	}
+	
+	void begin( graph::ProcessOptions& processOptions );
+	void preProcess1_finish( graph::ProcessOptions& processOptions );
+	void preProcess2_initialize( graph::ProcessOptions& processOptions );
+	void preProcess2_finish( graph::ProcessOptions& processOptions );
+	void preProcess_infos( graph::ProcessInfos& nodeInfos );
+	void process( const graph::ProcessOptions& processOptions );
+	void postProcess( graph::ProcessOptions& processOptions );
+	void end( graph::ProcessOptions& processOptions );
 
-	void preProcess_finish( graph::ProcessOptions& processOptions )
-	{
-		TCOUT( "preProcess_finish: " << getName() << " at time: " << processOptions._time );
-		setCurrentTime( processOptions._time );
-
-		checkClipsConnections();
-		
-		getClipPreferencesAction();
-
-		initClipsFromReadsToWrites();
-
-		OfxRectD rod;
-		getRegionOfDefinitionAction( processOptions._time,
-									 processOptions._renderScale,
-									 rod );
-		setRegionOfDefinition( rod );
-		processOptions._renderRoI = rod;
-		TCOUT_VAR( rod );
-	}
-
-	void preProcess_initialize( graph::ProcessOptions& processOptions )
-	{
-		TCOUT( "preProcess_initialize: " << getName() );
-		
-		initClipsFromWritesToReads();
-		
-		getRegionOfInterestAction( processOptions._time,
-		                           processOptions._renderScale,
-		                           processOptions._renderRoI,
-		                           processOptions._inputsRoI );
-		TCOUT_VAR( processOptions._renderRoI );
-	}
-
-	void preProcess_infos( graph::ProcessInfos& nodeInfos )
-	{
-		TCOUT( "preProcess_initialize: " << getName() );
-		OfxRectD rod = getRegionOfDefinition();
-		nodeInfos._memory = (rod.x2-rod.x1)*(rod.y2-rod.y1)*4*sizeof(float)/*bit depth*/;
-	}
-
-	void process( const graph::ProcessOptions& processOptions )
-	{
-		TCOUT( "process: " << getName() );
-		OfxRectI roi = {
-			boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
-			boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),
-			boost::numeric_cast<int>(ceil( processOptions._renderRoI.x2 )),
-			boost::numeric_cast<int>(ceil( processOptions._renderRoI.y2 ))
-		};
-
-		renderAction( processOptions._time,
-		              processOptions._field,
-		              roi,
-		              processOptions._renderScale );
-		
-		debugOutputImage();
-	}
-
-	void postProcess( graph::ProcessOptions& processOptions )
-	{
-		TCOUT( "postProcess: " << getName() );
-	}
-
-	void end( graph::ProcessOptions& processOptions )
-	{
-		TCOUT( "end: " << getName() );
-		endRenderAction( processOptions._startFrame,
-		                 processOptions._endFrame,
-		                 processOptions._step,
-		                 processOptions._interactive,
-		                 processOptions._renderScale );
-	}
 
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 #endif

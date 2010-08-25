@@ -369,7 +369,7 @@ bool OfxhImageEffectNode::checkClipConnectionStatus() const
 	std::map<std::string, attribute::OfxhClipImage*>::const_iterator i;
 	for( i = _clips.begin(); i != _clips.end(); ++i )
 	{
-		if( !i->second->isOptional() && !i->second->getConnected() )
+		if( !i->second->isOptional() && !i->second->isConnected() )
 		{
 			return false;
 		}
@@ -1117,16 +1117,15 @@ bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 		return false;
 
 	// in the standard, it's written that only general context can handle multiple clip depth...
-	// but we remove this restriction...
-
+	// but we remove this restriction for filters (to allow input bitdepth != output bitdepth)
 //	if( _context == kOfxImageEffectContextFilter )
 //		return false;
-//
-//	if( _context == kOfxImageEffectContextGenerator ||
-//	_context == kOfxImageEffectContextTransition ||
-//	_context == kOfxImageEffectContextPaint ||
-//	_context == kOfxImageEffectContextRetimer )
-//		return false;
+
+	if( _context == kOfxImageEffectContextGenerator ||
+	_context == kOfxImageEffectContextTransition ||
+	_context == kOfxImageEffectContextPaint ||
+	_context == kOfxImageEffectContextRetimer )
+		return false;
 
 	return true;
 }
@@ -1183,7 +1182,7 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 	_frameVarying            = false;
 
 	/// now find the best depth that the plugin supports
-	deepestBitDepth = bestSupportedDepth( deepestBitDepth );
+	deepestBitDepth = bestSupportedBitDepth( deepestBitDepth );
 
 	/// now add the clip gubbins to the out args
 	for( std::map<std::string, attribute::OfxhClipImage*>::iterator it = _clips.begin();
@@ -1201,22 +1200,22 @@ void OfxhImageEffectNode::setDefaultClipPreferences()
 			{
 				std::string depth = deepestBitDepth;
 				std::string comp  = clip->findSupportedComp( mostComponents );
-				clip->setPixelDepth( depth );
+				clip->setBitDepthString( depth );
 				clip->setComponents( comp );
 			}
 			else
 			{
 				std::string comp  = rawComp;
-				std::string depth = multiBitDepth ? bestSupportedDepth( rawDepth ) : deepestBitDepth;
+				std::string depth = multiBitDepth ? bestSupportedBitDepth( rawDepth ) : deepestBitDepth;
 
-				clip->setPixelDepth( depth );
+				clip->setBitDepthString( depth );
 				clip->setComponents( comp );
 			}
 		}
 		else
 		{
 			/// hmm custom component type, don't touch it and pass it through
-			clip->setPixelDepth( rawDepth );
+			clip->setBitDepthString( rawDepth );
 			clip->setComponents( rawComp );
 		}
 	}
@@ -1267,9 +1266,9 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 		// as it is variable dimension, there is no default value, so we have to set it explicitly
 		outArgs.setStringProperty( componentParamName, clip->getComponents() );
 
-		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::eString, 1, !multiBitDepth, clip->getPixelDepth().c_str() };
+		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::eString, 1, !multiBitDepth, clip->getBitDepthString().c_str() };
 		outArgs.createProperty( specDep );
-		outArgs.setStringProperty( depthParamName, clip->getPixelDepth() );
+		outArgs.setStringProperty( depthParamName, clip->getBitDepthString() );
 
 		property::OfxhPropSpec specPAR = { parParamName.c_str(), property::eDouble, 1, false, "1" };
 		outArgs.createProperty( specPAR );
@@ -1291,7 +1290,7 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 		std::string parParamName       = "OfxImageClipPropPAR_" + it->first;
 
 		const property::String& propPixelDepth = outArgs.fetchStringProperty( depthParamName );
-		clip->setPixelDepth( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
+		clip->setBitDepthString( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
 		
 		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
 		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
@@ -1353,7 +1352,7 @@ const std::string& OfxhImageEffectNode::findMostChromaticComponents( const std::
 /**
  * given the bit depth, find the best match for it.
  */
-const std::string& OfxhImageEffectNode::bestSupportedDepth( const std::string& depth ) const
+const std::string& OfxhImageEffectNode::bestSupportedBitDepth( const std::string& depth ) const
 {
 	static const std::string none( kOfxBitDepthNone );
 	static const std::string bytes( kOfxBitDepthByte );
@@ -1363,30 +1362,30 @@ const std::string& OfxhImageEffectNode::bestSupportedDepth( const std::string& d
 	if( depth == none )
 		return none;
 
-	if( isPixelDepthSupported( depth ) )
+	if( isBitDepthSupported( depth ) )
 		return depth;
 
 	if( depth == floats )
 	{
-		if( isPixelDepthSupported( shorts ) )
+		if( isBitDepthSupported( shorts ) )
 			return shorts;
-		if( isPixelDepthSupported( bytes ) )
+		if( isBitDepthSupported( bytes ) )
 			return bytes;
 	}
 
 	if( depth == shorts )
 	{
-		if( isPixelDepthSupported( floats ) )
+		if( isBitDepthSupported( floats ) )
 			return floats;
-		if( isPixelDepthSupported( bytes ) )
+		if( isBitDepthSupported( bytes ) )
 			return bytes;
 	}
 
 	if( depth == bytes )
 	{
-		if( isPixelDepthSupported( shorts ) )
+		if( isBitDepthSupported( shorts ) )
 			return shorts;
-		if( isPixelDepthSupported( floats ) )
+		if( isBitDepthSupported( floats ) )
 			return floats;
 	}
 
@@ -1423,7 +1422,7 @@ void OfxhImageEffectNode::paramChanged( const attribute::OfxhParam& param, const
 	if( change == attribute::eChangeNone )
 		return;
 	
-	const std::string changeStr = attribute::mapEChangeToString(change);
+	const std::string changeStr = attribute::mapChangeEnumToString(change);
 	const double frame = getFrameRecursive();
 	OfxPointD renderScale;
 

@@ -38,8 +38,8 @@ DPXReaderProcessParams DPXReaderPlugin::getProcessParams(const OfxTime time)
 void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = _clipDst->getPixelComponents();
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
@@ -133,7 +133,7 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			DpxImage dpxImg;
 			dpxImg.readHeader( filename );
 
-			OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+			OFX::EBitDepth bd = OFX::eBitDepthNone;
 			switch(dpxImg.componentsType())
 			{
 				case DpxImage::eCompTypeR8G8B8:

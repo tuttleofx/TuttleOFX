@@ -35,8 +35,8 @@ JpegReaderProcessParams JpegReaderPlugin::getProcessParams(const OfxTime time)
 void JpegReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = this->_clipDst->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = this->_clipDst->getPixelComponents();
+	OFX::EBitDepth dstBitDepth         = this->_clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = this->_clipDst->getPixelComponents();
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{

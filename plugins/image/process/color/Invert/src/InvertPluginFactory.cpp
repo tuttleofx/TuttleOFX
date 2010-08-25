@@ -44,7 +44,7 @@ void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::ContextEnum context )
+void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
@@ -68,7 +68,7 @@ void InvertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, O
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context )
+OFX::ImageEffect* InvertPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::EContext context )
 {
 	return new InvertPlugin( handle );
 }

@@ -132,38 +132,13 @@ private:
 };
 
 template<class TGraph>
-struct dfs_preProcess_finish_visitor : public boost::dfs_visitor<>
+struct dfs_preProcess1_visitor : public boost::dfs_visitor<>
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preProcess_finish_visitor( TGraph& graph )
-			: _graph(graph)
-		{}
-
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			if( vertex.isFake() )
-				return;
-
-			vertex.getProcessNode()->preProcess_finish( vertex.getProcessOptions() );
-		}
-
-	private:
-		TGraph& _graph;
-};
-
-template<class TGraph>
-struct dfs_preProcess_initialize_visitor : public boost::dfs_visitor<>
-{
-	public:
-		typedef typename TGraph::GraphContainer GraphContainer;
-		typedef typename TGraph::Vertex Vertex;
-
-		dfs_preProcess_initialize_visitor( TGraph& graph )
+		dfs_preProcess1_visitor( TGraph& graph )
 			: _graph(graph)
 		{}
 
@@ -171,11 +146,59 @@ struct dfs_preProcess_initialize_visitor : public boost::dfs_visitor<>
 		void discover_vertex( VertexDescriptor v, Graph& g )
 		{
 			Vertex& vertex = _graph.instance(v);
-			TCOUT("[PREPROCESS] discover_vertex " << vertex);
+			TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
 			if( vertex.isFake() )
 				return;
 
-			vertex.getProcessNode()->preProcess_initialize( vertex.getProcessOptions() );
+			vertex.getProcessNode()->preProcess1_initialize( vertex.getProcessOptions() );
+		}
+
+		template<class VertexDescriptor, class Graph>
+		void finish_vertex( VertexDescriptor v, Graph& g )
+		{
+			Vertex& vertex = _graph.instance(v);
+			TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
+			if( vertex.isFake() )
+				return;
+
+			vertex.getProcessNode()->preProcess1_finish( vertex.getProcessOptions() );
+		}
+
+	private:
+		TGraph& _graph;
+};
+
+template<class TGraph>
+struct dfs_preProcess2_visitor : public boost::dfs_visitor<>
+{
+	public:
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+
+		dfs_preProcess2_visitor( TGraph& graph )
+			: _graph(graph)
+		{}
+
+		template<class VertexDescriptor, class Graph>
+		void discover_vertex( VertexDescriptor v, Graph& g )
+		{
+			Vertex& vertex = _graph.instance(v);
+			TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
+			if( vertex.isFake() )
+				return;
+
+			vertex.getProcessNode()->preProcess2_initialize( vertex.getProcessOptions() );
+		}
+
+		template<class VertexDescriptor, class Graph>
+		void finish_vertex( VertexDescriptor v, Graph& g )
+		{
+			Vertex& vertex = _graph.instance(v);
+			TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
+			if( vertex.isFake() )
+				return;
+
+			vertex.getProcessNode()->preProcess2_finish( vertex.getProcessOptions() );
 		}
 
 	private:

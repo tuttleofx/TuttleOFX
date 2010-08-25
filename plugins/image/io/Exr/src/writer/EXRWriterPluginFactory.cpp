@@ -51,7 +51,7 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	// Exr only supports RGB(A)
@@ -112,7 +112,7 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* EXRWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new EXRWriterPlugin( handle );
 }

@@ -6,6 +6,8 @@
 
 #include <tuttle/host/ofx/OfxhImage.hpp>
 
+#include <tuttle/common/ofx/imageEffect.hpp>
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -15,6 +17,7 @@ namespace host {
 namespace ofx {
 
 namespace imageEffect {
+using namespace ::tuttle::ofx::imageEffect;
 class OfxhImageEffectNode;
 class OfxhImageEffectNodeDescriptor;
 }
@@ -62,28 +65,47 @@ public:
 	}
 
 	/**
-	 *  Pixel Depth - fetch depth of all chromatic component in this clip
+	 * @brief fetch depth of all chromatic component in this clip
 	 *
 	 *   kOfxBitDepthNone (implying a clip is unconnected, not valid for an image)
 	 *   kOfxBitDepthByte
 	 *   kOfxBitDepthShort
 	 *   kOfxBitDepthFloat
 	 */
-	const std::string& getPixelDepth() const
+	const std::string& getBitDepthString() const
 	{
 		return getProperties().getStringProperty( kOfxImageEffectPropPixelDepth );
+	}
+
+	/**
+	 * @brief fetch depth of all chromatic component in this clip
+	 * 
+	 * 0 (implying a clip is unconnected, not valid for an image),
+	 * 8,
+	 * 16,
+	 * 32
+	 */
+	imageEffect::EBitDepth getBitDepth() const
+	{
+		const std::string& s = getBitDepthString();
+		return imageEffect::mapBitDepthStringToEnum(s);
 	}
 
 	/** set the current pixel depth
 	 * called by clip preferences action
 	 */
-	void setPixelDepth( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
+	void setBitDepthString( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
 		prop.setValue( s, 0, modifiedBy );
 	}
 
-	void setPixelDepthIfNotModifiedByPlugin( const std::string& s )
+	void setBitDepth( const imageEffect::EBitDepth bitDepth, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
+	{
+		setBitDepthString( mapBitDepthEnumToString(bitDepth), modifiedBy );
+	}
+
+	void setBitDepthIfNotModifiedByPlugin( const std::string& s )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
 		if( prop.getModifiedBy() != property::eModifiedByPlugin )
@@ -215,7 +237,7 @@ public:
 	 *
 	 *  Says whether the clip is actually connected at the moment.
 	 */
-	virtual const bool getConnected() const = 0;
+	virtual const bool isConnected() const = 0;
 	//	{
 	//		return getProperties().getDoubleProperty( kOfxImageClipPropConnected );
 	//	}

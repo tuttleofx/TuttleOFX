@@ -50,7 +50,7 @@ void LensDistortPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc, OFX::ContextEnum context )
+void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc, OFX::EContext context )
 {
     // Create the mandated output clip
     OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -267,7 +267,7 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor &de
  * @param[in]   context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* LensDistortPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context )
+OFX::ImageEffect* LensDistortPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::EContext context )
 {
     return new LensDistortPlugin( handle );
 }

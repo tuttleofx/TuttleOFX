@@ -51,7 +51,7 @@ void PngWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -110,7 +110,7 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* PngWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new PngWriterPlugin( handle );
 }

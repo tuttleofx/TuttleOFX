@@ -447,7 +447,7 @@ public:
 protected:
 	/// find the best supported bit depth for the given one. Override this if you define
 	/// more depths
-	virtual const std::string& bestSupportedDepth( const std::string& depth ) const;
+	virtual const std::string& bestSupportedBitDepth( const std::string& depth ) const;
 
 	/// find the most chromatic components out of the two. Override this if you define
 	/// more chromatic components
@@ -455,7 +455,7 @@ protected:
 
 	/** is the given bit depth supported
 	 */
-	bool isSupportedPixelDepth( const std::string& depth ) const
+	bool isSupportedBitDepth( const std::string& depth ) const
 	{
 		return getProperties().findStringPropValueIndex( kOfxImageEffectPropSupportedPixelDepths, depth ) != -1;
 	}

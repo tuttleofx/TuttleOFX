@@ -91,8 +91,8 @@ public:
 	/// does this effect need random temporal access
 	bool temporalAccess() const;
 
-	/// is the given RGBA/A pixel depth supported by the effect
-	bool isPixelDepthSupported( const std::string& s ) const;
+	/// is the given bit depth supported by the effect
+	bool isBitDepthSupported( const std::string& s ) const;
 
 	/// when field rendering, does the effect need to be called
 	/// twice to render a frame in all circumstances (with different fields)

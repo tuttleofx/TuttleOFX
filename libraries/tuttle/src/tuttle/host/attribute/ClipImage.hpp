@@ -88,19 +88,26 @@ public:
 
 	std::string getConnectedClipFullName() const
 	{
+		if( isOutput() || !isConnected() || _connectedClip->getFullName().size() == 0 )
+		{
+			BOOST_THROW_EXCEPTION( exception::Logic()
+				<< exception::user( "Input clip " + getFullName() + " is not connected !" ) );
+		}
+		return _connectedClip->getFullName();
+	}
+	
+	std::string getIdentifier() const
+	{
 		if( isOutput() )
-		{
 			return getFullName();
-		}
 		else
-		{
-			if( !getConnected() || _connectedClip->getFullName().size() == 0 )
-			{
-				BOOST_THROW_EXCEPTION( exception::Logic()
-					<< exception::user( "Input clip " + getFullName() + " is not connected !" ) );
-			}
-			return _connectedClip->getFullName();
-		}
+			return getConnectedClipFullName();
+	}
+
+	/// @todo tuttle: this is really bad...
+	ClipImage& getConnectedClip()
+	{
+		return const_cast<ClipImage&>(*_connectedClip);
 	}
 	
 	const ClipImage& getConnectedClip() const
@@ -185,7 +192,7 @@ public:
 	 */
 	void getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const;
 
-	const bool getConnected() const { return _isConnected; }
+	const bool isConnected() const { return _isConnected; }
 
 	/**
 	 * @brief Connected

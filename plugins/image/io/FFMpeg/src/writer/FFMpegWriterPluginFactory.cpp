@@ -54,7 +54,7 @@ void FFMpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                  OFX::ContextEnum context )
+                                                  OFX::EContext context )
 {
 	VideoFFmpegWriter writer;
 	
@@ -134,7 +134,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
  * @return  plugin instance
  */
 OFX::ImageEffect* FFMpegWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new FFMpegWriterPlugin(handle);
 }

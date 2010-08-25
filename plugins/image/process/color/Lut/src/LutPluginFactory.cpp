@@ -44,7 +44,7 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::ContextEnum context )
+void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::EContext context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
@@ -75,7 +75,7 @@ void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX:
  * @param[in] context    Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* LutPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::ContextEnum context )
+OFX::ImageEffect* LutPluginFactory::createInstance( OfxImageEffectHandle handle, OFX::EContext context )
 {
 	return new LutPlugin( handle );
 }

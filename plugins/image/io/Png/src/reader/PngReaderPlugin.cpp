@@ -40,8 +40,8 @@ PngReaderProcessParams PngReaderPlugin::getProcessParams(const OfxTime time)
 void PngReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = this->_clipDst->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = this->_clipDst->getPixelComponents();
+	OFX::EBitDepth dstBitDepth         = this->_clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = this->_clipDst->getPixelComponents();
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
@@ -185,7 +185,7 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	}
 	else
 	{
-		OFX::BitDepthEnum bd = OFX::eBitDepthNone;
+		OFX::EBitDepth bd = OFX::eBitDepthNone;
 		int bitDepth = png_read_precision( filename );
 		switch( bitDepth )
 		{

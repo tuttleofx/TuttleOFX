@@ -51,7 +51,7 @@ void JpegWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -112,7 +112,7 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
  * @return  plugin instance
  */
 OFX::ImageEffect* JpegWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new JpegWriterPlugin( handle );
 }

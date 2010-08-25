@@ -339,7 +339,7 @@ void MergePlugin::renderGray( const OFX::RenderArguments& args )
 {
 	assert( _clipDst );
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth();
+	OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth();
 	switch( dstBitDepth )
 	{
 		case OFX::eBitDepthUByte:
@@ -371,7 +371,7 @@ template< template <typename> class Functor >
 void MergePlugin::renderRGBA( const OFX::RenderArguments& args )
 {
 	assert( _clipDst );
-	OFX::BitDepthEnum dstBitDepth = _clipDst->getPixelDepth();
+	OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth();
 
 	// do the rendering
 	switch( dstBitDepth )

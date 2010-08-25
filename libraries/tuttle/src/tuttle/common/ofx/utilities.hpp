@@ -15,7 +15,6 @@ namespace ofx {
 /// class that is a std::vector of std::strings
 typedef std::vector<std::string> StringVec;
 
-/// class that is a std::vector of std::strings
 inline void setStringVecValue( StringVec& sv, const std::string& value, size_t index = 0 )
 {
 	size_t size = sv.size();
@@ -32,9 +31,6 @@ inline void setStringVecValue( StringVec& sv, const std::string& value, size_t i
 	else
 		sv[index] = value;
 }
-
-/// get me deepest bit depth
-std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 );
 
 /// get the min value
 template<class T>

@@ -50,7 +50,7 @@ void ImageMagickReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void ImageMagickReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -93,7 +93,7 @@ void ImageMagickReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* ImageMagickReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new ImageMagickReaderPlugin( handle );
 }

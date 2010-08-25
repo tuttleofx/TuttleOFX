@@ -51,7 +51,7 @@ void ImageMagickWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::ContextEnum            context )
+                                                OFX::EContext            context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -112,7 +112,7 @@ void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* ImageMagickWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::ContextEnum     context )
+                                                          OFX::EContext     context )
 {
 	return new ImageMagickWriterPlugin( handle );
 }
