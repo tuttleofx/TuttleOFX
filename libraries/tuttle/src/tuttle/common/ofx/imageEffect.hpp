@@ -21,7 +21,7 @@ enum EContext
 	eContextWriter
 };
 
-const std::string mapContextEnumToString( const EContext& s );
+const std::string mapContextEnumToString( const EContext s );
 
 /** @brief Enumerates the pixel depths supported */
 enum EBitDepth
@@ -33,7 +33,7 @@ enum EBitDepth
 	eBitDepthFloat = 32
 };
 
-const std::string mapBitDepthEnumToString( const EBitDepth& e );
+const std::string mapBitDepthEnumToString( const EBitDepth e );
 EBitDepth mapBitDepthStringToEnum( const std::string& str );
 
 /** @brief Enumerates the component types supported */
@@ -45,7 +45,7 @@ enum EPixelComponent
 	ePixelComponentCustom ///< some non standard pixel type
 };
 
-std::string mapPixelComponentEnumToString( const EPixelComponent& e );
+std::string mapPixelComponentEnumToString( const EPixelComponent e );
 
 /// get me deepest bit depth
 std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 );

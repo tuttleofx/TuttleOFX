@@ -282,8 +282,11 @@ private:
 	}
 
 	void checkClipsConnections() const;
-	void initClipsFromReadsToWrites();
-	void initClipsFromWritesToReads();
+
+	void initComponents();
+	void initPixelAspectRatio();
+	void maximizeBitDepthFromReadsToWrites();
+	void maximizeBitDepthFromWritesToReads();
 #endif
 };
 

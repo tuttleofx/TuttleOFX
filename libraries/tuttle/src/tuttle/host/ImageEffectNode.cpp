@@ -320,14 +320,60 @@ void ImageEffectNode::checkClipsConnections() const
 	}
 }
 
-void ImageEffectNode::initClipsFromReadsToWrites()
+void ImageEffectNode::initComponents()
+{
+	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+	bool inputClipsFound = false;
+	std::string mostChromaticComponents = kOfxImageComponentNone;
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			inputClipsFound = true;
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
+		}
+	}
+	// components
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			if( clip.isSupportedComponent( mostChromaticComponents ) )
+				clip.setComponentsIfNotModifiedByPlugin( linkClip.getComponents() );
+		}
+	}
+	if( outputClip.isSupportedComponent( mostChromaticComponents ) )
+		outputClip.setComponentsIfNotModifiedByPlugin( mostChromaticComponents );
+}
+
+/// @todo multiple PAR
+void ImageEffectNode::initPixelAspectRatio()
+{
+	if( supportsMultipleClipPARs() )
+	{
+
+	}
+	else
+	{
+
+	}
+}
+
+void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 {
 	std::string biggestBitDepth = kOfxBitDepthNone;
-	std::string mostChromaticComponents = kOfxImageComponentNone;
 	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
 	bool inputClipsFound = false;
 
-	// init common variables
+	// init variables
 	for( ClipImageMap::iterator it = _clips.begin();
 		 it != _clips.end();
 		 ++it )
@@ -337,9 +383,7 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 		{
 			inputClipsFound = true;
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
-			COUT_VAR( clip.getFullName() );
 			biggestBitDepth = ofx::imageEffect::findDeepestBitDepth( linkClip.getBitDepthString(), biggestBitDepth );
-			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
 		}
 	}
 	std::string validBitDepth = this->bestSupportedBitDepth( biggestBitDepth );
@@ -358,22 +402,17 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 			{
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
 				const std::string& linkClipBitDepth = linkClip.getBitDepthString();
-				if( !this->isSupportedBitDepth( linkClipBitDepth ) )
+				if( this->isSupportedBitDepth( linkClipBitDepth ) )
 				{
-					BOOST_THROW_EXCEPTION( exception::Logic()
-						<< exception::user( "Pixel depth " + quotes(linkClipBitDepth) + " not supported on plugin " + quotes(getName()) + "." )
-						<< exception::dev( "Plugin supports multiple clip depth." )
-						<< exception::pluginName( getName() )
-						<< exception::pluginIdentifier( getPlugin().getIdentifier() )
-						);
+					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( linkClipBitDepth );
 				}
-				clip.setBitDepthIfNotModifiedByPlugin( linkClipBitDepth );
 			}
 		}
 	}
-	else // no multi clip depth support (standard case)
+	else // multiple clip depth not supported (standard case)
 	{
-		if( inputClipsFound && validBitDepth == kOfxBitDepthNone )
+		if( inputClipsFound && // if we have an input clip
+		    validBitDepth == kOfxBitDepthNone ) // if we didn't found a valid bit depth value
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
 				<< exception::user( "Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
@@ -386,47 +425,19 @@ void ImageEffectNode::initClipsFromReadsToWrites()
 			if( !clip.isOutput() && clip.isConnected() )
 			{
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
-				if( ! linkClip.getNode().isSupportedBitDepth( validBitDepth ) )
+				if( linkClip.getNode().isSupportedBitDepth( validBitDepth ) )
 				{
-					BOOST_THROW_EXCEPTION( exception::Logic()
-						<< exception::user() + "Pixel depth " + validBitDepth + " not supported on node " + quotes(getName())
-						<< exception::pluginName( getName() )
-						<< exception::pluginIdentifier( getPlugin().getIdentifier() ) );
+					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
 				}
-				clip.setBitDepthIfNotModifiedByPlugin( validBitDepth );
 			}
 		}
 	}
-	outputClip.setBitDepthIfNotModifiedByPlugin( validBitDepth );
+	outputClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
 
-	// components
-	for( ClipImageMap::iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
-	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
-		if( !clip.isOutput() && clip.isConnected() )
-		{
-			const attribute::ClipImage& linkClip = clip.getConnectedClip();
-			if( clip.isSupportedComponent( mostChromaticComponents ) )
-				clip.setComponentsIfNotModifiedByPlugin( linkClip.getComponents() );
-		}
-	}
-	if( outputClip.isSupportedComponent( mostChromaticComponents ) )
-		outputClip.setComponentsIfNotModifiedByPlugin( mostChromaticComponents );
-
-	/// @todo multiple PAR
-	if( supportsMultipleClipPARs() )
-	{
-
-	}
-	else
-	{
-
-	}
 }
 
-void ImageEffectNode::initClipsFromWritesToReads()
+
+void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 {
 	if( ! supportsMultipleClipDepths() )
 	{
@@ -439,7 +450,7 @@ void ImageEffectNode::initClipsFromWritesToReads()
 			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
 			if( !clip.isOutput() && clip.isConnected() )
 			{
-				clip.setBitDepthIfNotModifiedByPlugin( outputClipBitDepthStr );
+				clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
 
 				/// @todo tuttle: what is the best way to access another node ?
 				/// through the graph ? through a graph inside ProcessOptions ?
@@ -450,7 +461,7 @@ void ImageEffectNode::initClipsFromWritesToReads()
 					if( linkClip.getNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
 						linkClip.setBitDepthString( outputClipBitDepthStr );
 					else
-						linkClip.setBitDepthIfNotModifiedByPlugin( outputClipBitDepthStr );
+						linkClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
 				}
 			}
 		}
@@ -509,8 +520,9 @@ void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions 
 	checkClipsConnections();
 
 	getClipPreferencesAction();
-
-	initClipsFromReadsToWrites();
+	initComponents();
+	initPixelAspectRatio();
+	maximizeBitDepthFromReadsToWrites();
 
 	OfxRectD rod;
 	getRegionOfDefinitionAction( processOptions._time,
@@ -525,7 +537,7 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 {
 	TCOUT( "preProcess2_initialize: " << getName() << " at time: " << processOptions._time );
 
-	initClipsFromWritesToReads();
+	maximizeBitDepthFromWritesToReads();
 
 	getRegionOfInterestAction( processOptions._time,
 							   processOptions._renderScale,
@@ -537,7 +549,7 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 void ImageEffectNode::preProcess2_finish( graph::ProcessOptions& processOptions )
 {
 	TCOUT( "preProcess2_finish: " << getName() << " at time: " << processOptions._time );
-	initClipsFromReadsToWrites();
+	maximizeBitDepthFromReadsToWrites();
 }
 
 void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos )
