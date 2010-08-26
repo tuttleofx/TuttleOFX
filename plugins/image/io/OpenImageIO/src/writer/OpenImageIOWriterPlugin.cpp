@@ -49,6 +49,8 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const O
 void OpenImageIOWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
+	
+	WriterPlugin::render( args );
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
 	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();

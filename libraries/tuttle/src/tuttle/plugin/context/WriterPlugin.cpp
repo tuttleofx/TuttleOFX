@@ -50,18 +50,24 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip * &id
 	// little hack for the push button Render
 	if( _oneRender && _oneRenderAtTime == args.time )
 	{
-		_oneRender = false;
 		return false;
 	}
 	if( OFX::getImageEffectHostDescription()->hostIsBackground )
+	{
 		return false;
-
+	}
 	if( _paramRenderAlways->getValue() )
+	{
 		return false;
-
+	}
 	identityClip = _clipSrc;
 	identityTime = args.time;
 	return true;
+}
+
+void WriterPlugin::render( const OFX::RenderArguments &args )
+{
+	_oneRender = false;
 }
 
 }

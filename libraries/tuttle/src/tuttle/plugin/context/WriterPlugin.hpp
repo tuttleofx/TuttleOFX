@@ -20,8 +20,9 @@ public:
 public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-
 	bool isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime );
+
+	void render( const OFX::RenderArguments &args );
 
 protected:
 	inline bool varyOnTime() const { return _isSequence; }

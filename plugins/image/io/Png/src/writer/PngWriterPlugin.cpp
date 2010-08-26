@@ -46,6 +46,7 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams(const OfxTime time)
  */
 void PngWriterPlugin::render( const OFX::RenderArguments& args )
 {
+	WriterPlugin::render( args );
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
 	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();

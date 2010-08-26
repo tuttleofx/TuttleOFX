@@ -58,6 +58,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams(const OfxTime time)
  */
 void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
+	WriterPlugin::render( args );
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
