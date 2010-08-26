@@ -55,17 +55,6 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 	return params;
 }
 
-bool Jpeg2000WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
-{
-	if( OFX::getImageEffectHostDescription()->hostIsBackground || _paramRenderAlways->getValue() )
-	{
-		return false;
-	}
-	identityClip = _clipSrc;
-	identityTime = args.time;
-	return true;
-}
-
 void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
 	WriterPlugin::changedParam( args, paramName );
@@ -98,9 +87,11 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
  */
 void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
 {
+	WriterPlugin::render( args );
+	COUT("Jpeg2000WriterPlugin::render");
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::BitDepthEnum dstBitDepth         = _clipSrc->getPixelDepth();
-	OFX::PixelComponentEnum dstComponents = _clipSrc->getPixelComponents();
+	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
@@ -165,7 +156,7 @@ void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
 	}
 	else
 	{
-		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToStr( dstComponents ) << ")" );
+		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToString( dstComponents ) << ")" );
 	}
 }
 

@@ -52,7 +52,7 @@ void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                     OFX::ContextEnum context )
+                                                     OFX::EContext context )
 {
 	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -82,21 +82,10 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	bitDepth->setDefault( 1 );
 	desc.addClipPreferencesSlaveParam( *bitDepth );
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( false );
-
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
-	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint("Force render (writing)");
-
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kJpeg2000HelpButton );
-	helpButton->setScriptName( "help" );
-
 	OFX::BooleanParamDescriptor* lossless = desc.defineBooleanParam( kParamLossless );
 	lossless->setLabel( "lossless" );
 	lossless->setHint("When no cinema profile is selected, set compression to lossless.");
-	lossless->setDefault( true );
+	lossless->setDefault( false );
 
 	OFX::ChoiceParamDescriptor* cineProfil = desc.defineChoiceParam( kParamCinemaProfil );
 	cineProfil->appendOption( "Not Digital Cinema" );
@@ -104,6 +93,25 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	cineProfil->appendOption( "2K Digital Cinema at 48 fps" );
 	cineProfil->appendOption( "4K Digital Cinema at 24 fps" );
 	cineProfil->setDefault( 0 );
+
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	render->setLabels( "Render", "Render", "Render step" );
+	render->setHint("Force render (writing)");
+
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	renderAlways->setLabel( "Render always" );
+	renderAlways->setDefault( false );
+
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kTuttlePluginWriterParamForceNewRender );
+	forceNewRender->setLabel( "Force new render" );
+	forceNewRender->setIsSecret( true );
+//	forceNewRender->setIsPersistant( false );
+	forceNewRender->setAnimates( false );
+	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	forceNewRender->setEvaluateOnChange( true );
+	forceNewRender->setDefault( 0 );
+	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kJpeg2000HelpButton );
+	helpButton->setScriptName( "help" );
 }
 
 /**
@@ -113,7 +121,7 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
  * @return  plugin instance
  */
 OFX::ImageEffect* Jpeg2000WriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new Jpeg2000WriterPlugin(handle);
 }

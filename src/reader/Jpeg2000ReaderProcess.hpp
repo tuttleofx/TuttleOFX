@@ -22,7 +22,7 @@ namespace jpeg2000 {
 namespace reader {
 
 /**
- * @brief FFMpeg process
+ * @brief process
  *
  */
 template<class View>

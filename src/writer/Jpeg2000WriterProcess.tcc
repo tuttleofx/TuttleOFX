@@ -13,6 +13,7 @@ Jpeg2000WriterProcess<View>::Jpeg2000WriterProcess( Jpeg2000WriterPlugin &instan
 : ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
+	COUT_INFOS;
 	this->setNoMultiThreading();
 }
 
@@ -29,6 +30,7 @@ Jpeg2000WriterProcess<View>::~Jpeg2000WriterProcess()
 template<class View>
 void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
+	COUT_INFOS;
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	_params = _plugin.getProcessParams(this->_renderArgs.time);
@@ -39,6 +41,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	{
 		case 8:
 		{
+	COUT_INFOS;
 			rgb8_image_t img( this->_srcView.dimensions() );
 			rgb8_view_t vw( view(img) );
 			// Convert pixels in PIX_FMT_RGB24
@@ -59,6 +62,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 		case 12:
 		case 16:
 		{
+	COUT_INFOS;
 			rgb16_image_t img( this->_srcView.dimensions() );
 			rgb16_view_t vw( view(img) );
 			copy_and_convert_pixels( clamp<rgb16_pixel_t>(this->_srcView), flipped_up_down_view( vw ) );
@@ -77,6 +81,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 		}
 		case 32:
 		{
+	COUT_INFOS;
 			rgb32_image_t img( this->_srcView.dimensions() );
 			rgb32_view_t vw( view(img) );
 			// Convert pixels in PIX_FMT_RGB24

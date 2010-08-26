@@ -11,7 +11,7 @@ namespace reader {
 
 struct Jpeg2000ReaderProcessParams
 {
-	std::string _paramFilepath;      ///< Ffmpeg filepath
+	std::string _paramFilepath;      ///< filepath
 };
 
 /**
@@ -31,7 +31,7 @@ public:
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
-	OFX::BitDepthEnum getParamExplicitConversion() const
+	OFX::EBitDepth getParamExplicitConversion() const
 	{
 		switch( this->_paramExplicitConv->getValue() )
 		{
@@ -56,7 +56,7 @@ public:
 		std::size_t _height;
 		std::size_t _components;
 		std::size_t _precision;
-		OFX::BitDepthEnum _precisionType;
+		OFX::EBitDepth _precisionType;
 	};
 
 	FileInfo retrieveFileInfo( const OfxTime time );

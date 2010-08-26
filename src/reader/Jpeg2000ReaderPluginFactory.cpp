@@ -53,7 +53,7 @@ void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in]        context    Application context
  */
 void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                   OFX::ContextEnum context )
+                                                   OFX::EContext context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -96,7 +96,7 @@ void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
  * @return  plugin instance
  */
 OFX::ImageEffect* Jpeg2000ReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new Jpeg2000ReaderPlugin(handle);
 }

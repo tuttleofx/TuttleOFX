@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_FFMPEG_WRITER_PROCESS_HPP_
-#define _TUTTLE_PLUGIN_FFMPEG_WRITER_PROCESS_HPP_
+#ifndef _TUTTLE_PLUGIN_JPEG2000_WRITER_PROCESS_HPP_
+#define _TUTTLE_PLUGIN_JPEG2000_WRITER_PROCESS_HPP_
 
 #include "Jpeg2000WriterPlugin.hpp"
 #include "Jpeg2000WriterProcess.hpp"
@@ -28,7 +28,7 @@ namespace jpeg2000 {
 namespace writer {
 
 /**
- * @brief FFMpeg process
+ * @brief process
  *
  */
 template<class View>
