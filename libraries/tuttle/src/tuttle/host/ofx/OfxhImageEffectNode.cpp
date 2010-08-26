@@ -1264,7 +1264,7 @@ void OfxhImageEffectNode::setupClipPreferencesArgs( property::OfxhSet& outArgs )
 		property::OfxhPropSpec specComp = { componentParamName.c_str(), property::eString, 0, false, "" }; // note the support for multi-planar clips
 		outArgs.createProperty( specComp );
 		// as it is variable dimension, there is no default value, so we have to set it explicitly
-		outArgs.setStringProperty( componentParamName, clip->getComponents() );
+		outArgs.setStringProperty( componentParamName, clip->getComponentsString() );
 
 		property::OfxhPropSpec specDep = { depthParamName.c_str(), property::eString, 1, !multiBitDepth, clip->getBitDepthString().c_str() };
 		outArgs.createProperty( specDep );

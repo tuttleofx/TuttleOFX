@@ -34,18 +34,18 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 
 	OfxPointI dimensions = { ibounds.x2 - ibounds.x1, ibounds.y2 - ibounds.y1 };
 
-	if( clip.getComponents() == kOfxImageComponentRGBA )
+	if( clip.getComponentsString() == kOfxImageComponentRGBA )
 	{
 		_ncomp = 4;
 	}
-	else if( clip.getComponents() == kOfxImageComponentAlpha )
+	else if( clip.getComponentsString() == kOfxImageComponentAlpha )
 	{
 		_ncomp = 1;
 	}
 	else
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()
-			<< exception::user() + "Unsupported component type: " + quotes(clip.getComponents()) );
+			<< exception::user() + "Unsupported component type: " + quotes(clip.getComponentsString()) );
 	}
 
 	// make some memory according to the bit depth

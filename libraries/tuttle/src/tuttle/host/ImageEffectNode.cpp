@@ -15,10 +15,7 @@
 #include <tuttle/host/ofx/property/OfxhSet.hpp>
 #include <tuttle/host/ofx/attribute/OfxhClip.hpp>
 #include <tuttle/host/ofx/attribute/OfxhParam.hpp>
-
-// ofx
-#include <ofxCore.h>
-#include <ofxImageEffect.h>
+#include <tuttle/host/Core.hpp> // for Core::instance().getMemoryCache()
 
 #ifndef TUTTLE_PRODUCTION
 // to output all nodes as png for debug
@@ -26,9 +23,12 @@
 #endif
 
 #ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
-#include <tuttle/host/Core.hpp>
 #include <boost/lexical_cast.hpp>
 #endif
+
+// ofx
+#include <ofxCore.h>
+#include <ofxImageEffect.h>
 
 #include <iomanip>
 #include <iostream>
@@ -334,7 +334,7 @@ void ImageEffectNode::initComponents()
 		{
 			inputClipsFound = true;
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
-			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponents(), mostChromaticComponents );
+			mostChromaticComponents = findMostChromaticComponents( linkClip.getComponentsString(), mostChromaticComponents );
 		}
 	}
 	// components
@@ -347,7 +347,7 @@ void ImageEffectNode::initComponents()
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
 			if( clip.isSupportedComponent( mostChromaticComponents ) )
-				clip.setComponentsIfNotModifiedByPlugin( linkClip.getComponents() );
+				clip.setComponentsIfNotModifiedByPlugin( linkClip.getComponentsString() );
 		}
 	}
 	if( outputClip.isSupportedComponent( mostChromaticComponents ) )
@@ -466,13 +466,16 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 			}
 		}
 	}
-	
+}
+
+void ImageEffectNode::validBitDepthConnections() const
+{
 	// validation
-	for( ClipImageMap::iterator it = _clips.begin();
+	for( ClipImageMap::const_iterator it = _clips.begin();
 		 it != _clips.end();
 		 ++it )
 	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
 
 		const ofx::property::String& propPixelDepth = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
 		const ofx::property::String& propComponent = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
@@ -550,24 +553,40 @@ void ImageEffectNode::preProcess2_finish( graph::ProcessOptions& processOptions 
 {
 	TCOUT( "preProcess2_finish: " << getName() << " at time: " << processOptions._time );
 	maximizeBitDepthFromReadsToWrites();
+	validBitDepthConnections();
 }
 
-void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos )
+void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos ) const
 {
 	TCOUT( "preProcess2_initialize: " << getName() );
-	OfxRectD rod = getRegionOfDefinition();
-	nodeInfos._memory = (rod.x2-rod.x1)*(rod.y2-rod.y1)*4*sizeof(float)/*bit depth*/;
+	const OfxRectD rod = getRegionOfDefinition();
+	const std::size_t bitDepth = this->getOutputClip().getBitDepth(); // value in bytes
+	const std::size_t nbComponents = getOutputClip().getNbComponents();
+	nodeInfos._memory = (rod.x2-rod.x1)*(rod.y2-rod.y1)*nbComponents*bitDepth;
 }
 
-void ImageEffectNode::process( const graph::ProcessOptions& processOptions )
+void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 {
+	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
+	boost::ptr_list<attribute::Image> allNeededDatas;
+	
 	TCOUT( "process: " << getName() );
-	OfxRectI roi = {
+	const OfxRectI roi = {
 		boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
 		boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),
 		boost::numeric_cast<int>(ceil( processOptions._renderRoI.x2 )),
 		boost::numeric_cast<int>(ceil( processOptions._renderRoI.y2 ))
 	};
+
+	// acquire needed images
+	for( ClipImageMap::iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		boost::shared_ptr<attribute::Image> image = memoryCache.get( clip->getIdentifier(), this->getCurrentTime() );
+		allNeededDatas.push_back( image );
+	}
 
 	renderAction( processOptions._time,
 				  processOptions._field,
@@ -575,6 +594,9 @@ void ImageEffectNode::process( const graph::ProcessOptions& processOptions )
 				  processOptions._renderScale );
 
 	debugOutputImage();
+	
+	// mark output clip used with the number of out_edges...
+	// release each input
 }
 
 void ImageEffectNode::postProcess( graph::ProcessOptions& processOptions )

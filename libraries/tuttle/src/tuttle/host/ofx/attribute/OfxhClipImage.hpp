@@ -138,9 +138,29 @@ public:
 	 *  kOfxImageComponentAlpha
 	 *  and any custom ones you may think of
 	 */
-	const std::string& getComponents() const
+	const std::string& getComponentsString() const
 	{
 		return getProperties().getStringProperty( kOfxImageEffectPropComponents );
+	}
+
+	/** Components that can be fetched from this clip -
+	 *
+	 *  kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
+	 *  kOfxImageComponentRGBA
+	 *  kOfxImageComponentAlpha
+	 *  and any custom ones you may think of
+	 */
+	const imageEffect::EPixelComponent getComponents() const
+	{
+		return imageEffect::mapPixelComponentStringToEnum( getComponentsString() );
+	}
+	
+	/**
+	 * Number of values for this Components.
+	 */
+	const std::size_t getNbComponents() const
+	{
+		return imageEffect::numberOfComponents( getComponents() );
 	}
 
 	/**

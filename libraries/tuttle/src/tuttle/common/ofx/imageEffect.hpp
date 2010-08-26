@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_COMMON_OFX_IMAGEEFFECT_HPP_
 #define	_TUTTLE_COMMON_OFX_IMAGEEFFECT_HPP_
 
+#include <tuttle/common/exceptions.hpp>
+
 #include <string>
 
 namespace tuttle {
@@ -28,9 +30,9 @@ enum EBitDepth
 {
 	eBitDepthNone = -1, ///< @brief bit depth that indicates no data is present
 	eBitDepthCustom = 0, ///< some non standard bit depth
-	eBitDepthUByte = 8,
-	eBitDepthUShort = 16,
-	eBitDepthFloat = 32
+	eBitDepthUByte = 1,
+	eBitDepthUShort = 2,
+	eBitDepthFloat = 4
 };
 
 const std::string mapBitDepthEnumToString( const EBitDepth e );
@@ -46,6 +48,24 @@ enum EPixelComponent
 };
 
 std::string mapPixelComponentEnumToString( const EPixelComponent e );
+EPixelComponent mapPixelComponentStringToEnum( const std::string& str );
+
+inline std::size_t numberOfComponents( const EPixelComponent c )
+{
+	switch( c )
+	{
+		case ePixelComponentAlpha:
+			return 1;
+		case ePixelComponentRGBA:
+			return 4;
+		case ePixelComponentNone:
+			return 0;
+		case ePixelComponentCustom:
+			BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Can't retrieve the number of values inside a custom pixel component." );
+			return 0;
+	}
+}
 
 /// get me deepest bit depth
 std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 );

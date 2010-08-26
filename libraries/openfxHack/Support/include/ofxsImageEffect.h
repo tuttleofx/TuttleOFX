@@ -102,11 +102,11 @@ const std::string mapContextEnumToString( const EContext s );
 /** @brief Enumerates the pixel depths supported */
 enum EBitDepth
 {
-	eBitDepthNone, /**< @brief bit depth that indicates no data is present */
-	eBitDepthUByte,
-	eBitDepthUShort,
-	eBitDepthFloat,
-	eBitDepthCustom ///< some non standard bit depth
+	eBitDepthNone = -1, /**< @brief bit depth that indicates no data is present */
+	eBitDepthCustom = 0, ///< some non standard bit depth
+	eBitDepthUByte = 1,
+	eBitDepthUShort = 2,
+	eBitDepthFloat = 4
 };
 
 const std::string mapBitDepthEnumToString( const EBitDepth e );

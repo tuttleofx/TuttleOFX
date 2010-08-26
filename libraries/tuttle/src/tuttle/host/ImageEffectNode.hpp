@@ -96,8 +96,8 @@ public:
 	void preProcess1_finish( graph::ProcessOptions& processOptions );
 	void preProcess2_initialize( graph::ProcessOptions& processOptions );
 	void preProcess2_finish( graph::ProcessOptions& processOptions );
-	void preProcess_infos( graph::ProcessInfos& nodeInfos );
-	void process( const graph::ProcessOptions& processOptions );
+	void preProcess_infos( graph::ProcessInfos& nodeInfos ) const;
+	void process( graph::ProcessOptions& processOptions );
 	void postProcess( graph::ProcessOptions& processOptions );
 	void end( graph::ProcessOptions& processOptions );
 
@@ -287,6 +287,7 @@ private:
 	void initPixelAspectRatio();
 	void maximizeBitDepthFromReadsToWrites();
 	void maximizeBitDepthFromWritesToReads();
+	void validBitDepthConnections() const;
 #endif
 };
 

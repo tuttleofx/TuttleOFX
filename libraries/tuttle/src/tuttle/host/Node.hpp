@@ -45,8 +45,8 @@ public:
 	virtual void preProcess1_finish( graph::ProcessOptions& processOptions ) {}
 	virtual void preProcess2_initialize( graph::ProcessOptions& processOptions ) {}
 	virtual void preProcess2_finish( graph::ProcessOptions& processOptions ) {}
-	virtual void preProcess_infos( graph::ProcessInfos& nodeInfos )             = 0;
-	virtual void process( const graph::ProcessOptions& processOptions )         = 0;
+	virtual void preProcess_infos( graph::ProcessInfos& nodeInfos ) const       = 0;
+	virtual void process( graph::ProcessOptions& processOptions )               = 0;
 	virtual void postProcess( graph::ProcessOptions& processOptions )           = 0;
 	virtual void end( graph::ProcessOptions& processOptions )                   = 0;
 #endif
