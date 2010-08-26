@@ -584,8 +584,8 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 		 ++it )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
-		boost::shared_ptr<attribute::Image> image = memoryCache.get( clip->getIdentifier(), this->getCurrentTime() );
-		allNeededDatas.push_back( image );
+		boost::shared_ptr<attribute::Image> image = memoryCache.get( clip.getIdentifier(), this->getCurrentTime() );
+		allNeededDatas.push_back( image.get() );
 	}
 
 	renderAction( processOptions._time,
