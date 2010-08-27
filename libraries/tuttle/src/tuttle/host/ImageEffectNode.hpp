@@ -95,7 +95,8 @@ public:
 	void begin( graph::ProcessOptions& processOptions );
 	void preProcess1_finish( graph::ProcessOptions& processOptions );
 	void preProcess2_initialize( graph::ProcessOptions& processOptions );
-	void preProcess2_finish( graph::ProcessOptions& processOptions );
+	void preProcess3_initialize( graph::ProcessOptions& processOptions );
+	void preProcess3_finish( graph::ProcessOptions& processOptions );
 	void preProcess_infos( graph::ProcessInfos& nodeInfos ) const;
 	void process( graph::ProcessOptions& processOptions );
 	void postProcess( graph::ProcessOptions& processOptions );

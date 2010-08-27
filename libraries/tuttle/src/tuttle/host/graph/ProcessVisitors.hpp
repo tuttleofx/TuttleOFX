@@ -205,6 +205,43 @@ struct dfs_preProcess2_visitor : public boost::dfs_visitor<>
 		TGraph& _graph;
 };
 
+template<class TGraph>
+struct dfs_preProcess3_visitor : public boost::dfs_visitor<>
+{
+	public:
+		typedef typename TGraph::GraphContainer GraphContainer;
+		typedef typename TGraph::Vertex Vertex;
+
+		dfs_preProcess3_visitor( TGraph& graph )
+			: _graph(graph)
+		{}
+
+		template<class VertexDescriptor, class Graph>
+		void discover_vertex( VertexDescriptor v, Graph& g )
+		{
+			Vertex& vertex = _graph.instance(v);
+			TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
+			if( vertex.isFake() )
+				return;
+
+			vertex.getProcessNode()->preProcess3_initialize( vertex.getProcessOptions() );
+		}
+
+		template<class VertexDescriptor, class Graph>
+		void finish_vertex( VertexDescriptor v, Graph& g )
+		{
+			Vertex& vertex = _graph.instance(v);
+			TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
+			if( vertex.isFake() )
+				return;
+
+			vertex.getProcessNode()->preProcess3_finish( vertex.getProcessOptions() );
+		}
+
+	private:
+		TGraph& _graph;
+};
+
 
 template<class TGraph>
 struct dfs_optimizeGraph_visitor : public boost::dfs_visitor<>

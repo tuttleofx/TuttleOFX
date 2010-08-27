@@ -404,6 +404,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 				const std::string& linkClipBitDepth = linkClip.getBitDepthString();
 				if( this->isSupportedBitDepth( linkClipBitDepth ) )
 				{
+					COUT( "&&&&"<<__LINE__<<" set if bit depth: " << clip.getFullName() << "<--" << linkClip.getFullName() << " !! " << linkClipBitDepth );
 					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( linkClipBitDepth );
 				}
 			}
@@ -427,6 +428,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
 				if( linkClip.getNode().isSupportedBitDepth( validBitDepth ) )
 				{
+					COUT( "&&&&"<<__LINE__<<" set if bit depth: " << clip.getFullName() << " (" << linkClip.getFullName() << ") !! " << validBitDepth );
 					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
 				}
 			}
@@ -450,18 +452,23 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
 			if( !clip.isOutput() && clip.isConnected() )
 			{
-				clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
-
 				/// @todo tuttle: what is the best way to access another node ?
 				/// through the graph ? through a graph inside ProcessOptions ?
 				/*const */attribute::ClipImage& linkClip = clip.getConnectedClip();
+				
 				if( outputClip.getBitDepth() > linkClip.getBitDepth() && // we can increase the bit depth but not decrease
 				    linkClip.getNode().isSupportedBitDepth(outputClipBitDepthStr) ) // need to be supported by the other node
 				{
 					if( linkClip.getNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
+					{
+						COUT( "&&&&"<<__LINE__<<" set bit depth: " << clip.getFullName() << "-->" << linkClip.getFullName() << " !! " << outputClipBitDepthStr );
 						linkClip.setBitDepthString( outputClipBitDepthStr );
+					}
 					else
+					{
+						COUT( "&&&&"<<__LINE__<<" set if bit depth: " << clip.getFullName() << "-->" << linkClip.getFullName() << " !! " << outputClipBitDepthStr );
 						linkClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
+					}
 				}
 			}
 		}
@@ -491,11 +498,12 @@ void ImageEffectNode::validBitDepthConnections() const
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
+			TCOUT( "  Connection between " << clip.getFullName() << " (" << clip.getBitDepth() << " bytes)" << " => " << linkClip.getFullName() << " (" << linkClip.getBitDepth() << " bytes)." );
 			if( clip.getBitDepth() != linkClip.getBitDepth() )
 			{
 					BOOST_THROW_EXCEPTION( exception::Logic()
 						<< exception::dev() + "Error in graph bit depth propagation."
-						                      "Connection between " + clip.getFullName() + " (" + clip.getBitDepth() + " bits)" + " => " + linkClip.getFullName() + " (" + linkClip.getBitDepth() + " bits)."
+						                      "Connection between " + clip.getFullName() + " (" + clip.getBitDepth() + " bytes)" + " => " + linkClip.getFullName() + " (" + linkClip.getBitDepth() + " bytes)."
 						<< exception::pluginName( getName() )
 						<< exception::pluginIdentifier( getPlugin().getIdentifier() ) );
 			}
@@ -549,9 +557,16 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 	TCOUT_VAR( processOptions._renderRoI );
 }
 
-void ImageEffectNode::preProcess2_finish( graph::ProcessOptions& processOptions )
+void ImageEffectNode::preProcess3_initialize( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "preProcess2_finish: " << getName() << " at time: " << processOptions._time );
+	TCOUT( "preProcess3_initialize: " << getName() << " at time: " << processOptions._time );
+
+	maximizeBitDepthFromWritesToReads();
+}
+
+void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions )
+{
+	TCOUT( "preProcess3_finish: " << getName() << " at time: " << processOptions._time );
 	maximizeBitDepthFromReadsToWrites();
 	validBitDepthConnections();
 }
@@ -585,7 +600,7 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
 		boost::shared_ptr<attribute::Image> image = memoryCache.get( clip.getIdentifier(), this->getCurrentTime() );
-		allNeededDatas.push_back( image.get() );
+		//allNeededDatas.push_back( image.get() );
 	}
 
 	renderAction( processOptions._time,

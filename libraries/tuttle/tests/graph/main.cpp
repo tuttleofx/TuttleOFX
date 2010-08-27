@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	read1.getParam( "filename" ).set( "data/input.png" );
 	read2.getParam( "filename" ).set( "data/input.dpx" );
 	read3.getParam( "filename" ).set( "data/input.exr" );
-	bitdepth.getParam( "outputBitDepth" ).set( 3 );
+	//bitdepth.getParam( "outputBitDepth" ).set( 3 );
 //	crop1.getParam( "Down" ).set( 400 );
 	write1.getParam( "filename" ).set( "data/output1.png" );
 	write2.getParam( "filename" ).set( "data/output2.dpx" );
@@ -92,8 +92,9 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	TCOUT( "__________________________________________________3" );
 	TCOUT( "connect" );
-	g.connect( read1, bitdepth );
-	g.connect( bitdepth, invert1 );
+	g.connect( read1, invert1 );
+	TCOUT( "connect" );
+	g.connect( invert1, bitdepth );
 	TCOUT( "connect" );
 	g.connect( invert1, invert2 );
 	TCOUT( "connect" );
@@ -109,6 +110,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 	TCOUT( "__________3.5" );
 	g.connect( invert1, merge1.getAttribute("SourceA") );
+//	g.connect( bitdepth, merge1.getAttribute("SourceA") );
 	TCOUT( "__________3.5" );
 	g.connect( read3, merge1.getAttribute("SourceB") );
 	TCOUT( "__________3.5" );
@@ -118,8 +120,8 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 	TCOUT( "__________________________________________________4" );
 	std::list<std::string> outputs;
 	outputs.push_back( write1.getName() );
-	outputs.push_back( write2.getName() );
-	outputs.push_back( write3.getName() );
+//	outputs.push_back( write2.getName() );
+//	outputs.push_back( write3.getName() );
 	outputs.push_back( write4.getName() );
 	g.compute( outputs, 0, 1 );
 

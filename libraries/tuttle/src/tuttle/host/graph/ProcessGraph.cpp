@@ -118,12 +118,16 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		renderGraph.dfs( connectClipsVisitor, output );
 
 		COUT( "---------------------------------------- preprocess 1" );
-		graph::dfs_preProcess1_visitor<InternalGraphImpl> preProcessFinishVisitor( renderGraph );
-		renderGraph.dfs( preProcessFinishVisitor, output );
+		graph::dfs_preProcess1_visitor<InternalGraphImpl> preProcess1Visitor( renderGraph );
+		renderGraph.dfs( preProcess1Visitor, output );
 		
 		COUT( "---------------------------------------- preprocess 2" );
-		graph::dfs_preProcess2_visitor<InternalGraphImpl> preProcessInitializeVisitor( renderGraph );
-		renderGraph.dfs( preProcessInitializeVisitor, output );
+		graph::dfs_preProcess2_visitor<InternalGraphImpl> preProcess2Visitor( renderGraph );
+		renderGraph.dfs( preProcess2Visitor, output );
+		
+		COUT( "---------------------------------------- preprocess 3" );
+		graph::dfs_preProcess3_visitor<InternalGraphImpl> preProcess3Visitor( renderGraph );
+		renderGraph.dfs( preProcess3Visitor, output );
 
 		COUT( "---------------------------------------- optimizeGraph" );
 		graph::dfs_optimizeGraph_visitor<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
