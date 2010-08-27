@@ -64,7 +64,7 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginWriterParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kWriterParamFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
@@ -77,23 +77,23 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	components->setDefault( 0 );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kWriterParamBitDepth );
 	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( 1 );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint("Force render (writing)");
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	renderAlways->setDefault( false );
 
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kTuttlePluginWriterParamForceNewRender );
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kWriterParamForceNewRender );
 	forceNewRender->setLabel( "Force new render" );
 	forceNewRender->setIsSecret( true );
 	forceNewRender->setIsPersistant( false );

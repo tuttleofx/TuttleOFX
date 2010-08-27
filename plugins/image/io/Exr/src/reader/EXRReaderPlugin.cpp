@@ -109,7 +109,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kExrReaderHelpString );
 	}
-	else if( paramName == kTuttlePluginReaderParamFilename )
+	else if( paramName == kReaderParamFilename )
 	{
 		ReaderPlugin::changedParam( args, paramName );
 		updateCombos();
@@ -157,37 +157,38 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 
-	// Check if exist
-	if( bfs::exists( filename ) )
+	if( ! bfs::exists( filename ) )
 	{
-		if ( _paramExplicitConv->getValue() )
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "No input file." )
+			<< exception::filename( filename )
+			);
+	}
+	switch( getExplicitConversion() )
+	{
+		case eReaderParamExplicitConversionAuto:
 		{
-			switch( _paramExplicitConv->getValue() )
-			{
-				case 1:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-					break;
-				}
-				case 2:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-					break;
-				}
-				case 3:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-					break;
-				}
-			}
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); /// @todo tuttle: retrieve info from exr, can be 8, 16, 32 as interger or floating point values
+			break;
 		}
-		else
+		case eReaderParamExplicitConversionByte:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+			break;
+		}
+		case eReaderParamExplicitConversionShort:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+			break;
+		}
+		case eReaderParamExplicitConversionFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+			break;
 		}
-		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info from exr
 }
 
 void EXRReaderPlugin::updateCombos()

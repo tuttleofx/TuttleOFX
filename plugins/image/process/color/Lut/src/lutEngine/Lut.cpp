@@ -4,8 +4,6 @@
 
 namespace tuttle {
 
-using namespace std;
-
 Lut3D::Lut3D( Interpolator* interpolator, size_t dimSize, double* data /* = NULL*/ )
 	: AbstractLut( interpolator, dimSize, data )
 {

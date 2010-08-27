@@ -18,11 +18,10 @@ namespace tuttle {
 using namespace boost;
 using namespace boost::spirit::classic;
 namespace fs = boost::filesystem;
-using namespace std;
 
 bool LutReader::read( const fs::path& filename )
 {
-	stringstream ss;
+	std::stringstream ss;
 	fs::ifstream file;
 	_bReadOk = false;
 	_data.clear();
@@ -38,7 +37,7 @@ bool LutReader::read( const fs::path& filename )
 	{
 		double max  = *( max_element( _data.begin(), _data.end() ) );
 		double norm = 1.0 / std::pow( 2.0, std::ceil( std::log( max ) / std::log( 2.0 ) ) );
-		for( vector<double>::iterator it = _data.begin(); it != _data.end(); ++it )
+		for( std::vector<double>::iterator it = _data.begin(); it != _data.end(); ++it )
 		{
 			( *it ) *= norm;
 		}

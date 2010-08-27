@@ -159,39 +159,25 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename = getAbsoluteFirstFilename();
 
-	// Check if exist
-	if( bfs::exists( filename ) )
+	if( ! bfs::exists( filename ) )
 	{
-		ImageInfo* imageInfo = AcquireImageInfo();
-		GetImageInfo( imageInfo );
-		strcpy( imageInfo->filename, filename.c_str() );
-		ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
-		GetExceptionInfo( exceptionsInfo );
-		
-		Image* image = PingImage( imageInfo, exceptionsInfo );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "No input file." )
+			<< exception::filename( filename )
+			);
+	}
 
-		if ( _paramExplicitConv->getValue() )
-		{
-			switch( _paramExplicitConv->getValue() )
-			{
-				case 1:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-					break;
-				}
-				case 2:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-					break;
-				}
-				case 3:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-					break;
-				}
-			}
-		}
-		else
+	ImageInfo* imageInfo = AcquireImageInfo();
+	GetImageInfo( imageInfo );
+	strcpy( imageInfo->filename, filename.c_str() );
+	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
+	GetExceptionInfo( exceptionsInfo );
+
+	Image* image = PingImage( imageInfo, exceptionsInfo );
+
+	switch( getExplicitConversion() )
+	{
+		case eReaderParamExplicitConversionAuto:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); // by default
 			if( image )
@@ -206,15 +192,31 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 				}
 			}
+			break;
 		}
-		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA ); /// RGB
-		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
-
-		if( image )
-			image = DestroyImage( image );
-		imageInfo = DestroyImageInfo( imageInfo );
-		exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
+		case eReaderParamExplicitConversionByte:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+			break;
+		}
+		case eReaderParamExplicitConversionShort:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+			break;
+		}
+		case eReaderParamExplicitConversionFloat:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+			break;
+		}
 	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA ); /// @todo tuttle: retrieve info, gray / RGB / RGBA...
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info
+
+	if( image )
+		image = DestroyImage( image );
+	imageInfo = DestroyImageInfo( imageInfo );
+	exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
 }
 
 }

@@ -127,7 +127,6 @@ template<class View>
 template<class DView>
 void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 {
-	using namespace std;
 	using namespace boost;
 	using namespace mpl;
 	using namespace boost::gil;

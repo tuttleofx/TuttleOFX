@@ -60,19 +60,21 @@ void ImageMagickReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginReaderParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kReaderParamFilename );
 	assert( filename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kTuttlePluginReaderParamExplicitConversion );
+	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kReaderParamExplicitConversion );
 	explicitConversion->setLabel( "Explicit conversion" );
 	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
 	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
 	explicitConversion->appendOption( kTuttlePluginBitDepth16 );
 	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
+	explicitConversion->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	explicitConversion->setAnimates( false );
 	desc.addClipPreferencesSlaveParam( *explicitConversion );
 
 	if( OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )

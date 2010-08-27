@@ -104,31 +104,17 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 	
-	// Check if exist
-	if( bfs::exists( filename ) )
+	if( ! bfs::exists( filename ) )
 	{
-		if ( _paramExplicitConv->getValue() )
-		{
-			switch( _paramExplicitConv->getValue() )
-			{
-				case 1:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-					break;
-				}
-				case 2:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-					break;
-				}
-				case 3:
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-					break;
-				}
-			}
-		}
-		else
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "No input file." )
+			<< exception::filename( filename )
+			);
+	}
+
+	switch( getExplicitConversion() )
+	{
+		case eReaderParamExplicitConversionAuto:
 		{
 			DpxImage dpxImg;
 			dpxImg.readHeader( filename );
@@ -161,10 +147,26 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			}
 
 			clipPreferences.setClipBitDepth( *_clipDst, bd );
+			break;
 		}
-		clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
-		clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+		case eReaderParamExplicitConversionByte:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+			break;
+		}
+		case eReaderParamExplicitConversionShort:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+			break;
+		}
+		case eReaderParamExplicitConversionFloat:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+			break;
+		}
 	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 
 }

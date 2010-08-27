@@ -4,6 +4,7 @@
 #include "ReaderDefinition.hpp"
 
 #include <tuttle/common/clip/Sequence.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 
@@ -21,7 +22,7 @@ public:
 public:
 	virtual void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	virtual bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod ) = 0;
-	virtual void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences ) = 0;
+	virtual void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	virtual bool getTimeDomain( OfxRangeD& range );
 
 public:
@@ -59,6 +60,25 @@ public:
 			return _filePattern.getLastTime();
 		else
 			return kOfxFlagInfiniteMax;
+	}
+	EReaderParamExplicitConversion getExplicitConversion() const
+	{
+		return static_cast<EReaderParamExplicitConversion>( _paramExplicitConv->getValue() );
+	}
+	OFX::EBitDepth getOfxExplicitConversion() const
+	{
+		switch( getExplicitConversion() )
+		{
+			case eReaderParamExplicitConversionByte:
+				return OFX::eBitDepthUByte;
+			case eReaderParamExplicitConversionShort:
+				return OFX::eBitDepthUShort;
+			case eReaderParamExplicitConversionFloat:
+				return OFX::eBitDepthFloat;
+			case eReaderParamExplicitConversionAuto:
+				BOOST_THROW_EXCEPTION( exception::Value() );
+		}
+		return OFX::eBitDepthNone;
 	}
 
 protected:

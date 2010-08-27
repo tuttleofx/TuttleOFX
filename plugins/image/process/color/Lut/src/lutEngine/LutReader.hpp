@@ -13,15 +13,14 @@
 
 namespace tuttle {
 
-using namespace std;
 using namespace boost;
 namespace fs = boost::filesystem;
 
 class LutReader
 {
 protected:
-	vector<double> _data;
-	vector<double> _steps;
+	std::vector<double> _data;
+	std::vector<double> _steps;
 	bool _bReadOk;
 
 public:
@@ -32,8 +31,8 @@ public:
 	bool read( const fs::path& filename );
 	/// Is a file read success
 	const bool readOk() const { return _bReadOk; }
-	vector<double>& data()  { return _data; }
-	vector<double>& steps() { return _steps; }
+	std::vector<double>& data()  { return _data; }
+	std::vector<double>& steps() { return _steps; }
 };
 
 // 3DL File parser

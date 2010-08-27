@@ -68,7 +68,6 @@ void DPXReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 template<class View>
 View& DPXReaderProcess<View>::readImage( View& dst )
 {
-	using namespace std;
 	using namespace boost;
 	using namespace mpl;
 	using namespace boost::gil;

@@ -5,7 +5,6 @@
 
 namespace tuttle {
 
-using namespace std;
 
 Color TrilinInterpolator::interpolate( const AbstractLut* lut, const double x, const double y, const double z ) const
 {

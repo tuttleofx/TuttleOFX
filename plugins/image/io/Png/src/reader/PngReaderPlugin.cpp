@@ -157,49 +157,48 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 	if( ! bfs::exists( filename ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::Value()
-			<< exception::user( "File doesn't exist." )
-			<< exception::filename( filename ) );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "No input file." )
+			<< exception::filename( filename )
+			);
 	}
 
-	if ( _paramExplicitConv->getValue() )
+	switch( getExplicitConversion() )
 	{
-		switch( _paramExplicitConv->getValue() )
+		case eReaderParamExplicitConversionAuto:
 		{
-			case 1:
+			OFX::EBitDepth bd = OFX::eBitDepthNone;
+			int bitDepth = png_read_precision( filename );
+			switch( bitDepth )
 			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-				break;
+				case 8:
+					bd = OFX::eBitDepthUByte;
+					break;
+				case 16:
+					bd = OFX::eBitDepthUShort;
+					break;
+				default:
+					BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
+					break;
 			}
-			case 2:
-			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-				break;
-			}
-			case 3:
-			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-				break;
-			}
+			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
+			break;
 		}
-	}
-	else
-	{
-		OFX::EBitDepth bd = OFX::eBitDepthNone;
-		int bitDepth = png_read_precision( filename );
-		switch( bitDepth )
+		case eReaderParamExplicitConversionByte:
 		{
-			case 8:
-				bd = OFX::eBitDepthUByte;
-				break;
-			case 16:
-				bd = OFX::eBitDepthUShort;
-				break;
-			default:
-				BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
-				break;
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+			break;
 		}
-		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
+		case eReaderParamExplicitConversionShort:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+			break;
+		}
+		case eReaderParamExplicitConversionFloat:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+			break;
+		}
 	}
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );

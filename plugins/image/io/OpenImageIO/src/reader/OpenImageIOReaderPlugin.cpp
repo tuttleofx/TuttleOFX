@@ -166,75 +166,82 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 //	}
 
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	// Check if exist
+
 	if( ! bfs::exists( filename ) )
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
+	{
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "No input file." )
+			<< exception::filename( filename )
+			);
+	}
+	
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
-	if( !in )
+	if( !in.get() )
 		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
+
 	ImageSpec spec;
 	in->open( filename, spec );
-	if ( _paramExplicitConv->getValue() )
+
+	switch( getExplicitConversion() )
 	{
-		switch( _paramExplicitConv->getValue() )
+		case eReaderParamExplicitConversionAuto:
 		{
-			case 1:
+			OFX::EBitDepth bd = OFX::eBitDepthNone;
+			switch( spec.format.basetype )
 			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-				break;
+	//			case TypeDesc::UCHAR:
+				case TypeDesc::UINT8:
+	//			case TypeDesc::CHAR:
+				case TypeDesc::INT8:
+					bd = OFX::eBitDepthUByte;
+					break;
+				case TypeDesc::HALF:
+	//			case TypeDesc::USHORT:
+				case TypeDesc::UINT16:
+	//			case TypeDesc::SHORT:
+				case TypeDesc::INT16:
+					bd = OFX::eBitDepthUShort;
+					break;
+	//			case TypeDesc::UINT:
+				case TypeDesc::UINT32:
+	//			case TypeDesc::INT:
+				case TypeDesc::INT32:
+	//			case TypeDesc::ULONGLONG:
+				case TypeDesc::UINT64:
+	//			case TypeDesc::LONGLONG:
+				case TypeDesc::INT64:
+				case TypeDesc::FLOAT:
+				case TypeDesc::DOUBLE:
+					bd = OFX::eBitDepthFloat;
+					break;
+				case TypeDesc::STRING:
+				case TypeDesc::PTR:
+				case TypeDesc::LASTBASE:
+				case TypeDesc::UNKNOWN:
+				case TypeDesc::NONE:
+				default:
+					BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
 			}
-			case 2:
-			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-				break;
-			}
-			case 3:
-			{
-				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-				break;
-			}
+			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
+			break;
+		}
+		case eReaderParamExplicitConversionByte:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+			break;
+		}
+		case eReaderParamExplicitConversionShort:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+			break;
+		}
+		case eReaderParamExplicitConversionFloat:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+			break;
 		}
 	}
-	else
-	{
-		OFX::EBitDepth bd = OFX::eBitDepthNone;
-		switch( spec.format.basetype )
-		{
-//			case TypeDesc::UCHAR:
-			case TypeDesc::UINT8:
-//			case TypeDesc::CHAR:
-			case TypeDesc::INT8:
-				bd = OFX::eBitDepthUByte;
-				break;
-			case TypeDesc::HALF:
-//			case TypeDesc::USHORT:
-			case TypeDesc::UINT16:
-//			case TypeDesc::SHORT:
-			case TypeDesc::INT16:
-				bd = OFX::eBitDepthUShort;
-				break;
-//			case TypeDesc::UINT:
-			case TypeDesc::UINT32:
-//			case TypeDesc::INT:
-			case TypeDesc::INT32:
-//			case TypeDesc::ULONGLONG:
-			case TypeDesc::UINT64:
-//			case TypeDesc::LONGLONG:
-			case TypeDesc::INT64:
-			case TypeDesc::FLOAT:
-			case TypeDesc::DOUBLE:
-				bd = OFX::eBitDepthFloat;
-				break;
-			case TypeDesc::STRING:
-			case TypeDesc::PTR:
-			case TypeDesc::LASTBASE:
-			case TypeDesc::UNKNOWN:
-			case TypeDesc::NONE:
-			default:
-				BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
-		}
-		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
-	}
+
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 	in->close();
