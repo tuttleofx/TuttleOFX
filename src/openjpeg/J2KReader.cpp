@@ -1,6 +1,7 @@
 #include "J2KReader.hpp"
 #include "J2KCommon.hpp"
-#include "tuttle/common/utils/global.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 #include "ofxsMemory.h"
 #include "ofxsCore.h"
 #include <openjpeg.h>
@@ -12,8 +13,7 @@
 namespace tuttle {
 namespace io {
 
-using namespace std;
-using namespace boost::filesystem;
+namespace fs = boost::filesystem;
 
 J2KReader::J2KReader()
 {
@@ -30,115 +30,122 @@ J2KReader::~J2KReader()
 void J2KReader::open(const std::string & filename)
 {
 	close();
-	if( exists( filename ) )
+	if( ! fs::exists( filename ) )
 	{
-		boost::filesystem::ifstream inputDataStream;
-		inputDataStream.open(filename, std::ios_base::binary);
-		if( inputDataStream.is_open() )
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "No input file." )
+			<<exception::filename(filename) );
+	}
+
+	fs::ifstream inputDataStream;
+	inputDataStream.open(filename, std::ios_base::binary);
+
+	if( ! inputDataStream.is_open() )
+	{
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to open file." )
+			<<exception::filename(filename) );
+	}
+	uint32_t magic;
+
+	// read the input file and put it in memory
+	// ----------------------------------------
+	inputDataStream.read( (char*)&magic, sizeof( int ) );
+	if( inputDataStream.fail() )
+	{
+		inputDataStream.close();
+		BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::dev( "Unable to read magic number." )
+			<<exception::filename(filename) );
+	}
+	if( magic != MAYBE_MAGIC && magic != MAYBE_REV_MAGIC )
+	{
+		inputDataStream.close();
+		BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::dev( "Invalid magic number." )
+			<<exception::filename(filename) );
+	}
+
+	inputDataStream.seekg(0, std::ios::end);
+	ssize_t dataLength = inputDataStream.tellg();
+	inputDataStream.seekg(0, std::ios::beg);
+	if( dataLength != _dataLength || !_fileData )
+	{
+		if( _fileData )
 		{
-            uint32_t magic;
-
-            // read the input file and put it in memory
-            // ----------------------------------------
-			inputDataStream.read((char*)&magic, sizeof( int ));
-            if( inputDataStream.fail() )
-            {
-                inputDataStream.close();
-				BOOST_THROW_EXCEPTION( std::logic_error( std::string("Unable to read magic number on ") + filename ) );
-            }
-            if( magic != MAYBE_MAGIC && magic != MAYBE_REV_MAGIC )
-            {
-                inputDataStream.close();
-				BOOST_THROW_EXCEPTION( std::logic_error( std::string("Invalid magic number on ") + filename ) );
-            }
-
-            inputDataStream.seekg(0, ios::end);
-            ssize_t dataLength = inputDataStream.tellg();
-            inputDataStream.seekg(0, ios::beg);
-			if (dataLength != _dataLength || !_fileData)
-			{
-				if (_fileData)
-				{
-					OFX::memory::free(_fileData);
-				}
-				_fileData = (uint8_t*)OFX::memory::allocate(dataLength);
-			}
-            inputDataStream.read( (char*)_fileData, dataLength );
-            if( inputDataStream.fail() )
-            {
-                inputDataStream.close();
-				OFX::memory::free(_fileData);
-				_fileData = NULL;
-				_dataLength = 0;
-				BOOST_THROW_EXCEPTION( std::logic_error(std::string("Unable to read image data on ") + filename ) );
-            }
-			inputDataStream.close();
-			_dataLength = dataLength;
-         }
-         else
-         {
-			BOOST_THROW_EXCEPTION(std::logic_error(std::string("Unable to open file ") + filename));
-         }
+			OFX::memory::free(_fileData);
+		}
+		_fileData = (uint8_t*)OFX::memory::allocate(dataLength);
 	}
-	else
+	inputDataStream.read( (char*)_fileData, dataLength );
+	if( inputDataStream.fail() )
 	{
-		BOOST_THROW_EXCEPTION(std::logic_error(std::string("File ") + filename + " doesn't exists!"));
+		inputDataStream.close();
+		OFX::memory::free(_fileData);
+		_fileData = NULL;
+		_dataLength = 0;
+		BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::dev( "Unable to read image data." )
+			<<exception::filename(filename) );
 	}
+	inputDataStream.close();
+	_dataLength = dataLength;
 }
 
 void J2KReader::decode(bool headeronly)
 {
-	if (!_fileData || !_dataLength)
+	if( !_fileData || !_dataLength )
 	{
-		BOOST_THROW_EXCEPTION(std::logic_error("open a file before decoding!"));
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev( "Need to open the file before decoding." ) );
 	}
-	else
+	opj_dparameters_t       parameters;       // decompression parameters
+	opj_dinfo_t             *dinfo = NULL;    // handle to a decompressor
+	opj_cio_t               *cio = NULL;
+
+	_openjpeg.event_mgr.error_handler = NULL;
+	_openjpeg.event_mgr.warning_handler = NULL;
+	_openjpeg.event_mgr.info_handler = NULL;
+	opj_set_default_decoder_parameters(&parameters);
+
+	if (headeronly)
 	{
-		opj_dparameters_t       parameters;       // decompression parameters
-		opj_dinfo_t             *dinfo = NULL;    // handle to a decompressor
-		opj_cio_t               *cio = NULL;
+		parameters.cp_limit_decoding = LIMIT_TO_MAIN_HEADER;
+	}
 
-		_openjpeg.event_mgr.error_handler = NULL;
-		_openjpeg.event_mgr.warning_handler = NULL;
-		_openjpeg.event_mgr.info_handler = NULL;
-		opj_set_default_decoder_parameters(&parameters);
-
-		if (headeronly)
-		{
-			parameters.cp_limit_decoding = LIMIT_TO_MAIN_HEADER;
-		}
-
-		// Decompress a JPEG-2000 codestream
-		// get a decoder handle
-		dinfo = opj_create_decompress(CODEC_J2K);
-		// Catch events using our callbacks and give a local context
-		opj_set_event_mgr((opj_common_ptr) dinfo, &_openjpeg.event_mgr, stderr );
-		// setup the decoder decoding parameters using user parameters
-		opj_setup_decoder(dinfo, &parameters);
-		if ( !dinfo )
-		{
-			BOOST_THROW_EXCEPTION(std::logic_error("Failed to open decoder for image!"));
-		}
-		// open a byte stream
-		cio = opj_cio_open((opj_common_ptr)dinfo, _fileData, _dataLength);
-		if (!cio)
-		{
-			opj_destroy_decompress( dinfo );
-			BOOST_THROW_EXCEPTION(std::logic_error("Failed to open decoder for image!"));
-		}
-		// Start decoding to get an image
-		if (_openjpeg.image)
-		{
-			opj_image_destroy( _openjpeg.image );
-		}
-		_openjpeg.image = opj_decode( dinfo, cio );
-		// close the byte stream
+	// Decompress a JPEG-2000 codestream
+	// get a decoder handle
+	dinfo = opj_create_decompress(CODEC_J2K);
+	// Catch events using our callbacks and give a local context
+	opj_set_event_mgr((opj_common_ptr) dinfo, &_openjpeg.event_mgr, stderr );
+	// setup the decoder decoding parameters using user parameters
+	opj_setup_decoder(dinfo, &parameters);
+	if( !dinfo )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::dev( "Failed to open decoder for image." ) );
+	}
+	// open a byte stream
+	cio = opj_cio_open((opj_common_ptr)dinfo, _fileData, _dataLength);
+	if( !cio )
+	{
 		opj_destroy_decompress( dinfo );
-		opj_cio_close( cio );
-		if ( !_openjpeg.image )
-		{
-			BOOST_THROW_EXCEPTION(std::logic_error("Failed to decode image!"));
-		}
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::dev( "Failed to open decoder for image." ) );
+	}
+	// Start decoding to get an image
+	if( _openjpeg.image )
+	{
+		opj_image_destroy( _openjpeg.image );
+	}
+	_openjpeg.image = opj_decode( dinfo, cio );
+	// close the byte stream
+	opj_destroy_decompress( dinfo );
+	opj_cio_close( cio );
+	if( !_openjpeg.image )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::dev( "Failed to decode image." ) );
 	}
 }
 

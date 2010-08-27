@@ -15,9 +15,9 @@ class J2KWriter
 public:
 	J2KWriter();
 	virtual ~J2KWriter();
-	bool open(const std::string & filename, const size_t w, const size_t h, const size_t nc, const size_t dprecision);
-	bool encode(const uint8_t *data, const size_t sprecision);
-	bool close();
+	void open(const std::string & filename, const size_t w, const size_t h, const size_t nc, const size_t dprecision);
+	void encode(const uint8_t *data, const size_t sprecision);
+	void close();
 
 	// Setters
 	inline void setLossless(bool lossless);
@@ -25,7 +25,7 @@ public:
 	inline void setCinemaMode(const OPJ_CINEMA_MODE cinemaMode);
 private:
 	void cinemaSetupParameters();
-	bool cinemaSetupEncoder();
+	void cinemaSetupEncoder();
 	int initialize4Kpocs(opj_poc_t *POC, int numres);
 
 private:

@@ -17,32 +17,7 @@ Jpeg2000ReaderProcess<View>::Jpeg2000ReaderProcess( Jpeg2000ReaderPlugin &instan
 template<class View>
 Jpeg2000ReaderProcess<View>::~Jpeg2000ReaderProcess()
 {
-	_plugin.getReader().close();
-}
-
-template<class View>
-void Jpeg2000ReaderProcess<View>::setup( const OFX::RenderArguments& args )
-{
-	// Fetch output image
-//	Jpeg2000ReaderProcessParams params = _plugin.getProcessParams(args.time);
-
-	boost::gil::point2<ptrdiff_t> imageDims( _plugin.getReader().width(),
-                                             _plugin.getReader().height() );
-
-	double par       = _plugin._clipDst->getPixelAspectRatio();
-	OfxRectD reqRect = { 0, 0, imageDims.x * par, imageDims.y };
-	this->_dst.reset( _plugin._clipDst->fetchImage( args.time, reqRect ) );
-	if( !this->_dst.get() )
-	{
-		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	}
-	if( this->_dst->getRowBytes( ) <= 0 )
-	{
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	}
-
-	// Build destination view
-	this->_dstView = this->getView( this->_dst.get(), _plugin._clipDst->getPixelRod(args.time) );
+	_plugin._reader.close();
 }
 
 /**
@@ -53,7 +28,7 @@ template<class View>
 void Jpeg2000ReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	switch(_plugin.getReader().components())
+	switch(_plugin._reader.components())
 	{
 		case 1:
 		{
@@ -83,7 +58,7 @@ void Jpeg2000ReaderProcess<View>::switchLayoutCopy()
 {
 	using namespace boost::gil;
 
-	switch(_plugin.getReader().precision())
+	switch(_plugin._reader.precision())
 	{
 		case 8:
 		{
@@ -120,12 +95,12 @@ template<class WorkingPixel>
 void Jpeg2000ReaderProcess<View>::switchPrecisionCopy(const View & wv)
 {
 	using namespace boost::gil;
-	tuttle::io::J2KReader & reader = _plugin.getReader();
+	tuttle::io::J2KReader & reader = _plugin._reader;
 	int w = reader.width();
 	int h = reader.height();
 
 	unsigned int *data[num_channels<WorkingPixel>::type::value];
-	for(int i = 0; i < num_channels<WorkingPixel>::type::value; ++i)
+	for( int i = 0; i < num_channels<WorkingPixel>::type::value; ++i )
 	{
 		data[i] = (unsigned int*)reader.compData(i);
 	}

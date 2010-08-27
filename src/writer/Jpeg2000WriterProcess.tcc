@@ -13,7 +13,6 @@ Jpeg2000WriterProcess<View>::Jpeg2000WriterProcess( Jpeg2000WriterPlugin &instan
 : ImageGilFilterProcessor<View>( instance )
 , _plugin( instance )
 {
-	COUT_INFOS;
 	this->setNoMultiThreading();
 }
 
@@ -30,7 +29,6 @@ Jpeg2000WriterProcess<View>::~Jpeg2000WriterProcess()
 template<class View>
 void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	COUT_INFOS;
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	_params = _plugin.getProcessParams(this->_renderArgs.time);
@@ -41,7 +39,6 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	{
 		case 8:
 		{
-	COUT_INFOS;
 			rgb8_image_t img( this->_srcView.dimensions() );
 			rgb8_view_t vw( view(img) );
 			// Convert pixels in PIX_FMT_RGB24
@@ -50,19 +47,14 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			copy_and_convert_pixels( this->_srcView, this->_dstView );
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 
-			if( _writer.open(_params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb8_view_t::value_type>::type::value, 8) )
-			{
-				BOOST_THROW_EXCEPTION( exception::File()
-					<< exception::user("Unable to open output file!") ///@todo tuttle: not a very good error message...
-					<< boost::errinfo_file_name(_params._filepath) );
-			}
+			_writer.open( _params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb8_view_t::value_type>::type::value, 8 );
 			_writer.encode(pixels, 8);
+
 			break;
 		}
 		case 12:
 		case 16:
 		{
-	COUT_INFOS;
 			rgb16_image_t img( this->_srcView.dimensions() );
 			rgb16_view_t vw( view(img) );
 			copy_and_convert_pixels( clamp<rgb16_pixel_t>(this->_srcView), flipped_up_down_view( vw ) );
@@ -70,18 +62,13 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			copy_and_convert_pixels( this->_srcView, this->_dstView );
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 
-			if( _writer.open(_params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb16_view_t::value_type>::type::value, 16) )
-			{
-				BOOST_THROW_EXCEPTION( exception::File()
-					<< exception::user("Unable to open output file!")
-					<< boost::errinfo_file_name(_params._filepath) );
-			}
+			_writer.open( _params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb16_view_t::value_type>::type::value, 16 );
 			_writer.encode(pixels, 16);
+
 			break;
 		}
 		case 32:
 		{
-	COUT_INFOS;
 			rgb32_image_t img( this->_srcView.dimensions() );
 			rgb32_view_t vw( view(img) );
 			// Convert pixels in PIX_FMT_RGB24
@@ -90,12 +77,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			copy_and_convert_pixels( this->_srcView, this->_dstView );
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 
-			if( _writer.open(_params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb32_view_t::value_type>::type::value, 32) )
-			{
-				BOOST_THROW_EXCEPTION( exception::File()
-					<< exception::user("Unable to open output file!")
-					<< boost::errinfo_file_name(_params._filepath) );
-			}
+			_writer.open( _params._filepath, this->_srcView.width(), this->_srcView.height(), num_channels<rgb32_view_t::value_type>::type::value, 32 );
 			_writer.encode(pixels, 32);
 			break;
 		}

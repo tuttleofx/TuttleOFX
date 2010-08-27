@@ -11,8 +11,6 @@
 namespace tuttle {
 namespace io {
 
-namespace fs = boost::filesystem;
-
 class J2KReader
 {
 public:

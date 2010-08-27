@@ -21,7 +21,6 @@ class Jpeg2000ReaderPlugin : public ReaderPlugin
 {
 public:
     Jpeg2000ReaderPlugin( OfxImageEffectHandle handle );
-	tuttle::io::J2KReader & getReader();
 	~Jpeg2000ReaderPlugin();
 
 public:
@@ -30,23 +29,6 @@ public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-
-	OFX::EBitDepth getParamExplicitConversion() const
-	{
-		switch( this->_paramExplicitConv->getValue() )
-		{
-			case 0:
-				return OFX::eBitDepthNone;
-			case 1:
-				return OFX::eBitDepthUByte;
-			case 2:
-				return OFX::eBitDepthUShort;
-			case 3:
-				return OFX::eBitDepthFloat;
-			default:
-				BOOST_THROW_EXCEPTION(OFX::Exception::Suite( kOfxStatErrImageFormat ));
-		}
-	}
 
 	struct FileInfo
 	{

@@ -1,6 +1,7 @@
 #include "J2KWriter.hpp"
 #include "J2KCommon.hpp"
 #include <tuttle/plugin/image/gil/typedefs.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -8,8 +9,7 @@
 namespace tuttle {
 namespace io {
 
-using namespace std;
-using namespace boost::filesystem;
+namespace fs = boost::filesystem;
 
 J2KWriter::J2KWriter()
 : _width(0)
@@ -19,7 +19,7 @@ J2KWriter::J2KWriter()
 , _cinemaMode(OFF)
 , _cio(NULL)
 {
-    memset(&_openjpeg, 0, sizeof(OpenJpegStuffs));
+    memset( &_openjpeg, 0, sizeof(OpenJpegStuffs) );
 }
 
 J2KWriter::~J2KWriter()
@@ -27,7 +27,7 @@ J2KWriter::~J2KWriter()
 	close();
 }
 
-bool J2KWriter::open(const std::string & filename, const size_t w, const size_t h, const size_t nc, const size_t dprecision)
+void J2KWriter::open(const std::string & filename, const size_t w, const size_t h, const size_t nc, const size_t dprecision)
 {
 	close();
     opj_image_cmptparm_t cmptparm[nc];
@@ -62,13 +62,13 @@ bool J2KWriter::open(const std::string & filename, const size_t w, const size_t 
 
     //////////////////////////////////////////////////////////////////////////
     // if no rate entered, lossless by default
-    if (_openjpeg.parameters.tcp_numlayers == 0)
+    if( _openjpeg.parameters.tcp_numlayers == 0 )
     {
 	    _openjpeg.parameters.tcp_rates[0] = 0;	/* MOD antonin : losslessbug */
 	    _openjpeg.parameters.tcp_numlayers++;
 	    _openjpeg.parameters.cp_disto_alloc = 1;
     }
-	if ( _cinemaMode )
+	if( _cinemaMode )
 	{
 		cinemaSetupParameters();
 	}
@@ -119,30 +119,28 @@ bool J2KWriter::open(const std::string & filename, const size_t w, const size_t 
 	/* Decide if MCT should be used */
 	_openjpeg.parameters.tcp_mct = _openjpeg.image->numcomps == 3 ? 1 : 0;
 
-	if ( _openjpeg.parameters.cp_cinema )
+	if( _openjpeg.parameters.cp_cinema != OFF )
 	{
-		if (cinemaSetupEncoder())
-		{
-			return true;
-		}
+		cinemaSetupEncoder();
 	}
 
-	_outFile.open(filename, ios_base::out | ios_base::binary);
-	if ( !_outFile.good() )
+	_outFile.open(filename, std::ios_base::out | std::ios_base::binary);
+	if( !_outFile.good() )
 	{
-		return true;
+		BOOST_THROW_EXCEPTION( exception::File()
+					<< exception::user("Unable to open output file.")
+					<< exception::filename(filename) );
 	}
 	_components = nc;
 	_width = w;
 	_height = h;
-	return false;
 }
 
-bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
+void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 {
 	using namespace boost::gil;
 	OPJ_CODEC_FORMAT fmt;
-	switch(_openjpeg.parameters.cod_format)
+	switch( _openjpeg.parameters.cod_format )
 	{
 		case J2K_CFMT:
 		{
@@ -151,7 +149,8 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 		}
 		default:
 		{
-			return true;
+			BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Unrecognized output J2K format \"" + _openjpeg.parameters.cod_format + "\"." );
 		}
 	}
 
@@ -168,16 +167,16 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 	int j = _width * _height;
 	// Check cinema mode off/on
 	int *ch32[_components];
-	switch(sprecision)
+	switch( sprecision )
 	{
 		case 8:
 		{
 			const uint8_t *sdata = (uint8_t*)data;
-			for(size_t c = 0; c < _components; ++c)
+			for( size_t c = 0; c < _components; ++c )
 			{
 				ch32[c] = &_openjpeg.image->comps[c].data[0];
 			}
-			if (_cinemaMode != OFF)
+			if( _cinemaMode != OFF )
 			{
 				// DCI is always 12 bits encoded
 				while ( j-- )
@@ -226,7 +225,7 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 			{
 				ch32[c] = &_openjpeg.image->comps[c].data[0];
 			}
-			if (_cinemaMode != OFF)
+			if( _cinemaMode != OFF )
 			{
 				// DCI is always 12 bits encoded
 				while ( j-- )
@@ -260,12 +259,12 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 			{
 				ch32[c] = &_openjpeg.image->comps[c].data[0];
 			}
-			if (_cinemaMode != OFF)
+			if( _cinemaMode != OFF )
 			{
 				// DCI is always 12 bits
-				while ( j-- )
+				while( j-- )
 				{
-					for(size_t c = 0; c < _components; ++c)
+					for( size_t c = 0; c < _components; ++c )
 					{
 						gray32_pixel_t sp(*sdata++);
 						gray12_pixel_t dp;
@@ -276,9 +275,9 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 			}
 			else
 			{
-				while ( j-- )
+				while( j-- )
 				{
-					for(size_t c = 0; c < _components; ++c)
+					for( size_t c = 0; c < _components; ++c )
 					{
 						*(ch32[c]++) = *sdata++;
 					}
@@ -289,18 +288,16 @@ bool J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 	}
 
 	// Encode the image
-	if (!opj_encode(cinfo, _cio, _openjpeg.image, NULL))
+	if( ! opj_encode(cinfo, _cio, _openjpeg.image, NULL) )
 	{
 		opj_cio_close(_cio);
 		_cio = NULL;
-		std::cerr << "failed to encode image!" << std::endl;
-		return true;
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user( "Failed to encode image!" ) );
 	}
 
 	/* free remaining compression structures */
 	opj_destroy_compress(cinfo);
-
-	return false;
 }
 
 void J2KWriter::cinemaSetupParameters( )
@@ -336,48 +333,42 @@ void J2KWriter::cinemaSetupParameters( )
     _openjpeg.parameters.irreversible = 1;
 }
 
-bool J2KWriter::cinemaSetupEncoder()
+void J2KWriter::cinemaSetupEncoder()
 {
-    int i;
-
-    switch ( _openjpeg.parameters.cp_cinema )
+    switch( _openjpeg.parameters.cp_cinema )
     {
 		case CINEMA2K_24:
 		case CINEMA2K_48:
 		{
-			if ( _openjpeg.parameters.numresolution > 6 )
+			if( _openjpeg.parameters.numresolution > 6 )
 			{
 				_openjpeg.parameters.numresolution = 6;
 			}
-			if (_openjpeg.image->comps[0].w != 2048 && _openjpeg.image->comps[0].h != 1080)
+			if( _openjpeg.image->comps[0].w != 2048 && _openjpeg.image->comps[0].h != 1080 )
 			{
-				std::cerr << "Image dimensions " << _openjpeg.image->comps[0].w
-					      << " x " << _openjpeg.image->comps[0].h
-					      << " is not 2K compliant." << std::endl;
-				std::cerr << "JPEG Digital Cinema Profile-3 (2K profile) compliance requires that at least one of coordinates match 2048 x 1080" << std::endl;
 				_openjpeg.parameters.cp_rsiz = STD_RSIZ;
-				return true;
+				BOOST_THROW_EXCEPTION( exception::Logic()
+					<< exception::user() + "Image dimensions " + _openjpeg.image->comps[0].w + " x " + _openjpeg.image->comps[0].h + " is not 2K compliant.\n"
+					      + "JPEG Digital Cinema Profile-3 (2K profile) compliance requires that at least one of coordinates match 2048 x 1080" );
 			}
 			break;
 		}
 		case CINEMA4K_24:
 		{
-			if(_openjpeg.parameters.numresolution < 1)
+			if( _openjpeg.parameters.numresolution < 1 )
 			{
 				_openjpeg.parameters.numresolution = 1;
 			}
-			else if(_openjpeg.parameters.numresolution > 7)
+			else if( _openjpeg.parameters.numresolution > 7 )
 			{
 				_openjpeg.parameters.numresolution = 7;
 			}
-			if (_openjpeg.image->comps[0].w != 4096 && _openjpeg.image->comps[0].h != 2160)
+			if( _openjpeg.image->comps[0].w != 4096 && _openjpeg.image->comps[0].h != 2160 )
 			{
-				std::cerr << "Image dimensions " << _openjpeg.image->comps[0].w
-					      << " x " << _openjpeg.image->comps[0].h
-					      << " is not 4K compliant." << std::endl;
-				std::cerr << "JPEG Digital Cinema Profile-3 (4K profile) compliance requires that at least one of coordinates match 4096 x 2160" << std::endl;
 				_openjpeg.parameters.cp_rsiz = STD_RSIZ;
-				return true;
+				BOOST_THROW_EXCEPTION( exception::Logic()
+					<< exception::user() + "Image dimensions " + _openjpeg.image->comps[0].w + " x " + _openjpeg.image->comps[0].h + " is not 4K compliant.\n"
+				          + "JPEG Digital Cinema Profile-3 (4K profile) compliance requires that at least one of coordinates match 4096 x 2160" );
 			}
 			_openjpeg.parameters.numpocs =
 				initialize4Kpocs( _openjpeg.parameters.POC,
@@ -388,12 +379,12 @@ bool J2KWriter::cinemaSetupEncoder()
 			break;
     }
 
-    switch (_openjpeg.parameters.cp_cinema)
+    switch( _openjpeg.parameters.cp_cinema )
     {
         case CINEMA2K_24:
         case CINEMA4K_24:
 		{
-            for(i = 0; i < _openjpeg.parameters.tcp_numlayers ; ++i)
+            for( int i = 0; i < _openjpeg.parameters.tcp_numlayers ; ++i )
             {
 				_openjpeg.parameters.tcp_rates[0]=
 					((float) (_openjpeg.image->numcomps * _openjpeg.image->comps[0].w * _openjpeg.image->comps[0].h * _openjpeg.image->comps[0].prec)) /
@@ -404,7 +395,7 @@ bool J2KWriter::cinemaSetupEncoder()
 		}
         case CINEMA2K_48:
 		{
-            for(i = 0 ; i < _openjpeg.parameters.tcp_numlayers ; ++i)
+            for( int i = 0 ; i < _openjpeg.parameters.tcp_numlayers ; ++i )
             {
 				_openjpeg.parameters.tcp_rates[0] =
 				((float) ( _openjpeg.image->numcomps *
@@ -420,10 +411,9 @@ bool J2KWriter::cinemaSetupEncoder()
 			break;
 	}
 	_openjpeg.parameters.cp_disto_alloc = 1;
-	return false;
 }
 
-int J2KWriter::initialize4Kpocs(opj_poc_t *POC, int numres)
+int J2KWriter::initialize4Kpocs( opj_poc_t *POC, int numres )
 {
 	POC[0].tile  = 1;
 	POC[0].resno0  = 0;
@@ -442,9 +432,9 @@ int J2KWriter::initialize4Kpocs(opj_poc_t *POC, int numres)
 	return 2;
 }
 
-bool J2KWriter::close()
+void J2KWriter::close()
 {
-	if (_cio)
+	if( _cio )
 	{
 		// Output the buffer
 		_outFile.write( (const char*)_cio->buffer, (size_t)cio_tell(_cio) );
@@ -455,13 +445,11 @@ bool J2KWriter::close()
 
 	_outFile.close();
 
-	if ( _openjpeg.image )
+	if( _openjpeg.image )
 	{
 		opj_image_destroy( _openjpeg.image );
 		_openjpeg.image = NULL;
 	}
-
-    return false;
 }
 
 }

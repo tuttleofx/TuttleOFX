@@ -43,9 +43,77 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 	return params;
 }
 
-J2KReader & Jpeg2000ReaderPlugin::getReader()
+void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-	return _reader;
+	if( paramName == kReaderParamFilename )
+	{
+		_reader.close();
+		_fileInfos._failed = true;
+	}
+	else if( paramName == "Help" )
+    {
+        sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     kJpeg2000HelpString );
+    }
+	ReaderPlugin::changedParam(args, paramName);
+}
+
+bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	FileInfo fileInfo = retrieveFileInfo( args.time );
+	if ( fileInfo._failed )
+	{
+		COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
+		return false;
+	}
+
+	rod.x1 = 0;
+	rod.x2 = fileInfo._width;
+	rod.y1 = 0;
+	rod.y2 = fileInfo._height;
+
+	return true;
+}
+
+void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	COUT("Jpeg2000ReaderPlugin::getClipPreferences");
+	ReaderPlugin::getClipPreferences( clipPreferences );
+
+	FileInfo fileInfo = retrieveFileInfo( getFirstTime() );
+	if ( fileInfo._failed )
+	{
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, "Unable to read file infos." ) );
+	}
+
+	if( getExplicitConversion() == eReaderParamExplicitConversionAuto )
+	{
+		clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
+		switch( fileInfo._components )
+		{
+			case 1:
+				clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentAlpha );
+				break;
+			case 3:
+			case 4:
+				clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+				break;
+			default:
+			{
+				BOOST_THROW_EXCEPTION( exception::ImageFormat()
+					<< exception::user() + "Unexpected number of channels (" + fileInfo._components + ")" );
+			}
+		}
+
+		clipPreferences.setClipBitDepth( *_clipDst, fileInfo._precisionType );
+	}
+	else // if we explicitly specify which conversion we want
+	{
+		clipPreferences.setClipBitDepth( *_clipDst, getOfxExplicitConversion() );
+		clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+		clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
+	}
 }
 
 /**
@@ -132,88 +200,9 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 	}
 }
 
-void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-	if( paramName == kTuttlePluginReaderParamFilename )
-	{
-		_reader.close();
-		_fileInfos._failed = true;
-	}
-	else if( paramName == "Help" )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kJpeg2000HelpString );
-    }
-	ReaderPlugin::changedParam(args, paramName);
-}
-
-bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-{
-	FileInfo fileInfo = retrieveFileInfo( args.time );
-	if ( fileInfo._failed )
-	{
-		COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
-		return false;
-	}
-
-	rod.x1 = 0;
-	rod.x2 = fileInfo._width;
-	rod.y1 = 0;
-	rod.y2 = fileInfo._height;
-
-	return true;
-}
-
-void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
-{
-	try
-	{
-		// If pattern detected (frame varying on time)
-		clipPreferences.setOutputFrameVarying( varyOnTime() );
-
-		FileInfo fileInfo = retrieveFileInfo( getFirstTime() );
-		if ( fileInfo._failed )
-		{
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, "Unable to read file infos." ) );
-		}
-
-		// If we explicitly specify which conversion we want
-		if ( getParamExplicitConversion() != OFX::eBitDepthNone )
-		{
-			clipPreferences.setClipBitDepth( *_clipDst, getParamExplicitConversion() );
-			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-			clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
-		}
-		else
-		{
-			clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
-			switch(fileInfo._components)
-			{
-				case 3:
-				case 4:
-					clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-					break;
-				case 1:
-					clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentAlpha );
-					break;
-				default:
-				{
-					BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat, "Unexpected number of channels, settings pixel component to custom." ) );
-				}
-			}
-
-			clipPreferences.setClipBitDepth( *_clipDst, fileInfo._precisionType );
-		}
-	}
-	catch(...)
-	{
-	}
-}
-
 Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const OfxTime time )
 {
-	if (!_fileInfos._failed)
+	if( !_fileInfos._failed )
 	{
 		if( time == _fileInfos._time && _reader.imageReady() )
 		{

@@ -66,13 +66,13 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kTuttlePluginWriterParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kWriterParamFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kTuttlePluginWriterParamBitDepth );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kWriterParamBitDepth );
 	bitDepth->setLabel( "Precision" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth12 );
@@ -94,15 +94,15 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	cineProfil->appendOption( "4K Digital Cinema at 24 fps" );
 	cineProfil->setDefault( 0 );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kTuttlePluginWriterParamRender );
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint("Force render (writing)");
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kTuttlePluginWriterParamRenderAlways );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setDefault( false );
 
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kTuttlePluginWriterParamForceNewRender );
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kWriterParamForceNewRender );
 	forceNewRender->setLabel( "Force new render" );
 	forceNewRender->setIsSecret( true );
 //	forceNewRender->setIsPersistant( false );

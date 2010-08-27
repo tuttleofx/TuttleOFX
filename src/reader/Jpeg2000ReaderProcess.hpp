@@ -34,7 +34,6 @@ protected :
 public:
     Jpeg2000ReaderProcess( Jpeg2000ReaderPlugin& instance );
 	~Jpeg2000ReaderProcess();
-	void setup( const OFX::RenderArguments& args );
 
 	// Do some processing
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
