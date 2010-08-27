@@ -44,6 +44,7 @@
 
 #include <boost/serialization/extended_type_info.hpp>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/scoped_ptr.hpp>
 

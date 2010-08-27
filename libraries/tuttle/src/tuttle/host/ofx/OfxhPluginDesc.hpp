@@ -5,6 +5,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
 

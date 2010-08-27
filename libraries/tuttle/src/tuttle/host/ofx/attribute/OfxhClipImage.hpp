@@ -9,6 +9,7 @@
 #include <tuttle/common/ofx/imageEffect.hpp>
 
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 

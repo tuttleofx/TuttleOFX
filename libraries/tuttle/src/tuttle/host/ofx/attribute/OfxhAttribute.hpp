@@ -4,6 +4,7 @@
 #include "OfxhAttributeDescriptor.hpp"
 
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/type_traits/is_virtual_base_of.hpp>
 

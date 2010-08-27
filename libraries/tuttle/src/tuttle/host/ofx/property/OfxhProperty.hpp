@@ -37,6 +37,7 @@
 #include <boost/type_traits/is_virtual_base_of.hpp>
 #include <boost/serialization/extended_type_info.hpp>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/lexical_cast.hpp>
