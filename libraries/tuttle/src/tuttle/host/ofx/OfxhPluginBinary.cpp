@@ -1,6 +1,8 @@
 #include "OfxhPluginBinary.hpp"
 #include "OfxhPluginCache.hpp"
 
+#include <tuttle/host/exceptions.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -37,7 +39,16 @@ void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 			APICache::OfxhPluginAPICacheI* api = cache->findApiHandler( plug.pluginApi, plug.apiVersion );
 			assert( api );
 
-			_plugins.push_back( api->newPlugin( *this, i, plug ) );
+			OfxhPlugin* newPlug = api->newPlugin( *this, i, plug );
+			if( newPlug == NULL )
+			{
+				BOOST_THROW_EXCEPTION( exception::Unknown()
+					<< exception::dev( "Error creating a new OfxhPlugin." )
+					<< exception::pluginIdentifier( plug.pluginIdentifier )
+					<< exception::ofxApi( plug.pluginApi )
+					<< exception::filename( _binary.getBinaryPath() ) );
+			}
+			_plugins.push_back( newPlug );
 		}
 	}
 	_binary.unload();
