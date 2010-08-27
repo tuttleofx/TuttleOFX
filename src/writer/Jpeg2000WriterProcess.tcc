@@ -1,7 +1,6 @@
 #include "Jpeg2000WriterPlugin.hpp"
 
 #include <boost/assert.hpp>
-#include <boost/exception/errinfo_file_name.hpp>
 
 namespace tuttle {
 namespace plugin {

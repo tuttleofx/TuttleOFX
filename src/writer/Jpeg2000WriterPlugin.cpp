@@ -88,7 +88,6 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
 {
 	WriterPlugin::render( args );
-	COUT("Jpeg2000WriterPlugin::render");
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
 	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();

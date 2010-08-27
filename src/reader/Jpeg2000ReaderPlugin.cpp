@@ -78,7 +78,6 @@ bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionA
 
 void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	COUT("Jpeg2000ReaderPlugin::getClipPreferences");
 	ReaderPlugin::getClipPreferences( clipPreferences );
 
 	FileInfo fileInfo = retrieveFileInfo( getFirstTime() );
