@@ -374,8 +374,7 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	AVCodecContext* codecContext = stream->codec;
 	if( curPos >= frame )
 	{
-		// std::cout << "avcodec_decode_video" << std::endl;
-#if LIBAVCODEC_VERSION_MAJOR >= 52
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT( 52, 21, 0 )
 		avcodec_decode_video2( codecContext, _avFrame, &hasPicture, &_pkt );
 #else
 		avcodec_decode_video( codecContext, _avFrame, &hasPicture, _pkt.data, _pkt.size );
@@ -383,8 +382,7 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	}
 	else if( _offsetTime )
 	{
-		// std::cout << "avcodec_decode_video" << std::endl;
-#if LIBAVCODEC_VERSION_MAJOR >= 52
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT( 52, 21, 0 )
 		avcodec_decode_video2( codecContext, _avFrame, &curSearch, &_pkt );
 #else
 		avcodec_decode_video( codecContext, _avFrame, &curSearch, _pkt.data, _pkt.size );
