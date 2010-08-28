@@ -435,7 +435,6 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 		}
 	}
 	outputClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
-
 }
 
 
@@ -555,13 +554,6 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 							   processOptions._renderRoI,
 							   processOptions._inputsRoI );
 	TCOUT_VAR( processOptions._renderRoI );
-}
-
-void ImageEffectNode::preProcess3_initialize( graph::ProcessOptions& processOptions )
-{
-	TCOUT( "preProcess3_initialize: " << getName() << " at time: " << processOptions._time );
-
-	maximizeBitDepthFromWritesToReads();
 }
 
 void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions )

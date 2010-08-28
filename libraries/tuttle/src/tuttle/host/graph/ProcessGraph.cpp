@@ -114,33 +114,33 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		}
 		
 		COUT( "---------------------------------------- connectClips" );
-		graph::dfs_connectClips_visitor<InternalGraphImpl> connectClipsVisitor( renderGraph );
+		graph::visitor::ConnectClips<InternalGraphImpl> connectClipsVisitor( renderGraph );
 		renderGraph.dfs( connectClipsVisitor, output );
 
 		COUT( "---------------------------------------- preprocess 1" );
-		graph::dfs_preProcess1_visitor<InternalGraphImpl> preProcess1Visitor( renderGraph );
+		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraph );
 		renderGraph.dfs( preProcess1Visitor, output );
 		
 		COUT( "---------------------------------------- preprocess 2" );
-		graph::dfs_preProcess2_visitor<InternalGraphImpl> preProcess2Visitor( renderGraph );
-		renderGraph.dfs( preProcess2Visitor, output );
-		
+		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraph );
+		renderGraph.bfs( preProcess2Visitor, output );
+
 		COUT( "---------------------------------------- preprocess 3" );
-		graph::dfs_preProcess3_visitor<InternalGraphImpl> preProcess3Visitor( renderGraph );
+		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraph );
 		renderGraph.dfs( preProcess3Visitor, output );
 
 		COUT( "---------------------------------------- optimizeGraph" );
-		graph::dfs_optimizeGraph_visitor<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
+		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
 		renderGraph.dfs( optimizeGraphVisitor, output );
 
 		// remove isIdentity nodes
 
 		COUT( "---------------------------------------- process" );
-		graph::dfs_process_visitor<InternalGraphImpl> processVisitor( renderGraph );
+		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraph );
 		renderGraph.dfs( processVisitor, output );
 
 		COUT( "---------------------------------------- postprocess" );
-		graph::dfs_postProcess_visitor<InternalGraphImpl> postProcessVisitor( renderGraph );
+		graph::visitor::PostProcess<InternalGraphImpl> postProcessVisitor( renderGraph );
 		renderGraph.dfs( postProcessVisitor, output );
 
 		// end of one frame

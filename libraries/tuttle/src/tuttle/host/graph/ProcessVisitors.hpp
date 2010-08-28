@@ -6,27 +6,30 @@
 #include <vector>
 #include <boost/graph/properties.hpp>
 #include <boost/graph/visitors.hpp>
+#include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/breadth_first_search.hpp>
 
 namespace tuttle {
 namespace host {
 namespace graph {
+namespace visitor {
 
 template<class TGraph>
-struct dfs_test_visitor : public boost::dfs_visitor<>
+class Test_dfs : public boost::dfs_visitor<>
 {
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
 	typedef typename TGraph::Edge Edge;
 
-	dfs_test_visitor( TGraph& graph )
+	Test_dfs( TGraph& graph )
 		: _graph( graph )
 	{
 		COUT_X( 80, "_" );
 		TCOUT( "dfs_test_visitor" );
 	}
 
-	~dfs_test_visitor()
+	~Test_dfs()
 	{
 		TCOUT( "~dfs_test_visitor" );
 		COUT_X( 80, "_" );
@@ -95,14 +98,14 @@ private:
 };
 
 template<class TGraph>
-struct dfs_connectClips_visitor : public boost::dfs_visitor<>
+class ConnectClips : public boost::default_dfs_visitor
 {
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
 	typedef typename TGraph::Edge Edge;
 
-	dfs_connectClips_visitor( TGraph& graph )
+	ConnectClips( TGraph& graph )
 		: _graph( graph )
 	{}
 
@@ -132,13 +135,13 @@ private:
 };
 
 template<class TGraph>
-struct dfs_preProcess1_visitor : public boost::dfs_visitor<>
+class PreProcess1 : public boost::default_dfs_visitor
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preProcess1_visitor( TGraph& graph )
+		PreProcess1( TGraph& graph )
 			: _graph(graph)
 		{}
 
@@ -169,13 +172,13 @@ struct dfs_preProcess1_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_preProcess2_visitor : public boost::dfs_visitor<>
+class PreProcess2 : public boost::default_bfs_visitor
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preProcess2_visitor( TGraph& graph )
+		PreProcess2( TGraph& graph )
 			: _graph(graph)
 		{}
 
@@ -206,13 +209,13 @@ struct dfs_preProcess2_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_preProcess3_visitor : public boost::dfs_visitor<>
+class PreProcess3 : public boost::default_dfs_visitor
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_preProcess3_visitor( TGraph& graph )
+		PreProcess3( TGraph& graph )
 			: _graph(graph)
 		{}
 
@@ -244,7 +247,7 @@ struct dfs_preProcess3_visitor : public boost::dfs_visitor<>
 
 
 template<class TGraph>
-struct dfs_optimizeGraph_visitor : public boost::dfs_visitor<>
+class OptimizeGraph : public boost::default_dfs_visitor
 {
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
@@ -255,7 +258,7 @@ public:
 	typedef typename TGraph::in_edge_iterator in_edge_iterator;
 	typedef typename TGraph::out_edge_iterator out_edge_iterator;
 
-	dfs_optimizeGraph_visitor( TGraph& graph )
+	OptimizeGraph( TGraph& graph )
 		: _graph( graph )
 	{
 		COUT_X( 80, ":" );
@@ -309,13 +312,13 @@ private:
 };
 
 template<class TGraph>
-struct dfs_process_visitor : public boost::dfs_visitor<>
+class Process : public boost::default_dfs_visitor
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_process_visitor( TGraph& graph )
+		Process( TGraph& graph )
 			: _graph(graph)
 		{}
 
@@ -335,13 +338,13 @@ struct dfs_process_visitor : public boost::dfs_visitor<>
 };
 
 template<class TGraph>
-struct dfs_postProcess_visitor : public boost::dfs_visitor<>
+class PostProcess : public boost::default_dfs_visitor
 {
 	public:
 		typedef typename TGraph::GraphContainer GraphContainer;
 		typedef typename TGraph::Vertex Vertex;
 
-		dfs_postProcess_visitor( TGraph& graph )
+		PostProcess( TGraph& graph )
 			: _graph(graph)
 		{}
 
@@ -369,6 +372,7 @@ struct dfs_postProcess_visitor : public boost::dfs_visitor<>
 		TGraph& _graph;
 };
 
+}
 }
 }
 }

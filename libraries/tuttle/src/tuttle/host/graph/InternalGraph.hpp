@@ -325,13 +325,13 @@ public:
 	template<class Visitor>
 	void dfs( Visitor vis )
 	{
-		boost::depth_first_search( _graph, visitor( vis ) );
+		boost::depth_first_search( _graph, boost::visitor( vis ) );
 	}
 
-	void bfs( const vertex_descriptor& vroot )
+	template<class Visitor>
+	void bfs( Visitor vis, const vertex_descriptor& vroot )
 	{
-		test_bfs_visitor vis;
-		boost::breadth_first_search( _graph, vroot, visitor( vis ) );
+		boost::breadth_first_search( _graph, vroot, boost::visitor(vis) );
 	}
 
 	void copyTransposed( const This& g )
