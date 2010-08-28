@@ -14,7 +14,8 @@ if 'sharedNoUndefined' in project.CC:
 if 'visibilityhidden' in project.CC:
 	tuttleFlags['SHCCFLAGS'] = [project.CC['visibilityhidden']]
 
-tuttle = project.ObjectLibrary( 'tuttle', includes=[ project.env['EXTLIBRARIES'], project.env['LIBRARIES'] ], envFlags=tuttleFlags )
+tuttle = project.ObjectLibrary( 'tuttle',
+								envFlags=tuttleFlags )
 
 project.commonLibs.append( tuttle )
 

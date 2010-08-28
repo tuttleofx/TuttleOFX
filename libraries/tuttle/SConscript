@@ -61,7 +61,7 @@ initFile = envSwig.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
                             [ Mkdir('${TARGET.dir}'),
                               Touch('$TARGET'),
                             ])
-envSwig.Depends( tuttlePython, initFile )
+envSwig.Requires( tuttlePython, initFile )
 
 tuttlePythonInstall = envSwig.Install( pythonOutputDir, tuttlePython )
 
