@@ -60,16 +60,15 @@ void BitDepthPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
     dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
     dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::ChoiceParamDescriptor* outBitDepth = desc.defineChoiceParam( kOutputBitDepth );
-	assert( outBitDepth );
-	outBitDepth->setLabels(kOutputBitDepthLabel, kOutputBitDepthLabel, kOutputBitDepthLabel);
+	OFX::ChoiceParamDescriptor* outBitDepth = desc.defineChoiceParam( kParamOutputBitDepth );
+	outBitDepth->setLabel( "Output bit depth" );
 	outBitDepth->appendOption("auto");
 	outBitDepth->appendOption("byte (8 bits)");
 	outBitDepth->appendOption("short (16 bits)");
 	outBitDepth->appendOption("float (32 bits)");
 	outBitDepth->setDefault(3);
 
-    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kBitDepthHelpButton );
+    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kParamHelpButton );
     helpButton->setScriptName( "&Help" );
 }
 

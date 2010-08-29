@@ -19,17 +19,25 @@ ImageEffect( handle )
 {
     _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_outBitDepth = fetchChoiceParam( kOutputBitDepth );
+	_paramOutBitDepth = fetchChoiceParam( kParamOutputBitDepth );
 }
 
-OFX::Clip * BitDepthPlugin::getSrcClip( ) const
+void BitDepthPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-    return _clipSrc;
+    if( paramName == kParamHelpButton )
+    {
+        sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     kBitDepthHelpString );
+    }
 }
 
-OFX::Clip * BitDepthPlugin::getDstClip( ) const
+void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-    return _clipDst;
+	if( _paramOutBitDepth->getValue() != 0 )
+	{
+		clipPreferences.setClipBitDepth( *_clipDst, static_cast<OFX::EBitDepth>(_paramOutBitDepth->getValue()) );
+	}
 }
 
 /**
@@ -71,8 +79,6 @@ void BitDepthPlugin::render( const OFX::RenderArguments &args )
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 			}
-			default:
-				break;
 		}
 	} else {
 		switch( srcBitDepth )
@@ -98,8 +104,6 @@ void BitDepthPlugin::render( const OFX::RenderArguments &args )
 			case OFX::eBitDepthCustom :
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
-			default:
-				break;
 		}
 	}
 }
@@ -141,8 +145,6 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments &args )
 			case OFX::eBitDepthCustom :
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
-			default:
-				break;
 		}
 	} else {
 		switch( dstBitDepth )
@@ -171,27 +173,8 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments &args )
 			case OFX::eBitDepthCustom :
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
-			default:
-				break;
 		}
 	}
-}
-
-void BitDepthPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
-    if( paramName == kBitDepthHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kBitDepthHelpString );
-    }
-}
-
-void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
-{
-//	clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-	if( _outBitDepth->getValue() != 0 )
-		clipPreferences.setClipBitDepth( *_clipDst, (OFX::EBitDepth)(_outBitDepth->getValue()) );
 }
 
 }
