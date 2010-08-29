@@ -1,0 +1,24 @@
+extern = '$TOPDIR/3rdParty'
+
+incdir_openimageio = join(extern,'oiio/oiio-trunk/dist/linux/include')
+libdir_openimageio = join(extern,'oiio/oiio-trunk/dist/linux/lib')
+
+incdir_raw = join(extern,'LibRaw-0.9.1')
+libdir_raw = join(extern,'LibRaw-0.9.1/lib')
+
+incdir_boost = join(extern,'boost')
+libdir_boost = join(extern,'boost/stage/lib')
+
+incdir_openexr = join(extern,'OpenEXR/include')
+libdir_openexr = join(extern,'OpenEXR/lib')
+
+incdir_freetype = join(extern,'freetype2/include')
+libdir_freetype = join(extern,'freetype2/lib')
+
+incdir_imagemagick = join(extern,'ImageMagick/include')
+libdir_imagemagick = join(extern,'ImageMagick/lib')
+
+python = 'python2.6'
+incdir_python = join(extern,'python2.6/include')
+libdir_python = join(extern,'python2.6/lib')
+
