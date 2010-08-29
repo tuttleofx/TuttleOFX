@@ -105,21 +105,17 @@ OfxStatus clipGetImage( OfxImageClipHandle    h1,
 		return kOfxStatErrBadHandle;
 	}
 
-	if( clipInstance )
+	OfxhImage* image = clipInstance->getImage( time, h2 );
+	if( !image )
 	{
-		OfxhImage* image = clipInstance->getImage( time, h2 );
-		if( !image )
-		{
-			h3 = NULL;
-			return kOfxStatFailed;
-		}
-
-		*h3 = image->getPropHandle(); // a pointer to the base class cast into OfxPropertySetHandle
-
-		return kOfxStatOK;
+		h3 = NULL;
+		return kOfxStatFailed;
 	}
 
-	return kOfxStatErrBadHandle;
+	image->addReference();
+	*h3 = image->getPropHandle(); // a pointer to the base class cast into OfxPropertySetHandle
+
+	return kOfxStatOK;
 }
 
 OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
@@ -132,15 +128,13 @@ OfxStatus clipReleaseImage( OfxPropertySetHandle h1 )
 	}
 
 	OfxhImage* image = dynamic_cast<OfxhImage*>( pset );
-
-	if( image )
+	if( !image )
 	{
-		// clip::image has a virtual destructor for derived classes
-		image->releaseReference();
-		return kOfxStatOK;
-	}
-	else
 		return kOfxStatErrBadHandle;
+	}
+	// clip::image has a virtual destructor for derived classes
+	image->releaseReference();
+	return kOfxStatOK;
 }
 
 OfxStatus clipGetHandle( OfxImageEffectHandle  imageEffect,

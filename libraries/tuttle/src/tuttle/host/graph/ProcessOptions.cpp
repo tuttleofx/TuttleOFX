@@ -13,7 +13,9 @@ namespace graph {
 std::ostream& operator<<( std::ostream& os, const ProcessInfos& infos )
 {
 	os << "nodes:" << infos._nodes << std::endl;
-	os << "memory:" << std::setprecision(2) << infos._memory * 1e-6 << "Mo (" << infos._memory << ")" << std::endl;
+	std::ostringstream s;
+	s << "memory:" << std::setprecision(2) << infos._memory * 1e-6 << "Mo (" << infos._memory << ")" << std::endl;
+	os << s.str();
 	return os;
 }
 

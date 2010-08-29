@@ -16,7 +16,7 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
+Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
 	: ofx::imageEffect::OfxhImage( clip ) ///< this ctor will set basic props on the image
 	, _memoryPool( Core::instance().getMemoryPool() )
 {

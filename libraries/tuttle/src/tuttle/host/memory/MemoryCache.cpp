@@ -13,17 +13,30 @@ bool MemoryCache::Key::operator<( const Key& other ) const
 {
 	if( _time != other._time )
 		return _time < other._time;
-	return _pluginName < other._pluginName;
+	return _identifier < other._identifier;
 }
 
-void MemoryCache::put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData )
+bool MemoryCache::Key::operator==( const Key& v ) const
 {
-	_map[Key( pluginName, time )] = pData;
+	return _time == v._time && _identifier == v._identifier;
 }
 
-CACHE_ELEMENT MemoryCache::get( const std::string& pluginName, const double& time ) const
+std::size_t MemoryCache::Key::getHash() const
 {
-	MAP::const_iterator itr = _map.find( Key( pluginName, time ) );
+	std::size_t seed = 0;
+	boost::hash_combine( seed, _time );
+	boost::hash_combine( seed, _identifier );
+	return seed;
+}
+
+void MemoryCache::put( const std::string& identifier, const double time, CACHE_ELEMENT pData )
+{
+	_map[Key( identifier, time )] = pData;
+}
+
+CACHE_ELEMENT MemoryCache::get( const std::string& identifier, const double time ) const
+{
+	MAP::const_iterator itr = _map.find( Key( identifier, time ) );
 
 	if( itr == _map.end() )
 		return CACHE_ELEMENT();
@@ -89,7 +102,7 @@ const std::string& MemoryCache::getPluginName( const CACHE_ELEMENT& pData ) cons
 
 	if( itr == _map.end() )
 		return EMPTY_STRING;
-	return itr->first._pluginName;
+	return itr->first._identifier;
 }
 
 bool MemoryCache::remove( const CACHE_ELEMENT& pData )

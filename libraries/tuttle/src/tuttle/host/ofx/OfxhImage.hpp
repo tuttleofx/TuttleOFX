@@ -57,9 +57,9 @@ class OfxhImage : public property::OfxhSet
 protected:
 	/// called during ctors to get bits from the clip props into ours
 	void initClipBits( attribute::OfxhClip& instance );
-	static int _count; ///< temp.... for check
-	int _id; ///< temp.... for check
-	int _referenceCount; ///< reference count on this image
+	static std::ptrdiff_t _count; ///< temp.... for check
+	std::ptrdiff_t _id; ///< temp.... for check
+	std::ptrdiff_t _referenceCount; ///< reference count on this image
 
 public:
 	// default constructor

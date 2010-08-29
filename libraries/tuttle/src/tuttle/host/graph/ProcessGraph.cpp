@@ -71,7 +71,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 
 	// Initialize variables
 	OfxPointD renderScale       = { 1.0, 1.0 };
-	OfxRectD renderWindow       = { 0, 123, 0, 123 };
+	OfxRectD renderWindow       = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
 	ProcessOptions defaultOptions;

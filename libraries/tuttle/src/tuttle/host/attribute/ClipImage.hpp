@@ -5,9 +5,7 @@
 
 #include <tuttle/host/attribute/Image.hpp>
 #include <tuttle/host/Node.hpp>
-#include <tuttle/host/memory/IMemoryPool.hpp>
 #include <tuttle/host/memory/IMemoryCache.hpp>
-#include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 
 #include <boost/cstdint.hpp>
@@ -24,6 +22,7 @@ namespace attribute {
  */
 class ClipImage : public Attribute, public ofx::attribute::OfxhClipImage
 {
+	friend class ImageEffectNode;
 protected:
 	std::string _name;
 	OfxPointD _frameRange; ///< get frame range
@@ -66,19 +65,21 @@ public:
 //		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
 //		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
 //		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
-		getEditableProperties().eraseProperty( kOfxImagePropBounds );
-		getEditableProperties().eraseProperty( kOfxImagePropData );
 //		getEditableProperties().eraseProperty( kOfxImagePropField );
 //		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
 //		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
-		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
 //		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
 
+		getEditableProperties().eraseProperty( kOfxImagePropBounds );
+		getEditableProperties().eraseProperty( kOfxImagePropData );
+		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
 		getEditableProperties().setChainedSet( &other.getProperties() );
 
-		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
-		//		TCOUT(getProperties());
 		setConnected();
+
+		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
+		getEditableProperties().setStringProperty( "TuttleIdentifier", getIdentifier() );
+		//		TCOUT(getProperties());
 		//		TCOUT("Clip connected!");
 	}
 

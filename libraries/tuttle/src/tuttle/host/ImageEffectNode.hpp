@@ -89,7 +89,7 @@ public:
 
 	OfxTime getCurrentTime() const { return _currentTime; }
 
-	void debugOutputImage() const;
+	void debugOutputImage( const OfxTime time ) const;
 
 	
 	void begin( graph::ProcessOptions& processOptions );

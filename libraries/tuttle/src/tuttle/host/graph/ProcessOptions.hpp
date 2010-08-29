@@ -39,11 +39,11 @@ class ProcessOptions
 	typedef ProcessOptions This;
 public:
 	ProcessOptions()
-	: _startFrame(123)
-	, _endFrame(123)
-	, _step(123)
-	, _interactive(123)
-	, _time(123)
+	: _startFrame(0)
+	, _endFrame(0)
+	, _step(0)
+	, _interactive(0)
+	, _time(0)
 	{
 		_localInfos._nodes = 1; // local infos can contain only 1 node by definition...
 	}
@@ -68,6 +68,7 @@ public:
 
 	// imageEffect specific options
 	std::string _field;
+	OfxRectD _renderRoD; // is it a good thing to store this here ?
 	OfxRectD _renderRoI;
 	OfxPointD _renderScale;
 

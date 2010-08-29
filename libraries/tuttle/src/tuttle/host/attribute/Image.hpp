@@ -24,7 +24,7 @@ protected:
 	memory::IMemoryPool& _memoryPool;
 
 public:
-	explicit Image( ClipImage& clip, const OfxRectD& bounds, OfxTime t );
+	explicit Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime t );
 	virtual ~Image();
 
 	boost::uint8_t* getPixelData() { return reinterpret_cast<boost::uint8_t*>( _data->data() ); }

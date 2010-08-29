@@ -1,7 +1,6 @@
 #include "ClipImage.hpp"
 
 #include <tuttle/host/HostDescriptor.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 #include <tuttle/host/Core.hpp>
 
 #include <tuttle/host/ofx/OfxhCore.hpp>
@@ -38,6 +37,7 @@ ClipImage::ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribut
 {
 	_frameRange = _effect.getEffectFrameRange();
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
+	getEditableProperties().addProperty( new ofx::property::String( "TuttleIdentifier", 1, 1, "" ) );
 }
 
 ClipImage::~ClipImage()
@@ -153,54 +153,8 @@ tuttle::host::ofx::imageEffect::OfxhImage* ClipImage::getImage( const OfxTime ti
 	/// if bounds != cache buffer bounds:
 	///  * bounds < cache buffer: use rowSize to adjust, and modify pointer
 	///  * bounds > cache buffer: recompute / exception ?
-	if( image.get() != NULL )
-	{
-		/*
-		 * if( isOutput() )
-		 * {
-		 *  TCOUT("output already in cache !");
-		 *  TCOUT( "return output image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
-		 * }
-		 * else
-		 * {
-		 *  TCOUT( "return input image : " << image.get() ); // << " typeid:" << typeid(image.get()).name() );
-		 * }
-		 */
-		image->addReference(); // image already in cache, we just add a reference
-		return image.get();
-	}
-	if( isOutput() )
-	{
-		// make a new ref counted image
-		try
-		{
-			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
-			_memoryCache.put( getIdentifier(), time, outputImage );
-			return outputImage.get();
-		}
-		catch( std::length_error& e )
-		{
-			_memoryCache.clearUnused();
-			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
-			_memoryCache.put( getIdentifier(), time, outputImage );
-			return outputImage.get();
-		}
-		catch( std::bad_alloc& e )
-		{
-			_memoryCache.clearUnused();
-			boost::shared_ptr<Image> outputImage( new Image( *this, bounds, time ) );
-			_memoryCache.put( getIdentifier(), time, outputImage );
-			return outputImage.get();
-		}
-		//		outputImage.get()->cout();
-		//		TCOUT( "return output image : " << outputImage.get() ); // << " typeid:" << typeid(image.get()).name() << std::endl;
-		//		TCOUT_VAR( _memoryCache.size() );
-		//		TCOUT( "return output image : " << _memoryCache.get( getFullName(), time ).get() );
-		//		_memoryCache.get( getFullName(), time ).get()->cout();
-	}
-	BOOST_THROW_EXCEPTION( exception::Memory()
-		<< exception::dev( "Error input clip not in cache !" ) );
-	return NULL;
+
+	return image.get();
 }
 
 }

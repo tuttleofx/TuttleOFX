@@ -33,6 +33,7 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <list>
 
 namespace tuttle {
 namespace host {
@@ -404,7 +405,6 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 				const std::string& linkClipBitDepth = linkClip.getBitDepthString();
 				if( this->isSupportedBitDepth( linkClipBitDepth ) )
 				{
-					COUT( "&&&&"<<__LINE__<<" set if bit depth: " << clip.getFullName() << "<--" << linkClip.getFullName() << " !! " << linkClipBitDepth );
 					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( linkClipBitDepth );
 				}
 			}
@@ -428,7 +428,6 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
 				if( linkClip.getNode().isSupportedBitDepth( validBitDepth ) )
 				{
-					COUT( "&&&&"<<__LINE__<<" set if bit depth: " << clip.getFullName() << " (" << linkClip.getFullName() << ") !! " << validBitDepth );
 					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
 				}
 			}
@@ -460,12 +459,10 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 				{
 					if( linkClip.getNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
 					{
-						COUT( "&&&&"<<__LINE__<<" set bit depth: " << clip.getFullName() << "-->" << linkClip.getFullName() << " !! " << outputClipBitDepthStr );
 						linkClip.setBitDepthString( outputClipBitDepthStr );
 					}
 					else
 					{
-						COUT( "&&&&"<<__LINE__<<" set if bit depth: " << clip.getFullName() << "-->" << linkClip.getFullName() << " !! " << outputClipBitDepthStr );
 						linkClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
 					}
 				}
@@ -539,6 +536,7 @@ void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions 
 								 processOptions._renderScale,
 								 rod );
 	setRegionOfDefinition( rod );
+	processOptions._renderRoD = rod;
 	processOptions._renderRoI = rod;
 	TCOUT_VAR( rod );
 }
@@ -553,6 +551,7 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 							   processOptions._renderScale,
 							   processOptions._renderRoI,
 							   processOptions._inputsRoI );
+	TCOUT_VAR( processOptions._renderRoD );
 	TCOUT_VAR( processOptions._renderRoI );
 }
 
@@ -565,7 +564,7 @@ void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions 
 
 void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos ) const
 {
-	TCOUT( "preProcess2_initialize: " << getName() );
+	TCOUT( "preProcess_infos: " << getName() );
 	const OfxRectD rod = getRegionOfDefinition();
 	const std::size_t bitDepth = this->getOutputClip().getBitDepth(); // value in bytes
 	const std::size_t nbComponents = getOutputClip().getNbComponents();
@@ -574,16 +573,18 @@ void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos ) const
 
 void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 {
-	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
-	boost::ptr_list<attribute::Image> allNeededDatas;
-	
 	TCOUT( "process: " << getName() );
+	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
+	// keep the hand on all needed datas during the process function
+	std::list<memory::CACHE_ELEMENT> allNeededDatas;
+	
 	const OfxRectI roi = {
 		boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
 		boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),
 		boost::numeric_cast<int>(ceil( processOptions._renderRoI.x2 )),
 		boost::numeric_cast<int>(ceil( processOptions._renderRoI.y2 ))
 	};
+	TCOUT_VAR( roi );
 
 	// acquire needed images
 	for( ClipImageMap::iterator it = _clips.begin();
@@ -591,8 +592,22 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 		 ++it )
 	{
 		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
-		boost::shared_ptr<attribute::Image> image = memoryCache.get( clip.getIdentifier(), this->getCurrentTime() );
-		//allNeededDatas.push_back( image.get() );
+		memory::CACHE_ELEMENT image;
+		if( clip.isOutput() )
+		{
+			image.reset( new attribute::Image( clip, processOptions._renderRoI, processOptions._time ) );
+			memoryCache.put( clip.getIdentifier(), processOptions._time, image );
+		}
+		else
+		{
+			image = memoryCache.get( clip.getIdentifier(), processOptions._time );
+			if( image.get() == NULL )
+			{
+				BOOST_THROW_EXCEPTION( exception::Memory()
+					<< exception::dev() + "Input attribute " + quotes(clip.getFullName()) + " not in memory cache (identifier:" + quotes(clip.getIdentifier()) + ")." );
+			}
+		}
+		allNeededDatas.push_back( image );
 	}
 
 	renderAction( processOptions._time,
@@ -600,7 +615,7 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 				  roi,
 				  processOptions._renderScale );
 
-	debugOutputImage();
+	debugOutputImage( processOptions._time );
 	
 	// mark output clip used with the number of out_edges...
 	// release each input
@@ -648,15 +663,15 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 	return os;
 }
 
-void ImageEffectNode::debugOutputImage() const
+void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
 #ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
 	IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
 
-	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + ".Output", this->getCurrentTime() );
+	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + ".Output", time );
 
 	// big hack, for debug...
-	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>(this->getCurrentTime()) + "_" + this->getName() + ".png" );
+	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>(time) + "_" + this->getName() + ".png" );
 #endif
 }
 
