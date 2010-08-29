@@ -1,63 +1,98 @@
 ### TuttleOFX compilation with scons tool ###
 
-###############
-# IN PROGRESS #
-###############
-
+# It's recommanded to use scons version >= 2.0 else see the end of this file.
 
 # We call $TUTTLE the TuttleOFX root directory.
 export TUTTLE=`pwd`
 
 
-### Fetching external libraries ###
+################################################################################
+### A - Fetching external libraries
 
 # You have the choice between:
-# 1) install libraries on your system using standard packages.
-# or
-# 2) downloading all external libraries, with a dedicated script
+# A1) install libraries on your system using standard packages.
+# -- OR --
+# A2) download all external libraries, with a dedicated script
 
-## 1) install libraries on your system using standard packages
+## A1) install libraries on your system using standard packages
 # You need to install all libraries by yourself, see README for the full list.
 # When all libraries are installed, create a configuration file.
-# copy an exemple
-cp $TUTTLE/tools/sconsconf/system.ubuntu $TUTTLE/`hostname`.sconsconf
+# copy a configuration file, depending on your operating system:
+cp $TUTTLE/tools/sconf/linux.sconf .
+# or
+#cp $TUTTLE/tools/sconf/macos.sconf .
+#cp $TUTTLE/tools/sconf/windows.sconf .
 
 
-## 2) downloading all external libraries
+## A2) download all external libraries
 cd $TUTTLE/3rdParty
 # download libraries
 python init.py
 
-# now you need to compile all these libraries
+# now you need to compile all these libraries by yourself,
+# because all these libraries can have their own build system,
+# their own dependencies, their own flags you may want to choose, etc.
 
-# copy the configuration file for local libraries
-cp $TUTTLE/tools/scons.conf/local $TUTTLE/scons.conf
+# copy the configuration file to use local libraries
+cp $TUTTLE/tools/sconf/local.sconf .
 
-# edit $TUTTLE/scons.conf to set correct directories
 
-### Building
+################################################################################
+### B - Building
 
+# you can customize options in user.sconf
+# you can use the example:
+cp $TUTTLE/tools/sconf/user.sconf .
+
+# build
 scons
 
+# install
+scons INSTALLPATH=/custom/path/to/tuttlePackage install=True
+# install is an option and not a target, so you can choose
+# the targets you want to install
+
+
+################################################################################
+### Some build options for particular purposes
+
+# see scons documentation
+http://www.scons.org/documentation.php
+
+## some scons features commonly used
+#
+# Usefull scons command line options and properties ###
+scons -h                        # help: all project options
+scons -H                        # scons help: all scons options
+#
 # you can specify a particular target, like
-scons python # to compile tuttle python wrapping
+scons python # to only compile tuttle python wrapping
+scons sam-ls # to only compile sam-ls application
+# you can clean as follow
+scons -c
+# you can clean specific target
+scons sam-ls -c
 
-
-
-## Usefull scons command line options and properties ###
-
-# -h                        help: all project options
-# -H                        scons help: all scons options
-
-# you are able to compile only one directory, by compiling from this directory
-# The flag -u search a SConstruct in upper directories
+# you can compile only one directory by compiling from within this directory
+# notice the flag -u to search a SConstruct in upper directories
 cd $TUTTLE/plugins/image/filter
 scons -u
 # other solution, from the root directory
-scons $TUTTLE/plugins/image/filter
+scons plugins/image/filter
 
 # you can add default flags to scons,
 # for example it's usefull to always add "-u" flag
 export SCONSFLAGS='-u'
+
+# all options from .sconf files can be overloaded by command line options
+
+
+################################################################################
+### scons --version < 2.0
+#
+# If you use a previous version of scons, options aren't shared between
+# .sconf files, so you have to fix default .sconf files.
+# Main fix is to replace join with os.path.join and add import os in all
+# .sconf files
 
 
