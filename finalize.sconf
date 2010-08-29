@@ -1,8 +1,9 @@
 # finalize options
 # user don't have to modify this file
 
-# Include boostHack file before real boost files:
-# * We have some internal fixes for tuttle project
-# * contains some extensions for boost::gil
+# Include boostHack files before real boost headers.
+# boostHack contains:
+# * some internal fixes for tuttle project
+# * some extensions for boost::gil
 incdir_boost=['$TOPDIR/3rdParty/boostHack', incdir_boost]
 
