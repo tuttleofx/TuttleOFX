@@ -1500,7 +1500,6 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, EBitDepth bitDepth )
 		// set the value supported by the host or set nothing
 		// by setting this value, we may have less problem depending on host implementations
 		outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getPixelDepth() ) );
-		return;
 	}
 }
 
