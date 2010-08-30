@@ -15,89 +15,6 @@ namespace graph {
 namespace visitor {
 
 template<class TGraph>
-class Test_dfs : public boost::dfs_visitor<>
-{
-public:
-	typedef typename TGraph::GraphContainer GraphContainer;
-	typedef typename TGraph::Vertex Vertex;
-	typedef typename TGraph::Edge Edge;
-
-	Test_dfs( TGraph& graph )
-		: _graph( graph )
-	{
-		COUT_X( 80, "_" );
-		TCOUT( "dfs_test_visitor" );
-	}
-
-	~Test_dfs()
-	{
-		TCOUT( "~dfs_test_visitor" );
-		COUT_X( 80, "_" );
-	}
-
-	template<class EdgeDescriptor, class Graph>
-	void examine_edge( EdgeDescriptor e, Graph& g )
-	{
-		Edge& edge = _graph.instance(e);
-		Vertex& vertexSource = _graph.sourceInstance(e);
-		Vertex& vertexDest   = _graph.targetInstance(e);
-
-		TCOUT( edge << " : " << "examine_edge" );
-	}
-
-	template <class VertexDescriptor, class Graph>
-	void initialize_vertex(VertexDescriptor v, const Graph& g)
-	{
-		Vertex& vertex = _graph.instance(v);
-		TCOUT( vertex << " : " << "initialize_vertex" );
-	}
-	template <class VertexDescriptor, class Graph>
-	void start_vertex(VertexDescriptor v, const Graph& g)
-	{
-		Vertex& vertex = _graph.instance(v);
-		TCOUT( vertex << " : " << "start_vertex" );
-	}
-	template <class VertexDescriptor, class Graph>
-	void discover_vertex(VertexDescriptor v, const Graph& g)
-	{
-		Vertex& vertex = _graph.instance(v);
-		TCOUT( vertex << " : " << "discover_vertex" );
-	}
-//	template <class Edge, class Graph>
-//	void examine_edge(Edge e, const Graph& g)
-//	{
-//		TCOUT( u << " : " <<BOOST_CURRENT_FUNCTION );
-//	}
-	template <class EdgeDescriptor, class Graph>
-	void tree_edge(EdgeDescriptor e, const Graph& g)
-	{
-		Edge& edge = _graph.instance(e);
-		TCOUT( edge << " : " << "tree_edge" );
-	}
-	template <class EdgeDescriptor, class Graph>
-	void back_edge(EdgeDescriptor e, const Graph& g)
-	{
-		Edge& edge = _graph.instance(e);
-		TCOUT( edge << " : " << "back_edge" );
-	}
-	template <class EdgeDescriptor, class Graph>
-	void forward_or_cross_edge(EdgeDescriptor e, const Graph& g)
-	{
-		Edge& edge = _graph.instance(e);
-		TCOUT( edge << " : " << "forward_or_cross_edge" );
-	}
-	template <class VertexDescriptor, class Graph>
-	void finish_vertex(VertexDescriptor v, const Graph& g)
-	{
-		Vertex& vertex = _graph.instance(v);
-		TCOUT( vertex << " : " << "finish_vertex" );
-	}
-
-private:
-	TGraph& _graph;
-};
-
-template<class TGraph>
 class ConnectClips : public boost::default_dfs_visitor
 {
 public:
@@ -123,11 +40,11 @@ public:
 		TCOUT("[CONNECT] examine_edge "
 			<< vertexSource
 			<< " TO "
-			<< vertexDest << "." << edge.inAttrName() );
+			<< vertexDest << "." << edge.getInAttrName() );
 
 		Node& sourceNode = *vertexSource.getProcessNode();
 		Node& targetNode = *vertexDest.getProcessNode();
-		sourceNode.connect( targetNode, sourceNode.getAttribute( edge.inAttrName() ) );
+		sourceNode.connect( targetNode, sourceNode.getAttribute( edge.getInAttrName() ) );
 	}
 
 private:

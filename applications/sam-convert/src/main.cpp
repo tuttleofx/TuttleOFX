@@ -40,7 +40,8 @@ int main( int argc, char** argv )
 		Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
 		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-//		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+		/*Graph::Node& invert2 = */g.createNode( "fr.tuttle.invert" );
+		/*Graph::Node& invert2 = */g.createNode( "fr.tuttle.invert" );
 		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 		Graph::Node& blur1 = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
@@ -59,6 +60,7 @@ int main( int argc, char** argv )
 		read2.getParam( "filename" ).set( "data/input.dpx" );
 		read3.getParam( "filename" ).set( "data/input.exr" );
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
+		COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getString() );
 		blur1.getParam( "size" ).set( 6.5, 15.0 );
 //		blur1.getParam( "size" ).setAtIndex( 65.43, 1 );
 	//	crop1.getParam( "Down" ).set( 400 );
@@ -86,8 +88,8 @@ int main( int argc, char** argv )
 		COUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
-		outputs.push_back( write2.getName() );
-		outputs.push_back( write3.getName() );
+//		outputs.push_back( write2.getName() );
+//		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
 		g.compute( outputs, 0, 0 );
 	}

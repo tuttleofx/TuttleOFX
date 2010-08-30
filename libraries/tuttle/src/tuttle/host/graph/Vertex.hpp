@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <tuttle/host/Node.hpp>
+#include <tuttle/common/utils/global.hpp>
 
 namespace tuttle {
 namespace host {
@@ -16,6 +17,7 @@ public:
 		: _name( name ),
 		_processNode( NULL ),
 		_fake( true ),
+		_used( true ),
 		_id( _count++ )
 	{
 	}
@@ -25,6 +27,7 @@ public:
 		: _name( name ),
 		_processNode( &processNode ),
 		_fake( false ),
+		_used( true ),
 		_id( _count++ )
 	{
 	}
@@ -38,8 +41,7 @@ public:
 	virtual ~Vertex()
 	{
 	}
-	
-	/*
+
 	Vertex& operator=( const Vertex& v )
 	{
 		if( this == &v )
@@ -48,12 +50,14 @@ public:
 		_processNode = v._processNode;
 		_processOptions = v._processOptions;
 		_fake = v._fake;
+		_used = v._used;
 		return *this;
 	}
-	*/
 
-	const bool                     isFake() const                         { return _fake; }
-	const std::string&             getName() const                        { return _name; }
+	bool isFake() const { return _fake; }
+	void setUsed( const bool used = true ) { _used = used; }
+	bool isUsed() const { return _used; }
+	const std::string& getName() const                        { return _name; }
 	Node*             getProcessNode()                       { return _processNode; }
 	const Node* const getProcessNode() const                 { return _processNode; }
 	void                           setProcessNode( Node* p ) { _processNode = p; }
@@ -68,6 +72,7 @@ private:
 	Node* _processNode;
 	graph::ProcessOptions _processOptions;
 	bool _fake;
+	bool _used;
 	static int _count;
 public:
 	int _id;

@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	TCOUT( "__________________________________________________" );
 	TCOUT( "graph:" );
 	//	std::vector<boost::default_color_type > colormap(boost::num_vertices(graph.getGraph()));
-	graph::test_dfs_visitor testVisitorA;
+	graph::visitor::Test_dfs<InternalGraph> testVisitorA(graph);
 	//	boost::depth_first_search( graph.getGraph(), boost::root_vertex(nodesDescriptor[n1]), boost::visitor(testVisitorA) );//, colormap );
 	graph.dfs( testVisitorA, nodesDescriptor[n1] );
 
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 		//		TCOUT( "pp: "<< graphT.getGraph()[*i]._name );
 	}
 
-	graph::test_dfs_visitor testVisitorB;
+	graph::visitor::Test_dfs<InternalGraph> testVisitorB(graph);
 	//	boost::depth_first_search( graphT.getGraph(), boost::visitor(testVisitorB) );
 
 	graphT.dfs( testVisitorB, mmap["v3"] );

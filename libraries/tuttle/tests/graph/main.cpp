@@ -4,8 +4,8 @@
 
 #define BOOST_TEST_MODULE graph_tests
 #include <boost/test/unit_test.hpp>
-#include <boost/test/execution_monitor.hpp>
-#include <boost/test/exception_safety.hpp>
+//#include <boost/test/execution_monitor.hpp>
+//#include <boost/test/exception_safety.hpp>
 
 using namespace boost::unit_test;
 
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 {
 	try
 	{
-		::boost::execution_monitor ex_mon;
+//		::boost::execution_monitor ex_mon;
 
 		using namespace std;
 		using namespace tuttle::host;
@@ -70,9 +70,10 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 		Graph g;
 		Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
-		Graph::Node& read2   = g.createNode( "fr.tuttle.dpxreader" );
+		/*Graph::Node& read2   = */g.createNode( "fr.tuttle.dpxreader" );
+//		/*Graph::Node& read2   = */g.createNode( "fr.tuttle.dpxreader" );
 		Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
-		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
+//		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
 		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 		Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
@@ -87,7 +88,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
 		read1.getParam( "filename" ).set( "data/input.png" );
-		read2.getParam( "filename" ).set( "data/input.dpx" );
+//		read2.getParam( "filename" ).set( "data/input.dpx" );
 		read3.getParam( "filename" ).set( "data/input.exr" );
 		//bitdepth.getParam( "outputBitDepth" ).set( 3 );
 	//	crop1.getParam( "Down" ).set( 400 );
@@ -100,7 +101,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		TCOUT( "connect" );
 		g.connect( read1, invert1 );
 		TCOUT( "connect" );
-		g.connect( invert1, bitdepth );
+//		g.connect( invert1, bitdepth );
 		TCOUT( "connect" );
 		g.connect( invert1, invert2 );
 		TCOUT( "connect" );
@@ -126,8 +127,8 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		TCOUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
-	//	outputs.push_back( write2.getName() );
-	//	outputs.push_back( write3.getName() );
+		outputs.push_back( write2.getName() );
+		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
 		g.compute( outputs, 0, 1 );
 

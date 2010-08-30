@@ -45,15 +45,27 @@ void InternalGraph<VERTEX, EDGE>::toDominatorTree()
 }
 
 template< typename VERTEX, typename EDGE >
-std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGraph<VERTEX, EDGE>::leaves()
+std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGraph<VERTEX, EDGE>::rootVertices()
 {
-	std::vector<vertex_descriptor> vleaves;
+	std::vector<vertex_descriptor> vroots;
 	vertex_range_t vrange = getVertices();
 	for( vertex_iterator it = vrange.first; it != vrange.second; ++it )
 		if( out_degree( *it, _graph ) == 0 )
-			vleaves.push_back( *it );
+			vroots.push_back( *it );
 
-	return vleaves;
+	return vroots;
+}
+
+template< typename VERTEX, typename EDGE >
+std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGraph<VERTEX, EDGE>::leafVertices()
+{
+	std::vector<vertex_descriptor> vleafs;
+	vertex_range_t vrange = getVertices();
+	for( vertex_iterator it = vrange.first; it != vrange.second; ++it )
+		if( in_degree( *it, _graph ) == 0 )
+			vleafs.push_back( *it );
+
+	return vleafs;
 }
 
 template< typename VERTEX, typename EDGE >
@@ -70,6 +82,33 @@ void InternalGraph<VERTEX, EDGE>::rebuildVertexDescriptorMap()
 	}
 }
 
+
+template< typename VERTEX, typename EDGE >
+std::size_t InternalGraph<VERTEX, EDGE>::removeUnconnectedVertices( const vertex_descriptor& vroot )
+{
+	visitor::MarkUsed<This> vis( *this );
+	this->dfs( vis, vroot );
+
+	std::list<std::string> toRemove;
+	vertex_range_t vrange = getVertices();
+	for( vertex_iterator it = vrange.first; it != vrange.second; ++it )
+	{
+		if( ! instance(*it).isUsed() )
+		{
+			TCOUT( "removeVertex: " << instance(*it).getName() );
+			toRemove.push_back( instance(*it).getName() );
+		}
+	}
+	BOOST_FOREACH( const std::string& v, toRemove )
+	{
+		this->removeVertex( this->getVertexDescriptor( v ) );
+		/// @todo tuttle: what is the correct way to remove vertices ?
+		rebuildVertexDescriptorMap();
+	}
+	TCOUT_VAR( toRemove.size() );
+
+	return toRemove.size();
+}
 
 
 template< typename Vertex, typename Edge >

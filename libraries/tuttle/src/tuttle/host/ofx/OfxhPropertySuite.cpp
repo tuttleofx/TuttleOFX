@@ -40,7 +40,6 @@ OfxStatus propSet( OfxPropertySetHandle properties,
 		//		std::cout << "propSet error !!! returning status kOfxStatErrUnknown" << std::endl;
 		//		#endif
 		//		return kOfxStatErrUnknown;
-		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
@@ -53,6 +52,7 @@ OfxStatus propSet( OfxPropertySetHandle properties,
 	{
 		return kOfxStatErrUnknown;
 	}
+	return kOfxStatOK;
 }
 
 /// static functions for the suite
@@ -82,8 +82,6 @@ OfxStatus propSetN( OfxPropertySetHandle properties,
 		}
 		
 		prop.setValueN( values, count, eModifiedByPlugin );
-
-		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
@@ -93,6 +91,7 @@ OfxStatus propSetN( OfxPropertySetHandle properties,
 	{
 		return kOfxStatErrUnknown;
 	}
+	return kOfxStatOK;
 }
 
 /// static functions for the suite
@@ -118,7 +117,6 @@ OfxStatus propGet( OfxPropertySetHandle          properties,
 		#ifdef DEBUG_PROPERTIES
 		std::cout << *value << "\n";
 		#endif
-		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
@@ -132,6 +130,7 @@ OfxStatus propGet( OfxPropertySetHandle          properties,
 	{
 		return kOfxStatErrUnknown;
 	}
+	return kOfxStatOK;
 }
 
 ///@todo tuttle: remove this !
@@ -170,7 +169,6 @@ OfxStatus propGetN( OfxPropertySetHandle          properties,
 		if( !thisSet->verifyMagic() )
 			return kOfxStatErrBadHandle;
 		thisSet->fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).getValueN( castToConst( values ), count );
-		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
@@ -180,6 +178,7 @@ OfxStatus propGetN( OfxPropertySetHandle          properties,
 	{
 		return kOfxStatErrUnknown;
 	}
+	return kOfxStatOK;
 }
 
 /**
@@ -203,7 +202,6 @@ OfxStatus propReset( OfxPropertySetHandle properties, const char* property )
 		
 		prop.reset();
 
-		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
@@ -213,6 +211,7 @@ OfxStatus propReset( OfxPropertySetHandle properties, const char* property )
 	{
 		return kOfxStatErrUnknown;
 	}
+	return kOfxStatOK;
 }
 
 /**
@@ -224,7 +223,6 @@ OfxStatus propGetDimension( OfxPropertySetHandle properties, const char* propert
 	{
 		OfxhSet* thisSet = reinterpret_cast<OfxhSet*>( properties );
 		*count = thisSet->fetchProperty( property ).getDimension();
-		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
@@ -234,6 +232,7 @@ OfxStatus propGetDimension( OfxPropertySetHandle properties, const char* propert
 	{
 		return kOfxStatErrUnknown;
 	}
+	return kOfxStatOK;
 }
 
 /**

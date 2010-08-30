@@ -14,6 +14,7 @@
 #include <boost/graph/graphviz.hpp>
 #include <boost/foreach.hpp>
 #include <boost/exception/all.hpp>
+#include <boost/unordered_map.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -78,7 +79,7 @@ public:
 
 	InternalGraph( const This& g )
 	{
-		*this = g; // using operator=
+		*this = g;
 	}
 
 	This& operator=( const This& g )
@@ -86,6 +87,7 @@ public:
 		if( this == &g )
 			return *this;
 
+		clear();
 		boost::copy_graph( g._graph, _graph );
 		_count = g._count;
 		rebuildVertexDescriptorMap();
@@ -129,9 +131,12 @@ public:
 
 	void removeVertex( const vertex_descriptor& v )
 	{
-		_vertexDescriptorMap.erase( instance( v ).getName() );
-		clear_vertex( v, _graph );
-		remove_vertex( v, _graph );
+		_vertexDescriptorMap.erase( instance( v ).getName() ); // remove from our access map
+		clear_vertex( v, _graph ); // remove in and out edges
+		/// @todo tuttle: create errors if we remove the vertex...
+//		remove_vertex( v, _graph ); // finally remove the vertex from the boost graph
+		// clear_vertex is not called by boost graph itself.
+		// It may result in an undefined behaviour if not called before.
 	}
 
 	void connect( const std::string& out, const std::string& in, const std::string& inAttr )
@@ -157,8 +162,9 @@ public:
 
 		instance( addedEdge ) = prop;
 
-		if( has_cycle() )
+		if( hasCycle() )
 		{
+			/// @todo tuttle: remove added edge
 			BOOST_THROW_EXCEPTION( exception::Logic()
 				<< exception::user( "Connection error because the graph becomes cyclic." ) );
 		}
@@ -178,12 +184,12 @@ public:
 
 	Vertex& getVertex( const std::string& vertexName )
 	{
-		return instance( _vertexDescriptorMap[vertexName] );
+		return instance( getVertexDescriptor(vertexName) );
 	}
 
 	const Vertex& getVertex( const std::string& vertexName ) const
 	{
-		return instance( _vertexDescriptorMap[vertexName] );
+		return instance( getVertexDescriptor(vertexName) );
 	}
 
 	const vertex_descriptor source( const edge_descriptor& e ) const
@@ -286,14 +292,12 @@ public:
 		return out_degree( v, _graph );
 	}
 
-	bool has_cycle()
+	bool hasCycle()
 	{
 		// we use a depth first search visitor
-		bool has_cycle = false;
-		cycle_detector vis( has_cycle );
-
-		boost::depth_first_search( _graph, visitor( vis ) );
-		return has_cycle;
+		visitor::CycleDetector vis;
+		boost::depth_first_search( _graph, boost::visitor( vis ) );
+		return vis._hasCycle;
 	}
 
 	template<class Visitor>
@@ -342,9 +346,25 @@ public:
 		rebuildVertexDescriptorMap();
 	}
 
+	/**
+	 * @brief Create a tree from the graph.
+	 */
 	void toDominatorTree();
 
-	std::vector<vertex_descriptor> leaves();
+	/**
+	 * @brief Create a vector of root vertices, ie. all nodes whithout parents.
+	 */
+	std::vector<vertex_descriptor> rootVertices();
+
+	/**
+	 * @brief Create a vector of leaf vertices (or external node), ie. all nodes that has zero child node.
+	 */
+	std::vector<vertex_descriptor> leafVertices();
+
+	/**
+	 * @brief Remove all vertices without connection with vroot.
+	 */
+	std::size_t removeUnconnectedVertices( const vertex_descriptor& vroot );
 
 	template< typename Vertex, typename Edge >
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
@@ -354,7 +374,7 @@ private:
 
 protected:
 	GraphContainer _graph;
-	std::map<std::string, vertex_descriptor> _vertexDescriptorMap;
+	boost::unordered_map<std::string, vertex_descriptor> _vertexDescriptorMap;
 	int _count; // for vertex_index
 
 };

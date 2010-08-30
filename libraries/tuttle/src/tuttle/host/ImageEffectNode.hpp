@@ -287,6 +287,7 @@ private:
 	void initPixelAspectRatio();
 	void maximizeBitDepthFromReadsToWrites();
 	void maximizeBitDepthFromWritesToReads();
+	void coutBitDepthConnections() const;
 	void validBitDepthConnections() const;
 #endif
 };

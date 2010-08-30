@@ -1291,7 +1291,7 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 
 		const property::String& propPixelDepth = outArgs.fetchStringProperty( depthParamName );
 		clip->setBitDepthString( propPixelDepth.getValue(), propPixelDepth.getModifiedBy() );
-		
+
 		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
 		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
 		

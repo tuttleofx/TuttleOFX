@@ -12,8 +12,7 @@ namespace graph {
 const std::string ProcessGraph::_outputId( "TUTTLE_FAKE_OUTPUT" );
 
 ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNodes )
-: _nodes( graph.getNodes() )
-, _instanceCount( graph.getInstanceCount() )
+: _instanceCount( graph.getInstanceCount() )
 {
 	_graph.copyTransposed( graph.getGraph() );
 
@@ -22,28 +21,47 @@ ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNo
 	
 	BOOST_FOREACH( const std::string& s, outputNodes )
 	{
-		_graph.connect( "TUTTLE_FAKE_OUTPUT", s, "Output" );
+		_graph.connect( _outputId, s, "Output" );
 		COUT_DEBUG( "MY OUTPUT: " << s );
 	}
 	relink();
-//	removeUnconnectedVertex();
 }
 
 ProcessGraph::~ProcessGraph()
 {}
 
 /**
- * @brief The graph copy needs to link on vertex owns in ProcessGraph (_nodes) and not link to Vertex inside Graph.
+ * @brief After copying Vertices, we need to duplicate Nodes and relink Vertices with new Nodes.
  */
 void ProcessGraph::relink()
 {
-	InternalGraphImpl::vertex_range_t vrange = _graph.getVertices();
+	_graph.removeUnconnectedVertices( _graph.getVertexDescriptor( _outputId ) );
 
+	InternalGraphImpl::vertex_range_t vrange = _graph.getVertices();
 	for( InternalGraphImpl::vertex_iterator it = vrange.first; it != vrange.second; ++it )
 	{
 		graph::Vertex& v = _graph.instance( *it );
+
+		// fake node has no ProcessNode
 		if( !v.isFake() )
-			v.setProcessNode( &_nodes.at( v.getProcessNode()->getName() ) );
+		{
+			const tuttle::host::Node* const origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+			std::string key( origNode->getName() );
+			NodeMap::iterator it = _nodes.find( key );
+			tuttle::host::Node* newNode;
+			if( it != _nodes.end() )
+			{
+				newNode = it->second;
+			}
+			else
+			{
+				newNode = origNode->clone();
+				/// @todo tuttle: no dynamic_cast here, _nodes must use tuttle::host::Node
+				_nodes.insert( key, dynamic_cast<Node*>(newNode) ); // owns the new pointer
+				// our vertices have a link to our Nodes
+			}
+			v.setProcessNode( newNode );
+		}
 	}
 }
 
@@ -98,7 +116,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	{
 		defaultOptions._time = t;
 		COUT( "________________________________________ frame: " << t );
-		InternalGraphImpl renderGraph = InternalGraphImpl( _graph );
+		InternalGraphImpl renderGraph( _graph );
 		InternalGraphImpl::vertex_descriptor& output = renderGraph.getVertexDescriptor( _outputId );
 
 		COUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
@@ -110,6 +128,8 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 			{
 				Vertex& v = renderGraph.instance( *v_it );
 				v.setProcessOptions( defaultOptions );
+				v.getProcessOptions()._nbInputs = renderGraph.getInDegree( *v_it );
+				v.getProcessOptions()._nbOutputs = renderGraph.getOutDegree( *v_it );
 			}
 		}
 		

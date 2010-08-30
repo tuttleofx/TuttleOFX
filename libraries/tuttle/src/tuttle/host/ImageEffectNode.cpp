@@ -454,8 +454,7 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 				/// through the graph ? through a graph inside ProcessOptions ?
 				/*const */attribute::ClipImage& linkClip = clip.getConnectedClip();
 				
-				if( outputClip.getBitDepth() > linkClip.getBitDepth() && // we can increase the bit depth but not decrease
-				    linkClip.getNode().isSupportedBitDepth(outputClipBitDepthStr) ) // need to be supported by the other node
+				if( linkClip.getNode().isSupportedBitDepth(outputClipBitDepthStr) ) // need to be supported by the other node
 				{
 					if( linkClip.getNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
 					{
@@ -471,7 +470,7 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 	}
 }
 
-void ImageEffectNode::validBitDepthConnections() const
+void ImageEffectNode::coutBitDepthConnections() const
 {
 	// validation
 	for( ClipImageMap::const_iterator it = _clips.begin();
@@ -495,6 +494,21 @@ void ImageEffectNode::validBitDepthConnections() const
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
 			TCOUT( "  Connection between " << clip.getFullName() << " (" << clip.getBitDepth() << " bytes)" << " => " << linkClip.getFullName() << " (" << linkClip.getBitDepth() << " bytes)." );
+		}
+	}
+}
+
+void ImageEffectNode::validBitDepthConnections() const
+{
+	// validation
+	for( ClipImageMap::const_iterator it = _clips.begin();
+		 it != _clips.end();
+		 ++it )
+	{
+		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		if( !clip.isOutput() && clip.isConnected() )
+		{
+			const attribute::ClipImage& linkClip = clip.getConnectedClip();
 			if( clip.getBitDepth() != linkClip.getBitDepth() )
 			{
 					BOOST_THROW_EXCEPTION( exception::Logic()
@@ -530,7 +544,7 @@ void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions 
 	initComponents();
 	initPixelAspectRatio();
 	maximizeBitDepthFromReadsToWrites();
-
+	
 	OfxRectD rod;
 	getRegionOfDefinitionAction( processOptions._time,
 								 processOptions._renderScale,
@@ -559,6 +573,7 @@ void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions 
 {
 	TCOUT( "preProcess3_finish: " << getName() << " at time: " << processOptions._time );
 	maximizeBitDepthFromReadsToWrites();
+	coutBitDepthConnections();
 	validBitDepthConnections();
 }
 
