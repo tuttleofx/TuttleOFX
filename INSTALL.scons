@@ -1,7 +1,5 @@
 ### TuttleOFX compilation with scons tool ###
 
-# It's recommanded to use scons version >= 2.0 else see the end of this file.
-
 # We call $TUTTLE the TuttleOFX root directory.
 export TUTTLE=`pwd`
 
@@ -85,14 +83,5 @@ scons plugins/image/filter
 export SCONSFLAGS='-u'
 
 # all options from .sconf files can be overloaded by command line options
-
-
-################################################################################
-### scons --version < 2.0
-#
-# If you use a previous version of scons, options aren't shared between
-# .sconf files, so you have to fix default .sconf files.
-# Main fix is to replace join with os.path.join and add import os in all
-# .sconf files
 
 
