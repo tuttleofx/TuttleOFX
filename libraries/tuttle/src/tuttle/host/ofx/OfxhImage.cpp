@@ -41,7 +41,7 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-int OfxhImage::_count = 0;
+std::ptrdiff_t OfxhImage::_count = 0;
 
 static property::OfxhPropSpec imageStuffs[] = {
 	{ kOfxPropType, property::eString, 1, false, kOfxTypeImage },
