@@ -1,9 +1,9 @@
-#include "Node.hpp"
+#include "INode.hpp"
 
 namespace tuttle {
 namespace host {
 
-Node::~Node() {}
+INode::~INode() {}
 
 }
 }

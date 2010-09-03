@@ -44,10 +44,10 @@ void ProcessGraph::relink()
 		// fake node has no ProcessNode
 		if( !v.isFake() )
 		{
-			const tuttle::host::Node* const origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+			const tuttle::host::INode* const origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
 			std::string key( origNode->getName() );
 			NodeMap::iterator it = _nodes.find( key );
-			tuttle::host::Node* newNode;
+			tuttle::host::INode* newNode;
 			if( it != _nodes.end() )
 			{
 				newNode = it->second;

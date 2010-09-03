@@ -4,7 +4,7 @@
 #include "Attribute.hpp"
 
 #include <tuttle/host/attribute/Image.hpp>
-#include <tuttle/host/Node.hpp>
+#include <tuttle/host/INode.hpp>
 #include <tuttle/host/memory/IMemoryCache.hpp>
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 

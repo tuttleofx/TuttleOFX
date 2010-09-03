@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include <tuttle/host/Node.hpp>
+#include <tuttle/host/INode.hpp>
 #include <tuttle/common/utils/global.hpp>
 
 namespace tuttle {
@@ -22,7 +22,7 @@ public:
 	{}
 
 	Vertex( const std::string& name,
-	        Node&              processNode )
+	        INode&              processNode )
 		: _name( name )
 		, _processNode( &processNode )
 		, _fake( false )
@@ -55,9 +55,9 @@ public:
 	void                  setUsed( const bool used = true )                  { _used = used; }
 	bool                  isUsed() const                                     { return _used; }
 	const std::string&    getName() const                                    { return _name; }
-	Node*                 getProcessNode()                                   { return _processNode; }
-	const Node* const     getProcessNode() const                             { return _processNode; }
-	void                  setProcessNode( Node* p )                          { _processNode = p; }
+	INode*                 getProcessNode()                                   { return _processNode; }
+	const INode* const     getProcessNode() const                             { return _processNode; }
+	void                  setProcessNode( INode* p )                          { _processNode = p; }
 	ProcessOptions&       getProcessOptions()                                { return _processOptions; }
 	const ProcessOptions& getProcessOptions() const                          { return _processOptions; }
 	void                  setProcessOptions( const ProcessOptions& options ) { _processOptions = options; }
@@ -68,7 +68,7 @@ public:
 	std::string _name;
 
 private:
-	Node* _processNode;
+	INode* _processNode;
 	graph::ProcessOptions _processOptions;
 	bool _fake;
 	bool _used;

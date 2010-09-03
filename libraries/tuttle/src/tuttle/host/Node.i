@@ -3,7 +3,7 @@
 
 %{
 #include <tuttle/host/graph/ProcessOptions.hpp>
-#include <tuttle/host/Node.hpp>
+#include <tuttle/host/INode.hpp>
 %}
 
-%include <tuttle/host/Node.hpp>
+%include <tuttle/host/INode.hpp>

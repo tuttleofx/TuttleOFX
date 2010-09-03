@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 #define _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 
-#include "Node.hpp"
+#include "INode.hpp"
 #include "attribute/ClipImage.hpp"
 
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
@@ -13,7 +13,7 @@
 namespace tuttle {
 namespace host {
 
-class ImageEffectNode : public Node
+class ImageEffectNode : public INode
 	, public ofx::imageEffect::OfxhImageEffectNode
 {
 public:
@@ -47,7 +47,7 @@ public:
 
 	const ENodeType getNodeType() const { return eNodeTypeImageEffect; }
 
-	void connect( const Node& sourceEffect, attribute::Attribute& attr );
+	void connect( const INode& sourceEffect, attribute::Attribute& attr );
 
 	ofx::attribute::OfxhClipImage&       getOutputClip()       { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
 	const ofx::attribute::OfxhClipImage& getOutputClip() const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
