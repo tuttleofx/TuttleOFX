@@ -32,7 +32,7 @@ public:
 	{
 	}
 
-	Vertex( Vertex& v )
+	Vertex( const Vertex& v )
 	{
 		this->operator=(v);
 		_id = _count++;
@@ -67,8 +67,9 @@ public:
 
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 
-private:
+public:
 	std::string _name;
+private:
 	Node* _processNode;
 	graph::ProcessOptions _processOptions;
 	bool _fake;

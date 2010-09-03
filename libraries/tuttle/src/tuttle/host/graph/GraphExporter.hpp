@@ -37,8 +37,8 @@ inline void exportSimple( const InternalGraph<Vertex, Edge>& g, std::ostream& os
 {
 	using namespace boost;
 	boost::write_graphviz( os, g.getGraph(),
-	                           make_node_writer( get( vertex_properties, g.getGraph() ) ),
-	                           make_node_writer( get( edge_properties,   g.getGraph() ) ) );
+	                           make_node_writer( get( &Vertex::_name, g.getGraph() ) ),
+	                           make_node_writer( get( &Edge::_name,   g.getGraph() ) ) );
 }
 
 template<typename Vertex, typename Edge>
@@ -66,8 +66,8 @@ inline void exportAsDOT<Vertex, Edge >( const InternalGraph<Vertex, Edge>& g, st
 	using namespace boost;
 	boost::write_graphviz( os,
 						   g.getGraph(),
-						   boost::make_label_writer( get( vertex_properties, g.getGraph() ) ),
-						   boost::make_label_writer( get( edge_properties, g.getGraph() ) ),
+						   boost::make_label_writer( get( &Vertex::_name, g.getGraph() ) ),
+						   boost::make_label_writer( get( &Edge::_name, g.getGraph() ) ),
 						   boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
 }
 

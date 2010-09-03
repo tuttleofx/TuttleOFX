@@ -80,6 +80,27 @@ void removeVertexAndReconnectTo( const VertexDescriptor& v, const VertexDescript
 }
 */
 
+/*
+// May be interesting for process function.
+typedef std::vector< Vertex > container;
+container c;
+topological_sort( G, std::back_inserter(c) );
+
+cout << "A topological ordering: ";
+for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
+cout << index(*ii) << " ";
+cout << endl;
+*/
+
+/*
+for( size_type i = 0; i < num_vertices(CG); ++i )
+	std::sort( CG[i].begin(), CG[i].end(),
+		boost::bind( std::less<cg_vertex>(),
+			boost::bind(detail::subscript(topo_number), _1 ),
+			boost::bind(detail::subscript(topo_number), _2 ) ) );
+
+*/
+
 void ProcessGraph::process( const int tBegin, const int tEnd )
 {
 	using namespace boost;
@@ -116,21 +137,18 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	{
 		defaultOptions._time = t;
 		COUT( "________________________________________ frame: " << t );
-		InternalGraphImpl renderGraph( _graph );
+		InternalGraphImpl renderGraph = _graph;
 		InternalGraphImpl::vertex_descriptor& output = renderGraph.getVertexDescriptor( _outputId );
 
 		COUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
 
 		COUT( "---------------------------------------- set default options" );
+		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
-			InternalGraphImpl::vertex_iterator v_it, v_end;
-			for( tie(v_it, v_end) = renderGraph.getVertices(); v_it != v_end; ++v_it )
-			{
-				Vertex& v = renderGraph.instance( *v_it );
-				v.setProcessOptions( defaultOptions );
-				v.getProcessOptions()._nbInputs = renderGraph.getInDegree( *v_it );
-				v.getProcessOptions()._nbOutputs = renderGraph.getOutDegree( *v_it );
-			}
+			Vertex& v = renderGraph.instance( vd );
+			v.setProcessOptions( defaultOptions );
+			v.getProcessOptions()._nbInputs = renderGraph.getInDegree( vd );
+			v.getProcessOptions()._nbOutputs = renderGraph.getOutDegree( vd );
 		}
 		
 		COUT( "---------------------------------------- connectClips" );

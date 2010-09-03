@@ -5,8 +5,28 @@
 #include <tuttle/host/graph/Visitors.hpp>
 
 #include <boost/graph/graph_utility.hpp>
+//#include <boost/bind.hpp>
 
 #include <iostream>
+
+namespace tuttle {
+namespace host {
+namespace graph {
+
+template<class G>
+class Display
+{
+public:
+	Display( const G& g ) : _g(g) {}
+	inline std::ostream& operator<<( std::ostream& os )
+	{
+		os << _g.getName();
+		return os;
+	}
+private:
+	const G& _g;
+};
+
 
 class TestVertex
 {
@@ -15,8 +35,7 @@ public:
 	TestVertex( const std::string& name ) : _name( name ) {}
 	~TestVertex() {}
 	std::string _name;
-	const std::string&           getName() const { return _name; }
-	std::string&                 getName()       { return _name; }
+	const std::string& getName() const { return _name; }
 	friend std::ostream& operator<<( std::ostream& os, const TestVertex& v );
 };
 inline std::ostream& operator<<( std::ostream& os, const TestVertex& v )
@@ -32,21 +51,75 @@ public:
 	TestEdge( const std::string& in, const std::string& out )
 		: _nameIn( in )
 		, _nameOut( out )
-	{}
+		, _name( out + "->" + in )
+	{
+	}
 	~TestEdge() {}
 	std::string _nameIn;
 	std::string _nameOut;
+	std::string _name;
+	const std::string& getName() const { return _name; }
 	friend std::ostream& operator<<( std::ostream& os, const TestEdge& v );
 };
 inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
 {
-	os << e._nameOut << "->" << e._nameIn;
+	os << e._name;
 	return os;
 }
 
-namespace tuttle {
-namespace host {
-namespace graph {
+
+//template<class T>
+//class DotEntry
+//{
+//	DotEntry( const std::string& key, const T& value )
+//	: _key(key),
+//	_value(value)
+//	{}
+//	std::string key;
+//	T value;
+//	friend std::ostream& operator<<( std::ostream& os, const DotEntry& dot );
+//};
+//
+//inline std::ostream& operator<<( std::ostream& os, const DotEntry& dot )
+//{
+//	os << "[" << dot._key << "=\"" << dot._value << "\"]";
+//	return os;
+//}
+
+
+template<class G>
+struct vertex_label_writer
+{
+	vertex_label_writer( const G& g ) : _g(g) {}
+	template<class Vertex>
+	void operator()( std::ostream& out, const Vertex& v ) const
+	{
+		out << "[type=\"vertex\"]";
+		out << "[label=\"" << _g[v].getName() << "\"]";
+	}
+private:
+	const G& _g;
+};
+
+template<class G>
+struct edge_label_writer
+{
+	edge_label_writer( const G& g ) : _g(g) {}
+	template<class Edge>
+	void operator()( std::ostream& out, const Edge& e ) const
+	{
+		out << "[type=\"edge\"]";
+		out << "[label=\"" << _g[e].getName() << "\"]";
+	}
+private:
+	const G& _g;
+};
+
+template<template<typename> class T, class G>
+T<G> make( const G& g )
+{
+	return T<G>(g);
+}
 
 template<>
 void exportAsDOT<TestVertex, TestEdge>( const InternalGraph<TestVertex, TestEdge >& g, std::ostream& os )
@@ -67,9 +140,17 @@ void exportAsDOT<TestVertex, TestEdge>( const InternalGraph<TestVertex, TestEdge
 	using namespace boost;
 	boost::write_graphviz( os,
 						   g.getGraph(),
-						   boost::make_label_writer( get( vertex_properties, g.getGraph() ) ),
-						   boost::make_label_writer( get( edge_properties, g.getGraph() ) ),
+						   make<vertex_label_writer>( g.getGraph() ),
+						   make<edge_label_writer>( g.getGraph() ),
 						   boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
+
+//	dynamic_properties dp;
+//	dp.property( "label", get(&Vertex::_display, g) );
+//	boost::write_graphviz( os,
+//	                       g.getGraph(),
+//						   dp,
+//						   std::string("id") );
+
 }
 
 
@@ -89,24 +170,24 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	using namespace std;
 	using namespace tuttle::host;
 
-	typedef graph::InternalGraph<TestVertex, TestEdge> InternalGraph;
-	typedef graph::InternalGraph<TestVertex, TestEdge>::vertex_descriptor Descriptor;
+	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
+	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge>::vertex_descriptor Descriptor;
 	typedef std::map<std::string, int> InstanceCountMap;
 
 	std::string n1( "v1" );
 	std::string n2( "v2" );
 	std::string n3( "v3" );
 
-	typedef graph::InternalGraph<TestVertex, TestEdge> InternalGraph;
+	typedef graph::InternalGraph<graph::TestVertex, graph::TestEdge> InternalGraph;
 	InternalGraph graph;
 	std::map<std::string, Descriptor> nodesDescriptor;
-	nodesDescriptor[n1] = graph.addVertex( TestVertex( n1 ) );
-	nodesDescriptor[n2] = graph.addVertex( TestVertex( n2 ) );
-	nodesDescriptor[n3] = graph.addVertex( TestVertex( n3 ) );
+	nodesDescriptor[n1] = graph.addVertex( graph::TestVertex( n1 ) );
+	nodesDescriptor[n2] = graph.addVertex( graph::TestVertex( n2 ) );
+	nodesDescriptor[n3] = graph.addVertex( graph::TestVertex( n3 ) );
 
-	TestEdge e1( n1, n2 );
+	graph::TestEdge e1( n1, n2 );
 	graph.addEdge( nodesDescriptor[n1], nodesDescriptor[n2], e1 );
-	TestEdge e2( n2, n3 );
+	graph::TestEdge e2( n2, n3 );
 	graph.addEdge( nodesDescriptor[n2], nodesDescriptor[n3], e2 );
 
 	TCOUT( "graph:" );
@@ -118,8 +199,8 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	TCOUT( "graphT:" );
 	boost::print_graph( graphT.getGraph() );
 
-	graph::exportAsDOT<TestVertex, TestEdge>( graph, "boostgraphtest.dot" );
-	graph::exportAsDOT<TestVertex, TestEdge>( graphT, "boostgraphTtest.dot" );
+	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( graph, "boostgraphtest.dot" );
+	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( graphT, "boostgraphTtest.dot" );
 
 	TCOUT( "__________________________________________________" );
 	TCOUT( "graph:" );
@@ -136,8 +217,8 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	     i != iEnd;
 	     ++i )
 	{
-		TCOUT( "pp: " << get( vertex_properties, graphT.getGraph() )[*i]._name );
-		mmap[get( vertex_properties, graphT.getGraph() )[*i]._name] = *i;
+		TCOUT( "pp: " << graphT.getGraph()[*i]._name );
+		mmap[graphT.getGraph()[*i]._name] = *i;
 		//		TCOUT( "pp: "<< graphT.getGraph()[*i]._name );
 	}
 
@@ -156,7 +237,7 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 /*
 BOOST_AUTO_TEST_CASE( create_boostGraph )
 {
-	typedef boost::adjacency_list< boost::listS, boost::vecS, boost::undirectedS, TestVertex, TestEdge > Graph;
+	typedef boost::adjacency_list< boost::listS, boost::vecS, boost::undirectedS, graph::TestVertex, graph::TestEdge > Graph;
 	Graph g;
 
 	//add 100 vertices

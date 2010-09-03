@@ -4,6 +4,20 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
+template< typename VERTEX, typename EDGE >
+InternalGraph<VERTEX, EDGE>& InternalGraph<VERTEX, EDGE>::operator=( const This& g )
+{
+	if( this == &g )
+		return *this;
+	clear();
+	boost::copy_graph( g._graph, _graph );
+	//COUT( "InternalGraph after copy" );
+	//exportSimple( *this, std::cout );
+	//COUT_X( 80, "_" );
+	rebuildVertexDescriptorMap();
+	return *this;
+}
+
 
 template< typename VERTEX, typename EDGE >
 void InternalGraph<VERTEX, EDGE>::toDominatorTree()
@@ -72,13 +86,9 @@ template< typename VERTEX, typename EDGE >
 void InternalGraph<VERTEX, EDGE>::rebuildVertexDescriptorMap()
 {
 	_vertexDescriptorMap.clear();
-	for( vertex_iterator i = vertices( getGraph() ).first, iEnd = vertices( getGraph() ).second;
-		 i != iEnd;
-		 ++i )
+	BOOST_FOREACH( vertex_descriptor vd, getVertices() )
 	{
-		//			TCOUT( "pp: "<< get(vertex_properties, graphT.getGraph())[*i]._name );
-		//			TCOUT( "pp: "<< graphT.getGraph()[*i]._name ); // if no boost::property_map
-		_vertexDescriptorMap[get( vertex_properties, getGraph() )[*i].getName()] = *i;
+		_vertexDescriptorMap[instance(vd).getName()] = vd;
 	}
 }
 
@@ -90,22 +100,19 @@ std::size_t InternalGraph<VERTEX, EDGE>::removeUnconnectedVertices( const vertex
 	this->dfs( vis, vroot );
 
 	std::list<std::string> toRemove;
-	vertex_range_t vrange = getVertices();
-	for( vertex_iterator it = vrange.first; it != vrange.second; ++it )
+	BOOST_FOREACH( const vertex_descriptor& vd, getVertices() )
 	{
-		if( ! instance(*it).isUsed() )
+		const Vertex& v = instance(vd);
+		if( ! v.isUsed() )
 		{
-			TCOUT( "removeVertex: " << instance(*it).getName() );
-			toRemove.push_back( instance(*it).getName() );
+			toRemove.push_back( v.getName() );
 		}
 	}
-	BOOST_FOREACH( const std::string& v, toRemove )
+	BOOST_FOREACH( const std::string& vs, toRemove )
 	{
-		this->removeVertex( this->getVertexDescriptor( v ) );
-		/// @todo tuttle: what is the correct way to remove vertices ?
-		rebuildVertexDescriptorMap();
+		//TCOUT( "removeVertex: " << vs );
+		this->removeVertex( getVertexDescriptor(vs) );
 	}
-	TCOUT_VAR( toRemove.size() );
 
 	return toRemove.size();
 }

@@ -6,6 +6,7 @@
 
 #include <boost/version.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/exception/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/exception/errinfo_file_name.hpp>
