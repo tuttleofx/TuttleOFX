@@ -73,10 +73,10 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 				return;
 		}
 	} /*
-	    else if( dstComponents == OFX::ePixelComponentAlpha )
-	    {
-	    switch( dstBitDepth )
-	    {
+	     else if( dstComponents == OFX::ePixelComponentAlpha )
+	     {
+	     switch( dstBitDepth )
+	     {
 	        case OFX::eBitDepthUByte:
 	        {
 	            ImageMagickReaderProcess<gray8_view_t> fred( *this );
@@ -101,8 +101,8 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 	        case OFX::eBitDepthCustom:
 	            COUT_FATALERROR( "BitDepthCustom not recognize." );
 	            return;
-	    }
-	    }*/
+	     }
+	     }*/
 	else
 	{
 		COUT_FATALERROR( dstComponents << " not recognize." );

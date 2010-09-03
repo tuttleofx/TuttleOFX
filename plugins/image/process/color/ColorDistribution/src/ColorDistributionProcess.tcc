@@ -26,11 +26,11 @@ struct channel_color_distribution_t : public std::binary_function<Channel, Chann
 
 #define TUTTLE_DEFINE_SAME_COLOR_DISTRIBUTION( COLORDISTRIBUTION ) \
     template < typename Channel > \
-    struct channel_color_distribution_t<Channel, COLORDISTRIBUTION, COLORDISTRIBUTION> \
-	: public std::binary_function<Channel, Channel, Channel> \
+    struct channel_color_distribution_t< Channel, COLORDISTRIBUTION, COLORDISTRIBUTION > \
+		: public std::binary_function< Channel, Channel, Channel > \
 	{ \
 		typename channel_traits<Channel>::reference operator()( typename channel_traits<Channel>::const_reference ch1, \
-		                                                            typename channel_traits < Channel > ::reference ch2 ) const \
+		                                                            typename channel_traits<Channel>::reference ch2 ) const \
 		{ \
 			BOOST_THROW_EXCEPTION( std::logic_error( "This conversion is an identity conversion, you don't need to do the process." ) ); \
 			return ch2 = ch1; \

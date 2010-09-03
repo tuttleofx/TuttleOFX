@@ -16,15 +16,18 @@ namespace plugin {
 namespace interact {
 
 template<ECoordonateSystem coord>
-struct CoordonateSystemNotCentered {
+struct CoordonateSystemNotCentered
+{
 	static const ECoordonateSystem value = coord;
 };
 template<>
-struct CoordonateSystemNotCentered<eCoordonateSystemXXcn> {
+struct CoordonateSystemNotCentered<eCoordonateSystemXXcn>
+{
 	static const ECoordonateSystem value = eCoordonateSystemXXn;
 };
 template<>
-struct CoordonateSystemNotCentered<eCoordonateSystemXYc> {
+struct CoordonateSystemNotCentered<eCoordonateSystemXYc>
+{
 	static const ECoordonateSystem value = eCoordonateSystemXYc;
 };
 

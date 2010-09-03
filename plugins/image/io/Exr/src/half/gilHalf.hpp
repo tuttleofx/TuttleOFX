@@ -29,10 +29,14 @@ struct channel_traits<half> : public detail::channel_traits_impl<half, false>
 /// @typedef an half trait between 0 and 1
 ///////////////////////////////////////////////////////////////////////////////
 
-struct      half_zero {
-	static half apply() { return half( 0.0f ); } };
-struct      half_one {
-	static half apply() { return half( 1.0f ); } };
+struct      half_zero
+{
+	static half apply() { return half( 0.0f ); }
+};
+struct      half_one
+{
+	static half apply() { return half( 1.0f ); }
+};
 typedef     scoped_channel_value< half, half_zero, half_one> bits16h;
 
 inline bits16h operator+( bits16h _lhs, bits16h _rhs )

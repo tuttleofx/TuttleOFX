@@ -31,10 +31,14 @@ typedef uint64_t bits64;
 /// \ingroup bits64s
 typedef int64_t bits64s;
 
-struct double_zero {
-	static double apply() { return 0.0; } };
-struct double_one {
-	static double apply() { return 1.0; } };
+struct double_zero
+{
+	static double apply() { return 0.0; }
+};
+struct double_one
+{
+	static double apply() { return 1.0; }
+};
 
 /// \defgroup bits64f bits64f
 /// \ingroup ChannelModel

@@ -193,10 +193,14 @@ struct scoped_channel_value
 		BaseChannelValue _value;
 };
 
-struct float_zero {
-	static float apply() { return 0.0f; } };
-struct float_one {
-	static float apply() { return 1.0f; } };
+struct float_zero
+{
+	static float apply() { return 0.0f; }
+};
+struct float_one
+{
+	static float apply() { return 1.0f; }
+};
 
 ///////////////////////////////////////////
 ////

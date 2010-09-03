@@ -12,8 +12,10 @@ namespace boost {
 namespace gil {
 
 template<bool is_signed, typename Channel>
-struct is_negative_impl {
-	static bool process( const Channel& v ) { return v < 0; } };
+struct is_negative_impl
+{
+	static bool process( const Channel& v ) { return v < 0; }
+};
 
 template<typename Channel>
 struct is_negative_impl<false, Channel>

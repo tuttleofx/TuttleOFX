@@ -125,10 +125,10 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments& args )
 				return;
 		}
 	} /*
-	    else if( dstComponents == OFX::ePixelComponentAlpha )
-	    {
-	    switch( dstBitDepth )
-	    {
+	     else if( dstComponents == OFX::ePixelComponentAlpha )
+	     {
+	     switch( dstBitDepth )
+	     {
 	        case OFX::eBitDepthUByte :
 	        {
 	            ImageStatisticsProcess<gray8_view_t> p( *this );
@@ -153,8 +153,8 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments& args )
 	        case OFX::eBitDepthCustom :
 	            COUT_FATALERROR( "BitDepthCustom not recognize." );
 	            return;
-	    }
-	    }*/
+	     }
+	     }*/
 }
 
 void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
