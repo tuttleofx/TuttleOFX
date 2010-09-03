@@ -58,31 +58,10 @@ public:
 			    << exception::user( "You can't connect to an input Clip !" ) );
 		}
 		_connectedClip = &other;
-		//getEditableProperties().clear();
-
-		//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedPixelDepth );
-		//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedComponents );
-		//		getEditableProperties().eraseProperty( kOfxImageClipPropContinuousSamples );
-		//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldExtraction );
-		//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
-		//		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
-		//		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
-		//		getEditableProperties().eraseProperty( kOfxImagePropField );
-		//		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
-		//		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
-		//		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
-
-		getEditableProperties().eraseProperty( kOfxImagePropBounds );
-		getEditableProperties().eraseProperty( kOfxImagePropData );
-		getEditableProperties().eraseProperty( kOfxImagePropRowBytes );
-		getEditableProperties().setChainedSet( &other.getProperties() );
-
 		setConnected();
 
 		getEditableProperties().setStringProperty( "TuttleFullName", getFullName() );
 		getEditableProperties().setStringProperty( "TuttleIdentifier", getIdentifier() );
-		//		TCOUT(getProperties());
-		//		TCOUT("Clip connected!");
 	}
 
 	void setUnconnected() { _connectedClip = NULL; setConnected( false ); }
