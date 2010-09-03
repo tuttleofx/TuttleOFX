@@ -12,10 +12,43 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
+namespace detail {
+template<class T>
+struct DotEntry
+{
+	DotEntry( const std::string& key, const T& value )
+	: _key(key),
+	_value(value)
+	{}
+	const std::string& _key;
+	const T& _value;
+	template<class TT>
+	friend std::ostream& operator<<( std::ostream& os, const DotEntry<TT>& d );
+};
+template<class T>
+std::ostream& operator<<( std::ostream& os, const DotEntry<T>& d )
+{
+	os << "[" << d._key << "=\"" << d._value << "\"]";
+	return os;
+}
+}
+
+/**
+ * @brief Use this function to force the correct syntax.
+ *        os << dotEntry( "label", "fooNode");
+ *        output: [label="fooNode"]
+ */
+template<class T>
+detail::DotEntry<T> dotEntry( const std::string& key, const T& value )
+{
+	return detail::DotEntry<T>( key, value );
+}
+
+namespace detail {
 template <class Name>
-class node_writer {
+class simple_node_writer {
 public:
-	node_writer(Name _name) : name(_name) {}
+	simple_node_writer(Name _name) : name(_name) {}
 	template <class VertexOrEdge>
 	void operator()(std::ostream& out, const VertexOrEdge& v) const
 	{
@@ -24,12 +57,18 @@ public:
 private:
 	Name name;
 };
+}
 
+/**
+ * @brief For simple export, don't use the real .dot syntax, just put the name.
+ * like: [ fooNode ]
+ * instead of: [label="fooNode"]
+ */
 template <class Name>
-inline node_writer<Name>
-make_node_writer(Name n)
+inline detail::simple_node_writer<Name>
+make_simple_node_writer(Name n)
 {
-	return node_writer<Name>(n);
+	return detail::simple_node_writer<Name>(n);
 }
 
 template<typename Vertex, typename Edge>
@@ -37,8 +76,8 @@ inline void exportSimple( std::ostream& os, const InternalGraph<Vertex, Edge>& g
 {
 	using namespace boost;
 	boost::write_graphviz( os, g.getGraph(),
-	                           make_node_writer( get( &Vertex::_name, g.getGraph() ) ),
-	                           make_node_writer( get( &Edge::_name,   g.getGraph() ) ) );
+	                           make_simple_node_writer( get( &Vertex::_name, g.getGraph() ) ),
+	                           make_simple_node_writer( get( &Edge::_name,   g.getGraph() ) ) );
 }
 
 template<typename Vertex, typename Edge>

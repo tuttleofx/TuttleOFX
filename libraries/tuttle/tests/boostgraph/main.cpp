@@ -13,21 +13,6 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-template<class G>
-class Display
-{
-public:
-	Display( const G& g ) : _g(g) {}
-	inline std::ostream& operator<<( std::ostream& os )
-	{
-		os << _g.getName();
-		return os;
-	}
-private:
-	const G& _g;
-};
-
-
 class TestVertex
 {
 public:
@@ -65,49 +50,6 @@ inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
 {
 	os << e._name;
 	return os;
-}
-
-template<class T>
-struct DotEntry
-{
-	DotEntry( const std::string& key, const T& value )
-	: _key(key),
-	_value(value)
-	{}
-	const std::string& _key;
-	const T& _value;
-	template<class TT>
-	friend std::ostream& operator<<( std::ostream& os, const DotEntry<TT>& d );
-};
-template<class T>
-std::ostream& operator<<( std::ostream& os, const DotEntry<T>& d )
-{
-	os << "[" << d._key << "=\"" << d._value << "\"]";
-	return os;
-}
-
-//template<>
-//class DotEntry<char*>
-//{
-//	typedef char* T;
-//	DotEntry( const std::string& key, const T& value )
-//	: _key(key),
-//	_value(value)
-//	{}
-//	const std::string& _key;
-//	const std::string _value;
-//	inline std::ostream& operator<<( std::ostream& os )
-//	{
-//		os << "[" << _key << "=\"" << _value << "\"]";
-//		return os;
-//	}
-//};
-
-
-template<class T>
-DotEntry<T> dotEntry( const std::string& key, const T& value )
-{
-	return DotEntry<T>( key, value );
 }
 
 template<class G>
@@ -166,13 +108,6 @@ void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<Te
 						   make<vertex_label_writer>( g.getGraph() ),
 						   make<edge_label_writer>( g.getGraph() ),
 						   boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
-
-//	dynamic_properties dp;
-//	dp.property( "label", get(&Vertex::_display, g) );
-//	boost::write_graphviz( os,
-//	                       g.getGraph(),
-//						   dp,
-//						   std::string("id") );
 
 }
 
