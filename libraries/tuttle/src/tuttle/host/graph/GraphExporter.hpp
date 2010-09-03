@@ -33,7 +33,7 @@ make_node_writer(Name n)
 }
 
 template<typename Vertex, typename Edge>
-inline void exportSimple( const InternalGraph<Vertex, Edge>& g, std::ostream& os )
+inline void exportSimple( std::ostream& os, const InternalGraph<Vertex, Edge>& g )
 {
 	using namespace boost;
 	boost::write_graphviz( os, g.getGraph(),
@@ -42,13 +42,13 @@ inline void exportSimple( const InternalGraph<Vertex, Edge>& g, std::ostream& os
 }
 
 template<typename Vertex, typename Edge>
-inline void exportAsDOT( const InternalGraph<Vertex, Edge >& g, std::ostream& os )
+inline void exportAsDOT( std::ostream& os, const InternalGraph<Vertex, Edge >& g )
 {
 	boost::write_graphviz( os, g.getGraph() );
 }
 
 template<>
-inline void exportAsDOT<Vertex, Edge >( const InternalGraph<Vertex, Edge>& g, std::ostream& os )
+inline void exportAsDOT<Vertex, Edge >( std::ostream& os, const InternalGraph<Vertex, Edge>& g )
 {
 	std::map<std::string, std::string> graph_attr, vertex_attr, edge_attr;
 	graph_attr["size"]       = "6,6";
@@ -72,10 +72,10 @@ inline void exportAsDOT<Vertex, Edge >( const InternalGraph<Vertex, Edge>& g, st
 }
 
 template<typename Vertex, typename Edge>
-inline void exportAsDOT( const InternalGraph<Vertex, Edge >& g, const char* filename )
+inline void exportAsDOT( const std::string& filename, const InternalGraph<Vertex, Edge >& g )
 {
-	std::ofstream ofs( filename );
-	exportAsDOT( g, ofs );
+	std::ofstream ofs( filename.c_str() );
+	exportAsDOT( ofs, g );
 }
 
 

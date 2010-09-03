@@ -125,7 +125,7 @@ std::ostream& operator<<( std::ostream& os, const InternalGraph<Vertex, Edge>& g
 	<< "  vertex count: " << g.getVertexCount() << std::endl
 	<< "  edge count: " << g.getEdgeCount() << std::endl;
 
-	exportSimple<Vertex, Edge>( g, os );
+	exportSimple<Vertex, Edge>( os, g );
 
 	return os;
 }

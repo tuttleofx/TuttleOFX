@@ -173,7 +173,7 @@ void Graph::connect( const Node& outNode, const Attribute& inAttr )
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
-	graph::exportAsDOT( _graph, "graph.dot" );
+	graph::exportAsDOT( "graph.dot", _graph );
 
 	COUT( "ProcessGraph constructor" );
 	graph::ProcessGraph process( *this, nodes );

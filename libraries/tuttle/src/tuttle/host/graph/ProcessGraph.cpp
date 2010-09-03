@@ -106,7 +106,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	using namespace boost;
 	using namespace boost::graph;
 	COUT( "process" );
-	graph::exportAsDOT( _graph, "graphprocess.dot" );
+	graph::exportAsDOT( "graphprocess.dot", _graph );
 
 	// Initialize variables
 	OfxPointD renderScale       = { 1.0, 1.0 };

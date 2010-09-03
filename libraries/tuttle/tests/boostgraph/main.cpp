@@ -67,25 +67,48 @@ inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
 	return os;
 }
 
+template<class T>
+struct DotEntry
+{
+	DotEntry( const std::string& key, const T& value )
+	: _key(key),
+	_value(value)
+	{}
+	const std::string& _key;
+	const T& _value;
+	template<class TT>
+	friend std::ostream& operator<<( std::ostream& os, const DotEntry<TT>& d );
+};
+template<class T>
+std::ostream& operator<<( std::ostream& os, const DotEntry<T>& d )
+{
+	os << "[" << d._key << "=\"" << d._value << "\"]";
+	return os;
+}
 
-//template<class T>
-//class DotEntry
+//template<>
+//class DotEntry<char*>
 //{
+//	typedef char* T;
 //	DotEntry( const std::string& key, const T& value )
 //	: _key(key),
 //	_value(value)
 //	{}
-//	std::string key;
-//	T value;
-//	friend std::ostream& operator<<( std::ostream& os, const DotEntry& dot );
+//	const std::string& _key;
+//	const std::string _value;
+//	inline std::ostream& operator<<( std::ostream& os )
+//	{
+//		os << "[" << _key << "=\"" << _value << "\"]";
+//		return os;
+//	}
 //};
-//
-//inline std::ostream& operator<<( std::ostream& os, const DotEntry& dot )
-//{
-//	os << "[" << dot._key << "=\"" << dot._value << "\"]";
-//	return os;
-//}
 
+
+template<class T>
+DotEntry<T> dotEntry( const std::string& key, const T& value )
+{
+	return DotEntry<T>( key, value );
+}
 
 template<class G>
 struct vertex_label_writer
@@ -94,8 +117,8 @@ struct vertex_label_writer
 	template<class Vertex>
 	void operator()( std::ostream& out, const Vertex& v ) const
 	{
-		out << "[type=\"vertex\"]";
-		out << "[label=\"" << _g[v].getName() << "\"]";
+		out << dotEntry( "type", "vertex" );
+		out << dotEntry( "label", _g[v].getName() );
 	}
 private:
 	const G& _g;
@@ -108,8 +131,8 @@ struct edge_label_writer
 	template<class Edge>
 	void operator()( std::ostream& out, const Edge& e ) const
 	{
-		out << "[type=\"edge\"]";
-		out << "[label=\"" << _g[e].getName() << "\"]";
+		out << dotEntry( "type", "vertex" );
+		out << dotEntry( "label", _g[e].getName() );
 	}
 private:
 	const G& _g;
@@ -122,7 +145,7 @@ T<G> make( const G& g )
 }
 
 template<>
-void exportAsDOT<TestVertex, TestEdge>( const InternalGraph<TestVertex, TestEdge >& g, std::ostream& os )
+void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<TestVertex, TestEdge >& g )
 {
 	std::map<std::string, std::string> graph_attr, vertex_attr, edge_attr;
 	graph_attr["size"]       = "6,6";
@@ -199,8 +222,8 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	TCOUT( "graphT:" );
 	boost::print_graph( graphT.getGraph() );
 
-	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( graph, "boostgraphtest.dot" );
-	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( graphT, "boostgraphTtest.dot" );
+	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( "boostgraphtest.dot", graph );
+	graph::exportAsDOT<graph::TestVertex, graph::TestEdge>( "boostgraphTtest.dot", graphT );
 
 	TCOUT( "__________________________________________________" );
 	TCOUT( "graph:" );
