@@ -29,8 +29,10 @@ struct channel_traits<half> : public detail::channel_traits_impl<half, false>
 /// @typedef an half trait between 0 and 1
 ///////////////////////////////////////////////////////////////////////////////
 
-struct      half_zero { static half apply() { return half(0.0f); } };
-struct      half_one  { static half apply() { return half(1.0f); } };
+struct      half_zero {
+	static half apply() { return half( 0.0f ); } };
+struct      half_one {
+	static half apply() { return half( 1.0f ); } };
 typedef     scoped_channel_value< half, half_zero, half_one> bits16h;
 
 inline bits16h operator+( bits16h _lhs, bits16h _rhs )
@@ -80,6 +82,7 @@ struct channel_converter_unsigned<SrcChannelV, bits16h>
 		return bits16h( float(x)
 		                / float(channel_traits<SrcChannelV>::max_value() ) );
 	}
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -103,6 +106,7 @@ struct channel_converter_unsigned<bits32f, bits16h>
 	{
 		return bits16h( half( f ) );
 	}
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,8 +116,9 @@ struct channel_converter_unsigned<bits16h, bits32f>
 {
 	bits32f operator()( bits16h h ) const
 	{
-		return bits32f( float( half( h ) ) );
+		return bits32f( float(half( h ) ) );
 	}
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -125,6 +130,7 @@ struct channel_multiplier_unsigned<bits16h>
 	{
 		return a* b;
 	}
+
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -141,8 +147,10 @@ GIL_DEFINE_ALL_TYPEDEFS( 16h, rgb )
 GIL_DEFINE_ALL_TYPEDEFS( 16h, rgba )
 GIL_DEFINE_ALL_TYPEDEFS( 16h, cmyk )
 
-template <int N> struct devicen_t;
-template <int N> struct devicen_layout_t;
+template <int N>
+struct devicen_t;
+template <int N>
+struct devicen_layout_t;
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 16h, dev2n, devicen_t<2>, devicen_layout_t<2>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 16h, dev3n, devicen_t<3>, devicen_layout_t<3>)
 GIL_DEFINE_ALL_TYPEDEFS_INTERNAL( 16h, dev4n, devicen_t<4>, devicen_layout_t<4>)

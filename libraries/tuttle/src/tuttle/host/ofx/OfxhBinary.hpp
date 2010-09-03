@@ -83,8 +83,8 @@ class OfxhBinary
 {
 public:
 	typedef OfxhBinary This;
-/// destruction will close the library and invalidate
-/// any function pointers returned by lookupSymbol()
+	/// destruction will close the library and invalidate
+	/// any function pointers returned by lookupSymbol()
 
 protected:
 	std::string _binaryPath;
@@ -101,7 +101,7 @@ protected:
 
 private:
 	void init( const std::string& binaryPath );
-	
+
 public:
 	OfxhBinary();
 
@@ -114,14 +114,15 @@ public:
 	bool operator==( const This& other ) const
 	{
 		if( _binaryPath != other._binaryPath ||
-			_invalid != other._invalid ||
-			_exists != other._exists ||
-			_time != other._time ||
-			_size != other._size )
+		    _invalid != other._invalid ||
+		    _exists != other._exists ||
+		    _time != other._time ||
+		    _size != other._size )
 			return false;
 		return true;
 	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	bool isLoaded() const { return _dlHandle != 0; }
 
@@ -157,14 +158,15 @@ public:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_binaryPath);
-		ar & BOOST_SERIALIZATION_NVP(_invalid);
-		ar & BOOST_SERIALIZATION_NVP(_exists);
-		ar & BOOST_SERIALIZATION_NVP(_size);
-		ar & BOOST_SERIALIZATION_NVP(_time);
-//		ar & BOOST_SERIALIZATION_NVP(_users);
+		ar& BOOST_SERIALIZATION_NVP( _binaryPath );
+		ar& BOOST_SERIALIZATION_NVP( _invalid );
+		ar& BOOST_SERIALIZATION_NVP( _exists );
+		ar& BOOST_SERIALIZATION_NVP( _size );
+		ar& BOOST_SERIALIZATION_NVP( _time );
+
+		//		ar & BOOST_SERIALIZATION_NVP(_users);
 
 		if( typename Archive::is_loading() )
 		{
@@ -172,6 +174,7 @@ private:
 			init( _binaryPath );
 		}
 	}
+
 };
 
 }

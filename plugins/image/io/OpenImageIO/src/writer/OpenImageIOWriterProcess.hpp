@@ -23,7 +23,7 @@ protected:
 	OpenImageIOWriterPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-	OpenImageIOWriterProcess( OpenImageIOWriterPlugin & instance );
+	OpenImageIOWriterProcess( OpenImageIOWriterPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 

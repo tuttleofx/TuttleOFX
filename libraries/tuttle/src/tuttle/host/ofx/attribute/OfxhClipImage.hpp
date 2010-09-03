@@ -24,18 +24,17 @@ class OfxhImageEffectNodeDescriptor;
 }
 namespace attribute {
 
-
 /**
  * a clip image instance
  * @todo tuttle: template this class with the Node Type, so replace OfxhImageEffectNode by template parameter
  */
-class OfxhClipImage : 
-	public attribute::OfxhClip,
-	virtual public OfxhClipImageAccessor
+class OfxhClipImage
+	: public attribute::OfxhClip
+	, virtual public OfxhClipImageAccessor
 {
 public:
 	typedef OfxhClipImage This;
-	
+
 protected:
 	imageEffect::OfxhImageEffectNode& _effectInstance; ///< effect instance
 
@@ -47,16 +46,17 @@ public:
 
 	bool operator==( const This& other ) const
 	{
-		if( OfxhClip::operator!=(other) )
+		if( OfxhClip::operator!=( other ) )
 			return false;
 		return true;
 	}
+
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	virtual OfxhClipImage* clone() const                    = 0;
 	virtual std::string    getFullName() const              = 0;
 	virtual std::string    getConnectedClipFullName() const = 0; ///< @todo tuttle: remove this!
- 
+
 	/**
 	 * get a handle on the clip descriptor for the C api
 	 */
@@ -80,7 +80,7 @@ public:
 
 	/**
 	 * @brief fetch depth of all chromatic component in this clip
-	 * 
+	 *
 	 * 0 (implying a clip is unconnected, not valid for an image),
 	 * 8,
 	 * 16,
@@ -89,7 +89,8 @@ public:
 	imageEffect::EBitDepth getBitDepth() const
 	{
 		const std::string& s = getBitDepthString();
-		return imageEffect::mapBitDepthStringToEnum(s);
+
+		return imageEffect::mapBitDepthStringToEnum( s );
 	}
 
 	/** set the current pixel depth
@@ -98,19 +99,21 @@ public:
 	void setBitDepthString( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+
 		prop.setValue( s, 0, modifiedBy );
 	}
 
 	void setBitDepth( const imageEffect::EBitDepth bitDepth, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
-		setBitDepthString( mapBitDepthEnumToString(bitDepth), modifiedBy );
+		setBitDepthString( mapBitDepthEnumToString( bitDepth ), modifiedBy );
 	}
 
 	void setBitDepthStringIfUpperAndNotModifiedByPlugin( const std::string& s )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+
 		if( prop.getModifiedBy() != property::eModifiedByPlugin && // if not modified by plugin
-		    ofx::imageEffect::mapBitDepthStringToEnum(s) > getBitDepth() ) // we can increase the bit depth but not decrease
+		    ofx::imageEffect::mapBitDepthStringToEnum( s ) > getBitDepth() ) // we can increase the bit depth but not decrease
 			prop.setValue( s );
 	}
 
@@ -129,6 +132,7 @@ public:
 	void setPixelAspectRatio( const double& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
 		property::Double& prop = getEditableProperties().fetchLocalDoubleProperty( kOfxImagePropPixelAspectRatio );
+
 		prop.setValue( s, 0, modifiedBy );
 	}
 
@@ -155,7 +159,7 @@ public:
 	{
 		return imageEffect::mapPixelComponentStringToEnum( getComponentsString() );
 	}
-	
+
 	/**
 	 * Number of values for this Components.
 	 */
@@ -171,12 +175,14 @@ public:
 	void setComponents( const std::string& s, const property::EModifiedBy modifiedBy = property::eModifiedByHost )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
+
 		prop.setValue( s, 0, modifiedBy );
 	}
 
 	void setComponentsIfNotModifiedByPlugin( const std::string& s )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropComponents );
+
 		if( prop.getModifiedBy() != property::eModifiedByPlugin )
 			prop.setValue( s );
 	}
@@ -319,20 +325,20 @@ inline OfxhClipImage* new_clone( const OfxhClipImage& a )
 {
 	return a.clone();
 }
+
 #endif
 
 }
 }
 }
 }
-
 
 #ifndef SWIG
 // force boost::is_virtual_base_of value (used by boost::serialization)
-namespace boost{
-template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
+namespace boost {
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhClip, tuttle::host::ofx::attribute::OfxhClipImage>: public mpl::true_ {};
 }
 #endif
-
 
 #endif

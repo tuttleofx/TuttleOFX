@@ -8,7 +8,6 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-
 OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin& p, OfxhHost& host ) : _p( &p )
 {
 	_b = &_p->getBinary();
@@ -19,9 +18,9 @@ OfxhPluginHandle::OfxhPluginHandle( OfxhPlugin& p, OfxhHost& host ) : _p( &p )
 	if( !_op )
 	{
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::user( "Loading plugin failed." )
-			<< exception::dev() + "OfxGetPlugin call failed at index " + _p->getIndex() + "."
-			<< exception::filename( _b->getBundlePath() ) );
+		    << exception::user( "Loading plugin failed." )
+		    << exception::dev() + "OfxGetPlugin call failed at index " + _p->getIndex() + "."
+		    << exception::filename( _b->getBundlePath() ) );
 	}
 	_op->setHost( host.getHandle() );
 }
@@ -34,5 +33,4 @@ OfxhPluginHandle::~OfxhPluginHandle()
 }
 }
 }
-
 

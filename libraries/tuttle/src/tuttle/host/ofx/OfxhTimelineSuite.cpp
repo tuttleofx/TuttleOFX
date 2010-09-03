@@ -28,7 +28,7 @@ OfxStatus TimelineGetTime( void* effectInstance, double* time )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -53,7 +53,7 @@ OfxStatus TimelineGotoTime( void* effectInstance, double time )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -78,7 +78,7 @@ OfxStatus TimelineGetBounds( void* effectInstance, double* firstTime, double* la
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}

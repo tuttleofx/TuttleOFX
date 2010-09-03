@@ -85,7 +85,7 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 
 	// initialize raw data
 	_dataSize = dataSize();
-	if (_dataSize != 0)
+	if( _dataSize != 0 )
 	{
 		// read and throws away characters until 'offset' characters have been read
 		f.ignore( _header.dataOffset() - f.tellg() );
@@ -155,7 +155,7 @@ void DpxImage::readHeader( ifstream& f )
 	}
 
 	// ...file information
-	gen = &( _header._fileInfo );
+	gen                         = &( _header._fileInfo );
 	_header._fileInfo.magic_num = gen->magic_num;
 	std::size_t hdrSize = 0;
 
@@ -164,16 +164,16 @@ void DpxImage::readHeader( ifstream& f )
 		uint32_t genhdrsize = swapEndian<uint32_t>( gen->gen_hdr_size );
 		hdrSize = ( genhdrsize > 0 ? genhdrsize : sizeof( DpxHeader ) ) - 36;
 	}
-	else if (_header._fileInfo.magic_num == DPX_MAGIC)
+	else if( _header._fileInfo.magic_num == DPX_MAGIC )
 	{
 		hdrSize = ( gen->gen_hdr_size > 0 ? gen->gen_hdr_size : sizeof( DpxHeader ) ) - 36;
 	}
 	else
 	{
-		BOOST_THROW_EXCEPTION(std::logic_error("Not a dpx image !"));
+		BOOST_THROW_EXCEPTION( std::logic_error( "Not a dpx image !" ) );
 	}
 	// Read meta dynamic infos
-	scoped_array<uint8_t> hdrBuffer(new uint8_t[hdrSize]);
+	scoped_array<uint8_t> hdrBuffer( new uint8_t[hdrSize] );
 	// reads data from _header...
 	if( !f.read( (char*)hdrBuffer.get(), hdrSize ) )
 	{
@@ -184,24 +184,24 @@ void DpxImage::readHeader( ifstream& f )
 	}
 	// Read dynamic data
 	std::size_t bufpos = 0;
-	readDynamicHdrData((uint8_t*)gen->file_name, sizeof(gen->file_name), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->file_name);
-	readDynamicHdrData((uint8_t*)gen->create_time, sizeof(gen->create_time), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->create_time);
-	readDynamicHdrData((uint8_t*)gen->creator, sizeof(gen->creator), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->creator);
-	readDynamicHdrData((uint8_t*)gen->project, sizeof(gen->project), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->project);
-	readDynamicHdrData((uint8_t*)gen->copyright, sizeof(gen->copyright), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->copyright);
-	memcpy(&gen->key, hdrBuffer.get() + bufpos, sizeof(uint32_t));
-	bufpos += sizeof(uint32_t);
-	memcpy(&gen->reserved, hdrBuffer.get() + bufpos, sizeof(gen->reserved));
-	bufpos += sizeof(gen->reserved);
+	readDynamicHdrData( (uint8_t*)gen->file_name, sizeof( gen->file_name ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen->file_name );
+	readDynamicHdrData( (uint8_t*)gen->create_time, sizeof( gen->create_time ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen->create_time );
+	readDynamicHdrData( (uint8_t*)gen->creator, sizeof( gen->creator ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen->creator );
+	readDynamicHdrData( (uint8_t*)gen->project, sizeof( gen->project ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen->project );
+	readDynamicHdrData( (uint8_t*)gen->copyright, sizeof( gen->copyright ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen->copyright );
+	memcpy( &gen->key, hdrBuffer.get() + bufpos, sizeof( uint32_t ) );
+	bufpos += sizeof( uint32_t );
+	memcpy( &gen->reserved, hdrBuffer.get() + bufpos, sizeof( gen->reserved ) );
+	bufpos += sizeof( gen->reserved );
 	// Copy the remaining header infos
-	memcpy(&(_header._imageInfo), hdrBuffer.get() + bufpos, hdrSize - bufpos);
+	memcpy( &( _header._imageInfo ), hdrBuffer.get() + bufpos, hdrSize - bufpos );
 
-	if ( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
+	if( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
 	{
 		_header.swapHeader();
 	}
@@ -261,72 +261,73 @@ void DpxHeader::swapHeader()
 		_imageInfo.image_element[i].ref_low_data      = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_low_data );
 		_imageInfo.image_element[i].ref_low_quantity  = swapEndian<float>( _imageInfo.image_element[i].ref_low_quantity );
 		_imageInfo.image_element[i].ref_high_data     = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_high_data );
-		_imageInfo.image_element[i].ref_high_quantity = swapEndian<float>(_imageInfo.image_element[i].ref_high_quantity );
-		_imageInfo.image_element[i].packing           = swapEndian<short>(_imageInfo.image_element[i].packing );
-		_imageInfo.image_element[i].encoding          = swapEndian<short>(_imageInfo.image_element[i].encoding );
-		_imageInfo.image_element[i].data_offset       = swapEndian<uint32_t>(_imageInfo.image_element[i].data_offset );
-		_imageInfo.image_element[i].eol_padding       = swapEndian<uint32_t>(_imageInfo.image_element[i].eol_padding );
-		_imageInfo.image_element[i].eo_image_padding  = swapEndian<uint32_t>(_imageInfo.image_element[i].eo_image_padding );
+		_imageInfo.image_element[i].ref_high_quantity = swapEndian<float>( _imageInfo.image_element[i].ref_high_quantity );
+		_imageInfo.image_element[i].packing           = swapEndian<short>( _imageInfo.image_element[i].packing );
+		_imageInfo.image_element[i].encoding          = swapEndian<short>( _imageInfo.image_element[i].encoding );
+		_imageInfo.image_element[i].data_offset       = swapEndian<uint32_t>( _imageInfo.image_element[i].data_offset );
+		_imageInfo.image_element[i].eol_padding       = swapEndian<uint32_t>( _imageInfo.image_element[i].eol_padding );
+		_imageInfo.image_element[i].eo_image_padding  = swapEndian<uint32_t>( _imageInfo.image_element[i].eo_image_padding );
 	}
 
 	//..file orientation
-	_imageOrientation.x_offset        =   swapEndian<uint32_t>(_imageOrientation.x_offset );
-	_imageOrientation.y_offset        =   swapEndian<uint32_t>(_imageOrientation.y_offset );
-	_imageOrientation.x_center        =   swapEndian<uint32_t>(_imageOrientation.x_center );
-	_imageOrientation.y_center        =   swapEndian<uint32_t>(_imageOrientation.y_center );
-	_imageOrientation.x_orig_size     =   swapEndian<uint32_t>(_imageOrientation.x_orig_size );
-	_imageOrientation.y_orig_size     =   swapEndian<uint32_t>(_imageOrientation.y_orig_size );
-	_imageOrientation.border[0]       =   swapEndian<short>(_imageOrientation.border[0] );
-	_imageOrientation.border[1]       =   swapEndian<short>(_imageOrientation.border[1] );
-	_imageOrientation.border[2]       =   swapEndian<short>(_imageOrientation.border[2] );
-	_imageOrientation.border[3]       =   swapEndian<short>(_imageOrientation.border[3] );
-	_imageOrientation.pixel_aspect[0] =   swapEndian<uint32_t>(_imageOrientation.pixel_aspect[0] );
-	_imageOrientation.pixel_aspect[1] =   swapEndian<uint32_t>(_imageOrientation.pixel_aspect[1] );
+	_imageOrientation.x_offset        =   swapEndian<uint32_t>( _imageOrientation.x_offset );
+	_imageOrientation.y_offset        =   swapEndian<uint32_t>( _imageOrientation.y_offset );
+	_imageOrientation.x_center        =   swapEndian<uint32_t>( _imageOrientation.x_center );
+	_imageOrientation.y_center        =   swapEndian<uint32_t>( _imageOrientation.y_center );
+	_imageOrientation.x_orig_size     =   swapEndian<uint32_t>( _imageOrientation.x_orig_size );
+	_imageOrientation.y_orig_size     =   swapEndian<uint32_t>( _imageOrientation.y_orig_size );
+	_imageOrientation.border[0]       =   swapEndian<short>( _imageOrientation.border[0] );
+	_imageOrientation.border[1]       =   swapEndian<short>( _imageOrientation.border[1] );
+	_imageOrientation.border[2]       =   swapEndian<short>( _imageOrientation.border[2] );
+	_imageOrientation.border[3]       =   swapEndian<short>( _imageOrientation.border[3] );
+	_imageOrientation.pixel_aspect[0] =   swapEndian<uint32_t>( _imageOrientation.pixel_aspect[0] );
+	_imageOrientation.pixel_aspect[1] =   swapEndian<uint32_t>( _imageOrientation.pixel_aspect[1] );
 
-	//..motion picture film 
-	_motionPicture.prefix         =   swapEndian<uint32_t>(_motionPicture.prefix );
-	_motionPicture.count          =   swapEndian<uint32_t>(_motionPicture.count );
-	_motionPicture.frame_position =   swapEndian<uint32_t>(_motionPicture.frame_position );
-	_motionPicture.sequence_len   =   swapEndian<uint32_t>(_motionPicture.sequence_len );
-	_motionPicture.held_count     =   swapEndian<uint32_t>(_motionPicture.held_count );
-	_motionPicture.frame_rate     =   swapEndian<float>(_motionPicture.frame_rate );
-	_motionPicture.shutter_angle  =   swapEndian<float>(_motionPicture.shutter_angle );
+	//..motion picture film
+	_motionPicture.prefix         =   swapEndian<uint32_t>( _motionPicture.prefix );
+	_motionPicture.count          =   swapEndian<uint32_t>( _motionPicture.count );
+	_motionPicture.frame_position =   swapEndian<uint32_t>( _motionPicture.frame_position );
+	_motionPicture.sequence_len   =   swapEndian<uint32_t>( _motionPicture.sequence_len );
+	_motionPicture.held_count     =   swapEndian<uint32_t>( _motionPicture.held_count );
+	_motionPicture.frame_rate     =   swapEndian<float>( _motionPicture.frame_rate );
+	_motionPicture.shutter_angle  =   swapEndian<float>( _motionPicture.shutter_angle );
 
-	//..television 
-	_television.tim_code          =   swapEndian<uint32_t>(_television.tim_code );
-	_television.userBits          =   swapEndian<uint32_t>(_television.userBits );
-	_television.hor_sample_rate   =   swapEndian<float>(_television.hor_sample_rate );
-	_television.ver_sample_rate   =   swapEndian<float>(_television.ver_sample_rate );
-	_television.frame_rate        =   swapEndian<float>(_television.frame_rate );
-	_television.time_offset       =   swapEndian<float>(_television.time_offset );
-	_television.gamma             =   swapEndian<float>(_television.gamma );
-	_television.black_level       =   swapEndian<float>(_television.black_level );
-	_television.black_gain        =   swapEndian<float>(_television.black_gain );
-	_television.break_point       =   swapEndian<float>(_television.break_point );
-	_television.white_level       =   swapEndian<float>(_television.white_level );
-	_television.integration_times =   swapEndian<float>(_television.integration_times );
+	//..television
+	_television.tim_code          =   swapEndian<uint32_t>( _television.tim_code );
+	_television.userBits          =   swapEndian<uint32_t>( _television.userBits );
+	_television.hor_sample_rate   =   swapEndian<float>( _television.hor_sample_rate );
+	_television.ver_sample_rate   =   swapEndian<float>( _television.ver_sample_rate );
+	_television.frame_rate        =   swapEndian<float>( _television.frame_rate );
+	_television.time_offset       =   swapEndian<float>( _television.time_offset );
+	_television.gamma             =   swapEndian<float>( _television.gamma );
+	_television.black_level       =   swapEndian<float>( _television.black_level );
+	_television.black_gain        =   swapEndian<float>( _television.black_gain );
+	_television.break_point       =   swapEndian<float>( _television.break_point );
+	_television.white_level       =   swapEndian<float>( _television.white_level );
+	_television.integration_times =   swapEndian<float>( _television.integration_times );
 }
 
-std::size_t mystrnlen (const char *string, std::size_t maxlen)
+std::size_t mystrnlen( const char* string, std::size_t maxlen )
 {
-  const char *end = static_cast<const char *>( memchr( string, '\0', maxlen ) );
-  return end ? (std::size_t) ( end - string ) : maxlen;
+	const char* end = static_cast<const char*>( memchr( string, '\0', maxlen ) );
+
+	return end ? ( std::size_t )( end - string ) : maxlen;
 }
 
-std::size_t DpxImage::readDynamicHdrData(uint8_t *dst, std::size_t maxLen, uint8_t *buffer, std::size_t bufpos)
+std::size_t DpxImage::readDynamicHdrData( uint8_t* dst, std::size_t maxLen, uint8_t* buffer, std::size_t bufpos )
 {
 	// Strings always
 	buffer += bufpos;
-//	strncpy((char*)dst, (char*)buffer, maxLen);
-	strncpy( (char *) dst, (char *) buffer, maxLen);
+	//	strncpy((char*)dst, (char*)buffer, maxLen);
+	strncpy( (char*) dst, (char*) buffer, maxLen );
 	int startPos = bufpos;
-	bufpos += mystrnlen( (const char*) dst, maxLen);
+	bufpos += mystrnlen( (const char*) dst, maxLen );
 	// First skip 0x00 and following 0xFF caracters
-	while( buffer[bufpos] == 0x00 && (bufpos - startPos) < maxLen )
+	while( buffer[bufpos] == 0x00 && ( bufpos - startPos ) < maxLen )
 	{
 		bufpos++;
 	}
-	while( buffer[bufpos] == 0xFF && (bufpos - startPos) < maxLen )
+	while( buffer[bufpos] == 0xFF && ( bufpos - startPos ) < maxLen )
 	{
 		bufpos++;
 	}
@@ -375,7 +376,8 @@ void DpxImage::writeHeader( ofstream& f )
 {
 	// Write data
 	DpxHeader header = _header;
-	if ( header.bigEndian() )
+
+	if( header.bigEndian() )
 	{
 		header.swapHeader();
 	}
@@ -446,11 +448,11 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 			{
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
-				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
-				std::size_t dataSize16    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint16_t );
-				uint16_t* pData16    = (uint16_t*)pData.get();
-				uint16_t* pSrcData16 = (uint16_t*)_data.get();
-				uint16_t* pData16End = pData16 + dataSize16;
+				pData.reset( new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )] );
+				std::size_t dataSize16 = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint16_t );
+				uint16_t* pData16      = (uint16_t*)pData.get();
+				uint16_t* pSrcData16   = (uint16_t*)_data.get();
+				uint16_t* pData16End   = pData16 + dataSize16;
 				do
 				{
 					*pData16++ = swapEndian<uint16_t>( *pSrcData16++ );
@@ -466,11 +468,11 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 			{
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
-				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
-				std::size_t dataSize32    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint32_t );
-				uint32_t* pData32    = (uint32_t*)pData.get();
-				uint32_t* pSrcData32 = (uint32_t*)_data.get();
-				uint32_t* pData32End = pData32 + dataSize32;
+				pData.reset( new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )] );
+				std::size_t dataSize32 = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint32_t );
+				uint32_t* pData32      = (uint32_t*)pData.get();
+				uint32_t* pSrcData32   = (uint32_t*)_data.get();
+				uint32_t* pData32End   = pData32 + dataSize32;
 				do
 				{
 					*pData32++ = swapEndian<uint32_t>( *pSrcData32++ );
@@ -509,7 +511,7 @@ inline const std::size_t DpxImage::components() const
 
 const std::size_t DpxImage::dataSize() const
 {
-	std::size_t sz               = 0;
+	std::size_t sz          = 0;
 	boost::uint16_t packing = _header.packing();
 
 	switch( componentsType() )
@@ -523,7 +525,7 @@ const std::size_t DpxImage::dataSize() const
 				sz = sizeof( boost::uint32_t ) * width() * height();
 			// Unpacked means that pixels are bit aligned
 			else
-				sz = ( std::size_t ) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
+				sz = (std::size_t) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
 			break;
 		case eCompTypeR8G8B8A8:
 		case eCompTypeA8B8G8R8:
@@ -556,7 +558,7 @@ const std::size_t DpxImage::dataSize() const
 			if( packing )
 				sz = sizeof( boost::uint64_t ) * width() * height();
 			else
-				sz = ( std::size_t ) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
+				sz = (std::size_t) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
 			break;
 		case eCompTypeR16G16B16A16:
 		case eCompTypeA16B16G16R16:

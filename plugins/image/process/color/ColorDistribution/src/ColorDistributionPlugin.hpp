@@ -25,26 +25,26 @@ class ColorDistributionPlugin : public OFX::ImageEffect
 {
 public:
 	typedef float Scalar;
+
 public:
-    ColorDistributionPlugin( OfxImageEffectHandle handle );
+	ColorDistributionPlugin( OfxImageEffectHandle handle );
 
 public:
 	ColorDistributionProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
-	
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
-	
+
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-    void render( const OFX::RenderArguments &args );
-	
-	
+	void render( const OFX::RenderArguments& args );
+
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip*			_clipSrc; ///< Source image clip
-    OFX::Clip*			_clipDst; ///< Destination image clip
-	OFX::BooleanParam	*_paramInvert;
-	OFX::ChoiceParam	*_paramIn;
-	OFX::ChoiceParam	*_paramOut;
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip*          _clipSrc; ///< Source image clip
+	OFX::Clip*          _clipDst; ///< Destination image clip
+	OFX::BooleanParam* _paramInvert;
+	OFX::ChoiceParam* _paramIn;
+	OFX::ChoiceParam* _paramOut;
 };
 
 }

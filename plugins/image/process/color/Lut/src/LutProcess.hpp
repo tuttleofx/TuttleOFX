@@ -25,7 +25,7 @@ template<class View>
 class LutProcess : public ImageGilFilterProcessor<View>
 {
 private:
-	Lut3D *_lut3D;               ///< Lut3D
+	Lut3D* _lut3D;               ///< Lut3D
 	LutPlugin&  _plugin;        ///< Rendering plugin
 
 public:

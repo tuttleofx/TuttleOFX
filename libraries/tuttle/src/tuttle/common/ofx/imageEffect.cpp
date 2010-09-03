@@ -30,7 +30,7 @@ EContext mapContextStringToEnum( const std::string& s )
 	if( s == kOfxImageEffectContextWriter )
 		return eContextWriter;
 	BOOST_THROW_EXCEPTION( exception::Value()
-		<< exception::dev() + s );
+	    << exception::dev() + s );
 	return eContextGeneral;
 }
 
@@ -59,7 +59,7 @@ const std::string mapContextEnumToString( const EContext s )
 			return "ContextNone...";
 	}
 	BOOST_THROW_EXCEPTION( exception::Value()
-		<< exception::dev() + "Unknown image effect context enum." );
+	    << exception::dev() + "Unknown image effect context enum." );
 	return "";
 }
 
@@ -154,7 +154,7 @@ EBitDepth mapBitDepthStringToEnum( const std::string& str )
 
 const std::string mapBitDepthEnumToString( const EBitDepth e )
 {
-	switch(e)
+	switch( e )
 	{
 		case eBitDepthUByte:
 			return kOfxBitDepthByte;
@@ -168,7 +168,7 @@ const std::string mapBitDepthEnumToString( const EBitDepth e )
 			return "eBitDepthCustom";
 	}
 	BOOST_THROW_EXCEPTION( exception::Value()
-		<< exception::dev() + "BitDepth enum: " + e );
+	    << exception::dev() + "BitDepth enum: " + e );
 	return kOfxBitDepthNone;
 }
 
@@ -195,7 +195,7 @@ EPixelComponent mapPixelComponentStringToEnum( const std::string& str )
 
 std::string mapPixelComponentEnumToString( const EPixelComponent e )
 {
-	switch(e)
+	switch( e )
 	{
 		case ePixelComponentRGBA:
 			return kOfxImageComponentRGBA;
@@ -207,7 +207,7 @@ std::string mapPixelComponentEnumToString( const EPixelComponent e )
 			return "ePixelComponentCustom";
 	}
 	BOOST_THROW_EXCEPTION( exception::Value()
-		<< exception::user() + "PixelComponent enum: " + e );
+	    << exception::user() + "PixelComponent enum: " + e );
 }
 
 ///** @brief turns a premultiplication string into and enum */
@@ -314,8 +314,8 @@ std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 )
 	else
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
-			<< exception::user() + "Unrecognized bitdepth " + quotes(s1) + "."
-			<< exception::dev() + "We can't find the deepest bit depth between " + quotes(s1) + " and " + quotes(s2) );
+		    << exception::user() + "Unrecognized bitdepth " + quotes( s1 ) + "."
+		    << exception::dev() + "We can't find the deepest bit depth between " + quotes( s1 ) + " and " + quotes( s2 ) );
 		return s2;
 	}
 }

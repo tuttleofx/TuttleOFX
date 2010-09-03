@@ -29,11 +29,11 @@ namespace host {
 namespace attribute {
 
 ClipImage::ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
-: Attribute( effect )
-, tuttle::host::ofx::attribute::OfxhClipImage( effect, desc )
-, _isConnected( false )
-, _continuousSamples( false )
-, _memoryCache( Core::instance().getMemoryCache() )
+	: Attribute( effect )
+	, tuttle::host::ofx::attribute::OfxhClipImage( effect, desc )
+	, _isConnected( false )
+	, _continuousSamples( false )
+	, _memoryCache( Core::instance().getMemoryCache() )
 {
 	_frameRange = _effect.getEffectFrameRange();
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
@@ -56,7 +56,7 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 		if( !isConnected() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." ) );
+			    << exception::dev( "fetchRegionOfDefinition on an unconnected input clip ! (clip: " + getFullName() + ")." ) );
 		}
 		return _connectedClip->fetchRegionOfDefinition( time );
 	}
@@ -66,7 +66,7 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 	if( time != _effect.getCurrentTime() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()
-				<< exception::user( "Access to another time than current is not supported at the moment." ) );
+		        << exception::user( "Access to another time than current is not supported at the moment." ) );
 	}
 	return _effect.getRegionOfDefinition();
 }
@@ -100,7 +100,7 @@ double ClipImage::getFrameRate() const
 void ClipImage::getFrameRange( double& startFrame, double& endFrame ) const
 {
 	startFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 0 );
-	endFrame = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
+	endFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropFrameRange, 1 );
 }
 
 /**
@@ -120,7 +120,7 @@ const double ClipImage::getUnmappedFrameRate() const
 void ClipImage::getUnmappedFrameRange( double& unmappedStartFrame, double& unmappedEndFrame ) const
 {
 	unmappedStartFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 0 );
-	unmappedEndFrame = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 1 );
+	unmappedEndFrame   = getProperties().getDoubleProperty( kOfxImageEffectPropUnmappedFrameRange, 1 );
 }
 
 /// override this to fill in the image at the given time.

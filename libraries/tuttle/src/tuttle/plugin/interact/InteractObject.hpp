@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_PLUGIN_INTERACTOBJECT_HPP_
-#define	_TUTTLE_PLUGIN_INTERACTOBJECT_HPP_
+#define _TUTTLE_PLUGIN_INTERACTOBJECT_HPP_
 
 #include "interact.hpp"
 #include <ofxsInteract.h>
@@ -20,21 +20,22 @@ class InteractObject /*: public OFX::InteractI*/
 {
 public:
 	typedef boost::gil::point2<double> Point2;
+
 public:
 	virtual ~InteractObject() = 0;
 
 	/** @brief the function called to draw in the interact */
 	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
 
-	virtual EMoveType selectIfIntesect( const OFX::PenArgs& args ){ return eMoveTypeNone; }
-	virtual bool selectIfIsIn( const OfxRectD& ){ return false; }
-	virtual void unselect(){}
+	virtual EMoveType selectIfIntesect( const OFX::PenArgs& args ) { return eMoveTypeNone; }
+	virtual bool      selectIfIsIn( const OfxRectD& )              { return false; }
+	virtual void      unselect()                                   {}
 
-	virtual void endMove(){}
-	virtual bool moveXYSelected( const Point2& ){ return false; }
-	virtual bool moveXSelected( const Point2& ){ return false; }
-	virtual bool moveYSelected( const Point2& ){ return false; }
-	virtual void beginMove(){}
+	virtual void endMove()                       {}
+	virtual bool moveXYSelected( const Point2& ) { return false; }
+	virtual bool moveXSelected( const Point2& )  { return false; }
+	virtual bool moveYSelected( const Point2& )  { return false; }
+	virtual void beginMove()                     {}
 };
 
 }

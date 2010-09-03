@@ -24,7 +24,6 @@ namespace plugin {
 namespace fftTransform {
 namespace fft {
 
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -32,7 +31,7 @@ namespace fft {
 void FftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleFft", "Fft",
-		            "Forward fft" );
+	                "Forward fft" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment
@@ -54,33 +53,34 @@ void FftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void FftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                          OFX::EContext               context )
 {
-	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::ChoiceParamDescriptor* fftTypeLong = desc.defineChoiceParam( kFftTypeLong );
 	fftTypeLong->setLabel( "fft type" );
-    fftTypeLong->appendOption( "FFT Magnitude" );
-	fftTypeLong->appendOption( "FFT Module" );			// 1st Input of inverse fft
-	fftTypeLong->appendOption( "FFT Phase" );			// 2nd Input of inverse fft
+	fftTypeLong->appendOption( "FFT Magnitude" );
+	fftTypeLong->appendOption( "FFT Module" );          // 1st Input of inverse fft
+	fftTypeLong->appendOption( "FFT Phase" );           // 2nd Input of inverse fft
 
 	OFX::ChoiceParamDescriptor* fftType = desc.defineChoiceParam( kFftType );
 	fftType->setIsSecret( true );
-    fftType->appendOption( "FFT Magnitude" );
+	fftType->appendOption( "FFT Magnitude" );
 	fftType->appendOption( "FFT Module" );
 	fftType->appendOption( "FFT Phase" );
 	fftType->setDefault( 0 );
 
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kHelpButton );
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
 	helpButton->setLabel( "Help" );
 }
 
@@ -91,7 +91,7 @@ void FftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* FftPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                    OFX::EContext        context )
 {
 	return new FftPlugin( handle );
 }

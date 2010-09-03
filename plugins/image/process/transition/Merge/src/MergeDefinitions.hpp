@@ -8,11 +8,11 @@ namespace plugin {
 namespace merge {
 
 // Descriptors name
-const static std::string kMergeSourceA         = "SourceA";
-const static std::string kMergeSourceB         = "SourceB";
-const static std::string kMergeHelpButton      = "Help";
-const static std::string kMergeFunction        = "mergingFunction";
-const static std::string kMergeFunctionLabel   = "Merging function";
+const static std::string kMergeSourceA       = "SourceA";
+const static std::string kMergeSourceB       = "SourceB";
+const static std::string kMergeHelpButton    = "Help";
+const static std::string kMergeFunction      = "mergingFunction";
+const static std::string kMergeFunctionLabel = "Merging function";
 
 // Plugin internal data
 const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used to merge two clips A and B.  <br />";

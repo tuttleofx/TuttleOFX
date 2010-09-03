@@ -10,17 +10,16 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 /**
  * a clip descriptor
  */
-class OfxhClipDescriptor :
-	public OfxhAttributeDescriptor,
-	virtual public OfxhClipAccessor
+class OfxhClipDescriptor
+	: public OfxhAttributeDescriptor
+	, virtual public OfxhClipAccessor
 {
 public:
 	typedef OfxhClipDescriptor This;
-	
+
 public:
 	/// constructor
 	OfxhClipDescriptor();
@@ -34,17 +33,18 @@ public:
 			return false;
 		return true;
 	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttributeDescriptor);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhAttributeDescriptor );
 	}
-};
 
+};
 
 }
 }
@@ -52,10 +52,10 @@ private:
 }
 
 // force boost::is_virtual_base_of value (used by boost::serialization)
-namespace boost{
-template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
+namespace boost {
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhClipDescriptor>: public mpl::true_ {};
 }
-
 
 #endif
 

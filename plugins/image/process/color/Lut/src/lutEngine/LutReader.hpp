@@ -24,15 +24,15 @@ protected:
 	bool _bReadOk;
 
 public:
-	LutReader(): _bReadOk(false) {}
+	LutReader() : _bReadOk( false ) {}
 	virtual ~LutReader() {}
 
 	/// Set 3DL filename
 	bool read( const fs::path& filename );
 	/// Is a file read success
-	const bool readOk() const { return _bReadOk; }
-	std::vector<double>& data()  { return _data; }
-	std::vector<double>& steps() { return _steps; }
+	const bool           readOk() const { return _bReadOk; }
+	std::vector<double>& data()         { return _data; }
+	std::vector<double>& steps()        { return _steps; }
 };
 
 // 3DL File parser

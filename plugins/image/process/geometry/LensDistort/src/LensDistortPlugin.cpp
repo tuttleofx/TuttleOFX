@@ -13,48 +13,49 @@ namespace tuttle {
 namespace plugin {
 namespace lens {
 
-OfxRectD LensDistortPlugin::_dstRoi = { 0, 0, 0, 0 };
-OfxRectD LensDistortPlugin::_srcRoi = { 0, 0, 0, 0 };
+OfxRectD LensDistortPlugin::_dstRoi     = { 0, 0, 0, 0 };
+OfxRectD LensDistortPlugin::_srcRoi     = { 0, 0, 0, 0 };
 OfxRectD LensDistortPlugin::_srcRealRoi = { 0, 0, 0, 0 };
 
 const static std::string kLensDistortHelpString( "<p>Apply or correct a lens distortion on an image.</p>" );
 
 LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
-: ImageEffect( handle )
+	: ImageEffect( handle )
 {
-	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst    = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc    = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_srcRefClip = fetchClip( kClipOptionalSourceRef );
 
-	_reverse = fetchBooleanParam( kParamReverse );
-	_displaySource = fetchBooleanParam( kParamDisplaySource );
-	_lensType = fetchChoiceParam( kParamLensType );
-	_coef1 = fetchDoubleParam( kParamCoef1 );
-	_coef2 = fetchDoubleParam( kParamCoef2 );
-	_squeeze = fetchDoubleParam( kParamSqueeze );
-	_asymmetric = fetchDouble2DParam( kParamAsymmetric );
-	_center = fetchDouble2DParam( kParamCenter );
-	_centerOverlay = fetchBooleanParam( kParamCenterOverlay );
-	_centerType = fetchChoiceParam( kParamCenterType );
-	_preScale = fetchDoubleParam( kParamPreScale );
-	_postScale = fetchDoubleParam( kParamPostScale );
-	_interpolation = fetchChoiceParam( kParamInterpolation );
-	_resizeRod = fetchChoiceParam( kParamResizeRod );
+	_reverse              = fetchBooleanParam( kParamReverse );
+	_displaySource        = fetchBooleanParam( kParamDisplaySource );
+	_lensType             = fetchChoiceParam( kParamLensType );
+	_coef1                = fetchDoubleParam( kParamCoef1 );
+	_coef2                = fetchDoubleParam( kParamCoef2 );
+	_squeeze              = fetchDoubleParam( kParamSqueeze );
+	_asymmetric           = fetchDouble2DParam( kParamAsymmetric );
+	_center               = fetchDouble2DParam( kParamCenter );
+	_centerOverlay        = fetchBooleanParam( kParamCenterOverlay );
+	_centerType           = fetchChoiceParam( kParamCenterType );
+	_preScale             = fetchDoubleParam( kParamPreScale );
+	_postScale            = fetchDoubleParam( kParamPostScale );
+	_interpolation        = fetchChoiceParam( kParamInterpolation );
+	_resizeRod            = fetchChoiceParam( kParamResizeRod );
 	_resizeRodManualScale = fetchDoubleParam( kParamResizeRodManualScale );
-	_groupDisplayParams = fetchGroupParam( kParamDisplayOptions );
-	_gridOverlay = fetchBooleanParam( kParamGridOverlay );
-	_gridCenter = fetchDouble2DParam( kParamGridCenter );
-	_gridCenterOverlay = fetchBooleanParam( kParamGridCenterOverlay );
-	_gridScale = fetchDouble2DParam( kParamGridScale );
-	_debugDisplayRoi = fetchBooleanParam( kParamDebugDisplayRoi );
-	_helpButton = fetchPushButtonParam( kParamHelp );
+	_groupDisplayParams   = fetchGroupParam( kParamDisplayOptions );
+	_gridOverlay          = fetchBooleanParam( kParamGridOverlay );
+	_gridCenter           = fetchDouble2DParam( kParamGridCenter );
+	_gridCenterOverlay    = fetchBooleanParam( kParamGridCenterOverlay );
+	_gridScale            = fetchDouble2DParam( kParamGridScale );
+	_debugDisplayRoi      = fetchBooleanParam( kParamDebugDisplayRoi );
+	_helpButton           = fetchPushButtonParam( kParamHelp );
 
 	initParamsProps();
 }
 
 void LensDistortPlugin::initParamsProps()
 {
-	static const OFX::InstanceChangedArgs args = { OFX::eChangePluginEdit, 0.0, {0.0, 0.0} };
+	static const OFX::InstanceChangedArgs args = { OFX::eChangePluginEdit, 0.0, { 0.0, 0.0 } };
+
 	changedParam( args, kParamLensType );
 	changedParam( args, kParamResizeRod );
 }
@@ -63,31 +64,31 @@ void LensDistortPlugin::initParamsProps()
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void LensDistortPlugin::render( const OFX::RenderArguments &args )
+void LensDistortPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace bgil;
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
 		switch( dstBitDepth )
 		{
-			case OFX::eBitDepthUByte :
+			case OFX::eBitDepthUByte:
 			{
 				LensDistortProcess<rgba8_view_t> effect( *this );
 				effect.setupAndProcess( args );
 				break;
 			}
-			case OFX::eBitDepthUShort :
+			case OFX::eBitDepthUShort:
 			{
 				LensDistortProcess<rgba16_view_t> effect( *this );
 				effect.setupAndProcess( args );
 				break;
 			}
-			case OFX::eBitDepthFloat :
+			case OFX::eBitDepthFloat:
 			{
 				LensDistortProcess<rgba32f_view_t> effect( *this );
 				effect.setupAndProcess( args );
@@ -95,7 +96,7 @@ void LensDistortPlugin::render( const OFX::RenderArguments &args )
 			}
 			default:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
 				break;
 			}
 		}
@@ -104,19 +105,19 @@ void LensDistortPlugin::render( const OFX::RenderArguments &args )
 	{
 		switch( dstBitDepth )
 		{
-			case OFX::eBitDepthUByte :
+			case OFX::eBitDepthUByte:
 			{
 				LensDistortProcess<gray8_view_t> effect( *this );
 				effect.setupAndProcess( args );
 				break;
 			}
-			case OFX::eBitDepthUShort :
+			case OFX::eBitDepthUShort:
 			{
 				LensDistortProcess<gray16_view_t> effect( *this );
 				effect.setupAndProcess( args );
 				break;
 			}
-			case OFX::eBitDepthFloat :
+			case OFX::eBitDepthFloat:
 			{
 				LensDistortProcess<gray32f_view_t> effect( *this );
 				effect.setupAndProcess( args );
@@ -124,22 +125,22 @@ void LensDistortPlugin::render( const OFX::RenderArguments &args )
 			}
 			default:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
 				break;
 			}
 		}
 	}
 	else
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
 	}
 }
 
-void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	if( paramName == kParamLensType )
 	{
-		switch( _lensType->getValue( ) )
+		switch( _lensType->getValue() )
 		{
 			case 0: // normal
 				_coef2->setIsSecret( true );
@@ -179,36 +180,37 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs &args, cons
 		}
 		else
 		{
-//			_resizeRodManualScale->setIsSecret( true );
+			//			_resizeRodManualScale->setIsSecret( true );
 			_resizeRodManualScale->setEnabled( false );
 		}
 	}
 	else if( paramName == kParamGridOverlay || paramName == kParamGridCenter || paramName == kParamGridScale )
 	{
-		redrawOverlays( );
+		redrawOverlays();
 	}
 	else if( paramName == kParamHelp )
 	{
 		sendMessage( OFX::Message::eMessageMessage,
-					 "", // no XML override
-					 kLensDistortHelpString
-					 );
+		             "", // no XML override
+		             kLensDistortHelpString
+		             );
 	}
 }
 
-bool LensDistortPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime )
+bool LensDistortPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
 	bool isIdentity = false;
-	if( _displaySource->getValue( ) )
+
+	if( _displaySource->getValue() )
 	{
 		isIdentity = true;
 	}
-	else if( _coef1->getValue( ) == 0 /*_coef1->getDefault( )*/ &&
-			  _preScale->getValue( ) == _preScale->getDefault( ) &&
-			  _postScale->getValue( ) == _postScale->getDefault( ) &&
-			 ( !_coef2->getIsEnable( ) || _coef2->getValue( ) == _coef2->getDefault( ) ) &&
-			 ( !_squeeze->getIsEnable( ) || _squeeze->getValue( ) == _squeeze->getDefault( ) ) &&
-			 ( !_asymmetric->getIsEnable( ) || _asymmetric->getValue( ) == _asymmetric->getDefault( ) ) )
+	else if( _coef1->getValue() == 0 /*_coef1->getDefault( )*/ &&
+	         _preScale->getValue() == _preScale->getDefault() &&
+	         _postScale->getValue() == _postScale->getDefault() &&
+	         ( !_coef2->getIsEnable() || _coef2->getValue() == _coef2->getDefault() ) &&
+	         ( !_squeeze->getIsEnable() || _squeeze->getValue() == _squeeze->getDefault() ) &&
+	         ( !_asymmetric->getIsEnable() || _asymmetric->getValue() == _asymmetric->getDefault() ) )
 	{
 		isIdentity = true;
 	}
@@ -221,7 +223,7 @@ bool LensDistortPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip 
 	return false;
 }
 
-bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments &args, OfxRectD &rod )
+bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	using namespace bgil;
 	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
@@ -274,16 +276,16 @@ bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgu
 				Point2 r = transformValues( getLensType(), params, Point2( srcRodInDstFrame.x2, params._lensCenterSrc.y ) );
 				pMax.x = std::min( pMax.x, r.x );
 			}
-			rod.x1 = pMin.x;
-			rod.y1 = pMin.y;
-			rod.x2 = pMax.x;
-			rod.y2 = pMax.y;
+			rod.x1   = pMin.x;
+			rod.y1   = pMin.y;
+			rod.x2   = pMax.x;
+			rod.y2   = pMax.y;
 			modified = true;
 			break;
 		}
 		case eParamResizeRodMax:
 		{
-			rod = transformValues( getLensType(), params, srcRodInDstFrame );
+			rod      = transformValues( getLensType(), params, srcRodInDstFrame );
 			modified = true;
 			break;
 		}
@@ -293,15 +295,15 @@ bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgu
 			if( scale == 1.0 )
 				return false;
 
-			point2<double> pMin(srcRodInDstFrame.x1, srcRodInDstFrame.y1); // top left corner
-			point2<double> pMax(srcRodInDstFrame.x2, srcRodInDstFrame.y2); // down right corner
-			point2<double> center(srcRodSize * 0.5);
-			pMin = ((pMin - center) * scale) + center;
-			pMax = ((pMax - center) * scale) + center;
-			rod.x1 = pMin.x;
-			rod.y1 = pMin.y;
-			rod.x2 = pMax.x;
-			rod.y2 = pMax.y;
+			point2<double> pMin( srcRodInDstFrame.x1, srcRodInDstFrame.y1 ); // top left corner
+			point2<double> pMax( srcRodInDstFrame.x2, srcRodInDstFrame.y2 ); // down right corner
+			point2<double> center( srcRodSize * 0.5 );
+			pMin     = ( ( pMin - center ) * scale ) + center;
+			pMax     = ( ( pMax - center ) * scale ) + center;
+			rod.x1   = pMin.x;
+			rod.y1   = pMin.y;
+			rod.x2   = pMax.x;
+			rod.y2   = pMax.y;
 			modified = true;
 		}
 	}
@@ -312,10 +314,11 @@ bool LensDistortPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgu
 	return modified;
 }
 
-void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois )
+void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
 	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 	OfxRectD dstRod = _clipDst->getCanonicalRod( args.time );
+
 	LensDistortProcessParams<Scalar> params;
 	if( _srcRefClip->isConnected() )
 	{
@@ -333,19 +336,19 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	outputRoi.x2 -= dstRod.x1;
 	outputRoi.y2 -= dstRod.y1;
 	OfxRectD srcRoi = transformValues( getLensType(), params, outputRoi );
-	srcRoi.x1 += srcRod.x1; // to RoW coordinates
-	srcRoi.y1 += srcRod.y1;
-	srcRoi.x2 += srcRod.x1;
-	srcRoi.y2 += srcRod.y1;
+	srcRoi.x1    += srcRod.x1; // to RoW coordinates
+	srcRoi.y1    += srcRod.y1;
+	srcRoi.x2    += srcRod.x1;
+	srcRoi.y2    += srcRod.y1;
 	outputRoi.x1 += dstRod.x1; // to RoW coordinates
 	outputRoi.y1 += dstRod.y1;
 	outputRoi.x2 += dstRod.x1;
 	outputRoi.y2 += dstRod.y1;
-//    srcRoi.x1 += 2; // if we remove 2 pixels to the needed RoI the plugin crash, because it tries to access to this pixels
-//    srcRoi.y1 += 2; // so the calcul of the RoI has a precision of one pixel
-//    srcRoi.x2 -= 2;
-//    srcRoi.y2 -= 2;
-	OfxRectD srcRealRoi = rectanglesIntersection(srcRoi, srcRod);
+	//    srcRoi.x1 += 2; // if we remove 2 pixels to the needed RoI the plugin crash, because it tries to access to this pixels
+	//    srcRoi.y1 += 2; // so the calcul of the RoI has a precision of one pixel
+	//    srcRoi.x2 -= 2;
+	//    srcRoi.y2 -= 2;
+	OfxRectD srcRealRoi = rectanglesIntersection( srcRoi, srcRod );
 	srcRealRoi = srcRod;
 
 	rois.setRegionOfInterest( *_clipSrc, srcRealRoi );
@@ -353,40 +356,40 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	if( _debugDisplayRoi->getValue() )
 	{
 		_srcRealRoi = srcRealRoi;
-		_srcRoi = srcRoi;
-		_dstRoi = outputRoi;
+		_srcRoi     = srcRoi;
+		_dstRoi     = outputRoi;
 	}
 }
 
 LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProcessParams( const OfxRectD& inputRod, const OfxRectD& outputRod, const OfxRectD& optionalInputRod, const double pixelAspectRatio, const bool reverse ) const
 {
-	const bool useOptionalInputRod = (optionalInputRod.x1 != optionalInputRod.x2) && (optionalInputRod.y1 != optionalInputRod.y2);
+	const bool useOptionalInputRod  = ( optionalInputRod.x1 != optionalInputRod.x2 ) && ( optionalInputRod.y1 != optionalInputRod.y2 );
 	const OfxRectD& choosedInputRod = useOptionalInputRod ? optionalInputRod : inputRod;
 
 	typedef bgil::point2<Scalar> Point2;
 	LensDistortProcessParams<Scalar> params;
 
-	params._coef1 = _coef1->getValue( );
+	params._coef1 = _coef1->getValue();
 	if( params._coef1 >= 0 )
 		params._distort = true; // distort
 	else
 		params._distort = false; // undistort
-	params._coef1 = std::abs( params._coef1 );
-	params._coef2 = _coef2->getValue( );
-	params._squeeze = _squeeze->getValue( );
-	params._asymmetric = ofxToGil( _asymmetric->getValue( ) );
-	double preScale = _preScale->getValue( );
-	params._preScale.x = (1.0 / preScale);
+	params._coef1      = std::abs( params._coef1 );
+	params._coef2      = _coef2->getValue();
+	params._squeeze    = _squeeze->getValue();
+	params._asymmetric = ofxToGil( _asymmetric->getValue() );
+	double preScale = _preScale->getValue();
+	params._preScale.x = ( 1.0 / preScale );
 	params._preScale.y = 1.0 / preScale;
-	double postScale = _postScale->getValue( );
-	params._postScale.x = (1.0 / postScale);
+	double postScale = _postScale->getValue();
+	params._postScale.x = ( 1.0 / postScale );
 	params._postScale.y = 1.0 / postScale;
-	Point2 imgShift = Point2( inputRod.x1-outputRod.x1, inputRod.y1-outputRod.y1 ); // translate output -> source
-	params._imgSizeSrc = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
-	params._imgCenterSrc = Point2( params._imgSizeSrc.x*0.5, params._imgSizeSrc.y*0.5 );
-	params._imgCenterDst = params._imgCenterSrc + imgShift;
+	Point2 imgShift = Point2( inputRod.x1 - outputRod.x1, inputRod.y1 - outputRod.y1 ); // translate output -> source
+	params._imgSizeSrc      = Point2( choosedInputRod.x2 - choosedInputRod.x1, choosedInputRod.y2 - choosedInputRod.y1 );
+	params._imgCenterSrc    = Point2( params._imgSizeSrc.x * 0.5, params._imgSizeSrc.y * 0.5 );
+	params._imgCenterDst    = params._imgCenterSrc + imgShift;
 	params._imgHalfDiagonal = std::sqrt( params._imgCenterSrc.x * params._imgCenterSrc.x * pixelAspectRatio * pixelAspectRatio + params._imgCenterSrc.y * params._imgCenterSrc.y );
-	params._pixelRatio = pixelAspectRatio;
+	params._pixelRatio      = pixelAspectRatio;
 	switch( getCenterType() )
 	{
 		case eParamCenterTypeSource:
@@ -394,7 +397,7 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 			params._lensCenterSrc = pointNormalizedXXcToCanonicalXY( ofxToGil( _center->getValue() ), params._imgSizeSrc );
 			if( useOptionalInputRod )
 			{
-				Point2 imgShiftBetweenInputs = Point2( optionalInputRod.x1-inputRod.x1, optionalInputRod.y1-inputRod.y1 ); // translate inputRod -> optionalInputRod
+				Point2 imgShiftBetweenInputs = Point2( optionalInputRod.x1 - inputRod.x1, optionalInputRod.y1 - inputRod.y1 ); // translate inputRod -> optionalInputRod
 				params._lensCenterSrc += imgShiftBetweenInputs;
 			}
 			params._lensCenterDst = params._lensCenterSrc + imgShift;
@@ -410,7 +413,7 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 	{
 		params._distort = !params._distort;
 		Point2 swapPreScale = params._preScale;
-		params._preScale = 1.0 / params._postScale;
+		params._preScale  = 1.0 / params._postScale;
 		params._postScale = 1.0 / swapPreScale;
 	}
 	return params;
@@ -419,5 +422,4 @@ LensDistortProcessParams<LensDistortPlugin::Scalar> LensDistortPlugin::getProces
 }
 }
 }
-
 

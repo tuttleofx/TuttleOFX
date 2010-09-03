@@ -15,18 +15,30 @@ namespace ofx {
 
 struct OfxhPluginIdent
 {
-	OfxhPluginIdent(): _versionMinor(0), _versionMajor(0) {}
-	OfxhPluginIdent(const std::string & identifier, const std::string & rawId, int verMin, int verMax)
-	: _identifier(identifier), _rawIdentifier(rawId), _versionMinor(verMin), _versionMajor(verMax)
+	OfxhPluginIdent() : _versionMinor( 0 )
+		, _versionMajor( 0 ) {}
+	OfxhPluginIdent( const std::string& identifier, const std::string& rawId, int verMin, int verMax )
+		: _identifier( identifier )
+		, _rawIdentifier( rawId )
+		, _versionMinor( verMin )
+		, _versionMajor( verMax )
+	{}
+
+	bool operator<( const OfxhPluginIdent& d2 ) const
 	{
+		return _identifier < d2._identifier ||
+		       ( _identifier == d2._identifier && _versionMajor < d2._versionMajor ) ||
+		       ( _identifier == d2._identifier && _versionMajor == d2._versionMajor && _versionMinor < d2._versionMinor );
 	}
-	bool operator<(const OfxhPluginIdent & d2) const { return _identifier < d2._identifier ||
-															  (_identifier == d2._identifier && _versionMajor < d2._versionMajor ) ||
-			                                                  (_identifier == d2._identifier && _versionMajor == d2._versionMajor && _versionMinor < d2._versionMinor ); }
-	bool operator!=(const OfxhPluginIdent & d2) const { return _identifier != d2._identifier &&
-															   _rawIdentifier != d2._rawIdentifier &&
-			                                                   _versionMinor != d2._versionMinor &&
-			                                                   _versionMajor != d2._versionMajor; }
+
+	bool operator!=( const OfxhPluginIdent& d2 ) const
+	{
+		return _identifier != d2._identifier &&
+		       _rawIdentifier != d2._rawIdentifier &&
+		       _versionMinor != d2._versionMinor &&
+		       _versionMajor != d2._versionMajor;
+	}
+
 	std::string _identifier;
 	std::string _rawIdentifier;
 	int _versionMinor, _versionMajor;
@@ -39,6 +51,7 @@ class OfxhPluginDesc
 {
 public:
 	typedef OfxhPluginDesc This;
+
 protected:
 	std::string _pluginApi; ///< the API I implement
 	int _apiVersion; ///< the version of the API
@@ -49,11 +62,11 @@ public:
 	OfxhPluginDesc();
 
 	OfxhPluginDesc( const std::string& api,
-	            int                apiVersion,
-	            const std::string& identifier,
-	            const std::string& rawIdentifier,
-	            int                versionMajor,
-	            int                versionMinor );
+	                int                apiVersion,
+	                const std::string& identifier,
+	                const std::string& rawIdentifier,
+	                int                versionMajor,
+	                int                versionMinor );
 
 	/**
 	 * constructor for the case where we have already loaded the plugin binary and
@@ -64,7 +77,7 @@ public:
 	virtual ~OfxhPluginDesc();
 
 	bool operator==( const This& other ) const;
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 public:
 	const std::string& getPluginApi() const
@@ -77,12 +90,12 @@ public:
 		return _apiVersion;
 	}
 
-	const OfxhPluginIdent & getIdentity() const 
+	const OfxhPluginIdent& getIdentity() const
 	{
 		return _ident;
 	}
 
-	OfxhPluginIdent & getIdentity()
+	OfxhPluginIdent& getIdentity()
 	{
 		return _ident;
 	}
@@ -106,32 +119,33 @@ public:
 	{
 		return _ident._versionMinor;
 	}
-	
+
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_pluginApi);
-		ar & BOOST_SERIALIZATION_NVP(_apiVersion);
-//		ar & BOOST_SERIALIZATION_NVP(_ident._identifier);
-		ar & BOOST_SERIALIZATION_NVP(_ident._rawIdentifier);
-		ar & BOOST_SERIALIZATION_NVP(_ident._versionMajor);
-		ar & BOOST_SERIALIZATION_NVP(_ident._versionMinor);
-		
+		ar& BOOST_SERIALIZATION_NVP( _pluginApi );
+		ar& BOOST_SERIALIZATION_NVP( _apiVersion );
+		//		ar & BOOST_SERIALIZATION_NVP(_ident._identifier);
+		ar& BOOST_SERIALIZATION_NVP( _ident._rawIdentifier );
+		ar& BOOST_SERIALIZATION_NVP( _ident._versionMajor );
+		ar& BOOST_SERIALIZATION_NVP( _ident._versionMinor );
+
 		if( typename Archive::is_loading() )
 		{
 			_ident._identifier = _ident._rawIdentifier;
 			boost::to_lower( _ident._identifier );
 		}
 	}
+
 };
 
 }
 }
 }
 
-BOOST_SERIALIZATION_ASSUME_ABSTRACT(tuttle::host::ofx::OfxhPluginDesc)
+BOOST_SERIALIZATION_ASSUME_ABSTRACT( tuttle::host::ofx::OfxhPluginDesc )
 
 #endif
 

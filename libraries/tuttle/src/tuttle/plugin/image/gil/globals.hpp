@@ -12,12 +12,11 @@
 
 namespace tuttle {
 
-
 template<class View>
 View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
 {
 	using namespace boost::gil;
-    typedef typename View::value_type Pixel;
+	typedef typename View::value_type Pixel;
 
 	// if the tile is equals to the full image
 	// directly return the tile
@@ -26,7 +25,7 @@ View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
 		return tileView;
 
 	// view the tile as a full image
-	return subimage_view( tileView, rod.x1-bounds.x1, rod.y1-bounds.y1, rod.x2-rod.x1, rod.y2-rod.y1 );
+	return subimage_view( tileView, rod.x1 - bounds.x1, rod.y1 - bounds.y1, rod.x2 - rod.x1, rod.y2 - rod.y1 );
 }
 
 struct alpha_max_filler
@@ -36,8 +35,8 @@ struct alpha_max_filler
 	{
 		using namespace boost::gil;
 		gil_function_requires<ColorSpacesCompatibleConcept<
-		                      typename color_space_type<P>::type,
-		                      rgba_t> >( );
+		                          typename color_space_type<P>::type,
+		                          rgba_t> >( );
 		P p2;
 		p2[3] = channel_traits< typename channel_type< P >::type >::max_value();
 		return p2;
@@ -69,7 +68,6 @@ struct image_from_view
 };
 // typedef typename view_type_from_pixel<OutPixelType, boost::gil::is_planar<View>::value >::type OutView;
 
-
 /**
  * @brief Get black color value
  */
@@ -81,6 +79,7 @@ static inline const Pixel get_black()
 	color_convert( gray32f_pixel_t( 0.0 ), black );
 	return black;
 }
+
 template<class View>
 static inline const typename View::value_type get_black( const View& )
 {
@@ -95,6 +94,7 @@ static inline typename View::value_type get_white()
 	color_convert( gray32f_pixel_t( 1.0 ), white );
 	return white;
 }
+
 template<class View>
 static inline typename View::value_type get_white( const View& )
 {
@@ -117,7 +117,7 @@ void fill_black( View& v )
 	using namespace boost::gil;
 	transform_pixels( v, v, black_filler() );
 	// Following doesn't work for built-in pixel types
-//	fill_pixels( v, get_black( v ) );
+	//	fill_pixels( v, get_black( v ) );
 }
 
 template <class View>
@@ -185,15 +185,16 @@ template <typename T>
 GIL_FORCEINLINE
 boost::gil::point2<T> operator/( const boost::gil::point2<T>& a, const boost::gil::point2<T>& b ) { return boost::gil::point2<T>( a.x / b.x, a.y / b.y ); }
 /// \ingroup PointModel
-template <typename T> GIL_FORCEINLINE
+template <typename T>
+GIL_FORCEINLINE
 boost::gil::point2<double> operator/( const double t, const boost::gil::point2<T>& p )
 {
-    boost::gil::point2<double> res(0,0);
-    if( p.x != 0 )
-        res.x = t / p.x;
-    if( p.y != 0 )
-        res.y = t / p.y;
-    return res;
+	boost::gil::point2<double> res( 0, 0 );
+	if( p.x != 0 )
+		res.x = t / p.x;
+	if( p.y != 0 )
+		res.y = t / p.y;
+	return res;
 }
 
 template <typename T>
@@ -202,31 +203,29 @@ std::ostream& operator<<( std::ostream& out, const boost::gil::point2<T>& p )
 	return out << "x:" << p.x << " y:" << p.y;
 }
 
-
 inline boost::gil::point2<double> ofxToGil( const OfxPointD& p )
 {
-    return boost::gil::point2<double>( p.x, p.y );
+	return boost::gil::point2<double>( p.x, p.y );
 }
 
 inline OfxPointD gilToOfx( const boost::gil::point2<double>& p )
 {
 	OfxPointD r = { p.x, p.y };
-    return r;
+
+	return r;
 }
 
 inline boost::gil::point2<int> ofxToGil( const OfxPointI& p )
 {
-    return boost::gil::point2<int>( p.x, p.y );
+	return boost::gil::point2<int>( p.x, p.y );
 }
 
 inline OfxPointI gilToOfx( const boost::gil::point2<int>& p )
 {
-	OfxPointI r = { p.x, p. y };
-    return r;
+	OfxPointI r = { p.x, p.y };
+
+	return r;
 }
-
-
-
 
 /**
  * @brief Compute min & max value from a view

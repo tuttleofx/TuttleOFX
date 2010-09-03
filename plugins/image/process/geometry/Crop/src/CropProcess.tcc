@@ -21,8 +21,8 @@ namespace crop {
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
 {
 	_upBand     = instance.fetchIntParam( kParamUp );
 	_downBand   = instance.fetchIntParam( kParamDown );
@@ -37,8 +37,8 @@ CropProcess<View>::CropProcess( CropPlugin& instance )
 template<class View>
 void CropProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	ImageGilFilterProcessor<View>::setup(args);
-	
+	ImageGilFilterProcessor<View>::setup( args );
+
 	// SOURCE
 	_renderScale = this->_src->getRenderScale();
 	_par         = _plugin.getSrcClip()->getPixelAspectRatio();
@@ -51,7 +51,7 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 	_clipROD.y2 *= this->_src->getRenderScale().y;
 
 	point2<int> srcImgCorner = point2<int>( static_cast<int>( -_srcBounds.x1 ),
-											static_cast<int>( -_srcBounds.y1 ) );
+	                                        static_cast<int>( -_srcBounds.y1 ) );
 	OFX::EBitDepth srcBitDepth         = this->_src->getPixelDepth();
 	OFX::EPixelComponent srcComponents = this->_src->getPixelComponents();
 	typename image_from_view<View>::type imResized;
@@ -67,15 +67,15 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 		OfxRectD finalProcWin = rectanglesIntersection( croppedRect, dProcRenderRect );
 		if( finalProcWin.x1 < finalProcWin.x2 && finalProcWin.y1 < finalProcWin.y2 )
 		{
-			View srcTileView = this->getView( this->_src.get(), _plugin.getSrcClip()->getPixelRod(args.time) );
+			View srcTileView = this->getView( this->_src.get(), _plugin.getSrcClip()->getPixelRod( args.time ) );
 			imResized.recreate( int(finalProcWin.x2 - finalProcWin.x1), ///@todo tuttle: to change !
-								int(finalProcWin.y2 - finalProcWin.y1) );
+			                    int(finalProcWin.y2 - finalProcWin.y1) );
 			resize_view( srcTileView, view( imResized ), bilinear_sampler() );
 			this->_srcView = subimage_view( view( imResized ),
-											srcImgCorner.x,
-											srcImgCorner.y,
-											int(_clipROD.x2 - _clipROD.x1),
-											int(_clipROD.y2 - _clipROD.y1) );
+			                                srcImgCorner.x,
+			                                srcImgCorner.y,
+			                                int(_clipROD.x2 - _clipROD.x1),
+			                                int(_clipROD.y2 - _clipROD.y1) );
 		}
 	}
 
@@ -89,7 +89,7 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 	dstClipROD.y2 *= this->_src->getRenderScale().y;
 
 	point2<int> dstImgCorner = point2<int>( static_cast<int>( -dstImgBounds.x1 ),
-											static_cast<int>( -dstImgBounds.y1 ) );
+	                                        static_cast<int>( -dstImgBounds.y1 ) );
 
 	OFX::EBitDepth dstBitDepth         = this->_dst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = this->_dst->getPixelComponents();
@@ -101,11 +101,11 @@ void CropProcess<View>::setup( const OFX::RenderArguments& args )
 	}
 
 	// Build destination view
-	View dstTileView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod(args.time) );
+	View dstTileView = this->getView( this->_dst.get(), _plugin.getDstClip()->getPixelRod( args.time ) );
 
 	this->_dstView = subimage_view( dstTileView, dstImgCorner.x, dstImgCorner.y,
-									int(dstClipROD.x2 - dstClipROD.x1),
-									int(dstClipROD.y2 - dstClipROD.y1) );
+	                                int(dstClipROD.x2 - dstClipROD.x1),
+	                                int(dstClipROD.y2 - dstClipROD.y1) );
 
 	// Begin progression
 	this->progressBegin( std::abs( dstImgBounds.y2 - dstImgBounds.y1 ), "Crop" );
@@ -143,9 +143,10 @@ void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 {
 	///@todo tuttle: is it possible to place the crop depending on the RoW and not on image source RoD ?
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+
 	typedef typename View::x_iterator x_iterator;
 	Pixel fillingColor = get_black( this->_srcView );
-	
+
 	OfxRectD croppedRect = getCrop();
 
 	if( croppedRect.x1 < croppedRect.x2 && croppedRect.y1 < croppedRect.y2 )

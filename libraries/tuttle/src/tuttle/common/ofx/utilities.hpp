@@ -83,7 +83,6 @@ inline OfxRectD rectUnion( const OfxRectD& a,
 	return r;
 }
 
-
 }
 }
 

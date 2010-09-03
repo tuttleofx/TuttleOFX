@@ -20,6 +20,7 @@ public:
 	typedef Graph::Descriptor Descriptor;
 	typedef Graph::NodeMap NodeMap;
 	typedef Graph::InstanceCountMap InstanceCountMap;
+
 public:
 	ProcessGraph( Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
 	~ProcessGraph();

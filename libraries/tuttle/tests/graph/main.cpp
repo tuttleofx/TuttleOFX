@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 {
 	try
 	{
-//		::boost::execution_monitor ex_mon;
+		//		::boost::execution_monitor ex_mon;
 
 		using namespace std;
 		using namespace tuttle::host;
@@ -69,29 +69,29 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		TCOUT( "__________________________________________________1" );
 
 		Graph g;
-		Graph::Node& read1   = g.createNode( "fr.tuttle.pngreader" );
-		/*Graph::Node& read2   = */g.createNode( "fr.tuttle.dpxreader" );
-//		/*Graph::Node& read2   = */g.createNode( "fr.tuttle.dpxreader" );
-		Graph::Node& read3   = g.createNode( "fr.tuttle.exrreader" );
-//		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
+		Graph::Node& read1 = g.createNode( "fr.tuttle.pngreader" );
+		/*Graph::Node& read2   = */ g.createNode( "fr.tuttle.dpxreader" );
+		//		/*Graph::Node& read2   = */g.createNode( "fr.tuttle.dpxreader" );
+		Graph::Node& read3 = g.createNode( "fr.tuttle.exrreader" );
+		//		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
 		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
 		Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
 		Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
-		/*Graph::Node& crop1   = */g.createNode( "fr.tuttle.crop" );
-		Graph::Node& merge1  = g.createNode( "fr.tuttle.merge" );
-		Graph::Node& write1  = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write4  = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write2  = g.createNode( "fr.tuttle.dpxwriter" );
-		Graph::Node& write3  = g.createNode( "fr.tuttle.exrwriter" );
+		/*Graph::Node& crop1   = */ g.createNode( "fr.tuttle.crop" );
+		Graph::Node& merge1 = g.createNode( "fr.tuttle.merge" );
+		Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write4 = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write2 = g.createNode( "fr.tuttle.dpxwriter" );
+		Graph::Node& write3 = g.createNode( "fr.tuttle.exrwriter" );
 
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
 		read1.getParam( "filename" ).set( "data/input.png" );
-//		read2.getParam( "filename" ).set( "data/input.dpx" );
+		//		read2.getParam( "filename" ).set( "data/input.dpx" );
 		read3.getParam( "filename" ).set( "data/input.exr" );
 		//bitdepth.getParam( "outputBitDepth" ).set( 3 );
-	//	crop1.getParam( "Down" ).set( 400 );
+		//	crop1.getParam( "Down" ).set( 400 );
 		write1.getParam( "filename" ).set( "data/output1.png" );
 		write2.getParam( "filename" ).set( "data/output2.dpx" );
 		write3.getParam( "filename" ).set( "data/output3.exr" );
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		TCOUT( "connect" );
 		g.connect( read1, invert1 );
 		TCOUT( "connect" );
-//		g.connect( invert1, bitdepth );
+		//		g.connect( invert1, bitdepth );
 		TCOUT( "connect" );
 		g.connect( invert1, invert2 );
 		TCOUT( "connect" );
@@ -116,12 +116,12 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		g.connect( invert1, write3 );
 
 		TCOUT( "__________3.5" );
-		g.connect( invert1, merge1.getAttribute("SourceA") );
-	//	g.connect( bitdepth, merge1.getAttribute("SourceA") );
+		g.connect( invert1, merge1.getAttribute( "SourceA" ) );
+		//	g.connect( bitdepth, merge1.getAttribute("SourceA") );
 		TCOUT( "__________3.5" );
-		g.connect( read3, merge1.getAttribute("SourceB") );
+		g.connect( read3, merge1.getAttribute( "SourceB" ) );
 		TCOUT( "__________3.5" );
-	//	g.connect( merge1, crop1 );
+		//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
 
 		TCOUT( "__________________________________________________4" );
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 		TCOUT( "__________________________________________________5" );
 	}
-	catch(...)
+	catch(... )
 	{
 		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
 		BOOST_FAIL( "Exception" );

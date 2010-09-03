@@ -6,7 +6,8 @@
 namespace tuttle {
 namespace plugin {
 namespace lens {
-	mDeclarePluginFactory( LensDistortPluginFactory, { }, { } );
+mDeclarePluginFactory( LensDistortPluginFactory, {}, {}
+                       );
 }
 }
 }

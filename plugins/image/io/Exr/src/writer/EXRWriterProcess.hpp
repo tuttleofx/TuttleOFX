@@ -38,7 +38,7 @@ public:
 	typedef typename View::value_type Pixel;
 
 public:
-	EXRWriterProcess( EXRWriterPlugin & instance );
+	EXRWriterProcess( EXRWriterPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 

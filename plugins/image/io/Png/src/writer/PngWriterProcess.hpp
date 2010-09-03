@@ -23,7 +23,7 @@ protected:
 	PngWriterPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-	PngWriterProcess( PngWriterPlugin & instance );
+	PngWriterProcess( PngWriterPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 

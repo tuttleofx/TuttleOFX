@@ -5,16 +5,14 @@
 #include "OfxhParamSet.hpp"
 #include "OfxhParamDescriptor.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace attribute {
 
-
-class OfxhParamGroup :
-    public OfxhParam,
-	public OfxhParamSet
+class OfxhParamGroup
+	: public OfxhParam
+	, public OfxhParamSet
 {
 public:
 	OfxhParamGroup( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
@@ -25,9 +23,9 @@ public:
 		_paramList.clear();
 	}
 
-	void setChildrens( const OfxhParamSet* childrens );
+	void          setChildrens( const OfxhParamSet* childrens );
 	OfxhParamSet* getChildrens() const;
-	void addChildren( OfxhParam* children );
+	void          addChildren( OfxhParam* children );
 
 	property::OfxhSet& getParamSetProps()
 	{
@@ -60,12 +58,10 @@ public:
 
 };
 
-
 }
 }
 }
 }
-
 
 #endif
 

@@ -19,7 +19,6 @@ namespace plugin {
 namespace dpx {
 namespace reader {
 
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
@@ -51,7 +50,7 @@ void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext            context )
+                                                OFX::EContext               context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -84,7 +83,7 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	else
 	{
 		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>(OFX::getImageEffectHostDescription()->getPixelDepth()) );
+		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
 	}
 }
 
@@ -95,7 +94,7 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* DPXReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext     context )
+                                                          OFX::EContext        context )
 {
 	return new DPXReaderPlugin( handle );
 }

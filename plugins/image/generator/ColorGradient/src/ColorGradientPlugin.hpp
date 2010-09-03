@@ -22,7 +22,6 @@ struct ColorGradientProcessParams
 	std::vector<boost::gil::rgba32f_pixel_t> _colors;
 };
 
-
 /**
  * @brief ColorGradient plugin
  */
@@ -30,27 +29,28 @@ class ColorGradientPlugin : public OFX::ImageEffect
 {
 public:
 	typedef boost::gil::point2<double> Point2;
+
 public:
-    ColorGradientPlugin( OfxImageEffectHandle handle );
+	ColorGradientPlugin( OfxImageEffectHandle handle );
 
 private:
 	template<template<typename> class Functor>
-	void renderFunctor( const OFX::RenderArguments &args );
+	void renderFunctor( const OFX::RenderArguments& args );
 
 public:
-    void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void render( const OFX::RenderArguments& args );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 	template<class View>
 	ColorGradientProcessParams<View> getProcessParams() const;
-	
+
 public:
 	typedef std::vector<OFX::Double2DParam*> Double2DParamVector;
 	typedef std::vector<OFX::RGBAParam*> RGBAParamVector;
-	
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _clipSrc;       ///< Source image clip
-    OFX::Clip* _clipDst;       ///< Destination image clip
+
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc;       ///< Source image clip
+	OFX::Clip* _clipDst;       ///< Destination image clip
 	Double2DParamVector _points;
 	RGBAParamVector _colors;
 	OFX::ChoiceParam* _gradientType;

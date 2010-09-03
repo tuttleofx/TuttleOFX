@@ -5,7 +5,7 @@ namespace host {
 namespace graph {
 
 template< typename VERTEX, typename EDGE >
-InternalGraph<VERTEX, EDGE>& InternalGraph<VERTEX, EDGE>::operator=( const This& g )
+InternalGraph<VERTEX, EDGE>&InternalGraph<VERTEX, EDGE>::operator=( const This& g )
 {
 	if( this == &g )
 		return *this;
@@ -17,7 +17,6 @@ InternalGraph<VERTEX, EDGE>& InternalGraph<VERTEX, EDGE>::operator=( const This&
 	rebuildVertexDescriptorMap();
 	return *this;
 }
-
 
 template< typename VERTEX, typename EDGE >
 void InternalGraph<VERTEX, EDGE>::toDominatorTree()
@@ -39,7 +38,7 @@ void InternalGraph<VERTEX, EDGE>::toDominatorTree()
 	// Lengauer-Tarjan dominator tree algorithm
 	domTreePredVector = std::vector<vertex_descriptor>( num_vertices( _graph ), boost::graph_traits<GraphContainer>::null_vertex() );
 	PredMap domTreePredMap =
-		boost::make_iterator_property_map( domTreePredVector.begin(), indexMap );
+	    boost::make_iterator_property_map( domTreePredVector.begin(), indexMap );
 
 	boost::lengauer_tarjan_dominator_tree( _graph, vertex( 0, _graph ), domTreePredMap );
 
@@ -88,10 +87,9 @@ void InternalGraph<VERTEX, EDGE>::rebuildVertexDescriptorMap()
 	_vertexDescriptorMap.clear();
 	BOOST_FOREACH( vertex_descriptor vd, getVertices() )
 	{
-		_vertexDescriptorMap[instance(vd).getName()] = vd;
+		_vertexDescriptorMap[instance( vd ).getName()] = vd;
 	}
 }
-
 
 template< typename VERTEX, typename EDGE >
 std::size_t InternalGraph<VERTEX, EDGE>::removeUnconnectedVertices( const vertex_descriptor& vroot )
@@ -100,30 +98,30 @@ std::size_t InternalGraph<VERTEX, EDGE>::removeUnconnectedVertices( const vertex
 	this->dfs( vis, vroot );
 
 	std::list<std::string> toRemove;
-	BOOST_FOREACH( const vertex_descriptor& vd, getVertices() )
+	BOOST_FOREACH( const vertex_descriptor &vd, getVertices() )
 	{
-		const Vertex& v = instance(vd);
-		if( ! v.isUsed() )
+		const Vertex& v = instance( vd );
+
+		if( !v.isUsed() )
 		{
 			toRemove.push_back( v.getName() );
 		}
 	}
-	BOOST_FOREACH( const std::string& vs, toRemove )
+	BOOST_FOREACH( const std::string & vs, toRemove )
 	{
 		//TCOUT( "removeVertex: " << vs );
-		this->removeVertex( getVertexDescriptor(vs) );
+		this->removeVertex( getVertexDescriptor( vs ) );
 	}
 
 	return toRemove.size();
 }
 
-
 template< typename Vertex, typename Edge >
 std::ostream& operator<<( std::ostream& os, const InternalGraph<Vertex, Edge>& g )
 {
 	os
-	<< "  vertex count: " << g.getVertexCount() << std::endl
-	<< "  edge count: " << g.getEdgeCount() << std::endl;
+	                  << "  vertex count: " << g.getVertexCount() << std::endl
+	                  << "  edge count: " << g.getEdgeCount() << std::endl;
 
 	exportSimple<Vertex, Edge>( os, g );
 

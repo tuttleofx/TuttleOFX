@@ -10,7 +10,8 @@ class ImageEffectNode;
 
 namespace attribute {
 
-class Param : public Attribute, virtual public ofx::attribute::OfxhParamAccessor
+class Param : public Attribute
+	, virtual public ofx::attribute::OfxhParamAccessor
 {
 public:
 	Param( ImageEffectNode& effect );

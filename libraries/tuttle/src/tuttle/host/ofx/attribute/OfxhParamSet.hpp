@@ -13,20 +13,20 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 /// A set of parameters
 ///
 /// As we are the owning object we delete the params inside ourselves. It was tempting
 /// to make params autoref objects and have shared ownership with the client code
 /// but that adds complexity for no strong gain.
-class OfxhParamSet :
-	public OfxhParamSetAccessor,
-	virtual public OfxhIObject
+class OfxhParamSet
+	: public OfxhParamSetAccessor
+	, virtual public OfxhIObject
 {
 public:
 	typedef OfxhParamSet This;
 	typedef std::map<std::string, OfxhParam*> ParamMap;
 	typedef boost::ptr_list<OfxhParam> ParamList;
+
 protected:
 	ParamMap _params;        ///< params by name
 	ParamList _paramList;    ///< params list
@@ -44,9 +44,9 @@ public:
 	virtual ~OfxhParamSet();
 
 	void operator=( const OfxhParamSet& other );
-	
+
 	void copyParamsValues( const OfxhParamSet& other );
-	
+
 	bool operator==( const This& other ) const { return _paramList == other._paramList; }
 
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
@@ -64,13 +64,15 @@ public:
 	OfxhParam& getParam( const std::string& name )
 	{
 		ParamMap::iterator it = _params.find( name );
+
 		if( it == _params.end() )
 			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex, std::string( "Param not found. (" ) + name + ")" ) );
 		return *it->second;
 	}
-	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>(this)->getParam( name ); }
 
-#ifndef SWIG
+	const OfxhParam& getParam( const std::string& name ) const { return const_cast<This*>( this )->getParam( name ); }
+
+	#ifndef SWIG
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
 	virtual void paramChanged( const attribute::OfxhParam& param, const EChange change ) = 0;
@@ -98,9 +100,8 @@ public:
 
 private:
 	void initMapFromList();
-#endif
+	#endif
 };
-
 
 }
 }

@@ -50,7 +50,7 @@ bool Progress::progressForward( const int nSteps )
 	return false;
 	#else
 	_counter += _stepSize * static_cast<double>( nSteps );
-//	COUT_DEBUG( "progress: " << _counter );
+	//	COUT_DEBUG( "progress: " << _counter );
 	return false;
 	#endif
 }

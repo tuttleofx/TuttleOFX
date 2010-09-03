@@ -30,7 +30,7 @@ namespace text {
 void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleText", "Text",
-				   "Text" );
+	                "Text" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
@@ -53,24 +53,25 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                           OFX::EContext               context )
 {
-	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::StringParamDescriptor *text = desc.defineStringParam( kText );
+	OFX::StringParamDescriptor* text = desc.defineStringParam( kText );
 	text->setLabel( "Text" );
 	text->setStringType( OFX::eStringTypeMultiLine );
 
-	OFX::StringParamDescriptor *font = desc.defineStringParam( kFont );
+	OFX::StringParamDescriptor* font = desc.defineStringParam( kFont );
 	font->setLabel( "Font file" );
 	font->setStringType( OFX::eStringTypeFilePath );
 	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/arial.ttf" );
@@ -115,7 +116,7 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* TextPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                     OFX::EContext        context )
 {
 	return new TextPlugin( handle );
 }

@@ -37,7 +37,7 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 	if( _paramList.size() != other._paramList.size() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev( "You try to copy parameters values, but the two lists are not identical." ) );
+		    << exception::dev( "You try to copy parameters values, but the two lists are not identical." ) );
 	}
 
 	ParamList::const_iterator oit = other._paramList.begin(), oitEnd = other._paramList.end();
@@ -45,25 +45,25 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 	     it != itEnd && oit != oitEnd;
 	     ++it, ++oit )
 	{
-		OfxhParam& p = *it;
+		OfxhParam& p        = *it;
 		const OfxhParam& op = *oit;
 		if( p.getName() != op.getName() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev( "You try to copy parameters values, but it is not the same parameters in the two lists." ) );
+			    << exception::dev( "You try to copy parameters values, but it is not the same parameters in the two lists." ) );
 		}
-		p.copy(op);
+		p.copy( op );
 	}
 	initMapFromList();
 }
 
 void OfxhParamSet::referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {
-//	if( _allParams.find( name ) != _allParams.end() )
-//	{
-//		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to reference a new parameter which already exists." ) );
-//	}
-//	_allParams[name] = instance;
+	//	if( _allParams.find( name ) != _allParams.end() )
+	//	{
+	//		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to reference a new parameter which already exists." ) );
+	//	}
+	//	_allParams[name] = instance;
 }
 
 void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
@@ -74,9 +74,8 @@ void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_
 	}
 	_paramList.push_back( instance );
 	_params[name] = instance;
-//	referenceParam( name, instance );
+	//	referenceParam( name, instance );
 }
-
 
 }
 }

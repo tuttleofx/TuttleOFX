@@ -7,13 +7,12 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 /**
  * clip clipimage instance
  */
 OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffectNode& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
-: attribute::OfxhClip( desc )
-, _effectInstance( effectInstance )
+	: attribute::OfxhClip( desc )
+	, _effectInstance( effectInstance )
 	//				, _pixelDepth( kOfxBitDepthNone )
 	//				, _components( kOfxImageComponentNone )
 {
@@ -80,7 +79,6 @@ const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) cons
 
 	return none;
 }
-
 
 }
 }

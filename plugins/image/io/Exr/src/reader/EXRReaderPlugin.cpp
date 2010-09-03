@@ -28,7 +28,7 @@ using namespace Imf;
 using namespace boost::gil;
 
 EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
-: ReaderPlugin( handle )
+	: ReaderPlugin( handle )
 {
 	_outComponents = fetchChoiceParam( kParamOutputComponents );
 	_vChannelChoice.push_back( fetchChoiceParam( kParamOutputRedIs ) );
@@ -38,10 +38,11 @@ EXRReaderPlugin::EXRReaderPlugin( OfxImageEffectHandle handle )
 	updateCombos();
 }
 
-EXRReaderProcessParams EXRReaderPlugin::getProcessParams(const OfxTime time)
+EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 {
 	EXRReaderProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
+
+	params._filepath      = getAbsoluteFilenameAt( time );
 	params._outComponents = _outComponents->getValue();
 	return params;
 }
@@ -91,11 +92,12 @@ void EXRReaderPlugin::render( const OFX::RenderArguments& args )
 
 bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	InputFile in( getAbsoluteFilenameAt(args.time).c_str() );
+	InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
 	const Header& h             = in.header();
 	const Imath::V2i dataWindow = h.dataWindow().size();
+
 	rod.x1 = 0;
-	rod.x2 = (dataWindow.x + 1) * this->_clipDst->getPixelAspectRatio();
+	rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = dataWindow.y + 1;
 	return true;
@@ -157,12 +159,12 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<< exception::filename( filename )
-			);
+		    << exception::user( "No input file." )
+		    << exception::filename( filename )
+		                       );
 	}
 	switch( getExplicitConversion() )
 	{
@@ -194,8 +196,8 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 void EXRReaderPlugin::updateCombos()
 {
 	const std::string filename( getAbsoluteFirstFilename() );
-	
-	if ( bfs::exists( filename ) )
+
+	if( bfs::exists( filename ) )
 	{
 		// read dims
 		InputFile in( filename.c_str() );

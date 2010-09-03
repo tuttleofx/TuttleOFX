@@ -30,7 +30,7 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 {
 	RawReaderProcessParams params;
 
-	params._filepath = getAbsoluteFilenameAt( time );
+	params._filepath  = getAbsoluteFilenameAt( time );
 	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
 	return params;
 }
@@ -112,23 +112,22 @@ void RawReaderPlugin::render( const OFX::RenderArguments& args )
 	}
 }
 
-
 void RawReaderPlugin::updateInfos()
 {
-	COUT("updateInfos begin");
+	COUT( "updateInfos begin" );
 	RawReaderProcessParams params = getProcessParams( this->timeLineGetBounds().min );
 
 	LibRaw rawProcessor;
-	libraw_iparams_t& p1 = rawProcessor.imgdata.idata;
-	libraw_image_sizes_t& sizes = rawProcessor.imgdata.sizes;
-	libraw_colordata_t& color = rawProcessor.imgdata.color;
+	libraw_iparams_t& p1          = rawProcessor.imgdata.idata;
+	libraw_image_sizes_t& sizes   = rawProcessor.imgdata.sizes;
+	libraw_colordata_t& color     = rawProcessor.imgdata.color;
 	libraw_thumbnail_t& thumbnail = rawProcessor.imgdata.thumbnail;
-	libraw_imgother_t& p2 = rawProcessor.imgdata.other;
-//	libraw_output_params_t& out = rawProcessor.imgdata.params;
+	libraw_imgother_t& p2         = rawProcessor.imgdata.other;
+	//	libraw_output_params_t& out = rawProcessor.imgdata.params;
 
 	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
-		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror(ret) );
+		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
 		return;
 	}
 	if( const int ret = rawProcessor.adjust_sizes_info_only() )
@@ -138,7 +137,7 @@ void RawReaderPlugin::updateInfos()
 	}
 
 	std::ostringstream ss;
-	
+
 	ss << "Filename: " << params._filepath << "\n";
 	ss << "Timestamp: " << ctime( &( p2.timestamp ) ) << "\n";
 	ss << "Camera: " << p1.make << " " << p1.model << "\n";
@@ -148,10 +147,10 @@ void RawReaderPlugin::updateInfos()
 	{
 		ss << "DNG Version: ";
 		for( int i = 24; i >= 0; i -= 8 )
-			ss << (p1.dng_version >> i & 255) << (i ? '.' : '\n');
+			ss << ( p1.dng_version >> i & 255 ) << ( i ? '.' : '\n' );
 		ss << "\n";
 	}
-	
+
 	ss << "ISO speed: " << (int) p2.iso_speed << "\n";
 	ss << "Shutter: ";
 	if( p2.shutter > 0 && p2.shutter < 1 )
@@ -200,7 +199,7 @@ void RawReaderPlugin::updateInfos()
 	ss << " rgb_cam=" << csl[color.color_flags.rgb_cam_state] << ",";
 	ss << " cmatrix=" << csl[color.color_flags.cmatrix_state] << ",";
 	ss << " pre_mul=" << csl[color.color_flags.pre_mul_state] << ",";
-	ss << " cam_mul="<< csl[color.color_flags.cam_mul_state] << "\n";
+	ss << " cam_mul=" << csl[color.color_flags.cam_mul_state] << "\n";
 	ss << "Cam->XYZ matrix:" << "\n";
 	for( int i = 0; i < 4; ++i )
 		ss << color.cam_xyz[i][0] << "\t" << color.cam_xyz[i][1] << "\t" << color.cam_xyz[i][2] << "\n"; // %6.4f
@@ -216,10 +215,10 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kRawReaderHelpString );
 	}
-//	else if( paramName == kRawReaderUpdateInfosButton )
-//	{
-//		updateInfos();
-//	}
+	//	else if( paramName == kRawReaderUpdateInfosButton )
+	//	{
+	//		updateInfos();
+	//	}
 	else
 	{
 		ReaderPlugin::changedParam( args, paramName );
@@ -229,17 +228,17 @@ void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	updateInfos();
-	
+
 	RawReaderProcessParams params = getProcessParams( this->timeLineGetBounds().min );
 
 	LibRaw rawProcessor;
 	libraw_image_sizes_t& sizes = rawProcessor.imgdata.sizes;
 	//libraw_output_params_t& out = rawProcessor.imgdata.params;
-//	out.half_size  = 1;
+	//	out.half_size  = 1;
 
 	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
-		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror(ret) );
+		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
 		return false;
 	}
 	if( const int ret = rawProcessor.adjust_sizes_info_only() )
@@ -248,7 +247,7 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 		return false;
 	}
 
-//	point2<ptrdiff_t> dims( sizes.raw_width, sizes.raw_height );
+	//	point2<ptrdiff_t> dims( sizes.raw_width, sizes.raw_height );
 	point2<ptrdiff_t> dims( sizes.width, sizes.height );
 	COUT_VAR( dims );
 	rod.x1 = 0;
@@ -263,12 +262,12 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<< exception::filename( filename )
-			);
+		    << exception::user( "No input file." )
+		    << exception::filename( filename )
+		                       );
 	}
 
 	switch( getExplicitConversion() )
@@ -276,7 +275,7 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		case eReaderParamExplicitConversionAuto:
 		{
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
-			int bitDepth         = 32; //raw_read_precision( filename );
+			int bitDepth      = 32;    //raw_read_precision( filename );
 			switch( bitDepth )
 			{
 				case 8:

@@ -23,7 +23,7 @@ namespace colorGradient {
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleColorGradient", "ColorGradient",
 	                "Create a color gradient" );
@@ -47,16 +47,17 @@ void ColorGradientPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                    OFX::EContext context )
+void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                    OFX::EContext               context )
 {
-	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
@@ -72,15 +73,15 @@ void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &
 	nbPoint->setRange( 2, kMaxNbPoints );
 	nbPoint->setDisplayRange( 2, kMaxNbPoints );
 
-	for( unsigned int i = 0; i < kMaxNbPoints; ++i)
+	for( unsigned int i = 0; i < kMaxNbPoints; ++i )
 	{
-		OFX::Double2DParamDescriptor* point = desc.defineDouble2DParam( getPointParamName(i) );
-		point->setLabel( getPointParamName(i) );
-//		point->setIsSecret( true );
+		OFX::Double2DParamDescriptor* point = desc.defineDouble2DParam( getPointParamName( i ) );
+		point->setLabel( getPointParamName( i ) );
+		//		point->setIsSecret( true );
 		point->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-		OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( getColorParamName(i) );
-		color->setLabel( getColorParamName(i) );
-//		color->setIsSecret( true );
+		OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( getColorParamName( i ) );
+		color->setLabel( getColorParamName( i ) );
+		//		color->setIsSecret( true );
 	}
 }
 
@@ -91,9 +92,9 @@ void ColorGradientPluginFactory::describeInContext( OFX::ImageEffectDescriptor &
  * @return  plugin instance
  */
 OFX::ImageEffect* ColorGradientPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                              OFX::EContext        context )
 {
-	return new ColorGradientPlugin(handle);
+	return new ColorGradientPlugin( handle );
 }
 
 }

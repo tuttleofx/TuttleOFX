@@ -52,7 +52,6 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-
 #if defined ( __linux__ )
 
  #define DIRLIST_SEP_CHARS ":;"
@@ -97,17 +96,17 @@ static const char* getArchStr()
 // Define this to enable ofx plugin cache debug messages.
 //#define CACHE_DEBUG
 
-
 #if defined ( WINDOWS )
 
 #ifndef _MSC_VER
- #define SHGFP_TYPE_CURRENT 0
+  #define SHGFP_TYPE_CURRENT 0
 #endif
 
 const TCHAR* getStdOFXPluginPath( const std::string& hostId = "Plugins" )
 {
 	static TCHAR buffer[MAX_PATH];
 	static int gotIt = 0;
+
 	if( !gotIt )
 	{
 		gotIt = 1;
@@ -139,10 +138,10 @@ std::string OFXGetEnv( const char* e )
 }
 
 OfxhPluginCache::OfxhPluginCache()
-	: _ignoreCache( false ),
-	_cacheVersion( "" ),
-	_dirty( false ),
-	_enablePluginSeek( true )
+	: _ignoreCache( false )
+	, _cacheVersion( "" )
+	, _dirty( false )
+	, _enablePluginSeek( true )
 {
 	std::string s = OFXGetEnv( "OFX_PLUGIN_PATH" );
 
@@ -179,8 +178,7 @@ OfxhPluginCache::OfxhPluginCache()
 }
 
 OfxhPluginCache::~OfxhPluginCache()
-{
-}
+{}
 
 void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
 {
@@ -258,12 +256,12 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 
 					for( int j = 0; j < pb->getNPlugins(); ++j )
 					{
-						OfxhPlugin& plug                         = pb->getPlugin( j );
+						OfxhPlugin& plug                   = pb->getPlugin( j );
 						APICache::OfxhPluginAPICacheI& api = plug.getApiHandler();
 						api.loadFromPlugin( plug );
 					}
 				}
-				catch( ... )
+				catch(... )
 				{
 					COUT_CURRENT_EXCEPTION;
 				}
@@ -338,7 +336,7 @@ void OfxhPluginCache::scanPluginFiles()
 		{
 			// the binary was in the cache, but was not on the path
 			setDirty();
-			i      = _binaries.erase( i );
+			i = _binaries.erase( i );
 		}
 		else
 		{
@@ -370,8 +368,8 @@ void OfxhPluginCache::scanPluginFiles()
 				}
 				else
 				{
-					COUT_ERROR("Ignoring plugin " << plug.getIdentifier() <<
-					" as unsupported (" << reason << ")");
+					COUT_ERROR( "Ignoring plugin " << plug.getIdentifier() <<
+					            " as unsupported (" << reason << ")" );
 				}
 			}
 
@@ -379,7 +377,6 @@ void OfxhPluginCache::scanPluginFiles()
 		}
 	}
 }
-
 
 APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler( const std::string& api, int version )
 {
@@ -394,8 +391,6 @@ APICache::OfxhPluginAPICacheI* OfxhPluginCache::findApiHandler( const std::strin
 	}
 	return 0;
 }
-
-
 
 /**
  * get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
@@ -450,15 +445,15 @@ std::ostream& operator<<( std::ostream& os, const OfxhPluginCache& v )
 		os << "  " << "Filepath: " << it->second->getBinary().getFilePath();
 		os << "(" << it->second->getIndex() << ")" << std::endl;
 
-//		os << "Contexts:" << std::endl;
-//		const std::set<std::string>& contexts = it->second->getContexts();
-//		for( std::set<std::string>::const_iterator it2 = contexts.begin(); it2 != contexts.end(); ++it2 )
-//			os << "  * " << *it2 << std::endl;
-//		const OfxhImageEffectNodeDescriptor& d = it->second->getDescriptor();
-//		os << "Inputs:" << std::endl;
-//		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
-//		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
-//			os << "    * " << it2->first << std::endl;
+		//		os << "Contexts:" << std::endl;
+		//		const std::set<std::string>& contexts = it->second->getContexts();
+		//		for( std::set<std::string>::const_iterator it2 = contexts.begin(); it2 != contexts.end(); ++it2 )
+		//			os << "  * " << *it2 << std::endl;
+		//		const OfxhImageEffectNodeDescriptor& d = it->second->getDescriptor();
+		//		os << "Inputs:" << std::endl;
+		//		const std::map<std::string, attribute::OfxhClipImageDescriptor*>& inputs = d.getClips();
+		//		for( std::map<std::string, attribute::OfxhClipImageDescriptor*>::const_iterator it2 = inputs.begin(); it2 != inputs.end(); ++it2 )
+		//			os << "    * " << it2->first << std::endl;
 		os << "________________________________________________________________________________" << std::endl;
 	}
 	os << "}" << std::endl;

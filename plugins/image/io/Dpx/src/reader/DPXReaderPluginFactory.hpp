@@ -7,9 +7,10 @@ namespace plugin {
 namespace dpx {
 namespace reader {
 
-static const bool kSupportTiles              = false;
+static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( DPXReaderPluginFactory, {}, {} );
+mDeclarePluginFactory( DPXReaderPluginFactory, {}, {}
+                       );
 
 }
 }

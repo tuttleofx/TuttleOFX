@@ -5,11 +5,9 @@ namespace plugin {
 namespace interact {
 
 IsActiveFunctor::~IsActiveFunctor()
-{
-}
+{}
 
 }
 }
 }
-
 

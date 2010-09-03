@@ -5,7 +5,6 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 void OfxhParamInteger::derive( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC
 {
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported ) );
@@ -75,8 +74,6 @@ void OfxhParamInteger::integrateV( const OfxTime time1, const OfxTime time2, va_
 
 	this->integrate( time1, time2, *value );
 }
-
-
 
 }
 }

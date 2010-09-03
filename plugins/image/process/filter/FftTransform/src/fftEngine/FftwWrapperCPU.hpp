@@ -3,28 +3,29 @@
  */
 
 #ifndef _TUTTLE_PLUGIN_FFTWWRAPPERCPU_HPP_
-#define	_TUTTLE_PLUGIN_FFTWWRAPPERCPU_HPP_
+#define _TUTTLE_PLUGIN_FFTWWRAPPERCPU_HPP_
 
 #include "IfftwWrapper.hpp"
 
 namespace tuttle {
-namespace plugin {
-namespace filter {
-namespace fft {
+	namespace plugin {
+	namespace filter {
+	namespace fft {
 
-class FftwWrapperCPU : public IfftwWrapper {
-public:
-	FftwWrapperCPU();
-	virtual ~FftwWrapperCPU();
-	bool fft(const float* in, Complex* out, size_t w, size_t h);
-	bool ifft(Complex* in, float* out, size_t w, size_t h);
-private:
+	class FftwWrapperCPU : public IfftwWrapper
+	{
+	public:
+		FftwWrapperCPU();
+		virtual ~FftwWrapperCPU();
+		bool fft( const float* in, Complex* out, size_t w, size_t h );
+		bool ifft( Complex* in, float* out, size_t w, size_t h );
 
-};
+	private:
+	};
 
-}
-}
-}
+	}
+	}
+	}
 
-#endif	/* _FFTWWRAPPERCPU_HPP */
+#endif  /* _FFTWWRAPPERCPU_HPP */
 

@@ -11,66 +11,66 @@ namespace tuttle {
 namespace plugin {
 namespace gamma {
 
-GammaPlugin::GammaPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+GammaPlugin::GammaPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+	_srcClip   = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_dstClip   = fetchClip( kOfxImageEffectOutputClipName );
 	_gammaType = fetchChoiceParam( kGammaType );
-	_master = fetchDoubleParam( kMasterValue );
-	_red = fetchDoubleParam( kRedValue );
-	_green = fetchDoubleParam( kGreenValue );
-	_blue = fetchDoubleParam( kBlueValue );
-	_alpha = fetchDoubleParam( kAlphaValue );
-	_invert = fetchBooleanParam( kInvert );
+	_master    = fetchDoubleParam( kMasterValue );
+	_red       = fetchDoubleParam( kRedValue );
+	_green     = fetchDoubleParam( kGreenValue );
+	_blue      = fetchDoubleParam( kBlueValue );
+	_alpha     = fetchDoubleParam( kAlphaValue );
+	_invert    = fetchBooleanParam( kInvert );
 
 	// For updating the UI
 	OFX::InstanceChangedArgs instChangedArgs;
-	instChangedArgs.reason = OFX::eChangePluginEdit;
+	instChangedArgs.reason        = OFX::eChangePluginEdit;
 	instChangedArgs.renderScale.x = instChangedArgs.renderScale.y = 1.0;
-	instChangedArgs.time = 0;
+	instChangedArgs.time          = 0;
 	changedParam( instChangedArgs, kGammaType );
 }
 
 GammaProcessParams<GammaPlugin::Scalar> GammaPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	GammaProcessParams<Scalar> params;
-	EGammaType	type;
-	double		master,
-				red, green, blue,
-				alpha;
-	bool		invert;
-	double		gamma, iGamma,
-				rGamma, gGamma, bGamma,
-				aGamma;
+	EGammaType type;
+	double master,
+	       red, green, blue,
+	       alpha;
+	bool invert;
+	double gamma, iGamma,
+	       rGamma, gGamma, bGamma,
+	       aGamma;
 
-	type = static_cast<EGammaType>( _gammaType->getValue() );
+	type   = static_cast<EGammaType>( _gammaType->getValue() );
 	master = _master->getValue();
-	red = _red->getValue();
-	green = _green->getValue();
-	blue = _blue->getValue();
-	alpha = _alpha->getValue();
+	red    = _red->getValue();
+	green  = _green->getValue();
+	blue   = _blue->getValue();
+	alpha  = _alpha->getValue();
 	invert = _invert->getValue();
-	switch ( type )
+	switch( type )
 	{
 		case eGammaTypeGlobal:
 			gamma = master;
-			if ( invert == true )
+			if( invert == true )
 			{
 				gamma = 1.0 / gamma;
 			}
-			iGamma = ( gamma == 1.0 ? 1.0 : 1.0 / gamma );
-			params.iRGamma =
-			params.iGGamma =
-			params.iBGamma = iGamma;
-			params.iAGamma = 1.0;
+			iGamma                 = ( gamma == 1.0 ? 1.0 : 1.0 / gamma );
+			params.iRGamma         =
+			    params.iGGamma     =
+			        params.iBGamma = iGamma;
+			params.iAGamma         = 1.0;
 			break;
 		case eGammaTypeChannels:
 			rGamma = red;
 			gGamma = green;
 			bGamma = blue;
 			aGamma = alpha;
-			if ( invert == true )
+			if( invert == true )
 			{
 				rGamma = 1.0 / rGamma;
 				gGamma = 1.0 / gGamma;
@@ -90,96 +90,96 @@ GammaProcessParams<GammaPlugin::Scalar> GammaPlugin::getProcessParams( const Ofx
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void GammaPlugin::render( const OFX::RenderArguments &args )
+void GammaPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _dstClip->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth dstBitDepth         = _dstClip->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _dstClip->getPixelComponents();
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                GammaProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                GammaProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                GammaProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				GammaProcess<rgba8_view_t> p( *this );
+				p.setupAndProcess( args );
 				break;
 			}
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                GammaProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                GammaProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                GammaProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
+			case OFX::eBitDepthUShort:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				GammaProcess<rgba16_view_t> p( *this );
+				p.setupAndProcess( args );
 				break;
 			}
-        }
-    }
+			case OFX::eBitDepthFloat:
+			{
+				GammaProcess<rgba32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				break;
+			}
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				GammaProcess<gray8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				GammaProcess<gray16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				GammaProcess<gray32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				break;
+			}
+		}
+	}
 	else
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
 	}
 }
 
-void GammaPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void GammaPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if ( paramName == kGammaType )
+	if( paramName == kGammaType )
 	{
 		bool bMaster, bRGBA;
-		switch ( getGammaType() )
+		switch( getGammaType() )
 		{
 			case eGammaTypeGlobal:
 				bMaster = false;
-				bRGBA = true;
+				bRGBA   = true;
 				break;
 			case eGammaTypeChannels:
 				bMaster = true;
-				bRGBA = false;
+				bRGBA   = false;
 				break;
 			default: // Error
 				bMaster = true;
-				bRGBA = true;
+				bRGBA   = true;
 				break;
 		}
 		_master->setIsSecret( bMaster );
@@ -187,11 +187,11 @@ void GammaPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std:
 		_green->setIsSecret( bRGBA );
 		_blue->setIsSecret( bRGBA );
 		_alpha->setIsSecret( bRGBA );
-//		_master->setEnabled( bMaster );
-//		_red->setEnabled( bRGBA );
-//		_green->setEnabled( bRGBA );
-//		_blue->setEnabled( bRGBA );
-//		_alpha->setEnabled( bRGBA );
+		//		_master->setEnabled( bMaster );
+		//		_red->setEnabled( bRGBA );
+		//		_green->setEnabled( bRGBA );
+		//		_blue->setEnabled( bRGBA );
+		//		_alpha->setEnabled( bRGBA );
 
 	}
 }

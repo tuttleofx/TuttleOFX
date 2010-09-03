@@ -25,25 +25,26 @@ private:
 	{
 		typedef Key This;
 		Key( const std::string& identifier, const double& time )
-			: _identifier( identifier ),
-			_time( time )
+			: _identifier( identifier )
+			, _time( time )
 		{}
 		bool operator<( const This& ) const;
 		bool operator==( const This& v ) const;
-		std::size_t getHash() const;
+		std::size_t  getHash() const;
 
 		std::string _identifier;
 		double _time;
 	};
 	struct KeyHash : std::unary_function<Key, std::size_t>
 	{
-		std::size_t operator()(const Key& p) const
+		std::size_t operator()( const Key& p ) const
 		{
 			return p.getHash();
 		}
+
 	};
 	typedef boost::unordered_map<Key, CACHE_ELEMENT, KeyHash> MAP;
-//	typedef std::map<Key, CACHE_ELEMENT> MAP;
+	//	typedef std::map<Key, CACHE_ELEMENT> MAP;
 	MAP _map;
 	MAP::const_iterator getIteratorForValue( const CACHE_ELEMENT& ) const;
 	MAP::iterator       getIteratorForValue( const CACHE_ELEMENT& );

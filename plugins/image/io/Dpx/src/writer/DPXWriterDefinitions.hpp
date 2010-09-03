@@ -17,8 +17,8 @@ enum EParamBitDepth
 	eParamBitDepth32
 };
 
-static const std::string kParamComponentsType      = "componentsType";
-static const std::string kParamCompressed          = "compressed";
+static const std::string kParamComponentsType = "componentsType";
+static const std::string kParamCompressed     = "compressed";
 
 const static std::string kDPXWriterHelpButton = "Help";
 const static std::string kDPXWriterHelpString = "<b>DPX File writer</b> plugin is used to output dpx files.  <br />";

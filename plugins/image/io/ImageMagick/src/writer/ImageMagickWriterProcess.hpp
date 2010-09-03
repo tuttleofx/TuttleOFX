@@ -23,7 +23,7 @@ protected:
 	ImageMagickWriterPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-	ImageMagickWriterProcess( ImageMagickWriterPlugin & instance );
+	ImageMagickWriterProcess( ImageMagickWriterPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 

@@ -29,18 +29,18 @@ public:
 	template<class EdgeDescriptor, class Graph>
 	void examine_edge( EdgeDescriptor e, Graph& g )
 	{
-		Edge& edge = _graph.instance(e);
-		Vertex& vertexSource = _graph.sourceInstance(e);
-		Vertex& vertexDest   = _graph.targetInstance(e);
+		Edge& edge           = _graph.instance( e );
+		Vertex& vertexSource = _graph.sourceInstance( e );
+		Vertex& vertexDest   = _graph.targetInstance( e );
 
 		if( vertexDest.isFake() || vertexSource.isFake() )
 			return;
 
 		TCOUT( "examine_edge" << vertexSource );
-		TCOUT("[CONNECT] examine_edge "
-			<< vertexSource
-			<< " TO "
-			<< vertexDest << "." << edge.getInAttrName() );
+		TCOUT( "[CONNECT] examine_edge "
+		    << vertexSource
+		    << " TO "
+		    << vertexDest << "." << edge.getInAttrName() );
 
 		Node& sourceNode = *vertexSource.getProcessNode();
 		Node& targetNode = *vertexDest.getProcessNode();
@@ -54,114 +54,119 @@ private:
 template<class TGraph>
 class PreProcess1 : public boost::default_dfs_visitor
 {
-	public:
-		typedef typename TGraph::GraphContainer GraphContainer;
-		typedef typename TGraph::Vertex Vertex;
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
 
-		PreProcess1( TGraph& graph )
-			: _graph(graph)
-		{}
+	PreProcess1( TGraph& graph )
+		: _graph( graph )
+	{}
 
-		template<class VertexDescriptor, class Graph>
-		void discover_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
-			if( vertex.isFake() )
-				return;
+	template<class VertexDescriptor, class Graph>
+	void discover_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-			vertex.getProcessNode()->preProcess1_initialize( vertex.getProcessOptions() );
-		}
+		TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
 
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
-			if( vertex.isFake() )
-				return;
+		vertex.getProcessNode()->preProcess1_initialize( vertex.getProcessOptions() );
+	}
 
-			vertex.getProcessNode()->preProcess1_finish( vertex.getProcessOptions() );
-		}
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-	private:
-		TGraph& _graph;
+		TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode()->preProcess1_finish( vertex.getProcessOptions() );
+	}
+
+private:
+	TGraph& _graph;
 };
 
 template<class TGraph>
 class PreProcess2 : public boost::default_bfs_visitor
 {
-	public:
-		typedef typename TGraph::GraphContainer GraphContainer;
-		typedef typename TGraph::Vertex Vertex;
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
 
-		PreProcess2( TGraph& graph )
-			: _graph(graph)
-		{}
+	PreProcess2( TGraph& graph )
+		: _graph( graph )
+	{}
 
-		template<class VertexDescriptor, class Graph>
-		void discover_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
-			if( vertex.isFake() )
-				return;
+	template<class VertexDescriptor, class Graph>
+	void discover_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-			vertex.getProcessNode()->preProcess2_initialize( vertex.getProcessOptions() );
-		}
+		TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
 
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
-			if( vertex.isFake() )
-				return;
+		vertex.getProcessNode()->preProcess2_initialize( vertex.getProcessOptions() );
+	}
 
-			vertex.getProcessNode()->preProcess2_finish( vertex.getProcessOptions() );
-		}
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-	private:
-		TGraph& _graph;
+		TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode()->preProcess2_finish( vertex.getProcessOptions() );
+	}
+
+private:
+	TGraph& _graph;
 };
 
 template<class TGraph>
 class PreProcess3 : public boost::default_dfs_visitor
 {
-	public:
-		typedef typename TGraph::GraphContainer GraphContainer;
-		typedef typename TGraph::Vertex Vertex;
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
 
-		PreProcess3( TGraph& graph )
-			: _graph(graph)
-		{}
+	PreProcess3( TGraph& graph )
+		: _graph( graph )
+	{}
 
-		template<class VertexDescriptor, class Graph>
-		void discover_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
-			if( vertex.isFake() )
-				return;
+	template<class VertexDescriptor, class Graph>
+	void discover_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-			vertex.getProcessNode()->preProcess3_initialize( vertex.getProcessOptions() );
-		}
+		TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
 
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
-			if( vertex.isFake() )
-				return;
+		vertex.getProcessNode()->preProcess3_initialize( vertex.getProcessOptions() );
+	}
 
-			vertex.getProcessNode()->preProcess3_finish( vertex.getProcessOptions() );
-		}
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-	private:
-		TGraph& _graph;
+		TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode()->preProcess3_finish( vertex.getProcessOptions() );
+	}
+
+private:
+	TGraph& _graph;
 };
-
 
 template<class TGraph>
 class OptimizeGraph : public boost::default_dfs_visitor
@@ -182,16 +187,16 @@ public:
 	}
 
 	template <class VertexDescriptor, class Graph>
-	void finish_vertex(VertexDescriptor v, const Graph& g)
+	void finish_vertex( VertexDescriptor v, const Graph& g )
 	{
 		using namespace boost;
 		using namespace boost::graph;
-		Vertex& vertex = _graph.instance(v);
+		Vertex& vertex = _graph.instance( v );
 
 		out_edge_iterator oe, oeEnd;
-		tie(oe, oeEnd) = out_edges( v, _graph.getGraph() );
-//		in_edge_iterator ie, ieEnd;
-//		tie(ie, ieEnd) = in_edges( v, _graph.getGraph() );
+		tie( oe, oeEnd ) = out_edges( v, _graph.getGraph() );
+		//		in_edge_iterator ie, ieEnd;
+		//		tie(ie, ieEnd) = in_edges( v, _graph.getGraph() );
 		ProcessOptions& procOptions = vertex.getProcessOptions();
 
 		// compute global infos for inputs
@@ -200,19 +205,19 @@ public:
 		procOptions._nbInputs = _graph.getOutDegree( v );
 		for( ; oe != oeEnd; ++oe )
 		{
-//			Edge& outEdge = _graph.instance(*oe);
-			Vertex& outVertex = _graph.targetInstance(*oe);
+			//			Edge& outEdge = _graph.instance(*oe);
+			Vertex& outVertex = _graph.targetInstance( *oe );
 			procOptions._globalInfos += outVertex.getProcessOptions()._localInfos;
 		}
 
-//		// direct node usages (originally the node outputs)
+		//		// direct node usages (originally the node outputs)
 		procOptions._nbOutputs = _graph.getInDegree( v );
-//		for( ; ie != ieEnd; ++ie )
-//		{
-//			Edge& e = _graph.instance(*ie);
-//		}
+		//		for( ; ie != ieEnd; ++ie )
+		//		{
+		//			Edge& e = _graph.instance(*ie);
+		//		}
 
-		if( ! vertex.isFake() )
+		if( !vertex.isFake() )
 		{
 			// compute local infos, need to be a real node !
 			vertex.getProcessNode()->preProcess_infos( procOptions._localInfos );
@@ -231,62 +236,65 @@ private:
 template<class TGraph>
 class Process : public boost::default_dfs_visitor
 {
-	public:
-		typedef typename TGraph::GraphContainer GraphContainer;
-		typedef typename TGraph::Vertex Vertex;
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
 
-		Process( TGraph& graph )
-			: _graph(graph)
-		{}
+	Process( TGraph& graph )
+		: _graph( graph )
+	{}
 
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			COUT( "[PROCESS] finish_vertex " << vertex );
-			if( vertex.isFake() )
-				return;
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-			vertex.getProcessNode()->process( vertex.getProcessOptions() );
-		}
+		COUT( "[PROCESS] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
 
-	private:
-		TGraph& _graph;
+		vertex.getProcessNode()->process( vertex.getProcessOptions() );
+	}
+
+private:
+	TGraph& _graph;
 };
 
 template<class TGraph>
 class PostProcess : public boost::default_dfs_visitor
 {
-	public:
-		typedef typename TGraph::GraphContainer GraphContainer;
-		typedef typename TGraph::Vertex Vertex;
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
 
-		PostProcess( TGraph& graph )
-			: _graph(graph)
-		{}
+	PostProcess( TGraph& graph )
+		: _graph( graph )
+	{}
 
-		template<class VertexDescriptor, class Graph>
-		void initialize_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT("[POSTPROCESS] initialize_vertex " << vertex);
-			if( vertex.isFake() )
-				return;
-		}
+	template<class VertexDescriptor, class Graph>
+	void initialize_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			Vertex& vertex = _graph.instance(v);
-			TCOUT("[POSTPROCESS] finish_vertex " << vertex);
-			if( vertex.isFake() )
-				return;
+		TCOUT( "[POSTPROCESS] initialize_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+	}
 
-			vertex.getProcessNode()->postProcess( vertex.getProcessOptions() );
-		}
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-	private:
-		TGraph& _graph;
+		TCOUT( "[POSTPROCESS] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		vertex.getProcessNode()->postProcess( vertex.getProcessOptions() );
+	}
+
+private:
+	TGraph& _graph;
 };
 
 }

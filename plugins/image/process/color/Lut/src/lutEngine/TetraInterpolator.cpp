@@ -25,16 +25,16 @@ Color TetraInterpolator::interpolate( const AbstractLut* lut, const double x, co
 
 	if( x1 >= dimSize )
 		x1 = dimSize - 1;
-    else if ( x1 < 0 )
-        x1 = 0;
+	else if( x1 < 0 )
+		x1 = 0;
 	if( y1 >= dimSize )
 		y1 = dimSize - 1;
-    else if ( y1 < 0 )
-        y1 = 0;
+	else if( y1 < 0 )
+		y1 = 0;
 	if( z1 >= dimSize )
 		z1 = dimSize - 1;
-    else if ( z1 < 0 )
-        z1 = 0;
+	else if( z1 < 0 )
+		z1 = 0;
 
 	p000 = lut->getIndexedColor( x0, y0, z0 );
 	p001 = lut->getIndexedColor( x0, y0, z1 );

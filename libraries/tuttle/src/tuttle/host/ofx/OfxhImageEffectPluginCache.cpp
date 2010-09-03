@@ -9,10 +9,9 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-
 OfxhImageEffectPluginCache::OfxhImageEffectPluginCache( tuttle::host::ofx::imageEffect::OfxhImageEffectHost& host )
-	: OfxhPluginAPICacheI( kOfxImageEffectPluginApi, 1, 1 ),
-	_host( &host ) {}
+	: OfxhPluginAPICacheI( kOfxImageEffectPluginApi, 1, 1 )
+	, _host( &host ) {}
 
 OfxhImageEffectPluginCache::~OfxhImageEffectPluginCache() {}
 
@@ -24,7 +23,7 @@ OfxhImageEffectPlugin* OfxhImageEffectPluginCache::getPluginById( const std::str
 {
 	if( vermaj == -1 &&  vermin == -1 )
 		return _pluginsByID[id];
-	
+
 	// return the highest version one, which fits the pattern provided
 	OfxhImageEffectPlugin* sofar = 0;
 
@@ -123,10 +122,10 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		BOOST_THROW_EXCEPTION( exception::OfxCustom()
-			<< exception::ofxStatus( rval )
-			<< exception::user( "Loading plugin failed." )
-			<< exception::dev( "kOfxActionLoad failed." )
-			<< exception::pluginIdentifier( op.getIdentifier() ) );
+		    << exception::ofxStatus( rval )
+		    << exception::user( "Loading plugin failed." )
+		    << exception::dev( "kOfxActionLoad failed." )
+		    << exception::pluginIdentifier( op.getIdentifier() ) );
 	}
 
 	rval = plug->mainEntry( kOfxActionDescribe, p.getDescriptor().getHandle(), 0, 0 );
@@ -134,10 +133,10 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		BOOST_THROW_EXCEPTION( exception::OfxCustom()
-			<< exception::ofxStatus( rval )
-			<< exception::user( "Loading plugin failed." )
-			<< exception::dev( "kOfxActionDescribe failed." )
-			<< exception::pluginIdentifier( op.getIdentifier() ) );
+		    << exception::ofxStatus( rval )
+		    << exception::user( "Loading plugin failed." )
+		    << exception::dev( "kOfxActionDescribe failed." )
+		    << exception::pluginIdentifier( op.getIdentifier() ) );
 	}
 
 	const imageEffect::OfxhImageEffectNodeDescriptor& e = p.getDescriptor();
@@ -156,10 +155,10 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		BOOST_THROW_EXCEPTION( exception::OfxCustom()
-			<< exception::ofxStatus( rval )
-			<< exception::user( "Unloading plugin failed at initialization.." )
-			<< exception::dev( "kOfxActionUnload failed." )
-			<< exception::pluginIdentifier( op.getIdentifier() ) );
+		    << exception::ofxStatus( rval )
+		    << exception::user( "Unloading plugin failed at initialization.." )
+		    << exception::dev( "kOfxActionUnload failed." )
+		    << exception::pluginIdentifier( op.getIdentifier() ) );
 	}
 }
 
@@ -202,7 +201,8 @@ void OfxhImageEffectPluginCache::confirmPlugin( OfxhPlugin& p )
 bool OfxhImageEffectPluginCache::pluginSupported( const tuttle::host::ofx::OfxhPlugin& p, std::string& reason ) const
 {
 	const OfxhImageEffectPlugin* imageEffectPlugin = dynamic_cast<const OfxhImageEffectPlugin*>( &p );
-	if( ! imageEffectPlugin )
+
+	if( !imageEffectPlugin )
 		return false;
 	return Core::instance().getHost().pluginSupported( *imageEffectPlugin, reason );
 }
@@ -229,7 +229,6 @@ OfxhPlugin* OfxhImageEffectPluginCache::newPlugin( OfxhPluginBinary&  pb,
 
 	return plugin;
 }
-
 
 std::ostream& operator<<( std::ostream& os, const OfxhImageEffectPluginCache& v )
 {

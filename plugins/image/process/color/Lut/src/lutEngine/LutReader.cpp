@@ -23,6 +23,7 @@ bool LutReader::read( const fs::path& filename )
 {
 	std::stringstream ss;
 	fs::ifstream file;
+
 	_bReadOk = false;
 	_data.clear();
 	_steps.clear();
@@ -42,7 +43,7 @@ bool LutReader::read( const fs::path& filename )
 			( *it ) *= norm;
 		}
 	}
-	if (info.full)
+	if( info.full )
 		_bReadOk = true;
 
 	return !info.full;

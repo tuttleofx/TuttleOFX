@@ -16,30 +16,28 @@ namespace ofx {
 /**
  * exception, representing an OfxStatus
  */
-class OfxhException : public std::logic_error, virtual public boost::exception
+class OfxhException : public std::logic_error
+	, virtual public boost::exception
 {
-	OfxStatus _stat;
+OfxStatus _stat;
 
 public:
 	explicit OfxhException( const std::string& what )
-	: boost::exception()
-	, std::logic_error( what )
-	{
-	}
+		: boost::exception()
+		, std::logic_error( what )
+	{}
 
 	explicit OfxhException( OfxStatus stat )
 		: boost::exception()
 		, std::logic_error( ofx::mapStatusToString( stat ) )
 		, _stat( stat )
-	{
-	}
+	{}
 
 	explicit OfxhException( OfxStatus stat, const std::string& what )
 		: boost::exception()
 		, std::logic_error( ofx::mapStatusToString( stat ) + " " + what )
 		, _stat( stat )
-	{
-	}
+	{}
 
 	/// get the status
 	OfxStatus getStatus() const
@@ -58,7 +56,7 @@ public:
 //#if !defined(WINDOWS) || !defined(SWIG)
 // #define OFX_EXCEPTION_SPEC throw(tuttle::host::ofx::OfxhException)
 //#else
- #define OFX_EXCEPTION_SPEC
+#define OFX_EXCEPTION_SPEC
 //#endif
 
 }

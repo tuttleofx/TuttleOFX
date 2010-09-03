@@ -23,8 +23,8 @@ namespace writer {
 
 template<class View>
 OpenImageIOWriterProcess<View>::OpenImageIOWriterProcess( OpenImageIOWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
 {
 	this->setNoMultiThreading();
 }
@@ -39,7 +39,7 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
-	OpenImageIOWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
+	OpenImageIOWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 	try
 	{
 		/// @todo tuttle: use params._components
@@ -47,22 +47,22 @@ void OpenImageIOWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	}
 	catch( exception::Common& e )
 	{
-		e << exception::filename(params._filepath);
-		COUT_ERROR( boost::diagnostic_information(e) );
-//		throw;
+		e << exception::filename( params._filepath );
+		COUT_ERROR( boost::diagnostic_information( e ) );
+		//		throw;
 	}
-	catch( ... )
+	catch(... )
 	{
-//		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::user( "Unable to write image")
-//			<< exception::filename(params._filepath) );
+		//		BOOST_THROW_EXCEPTION( exception::Unknown()
+		//			<< exception::user( "Unable to write image")
+		//			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	copy_pixels( this->_srcView, this->_dstView );
 }
 
 /**
- * 
+ *
  */
 template<class View>
 void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::string& filepath, const TypeDesc bitDepth )
@@ -74,14 +74,14 @@ void OpenImageIOWriterProcess<View>::writeImage( const View& src, const std::str
 	out->open( filepath, spec );
 
 	typedef mpl::map<
-      mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT8> >
-    , mpl::pair<gil::bits16, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT16> >
-    , mpl::pair<gil::bits32, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT32> >
-    , mpl::pair<gil::bits32f, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::FLOAT> >
-    > MapBits;
+	    mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT8> >,
+	    mpl::pair<gil::bits16, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT16> >,
+	    mpl::pair<gil::bits32, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT32> >,
+	    mpl::pair<gil::bits32f, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::FLOAT> >
+	    > MapBits;
 	typedef typename gil::channel_type<View>::type ChannelType;
 
-	out->write_image( mpl::at<MapBits, ChannelType>::type::value, &((*src.begin())[0]) ); // get the adress of the first channel value from the first pixel
+	out->write_image( mpl::at<MapBits, ChannelType>::type::value, &( ( *src.begin() )[0] ) ); // get the adress of the first channel value from the first pixel
 	out->close();
 }
 

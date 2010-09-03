@@ -46,10 +46,7 @@
 namespace tuttle {
 namespace host {
 namespace ofx {
-namespace APICache {
-
-
-}
+namespace APICache {}
 }
 }
 }

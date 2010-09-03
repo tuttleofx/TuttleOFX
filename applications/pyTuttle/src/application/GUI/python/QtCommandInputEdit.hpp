@@ -3,7 +3,6 @@
 
 #include <python/EmbeddedPython.hpp>
 
-
 #include <string>
 
 #include <QtGui/QTextEdit>
@@ -11,45 +10,45 @@
 
 class QtCommandInputEdit : public QTextEdit
 {
-	Q_OBJECT
-public:
-	QtCommandInputEdit( QWidget * parent = 0 );
+Q_OBJECT
 
 public:
-	void setEmbeddedPython( EmbeddedPython* python ){ m_embeddedPython = python; }
+	QtCommandInputEdit( QWidget* parent = 0 );
+
+public:
+	void        setEmbeddedPython( EmbeddedPython* python ) { m_embeddedPython = python; }
 	const char* textToExecute();
-	QString charUnderCursor( ) const;
-	QString wordUnderCursor( ) const;
-	std::string wordUnderCursor_std( ) const;
+	QString     charUnderCursor() const;
+	QString     wordUnderCursor() const;
+	std::string wordUnderCursor_std() const;
 
 signals:
-	void executeScript( );
+	void executeScript();
 
 private:
 	void scriptExecuted();
 
 protected:
-	void keyPressEvent( QKeyEvent * e );
-    void focusInEvent(QFocusEvent *e);
+	void keyPressEvent( QKeyEvent* e );
+	void focusInEvent( QFocusEvent* e );
 
 protected:
-	bool navigateNext( );
-	bool navigatePrevious( );
-	void navigateCommandNext( );
-	void navigateCommandPrevious( );
-	void navigateOutputNext( );
-	void navigateOutputPrevious( );
+	bool navigateNext();
+	bool navigatePrevious();
+	void navigateCommandNext();
+	void navigateCommandPrevious();
+	void navigateOutputNext();
+	void navigateOutputPrevious();
 
-	void autocomplete( );
+	void autocomplete();
 
 protected:
 	void addTab();
 	void removeTab();
 	void removeLine();
 
-
 private slots:
-	void insertCompletion( const QString &completion );
+	void insertCompletion( const QString& completion );
 
 private:
 	void setCompleterList( QStringList& words );
@@ -57,8 +56,8 @@ private:
 	void initCompleter();
 
 private:
-	EmbeddedPython *m_embeddedPython;
-	QCompleter *m_completer;
+	EmbeddedPython* m_embeddedPython;
+	QCompleter* m_completer;
 	std::list<EmbeddedPython::CommandAndResult>::iterator m_navigation_iterator; // Lorsque l'on navigue dans l'historique des CommandAndResult
 	QString m_navigation_saveCommand; // Lorsque l'on navigue dans l'historique, on garde la commande en cours
 	bool m_navigation; // True : lorsque l'on navigue dans l'historique, False sinon

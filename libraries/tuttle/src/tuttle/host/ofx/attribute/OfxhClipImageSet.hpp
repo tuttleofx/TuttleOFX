@@ -15,8 +15,8 @@ class OfxhImageEffectNodeDescriptor;
 }
 namespace attribute {
 
-class OfxhClipImageSet :
-	virtual public OfxhIObject
+class OfxhClipImageSet
+	: virtual public OfxhIObject
 	//, public ClipAccessorSet
 {
 public:
@@ -43,9 +43,9 @@ public:
 
 	bool operator==( const This& other ) const;
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
-#ifndef SWIG
+	#ifndef SWIG
 	void copyClipsValues( const OfxhClipImageSet& other );
-	
+
 	void populateClips( const imageEffect::OfxhImageEffectNodeDescriptor& descriptor ) OFX_EXCEPTION_SPEC;
 
 	const ClipImageMap& getClips() const
@@ -124,9 +124,8 @@ public:
 
 private:
 	void initMapFromList();
-#endif
+	#endif
 };
-
 
 }
 }

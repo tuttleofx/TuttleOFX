@@ -26,37 +26,39 @@ OfxRectD pointsBoundingBox( const P& a, const P& b, const P& c, const P& d )
 template<typename Point2>
 inline OfxRectD pointsBoundingBox( const std::vector<Point2>& points )
 {
-    // if( !points.size() )
-    //  BOOST_THROW_EXCEPTION...
-    const Point2 p( points[0] );
-    OfxRectD bounds = { p.x, p.y, p.x, p.y};
-    for( typename std::vector<Point2>::const_iterator it = points.begin(), itEnd = points.end();
-         it != itEnd;
-         ++it )
-    {
-        if( it->x < bounds.x1 )
-            bounds.x1 = it->x;
-        else if( it->x > bounds.x2 )
-            bounds.x2 = it->x;
+	// if( !points.size() )
+	//  BOOST_THROW_EXCEPTION...
+	const Point2 p( points[0] );
+	OfxRectD bounds = { p.x, p.y, p.x, p.y };
 
-        if( it->y < bounds.y1 )
-            bounds.y1 = it->y;
-        else if( it->y > bounds.y2 )
-            bounds.y2 = it->y;
-    }
-    return bounds;
+	for( typename std::vector<Point2>::const_iterator it = points.begin(), itEnd = points.end();
+	     it != itEnd;
+	     ++it )
+	{
+		if( it->x < bounds.x1 )
+			bounds.x1 = it->x;
+		else if( it->x > bounds.x2 )
+			bounds.x2 = it->x;
+
+		if( it->y < bounds.y1 )
+			bounds.y1 = it->y;
+		else if( it->y > bounds.y2 )
+			bounds.y2 = it->y;
+	}
+	return bounds;
 }
 
 template<class Point2>
 Point2 pointsMinXY( const std::vector<Point2>& points )
 {
-    // if( !points.size() )
-    //  BOOST_THROW_EXCEPTION...
+	// if( !points.size() )
+	//  BOOST_THROW_EXCEPTION...
 	Point2 p = points[0];
-	for( typename std::vector<Point2>::const_iterator it = points.begin()+1, itEnd = points.end();
-         it != itEnd;
-         ++it )
-    {
+
+	for( typename std::vector<Point2>::const_iterator it = points.begin() + 1, itEnd = points.end();
+	     it != itEnd;
+	     ++it )
+	{
 		if( it->x < p.x )
 			p.x = it->x;
 		if( it->y < p.y )
@@ -68,13 +70,14 @@ Point2 pointsMinXY( const std::vector<Point2>& points )
 template<class Point2>
 Point2 pointsMaxXY( const std::vector<Point2>& points )
 {
-    // if( !points.size() )
-    //  BOOST_THROW_EXCEPTION...
+	// if( !points.size() )
+	//  BOOST_THROW_EXCEPTION...
 	Point2 p = points[0];
-	for( typename std::vector<Point2>::const_iterator it = points.begin()+1, itEnd = points.end();
-         it != itEnd;
-         ++it )
-    {
+
+	for( typename std::vector<Point2>::const_iterator it = points.begin() + 1, itEnd = points.end();
+	     it != itEnd;
+	     ++it )
+	{
 		if( it->x > p.x )
 			p.x = it->x;
 		if( it->y > p.y )
@@ -87,6 +90,7 @@ template<class R>
 R rectanglesIntersection( const R& a, const R& b )
 {
 	R bb;
+
 	bb.x1 = std::max( a.x1, b.x1 );
 	bb.x2 = std::max( bb.x1, std::min( a.x2, b.x2 ) );
 	bb.y1 = std::max( a.y1, b.y1 );

@@ -52,21 +52,21 @@ OfxhProperty::OfxhProperty( const std::string& name,
                             TypeEnum           type,
                             size_t             dimension,
                             bool               pluginReadOnly )
-	: _name( name ),
-	_type( type ),
-	_dimension( dimension ),
-	_pluginReadOnly( pluginReadOnly ),
-	_modifiedBy( eModifiedByHost),
-	_getHook( NULL )
-	{}
+	: _name( name )
+	, _type( type )
+	, _dimension( dimension )
+	, _pluginReadOnly( pluginReadOnly )
+	, _modifiedBy( eModifiedByHost )
+	, _getHook( NULL )
+{}
 
 OfxhProperty::OfxhProperty( const OfxhProperty& other )
-	: _name( other._name ),
-	_type( other._type ),
-	_dimension( other._dimension ),
-	_pluginReadOnly( other._pluginReadOnly ),
-	_modifiedBy( other._modifiedBy ),
-	_getHook( NULL )
+	: _name( other._name )
+	, _type( other._type )
+	, _dimension( other._dimension )
+	, _pluginReadOnly( other._pluginReadOnly )
+	, _modifiedBy( other._modifiedBy )
+	, _getHook( NULL )
 {}
 
 OfxhProperty::~OfxhProperty()

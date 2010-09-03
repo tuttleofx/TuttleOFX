@@ -13,7 +13,7 @@ namespace ofx {
 class OfxhIObject
 {
 public:
-    virtual ~OfxhIObject() = 0;
+	virtual ~OfxhIObject() = 0;
 };
 
 }
@@ -21,5 +21,4 @@ public:
 }
 
 #endif
-
 

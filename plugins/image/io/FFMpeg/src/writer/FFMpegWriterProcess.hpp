@@ -17,7 +17,6 @@
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
@@ -30,14 +29,14 @@ namespace writer {
 template<class View>
 class FFMpegWriterProcess : public ImageGilFilterProcessor<View>
 {
-protected :
-    FFMpegWriterPlugin&	_plugin;		///< Rendering plugin
+protected:
+	FFMpegWriterPlugin& _plugin;        ///< Rendering plugin
 	FFMpegProcessParams _params;
-	
+
 public:
-    FFMpegWriterProcess( FFMpegWriterPlugin& instance );
-    
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	FFMpegWriterProcess( FFMpegWriterPlugin& instance );
+
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

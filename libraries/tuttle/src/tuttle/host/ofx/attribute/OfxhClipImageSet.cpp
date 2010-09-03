@@ -40,7 +40,7 @@ void OfxhClipImageSet::copyClipsValues( const OfxhClipImageSet& other )
 	if( _clipsByOrder.size() != other._clipsByOrder.size() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev( "You try to copy clips values, but the two lists are not identical." ) );
+		    << exception::dev( "You try to copy clips values, but the two lists are not identical." ) );
 	}
 
 	ClipImageVector::const_iterator oit = other._clipsByOrder.begin(), oitEnd = other._clipsByOrder.end();
@@ -48,14 +48,14 @@ void OfxhClipImageSet::copyClipsValues( const OfxhClipImageSet& other )
 	     it != itEnd && oit != oitEnd;
 	     ++it, ++oit )
 	{
-		OfxhClipImage& c = *it;
+		OfxhClipImage& c        = *it;
 		const OfxhClipImage& oc = *oit;
 		if( c.getName() != oc.getName() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev( "You try to copy clips values, but it is not the same clips in the two lists." ) );
+			    << exception::dev( "You try to copy clips values, but it is not the same clips in the two lists." ) );
 		}
-		c.copyValues(oc);
+		c.copyValues( oc );
 	}
 }
 
@@ -74,17 +74,15 @@ void OfxhClipImageSet::populateClips( const imageEffect::OfxhImageEffectNodeDesc
 		OfxhClipImage* instance = newClipImage( *it ); //( this, *it, counter );
 		if( !instance )
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev( "Error on ClipImage creation." ) );
+			    << exception::dev( "Error on ClipImage creation." ) );
 
 		_clipsByOrder.push_back( instance );
 		_clips[name] = instance;
 	}
 }
 
-
 }
 }
 }
 }
-
 

@@ -14,13 +14,13 @@ class Attribute
 {
 protected:
 	/*const*/ ImageEffectNode& _effect;
-	
+
 public:
 	Attribute( ImageEffectNode& effect );
 	virtual ~Attribute() = 0;
 
 	virtual const std::string& getName() const = 0;
-	const ImageEffectNode& getNode() const;
+	const ImageEffectNode&     getNode() const;
 };
 
 }

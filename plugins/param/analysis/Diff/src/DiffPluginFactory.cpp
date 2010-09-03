@@ -46,9 +46,10 @@ void DiffPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void DiffPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                           OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClipA = desc.defineClip( kDiffSourceA );
+
 	assert( srcClipA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -63,7 +64,7 @@ void DiffPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	srcClipB->setOptional( false );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -75,14 +76,14 @@ void DiffPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	diffFunction->appendOption( "PSNR (Peak Signal to Noise Ratio)" );
 	diffFunction->appendOption( "MSE (Mean Square Error)" );
 	diffFunction->appendOption( "SSIM (Structural SIMilarity)" );
-	diffFunction->setDefault(0);
+	diffFunction->setDefault( 0 );
 
 	OFX::RGBAParamDescriptor* outputQualityMesure = desc.defineRGBAParam( kOutputQualityMesure );
 	assert( outputQualityMesure );
 	outputQualityMesure->setLabel( "Quality" );
 	outputQualityMesure->setEvaluateOnChange( false );
 
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kHelpButton );
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
 	assert( helpButton );
 	helpButton->setLabel( "Help" );
 }
@@ -94,7 +95,7 @@ void DiffPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* DiffPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                     OFX::EContext        context )
 {
 	return new DiffPlugin( handle );
 }

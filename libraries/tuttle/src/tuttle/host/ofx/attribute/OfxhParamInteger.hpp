@@ -11,10 +11,9 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
-class OfxhParamInteger :
-    public OfxhParam,
-	public OfxhKeyframeParam
+class OfxhParamInteger
+	: public OfxhParam
+	, public OfxhKeyframeParam
 {
 protected:
 	std::size_t _index;
@@ -23,22 +22,23 @@ public:
 	typedef int BaseType;
 	OfxhParamInteger( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance, const std::size_t index = 0 )
 		: OfxhParam( descriptor, name, setInstance )
-		, _index(index)
+		, _index( index )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
 	}
 
 	// Deriving implementatation needs to overide these
-	virtual void get( int& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const int&, const EChange change )         OFX_EXCEPTION_SPEC = 0;
+	virtual void get( int& ) const OFX_EXCEPTION_SPEC                                                 = 0;
+	virtual void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC                       = 0;
+	virtual void set( const int&, const EChange change )         OFX_EXCEPTION_SPEC                   = 0;
 	virtual void setAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
 
 	virtual void set( const bool& v, const EChange change )         OFX_EXCEPTION_SPEC
 	{
 		set( int(v), change );
 	}
+
 	virtual void setAtTime( const OfxTime time, const bool& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		setAtTime( time, int(v), change );
@@ -67,12 +67,10 @@ public:
 	virtual void integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC;
 };
 
-
 }
 }
 }
 }
-
 
 #endif
 

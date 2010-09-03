@@ -4,7 +4,7 @@ namespace tuttle {
 namespace host {
 namespace memory {
 
-IMemoryCache::~IMemoryCache(){}
+IMemoryCache::~IMemoryCache() {}
 
 }
 }

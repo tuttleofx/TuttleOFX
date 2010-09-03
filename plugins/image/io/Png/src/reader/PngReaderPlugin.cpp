@@ -22,14 +22,14 @@ namespace bfs = boost::filesystem;
 using namespace boost::gil;
 
 PngReaderPlugin::PngReaderPlugin( OfxImageEffectHandle handle )
-: ReaderPlugin( handle )
-{
-}
+	: ReaderPlugin( handle )
+{}
 
-PngReaderProcessParams PngReaderPlugin::getProcessParams(const OfxTime time)
+PngReaderProcessParams PngReaderPlugin::getProcessParams( const OfxTime time )
 {
 	PngReaderProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
+
+	params._filepath = getAbsoluteFilenameAt( time );
 	return params;
 }
 
@@ -42,6 +42,7 @@ void PngReaderPlugin::render( const OFX::RenderArguments& args )
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = this->_clipDst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = this->_clipDst->getPixelComponents();
+
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
@@ -119,19 +120,19 @@ void PngReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else
 	{
-		ReaderPlugin::changedParam(args, paramName);
+		ReaderPlugin::changedParam( args, paramName );
 	}
 }
 
 bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const std::string filename( getAbsoluteFilenameAt(args.time) );
+	const std::string filename( getAbsoluteFilenameAt( args.time ) );
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
-			<< exception::user( "File doesn't exist." )
-			<< exception::filename( filename ) );
+		    << exception::user( "File doesn't exist." )
+		    << exception::filename( filename ) );
 	}
 	try
 	{
@@ -144,7 +145,7 @@ bool PngReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 	}
 	catch( boost::exception& e )
 	{
-		e << exception::filename(filename);
+		e << exception::filename( filename );
 		throw;
 	}
 	return true;
@@ -155,12 +156,12 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<< exception::filename( filename )
-			);
+		    << exception::user( "No input file." )
+		    << exception::filename( filename )
+		                       );
 	}
 
 	switch( getExplicitConversion() )
@@ -168,7 +169,7 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		case eReaderParamExplicitConversionAuto:
 		{
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
-			int bitDepth = png_read_precision( filename );
+			int bitDepth      = png_read_precision( filename );
 			switch( bitDepth )
 			{
 				case 8:

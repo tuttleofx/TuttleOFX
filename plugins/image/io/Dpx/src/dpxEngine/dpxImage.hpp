@@ -249,10 +249,10 @@ private:
 	boost::shared_array<boost::uint8_t> _data;      /// raw data
 	boost::shared_array<boost::uint8_t> _indyData;  /// right endianness reinterpreted data
 
-	void            readHeader( fs::ifstream& f );
-	bool            isEndianReinterpNeeded() const;
+	void                                readHeader( fs::ifstream& f );
+	bool                                isEndianReinterpNeeded() const;
 	boost::shared_array<boost::uint8_t> reinterpretEndianness() const;
-	size_t readDynamicHdrData(uint8_t *dst, size_t maxLen, uint8_t *buffer, size_t bufpos);
+	size_t                              readDynamicHdrData( uint8_t* dst, size_t maxLen, uint8_t* buffer, size_t bufpos );
 
 public:
 	enum EDPX_CompType

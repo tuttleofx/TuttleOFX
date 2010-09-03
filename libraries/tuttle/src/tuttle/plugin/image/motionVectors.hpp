@@ -35,7 +35,6 @@ namespace plugin {
 
 namespace bgil = boost::gil;
 
-
 /**
  * @brief change intensity and rotate vectors.
  * @param [in/out] xVecView image of x vectors
@@ -44,10 +43,11 @@ namespace bgil = boost::gil;
  * @param [in] intensity scale vectors values
  * @param [in] p inform progress
  */
-template< typename View> // Models RandomAccess2DImageViewConcept
+template< typename View>
+// Models RandomAccess2DImageViewConcept
 bool modifyVectors( const View& xVecView, const View& yVecView,
-				    const double angle, const double intensity,
-					tuttle::plugin::Progress* p )
+                    const double angle, const double intensity,
+                    tuttle::plugin::Progress* p )
 {
 	BOOST_ASSERT( yVecView.width() != 0 );
 	BOOST_ASSERT( yVecView.height() != 0 );
@@ -62,15 +62,15 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 	const double sinAngle = std::sin( angle );
 
 	for( int y = 0;
-			 y < xVecView.height();
-			 ++y )
+	     y < xVecView.height();
+	     ++y )
 	{
-		typename View::x_iterator it_xVec = xVecView.row_begin(y);
-		typename View::x_iterator itEnd_xVec = xVecView.row_end(y);
-		typename View::x_iterator it_yVec = yVecView.row_begin(y);
+		typename View::x_iterator it_xVec    = xVecView.row_begin( y );
+		typename View::x_iterator itEnd_xVec = xVecView.row_end( y );
+		typename View::x_iterator it_yVec    = yVecView.row_begin( y );
 		for( ;
-			 it_xVec != itEnd_xVec;
-			 ++it_xVec, ++it_yVec )
+		     it_xVec != itEnd_xVec;
+		     ++it_xVec, ++it_yVec )
 		{
 			VecPoint2 gradient;
 			gradient.x = bgil::get_color( *it_xVec, bgil::gray_color_t() );
@@ -86,7 +86,7 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 			bgil::get_color( *it_xVec, bgil::gray_color_t() ) = motion.x;
 			bgil::get_color( *it_yVec, bgil::gray_color_t() ) = motion.y;
 		}
-		if( p->progressForward( ) )
+		if( p->progressForward() )
 			return true;
 	}
 	return false;
@@ -94,15 +94,15 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 
 template<typename GView, typename View, typename Point, typename Scalar>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
-                  const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::convolve_boundary_option boundary_option,
-                  tuttle::plugin::Progress* p )
+                             const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::convolve_boundary_option boundary_option,
+                             tuttle::plugin::Progress* p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
-	correlate_rows<GPixel>( color_converted_view<GPixel>(img), kernel, xGradientView, topleft, boundary_option );
+	correlate_rows<GPixel>( color_converted_view<GPixel>( img ), kernel, xGradientView, topleft, boundary_option );
 	if( p->progressForward( xGradientView.height() ) )
 		return true;
-	correlate_cols<GPixel>( color_converted_view<GPixel>(img), kernel, yGradientView, topleft, boundary_option );
+	correlate_cols<GPixel>( color_converted_view<GPixel>( img ), kernel, yGradientView, topleft, boundary_option );
 	if( p->progressForward( yGradientView.height() ) )
 		return true;
 	return false;
@@ -110,15 +110,15 @@ bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& i
 
 template<typename GView, typename View, typename Point, typename Scalar>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
-                  const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::kernel_1d<Scalar>& kernelSecondary, const boost::gil::convolve_boundary_option boundary_option,
-                  tuttle::plugin::Progress* p )
+                             const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::kernel_1d<Scalar>& kernelSecondary, const boost::gil::convolve_boundary_option boundary_option,
+                             tuttle::plugin::Progress* p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
-	correlate_rows_cols<GPixel>( color_converted_view<GPixel>(img), kernel, kernelSecondary, xGradientView, topleft, boundary_option );
+	correlate_rows_cols<GPixel>( color_converted_view<GPixel>( img ), kernel, kernelSecondary, xGradientView, topleft, boundary_option );
 	if( p->progressForward( xGradientView.height() ) )
 		return true;
-	correlate_rows_cols<GPixel>( color_converted_view<GPixel>(img), kernelSecondary, kernel, yGradientView, topleft, boundary_option );
+	correlate_rows_cols<GPixel>( color_converted_view<GPixel>( img ), kernelSecondary, kernel, yGradientView, topleft, boundary_option );
 	if( p->progressForward( yGradientView.height() ) )
 		return true;
 	return false;
@@ -128,15 +128,16 @@ bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& i
  * @brief Moves the pixels based on the variation of the mask (the derivative: [-1 0 1] kernel)
  */
 template <typename Sampler, // Models SamplerConcept
-typename SrcView, // Models RandomAccess2DImageViewConcept
-typename VecView, // Models RandomAccess2DImageViewConcept
-typename DstView> // Models MutableRandomAccess2DImageViewConcept
+          typename SrcView, // Models RandomAccess2DImageViewConcept
+          typename VecView, // Models RandomAccess2DImageViewConcept
+          typename DstView>
+// Models MutableRandomAccess2DImageViewConcept
 bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcRod,
-							        const VecView& xVecView, const VecView& yVecView, const OfxRectI& vecRod,
-							        const DstView& dstView, const OfxRectI& dstRod,
-							        const OfxRectI& procWindowRoW,
-							        tuttle::plugin::Progress* p,
-							        Sampler sampler = Sampler( ) )
+                                    const VecView& xVecView, const VecView& yVecView, const OfxRectI& vecRod,
+                                    const DstView& dstView, const OfxRectI& dstRod,
+                                    const OfxRectI& procWindowRoW,
+                                    tuttle::plugin::Progress* p,
+                                    Sampler sampler = Sampler() )
 {
 	BOOST_ASSERT( srcView.width() == srcRod.x2 - srcRod.x1 );
 	BOOST_ASSERT( srcView.height() == srcRod.y2 - srcRod.y1 );
@@ -149,7 +150,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 
 	BOOST_ASSERT( dstView.width() == dstRod.x2 - dstRod.x1 );
 	BOOST_ASSERT( dstView.height() == dstRod.y2 - dstRod.y1 );
-	
+
 	typedef typename DstView::point_t Point2Integer;
 	typedef typename boost::gil::channel_type<VecView>::type::base_channel_t VecChannel;
 	typedef typename boost::gil::point2<VecChannel> VecPoint2;
@@ -157,7 +158,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 	typedef typename DstView::value_type DstPixel;
 
 	DstPixel black;
-	color_convert( bgil::rgba32f_pixel_t(0.0,0.0,0.0,0.0), black );
+	color_convert( bgil::rgba32f_pixel_t( 0.0, 0.0, 0.0, 0.0 ), black );
 
 	// shift between the procWindow and the output clip RoD
 	// __________________________
@@ -188,7 +189,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 		const Coord yDst = y - dstRod.y1;
 		const Coord ySrc = y - srcRod.y1;
 		const Coord yVec = y - vecRod.y1;
-		typename DstView::x_iterator xit_dst = dstView.x_at( shiftProcWinDstRod.x1, yDst );
+		typename DstView::x_iterator xit_dst  = dstView.x_at( shiftProcWinDstRod.x1, yDst );
 		typename VecView::x_iterator xit_xVec = xVecView.x_at( shiftProcWinVecRod.x1, yVec );
 		typename VecView::x_iterator xit_yVec = yVecView.x_at( shiftProcWinVecRod.x1, yVec );
 		for( Coord x = procWindowRoW.x1;
@@ -220,7 +221,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 
 		// notify the end of the line to inform the progress
 		// and allows the host to abort
-		if( p->progressForward( ) )
+		if( p->progressForward() )
 			return true;
 	}
 	return false;
@@ -228,7 +229,6 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
 
 }
 }
-
 
 #endif
 

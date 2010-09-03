@@ -5,7 +5,6 @@
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace crop {
@@ -19,6 +18,7 @@ class CropProcess : public ImageGilFilterProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
+
 protected:
 	CropPlugin&          _plugin;        ///< Rendering plugin
 	OfxRectI _srcBounds;    ///< Current source bounds

@@ -17,17 +17,18 @@ namespace writer {
 using namespace boost::gil;
 
 EXRWriterPlugin::EXRWriterPlugin( OfxImageEffectHandle handle )
-: WriterPlugin( handle )
+	: WriterPlugin( handle )
 {
 	_componentsType = fetchChoiceParam( kParamComponentsType );
 }
 
-EXRWriterProcessParams EXRWriterPlugin::getProcessParams(const OfxTime time)
+EXRWriterProcessParams EXRWriterPlugin::getProcessParams( const OfxTime time )
 {
 	EXRWriterProcessParams params;
-	params._bitDepth = (EParamBitDepth)this->_paramBitDepth->getValue();
+
+	params._bitDepth       = ( EParamBitDepth ) this->_paramBitDepth->getValue();
 	params._componentsType = (ECompType)_componentsType->getValue();
-	params._filepath = getAbsoluteFilenameAt(time);
+	params._filepath       = getAbsoluteFilenameAt( time );
 	return params;
 }
 

@@ -4,7 +4,6 @@
 
 #include <boost/foreach.hpp>
 
-
 namespace tuttle {
 namespace host {
 namespace graph {
@@ -12,14 +11,14 @@ namespace graph {
 const std::string ProcessGraph::_outputId( "TUTTLE_FAKE_OUTPUT" );
 
 ProcessGraph::ProcessGraph( Graph& graph, const std::list<std::string>& outputNodes )
-: _instanceCount( graph.getInstanceCount() )
+	: _instanceCount( graph.getInstanceCount() )
 {
 	_graph.copyTransposed( graph.getGraph() );
 
-	Vertex outputVertex(_outputId);
+	Vertex outputVertex( _outputId );
 	_graph.addVertex( outputVertex );
-	
-	BOOST_FOREACH( const std::string& s, outputNodes )
+
+	BOOST_FOREACH( const std::string & s, outputNodes )
 	{
 		_graph.connect( _outputId, s, "Output" );
 		COUT_DEBUG( "MY OUTPUT: " << s );
@@ -57,7 +56,7 @@ void ProcessGraph::relink()
 			{
 				newNode = origNode->clone();
 				/// @todo tuttle: no dynamic_cast here, _nodes must use tuttle::host::Node
-				_nodes.insert( key, dynamic_cast<Node*>(newNode) ); // owns the new pointer
+				_nodes.insert( key, dynamic_cast<Node*>( newNode ) ); // owns the new pointer
 				// our vertices have a link to our Nodes
 			}
 			v.setProcessNode( newNode );
@@ -66,40 +65,40 @@ void ProcessGraph::relink()
 }
 
 /*
-void removeVertexAndReconnectTo( const VertexDescriptor& v, const VertexDescriptor& other )
-{
-	InternalGraph::out_edge_iterator oe, oeEnd;
-	tie(oe, oeEnd) = out_edges(v, g);
-	// InternalGraph::in_edge_iterator ie, ieEnd;
-	// tie(ie, ieEnd) = in_edges(v, g);
+   void removeVertexAndReconnectTo( const VertexDescriptor& v, const VertexDescriptor& other )
+   {
+    InternalGraph::out_edge_iterator oe, oeEnd;
+    tie(oe, oeEnd) = out_edges(v, g);
+    // InternalGraph::in_edge_iterator ie, ieEnd;
+    // tie(ie, ieEnd) = in_edges(v, g);
 
-	for( ; oe != oeEnd; ++oe )
-		source( oe )
+    for( ; oe != oeEnd; ++oe )
+        source( oe )
 
-	_graph.removeVertex( v );
-}
-*/
-
-/*
-// May be interesting for process function.
-typedef std::vector< Vertex > container;
-container c;
-topological_sort( G, std::back_inserter(c) );
-
-cout << "A topological ordering: ";
-for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
-cout << index(*ii) << " ";
-cout << endl;
-*/
+    _graph.removeVertex( v );
+   }
+ */
 
 /*
-for( size_type i = 0; i < num_vertices(CG); ++i )
-	std::sort( CG[i].begin(), CG[i].end(),
-		boost::bind( std::less<cg_vertex>(),
-			boost::bind(detail::subscript(topo_number), _1 ),
-			boost::bind(detail::subscript(topo_number), _2 ) ) );
+   // May be interesting for process function.
+   typedef std::vector< Vertex > container;
+   container c;
+   topological_sort( G, std::back_inserter(c) );
 
-*/
+   cout << "A topological ordering: ";
+   for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
+   cout << index(*ii) << " ";
+   cout << endl;
+ */
+
+/*
+   for( size_type i = 0; i < num_vertices(CG); ++i )
+    std::sort( CG[i].begin(), CG[i].end(),
+        boost::bind( std::less<cg_vertex>(),
+            boost::bind(detail::subscript(topo_number), _1 ),
+            boost::bind(detail::subscript(topo_number), _2 ) ) );
+
+ */
 
 void ProcessGraph::process( const int tBegin, const int tEnd )
 {
@@ -109,8 +108,8 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	graph::exportAsDOT( "graphprocess.dot", _graph );
 
 	// Initialize variables
-	OfxPointD renderScale       = { 1.0, 1.0 };
-	OfxRectD renderWindow       = { 0, 0, 0, 0 };
+	OfxPointD renderScale = { 1.0, 1.0 };
+	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
 	ProcessOptions defaultOptions;
@@ -137,7 +136,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	{
 		defaultOptions._time = t;
 		COUT( "________________________________________ frame: " << t );
-		InternalGraphImpl renderGraph = _graph;
+		InternalGraphImpl renderGraph                = _graph;
 		InternalGraphImpl::vertex_descriptor& output = renderGraph.getVertexDescriptor( _outputId );
 
 		COUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
@@ -146,11 +145,12 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
 			Vertex& v = renderGraph.instance( vd );
+
 			v.setProcessOptions( defaultOptions );
-			v.getProcessOptions()._nbInputs = renderGraph.getInDegree( vd );
+			v.getProcessOptions()._nbInputs  = renderGraph.getInDegree( vd );
 			v.getProcessOptions()._nbOutputs = renderGraph.getOutDegree( vd );
 		}
-		
+
 		COUT( "---------------------------------------- connectClips" );
 		graph::visitor::ConnectClips<InternalGraphImpl> connectClipsVisitor( renderGraph );
 		renderGraph.dfs( connectClipsVisitor, output );
@@ -158,7 +158,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		COUT( "---------------------------------------- preprocess 1" );
 		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraph );
 		renderGraph.dfs( preProcess1Visitor, output );
-		
+
 		COUT( "---------------------------------------- preprocess 2" );
 		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraph );
 		renderGraph.bfs( preProcess2Visitor, output );

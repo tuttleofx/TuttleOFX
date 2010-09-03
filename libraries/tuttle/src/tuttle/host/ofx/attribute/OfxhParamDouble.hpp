@@ -6,16 +6,14 @@
 #include "OfxhParamSet.hpp"
 #include "OfxhKeyframeParam.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace attribute {
 
-
-class OfxhParamDouble :
-    public OfxhParam,
-	public OfxhKeyframeParam
+class OfxhParamDouble
+	: public OfxhParam
+	, public OfxhKeyframeParam
 {
 protected:
 	std::size_t _index;
@@ -24,29 +22,29 @@ public:
 	typedef double BaseType;
 	OfxhParamDouble( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance, const std::size_t index = 0 )
 		: OfxhParam( descriptor, name, setInstance )
-		, _index(index)
+		, _index( index )
 	{
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMin, this );
 		getEditableProperties().addNotifyHook( kOfxParamPropDisplayMax, this );
 	}
-	
+
 	// Deriving implementatation needs to overide these
-	virtual void get( double& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void getAtTime( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;
-	virtual void set( const double&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+	virtual void get( double& ) const OFX_EXCEPTION_SPEC                                                 = 0;
+	virtual void getAtTime( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC                       = 0;
+	virtual void set( const double&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
 	virtual void setAtTime( const OfxTime time, const double&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
 
 	virtual void set( const int& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		this->set( (const double)(v), change );
+		this->set( (const double)( v ), change );
 	}
 
 	virtual void setAtTime( const OfxTime time, const int& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		this->setAtTime( time, (const double)(v), change );
+		this->setAtTime( time, (const double)( v ), change );
 	}
 
-	virtual void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC = 0;
+	virtual void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC                          = 0;
 	virtual void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC = 0;
 
 	/// implementation of var args function
@@ -68,12 +66,10 @@ public:
 	virtual void integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC;
 };
 
-
 }
 }
 }
 }
-
 
 #endif
 

@@ -15,9 +15,7 @@ namespace fftTransform {
 namespace ifft {
 
 struct FftTransformProcessParams
-{
-	
-};
+{};
 
 /**
  * @brief FftTransform plugin
@@ -25,23 +23,23 @@ struct FftTransformProcessParams
 class IfftPlugin : public OFX::ImageEffect
 {
 public:
-    IfftPlugin( OfxImageEffectHandle handle );
-    OFX::Clip *getSrcClipRe( ) const;
-    OFX::Clip *getSrcClipIm( ) const;
-    OFX::Clip *getDstClip( ) const;
+	IfftPlugin( OfxImageEffectHandle handle );
+	OFX::Clip* getSrcClipRe() const;
+	OFX::Clip* getSrcClipIm() const;
+	OFX::Clip* getDstClip() const;
 
 public:
-    void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void render( const OFX::RenderArguments& args );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	
+
 	FftTransformProcessParams getProcessParams() const;
-	
+
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _srcClipMod; ///< Real part source image clip
-    OFX::Clip* _srcClipPhase; ///< Imaginary part source image clip
-    OFX::Clip* _clipDst; ///< Destination image clip
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _srcClipMod; ///< Real part source image clip
+	OFX::Clip* _srcClipPhase; ///< Imaginary part source image clip
+	OFX::Clip* _clipDst; ///< Destination image clip
 };
 
 }

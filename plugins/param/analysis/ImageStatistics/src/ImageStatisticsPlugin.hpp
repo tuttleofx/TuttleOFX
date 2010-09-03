@@ -23,26 +23,26 @@ struct ImageStatisticsProcessParams
 class ImageStatisticsPlugin : public OFX::ImageEffect
 {
 public:
-    ImageStatisticsPlugin( OfxImageEffectHandle handle );
+	ImageStatisticsPlugin( OfxImageEffectHandle handle );
 
 public:
-    void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void render( const OFX::RenderArguments& args );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
-    void getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois );
+	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 
 	ImageStatisticsProcessParams getProcessParams( const OfxRectI& srcRod ) const;
-	
+
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _clipSrc; ///< Source image clip
-    OFX::Clip* _clipDst; ///< Destination image clip
-	
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc; ///< Source image clip
+	OFX::Clip* _clipDst; ///< Destination image clip
+
 	OFX::ChoiceParam* _paramCoordinateSystem;
 	OFX::Double2DParam* _paramRectCenter;
 	OFX::Double2DParam* _paramRectSize;
 	OFX::ChoiceParam* _paramChooseOutput;
-	
+
 	OFX::RGBAParam* _paramOutputAverage;
 	OFX::RGBAParam* _paramOutputChannelMin;
 	OFX::RGBAParam* _paramOutputChannelMax;
@@ -50,7 +50,7 @@ public:
 	OFX::RGBAParam* _paramOutputLuminosityMax;
 	OFX::RGBAParam* _paramOutputKurtosis;
 	OFX::RGBAParam* _paramOutputSkewness;
-	
+
 	OFX::Double3DParam* _paramOutputAverageHSL;
 	OFX::Double3DParam* _paramOutputChannelMinHSL;
 	OFX::Double3DParam* _paramOutputChannelMaxHSL;

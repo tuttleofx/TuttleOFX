@@ -12,8 +12,8 @@ namespace writer {
 struct EXRWriterProcessParams
 {
 	std::string _filepath;       ///< filepath
-	EParamBitDepth   _bitDepth;		 ///< Bit depth
-	ECompType   _componentsType; ///< Components type
+	EParamBitDepth _bitDepth;        ///< Bit depth
+	ECompType _componentsType;   ///< Components type
 };
 
 /**
@@ -26,8 +26,8 @@ public:
 	EXRWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	EXRWriterProcessParams getProcessParams(const OfxTime time);
-	void render( const OFX::RenderArguments& args );
+	EXRWriterProcessParams getProcessParams( const OfxTime time );
+	void                   render( const OFX::RenderArguments& args );
 
 protected:
 	OFX::ChoiceParam*     _componentsType;  ///< Components type

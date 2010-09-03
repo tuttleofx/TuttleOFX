@@ -1,6 +1,5 @@
 #include "OfxhParamDescriptor.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -83,7 +82,6 @@ bool findType( const std::string paramType, property::TypeEnum& propType, int& p
 	}
 	return false;
 }
-
 
 /**
  * @brief make a parameter, with the given type and name
@@ -348,8 +346,6 @@ void OfxhParamDescriptor::initNumericParamProps( const std::string& type, proper
 		}
 	}
 }
-
-
 
 }
 }

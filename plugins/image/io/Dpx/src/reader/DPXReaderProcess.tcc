@@ -31,25 +31,23 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
-: ImageGilProcessor<View>( instance )
-, _plugin( instance )
-{
-}
+	: ImageGilProcessor<View>( instance )
+	, _plugin( instance )
+{}
 
 template<class View>
 DPXReaderProcess<View>::~DPXReaderProcess()
-{
-}
+{}
 
 template<class View>
 void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
 	ImageGilProcessor<View>::setup( args );
-	DPXReaderProcessParams params = _plugin.getProcessParams(args.time);
-	if( ! bfs::exists( params._filepath ) )
+	DPXReaderProcessParams params = _plugin.getProcessParams( args.time );
+	if( !bfs::exists( params._filepath ) )
 	{
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatFailed, std::string("Unable to open : ") + params._filepath ) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, std::string( "Unable to open : " ) + params._filepath ) );
 	}
 	_dpxImage.read( params._filepath, true );
 }
@@ -164,7 +162,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
-					OFX::Exception::Suite(kOfxStatFailed, std::string( "Error: unsupported dpx file format (RGBA10 byte packed). " ) );
+					OFX::Exception::Suite( kOfxStatFailed, std::string( "Error: unsupported dpx file format (RGBA10 byte packed). " ) );
 					break;
 				}
 			}
@@ -188,7 +186,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				case 1:
 				case 2:
 				{
-					OFX::Exception::Suite(kOfxStatFailed, std::string( "Error: unsupported dpx file format (ABGR10 byte packed). " ) );
+					OFX::Exception::Suite( kOfxStatFailed, std::string( "Error: unsupported dpx file format (ABGR10 byte packed). " ) );
 					break;
 				}
 			}

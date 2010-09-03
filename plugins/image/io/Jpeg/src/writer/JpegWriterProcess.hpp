@@ -23,7 +23,7 @@ protected:
 	JpegWriterPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-	JpegWriterProcess( JpegWriterPlugin & instance );
+	JpegWriterProcess( JpegWriterPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 

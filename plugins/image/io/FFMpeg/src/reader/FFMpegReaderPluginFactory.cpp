@@ -20,15 +20,14 @@ namespace plugin {
 namespace ffmpeg {
 namespace reader {
 
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleFfmpegReader", "FfmpegReader",
-		            "Ffmpeg video reader" );
+	                "Ffmpeg video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
 	// add the supported contexts
@@ -41,7 +40,7 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	desc.setSupportsMultipleClipDepths( true );
-	
+
 	// plugin flags
 	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
@@ -53,11 +52,12 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                                   OFX::EContext context )
+void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                                   OFX::EContext               context )
 {
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
@@ -67,7 +67,7 @@ void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
 	helpButton->setScriptName( "help" );
 }
 
@@ -78,9 +78,9 @@ void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor &d
  * @return  plugin instance
  */
 OFX::ImageEffect* FFMpegReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                             OFX::EContext        context )
 {
-	return new FFMpegReaderPlugin(handle);
+	return new FFMpegReaderPlugin( handle );
 }
 
 }

@@ -35,7 +35,7 @@ protected:
 	OfxRectI _srcPixelRodB;
 
 public:
-	MergeProcess( MergePlugin & instance );
+	MergeProcess( MergePlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
 

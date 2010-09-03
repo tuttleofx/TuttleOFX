@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMTWOCORNERS_HPP_
-#define	_TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMTWOCORNERS_HPP_
+#define _TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMTWOCORNERS_HPP_
 
 #include "Frame.hpp"
 #include "InteractInfos.hpp"
@@ -19,7 +19,7 @@ class ParamRectangleFromTwoCorners : public PointInteract
 public:
 	ParamRectangleFromTwoCorners( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeClip );
 	~ParamRectangleFromTwoCorners();
-	
+
 private:
 	OFX::Double2DParam* _paramA; ///< same as TL (min)
 	OFX::Double2DParam* _paramB; ///< same as BR (max)
@@ -31,7 +31,7 @@ private:
 	 *    |         |
 	 * L  |    C    |  R
 	 *    |         |
-	 *    |_________| 
+	 *    |_________|
 	 *  BL           BR
 	 *         B
 	 */
@@ -49,32 +49,34 @@ private:
 		eSelectTypeC
 	};
 	ESelectType _selectType;
-	
+
 public:
 	bool draw( const OFX::DrawArgs& args ) const;
 
 	ESelectType selectType( const OFX::PenArgs& args ) const;
 
 	EMoveType selectIfIntesect( const OFX::PenArgs& args );
-	bool selectIfIsIn( const OfxRectD& );
+	bool      selectIfIsIn( const OfxRectD& );
 
 	Point2 getPoint() const
 	{
-		if( ! _relativeFrame.isEnabled() )
-			return Point2(0, 0); // throw to stop overlay ?
+		if( !_relativeFrame.isEnabled() )
+			return Point2( 0, 0 ); // throw to stop overlay ?
 		OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
-		Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+		Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 		return pointNormalizedXXcToCanonicalXY( ofxToGil( ( _paramB->getValue() + _paramA->getValue() ) * 0.5 ), rodSize ) + Point2( rod.x1, rod.y1 );
 	}
+
 	void setPoint( const Scalar x, const Scalar y )
 	{
 		OfxRectD imgRod = _relativeFrame.getFrame( this->getTime() );
-		Point2 imgRodSize( imgRod.x2-imgRod.x1, imgRod.y2-imgRod.y1 );
-		Point2 mouse( x-imgRod.x1, y-imgRod.y1 );
+		Point2 imgRodSize( imgRod.x2 - imgRod.x1, imgRod.y2 - imgRod.y1 );
+		Point2 mouse( x - imgRod.x1, y - imgRod.y1 );
+
 		mouse = pointCanonicalXYToNormalizedXXc( mouse, imgRodSize );
 		Point2 currentPos = pointCanonicalXYToNormalizedXXc( getPoint(), imgRodSize );
-		OfxPointD pA = _paramA->getValue();
-		OfxPointD pB = _paramB->getValue();
+		OfxPointD pA      = _paramA->getValue();
+		OfxPointD pB      = _paramB->getValue();
 		switch( _selectType )
 		{
 			case eSelectTypeT:
@@ -133,29 +135,28 @@ public:
 			}
 		}
 	}
-};
 
+};
 
 template<class TFrame, ECoordonateSystem coord>
 ParamRectangleFromTwoCorners<TFrame, coord>::ParamRectangleFromTwoCorners( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeFrame )
-: PointInteract( infos )
-, _paramA( paramA )
-, _paramB( paramB )
-, _relativeFrame( relativeFrame )
-{
-}
+	: PointInteract( infos )
+	, _paramA( paramA )
+	, _paramB( paramB )
+	, _relativeFrame( relativeFrame )
+{}
 
 template<class TFrame, ECoordonateSystem coord>
-ParamRectangleFromTwoCorners<TFrame, coord>::~ParamRectangleFromTwoCorners( ) { }
+ParamRectangleFromTwoCorners<TFrame, coord>::~ParamRectangleFromTwoCorners() {}
 
 template<class TFrame, ECoordonateSystem coord>
 bool ParamRectangleFromTwoCorners<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
 {
 	PointInteract::draw( args );
 	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
-	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
-	Point2 pA( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
-	Point2 pB( pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 ) );
+	Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
+	Point2 pA( pointNormalizedXXcToCanonicalXY( ofxToGil( _paramA->getValue() ), rodSize ) + Point2( rod.x1, rod.y1 ) );
+	Point2 pB( pointNormalizedXXcToCanonicalXY( ofxToGil( _paramB->getValue() ), rodSize ) + Point2( rod.x1, rod.y1 ) );
 	overlay::displayRect( pA, pB );
 	return true;
 }
@@ -163,14 +164,15 @@ bool ParamRectangleFromTwoCorners<TFrame, coord>::draw( const OFX::DrawArgs& arg
 template<class TFrame, ECoordonateSystem coord>
 typename ParamRectangleFromTwoCorners<TFrame, coord>::ESelectType ParamRectangleFromTwoCorners<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
-	const Point2 p = ofxToGil( args.penPosition );
-	double scale = args.pixelScale.x;
+	const Point2 p        = ofxToGil( args.penPosition );
+	double scale          = args.pixelScale.x;
 	double margeCanonical = getMarge() * scale;
-	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
-	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
-	Point2 a = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
-	Point2 b = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
+	OfxRectD rod          = _relativeFrame.getFrame( this->getTime() );
+	Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
+	Point2 a = pointNormalizedXXcToCanonicalXY( ofxToGil( _paramA->getValue() ), rodSize ) + Point2( rod.x1, rod.y1 );
+	Point2 b = pointNormalizedXXcToCanonicalXY( ofxToGil( _paramB->getValue() ), rodSize ) + Point2( rod.x1, rod.y1 );
 	Point2 min, max;
+
 	min.x = std::min( a.x, b.x );
 	min.y = std::min( a.y, b.y );
 	max.x = std::max( a.x, b.x );
@@ -206,7 +208,7 @@ EMoveType ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIntesect( const O
 {
 	this->_offset.x = 0;
 	this->_offset.y = 0;
-	_selectType = selectType( args );
+	_selectType     = selectType( args );
 	if( _selectType != eSelectTypeNone )
 		return eMoveTypeXY;
 	EMoveType m = PointInteract::selectIfIntesect( args );
@@ -220,9 +222,9 @@ bool ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIsIn( const OfxRectD& 
 {
 	_selectType = eSelectTypeNone;
 	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
-	Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
-	Point2 a = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramA->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
-	Point2 b = pointNormalizedXXcToCanonicalXY( ofxToGil(_paramB->getValue()), rodSize ) + Point2( rod.x1, rod.y1 );
+	Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
+	Point2 a = pointNormalizedXXcToCanonicalXY( ofxToGil( _paramA->getValue() ), rodSize ) + Point2( rod.x1, rod.y1 );
+	Point2 b = pointNormalizedXXcToCanonicalXY( ofxToGil( _paramB->getValue() ), rodSize ) + Point2( rod.x1, rod.y1 );
 	Point2 min, max;
 	min.x = std::min( a.x, b.x );
 	min.y = std::min( a.y, b.y );
@@ -231,12 +233,11 @@ bool ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIsIn( const OfxRectD& 
 	if( rect.x1 <= min.x  && rect.x2 >= max.x &&
 	    rect.y1 <= min.y  && rect.y2 >= max.y )
 	{
-		_offset = Point2(0,0);
+		_offset = Point2( 0, 0 );
 		return true;
 	}
 	return false;
 }
-
 
 }
 }

@@ -14,29 +14,29 @@ namespace bitDepth {
 using namespace boost;
 using namespace boost::gil;
 
-BitDepthPlugin::BitDepthPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+BitDepthPlugin::BitDepthPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc          = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst          = fetchClip( kOfxImageEffectOutputClipName );
 	_paramOutBitDepth = fetchChoiceParam( kParamOutputBitDepth );
 }
 
-void BitDepthPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void BitDepthPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-    if( paramName == kParamHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kBitDepthHelpString );
-    }
+	if( paramName == kParamHelpButton )
+	{
+		sendMessage( OFX::Message::eMessageMessage,
+		             "", // No XML resources
+		             kBitDepthHelpString );
+	}
 }
 
 void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	if( _paramOutBitDepth->getValue() != 0 )
 	{
-		clipPreferences.setClipBitDepth( *_clipDst, static_cast<OFX::EBitDepth>(_paramOutBitDepth->getValue()) );
+		clipPreferences.setClipBitDepth( *_clipDst, static_cast<OFX::EBitDepth>( _paramOutBitDepth->getValue() ) );
 	}
 }
 
@@ -44,64 +44,66 @@ void BitDepthPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefere
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void BitDepthPlugin::render( const OFX::RenderArguments &args )
+void BitDepthPlugin::render( const OFX::RenderArguments& args )
 {
-    // instantiate the render code based on the pixel depth of the dst clip
-    const OFX::EBitDepth srcBitDepth = _clipSrc->getPixelDepth( );
-    const OFX::EPixelComponent srcComponents = _clipSrc->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	const OFX::EBitDepth srcBitDepth         = _clipSrc->getPixelDepth();
+	const OFX::EPixelComponent srcComponents = _clipSrc->getPixelComponents();
 
-	if (srcComponents == OFX::ePixelComponentRGBA)
+	if( srcComponents == OFX::ePixelComponentRGBA )
 	{
 		switch( srcBitDepth )
 		{
 			case OFX::eBitDepthUByte:
 			{
-				setupDestView<rgba8_view_t>(args);
+				setupDestView<rgba8_view_t>( args );
 				return;
 			}
 			case OFX::eBitDepthUShort:
 			{
-				setupDestView<rgba16_view_t>(args);
+				setupDestView<rgba16_view_t>( args );
 				return;
 			}
 			case OFX::eBitDepthFloat:
 			{
-				setupDestView<rgba32f_view_t>(args);
+				setupDestView<rgba32f_view_t>( args );
 				return;
 			}
-			case OFX::eBitDepthNone :
+			case OFX::eBitDepthNone:
 			{
 				COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
 			}
-			case OFX::eBitDepthCustom :
+			case OFX::eBitDepthCustom:
 			{
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		switch( srcBitDepth )
 		{
 			case OFX::eBitDepthUByte:
 			{
-				setupDestView<gray8_view_t>(args);
+				setupDestView<gray8_view_t>( args );
 				return;
 			}
 			case OFX::eBitDepthUShort:
 			{
-				setupDestView<gray16_view_t>(args);
+				setupDestView<gray16_view_t>( args );
 				return;
 			}
 			case OFX::eBitDepthFloat:
 			{
-				setupDestView<gray32f_view_t>(args);
+				setupDestView<gray32f_view_t>( args );
 				return;
 			}
-			case OFX::eBitDepthNone :
+			case OFX::eBitDepthNone:
 				COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
-			case OFX::eBitDepthCustom :
+			case OFX::eBitDepthCustom:
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}
@@ -113,11 +115,12 @@ void BitDepthPlugin::render( const OFX::RenderArguments &args )
  * @param[in]   args     Rendering parameters
  */
 template<class sview_t>
-void BitDepthPlugin::setupDestView( const OFX::RenderArguments &args )
+void BitDepthPlugin::setupDestView( const OFX::RenderArguments& args )
 {
-	const OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    const OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
-	if (dstComponents == OFX::ePixelComponentRGBA)
+	const OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	const OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
+
+	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
 		switch( dstBitDepth )
 		{
@@ -139,14 +142,16 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments &args )
 				fred.setupAndProcess( args );
 				return;
 			}
-			case OFX::eBitDepthNone :
+			case OFX::eBitDepthNone:
 				COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
-			case OFX::eBitDepthCustom :
+			case OFX::eBitDepthCustom:
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}
-	} else {
+	}
+	else
+	{
 		switch( dstBitDepth )
 		{
 			case OFX::eBitDepthUByte:
@@ -167,10 +172,10 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments &args )
 				fred.setupAndProcess( args );
 				return;
 			}
-			case OFX::eBitDepthNone :
+			case OFX::eBitDepthNone:
 				COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
-			case OFX::eBitDepthCustom :
+			case OFX::eBitDepthCustom:
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}

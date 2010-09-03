@@ -20,7 +20,7 @@ public:
 	TestVertex( const std::string& name ) : _name( name ) {}
 	~TestVertex() {}
 	std::string _name;
-	const std::string& getName() const { return _name; }
+	const std::string&           getName() const { return _name; }
 	friend std::ostream& operator<<( std::ostream& os, const TestVertex& v );
 };
 inline std::ostream& operator<<( std::ostream& os, const TestVertex& v )
@@ -37,13 +37,13 @@ public:
 		: _nameIn( in )
 		, _nameOut( out )
 		, _name( out + "->" + in )
-	{
-	}
+	{}
+
 	~TestEdge() {}
 	std::string _nameIn;
 	std::string _nameOut;
 	std::string _name;
-	const std::string& getName() const { return _name; }
+	const std::string&           getName() const { return _name; }
 	friend std::ostream& operator<<( std::ostream& os, const TestEdge& v );
 };
 inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
@@ -55,35 +55,37 @@ inline std::ostream& operator<<( std::ostream& os, const TestEdge& e )
 template<class G>
 struct vertex_label_writer
 {
-	vertex_label_writer( const G& g ) : _g(g) {}
+	vertex_label_writer( const G& g ) : _g( g ) {}
 	template<class Vertex>
 	void operator()( std::ostream& out, const Vertex& v ) const
 	{
 		out << dotEntry( "type", "vertex" );
 		out << dotEntry( "label", _g[v].getName() );
 	}
-private:
-	const G& _g;
+
+	private:
+		const G& _g;
 };
 
 template<class G>
 struct edge_label_writer
 {
-	edge_label_writer( const G& g ) : _g(g) {}
+	edge_label_writer( const G& g ) : _g( g ) {}
 	template<class Edge>
 	void operator()( std::ostream& out, const Edge& e ) const
 	{
 		out << dotEntry( "type", "vertex" );
 		out << dotEntry( "label", _g[e].getName() );
 	}
-private:
-	const G& _g;
+
+	private:
+		const G& _g;
 };
 
 template<template<typename> class T, class G>
 T<G> make( const G& g )
 {
-	return T<G>(g);
+	return T<G>( g );
 }
 
 template<>
@@ -104,13 +106,12 @@ void exportAsDOT<TestVertex, TestEdge>( std::ostream& os, const InternalGraph<Te
 
 	using namespace boost;
 	boost::write_graphviz( os,
-						   g.getGraph(),
-						   make<vertex_label_writer>( g.getGraph() ),
-						   make<edge_label_writer>( g.getGraph() ),
-						   boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
+	                       g.getGraph(),
+	                       make<vertex_label_writer>( g.getGraph() ),
+	                       make<edge_label_writer>( g.getGraph() ),
+	                       boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
 
 }
-
 
 }
 }
@@ -163,7 +164,7 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	TCOUT( "__________________________________________________" );
 	TCOUT( "graph:" );
 	//	std::vector<boost::default_color_type > colormap(boost::num_vertices(graph.getGraph()));
-	graph::visitor::Test_dfs<InternalGraph> testVisitorA(graph);
+	graph::visitor::Test_dfs<InternalGraph> testVisitorA( graph );
 	//	boost::depth_first_search( graph.getGraph(), boost::root_vertex(nodesDescriptor[n1]), boost::visitor(testVisitorA) );//, colormap );
 	graph.dfs( testVisitorA, nodesDescriptor[n1] );
 
@@ -180,40 +181,40 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 		//		TCOUT( "pp: "<< graphT.getGraph()[*i]._name );
 	}
 
-	graph::visitor::Test_dfs<InternalGraph> testVisitorB(graph);
+	graph::visitor::Test_dfs<InternalGraph> testVisitorB( graph );
 	//	boost::depth_first_search( graphT.getGraph(), boost::visitor(testVisitorB) );
 
 	graphT.dfs( testVisitorB, mmap["v3"] );
 	/*
-	graph_traits<graph_type>::out_edge_iterator ei, edge_end;
-	for( boost::tie(ei, edge_end) = out_edges(*i, g); ei != edge_end; ++ei )
-		std::cout << " --" << name[*ei] << "--> " << id[target(*ei, g)] << "  ";
+	   graph_traits<graph_type>::out_edge_iterator ei, edge_end;
+	   for( boost::tie(ei, edge_end) = out_edges(*i, g); ei != edge_end; ++ei )
+	    std::cout << " --" << name[*ei] << "--> " << id[target(*ei, g)] << "  ";
 	 */
 
 }
 
 /*
-BOOST_AUTO_TEST_CASE( create_boostGraph )
-{
-	typedef boost::adjacency_list< boost::listS, boost::vecS, boost::undirectedS, graph::TestVertex, graph::TestEdge > Graph;
-	Graph g;
+   BOOST_AUTO_TEST_CASE( create_boostGraph )
+   {
+    typedef boost::adjacency_list< boost::listS, boost::vecS, boost::undirectedS, graph::TestVertex, graph::TestEdge > Graph;
+    Graph g;
 
-	//add 100 vertices
-	for( int i=0; i<15; ++i )
-	{
-		Graph::vertex_descriptor v = add_vertex(g);
-		g[v]._name = "albert" + boost::lexical_cast<std::string>(i);
-	}
+    //add 100 vertices
+    for( int i=0; i<15; ++i )
+    {
+        Graph::vertex_descriptor v = add_vertex(g);
+        g[v]._name = "albert" + boost::lexical_cast<std::string>(i);
+    }
 
-	//zero some_property for all vertices
-	for( Graph::vertex_iterator i = vertices(g).first, iEnd = vertices(g).second;
-								i != iEnd;
-								++i )
-	{
-		TCOUT(": " << g[*i]._name);
-	}
+    //zero some_property for all vertices
+    for( Graph::vertex_iterator i = vertices(g).first, iEnd = vertices(g).second;
+                                i != iEnd;
+ ++i )
+    {
+        TCOUT(": " << g[*i]._name);
+    }
 
-}
+   }
  */
 
 BOOST_AUTO_TEST_SUITE_END()

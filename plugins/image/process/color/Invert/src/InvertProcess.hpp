@@ -23,7 +23,7 @@ protected:
 	InvertPlugin& _plugin;  ///< Rendering plugin
 
 public:
-	InvertProcess( InvertPlugin & instance );
+	InvertProcess( InvertPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };

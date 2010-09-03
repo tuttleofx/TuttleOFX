@@ -8,10 +8,10 @@ namespace ffmpeg {
 namespace writer {
 
 template<class View>
-FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
-, _plugin( instance )
-, _params( _plugin.getProcessParams() )
+FFMpegWriterProcess<View>::FFMpegWriterProcess( FFMpegWriterPlugin& instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
+	, _params( _plugin.getProcessParams() )
 {
 	this->setNoMultiThreading();
 }
@@ -25,12 +25,12 @@ void FFMpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWi
 {
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	
+
 	_plugin._writer.width( this->_srcView.width() );
 	_plugin._writer.height( this->_srcView.height() );
 
 	rgb8_image_t img( this->_srcView.dimensions() );
-	rgb8_view_t vw( view(img) );
+	rgb8_view_t vw( view( img ) );
 	// Convert pixels in PIX_FMT_RGB24
 	copy_and_convert_pixels( this->_srcView, flipped_up_down_view( vw ) );
 	// Convert pixels to destination

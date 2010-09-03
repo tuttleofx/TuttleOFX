@@ -51,9 +51,10 @@ void ImageMagickWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in]        context    Application context
  */
 void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext            context )
+                                                        OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
@@ -88,7 +89,7 @@ void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint("Force render (writing)");
+	render->setHint( "Force render (writing)" );
 
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
@@ -112,7 +113,7 @@ void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @return  plugin instance
  */
 OFX::ImageEffect* ImageMagickWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext     context )
+                                                                  OFX::EContext        context )
 {
 	return new ImageMagickWriterPlugin( handle );
 }

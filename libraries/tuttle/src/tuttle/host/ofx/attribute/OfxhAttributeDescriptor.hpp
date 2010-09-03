@@ -9,12 +9,12 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
-class OfxhAttributeDescriptor :
-	virtual public OfxhAttributeAccessor
+class OfxhAttributeDescriptor
+	: virtual public OfxhAttributeAccessor
 {
 public:
 	typedef OfxhAttributeDescriptor This;
+
 private:
 	OfxhAttributeDescriptor( const OfxhAttributeDescriptor& other );
 
@@ -34,14 +34,14 @@ protected:
 	}
 
 public:
-
 	bool operator==( const This& other ) const
 	{
 		if( _properties != other._properties )
 			return false;
 		return true;
 	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	const property::OfxhSet& getProperties() const
 	{
@@ -56,13 +56,12 @@ public:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_properties);
+		ar& BOOST_SERIALIZATION_NVP( _properties );
 	}
+
 };
-
-
 
 }
 }

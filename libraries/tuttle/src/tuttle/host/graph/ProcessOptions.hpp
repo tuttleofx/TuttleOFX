@@ -12,11 +12,12 @@ namespace graph {
 
 class ProcessInfos
 {
-	typedef ProcessInfos This;
+typedef ProcessInfos This;
+
 public:
 	ProcessInfos()
-	: _nodes(0)
-	, _memory(0)
+		: _nodes( 0 )
+		, _memory( 0 )
 	{}
 
 	std::size_t _nodes;
@@ -24,7 +25,7 @@ public:
 
 	ProcessInfos& operator+=( const ProcessInfos& p )
 	{
-		_nodes += p._nodes;
+		_nodes  += p._nodes;
 		_memory += p._memory;
 		return *this;
 	}
@@ -33,31 +34,32 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 };
 
-
 class ProcessOptions
 {
-	typedef ProcessOptions This;
+typedef ProcessOptions This;
+
 public:
 	ProcessOptions()
-	: _startFrame(0)
-	, _endFrame(0)
-	, _step(0)
-	, _interactive(0)
-	, _time(0)
+		: _startFrame( 0 )
+		, _endFrame( 0 )
+		, _step( 0 )
+		, _interactive( 0 )
+		, _time( 0 )
 	{
 		_localInfos._nodes = 1; // local infos can contain only 1 node by definition...
 	}
+
 	ProcessOptions( const ProcessOptions& other ) { operator=( other ); }
 	~ProcessOptions() {}
 
 public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
-	
+
 public:
 	OfxTime _startFrame;
 	OfxTime _endFrame;
 	OfxTime _step;
-	bool    _interactive;
+	bool _interactive;
 	OfxTime _time;
 
 	std::size_t _nbInputs;

@@ -1,8 +1,7 @@
 #ifndef _EMBEDDEDPYTHON_HPP
-#define	_EMBEDDEDPYTHON_HPP
+#define _EMBEDDEDPYTHON_HPP
 
 #include "PythonRedirect.hpp"
-
 
 #include <Python.h>
 
@@ -12,7 +11,7 @@
 
 /**
  * @brief Centralised Python interface
- * 
+ *
  * @todo launch commands or scripts inside different python contexts
  * @todo threads creation
  */
@@ -20,20 +19,19 @@ class EmbeddedPythonBase
 {
 
 public:
-
-	EmbeddedPythonBase( )
+	EmbeddedPythonBase()
 	{
-		initialize( );
+		initialize();
 	}
 
-	virtual ~EmbeddedPythonBase( )
+	virtual ~EmbeddedPythonBase()
 	{
-		uninitialize( );
+		uninitialize();
 	}
 
 private:
-	void initialize( );
-	void uninitialize( );
+	void initialize();
+	void uninitialize();
 
 public:
 	virtual int pyRun_SimpleString( const std::string in_command );
@@ -42,23 +40,24 @@ public:
 
 };
 
-
 //______________________________________________________________________________
 
 /**
  * @brief Centralised Python interface
  *        Save commands history
  */
-class EmbeddedPython : public EmbeddedPythonBase, public PythonOutput
+class EmbeddedPython : public EmbeddedPythonBase
+	, public PythonOutput
 {
 public:
-	EmbeddedPython( ) : EmbeddedPythonBase( ), PythonOutput( )
+	EmbeddedPython() : EmbeddedPythonBase()
+		, PythonOutput()
 	{
-		m_pythonRedirect.init( );
+		m_pythonRedirect.init();
 		m_pythonRedirect.addPythonOutput( this );
 	}
 
-	virtual ~EmbeddedPython( ) { }
+	virtual ~EmbeddedPython() {}
 
 public:
 	int pyRun_SimpleString( const std::string in_command )
@@ -86,25 +85,25 @@ public:
 
 	void writeLog( char* str, bool isError = false );
 	void writeErr( char* str );
-	void clearLog( );
+	void clearLog();
 
 public:
 	struct CommandAndResult
 	{
 
 		CommandAndResult( std::string command, std::string output = std::string( "" ), std::string output_error = std::string( "" ) )
-		: m_command( command )
-		, m_output( output )
-		, m_output_error( output_error ) { }
+			: m_command( command )
+			, m_output( output )
+			, m_output_error( output_error ) {}
 
-		CommandAndResult( const CommandAndResult & in_command )
-		: m_command( in_command.m_command )
-		, m_output( in_command.m_output )
-		, m_output_error( in_command.m_output_error ) { }
+		CommandAndResult( const CommandAndResult& in_command )
+			: m_command( in_command.m_command )
+			, m_output( in_command.m_output )
+			, m_output_error( in_command.m_output_error ) {}
 
-		CommandAndResult( ) { }
+		CommandAndResult() {}
 
-		~CommandAndResult( ) { }
+		~CommandAndResult() {}
 
 		std::string m_command; ///< command
 		std::string m_output; ///< standard output
@@ -117,41 +116,34 @@ protected:
 	PythonRedirect m_pythonRedirect;
 };
 
-
-
-
 /*
-// sub classe pour les threads
-class EmbeddedPython
-{
-	public:
-		class PythonThread
-		{
-			PythonThread(){}
-			~PythonThread(){}
+   // sub classe pour les threads
+   class EmbeddedPython
+   {
+    public:
+        class PythonThread
+        {
+            PythonThread(){}
+            ~PythonThread(){}
 
-		};
-		std::vector<PythonThread> m_threadsList;
-};
+        };
+        std::vector<PythonThread> m_threadsList;
+   };
  */
 
-
-
-
-
 /*
-class EmbeddedPythonSingleton : public EmbeddedPython, public Singleton<EmbeddedPythonSingleton>
-{
-	SINGLETON_BLABLA
-public:
-	EmbeddedPythonSingleton(){};
-	~EmbeddedPythonSingleton(){};
-public:
-//	static EmbeddedPythonSingleton& get()
-//	{
-//		return *this;
-//	}
-};
+   class EmbeddedPythonSingleton : public EmbeddedPython, public Singleton<EmbeddedPythonSingleton>
+   {
+    SINGLETON_BLABLA
+   public:
+    EmbeddedPythonSingleton(){};
+    ~EmbeddedPythonSingleton(){};
+   public:
+   //	static EmbeddedPythonSingleton& get()
+   //	{
+   //		return *this;
+   //	}
+   };
  */
 
 #endif

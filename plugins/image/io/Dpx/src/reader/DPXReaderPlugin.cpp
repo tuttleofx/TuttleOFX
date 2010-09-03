@@ -20,14 +20,14 @@ using namespace tuttle::io;
 using namespace boost::gil;
 
 DPXReaderPlugin::DPXReaderPlugin( OfxImageEffectHandle handle )
-: ReaderPlugin( handle )
-{
-}
+	: ReaderPlugin( handle )
+{}
 
-DPXReaderProcessParams DPXReaderPlugin::getProcessParams(const OfxTime time)
+DPXReaderProcessParams DPXReaderPlugin::getProcessParams( const OfxTime time )
 {
 	DPXReaderProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
+
+	params._filepath = getAbsoluteFilenameAt( time );
 	return params;
 }
 
@@ -84,14 +84,15 @@ void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else
 	{
-		ReaderPlugin::changedParam(args, paramName);
+		ReaderPlugin::changedParam( args, paramName );
 	}
 }
 
 bool DPXReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	tuttle::io::DpxImage dpxImg;
-	dpxImg.readHeader( getAbsoluteFilenameAt(args.time) );
+
+	dpxImg.readHeader( getAbsoluteFilenameAt( args.time ) );
 	rod.x1 = 0;
 	rod.x2 = dpxImg.width() * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
@@ -103,13 +104,13 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
-	
-	if( ! bfs::exists( filename ) )
+
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<< exception::filename( filename )
-			);
+		    << exception::user( "No input file." )
+		    << exception::filename( filename )
+		                       );
 	}
 
 	switch( getExplicitConversion() )
@@ -120,7 +121,7 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			dpxImg.readHeader( filename );
 
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
-			switch(dpxImg.componentsType())
+			switch( dpxImg.componentsType() )
 			{
 				case DpxImage::eCompTypeR8G8B8:
 				case DpxImage::eCompTypeR8G8B8A8:

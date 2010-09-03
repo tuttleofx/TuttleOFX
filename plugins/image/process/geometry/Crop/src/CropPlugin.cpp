@@ -189,11 +189,13 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 	}
 }
 
-OfxRectD CropPlugin::getCropRect( OfxRectD *clipROD /* = NULL */ )
+OfxRectD CropPlugin::getCropRect( OfxRectD* clipROD /* = NULL */ )
 {
 	OfxRectD tmp;
-	if (!clipROD) {
-		tmp = getSrcClip()->getCanonicalRod( timeLineGetTime() );
+
+	if( !clipROD )
+	{
+		tmp     = getSrcClip()->getCanonicalRod( timeLineGetTime() );
 		clipROD = &tmp;
 	}
 	OfxRectD rect;
@@ -204,7 +206,7 @@ OfxRectD CropPlugin::getCropRect( OfxRectD *clipROD /* = NULL */ )
 	OFX::IntParam* rightBand = fetchIntParam( kParamRight );
 
 	rect.x1 = par * leftBand->getValue();
-	rect.x2 = clipROD->x2 - par * rightBand->getValue();
+	rect.x2 = clipROD->x2 - par* rightBand->getValue();
 	rect.y1 = downBand->getValue();
 	rect.y2 = clipROD->y2 - upBand->getValue();
 	return rect;
@@ -213,11 +215,15 @@ OfxRectD CropPlugin::getCropRect( OfxRectD *clipROD /* = NULL */ )
 bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	OFX::BooleanParam* bop = fetchBooleanParam( kParamFillMode );
-	if ( bop->getValue() == false ) {
+
+	if( bop->getValue() == false )
+	{
 		OfxRectD rect = getSrcClip()->getCanonicalRod( args.time );
 		rod = getCropRect( &rect );
-	} else {
-		rod = getSrcClip()->getCanonicalRod(args.time);
+	}
+	else
+	{
+		rod = getSrcClip()->getCanonicalRod( args.time );
 	}
 	return true;
 }

@@ -23,22 +23,23 @@ template<class View, template<typename> class ColorGradientFunctor>
 class ColorGradientProcess : public ImageGilProcessor<View>
 {
 public:
-    typedef typename View::value_type Pixel;
+	typedef typename View::value_type Pixel;
 	typedef ColorGradientFunctor<Pixel> ColorGradientFunctorT;
-    typedef typename ColorGradientFunctorT::point_t Point;
-    typedef boost::gil::virtual_2d_locator<ColorGradientFunctorT,false> Locator;
-    typedef boost::gil::image_view<Locator> ColorGradientVirtualView;
-protected :
-    ColorGradientPlugin&    _plugin;        ///< Rendering plugin
-    ColorGradientVirtualView _srcView;      ///< Source view
+	typedef typename ColorGradientFunctorT::point_t Point;
+	typedef boost::gil::virtual_2d_locator<ColorGradientFunctorT, false> Locator;
+	typedef boost::gil::image_view<Locator> ColorGradientVirtualView;
+
+protected:
+	ColorGradientPlugin&    _plugin;        ///< Rendering plugin
+	ColorGradientVirtualView _srcView;      ///< Source view
 
 public:
-    ColorGradientProcess( ColorGradientPlugin& instance );
+	ColorGradientProcess( ColorGradientPlugin& instance );
 
-	void setup( const OFX::RenderArguments &args );
-	
-    // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void setup( const OFX::RenderArguments& args );
+
+	// Do some processing
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

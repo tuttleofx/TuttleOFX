@@ -15,7 +15,7 @@ template <class View>
 class ImageGilFilterProcessor : public ImageGilProcessor<View>
 {
 protected:
-    OFX::Clip* _clipSrc;       ///< Source image clip
+	OFX::Clip* _clipSrc;       ///< Source image clip
 	boost::scoped_ptr<OFX::Image> _src;
 	OfxRectI _srcPixelRod;
 	View _srcView; ///< @brief source clip (filters have only one input)
@@ -31,13 +31,12 @@ template <class View>
 ImageGilFilterProcessor<View>::ImageGilFilterProcessor( OFX::ImageEffect& effect )
 	: ImageGilProcessor<View>( effect )
 {
-    _clipSrc = effect.fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipSrc = effect.fetchClip( kOfxImageEffectSimpleSourceClipName );
 }
 
 template <class View>
 ImageGilFilterProcessor<View>::~ImageGilFilterProcessor()
-{
-}
+{}
 
 template <class View>
 void ImageGilFilterProcessor<View>::setup( const OFX::RenderArguments& args )
@@ -46,20 +45,19 @@ void ImageGilFilterProcessor<View>::setup( const OFX::RenderArguments& args )
 
 	// source view
 	this->_src.reset( _clipSrc->fetchImage( args.time ) );
-	if( !this->_src.get( ) )
+	if( !this->_src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( this->_src->getRowBytes( ) <= 0 )
+	if( this->_src->getRowBytes() <= 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRod = _clipSrc->getPixelRod(args.time, args.renderScale);
+	//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
+	_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
 	this->_srcView = this->getView( this->_src.get(), _srcPixelRod );
 
 	// Make sure bit depths are same
 	if( this->_src->getPixelDepth() != this->_dst->getPixelDepth() ||
-		this->_src->getPixelComponents() != this->_dst->getPixelComponents() )
+	    this->_src->getPixelComponents() != this->_dst->getPixelComponents() )
 		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch() );
 }
-
 
 }
 }

@@ -35,8 +35,8 @@ protected:
 
 public:
 	#ifndef WITHOUT_OFX
-	Progress( OFX::ImageEffect& effect ) : _effect( effect ),
-		_mutex( 0 ) {}
+	Progress( OFX::ImageEffect& effect ) : _effect( effect )
+		, _mutex( 0 ) {}
 	#else
 	Progress() {}
 	#endif

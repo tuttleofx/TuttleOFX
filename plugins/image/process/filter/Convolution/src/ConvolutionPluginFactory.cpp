@@ -26,7 +26,7 @@ namespace convolution {
 void ConvolutionPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "Convolution", "Convolution",
-		            "Convolution" );
+	                "Convolution" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
 	// add the supported contexts, only filter at the moment
@@ -48,9 +48,10 @@ void ConvolutionPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                                  OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
@@ -64,14 +65,14 @@ void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	OFX::Int2DParamDescriptor* size = desc.defineInt2DParam( kParamSize );
 	size->setLabel( "Size" );
 	size->setDefault( 3, 3 );
-//	size->setIncrement( 2, 2 );
+	//	size->setIncrement( 2, 2 );
 	size->setRange( 3, 3, kParamSizeMax, kParamSizeMax );
 
 	for( unsigned int y = 0; y < kParamSizeMax; ++y )
 	{
 		for( unsigned int x = 0; x < kParamSizeMax; ++x )
 		{
-			const std::string name( getCoefName(y, x) );
+			const std::string name( getCoefName( y, x ) );
 			OFX::DoubleParamDescriptor* coef = desc.defineDoubleParam( name );
 			coef->setLabel( name );
 			coef->setDisplayRange( -10.0, 10.0 );
@@ -90,7 +91,7 @@ void ConvolutionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
  * @return  plugin instance
  */
 OFX::ImageEffect* ConvolutionPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                            OFX::EContext        context )
 {
 	return new ConvolutionPlugin( handle );
 }

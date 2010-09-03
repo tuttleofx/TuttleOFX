@@ -36,7 +36,6 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-
 template < typename VERTEX, typename EDGE >
 class InternalGraph
 {
@@ -50,12 +49,12 @@ public:
 	    boost::setS,                // disallow parallel edges (OutEdgeList), use hash_setS ?
 	    boost::vecS,               // vertex container (VertexList)
 	    boost::bidirectionalS,      // directed graph
-//	    boost::property<vertex_properties_t, Vertex>,
-//	    boost::property<edge_properties_t, Edge>,
+	    //	    boost::property<vertex_properties_t, Vertex>,
+	    //	    boost::property<edge_properties_t, Edge>,
 	    Vertex,
 	    Edge,
-		boost::no_property, // no GraphProperty
-		boost::listS // EdgeList
+	    boost::no_property, // no GraphProperty
+	    boost::listS // EdgeList
 	    > GraphContainer;
 
 	// a bunch of graph-specific typedefs
@@ -77,8 +76,7 @@ public:
 
 	// constructors etc.
 	InternalGraph()
-	{
-	}
+	{}
 
 	InternalGraph( const This& g )
 	{
@@ -91,7 +89,7 @@ public:
 	 * @warning unused and untested...
 	 */
 	template<typename V, typename E>
-	This& operator=( const InternalGraph<V,E>& g )
+	This& operator=( const InternalGraph<V, E>& g )
 	{
 		boost::copy_graph( g._graph, _graph );
 		rebuildVertexDescriptorMap();
@@ -99,8 +97,7 @@ public:
 	}
 
 	virtual ~InternalGraph()
-	{
-	}
+	{}
 
 	// structure modification methods
 	void clear()
@@ -112,6 +109,7 @@ public:
 	vertex_descriptor addVertex( const Vertex& prop )
 	{
 		vertex_descriptor vd = boost::add_vertex( prop, _graph );
+
 		_vertexDescriptorMap[prop.getName()] = vd;
 		return vd;
 	}
@@ -135,7 +133,7 @@ public:
 			Edge e( out, in, inAttr );
 			addEdge( descOut, descIn, e );
 		}
-		catch( boost::exception &e )
+		catch( boost::exception& e )
 		{
 			e << exception::user( "Error while connecting " + out + " <-- " + in + "." + inAttr );
 			throw;
@@ -152,7 +150,7 @@ public:
 		{
 			/// @todo tuttle: remove added edge
 			BOOST_THROW_EXCEPTION( exception::Logic()
-				<< exception::user( "Connection error because the graph becomes cyclic." ) );
+			    << exception::user( "Connection error because the graph becomes cyclic." ) );
 		}
 
 		return addedEdge;
@@ -170,38 +168,42 @@ public:
 
 	Vertex& getVertex( const std::string& vertexName )
 	{
-		return instance( getVertexDescriptor(vertexName) );
+		return instance( getVertexDescriptor( vertexName ) );
 	}
 
 	const Vertex& getVertex( const std::string& vertexName ) const
 	{
-		return instance( getVertexDescriptor(vertexName) );
+		return instance( getVertexDescriptor( vertexName ) );
 	}
 
 	const vertex_descriptor source( const edge_descriptor& e ) const
 	{
 		return boost::source( e, _graph );
 	}
+
 	Vertex& sourceInstance( const edge_descriptor& e )
 	{
-		return instance(source( e ));
+		return instance( source( e ) );
 	}
+
 	const Vertex& sourceInstance( const edge_descriptor& e ) const
 	{
-		return instance(source( e ));
+		return instance( source( e ) );
 	}
-	
+
 	const vertex_descriptor target( const edge_descriptor& e ) const
 	{
 		return boost::target( e, _graph );
 	}
+
 	Vertex& targetInstance( const edge_descriptor& e )
 	{
-		return instance(target( e ));
+		return instance( target( e ) );
 	}
+
 	const Vertex& targetInstance( const edge_descriptor& e ) const
 	{
-		return instance(target( e ));
+		return instance( target( e ) );
 	}
 
 	// property access
@@ -274,6 +276,7 @@ public:
 	{
 		// we use a depth first search visitor
 		visitor::CycleDetector vis;
+
 		this->dfs( vis );
 		return vis._hasCycle;
 	}
@@ -282,18 +285,18 @@ public:
 	void dfs( Visitor vis, const vertex_descriptor& vroot )
 	{
 		std::vector<boost::default_color_type > colormap( boost::num_vertices( _graph ), boost::white_color );
-		BOOST_FOREACH( const vertex_descriptor& vd, getVertices() )
+		BOOST_FOREACH( const vertex_descriptor &vd, getVertices() )
 		{
-			vis.initialize_vertex(vd, _graph);
+			vis.initialize_vertex( vd, _graph );
 		}
 		// use depth_first_visit (and not depth_first_search) because
 		// we visit vertices from vroot, without visiting nodes not
 		// reachable from vroot
 		boost::depth_first_visit( _graph,
-								  vroot,
+		                          vroot,
 		                          vis,
-								  boost::make_iterator_property_map( colormap.begin(), boost::get(boost::vertex_index, _graph) )
-		                         );
+		                          boost::make_iterator_property_map( colormap.begin(), boost::get( boost::vertex_index, _graph ) )
+		                          );
 	}
 
 	template<class Visitor>
@@ -301,16 +304,16 @@ public:
 	{
 		boost::depth_first_search( _graph,
 		                           boost::visitor( vis )
-		                          );
+		                           );
 	}
 
 	template<class Visitor>
 	void bfs( Visitor vis, const vertex_descriptor& vroot )
 	{
 		boost::breadth_first_search( _graph,
-								     vroot,
-								     boost::visitor(vis)
-		                            );
+		                             vroot,
+		                             boost::visitor( vis )
+		                             );
 	}
 
 	void copyTransposed( const This& g )
@@ -342,7 +345,7 @@ public:
 
 	template< typename Vertex, typename Edge >
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
-	
+
 private:
 	void rebuildVertexDescriptorMap();
 

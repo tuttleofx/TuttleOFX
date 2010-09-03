@@ -74,6 +74,7 @@ OfxhProperty& OfxhSet::fetchLocalProperty( const std::string& name )
 const OfxhProperty& OfxhSet::fetchProperty( const std::string& name ) const
 {
 	PropertyMap::const_iterator i = _props.find( name );
+
 	if( i == _props.end() )
 	{
 		if( _chainedSet )
@@ -110,7 +111,7 @@ void OfxhSet::createProperty( const OfxhPropSpec& spec )
 			_props.insert( key, new Pointer( spec.name, spec.dimension, spec.readonly, (void*) spec.defaultValue ) );
 			break;
 		case eNone:
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString(spec.type) + ")" ) );
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "Tried to create a property of an unrecognized type (" ) + spec.name + ", " + mapTypeEnumToString( spec.type ) + ")" ) );
 	}
 }
 
@@ -147,7 +148,8 @@ bool OfxhSet::hasProperty( const std::string& propName, bool followChain ) const
  */
 void OfxhSet::addProperty( OfxhProperty* prop )
 {
-	std::string key(prop->getName()); // for constness
+	std::string key( prop->getName() ); // for constness
+
 	_props.insert( key, prop );
 }
 
@@ -210,13 +212,12 @@ bool OfxhSet::operator==( const This& other ) const
 	return true;
 }
 
-
 void OfxhSet::copyValues( const This& other )
 {
 	if( _props.size() != other._props.size() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev( "You try to copy properties values, but the two lists are not identical." ) );
+		    << exception::dev( "You try to copy properties values, but the two lists are not identical." ) );
 	}
 
 	PropertyMap::const_iterator oit = other._props.begin(), oitEnd = other._props.end();
@@ -224,14 +225,14 @@ void OfxhSet::copyValues( const This& other )
 	     it != itEnd && oit != oitEnd;
 	     ++it, ++oit )
 	{
-		OfxhProperty& p = *(it->second);
-		const OfxhProperty& op = *(oit->second);
+		OfxhProperty& p        = *( it->second );
+		const OfxhProperty& op = *( oit->second );
 		if( p.getName() != op.getName() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev( "You try to copy properties values, but it is not the same property in the two lists." ) );
+			    << exception::dev( "You try to copy properties values, but it is not the same property in the two lists." ) );
 		}
-		p.copyValues(op);
+		p.copyValues( op );
 	}
 }
 
@@ -332,9 +333,9 @@ std::ostream& operator<<( std::ostream& os, const OfxhSet& v )
 		const OfxhProperty& prop = *( it->second );
 		os << "    " << it->first << " ";
 		os << "(type:" << mapTypeEnumToString( prop.getType() )
-			<< " dim:" << prop.getDimension() << " ro:" << prop.getPluginReadOnly()
-			<< " modifiedBy:" << (prop.getModifiedBy() == eModifiedByHost ? "host" : "plugin")
-			<< ") : [";
+		   << " dim:" << prop.getDimension() << " ro:" << prop.getPluginReadOnly()
+		   << " modifiedBy:" << ( prop.getModifiedBy() == eModifiedByHost ? "host" : "plugin" )
+		   << ") : [";
 		int i = 0;
 		for( ; i < (int)( prop.getDimension() ) - 1; ++i )
 		{
@@ -347,8 +348,6 @@ std::ostream& operator<<( std::ostream& os, const OfxhSet& v )
 	os << "}" << std::endl;
 	return os;
 }
-
-
 
 }
 }

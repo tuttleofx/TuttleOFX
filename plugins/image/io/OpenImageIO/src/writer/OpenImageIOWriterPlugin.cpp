@@ -12,19 +12,19 @@ namespace plugin {
 namespace openImageIO {
 namespace writer {
 
-
 OpenImageIOWriterPlugin::OpenImageIOWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_components     = fetchChoiceParam( kParamOutputComponents );
+	_components = fetchChoiceParam( kParamOutputComponents );
 }
 
-OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const OfxTime time)
+OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams( const OfxTime time )
 {
 	OpenImageIOWriterProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
+
+	params._filepath   = getAbsoluteFilenameAt( time );
 	params._components = static_cast<EParamComponents>( this->_components->getValue() );
-	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
+	switch( static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() ) )
 	{
 		case eParamBitDepth8:
 			params._bitDepth = TypeDesc::UINT8;
@@ -36,7 +36,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const O
 			params._bitDepth = TypeDesc::FLOAT;
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue, "Incorrect bit depth." ) );
 			break;
 	}
 	return params;
@@ -49,7 +49,7 @@ OpenImageIOWriterProcessParams OpenImageIOWriterPlugin::getProcessParams(const O
 void OpenImageIOWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-	
+
 	WriterPlugin::render( args );
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();

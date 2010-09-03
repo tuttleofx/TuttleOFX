@@ -6,26 +6,23 @@
 #include "OfxhParamSet.hpp"
 #include "OfxhKeyframeParam.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace attribute {
 
-class OfxhParamPushButton :
-	public OfxhParam,
-	public OfxhKeyframeParam
+class OfxhParamPushButton
+	: public OfxhParam
+	, public OfxhKeyframeParam
 {
 public:
 	OfxhParamPushButton( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 };
 
-
 }
 }
 }
 }
-
 
 #endif
 

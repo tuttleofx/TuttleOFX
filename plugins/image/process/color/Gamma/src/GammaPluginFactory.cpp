@@ -16,7 +16,6 @@ namespace gamma {
 
 static const bool kSupportTiles = false;
 
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -24,7 +23,7 @@ static const bool kSupportTiles = false;
 void GammaPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleGamma", "Gamma",
-		            "Apply gamma value on image." );
+	                "Apply gamma value on image." );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	// add the supported contexts, only filter at the moment
@@ -46,9 +45,10 @@ void GammaPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void GammaPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                            OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
@@ -59,48 +59,48 @@ void GammaPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::ChoiceParamDescriptor *gammaType = desc.defineChoiceParam( kGammaType );
+	OFX::ChoiceParamDescriptor* gammaType = desc.defineChoiceParam( kGammaType );
 	gammaType->setLabel( "Type" );
 	gammaType->setHint( "Gamma selection mode." );
 	gammaType->appendOption( kGammaGlobal );
 	gammaType->appendOption( kGammaChannels );
 
-	OFX::DoubleParamDescriptor *masterValue = desc.defineDoubleParam( kMasterValue );
+	OFX::DoubleParamDescriptor* masterValue = desc.defineDoubleParam( kMasterValue );
 	masterValue->setLabel( "Master" );
 	masterValue->setRange( 0.001, 1024.0 );
 	masterValue->setDisplayRange( 0.001, 20.0 );
 	masterValue->setDoubleType( OFX::eDoubleTypePlain );
 	masterValue->setDefault( 1.0 );
 
-	OFX::DoubleParamDescriptor *redValue = desc.defineDoubleParam( kRedValue );
+	OFX::DoubleParamDescriptor* redValue = desc.defineDoubleParam( kRedValue );
 	redValue->setLabel( "Red" );
 	redValue->setRange( 0.001, 1024.0 );
 	redValue->setDisplayRange( 0.001, 20.0 );
 	redValue->setDoubleType( OFX::eDoubleTypePlain );
 	redValue->setDefault( 1.0 );
 
-	OFX::DoubleParamDescriptor *greenValue = desc.defineDoubleParam( kGreenValue );
+	OFX::DoubleParamDescriptor* greenValue = desc.defineDoubleParam( kGreenValue );
 	greenValue->setLabel( "Green" );
 	greenValue->setRange( 0.001, 1024.0 );
 	greenValue->setDisplayRange( 0.001, 20.0 );
 	greenValue->setDoubleType( OFX::eDoubleTypePlain );
 	greenValue->setDefault( 1.0 );
 
-	OFX::DoubleParamDescriptor *blueValue = desc.defineDoubleParam( kBlueValue );
+	OFX::DoubleParamDescriptor* blueValue = desc.defineDoubleParam( kBlueValue );
 	blueValue->setLabel( "Blue" );
 	blueValue->setRange( 0.001, 1024.0 );
 	blueValue->setDisplayRange( 0.001, 20.0 );
 	blueValue->setDoubleType( OFX::eDoubleTypePlain );
 	blueValue->setDefault( 1.0 );
 
-	OFX::DoubleParamDescriptor *alphaValue = desc.defineDoubleParam( kAlphaValue );
+	OFX::DoubleParamDescriptor* alphaValue = desc.defineDoubleParam( kAlphaValue );
 	alphaValue->setLabel( "Alpha" );
 	alphaValue->setRange( 0.001, 1024.0 );
 	alphaValue->setDisplayRange( 0.001, 20.0 );
 	alphaValue->setDoubleType( OFX::eDoubleTypePlain );
 	alphaValue->setDefault( 1.0 );
 
-	OFX::BooleanParamDescriptor *invert = desc.defineBooleanParam( kInvert );
+	OFX::BooleanParamDescriptor* invert = desc.defineBooleanParam( kInvert );
 	invert->setDefault( false );
 }
 
@@ -111,7 +111,7 @@ void GammaPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* GammaPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                      OFX::EContext        context )
 {
 	return new GammaPlugin( handle );
 }

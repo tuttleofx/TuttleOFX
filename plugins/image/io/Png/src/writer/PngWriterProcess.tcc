@@ -22,8 +22,8 @@ namespace writer {
 
 template<class View>
 PngWriterProcess<View>::PngWriterProcess( PngWriterPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
 {
 	this->setNoMultiThreading();
 }
@@ -38,7 +38,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
-	PngWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
+	PngWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 	try
 	{
 		switch( params._bitDepth )
@@ -51,35 +51,35 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				break;
 			default:
 				BOOST_THROW_EXCEPTION( exception::ImageFormat()
-					<< exception::user( "Unrecognized bit depth" ) );
+				    << exception::user( "Unrecognized bit depth" ) );
 				break;
 		}
 	}
 	catch( exception::Common& e )
 	{
-		e << exception::filename(params._filepath);
-		COUT_ERROR( boost::diagnostic_information(e) );
-//		throw;
+		e << exception::filename( params._filepath );
+		COUT_ERROR( boost::diagnostic_information( e ) );
+		//		throw;
 	}
-	catch( ... )
+	catch(... )
 	{
-//		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::user( "Unable to write image")
-//			<< exception::filename(params._filepath) );
+		//		BOOST_THROW_EXCEPTION( exception::Unknown()
+		//			<< exception::user( "Unable to write image")
+		//			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	copy_pixels( this->_srcView, this->_dstView );
 }
 
 /**
- * 
+ *
  */
 template<class View>
 template<class Bits>
 void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath )
 {
 	using namespace boost::gil;
-	PngWriterProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
+	PngWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 
 	switch( params._components )
 	{

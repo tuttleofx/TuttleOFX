@@ -17,8 +17,8 @@ template<class T>
 struct DotEntry
 {
 	DotEntry( const std::string& key, const T& value )
-	: _key(key),
-	_value(value)
+		: _key( key )
+		, _value( value )
 	{}
 	const std::string& _key;
 	const T& _value;
@@ -31,6 +31,7 @@ std::ostream& operator<<( std::ostream& os, const DotEntry<T>& d )
 	os << "[" << d._key << "=\"" << d._value << "\"]";
 	return os;
 }
+
 }
 
 /**
@@ -46,14 +47,16 @@ detail::DotEntry<T> dotEntry( const std::string& key, const T& value )
 
 namespace detail {
 template <class Name>
-class simple_node_writer {
+class simple_node_writer
+{
 public:
-	simple_node_writer(Name _name) : name(_name) {}
+	simple_node_writer( Name _name ) : name( _name ) {}
 	template <class VertexOrEdge>
-	void operator()(std::ostream& out, const VertexOrEdge& v) const
+	void operator()( std::ostream& out, const VertexOrEdge& v ) const
 	{
-		out << " [ " << get(name, v) << " ]";
+		out << " [ " << get( name, v ) << " ]";
 	}
+
 private:
 	Name name;
 };
@@ -65,10 +68,9 @@ private:
  * instead of: [label="fooNode"]
  */
 template <class Name>
-inline detail::simple_node_writer<Name>
-make_simple_node_writer(Name n)
+inline detail::simple_node_writer<Name>make_simple_node_writer( Name n )
 {
-	return detail::simple_node_writer<Name>(n);
+	return detail::simple_node_writer<Name>( n );
 }
 
 template<typename Vertex, typename Edge>
@@ -76,8 +78,8 @@ inline void exportSimple( std::ostream& os, const InternalGraph<Vertex, Edge>& g
 {
 	using namespace boost;
 	boost::write_graphviz( os, g.getGraph(),
-	                           make_simple_node_writer( get( &Vertex::_name, g.getGraph() ) ),
-	                           make_simple_node_writer( get( &Edge::_name,   g.getGraph() ) ) );
+	                       make_simple_node_writer( get( &Vertex::_name, g.getGraph() ) ),
+	                       make_simple_node_writer( get( &Edge::_name,   g.getGraph() ) ) );
 }
 
 template<typename Vertex, typename Edge>
@@ -104,19 +106,19 @@ inline void exportAsDOT<Vertex, Edge >( std::ostream& os, const InternalGraph<Ve
 
 	using namespace boost;
 	boost::write_graphviz( os,
-						   g.getGraph(),
-						   boost::make_label_writer( get( &Vertex::_name, g.getGraph() ) ),
-						   boost::make_label_writer( get( &Edge::_name, g.getGraph() ) ),
-						   boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
+	                       g.getGraph(),
+	                       boost::make_label_writer( get( &Vertex::_name, g.getGraph() ) ),
+	                       boost::make_label_writer( get( &Edge::_name, g.getGraph() ) ),
+	                       boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
 }
 
 template<typename Vertex, typename Edge>
 inline void exportAsDOT( const std::string& filename, const InternalGraph<Vertex, Edge >& g )
 {
 	std::ofstream ofs( filename.c_str() );
+
 	exportAsDOT( ofs, g );
 }
-
 
 }
 }

@@ -5,8 +5,7 @@ namespace plugin {
 namespace interact {
 
 InteractObject::~InteractObject()
-{
-}
+{}
 
 }
 }

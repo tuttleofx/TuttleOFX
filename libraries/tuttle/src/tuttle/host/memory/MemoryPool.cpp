@@ -19,12 +19,12 @@ private:
 
 public:
 	PoolData( IPool& pool, const std::size_t size )
-		: _pool( pool ),
-		_id( _count++ ),
-		_reservedSize( size ),
-		_size( size ),
-		_pData( new char[size] ),
-		_refCount( 0 )
+		: _pool( pool )
+		, _id( _count++ )
+		, _reservedSize( size )
+		, _size( size )
+		, _pData( new char[size] )
+		, _refCount( 0 )
 	{}
 
 	~PoolData()
@@ -41,8 +41,8 @@ public:
 	virtual void addRef();
 	virtual void release();
 
-	virtual char*        data()               { return _pData; }
-	virtual const char*  data() const         { return _pData; }
+	virtual char*             data()               { return _pData; }
+	virtual const char*       data() const         { return _pData; }
 	virtual const std::size_t size() const         { return _size; }
 	virtual const std::size_t reservedSize() const { return _reservedSize; }
 
@@ -82,12 +82,11 @@ void PoolData::release()
 
 MemoryPool::MemoryPool( const std::size_t maxSize )
 	: _memoryAuthorized( maxSize )
-{
-}
+{}
 
 MemoryPool::~MemoryPool()
 {
-	if( ! _dataUsed.empty() )
+	if( !_dataUsed.empty() )
 	{
 		COUT_ERROR( "Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
 	}
@@ -108,8 +107,9 @@ MemoryPool::~MemoryPool()
 
 void MemoryPool::referenced( PoolData* pData )
 {
-//	DataList::iterator it = std::find( _dataUnused.begin(), _dataUnused.end(), pData );
+	//	DataList::iterator it = std::find( _dataUnused.begin(), _dataUnused.end(), pData );
 	DataList::iterator it = _dataUnused.find( pData );
+
 	if( it != _dataUnused.end() )
 	{
 		_dataUnused.erase( it );
@@ -133,9 +133,9 @@ namespace  {
 struct DataFitSize : public std::unary_function<PoolData*, void>
 {
 	DataFitSize( std::size_t size )
-		: _size( size ),
-		_bestMatchDiff( ULONG_MAX ),
-		_pBestMatch( NULL )
+		: _size( size )
+		, _bestMatchDiff( ULONG_MAX )
+		, _pBestMatch( NULL )
 	{}
 
 	void operator()( PoolData* pData )
@@ -156,10 +156,10 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 		return _pBestMatch;
 	}
 
-private:
-	const std::size_t _size;
-	std::size_t _bestMatchDiff;
-	PoolData* _pBestMatch;
+	private:
+		const std::size_t _size;
+		std::size_t _bestMatchDiff;
+		PoolData* _pBestMatch;
 };
 
 }

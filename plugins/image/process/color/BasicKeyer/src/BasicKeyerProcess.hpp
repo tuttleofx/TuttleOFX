@@ -23,19 +23,20 @@ template<class View>
 class BasicKeyerProcess : public ImageGilFilterProcessor<View>
 {
 public:
-    typedef ImageGilFilterProcessor<View> Parent;
-    typedef typename View::value_type Pixel;
-protected :
-    BasicKeyerPlugin&    _plugin;        ///< Rendering plugin
+	typedef ImageGilFilterProcessor<View> Parent;
+	typedef typename View::value_type Pixel;
+
+protected:
+	BasicKeyerPlugin&    _plugin;        ///< Rendering plugin
 
 	BasicKeyerProcessParams<View> _params;
 
 public:
-    BasicKeyerProcess( BasicKeyerPlugin& instance );
+	BasicKeyerProcess( BasicKeyerPlugin& instance );
 
-	void setup( const OFX::RenderArguments &args );
-	
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void setup( const OFX::RenderArguments& args );
+
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

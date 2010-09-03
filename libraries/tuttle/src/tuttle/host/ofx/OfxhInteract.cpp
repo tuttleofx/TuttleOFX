@@ -56,9 +56,9 @@ static property::OfxhPropSpec interactDescriptorStuffs[] = {
 };
 
 OfxhInteractDescriptor::OfxhInteractDescriptor()
-	: _properties( interactDescriptorStuffs ),
-	_state( eUninitialised ),
-	_entryPoint( NULL )
+	: _properties( interactDescriptorStuffs )
+	, _state( eUninitialised )
+	, _entryPoint( NULL )
 {}
 
 OfxhInteractDescriptor::~OfxhInteractDescriptor()
@@ -132,11 +132,11 @@ static property::OfxhPropSpec interactArgsStuffs[] = {
 // instance
 
 OfxhInteract::OfxhInteract( const OfxhInteractDescriptor& desc, void* effectInstance )
-	: _descriptor( desc ),
-	_properties( interactInstanceStuffs ),
-	_state( desc.getState() ),
-	_effectInstance( effectInstance ),
-	_argProperties( interactArgsStuffs )
+	: _descriptor( desc )
+	, _properties( interactInstanceStuffs )
+	, _state( desc.getState() )
+	, _effectInstance( effectInstance )
+	, _argProperties( interactArgsStuffs )
 {
 	_properties.setPointerProperty( kOfxPropEffectInstance, effectInstance );
 	_properties.setChainedSet( &desc.getProperties() ); /// chain it into the descriptor props
@@ -303,105 +303,105 @@ void OfxhInteract::createInstanceAction() OFX_EXCEPTION_SPEC
 }
 
 void OfxhInteract::drawAction( OfxTime          time,
-                                    const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC
+                               const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	OfxStatus status = callEntry( kOfxInteractActionDraw, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::penMotionAction( OfxTime          time,
-                                         const OfxPointD& renderScale,
-                                         const OfxPointD& penPos,
-                                         const OfxPointI& penPosViewport,
-                                         double           pressure ) OFX_EXCEPTION_SPEC
+                                    const OfxPointD& renderScale,
+                                    const OfxPointD& penPos,
+                                    const OfxPointI& penPosViewport,
+                                    double           pressure ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	setPenArgProps( penPos, penPosViewport, pressure );
 	OfxStatus status = callEntry( kOfxInteractActionPenMotion, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::penUpAction( OfxTime          time,
-                                     const OfxPointD& renderScale,
-                                     const OfxPointD& penPos,
-                                     const OfxPointI& penPosViewport,
-                                     double           pressure ) OFX_EXCEPTION_SPEC
+                                const OfxPointD& renderScale,
+                                const OfxPointD& penPos,
+                                const OfxPointI& penPosViewport,
+                                double           pressure ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	setPenArgProps( penPos, penPosViewport, pressure );
 	OfxStatus status = callEntry( kOfxInteractActionPenUp, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::penDownAction( OfxTime          time,
-                                       const OfxPointD& renderScale,
-                                       const OfxPointD& penPos,
-                                       const OfxPointI& penPosViewport,
-                                       double           pressure ) OFX_EXCEPTION_SPEC
+                                  const OfxPointD& renderScale,
+                                  const OfxPointD& penPos,
+                                  const OfxPointI& penPosViewport,
+                                  double           pressure ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	setPenArgProps( penPos, penPosViewport, pressure );
 	OfxStatus status = callEntry( kOfxInteractActionPenDown, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::keyDownAction( OfxTime          time,
-                                       const OfxPointD& renderScale,
-                                       int              key,
-                                       char*            keyString ) OFX_EXCEPTION_SPEC
+                                  const OfxPointD& renderScale,
+                                  int              key,
+                                  char*            keyString ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	setKeyArgProps( key, keyString );
 	OfxStatus status = callEntry( kOfxInteractActionKeyDown, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::keyUpAction( OfxTime          time,
-                                     const OfxPointD& renderScale,
-                                     int              key,
-                                     char*            keyString ) OFX_EXCEPTION_SPEC
+                                const OfxPointD& renderScale,
+                                int              key,
+                                char*            keyString ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	setKeyArgProps( key, keyString );
 	OfxStatus status = callEntry( kOfxInteractActionKeyUp, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::keyRepeatAction( OfxTime          time,
-                                         const OfxPointD& renderScale,
-                                         int              key,
-                                         char*            keyString ) OFX_EXCEPTION_SPEC
+                                    const OfxPointD& renderScale,
+                                    int              key,
+                                    char*            keyString ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	setKeyArgProps( key, keyString );
 	OfxStatus status = callEntry( kOfxInteractActionKeyRepeat, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::gainFocusAction( OfxTime          time,
-                                         const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC
+                                    const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	OfxStatus status = callEntry( kOfxInteractActionGainFocus, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 void OfxhInteract::loseFocusAction( OfxTime          time,
-                                         const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC
+                                    const OfxPointD& renderScale ) OFX_EXCEPTION_SPEC
 {
 	initArgProp( time, renderScale );
 	OfxStatus status = callEntry( kOfxInteractActionLoseFocus, &_argProperties );
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException(status) );
+		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
 }

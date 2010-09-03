@@ -32,7 +32,6 @@ OfxhParamSet* OfxhParamGroup::getChildrens() const
 	return (OfxhParamSet*)this;
 }
 
-
 }
 }
 }

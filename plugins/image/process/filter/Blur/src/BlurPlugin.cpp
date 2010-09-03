@@ -11,26 +11,25 @@ namespace tuttle {
 namespace plugin {
 namespace blur {
 
-
-BlurPlugin::BlurPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+BlurPlugin::BlurPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
-	_paramSize = fetchDouble2DParam( kParamSize );
+	_paramSize   = fetchDouble2DParam( kParamSize );
 	_paramBorder = fetchChoiceParam( kParamBorder );
 }
 
 BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	BlurProcessParams<Scalar> params;
-	params._size = ofxToGil( _paramSize->getValue() ) * ofxToGil(renderScale  );
+	params._size   = ofxToGil( _paramSize->getValue() ) * ofxToGil( renderScale  );
 	params._border = static_cast<EBorder>( _paramBorder->getValue() );
 
-//	COUT_X(80, "X");
+	//	COUT_X(80, "X");
 	params._gilKernelX = buildGaussian1DKernel<Scalar>( params._size.x );
-//	COUT_X(80, "Y");
+	//	COUT_X(80, "Y");
 	params._gilKernelY = buildGaussian1DKernel<Scalar>( params._size.y );
 
 	return params;
@@ -40,81 +39,82 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void BlurPlugin::render( const OFX::RenderArguments &args )
+void BlurPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                BlurProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                BlurProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                BlurProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				BlurProcess<rgba8_view_t> p( *this );
+				p.setupAndProcess( args );
 				break;
 			}
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                BlurProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                BlurProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                BlurProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
+			case OFX::eBitDepthUShort:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				BlurProcess<rgba16_view_t> p( *this );
+				p.setupAndProcess( args );
 				break;
 			}
-        }
-    }
+			case OFX::eBitDepthFloat:
+			{
+				BlurProcess<rgba32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				break;
+			}
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				BlurProcess<gray8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				BlurProcess<gray16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				BlurProcess<gray32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				break;
+			}
+		}
+	}
 	else
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
 	}
 }
 
 bool BlurPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+
 	BlurProcessParams<Scalar> params = getProcessParams();
 
 	switch( params._border )
@@ -131,10 +131,10 @@ bool BlurPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& 
 	return false;
 }
 
-void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &args, OFX::RegionOfInterestSetter &rois )
+void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
 	BlurProcessParams<Scalar> params = getProcessParams();
-	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	OfxRectD srcRod                  = _clipSrc->getCanonicalRod( args.time );
 
 	OfxRectD srcRoi;
 	srcRoi.x1 = srcRod.x1 - params._gilKernelX.left_size();
@@ -144,28 +144,28 @@ void BlurPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments &ar
 	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 }
 
-bool BlurPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime )
+bool BlurPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
 	BlurProcessParams<Scalar> params = getProcessParams();
 	if( params._size.x != 0 || params._size.y != 0 )
 		return false;
-	
+
 	identityClip = _clipSrc;
 	identityTime = args.time;
 	return true;
 }
 
 /*
-void BlurPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-{
+   void BlurPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+   {
     if( paramName == kHelpButton )
     {
         sendMessage( OFX::Message::eMessageMessage,
                      "", // No XML resources
                      kHelpString );
     }
-}
-*/
+   }
+ */
 
 }
 }

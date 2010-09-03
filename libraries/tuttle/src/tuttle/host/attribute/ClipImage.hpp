@@ -20,9 +20,11 @@ namespace attribute {
  *
  *
  */
-class ClipImage : public Attribute, public ofx::attribute::OfxhClipImage
+class ClipImage : public Attribute
+	, public ofx::attribute::OfxhClipImage
 {
-	friend class ImageEffectNode;
+friend class ImageEffectNode;
+
 protected:
 	std::string _name;
 	OfxPointD _frameRange; ///< get frame range
@@ -40,7 +42,7 @@ public:
 	ClipImage* clone() const { return new ClipImage( *this ); }
 
 	const std::string& getName() const { return ofx::attribute::OfxhAttributeAccessor::getName(); }
-	
+
 	/// @warning HACK ! to force connection (only for test)
 	/// @todo remove this !!!!
 	void setConnectedClip( const ClipImage& other )
@@ -48,27 +50,27 @@ public:
 		if( isOutput() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
-				<< exception::user( "You can't connect an output Clip !" ) );
+			    << exception::user( "You can't connect an output Clip !" ) );
 		}
 		if( !other.isOutput() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
-				<< exception::user( "You can't connect to an input Clip !" ) );
+			    << exception::user( "You can't connect to an input Clip !" ) );
 		}
 		_connectedClip = &other;
 		//getEditableProperties().clear();
 
-//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedPixelDepth );
-//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedComponents );
-//		getEditableProperties().eraseProperty( kOfxImageClipPropContinuousSamples );
-//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldExtraction );
-//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
-//		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
-//		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
-//		getEditableProperties().eraseProperty( kOfxImagePropField );
-//		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
-//		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
-//		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
+		//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedPixelDepth );
+		//		getEditableProperties().eraseProperty( kOfxImageClipPropUnmappedComponents );
+		//		getEditableProperties().eraseProperty( kOfxImageClipPropContinuousSamples );
+		//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldExtraction );
+		//		getEditableProperties().eraseProperty( kOfxImageClipPropFieldOrder );
+		//		getEditableProperties().eraseProperty( kOfxImageEffectPropPixelDepth );
+		//		getEditableProperties().eraseProperty( kOfxImageEffectPropComponents );
+		//		getEditableProperties().eraseProperty( kOfxImagePropField );
+		//		getEditableProperties().eraseProperty( kOfxImagePropPixelAspectRatio );
+		//		getEditableProperties().eraseProperty( kOfxImagePropRegionOfDefinition );
+		//		getEditableProperties().eraseProperty( kOfxImagePropUniqueIdentifier );
 
 		getEditableProperties().eraseProperty( kOfxImagePropBounds );
 		getEditableProperties().eraseProperty( kOfxImagePropData );
@@ -92,11 +94,11 @@ public:
 		if( isOutput() || !isConnected() || _connectedClip->getFullName().size() == 0 )
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
-				<< exception::user( "Input clip " + getFullName() + " is not connected !" ) );
+			    << exception::user( "Input clip " + getFullName() + " is not connected !" ) );
 		}
 		return _connectedClip->getFullName();
 	}
-	
+
 	std::string getIdentifier() const
 	{
 		if( isOutput() )
@@ -108,9 +110,9 @@ public:
 	/// @todo tuttle: this is really bad...
 	ClipImage& getConnectedClip()
 	{
-		return const_cast<ClipImage&>(*_connectedClip);
+		return const_cast<ClipImage&>( *_connectedClip );
 	}
-	
+
 	const ClipImage& getConnectedClip() const
 	{
 		return *_connectedClip;

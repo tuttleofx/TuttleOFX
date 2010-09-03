@@ -49,33 +49,32 @@
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
 namespace imageEffect {
-
 
 /**
  *  an image effect plugin instance.
  *
  *  Client code needs to filling the pure virtuals in this.
  */
-class OfxhImageEffectNode : public OfxhImageEffectNodeBase,
-	public attribute::OfxhParamSet,
-	public attribute::OfxhClipImageSet,
-	public OfxhIProgress,
-	public OfxhIMessage,
-	public OfxhITimeline,
-	private property::OfxhNotifyHook,
-	private property::OfxhGetHook
+class OfxhImageEffectNode : public OfxhImageEffectNodeBase
+	, public attribute::OfxhParamSet
+	, public attribute::OfxhClipImageSet
+	, public OfxhIProgress
+	, public OfxhIMessage
+	, public OfxhITimeline
+	, private property::OfxhNotifyHook
+	, private property::OfxhGetHook
 {
 public:
 	typedef OfxhImageEffectNode This;
 	/// a map used to specify needed frame ranges on set of clips
 	typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
 
-#ifndef SWIG
+	#ifndef SWIG
+
 protected:
 	const OfxhImageEffectPlugin& _plugin;
 	std::string _context;
@@ -101,7 +100,7 @@ public:
 
 protected:
 	void initHook();
-	
+
 	/**
 	 *  called after construction to populate the various members
 	 *  ideally should be called in the ctor, but it relies on
@@ -176,19 +175,20 @@ public:
 
 	/// make a clip
 	//        virtual tuttle::host::ofx::attribute::ClipImageInstance* newClipImage( tuttle::host::ofx::attribute::ClipImageDescriptor* descriptor) = 0;
+
 protected:
-#ifndef SWIG
+	#ifndef SWIG
 	virtual void vmessage( const char* type,
-	                            const char* id,
-	                            const char* format,
-	                            va_list     args ) const OFX_EXCEPTION_SPEC = 0;
+	                       const char* id,
+	                       const char* format,
+	                       va_list     args ) const OFX_EXCEPTION_SPEC = 0;
 
 	/// call the effect entry point
 	virtual OfxStatus mainEntry( const char*        action,
 	                             const void*        handle,
 	                             property::OfxhSet* inArgs,
 	                             property::OfxhSet* outArgs ) const;
-#endif
+	#endif
 
 public:
 	size_t upperGetDimension( const std::string& name );
@@ -300,14 +300,14 @@ public:
 	virtual void beginInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC;
 
 	virtual void paramInstanceChangedAction( const std::string& paramName,
-	                                              const std::string& why,
-	                                              OfxTime            time,
-	                                              OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
+	                                         const std::string& why,
+	                                         OfxTime            time,
+	                                         OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
 	virtual void clipInstanceChangedAction( const std::string& clipName,
-	                                             const std::string& why,
-	                                             OfxTime            time,
-	                                             OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
+	                                        const std::string& why,
+	                                        OfxTime            time,
+	                                        OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
 	virtual void endInstanceChangedAction( const std::string& why ) OFX_EXCEPTION_SPEC;
 
@@ -323,21 +323,21 @@ public:
 
 	// render action
 	virtual void beginRenderAction( OfxTime   startFrame,
-	                                     OfxTime   endFrame,
-	                                     OfxTime   step,
-	                                     bool      interactive,
-	                                     OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
+	                                OfxTime   endFrame,
+	                                OfxTime   step,
+	                                bool      interactive,
+	                                OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 	virtual void renderAction( OfxTime            time,
-	                                const std::string& field,
-	                                const OfxRectI&    renderRoI,
-	                                OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
+	                           const std::string& field,
+	                           const OfxRectI&    renderRoI,
+	                           OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
 	virtual void endRenderAction( OfxTime   startFrame,
-	                                   OfxTime   endFrame,
-	                                   OfxTime   step,
-	                                   bool      interactive,
-	                                   OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
+	                              OfxTime   endFrame,
+	                              OfxTime   step,
+	                              bool      interactive,
+	                              OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 	/**
 	 *  Call the region of definition action the plugin at the given time
@@ -346,8 +346,8 @@ public:
 	 *  RoD is calculated and returned.
 	 */
 	virtual void getRegionOfDefinitionAction( OfxTime   time,
-	                                               OfxPointD renderScale,
-	                                               OfxRectD& rod ) const OFX_EXCEPTION_SPEC;
+	                                          OfxPointD renderScale,
+	                                          OfxRectD& rod ) const OFX_EXCEPTION_SPEC;
 
 	/**
 	 *  call the get region of interest action on the plugin for the
@@ -358,20 +358,20 @@ public:
 	 *  as well
 	 */
 	virtual void getRegionOfInterestAction( OfxTime time,
-	                                             OfxPointD renderScale,
-	                                             const OfxRectD& roi,
-	                                             std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC;
+	                                        OfxPointD renderScale,
+	                                        const OfxRectD& roi,
+	                                        std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC;
 
 	// get frames needed to render the given frame
 	virtual void getFrameNeededAction( OfxTime   time,
-	                                        RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC;
+	                                   RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC;
 
 	// is identity
 	virtual void isIdentityAction( OfxTime&           time,
-	                                    const std::string& field,
-	                                    const OfxRectI&    renderRoI,
-	                                    OfxPointD          renderScale,
-	                                    std::string&       clip ) const OFX_EXCEPTION_SPEC;
+	                               const std::string& field,
+	                               const OfxRectI&    renderRoI,
+	                               OfxPointD          renderScale,
+	                               std::string&       clip ) const OFX_EXCEPTION_SPEC;
 
 	// time domain
 	virtual void getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC;
@@ -387,7 +387,7 @@ public:
 		/// @todo tuttle initOverlayDescriptor... !!! Correct the constness
 		//_descriptor->initOverlayDescriptor( bitDepthPerComponent, hasAlpha );
 	}
-	
+
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const
 	{
 		return _descriptor.getOverlayDescriptor();
@@ -463,13 +463,15 @@ protected:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhParamSet);
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(attribute::OfxhClipImageSet);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhImageEffectNodeBase );
+
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( attribute::OfxhParamSet );
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( attribute::OfxhClipImageSet );
 	}
-#endif
+
+	#endif
 };
 
 }

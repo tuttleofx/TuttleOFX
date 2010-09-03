@@ -10,16 +10,16 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-class ParamGroup : public Param, public ofx::attribute::OfxhParamGroup
+class ParamGroup : public Param
+	, public ofx::attribute::OfxhParamGroup
 {
 public:
 	ParamGroup( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
-	ParamGroup* clone() const { return new ParamGroup(*this); }
-	
+	ParamGroup* clone() const { return new ParamGroup( *this ); }
+
 	void copy( const ParamGroup& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
-
 
 }
 }

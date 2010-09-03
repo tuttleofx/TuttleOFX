@@ -20,6 +20,7 @@ class OfxhPlugin : public OfxhPluginDesc
 {
 public:
 	typedef OfxhPlugin This;
+
 private:
 	OfxhPlugin( const This& ); ///< hidden
 	OfxhPlugin& operator=( const This& ); ///< hidden
@@ -29,14 +30,14 @@ protected:
 	int _index; ///< where I live inside that file
 
 public:
-	OfxhPlugin(){}
+	OfxhPlugin() {}
 
 	/**
 	 * construct this based on the struct returned by the getNthPlugin() in the binary
 	 */
-	OfxhPlugin( OfxhPluginBinary& bin, int idx, OfxPlugin& o ) : OfxhPluginDesc( o ),
-		_binary( &bin ),
-		_index( idx ) {}
+	OfxhPlugin( OfxhPluginBinary& bin, int idx, OfxPlugin& o ) : OfxhPluginDesc( o )
+		, _binary( &bin )
+		, _index( idx ) {}
 
 	/**
 	 * construct me from the cache
@@ -45,18 +46,18 @@ public:
 	            int apiVersion, const std::string& identifier,
 	            const std::string& rawIdentifier,
 	            int majorVersion, int minorVersion )
-		: OfxhPluginDesc( api, apiVersion, identifier, rawIdentifier, majorVersion, minorVersion ),
-		_binary( &bin ),
-		_index( idx ) {}
+		: OfxhPluginDesc( api, apiVersion, identifier, rawIdentifier, majorVersion, minorVersion )
+		, _binary( &bin )
+		, _index( idx ) {}
 
 	virtual ~OfxhPlugin() = 0;
 
 	bool operator==( const This& other ) const;
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
-	void setBinary( OfxhPluginBinary& binary ) { _binary = &binary; }
-	OfxhPluginBinary& getBinary() { return *_binary; }
-	const OfxhPluginBinary& getBinary() const { return *_binary; }
+	void                    setBinary( OfxhPluginBinary& binary ) { _binary = &binary; }
+	OfxhPluginBinary&       getBinary()                           { return *_binary; }
+	const OfxhPluginBinary& getBinary() const                     { return *_binary; }
 
 	int getIndex() const
 	{
@@ -84,21 +85,22 @@ public:
 		return false;
 	}
 
-#ifndef SWIG
-	virtual void setApiHandler( APICache::OfxhPluginAPICacheI& ) = 0;
-	virtual APICache::OfxhPluginAPICacheI& getApiHandler() = 0;
-	virtual const APICache::OfxhPluginAPICacheI& getApiHandler() const = 0;
+	#ifndef SWIG
+	virtual void                                 setApiHandler( APICache::OfxhPluginAPICacheI& ) = 0;
+	virtual APICache::OfxhPluginAPICacheI&       getApiHandler()                                 = 0;
+	virtual const APICache::OfxhPluginAPICacheI& getApiHandler() const                           = 0;
 
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPluginDesc);
-//		ar & BOOST_SERIALIZATION_NVP(_binary); // just a link, don't save
-		ar & BOOST_SERIALIZATION_NVP(_index);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhPluginDesc );
+		//		ar & BOOST_SERIALIZATION_NVP(_binary); // just a link, don't save
+		ar& BOOST_SERIALIZATION_NVP( _index );
 	}
-#endif
+
+	#endif
 };
 
 }

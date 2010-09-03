@@ -10,7 +10,8 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-class ParamString : public Param, public ofx::attribute::OfxhParamString
+class ParamString : public Param
+	, public ofx::attribute::OfxhParamString
 {
 protected:
 	std::string _value; /// @todo link de parametres

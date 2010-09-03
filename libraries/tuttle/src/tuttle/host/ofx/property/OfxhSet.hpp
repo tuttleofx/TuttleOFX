@@ -62,6 +62,7 @@ class OfxhSet
 {
 public:
 	typedef OfxhSet This;
+
 private:
 	static const int kMagic = 0x12082007; ///< magic number for property sets, and Connie's birthday :-)
 	const int _magic; ///< to check for handles being nice
@@ -132,29 +133,32 @@ public:
 
 	void copyValues( const This& other );
 
-#ifndef SWIG
+	#ifndef SWIG
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
-#endif
-	
-#ifdef SWIG
-	%extend
+	#endif
+
+	#ifdef SWIG
+	% extend
 	{
-//		const OfxhProperty& __getitem__( const std::string& name ) const
-//		{
-//			return self->fetchProperty(name);
-//		}
+		//		const OfxhProperty& __getitem__( const std::string& name ) const
+		//		{
+		//			return self->fetchProperty(name);
+		//		}
 		OfxhProperty& __getitem__( const std::string& name )
 		{
-			return self->fetchLocalProperty(name);
+			return self->fetchLocalProperty( name );
 		}
+
 		std::string __str__() const
 		{
 			std::stringstream s;
+
 			s << *self;
 			return s.str();
 		}
+
 	}
-#endif
+	#endif
 
 	/// adds a bunch of properties from PropSpec
 	void addProperties( const OfxhPropSpec* );
@@ -330,10 +334,11 @@ public:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_props);
+		ar& BOOST_SERIALIZATION_NVP( _props );
 	}
+
 };
 
 /// set a particular property
@@ -387,11 +392,11 @@ template<class T>
 typename T::ReturnType OfxhSet::getProperty( const std::string& property, int index ) const
 {
 	/*
-	if( !hasProperty( property, true ) )
-	{
-		TCOUT( "return kEmpty on property: " << property );
-		return T::kEmpty; /// @todo tuttle: is this really needed ?
-	}
+	   if( !hasProperty( property, true ) )
+	   {
+	    TCOUT( "return kEmpty on property: " << property );
+	    return T::kEmpty; /// @todo tuttle: is this really needed ?
+	   }
 	 */
 	return fetchTypedProperty<OfxhPropertyTemplate<T> >( property ).getValue( index );
 }
@@ -424,6 +429,5 @@ void OfxhSet::getPropertyRawN( const std::string& property, int count, typename 
 }
 }
 }
-
 
 #endif

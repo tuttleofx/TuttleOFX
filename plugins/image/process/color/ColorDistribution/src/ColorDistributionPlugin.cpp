@@ -11,25 +11,24 @@ namespace tuttle {
 namespace plugin {
 namespace colorDistribution {
 
-
-ColorDistributionPlugin::ColorDistributionPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+ColorDistributionPlugin::ColorDistributionPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_paramIn = fetchChoiceParam( kParamIn );
+	_clipSrc  = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst  = fetchClip( kOfxImageEffectOutputClipName );
+	_paramIn  = fetchChoiceParam( kParamIn );
 	_paramOut = fetchChoiceParam( kParamOut );
 }
 
 ColorDistributionProcessParams<ColorDistributionPlugin::Scalar> ColorDistributionPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	ColorDistributionProcessParams<Scalar> params;
-	params._in = static_cast<EParamDistribution>( _paramIn->getValue() );
+	params._in  = static_cast<EParamDistribution>( _paramIn->getValue() );
 	params._out = static_cast<EParamDistribution>( _paramOut->getValue() );
 	return params;
 }
 
-void ColorDistributionPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void ColorDistributionPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	if( paramName == kParamInvert )
 	{
@@ -55,78 +54,77 @@ bool ColorDistributionPlugin::isIdentity( const OFX::RenderArguments& args, OFX:
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ColorDistributionPlugin::render( const OFX::RenderArguments &args )
+void ColorDistributionPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                ColorDistributionProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                ColorDistributionProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                ColorDistributionProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				ColorDistributionProcess<rgba8_view_t> p( *this );
+				p.setupAndProcess( args );
 				break;
 			}
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                ColorDistributionProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                ColorDistributionProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                ColorDistributionProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
+			case OFX::eBitDepthUShort:
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+				ColorDistributionProcess<rgba16_view_t> p( *this );
+				p.setupAndProcess( args );
 				break;
 			}
-        }
-    }
+			case OFX::eBitDepthFloat:
+			{
+				ColorDistributionProcess<rgba32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				break;
+			}
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				ColorDistributionProcess<gray8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				ColorDistributionProcess<gray16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				ColorDistributionProcess<gray32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			default:
+			{
+				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
+				break;
+			}
+		}
+	}
 	else
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
 	}
 }
-
 
 }
 }

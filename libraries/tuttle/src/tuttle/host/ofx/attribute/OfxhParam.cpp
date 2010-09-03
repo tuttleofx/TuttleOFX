@@ -13,10 +13,10 @@ namespace attribute {
  * make a parameter, with the given type and name
  */
 OfxhParam::OfxhParam( const OfxhParamDescriptor& descriptor, const std::string& name, attribute::OfxhParamSet& setInstance )
-	: attribute::OfxhAttribute( descriptor ),
-	_paramSetInstance( &setInstance ),
-	_parentInstance( NULL ),
-	_avoidRecursion( false )
+	: attribute::OfxhAttribute( descriptor )
+	, _paramSetInstance( &setInstance )
+	, _parentInstance( NULL )
+	, _avoidRecursion( false )
 {
 	// parameter has to be owned by paramSet
 	setInstance.referenceParam( name, this ); ///< @todo tuttle move this from here.
@@ -61,7 +61,7 @@ void OfxhParam::setDisplayRange() {}
  */
 void OfxhParam::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV failed (paramName:") + getName() + ")" ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "ParamInstance getV failed (paramName:" ) + getName() + ")" ) );
 }
 
 /**
@@ -69,7 +69,7 @@ void OfxhParam::getV( va_list arg ) const OFX_EXCEPTION_SPEC
  */
 void OfxhParam::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
-	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance getV at time failed (paramName:") + getName() + ")" ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "ParamInstance getV at time failed (paramName:" ) + getName() + ")" ) );
 }
 
 /**
@@ -77,7 +77,7 @@ void OfxhParam::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
  */
 void OfxhParam::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
-	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV failed (paramName:") + getName() + ")" ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "ParamInstance setV failed (paramName:" ) + getName() + ")" ) );
 }
 
 /**
@@ -85,7 +85,7 @@ void OfxhParam::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
  */
 void OfxhParam::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
-	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string("ParamInstance setV at time failed (paramName:") + getName() + ")" ) );
+	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnsupported, std::string( "ParamInstance setV at time failed (paramName:" ) + getName() + ")" ) );
 }
 
 /**
@@ -152,8 +152,6 @@ OfxhParam* OfxhParam::getParentInstance()
 {
 	return _parentInstance;
 }
-
-
 
 std::ostream& operator<<( std::ostream& os, const OfxhParam& v )
 {

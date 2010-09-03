@@ -27,7 +27,7 @@ namespace imageStatistics {
 void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleImageStatistics", "ImageStatistics",
-		            "Image statistics" );
+	                "Image statistics" );
 	desc.setPluginGrouping( "tuttle/param/analysis" );
 
 	// add the supported contexts
@@ -42,8 +42,8 @@ void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	// plugin flags
 	desc.setSupportsMultiResolution( false );
 	desc.setSupportsTiles( kSupportTiles );
-	
-    desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<ImageStatisticsEffectOverlayDescriptor>() );
+
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<ImageStatisticsEffectOverlayDescriptor>() );
 }
 
 /**
@@ -52,9 +52,10 @@ void ImageStatisticsPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                                      OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
@@ -74,14 +75,14 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	OFX::Double2DParamDescriptor* rectCenter = desc.defineDouble2DParam( kParamRectCenter );
 	rectCenter->setLabel( "Center" );
 	rectCenter->setDoubleType( OFX::eDoubleTypePlain );
-//	rectCenter->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    rectCenter->setDefault( 0.5, 0.5 );
+	//	rectCenter->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+	rectCenter->setDefault( 0.5, 0.5 );
 
 	OFX::Double2DParamDescriptor* rectSize = desc.defineDouble2DParam( kParamRectSize );
 	rectSize->setLabel( "Size" );
 	rectSize->setDoubleType( OFX::eDoubleTypePlain );
-//	rectSize->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
-    rectSize->setDefault( 0.5, 0.5 );
+	//	rectSize->setDoubleType( OFX::eDoubleTypeNormalisedXYAbsolute );
+	rectSize->setDefault( 0.5, 0.5 );
 
 	OFX::ChoiceParamDescriptor* chooseOutput = desc.defineChoiceParam( kParamChooseOutput );
 	chooseOutput->setLabel( "Choose output" );
@@ -96,8 +97,8 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	OFX::GroupParamDescriptor* outputGroup = desc.defineGroupParam( kParamOutputGroup );
 	outputGroup->setLabel( "Output" );
 
-// -----------------------------------------------------------------------------
-	
+	// -----------------------------------------------------------------------------
+
 	OFX::GroupParamDescriptor* rgbaGroup = desc.defineGroupParam( kParamOutputGroupRGBA );
 	rgbaGroup->setLabel( "RGBA" );
 	rgbaGroup->setParent( outputGroup );
@@ -138,7 +139,7 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	outputSkewness->setParent( rgbaGroup );
 	outputSkewness->setEvaluateOnChange( false );
 
-// -----------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------
 
 	OFX::GroupParamDescriptor* hslGroup = desc.defineGroupParam( kParamOutputGroupHSL );
 	hslGroup->setLabel( "HSL" );
@@ -202,9 +203,9 @@ void ImageStatisticsPluginFactory::describeInContext( OFX::ImageEffectDescriptor
  * @return  plugin instance
  */
 OFX::ImageEffect* ImageStatisticsPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                                OFX::EContext        context )
 {
-	return new ImageStatisticsPlugin(handle);
+	return new ImageStatisticsPlugin( handle );
 }
 
 }

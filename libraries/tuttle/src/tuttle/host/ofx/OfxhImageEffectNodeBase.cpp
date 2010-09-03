@@ -1,6 +1,5 @@
 #include "OfxhImageEffectNodeBase.hpp"
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -71,7 +70,6 @@ void OfxhImageEffectNodeBase::setName( const std::string& name )
 {
 	_properties.setStringProperty( kOfxPropName, name );
 }
-
 
 const std::string& OfxhImageEffectNodeBase::getLongLabel() const
 {
@@ -188,10 +186,8 @@ bool OfxhImageEffectNodeBase::isClipPreferencesSlaveParam( const std::string& s 
 	return _properties.findStringPropValueIndex( kOfxImageEffectPropClipPreferencesSlaveParam, s ) != -1;
 }
 
-
 }
 }
 }
 }
-
 

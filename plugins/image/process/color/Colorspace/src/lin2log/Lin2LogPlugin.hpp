@@ -17,18 +17,18 @@ namespace lin2log {
 class Lin2LogPlugin : public OFX::ImageEffect
 {
 public:
-    Lin2LogPlugin( OfxImageEffectHandle handle );
-    OFX::Clip *getSrcClip( ) const;
-    OFX::Clip *getDstClip( ) const;
+	Lin2LogPlugin( OfxImageEffectHandle handle );
+	OFX::Clip* getSrcClip() const;
+	OFX::Clip* getDstClip() const;
 
 public:
-    virtual void render( const OFX::RenderArguments &args );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	virtual void render( const OFX::RenderArguments& args );
+	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip           *_clipSrc;       ///< Source image clip
-    OFX::Clip           *_clipDst;       ///< Destination image clip
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc;                 ///< Source image clip
+	OFX::Clip* _clipDst;                 ///< Destination image clip
 };
 
 }

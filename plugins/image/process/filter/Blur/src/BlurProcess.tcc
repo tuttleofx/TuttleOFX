@@ -4,17 +4,15 @@
 
 //#include <boost/lambda/lambda.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace blur {
 
 template<class View>
-BlurProcess<View>::BlurProcess( BlurPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
-, _plugin( effect )
-{
-}
+BlurProcess<View>::BlurProcess( BlurPlugin& effect )
+	: ImageGilFilterProcessor<View>( effect )
+	, _plugin( effect )
+{}
 
 template <class View>
 void BlurProcess<View>::setup( const OFX::RenderArguments& args )
@@ -22,15 +20,15 @@ void BlurProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 
-//	COUT_X( 20, "_" );
-//	COUT_VAR( _params._size );
-//	COUT_VAR2( _params._gilKernelX.size(), _params._gilKernelY.size() );
-//	std::cout << "x [";
-//	std::for_each(_params._gilKernelX.begin(), _params._gilKernelX.end(), std::cout << boost::lambda::_1 << ',');
-//	std::cout << "]" << std::endl;
-//	std::cout << "y [";
-//	std::for_each(_params._gilKernelY.begin(), _params._gilKernelY.end(), std::cout << boost::lambda::_1 << ',');
-//	std::cout << "]" << std::endl;
+	//	COUT_X( 20, "_" );
+	//	COUT_VAR( _params._size );
+	//	COUT_VAR2( _params._gilKernelX.size(), _params._gilKernelY.size() );
+	//	std::cout << "x [";
+	//	std::for_each(_params._gilKernelX.begin(), _params._gilKernelX.end(), std::cout << boost::lambda::_1 << ',');
+	//	std::cout << "]" << std::endl;
+	//	std::cout << "y [";
+	//	std::for_each(_params._gilKernelY.begin(), _params._gilKernelY.end(), std::cout << boost::lambda::_1 << ',');
+	//	std::cout << "]" << std::endl;
 }
 
 /**
@@ -43,13 +41,15 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	using boost::numeric_cast;
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-							     procWindowRoW.y2 - procWindowRoW.y1 };
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
 
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-							  procWindowSize.x, procWindowSize.y );
-	
-	Point proc_tl( procWindowRoW.x1-this->_srcPixelRod.x1, procWindowRoW.y1-this->_srcPixelRod.y1 );
+	                          procWindowSize.x, procWindowSize.y );
+
+	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
 
 	convolve_boundary_option option = convolve_option_extend_mirror;
 	switch( _params._border )

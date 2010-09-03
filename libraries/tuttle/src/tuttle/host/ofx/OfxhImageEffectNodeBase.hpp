@@ -44,7 +44,7 @@ public:
 	/// obtain a handle on this for passing to the C api
 	OfxImageEffectHandle getHandle() const;
 
-#ifndef SWIG
+	#ifndef SWIG
 	const property::OfxhSet& getProperties() const   { return _properties; }
 	property::OfxhSet&       getEditableProperties() { return _properties; }
 
@@ -110,11 +110,12 @@ public:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_properties);
+		ar& BOOST_SERIALIZATION_NVP( _properties );
 	}
-#endif
+
+	#endif
 };
 
 }

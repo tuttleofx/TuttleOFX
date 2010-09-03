@@ -60,9 +60,9 @@ static property::OfxhPropSpec imageStuffs[] = {
 };
 
 OfxhImage::OfxhImage()
-	: property::OfxhSet( imageStuffs ),
-	_id( _count++ ),
-	_referenceCount( 1 )
+	: property::OfxhSet( imageStuffs )
+	, _id( _count++ )
+	, _referenceCount( 1 )
 {
 	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
 }
@@ -71,9 +71,9 @@ OfxhImage::OfxhImage()
  * make an image from a clip instance
  */
 OfxhImage::OfxhImage( attribute::OfxhClip& instance )
-	: property::OfxhSet( imageStuffs ),
-	_id( _count++ ),
-	_referenceCount( 1 )
+	: property::OfxhSet( imageStuffs )
+	, _id( _count++ )
+	, _referenceCount( 1 )
 {
 	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
 	initClipBits( instance );
@@ -91,9 +91,9 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
                       int                  rowBytes,
                       std::string          field,
                       std::string          uniqueIdentifier )
-	: property::OfxhSet( imageStuffs ),
-	_id( _count++ ),
-	_referenceCount( 1 )
+	: property::OfxhSet( imageStuffs )
+	, _id( _count++ )
+	, _referenceCount( 1 )
 {
 	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
 	initClipBits( instance );
@@ -165,7 +165,7 @@ OfxRectI OfxhImage::getROD() const
 
 EBitDepth OfxhImage::getBitDepth() const
 {
-	std::string depth     = getStringProperty( kOfxImageEffectPropPixelDepth );
+	std::string depth  = getStringProperty( kOfxImageEffectPropPixelDepth );
 	EBitDepth bitDepth = eBitDepthNone;
 
 	if( depth == kOfxBitDepthByte )
@@ -185,7 +185,7 @@ EBitDepth OfxhImage::getBitDepth() const
 
 EPixelComponent OfxhImage::getComponentsType() const
 {
-	std::string sType           = getStringProperty( kOfxImageEffectPropComponents );
+	std::string sType        = getStringProperty( kOfxImageEffectPropComponents );
 	EPixelComponent compType = ePixelComponentNone;
 
 	if( sType == kOfxImageComponentRGBA )
@@ -203,7 +203,6 @@ int OfxhImage::getRowBytes() const
 {
 	return getIntProperty( kOfxImagePropRowBytes );
 }
-
 
 }
 }

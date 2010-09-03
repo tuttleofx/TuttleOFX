@@ -18,13 +18,12 @@ namespace tuttle {
 namespace plugin {
 namespace bitDepth {
 
-
 template<class SView, class DView>
-BitDepthProcess<SView, DView>::BitDepthProcess( BitDepthPlugin &instance )
-: ImageGilProcessor<DView>( instance )
-, _plugin( instance )
+BitDepthProcess<SView, DView>::BitDepthProcess( BitDepthPlugin& instance )
+	: ImageGilProcessor<DView>( instance )
+	, _plugin( instance )
 {
-    _clipSrc = _plugin.fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipSrc = _plugin.fetchClip( kOfxImageEffectSimpleSourceClipName );
 }
 
 template<class SView, class DView>
@@ -34,13 +33,13 @@ void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 
 	// source view
 	this->_src.reset( this->_clipSrc->fetchImage( args.time ) );
-	if( !this->_src.get( ) )
+	if( !this->_src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( this->_src->getRowBytes( ) <= 0 )
+	if( this->_src->getRowBytes() <= 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcView = getView<SView>( this->_src.get(), this->_clipSrc->getPixelRod(args.time) );
-//	this->_srcPixelRod = this->_src->getRegionOfDefinition(); // bug in nuke, returns bounds
-	this->_srcPixelRod = this->_clipSrc->getPixelRod(args.time);
+	this->_srcView = getView<SView>( this->_src.get(), this->_clipSrc->getPixelRod( args.time ) );
+	//	this->_srcPixelRod = this->_src->getRegionOfDefinition(); // bug in nuke, returns bounds
+	this->_srcPixelRod = this->_clipSrc->getPixelRod( args.time );
 }
 
 /**
@@ -52,17 +51,19 @@ void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& pr
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-							     procWindowRoW.y2 - procWindowRoW.y1 };
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
 
 	SView src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
-							   procWindowSize.x,
-							   procWindowSize.y );
+	                           procWindowSize.x,
+	                           procWindowSize.y );
 	DView dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-							   procWindowSize.x,
-							   procWindowSize.y );
+	                           procWindowSize.x,
+	                           procWindowSize.y );
 
-	copy_and_convert_pixels( clamp<typename SView::value_type>(src), dst );
+	copy_and_convert_pixels( clamp<typename SView::value_type>( src ), dst );
 }
 
 }

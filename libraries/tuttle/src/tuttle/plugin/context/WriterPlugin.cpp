@@ -6,23 +6,22 @@ namespace plugin {
 namespace bfs = boost::filesystem;
 
 WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
-: ImageEffect( handle )
-, _oneRender(false)
-, _oneRenderAtTime(0)
+	: ImageEffect( handle )
+	, _oneRender( false )
+	, _oneRenderAtTime( 0 )
 {
-	_clipSrc        = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst        = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc             = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst             = fetchClip( kOfxImageEffectOutputClipName );
 	_paramFilepath       = fetchStringParam( kWriterParamFilename );
 	_paramRenderButton   = fetchPushButtonParam( kWriterParamRender );
 	_paramRenderAlways   = fetchBooleanParam( kWriterParamRenderAlways );
 	_paramBitDepth       = fetchChoiceParam( kWriterParamBitDepth );
 	_paramForceNewRender = fetchIntParam( kWriterParamForceNewRender );
-	_isSequence = _filePattern.initFromDetection( _paramFilepath->getValue() );
+	_isSequence          = _filePattern.initFromDetection( _paramFilepath->getValue() );
 }
 
 WriterPlugin::~WriterPlugin()
-{
-}
+{}
 
 void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
@@ -32,7 +31,7 @@ void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 	}
 	else if( paramName == kWriterParamRender )
 	{
-		_oneRender = true;
+		_oneRender       = true;
 		_oneRenderAtTime = args.time;
 		// modify the plugin to force a new render
 		_paramForceNewRender->setValue( _paramForceNewRender->getValue() + 1 );
@@ -45,7 +44,7 @@ void WriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 	clipPreferences.setOutputFrameVarying( varyOnTime() );
 }
 
-bool WriterPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, OfxTime &identityTime )
+bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, OfxTime& identityTime )
 {
 	// little hack for the push button Render
 	if( _oneRender && _oneRenderAtTime == args.time )
@@ -65,7 +64,7 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments &args, OFX::Clip * &id
 	return true;
 }
 
-void WriterPlugin::render( const OFX::RenderArguments &args )
+void WriterPlugin::render( const OFX::RenderArguments& args )
 {
 	_oneRender = false;
 }

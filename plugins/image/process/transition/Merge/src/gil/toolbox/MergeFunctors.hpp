@@ -12,7 +12,8 @@ namespace boost {
 namespace gil {
 
 template<bool is_signed, typename Channel>
-struct is_negative_impl { static bool process( const Channel& v ) { return v < 0; } };
+struct is_negative_impl {
+	static bool process( const Channel& v ) { return v < 0; } };
 
 template<typename Channel>
 struct is_negative_impl<false, Channel>
@@ -24,7 +25,7 @@ struct is_negative_impl<false, Channel>
 template<typename Channel>
 bool is_negative( const Channel& v )
 {
-	return is_negative_impl<boost::is_signed<typename boost::gil::channel_traits<Channel>::value_type>::value, Channel>::process(v);
+	return is_negative_impl<boost::is_signed<typename boost::gil::channel_traits<Channel>::value_type>::value, Channel>::process( v );
 }
 
 /******************************************************************************
@@ -92,7 +93,7 @@ struct FunctorDivide
 	template <typename Channel>
 	inline void operator()( const Channel& A, const Channel& B, Channel& dst )
 	{
-		if( is_negative(A) && is_negative(B) )
+		if( is_negative( A ) && is_negative( B ) )
 		{
 			dst = Channel( 0 );
 			return;
@@ -153,7 +154,7 @@ struct FunctorMultiply
 	template <typename Channel>
 	inline void operator()( const Channel& A, const Channel& B, Channel& dst )
 	{
-		if( is_negative(A) && is_negative(B) )
+		if( is_negative( A ) && is_negative( B ) )
 		{
 			dst = (Channel)( 0 );
 			return;
@@ -315,7 +316,7 @@ struct FunctorColorBurn
 		if( B != 0 )
 		{
 			dst = max - Channel( ( max - A ) / B );
-			if( is_negative(dst) )
+			if( is_negative( dst ) )
 				dst = 0;
 		}
 		else
@@ -384,7 +385,7 @@ struct FunctorFreeze
 		else
 		{
 			dst = max - ( Channel ) std::sqrt( (float)max - A ) / B;
-			if( is_negative(dst) )
+			if( is_negative( dst ) )
 				dst = 0;
 		}
 	}

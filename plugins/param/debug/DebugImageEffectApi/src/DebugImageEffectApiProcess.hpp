@@ -18,7 +18,6 @@
 #include <vector>
 #include <iostream>
 
-
 namespace tuttle {
 namespace plugin {
 namespace debugImageEffectApi {
@@ -30,16 +29,16 @@ namespace debugImageEffectApi {
 template<class View>
 class DebugImageEffectApiProcess : public ImageGilFilterProcessor<View>
 {
-protected :
-    DebugImageEffectApiPlugin&    _plugin;        ///< Rendering plugin
+protected:
+	DebugImageEffectApiPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-    DebugImageEffectApiProcess( DebugImageEffectApiPlugin& instance );
+	DebugImageEffectApiProcess( DebugImageEffectApiPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
 
-    // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	// Do some processing
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

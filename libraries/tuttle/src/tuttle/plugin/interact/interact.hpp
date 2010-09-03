@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_PLUGIN_INTERACT_HPP_
-#define	_TUTTLE_PLUGIN_INTERACT_HPP_
+#define _TUTTLE_PLUGIN_INTERACT_HPP_
 
 #include <ofxsInteract.h>
 #include <ofxsParam.h>
@@ -21,6 +21,7 @@ enum EMoveType
 inline bool double2DSetValue( OFX::Double2DParam& p, const OfxPointD& value, const EMoveType& moveType )
 {
 	OfxPointD origin( p.getValue() );
+
 	switch( moveType )
 	{
 		case eMoveTypeXY:
@@ -42,6 +43,7 @@ inline bool double2DSetValue( OFX::Double2DParam& p, const OfxPointD& value, con
 			return false;
 	}
 }
+
 inline bool double2DSetValue( OFX::Double2DParam* p, const OfxPointD& value, const EMoveType& moveType )
 {
 	return double2DSetValue( *p, value, moveType );
@@ -51,10 +53,11 @@ template<class Point>
 inline EMoveType clicPoint( const Point& point, const Point& mouse, const double marge )
 {
 	Point dist;
-	dist.x = std::abs(point.x - mouse.x);
-	dist.y = std::abs(point.y - mouse.y);
-	
-	double bigMarge = marge * 3.0;
+
+	dist.x = std::abs( point.x - mouse.x );
+	dist.y = std::abs( point.y - mouse.y );
+
+	double bigMarge  = marge * 3.0;
 	double tinyMarge = marge * 0.5;
 	if( dist.x < marge && dist.y < marge )
 		return eMoveTypeXY;
@@ -74,8 +77,10 @@ inline EMoveType clicPoint( const Point& point, const Point& mouse, const double
 inline EMoveType clicDouble2D( const OFX::Double2DParam& point, const OfxPointD& mouse, const double marge )
 {
 	OfxPointD p = point.getValue();
+
 	return clicPoint<>( p, mouse, marge );
 }
+
 inline EMoveType clicDouble2D( const OFX::Double2DParam* point, const OfxPointD& mouse, const double marge )
 {
 	return clicDouble2D( *point, mouse, marge );

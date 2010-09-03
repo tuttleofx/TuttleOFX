@@ -5,9 +5,9 @@ namespace host {
 namespace attribute {
 
 Param::Param( ImageEffectNode& effect )
-: Attribute(effect)
-{
-}
+	: Attribute( effect )
+{}
+
 Param::~Param() {}
 
 }

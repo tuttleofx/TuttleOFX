@@ -29,7 +29,7 @@ public:
 		return *this;
 	}
 
-	const std::string& getName() const                   { return _name; }
+	const std::string& getName() const                { return _name; }
 	void               setName( const std::string s ) { _name = s; }
 
 	friend std::ostream& operator<<( std::ostream& os, const DummyEdge& v );

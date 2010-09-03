@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_PLUGIN_CONTEXT_READERPLUGIN_HPP_
-#define	_TUTTLE_PLUGIN_CONTEXT_READERPLUGIN_HPP_
+#define _TUTTLE_PLUGIN_CONTEXT_READERPLUGIN_HPP_
 
 #include "ReaderDefinition.hpp"
 
@@ -28,18 +28,19 @@ public:
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
-//		COUT_VAR( time );
+		//		COUT_VAR( time );
 		if( _isSequence )
 		{
-//			COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
+			//			COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
 			return _filePattern.getAbsoluteFilenameAt( time );
 		}
 		else
 		{
-//			COUT_VAR( _paramFilepath->getValue() );
+			//			COUT_VAR( _paramFilepath->getValue() );
 			return _paramFilepath->getValue();
 		}
 	}
+
 	std::string getAbsoluteFirstFilename() const
 	{
 		if( _isSequence )
@@ -47,6 +48,7 @@ public:
 		else
 			return _paramFilepath->getValue();
 	}
+
 	OfxTime getFirstTime() const
 	{
 		if( _isSequence )
@@ -54,6 +56,7 @@ public:
 		else
 			return kOfxFlagInfiniteMin;
 	}
+
 	OfxTime getLastTime() const
 	{
 		if( _isSequence )
@@ -61,10 +64,12 @@ public:
 		else
 			return kOfxFlagInfiniteMax;
 	}
+
 	EReaderParamExplicitConversion getExplicitConversion() const
 	{
 		return static_cast<EReaderParamExplicitConversion>( _paramExplicitConv->getValue() );
 	}
+
 	OFX::EBitDepth getOfxExplicitConversion() const
 	{
 		switch( getExplicitConversion() )
@@ -91,12 +96,11 @@ public:
 	OFX::StringParam*    _paramFilepath;     ///< File path
 	OFX::ChoiceParam*    _paramExplicitConv; ///< Explicit conversion
 	/// @}
-	
-private:
-	bool                  _isSequence;
-	common::Sequence      _filePattern;       ///< Filename pattern manager
-};
 
+private:
+	bool _isSequence;
+	common::Sequence _filePattern;            ///< Filename pattern manager
+};
 
 }
 }

@@ -8,7 +8,6 @@ namespace tuttle {
 namespace plugin {
 namespace lens {
 
-
 /**
  * @brief Contains functions to map coordinates between :
  *  * canonical coordinates system (ofx)
@@ -39,97 +38,104 @@ template<typename F>
 class CoordonatesSystemParams
 {
 public:
-    typedef F Float;
-    typedef boost::gil::point2<Float> Point2;
-public:
-    Point2 _imgSizeSrc;
-    Point2 _imgCenterSrc;
-    Point2 _imgCenterDst;
-    F _imgHalfDiagonal; ///< half diagonal of the image (to work between -0.5 and 0.5)
-    F _pixelRatio;
+	typedef F Float;
+	typedef boost::gil::point2<Float> Point2;
 
 public:
-    virtual ~CoordonatesSystemParams()=0;
+	Point2 _imgSizeSrc;
+	Point2 _imgCenterSrc;
+	Point2 _imgCenterDst;
+	F _imgHalfDiagonal; ///< half diagonal of the image (to work between -0.5 and 0.5)
+	F _pixelRatio;
 
-    /// @{ conversion functions
-    inline Point2 pixelToNormalized( const Point2& p ) const
-    {
-        BOOST_STATIC_ASSERT( boost::is_floating_point<F>::value );
-        BOOST_STATIC_ASSERT(( boost::is_same<F, double>::value ));
-        Point2 pn( p / _imgHalfDiagonal );
-        pn.x *= _pixelRatio;
-        return pn;
-    }
+public:
+	virtual ~CoordonatesSystemParams() = 0;
 
-    inline Point2 normalizedToPixel( const Point2& pn ) const
-    {
-        Point2 p( pn * _imgHalfDiagonal );
-        p.x /= _pixelRatio;
-        return p;
-    }
+	/// @{ conversion functions
+	inline Point2 pixelToNormalized( const Point2& p ) const
+	{
+		BOOST_STATIC_ASSERT( boost::is_floating_point<F>::value );
+		BOOST_STATIC_ASSERT( ( boost::is_same<F, double>::value ) );
+		Point2 pn( p / _imgHalfDiagonal );
+		pn.x *= _pixelRatio;
+		return pn;
+	}
 
-    inline Point2 pixelToCenterNormalized( const Point2& p ) const
-    {
-        return pixelToNormalized( p - _imgCenterSrc );
-    }
+	inline Point2 normalizedToPixel( const Point2& pn ) const
+	{
+		Point2 p( pn * _imgHalfDiagonal );
 
-    template<typename F2>
-    inline Point2 pixelToCenterNormalized( const boost::gil::point2<F2>& p ) const
-    {
-        Point2 pp( p.x, p.y );
-        return pixelToCenterNormalized( pp );
-    }
+		p.x /= _pixelRatio;
+		return p;
+	}
 
-    inline Point2 centerNormalizedToPixel( const Point2& pn ) const
-    {
-        return normalizedToPixel( pn ) + _imgCenterDst;
-    }
-    /// @}
+	inline Point2 pixelToCenterNormalized( const Point2& p ) const
+	{
+		return pixelToNormalized( p - _imgCenterSrc );
+	}
+
+	template<typename F2>
+	inline Point2 pixelToCenterNormalized( const boost::gil::point2<F2>& p ) const
+	{
+		Point2 pp( p.x, p.y );
+
+		return pixelToCenterNormalized( pp );
+	}
+
+	inline Point2 centerNormalizedToPixel( const Point2& pn ) const
+	{
+		return normalizedToPixel( pn ) + _imgCenterDst;
+	}
+
+	/// @}
 };
 
 template<typename F>
-CoordonatesSystemParams<F>::~CoordonatesSystemParams(){};
+CoordonatesSystemParams<F>::~CoordonatesSystemParams() {}
 
 template<typename F>
 class NormalLensDistortParams : public CoordonatesSystemParams<F>
 {
 public:
-    typedef typename CoordonatesSystemParams<F>::Point2 Point2;
+	typedef typename CoordonatesSystemParams<F>::Point2 Point2;
+
 public:
-    bool _distort; ///< true : distort, false : undistort
-    F _coef1;
+	bool _distort; ///< true : distort, false : undistort
+	F _coef1;
 
-    Point2 _lensCenterDst; ///< center of the lens ditortion in the dest image coordinates (in pixels)
-    Point2 _lensCenterSrc; ///< center of the lens ditortion in the source image coordinates (in pixels)
-    Point2 _postScale;
-    Point2 _preScale;
-	
+	Point2 _lensCenterDst; ///< center of the lens ditortion in the dest image coordinates (in pixels)
+	Point2 _lensCenterSrc; ///< center of the lens ditortion in the source image coordinates (in pixels)
+	Point2 _postScale;
+	Point2 _preScale;
+
 public:
-    virtual ~NormalLensDistortParams(){}
+	virtual ~NormalLensDistortParams() {}
 
-    inline Point2 pixelToLensCenterNormalized( const Point2& p ) const
-    {
-        return pixelToNormalized( p - this->_lensCenterDst );
-    }
+	inline Point2 pixelToLensCenterNormalized( const Point2& p ) const
+	{
+		return pixelToNormalized( p - this->_lensCenterDst );
+	}
 
-    template<typename F2>
-    inline Point2 pixelToLensCenterNormalized( const boost::gil::point2<F2>& p ) const
-    {
-        Point2 pp( p.x, p.y );
-        return pixelToLensCenterNormalized( pp );
-    }
+	template<typename F2>
+	inline Point2 pixelToLensCenterNormalized( const boost::gil::point2<F2>& p ) const
+	{
+		Point2 pp( p.x, p.y );
 
-    inline Point2 lensCenterNormalizedToPixel( const Point2& pn ) const
-    {
-        return normalizedToPixel( pn ) + this->_lensCenterSrc;
-    }
+		return pixelToLensCenterNormalized( pp );
+	}
+
+	inline Point2 lensCenterNormalizedToPixel( const Point2& pn ) const
+	{
+		return normalizedToPixel( pn ) + this->_lensCenterSrc;
+	}
+
 };
 
 template<typename F>
 class NormalLensUndistortParams : public NormalLensDistortParams<F>
 {
 public:
-    virtual ~NormalLensUndistortParams(){}
+	virtual ~NormalLensUndistortParams() {}
 
 };
 
@@ -137,46 +143,46 @@ template<typename F>
 class FisheyeLensDistortParams : public NormalLensUndistortParams<F>
 {
 public:
-    F _coef2;
+	F _coef2;
 
 public:
-    virtual ~FisheyeLensDistortParams(){}
+	virtual ~FisheyeLensDistortParams() {}
 };
 
 template<typename F>
 class FisheyeLensUndistortParams : public FisheyeLensDistortParams<F>
 {
 public:
-    virtual ~FisheyeLensUndistortParams(){}
+	virtual ~FisheyeLensUndistortParams() {}
 };
 
 template<typename F>
 class AdvancedLensDistortParams : public FisheyeLensUndistortParams<F>
 {
 public:
-    typedef typename CoordonatesSystemParams<F>::Point2 Point2;
+	typedef typename CoordonatesSystemParams<F>::Point2 Point2;
+
 public:
-    F _squeeze;
-    Point2 _asymmetric;
+	F _squeeze;
+	Point2 _asymmetric;
+
 public:
-    virtual ~AdvancedLensDistortParams(){}
+	virtual ~AdvancedLensDistortParams() {}
 };
 
 template<typename F>
 class AdvancedLensUndistortParams : public AdvancedLensDistortParams<F>
 {
 public:
-    virtual ~AdvancedLensUndistortParams(){}
+	virtual ~AdvancedLensUndistortParams() {}
 };
-
 
 template<typename F>
 class LensDistortProcessParams : public AdvancedLensUndistortParams<F>
 {
 public:
-    virtual ~LensDistortProcessParams(){}
+	virtual ~LensDistortProcessParams() {}
 };
-
 
 }
 }

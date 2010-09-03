@@ -25,7 +25,6 @@ public:
 	virtual property::OfxhSet& getParamSetProps() = 0;
 };
 
-
 }
 }
 }

@@ -9,7 +9,8 @@ namespace reader {
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( ImageMagickReaderPluginFactory, {}, {} );
+mDeclarePluginFactory( ImageMagickReaderPluginFactory, {}, {}
+                       );
 
 }
 }

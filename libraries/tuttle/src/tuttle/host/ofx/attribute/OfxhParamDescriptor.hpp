@@ -15,27 +15,29 @@ namespace attribute {
 bool isStandardType( const std::string& BaseType );
 
 /// the Descriptor of a plugin parameter
-class OfxhParamDescriptor :
-	public OfxhAttributeDescriptor,
-	virtual public OfxhParamAccessor
+class OfxhParamDescriptor
+	: public OfxhAttributeDescriptor
+	, virtual public OfxhParamAccessor
 {
 public:
 	typedef OfxhParamDescriptor This;
 
 private:
-	OfxhParamDescriptor(){}
+	OfxhParamDescriptor() {}
+
 public:
 	/// make a parameter, with the given type and name
 	OfxhParamDescriptor( const std::string& type, const std::string& name );
-	~OfxhParamDescriptor(){}
+	~OfxhParamDescriptor() {}
 
 	bool operator==( const This& other ) const
 	{
-		if( OfxhAttributeDescriptor::operator!=(other) )
+		if( OfxhAttributeDescriptor::operator!=( other ) )
 			return false;
 		return true;
 	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	/// grab a handle on the parameter for passing to the C API
 	OfxParamHandle getParamHandle() const
@@ -60,24 +62,23 @@ private:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttributeDescriptor);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhAttributeDescriptor );
 	}
+
 };
 
-
 }
 }
 }
 }
-
 
 // force boost::is_virtual_base_of value (used by boost::serialization)
-namespace boost{
-template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhParamDescriptor>: public mpl::true_ {};
+namespace boost {
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttributeDescriptor, tuttle::host::ofx::attribute::OfxhParamDescriptor>: public mpl::true_ {};
 }
-
 
 #endif
 

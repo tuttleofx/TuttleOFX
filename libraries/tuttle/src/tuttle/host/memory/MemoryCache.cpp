@@ -24,6 +24,7 @@ bool MemoryCache::Key::operator==( const Key& v ) const
 std::size_t MemoryCache::Key::getHash() const
 {
 	std::size_t seed = 0;
+
 	boost::hash_combine( seed, _time );
 	boost::hash_combine( seed, _identifier );
 	return seed;
@@ -117,15 +118,15 @@ bool MemoryCache::remove( const CACHE_ELEMENT& pData )
 
 void MemoryCache::clearUnused()
 {
-	for( MAP::iterator it = _map.begin();it != _map.end();)
+	for( MAP::iterator it = _map.begin(); it != _map.end(); )
 	{
 		if( it->second->getReference() == 0 )
 		{
-		    _map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
+			_map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
 		}
 		else
 		{
-		    ++it;
+			++it;
 		}
 	}
 }

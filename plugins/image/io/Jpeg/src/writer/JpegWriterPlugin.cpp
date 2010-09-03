@@ -21,12 +21,13 @@ JpegWriterPlugin::JpegWriterPlugin( OfxImageEffectHandle handle )
 	_quality = fetchIntParam( kParamQuality );
 }
 
-JpegWriterProcessParams JpegWriterPlugin::getProcessParams(const OfxTime time)
+JpegWriterProcessParams JpegWriterPlugin::getProcessParams( const OfxTime time )
 {
 	JpegWriterProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
-	params._quality = this->_quality->getValue();
-	params._premult = this->_premult->getValue();
+
+	params._filepath = getAbsoluteFilenameAt( time );
+	params._quality  = this->_quality->getValue();
+	params._premult  = this->_premult->getValue();
 	return params;
 }
 

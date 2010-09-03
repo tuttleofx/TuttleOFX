@@ -12,7 +12,6 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 /// a set of parameters
 class OfxhParamSetDescriptor : public OfxhParamSetAccessor
 {
@@ -24,8 +23,8 @@ public:
 	ParamDescriptorList _paramList;
 
 private:
-/// CC doesn't exist
-OfxhParamSetDescriptor( const This& );
+	/// CC doesn't exist
+	OfxhParamSetDescriptor( const This& );
 
 public:
 	/// default ctor
@@ -40,7 +39,8 @@ public:
 			return false;
 		return true;
 	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	/// obtain a handle on this set for passing to the C api
 	OfxParamSetHandle getParamSetHandle() const { return ( OfxParamSetHandle ) this; }
@@ -55,7 +55,7 @@ public:
 	/// define a param
 	virtual OfxhParamDescriptor* paramDefine( const char* paramType,
 	                                          const char* name );
-	
+
 private:
 	/// add a param in
 	virtual void addParam( const std::string& name, OfxhParamDescriptor* p );
@@ -63,12 +63,12 @@ private:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_paramList);
+		ar& BOOST_SERIALIZATION_NVP( _paramList );
 	}
-};
 
+};
 
 }
 }

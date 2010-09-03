@@ -57,7 +57,6 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-
 static const property::OfxhPropSpec effectInstanceStuff[] = {
 	/* name                                 type                   dim.   r/o    default value */
 	{ kOfxPropType, property::eString, 1, true, kOfxTypeImageEffectInstance },
@@ -80,15 +79,15 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin&         p
                                           const OfxhImageEffectNodeDescriptor& descriptor,
                                           const std::string&                   context,
                                           bool                                 interactive )
-	: OfxhImageEffectNodeBase( effectInstanceStuff ),
-	_plugin( plugin ),
-	_context( context ),
-	_descriptor( descriptor ),
-	_interactive( interactive ),
-	_created( false ),
-	_continuousSamples( false ),
-	_frameVarying( false ),
-	_outputFrameRate( 24 )
+	: OfxhImageEffectNodeBase( effectInstanceStuff )
+	, _plugin( plugin )
+	, _context( context )
+	, _descriptor( descriptor )
+	, _interactive( interactive )
+	, _created( false )
+	, _continuousSamples( false )
+	, _frameVarying( false )
+	, _outputFrameRate( 24 )
 {
 	_properties.setChainedSet( &descriptor.getProperties() );
 
@@ -100,13 +99,14 @@ OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectPlugin&         p
 	// copy is sequential over
 	bool sequential = descriptor.getProperties().getIntProperty( kOfxImageEffectInstancePropSequentialRender ) != 0;
 	_properties.setIntProperty( kOfxImageEffectInstancePropSequentialRender, sequential );
-	
+
 	initHook();
 }
 
 void OfxhImageEffectNode::initHook()
 {
 	int i = 0;
+
 	while( effectInstanceStuff[i].name )
 	{
 		// don't set hooks for context or isinteractive
@@ -130,17 +130,17 @@ void OfxhImageEffectNode::initHook()
 }
 
 OfxhImageEffectNode::OfxhImageEffectNode( const OfxhImageEffectNode& other )
-: OfxhImageEffectNodeBase( other.getProperties() )
-//, attribute::OfxhParamSet( other ) // done in populate function
-//, attribute::OfxhClipImageSet( other ) // done in populate function
-, _plugin( other.getPlugin() )
-, _context( other.getContext() )
-, _descriptor( other.getDescriptor() )
-, _interactive( other._interactive )
-, _created( false )
-, _continuousSamples( other._continuousSamples )
-, _frameVarying( other._frameVarying )
-, _outputFrameRate( other._outputFrameRate )
+	: OfxhImageEffectNodeBase( other.getProperties() )
+	//, attribute::OfxhParamSet( other ) // done in populate function
+	//, attribute::OfxhClipImageSet( other ) // done in populate function
+	, _plugin( other.getPlugin() )
+	, _context( other.getContext() )
+	, _descriptor( other.getDescriptor() )
+	, _interactive( other._interactive )
+	, _created( false )
+	, _continuousSamples( other._continuousSamples )
+	, _frameVarying( other._frameVarying )
+	, _outputFrameRate( other._outputFrameRate )
 {
 	_properties.setChainedSet( &_descriptor.getProperties() );
 	initHook();
@@ -176,7 +176,7 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 		// name and parentName of the parameter
 		std::string name       = descriptor.getName();
 		std::string parentName = descriptor.getParentName();
-		
+
 		if( parentName != "" )
 		{
 			attribute::OfxhParamGroup* parentGroup = dynamic_cast<attribute::OfxhParamGroup*>( parameters[parentName] );
@@ -380,22 +380,22 @@ bool OfxhImageEffectNode::checkClipConnectionStatus() const
 /**
  * override this to make processing abort, return 1 to abort processing
  *
-int OfxhImageEffectNode::abort()
-{
-	return 0;
-}
-*/
+   int OfxhImageEffectNode::abort()
+   {
+    return 0;
+   }
+ */
 
 /**
  * override this to use your own memory instance - must inherrit from memory::instance
  *
-OfxhMemory* OfxhImageEffectNode::newMemoryInstance( size_t nBytes )
-{
-	OfxhMemory* instance = new OfxhMemory();
-	instance->alloc( nBytes );
-	return instance;
-}
-*/
+   OfxhMemory* OfxhImageEffectNode::newMemoryInstance( size_t nBytes )
+   {
+    OfxhMemory* instance = new OfxhMemory();
+    instance->alloc( nBytes );
+    return instance;
+   }
+ */
 
 /**
  * @return an memory::instance calls makeMemoryInstance that can be overriden
@@ -414,6 +414,7 @@ OfxStatus OfxhImageEffectNode::mainEntry( const char*        action,
                                           property::OfxhSet* outArgs ) const
 {
 	const OfxhPluginHandle* pHandle = _plugin.getPluginHandle();
+
 	if( !pHandle )
 		return kOfxStatFailed;
 
@@ -480,11 +481,11 @@ void OfxhImageEffectNode::beginInstanceChangedAction( const std::string& why ) O
 }
 
 void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramName,
-                                                           const std::string& why,
-                                                           OfxTime            time,
-                                                           OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
+                                                      const std::string& why,
+                                                      OfxTime            time,
+                                                      OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
-	if ( getParams()[paramName]->changedActionInProgress() )
+	if( getParams()[paramName]->changedActionInProgress() )
 	{
 		return;
 	}
@@ -520,9 +521,9 @@ void OfxhImageEffectNode::paramInstanceChangedAction( const std::string& paramNa
 }
 
 void OfxhImageEffectNode::clipInstanceChangedAction( const std::string& clipName,
-                                                          const std::string& why,
-                                                          OfxTime            time,
-                                                          OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
+                                                     const std::string& why,
+                                                     OfxTime            time,
+                                                     OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
 	_clipPrefsDirty = true;
 	ClipImageMap::iterator it = _clips.find( clipName );
@@ -610,10 +611,10 @@ void OfxhImageEffectNode::endInstanceEditAction() OFX_EXCEPTION_SPEC
 }
 
 void OfxhImageEffectNode::beginRenderAction( OfxTime   startFrame,
-                                                  OfxTime   endFrame,
-                                                  OfxTime   step,
-                                                  bool      interactive,
-                                                  OfxPointD renderScale ) OFX_EXCEPTION_SPEC
+                                             OfxTime   endFrame,
+                                             OfxTime   step,
+                                             bool      interactive,
+                                             OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec stuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
@@ -642,9 +643,9 @@ void OfxhImageEffectNode::beginRenderAction( OfxTime   startFrame,
 }
 
 void OfxhImageEffectNode::renderAction( OfxTime            time,
-                                             const std::string& field,
-                                             const OfxRectI&    renderRoI,
-                                             OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
+                                        const std::string& field,
+                                        const OfxRectI&    renderRoI,
+                                        OfxPointD          renderScale ) OFX_EXCEPTION_SPEC
 {
 	static const property::OfxhPropSpec stuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
@@ -666,14 +667,14 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 	OfxStatus status = mainEntry( kOfxImageEffectActionRender, this->getHandle(), &inArgs, 0 );
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
-		BOOST_THROW_EXCEPTION( OfxhException( status, "Error in ActionRender on node \"" + this->getName() + "\" at time " + boost::lexical_cast<std::string>(time) + "." ) );
+		BOOST_THROW_EXCEPTION( OfxhException( status, "Error in ActionRender on node \"" + this->getName() + "\" at time " + boost::lexical_cast<std::string>( time ) + "." ) );
 }
 
 void OfxhImageEffectNode::endRenderAction( OfxTime   startFrame,
-                                                OfxTime   endFrame,
-                                                OfxTime   step,
-                                                bool      interactive,
-                                                OfxPointD renderScale ) OFX_EXCEPTION_SPEC
+                                           OfxTime   endFrame,
+                                           OfxTime   step,
+                                           bool      interactive,
+                                           OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec stuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, true, "0" },
@@ -729,7 +730,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		}
 		catch( boost::exception& e )
 		{
-			e << exception::dev() + "Need a clip " + quotes(kOfxImageEffectSimpleSourceClipName) + ".";
+			e << exception::dev() + "Need a clip " + quotes( kOfxImageEffectSimpleSourceClipName ) + ".";
 			e << exception::ofxContext( _context );
 			throw;
 		}
@@ -801,8 +802,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
  * RoD call
  */
 void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
-                                                            OfxPointD renderScale,
-                                                            OfxRectD& rod ) const OFX_EXCEPTION_SPEC
+                                                       OfxPointD renderScale,
+                                                       OfxRectD& rod ) const OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec inStuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
@@ -845,9 +846,9 @@ void OfxhImageEffectNode::getRegionOfDefinitionAction( OfxTime   time,
  * get the region of interest for each input and return it in the given std::map
  */
 void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
-                                                          OfxPointD renderScale,
-                                                          const OfxRectD& roi,
-                                                          std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC
+                                                     OfxPointD renderScale,
+                                                     const OfxRectD& roi,
+                                                     std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC
 {
 	// reset the map
 	rois.clear();
@@ -910,9 +911,9 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 
 		/// call the action
 		OfxStatus status = mainEntry( kOfxImageEffectActionGetRegionsOfInterest,
-		                  this->getHandle(),
-		                  &inArgs,
-		                  &outArgs );
+		                              this->getHandle(),
+		                              &inArgs,
+		                              &outArgs );
 
 		if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 			BOOST_THROW_EXCEPTION( OfxhException( status ) );
@@ -954,7 +955,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
  * see how many frames are needed from each clip to render the indicated frame
  */
 void OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
-                                                     RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC
+                                                RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC
 {
 	OfxStatus status = kOfxStatReplyDefault;
 	property::OfxhSet outArgs;
@@ -990,9 +991,9 @@ void OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
 		}
 
 		status = mainEntry( kOfxImageEffectActionGetFramesNeeded,
-		                  this->getHandle(),
-		                  &inArgs,
-		                  &outArgs );
+		                    this->getHandle(),
+		                    &inArgs,
+		                    &outArgs );
 
 		if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 			BOOST_THROW_EXCEPTION( OfxhException( status ) );
@@ -1045,10 +1046,10 @@ void OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
 }
 
 void OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
-                                                 const std::string& field,
-                                                 const OfxRectI&    renderRoI,
-                                                 OfxPointD          renderScale,
-                                                 std::string&       clip ) const OFX_EXCEPTION_SPEC
+                                            const std::string& field,
+                                            const OfxRectI&    renderRoI,
+                                            OfxPointD          renderScale,
+                                            std::string&       clip ) const OFX_EXCEPTION_SPEC
 {
 	static property::OfxhPropSpec inStuff[] = {
 		{ kOfxPropTime, property::eDouble, 1, true, "0" },
@@ -1074,9 +1075,9 @@ void OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
 	property::OfxhSet outArgs( outStuff );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionIsIdentity,
-	                          this->getHandle(),
-	                          &inArgs,
-	                          &outArgs );
+	                              this->getHandle(),
+	                              &inArgs,
+	                              &outArgs );
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
@@ -1118,13 +1119,13 @@ bool OfxhImageEffectNode::canCurrentlyHandleMultipleClipDepths() const
 
 	// in the standard, it's written that only general context can handle multiple clip depth...
 	// but we remove this restriction for filters (to allow input bitdepth != output bitdepth)
-//	if( _context == kOfxImageEffectContextFilter )
-//		return false;
+	//	if( _context == kOfxImageEffectContextFilter )
+	//		return false;
 
 	if( _context == kOfxImageEffectContextGenerator ||
-	_context == kOfxImageEffectContextTransition ||
-	_context == kOfxImageEffectContextPaint ||
-	_context == kOfxImageEffectContextRetimer )
+	    _context == kOfxImageEffectContextTransition ||
+	    _context == kOfxImageEffectContextPaint ||
+	    _context == kOfxImageEffectContextRetimer )
 		return false;
 
 	return true;
@@ -1294,9 +1295,9 @@ void OfxhImageEffectNode::setupClipInstancePreferences( property::OfxhSet& outAr
 
 		const property::String& propComponent = outArgs.fetchStringProperty( componentParamName );
 		clip->setComponents( propComponent.getValue(), propComponent.getModifiedBy() );
-		
+
 		const property::Double& propPixelAspectRatio = outArgs.fetchDoubleProperty( parParamName );
-		clip->setPixelAspectRatio( propPixelAspectRatio.getValue(), propPixelAspectRatio.getModifiedBy() );	
+		clip->setPixelAspectRatio( propPixelAspectRatio.getValue(), propPixelAspectRatio.getModifiedBy() );
 	}
 
 	_outputFrameRate         = outArgs.getDoubleProperty( kOfxImageEffectPropFrameRate );
@@ -1321,9 +1322,9 @@ void OfxhImageEffectNode::getClipPreferencesAction() OFX_EXCEPTION_SPEC
 	setupClipPreferencesArgs( outArgs );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionGetClipPreferences,
-	                          this->getHandle(),
-	                          0,
-	                          &outArgs );
+	                              this->getHandle(),
+	                              0,
+	                              &outArgs );
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
@@ -1403,9 +1404,9 @@ void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
 	property::OfxhSet outArgs( outStuff );
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionGetTimeDomain,
-	                          this->getHandle(),
-	                          0,
-	                          &outArgs );
+	                              this->getHandle(),
+	                              0,
+	                              &outArgs );
 
 	if( status != kOfxStatOK && status != kOfxStatReplyDefault )
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
@@ -1421,9 +1422,9 @@ void OfxhImageEffectNode::paramChanged( const attribute::OfxhParam& param, const
 {
 	if( change == attribute::eChangeNone )
 		return;
-	
-	const std::string changeStr = attribute::mapChangeEnumToString(change);
-	const double frame = getFrameRecursive();
+
+	const std::string changeStr = attribute::mapChangeEnumToString( change );
+	const double frame          = getFrameRecursive();
 	OfxPointD renderScale;
 
 	getRenderScaleRecursive( renderScale.x, renderScale.y );

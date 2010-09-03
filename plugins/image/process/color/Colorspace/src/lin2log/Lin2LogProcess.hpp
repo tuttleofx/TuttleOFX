@@ -29,15 +29,15 @@ template<class View>
 class Lin2LogProcess : public ImageGilFilterProcessor<View>
 {
 private:
-	void lin2log(View & src, View & dst);
+	void lin2log( View& src, View& dst );
 
-protected :
-    Lin2LogPlugin& _plugin;        ///< Rendering plugin
+protected:
+	Lin2LogPlugin& _plugin;        ///< Rendering plugin
 
-public :
-    Lin2LogProcess( Lin2LogPlugin &instance );
+public:
+	Lin2LogProcess( Lin2LogPlugin& instance );
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

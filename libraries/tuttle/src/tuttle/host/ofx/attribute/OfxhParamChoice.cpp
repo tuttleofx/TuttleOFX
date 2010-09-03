@@ -7,23 +7,22 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 int OfxhParamChoice::getIndexFor( const std::string& key ) const
 {
 	typedef std::vector<std::string> StringVector;
-	const StringVector& values = this->getProperties().fetchStringProperty(kOfxParamPropChoiceOption).getValues();
+	const StringVector& values           = this->getProperties().fetchStringProperty( kOfxParamPropChoiceOption ).getValues();
 	StringVector::const_iterator itValue = std::find( values.begin(), values.end(), key );
 	if( itValue == values.end() )
 	{
-	    std::string errorMsg( std::string("The key \"") + key + "\" doesn't exist for choice param \"" + this->getName() + "\".\n" );
-	    errorMsg += "Correct values are : [";
-	    for( StringVector::const_iterator it = values.begin(), itEnd = values.end();
+		std::string errorMsg( std::string( "The key \"" ) + key + "\" doesn't exist for choice param \"" + this->getName() + "\".\n" );
+		errorMsg += "Correct values are : [";
+		for( StringVector::const_iterator it = values.begin(), itEnd = values.end();
 		     it != itEnd;
 		     ++it )
 		{
-	        errorMsg +=  *it + ", ";
+			errorMsg +=  *it + ", ";
 		}
-	    errorMsg += "]";
+		errorMsg += "]";
 		BOOST_THROW_EXCEPTION( OfxhException( errorMsg ) );
 	}
 	return boost::numeric_cast<int>( std::distance( values.begin(), itValue ) );
@@ -32,7 +31,7 @@ int OfxhParamChoice::getIndexFor( const std::string& key ) const
 const std::string& OfxhParamChoice::getValueForId( const int id ) const
 {
 	typedef std::vector<std::string> StringVector;
-	const StringVector& values = this->getProperties().fetchStringProperty(kOfxParamPropChoiceOption).getValues();
+	const StringVector& values = this->getProperties().fetchStringProperty( kOfxParamPropChoiceOption ).getValues();
 	return values[id];
 }
 
@@ -75,8 +74,6 @@ void OfxhParamChoice::setV( const OfxTime time, va_list arg, const EChange chang
 
 	return setAtTime( time, value, change );
 }
-
-
 
 }
 }

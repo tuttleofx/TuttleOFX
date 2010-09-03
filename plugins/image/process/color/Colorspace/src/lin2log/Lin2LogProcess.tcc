@@ -13,7 +13,6 @@
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace colorspace {
@@ -22,22 +21,24 @@ namespace lin2log {
 using namespace boost::gil;
 
 namespace {
-static const float cineonBlackOffset = std::pow(10.0f, (95.0f - 685.0f) / 300.0f);
+static const float cineonBlackOffset = std::pow( 10.0f, ( 95.0f - 685.0f ) / 300.0f );
 
-inline float toCineon(float v)
+inline float toCineon( float v )
 {
-	float t = v*(1.0f-cineonBlackOffset)+cineonBlackOffset;
-	if (t <= 0.0f) return -std::numeric_limits<float>::infinity();
-	return (std::log10(t)*300.0f+685.0f)/1023.0f;
+	float t = v * ( 1.0f - cineonBlackOffset ) + cineonBlackOffset;
+
+	if( t <= 0.0f )
+		return -std::numeric_limits<float>::infinity();
+	return ( std::log10( t ) * 300.0f + 685.0f ) / 1023.0f;
 }
+
 }
 
 template<class View>
-Lin2LogProcess<View>::Lin2LogProcess( Lin2LogPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
-, _plugin( instance )
-{
-}
+Lin2LogProcess<View>::Lin2LogProcess( Lin2LogPlugin& instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
+{}
 
 /**
  * @brief Function called by rendering thread each time a process must be done.
@@ -47,27 +48,29 @@ template<class View>
 void Lin2LogProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-							     procWindowRoW.y2 - procWindowRoW.y1 };
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
 
 	View src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
-							  procWindowSize.x,
-							  procWindowSize.y );
+	                          procWindowSize.x,
+	                          procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-							  procWindowSize.x,
-							  procWindowSize.y );
+	                          procWindowSize.x,
+	                          procWindowSize.y );
 
 	lin2log( src, dst );
 }
 
 template<class View>
-void Lin2LogProcess<View>::lin2log(View & src, View & dst)
+void Lin2LogProcess<View>::lin2log( View& src, View& dst )
 {
 	typedef pixel<bits32f, layout<typename color_space_type<View>::type> > PixelF;
 	PixelF p;
-	int ncMax = num_channels<View>::value;
+	int ncMax         = num_channels<View>::value;
 	bool processAlpha = false;
-	if (!processAlpha && num_channels<View>::value == 4)
+	if( !processAlpha && num_channels<View>::value == 4 )
 	{
 		ncMax = 3;
 	}
@@ -79,12 +82,12 @@ void Lin2LogProcess<View>::lin2log(View & src, View & dst)
 
 		for( int x = 0; x < src.width(); ++x, ++src_it, ++dst_it )
 		{
-			color_convert(*src_it, p);
-			for(int c = 0; c < ncMax; ++c)
+			color_convert( *src_it, p );
+			for( int c = 0; c < ncMax; ++c )
 			{
-				p[c] = toCineon(p[c]);
+				p[c] = toCineon( p[c] );
 			}
-			color_convert(p, *dst_it);
+			color_convert( p, *dst_it );
 		}
 		if( this->progressForward() )
 			return;

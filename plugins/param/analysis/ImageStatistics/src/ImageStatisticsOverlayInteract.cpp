@@ -19,20 +19,20 @@ namespace plugin {
 namespace imageStatistics {
 
 ImageStatisticsOverlayInteract::ImageStatisticsOverlayInteract( OfxInteractHandle handle, OFX::ImageEffect* effect )
-: OFX::OverlayInteract( handle )
-, _infos( effect )
-, _interactScene( *effect , _infos )
+	: OFX::OverlayInteract( handle )
+	, _infos( effect )
+	, _interactScene( *effect, _infos )
 {
 	_effect = effect;
 	_plugin = dynamic_cast<ImageStatisticsPlugin*>( _effect );
 
-	interact::InteractObject* objCanonical  = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXY>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip(_plugin->_clipSrc) );
-	interact::InteractObject* objNormalized = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXYn>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip(_plugin->_clipSrc) );
-	_interactScene.push_back( objCanonical, new interact::IsActiveChoiceParamFunctor<>(_plugin->_paramCoordinateSystem) );
-	_interactScene.push_back( objNormalized, new interact::IsActiveChoiceParamFunctor<true>(_plugin->_paramCoordinateSystem) );
+	interact::InteractObject* objCanonical  = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXY>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip( _plugin->_clipSrc ) );
+	interact::InteractObject* objNormalized = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXYn>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip( _plugin->_clipSrc ) );
+	_interactScene.push_back( objCanonical, new interact::IsActiveChoiceParamFunctor<>( _plugin->_paramCoordinateSystem ) );
+	_interactScene.push_back( objNormalized, new interact::IsActiveChoiceParamFunctor<true>( _plugin->_paramCoordinateSystem ) );
 }
 
-bool ImageStatisticsOverlayInteract::draw( const OFX::DrawArgs &args )
+bool ImageStatisticsOverlayInteract::draw( const OFX::DrawArgs& args )
 {
 	return _interactScene.draw( args );
 }

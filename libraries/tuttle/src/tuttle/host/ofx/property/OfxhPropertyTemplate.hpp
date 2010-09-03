@@ -149,8 +149,8 @@ public:
 			//}
 			return false;
 		}
-//		if( _defaultValue != other._defaultValue )
-//			return false;
+		//		if( _defaultValue != other._defaultValue )
+		//			return false;
 		return true;
 	}
 
@@ -159,19 +159,19 @@ public:
 		if( getType() != other.getType() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev( "You try to copy a property value, but it is not the same property type." ) );
+			    << exception::dev( "You try to copy a property value, but it is not the same property type." ) );
 		}
 		copyValues( dynamic_cast<const This&>( other ) );
 	}
-	
+
 	void copyValues( const This& other )
 	{
 		if( OfxhProperty::operator!=( other ) )
 		{
 			BOOST_THROW_EXCEPTION( exception::Bug()
-				<< exception::dev( "You try to copy a property value, but it is not the same property." ) );
+			    << exception::dev( "You try to copy a property value, but it is not the same property." ) );
 		}
-		_value = other._value;
+		_value      = other._value;
 		_modifiedBy = other._modifiedBy;
 		//_defaultValue = other._defaultValue;
 	}
@@ -225,16 +225,16 @@ public:
 	/// @todo tuttle remove ReturnType, only use Type
 	inline APITypeConstless getAPIConstlessValue( int index = 0 ) const OFX_EXCEPTION_SPEC { return getConstlessValue( index ); }
 
-
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
-		ar & BOOST_SERIALIZATION_NVP(_value);
-		ar & BOOST_SERIALIZATION_NVP(_defaultValue);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhProperty );
+		ar& BOOST_SERIALIZATION_NVP( _value );
+		ar& BOOST_SERIALIZATION_NVP( _defaultValue );
 	}
+
 };
 
 typedef OfxhPropertyTemplate<OfxhIntValue>     Int;     /// Our int property
@@ -247,9 +247,9 @@ inline String::APITypeConstless String::getAPIConstlessValue( int index ) const 
 
 template<>
 template<class Archive>
-void Pointer::serialize( Archive &ar, const unsigned int version )
+void Pointer::serialize( Archive& ar, const unsigned int version )
 {
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhProperty);
+	ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhProperty );
 }
 
 }
@@ -259,16 +259,20 @@ void Pointer::serialize( Archive &ar, const unsigned int version )
 
 #ifndef SWIG
 // force boost::is_virtual_base_of value (used by boost::serialization)
-namespace boost{
-template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Int>: public mpl::true_ {};
-template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Double>: public mpl::true_ {};
-template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::String>: public mpl::true_ {};
-template<> struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Pointer>: public mpl::true_ {};
+namespace boost {
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Int>: public mpl::true_ {};
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Double>: public mpl::true_ {};
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::String>: public mpl::true_ {};
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Pointer>: public mpl::true_ {};
 }
-BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Int)
-BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Double)
-BOOST_CLASS_EXPORT(tuttle::host::ofx::property::Pointer)
-BOOST_CLASS_EXPORT(tuttle::host::ofx::property::String)
+BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Int )
+BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Double )
+BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Pointer )
+BOOST_CLASS_EXPORT( tuttle::host::ofx::property::String )
 #endif
 
 #endif

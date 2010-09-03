@@ -13,9 +13,9 @@ using namespace boost::gil;
 struct JpegWriterProcessParams
 {
 	std::string _filepath;      ///< filepath
-	bool        _premult;		///< Premultiply by alpha or directly use RGB channels
-	int         _bitDepth;      ///< Output bit depth
-	int         _quality;
+	bool _premult;              ///< Premultiply by alpha or directly use RGB channels
+	int _bitDepth;              ///< Output bit depth
+	int _quality;
 };
 
 /**
@@ -27,8 +27,8 @@ public:
 	JpegWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	JpegWriterProcessParams getProcessParams(const OfxTime time);
-	virtual void render( const OFX::RenderArguments& args );
+	JpegWriterProcessParams getProcessParams( const OfxTime time );
+	virtual void            render( const OFX::RenderArguments& args );
 
 public:
 	OFX::BooleanParam* _premult; ///< premult output by alpha

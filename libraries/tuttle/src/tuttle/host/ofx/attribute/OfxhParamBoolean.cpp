@@ -5,13 +5,13 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 /**
  * implementation of var args function
  */
 void OfxhParamBoolean::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	bool v;
+
 	get( v );
 
 	int* value = va_arg( arg, int* );
@@ -24,6 +24,7 @@ void OfxhParamBoolean::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 void OfxhParamBoolean::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	bool v;
+
 	getAtTime( time, v );
 
 	int* value = va_arg( arg, int* );
@@ -36,6 +37,7 @@ void OfxhParamBoolean::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTI
 void OfxhParamBoolean::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	bool value = va_arg( arg, int ) != 0;
+
 	set( value, change );
 }
 
@@ -45,9 +47,9 @@ void OfxhParamBoolean::setV( va_list arg, const EChange change ) OFX_EXCEPTION_S
 void OfxhParamBoolean::setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 {
 	bool value = va_arg( arg, int ) != 0;
+
 	setAtTime( time, value, change );
 }
-
 
 }
 }

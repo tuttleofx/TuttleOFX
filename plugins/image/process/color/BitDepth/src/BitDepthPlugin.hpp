@@ -17,22 +17,22 @@ class BitDepthPlugin : public OFX::ImageEffect
 {
 private:
 	template<class sview_t>
-	void setupDestView( const OFX::RenderArguments &args );
+	void setupDestView( const OFX::RenderArguments& args );
 
 public:
-    BitDepthPlugin( OfxImageEffectHandle handle );
+	BitDepthPlugin( OfxImageEffectHandle handle );
 
 public:
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 
-	void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments& args );
 
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip           *_clipSrc;       ///< Source image clip
-    OFX::Clip           *_clipDst;       ///< Destination image clip
-	OFX::ChoiceParam    *_paramOutBitDepth;   ///< Output bit depth
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc;                 ///< Source image clip
+	OFX::Clip* _clipDst;                 ///< Destination image clip
+	OFX::ChoiceParam* _paramOutBitDepth;      ///< Output bit depth
 };
 
 }

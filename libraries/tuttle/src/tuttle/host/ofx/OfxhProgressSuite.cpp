@@ -10,14 +10,14 @@ namespace ofx {
 namespace {
 
 OfxStatus ProgressStart( void*       effectInstance,
-                                const char* label )
+                         const char* label )
 {
 	try
 	{
 		OfxhIProgress* me = dynamic_cast<OfxhIProgress*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
-		
+
 		me->progressStart( label );
 
 		return kOfxStatOK;
@@ -26,7 +26,7 @@ OfxStatus ProgressStart( void*       effectInstance,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -51,7 +51,7 @@ OfxStatus ProgressEnd( void* effectInstance )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -67,8 +67,8 @@ OfxStatus ProgressUpdate( void* effectInstance, double progress )
 		OfxhIProgress* me = dynamic_cast<OfxhIProgress*>( reinterpret_cast<OfxhIObject*>( effectInstance ) );
 		if( !me )
 			return kOfxStatErrBadHandle;
-		
-		bool v            = me->progressUpdate( progress );
+
+		bool v = me->progressUpdate( progress );
 
 		return v ? kOfxStatOK : kOfxStatReplyNo;
 	}
@@ -76,7 +76,7 @@ OfxStatus ProgressUpdate( void* effectInstance, double progress )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}

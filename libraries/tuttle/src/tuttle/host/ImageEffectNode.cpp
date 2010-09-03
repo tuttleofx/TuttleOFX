@@ -23,7 +23,7 @@
 #endif
 
 #ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
-#include <boost/lexical_cast.hpp>
+ #include <boost/lexical_cast.hpp>
 #endif
 
 // ofx
@@ -37,7 +37,6 @@
 
 namespace tuttle {
 namespace host {
-
 
 ImageEffectNode::ImageEffectNode( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
                                   tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
@@ -58,15 +57,14 @@ ImageEffectNode::ImageEffectNode( const ImageEffectNode& other )
 }
 
 ImageEffectNode::~ImageEffectNode()
-{
-}
+{}
 
 void ImageEffectNode::connect( const Node& sourceEffect, attribute::Attribute& attr )
 {
 	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>( sourceEffect );
 
 	const attribute::ClipImage& output = dynamic_cast<attribute::ClipImage&>( source.getClip( kOfxImageEffectOutputClipName ) );
-	attribute::ClipImage& input  = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
+	attribute::ClipImage& input        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
 
 	input.setConnectedClip( output );
 }
@@ -94,6 +92,7 @@ const std::string& ImageEffectNode::getDefaultOutputFielding() const
 
 	return v;
 }
+
 /**
  * @return 1 to abort processing
  */
@@ -105,16 +104,16 @@ int ImageEffectNode::abort()
 ofx::OfxhMemory* ImageEffectNode::newMemoryInstance( size_t nBytes )
 {
 	ofx::OfxhMemory* instance = new ofx::OfxhMemory();
+
 	instance->alloc( nBytes );
 	return instance;
 }
 
-
 // vmessage
 void ImageEffectNode::vmessage( const char* type,
-                                     const char* id,
-                                     const char* format,
-                                     va_list     args ) const OFX_EXCEPTION_SPEC
+                                const char* id,
+                                const char* format,
+                                va_list     args ) const OFX_EXCEPTION_SPEC
 {
 	vprintf( format, args );
 }
@@ -195,8 +194,9 @@ const std::string ImageEffectNode::getProjectBitDepth() const
 // make a parameter instance
 ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
 {
-	std::string name = descriptor.getName();
+	std::string name                 = descriptor.getName();
 	ofx::attribute::OfxhParam* param = NULL;
+
 	try
 	{
 		if( descriptor.getParamType() == kOfxParamTypeString )
@@ -230,19 +230,19 @@ ofx::attribute::OfxhParam* ImageEffectNode::newParam( const ofx::attribute::Ofxh
 		else
 		{
 			BOOST_THROW_EXCEPTION( exception::Failed()
-				<< exception::user() + "Can't create param " + quotes(name) + " instance from param descriptor, type not recognized." );
+			    << exception::user() + "Can't create param " + quotes( name ) + " instance from param descriptor, type not recognized." );
 		}
 		this->addParam( name, param );
 	}
 	catch( exception::Common& e )
 	{
-		BOOST_THROW_EXCEPTION( ofx::OfxhException( *boost::get_error_info<exception::ofxStatus>(e),
-			                                       boost::diagnostic_information(e) ) );
+		BOOST_THROW_EXCEPTION( ofx::OfxhException( *boost::get_error_info<exception::ofxStatus>( e ),
+		                                           boost::diagnostic_information( e ) ) );
 	}
-	catch( ... )
+	catch(... )
 	{
 		BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrUnknown,
-			                                       boost::current_exception_diagnostic_information() ) );
+		                                           boost::current_exception_diagnostic_information() ) );
 	}
 	return param;
 }
@@ -259,20 +259,18 @@ void ImageEffectNode::editEnd() OFX_EXCEPTION_SPEC
 
 /// Start doing progress.
 void ImageEffectNode::progressStart( const std::string& message )
-{
-}
+{}
 
 /// finish yer progress
 void ImageEffectNode::progressEnd()
-{
-}
+{}
 
 /// set the progress to some level of completion, returns
 /// false if you should abandon processing, true to continue
 bool ImageEffectNode::progressUpdate( double progress )
 {
-//	COUT( "\033[sprogress: " << std::setw(3) << int(progress * 100)  << "\033[r");
-//	COUT_VAR( progress );
+	//	COUT( "\033[sprogress: " << std::setw(3) << int(progress * 100)  << "\033[r");
+	//	COUT_VAR( progress );
 	return true;
 }
 
@@ -296,10 +294,10 @@ void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 
 /// override to get frame range of the effect
 void ImageEffectNode::beginRenderAction( OfxTime   startFrame,
-										  OfxTime   endFrame,
-										  OfxTime   step,
-										  bool      interactive,
-										  OfxPointD renderScale ) OFX_EXCEPTION_SPEC
+                                         OfxTime   endFrame,
+                                         OfxTime   step,
+                                         bool      interactive,
+                                         OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
 	_frameRange.x = startFrame;
 	_frameRange.y = endFrame;
@@ -309,28 +307,29 @@ void ImageEffectNode::beginRenderAction( OfxTime   startFrame,
 void ImageEffectNode::checkClipsConnections() const
 {
 	for( ClipImageMap::const_iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
+	     it != _clips.end();
+	     ++it )
 	{
-		const attribute::ClipImage& clip = dynamic_cast<const attribute::ClipImage&>( *(it->second) );
+		const attribute::ClipImage& clip = dynamic_cast<const attribute::ClipImage&>( *( it->second ) );
 		if( !clip.isOutput() && !clip.isConnected() && !clip.isOptional() ) // one non optional input clip is unconnected
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
-				<< exception::user( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
+			    << exception::user( "A non optional clip is unconnected ! (" + clip.getFullName() + ")" ) );
 		}
 	}
 }
 
 void ImageEffectNode::initComponents()
 {
-	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
-	bool inputClipsFound = false;
+	attribute::ClipImage& outputClip    = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+	bool inputClipsFound                = false;
 	std::string mostChromaticComponents = kOfxImageComponentNone;
+
 	for( ClipImageMap::iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
+	     it != _clips.end();
+	     ++it )
 	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			inputClipsFound = true;
@@ -340,10 +339,10 @@ void ImageEffectNode::initComponents()
 	}
 	// components
 	for( ClipImageMap::iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
+	     it != _clips.end();
+	     ++it )
 	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
@@ -359,27 +358,23 @@ void ImageEffectNode::initComponents()
 void ImageEffectNode::initPixelAspectRatio()
 {
 	if( supportsMultipleClipPARs() )
-	{
-
-	}
+	{}
 	else
-	{
-
-	}
+	{}
 }
 
 void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 {
-	std::string biggestBitDepth = kOfxBitDepthNone;
+	std::string biggestBitDepth      = kOfxBitDepthNone;
 	attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
-	bool inputClipsFound = false;
+	bool inputClipsFound             = false;
 
 	// init variables
 	for( ClipImageMap::iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
+	     it != _clips.end();
+	     ++it )
 	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 		if( !clip.isOutput() && clip.isConnected() ) // filter for clip.isMask() and clip.isOptional() ?
 		{
 			inputClipsFound = true;
@@ -388,21 +383,21 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 		}
 	}
 	std::string validBitDepth = this->bestSupportedBitDepth( biggestBitDepth );
-	
+
 	// bit depth
 	if( supportsMultipleClipDepths() )
 	{
 		// check if we support the bit depth of each input
 		// and fill input clip with connected clips bit depth
 		for( ClipImageMap::iterator it = _clips.begin();
-			 it != _clips.end();
-			 ++it )
+		     it != _clips.end();
+		     ++it )
 		{
-			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 			if( !clip.isOutput() && clip.isConnected() )
 			{
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
-				const std::string& linkClipBitDepth = linkClip.getBitDepthString();
+				const std::string& linkClipBitDepth  = linkClip.getBitDepthString();
 				if( this->isSupportedBitDepth( linkClipBitDepth ) )
 				{
 					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( linkClipBitDepth );
@@ -416,13 +411,13 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 		    validBitDepth == kOfxBitDepthNone ) // if we didn't found a valid bit depth value
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
-				<< exception::user( "Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
+			    << exception::user( "Pixel depth " + biggestBitDepth + " not supported on plugin : " + getName() ) );
 		}
 		for( ClipImageMap::iterator it = _clips.begin();
-			 it != _clips.end();
-			 ++it )
+		     it != _clips.end();
+		     ++it )
 		{
-			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 			if( !clip.isOutput() && clip.isConnected() )
 			{
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
@@ -436,25 +431,24 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 	outputClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
 }
 
-
 void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 {
-	if( ! supportsMultipleClipDepths() )
+	if( !supportsMultipleClipDepths() )
 	{
-		attribute::ClipImage& outputClip = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
+		attribute::ClipImage& outputClip         = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
 		const std::string& outputClipBitDepthStr = outputClip.getBitDepthString();
 		for( ClipImageMap::iterator it = _clips.begin();
-			 it != _clips.end();
-			 ++it )
+		     it != _clips.end();
+		     ++it )
 		{
-			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+			attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 			if( !clip.isOutput() && clip.isConnected() )
 			{
 				/// @todo tuttle: what is the best way to access another node ?
 				/// through the graph ? through a graph inside ProcessOptions ?
-				/*const */attribute::ClipImage& linkClip = clip.getConnectedClip();
-				
-				if( linkClip.getNode().isSupportedBitDepth(outputClipBitDepthStr) ) // need to be supported by the other node
+				/*const */ attribute::ClipImage& linkClip = clip.getConnectedClip();
+
+				if( linkClip.getNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
 				{
 					if( linkClip.getNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
 					{
@@ -474,21 +468,21 @@ void ImageEffectNode::coutBitDepthConnections() const
 {
 	// validation
 	for( ClipImageMap::const_iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
+	     it != _clips.end();
+	     ++it )
 	{
-		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 
-		const ofx::property::String& propPixelDepth = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
-		const ofx::property::String& propComponent = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
+		const ofx::property::String& propPixelDepth       = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
+		const ofx::property::String& propComponent        = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
 		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
 		TCOUT( "-- " << "clip: " << " = " << clip.getFullName() );
 		TCOUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
-			<< " : " << (propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+		             << " : " << ( propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
 		TCOUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
-			<< " : " << (propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+		             << " : " << ( propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
 		TCOUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
-			<< " : " << (propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)") );
+		             << " : " << ( propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
 
 		if( !clip.isOutput() && clip.isConnected() )
 		{
@@ -502,35 +496,33 @@ void ImageEffectNode::validBitDepthConnections() const
 {
 	// validation
 	for( ClipImageMap::const_iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
+	     it != _clips.end();
+	     ++it )
 	{
-		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		const attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
 			if( clip.getBitDepth() != linkClip.getBitDepth() )
 			{
-					BOOST_THROW_EXCEPTION( exception::Logic()
-						<< exception::dev() + "Error in graph bit depth propagation."
-						                      "Connection between " + clip.getFullName() + " (" + clip.getBitDepth() + " bytes)" + " => " + linkClip.getFullName() + " (" + linkClip.getBitDepth() + " bytes)."
-						<< exception::pluginName( getName() )
-						<< exception::pluginIdentifier( getPlugin().getIdentifier() ) );
+				BOOST_THROW_EXCEPTION( exception::Logic()
+				        << exception::dev() + "Error in graph bit depth propagation."
+				                              "Connection between " + clip.getFullName() + " (" + clip.getBitDepth() + " bytes)" + " => " + linkClip.getFullName() + " (" + linkClip.getBitDepth() + " bytes)."
+				        << exception::pluginName( getName() )
+				        << exception::pluginIdentifier( getPlugin().getIdentifier() ) );
 			}
 		}
 	}
 }
 
-
-
 void ImageEffectNode::begin( graph::ProcessOptions& processOptions )
 {
 	TCOUT( "begin: " << getName() );
 	beginRenderAction( processOptions._startFrame,
-					   processOptions._endFrame,
-					   processOptions._step,
-					   processOptions._interactive,
-					   processOptions._renderScale );
+	                   processOptions._endFrame,
+	                   processOptions._step,
+	                   processOptions._interactive,
+	                   processOptions._renderScale );
 }
 
 void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions )
@@ -544,11 +536,11 @@ void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions 
 	initComponents();
 	initPixelAspectRatio();
 	maximizeBitDepthFromReadsToWrites();
-	
+
 	OfxRectD rod;
 	getRegionOfDefinitionAction( processOptions._time,
-								 processOptions._renderScale,
-								 rod );
+	                             processOptions._renderScale,
+	                             rod );
 	setRegionOfDefinition( rod );
 	processOptions._renderRoD = rod;
 	processOptions._renderRoI = rod;
@@ -562,9 +554,9 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 	maximizeBitDepthFromWritesToReads();
 
 	getRegionOfInterestAction( processOptions._time,
-							   processOptions._renderScale,
-							   processOptions._renderRoI,
-							   processOptions._inputsRoI );
+	                           processOptions._renderScale,
+	                           processOptions._renderRoI,
+	                           processOptions._inputsRoI );
 	TCOUT_VAR( processOptions._renderRoD );
 	TCOUT_VAR( processOptions._renderRoI );
 }
@@ -580,10 +572,10 @@ void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions 
 void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos ) const
 {
 	TCOUT( "preProcess_infos: " << getName() );
-	const OfxRectD rod = getRegionOfDefinition();
-	const std::size_t bitDepth = this->getOutputClip().getBitDepth(); // value in bytes
+	const OfxRectD rod             = getRegionOfDefinition();
+	const std::size_t bitDepth     = this->getOutputClip().getBitDepth(); // value in bytes
 	const std::size_t nbComponents = getOutputClip().getNbComponents();
-	nodeInfos._memory = (rod.x2-rod.x1)*(rod.y2-rod.y1)*nbComponents*bitDepth;
+	nodeInfos._memory = ( rod.x2 - rod.x1 ) * ( rod.y2 - rod.y1 ) * nbComponents * bitDepth;
 }
 
 void ImageEffectNode::process( graph::ProcessOptions& processOptions )
@@ -592,21 +584,21 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
-	
+
 	const OfxRectI roi = {
-		boost::numeric_cast<int>(floor( processOptions._renderRoI.x1 )),
-		boost::numeric_cast<int>(floor( processOptions._renderRoI.y1 )),
-		boost::numeric_cast<int>(ceil( processOptions._renderRoI.x2 )),
-		boost::numeric_cast<int>(ceil( processOptions._renderRoI.y2 ))
+		boost::numeric_cast<int>( floor( processOptions._renderRoI.x1 ) ),
+		boost::numeric_cast<int>( floor( processOptions._renderRoI.y1 ) ),
+		boost::numeric_cast<int>( ceil( processOptions._renderRoI.x2 ) ),
+		boost::numeric_cast<int>( ceil( processOptions._renderRoI.y2 ) )
 	};
 	TCOUT_VAR( roi );
 
 	// acquire needed images
 	for( ClipImageMap::iterator it = _clips.begin();
-		 it != _clips.end();
-		 ++it )
+	     it != _clips.end();
+	     ++it )
 	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *(it->second) );
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
 		memory::CACHE_ELEMENT image;
 		if( clip.isOutput() )
 		{
@@ -619,19 +611,19 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 			if( image.get() == NULL )
 			{
 				BOOST_THROW_EXCEPTION( exception::Memory()
-					<< exception::dev() + "Input attribute " + quotes(clip.getFullName()) + " not in memory cache (identifier:" + quotes(clip.getIdentifier()) + ")." );
+				    << exception::dev() + "Input attribute " + quotes( clip.getFullName() ) + " not in memory cache (identifier:" + quotes( clip.getIdentifier() ) + ")." );
 			}
 		}
 		allNeededDatas.push_back( image );
 	}
 
 	renderAction( processOptions._time,
-				  processOptions._field,
-				  roi,
-				  processOptions._renderScale );
+	              processOptions._field,
+	              roi,
+	              processOptions._renderScale );
 
 	debugOutputImage( processOptions._time );
-	
+
 	// mark output clip used with the number of out_edges...
 	// release each input
 }
@@ -645,14 +637,11 @@ void ImageEffectNode::end( graph::ProcessOptions& processOptions )
 {
 	TCOUT( "end: " << getName() );
 	endRenderAction( processOptions._startFrame,
-					 processOptions._endFrame,
-					 processOptions._step,
-					 processOptions._interactive,
-					 processOptions._renderScale );
+	                 processOptions._endFrame,
+	                 processOptions._step,
+	                 processOptions._interactive,
+	                 processOptions._renderScale );
 }
-
-
-
 
 std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 {
@@ -680,16 +669,15 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {
-#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
+	#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
 	IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
 
 	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + ".Output", time );
 
 	// big hack, for debug...
-	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>(time) + "_" + this->getName() + ".png" );
-#endif
+	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>( time ) + "_" + this->getName() + ".png" );
+	#endif
 }
-
 
 }
 }

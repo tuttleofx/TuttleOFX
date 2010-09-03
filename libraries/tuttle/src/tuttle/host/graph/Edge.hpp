@@ -16,26 +16,23 @@ class Edge
 {
 public:
 	Edge()
-	{
-	}
+	{}
 
 	Edge( const std::string& out, const std::string& in, const std::string& inAttrName )
-		: _out( out ),
-		_in( in ),
-		_inAttrName( inAttrName ),
-		_name( std::string( out ) + "." + kOfxOutputAttributeName + "-->" + in + "." + inAttrName )
-	{
-	}
+		: _out( out )
+		, _in( in )
+		, _inAttrName( inAttrName )
+		, _name( std::string( out ) + "." + kOfxOutputAttributeName + "-->" + in + "." + inAttrName )
+	{}
 
 	Edge( const Edge& e )
 	{
-		this->operator=(e);
+		this->operator=( e );
 		//_id = _count++;
 	}
 
 	virtual ~Edge()
-	{
-	}
+	{}
 
 	// operators
 	Edge& operator=( const Edge& e )
@@ -52,7 +49,7 @@ public:
 	const std::string& getOut() const        { return _out; }
 	const std::string& getIn() const         { return _in; }
 	const std::string& getInAttrName() const { return _inAttrName; }
-	const std::string& getName() const { return _name; }
+	const std::string& getName() const       { return _name; }
 
 	friend std::ostream& operator<<( std::ostream& os, const Edge& v );
 

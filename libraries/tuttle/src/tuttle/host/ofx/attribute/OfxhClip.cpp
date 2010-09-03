@@ -6,7 +6,6 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 OfxhClip::OfxhClip( const OfxhClipDescriptor& desc )
 	: attribute::OfxhAttribute( desc )
 {
@@ -37,22 +36,22 @@ void OfxhClip::initHook( const property::OfxhPropSpec* propSpec )
 {
 	// no more GetHook on clip for the moment...
 	/*
-	int i = 0;
-	while( propSpec[i].name )
-	{
-		const Property::PropSpec& spec = propSpec[i];
-		switch( spec.type )
-		{
-			case Property::eDouble :
-			case Property::eString :
-			case Property::eInt :
-				getProperties().setGetHook( spec.name, this );
-				break;
-			default:
-				break;
-		}
-		++i;
-	 }
+	   int i = 0;
+	   while( propSpec[i].name )
+	   {
+	    const Property::PropSpec& spec = propSpec[i];
+	    switch( spec.type )
+	    {
+	        case Property::eDouble :
+	        case Property::eString :
+	        case Property::eInt :
+	            getProperties().setGetHook( spec.name, this );
+	            break;
+	        default:
+	            break;
+	    }
+	 ++i;
+	   }
 	 */
 }
 

@@ -19,19 +19,20 @@ namespace writer {
 using namespace boost::gil;
 
 DPXWriterPlugin::DPXWriterPlugin( OfxImageEffectHandle handle )
-: WriterPlugin( handle )
+	: WriterPlugin( handle )
 {
 	_componentsType = fetchChoiceParam( kParamComponentsType );
 	_compressed     = fetchBooleanParam( kParamCompressed );
 }
 
-DPXWriterProcessParams DPXWriterPlugin::getProcessParams(const OfxTime time)
+DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 {
 	DPXWriterProcessParams params;
+
 	params._componentsType = _componentsType->getValue();
-	params._compressed = _compressed->getValue();
-	params._filepath = getAbsoluteFilenameAt(time);
-	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
+	params._compressed     = _compressed->getValue();
+	params._filepath       = getAbsoluteFilenameAt( time );
+	switch( static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() ) )
 	{
 		case eParamBitDepth8:
 			params._bitDepth = 8;
@@ -46,7 +47,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams(const OfxTime time)
 			params._bitDepth = 16;
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue, "Incorrect bit depth." ) );
 			break;
 	}
 	return params;
@@ -106,7 +107,7 @@ void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 	}
 	else
 	{
-		WriterPlugin::changedParam(args, paramName);
+		WriterPlugin::changedParam( args, paramName );
 	}
 }
 

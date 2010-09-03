@@ -10,7 +10,8 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-class ParamDouble : public Param, public ofx::attribute::OfxhParamDouble
+class ParamDouble : public Param
+	, public ofx::attribute::OfxhParamDouble
 {
 protected:
 	double _value;
@@ -33,10 +34,8 @@ public:
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
 
-
 }
 }
 }
-
 
 #endif

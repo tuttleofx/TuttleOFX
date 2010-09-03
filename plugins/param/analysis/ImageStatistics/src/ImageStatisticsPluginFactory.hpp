@@ -7,8 +7,9 @@ namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-	static const bool kSupportTiles = false;
-	mDeclarePluginFactory( ImageStatisticsPluginFactory, { }, { } );
+static const bool kSupportTiles = false;
+mDeclarePluginFactory( ImageStatisticsPluginFactory, {}, {}
+                       );
 }
 }
 }

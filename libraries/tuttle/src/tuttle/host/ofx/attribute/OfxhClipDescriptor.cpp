@@ -42,7 +42,6 @@ OfxhClipDescriptor::OfxhClipDescriptor( const property::OfxhSet& properties )
 OfxhClipDescriptor::~OfxhClipDescriptor()
 {}
 
-
 }
 }
 }

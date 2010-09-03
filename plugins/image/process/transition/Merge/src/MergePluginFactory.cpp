@@ -43,9 +43,10 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                            OFX::EContext            context )
+                                            OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClipA = desc.defineClip( kMergeSourceA );
+
 	assert( srcClipA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -116,7 +117,7 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* MergePluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                      OFX::EContext     context )
+                                                      OFX::EContext        context )
 {
 	return new MergePlugin( handle );
 }

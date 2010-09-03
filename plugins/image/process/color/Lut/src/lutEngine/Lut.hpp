@@ -20,7 +20,7 @@ public:
 
 	const size_t totalSize() const;
 	inline Color getIndexedColor( int _x, int _y, int _z ) const;
-	inline Color getColor( Color const& color ) const { return _interpolator->interpolate( this, color ); }
+	inline Color getColor( Color const& color ) const              { return _interpolator->interpolate( this, color ); }
 	inline Color getColor( double _r, double _g, double _b ) const { return _interpolator->interpolate( this, _r, _g, _b ); }
 	inline void  setIndexedColor( int _x, int _y, int _z, Color _color );
 	inline void  setIndexedValues( int _x, int _y, int _z, double _r, double _g, double _b );

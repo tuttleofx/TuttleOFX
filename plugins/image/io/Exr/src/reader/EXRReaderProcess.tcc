@@ -32,8 +32,8 @@ namespace bfs = boost::filesystem;
 
 template<class View>
 EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilProcessor<View>( instance )
+	, _plugin( instance )
 {
 	this->setNoMultiThreading();
 }
@@ -41,12 +41,13 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 template<class View>
 void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	EXRReaderProcessParams params = _plugin.getProcessParams(args.time);
-	if( ! bfs::exists( params._filepath ) )
+	EXRReaderProcessParams params = _plugin.getProcessParams( args.time );
+
+	if( !bfs::exists( params._filepath ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "Unable to open.")
-			<< exception::filename(params._filepath ) );
+		    << exception::user( "Unable to open." )
+		    << exception::filename( params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -66,7 +67,7 @@ template<class View>
 void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	EXRReaderProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
+	EXRReaderProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	try
 	{
@@ -93,7 +94,7 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				typename rgb_image_t::view_t dv( view( img ) );
 				readImage( flipped_up_down_view( dv ), params._filepath );
 				copy_and_convert_pixels( dv, this->_dstView );
-				fill_alpha_max(this->_dstView);
+				fill_alpha_max( this->_dstView );
 				break;
 			}
 			case eRGBA:
@@ -108,15 +109,15 @@ void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	}
 	catch( boost::exception& e )
 	{
-		e << exception::filename(params._filepath);
-		COUT_ERROR( boost::diagnostic_information(e) );
-//		throw;
+		e << exception::filename( params._filepath );
+		COUT_ERROR( boost::diagnostic_information( e ) );
+		//		throw;
 	}
-	catch( ... )
+	catch(... )
 	{
-//		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::user( "Unable to write image")
-//			<< exception::filename(params._filepath) );
+		//		BOOST_THROW_EXCEPTION( exception::Unknown()
+		//			<< exception::user( "Unable to write image")
+		//			<< exception::filename(params._filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 }
@@ -132,7 +133,7 @@ void EXRReaderProcess<View>::readImage( DView dst, const std::string& filepath )
 	using namespace boost::gil;
 	using namespace Imf;
 
-	EXRReaderProcessParams params = _plugin.getProcessParams(this->_renderArgs.time);
+	EXRReaderProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 
 	Imf::InputFile in( filepath.c_str() );
 	Imf::FrameBuffer frameBuffer;
@@ -242,7 +243,7 @@ void EXRReaderProcess<View>::channelCopy( Imf::InputFile& input,
 			if( !slice )
 			{
 				BOOST_THROW_EXCEPTION( exception::Value()
-					<< exception::user( std::string("Slice ") + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!") );
+				    << exception::user( std::string( "Slice " ) + _plugin.channelNames()[_plugin.channelChoice()[s]->getValue()] + " not found!" ) );
 			}
 			sliceCopy( slice, dst, w, h, s );
 		}

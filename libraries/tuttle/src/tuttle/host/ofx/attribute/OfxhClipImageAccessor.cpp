@@ -54,10 +54,8 @@ bool OfxhClipImageAccessor::supportsTiles() const
 	return getProperties().getIntProperty( kOfxImageEffectPropSupportsTiles ) != 0;
 }
 
-
 }
 }
 }
 }
-
 

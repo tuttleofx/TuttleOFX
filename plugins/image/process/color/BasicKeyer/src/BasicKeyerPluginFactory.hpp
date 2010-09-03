@@ -7,8 +7,9 @@ namespace tuttle {
 namespace plugin {
 namespace basicKeyer {
 
-static const bool   kSupportTiles = true;
-mDeclarePluginFactory( BasicKeyerPluginFactory, { }, { } );
+static const bool kSupportTiles = true;
+mDeclarePluginFactory( BasicKeyerPluginFactory, {}, {}
+                       );
 
 }
 }

@@ -10,15 +10,15 @@
 
 #include <boost/numeric/conversion/cast.hpp>
 
-
 namespace tuttle {
 namespace host {
 
-class ImageEffectNode : public Node,
-	public ofx::imageEffect::OfxhImageEffectNode
+class ImageEffectNode : public Node
+	, public ofx::imageEffect::OfxhImageEffectNode
 {
 public:
 	typedef ImageEffectNode This;
+
 protected:
 	OfxPointD _frameRange;
 	OfxRectD _rod;
@@ -30,14 +30,14 @@ public:
 	                 const std::string&                               context );
 
 	ImageEffectNode( const ImageEffectNode& other );
-	
+
 	~ImageEffectNode();
 
-	const std::string& getName() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
+	const std::string&               getName() const                           { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
-	ofx::attribute::OfxhParam& getParam( const std::string& name ) { return ofx::attribute::OfxhParamSet::getParam( name ); }
+	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
 
-#ifndef SWIG
+	#ifndef SWIG
 	ImageEffectNode* clone() const
 	{
 		return new ImageEffectNode( *this );
@@ -57,7 +57,7 @@ public:
 	{
 		ofx::attribute::OfxhClipImageSet::ClipImageVector& clips = getClipsByOrder();
 		ofx::attribute::OfxhClipImageSet::ClipImageMap& clipsMap = getClips();
-		ofx::attribute::OfxhAttribute* inAttr = NULL;
+		ofx::attribute::OfxhAttribute* inAttr                    = NULL;
 
 		if( clips.size() == 1 )
 		{
@@ -78,12 +78,12 @@ public:
 		else // if( inClips.empty() )
 		{
 			BOOST_THROW_EXCEPTION( exception::Logic()
-				<< exception::user( "Connection failed : no clip." ) );
+			    << exception::user( "Connection failed : no clip." ) );
 		}
 		return dynamic_cast<attribute::ClipImage&>( *inAttr );
 	}
 
-	const attribute::Attribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>(this)->getSingleInputAttribute(); };
+	const attribute::Attribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>( this )->getSingleInputAttribute(); }
 
 	OfxRectD getRegionOfDefinition() const { return _rod; }
 
@@ -91,7 +91,6 @@ public:
 
 	void debugOutputImage( const OfxTime time ) const;
 
-	
 	void begin( graph::ProcessOptions& processOptions );
 	void preProcess1_finish( graph::ProcessOptions& processOptions );
 	void preProcess2_initialize( graph::ProcessOptions& processOptions );
@@ -101,26 +100,28 @@ public:
 	void postProcess( graph::ProcessOptions& processOptions );
 	void end( graph::ProcessOptions& processOptions );
 
-
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
-#endif
+	#endif
 
-#ifdef SWIG
-	%extend
+	#ifdef SWIG
+	% extend
 	{
 		ofx::attribute::OfxhParam& __getitem__( const std::string& name )
 		{
-			return self->getParam(name);
-//			return self->getProcessAttribute(name); //< @todo tuttle: can be clip or params !
+			return self->getParam( name );
+			//			return self->getProcessAttribute(name); //< @todo tuttle: can be clip or params !
 		}
+
 		std::string __str__() const
 		{
 			std::stringstream s;
+
 			s << *self;
 			return s.str();
 		}
+
 	}
-#endif
+	#endif
 
 	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
@@ -131,7 +132,7 @@ public:
 	/// and  might be mapped (if the host allows such a thing)
 	const std::string& getDefaultOutputFielding() const;
 
-#ifndef SWIG
+	#ifndef SWIG
 	/**
 	 * @return 1 to abort processing
 	 */
@@ -142,16 +143,15 @@ public:
 	 */
 	ofx::OfxhMemory* newMemoryInstance( size_t nBytes );
 
-
 	/// make a clip
 	ofx::attribute::OfxhClipImage* newClipImage( const ofx::attribute::OfxhClipImageDescriptor& descriptor );
 
 	/// vmessage
 	void vmessage( const char* type,
-	                    const char* id,
-	                    const char* format,
-	                    va_list     args ) const OFX_EXCEPTION_SPEC;
-	
+	               const char* id,
+	               const char* format,
+	               va_list     args ) const OFX_EXCEPTION_SPEC;
+
 	// The size of the current project in canonical coordinates.
 	// The size of a project is a sub set of the kOfxImageEffectPropProjectExtent. For example a
 	// project may be a PAL SD project, but only be a letter-box within that. The project size is
@@ -264,13 +264,12 @@ public:
 	}
 
 	void beginRenderAction( OfxTime   startFrame,
-	                             OfxTime   endFrame,
-	                             OfxTime   step,
-	                             bool      interactive,
-	                             OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
+	                        OfxTime   endFrame,
+	                        OfxTime   step,
+	                        bool      interactive,
+	                        OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 private:
-
 	void setRegionOfDefinition( const OfxRectD& rod )
 	{
 		_rod = rod;
@@ -289,7 +288,7 @@ private:
 	void maximizeBitDepthFromWritesToReads();
 	void coutBitDepthConnections() const;
 	void validBitDepthConnections() const;
-#endif
+	#endif
 };
 
 }

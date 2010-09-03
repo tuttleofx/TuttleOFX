@@ -6,8 +6,9 @@
 namespace tuttle {
 namespace plugin {
 namespace merge {
-	static const bool kSupportTiles = false;
-	mDeclarePluginFactory( MergePluginFactory, {}, {} );
+static const bool kSupportTiles = false;
+mDeclarePluginFactory( MergePluginFactory, {}, {}
+                       );
 }
 }
 }

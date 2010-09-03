@@ -16,17 +16,18 @@ template<class View>
 class ConvolutionProcess : public ImageGilFilterProcessor<View>
 {
 public:
-    typedef typename View::value_type Pixel;
-    typedef typename image_from_view<View>::type Image;
-protected :
-    ConvolutionPlugin&    _plugin;        ///< Rendering plugin
+	typedef typename View::value_type Pixel;
+	typedef typename image_from_view<View>::type Image;
+
+protected:
+	ConvolutionPlugin&    _plugin;        ///< Rendering plugin
 	ConvolutionProcessParams _params;
-	
+
 public:
-    ConvolutionProcess( ConvolutionPlugin& instance );
+	ConvolutionProcess( ConvolutionPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

@@ -8,15 +8,15 @@ namespace tuttle {
 class Color
 {
 public:
-	Color() : x( 0 ),
-		y( 0 ),
-		z( 0 ) {}
-	Color( double _x, double _y, double _z ) : x( _x ),
-		y( _y ),
-		z( _z ) {}
-	Color( const Color& _color ) : x( _color.x ),
-		y( _color.y ),
-		z( _color.z ) {}
+	Color() : x( 0 )
+		, y( 0 )
+		, z( 0 ) {}
+	Color( double _x, double _y, double _z ) : x( _x )
+		, y( _y )
+		, z( _z ) {}
+	Color( const Color& _color ) : x( _color.x )
+		, y( _color.y )
+		, z( _color.z ) {}
 	inline bool operator  ==( const Color _color ) const;
 	inline bool operator  !=( const Color _color ) const;
 	inline Color operator -( const Color _color ) const;

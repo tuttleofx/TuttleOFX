@@ -13,30 +13,30 @@ enum EIntrelacment { eInterlacmentNone, eInterlacmentUpper, eInterlacmentLower }
 class VideoFFmpegReader : public FFmpeg
 {
 public:
-	explicit VideoFFmpegReader( );
-	~VideoFFmpegReader( );
+	explicit VideoFFmpegReader();
+	~VideoFFmpegReader();
 
-	bool open( const std::string &filename );
-	void close( );
+	bool open( const std::string& filename );
+	void close();
 	bool read( const int frame );
 
 private:
-	bool setupStreamInfo( );
+	bool setupStreamInfo();
 
-	bool hasVideo( ) const
+	bool hasVideo() const
 	{
-		return !_videoIdx.empty( );
+		return !_videoIdx.empty();
 	}
 
-	AVStream* getVideoStream( )
+	AVStream* getVideoStream()
 	{
 		return _context && _currVideoIdx >= 0 ? _context->streams[_currVideoIdx] : NULL;
 	}
 
-	void openVideoCodec( );
-	void closeVideoCodec( );
+	void    openVideoCodec();
+	void    closeVideoCodec();
 	int64_t getTimeStamp( int pos ) const;
-	int getFrame( int64_t timestamp ) const;
+	int     getFrame( int64_t timestamp ) const;
 
 	/**
 	 * @brief Seek to the nearest previous keyframe from pos.
@@ -51,18 +51,17 @@ private:
 	bool decodeImage( const int frame );
 
 public:
-
-	int width( ) const
+	int width() const
 	{
 		return _width;
 	}
 
-	int height( ) const
+	int height() const
 	{
 		return _height;
 	}
 
-	double aspectRatio( ) const
+	double aspectRatio() const
 	{
 		return _aspect;
 	}
@@ -72,69 +71,70 @@ public:
 		return _interlacment;
 	}
 
-	double fps( ) const
+	double fps() const
 	{
 		if( _fpsDen )
 			return _fpsNum / (double) _fpsDen;
 		return 1.0f;
 	}
 
-	uint64_t nbFrames( )
+	uint64_t nbFrames()
 	{
 		return _nbFrames;
 	}
 
-	int frame( )
+	int frame()
 	{
 		return _lastDecodedPos;
 	}
 
-	bool isOpen( ) const
+	bool isOpen() const
 	{
 		return _isOpen;
 	}
 
-	unsigned char* data( )
+	unsigned char* data()
 	{
 		return &_data[0];
 	}
 
-	std::string codecName( )
+	std::string codecName()
 	{
 		if( !_videoCodec )
 			return "";
-		return(_videoCodec->long_name ) +std::string( " (" ) + std::string( _videoCodec->name ) + std::string( ", " ) + boost::lexical_cast<std::string>( static_cast<int>( _videoCodec->id ) ) + std::string( ")" );
+		return ( _videoCodec->long_name ) + std::string( " (" ) + std::string( _videoCodec->name ) + std::string( ", " ) + boost::lexical_cast<std::string>( static_cast<int>( _videoCodec->id ) ) + std::string( ")" );
 	}
 
-	std::string formatName( )
+	std::string formatName()
 	{
 		if( !_format )
 			return "";
-		return(_format->long_name ) +std::string( " (" ) + std::string( _format->name ) + std::string( ")" );
+		return ( _format->long_name ) + std::string( " (" ) + std::string( _format->name ) + std::string( ")" );
 	}
 
-	std::string codecIDString( )
+	std::string codecIDString()
 	{
 		if( !_videoCodec )
 			return "";
 		return codecID_toString( _videoCodec->id );
 	}
 
-	std::string codecTypeString( )
+	std::string codecTypeString()
 	{
 		if( !_videoCodec )
 			return "";
 		return codecType_toString( _videoCodec->type );
 	}
 
-	std::string pixelFormatString( )
+	std::string pixelFormatString()
 	{
-		if( !_videoCodec || !_avctxOptions ||_videoCodec->type <=0 || !_avctxOptions[_videoCodec->type] )
+		if( !_videoCodec || !_avctxOptions ||_videoCodec->type <= 0 || !_avctxOptions[_videoCodec->type] )
 			return "";
 		return pixelFormat_toString( _avctxOptions[_videoCodec->type]->pix_fmt );
 	}
 
-public: // private:
+public:
+	// private:
 	AVFormatContext* _context;
 	AVInputFormat* _format;
 	AVFormatParameters* _params;
@@ -143,7 +143,7 @@ public: // private:
 	AVPacket _pkt;
 	AVCodecContext* _avctxOptions[CODEC_TYPE_NB];
 	AVFormatContext* _avformatOptions;
-	struct SwsContext * _sws_context; ///< contexte de transformation swscale
+	struct SwsContext* _sws_context;  ///< contexte de transformation swscale
 	std::vector<int> _videoIdx;
 	int _fpsNum;
 	int _fpsDen;
