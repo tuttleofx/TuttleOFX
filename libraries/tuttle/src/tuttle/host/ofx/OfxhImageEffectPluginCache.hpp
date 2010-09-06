@@ -83,7 +83,7 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 
 	#ifdef SWIG
-	% extend
+	%extend
 	{
 		OfxhImageEffectPlugin& __getitem__( const std::string& name )
 		{

@@ -59,7 +59,7 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
 
 	#ifdef SWIG
-	% extend
+	%extend
 	{
 		const ofx::OfxhPlugin& __getitem__( const std::string& name ) const
 		{

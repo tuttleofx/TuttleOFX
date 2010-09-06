@@ -116,7 +116,7 @@ public:
 	#endif
 
 	#ifdef SWIG
-	% extend
+	%extend
 	{
 		Node& __getitem__( const std::string& name )
 		{

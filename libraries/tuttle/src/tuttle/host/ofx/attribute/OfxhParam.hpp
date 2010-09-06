@@ -131,7 +131,7 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 
 	#ifdef SWIG
-	% extend
+	%extend
 	{
 		ofx::property::OfxhProperty& __getitem__( const std::string& name )
 		{

@@ -104,7 +104,7 @@ public:
 	#endif
 
 	#ifdef SWIG
-	% extend
+	%extend
 	{
 		ofx::attribute::OfxhParam& __getitem__( const std::string& name )
 		{

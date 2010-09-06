@@ -138,7 +138,7 @@ public:
 	#endif
 
 	#ifdef SWIG
-	% extend
+	%extend
 	{
 		//		const OfxhProperty& __getitem__( const std::string& name ) const
 		//		{
