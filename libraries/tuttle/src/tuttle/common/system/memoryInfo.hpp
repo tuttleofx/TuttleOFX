@@ -2,6 +2,7 @@
 #define TUTTLE_SYSTEM_MEMORY_HPP_
 
 #include <cstddef>
+#include <ostream>
 
 struct MemoryInfo
 {
@@ -14,6 +15,8 @@ struct MemoryInfo
 };
 
 MemoryInfo getMemoryInfo();
+
+std::ostream& operator<<( std::ostream& os, const MemoryInfo& infos );
 
 #endif
 

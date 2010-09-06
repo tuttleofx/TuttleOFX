@@ -25,11 +25,16 @@ std::ostream& operator<<( std::ostream& os, const ProcessOptions& options )
 	os << "step:" << options._step << std::endl;
 	os << "interactive:" << options._interactive << std::endl;
 	os << "time:" << options._time << std::endl;
-	os << "nbInputs:" << options._nbInputs << std::endl;
-	os << "nbOutputs:" << options._nbOutputs << std::endl;
+	os << "out degree:" << options._outDegree << std::endl;
+	os << "in degree:" << options._inDegree << std::endl;
 
+	os << "__________" << std::endl;
 	os << "localInfos:" << std::endl << options._localInfos;
+	os << "__________" << std::endl;
+	os << "inputsInfos:" << std::endl << options._inputsInfos;
+	os << "__________" << std::endl;
 	os << "globalInfos:" << std::endl << options._globalInfos;
+	os << "__________" << std::endl;
 
 	// imageEffect specific options
 	os << "field:" << options._field << std::endl;

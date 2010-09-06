@@ -185,8 +185,10 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 
 std::size_t MemoryPool::updateMemoryAuthorizedWithRAM()
 {
+	_memoryAuthorized = getUsedMemorySize() + getMemoryInfo()._totalRam;
 	COUT_X( 5, " - MEMORYPOOL::updateMemoryAuthorizedWithRAM - " );
-	return _memoryAuthorized = getUsedMemorySize() + getMemoryInfo()._freeRam;
+	COUT_VAR( _memoryAuthorized );
+	return _memoryAuthorized;
 }
 
 namespace  {

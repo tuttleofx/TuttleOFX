@@ -22,6 +22,7 @@ typedef ::boost::shared_ptr<tuttle::host::attribute::Image> CACHE_ELEMENT; ///< 
 
 class IMemoryCache
 {
+typedef IMemoryCache This;
 public:
 	virtual ~IMemoryCache() = 0;
 	/// @todo tuttle: use key here, instead of (name, time)
@@ -35,6 +36,8 @@ public:
 	virtual bool               remove( const CACHE_ELEMENT& )                                               = 0;
 	virtual void               clearUnused()                                                                = 0;
 	virtual void               clearAll()                                                                   = 0;
+	virtual std::ostream&      outputStream( std::ostream& os ) const                                       = 0;
+	friend std::ostream& operator<<( std::ostream& os, const This& v );
 };
 
 }

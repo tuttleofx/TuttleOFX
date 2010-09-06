@@ -22,13 +22,15 @@
 //#define TUTTLE_DEBUG_OUTPUT_ALL_NODES
 #endif
 
-#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
- #include <boost/lexical_cast.hpp>
-#endif
 
 // ofx
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
+
+#include <boost/foreach.hpp>
+#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
+ #include <boost/lexical_cast.hpp>
+#endif
 
 #include <iomanip>
 #include <iostream>
@@ -594,11 +596,9 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 	TCOUT_VAR( roi );
 
 	// acquire needed images
-	for( ClipImageMap::iterator it = _clips.begin();
-	     it != _clips.end();
-	     ++it )
+	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
 	{
-		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( it->second ) );
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
 		memory::CACHE_ELEMENT image;
 		if( clip.isOutput() )
 		{
@@ -623,9 +623,35 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 	              processOptions._renderScale );
 
 	debugOutputImage( processOptions._time );
-
-	// mark output clip used with the number of out_edges...
-	// release each input
+	
+	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
+	{
+		attribute::ClipImage& clip = dynamic_cast<attribute::ClipImage&>( *( i.second ) );
+		memory::CACHE_ELEMENT image = memoryCache.get( clip.getIdentifier(), processOptions._time );
+		if( image.get() == NULL )
+		{
+			BOOST_THROW_EXCEPTION( exception::Memory()
+				<< exception::dev() + "Clip " + quotes( clip.getFullName() ) + " not in memory cache (identifier:" + quotes( clip.getIdentifier() ) + ")." );
+		}
+		if( clip.isOutput() )
+		{
+			std::size_t degree = processOptions._inDegree;
+			if( processOptions._finalNode )
+			{
+				// don't keep hand on final nodes
+				///@todo tuttle: case we compute a node to get the buffer...
+				--degree;
+			}
+			if( degree > 0 )
+			{
+				image->addReference( degree ); // add a reference on this node for each future usages
+			}
+		}
+		else
+		{
+			image->releaseReference();
+		}
+	}
 }
 
 void ImageEffectNode::postProcess( graph::ProcessOptions& processOptions )

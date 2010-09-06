@@ -120,7 +120,7 @@ void MemoryCache::clearUnused()
 {
 	for( MAP::iterator it = _map.begin(); it != _map.end(); )
 	{
-		if( it->second->getReference() == 0 )
+		if( it->second->getReference() <= 1 )
 		{
 			_map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
 		}
@@ -135,6 +135,23 @@ void MemoryCache::clearAll()
 {
 	COUT_X( 5, " - MEMORYCACHE::CLEARALL - " );
 	_map.clear();
+}
+
+std::ostream& operator<<( std::ostream& os, const MemoryCache::Key& v )
+{
+	os << "[identifier:" << v._identifier
+	   << ", time:" << v._time << "]";
+	return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const MemoryCache& v )
+{
+	os << "size:" << v.size() << std::endl;
+	BOOST_FOREACH( const MemoryCache::MAP::value_type& i, v._map )
+	{
+		os << i.first << " id:" << i.second->getId() << " ref:" << i.second->getReference() << std::endl;
+	}
+	return os;
 }
 
 }

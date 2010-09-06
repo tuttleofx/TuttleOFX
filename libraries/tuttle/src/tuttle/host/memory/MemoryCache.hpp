@@ -14,6 +14,7 @@ namespace memory {
 
 class MemoryCache : public IMemoryCache
 {
+typedef MemoryCache This;
 MemoryCache( const MemoryCache& pool );
 
 public:
@@ -35,6 +36,7 @@ private:
 		std::string _identifier;
 		double _time;
 	};
+	friend std::ostream& operator<<( std::ostream& os, const Key& v );
 	struct KeyHash : std::unary_function<Key, std::size_t>
 	{
 		std::size_t operator()( const Key& p ) const
@@ -60,6 +62,12 @@ public:
 	bool               remove( const CACHE_ELEMENT& );
 	void               clearUnused();
 	void               clearAll();
+	std::ostream& outputStream( std::ostream& os ) const
+	{
+		os << *this;
+		return os;
+	}
+	friend std::ostream& operator<<( std::ostream& os, const MemoryCache& v );
 };
 
 }

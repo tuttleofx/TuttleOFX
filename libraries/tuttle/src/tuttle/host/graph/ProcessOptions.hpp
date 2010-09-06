@@ -45,6 +45,9 @@ public:
 		, _step( 0 )
 		, _interactive( 0 )
 		, _time( 0 )
+		, _finalNode( false )
+		, _outDegree( 0 )
+		, _inDegree( 0 )
 	{
 		_localInfos._nodes = 1; // local infos can contain only 1 node by definition...
 	}
@@ -62,10 +65,12 @@ public:
 	bool _interactive;
 	OfxTime _time;
 
-	std::size_t _nbInputs;
-	std::size_t _nbOutputs;
+	bool _finalNode;
+	std::size_t _outDegree;
+	std::size_t _inDegree; ///< number of nodes using the output of this node
 
 	ProcessInfos _localInfos;
+	ProcessInfos _inputsInfos;
 	ProcessInfos _globalInfos;
 
 	// imageEffect specific options

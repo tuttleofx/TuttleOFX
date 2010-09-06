@@ -36,11 +36,11 @@ public:
 		if( vertexDest.isFake() || vertexSource.isFake() )
 			return;
 
-		TCOUT( "examine_edge" << vertexSource );
-		TCOUT( "[CONNECT] examine_edge "
-		    << vertexSource
-		    << " TO "
-		    << vertexDest << "." << edge.getInAttrName() );
+//		TCOUT( "examine_edge" << vertexSource );
+//		TCOUT( "[CONNECT] examine_edge "
+//		    << vertexSource
+//		    << " TO "
+//		    << vertexDest << "." << edge.getInAttrName() );
 
 		INode& sourceNode = *vertexSource.getProcessNode();
 		INode& targetNode = *vertexDest.getProcessNode();
@@ -67,7 +67,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
+//		TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -79,7 +79,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
+//		TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -106,7 +106,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
+//		TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -118,7 +118,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
+//		TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -145,7 +145,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
+//		TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -157,7 +157,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
+//		TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -193,35 +193,30 @@ public:
 		using namespace boost::graph;
 		Vertex& vertex = _graph.instance( v );
 
-		out_edge_iterator oe, oeEnd;
-		tie( oe, oeEnd ) = out_edges( v, _graph.getGraph() );
-		//		in_edge_iterator ie, ieEnd;
-		//		tie(ie, ieEnd) = in_edges( v, _graph.getGraph() );
 		ProcessOptions& procOptions = vertex.getProcessOptions();
-
-		// compute global infos for inputs
-
-		// direct dependencies (originally the node inputs)
-		procOptions._nbInputs = _graph.getOutDegree( v );
-		for( ; oe != oeEnd; ++oe )
-		{
-			//			Edge& outEdge = _graph.instance(*oe);
-			Vertex& outVertex = _graph.targetInstance( *oe );
-			procOptions._globalInfos += outVertex.getProcessOptions()._localInfos;
-		}
-
-		//		// direct node usages (originally the node outputs)
-		procOptions._nbOutputs = _graph.getInDegree( v );
-		//		for( ; ie != ieEnd; ++ie )
-		//		{
-		//			Edge& e = _graph.instance(*ie);
-		//		}
-
 		if( !vertex.isFake() )
 		{
 			// compute local infos, need to be a real node !
 			vertex.getProcessNode()->preProcess_infos( procOptions._localInfos );
 		}
+
+		// compute global infos for inputs
+
+		// direct dependencies (originally the node inputs)
+		BOOST_FOREACH( const edge_descriptor& oe, out_edges( v, _graph.getGraph() ) )
+		{
+//			Edge& outEdge = _graph.instance(*oe);
+			Vertex& outVertex = _graph.targetInstance( oe );
+			procOptions._inputsInfos += outVertex.getProcessOptions()._localInfos;
+			procOptions._globalInfos += outVertex.getProcessOptions()._globalInfos;
+		}
+		procOptions._globalInfos += procOptions._localInfos;
+
+//		BOOST_FOREACH( const edge_descriptor& ie, in_edges( v, _graph.getGraph() ) )
+//		{
+//			Edge& e = _graph.instance( ie );
+//		}
+
 
 		COUT_X( 80, "." );
 		COUT( vertex.getName() );
@@ -249,7 +244,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		COUT( "[PROCESS] finish_vertex " << vertex );
+//		COUT( "[PROCESS] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -276,7 +271,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[POSTPROCESS] initialize_vertex " << vertex );
+//		TCOUT( "[POSTPROCESS] initialize_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 	}
@@ -286,7 +281,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[POSTPROCESS] finish_vertex " << vertex );
+//		TCOUT( "[POSTPROCESS] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 

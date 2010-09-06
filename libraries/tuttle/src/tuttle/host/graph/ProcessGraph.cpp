@@ -147,8 +147,14 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 			Vertex& v = renderGraph.instance( vd );
 
 			v.setProcessOptions( defaultOptions );
-			v.getProcessOptions()._nbInputs  = renderGraph.getInDegree( vd );
-			v.getProcessOptions()._nbOutputs = renderGraph.getOutDegree( vd );
+			v.getProcessOptions()._inDegree  = renderGraph.getInDegree( vd );
+			v.getProcessOptions()._outDegree = renderGraph.getOutDegree( vd );
+		}
+		// for each final nodes
+		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( output, renderGraph.getGraph() ) )
+		{
+			Vertex& v = renderGraph.targetInstance( ed );
+			v.getProcessOptions()._finalNode = true;
 		}
 
 		COUT( "---------------------------------------- connectClips" );
@@ -185,8 +191,9 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		// do some clean: memory clean, as temporary solution...
 		COUT( "---------------------------------------- clearUnused" );
 		Core::instance().getMemoryCache().clearUnused();
-		COUT( "---------------------------------------- updateMemoryAuthorizedWithRAM" );
-		Core::instance().getMemoryPool().updateMemoryAuthorizedWithRAM();
+		COUT_VAR( Core::instance().getMemoryCache().size() );
+		COUT_VAR( Core::instance().getMemoryCache() );
+
 	}
 
 	//--- END RENDER
