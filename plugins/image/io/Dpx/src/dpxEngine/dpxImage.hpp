@@ -1,6 +1,8 @@
 #ifndef DPX_IMAGE_HPP
 #define DPX_IMAGE_HPP
 
+#include <tuttle/common/utils/global.hpp>
+
 #include <boost/cstdint.hpp>
 #include <boost/detail/endian.hpp>
 #include <boost/filesystem/fstream.hpp>
@@ -15,8 +17,10 @@ namespace io {
 
 namespace fs = boost::filesystem;
 
-#define DPX_MAGIC           0x53445058
-#define DPX_MAGIC_SWAP      0x58504453
+#define DPX_MAGIC           0x53445058 ///< dpx magic number is an interger corresponding to char[4] = "SDPX"
+#define DPX_MAGIC_SWAP      0x58504453 ///< "XPDS"
+///@todo tuttle: support for cineon file format
+#define CIN_MAGIC           0x802A5FD7 ///< cineon magic number
 #define UNDEF_U8            0xFF
 #define UNDEF_U32           0xFFFFFFFF
 #define UNDEF_S32           0x80000000
@@ -41,6 +45,9 @@ struct FileInformation
 	boost::uint32_t key;    // encryption ( FFFFFFFF = unencrypted )
 	char reserved[104];     // reserved field TBD (need to pad)
 };
+
+std::ostream& operator<<( std::ostream& os, const FileInformation& v );
+
 
 struct ImageInformation
 {
@@ -71,6 +78,9 @@ struct ImageInformation
 	boost::uint8_t reserved[52];                            // reserved for future use (padding)
 };
 
+std::ostream& operator<<( std::ostream& os, const ImageInformation::_image_element& v );
+std::ostream& operator<<( std::ostream& os, const ImageInformation& v );
+
 struct ImageOrientation
 {
 	boost::uint32_t x_offset;              // X offset
@@ -87,6 +97,8 @@ struct ImageOrientation
 	boost::uint32_t pixel_aspect[2];       // pixel aspect ratio (H:V)
 	boost::uint8_t reserved[28];          // reserved for future use (padding)
 };
+
+std::ostream& operator<<( std::ostream& os, const ImageOrientation& v );
 
 struct MotionPictureFilm
 {
@@ -105,6 +117,8 @@ struct MotionPictureFilm
 	char slate_info[100];                // slate information
 	boost::uint8_t reserved[60];         // reserved for future use (padding)
 };
+
+std::ostream& operator<<( std::ostream& os, const MotionPictureFilm& v );
 
 struct TelevisionHeader
 {
@@ -126,6 +140,9 @@ struct TelevisionHeader
 	float integration_times;             // integration time(s)
 	boost::uint8_t reserved[76];         // reserved for future use (padding)
 };
+
+
+std::ostream& operator<<( std::ostream& os, const TelevisionHeader& v );
 
 /// Class holding dpx informations
 class DpxHeader
@@ -241,6 +258,9 @@ public:
 	void swapHeader();
 };
 
+
+std::ostream& operator<<( std::ostream& os, const DpxHeader& v );
+
 class DpxImage
 {
 private:
@@ -293,6 +313,7 @@ public:
 	inline const boost::uint8_t compTypeToDescriptor( const EDPX_CompType type );
 
 	// Setters
+	inline const DpxHeader& getHeader() const { return _header; }
 	inline void setHeader( const DpxHeader& header );
 	inline void setComponentsType( EDPX_CompType );
 
