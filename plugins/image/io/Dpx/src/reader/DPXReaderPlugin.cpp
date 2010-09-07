@@ -76,15 +76,20 @@ void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 
 void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == "Help" )
+	ReaderPlugin::changedParam( args, paramName );
+	if( paramName == kParamDisplayHeader )
 	{
+		tuttle::io::DpxImage dpxImg;
+		dpxImg.readHeader( getAbsoluteFilenameAt( args.time ) );
+		std::ostringstream headerStr;
+		headerStr << "DPX HEADER:" << std::endl;
+		headerStr << dpxImg.getHeader();
+
+		COUT( headerStr.str() );
+
 		sendMessage( OFX::Message::eMessageMessage,
 		             "", // No XML resources
-		             kDPXReaderHelpString );
-	}
-	else
-	{
-		ReaderPlugin::changedParam( args, paramName );
+		             headerStr.str() );
 	}
 }
 

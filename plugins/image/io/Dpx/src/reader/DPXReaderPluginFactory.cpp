@@ -52,14 +52,11 @@ void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                 OFX::EContext               context )
 {
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
 	// Dpx only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	// Controls
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kReaderParamFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
@@ -85,6 +82,10 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 		explicitConversion->setIsSecret( true );
 		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
 	}
+	
+	OFX::PushButtonParamDescriptor* displayHeader = desc.definePushButtonParam( kParamDisplayHeader );
+	displayHeader->setLabel( "See Header" );
+	displayHeader->setHint( "See the file header without formating (debug purpose only)." );
 }
 
 /**

@@ -1,5 +1,6 @@
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderDefinitions.hpp"
+#include "DPXReaderProcess.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/typedefs.hpp>
