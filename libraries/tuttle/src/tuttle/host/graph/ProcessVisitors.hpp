@@ -67,7 +67,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
+		TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -79,7 +79,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
+		TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -106,7 +106,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
+		TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -118,7 +118,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
+		TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -145,7 +145,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
+		TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -157,7 +157,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
+		TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -183,7 +183,7 @@ public:
 	OptimizeGraph( TGraph& graph )
 		: _graph( graph )
 	{
-		COUT_X( 80, ":" );
+//		COUT_X( 80, ":" );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -218,10 +218,10 @@ public:
 //		}
 
 
-		COUT_X( 80, "." );
-		COUT( vertex.getName() );
-		COUT( procOptions );
-		COUT_X( 80, "." );
+//		COUT_X( 80, "." );
+//		COUT( vertex.getName() );
+//		COUT( procOptions );
+//		COUT_X( 80, "." );
 	}
 
 private:

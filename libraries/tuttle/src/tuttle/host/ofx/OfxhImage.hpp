@@ -58,9 +58,9 @@ protected:
 	/// called during ctors to get bits from the clip props into ours
 	void initClipBits( attribute::OfxhClip& instance );
 	static std::ptrdiff_t _count; ///< temp.... for check
-	std::string _clipName; ///< for debug
 	std::ptrdiff_t _id; ///< temp.... for check
 	std::ptrdiff_t _referenceCount; ///< reference count on this image
+	std::string _clipName; ///< for debug
 
 public:
 	// default constructor

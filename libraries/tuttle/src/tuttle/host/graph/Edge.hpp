@@ -23,6 +23,7 @@ public:
 		, _in( in )
 		, _inAttrName( inAttrName )
 		, _name( std::string( out ) + "." + kOfxOutputAttributeName + "-->" + in + "." + inAttrName )
+		, _localId( 0 )
 	{}
 
 	Edge( const Edge& e )
@@ -43,6 +44,7 @@ public:
 		_out        = e._out;
 		_inAttrName = e._inAttrName;
 		_name       = e._name;
+		_localId    = e._localId;
 		return *this;
 	}
 
@@ -51,6 +53,7 @@ public:
 	const std::string& getInAttrName() const { return _inAttrName; }
 	const std::string& getName() const       { return _name; }
 
+	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const Edge& v );
 
 public:
@@ -58,6 +61,7 @@ public:
 	std::string _in;
 	std::string _inAttrName;
 	std::string _name;
+	std::size_t _localId;
 };
 
 }

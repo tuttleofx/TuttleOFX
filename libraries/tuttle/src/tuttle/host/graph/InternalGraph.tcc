@@ -4,22 +4,8 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-template< typename VERTEX, typename EDGE >
-InternalGraph<VERTEX, EDGE>&InternalGraph<VERTEX, EDGE>::operator=( const This& g )
-{
-	if( this == &g )
-		return *this;
-	clear();
-	boost::copy_graph( g._graph, _graph );
-	//COUT( "InternalGraph after copy" );
-	//exportSimple( *this, std::cout );
-	//COUT_X( 80, "_" );
-	rebuildVertexDescriptorMap();
-	return *this;
-}
-
-template< typename VERTEX, typename EDGE >
-void InternalGraph<VERTEX, EDGE>::toDominatorTree()
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+void InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::toDominatorTree()
 {
 	typedef typename boost::property_map<GraphContainer, boost::vertex_index_t>::type IndexMap;
 	typedef typename std::vector<vertex_descriptor >::iterator VectorDescIter;
@@ -57,8 +43,9 @@ void InternalGraph<VERTEX, EDGE>::toDominatorTree()
 	}
 }
 
-template< typename VERTEX, typename EDGE >
-std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGraph<VERTEX, EDGE>::rootVertices()
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+std::vector<typename InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::vertex_descriptor>
+InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::rootVertices()
 {
 	std::vector<vertex_descriptor> vroots;
 	vertex_range_t vrange = getVertices();
@@ -69,8 +56,9 @@ std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGra
 	return vroots;
 }
 
-template< typename VERTEX, typename EDGE >
-std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGraph<VERTEX, EDGE>::leafVertices()
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+std::vector<typename InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::vertex_descriptor>
+InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::leafVertices()
 {
 	std::vector<vertex_descriptor> vleafs;
 	vertex_range_t vrange = getVertices();
@@ -81,8 +69,8 @@ std::vector<typename InternalGraph<VERTEX, EDGE>::vertex_descriptor> InternalGra
 	return vleafs;
 }
 
-template< typename VERTEX, typename EDGE >
-void InternalGraph<VERTEX, EDGE>::rebuildVertexDescriptorMap()
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+void InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::rebuildVertexDescriptorMap()
 {
 	_vertexDescriptorMap.clear();
 	BOOST_FOREACH( vertex_descriptor vd, getVertices() )
@@ -91,8 +79,8 @@ void InternalGraph<VERTEX, EDGE>::rebuildVertexDescriptorMap()
 	}
 }
 
-template< typename VERTEX, typename EDGE >
-std::size_t InternalGraph<VERTEX, EDGE>::removeUnconnectedVertices( const vertex_descriptor& vroot )
+template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexList, typename EdgeList >
+std::size_t InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::removeUnconnectedVertices( const vertex_descriptor& vroot )
 {
 	visitor::MarkUsed<This> vis( *this );
 	this->dfs( vis, vroot );
@@ -119,9 +107,8 @@ std::size_t InternalGraph<VERTEX, EDGE>::removeUnconnectedVertices( const vertex
 template< typename Vertex, typename Edge >
 std::ostream& operator<<( std::ostream& os, const InternalGraph<Vertex, Edge>& g )
 {
-	os
-	                  << "  vertex count: " << g.getVertexCount() << std::endl
-	                  << "  edge count: " << g.getEdgeCount() << std::endl;
+	os << "  vertex count: " << g.getVertexCount() << std::endl
+	   << "  edge count: " << g.getEdgeCount() << std::endl;
 
 	exportSimple<Vertex, Edge>( os, g );
 

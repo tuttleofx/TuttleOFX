@@ -89,16 +89,35 @@ void ProcessGraph::relink()
    for( container::reverse_iterator ii=c.rbegin(); ii!=c.rend(); ++ii )
    cout << index(*ii) << " ";
    cout << endl;
- */
+*/
 
-/*
-   for( size_type i = 0; i < num_vertices(CG); ++i )
-    std::sort( CG[i].begin(), CG[i].end(),
-        boost::bind( std::less<cg_vertex>(),
-            boost::bind(detail::subscript(topo_number), _1 ),
-            boost::bind(detail::subscript(topo_number), _2 ) ) );
+template<class TGraph>
+class OrderEdgeByMemorySize
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::edge_descriptor edge_descriptor;
 
- */
+	OrderEdgeByMemorySize( const TGraph& graph )
+		: _graph( graph )
+	{}
+
+	inline bool operator()( const edge_descriptor& ed1, const edge_descriptor& ed2 ) const
+	{
+		const Vertex& v1 = _graph.targetInstance( ed1 );
+		const Vertex& v2 = _graph.targetInstance( ed2 );
+
+		bool res= v1.getProcessOptions()._globalInfos._memory < v2.getProcessOptions()._globalInfos._memory;
+		COUT_VAR2(v1.getName(), v1.getProcessOptions()._globalInfos._memory);
+		COUT_VAR2(v2.getName(), v2.getProcessOptions()._globalInfos._memory);
+		COUT_VAR(res);
+		return res;
+	}
+private:
+	const TGraph& _graph;
+};
 
 void ProcessGraph::process( const int tBegin, const int tEnd )
 {
@@ -173,10 +192,62 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraph );
 		renderGraph.dfs( preProcess3Visitor, output );
 
-		COUT( "---------------------------------------- optimizeGraph" );
+		COUT( "---------------------------------------- optimize graph" );
 		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
 		renderGraph.dfs( optimizeGraphVisitor, output );
-
+		std::string dotfilename = std::string("graphprocess_") + boost::lexical_cast<std::string>(t) + ".dot";
+/*
+		COUT( "---------------------------------------- ordering graph" );
+		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
+		{
+			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
+			std::size_t i = 0;
+			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+			{
+				Edge& e = renderGraph.instance(ed);
+				e._localId = i++;
+				e._name += " -- ";
+				e._name += boost::lexical_cast<std::string>(e._localId); // tmp
+			}
+		}
+		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
+		{
+			Vertex& v = renderGraph.instance(vd);
+			COUT_X( 30, "-" );
+			COUT( "before sort edges of " << v.getName() );
+			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+			{
+				Edge& e = renderGraph.instance(ed);
+				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessOptions()._globalInfos._memory  );
+			}
+			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
+			boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, renderGraph.getGraph() );
+			std::sort( oe_it, oe_itEnd, OrderEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
+			std::size_t i = 0;
+			COUT( "after sort edges of " << v.getName() );
+			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+			{
+				Edge& e = renderGraph.instance(ed);
+				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessOptions()._globalInfos._memory );
+			}
+			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+			{
+				Edge& e = renderGraph.instance(ed);
+				e._localId = i++;
+				e._name += "=>";
+				e._name += boost::lexical_cast<std::string>(e._localId);
+			}
+			v._name += "  ";
+			v._name += boost::lexical_cast<std::string>( v.getProcessOptions()._globalInfos._memory );
+			if( ! v.isFake() )
+			{
+				v._name += "  ";
+				v._name += boost::lexical_cast<std::string>( dynamic_cast<ImageEffectNode&>(*v.getProcessNode()).getOutputClip().getBitDepthString() );
+			}
+		}
+		graph::exportAsDOT( dotfilename, renderGraph );
+*/
+		graph::exportDebugAsDOT( dotfilename, renderGraph );
 		// remove isIdentity nodes
 
 		COUT( "---------------------------------------- process" );

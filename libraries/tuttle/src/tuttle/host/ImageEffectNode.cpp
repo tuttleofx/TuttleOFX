@@ -519,7 +519,7 @@ void ImageEffectNode::validBitDepthConnections() const
 
 void ImageEffectNode::begin( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "begin: " << getName() );
+//	TCOUT( "begin: " << getName() );
 	beginRenderAction( processOptions._startFrame,
 	                   processOptions._endFrame,
 	                   processOptions._step,
@@ -529,7 +529,7 @@ void ImageEffectNode::begin( graph::ProcessOptions& processOptions )
 
 void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "preProcess1_finish: " << getName() << " at time: " << processOptions._time );
+//	TCOUT( "preProcess1_finish: " << getName() << " at time: " << processOptions._time );
 	setCurrentTime( processOptions._time );
 
 	checkClipsConnections();
@@ -546,12 +546,12 @@ void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions 
 	setRegionOfDefinition( rod );
 	processOptions._renderRoD = rod;
 	processOptions._renderRoI = rod;
-	TCOUT_VAR( rod );
+//	TCOUT_VAR( rod );
 }
 
 void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "preProcess2_initialize: " << getName() << " at time: " << processOptions._time );
+//	TCOUT( "preProcess2_initialize: " << getName() << " at time: " << processOptions._time );
 
 	maximizeBitDepthFromWritesToReads();
 
@@ -565,15 +565,15 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 
 void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "preProcess3_finish: " << getName() << " at time: " << processOptions._time );
+//	TCOUT( "preProcess3_finish: " << getName() << " at time: " << processOptions._time );
 	maximizeBitDepthFromReadsToWrites();
-	coutBitDepthConnections();
+//	coutBitDepthConnections();
 	validBitDepthConnections();
 }
 
 void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos ) const
 {
-	TCOUT( "preProcess_infos: " << getName() );
+//	TCOUT( "preProcess_infos: " << getName() );
 	const OfxRectD rod             = getRegionOfDefinition();
 	const std::size_t bitDepth     = this->getOutputClip().getBitDepth(); // value in bytes
 	const std::size_t nbComponents = getOutputClip().getNbComponents();
@@ -582,7 +582,7 @@ void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos ) const
 
 void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "process: " << getName() );
+//	TCOUT( "process: " << getName() );
 	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
@@ -593,7 +593,7 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 		boost::numeric_cast<int>( ceil( processOptions._renderRoI.x2 ) ),
 		boost::numeric_cast<int>( ceil( processOptions._renderRoI.y2 ) )
 	};
-	TCOUT_VAR( roi );
+//	TCOUT_VAR( roi );
 
 	// acquire needed images
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
@@ -656,12 +656,12 @@ void ImageEffectNode::process( graph::ProcessOptions& processOptions )
 
 void ImageEffectNode::postProcess( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "postProcess: " << getName() );
+//	TCOUT( "postProcess: " << getName() );
 }
 
 void ImageEffectNode::end( graph::ProcessOptions& processOptions )
 {
-	TCOUT( "end: " << getName() );
+//	TCOUT( "end: " << getName() );
 	endRenderAction( processOptions._startFrame,
 	                 processOptions._endFrame,
 	                 processOptions._step,

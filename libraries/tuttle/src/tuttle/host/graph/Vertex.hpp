@@ -62,6 +62,7 @@ public:
 	const ProcessOptions& getProcessOptions() const                          { return _processOptions; }
 	void                  setProcessOptions( const ProcessOptions& options ) { _processOptions = options; }
 
+	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 
 public:

@@ -29,10 +29,12 @@ public:
 	typedef ImageEffectNode Node; /// @todo tuttle ProcessNode...
 	typedef attribute::Attribute Attribute;
 	typedef graph::InternalGraph<Vertex, Edge> InternalGraphImpl;
-	typedef graph::InternalGraph<Vertex, Edge>::vertex_descriptor Descriptor;
-	typedef boost::ptr_map<std::string, Node> NodeMap;
-	typedef std::map<std::string, int> InstanceCountMap;
+	typedef InternalGraphImpl::vertex_descriptor vertex_descriptor;
+	typedef InternalGraphImpl::edge_descriptor edge_descriptor;
 
+	typedef std::map<std::string, int> InstanceCountMap;
+	typedef boost::ptr_map<std::string, Node> NodeMap;
+	
 public:
 	Graph();
 	//Graph( const Graph& other );

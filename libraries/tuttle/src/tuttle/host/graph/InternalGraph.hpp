@@ -36,25 +36,23 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-template < typename VERTEX, typename EDGE >
+template < typename VERTEX, typename EDGE, typename OutEdgeList = boost::setS, typename VertexList = boost::vecS, typename EdgeList = boost::listS >
 class InternalGraph
 {
 public:
 	typedef VERTEX Vertex;
 	typedef EDGE Edge;
-	typedef InternalGraph<Vertex, Edge> This;
+	typedef InternalGraph<Vertex, Edge, OutEdgeList, VertexList, EdgeList> This;
 
 	// Directed acyclic graph
 	typedef boost::adjacency_list<
-	    boost::setS,                // disallow parallel edges (OutEdgeList), use hash_setS ?
-	    boost::vecS,               // vertex container (VertexList)
+	    OutEdgeList,                // disallow parallel edges (OutEdgeList), use hash_setS ?
+	    VertexList,               // vertex container (VertexList)
 	    boost::bidirectionalS,      // directed graph
-	    //	    boost::property<vertex_properties_t, Vertex>,
-	    //	    boost::property<edge_properties_t, Edge>,
 	    Vertex,
 	    Edge,
 	    boost::no_property, // no GraphProperty
-	    boost::listS // EdgeList
+	    EdgeList // EdgeList
 	    > GraphContainer;
 
 	// a bunch of graph-specific typedefs
@@ -83,15 +81,26 @@ public:
 		*this = g;
 	}
 
-	This& operator=( const This& g );
-
-	/**
-	 * @warning unused and untested...
-	 */
-	template<typename V, typename E>
-	This& operator=( const InternalGraph<V, E>& g )
+	template<typename V, typename E, typename OEL, typename VL, typename EL>
+	InternalGraph( const InternalGraph<V, E, OEL, VL, EL>& g )
 	{
+		*this = g;
+	}
+
+	This& operator=( const This& g )
+	{
+		if( this == &g )
+			return *this;
+		clear();
 		boost::copy_graph( g._graph, _graph );
+		rebuildVertexDescriptorMap();
+		return *this;
+	}
+
+	template<typename V, typename E, typename OEL, typename VL, typename EL>
+	This& operator=( const InternalGraph<V, E, OEL, VL, EL>& g )
+	{
+		boost::copy_graph( g.getGraph(), _graph );
 		rebuildVertexDescriptorMap();
 		return *this;
 	}

@@ -16,8 +16,9 @@ public:
 	typedef Graph::Vertex Vertex;
 	typedef Graph::Edge Edge;
 	typedef Graph::Attribute Attribute;
-	typedef Graph::InternalGraphImpl InternalGraphImpl;
-	typedef Graph::Descriptor Descriptor;
+	typedef InternalGraph<Vertex, Edge, boost::vecS, boost::vecS> InternalGraphImpl;
+	typedef Graph::vertex_descriptor vertex_descriptor;
+	typedef Graph::edge_descriptor edge_descriptor;
 	typedef Graph::NodeMap NodeMap;
 	typedef Graph::InstanceCountMap InstanceCountMap;
 
