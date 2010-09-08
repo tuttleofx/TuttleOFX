@@ -199,65 +199,50 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		COUT( "---------------------------------------- optimize graph" );
 		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
 		renderGraph.dfs( optimizeGraphVisitor, output );
-		std::string dotfilename = std::string("graphprocess_") + boost::lexical_cast<std::string>(t) + ".dot";
 		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraph );
-/*
-		COUT( "---------------------------------------- ordering graph" );
+
+		/*
+		/// @todo tuttle: out_edges sort don't work...
+		COUT( "---------------------------------------- sorting graph" );
 		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
-			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
+			Vertex& v = renderGraph.instance(vd);
+			COUT_X( 30, "-" );
 			std::size_t i = 0;
+			COUT( "before sort edges of " << v.getName() );
 			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
 			{
 				Edge& e = renderGraph.instance(ed);
 				e._localId = i++;
 				e._name += " -- ";
 				e._name += boost::lexical_cast<std::string>(e._localId); // tmp
-			}
-		}
-		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
-		{
-			Vertex& v = renderGraph.instance(vd);
-			COUT_X( 30, "-" );
-			COUT( "before sort edges of " << v.getName() );
-			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
-			{
-				Edge& e = renderGraph.instance(ed);
 				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessOptions()._globalInfos._memory  );
 			}
 			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
 			boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, renderGraph.getGraph() );
 			std::sort( oe_it, oe_itEnd, OrderEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
-			std::size_t i = 0;
 			COUT( "after sort edges of " << v.getName() );
 			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
 			{
 				Edge& e = renderGraph.instance(ed);
 				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessOptions()._globalInfos._memory );
 			}
-			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
+			boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, renderGraph.getGraph() );
+			for( ; oe_it != oe_itEnd; ++oe_it )
 			{
-				Edge& e = renderGraph.instance(ed);
-				e._localId = i++;
-				e._name += "=>";
-				e._name += boost::lexical_cast<std::string>(e._localId);
-			}
-			v._name += "  ";
-			v._name += boost::lexical_cast<std::string>( v.getProcessOptions()._globalInfos._memory );
-			if( ! v.isFake() )
-			{
-				v._name += "  ";
-				v._name += boost::lexical_cast<std::string>( dynamic_cast<ImageEffectNode&>(*v.getProcessNode()).getOutputClip().getBitDepthString() );
+				Edge& e = renderGraph.instance(*oe_it);
+				COUT( e.getName() << " - " <<  renderGraph.targetInstance(*oe_it).getProcessOptions()._globalInfos._memory );
 			}
 		}
-		graph::exportDebugAsDOT( dotfilename, renderGraph );
-*/
+		graph::exportDebugAsDOT( "graphprocess_f.dot", renderGraph );
+		*/
 		// remove isIdentity nodes
 
 		COUT( "---------------------------------------- process" );
 		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraph );
 		renderGraph.dfs( processVisitor, output );
-		graph::exportDebugAsDOT( "graphprocess_f.dot", renderGraph );
+		graph::exportDebugAsDOT( "graphprocess_g.dot", renderGraph );
 
 		COUT( "---------------------------------------- postprocess" );
 		graph::visitor::PostProcess<InternalGraphImpl> postProcessVisitor( renderGraph );
