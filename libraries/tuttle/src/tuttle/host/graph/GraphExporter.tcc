@@ -17,6 +17,12 @@ std::ostream& operator<<( std::ostream& os, const DotEntry<T>& d )
 	os << d._key << "=\"" << d._value << "\"";
 	return os;
 }
+template<class T>
+std::ostream& operator<<( std::ostream& os, const SubDotEntry<T>& d )
+{
+	os << d._key << ":\'" << d._value << "\'\\n";
+	return os;
+}
 }
 
 /**
@@ -28,6 +34,11 @@ template<class T>
 detail::DotEntry<T> dotEntry( const std::string& key, const T& value )
 {
 	return detail::DotEntry<T>( key, value );
+}
+template<class T>
+detail::SubDotEntry<T> subDotEntry( const std::string& key, const T& value )
+{
+	return detail::SubDotEntry<T>( key, value );
 }
 
 namespace detail {

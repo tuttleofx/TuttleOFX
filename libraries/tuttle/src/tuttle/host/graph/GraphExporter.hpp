@@ -20,6 +20,15 @@ struct DotEntry
 	template<class TT>
 	friend std::ostream& operator<<( std::ostream& os, const DotEntry<TT>& d );
 };
+template<class T>
+struct SubDotEntry : public DotEntry<T>
+{
+	SubDotEntry( const std::string& key, const T& value )
+		: DotEntry<T>( key, value )
+	{}
+	template<class TT>
+	friend std::ostream& operator<<( std::ostream& os, const SubDotEntry<TT>& d );
+};
 }
 template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
 class InternalGraph;
@@ -31,6 +40,8 @@ class InternalGraph;
  */
 template<class T>
 detail::DotEntry<T> dotEntry( const std::string& key, const T& value );
+template<class T>
+detail::SubDotEntry<T> subDotEntry( const std::string& key, const T& value );
 
 template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
 inline void exportSimple( std::ostream& os, const InternalGraph<Vertex, Edge, OutEdgeList, VertexList, EdgeList>& g );

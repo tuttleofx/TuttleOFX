@@ -11,15 +11,18 @@ int Vertex::_count = 0;
 
 std::ostream& Vertex::exportDotDebug( std::ostream& os ) const
 {
-	os << "[" << std::endl;
-	os << dotEntry( "type", "Node" ) << ", " << std::endl;
-	os << dotEntry( "label", getName() ) << ", " << std::endl;
+	std::ostringstream s;
+	s << subDotEntry( "label", getName() ) << ", ";
 	if( ! isFake() )
 	{
-		os << dotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() ) << ", " << std::endl;
+		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() ) << ", ";
 	}
-	os << dotEntry( "localMemory", getProcessOptions()._localInfos._memory ) << ", " << std::endl;
-	os << dotEntry( "globalMemory", getProcessOptions()._globalInfos._memory ) << std::endl;
+	s << subDotEntry( "localMemory", getProcessOptions()._localInfos._memory ) << ", ";
+	s << subDotEntry( "globalMemory", getProcessOptions()._globalInfos._memory );
+
+	os << "[" << std::endl;
+	os << dotEntry( "type", "Node" ) << ", " << std::endl;
+	os << dotEntry( "label", s.str() ) << ", " << std::endl;
 	os << "]" << std::endl;
 	return os;
 }

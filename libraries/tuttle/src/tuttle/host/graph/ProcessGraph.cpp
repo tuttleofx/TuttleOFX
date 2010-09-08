@@ -179,23 +179,28 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		COUT( "---------------------------------------- connectClips" );
 		graph::visitor::ConnectClips<InternalGraphImpl> connectClipsVisitor( renderGraph );
 		renderGraph.dfs( connectClipsVisitor, output );
+		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraph );
 
 		COUT( "---------------------------------------- preprocess 1" );
 		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraph );
 		renderGraph.dfs( preProcess1Visitor, output );
+		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraph );
 
 		COUT( "---------------------------------------- preprocess 2" );
 		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraph );
-		renderGraph.bfs( preProcess2Visitor, output );
+		renderGraph.dfs_reverse( preProcess2Visitor ); //, output
+		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraph );
 
 		COUT( "---------------------------------------- preprocess 3" );
 		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraph );
 		renderGraph.dfs( preProcess3Visitor, output );
+		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraph );
 
 		COUT( "---------------------------------------- optimize graph" );
 		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
 		renderGraph.dfs( optimizeGraphVisitor, output );
 		std::string dotfilename = std::string("graphprocess_") + boost::lexical_cast<std::string>(t) + ".dot";
+		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraph );
 /*
 		COUT( "---------------------------------------- ordering graph" );
 		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
@@ -245,14 +250,14 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 				v._name += boost::lexical_cast<std::string>( dynamic_cast<ImageEffectNode&>(*v.getProcessNode()).getOutputClip().getBitDepthString() );
 			}
 		}
-		graph::exportAsDOT( dotfilename, renderGraph );
-*/
 		graph::exportDebugAsDOT( dotfilename, renderGraph );
+*/
 		// remove isIdentity nodes
 
 		COUT( "---------------------------------------- process" );
 		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraph );
 		renderGraph.dfs( processVisitor, output );
+		graph::exportDebugAsDOT( "graphprocess_f.dot", renderGraph );
 
 		COUT( "---------------------------------------- postprocess" );
 		graph::visitor::PostProcess<InternalGraphImpl> postProcessVisitor( renderGraph );

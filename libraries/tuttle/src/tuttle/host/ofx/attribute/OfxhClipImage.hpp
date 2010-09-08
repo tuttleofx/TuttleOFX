@@ -108,6 +108,14 @@ public:
 		setBitDepthString( mapBitDepthEnumToString( bitDepth ), modifiedBy );
 	}
 
+	void setBitDepthStringIfUpper( const std::string& s )
+	{
+		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );
+
+		if( ofx::imageEffect::mapBitDepthStringToEnum( s ) > getBitDepth() ) // we can increase the bit depth but not decrease
+			prop.setValue( s );
+	}
+
 	void setBitDepthStringIfUpperAndNotModifiedByPlugin( const std::string& s )
 	{
 		property::String& prop = getEditableProperties().fetchLocalStringProperty( kOfxImageEffectPropPixelDepth );

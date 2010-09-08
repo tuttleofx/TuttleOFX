@@ -91,7 +91,7 @@ private:
 };
 
 template<class TGraph>
-class PreProcess2 : public boost::default_bfs_visitor
+class PreProcess2 : public boost::default_dfs_visitor // default_bfs_visitor
 {
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
@@ -110,7 +110,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess2_initialize( vertex.getProcessOptions() );
+		vertex.getProcessNode()->preProcess2_rinitialize( vertex.getProcessOptions() );
 	}
 
 	template<class VertexDescriptor, class Graph>
@@ -122,7 +122,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess2_finish( vertex.getProcessOptions() );
+		vertex.getProcessNode()->preProcess2_rfinish( vertex.getProcessOptions() );
 	}
 
 private:

@@ -435,6 +435,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 
 void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 {
+	//TCOUT( "maximizeBitDepthFromWritesToReads: " << getName() );
 	if( !supportsMultipleClipDepths() )
 	{
 		attribute::ClipImage& outputClip         = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
@@ -450,18 +451,25 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 				/// through the graph ? through a graph inside ProcessOptions ?
 				/*const */ attribute::ClipImage& linkClip = clip.getConnectedClip();
 
+				//TCOUT_X( 20, "-" );
+				//TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
 				if( linkClip.getNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
 				{
 					if( linkClip.getNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
 					{
-						linkClip.setBitDepthString( outputClipBitDepthStr );
+						linkClip.setBitDepthStringIfUpper( outputClipBitDepthStr );
 					}
 					else
 					{
 						linkClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
 					}
 				}
+				//TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
 			}
+			//else
+			//{
+			//	TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << ", unconnected ? " << clip.isConnected() << ", output ? " << clip.isOutput() );
+			//}
 		}
 	}
 }
@@ -549,9 +557,9 @@ void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions 
 //	TCOUT_VAR( rod );
 }
 
-void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOptions )
+void ImageEffectNode::preProcess2_rfinish( graph::ProcessOptions& processOptions )
 {
-//	TCOUT( "preProcess2_initialize: " << getName() << " at time: " << processOptions._time );
+//	TCOUT( "preProcess2_finish: " << getName() << " at time: " << processOptions._time );
 
 	maximizeBitDepthFromWritesToReads();
 
@@ -559,8 +567,8 @@ void ImageEffectNode::preProcess2_initialize( graph::ProcessOptions& processOpti
 	                           processOptions._renderScale,
 	                           processOptions._renderRoI,
 	                           processOptions._inputsRoI );
-	TCOUT_VAR( processOptions._renderRoD );
-	TCOUT_VAR( processOptions._renderRoI );
+//	TCOUT_VAR( processOptions._renderRoD );
+//	TCOUT_VAR( processOptions._renderRoI );
 }
 
 void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions )

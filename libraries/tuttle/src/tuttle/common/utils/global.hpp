@@ -98,6 +98,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #define TCOUT COUT
+#define TCOUT_X COUT_X
 #define TCOUT_VAR COUT_VAR
 #define TCOUT_VAR2 COUT_VAR2
 #define TCOUT_VAR3 COUT_VAR3

@@ -60,8 +60,8 @@ public:
 	 * @remark breadth first search
 	 * @{
 	 */
-	virtual void preProcess2_initialize( graph::ProcessOptions& processOptions ) {}
-	virtual void preProcess2_finish( graph::ProcessOptions& processOptions )     {}
+	virtual void preProcess2_rinitialize( graph::ProcessOptions& processOptions ) {}
+	virtual void preProcess2_rfinish( graph::ProcessOptions& processOptions )     {}
 	/**
 	 * @}
 	 * @group preProcess3

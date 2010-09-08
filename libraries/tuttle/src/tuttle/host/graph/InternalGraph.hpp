@@ -317,6 +317,16 @@ public:
 	}
 
 	template<class Visitor>
+	void dfs_reverse( Visitor vis )
+	{
+		boost::reverse_graph<GraphContainer> revGraph(_graph);
+
+		boost::depth_first_search( revGraph,
+		                           boost::visitor( vis )
+		                           );
+	}
+
+	template<class Visitor>
 	void bfs( Visitor vis, const vertex_descriptor& vroot )
 	{
 		boost::breadth_first_search( _graph,
