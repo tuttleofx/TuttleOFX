@@ -159,6 +159,20 @@ public:
 		}
 	}
 
+	std::ostream& displayValues( std::ostream& os ) const
+	{
+		BOOST_STATIC_ASSERT( DIM != 0 );
+		os << "[";
+		for( std::size_t index = 0; index < DIM-1; ++index )
+		{
+			_controls[index].displayValues( os );
+			os << ",";
+		}
+		_controls[DIM-1].displayValues( os );
+		os << "]";
+		return os;
+	}
+
 };
 
 }

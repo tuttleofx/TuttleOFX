@@ -129,6 +129,7 @@ public:
 	}
 
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
+	virtual std::ostream& displayValues( std::ostream& os ) const { return os; };
 
 	#ifdef SWIG
 	%extend

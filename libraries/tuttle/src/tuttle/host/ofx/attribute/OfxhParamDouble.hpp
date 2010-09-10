@@ -64,6 +64,12 @@ public:
 
 	/// implementation of var args function
 	virtual void integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC;
+
+	std::ostream& displayValues( std::ostream& os ) const
+	{
+		os << getDouble();
+		return os;
+	}
 };
 
 }

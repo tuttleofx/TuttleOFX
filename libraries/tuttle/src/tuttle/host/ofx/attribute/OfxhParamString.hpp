@@ -40,6 +40,12 @@ public:
 
 	/// implementation of var args function
 	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC;
+
+	std::ostream& displayValues( std::ostream& os ) const
+	{
+		os << getString();
+		return os;
+	}
 };
 
 }
