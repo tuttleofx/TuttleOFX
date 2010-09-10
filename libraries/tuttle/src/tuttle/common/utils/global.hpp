@@ -1,6 +1,8 @@
 #ifndef __TUTTLE_GLOBAL__
 #define __TUTTLE_GLOBAL__
 
+//#define TUTTLE_NO_COUT
+
 ////////////////////////////////////////////////////////////////////////////////
 // windows stuff
 #include "windows/windows.h"
@@ -39,23 +41,35 @@
  **/
  #define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << ::std::endl << "function: " << BOOST_CURRENT_FUNCTION
 
+ #define VAR( a )  # a << ": " << a
+ #define VAR2( a, b )  # a << ": " << a << ", " << # b << ": " << b
+ #define VAR3( a, b, c )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c
+ #define VAR4( a, b, c, d )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d
+ #define VAR_ENDL( a )  # a << ":" << ::std::endl << a
+
+#ifndef TUTTLE_NO_COUT
 /**
  * @param[in] ... : all parameters with an operator << defined
  * @brief terminal display
  **/
  #define COUT(... )  ::std::cout << __VA_ARGS__ << ::std::endl
+ #define CERR(... )  ::std::cerr << __VA_ARGS__ << ::std::endl
 
  #define COUT_X( N, ... ) \
     for( unsigned int i = 0; i < N; ++i ) { ::std::cout << __VA_ARGS__; } \
-    ::std::cout << __VA_ARGS__ << ::std::endl
+    ::std::cout << ::std::endl
 
- #define VAR( a )  # a << ": " << a
- #define VAR_ENDL( a )  # a << ":" << ::std::endl << a
+#else
+ #define COUT(...)
+ #define CERR(...)
+ #define COUT_X( N, ... )
+#endif
 
- #define COUT_VAR( a )  ::std::cout << # a << ": " << a << ::std::endl
- #define COUT_VAR2( a, b )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ::std::endl
- #define COUT_VAR3( a, b, c )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ::std::endl
- #define COUT_VAR4( a, b, c, d )  ::std::cout << # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d << ::std::endl
+
+ #define COUT_VAR( a )  COUT( VAR( a ) )
+ #define COUT_VAR2( a, b )  COUT( VAR2( a, b ) )
+ #define COUT_VAR3( a, b, c )  COUT( VAR3( a, b, c ) )
+ #define COUT_VAR4( a, b, c, d )  COUT( VAR4( a, b, c, d ) )
 
 /**
  * @brief terminal information display
@@ -71,19 +85,19 @@
           ::std::endl << "\t" << __VA_ARGS__ )
 
  #define COUT_WARNING(... )  \
-    ::std::cerr << "Warning:" << \
+    CERR( "Warning:" << \
     ::std::endl << INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__  << ::std::endl
+    ::std::endl << "\t" << __VA_ARGS__  )
 
  #define COUT_ERROR(... )  \
-    ::std::cerr << "Error:" << \
+    CERR( "Error:" << \
     ::std::endl << INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__  << ::std::endl
+    ::std::endl << "\t" << __VA_ARGS__  )
 
  #define COUT_FATALERROR(... )  \
-    ::std::cerr << "Fatal error:" << \
+    CERR( "Fatal error:" << \
     ::std::endl << INFOS << \
-    ::std::endl << "\t" << __VA_ARGS__  << ::std::endl
+    ::std::endl << "\t" << __VA_ARGS__  )
 
 #endif
 
