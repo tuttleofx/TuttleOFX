@@ -695,7 +695,7 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 	     it != itEnd;
 	     ++it )
 	{
-		os << "  * " << it->getName() << " (" << it->getLabel() << ")" << std::endl;
+		os << "  * " << it->getName() << " (" << it->getLabel() << "): " <<	it->displayValues(os) << std::endl;
 	}
 	os << "________________________________________________________________________________" << std::endl;
 	return os;
