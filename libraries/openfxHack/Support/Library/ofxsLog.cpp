@@ -34,11 +34,6 @@
  *
  */
 
-#include <string>
-#include <cassert>
-#include <cstdio>
-#include <cstdarg>
-
 /** @file This file contains the body of functions used for logging ofx problems etc...
  *
  * The log file is written to using printf style functions, rather than via c++ iostreams.
@@ -51,7 +46,7 @@
 #include <cstdarg>
 #include <cstdlib>
 
-#define OFX_LOG
+//#define OFX_LOG
 
 namespace OFX {
 namespace Log {
