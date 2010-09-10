@@ -12,13 +12,14 @@ int Vertex::_count = 0;
 std::ostream& Vertex::exportDotDebug( std::ostream& os ) const
 {
 	std::ostringstream s;
-	s << subDotEntry( "label", getName() ) << ", ";
+	s << subDotEntry( "label", getName() );
 	if( ! isFake() )
 	{
-		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() ) << ", ";
+		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() );
 	}
-	s << subDotEntry( "localMemory", getProcessOptions()._localInfos._memory ) << ", ";
+	s << subDotEntry( "localMemory", getProcessOptions()._localInfos._memory );
 	s << subDotEntry( "globalMemory", getProcessOptions()._globalInfos._memory );
+	s << subDotEntry( "time", getProcessOptions()._time );
 
 	os << "[" << std::endl;
 	os << dotEntry( "type", "Node" ) << ", " << std::endl;
