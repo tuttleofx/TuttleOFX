@@ -171,8 +171,10 @@ void Graph::connect( const Node& outNode, const Attribute& inAttr )
 
 void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
+#ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
-
+#endif
+	
 	COUT( "ProcessGraph constructor" );
 	graph::ProcessGraph process( *this, nodes );
 	COUT( "ProcessGraph process" );

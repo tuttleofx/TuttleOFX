@@ -44,7 +44,11 @@ void ProcessGraph::relink()
 		// fake node has no ProcessNode
 		if( !v.isFake() )
 		{
+#ifdef PROCESSGRAPH_USE_LINK
+			tuttle::host::INode* origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+#else
 			const tuttle::host::INode* const origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+#endif
 			std::string key( origNode->getName() );
 			NodeMap::iterator it = _nodes.find( key );
 			tuttle::host::INode* newNode;
@@ -54,9 +58,14 @@ void ProcessGraph::relink()
 			}
 			else
 			{
+#ifdef PROCESSGRAPH_USE_LINK
+				newNode = origNode;
+				_nodes[key] = dynamic_cast<Node*>( newNode ); // link to the original node
+#else
 				newNode = origNode->clone();
 				/// @todo tuttle: no dynamic_cast here, _nodes must use tuttle::host::Node
 				_nodes.insert( key, dynamic_cast<Node*>( newNode ) ); // owns the new pointer
+#endif
 				// our vertices have a link to our Nodes
 			}
 			v.setProcessNode( newNode );
@@ -110,9 +119,9 @@ public:
 		const Vertex& v2 = _graph.targetInstance( ed2 );
 
 		bool res= v1.getProcessOptions()._globalInfos._memory < v2.getProcessOptions()._globalInfos._memory;
-		COUT_VAR2(v1.getName(), v1.getProcessOptions()._globalInfos._memory);
-		COUT_VAR2(v2.getName(), v2.getProcessOptions()._globalInfos._memory);
-		COUT_VAR(res);
+//		COUT_VAR2(v1.getName(), v1.getProcessOptions()._globalInfos._memory);
+//		COUT_VAR2(v2.getName(), v2.getProcessOptions()._globalInfos._memory);
+//		COUT_VAR(res);
 		return res;
 	}
 private:
@@ -123,8 +132,10 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 {
 	using namespace boost;
 	using namespace boost::graph;
-	COUT( "process" );
+#ifndef TUTTLE_PRODUCTION
+	TCOUT( "process" );
 	graph::exportAsDOT( "graphprocess.dot", _graph );
+#endif
 
 	// Initialize variables
 	OfxPointD renderScale = { 1.0, 1.0 };
@@ -142,25 +153,25 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	defaultOptions._renderScale = renderScale;
 	defaultOptions._renderRoI   = renderWindow;
 
-	COUT( "process begin" );
-	BOOST_FOREACH( NodeMap::value_type p, _nodes )
+	TCOUT( "process begin" );
+	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
 		p.second->begin( defaultOptions );
 	}
 
-	COUT( "process render..." );
+	TCOUT( "process render..." );
 	//--- RENDER
 	// at each frame
 	for( int t = tBegin; t <= tEnd; ++t )
 	{
 		defaultOptions._time = t;
-		COUT( "________________________________________ frame: " << t );
+		TCOUT( "________________________________________ frame: " << t );
 		InternalGraphImpl renderGraph                = _graph;
 		InternalGraphImpl::vertex_descriptor& output = renderGraph.getVertexDescriptor( _outputId );
 
-		COUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
+		TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
 
-		COUT( "---------------------------------------- set default options" );
+		TCOUT( "---------------------------------------- set default options" );
 		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
 			Vertex& v = renderGraph.instance( vd );
@@ -176,36 +187,55 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 			v.getProcessOptions()._finalNode = true;
 		}
 
-		COUT( "---------------------------------------- connectClips" );
+		TCOUT( "---------------------------------------- connectClips" );
 		graph::visitor::ConnectClips<InternalGraphImpl> connectClipsVisitor( renderGraph );
 		renderGraph.dfs( connectClipsVisitor, output );
+#ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraph );
+#endif
 
-		COUT( "---------------------------------------- preprocess 1" );
+		TCOUT( "---------------------------------------- preprocess 1" );
 		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraph );
 		renderGraph.dfs( preProcess1Visitor, output );
+#ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraph );
+#endif
 
-		COUT( "---------------------------------------- preprocess 2" );
+		TCOUT( "---------------------------------------- preprocess 2" );
 		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraph );
 		renderGraph.dfs_reverse( preProcess2Visitor ); //, output
+#ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraph );
+#endif
 
-		COUT( "---------------------------------------- preprocess 3" );
+		TCOUT( "---------------------------------------- preprocess 3" );
 		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraph );
 		renderGraph.dfs( preProcess3Visitor, output );
+#ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraph );
+#endif
 
-		COUT( "---------------------------------------- optimize graph" );
+		TCOUT( "---------------------------------------- optimize graph" );
 		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
 		renderGraph.dfs( optimizeGraphVisitor, output );
+#ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraph );
-
+#endif
+		
 		/*
+		InternalGraphImpl tmpGraph;
+		output = renderGraph.getVertexDescriptor( _outputId );
 		/// @todo tuttle: out_edges sort don't work...
-		COUT( "---------------------------------------- sorting graph" );
+		TCOUT( "---------------------------------------- sorting graph" );
 		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
+			std::vector<InternalGraphImpl::Edge> edges( boost::out_degree(vd, renderGraph.getGraph()) );
+
+			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
+			{
+				edges.push_back( renderGraph.instance(ed) );
+			}
+
 			Vertex& v = renderGraph.instance(vd);
 			COUT_X( 30, "-" );
 			std::size_t i = 0;
@@ -218,9 +248,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 				e._name += boost::lexical_cast<std::string>(e._localId); // tmp
 				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessOptions()._globalInfos._memory  );
 			}
-			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
-			boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, renderGraph.getGraph() );
-			std::sort( oe_it, oe_itEnd, OrderEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
+			std::sort( edges.begin(), edges.end(), OrderEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
 			COUT( "after sort edges of " << v.getName() );
 			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
 			{
@@ -235,30 +263,34 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 				COUT( e.getName() << " - " <<  renderGraph.targetInstance(*oe_it).getProcessOptions()._globalInfos._memory );
 			}
 		}
-		graph::exportDebugAsDOT( "graphprocess_f.dot", renderGraph );
+#ifndef TUTTLE_PRODUCTION
+		graph::exportDebugAsDOT( "graphprocess_f.dot", tmpGraph );
+#endif
 		*/
 		// remove isIdentity nodes
 
-		COUT( "---------------------------------------- process" );
+		TCOUT( "---------------------------------------- process" );
 		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraph );
 		renderGraph.dfs( processVisitor, output );
+#ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_g.dot", renderGraph );
+#endif
 
-		COUT( "---------------------------------------- postprocess" );
+		TCOUT( "---------------------------------------- postprocess" );
 		graph::visitor::PostProcess<InternalGraphImpl> postProcessVisitor( renderGraph );
 		renderGraph.dfs( postProcessVisitor, output );
 
 		// end of one frame
 		// do some clean: memory clean, as temporary solution...
-		COUT( "---------------------------------------- clearUnused" );
+		TCOUT( "---------------------------------------- clearUnused" );
 		Core::instance().getMemoryCache().clearUnused();
-		COUT_VAR( Core::instance().getMemoryCache().size() );
-		COUT_VAR( Core::instance().getMemoryCache() );
+		TCOUT_VAR( Core::instance().getMemoryCache().size() );
+		TCOUT_VAR( Core::instance().getMemoryCache() );
 
 	}
 
 	//--- END RENDER
-	BOOST_FOREACH( NodeMap::value_type p, _nodes )
+	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
 		p.second->end( defaultOptions ); // node option... or no option here ?
 	}
