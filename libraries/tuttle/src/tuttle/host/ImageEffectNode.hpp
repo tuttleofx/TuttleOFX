@@ -2,11 +2,10 @@
 #define _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 
 #include "INode.hpp"
+#include "attribute/Param.hpp"
 #include "attribute/ClipImage.hpp"
 
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
-#include <tuttle/host/ofx/attribute/OfxhAttribute.hpp>
-#include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
 
@@ -36,6 +35,8 @@ public:
 	const std::string&               getName() const                           { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
+//	const attribute::Param& getParam( const std::string& name ) const { return dynamic_cast<const attribute::Param&>( ofx::attribute::OfxhParamSet::getParam( name ) ); }
+//	attribute::Param&       getParam( const std::string& name )       { return dynamic_cast<attribute::Param&>( ofx::attribute::OfxhParamSet::getParam( name ) ); }
 
 	#ifndef SWIG
 	ImageEffectNode* clone() const
