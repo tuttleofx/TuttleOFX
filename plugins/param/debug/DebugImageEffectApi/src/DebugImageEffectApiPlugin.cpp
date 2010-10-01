@@ -197,11 +197,11 @@ void DebugImageEffectApiPlugin::changedParam( const OFX::InstanceChangedArgs& ar
 		   int maxPages;
 		   int pageRowCount;
 		   int pageColumnCount;
-		   typedef std::vector<PixelComponentEnum> PixelComponentArray;
+		   typedef std::vector<EPixelComponent> PixelComponentArray;
 		   PixelComponentArray _supportedComponents;
-		   typedef std::vector<ContextEnum> ContextArray;
+		   typedef std::vector<EContext> ContextArray;
 		   ContextArray _supportedContexts;
-		   typedef std::vector<BitDepthEnum> PixelDepthArray;
+		   typedef std::vector<EBitDepth> PixelDepthArray;
 		   PixelDepthArray _supportedPixelDepths;
 		   bool supportsProgressSuite;
 		   bool supportsTimeLineSuite;
