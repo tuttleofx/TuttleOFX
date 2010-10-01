@@ -45,6 +45,8 @@
 #include "ofxsParam.h"
 #include "ofxsInteract.h"
 #include "ofxsMessage.h"
+#include "ofxParametricParam.h"
+#include "extensions/nuke/camera.h"
 
 #include <ofxProgress.h>
 #include <ofxTimeLine.h>
@@ -389,6 +391,8 @@ public:
 	const PropertySet& getPropertySet() const { return _effectProps; }
 
 	PropertySet& getPropertySet() { return _effectProps; }
+
+	OfxImageEffectHandle getImageEffectHandle() { return _effectHandle; }
 
 	/** @brief, set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
@@ -961,6 +965,8 @@ public:
 	 * The returned clip \em must not be deleted by the client code. This is all managed by the ImageEffect itself.
 	 */
 	Clip* fetchClip( const std::string& name );
+
+	CameraParam* fetchCameraParam( const std::string& name );
 
 	/** @brief does the host want us to abort rendering? */
 	bool abort( void ) const;
