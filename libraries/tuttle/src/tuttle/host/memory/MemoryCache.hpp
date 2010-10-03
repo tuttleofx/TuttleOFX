@@ -15,36 +15,13 @@ namespace memory {
 class MemoryCache : public IMemoryCache
 {
 typedef MemoryCache This;
-MemoryCache( const MemoryCache& pool );
 
 public:
+	MemoryCache( const MemoryCache& cache ) : _map(cache._map) {}
 	MemoryCache() {}
 	~MemoryCache() {}
 
 private:
-	struct Key
-	{
-		typedef Key This;
-		Key( const std::string& identifier, const double& time )
-			: _identifier( identifier )
-			, _time( time )
-		{}
-		bool operator<( const This& ) const;
-		bool operator==( const This& v ) const;
-		std::size_t  getHash() const;
-
-		std::string _identifier;
-		double _time;
-	};
-	friend std::ostream& operator<<( std::ostream& os, const Key& v );
-	struct KeyHash : std::unary_function<Key, std::size_t>
-	{
-		std::size_t operator()( const Key& p ) const
-		{
-			return p.getHash();
-		}
-
-	};
 	typedef boost::unordered_map<Key, CACHE_ELEMENT, KeyHash> MAP;
 	//	typedef std::map<Key, CACHE_ELEMENT> MAP;
 	MAP _map;
