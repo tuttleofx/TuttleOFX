@@ -2,54 +2,41 @@
 #define _TUTTLE_PROCESSVISITORS_HPP_
 
 #include "ProcessOptions.hpp"
-#include <iostream>
-#include <vector>
+
+#include <tuttle/host/memory/MemoryCache.hpp>
+
 #include <boost/graph/properties.hpp>
 #include <boost/graph/visitors.hpp>
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/breadth_first_search.hpp>
+#include <boost/foreach.hpp>
+
+#include <iostream>
+#include <vector>
 
 namespace tuttle {
 namespace host {
 namespace graph {
-namespace visitor {
 
 template<class TGraph>
-class ConnectClips : public boost::default_dfs_visitor
+inline void connectClips( TGraph& graph )
 {
-public:
-	typedef typename TGraph::GraphContainer GraphContainer;
-	typedef typename TGraph::Vertex Vertex;
-	typedef typename TGraph::Edge Edge;
-
-	ConnectClips( TGraph& graph )
-		: _graph( graph )
-	{}
-
-	template<class EdgeDescriptor, class Graph>
-	void examine_edge( EdgeDescriptor e, Graph& g )
+	BOOST_FOREACH( typename TGraph::edge_descriptor ed, graph.getEdges() )
 	{
-		Edge& edge           = _graph.instance( e );
-		Vertex& vertexSource = _graph.sourceInstance( e );
-		Vertex& vertexDest   = _graph.targetInstance( e );
+		typename TGraph::Edge& edge           = graph.instance( ed );
+		typename TGraph::Vertex& vertexSource = graph.sourceInstance( ed );
+		typename TGraph::Vertex& vertexDest   = graph.targetInstance( ed );
 
-		if( vertexDest.isFake() || vertexSource.isFake() )
-			return;
-
-//		TCOUT( "examine_edge" << vertexSource );
-//		TCOUT( "[CONNECT] examine_edge "
-//		    << vertexSource
-//		    << " TO "
-//		    << vertexDest << "." << edge.getInAttrName() );
-
-		INode& sourceNode = *vertexSource.getProcessNode();
-		INode& targetNode = *vertexDest.getProcessNode();
-		sourceNode.connect( targetNode, sourceNode.getAttribute( edge.getInAttrName() ) );
+		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
+		{
+			INode& sourceNode = *vertexSource.getProcessNode();
+			INode& targetNode = *vertexDest.getProcessNode();
+			sourceNode.connect( targetNode, sourceNode.getAttribute( edge.getInAttrName() ) );
+		}
 	}
+}
 
-private:
-	TGraph& _graph;
-};
+namespace visitor {
 
 template<class TGraph>
 class PreProcess1 : public boost::default_dfs_visitor
@@ -63,18 +50,6 @@ public:
 	{}
 
 	template<class VertexDescriptor, class Graph>
-	void discover_vertex( VertexDescriptor v, Graph& g )
-	{
-		Vertex& vertex = _graph.instance( v );
-
-		TCOUT( "[PREPROCESS 1] discover_vertex " << vertex );
-		if( vertex.isFake() )
-			return;
-
-		vertex.getProcessNode()->preProcess1_initialize( vertex.getProcessOptions() );
-	}
-
-	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
@@ -83,7 +58,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess1_finish( vertex.getProcessOptions() );
+		vertex.getProcessNode()->preProcess1( vertex.getProcessOptions() );
 	}
 
 private:
@@ -91,7 +66,7 @@ private:
 };
 
 template<class TGraph>
-class PreProcess2 : public boost::default_dfs_visitor // default_bfs_visitor
+class PreProcess2 : public boost::default_dfs_visitor
 {
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
@@ -102,18 +77,6 @@ public:
 	{}
 
 	template<class VertexDescriptor, class Graph>
-	void discover_vertex( VertexDescriptor v, Graph& g )
-	{
-		Vertex& vertex = _graph.instance( v );
-
-		TCOUT( "[PREPROCESS 2] discover_vertex " << vertex );
-		if( vertex.isFake() )
-			return;
-
-		vertex.getProcessNode()->preProcess2_rinitialize( vertex.getProcessOptions() );
-	}
-
-	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
@@ -122,7 +85,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess2_rfinish( vertex.getProcessOptions() );
+		vertex.getProcessNode()->preProcess2_reverse( vertex.getProcessOptions() );
 	}
 
 private:
@@ -139,19 +102,6 @@ public:
 	PreProcess3( TGraph& graph )
 		: _graph( graph )
 	{}
-
-	template<class VertexDescriptor, class Graph>
-	void discover_vertex( VertexDescriptor v, Graph& g )
-	{
-		Vertex& vertex = _graph.instance( v );
-
-		TCOUT( "[PREPROCESS 3] discover_vertex " << vertex );
-		if( vertex.isFake() )
-			return;
-
-		vertex.getProcessNode()->preProcess3_initialize( vertex.getProcessOptions() );
-	}
-
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
@@ -161,7 +111,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess3_finish( vertex.getProcessOptions() );
+		vertex.getProcessNode()->preProcess3( vertex.getProcessOptions() );
 	}
 
 private:
@@ -237,22 +187,35 @@ public:
 
 	Process( TGraph& graph )
 		: _graph( graph )
-	{}
+		, _result() // ( tuttle::host::Core::instance().getMemoryPool() )
+	{
+	}
 
 	template<class VertexDescriptor, class Graph>
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
-
 //		COUT( "[PROCESS] finish_vertex " << vertex );
+
+		// do nothing on the empty output node
+		// it's just a link to final nodes
 		if( vertex.isFake() )
 			return;
 
+		// check if abort ?
+
+		// launch the process
 		vertex.getProcessNode()->process( vertex.getProcessOptions() );
+		
+		if( vertex.getProcessOptions()._finalNode )
+		{
+//			_result.put( vertex._name, vertex._time, vertex._image);
+		}
 	}
 
 private:
 	TGraph& _graph;
+	memory::MemoryCache _result;
 };
 
 template<class TGraph>

@@ -322,7 +322,7 @@ public:
 	virtual void endInstanceEditAction() OFX_EXCEPTION_SPEC;
 
 	// render action
-	virtual void beginRenderAction( OfxTime   startFrame,
+	virtual void beginSequenceRenderAction( OfxTime   startFrame,
 	                                OfxTime   endFrame,
 	                                OfxTime   step,
 	                                bool      interactive,
@@ -333,7 +333,7 @@ public:
 	                           const OfxRectI&    renderRoI,
 	                           OfxPointD          renderScale ) OFX_EXCEPTION_SPEC;
 
-	virtual void endRenderAction( OfxTime   startFrame,
+	virtual void endSequenceRenderAction( OfxTime   startFrame,
 	                              OfxTime   endFrame,
 	                              OfxTime   step,
 	                              bool      interactive,

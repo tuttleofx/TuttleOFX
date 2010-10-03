@@ -295,7 +295,7 @@ void ImageEffectNode::timelineGetBounds( double& t1, double& t2 )
 }
 
 /// override to get frame range of the effect
-void ImageEffectNode::beginRenderAction( OfxTime   startFrame,
+void ImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
                                          OfxTime   endFrame,
                                          OfxTime   step,
                                          bool      interactive,
@@ -303,7 +303,7 @@ void ImageEffectNode::beginRenderAction( OfxTime   startFrame,
 {
 	_frameRange.x = startFrame;
 	_frameRange.y = endFrame;
-	OfxhImageEffectNode::beginRenderAction( startFrame, endFrame, step, interactive, renderScale );
+	OfxhImageEffectNode::beginSequenceRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
 
 void ImageEffectNode::checkClipsConnections() const
@@ -525,17 +525,17 @@ void ImageEffectNode::validBitDepthConnections() const
 	}
 }
 
-void ImageEffectNode::begin( graph::ProcessOptions& processOptions )
+void ImageEffectNode::beginSequence( graph::ProcessOptions& processOptions )
 {
 //	TCOUT( "begin: " << getName() );
-	beginRenderAction( processOptions._startFrame,
+	beginSequenceRenderAction( processOptions._startFrame,
 	                   processOptions._endFrame,
 	                   processOptions._step,
 	                   processOptions._interactive,
 	                   processOptions._renderScale );
 }
 
-void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions )
+void ImageEffectNode::preProcess1( graph::ProcessOptions& processOptions )
 {
 //	TCOUT( "preProcess1_finish: " << getName() << " at time: " << processOptions._time );
 	setCurrentTime( processOptions._time );
@@ -557,7 +557,7 @@ void ImageEffectNode::preProcess1_finish( graph::ProcessOptions& processOptions 
 //	TCOUT_VAR( rod );
 }
 
-void ImageEffectNode::preProcess2_rfinish( graph::ProcessOptions& processOptions )
+void ImageEffectNode::preProcess2_reverse( graph::ProcessOptions& processOptions )
 {
 //	TCOUT( "preProcess2_finish: " << getName() << " at time: " << processOptions._time );
 
@@ -571,7 +571,7 @@ void ImageEffectNode::preProcess2_rfinish( graph::ProcessOptions& processOptions
 //	TCOUT_VAR( processOptions._renderRoI );
 }
 
-void ImageEffectNode::preProcess3_finish( graph::ProcessOptions& processOptions )
+void ImageEffectNode::preProcess3( graph::ProcessOptions& processOptions )
 {
 //	TCOUT( "preProcess3_finish: " << getName() << " at time: " << processOptions._time );
 	maximizeBitDepthFromReadsToWrites();
@@ -667,10 +667,10 @@ void ImageEffectNode::postProcess( graph::ProcessOptions& processOptions )
 //	TCOUT( "postProcess: " << getName() );
 }
 
-void ImageEffectNode::end( graph::ProcessOptions& processOptions )
+void ImageEffectNode::endSequence( graph::ProcessOptions& processOptions )
 {
 //	TCOUT( "end: " << getName() );
-	endRenderAction( processOptions._startFrame,
+	endSequenceRenderAction( processOptions._startFrame,
 	                 processOptions._endFrame,
 	                 processOptions._step,
 	                 processOptions._interactive,
