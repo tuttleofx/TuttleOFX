@@ -16,8 +16,31 @@ namespace memory {
 // configure the cache with this element
 // CACHE_ELEMENT should be a smart_ptr of some kind
 // pointer will be stored in a container so no auto_ptr is allowed
-
 typedef ::boost::shared_ptr<tuttle::host::attribute::Image> CACHE_ELEMENT; ///< @todo temporary solution..
+
+struct Key
+{
+	typedef Key This;
+	Key( const std::string& identifier, const double& time )
+		: _identifier( identifier )
+		, _time( time )
+	{}
+	bool operator<( const This& ) const;
+	bool operator==( const This& v ) const;
+	std::size_t  getHash() const;
+
+	std::string _identifier;
+	double _time;
+	friend std::ostream& operator<<( std::ostream& os, const Key& v );
+};
+struct KeyHash : std::unary_function<Key, std::size_t>
+{
+	std::size_t operator()( const Key& p ) const
+	{
+		return p.getHash();
+	}
+
+};
 //typedef IPoolDataPtr CACHE_ELEMENT;
 
 class IMemoryCache

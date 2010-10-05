@@ -9,27 +9,6 @@ namespace tuttle {
 namespace host {
 namespace memory {
 
-bool MemoryCache::Key::operator<( const Key& other ) const
-{
-	if( _time != other._time )
-		return _time < other._time;
-	return _identifier < other._identifier;
-}
-
-bool MemoryCache::Key::operator==( const Key& v ) const
-{
-	return _time == v._time && _identifier == v._identifier;
-}
-
-std::size_t MemoryCache::Key::getHash() const
-{
-	std::size_t seed = 0;
-
-	boost::hash_combine( seed, _time );
-	boost::hash_combine( seed, _identifier );
-	return seed;
-}
-
 void MemoryCache::put( const std::string& identifier, const double time, CACHE_ELEMENT pData )
 {
 	_map[Key( identifier, time )] = pData;
@@ -135,13 +114,6 @@ void MemoryCache::clearAll()
 {
 	COUT_X( 5, " - MEMORYCACHE::CLEARALL - " );
 	_map.clear();
-}
-
-std::ostream& operator<<( std::ostream& os, const MemoryCache::Key& v )
-{
-	os << "[identifier:" << v._identifier
-	   << ", time:" << v._time << "]";
-	return os;
 }
 
 std::ostream& operator<<( std::ostream& os, const MemoryCache& v )

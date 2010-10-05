@@ -92,14 +92,14 @@ public:
 
 	void debugOutputImage( const OfxTime time ) const;
 
-	void begin( graph::ProcessOptions& processOptions );
-	void preProcess1_finish( graph::ProcessOptions& processOptions );
-	void preProcess2_rfinish( graph::ProcessOptions& processOptions );
-	void preProcess3_finish( graph::ProcessOptions& processOptions );
+	void beginSequence( graph::ProcessOptions& processOptions );
+	void preProcess1( graph::ProcessOptions& processOptions );
+	void preProcess2_reverse( graph::ProcessOptions& processOptions );
+	void preProcess3( graph::ProcessOptions& processOptions );
 	void preProcess_infos( graph::ProcessInfos& nodeInfos ) const;
 	void process( graph::ProcessOptions& processOptions );
 	void postProcess( graph::ProcessOptions& processOptions );
-	void end( graph::ProcessOptions& processOptions );
+	void endSequence( graph::ProcessOptions& processOptions );
 
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 	#endif
@@ -264,7 +264,7 @@ public:
 		_frameRange.y = end;
 	}
 
-	void beginRenderAction( OfxTime   startFrame,
+	void beginSequenceRenderAction( OfxTime   startFrame,
 	                        OfxTime   endFrame,
 	                        OfxTime   step,
 	                        bool      interactive,

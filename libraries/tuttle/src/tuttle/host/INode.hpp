@@ -44,15 +44,14 @@ public:
 	 * @brief Begin of the a new frame range to process. Initilize this node.
 	 * @remark depth first search
 	 */
-	virtual void begin( graph::ProcessOptions& processOptions ) = 0;
+	virtual void beginSequence( graph::ProcessOptions& processOptions ) = 0;
 	/**
 	 * @group preProcess1
 	 * @brief Initialization pass to propagate informations from inputs to outputs.
 	 * @remark depth first search
 	 * @{
 	 */
-	virtual void preProcess1_initialize( graph::ProcessOptions& processOptions ) {}
-	virtual void preProcess1_finish( graph::ProcessOptions& processOptions )     {}
+	virtual void preProcess1( graph::ProcessOptions& processOptions )     {}
 	/**
 	 * @}
 	 * @group preProcess2
@@ -60,8 +59,7 @@ public:
 	 * @remark breadth first search
 	 * @{
 	 */
-	virtual void preProcess2_rinitialize( graph::ProcessOptions& processOptions ) {}
-	virtual void preProcess2_rfinish( graph::ProcessOptions& processOptions )     {}
+	virtual void preProcess2_reverse( graph::ProcessOptions& processOptions )     {}
 	/**
 	 * @}
 	 * @group preProcess3
@@ -69,8 +67,7 @@ public:
 	 * @remark depth first search
 	 * @{
 	 */
-	virtual void preProcess3_initialize( graph::ProcessOptions& processOptions ) {}
-	virtual void preProcess3_finish( graph::ProcessOptions& processOptions )     {}
+	virtual void preProcess3( graph::ProcessOptions& processOptions )     {}
 	/**
 	 * @}
 	 * @brief Fill ProcessInfo to compute statistics for the current process,
@@ -92,7 +89,7 @@ public:
 	 * @brief End of the whole frame range process, now finalize this node.
 	 * @remark depth first search
 	 */
-	virtual void end( graph::ProcessOptions& processOptions ) = 0;
+	virtual void endSequence( graph::ProcessOptions& processOptions ) = 0;
 	#endif
 };
 

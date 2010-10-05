@@ -610,7 +610,7 @@ void OfxhImageEffectNode::endInstanceEditAction() OFX_EXCEPTION_SPEC
 		BOOST_THROW_EXCEPTION( OfxhException( status ) );
 }
 
-void OfxhImageEffectNode::beginRenderAction( OfxTime   startFrame,
+void OfxhImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
                                              OfxTime   endFrame,
                                              OfxTime   step,
                                              bool      interactive,
@@ -670,7 +670,7 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 		BOOST_THROW_EXCEPTION( OfxhException( status, "Error in ActionRender on node \"" + this->getName() + "\" at time " + boost::lexical_cast<std::string>( time ) + "." ) );
 }
 
-void OfxhImageEffectNode::endRenderAction( OfxTime   startFrame,
+void OfxhImageEffectNode::endSequenceRenderAction( OfxTime   startFrame,
                                            OfxTime   endFrame,
                                            OfxTime   step,
                                            bool      interactive,

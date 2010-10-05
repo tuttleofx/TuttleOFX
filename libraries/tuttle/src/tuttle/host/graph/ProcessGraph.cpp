@@ -156,7 +156,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	TCOUT( "process begin" );
 	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
-		p.second->begin( defaultOptions );
+		p.second->beginSequence( defaultOptions );
 	}
 
 	TCOUT( "process render..." );
@@ -166,60 +166,64 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	{
 		defaultOptions._time = t;
 		TCOUT( "________________________________________ frame: " << t );
-		InternalGraphImpl renderGraph                = _graph;
-		InternalGraphImpl::vertex_descriptor& output = renderGraph.getVertexDescriptor( _outputId );
-
+		// use an internal copy for inside the process
+		InternalGraphImpl renderGraph = _graph;
 		TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
+		/// @todo tuttle: compute time range for each node
+		/// @todo tuttle: create a new graph with time information
+		InternalGraphImpl renderGraphAtTime = renderGraph;
+		// fill renderGraph from _graph with each node deployed at all times
+
+		InternalGraphImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( _outputId );
 
 		TCOUT( "---------------------------------------- set default options" );
-		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraph.getVertices() )
+		BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
 		{
-			Vertex& v = renderGraph.instance( vd );
+			Vertex& v = renderGraphAtTime.instance( vd );
 
 			v.setProcessOptions( defaultOptions );
-			v.getProcessOptions()._inDegree  = renderGraph.getInDegree( vd );
-			v.getProcessOptions()._outDegree = renderGraph.getOutDegree( vd );
+			v.getProcessOptions()._inDegree  = renderGraphAtTime.getInDegree( vd );
+			v.getProcessOptions()._outDegree = renderGraphAtTime.getOutDegree( vd );
 		}
 		// for each final nodes
-		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( output, renderGraph.getGraph() ) )
+		BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )
 		{
-			Vertex& v = renderGraph.targetInstance( ed );
+			Vertex& v = renderGraphAtTime.targetInstance( ed );
 			v.getProcessOptions()._finalNode = true;
 		}
 
 		TCOUT( "---------------------------------------- connectClips" );
-		graph::visitor::ConnectClips<InternalGraphImpl> connectClipsVisitor( renderGraph );
-		renderGraph.dfs( connectClipsVisitor, output );
+		connectClips<InternalGraphImpl>( renderGraphAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraph );
+		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 1" );
-		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraph );
-		renderGraph.dfs( preProcess1Visitor, output );
+		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraphAtTime );
+		renderGraphAtTime.dfs( preProcess1Visitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraph );
+		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 2" );
-		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraph );
-		renderGraph.dfs_reverse( preProcess2Visitor ); //, output
+		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraphAtTime );
+		renderGraphAtTime.dfs_reverse( preProcess2Visitor ); //, output
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraph );
+		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 3" );
-		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraph );
-		renderGraph.dfs( preProcess3Visitor, output );
+		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraphAtTime );
+		renderGraphAtTime.dfs( preProcess3Visitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraph );
+		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- optimize graph" );
-		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraph );
-		renderGraph.dfs( optimizeGraphVisitor, output );
+		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraphAtTime );
+		renderGraphAtTime.dfs( optimizeGraphVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraph );
+		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraphAtTime );
 #endif
 		
 		/*
@@ -270,15 +274,15 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		// remove isIdentity nodes
 
 		TCOUT( "---------------------------------------- process" );
-		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraph );
-		renderGraph.dfs( processVisitor, output );
+		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraphAtTime );
+		renderGraphAtTime.dfs( processVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_g.dot", renderGraph );
+		graph::exportDebugAsDOT( "graphprocess_g.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- postprocess" );
-		graph::visitor::PostProcess<InternalGraphImpl> postProcessVisitor( renderGraph );
-		renderGraph.dfs( postProcessVisitor, output );
+		graph::visitor::PostProcess<InternalGraphImpl> postProcessVisitor( renderGraphAtTime );
+		renderGraphAtTime.dfs( postProcessVisitor, outputAtTime );
 
 		// end of one frame
 		// do some clean: memory clean, as temporary solution...
@@ -292,7 +296,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	//--- END RENDER
 	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
-		p.second->end( defaultOptions ); // node option... or no option here ?
+		p.second->endSequence( defaultOptions ); // node option... or no option here ?
 	}
 
 }
