@@ -128,7 +128,7 @@ private:
 	const TGraph& _graph;
 };
 
-void ProcessGraph::process( const int tBegin, const int tEnd )
+memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 {
 	using namespace boost;
 	using namespace boost::graph;
@@ -159,6 +159,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		p.second->beginSequence( defaultOptions );
 	}
 
+	memory::MemoryCache result;
 	TCOUT( "process render..." );
 	//--- RENDER
 	// at each frame
@@ -169,10 +170,16 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		// use an internal copy for inside the process
 		InternalGraphImpl renderGraph = _graph;
 		TCOUT( "________________________________________ output node : " << renderGraph.getVertex( _outputId ).getName() );
-		/// @todo tuttle: compute time range for each node
+
 		/// @todo tuttle: create a new graph with time information
 		InternalGraphImpl renderGraphAtTime = renderGraph;
-		// fill renderGraph from _graph with each node deployed at all times
+//		InternalGraphImpl renderGraphAtTime;
+//		//fill renderGraph from _graph with each node deployed at all times
+//		graph::visitor::DeployTime<InternalGraphImpl> deployTimeVisitor( renderGraph, renderGraphAtTime );
+//		renderGraphAtTime.dfs( deployTimeVisitor, renderGraphAtTime.getVertexDescriptor( _outputId ) );
+//#ifndef TUTTLE_PRODUCTION
+//		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraph );
+//#endif
 
 		InternalGraphImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( _outputId );
 
@@ -195,35 +202,35 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 		TCOUT( "---------------------------------------- connectClips" );
 		connectClips<InternalGraphImpl>( renderGraphAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraphAtTime );
+		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 1" );
 		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraphAtTime );
 		renderGraphAtTime.dfs( preProcess1Visitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
+		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 2" );
 		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraphAtTime );
 		renderGraphAtTime.dfs_reverse( preProcess2Visitor ); //, output
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
+		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 3" );
 		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraphAtTime );
 		renderGraphAtTime.dfs( preProcess3Visitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraphAtTime );
+		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- optimize graph" );
 		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraphAtTime );
 		renderGraphAtTime.dfs( optimizeGraphVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraphAtTime );
+		graph::exportDebugAsDOT( "graphprocess_f.dot", renderGraphAtTime );
 #endif
 		
 		/*
@@ -268,16 +275,16 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 			}
 		}
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_f.dot", tmpGraph );
+		graph::exportDebugAsDOT( "graphprocess_g.dot", tmpGraph );
 #endif
 		*/
 		// remove isIdentity nodes
 
 		TCOUT( "---------------------------------------- process" );
-		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraphAtTime );
+		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraphAtTime, result );
 		renderGraphAtTime.dfs( processVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_g.dot", renderGraphAtTime );
+		graph::exportDebugAsDOT( "graphprocess_h.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- postprocess" );
@@ -298,7 +305,7 @@ void ProcessGraph::process( const int tBegin, const int tEnd )
 	{
 		p.second->endSequence( defaultOptions ); // node option... or no option here ?
 	}
-
+	return result;
 }
 
 }

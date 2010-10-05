@@ -525,6 +525,38 @@ void ImageEffectNode::validBitDepthConnections() const
 	}
 }
 
+
+INode::InputsTimeMap ImageEffectNode::getFramesNeeded( const OfxTime time )
+{
+	const bool temporalClipAccess = this->getProperties().fetchIntProperty( kOfxImageEffectPropTemporalClipAccess ).getValue();
+	InputsTimeMap result;
+	if( temporalClipAccess )
+	{
+		ClipRangeMap clipMap;
+		getFramesNeededAction( time, clipMap );
+		BOOST_FOREACH( const ClipRangeMap::value_type& v, clipMap )
+		{
+			const std::string fullname = v.first->getFullName();
+			BOOST_FOREACH( const ClipRangeMap::value_type::second_type::value_type& range, v.second )
+			{
+				for( OfxTime t = range.min; t < range.max; t += 1.0 )
+				{
+					result[ fullname ].insert(t);
+				}
+			}
+		}
+	}
+	else
+	{
+		BOOST_FOREACH( ClipImageVector::const_reference v, _clipsByOrder )
+		{
+			result[v.getFullName()].insert(time);
+		}
+	}
+	return result;
+}
+
+
 void ImageEffectNode::beginSequence( graph::ProcessOptions& processOptions )
 {
 //	TCOUT( "begin: " << getName() );

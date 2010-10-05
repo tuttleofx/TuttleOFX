@@ -7,6 +7,7 @@
 #include <tuttle/host/graph/Vertex.hpp>
 #include <tuttle/host/graph/Edge.hpp>
 #include <tuttle/host/attribute/Attribute.hpp>
+#include <tuttle/host/memory/MemoryCache.hpp>
 #include <tuttle/common/utils/global.hpp>
 
 #include <boost/ptr_container/ptr_map.hpp>

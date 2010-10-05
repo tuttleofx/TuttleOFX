@@ -92,6 +92,7 @@ public:
 
 	void debugOutputImage( const OfxTime time ) const;
 
+	InputsTimeMap getFramesNeeded( const OfxTime time );
 	void beginSequence( graph::ProcessOptions& processOptions );
 	void preProcess1( graph::ProcessOptions& processOptions );
 	void preProcess2_reverse( graph::ProcessOptions& processOptions );

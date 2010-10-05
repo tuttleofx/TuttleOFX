@@ -954,8 +954,8 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 /**
  * see how many frames are needed from each clip to render the indicated frame
  */
-void OfxhImageEffectNode::getFrameNeededAction( OfxTime   time,
-                                                RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC
+void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
+                                                ClipRangeMap& rangeMap ) const OFX_EXCEPTION_SPEC
 {
 	OfxStatus status = kOfxStatReplyDefault;
 	property::OfxhSet outArgs;

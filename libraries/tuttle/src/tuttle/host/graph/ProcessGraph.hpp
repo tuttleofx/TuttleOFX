@@ -32,7 +32,7 @@ public:
 	ProcessGraph( Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
 	~ProcessGraph();
 
-	void process( const int tBegin, const int tEnd );
+	memory::MemoryCache process( const int tBegin, const int tEnd );
 
 private:
 	void relink();

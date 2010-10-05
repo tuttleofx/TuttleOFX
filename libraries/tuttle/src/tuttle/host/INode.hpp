@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 
 namespace tuttle {
 namespace host {
@@ -39,6 +40,10 @@ public:
 
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
+
+	typedef std::map<std::string, std::set<OfxTime> > InputsTimeMap;
+
+	virtual InputsTimeMap getFramesNeeded( const OfxTime time ) = 0;
 
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.

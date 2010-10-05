@@ -38,6 +38,42 @@ inline void connectClips( TGraph& graph )
 
 namespace visitor {
 
+/**
+ * @brief Create a new version of a graph with nodes deployed over time.
+ *
+ * Compute kOfxImageEffectActionGetFramesNeeded for each node if kOfxImageEffectPropTemporalClipAccess is true.
+ */
+template<class TGraph>
+class DeployTime : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+
+	DeployTime( const TGraph& graph, TGraph& graphAtTime )
+		: _graph( graph )
+		, _graphAtTime( _graphAtTime )
+	{}
+
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TCOUT( "[DEPLOY TIME] " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		INode::InputsTimeMap map = vertex.getProcessNode()->getFramesNeeded();
+
+		vertex.getProcessNode()->preProcess1( vertex.getProcessOptions() );
+	}
+
+private:
+	const TGraph& _graph;
+	TGraph& _graphAtTime;
+};
+
 template<class TGraph>
 class PreProcess1 : public boost::default_dfs_visitor
 {
@@ -185,9 +221,9 @@ public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
 
-	Process( TGraph& graph )
+	Process( TGraph& graph, memory::MemoryCache& result )
 		: _graph( graph )
-		, _result() // ( tuttle::host::Core::instance().getMemoryPool() )
+		, _result( result )
 	{
 	}
 
@@ -215,7 +251,7 @@ public:
 
 private:
 	TGraph& _graph;
-	memory::MemoryCache _result;
+	memory::MemoryCache& _result;
 };
 
 template<class TGraph>

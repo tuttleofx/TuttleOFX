@@ -71,7 +71,7 @@ class OfxhImageEffectNode : public OfxhImageEffectNodeBase
 public:
 	typedef OfxhImageEffectNode This;
 	/// a map used to specify needed frame ranges on set of clips
-	typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > RangeMap;
+	typedef std::map<attribute::OfxhClipImage*, std::vector<OfxRangeD> > ClipRangeMap;
 
 	#ifndef SWIG
 
@@ -363,8 +363,8 @@ public:
 	                                        std::map<attribute::OfxhClipImage*, OfxRectD>& rois ) const OFX_EXCEPTION_SPEC;
 
 	// get frames needed to render the given frame
-	virtual void getFrameNeededAction( OfxTime   time,
-	                                   RangeMap& rangeMap ) const OFX_EXCEPTION_SPEC;
+	virtual void getFramesNeededAction( OfxTime   time,
+	                                   ClipRangeMap& rangeMap ) const OFX_EXCEPTION_SPEC;
 
 	// is identity
 	virtual void isIdentityAction( OfxTime&           time,
