@@ -65,10 +65,10 @@ public:
 	void connect( const Node& outNode, const Attribute& inAttr );
 	//	void unconnectNode( const Node& node );
 
-	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
-	void compute( const std::list<std::string>& nodes, const int time ) { compute( nodes, time, time ); }
+	memory::MemoryCache compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
+	memory::MemoryCache compute( const std::list<std::string>& nodes, const int time ) { return compute( nodes, time, time ); }
 
-	void compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
+	memory::MemoryCache compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> nodesStr;
 		//nodesStr.reserve(nodes.size());
@@ -76,31 +76,31 @@ public:
 		{
 			nodesStr.push_back( n->getName() );
 		}
-		compute( nodesStr, tBegin, tEnd );
+		return compute( nodesStr, tBegin, tEnd );
 	}
 
-	void compute( const std::list<Node*>& nodes, const int time ) { compute( nodes, time, time ); }
+	memory::MemoryCache compute( const std::list<Node*>& nodes, const int time ) { return compute( nodes, time, time ); }
 
-	void compute( const std::string& node, const int tBegin, const int tEnd )
+	memory::MemoryCache compute( const std::string& node, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> outputs;
 		outputs.push_back( node );
-		compute( outputs, tBegin, tEnd );
+		return compute( outputs, tBegin, tEnd );
 	}
 
-	void compute( const Node& node, const int tBegin, const int tEnd )
+	memory::MemoryCache compute( const Node& node, const int tBegin, const int tEnd )
 	{
-		compute( node.getName(), tBegin, tEnd );
+		return compute( node.getName(), tBegin, tEnd );
 	}
 
-	void compute( const std::string& node, const int time )
+	memory::MemoryCache compute( const std::string& node, const int time )
 	{
-		compute( node, time, time );
+		return compute( node, time, time );
 	}
 
-	void compute( const Node& node, const int time )
+	memory::MemoryCache compute( const Node& node, const int time )
 	{
-		compute( node.getName(), time );
+		return compute( node.getName(), time );
 	}
 
 	const InternalGraphImpl& getGraph() const { return _graph; }

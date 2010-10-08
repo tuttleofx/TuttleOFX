@@ -169,7 +169,7 @@ void Graph::connect( const Node& outNode, const Attribute& inAttr )
 //void Graph::unconnectNode( const Node& node )
 //{}
 
-void Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
+memory::MemoryCache Graph::compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd )
 {
 #ifndef TUTTLE_PRODUCTION
 	graph::exportAsDOT( "graph.dot", _graph );
@@ -178,7 +178,7 @@ void Graph::compute( const std::list<std::string>& nodes, const int tBegin, cons
 	COUT( "ProcessGraph constructor" );
 	graph::ProcessGraph process( *this, nodes );
 	COUT( "ProcessGraph process" );
-	process.process( tBegin, tEnd );
+	return process.process( tBegin, tEnd );
 }
 
 std::list<Graph::Node*> Graph::getNodesByContext( const std::string& context )

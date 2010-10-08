@@ -66,7 +66,11 @@ public:
 
 		INode::InputsTimeMap map = vertex.getProcessNode()->getFramesNeeded();
 
-		vertex.getProcessNode()->preProcess1( vertex.getProcessOptions() );
+		BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, map )
+		{
+			//v.first;
+			//v.second;
+		}
 	}
 
 private:
