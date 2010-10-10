@@ -1,82 +1,32 @@
 #ifndef _TUTTLE_VERTEX_HPP_
 #define _TUTTLE_VERTEX_HPP_
 
-#include <iostream>
-
-#include <tuttle/host/INode.hpp>
-#include <tuttle/common/utils/global.hpp>
+#include "IVertex.hpp"
 
 namespace tuttle {
 namespace host {
 namespace graph {
 
-class Vertex
+class Vertex : public IVertex
 {
 public:
-	Vertex( const std::string& name = "Undefined" )
-		: _name( name )
-		, _processNode( NULL )
-		, _fake( true )
-		, _used( true )
-		, _id( _count++ )
-	{}
-
-	Vertex( const std::string& name,
-	        INode&              processNode )
-		: _name( name )
-		, _processNode( &processNode )
-		, _fake( false )
-		, _used( true )
-		, _id( _count++ )
-	{}
-
-	Vertex( const Vertex& v )
-	{
-		this->operator=( v );
-		_id = _count++;
-	}
-
-	virtual ~Vertex()
-	{}
+	Vertex( const std::string& name = "Undefined" );
+	Vertex( const std::string& name, INode& processNode );
+	Vertex( const Vertex& v );
 
 	Vertex& operator=( const Vertex& v )
 	{
-		if( this == &v )
-			return *this;
-		_name           = v._name;
-		_processNode    = v._processNode;
-		_processOptions = v._processOptions;
-		_fake           = v._fake;
-		_used           = v._used;
+		IVertex::operator=(v);
+		_times           = v._times;
 		return *this;
 	}
-
-	bool                  isFake() const                                     { return _fake; }
-	void                  setUsed( const bool used = true )                  { _used = used; }
-	bool                  isUsed() const                                     { return _used; }
-	const std::string&    getName() const                                    { return _name; }
-	INode*                 getProcessNode()                                   { return _processNode; }
-	const INode* const     getProcessNode() const                             { return _processNode; }
-	void                  setProcessNode( INode* p )                          { _processNode = p; }
-	ProcessOptions&       getProcessOptions()                                { return _processOptions; }
-	const ProcessOptions& getProcessOptions() const                          { return _processOptions; }
-	void                  setProcessOptions( const ProcessOptions& options ) { _processOptions = options; }
 
 	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 
 public:
-	std::string _name;
-
-private:
-	INode* _processNode;
-	graph::ProcessOptions _processOptions;
-	bool _fake;
-	bool _used;
-	static int _count;
-
-public:
-	int _id;
+	typedef std::set<OfxTime> TimesSet;
+	TimesSet _times;
 };
 
 }

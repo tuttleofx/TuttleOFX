@@ -69,6 +69,7 @@ public:
 
 	typedef std::pair<adjacency_iterator, adjacency_iterator> adjacency_vertex_range_t;
 	typedef std::pair<out_edge_iterator, out_edge_iterator> out_edge_range_t;
+	typedef std::pair<in_edge_iterator, in_edge_iterator> in_edge_range_t;
 	typedef std::pair<vertex_iterator, vertex_iterator> vertex_range_t;
 	typedef std::pair<edge_iterator, edge_iterator> edge_range_t;
 
@@ -246,40 +247,26 @@ public:
 		return _graph;
 	}
 
-	edge_range_t getEdges() const
-	{
-		return edges( _graph );
-	}
+	edge_range_t getEdges() { return edges( _graph ); }
+	const edge_range_t getEdges() const { return edges( _graph ); }
 
-	vertex_range_t getVertices() const
-	{
-		return vertices( _graph );
-	}
+	in_edge_range_t getInEdges( const vertex_descriptor& v ) { return in_edges( v, _graph ); }
+	const in_edge_range_t getInEdges( const vertex_descriptor& v ) const { return in_edges( v, _graph ); }
 
-	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const
-	{
-		return adjacent_vertices( v, _graph );
-	}
+	out_edge_range_t getOutEdges( const vertex_descriptor& v ) { return out_edges( v, _graph ); }
+	const out_edge_range_t getOutEdges( const vertex_descriptor& v ) const { return out_edges( v, _graph ); }
 
-	std::size_t getVertexCount() const
-	{
-		return num_vertices( _graph );
-	}
+	vertex_range_t getVertices() const { return vertices( _graph ); }
 
-	std::size_t getEdgeCount() const
-	{
-		return num_edges( _graph );
-	}
+	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const { return adjacent_vertices( v, _graph ); }
 
-	degree_t getInDegree( const vertex_descriptor& v ) const
-	{
-		return in_degree( v, _graph );
-	}
+	std::size_t getVertexCount() const { return num_vertices( _graph ); }
 
-	degree_t getOutDegree( const vertex_descriptor& v ) const
-	{
-		return out_degree( v, _graph );
-	}
+	std::size_t getEdgeCount() const { return num_edges( _graph ); }
+
+	degree_t getInDegree( const vertex_descriptor& v ) const { return in_degree( v, _graph ); }
+
+	degree_t getOutDegree( const vertex_descriptor& v ) const { return out_degree( v, _graph ); }
 
 	bool hasCycle()
 	{
