@@ -286,12 +286,12 @@ public:
 		// we use a depth first search visitor
 		visitor::CycleDetector vis;
 
-		this->dfs( vis );
+		this->depthFirstSearch( vis );
 		return vis._hasCycle;
 	}
 
 	template<class Visitor>
-	void dfs( Visitor vis, const vertex_descriptor& vroot )
+	void depthFirstVisit( Visitor& vis, const vertex_descriptor& vroot )
 	{
 		std::vector<boost::default_color_type > colormap( boost::num_vertices( _graph ), boost::white_color );
 		BOOST_FOREACH( const vertex_descriptor &vd, getVertices() )
@@ -309,7 +309,28 @@ public:
 	}
 
 	template<class Visitor>
-	void dfs( Visitor vis )
+	void depthFirstVisitReverse( Visitor& vis, const vertex_descriptor& vroot )
+	{
+		boost::reverse_graph<GraphContainer> revGraph(_graph);
+
+		std::vector<boost::default_color_type > colormap( boost::num_vertices( revGraph ), boost::white_color );
+		BOOST_FOREACH( const vertex_descriptor& vd, vertices( revGraph ) )
+		{
+			vis.initialize_vertex( vd, revGraph );
+		}
+
+		// use depth_first_visit (and not depth_first_search) because
+		// we visit vertices from vroot, without visiting nodes not
+		// reachable from vroot
+		boost::depth_first_visit( revGraph,
+		                          vroot,
+		                          vis,
+		                          boost::make_iterator_property_map( colormap.begin(), boost::get( boost::vertex_index, revGraph ) )
+		                          );
+	}
+
+	template<class Visitor>
+	void depthFirstSearch( Visitor& vis )
 	{
 		boost::depth_first_search( _graph,
 		                           boost::visitor( vis )
@@ -317,7 +338,7 @@ public:
 	}
 
 	template<class Visitor>
-	void dfs_reverse( Visitor vis )
+	void depthFirstSearchReverse( Visitor& vis )
 	{
 		boost::reverse_graph<GraphContainer> revGraph(_graph);
 
@@ -327,10 +348,37 @@ public:
 	}
 
 	template<class Visitor>
-	void bfs( Visitor vis, const vertex_descriptor& vroot )
+	void depthFirstSearch( Visitor& vis, const vertex_descriptor& vroot )
+	{
+		boost::depth_first_search( _graph,
+		                           vroot,
+		                           boost::visitor( vis )
+		                           );
+	}
+
+	template<class Visitor>
+	void depthFirstSearchReverse( Visitor& vis, const vertex_descriptor& vroot )
+	{
+		boost::reverse_graph<GraphContainer> revGraph(_graph);
+		boost::depth_first_search( revGraph,
+		                           vroot,
+		                           boost::visitor( vis )
+		                           );
+	}
+
+	template<class Visitor>
+	void breadthFirstSearch( Visitor& vis, const vertex_descriptor& vroot )
 	{
 		boost::breadth_first_search( _graph,
 		                             vroot,
+		                             boost::visitor( vis )
+		                             );
+	}
+
+	template<class Visitor>
+	void breadthFirstSearch( Visitor& vis )
+	{
+		boost::breadth_first_search( _graph,
 		                             boost::visitor( vis )
 		                             );
 	}

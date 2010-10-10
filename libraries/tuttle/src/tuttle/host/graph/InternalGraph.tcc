@@ -83,7 +83,7 @@ template< typename VERTEX, typename EDGE, typename OutEdgeList, typename VertexL
 std::size_t InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::removeUnconnectedVertices( const vertex_descriptor& vroot )
 {
 	visitor::MarkUsed<This> vis( *this );
-	this->dfs( vis, vroot );
+	this->depthFirstVisit( vis, vroot );
 
 	std::list<std::string> toRemove;
 	BOOST_FOREACH( const vertex_descriptor &vd, getVertices() )

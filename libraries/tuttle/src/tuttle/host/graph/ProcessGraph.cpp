@@ -207,28 +207,28 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 
 		TCOUT( "---------------------------------------- preprocess 1" );
 		graph::visitor::PreProcess1<InternalGraphImpl> preProcess1Visitor( renderGraphAtTime );
-		renderGraphAtTime.dfs( preProcess1Visitor, outputAtTime );
+		renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 2" );
 		graph::visitor::PreProcess2<InternalGraphImpl> preProcess2Visitor( renderGraphAtTime );
-		renderGraphAtTime.dfs_reverse( preProcess2Visitor ); //, output
+		renderGraphAtTime.depthFirstSearchReverse( preProcess2Visitor );
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- preprocess 3" );
 		graph::visitor::PreProcess3<InternalGraphImpl> preProcess3Visitor( renderGraphAtTime );
-		renderGraphAtTime.dfs( preProcess3Visitor, outputAtTime );
+		renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_e.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- optimize graph" );
 		graph::visitor::OptimizeGraph<InternalGraphImpl> optimizeGraphVisitor( renderGraphAtTime );
-		renderGraphAtTime.dfs( optimizeGraphVisitor, outputAtTime );
+		renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_f.dot", renderGraphAtTime );
 #endif
@@ -282,14 +282,14 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 
 		TCOUT( "---------------------------------------- process" );
 		graph::visitor::Process<InternalGraphImpl> processVisitor( renderGraphAtTime, result );
-		renderGraphAtTime.dfs( processVisitor, outputAtTime );
+		renderGraphAtTime.depthFirstVisit( processVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_h.dot", renderGraphAtTime );
 #endif
 
 		TCOUT( "---------------------------------------- postprocess" );
 		graph::visitor::PostProcess<InternalGraphImpl> postProcessVisitor( renderGraphAtTime );
-		renderGraphAtTime.dfs( postProcessVisitor, outputAtTime );
+		renderGraphAtTime.depthFirstVisit( postProcessVisitor, outputAtTime );
 
 		// end of one frame
 		// do some clean: memory clean, as temporary solution...
