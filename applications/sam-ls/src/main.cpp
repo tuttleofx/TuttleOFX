@@ -1,4 +1,3 @@
-
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -15,7 +14,7 @@ int main( int argc, char** argv )
 	try
 	{
 		std::vector<std::string> args;
-		args.reserve(argc-1);
+		args.reserve( argc - 1 );
 
 		if( argc <= 1 ) // no argument
 		{
@@ -23,10 +22,10 @@ int main( int argc, char** argv )
 		}
 		else
 		{
-			for( int i = 1; i<argc; ++i )
+			for( int i = 1; i < argc; ++i )
 				args.push_back( argv[i] );
 		}
-		
+
 		BOOST_FOREACH( boost::filesystem::path path, args )
 		{
 			//COUT( "param:" << path );
@@ -36,15 +35,15 @@ int main( int argc, char** argv )
 				if( fs::is_directory( path ) )
 				{
 					std::vector<Sequence> sequences = sequencesInDir( path );
-					BOOST_FOREACH( const std::vector<Sequence>::value_type& s, sequences )
+					BOOST_FOREACH( const std::vector<Sequence>::value_type & s, sequences )
 					{
-//						if( s.getNbFiles() != 1 )
+						//						if( s.getNbFiles() != 1 )
 						COUT( s );
 					}
 				}
 				else
 				{
-//					cout << "* File: " << path << endl;
+					//					cout << "* File: " << path << endl;
 				}
 			}
 			else
@@ -54,7 +53,7 @@ int main( int argc, char** argv )
 					Sequence s( path );
 					COUT( s );
 				}
-				catch(...)
+				catch(... )
 				{
 					std::cerr << "Unrecognized pattern \"" << path << "\"" << std::endl;
 				}
@@ -62,7 +61,7 @@ int main( int argc, char** argv )
 		}
 
 	}
-	catch(...)
+	catch(... )
 	{
 		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
 	}

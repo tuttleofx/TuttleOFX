@@ -1,11 +1,11 @@
 #ifndef _FFMPEG_HPP
-#define	_FFMPEG_HPP
+#define _FFMPEG_HPP
 
 extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavutil/avutil.h>
-#include <libswscale/swscale.h>
+	#include <libavcodec/avcodec.h>
+	#include <libavformat/avformat.h>
+	#include <libavutil/avutil.h>
+	#include <libswscale/swscale.h>
 }
 
 #include <string>
@@ -17,8 +17,8 @@ extern "C" {
 class FFmpeg
 {
 protected:
-	FFmpeg(){}
-	virtual ~FFmpeg(){}
+	FFmpeg() {}
+	virtual ~FFmpeg() {}
 
 public:
 	static const std::string ffmpegError_toString( int error );
@@ -29,9 +29,8 @@ public:
 private:
 	static bool _hasBeenInit;
 	static bool globalInit();
-	
-};
 
+};
 
 #endif
 

@@ -24,7 +24,7 @@ OfxStatus interactSwapBuffers( OfxInteractHandle handle )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -39,14 +39,14 @@ OfxStatus interactRedraw( OfxInteractHandle handle )
 			return kOfxStatErrBadHandle;
 
 		interactInstance->redraw();
-		
+
 		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -68,7 +68,7 @@ OfxStatus interactGetPropertySet( OfxInteractHandle handle, OfxPropertySetHandle
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}

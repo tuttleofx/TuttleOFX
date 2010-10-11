@@ -27,8 +27,8 @@ public:
 	OpenImageIOWriterPlugin( OfxImageEffectHandle handle );
 
 public:
-	OpenImageIOWriterProcessParams getProcessParams(const OfxTime time);
-	void render( const OFX::RenderArguments& args );
+	OpenImageIOWriterProcessParams getProcessParams( const OfxTime time );
+	void                           render( const OFX::RenderArguments& args );
 
 public:
 	OFX::ChoiceParam* _components;     ///< Choose components RGBA/RGB

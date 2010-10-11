@@ -18,28 +18,29 @@ namespace fft {
 
 using namespace boost::gil;
 
-FftPlugin::FftPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+FftPlugin::FftPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_fftType = fetchChoiceParam( kFftType );
+	_clipSrc     = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst     = fetchClip( kOfxImageEffectOutputClipName );
+	_fftType     = fetchChoiceParam( kFftType );
 	_fftTypeLong = fetchChoiceParam( kFftTypeLong );
 }
 
-OFX::Clip* FftPlugin::getSrcClip( ) const
+OFX::Clip* FftPlugin::getSrcClip() const
 {
-    return _clipSrc;
+	return _clipSrc;
 }
 
-OFX::Clip* FftPlugin::getDstClip( ) const
+OFX::Clip* FftPlugin::getDstClip() const
 {
-    return _clipDst;
+	return _clipDst;
 }
 
 FftTransformProcessParams FftPlugin::getProcessParams() const
 {
 	FftTransformProcessParams params;
+
 	params._type = (EfftType)_fftType->getValue();
 	return params;
 }
@@ -48,83 +49,83 @@ FftTransformProcessParams FftPlugin::getProcessParams() const
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void FftPlugin::render( const OFX::RenderArguments &args )
+void FftPlugin::render( const OFX::RenderArguments& args )
 {
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                FftProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                FftProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                FftProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                FftProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                FftProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                FftProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				FftProcess<rgba8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				FftProcess<rgba16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				FftProcess<rgba32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				FftProcess<gray8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				FftProcess<gray16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				FftProcess<gray32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
 }
 
-void FftPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void FftPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-    if( paramName == kHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kHelpString );
-    }
+	if( paramName == kHelpButton )
+	{
+		sendMessage( OFX::Message::eMessageMessage,
+		             "", // No XML resources
+		             kHelpString );
+	}
 	else if( paramName == kFftTypeLong && args.reason == OFX::eChangeUserEdit )
 	{
 		_fftType->setValue( _fftTypeLong->getValue() );

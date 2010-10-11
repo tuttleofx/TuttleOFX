@@ -1,52 +1,27 @@
 #ifndef _TUTTLE_EDGE_HPP_
 #define _TUTTLE_EDGE_HPP_
 
-#include <iostream>
-#include <string>
-#include <ofxAttribute.h>
+#include "IEdge.hpp"
+
+#include <map>
+#include <set>
 
 namespace tuttle {
 namespace host {
 namespace graph {
 
-class Edge
+class Edge : public IEdge
 {
 public:
-	Edge() {}
-
-	Edge( const std::string& out, const std::string& in, const std::string& inAttrName )
-		: _out( out ),
-		_in( in ),
-		_inAttrName( inAttrName )
-	{}
-
-	//Edge( const Edge& e );
-
-	virtual ~Edge()
-	{}
-
-	// operators
-	Edge& operator=( const Edge& e )
-	{
-		if( this == &e )
-			return *this;
-		_in         = e.in();
-		_out        = e.out();
-		_inAttrName = e.inAttrName();
-		return *this;
-	}
-
-	const std::string& out() const        { return _out; }
-	const std::string& in() const         { return _in; }
-	const std::string& inAttrName() const { return _inAttrName; }
-	const std::string  name() const       { return out() + std::string( "." ) + std::string( kOfxOutputAttributeName ) + std::string( "-->" ) + in() + std::string( "." ) + inAttrName(); }
-
-	friend std::ostream& operator<<( std::ostream& os, const Edge& v );
-
-private:
-	std::string _out;
-	std::string _in;
-	std::string _inAttrName;
+	Edge();
+	Edge( const std::string& out, const std::string& in, const std::string& inAttrName );
+	Edge( const Edge& e );
+	~Edge();
+	
+public:
+	typedef std::set<OfxTime> TimesSet;
+	typedef std::map<OfxTime, TimesSet> TimeMap;
+	TimeMap _timesNeeded;
 };
 
 }

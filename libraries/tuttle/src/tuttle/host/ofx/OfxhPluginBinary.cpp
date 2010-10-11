@@ -7,7 +7,6 @@ namespace tuttle {
 namespace host {
 namespace ofx {
 
-
 /**
  * @brief try to open the plugin bundle object and query it for plugins
  */
@@ -43,10 +42,10 @@ void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 			if( newPlug == NULL )
 			{
 				BOOST_THROW_EXCEPTION( exception::Unknown()
-					<< exception::dev( "Error creating a new OfxhPlugin." )
-					<< exception::pluginIdentifier( plug.pluginIdentifier )
-					<< exception::ofxApi( plug.pluginApi )
-					<< exception::filename( _binary.getBinaryPath() ) );
+				    << exception::dev( "Error creating a new OfxhPlugin." )
+				    << exception::pluginIdentifier( plug.pluginIdentifier )
+				    << exception::ofxApi( plug.pluginApi )
+				    << exception::filename( _binary.getBinaryPath() ) );
 			}
 			_plugins.push_back( newPlug );
 		}
@@ -55,8 +54,7 @@ void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 }
 
 OfxhPluginBinary::~OfxhPluginBinary()
-{
-}
+{}
 
 }
 }

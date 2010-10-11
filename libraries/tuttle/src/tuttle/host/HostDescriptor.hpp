@@ -33,8 +33,8 @@ public:
 	 *  @arg context - the context to be created in
 	 */
 	tuttle::host::ImageEffectNode* newInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
-	                                                  tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
-	                                                  const std::string&                                             context ) const;
+	                                            tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
+	                                            const std::string&                                             context ) const;
 	/// Override this to create a descriptor, this makes the 'root' descriptor
 	tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* makeDescriptor( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin& plugin ) const;
 
@@ -45,13 +45,13 @@ public:
 	/// used to construct populate the cache
 	tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor* makeDescriptor( const std::string&                                     bundlePath,
 	                                                                               tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin& plug ) const;
-#ifndef SWIG
+	#ifndef SWIG
 	/// vmessage
 	OfxStatus vmessage( const char* type,
 	                    const char* id,
 	                    const char* format,
 	                    va_list     args ) const;
-#endif
+	#endif
 };
 
 }

@@ -19,10 +19,8 @@ bool OfxhClipAccessor::isOptional() const
 	return getProperties().getIntProperty( kOfxImageClipPropOptional ) != 0;
 }
 
-
 }
 }
 }
 }
-
 

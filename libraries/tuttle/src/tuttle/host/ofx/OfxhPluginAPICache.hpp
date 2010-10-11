@@ -51,9 +51,9 @@ public:
 
 public:
 	OfxhPluginAPICacheI( std::string apiName, int verMin, int verMax )
-		: _apiName( apiName ),
-		_apiVersionMin( verMin ),
-		_apiVersionMax( verMax )
+		: _apiName( apiName )
+		, _apiVersionMin( verMin )
+		, _apiVersionMax( verMax )
 	{}
 
 	virtual ~OfxhPluginAPICacheI() {}
@@ -67,7 +67,7 @@ public:
 	virtual OfxhPlugin* newPlugin( OfxhPluginBinary& pb, int pi, const std::string& api, int apiVersion, const std::string& pluginId,
 	                               const std::string& rawId, int pluginMajorVersion, int pluginMinorVersion ) = 0;
 
-	virtual OfxhHost& getHost() =0;
+	virtual OfxhHost& getHost() = 0;
 
 	virtual void confirmPlugin( OfxhPlugin& ) = 0;
 

@@ -17,7 +17,8 @@ namespace plugin {
 template <typename T>
 class OfxAllocator
 {
-	static int size_all;
+static int size_all;
+
 public:
 	typedef T Type;
 	typedef size_t size_type;
@@ -29,18 +30,18 @@ public:
 	typedef T value_type;
 
 public:
-	OfxAllocator( ) { }
-	OfxAllocator( const OfxAllocator& ) { }
+	OfxAllocator() {}
+	OfxAllocator( const OfxAllocator& ) {}
 	template <class U>
-	OfxAllocator( const OfxAllocator<U>& ) { }
+	OfxAllocator( const OfxAllocator<U>& ) {}
 
 public:
-	pointer allocate( const size_type n, const void * = 0 )
+	pointer allocate( const size_type n, const void* = 0 )
 	{
 		++size_all;
-		COUT( "Use OfxAllocator to allocate");
-		T* t = static_cast<T*>( OFX::memory::allocate( n * sizeof(T) /*, ImageEffect* handle = 0*/ ) );
-//		T* t = (T*) malloc( n * sizeof(T) );
+		COUT( "Use OfxAllocator to allocate" );
+		T* t = static_cast<T*>( OFX::memory::allocate( n * sizeof( T ) /*, ImageEffect* handle = 0*/ ) );
+		//		T* t = (T*) malloc( n * sizeof(T) );
 		COUT( "allocate done (address:" << t << ") (+" << n << ") " << size_all );
 		return t;
 	}
@@ -54,9 +55,9 @@ public:
 		COUT( "deallocate done." );
 	}
 
-	void construct( pointer p, const T& val ) { new ((T*) p ) T( val ); }
+	void construct( pointer p, const T& val ) { new ( (T*) p )T( val ); }
 
-	void destroy( pointer p ) { p->~T( ); }
+	void destroy( pointer p ) { p->~T(); }
 
 	template <class U>
 	struct rebind
@@ -64,21 +65,22 @@ public:
 		typedef OfxAllocator<U> other;
 	};
 
-	OfxAllocator<T> & operator=( const OfxAllocator& ) { return *this; }
+	OfxAllocator<T>& operator=( const OfxAllocator& ) { return *this; }
 
 	template <class U>
-	OfxAllocator & operator=(const OfxAllocator<U>& ) { return *this; }
+	OfxAllocator& operator=( const OfxAllocator<U>& ) { return *this; }
 
-	pointer address( reference x ) const { return &x; }
+	pointer       address( reference x ) const       { return &x; }
 	const_pointer address( const_reference x ) const { return &x; }
 
-	size_type max_size( ) const { return size_t( -1 ); }
+	size_type max_size() const { return size_t( -1 ); }
 };
 
-template <typename T> int OfxAllocator<T>::size_all = 0;
+template <typename T>
+int OfxAllocator<T>::size_all = 0;
 
-
-}}
+}
+}
 
 #endif
 

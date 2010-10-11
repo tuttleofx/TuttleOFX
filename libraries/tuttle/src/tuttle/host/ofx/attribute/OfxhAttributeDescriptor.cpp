@@ -29,10 +29,8 @@ OfxhAttributeDescriptor::OfxhAttributeDescriptor( const property::OfxhSet& prope
 
 OfxhAttributeDescriptor::~OfxhAttributeDescriptor() {}
 
-
 }
 }
 }
 }
-
 

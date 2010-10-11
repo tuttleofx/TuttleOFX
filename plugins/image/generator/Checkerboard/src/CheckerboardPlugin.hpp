@@ -17,21 +17,21 @@ namespace checkerboard {
 class CheckerboardPlugin : public OFX::ImageEffect
 {
 public:
-    CheckerboardPlugin( OfxImageEffectHandle handle );
-    OFX::Clip *getSrcClip( ) const;
-    OFX::Clip *getDstClip( ) const;
+	CheckerboardPlugin( OfxImageEffectHandle handle );
+	OFX::Clip* getSrcClip() const;
+	OFX::Clip* getDstClip() const;
 
 public:
-    virtual void render( const OFX::RenderArguments &args );
-//    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	virtual void render( const OFX::RenderArguments& args );
+	//    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip           *_clipSrc;       ///< Source image clip
-    OFX::Clip           *_clipDst;       ///< Destination image clip
-	OFX::Int2DParam     *_boxes;
-	OFX::RGBAParam      *_color1;
-	OFX::RGBAParam      *_color2;
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc;                 ///< Source image clip
+	OFX::Clip* _clipDst;                 ///< Destination image clip
+	OFX::Int2DParam* _boxes;
+	OFX::RGBAParam* _color1;
+	OFX::RGBAParam* _color2;
 };
 
 }

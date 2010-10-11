@@ -6,6 +6,7 @@
 
 #include <boost/version.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/exception/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/exception/errinfo_file_name.hpp>
@@ -20,58 +21,59 @@
 #ifndef SWIG
 namespace boost {
 
-	struct error_info_sstream
-	{
-        typedef std::ostringstream value_type;
-        value_type _v;
-	};
+struct error_info_sstream
+{
+	typedef std::ostringstream value_type;
+	value_type _v;
+};
 
-    inline
-    std::string
-    to_string( const error_info_sstream& x )
+inline std::string to_string( const error_info_sstream& x )
+{
+	return x._v.str();
+}
+
+template<class Tag>
+class error_info<Tag, error_info_sstream>: public exception_detail::error_info_base
+{
+public:
+	typedef error_info_sstream T;
+	typedef error_info<Tag, T> This;
+	typedef T value_type;
+
+	error_info() {}
+	error_info( const This& v )
 	{
-		return x._v.str();
+		_value._v << v._value._v.str();
 	}
 
-    template<class Tag>
-    class error_info<Tag, error_info_sstream>: public exception_detail::error_info_base
+	template<typename V>
+	error_info( const V& value )
 	{
-	public:
-        typedef error_info_sstream T;
-        typedef error_info<Tag,T> This;
-        typedef T value_type;
+		_value._v << value;
+	}
 
-		error_info(){}
-		error_info( const This& v )
-		{
-			_value._v << v._value._v.str();
-		}
-		template<typename V>
-        error_info( const V& value )
-		{
-			_value._v << value;
-		}
-        ~error_info() throw() {}
+	~error_info() throw( ) {}
 
-		template<typename V>
-		This& operator+( const V& v )
-		{
-			_value._v << v;
-			return *this;
-		}
-		
-        const value_type& value() const { return _value; }
-        value_type& value() { return _value; }
-	private:
-#if( BOOST_VERSION >= 104300 )
-        std::string tag_typeid_name() const { return tag_type_name<Tag>(); }
-#else
-        char const * tag_typeid_name() const { return tag_type_name<Tag>(); }
-#endif
-        std::string value_as_string() const { return _value._v.str(); }
+	template<typename V>
+	This& operator+( const V& v )
+	{
+		_value._v << v;
+		return *this;
+	}
 
-        value_type _value;
-	};
+	const value_type& value() const { return _value; }
+	value_type&       value()       { return _value; }
+
+private:
+	#if ( BOOST_VERSION >= 104300 )
+	std::string tag_typeid_name() const { return tag_type_name<Tag>(); }
+	#else
+	char const* tag_typeid_name() const { return tag_type_name<Tag>(); }
+	#endif
+	std::string value_as_string() const { return _value._v.str(); }
+
+	value_type _value;
+};
 }
 #endif
 
@@ -105,43 +107,43 @@ namespace exception {
  * @brief If you catch an error at the top level, you can print this information to the user.
  * @remark User information.
  */
-typedef ::boost::error_info<struct tag_userMessage,::boost::error_info_sstream> user;
+typedef ::boost::error_info<struct tag_userMessage, ::boost::error_info_sstream> user;
 /**
  * @brief This is detailed informations for developpers.
  * Not always a real human readable message :)
  * @remark Dev information.
  */
 //typedef ::boost::error_info<struct tag_message,std::string> dev;
-typedef ::boost::error_info<struct tag_devMessage,::boost::error_info_sstream> dev;
+typedef ::boost::error_info<struct tag_devMessage, ::boost::error_info_sstream> dev;
 //typedef ::boost::error_info_sstream<struct tag_message> dev;
 /**
  * @brief The ofx error status code.
  * @remark Dev information.
  */
-typedef ::boost::error_info<struct tag_ofxStatus,::OfxStatus> ofxStatus;
-inline std::string to_string( const ofxStatus& e ) { return ofx::mapStatusToString(e.value()); }
+typedef ::boost::error_info<struct tag_ofxStatus, ::OfxStatus> ofxStatus;
+inline std::string to_string( const ofxStatus& e ) { return ofx::mapStatusToString( e.value() ); }
 
 /**
  * @brief The ofx context name.
  * Each plugin can be instanciated in differents contexts (depending on the declaration of supported contexts).
  * @remark Dev information.
  */
-typedef ::boost::error_info<struct tag_ofxContext,::std::string> ofxContext;
+typedef ::boost::error_info<struct tag_ofxContext, ::std::string> ofxContext;
 /**
  * @brief The ofx api string identification.
  * @remark Dev information.
  */
-typedef ::boost::error_info<struct tag_ofxApi,::std::string> ofxApi;
+typedef ::boost::error_info<struct tag_ofxApi, ::std::string> ofxApi;
 /**
  * @brief Plugin string identifier.
  * @remark Dev or User information.
  */
-typedef ::boost::error_info<struct tag_pluginIdentifier,::std::string> pluginIdentifier;
+typedef ::boost::error_info<struct tag_pluginIdentifier, ::std::string> pluginIdentifier;
 /**
  * @brief Plugin name.
  * @remark User information.
  */
-typedef ::boost::error_info<struct tag_pluginName,::std::string> pluginName;
+typedef ::boost::error_info<struct tag_pluginName, ::std::string> pluginName;
 /**
  * @brief Problem with a file.
  * @remark User information.
@@ -150,9 +152,9 @@ typedef ::boost::errinfo_file_name filename;
 /// @}
 #endif
 
-
 /** @brief Common exception for all tuttle plugin exceptions */
-struct Common : virtual public ::std::exception, virtual public ::boost::exception {};
+struct Common : virtual public ::std::exception
+	, virtual public ::boost::exception {};
 
 /// @brief Ofx standard errors
 /// @{
@@ -168,8 +170,9 @@ struct Failed : virtual public Common
 {
 	Failed()
 	{
-		*this << ofxStatus( kOfxStatFailed );
+		* this << ofxStatus( kOfxStatFailed );
 	}
+
 };
 
 /**
@@ -181,8 +184,9 @@ struct Fatal : virtual public Common
 {
 	Fatal()
 	{
-		*this << ofxStatus( kOfxStatErrFatal );
+		* this << ofxStatus( kOfxStatErrFatal );
 	}
+
 };
 
 /** @brief Status error code for an operation on or request for an unknown object */
@@ -190,8 +194,9 @@ struct Unknown : virtual public Common
 {
 	Unknown()
 	{
-		*this << ofxStatus( kOfxStatErrUnknown );
+		* this << ofxStatus( kOfxStatErrUnknown );
 	}
+
 };
 
 /**
@@ -203,8 +208,9 @@ struct MissingHostFeature : virtual Common
 {
 	MissingHostFeature()
 	{
-		*this << ofxStatus( kOfxStatErrMissingHostFeature );
+		* this << ofxStatus( kOfxStatErrMissingHostFeature );
 	}
+
 };
 
 /** @brief Status error code for an unsupported feature/operation */
@@ -212,8 +218,9 @@ struct Unsupported : virtual public Common
 {
 	Unsupported()
 	{
-		*this << ofxStatus( kOfxStatErrUnsupported );
+		* this << ofxStatus( kOfxStatErrUnsupported );
 	}
+
 };
 
 /** @brief Status error code for an operation attempting to create something that exists */
@@ -221,8 +228,9 @@ struct Exists : virtual public Common
 {
 	Exists()
 	{
-		*this << ofxStatus( kOfxStatErrExists );
+		* this << ofxStatus( kOfxStatErrExists );
 	}
+
 };
 
 /** @brief Status error code for an incorrect format */
@@ -230,8 +238,9 @@ struct Format : virtual public Common
 {
 	Format()
 	{
-		*this << ofxStatus( kOfxStatErrFormat );
+		* this << ofxStatus( kOfxStatErrFormat );
 	}
+
 };
 
 /** @brief Status error code indicating that something failed due to memory shortage */
@@ -239,8 +248,9 @@ struct Memory : virtual public Common
 {
 	Memory()
 	{
-		*this << ofxStatus( kOfxStatErrMemory );
+		* this << ofxStatus( kOfxStatErrMemory );
 	}
+
 };
 
 /** @brief Status error code for an operation on a bad handle */
@@ -248,8 +258,9 @@ struct BadHandle : virtual public Common
 {
 	BadHandle()
 	{
-		*this << ofxStatus( kOfxStatErrBadHandle );
+		* this << ofxStatus( kOfxStatErrBadHandle );
 	}
+
 };
 
 /** @brief Status error code indicating that a given index was invalid or unavailable */
@@ -257,8 +268,9 @@ struct BadIndex : virtual public Common
 {
 	BadIndex()
 	{
-		*this << ofxStatus( kOfxStatErrBadIndex );
+		* this << ofxStatus( kOfxStatErrBadIndex );
 	}
+
 };
 
 /** @brief Status error code indicating that something failed due an illegal value */
@@ -266,8 +278,9 @@ struct Value : virtual public Common
 {
 	Value()
 	{
-		*this << ofxStatus( kOfxStatErrValue );
+		* this << ofxStatus( kOfxStatErrValue );
 	}
+
 };
 
 /// @brief imageEffect specific errors
@@ -278,12 +291,12 @@ struct ImageFormat : virtual public Common
 {
 	ImageFormat()
 	{
-		*this << ofxStatus( kOfxStatErrImageFormat );
+		* this << ofxStatus( kOfxStatErrImageFormat );
 	}
+
 };
 /// @}
 /// @}
-
 
 /// @brief Other exceptions
 /// @{

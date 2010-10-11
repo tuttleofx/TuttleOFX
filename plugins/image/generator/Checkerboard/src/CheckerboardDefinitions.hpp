@@ -3,15 +3,13 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace checkerboard {
 
-const static std::string kCheckerboardBoxes = "boxes";
+const static std::string kCheckerboardBoxes  = "boxes";
 const static std::string kCheckerboardColor1 = "color1";
 const static std::string kCheckerboardColor2 = "color2";
-
 
 }
 }

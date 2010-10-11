@@ -5,8 +5,9 @@
 namespace tuttle {
 namespace plugin {
 namespace quality {
-	static const bool kSupportTiles = false;
-	mDeclarePluginFactory( DiffPluginFactory, { }, { } );
+static const bool kSupportTiles = false;
+mDeclarePluginFactory( DiffPluginFactory, {}, {}
+                       );
 }
 }
 }

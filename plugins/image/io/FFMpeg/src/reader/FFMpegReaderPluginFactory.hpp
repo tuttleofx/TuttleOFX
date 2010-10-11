@@ -7,9 +7,10 @@ namespace plugin {
 namespace ffmpeg {
 namespace reader {
 
-static const bool   kSupportTiles                 = false;
+static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( FFMpegReaderPluginFactory, { }, { } );
+mDeclarePluginFactory( FFMpegReaderPluginFactory, {}, {}
+                       );
 
 }
 }

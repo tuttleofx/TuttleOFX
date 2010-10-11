@@ -7,9 +7,9 @@ namespace host {
 namespace attribute {
 
 Attribute::Attribute( ImageEffectNode& effect )
-: _effect(effect)
-{
-}
+	: _effect( effect )
+{}
+
 Attribute::~Attribute() {}
 
 const ImageEffectNode& Attribute::getNode() const

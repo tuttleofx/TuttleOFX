@@ -3,7 +3,6 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace colorspace {
@@ -14,7 +13,6 @@ static const bool kSupportTiles = false;
 const static std::string kLin2LogHelpButton = "Help";
 
 const static std::string kLin2LogHelpString = "<b>Linear to logarithmic convertion</b> plugin is used to linear image to log.  <br />";
-
 
 }
 }

@@ -10,7 +10,8 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-class ParamInteger : public Param, public ofx::attribute::OfxhParamInteger
+class ParamInteger : public Param
+	, public ofx::attribute::OfxhParamInteger
 {
 protected:
 	int _value; /// @todo link de parametres
@@ -23,8 +24,8 @@ public:
 
 	void get( int& ) const OFX_EXCEPTION_SPEC;
 	void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
-	void set( const int &, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void setAtTime( const OfxTime time, const int &, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void set( const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void setAtTime( const OfxTime time, const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 
 	void copy( const ParamInteger& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
@@ -33,6 +34,5 @@ public:
 }
 }
 }
-
 
 #endif

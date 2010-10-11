@@ -4,11 +4,11 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-ParamChoice::ParamChoice( ImageEffectNode&                                   effect,
-                          const std::string&                                 name,
+ParamChoice::ParamChoice( ImageEffectNode&                           effect,
+                          const std::string&                         name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor )
-	: Param( effect ),
-	ofx::attribute::OfxhParamChoice( descriptor, name, effect )
+	: Param( effect )
+	, ofx::attribute::OfxhParamChoice( descriptor, name, effect )
 {
 	_value = getDefault();
 }
@@ -28,13 +28,13 @@ void ParamChoice::getAtTime( const OfxTime time, int& v ) const OFX_EXCEPTION_SP
 	v = _value; ///< @todo: in time !
 }
 
-void ParamChoice::set( const int &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamChoice::set( const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 	paramChanged( change );
 }
 
-void ParamChoice::setAtTime( const OfxTime time, const int &v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamChoice::setAtTime( const OfxTime time, const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 	paramChanged( change );
@@ -43,15 +43,15 @@ void ParamChoice::setAtTime( const OfxTime time, const int &v, const ofx::attrib
 void ParamChoice::copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC
 {
 	_value = p._value;
-//	paramChanged( ofx::attribute::eChangeUserEdited );
+	//	paramChanged( ofx::attribute::eChangeUserEdited );
 }
 
 void ParamChoice::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
 {
-	const ParamChoice& param = dynamic_cast<const ParamChoice&>(p);
+	const ParamChoice& param = dynamic_cast<const ParamChoice&>( p );
+
 	copy( param );
 }
-
 
 }
 }

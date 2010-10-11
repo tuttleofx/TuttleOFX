@@ -12,11 +12,11 @@ namespace timeShift {
 
 using namespace boost::gil;
 
-TimeShiftPlugin::TimeShiftPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+TimeShiftPlugin::TimeShiftPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_offset = fetchDoubleParam( kOffset );
 }
@@ -25,9 +25,8 @@ ImageEffect( handle )
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void TimeShiftPlugin::render( const OFX::RenderArguments &args )
-{
-}
+void TimeShiftPlugin::render( const OFX::RenderArguments& args )
+{}
 
 bool TimeShiftPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {

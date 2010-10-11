@@ -18,9 +18,9 @@ namespace imageEffect {
  * an image effect plugin descriptor
  */
 class OfxhImageEffectNodeDescriptor
-	: public OfxhImageEffectNodeBase,
-	public attribute::OfxhParamSetDescriptor,
-	private boost::noncopyable
+	: public OfxhImageEffectNodeBase
+	, public attribute::OfxhParamSetDescriptor
+	, private boost::noncopyable
 {
 public:
 	typedef OfxhImageEffectNodeDescriptor This;
@@ -37,12 +37,12 @@ protected:
 private:
 	// private CC
 	OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& other )
-		: OfxhImageEffectNodeBase( other._properties ),
-		_plugin( other._plugin )
+		: OfxhImageEffectNodeBase( other._properties )
+		, _plugin( other._plugin )
 	{}
 
 	OfxhImageEffectNodeDescriptor();
-	
+
 public:
 	/// used to construct the global description
 	OfxhImageEffectNodeDescriptor( OfxhPlugin& plug );
@@ -57,7 +57,7 @@ public:
 	virtual ~OfxhImageEffectNodeDescriptor();
 
 	bool operator==( const This& other ) const;
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	/// implemented for ParamDescriptorSet
 	property::OfxhSet& getParamSetProps()
@@ -92,16 +92,17 @@ public:
 	const interact::OfxhInteractDescriptor& getOverlayDescriptor() const { return _overlayDescriptor; }
 
 	void initOverlayDescriptor( int bitDepthPerComponent = 8, bool hasAlpha = false );
-	
+
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhImageEffectNodeBase);
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhParamSetDescriptor);
-		ar & BOOST_SERIALIZATION_NVP(_clipsByOrder);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhImageEffectNodeBase );
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhParamSetDescriptor );
+		ar& BOOST_SERIALIZATION_NVP( _clipsByOrder );
 	}
+
 };
 
 }

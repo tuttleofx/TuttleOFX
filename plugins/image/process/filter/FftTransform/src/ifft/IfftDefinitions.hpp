@@ -7,14 +7,13 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace fftTransform {
 namespace ifft {
 
-const static std::string kSourcePhase        = "SourceMod";
-const static std::string kSourceModule		 = "SourcePhase";
+const static std::string kSourcePhase  = "SourceMod";
+const static std::string kSourceModule = "SourcePhase";
 
 const static std::string kHelpButton = "Help";
 

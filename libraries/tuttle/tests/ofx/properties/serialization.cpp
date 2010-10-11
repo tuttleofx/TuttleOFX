@@ -1,4 +1,3 @@
-
 //#define BOOST_TEST_MODULE properties_tests
 #include <boost/test/unit_test.hpp>
 
@@ -61,20 +60,19 @@ BOOST_AUTO_TEST_CASE( properties_serialization )
 	double tab2Double[2] = { 11, 22 };
 	testSet.setDoublePropertyN( testDouble_2_ro, tab2Double, 2 );
 
-
-//	typedef boost::archive::binary_oarchive OArchive;
-//	typedef boost::archive::binary_iarchive IArchive;
-//	typedef boost::archive::text_oarchive OArchive;
-//	typedef boost::archive::text_iarchive IArchive;
+	//	typedef boost::archive::binary_oarchive OArchive;
+	//	typedef boost::archive::binary_iarchive IArchive;
+	//	typedef boost::archive::text_oarchive OArchive;
+	//	typedef boost::archive::text_iarchive IArchive;
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-    std::string testfile( "test_properties_serialization.xml" );
-    BOOST_REQUIRE( testfile.size() );
+	std::string testfile( "test_properties_serialization.xml" );
+	BOOST_REQUIRE( testfile.size() );
 
 	std::ofstream ofsb( testfile.c_str() );
 	OArchive oArchive( ofsb );
-	oArchive << BOOST_SERIALIZATION_NVP(testSet);
+	oArchive << BOOST_SERIALIZATION_NVP( testSet );
 	ofsb.close();
 
 	// new datas
@@ -82,12 +80,12 @@ BOOST_AUTO_TEST_CASE( properties_serialization )
 
 	std::ifstream ifsb( testfile.c_str() );
 	IArchive iArchive( ifsb );
-	iArchive >> BOOST_SERIALIZATION_NVP(testSet2);
+	iArchive >> BOOST_SERIALIZATION_NVP( testSet2 );
 	ifsb.close();
 
 	BOOST_CHECK( testSet == testSet2 );
 
-    BOOST_CHECK_EQUAL( 0, std::remove( testfile.c_str() ) );
+	BOOST_CHECK_EQUAL( 0, std::remove( testfile.c_str() ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

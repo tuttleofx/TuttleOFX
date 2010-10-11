@@ -37,12 +37,13 @@ struct inverter
 			p2[3] = p[3];
 		return p2;
 	}
+
 };
 
 template<class View>
 InvertProcess<View>::InvertProcess( InvertPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
 {}
 
 /**
@@ -54,13 +55,15 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-							     procWindowRoW.y2 - procWindowRoW.y1 };
+	OfxPointI procWindowSize  = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1
+	};
 
 	View src = subimage_view( this->_srcView, procWindowOutput.x1, procWindowOutput.y1,
-							                  procWindowSize.x, procWindowSize.y );
+	                          procWindowSize.x, procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-							                  procWindowSize.x, procWindowSize.y );
+	                          procWindowSize.x, procWindowSize.y );
 
 	transform_pixels_progress( src, dst, inverter(), *this );
 }

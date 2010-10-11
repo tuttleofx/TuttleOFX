@@ -6,7 +6,8 @@ namespace tuttle {
 namespace plugin {
 namespace timeShift {
 
-mDeclarePluginFactory( TimeShiftPluginFactory, { }, { } );
+mDeclarePluginFactory( TimeShiftPluginFactory, {}, {}
+                       );
 
 }
 }

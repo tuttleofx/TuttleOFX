@@ -21,12 +21,13 @@ ImageMagickWriterPlugin::ImageMagickWriterPlugin( OfxImageEffectHandle handle )
 	_quality = fetchIntParam( kParamQuality );
 }
 
-ImageMagickWriterProcessParams ImageMagickWriterPlugin::getProcessParams(const OfxTime time)
+ImageMagickWriterProcessParams ImageMagickWriterPlugin::getProcessParams( const OfxTime time )
 {
 	ImageMagickWriterProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
-	params._quality = this->_quality->getValue();
-	params._premult = this->_premult->getValue();
+
+	params._filepath = getAbsoluteFilenameAt( time );
+	params._quality  = this->_quality->getValue();
+	params._premult  = this->_premult->getValue();
 	return params;
 }
 

@@ -12,9 +12,9 @@ namespace attribute {
 namespace {
 
 OfxStatus paramDefine( OfxParamSetHandle     paramSet,
-                              const char*           paramType,
-                              const char*           name,
-                              OfxPropertySetHandle* propertySet )
+                       const char*           paramType,
+                       const char*           name,
+                       OfxPropertySetHandle* propertySet )
 {
 	try
 	{
@@ -34,16 +34,16 @@ OfxStatus paramDefine( OfxParamSetHandle     paramSet,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
-                                 const char*           name,
-                                 OfxParamHandle*       param,
-                                 OfxPropertySetHandle* propertySet )
+                          const char*           name,
+                          OfxParamHandle*       param,
+                          OfxPropertySetHandle* propertySet )
 {
 	try
 	{
@@ -60,7 +60,7 @@ OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 			// if we can't find it return an error...
 			if( it == params.end() )
 			{
-				BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown, std::string("Can't find parameter : ") + name ) );
+				BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrUnknown, std::string( "Can't find parameter : " ) + name ) );
 			}
 
 			// get the param
@@ -100,14 +100,14 @@ OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 		COUT_EXCEPTION( e );
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
-                                         OfxPropertySetHandle* propHandle )
+                                  OfxPropertySetHandle* propHandle )
 {
 	try
 	{
@@ -123,14 +123,14 @@ OfxStatus paramSetGetPropertySet( OfxParamSetHandle     paramSet,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramGetPropertySet( OfxParamHandle        param,
-                                      OfxPropertySetHandle* propHandle )
+                               OfxPropertySetHandle* propHandle )
 {
 	try
 	{
@@ -147,7 +147,7 @@ OfxStatus paramGetPropertySet( OfxParamHandle        param,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -176,7 +176,7 @@ OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 		{
 			stat = e.getStatus();
 		}
-		catch( ... )
+		catch(... )
 		{
 			stat = kOfxStatErrUnknown;
 		}
@@ -189,7 +189,7 @@ OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -199,8 +199,8 @@ OfxStatus paramGetValue( OfxParamHandle paramHandle, ... )
  * get the param value at a time
  */
 OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
-                                      OfxTime        time,
-                                      ... )
+                               OfxTime        time,
+                               ... )
 {
 	try
 	{
@@ -220,7 +220,7 @@ OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
 		{
 			stat = e.getStatus();
 		}
-		catch( ... )
+		catch(... )
 		{
 			stat = kOfxStatErrUnknown;
 		}
@@ -233,7 +233,7 @@ OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -243,8 +243,8 @@ OfxStatus paramGetValueAtTime( OfxParamHandle paramHandle,
  * get the param's derivative at the given time
  */
 OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
-                                     OfxTime        time,
-                                     ... )
+                              OfxTime        time,
+                              ... )
 {
 	try
 	{
@@ -264,7 +264,7 @@ OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
 		{
 			stat = e.getStatus();
 		}
-		catch( ... )
+		catch(... )
 		{
 			stat = kOfxStatErrUnknown;
 		}
@@ -277,15 +277,15 @@ OfxStatus paramGetDerivative( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
-                                   OfxTime time1, OfxTime time2,
-                                   ... )
+                            OfxTime time1, OfxTime time2,
+                            ... )
 {
 	try
 	{
@@ -305,7 +305,7 @@ OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
 		{
 			stat = e.getStatus();
 		}
-		catch( ... )
+		catch(... )
 		{
 			stat = kOfxStatErrUnknown;
 		}
@@ -318,7 +318,7 @@ OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -328,7 +328,7 @@ OfxStatus paramGetIntegral( OfxParamHandle paramHandle,
  * set the param's value at the 'current' time
  */
 OfxStatus paramSetValue( OfxParamHandle paramHandle,
-                                ... )
+                         ... )
 {
 	try
 	{
@@ -348,7 +348,7 @@ OfxStatus paramSetValue( OfxParamHandle paramHandle,
 		{
 			stat = e.getStatus();
 		}
-		catch( ... )
+		catch(... )
 		{
 			stat = kOfxStatErrUnknown;
 		}
@@ -361,7 +361,7 @@ OfxStatus paramSetValue( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -371,8 +371,8 @@ OfxStatus paramSetValue( OfxParamHandle paramHandle,
  * set the param's value at the indicated time, and set a key
  */
 OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
-                                      OfxTime        time, // time in frames
-                                      ... )
+                               OfxTime        time,        // time in frames
+                               ... )
 {
 	try
 	{
@@ -392,7 +392,7 @@ OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 		{
 			stat = e.getStatus();
 		}
-		catch( ... )
+		catch(... )
 		{
 			stat = kOfxStatErrUnknown;
 		}
@@ -405,14 +405,14 @@ OfxStatus paramSetValueAtTime( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
-                                  unsigned int*  numberOfKeys )
+                           unsigned int*  numberOfKeys )
 {
 	try
 	{
@@ -423,7 +423,7 @@ OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
 		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 		if( !paramInstance )
 			return kOfxStatErrBadHandle;
-		
+
 		paramInstance->getNumKeys( *numberOfKeys );
 
 		return kOfxStatOK;
@@ -432,15 +432,15 @@ OfxStatus paramGetNumKeys( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
-                                  unsigned int   nthKey,
-                                  OfxTime*       time )
+                           unsigned int   nthKey,
+                           OfxTime*       time )
 {
 	try
 	{
@@ -453,23 +453,23 @@ OfxStatus paramGetKeyTime( OfxParamHandle paramHandle,
 			return kOfxStatErrBadHandle;
 
 		paramInstance->getKeyTime( nthKey, *time );
-		
+
 		return kOfxStatOK;
 	}
 	catch( OfxhException& e )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
-                                   OfxTime        time,
-                                   int            direction,
-                                   int*   index )
+                            OfxTime        time,
+                            int            direction,
+                            int*           index )
 {
 	try
 	{
@@ -480,7 +480,7 @@ OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
 		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 		if( !paramInstance )
 			return kOfxStatErrBadHandle;
-		
+
 		paramInstance->getKeyIndex( time, direction, *index );
 
 		return kOfxStatOK;
@@ -489,14 +489,14 @@ OfxStatus paramGetKeyIndex( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
-                                 OfxTime        time )
+                          OfxTime        time )
 {
 	try
 	{
@@ -516,7 +516,7 @@ OfxStatus paramDeleteKey( OfxParamHandle paramHandle,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -533,7 +533,7 @@ OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 		OfxhKeyframeParam* paramInstance = dynamic_cast<OfxhKeyframeParam*>( pInstance );
 		if( !paramInstance )
 			return kOfxStatErrBadHandle;
-		
+
 		paramInstance->deleteAllKeys();
 
 		return kOfxStatOK;
@@ -542,19 +542,19 @@ OfxStatus paramDeleteAllKeys( OfxParamHandle paramHandle )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
 }
 
 OfxStatus paramCopy( OfxParamHandle paramTo,
-                            OfxParamHandle paramFrom,
-                            OfxTime dstOffset, OfxRangeD* frameRange )
+                     OfxParamHandle paramFrom,
+                     OfxTime dstOffset, OfxRangeD* frameRange )
 {
 	try
 	{
-		OfxhParam* paramInstanceTo   = reinterpret_cast<OfxhParam*>( paramTo );
+		OfxhParam* paramInstanceTo = reinterpret_cast<OfxhParam*>( paramTo );
 		if( !paramInstanceTo || !paramInstanceTo->verifyMagic() )
 			return kOfxStatErrBadHandle;
 
@@ -573,7 +573,7 @@ OfxStatus paramCopy( OfxParamHandle paramTo,
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -594,7 +594,7 @@ OfxStatus paramEditBegin( OfxParamSetHandle paramSet, const char* name )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}
@@ -607,7 +607,7 @@ OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
 		OfxhParamSet* setInstance = reinterpret_cast<OfxhParamSet*>( paramSet );
 		if( !setInstance )
 			return kOfxStatErrBadHandle;
-		
+
 		setInstance->editEnd();
 
 		return kOfxStatOK;
@@ -616,7 +616,7 @@ OfxStatus paramEditEnd( OfxParamSetHandle paramSet )
 	{
 		return e.getStatus();
 	}
-	catch( ... )
+	catch(... )
 	{
 		return kOfxStatErrUnknown;
 	}

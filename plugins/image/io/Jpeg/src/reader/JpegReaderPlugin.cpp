@@ -17,14 +17,14 @@ namespace bfs = boost::filesystem;
 using namespace boost::gil;
 
 JpegReaderPlugin::JpegReaderPlugin( OfxImageEffectHandle handle )
-: ReaderPlugin( handle )
-{
-}
+	: ReaderPlugin( handle )
+{}
 
-JpegReaderProcessParams JpegReaderPlugin::getProcessParams(const OfxTime time)
+JpegReaderProcessParams JpegReaderPlugin::getProcessParams( const OfxTime time )
 {
 	JpegReaderProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
+
+	params._filepath = getAbsoluteFilenameAt( time );
 	return params;
 }
 
@@ -37,6 +37,7 @@ void JpegReaderPlugin::render( const OFX::RenderArguments& args )
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = this->_clipDst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = this->_clipDst->getPixelComponents();
+
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
@@ -114,13 +115,13 @@ void JpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const
 	}
 	else
 	{
-		ReaderPlugin::changedParam(args, paramName);
+		ReaderPlugin::changedParam( args, paramName );
 	}
 }
 
 bool JpegReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	point2<ptrdiff_t> jpegDims = jpeg_read_dimensions( getAbsoluteFilenameAt(args.time) );
+	point2<ptrdiff_t> jpegDims = jpeg_read_dimensions( getAbsoluteFilenameAt( args.time ) );
 	rod.x1 = 0;
 	rod.x2 = jpegDims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
@@ -133,12 +134,12 @@ void JpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefe
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<< exception::filename( filename )
-			);
+		    << exception::user( "No input file." )
+		    << exception::filename( filename )
+		                       );
 	}
 
 	switch( getExplicitConversion() )

@@ -7,7 +7,8 @@ namespace plugin {
 namespace exr {
 namespace reader {
 
-mDeclarePluginFactory( EXRReaderPluginFactory, {}, {} );
+mDeclarePluginFactory( EXRReaderPluginFactory, {}, {}
+                       );
 
 }
 }

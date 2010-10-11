@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_COMMON_OFX_IMAGEEFFECT_HPP_
-#define	_TUTTLE_COMMON_OFX_IMAGEEFFECT_HPP_
+#define _TUTTLE_COMMON_OFX_IMAGEEFFECT_HPP_
 
 #include <tuttle/common/exceptions.hpp>
 
@@ -28,15 +28,15 @@ const std::string mapContextEnumToString( const EContext s );
 /** @brief Enumerates the pixel depths supported */
 enum EBitDepth
 {
-	eBitDepthNone = -1, ///< @brief bit depth that indicates no data is present
+	eBitDepthNone   = -1, ///< @brief bit depth that indicates no data is present
 	eBitDepthCustom = 0, ///< some non standard bit depth
-	eBitDepthUByte = 1,
+	eBitDepthUByte  = 1,
 	eBitDepthUShort = 2,
-	eBitDepthFloat = 4
+	eBitDepthFloat  = 4
 };
 
 const std::string mapBitDepthEnumToString( const EBitDepth e );
-EBitDepth mapBitDepthStringToEnum( const std::string& str );
+EBitDepth         mapBitDepthStringToEnum( const std::string& str );
 
 /** @brief Enumerates the component types supported */
 enum EPixelComponent
@@ -47,7 +47,7 @@ enum EPixelComponent
 	ePixelComponentCustom ///< some non standard pixel type
 };
 
-std::string mapPixelComponentEnumToString( const EPixelComponent e );
+std::string     mapPixelComponentEnumToString( const EPixelComponent e );
 EPixelComponent mapPixelComponentStringToEnum( const std::string& str );
 
 inline std::size_t numberOfComponents( const EPixelComponent c )
@@ -62,7 +62,7 @@ inline std::size_t numberOfComponents( const EPixelComponent c )
 			return 0;
 		case ePixelComponentCustom:
 			BOOST_THROW_EXCEPTION( exception::Value()
-				<< exception::user() + "Can't retrieve the number of values inside a custom pixel component." );
+			    << exception::user() + "Can't retrieve the number of values inside a custom pixel component." );
 			return 0;
 	}
 }
@@ -73,7 +73,6 @@ std::string findDeepestBitDepth( const std::string& s1, const std::string& s2 );
 }
 }
 }
-
 
 #endif
 

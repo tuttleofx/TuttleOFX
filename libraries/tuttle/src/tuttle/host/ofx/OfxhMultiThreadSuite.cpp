@@ -19,25 +19,24 @@ namespace {
 
 struct ThreadSpecificData
 {
-	ThreadSpecificData( unsigned int threadIndex ):_index(0){}
+	ThreadSpecificData( unsigned int threadIndex ) : _index( 0 ) {}
 	unsigned int _index;
 };
 
 boost::thread_specific_ptr<ThreadSpecificData> ptr;
 
 void launchThread( OfxThreadFunctionV1 func,
-                          unsigned int threadIndex,
-						  unsigned int threadMax,
-						  void*        customArg )
+                   unsigned int        threadIndex,
+                   unsigned int        threadMax,
+                   void*               customArg )
 {
 	ptr.reset( new ThreadSpecificData( threadIndex ) );
 	func( threadIndex, threadMax, customArg );
 }
 
-
 OfxStatus multiThread( OfxThreadFunctionV1 func,
-                              const unsigned int  nThreads,
-                              void*               customArg )
+                       const unsigned int  nThreads,
+                       void*               customArg )
 {
 	if( nThreads == 0 )
 	{
@@ -52,7 +51,7 @@ OfxStatus multiThread( OfxThreadFunctionV1 func,
 		boost::thread_group group;
 		for( unsigned int i = 0; i < nThreads; ++i )
 		{
-			group.create_thread(boost::bind(launchThread, func, i, nThreads, customArg));
+			group.create_thread( boost::bind( launchThread, func, i, nThreads, customArg ) );
 		}
 		group.join_all();
 	}
@@ -62,14 +61,14 @@ OfxStatus multiThread( OfxThreadFunctionV1 func,
 OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
 {
 	*nCPUs = 1; /// @todo tuttle: needs to have an option to disable multithreading (force only one cpu).
-//	*nCPUs = boost::thread::hardware_concurrency();
+	//	*nCPUs = boost::thread::hardware_concurrency();
 	COUT_DEBUG( "nCPUs: " << *nCPUs );
 	return kOfxStatOK;
 }
 
 OfxStatus multiThreadIndex( unsigned int* const threadIndex )
 {
-//	*threadIndex = boost::this_thread::get_id(); //	we don't want a global thead id, but the thead index inside a node multithread process.
+	//	*threadIndex = boost::this_thread::get_id(); //	we don't want a global thead id, but the thead index inside a node multithread process.
 	if( ptr.get() != NULL )
 	{
 		*threadIndex = 0;
@@ -106,7 +105,7 @@ OfxStatus mutexLock( OfxMutexHandle mutex )
 {
 	if( mutex == NULL )
 		return kOfxStatErrBadHandle;
-    mutex->_mutex.lock();
+	mutex->_mutex.lock();
 	return kOfxStatOK;
 }
 
@@ -114,7 +113,7 @@ OfxStatus mutexUnLock( OfxMutexHandle mutex )
 {
 	if( mutex == NULL )
 		return kOfxStatErrBadHandle;
-    mutex->_mutex.unlock();
+	mutex->_mutex.unlock();
 	return kOfxStatOK;
 }
 

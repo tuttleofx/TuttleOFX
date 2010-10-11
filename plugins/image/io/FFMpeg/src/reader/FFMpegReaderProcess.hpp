@@ -15,7 +15,6 @@
 #include <vector>
 #include <iostream>
 
-
 namespace tuttle {
 namespace plugin {
 namespace ffmpeg {
@@ -28,15 +27,15 @@ namespace reader {
 template<class View>
 class FFMpegReaderProcess : public ImageGilProcessor<View>
 {
-protected :
-    FFMpegReaderPlugin&	_plugin;		///< Rendering plugin
+protected:
+	FFMpegReaderPlugin& _plugin;        ///< Rendering plugin
 
 public:
-    FFMpegReaderProcess( FFMpegReaderPlugin& instance );
+	FFMpegReaderProcess( FFMpegReaderPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
-    // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	// Do some processing
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

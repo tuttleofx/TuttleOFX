@@ -15,26 +15,23 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 template <class T, int DIM>
-class OfxhMultiDimParam : public OfxhParam,
-	public OfxhKeyframeParam
+class OfxhMultiDimParam : public OfxhParam
+	, public OfxhKeyframeParam
 {
 public:
 	typedef T Type;
 	typedef typename T::BaseType BaseType;
 
 protected:
-	boost::ptr_array<T,DIM> _controls; // owns the sub-parameters
+	boost::ptr_array<T, DIM> _controls; // owns the sub-parameters
 
 public:
 	OfxhMultiDimParam( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance )
-	{
-	}
+	{}
 
 	virtual ~OfxhMultiDimParam()
-	{
-	}
+	{}
 
 	inline std::size_t getSize() const
 	{
@@ -58,14 +55,16 @@ protected:
 public:
 	void copy( const OfxhMultiDimParam& p ) OFX_EXCEPTION_SPEC
 	{
-		for(std::size_t index = 0; index < DIM; ++index)
+		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			_controls[index].copy( p._controls[index] );
 		}
 	}
+
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
 	{
-		const OfxhMultiDimParam& param = dynamic_cast<const OfxhMultiDimParam&>(p);
+		const OfxhMultiDimParam& param = dynamic_cast<const OfxhMultiDimParam&>( p );
+
 		copy( param );
 	}
 
@@ -160,13 +159,26 @@ public:
 		}
 	}
 
+	std::ostream& displayValues( std::ostream& os ) const
+	{
+		BOOST_STATIC_ASSERT( DIM != 0 );
+		os << "[";
+		for( std::size_t index = 0; index < DIM-1; ++index )
+		{
+			_controls[index].displayValues( os );
+			os << ",";
+		}
+		_controls[DIM-1].displayValues( os );
+		os << "]";
+		return os;
+	}
+
 };
 
 }
 }
 }
 }
-
 
 #endif
 

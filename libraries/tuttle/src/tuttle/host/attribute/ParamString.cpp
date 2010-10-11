@@ -4,9 +4,8 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-
-ParamString::ParamString( ImageEffectNode&                                   effect,
-                          const std::string&                                 name,
+ParamString::ParamString( ImageEffectNode&                           effect,
+                          const std::string&                         name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
 	, ofx::attribute::OfxhParamString( descriptor, name, effect )
@@ -44,15 +43,15 @@ void ParamString::setAtTime( const OfxTime time, const std::string& v, const ofx
 void ParamString::copy( const ParamString& p ) OFX_EXCEPTION_SPEC
 {
 	_value = p._value;
-//	paramChanged( ofx::attribute::eChangeUserEdited );
+	//	paramChanged( ofx::attribute::eChangeUserEdited );
 }
 
 void ParamString::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
 {
-	const ParamString& param = dynamic_cast<const ParamString&>(p);
+	const ParamString& param = dynamic_cast<const ParamString&>( p );
+
 	copy( param );
 }
-
 
 }
 }

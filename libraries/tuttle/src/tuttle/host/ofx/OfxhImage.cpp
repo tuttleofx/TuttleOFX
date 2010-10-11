@@ -41,7 +41,7 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-int OfxhImage::_count = 0;
+std::ptrdiff_t OfxhImage::_count = 0;
 
 static property::OfxhPropSpec imageStuffs[] = {
 	{ kOfxPropType, property::eString, 1, false, kOfxTypeImage },
@@ -60,22 +60,24 @@ static property::OfxhPropSpec imageStuffs[] = {
 };
 
 OfxhImage::OfxhImage()
-	: property::OfxhSet( imageStuffs ),
-	_id( _count++ ),
-	_referenceCount( 1 )
+	: property::OfxhSet( imageStuffs )
+	, _id( _count++ )
+	, _referenceCount( 1 )
+	, _clipName( "No clip !" )
 {
-	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+	COUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 }
 
 /**
  * make an image from a clip instance
  */
 OfxhImage::OfxhImage( attribute::OfxhClip& instance )
-	: property::OfxhSet( imageStuffs ),
-	_id( _count++ ),
-	_referenceCount( 1 )
+	: property::OfxhSet( imageStuffs )
+	, _id( _count++ )
+	, _referenceCount( 1 )
+	, _clipName( instance.getName() )
 {
-	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+	COUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 	initClipBits( instance );
 }
 
@@ -91,11 +93,12 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
                       int                  rowBytes,
                       std::string          field,
                       std::string          uniqueIdentifier )
-	: property::OfxhSet( imageStuffs ),
-	_id( _count++ ),
-	_referenceCount( 1 )
+	: property::OfxhSet( imageStuffs )
+	, _id( _count++ )
+	, _referenceCount( 1 )
+	, _clipName( instance.getName() )
 {
-	COUT( "++ OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+	COUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 	initClipBits( instance );
 
 	// set other data
@@ -119,7 +122,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 
 OfxhImage::~OfxhImage()
 {
-	COUT( "-- ~OfxhImage, id:" << _id << ", ref:" << _referenceCount );
+	COUT( "-- ~OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 }
 
 /// called during ctor to get bits from the clip props into ours
@@ -165,7 +168,7 @@ OfxRectI OfxhImage::getROD() const
 
 EBitDepth OfxhImage::getBitDepth() const
 {
-	std::string depth     = getStringProperty( kOfxImageEffectPropPixelDepth );
+	std::string depth  = getStringProperty( kOfxImageEffectPropPixelDepth );
 	EBitDepth bitDepth = eBitDepthNone;
 
 	if( depth == kOfxBitDepthByte )
@@ -185,7 +188,7 @@ EBitDepth OfxhImage::getBitDepth() const
 
 EPixelComponent OfxhImage::getComponentsType() const
 {
-	std::string sType           = getStringProperty( kOfxImageEffectPropComponents );
+	std::string sType        = getStringProperty( kOfxImageEffectPropComponents );
 	EPixelComponent compType = ePixelComponentNone;
 
 	if( sType == kOfxImageComponentRGBA )
@@ -203,7 +206,6 @@ int OfxhImage::getRowBytes() const
 {
 	return getIntProperty( kOfxImagePropRowBytes );
 }
-
 
 }
 }

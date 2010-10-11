@@ -38,7 +38,7 @@ protected:
 	void writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const int packing );
 
 public:
-	DPXWriterProcess( DPXWriterPlugin & instance );
+	DPXWriterProcess( DPXWriterPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };

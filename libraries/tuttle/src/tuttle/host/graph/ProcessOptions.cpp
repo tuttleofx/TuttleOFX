@@ -9,11 +9,12 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-
 std::ostream& operator<<( std::ostream& os, const ProcessInfos& infos )
 {
 	os << "nodes:" << infos._nodes << std::endl;
-	os << "memory:" << std::setprecision(2) << infos._memory * 1e-6 << "Mo (" << infos._memory << ")" << std::endl;
+	std::ostringstream s;
+	s << "memory:" << std::setprecision( 2 ) << infos._memory * 1e-6 << "Mo (" << infos._memory << ")" << std::endl;
+	os << s.str();
 	return os;
 }
 
@@ -24,11 +25,16 @@ std::ostream& operator<<( std::ostream& os, const ProcessOptions& options )
 	os << "step:" << options._step << std::endl;
 	os << "interactive:" << options._interactive << std::endl;
 	os << "time:" << options._time << std::endl;
-	os << "nbInputs:" << options._nbInputs << std::endl;
-	os << "nbOutputs:" << options._nbOutputs << std::endl;
-	
+	os << "out degree:" << options._outDegree << std::endl;
+	os << "in degree:" << options._inDegree << std::endl;
+
+	os << "__________" << std::endl;
 	os << "localInfos:" << std::endl << options._localInfos;
+	os << "__________" << std::endl;
+	os << "inputsInfos:" << std::endl << options._inputsInfos;
+	os << "__________" << std::endl;
 	os << "globalInfos:" << std::endl << options._globalInfos;
+	os << "__________" << std::endl;
 
 	// imageEffect specific options
 	os << "field:" << options._field << std::endl;
@@ -36,7 +42,7 @@ std::ostream& operator<<( std::ostream& os, const ProcessOptions& options )
 	os << "renderScale:" << options._renderScale << std::endl;
 
 	os << "clips:" << options._inputsRoI.size() << std::endl;
-	BOOST_FOREACH( const ProcessOptions::MapClipImageRod::value_type& item, options._inputsRoI )
+	BOOST_FOREACH( const ProcessOptions::MapClipImageRod::value_type & item, options._inputsRoI )
 	{
 		if( item.first )
 		{

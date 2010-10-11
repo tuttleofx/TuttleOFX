@@ -17,25 +17,26 @@ namespace writer {
 using namespace boost::gil;
 
 FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
-: ImageEffect( handle )
+	: ImageEffect( handle )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
 
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-	_filepath = fetchStringParam( kParamFilename );
-	_format = fetchChoiceParam( kParamFormat );
-	_formatLong = fetchChoiceParam( kParamFormatLong );
-	_codec = fetchChoiceParam( kParamCodec );
-	_codecLong = fetchChoiceParam( kParamCodecLong );
-	_bitRate = fetchIntParam( kParamBitrate );
-	_paramRenderAlways   = fetchBooleanParam( kParamRenderAlways );
+	_clipSrc           = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
+	_filepath          = fetchStringParam( kParamFilename );
+	_format            = fetchChoiceParam( kParamFormat );
+	_formatLong        = fetchChoiceParam( kParamFormatLong );
+	_codec             = fetchChoiceParam( kParamCodec );
+	_codecLong         = fetchChoiceParam( kParamCodecLong );
+	_bitRate           = fetchIntParam( kParamBitrate );
+	_paramRenderAlways = fetchBooleanParam( kParamRenderAlways );
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 {
 	FFMpegProcessParams params;
+
 	_filepath->getValue( params._filepath );
 	_format->getValue( params._format );
 	_codec->getValue( params._codec );
@@ -43,14 +44,14 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 	return params;
 }
 
-void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-    if( paramName == kParamFFMpegHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kFFMpegHelpString );
-    }
+	if( paramName == kParamFFMpegHelpButton )
+	{
+		sendMessage( OFX::Message::eMessageMessage,
+		             "", // No XML resources
+		             kFFMpegHelpString );
+	}
 	else if( paramName == kParamFormatLong && args.reason == OFX::eChangeUserEdit  )
 	{
 		_format->setValue( _formatLong->getValue() );
@@ -95,73 +96,73 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void FFMpegWriterPlugin::render( const OFX::RenderArguments &args )
+void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                FFMpegWriterProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                FFMpegWriterProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                FFMpegWriterProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                FFMpegWriterProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                FFMpegWriterProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                FFMpegWriterProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				FFMpegWriterProcess<rgba8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				FFMpegWriterProcess<rgba16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				FFMpegWriterProcess<rgba32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
+	else if( dstComponents == OFX::ePixelComponentAlpha )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				FFMpegWriterProcess<gray8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				FFMpegWriterProcess<gray16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				FFMpegWriterProcess<gray32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
 }
 
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )

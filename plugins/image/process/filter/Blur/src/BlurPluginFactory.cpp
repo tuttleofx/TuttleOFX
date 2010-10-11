@@ -20,7 +20,6 @@ namespace blur {
 
 static const bool kSupportTiles = true;
 
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -28,7 +27,7 @@ static const bool kSupportTiles = true;
 void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleBlur", "TuttleBlur",
-		            "TuttleBlur" );
+	                "TuttleBlur" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
 	// add the supported contexts, only filter at the moment
@@ -36,8 +35,8 @@ void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
-//	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-//	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	//	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	//	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
@@ -50,9 +49,10 @@ void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                           OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
@@ -85,7 +85,7 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* BlurPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                     OFX::EContext        context )
 {
 	return new BlurPlugin( handle );
 }

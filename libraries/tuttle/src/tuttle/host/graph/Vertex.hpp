@@ -1,76 +1,32 @@
 #ifndef _TUTTLE_VERTEX_HPP_
 #define _TUTTLE_VERTEX_HPP_
 
-#include <iostream>
-
-#include <tuttle/host/Node.hpp>
+#include "IVertex.hpp"
 
 namespace tuttle {
 namespace host {
 namespace graph {
 
-class Vertex
+class Vertex : public IVertex
 {
 public:
-	Vertex( const std::string& name = "Undefined" )
-		: _name( name ),
-		_processNode( NULL ),
-		_fake( true ),
-		_id( _count++ )
-	{
-	}
+	Vertex( const std::string& name = "Undefined" );
+	Vertex( const std::string& name, INode& processNode );
+	Vertex( const Vertex& v );
 
-	Vertex( const std::string& name,
-	        Node& processNode )
-		: _name( name ),
-		_processNode( &processNode ),
-		_fake( false ),
-		_id( _count++ )
-	{
-	}
-
-	Vertex( Vertex& v )
-	{
-		this->operator=(v);
-		_id = _count++;
-	}
-
-	virtual ~Vertex()
-	{
-	}
-	
-	/*
 	Vertex& operator=( const Vertex& v )
 	{
-		if( this == &v )
-			return *this;
-		_name        = v._name;
-		_processNode = v._processNode;
-		_processOptions = v._processOptions;
-		_fake = v._fake;
+		IVertex::operator=(v);
+		_times           = v._times;
 		return *this;
 	}
-	*/
 
-	const bool                     isFake() const                         { return _fake; }
-	const std::string&             getName() const                        { return _name; }
-	Node*             getProcessNode()                       { return _processNode; }
-	const Node* const getProcessNode() const                 { return _processNode; }
-	void                           setProcessNode( Node* p ) { _processNode = p; }
-	ProcessOptions&          getProcessOptions() { return _processOptions; }
-	const ProcessOptions&    getProcessOptions() const { return _processOptions; }
-	void                           setProcessOptions( const ProcessOptions& options ) { _processOptions = options; }
-
+	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 
-private:
-	std::string _name;
-	Node* _processNode;
-	graph::ProcessOptions _processOptions;
-	bool _fake;
-	static int _count;
 public:
-	int _id;
+	typedef std::set<OfxTime> TimesSet;
+	TimesSet _times;
 };
 
 }

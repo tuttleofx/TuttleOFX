@@ -36,26 +36,25 @@ protected:
 	time_t _fileModificationTime; ///< used as a time stamp to check modification times, used for caching
 	size_t _fileSize; ///< file size last time we check, used for caching
 	bool _binaryChanged; ///< whether the timestamp/filesize in this cache is different from that in the actual binary
-	
+
 private:
 	explicit OfxhPluginBinary()
-		: _fileModificationTime( 0 ),
-		_fileSize( 0 ),
-		_binaryChanged( false )
-	{
-	}
-	
+		: _fileModificationTime( 0 )
+		, _fileSize( 0 )
+		, _binaryChanged( false )
+	{}
+
 public:
 	/// create one from the cache.  this will invoke the Binary() constructor which
 	/// will stat() the file.
 
 	explicit OfxhPluginBinary( const std::string& file, const std::string& bundlePath, time_t mtime, size_t size )
-		: _binary( file ),
-		_filePath( file ),
-		_bundlePath( bundlePath ),
-		_fileModificationTime( mtime ),
-		_fileSize( size ),
-		_binaryChanged( false )
+		: _binary( file )
+		, _filePath( file )
+		, _bundlePath( bundlePath )
+		, _fileModificationTime( mtime )
+		, _fileSize( size )
+		, _binaryChanged( false )
 	{
 		if( _fileModificationTime != _binary.getTime() || _fileSize != _binary.getSize() )
 		{
@@ -67,10 +66,10 @@ public:
 	/// create Plugin objects as appropriate for the plugins exported therefrom
 
 	explicit OfxhPluginBinary( const std::string& file, const std::string& bundlePath, OfxhPluginCache* cache )
-		: _binary( file ),
-		_filePath( file ),
-		_bundlePath( bundlePath ),
-		_binaryChanged( false )
+		: _binary( file )
+		, _filePath( file )
+		, _bundlePath( bundlePath )
+		, _binaryChanged( false )
 	{
 		loadPluginInfo( cache );
 	}
@@ -78,21 +77,21 @@ public:
 	/// dtor
 	virtual ~OfxhPluginBinary();
 
-#ifndef SWIG
+	#ifndef SWIG
 	bool operator==( const This& other ) const
 	{
 		if( _binary != other._binary ||
-			_filePath != other._filePath ||
-			_bundlePath != other._bundlePath ||
-			_plugins != other._plugins ||
-			_fileModificationTime != other._fileModificationTime ||
-			_fileSize != other._fileSize ||
-			_binaryChanged != other._binaryChanged )
+		    _filePath != other._filePath ||
+		    _bundlePath != other._bundlePath ||
+		    _plugins != other._plugins ||
+		    _fileModificationTime != other._fileModificationTime ||
+		    _fileSize != other._fileSize ||
+		    _binaryChanged != other._binaryChanged )
 			return false;
 		return true;
 	}
-	bool operator!=( const This& other ) const { return !This::operator==(other); }
 
+	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	time_t getFileModificationTime() const
 	{
@@ -164,26 +163,28 @@ public:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_binary);
-		ar & BOOST_SERIALIZATION_NVP(_filePath);
-		ar & BOOST_SERIALIZATION_NVP(_bundlePath);
-		ar & BOOST_SERIALIZATION_NVP(_plugins);
-		ar & BOOST_SERIALIZATION_NVP(_fileModificationTime);
-		ar & BOOST_SERIALIZATION_NVP(_fileSize);
-		ar & BOOST_SERIALIZATION_NVP(_binaryChanged);
+		ar& BOOST_SERIALIZATION_NVP( _binary );
+		ar& BOOST_SERIALIZATION_NVP( _filePath );
+		ar& BOOST_SERIALIZATION_NVP( _bundlePath );
+		ar& BOOST_SERIALIZATION_NVP( _plugins );
+		ar& BOOST_SERIALIZATION_NVP( _fileModificationTime );
+		ar& BOOST_SERIALIZATION_NVP( _fileSize );
+		ar& BOOST_SERIALIZATION_NVP( _binaryChanged );
+
 		if( typename Archive::is_loading() )
 		{
 			for( PluginVector::iterator it = getPlugins().begin(), itEnd = getPlugins().end();
-				 it != itEnd;
-				 ++it )
+			     it != itEnd;
+			     ++it )
 			{
 				it->setBinary( *this );
 			}
 		}
 	}
-#endif
+
+	#endif
 };
 
 }

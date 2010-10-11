@@ -3,12 +3,11 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace colorDistribution {
 
-const std::string kParamIn = "in";
+const std::string kParamIn  = "in";
 const std::string kParamOut = "out";
 
 const std::string kParamDistribution_linear = "Linear";
@@ -21,9 +20,9 @@ enum EParamDistribution
 {
 	eParamDistribution_linear = 0,
 	eParamDistribution_sRGB,
-//	eParamDistribution_cineon,
-//	eParamDistribution_rec709,
-//	eParamDistribution_rec601
+	//	eParamDistribution_cineon,
+	//	eParamDistribution_rec709,
+	//	eParamDistribution_rec601
 };
 
 const std::string kParamInvert = "invert";

@@ -99,6 +99,7 @@ class OfxhProperty : private boost::noncopyable
 {
 public:
 	typedef OfxhProperty This;
+
 protected:
 	std::string _name;                         ///< name of this property
 	TypeEnum _type;                            ///< type of this property
@@ -155,8 +156,8 @@ public:
 	/// change the state of readonlyness
 	void setPluginReadOnly( bool v ) { _pluginReadOnly = v; }
 
-	void setModifiedBy( const EModifiedBy who ) { _modifiedBy = who; }
-	EModifiedBy getModifiedBy() const { return _modifiedBy; }
+	void        setModifiedBy( const EModifiedBy who ) { _modifiedBy = who; }
+	EModifiedBy getModifiedBy() const                  { return _modifiedBy; }
 
 	/// override this to return a clone of the property
 	virtual OfxhProperty* clone() const = 0;
@@ -212,13 +213,14 @@ public:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_name);
-		ar & BOOST_SERIALIZATION_NVP(_type);
-		ar & BOOST_SERIALIZATION_NVP(_dimension);
-		ar & BOOST_SERIALIZATION_NVP(_pluginReadOnly);
+		ar& BOOST_SERIALIZATION_NVP( _name );
+		ar& BOOST_SERIALIZATION_NVP( _type );
+		ar& BOOST_SERIALIZATION_NVP( _dimension );
+		ar& BOOST_SERIALIZATION_NVP( _pluginReadOnly );
 	}
+
 };
 
 #ifndef SWIG
@@ -226,6 +228,7 @@ inline OfxhProperty* new_clone( const OfxhProperty& p )
 {
 	return p.clone();
 }
+
 #endif
 
 }

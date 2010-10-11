@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_PLUGIN_COORDONATESYSTEM_HPP_
-#define	_TUTTLE_PLUGIN_COORDONATESYSTEM_HPP_
+#define _TUTTLE_PLUGIN_COORDONATESYSTEM_HPP_
 
 #include <boost/gil/utilities.hpp>
 #include <boost/static_assert.hpp>
@@ -26,7 +26,6 @@ Value canonicalXXToNormalizedXX( const Value& v, const Point& imgSize ) { return
 template<typename Value, typename Point>
 Value normalizedXXToCanonicalXX( const Value& v, const Point& imgSize ) { return v * imgSize.x; }
 
-
 template<typename Point>
 Point pointCanonicalXYToNormalizedXY( const Point& point, const Point& imgSize ) { return point / imgSize; }
 template<typename Point>
@@ -52,8 +51,8 @@ Point pointCanonicalXYToNormalizedXX( const Point& point, const Point& imgSize )
 		return p;
 	}
 	Point p;
-	p.x = (point.x/imgSize.x);
-	p.y = ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x);
+	p.x = ( point.x / imgSize.x );
+	p.y = ( ( point.y + ( ( imgSize.x - imgSize.y ) * 0.5 ) ) / imgSize.x );
 	return p;
 }
 
@@ -61,6 +60,7 @@ template<typename Point>
 Point pointCanonicalXYToNormalizedXXc( const Point& point, const Point& imgSize )
 {
 	Point p( pointCanonicalXYToNormalizedXX( point, imgSize ) );
+
 	p.x -= 0.5;
 	p.y -= 0.5;
 	return p;
@@ -70,6 +70,7 @@ template<typename Point>
 Point pointNormalizedXXToCanonicalXX( const Point& point, const Point& imgSize )
 {
 	Point p;
+
 	p.x = point.x * imgSize.x;
 	p.y = point.y * imgSize.x;
 	return p;
@@ -79,8 +80,9 @@ template<typename Point>
 Point pointNormalizedXXToCanonicalXY( const Point& point, const Point& imgSize )
 {
 	Point p;
+
 	p.x = point.x * imgSize.x;
-	p.y = (point.y * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
+	p.y = ( point.y * imgSize.x ) - ( ( imgSize.x - imgSize.y ) * 0.5 );
 	return p;
 }
 
@@ -88,45 +90,51 @@ template<typename Point>
 Point pointNormalizedXXcToCanonicalXY( const Point& point, const Point& imgSize )
 {
 	Point p;
-	p.x = (point.x+0.5) * imgSize.x;
-	p.y = ((point.y+0.5) * imgSize.x)-((imgSize.x-imgSize.y)*0.5);
+
+	p.x = ( point.x + 0.5 ) * imgSize.x;
+	p.y = ( ( point.y + 0.5 ) * imgSize.x ) - ( ( imgSize.x - imgSize.y ) * 0.5 );
 	return p;
 }
 
-
 template<ECoordonateSystem from, ECoordonateSystem to>
-inline Point2Double pointConvertCoordonateSystem( const Point2Double& point, const Point2Double& imgSize ) { BOOST_STATIC_ASSERT(( from == to )); return point; }
+inline Point2Double pointConvertCoordonateSystem( const Point2Double& point, const Point2Double& imgSize ) { BOOST_STATIC_ASSERT( ( from == to ) ); return point; }
 
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXY, eCoordonateSystemXYn>( const Point2Double& point, const Point2Double& imgSize )
 {
 	return pointCanonicalXYToNormalizedXY( point, imgSize );
 }
+
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXYn, eCoordonateSystemXY>( const Point2Double& point, const Point2Double& imgSize )
 {
 	return pointNormalizedXYToCanonicalXY( point, imgSize );
 }
+
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXY, eCoordonateSystemXXn>( const Point2Double& point, const Point2Double& imgSize )
 {
 	return pointCanonicalXYToNormalizedXX( point, imgSize );
 }
+
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXY, eCoordonateSystemXXcn>( const Point2Double& point, const Point2Double& imgSize )
 {
 	return pointCanonicalXYToNormalizedXXc( point, imgSize );
 }
+
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXXn, eCoordonateSystemXX>( const Point2Double& point, const Point2Double& imgSize )
 {
 	return pointNormalizedXXToCanonicalXX( point, imgSize );
 }
+
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXXn, eCoordonateSystemXY>( const Point2Double& point, const Point2Double& imgSize )
 {
 	return pointNormalizedXXToCanonicalXY( point, imgSize );
 }
+
 template<>
 inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXXcn, eCoordonateSystemXY>( const Point2Double& point, const Point2Double& imgSize )
 {
@@ -136,7 +144,5 @@ inline Point2Double pointConvertCoordonateSystem<eCoordonateSystemXXcn, eCoordon
 }
 }
 
-
 #endif
-
 

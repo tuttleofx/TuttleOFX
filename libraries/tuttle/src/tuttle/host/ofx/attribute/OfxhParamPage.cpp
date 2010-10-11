@@ -22,7 +22,6 @@ const std::map<int, OfxhParam*>& OfxhParamPage::getChildren() const
 	return _children;
 }
 
-
 }
 }
 }

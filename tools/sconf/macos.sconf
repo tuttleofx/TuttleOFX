@@ -1,0 +1,10 @@
+# use system libraries
+
+include = '/opt/local/include'
+
+incdir_openexr = join(include,'OpenEXR')
+incdir_freetype = join(include,'freetype2')
+incdir_imagemagick = join(include,'ImageMagick')
+
+fwkdir_python = True # use framework with default directories
+

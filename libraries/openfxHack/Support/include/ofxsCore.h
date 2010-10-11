@@ -57,9 +57,9 @@
  * - called before the plug-in is unloaded, and all instances have been destroyed,
  * - void OFX::Plugin::describe(OFX::ImageEffectDescriptor &desc)
  * - called to describe the plugin to the host
- * - void OFX::Plugin::describeInContext(OFX::ImageEffectDescriptor &desc, OFX::ContextEnum context)
+ * - void OFX::Plugin::describeInContext(OFX::ImageEffectDescriptor &desc, OFX::EContext context)
  * - called to describe the plugin to the host for a context reported in OFX::Plugin::describe
- * -  OFX::ImageEffect * OFX::Plugin::createInstance(OfxImageEffectHandle handle, OFX::ContextEnum context)
+ * -  OFX::ImageEffect * OFX::Plugin::createInstance(OfxImageEffectHandle handle, OFX::EContext context)
  * - called when a new instance of a plug-in needs to be created. You need to derive a class from ImageEffect, new it and return it.
  *
  * The OFX::ImageEffect class has a set of members you can override to do various things, like rendering an effect. Again, look at the examples.
@@ -363,6 +363,7 @@ public:
 	void propReset( const char* property );
 
 	// set single values
+	// @tuttle todo: replace int with std::size_t for idx
 	void propSetPointer( const char* property, void* value, int idx, bool throwOnFailure = true );
 	void propSetString( const char* property, const std::string& value, int idx, bool throwOnFailure = true );
 	void propSetDouble( const char* property, double value, int idx, bool throwOnFailure = true );

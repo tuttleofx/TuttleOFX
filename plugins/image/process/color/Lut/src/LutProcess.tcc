@@ -1,5 +1,5 @@
-#if defined(_MSC_VER)
-	#pragma warning( disable : 4244 )
+#if defined( _MSC_VER )
+ #pragma warning( disable : 4244 )
 #endif
 
 #include "LutProcess.hpp"
@@ -19,7 +19,6 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem/fstream.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace lut {
@@ -28,10 +27,10 @@ using namespace boost::filesystem;
 
 template<class View>
 LutProcess<View>::LutProcess( LutPlugin& instance )
-	: ImageGilFilterProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
 {
-    _lut3D = &_plugin.lut3D();
+	_lut3D = &_plugin.lut3D();
 }
 
 /**
@@ -42,6 +41,7 @@ template<class View>
 void LutProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+
 	applyLut( this->_dstView, this->_srcView, procWindowOutput );
 }
 
@@ -59,9 +59,9 @@ void LutProcess<View>::applyLut( View& dst, View& src, const OfxRectI& procWindo
 		for( int x = procWindow.x1; x < procWindow.x2; ++x )
 		{
 			Color col = _lut3D->getColor( ( *sit )[0], ( *sit )[1], ( *sit )[2] );
-			( *dit )[0] = static_cast<Pixel>(col.x);
-			( *dit )[1] = static_cast<Pixel>(col.y);
-			( *dit )[2] = static_cast<Pixel>(col.z);
+			( *dit )[0] = static_cast<Pixel>( col.x );
+			( *dit )[1] = static_cast<Pixel>( col.y );
+			( *dit )[2] = static_cast<Pixel>( col.z );
 			if( dst.num_channels() > 3 )
 				( *dit )[3] = channel_traits< typename channel_type< View >::type >::max_value();
 			++sit;

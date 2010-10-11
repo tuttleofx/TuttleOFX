@@ -11,10 +11,11 @@ namespace plugin {
 namespace fftTransform {
 namespace ifft {
 
-static const bool kSupportTiles              = false;
-static const bool kHostFrameThreading        = false;
+static const bool kSupportTiles       = false;
+static const bool kHostFrameThreading = false;
 
-mDeclarePluginFactory( IfftPluginFactory, {}, {} );
+mDeclarePluginFactory( IfftPluginFactory, {}, {}
+                       );
 
 }
 }

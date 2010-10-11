@@ -5,6 +5,8 @@
 
 #include <string>
 
+#define PROCESSGRAPH_USE_LINK
+
 namespace tuttle {
 namespace host {
 namespace graph {
@@ -16,15 +18,21 @@ public:
 	typedef Graph::Vertex Vertex;
 	typedef Graph::Edge Edge;
 	typedef Graph::Attribute Attribute;
-	typedef Graph::InternalGraphImpl InternalGraphImpl;
-	typedef Graph::Descriptor Descriptor;
+	typedef InternalGraph<Vertex, Edge, boost::vecS, boost::vecS> InternalGraphImpl;
+	typedef Graph::vertex_descriptor vertex_descriptor;
+	typedef Graph::edge_descriptor edge_descriptor;
+#ifdef PROCESSGRAPH_USE_LINK
+	typedef std::map<std::string, Node*> NodeMap;
+#else
 	typedef Graph::NodeMap NodeMap;
+#endif
 	typedef Graph::InstanceCountMap InstanceCountMap;
+
 public:
 	ProcessGraph( Graph& graph, const std::list<std::string>& nodes ); ///@ todo: const Graph, no ?
 	~ProcessGraph();
 
-	void process( const int tBegin, const int tEnd );
+	memory::MemoryCache process( const int tBegin, const int tEnd );
 
 private:
 	void relink();

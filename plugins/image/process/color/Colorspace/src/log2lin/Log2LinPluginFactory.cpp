@@ -23,23 +23,23 @@ namespace log2lin {
  * @brief Function called to describe the plugin main features.
  * @param[in, out]   desc     Effect descriptor
  */
-void Log2LinPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
+void Log2LinPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    desc.setLabels( "TuttleLog2lin", "Log2lin",
-                    "Logarithmic to linear convertion" );
-    desc.setPluginGrouping( "tuttle/image/process/color" );
+	desc.setLabels( "TuttleLog2lin", "Log2lin",
+	                "Logarithmic to linear convertion" );
+	desc.setPluginGrouping( "tuttle/image/process/color" );
 
-    // add the supported contexts
-    desc.addSupportedContext( OFX::eContextFilter );
-    desc.addSupportedContext( OFX::eContextGeneral );
+	// add the supported contexts
+	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
-    // add supported pixel depths
-    desc.addSupportedBitDepth( OFX::eBitDepthUByte );
-    desc.addSupportedBitDepth( OFX::eBitDepthUShort );
-    desc.addSupportedBitDepth( OFX::eBitDepthFloat );
+	// add supported pixel depths
+	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
+	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
+	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-    // plugin flags
-    desc.setSupportsTiles( kSupportTiles );
+	// plugin flags
+	desc.setSupportsTiles( kSupportTiles );
 }
 
 /**
@@ -47,22 +47,23 @@ void Log2LinPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void Log2LinPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
-                                              OFX::EContext context )
+void Log2LinPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+                                              OFX::EContext               context )
 {
-    OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-    srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-    srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-    srcClip->setSupportsTiles( kSupportTiles );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
-    // Create the mandated output clip
-    OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-    dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-    dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-    dstClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClip->setSupportsTiles( kSupportTiles );
 
-    OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kLog2LinHelpButton );
-    helpButton->setScriptName( "&Help" );
+	// Create the mandated output clip
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	dstClip->setSupportsTiles( kSupportTiles );
+
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kLog2LinHelpButton );
+	helpButton->setScriptName( "&Help" );
 }
 
 /**
@@ -72,9 +73,9 @@ void Log2LinPluginFactory::describeInContext( OFX::ImageEffectDescriptor &desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* Log2LinPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                        OFX::EContext context)
+                                                        OFX::EContext        context )
 {
-    return new Log2LinPlugin(handle);
+	return new Log2LinPlugin( handle );
 }
 
 }

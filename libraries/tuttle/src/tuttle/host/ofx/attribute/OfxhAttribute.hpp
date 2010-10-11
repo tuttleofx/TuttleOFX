@@ -49,13 +49,14 @@ inline EChange mapChangeStringToEnum( const std::string& change )
 		return eChangeNone;
 }
 
-
 class OfxhAttribute : virtual public OfxhAttributeAccessor
 {
 public:
 	typedef OfxhAttribute This;
+
 protected:
-	OfxhAttribute(){}
+	OfxhAttribute() {}
+
 public:
 	OfxhAttribute( const property::OfxhSet& properties );
 	OfxhAttribute( const OfxhAttributeDescriptor& desc );
@@ -67,6 +68,7 @@ public:
 			return false;
 		return true;
 	}
+
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 protected:
@@ -92,15 +94,17 @@ public:
 
 	virtual void copyValues( const This& other )
 	{
-		_properties.copyValues(other._properties);
+		_properties.copyValues( other._properties );
 	}
+
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_NVP(_properties);
+		ar& BOOST_SERIALIZATION_NVP( _properties );
 	}
+
 };
 
 }

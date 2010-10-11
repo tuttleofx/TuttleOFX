@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMCENTERSIZE_HPP_
-#define	_TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMCENTERSIZE_HPP_
+#define _TUTTLE_PLUGIN_INTERACT_PARAMRECTANGLEFROMCENTERSIZE_HPP_
 
 #include "InteractObject.hpp"
 #include "PointInteract.hpp"
@@ -16,12 +16,20 @@ namespace plugin {
 namespace interact {
 
 template<ECoordonateSystem coord>
-struct CoordonateSystemNotCentered { static const ECoordonateSystem value = coord; };
+struct CoordonateSystemNotCentered
+{
+	static const ECoordonateSystem value = coord;
+};
 template<>
-struct CoordonateSystemNotCentered<eCoordonateSystemXXcn> { static const ECoordonateSystem value = eCoordonateSystemXXn; };
+struct CoordonateSystemNotCentered<eCoordonateSystemXXcn>
+{
+	static const ECoordonateSystem value = eCoordonateSystemXXn;
+};
 template<>
-struct CoordonateSystemNotCentered<eCoordonateSystemXYc> { static const ECoordonateSystem value = eCoordonateSystemXYc; };
-
+struct CoordonateSystemNotCentered<eCoordonateSystemXYc>
+{
+	static const ECoordonateSystem value = eCoordonateSystemXYc;
+};
 
 template<class TFrame, ECoordonateSystem coord>
 class ParamRectangleFromCenterSize : public PointInteract
@@ -29,7 +37,7 @@ class ParamRectangleFromCenterSize : public PointInteract
 public:
 	ParamRectangleFromCenterSize( const InteractInfos& infos, OFX::Double2DParam* paramCenter, OFX::Double2DParam* paramSize, const TFrame& frame );
 	~ParamRectangleFromCenterSize();
-	
+
 private:
 	ParamPoint<TFrame, coord> _center;
 	ParamPoint<TFrame, CoordonateSystemNotCentered<coord>::value> _size;
@@ -41,7 +49,7 @@ private:
 	 *    |         |
 	 * L  |    C    |  R
 	 *    |         |
-	 *    |_________| 
+	 *    |_________|
 	 *  BL           BR
 	 *         B
 	 */
@@ -83,18 +91,19 @@ private:
 			case eSelectTypeC:
 				return "eSelectTypeC";
 		}
-		BOOST_THROW_EXCEPTION( std::invalid_argument( "ESelectType: " + boost::lexical_cast<std::string>(s) ) );
+		BOOST_THROW_EXCEPTION( std::invalid_argument( "ESelectType: " + boost::lexical_cast<std::string>( s ) ) );
 		return "";
 	}
+
 	ESelectType _selectType;
-	
+
 public:
 	bool draw( const OFX::DrawArgs& args ) const;
 
 	ESelectType selectType( const OFX::PenArgs& args ) const;
 
 	EMoveType selectIfIntesect( const OFX::PenArgs& args );
-	bool selectIfIsIn( const OfxRectD& );
+	bool      selectIfIsIn( const OfxRectD& );
 
 	Point2 getPoint() const
 	{
@@ -105,33 +114,33 @@ public:
 	{
 		if( _selectType == eSelectTypeC )
 			return _center.setPoint( x, y );
-		
+
 		Point2 pCenter = _center.getPoint();
 		Point2 pSize   = _size.getPoint();
 
 		OfxRectD frameRect = _frame.getFrame( this->getTime() );
-		Point2 mouse( x-frameRect.x1, y-frameRect.y1 ); // relative to frame
+		Point2 mouse( x - frameRect.x1, y - frameRect.y1 ); // relative to frame
 		mouse = mouse - pCenter; // relative to pointCenter
 		switch( _selectType )
 		{
 			case eSelectTypeL:
 			{
-				_size.setPoint( std::abs(mouse.x), pSize.y );
+				_size.setPoint( std::abs( mouse.x ), pSize.y );
 				break;
 			}
 			case eSelectTypeR:
 			{
-				_size.setPoint( std::abs(mouse.x), pSize.y );
+				_size.setPoint( std::abs( mouse.x ), pSize.y );
 				break;
 			}
 			case eSelectTypeT:
 			{
-				_size.setPoint( pSize.x, std::abs(mouse.y) );
+				_size.setPoint( pSize.x, std::abs( mouse.y ) );
 				break;
 			}
 			case eSelectTypeB:
 			{
-				_size.setPoint( pSize.x, std::abs(mouse.y) );
+				_size.setPoint( pSize.x, std::abs( mouse.y ) );
 				break;
 			}
 			case eSelectTypeTL:
@@ -166,20 +175,19 @@ public:
 			}
 		}
 	}
-};
 
+};
 
 template<class TFrame, ECoordonateSystem coord>
 ParamRectangleFromCenterSize<TFrame, coord>::ParamRectangleFromCenterSize( const InteractInfos& infos, OFX::Double2DParam* paramCenter, OFX::Double2DParam* paramSize, const TFrame& frame )
-: PointInteract( infos )
-, _center( infos, paramCenter, frame )
-, _size( infos, paramSize, frame )
-, _frame( frame )
-{
-}
+	: PointInteract( infos )
+	, _center( infos, paramCenter, frame )
+	, _size( infos, paramSize, frame )
+	, _frame( frame )
+{}
 
 template<class TFrame, ECoordonateSystem coord>
-ParamRectangleFromCenterSize<TFrame, coord>::~ParamRectangleFromCenterSize( ) { }
+ParamRectangleFromCenterSize<TFrame, coord>::~ParamRectangleFromCenterSize() {}
 
 template<class TFrame, ECoordonateSystem coord>
 bool ParamRectangleFromCenterSize<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
@@ -192,17 +200,18 @@ bool ParamRectangleFromCenterSize<TFrame, coord>::draw( const OFX::DrawArgs& arg
 template<class TFrame, ECoordonateSystem coord>
 typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangleFromCenterSize<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
-	const Point2 p = ofxToGil( args.penPosition );
+	const Point2 p              = ofxToGil( args.penPosition );
 	const double margeCanonical = this->getMarge() * args.pixelScale.x;
+
 	COUT_VAR( this->getMarge() );
 	COUT_VAR( args.pixelScale.x );
 	COUT_VAR( margeCanonical );
 	const OfxRectD rod = _frame.getFrame( this->getTime() );
-	const Point2 rodSize( rod.x2-rod.x1, rod.y2-rod.y1 );
+	const Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	const Point2 pCenter = _center.getPoint();
-	const Point2 pSize = _size.getPoint();
-	const Point2 min = pCenter - pSize;
-	const Point2 max = pCenter + pSize;
+	const Point2 pSize   = _size.getPoint();
+	const Point2 min     = pCenter - pSize;
+	const Point2 max     = pCenter + pSize;
 
 	if( std::abs( min.x - p.x ) < margeCanonical ) // left
 	{
@@ -238,16 +247,16 @@ EMoveType ParamRectangleFromCenterSize<TFrame, coord>::selectIfIntesect( const O
 	EMoveType m = _center.selectIfIntesect( args );
 	if( m != eMoveTypeNone )
 	{
-		COUT( "intersect center.");
+		COUT( "intersect center." );
 		_selectType = eSelectTypeC;
 		return m;
 	}
 	// intersect borders
 	_selectType = selectType( args );
-	COUT( "_selectType : " << mapESelectTypeToString(_selectType) );
+	COUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
 	if( _selectType != eSelectTypeNone )
 	{
-		COUT( "intersect border.");
+		COUT( "intersect border." );
 		return eMoveTypeXY;
 	}
 	return eMoveTypeNone;
@@ -258,18 +267,17 @@ bool ParamRectangleFromCenterSize<TFrame, coord>::selectIfIsIn( const OfxRectD& 
 {
 	_selectType = eSelectTypeNone;
 	Point2 pCenter = _center.getPoint();
-	Point2 pSize = _size.getPoint();
-	Point2 min = pCenter - pSize;
-	Point2 max = pCenter + pSize;
+	Point2 pSize   = _size.getPoint();
+	Point2 min     = pCenter - pSize;
+	Point2 max     = pCenter + pSize;
 	if( rect.x1 <= min.x  && rect.x2 >= max.x &&
 	    rect.y1 <= min.y  && rect.y2 >= max.y )
 	{
-		this->_offset = Point2(0,0);
+		this->_offset = Point2( 0, 0 );
 		return true;
 	}
 	return false;
 }
-
 
 }
 }

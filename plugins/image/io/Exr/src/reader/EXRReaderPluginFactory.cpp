@@ -18,7 +18,7 @@ namespace plugin {
 namespace exr {
 namespace reader {
 
-static const bool kSupportTiles              = false;
+static const bool kSupportTiles = false;
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -51,7 +51,7 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext            context )
+                                                OFX::EContext               context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -85,43 +85,43 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	else
 	{
 		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>(OFX::getImageEffectHostDescription()->getPixelDepth()) );
+		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
 	}
 
 	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kParamOutputComponents );
 	assert( outComponents );
 	outComponents->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outComponents->setEvaluateOnChange(true);
+	outComponents->setEvaluateOnChange( true );
 	outComponents->setLabel( "Components to output" );
-	outComponents->setDefault(0);
+	outComponents->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* outRedIs = desc.defineChoiceParam( kParamOutputRedIs );
 	assert( outRedIs );
 	outRedIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outRedIs->setEvaluateOnChange(true);
+	outRedIs->setEvaluateOnChange( true );
 	outRedIs->setLabel( "Red is" );
-	outRedIs->setDefault(0);
+	outRedIs->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* outGreenIs = desc.defineChoiceParam( kParamOutputGreenIs );
 	assert( outGreenIs );
 	outGreenIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outGreenIs->setEvaluateOnChange(true);
+	outGreenIs->setEvaluateOnChange( true );
 	outGreenIs->setLabel( "Green is" );
-	outGreenIs->setDefault(0);
+	outGreenIs->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* outBlueIs = desc.defineChoiceParam( kParamOutputBlueIs );
 	assert( outBlueIs );
 	outBlueIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	outBlueIs->setEvaluateOnChange(true);
+	outBlueIs->setEvaluateOnChange( true );
 	outBlueIs->setLabel( "Blue is" );
-	outBlueIs->setDefault(0);
+	outBlueIs->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* outAlphaIs = desc.defineChoiceParam( kParamOutputAlphaIs );
 	assert( outAlphaIs );
-	outAlphaIs->setEvaluateOnChange(true);
+	outAlphaIs->setEvaluateOnChange( true );
 	outAlphaIs->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	outAlphaIs->setLabel( "Alpha is" );
-	outAlphaIs->setDefault(0);
+	outAlphaIs->setDefault( 0 );
 }
 
 /**
@@ -131,7 +131,7 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* EXRReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext     context )
+                                                          OFX::EContext        context )
 {
 	return new EXRReaderPlugin( handle );
 }

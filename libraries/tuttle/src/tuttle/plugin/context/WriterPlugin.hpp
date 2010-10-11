@@ -1,5 +1,5 @@
 #ifndef _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
-#define	_TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
+#define _TUTTLE_PLUGIN_CONTEXT_WRITERPLUGIN_HPP_
 
 #include "WriterDefinition.hpp"
 
@@ -12,7 +12,8 @@
 namespace tuttle {
 namespace plugin {
 
-class WriterPlugin : public OFX::ImageEffect {
+class WriterPlugin : public OFX::ImageEffect
+{
 public:
 	WriterPlugin( OfxImageEffectHandle handle );
 	virtual ~WriterPlugin();
@@ -20,19 +21,19 @@ public:
 public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	bool isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime );
+	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-	void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments& args );
 
 protected:
 	inline bool varyOnTime() const { return _isSequence; }
 
 private:
-	bool                   _isSequence;          ///<
-	common::Sequence       _filePattern;         ///< Filename pattern manager
+	bool _isSequence;                            ///<
+	common::Sequence _filePattern;               ///< Filename pattern manager
 
-	bool                   _oneRender;          ///<
-	OfxTime                _oneRenderAtTime;          ///<
+	bool _oneRender;                            ///<
+	OfxTime _oneRenderAtTime;                         ///<
 
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
@@ -42,6 +43,7 @@ public:
 		else
 			return _paramFilepath->getValue();
 	}
+
 	std::string getAbsoluteFirstFilename() const
 	{
 		if( _isSequence )
@@ -49,6 +51,7 @@ public:
 		else
 			return _paramFilepath->getValue();
 	}
+
 	OfxTime getFirstTime() const
 	{
 		if( _isSequence )
@@ -56,6 +59,7 @@ public:
 		else
 			return kOfxFlagInfiniteMin;
 	}
+
 	OfxTime getLastTime() const
 	{
 		if( _isSequence )
@@ -63,7 +67,7 @@ public:
 		else
 			return kOfxFlagInfiniteMax;
 	}
-	
+
 public:
 	/// @group Attributes
 	/// @{
@@ -77,7 +81,6 @@ public:
 	OFX::Clip* _clipDst;       ///< Ouput image clip
 	/// @}
 };
-
 
 }
 }

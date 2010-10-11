@@ -16,9 +16,9 @@ namespace writer {
 struct FFMpegProcessParams
 {
 	std::string _filepath;      ///< Ffmpeg filepath
-	int _format;				///< Format
-	int _codec;					///< Codec
-	int _bitrate;				///< Bit rate
+	int _format;                ///< Format
+	int _codec;                 ///< Codec
+	int _bitrate;               ///< Bit rate
 };
 
 /**
@@ -27,22 +27,22 @@ struct FFMpegProcessParams
 class FFMpegWriterPlugin : public OFX::ImageEffect
 {
 public:
-    FFMpegWriterPlugin( OfxImageEffectHandle handle );
+	FFMpegWriterPlugin( OfxImageEffectHandle handle );
 
 public:
 	FFMpegProcessParams getProcessParams() const;
 
-	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
-	bool isIdentity( const OFX::RenderArguments &args, OFX::Clip * &identityClip, double &identityTime );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
 	void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
-    void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments& args );
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip*          _clipSrc;       ///< Source image clip
-    OFX::Clip*          _clipDst;       ///< Destination image clip
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip*          _clipSrc;       ///< Source image clip
+	OFX::Clip*          _clipDst;       ///< Destination image clip
 	OFX::StringParam*   _filepath;      ///< Ffmpeg filepath
 	OFX::ChoiceParam*   _format;
 	OFX::ChoiceParam*   _formatLong;
@@ -50,7 +50,7 @@ public:
 	OFX::ChoiceParam*   _codecLong;
 	OFX::IntParam*      _bitRate;
 	OFX::BooleanParam*  _paramRenderAlways;     ///< Render always
-	VideoFFmpegWriter	_writer;
+	VideoFFmpegWriter _writer;
 };
 
 }

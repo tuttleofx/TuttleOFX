@@ -9,16 +9,17 @@
 #include <boost/gil/typedefs.hpp>
 
 #ifndef TUTTLE_PRODUCTION
-#include <boost/gil/extension/io/png_io.hpp>
+ #include <boost/gil/extension/io/png_io.hpp>
 #endif
 
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
-	: ofx::imageEffect::OfxhImage( clip ) ///< this ctor will set basic props on the image
-	, _memoryPool( Core::instance().getMemoryPool() )
+Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
+	: ofx::imageEffect::OfxhImage( clip )
+	,                                     ///< this ctor will set basic props on the image
+	_memoryPool( Core::instance().getMemoryPool() )
 {
 	size_t memlen = 0;
 	size_t rowlen = 0;
@@ -45,7 +46,7 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	else
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()
-			<< exception::user() + "Unsupported component type: " + quotes(clip.getComponentsString()) );
+		    << exception::user() + "Unsupported component type: " + quotes( clip.getComponentsString() ) );
 	}
 
 	// make some memory according to the bit depth
@@ -67,7 +68,7 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, OfxTime time )
 	else
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()
-			<< exception::user() + "Unsupported pixel depth: " + quotes(clip.getBitDepthString()) );
+		    << exception::user() + "Unsupported pixel depth: " + quotes( clip.getBitDepthString() ) );
 	}
 
 	_data = _memoryPool.allocate( memlen );

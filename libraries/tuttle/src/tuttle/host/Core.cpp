@@ -29,9 +29,9 @@ memory::MemoryCache cache;
 }
 
 Core::Core()
-	: _imageEffectPluginCache( _host ),
-	_memoryPool( pool ),
-	_memoryCache( cache )
+	: _imageEffectPluginCache( _host )
+	, _memoryPool( pool )
+	, _memoryCache( cache )
 {
 	_pluginCache.setCacheVersion( "tuttleV1" );
 
@@ -47,46 +47,44 @@ Core::~Core()
 
 void Core::preload()
 {
-//	typedef boost::archive::binary_oarchive OArchive;
-//	typedef boost::archive::binary_iarchive IArchive;
-//	typedef boost::archive::text_oarchive OArchive;
-//	typedef boost::archive::text_iarchive IArchive;
+	//	typedef boost::archive::binary_oarchive OArchive;
+	//	typedef boost::archive::binary_iarchive IArchive;
+	//	typedef boost::archive::text_oarchive OArchive;
+	//	typedef boost::archive::text_iarchive IArchive;
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
 	std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
-	
+
 	try
 	{
 		std::ifstream ifsb( cacheFile.c_str() );
 		if( ifsb.is_open() )
 		{
-			COUT_DEBUG("Read plugins cache.");
+			COUT_DEBUG( "Read plugins cache." );
 			IArchive iArchive( ifsb );
-			iArchive >> BOOST_SERIALIZATION_NVP(_pluginCache);
+			iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
 			ifsb.close();
 		}
 	}
 	catch( std::exception& e )
 	{
-		COUT_ERROR("Exception when reading cache file (" << e.what() << ")." );
+		COUT_ERROR( "Exception when reading cache file (" << e.what() << ")." );
 	}
-	
 
 	_pluginCache.scanPluginFiles();
 
 	if( _pluginCache.isDirty() )
 	{
 		/// flush out the current cache
-		COUT_DEBUG("Write plugins cache.");
+		COUT_DEBUG( "Write plugins cache." );
 		std::ofstream ofsb( cacheFile.c_str() );
 		OArchive oArchive( ofsb );
-		oArchive << BOOST_SERIALIZATION_NVP(_pluginCache);
+		oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
 		ofsb.close();
 	}
-	
-}
 
+}
 
 std::ostream& operator<<( std::ostream& os, const Core& v )
 {
@@ -95,7 +93,6 @@ std::ostream& operator<<( std::ostream& os, const Core& v )
 	os << "}" << std::endl;
 	return os;
 }
-
 
 }
 }

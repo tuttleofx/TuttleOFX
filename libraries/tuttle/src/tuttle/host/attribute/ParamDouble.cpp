@@ -4,13 +4,12 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-
-ParamDouble::ParamDouble( ImageEffectNode&                                   effect,
-                          const std::string&                                 name,
+ParamDouble::ParamDouble( ImageEffectNode&                           effect,
+                          const std::string&                         name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor,
-						  const std::size_t index )
-	: Param( effect ),
-	ofx::attribute::OfxhParamDouble( descriptor, name, effect, index )
+                          const std::size_t                          index )
+	: Param( effect )
+	, ofx::attribute::OfxhParamDouble( descriptor, name, effect, index )
 {
 	_value = getDefault();
 }
@@ -42,7 +41,6 @@ void ParamDouble::setAtTime( const OfxTime time, const double& v, const ofx::att
 	this->paramChanged( change );
 }
 
-
 void ParamDouble::derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC
 {
 	BOOST_THROW_EXCEPTION( ofx::OfxhException( kOfxStatErrMissingHostFeature ) );
@@ -56,12 +54,13 @@ void ParamDouble::integrate( const OfxTime time1, const OfxTime time2, double& )
 void ParamDouble::copy( const ParamDouble& p ) OFX_EXCEPTION_SPEC
 {
 	_value = p._value;
-//	paramChanged( ofx::attribute::eChangeUserEdited );
+	//	paramChanged( ofx::attribute::eChangeUserEdited );
 }
 
 void ParamDouble::copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC
 {
-	const ParamDouble& param = dynamic_cast<const ParamDouble&>(p);
+	const ParamDouble& param = dynamic_cast<const ParamDouble&>( p );
+
 	copy( param );
 }
 

@@ -8,7 +8,8 @@ namespace exr {
 namespace writer {
 
 static const bool kSupportTiles = false;
-mDeclarePluginFactory( EXRWriterPluginFactory, {}, {} );
+mDeclarePluginFactory( EXRWriterPluginFactory, {}, {}
+                       );
 
 }
 }

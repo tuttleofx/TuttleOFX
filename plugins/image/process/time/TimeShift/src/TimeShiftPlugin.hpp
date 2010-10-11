@@ -15,17 +15,17 @@ namespace timeShift {
 class TimeShiftPlugin : public OFX::ImageEffect
 {
 public:
-    TimeShiftPlugin( OfxImageEffectHandle handle );
+	TimeShiftPlugin( OfxImageEffectHandle handle );
 
 public:
-    void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments& args );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
-	
+
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _clipSrc;       ///< Source image clip
-    OFX::Clip* _clipDst;       ///< Destination image clip
-    OFX::DoubleParam* _offset; ///< Time offset
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc;       ///< Source image clip
+	OFX::Clip* _clipDst;       ///< Destination image clip
+	OFX::DoubleParam* _offset; ///< Time offset
 };
 
 }

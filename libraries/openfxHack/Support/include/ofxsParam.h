@@ -53,10 +53,14 @@
 #include "ofxsInteract.h"
 #include "ofxsUtilities.h"
 
+#include <extensions/nuke/camera.h>
+
 #include <boost/throw_exception.hpp>
+#include <boost/assert.hpp>
 
 #include <memory>
 #include <iostream>
+
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
 #define mDeclareProtectedAssignAndCC( CLASS ) \
@@ -125,7 +129,9 @@ enum ParamTypeEnum
 	eCustomParam,
 	eGroupParam,
 	ePageParam,
-	ePushButtonParam
+	ePushButtonParam,
+	eParametricParam,
+	eCameraParam
 };
 
 /** @brief Enumerates the different types of cache invalidation */
@@ -196,6 +202,9 @@ public:
 	virtual ~ParamDescriptor();
 
 	inline ParamTypeEnum getType( void ) const { return _paramType; }
+
+	inline PropertySet& getProps() { return _paramProps; }
+	inline const PropertySet& getProps() const { return _paramProps; }
 
 	/** @brief name */
 	inline const std::string& getName( void ) const { return _paramName; }
@@ -654,6 +663,28 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+/** @brief Wraps up a push button param, not much to it at all */
+class ParametricParamDescriptor : public ParamDescriptor
+{
+protected:
+	mDeclareProtectedAssignAndCC( ParametricParamDescriptor );
+	ParametricParamDescriptor( void ) { assert( false ); }
+
+protected:
+	/** @brief hidden constructor */
+	ParametricParamDescriptor( const std::string& name, OfxPropertySetHandle props );
+
+	// so it can make one
+	friend class ParamSetDescriptor;
+
+public:
+	void setDimension( const std::size_t dimension );
+
+	void setLabel( const std::string label );
+	void setDimensionLabel( const std::string label, const std::size_t id );
+};
+
+////////////////////////////////////////////////////////////////////////////////
 /** @brief Wraps up a custom param, haven't added animation support yet */
 class CustomParamDescriptor : public ValueParamDescriptor
 {
@@ -787,24 +818,50 @@ public:
 	/** @brief Define a push button param */
 	PushButtonParamDescriptor* definePushButtonParam( const std::string& name );
 
+	/** @brief Define a parametric param */
+	ParametricParamDescriptor* defineParametricParam( const std::string& name );
+
 	/** @brief Define a custom param */
 	CustomParamDescriptor* defineCustomParam( const std::string& name );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-/** @brief Base class for all param instances */
-class Param
+class Attribute
 {
+private:
+	Attribute( const Attribute& v ) { assert( false ); }
+	Attribute& operator=( const Attribute& ) { assert( false ); return *this; }
 protected:
+	Attribute() { assert( false ); }
+	
+public:
+	Attribute( const std::string& name )
+	: _name(name)
+	{}
+
+	/** @brief get name */
+	inline const std::string& getName() const { return _name; }
+
+	inline PropertySet& getProps() { return _props; }
+	inline const PropertySet& getProps() const { return _props; }
+	
+protected:
+	std::string _name;
+	PropertySet _props;
+};
+
+/** @brief Base class for all param instances */
+class Param : public Attribute
+{
+private:
 	// don't ever use these!
 	Param& operator=( const Param& ) { assert( false ); return *this; }
 	Param( const Param& v ) : _paramSet( v._paramSet ) { assert( false ); }
-	Param( void ) { assert( false ); }
+protected:
+	Param() { assert( false ); }
 
 protected:
-	std::string _paramName;
 	ParamTypeEnum _paramType;
-	PropertySet _paramProps;
 	OfxParamHandle _paramHandle;
 	const ParamSet* _paramSet; // who do I belong to
 
@@ -813,18 +870,17 @@ protected:
 
 	friend class ParamSet;
 
+	OfxParamHandle getOfxHandle() { return _paramHandle; }
+
 public:
 	/** @brief dtor */
-	virtual ~Param();
-
-	/** @brief get name */
-	const std::string& getName( void ) const;
+	virtual ~Param() = 0;
 
 	/** @brief, set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
 
 	/** @brief return the derived type of this parameter */
-	ParamTypeEnum getType( void ) const { return _paramType; }
+	ParamTypeEnum getParamType() const { return _paramType; }
 
 	/** @brief set the secretness of the param, defaults to false */
 	void setIsSecret( bool v );
@@ -870,7 +926,7 @@ protected:
 
 public:
 	/** @brief dtor */
-	virtual ~ValueParam();
+	virtual ~ValueParam() = 0;
 
 	/** @brief Set's whether the value of the param is significant (ie: affects the rendered image) */
 	void setEvaluateOnChange( bool v );
@@ -911,7 +967,7 @@ public:
 /** @brief Wraps up an integer param */
 class IntParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( IntParam );
 	IntParam( void ) { assert( false ); }
 
@@ -966,7 +1022,7 @@ public:
 /** @brief Wraps up an integer param */
 class Int2DParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( Int2DParam );
 	Int2DParam( void ) { assert( false ); }
 
@@ -1034,7 +1090,7 @@ public:
 /** @brief Wraps up an integer param */
 class Int3DParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( Int3DParam );
 	Int3DParam( void ) { assert( false ); }
 
@@ -1095,6 +1151,8 @@ protected:
 	friend class ParamSet;
 
 public:
+	virtual ~BaseDoubleParam() = 0;
+	
 	/** @brief set the sensitivity of any gui slider */
 	void setIncrement( double v );
 
@@ -1115,7 +1173,7 @@ public:
 /** @brief Wraps up an doubleeger param */
 class DoubleParam : public BaseDoubleParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( DoubleParam );
 	DoubleParam( void ) { assert( false ); }
 
@@ -1185,7 +1243,7 @@ public:
 /** @brief Wraps up an doubleeger param */
 class Double2DParam : public BaseDoubleParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( Double2DParam );
 	Double2DParam( void ) { assert( false ); }
 
@@ -1259,7 +1317,7 @@ public:
 /** @brief Wraps up an doubleeger param */
 class Double3DParam : public BaseDoubleParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( Double3DParam );
 	Double3DParam( void ) { assert( false ); }
 
@@ -1321,7 +1379,7 @@ public:
 /** @brief Wraps up an RGB param */
 class RGBParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( RGBParam );
 	RGBParam( void ) { assert( false ); }
 
@@ -1355,7 +1413,7 @@ public:
 /** @brief Wraps up an RGB param */
 class RGBAParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( RGBAParam );
 	RGBAParam( void ) { assert( false ); }
 
@@ -1392,7 +1450,7 @@ public:
 /** @brief Wraps up a string param */
 class StringParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( StringParam );
 	StringParam( void ) { assert( false ); }
 
@@ -1429,7 +1487,7 @@ public:
 /** @brief Wraps up a choice param */
 class ChoiceParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( ChoiceParam );
 	ChoiceParam( void ) { assert( false ); }
 
@@ -1475,7 +1533,7 @@ public:
 /** @brief Wraps up a boolean param */
 class BooleanParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( BooleanParam );
 	BooleanParam( void ) { assert( false ); }
 
@@ -1519,7 +1577,7 @@ public:
 /** @brief Wraps up a group param */
 class GroupParam : public Param
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( GroupParam );
 	GroupParam( void ) { assert( false ); }
 
@@ -1537,7 +1595,7 @@ public:
 /** @brief Wraps up a group param */
 class PageParam : public Param
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( PageParam );
 	PageParam( void ) { assert( false ); }
 
@@ -1555,7 +1613,7 @@ public:
 /** @brief Wraps up a custom param, not animation support yet */
 class CustomParam : public ValueParam
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( CustomParam );
 	CustomParam( void ) { assert( false ); }
 
@@ -1596,7 +1654,7 @@ public:
 /** @brief Wraps up a push button param, not much to it at all */
 class PushButtonParam : public Param
 {
-protected:
+private:
 	mDeclareProtectedAssignAndCC( PushButtonParam );
 	PushButtonParam( void ) { assert( false ); }
 
@@ -1609,6 +1667,175 @@ protected:
 
 public:
 };
+
+////////////////////////////////////////////////////////////////////////////////
+/** @brief Wraps up a parametric param */
+class ParametricParam : public Param
+{
+private:
+	mDeclareProtectedAssignAndCC( ParametricParam );
+	ParametricParam( void ) { assert( false ); }
+
+protected:
+	/** @brief hidden constructor */
+	ParametricParam( const ParamSet* paramSet, const std::string& name, OfxParamHandle handle );
+
+	// so it can make one
+	friend class ParamSet;
+
+public:
+	double getValue( const int curveIndex,
+									   const OfxTime time,
+									   const double parametricPosition );
+	int getNControlPoints( const int curveIndex,
+										   const OfxTime time );
+	std::pair<double, double> getNthControlPoints( const int curveIndex,
+										   const OfxTime time,
+											const int nthCtl );
+	void setNthControlPoints( const int curveIndex,
+												const OfxTime time,
+												const int nthCtl,
+												const double key,
+												const double value,
+												const bool addAnimationKey );
+	void setNthControlPoints( const int curveIndex,
+										   const OfxTime time,
+											const int nthCtl,
+											const std::pair<double, double> ctrlPoint,
+											const bool addAnimationKey );
+	void addControlPoint( const int curveIndex,
+											 const OfxTime time,
+											 const double key,
+											 const double value,
+											 const bool addAnimationKey );
+	void deleteControlPoint( const int curveIndex,
+											 const int nthCtl );
+	void deleteControlPoint( const int curveIndex );
+};
+
+////////////////////////////////////////////////////////////////////////////////
+/** @brief Wraps up a camera param */
+class CameraParam : public Param
+{
+private:
+	mDeclareProtectedAssignAndCC( CameraParam );
+	CameraParam( void ) { assert( false ); }
+
+protected:
+	/** @brief hidden constructor */
+	CameraParam( OfxImageEffectHandle imageEffectHandle, const ParamSet* paramSet, const std::string& name, NukeOfxCameraHandle handle );
+
+	// so it can make one
+	friend class ParamSet;
+
+public:
+	Param& getParameter( const std::string& name );
+
+private:
+	OfxImageEffectHandle _imageEffectHandle;
+};
+
+template<class ParamType>
+inline ParamTypeEnum mapParamTypeToEnum()
+{
+	return eDummyParam; // as default value...
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<StringParam>()
+{
+	return eStringParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<IntParam>()
+{
+	return eIntParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<Int2DParam>()
+{
+	return eInt2DParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<Int3DParam>()
+{
+	return eInt3DParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<DoubleParam>()
+{
+	return eDoubleParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<Double2DParam>()
+{
+	return eDouble2DParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<Double3DParam>()
+{
+	return eDouble3DParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<RGBParam>()
+{
+	return eRGBParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<RGBAParam>()
+{
+	return eRGBAParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<BooleanParam>()
+{
+	return eBooleanParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<ChoiceParam>()
+{
+	return eChoiceParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<CustomParam>()
+{
+	return eCustomParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<GroupParam>()
+{
+	return eGroupParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<PageParam>()
+{
+	return ePageParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<PushButtonParam>()
+{
+	return ePushButtonParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<ParametricParam>()
+{
+	return eParametricParam;
+}
+template<>
+inline ParamTypeEnum mapParamTypeToEnum<CameraParam>()
+{
+	return eCameraParam;
+}
+
+template<class ParamType>
+inline ParamTypeEnum mapParamTypeToEnumFrom( const ParamType& )
+{
+	return mapParamTypeToEnum<ParamType>();
+}
+template<class ParamType>
+inline ParamTypeEnum mapParamTypeToEnumFrom( const ParamType* )
+{
+	return mapParamTypeToEnum<ParamType>();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 /** @brief A set of parameters in a plugin instance */
@@ -1635,17 +1862,19 @@ private:
 
 	/** @brief calls the raw OFX routine to define a param */
 	void fetchRawParam( const std::string& name, ParamTypeEnum paramType, OfxParamHandle& handle );
+	void fetchRawCameraParam( OfxImageEffectHandle pluginHandle, const std::string& name, NukeOfxCameraHandle& handle );
 
 	/** @brief Fetch a param of the given name and type */
 	template <class T>
-	void fetchParam( const std::string& name, ParamTypeEnum paramType, T*& paramPtr )
+	T* fetchParam( const std::string& name )
 	{
-		paramPtr = NULL;
+		ParamTypeEnum paramType = mapParamTypeToEnum<T>();
+		T* paramPtr = NULL;
 
 		// have we made it already in this param set and is it an int?
 		if( Param * param  = findPreviouslyFetchedParam( name ) )
 		{
-			if( param->getType() == paramType )
+			if( param->getParamType() == paramType )
 			{
 				paramPtr = (T*) param; // could be a dynamic cast here
 			}
@@ -1664,6 +1893,17 @@ private:
 			// add it to our map of described ones
 			_fetchedParams[name] = paramPtr;
 		}
+		return paramPtr;
+	}
+	
+protected:
+	template<class T>
+	inline T* fetchAttribute( OfxImageEffectHandle pluginHandle, const std::string& name )
+	{
+		// maybe the correct fonction you want to use is fetchParam(std::string)
+		// if you use this function you need to redefine it for each type
+		// because we need OfxImageEffectHandle because we use specific suites
+		BOOST_ASSERT( false );
 	}
 
 protected:
@@ -1731,9 +1971,47 @@ public:
 
 	/** @brief Fetch a custom param */
 	CustomParam* fetchCustomParam( const std::string& name );
+
+	/** @brief Fetch a parametric param */
+	ParametricParam* fetchParametricParam( const std::string& name );
 };
 
-};
+/** @brief Fetch a parametric param */
+template<>
+inline CameraParam* ParamSet::fetchAttribute<CameraParam>( OfxImageEffectHandle pluginHandle, const std::string& name )
+{
+	typedef CameraParam T;
+	const ParamTypeEnum paramType = mapParamTypeToEnum<T>();
+	T* paramPtr = NULL;
+
+	// have we made it already in this param set and is it an int?
+	if( Param * param  = findPreviouslyFetchedParam( name ) )
+	{
+		if( param->getParamType() == paramType )
+		{
+			paramPtr = (T*) param; // could be a dynamic cast here
+		}
+		else
+		{
+			BOOST_THROW_EXCEPTION( OFX::Exception::TypeRequest( "Fetching param and attempting to return the wrong type" ) );
+		}
+	}
+	else
+	{
+		// ok define one and add it in
+		NukeOfxCameraHandle paramHandle;
+		fetchRawCameraParam( pluginHandle, name, paramHandle );
+
+		// make out support descriptor class
+		paramPtr = new T( pluginHandle, this, name, paramHandle );
+
+		// add it to our map of described ones
+		_fetchedParams[name] = paramPtr;
+	}
+	return paramPtr;
+}
+
+}
 
 // undeclare the protected assign and CC macro
 #undef mDeclareProtectedAssignAndCC

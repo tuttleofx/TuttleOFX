@@ -5,7 +5,6 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-
 OfxhParamAccessor::OfxhParamAccessor()
 {}
 

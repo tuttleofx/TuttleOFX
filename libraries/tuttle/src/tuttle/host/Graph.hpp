@@ -7,6 +7,7 @@
 #include <tuttle/host/graph/Vertex.hpp>
 #include <tuttle/host/graph/Edge.hpp>
 #include <tuttle/host/attribute/Attribute.hpp>
+#include <tuttle/host/memory/MemoryCache.hpp>
 #include <tuttle/common/utils/global.hpp>
 
 #include <boost/ptr_container/ptr_map.hpp>
@@ -17,7 +18,6 @@
 #include <sstream>
 #include <map>
 #include <list>
-
 
 namespace tuttle {
 namespace host {
@@ -30,10 +30,12 @@ public:
 	typedef ImageEffectNode Node; /// @todo tuttle ProcessNode...
 	typedef attribute::Attribute Attribute;
 	typedef graph::InternalGraph<Vertex, Edge> InternalGraphImpl;
-	typedef graph::InternalGraph<Vertex, Edge>::vertex_descriptor Descriptor;
-	typedef boost::ptr_map<std::string, Node> NodeMap;
-	typedef std::map<std::string, int> InstanceCountMap;
+	typedef InternalGraphImpl::vertex_descriptor vertex_descriptor;
+	typedef InternalGraphImpl::edge_descriptor edge_descriptor;
 
+	typedef std::map<std::string, int> InstanceCountMap;
+	typedef boost::ptr_map<std::string, Node> NodeMap;
+	
 public:
 	Graph();
 	//Graph( const Graph& other );
@@ -48,7 +50,7 @@ public:
 	 * @brief Delete a node from the current graph.
 	 * This will remove all the connections.
 	 */
-	void  deleteNode( const Node& node );
+	void deleteNode( const Node& node );
 	/**
 	 * @brief Connect nodes (using there unique name in this graph).
 	 */
@@ -61,73 +63,79 @@ public:
 	void connect( const std::list<Node*>& nodes );
 	void connect( const std::vector<Node*>& nodes );
 	void connect( const Node& outNode, const Attribute& inAttr );
-//	void unconnectNode( const Node& node );
+	//	void unconnectNode( const Node& node );
 
-	void compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
-	void compute( const std::list<std::string>& nodes, const int time ) { compute( nodes, time, time ); }
+	memory::MemoryCache compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
+	memory::MemoryCache compute( const std::list<std::string>& nodes, const int time ) { return compute( nodes, time, time ); }
 
-	void compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
+	memory::MemoryCache compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> nodesStr;
 		//nodesStr.reserve(nodes.size());
-		BOOST_FOREACH( Node* n, nodes )
+		BOOST_FOREACH( Node * n, nodes )
 		{
 			nodesStr.push_back( n->getName() );
 		}
-		compute( nodesStr, tBegin, tEnd );
+		return compute( nodesStr, tBegin, tEnd );
 	}
-	void compute( const std::list<Node*>& nodes, const int time ) { compute( nodes, time, time ); }
 
-	void compute( const std::string& node, const int tBegin, const int tEnd )
+	memory::MemoryCache compute( const std::list<Node*>& nodes, const int time ) { return compute( nodes, time, time ); }
+
+	memory::MemoryCache compute( const std::string& node, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> outputs;
 		outputs.push_back( node );
-		compute( outputs, tBegin, tEnd );
-	}
-	void compute( const Node& node, const int tBegin, const int tEnd )
-	{
-		compute( node.getName(), tBegin, tEnd );
-	}
-	void compute( const std::string& node, const int time )
-	{
-		compute( node, time, time );
-	}
-	void compute( const Node& node, const int time )
-	{
-		compute( node.getName(), time );
+		return compute( outputs, tBegin, tEnd );
 	}
 
-	const InternalGraphImpl&    getGraph() const         { return _graph; }
-	const NodeMap&          getNodes() const         { return _nodes; }
-	NodeMap&                getNodes()               { return _nodes; }
-	std::list<Node*> getNodesByContext( const std::string& type );
-	std::list<Node*> getNodesByPlugin( const std::string& pluginId );
-//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
-	const Node& getNode( const std::string& id ) const { return _nodes.at( id ); }
-	Node&                getNode( const std::string& name )       { return getNodes().at(name); }
-	const InstanceCountMap& getInstanceCount() const { return _instanceCount; }
+	memory::MemoryCache compute( const Node& node, const int tBegin, const int tEnd )
+	{
+		return compute( node.getName(), tBegin, tEnd );
+	}
+
+	memory::MemoryCache compute( const std::string& node, const int time )
+	{
+		return compute( node, time, time );
+	}
+
+	memory::MemoryCache compute( const Node& node, const int time )
+	{
+		return compute( node.getName(), time );
+	}
+
+	const InternalGraphImpl& getGraph() const { return _graph; }
+	const NodeMap&           getNodes() const { return _nodes; }
+	NodeMap&                 getNodes()       { return _nodes; }
+	std::list<Node*>         getNodesByContext( const std::string& type );
+	std::list<Node*>         getNodesByPlugin( const std::string& pluginId );
+	//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
+	const Node&             getNode( const std::string& id ) const { return _nodes.at( id ); }
+	Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
+	const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
 public:
-#ifndef SWIG
+	#ifndef SWIG
 	friend std::ostream& operator<<( std::ostream& os, const Graph& g );
-#endif
+	#endif
 
-#ifdef SWIG
+	#ifdef SWIG
 	%extend
 	{
 		Node& __getitem__( const std::string& name )
 		{
-			return self->getNode(name);
+			return self->getNode( name );
 		}
+
 		std::string __str__() const
 		{
 			std::stringstream s;
+
 			s << *self;
 			return s.str();
 		}
-	}
-#endif
 
+	}
+	#endif
 
 private:
 	InternalGraphImpl _graph;

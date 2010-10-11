@@ -13,8 +13,8 @@ namespace convolution {
 
 struct ConvolutionProcessParams
 {
-    boost::gil::point2<unsigned int> _size;
-    std::vector<double> _coef;
+	boost::gil::point2<unsigned int> _size;
+	std::vector<double> _coef;
 };
 
 /**
@@ -23,22 +23,22 @@ struct ConvolutionProcessParams
 class ConvolutionPlugin : public OFX::ImageEffect
 {
 public:
-    ConvolutionPlugin( OfxImageEffectHandle handle );
+	ConvolutionPlugin( OfxImageEffectHandle handle );
 
 public:
-    void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments& args );
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
-	
-	ConvolutionProcessParams getProcessParams() const;
-	
-public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _clipSrc; ///< Source image clip
-    OFX::Clip* _clipDst; ///< Destination image clip
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
-    OFX::Int2DParam* _paramSize;
-    std::vector<std::vector<OFX::DoubleParam*> > _paramCoef;
+	ConvolutionProcessParams getProcessParams() const;
+
+public:
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc; ///< Source image clip
+	OFX::Clip* _clipDst; ///< Destination image clip
+
+	OFX::Int2DParam* _paramSize;
+	std::vector<std::vector<OFX::DoubleParam*> > _paramCoef;
 };
 
 }

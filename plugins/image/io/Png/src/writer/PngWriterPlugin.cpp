@@ -20,12 +20,13 @@ PngWriterPlugin::PngWriterPlugin( OfxImageEffectHandle handle )
 	_paramOutputComponents = fetchChoiceParam( kParamOutputComponents );
 }
 
-PngWriterProcessParams PngWriterPlugin::getProcessParams(const OfxTime time)
+PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )
 {
 	PngWriterProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
-	params._components = static_cast<EParamComponents>(this->_paramOutputComponents->getValue());
-	switch(static_cast<EParamBitDepth>(this->_paramBitDepth->getValue()))
+
+	params._filepath   = getAbsoluteFilenameAt( time );
+	params._components = static_cast<EParamComponents>( this->_paramOutputComponents->getValue() );
+	switch( static_cast<EParamBitDepth>( this->_paramBitDepth->getValue() ) )
 	{
 		case eParamBitDepth8:
 			params._bitDepth = 8;
@@ -34,7 +35,7 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams(const OfxTime time)
 			params._bitDepth = 16;
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue, "Incorrect bit depth." ) );
 			break;
 	}
 	return params;

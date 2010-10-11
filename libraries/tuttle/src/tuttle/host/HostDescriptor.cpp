@@ -60,8 +60,8 @@ Host::Host()
 }
 
 tuttle::host::ImageEffectNode* Host::newInstance( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
-                                                        tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
-                                                        const std::string&                                             context ) const
+                                                  tuttle::host::ofx::imageEffect::OfxhImageEffectNodeDescriptor& desc,
+                                                  const std::string&                                             context ) const
 {
 	return new tuttle::host::ImageEffectNode( plugin, desc, context );
 }

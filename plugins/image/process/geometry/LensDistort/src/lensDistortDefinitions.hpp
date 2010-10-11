@@ -1,5 +1,5 @@
 #ifndef _LENSDISTORTDEFINITIONS_HPP
-#define	_LENSDISTORTDEFINITIONS_HPP
+#define _LENSDISTORTDEFINITIONS_HPP
 
 #include <tuttle/common/utils/global.hpp>
 
@@ -40,11 +40,11 @@ const std::string kParamResizeRodMax( "max" );
 const std::string kParamResizeRodManual( "manual" );
 enum EParamResizeRod
 {
-    eParamResizeRodNo = 0,
-    eParamResizeRodSourceRef,
-    eParamResizeRodMin,
-    eParamResizeRodMax,
-    eParamResizeRodManual,
+	eParamResizeRodNo = 0,
+	eParamResizeRodSourceRef,
+	eParamResizeRodMin,
+	eParamResizeRodMax,
+	eParamResizeRodManual,
 };
 
 const std::string kParamResizeRodManualScale( "scaleRod" );
@@ -59,25 +59,24 @@ const std::string kParamHelp( "help" );
 
 enum EParamLensType
 {
-    eParamLensTypeStandard = 0,
-    eParamLensTypeFisheye,
-    eParamLensTypeAdvanced,
+	eParamLensTypeStandard = 0,
+	eParamLensTypeFisheye,
+	eParamLensTypeAdvanced,
 };
 enum EParamInterpolation
 {
-    eParamInterpolationNearest = 0,
-    eParamInterpolationBilinear,
+	eParamInterpolationNearest = 0,
+	eParamInterpolationBilinear,
 };
 enum EParamCenterType
 {
-    eParamCenterTypeSource = 0,
-    eParamCenterTypeRoW,
+	eParamCenterTypeSource = 0,
+	eParamCenterTypeRoW,
 };
 
 }
 }
 }
-
 
 #endif
 

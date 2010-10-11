@@ -1,14 +1,25 @@
 #include "Edge.hpp"
+#include "GraphExporter.hpp"
 
 namespace tuttle {
 namespace host {
 namespace graph {
 
-std::ostream& operator<<( std::ostream& os, const Edge& v )
+Edge::Edge()
+{}
+
+Edge::Edge( const std::string& out, const std::string& in, const std::string& inAttrName )
+: IEdge( out, in, inAttrName )
 {
-	os << v.name() ;
-	return os;
 }
+
+Edge::Edge( const Edge& e )
+: IEdge( e )
+{}
+
+Edge::~Edge()
+{}
+
 
 }
 }

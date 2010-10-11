@@ -18,13 +18,13 @@ public:
 	CropPlugin( OfxImageEffectHandle handle );
 	OFX::Clip* getSrcClip() const;
 	OFX::Clip* getDstClip() const;
-	OfxRectD   getCropRect(OfxRectD *clipROD = NULL);
+	OfxRectD   getCropRect( OfxRectD* clipROD = NULL );
 	bool       displayRect();
 
 public:
 	virtual void render( const OFX::RenderArguments& args );
 	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	bool		 getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	bool         getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 
 protected:
 	// do not need to delete these, the ImageEffect is managing them for us

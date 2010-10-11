@@ -1,0 +1,7 @@
+
+mode = 'release'
+jobs = 2
+check_libs = False
+ccache = True 
+ccachedir = '~/tmp/ccache'
+

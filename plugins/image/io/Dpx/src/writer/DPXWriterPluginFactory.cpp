@@ -51,9 +51,10 @@ void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext            context )
+                                                OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
@@ -94,7 +95,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 
 	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
 	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint("Force render (writing)");
+	render->setHint( "Force render (writing)" );
 
 	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
 	renderAlways->setLabel( "Render always" );
@@ -118,7 +119,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* DPXWriterPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext     context )
+                                                          OFX::EContext        context )
 {
 	return new DPXWriterPlugin( handle );
 }

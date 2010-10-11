@@ -17,8 +17,8 @@ const static std::string kLutHelpString = "<b>Image Luter</b> is used to lut com
 LutPlugin::LutPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
-	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc   = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst   = fetchClip( kOfxImageEffectOutputClipName );
 	_sFilename = fetchStringParam( kInputFilename );
 }
 
@@ -32,16 +32,19 @@ OFX::Clip* LutPlugin::getDstClip() const
 	return _clipDst;
 }
 
-const LutReader & LutPlugin::lutReader() const {
+const LutReader& LutPlugin::lutReader() const
+{
 	return _lutReader;
 }
 
-LutReader & LutPlugin::lutReader() {
+LutReader& LutPlugin::lutReader()
+{
 	return _lutReader;
 }
 
-Lut3D & LutPlugin::lut3D() {
-    return _lut3D;
+Lut3D& LutPlugin::lut3D()
+{
+	return _lut3D;
 }
 
 /**
@@ -54,18 +57,20 @@ void LutPlugin::render( const OFX::RenderArguments& args )
 	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-	if (!_lutReader.readOk()) {
+	if( !_lutReader.readOk() )
+	{
 		std::string str;
 		_sFilename->getValue( str );
 		if( exists( str ) )
 		{
-			if ( _lutReader.read( str ) )
+			if( _lutReader.read( str ) )
 				COUT_ERROR( "Unable to read lut file..." );
-            else
-                _lut3D.reset( new TetraInterpolator(), _lutReader );
+			else
+				_lut3D.reset( new TetraInterpolator(), _lutReader );
 		}
 	}
-	if (_lutReader.readOk()) {
+	if( _lutReader.readOk() )
+	{
 		// select render according to pixel components & bit depth
 		if( dstComponents == OFX::ePixelComponentRGBA )
 		{
@@ -138,16 +143,16 @@ void LutPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::s
 		             "", // No XML resources
 		             kLutHelpString );
 	}
-	else if ( paramName == kInputFilename )
+	else if( paramName == kInputFilename )
 	{
 		std::string str;
 		_sFilename->getValue( str );
 		if( exists( str ) )
 		{
-			if ( _lutReader.read( str ) )
+			if( _lutReader.read( str ) )
 				BOOST_THROW_EXCEPTION( exception::File() << exception::user( "Unable to read lut file..." ) );
-            else
-                _lut3D.reset( new TetraInterpolator(), _lutReader );
+			else
+				_lut3D.reset( new TetraInterpolator(), _lutReader );
 		}
 	}
 }

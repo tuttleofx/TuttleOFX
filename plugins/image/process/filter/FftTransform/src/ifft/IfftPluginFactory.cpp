@@ -24,7 +24,6 @@ namespace plugin {
 namespace fftTransform {
 namespace ifft {
 
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -32,7 +31,7 @@ namespace ifft {
 void IfftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleIfft", "Ifft",
-		            "Backward fft" );
+	                "Backward fft" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment
@@ -55,25 +54,26 @@ void IfftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void IfftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                           OFX::EContext               context )
 {
-	OFX::ClipDescriptor *srcClipPhase = desc.defineClip( kSourcePhase );
+	OFX::ClipDescriptor* srcClipPhase = desc.defineClip( kSourcePhase );
+
 	srcClipPhase->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipPhase->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipPhase->setSupportsTiles( kSupportTiles );
 
-	OFX::ClipDescriptor *srcClipMod = desc.defineClip( kSourceModule );
+	OFX::ClipDescriptor* srcClipMod = desc.defineClip( kSourceModule );
 	srcClipMod->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipMod->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipMod->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kHelpButton );
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
 	helpButton->setLabel( "Help" );
 }
 
@@ -84,7 +84,7 @@ void IfftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @return  plugin instance
  */
 OFX::ImageEffect* IfftPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                     OFX::EContext        context )
 {
 	return new IfftPlugin( handle );
 }

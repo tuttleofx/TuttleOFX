@@ -16,7 +16,6 @@
 #include <vector>
 #include <iostream>
 
-
 namespace tuttle {
 namespace plugin {
 namespace quality {
@@ -28,8 +27,9 @@ namespace quality {
 template<class View>
 class DiffProcess : public ImageGilProcessor<View>
 {
-	typedef typename boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<View>::type> > PixelF;
-protected :
+typedef typename boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<View>::type> > PixelF;
+
+protected:
 	DiffPlugin&    _plugin;        ///< Rendering plugin
 	View _srcViewA; ///< Source view A
 	View _srcViewB; ///< Source view B
@@ -45,11 +45,9 @@ public:
 	// Do some processing
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 	template<class SView>
-	boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >
-	mse(const SView & v1, const SView & v2, const SView & dst);
+	boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >mse( const SView& v1, const SView& v2, const SView& dst );
 	template<class SView>
-	boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >
-	psnr(const SView & v1, const SView & v2, const SView & dst);
+	boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> >psnr( const SView& v1, const SView& v2, const SView& dst );
 };
 
 }

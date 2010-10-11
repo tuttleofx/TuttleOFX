@@ -8,7 +8,7 @@ namespace attribute {
 OfxhClipImageDescriptor::OfxhClipImageDescriptor()
 	: tuttle::host::ofx::attribute::OfxhClipDescriptor()
 {
-	init("");
+	init( "" );
 }
 
 /**
@@ -17,7 +17,7 @@ OfxhClipImageDescriptor::OfxhClipImageDescriptor()
 OfxhClipImageDescriptor::OfxhClipImageDescriptor( const std::string& name )
 	: tuttle::host::ofx::attribute::OfxhClipDescriptor()
 {
-	init(name);
+	init( name );
 }
 
 /**
@@ -45,5 +45,4 @@ void OfxhClipImageDescriptor::init( const std::string& name )
 }
 }
 }
-
 

@@ -19,7 +19,6 @@ void OfxhParamSetDescriptor::addParam( const std::string& name, OfxhParamDescrip
 	_paramMap[name] = p;
 }
 
-
 /**
  * define a param on this effect
  */
@@ -34,8 +33,6 @@ OfxhParamDescriptor* OfxhParamSetDescriptor::paramDefine( const char* paramType,
 	addParam( name, desc );
 	return desc;
 }
-
-
 
 }
 }

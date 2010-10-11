@@ -65,7 +65,6 @@ void OfxhParamDouble::integrateV( const OfxTime time1, const OfxTime time2, va_l
 	integrate( time1, time2, *value );
 }
 
-
 }
 }
 }

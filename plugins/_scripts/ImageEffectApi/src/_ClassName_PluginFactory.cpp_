@@ -4,7 +4,7 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/PluginException.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -46,7 +46,7 @@ void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::ContextEnum context )
+                                                  OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -59,7 +59,7 @@ void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelpButton );
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );
 	helpButton->setLabel( "Help" );
 }
 
@@ -70,7 +70,7 @@ void %CLASSNAME%PluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
  * @return  plugin instance
  */
 OFX::ImageEffect* %CLASSNAME%PluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::ContextEnum context )
+                                                            OFX::EContext context )
 {
 	return new %CLASSNAME%Plugin( handle );
 }

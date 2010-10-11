@@ -46,22 +46,22 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  */
 void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::EContext context )
 {
-	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor *filename = desc.defineStringParam( kInputFilename );
-	assert(filename);
-	filename->setDefault("");
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
+	assert( filename );
+	filename->setDefault( "" );
 	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 

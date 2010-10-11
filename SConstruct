@@ -9,12 +9,6 @@ from sconsProject import SConsProject
 
 
 class Tuttle( SConsProject ):
-	dir_libraries  = os.getcwd() + os.sep + 'libraries'
-
-	def createOptions(self, filename, args) :
-		opts = SConsProject.createOptions(self,filename,args)
-		opts.Add( PathVariable( 'LIBRARIES',    'Directory of intern libraries', self.dir_libraries ) )
-		return opts
 
 	def getOfxPlatformName( self ) :
 		'''Get the standard openfx name of the current platform.
@@ -119,20 +113,19 @@ class Tuttle( SConsProject ):
 		envLocal.Alias( 'ofxplugins', pluginName )
 		envLocal.Alias( 'all', 'ofxplugins' )
 
-		if envLocal['WINDOWS']:
+		if self.windows:
+			mode = 'Release'
 			if envLocal['debug']:
 				mode = 'Debug'
-			else:
-				mode = 'Release'
 			visual_project = envLocal.MSVSProject(
-				target = 'visual' + os.sep + pluginName + envLocal['MSVSPROJECTSUFFIX'],
+				target = os.path.join('visualc', pluginName + envLocal['MSVSPROJECTSUFFIX']),
 				srcs = allSources,
 				#incs = barincs,
 				#localincs = barlocalincs,
 				#resources = barresources,
 				#misc = barmisc,
 				buildtarget = plugin,
-				variant = ['Release']
+				variant = [mode]
 				)
 			envLocal.Alias( 'visualProject',   visual_project )
 

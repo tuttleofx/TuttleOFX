@@ -23,7 +23,6 @@
 #include <vector>
 #include <iostream>
 
-
 namespace tuttle {
 namespace plugin {
 namespace fftTransform {
@@ -36,14 +35,14 @@ namespace fft {
 template<class View>
 class FftProcess : public ImageGilFilterProcessor<View>
 {
-protected :
-    FftPlugin&    _plugin;        ///< Rendering plugin
+protected:
+	FftPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-    FftProcess( FftPlugin& instance );
+	FftProcess( FftPlugin& instance );
 
-    // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	// Do some processing
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

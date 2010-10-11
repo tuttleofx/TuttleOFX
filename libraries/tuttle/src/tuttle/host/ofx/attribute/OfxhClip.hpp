@@ -19,15 +19,16 @@ class OfxhClipDescriptor;
 /**
  * a clip instance
  */
-class OfxhClip :
-	public OfxhAttribute,
-	protected property::OfxhGetHook,
-	protected property::OfxhNotifyHook,
-	virtual public OfxhClipAccessor,
-	private boost::noncopyable
+class OfxhClip
+	: public OfxhAttribute
+	, protected property::OfxhGetHook
+	, protected property::OfxhNotifyHook
+	, virtual public OfxhClipAccessor
+	, private boost::noncopyable
 {
 public:
 	typedef OfxhClip This;
+
 protected:
 	OfxhClip( const OfxhClip& other ) : OfxhAttribute( other ) {}
 
@@ -37,13 +38,14 @@ public:
 
 	/// clone this clip
 	virtual OfxhClip* clone() const = 0;
-	
+
 	virtual bool operator==( const This& other ) const
 	{
-		if( OfxhAttribute::operator!=(other) )
+		if( OfxhAttribute::operator!=( other ) )
 			return false;
 		return true;
 	}
+
 	bool operator!=( const This& other ) const { return !This::operator==( other ); }
 
 	void initHook( const property::OfxhPropSpec* propSpec );
@@ -72,10 +74,11 @@ public:
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhAttribute);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhAttribute );
 	}
+
 };
 
 #ifndef SWIG
@@ -86,6 +89,7 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 {
 	return a.clone();
 }
+
 #endif
 
 }
@@ -94,10 +98,10 @@ inline OfxhClip* new_clone( const OfxhClip& a )
 }
 
 // force boost::is_virtual_base_of value (used by boost::serialization)
-namespace boost{
-template<> struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
+namespace boost {
+template<>
+struct is_virtual_base_of<tuttle::host::ofx::attribute::OfxhAttribute, tuttle::host::ofx::attribute::OfxhClip>: public mpl::true_ {};
 }
-
 
 #endif
 

@@ -4,8 +4,9 @@
 #include "IMemoryCache.hpp"
 #include "IMemoryPool.hpp"
 
-#include <boost/ptr_container/ptr_map.hpp>
-#include <map>
+//#include <boost/ptr_container/ptr_map.hpp>
+#include <boost/unordered_map.hpp>
+//#include <map>
 
 namespace tuttle {
 namespace host {
@@ -13,31 +14,23 @@ namespace memory {
 
 class MemoryCache : public IMemoryCache
 {
-MemoryCache( const MemoryCache& pool );
+typedef MemoryCache This;
 
 public:
+	MemoryCache( const MemoryCache& cache ) : _map(cache._map) {}
 	MemoryCache() {}
 	~MemoryCache() {}
 
 private:
-	struct Key
-	{
-		Key( const std::string& name, const double& time )
-			: _pluginName( name ),
-			_time( time )
-		{}
-		bool operator<( const Key& ) const;
-		std::string _pluginName;
-		double _time;
-	};
-	typedef std::map<Key, CACHE_ELEMENT> MAP;
+	typedef boost::unordered_map<Key, CACHE_ELEMENT, KeyHash> MAP;
+	//	typedef std::map<Key, CACHE_ELEMENT> MAP;
 	MAP _map;
 	MAP::const_iterator getIteratorForValue( const CACHE_ELEMENT& ) const;
 	MAP::iterator       getIteratorForValue( const CACHE_ELEMENT& );
 
 public:
-	void               put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData );
-	CACHE_ELEMENT      get( const std::string& pluginName, const double& time ) const;
+	void               put( const std::string& identifier, const double time, CACHE_ELEMENT pData );
+	CACHE_ELEMENT      get( const std::string& identifier, const double time ) const;
 	std::size_t        size() const;
 	bool               empty() const;
 	bool               inCache( const CACHE_ELEMENT& ) const;
@@ -46,6 +39,12 @@ public:
 	bool               remove( const CACHE_ELEMENT& );
 	void               clearUnused();
 	void               clearAll();
+	std::ostream& outputStream( std::ostream& os ) const
+	{
+		os << *this;
+		return os;
+	}
+	friend std::ostream& operator<<( std::ostream& os, const MemoryCache& v );
 };
 
 }

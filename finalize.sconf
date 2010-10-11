@@ -1,0 +1,14 @@
+# finalize options
+# user don't have to modify this file
+
+# Include boostHack files before real boost headers.
+# boostHack contains:
+# * some internal fixes for tuttle project
+# * some extensions for boost::gil
+incdir_boostHack = '$TOPDIR/3rdParty/boostHack'
+if 'incdir_boost' in locals():
+    incdir_boost = [incdir_boostHack, incdir_boost]
+else:
+    incdir_boost = incdir_boostHack
+
+

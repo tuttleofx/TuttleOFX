@@ -17,13 +17,14 @@ class GammaProcess : public ImageGilFilterProcessor<View>
 {
 public:
 	typedef float Scalar;
-protected :
-    GammaPlugin&    _plugin;        ///< Rendering plugin
+
+protected:
+	GammaPlugin&    _plugin;        ///< Rendering plugin
 
 public:
-    GammaProcess( GammaPlugin& effect );
+	GammaProcess( GammaPlugin& effect );
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

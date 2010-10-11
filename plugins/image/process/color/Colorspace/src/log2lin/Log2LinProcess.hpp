@@ -25,14 +25,15 @@ template<class View>
 class Log2LinProcess : public ImageGilFilterProcessor<View>
 {
 private:
-	void log2lin(View & src, View & dst);
-protected :
-    Log2LinPlugin& _plugin; ///< Rendering plugin
+	void log2lin( View& src, View& dst );
 
-public :
-    Log2LinProcess( Log2LinPlugin &instance );
+protected:
+	Log2LinPlugin& _plugin; ///< Rendering plugin
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+public:
+	Log2LinProcess( Log2LinPlugin& instance );
+
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

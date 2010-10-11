@@ -11,12 +11,12 @@ namespace reader {
 
 enum ECompType { eGray, eRGB, eRGBA };
 
-static const std::string kParamOutputComponents      = "outComponents";
-static const std::string kParamOutputRedIs           = "redIs";
-static const std::string kParamOutputGreenIs         = "greenIs";
-static const std::string kParamOutputBlueIs          = "blueIs";
-static const std::string kParamOutputAlphaIs         = "alphaIs";
-static const std::string kParamExplicitConversion    = "explicitConversion";
+static const std::string kParamOutputComponents   = "outComponents";
+static const std::string kParamOutputRedIs        = "redIs";
+static const std::string kParamOutputGreenIs      = "greenIs";
+static const std::string kParamOutputBlueIs       = "blueIs";
+static const std::string kParamOutputAlphaIs      = "alphaIs";
+static const std::string kParamExplicitConversion = "explicitConversion";
 
 const static std::string kEXRReaderHelpButton = "Help";
 const static std::string kExrReaderHelpString = "<b>EXR File reader</b> plugin is used to read exr files.  <br />";

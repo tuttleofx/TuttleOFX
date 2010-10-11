@@ -11,17 +11,17 @@ class OfxhMajorPlugin
 {
 public:
 	typedef OfxhMajorPlugin This;
-	
+
 private:
-std::string _id;
-int _major;
+	std::string _id;
+	int _major;
 
 public:
-	OfxhMajorPlugin( const std::string& id, int major ) : _id( id ),
-		_major( major ) {}
+	OfxhMajorPlugin( const std::string& id, int major ) : _id( id )
+		, _major( major ) {}
 
-	OfxhMajorPlugin( OfxhPlugin& iep ) : _id( iep.getIdentifier() ),
-		_major( iep.getVersionMajor() ) {}
+	OfxhMajorPlugin( OfxhPlugin& iep ) : _id( iep.getIdentifier() )
+		, _major( iep.getVersionMajor() ) {}
 
 	const std::string& getId() const
 	{

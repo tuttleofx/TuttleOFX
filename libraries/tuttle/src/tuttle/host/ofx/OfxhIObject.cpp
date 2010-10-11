@@ -5,9 +5,7 @@ namespace host {
 namespace ofx {
 
 OfxhIObject::~OfxhIObject()
-{
-
-}
+{}
 
 }
 }

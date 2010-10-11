@@ -29,6 +29,7 @@ public:
 	{
 		return new CropMargin( handle, effect );
 	}
+
 };
 
 }

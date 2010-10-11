@@ -3,7 +3,6 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace timeShift {

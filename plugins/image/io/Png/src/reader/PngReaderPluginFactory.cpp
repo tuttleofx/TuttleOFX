@@ -50,10 +50,11 @@ void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                OFX::EContext            context )
+                                                OFX::EContext               context )
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+
 	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -84,7 +85,7 @@ void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	else
 	{
 		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>(OFX::getImageEffectHostDescription()->getPixelDepth()) );
+		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
 	}
 }
 
@@ -95,7 +96,7 @@ void PngReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* PngReaderPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                          OFX::EContext     context )
+                                                          OFX::EContext        context )
 {
 	return new PngReaderPlugin( handle );
 }

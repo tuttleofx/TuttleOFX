@@ -9,21 +9,14 @@ namespace tuttle {
 namespace host {
 namespace memory {
 
-bool MemoryCache::Key::operator<( const Key& other ) const
+void MemoryCache::put( const std::string& identifier, const double time, CACHE_ELEMENT pData )
 {
-	if( _time != other._time )
-		return _time < other._time;
-	return _pluginName < other._pluginName;
+	_map[Key( identifier, time )] = pData;
 }
 
-void MemoryCache::put( const std::string& pluginName, const double& time, CACHE_ELEMENT pData )
+CACHE_ELEMENT MemoryCache::get( const std::string& identifier, const double time ) const
 {
-	_map[Key( pluginName, time )] = pData;
-}
-
-CACHE_ELEMENT MemoryCache::get( const std::string& pluginName, const double& time ) const
-{
-	MAP::const_iterator itr = _map.find( Key( pluginName, time ) );
+	MAP::const_iterator itr = _map.find( Key( identifier, time ) );
 
 	if( itr == _map.end() )
 		return CACHE_ELEMENT();
@@ -89,7 +82,7 @@ const std::string& MemoryCache::getPluginName( const CACHE_ELEMENT& pData ) cons
 
 	if( itr == _map.end() )
 		return EMPTY_STRING;
-	return itr->first._pluginName;
+	return itr->first._identifier;
 }
 
 bool MemoryCache::remove( const CACHE_ELEMENT& pData )
@@ -104,15 +97,15 @@ bool MemoryCache::remove( const CACHE_ELEMENT& pData )
 
 void MemoryCache::clearUnused()
 {
-	for( MAP::iterator it = _map.begin();it != _map.end();)
+	for( MAP::iterator it = _map.begin(); it != _map.end(); )
 	{
-		if( it->second->getReference() == 0 )
+		if( it->second->getReference() <= 1 )
 		{
-		    _map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
+			_map.erase( it++ ); // post-increment here, increments 'it' and returns a copy of the original 'it' to be used by erase()
 		}
 		else
 		{
-		    ++it;
+			++it;
 		}
 	}
 }
@@ -121,6 +114,16 @@ void MemoryCache::clearAll()
 {
 	COUT_X( 5, " - MEMORYCACHE::CLEARALL - " );
 	_map.clear();
+}
+
+std::ostream& operator<<( std::ostream& os, const MemoryCache& v )
+{
+	os << "size:" << v.size() << std::endl;
+	BOOST_FOREACH( const MemoryCache::MAP::value_type& i, v._map )
+	{
+		os << i.first << " id:" << i.second->getId() << " ref:" << i.second->getReference() << std::endl;
+	}
+	return os;
 }
 
 }

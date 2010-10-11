@@ -23,11 +23,10 @@ namespace reader {
 using namespace boost::gil;
 namespace bfs = boost::filesystem;
 
-
 template<class View>
 OpenImageIOReaderProcess<View>::OpenImageIOReaderProcess( OpenImageIOReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilProcessor<View>( instance )
+	, _plugin( instance )
 {
 	this->setNoMultiThreading();
 }
@@ -35,10 +34,11 @@ OpenImageIOReaderProcess<View>::OpenImageIOReaderProcess( OpenImageIOReaderPlugi
 template<class View>
 void OpenImageIOReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	OpenImageIOReaderProcessParams params = _plugin.getProcessParams(args.time);
-	if( ! bfs::exists( params._filepath ) )
+	OpenImageIOReaderProcessParams params = _plugin.getProcessParams( args.time );
+
+	if( !bfs::exists( params._filepath ) )
 	{
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatFailed, std::string("Unable to open : ") + params._filepath ) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, std::string( "Unable to open : " ) + params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -53,7 +53,7 @@ void OpenImageIOReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getProcessParams(this->_renderArgs.time)._filepath );
+	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
 }
 
 /**
@@ -70,14 +70,14 @@ View& OpenImageIOReaderProcess<View>::readImage( View& dst, const std::string& f
 	in->open( filepath, spec );
 
 	typedef mpl::map<
-      mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT8> >
-    , mpl::pair<gil::bits16, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT16> >
-    , mpl::pair<gil::bits32, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::UINT32> >
-    , mpl::pair<gil::bits32f, mpl::integral_c<TypeDesc::BASETYPE,TypeDesc::FLOAT> >
-    > MapBits;
+	    mpl::pair<gil::bits8, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT8> >,
+	    mpl::pair<gil::bits16, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT16> >,
+	    mpl::pair<gil::bits32, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::UINT32> >,
+	    mpl::pair<gil::bits32f, mpl::integral_c<TypeDesc::BASETYPE, TypeDesc::FLOAT> >
+	    > MapBits;
 	typedef typename gil::channel_type<View>::type ChannelType;
 
-	in->read_image( mpl::at<MapBits, ChannelType>::type::value, &((*dst.begin())[0]) ); // get the adress of the first channel value from the first pixel
+	in->read_image( mpl::at<MapBits, ChannelType>::type::value, &( ( *dst.begin() )[0] ) ); // get the adress of the first channel value from the first pixel
 	in->close();
 
 	return dst;

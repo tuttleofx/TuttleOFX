@@ -9,7 +9,6 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/scoped_ptr.hpp>
 
-
 namespace tuttle {
 namespace plugin {
 namespace text {
@@ -39,19 +38,21 @@ public:
 	{
 		FT_Face _face;
 
-		make_glyph( FT_Face face ) : _face( face ) { }
+		make_glyph( FT_Face face ) : _face( face ) {}
 
-		glyph_t* operator( )(char ch)
+		glyph_t* operator()( char ch )
 		{
-			glyph_t* u = new glyph_t( );
-			u->ch = ch;
+			glyph_t* u = new glyph_t();
+
+			u->ch   = ch;
 			u->face = _face;
 			return u;
 		}
+
 	};
-	
-protected :
-    TextPlugin&    _plugin;        ///< Rendering plugin
+
+protected:
+	TextPlugin&    _plugin;        ///< Rendering plugin
 	std::vector<FT_Glyph_Metrics> _metrics;
 	std::vector<int> _kerning;
 	boost::ptr_vector<glyph_t> _glyphs;
@@ -60,13 +61,13 @@ protected :
 	boost::gil::point2<int> _textSize;
 	Pixel _foregroundColor;
 	TextProcessParams _params;
-	
+
 public:
-    TextProcess( TextPlugin& instance );
+	TextProcess( TextPlugin& instance );
 
 	void setup( const OFX::RenderArguments& args );
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

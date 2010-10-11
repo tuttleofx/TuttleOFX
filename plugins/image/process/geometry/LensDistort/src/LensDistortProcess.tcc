@@ -16,21 +16,20 @@ namespace plugin {
 namespace lens {
 
 template<class View>
-LensDistortProcess<View>::LensDistortProcess( LensDistortPlugin &instance )
-: ImageGilFilterProcessor<View>( instance )
-, _plugin( instance )
-{
-}
+LensDistortProcess<View>::LensDistortProcess( LensDistortPlugin& instance )
+	: ImageGilFilterProcessor<View>( instance )
+	, _plugin( instance )
+{}
 
 template<class View>
-void LensDistortProcess<View>::setup( const OFX::RenderArguments &args )
+void LensDistortProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	ImageGilFilterProcessor<View>::setup(args);
-	
+	ImageGilFilterProcessor<View>::setup( args );
+
 	// recovery parameters values
-	_lensType = _plugin.getLensType();
+	_lensType      = _plugin.getLensType();
 	_interpolation = _plugin.getInterpolation();
-	_centerType = _plugin.getCenterType();
+	_centerType    = _plugin.getCenterType();
 
 	OfxRectD srcRod = rectIntToDouble( this->_srcPixelRod );
 	OfxRectD dstRod = rectIntToDouble( this->_dstPixelRod );
@@ -54,47 +53,48 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 {
 	using namespace bgil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	
-    switch( _interpolation )
-    {
-        case eParamInterpolationNearest:
-            lensDistort<nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-            return;
-        case eParamInterpolationBilinear:
-            lensDistort<bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-            return;
-    }
+
+	switch( _interpolation )
+	{
+		case eParamInterpolationNearest:
+			lensDistort<nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		case eParamInterpolationBilinear:
+			lensDistort<bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+	}
 	COUT_ERROR( "Interpolation method not recognize." );
 }
 
-template<class View> template<class Sampler>
+template<class View>
+template<class Sampler>
 void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const OfxRectI& procWindow )
 {
-    switch( _lensType )
-    {
-        case eParamLensTypeStandard:
-            if( _p._distort )
-            {
-                resample_pixels<Sampler>( srcView, dstView, static_cast<NormalLensDistortParams<double>&>(_p), procWindow, this );
-            }
-            else
-            {
-                resample_pixels<Sampler>( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>(_p), procWindow, this );
-            }
-            return;
-        case eParamLensTypeFisheye:
-            if( _p._distort )
-                resample_pixels<Sampler>( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>(_p), procWindow, this );
-            else
-                resample_pixels<Sampler>( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>(_p), procWindow, this );
-            return;
-        case eParamLensTypeAdvanced:
-            if( _p._distort )
-                resample_pixels<Sampler>( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>(_p), procWindow, this );
-            else
-                resample_pixels<Sampler>( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>(_p), procWindow, this );
-            return;
-    }
+	switch( _lensType )
+	{
+		case eParamLensTypeStandard:
+			if( _p._distort )
+			{
+				resample_pixels<Sampler>( srcView, dstView, static_cast<NormalLensDistortParams<double>&>( _p ), procWindow, this );
+			}
+			else
+			{
+				resample_pixels<Sampler>( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>( _p ), procWindow, this );
+			}
+			return;
+		case eParamLensTypeFisheye:
+			if( _p._distort )
+				resample_pixels<Sampler>( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>( _p ), procWindow, this );
+			else
+				resample_pixels<Sampler>( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>( _p ), procWindow, this );
+			return;
+		case eParamLensTypeAdvanced:
+			if( _p._distort )
+				resample_pixels<Sampler>( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>( _p ), procWindow, this );
+			else
+				resample_pixels<Sampler>( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>( _p ), procWindow, this );
+			return;
+	}
 	COUT_ERROR( "Lens type not recognize." );
 }
 

@@ -46,7 +46,7 @@ public:
 	/// fetch a suite
 	virtual void* fetchSuite( const char* suiteName, const int suiteVersion );
 
-#ifndef SWIG
+	#ifndef SWIG
 	/**
 	 * Create a new instance of an image effect plug-in.
 	 *
@@ -91,7 +91,7 @@ public:
 	 *  created.
 	 */
 	virtual void initDescriptor( OfxhImageEffectNodeDescriptor& desc ) const;
-#endif
+	#endif
 };
 
 }

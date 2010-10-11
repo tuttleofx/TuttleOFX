@@ -16,7 +16,6 @@
 #include <vector>
 #include <iostream>
 
-
 namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
@@ -28,22 +27,22 @@ template<class View>
 class ImageStatisticsProcess : public ImageGilFilterProcessor<View>
 {
 public:
-    typedef boost::gil::point2<double> Point2;
-    typedef typename View::value_type Pixel;
-    typedef typename image_from_view<View>::type Image;
-	
+	typedef boost::gil::point2<double> Point2;
+	typedef typename View::value_type Pixel;
+	typedef typename image_from_view<View>::type Image;
+
 private:
-    ImageStatisticsPlugin&    _plugin;        ///< Rendering plugin
+	ImageStatisticsPlugin&    _plugin;        ///< Rendering plugin
 	Pixel _outputPixel;
 	ImageStatisticsProcessParams _processParams;
-	
+
 public:
-    ImageStatisticsProcess( ImageStatisticsPlugin& instance );
+	ImageStatisticsProcess( ImageStatisticsPlugin& instance );
 
-	void setup( const OFX::RenderArguments &args );
+	void setup( const OFX::RenderArguments& args );
 
-    // Do some processing
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	// Do some processing
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

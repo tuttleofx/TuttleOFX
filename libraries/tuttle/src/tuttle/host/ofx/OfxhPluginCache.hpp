@@ -44,7 +44,6 @@
 #include <set>
 #include <algorithm>
 
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -78,6 +77,7 @@ class OfxhPluginCache
 public:
 	typedef OfxhPluginCache This;
 	typedef boost::ptr_list<OfxhPluginBinary> OfxhPluginBinaryList;
+
 protected:
 	tuttle::host::ofx::property::OfxhPropSpec* _hostSpec;
 
@@ -87,11 +87,10 @@ protected:
 	OfxhPluginBinaryList _binaries; ///< all the binaries we know about, we own these
 	std::list<OfxhPlugin*> _plugins; ///< all the plugins inside the binaries, we don't own these, populated from _binaries
 	std::map<std::string, OfxhPlugin*> _pluginsByID;
-	std::map<OfxhPluginIdent, bool> _loadedMap;	///< Used to check if a plugin is loaded twice
+	std::map<OfxhPluginIdent, bool> _loadedMap; ///< Used to check if a plugin is loaded twice
 	std::set<std::string> _knownBinFiles;
 
 	std::list<PluginCacheSupportedApi> _apiHandlers;
-
 
 	// internal state
 	bool _ignoreCache;
@@ -108,19 +107,19 @@ public:
 
 protected:
 	void scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse );
-	
+
 	void addPlugin( OfxhPlugin* plugin )
 	{
 		// Check if the same plugin has already been loaded
-		if (_loadedMap.find(plugin->getIdentity()) == _loadedMap.end())
+		if( _loadedMap.find( plugin->getIdentity() ) == _loadedMap.end() )
 		{
 			_loadedMap[plugin->getIdentity()] = true;
 		}
 		else
 		{
 			COUT_WARNING( "Warning! Plugin: " <<
-						  plugin->getRawIdentifier() <<
-						  " loaded twice!" );
+			              plugin->getRawIdentifier() <<
+			              " loaded twice!" );
 		}
 		_plugins.push_back( plugin );
 
@@ -139,36 +138,38 @@ protected:
 	}
 
 public:
-
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 
-#ifdef SWIG
+	#ifdef SWIG
 	%extend
 	{
 		OfxhPlugin& __getitem__( const std::string& name )
 		{
 			return *self->getPluginById( name );
 		}
+
 		std::string __str__() const
 		{
 			std::stringstream s;
+
 			s << *self;
 			return s.str();
 		}
+
 	}
-#endif
+	#endif
 
 	/// get the plugin by id.  vermaj and vermin can be specified.  if they are not it will
 	/// pick the highest found version.
-	OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
-	const OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>(*this).getPluginById( id, vermaj, vermin ); }
+	OfxhPlugin*       getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 );
+	const OfxhPlugin* getPluginById( const std::string& id, int vermaj = -1, int vermin = -1 ) const { return const_cast<This&>( *this ).getPluginById( id, vermaj, vermin ); }
 
 	/// get the list in which plugins are sought
 	const std::list<std::string>& getPluginPath()
 	{
 		return _pluginPath;
 	}
-	
+
 	/// was the cache outdated?
 	bool isDirty() const
 	{
@@ -240,24 +241,24 @@ public:
 	{
 		return _binaries;
 	}
-	
+
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-//		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
-//		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
-//		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
-		ar & BOOST_SERIALIZATION_NVP(_binaries);
-//		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
-		ar & BOOST_SERIALIZATION_NVP(_knownBinFiles);
+		//		ar & BOOST_SERIALIZATION_NVP(_pluginPath);
+		//		ar & BOOST_SERIALIZATION_NVP(_nonrecursePath);
+		//		ar & BOOST_SERIALIZATION_NVP(_pluginDirs);
+		ar& BOOST_SERIALIZATION_NVP( _binaries );
+		//		ar & BOOST_SERIALIZATION_NVP(_plugins); // just a link, don't save this
+		ar& BOOST_SERIALIZATION_NVP( _knownBinFiles );
 
 		if( typename Archive::is_loading() )
 		{
 			for( ofx::OfxhPluginCache::OfxhPluginBinaryList::iterator it = getBinaries().begin(), itEnd = getBinaries().end();
-				 it != itEnd;
-				 ++it )
+			     it != itEnd;
+			     ++it )
 			{
 				for( ofx::OfxhPluginBinary::PluginVector::iterator i = it->getPlugins().begin(), iEnd = it->getPlugins().end();
 				     i != iEnd;
@@ -265,11 +266,12 @@ private:
 				{
 					APICache::OfxhPluginAPICacheI* apiCache = findApiHandler( i->getPluginApi(), i->getApiVersion() );
 					i->setApiHandler( *apiCache );
-					_plugins.push_back(&(*i));
+					_plugins.push_back( &( *i ) );
 				}
 			}
 		}
 	}
+
 };
 
 }

@@ -10,7 +10,8 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-class ParamChoice : public Param, public ofx::attribute::OfxhParamChoice
+class ParamChoice : public Param
+	, public ofx::attribute::OfxhParamChoice
 {
 protected:
 	int _value;
@@ -20,12 +21,12 @@ public:
 	ParamChoice* clone() const { return new ParamChoice( *this ); }
 
 	int getDefault() const;
-	
+
 	void get( int& ) const OFX_EXCEPTION_SPEC;
 	void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC;
 	void set( const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void setAtTime( const OfxTime time, const int&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	
+
 	void copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };
@@ -33,6 +34,5 @@ public:
 }
 }
 }
-
 
 #endif

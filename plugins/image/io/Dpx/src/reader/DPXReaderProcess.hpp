@@ -25,7 +25,7 @@ template<class View>
 class DPXReaderProcess : public ImageGilProcessor<View>
 {
 public:
-	DPXReaderProcess( DPXReaderPlugin & instance );
+	DPXReaderProcess( DPXReaderPlugin& instance );
 	~DPXReaderProcess();
 
 	void setup( const OFX::RenderArguments& args );
@@ -38,7 +38,6 @@ public:
 protected:
 	template<class T, class DST_V>
 	void bitStreamToView( DST_V& dst, const int nc, const int channelSize );
-
 
 protected:
 	DPXReaderPlugin&    _plugin;        ///< Rendering plugin

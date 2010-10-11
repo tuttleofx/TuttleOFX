@@ -9,7 +9,8 @@ namespace reader {
 
 static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( JpegReaderPluginFactory, {}, {} );
+mDeclarePluginFactory( JpegReaderPluginFactory, {}, {}
+                       );
 
 }
 }

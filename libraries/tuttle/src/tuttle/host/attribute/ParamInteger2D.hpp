@@ -11,8 +11,8 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-
-class ParamInteger2D : public Param, public ofx::attribute::OfxhMultiDimParam<ParamInteger, 2 >
+class ParamInteger2D : public Param
+	, public ofx::attribute::OfxhMultiDimParam<ParamInteger, 2 >
 {
 public:
 	ParamInteger2D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
@@ -22,10 +22,9 @@ public:
 
 	void get( int& x, int& y ) const OFX_EXCEPTION_SPEC;
 	void getAtTime( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC;
-	void set( const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void setAtTime( const OfxTime time, const int &x, const int &y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void set( const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void setAtTime( const OfxTime time, const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 };
-
 
 }
 }

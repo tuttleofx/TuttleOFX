@@ -14,7 +14,7 @@ class OfxhKeyframeParam
 {
 public:
 	virtual ~OfxhKeyframeParam() {}
-	
+
 public:
 	virtual void getNumKeys( unsigned int& nKeys ) const OFX_EXCEPTION_SPEC;
 	virtual void getKeyTime( int nth, OfxTime& time ) const OFX_EXCEPTION_SPEC;
@@ -27,7 +27,6 @@ public:
 }
 }
 }
-
 
 #endif
 

@@ -7,7 +7,8 @@ namespace plugin {
 namespace colorspace {
 namespace log2lin {
 
-mDeclarePluginFactory( Log2LinPluginFactory, {}, {} );
+mDeclarePluginFactory( Log2LinPluginFactory, {}, {}
+                       );
 
 }
 }

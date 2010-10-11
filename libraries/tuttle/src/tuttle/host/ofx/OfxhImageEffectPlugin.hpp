@@ -69,6 +69,7 @@ public:
 	typedef OfxhImageEffectPlugin This;
 	typedef boost::ptr_map<std::string, OfxhImageEffectNodeDescriptor> ContextMap;
 	typedef std::set<std::string> ContextSet;
+
 private:
 	OfxhImageEffectPluginCache* _pc;
 
@@ -101,14 +102,14 @@ public:
 	~OfxhImageEffectPlugin();
 
 	bool operator==( const OfxhImageEffectPlugin& other ) const;
-	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==(other); }
+	bool operator!=( const OfxhImageEffectPlugin& other ) const { return !This::operator==( other ); }
 
-#ifndef SWIG
+	#ifndef SWIG
 	void setApiHandler( OfxhImageEffectPluginCache& api ) { _pc = &api; }
 	void setApiHandler( APICache::OfxhPluginAPICacheI& api );
 
 	/// @return the API handler this plugin was constructed by
-	APICache::OfxhPluginAPICacheI& getApiHandler();
+	APICache::OfxhPluginAPICacheI&       getApiHandler();
 	const APICache::OfxhPluginAPICacheI& getApiHandler() const;
 
 	/// @brief get the base image effect descriptor
@@ -143,18 +144,18 @@ public:
 private:
 	OfxhImageEffectNodeDescriptor& describeInContextAction( const std::string& context );
 
-
 private:
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize( Archive &ar, const unsigned int version )
+	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar & BOOST_SERIALIZATION_BASE_OBJECT_NVP(OfxhPlugin);
-		ar & BOOST_SERIALIZATION_NVP(_baseDescriptor);
+		ar& BOOST_SERIALIZATION_BASE_OBJECT_NVP( OfxhPlugin );
+		ar& BOOST_SERIALIZATION_NVP( _baseDescriptor );
 		//ar & BOOST_SERIALIZATION_NVP(_pluginHandle); // don't save this
-		ar & BOOST_SERIALIZATION_NVP(_contexts);
+		ar& BOOST_SERIALIZATION_NVP( _contexts );
 	}
-#endif
+
+	#endif
 };
 
 }
@@ -163,7 +164,7 @@ private:
 }
 
 #ifndef SWIG
-BOOST_CLASS_EXPORT(tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin)
+BOOST_CLASS_EXPORT( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin )
 #endif
 
 #endif

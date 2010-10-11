@@ -45,6 +45,8 @@
 #include "ofxsParam.h"
 #include "ofxsInteract.h"
 #include "ofxsMessage.h"
+#include "ofxParametricParam.h"
+#include "extensions/nuke/camera.h"
 
 #include <ofxProgress.h>
 #include <ofxTimeLine.h>
@@ -102,11 +104,11 @@ const std::string mapContextEnumToString( const EContext s );
 /** @brief Enumerates the pixel depths supported */
 enum EBitDepth
 {
-	eBitDepthNone = -1, /**< @brief bit depth that indicates no data is present */
-	eBitDepthCustom = 0, ///< some non standard bit depth
+	eBitDepthCustom = -1, ///< some non standard bit depth
+	eBitDepthNone = 0, ///< bit depth that indicates no data is present
 	eBitDepthUByte = 1,
 	eBitDepthUShort = 2,
-	eBitDepthFloat = 4
+	eBitDepthFloat = 3
 };
 
 const std::string mapBitDepthEnumToString( const EBitDepth e );
@@ -389,6 +391,8 @@ public:
 	const PropertySet& getPropertySet() const { return _effectProps; }
 
 	PropertySet& getPropertySet() { return _effectProps; }
+
+	OfxImageEffectHandle getImageEffectHandle() { return _effectHandle; }
 
 	/** @brief, set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
@@ -961,6 +965,8 @@ public:
 	 * The returned clip \em must not be deleted by the client code. This is all managed by the ImageEffect itself.
 	 */
 	Clip* fetchClip( const std::string& name );
+
+	CameraParam* fetchCameraParam( const std::string& name );
 
 	/** @brief does the host want us to abort rendering? */
 	bool abort( void ) const;

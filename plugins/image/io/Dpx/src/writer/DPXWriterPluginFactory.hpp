@@ -7,9 +7,10 @@ namespace plugin {
 namespace dpx {
 namespace writer {
 
-static const bool kSupportTiles              = false;
+static const bool kSupportTiles = false;
 
-mDeclarePluginFactory( DPXWriterPluginFactory, {}, {} );
+mDeclarePluginFactory( DPXWriterPluginFactory, {}, {}
+                       );
 
 }
 }

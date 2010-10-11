@@ -1,0 +1,24 @@
+Import( 'project' )
+Import( 'libs' )
+
+libraries = [ libs.openfxHack,
+			  libs.tuttleHost,
+              libs.boost_filesystem,
+			  libs.boost_regex,
+			  libs.boost_program_options,
+			  libs.dl,
+			  libs.boost_gil,
+			 ]
+
+sourcesDir = 'src'
+samCheckSources = project.scanFiles( [sourcesDir] )
+
+samCheckEnv = project.createEnv( libraries )
+samCheckEnv.Append( CPPPATH=sourcesDir )
+samCheck = samCheckEnv.Program( target=project.getName(), source=samCheckSources )
+
+samCheckInstall = samCheckEnv.Install( project.inOutputBin(), samCheck )
+samCheckEnv.Alias('all', samCheckInstall )
+
+
+

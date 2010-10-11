@@ -26,7 +26,7 @@ namespace timeShift {
 void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleTimeShift", "TimeShift",
-		            "TimeShift" );
+	                "TimeShift" );
 	desc.setPluginGrouping( "tuttle/image/process/time" );
 
 	// add the supported contexts
@@ -39,7 +39,7 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setTemporalClipAccess(true);
+	desc.setTemporalClipAccess( true );
 }
 
 /**
@@ -48,18 +48,19 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in]        context    Application context
  */
 void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+                                                OFX::EContext               context )
 {
-	OFX::ClipDescriptor *srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
+
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 
 	// Create the mandated output clip
-	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
+	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 
-	OFX::DoubleParamDescriptor *offset = desc.defineDoubleParam( kOffset );
+	OFX::DoubleParamDescriptor* offset = desc.defineDoubleParam( kOffset );
 	offset->setLabel( "offset" );
 	offset->setDefault( 0.0 );
 	offset->setDisplayRange( -10, 10 );
@@ -72,9 +73,9 @@ void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
  * @return  plugin instance
  */
 OFX::ImageEffect* TimeShiftPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+                                                          OFX::EContext        context )
 {
-	return new TimeShiftPlugin(handle);
+	return new TimeShiftPlugin( handle );
 }
 
 }

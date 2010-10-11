@@ -19,15 +19,16 @@ namespace bfs = boost::filesystem;
 using namespace boost::gil;
 
 ImageMagickReaderPlugin::ImageMagickReaderPlugin( OfxImageEffectHandle handle )
-: ReaderPlugin( handle )
+	: ReaderPlugin( handle )
 {
 	InitializeMagick( "" );
 }
 
-ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams(const OfxTime time)
+ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams( const OfxTime time )
 {
 	ImageMagickReaderProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
+
+	params._filepath = getAbsoluteFilenameAt( time );
 	return params;
 }
 
@@ -40,6 +41,7 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = this->_clipDst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = this->_clipDst->getPixelComponents();
+
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
@@ -70,37 +72,37 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}
-	}/*
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				ImageMagickReaderProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				ImageMagickReaderProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				ImageMagickReaderProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}*/
+	} /*
+	     else if( dstComponents == OFX::ePixelComponentAlpha )
+	     {
+	     switch( dstBitDepth )
+	     {
+	        case OFX::eBitDepthUByte:
+	        {
+	            ImageMagickReaderProcess<gray8_view_t> fred( *this );
+	            fred.setupAndProcess( args );
+	            break;
+	        }
+	        case OFX::eBitDepthUShort:
+	        {
+	            ImageMagickReaderProcess<gray16_view_t> fred( *this );
+	            fred.setupAndProcess( args );
+	            break;
+	        }
+	        case OFX::eBitDepthFloat:
+	        {
+	            ImageMagickReaderProcess<gray32f_view_t> fred( *this );
+	            fred.setupAndProcess( args );
+	            break;
+	        }
+	        case OFX::eBitDepthNone:
+	            COUT_FATALERROR( "BitDepthNone not recognize." );
+	            return;
+	        case OFX::eBitDepthCustom:
+	            COUT_FATALERROR( "BitDepthCustom not recognize." );
+	            return;
+	     }
+	     }*/
 	else
 	{
 		COUT_FATALERROR( dstComponents << " not recognize." );
@@ -117,15 +119,16 @@ void ImageMagickReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args
 	}
 	else
 	{
-		ReaderPlugin::changedParam(args, paramName);
+		ReaderPlugin::changedParam( args, paramName );
 	}
 }
 
 bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	ImageInfo* imageInfo = AcquireImageInfo();
+
 	GetImageInfo( imageInfo );
-	std::string filename = getAbsoluteFilenameAt(args.time);
+	std::string filename = getAbsoluteFilenameAt( args.time );
 	strcpy( imageInfo->filename, filename.c_str() );
 	ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
 	GetExceptionInfo( exceptionsInfo );
@@ -140,15 +143,15 @@ bool ImageMagickReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 		rod.y2 = 0;
 		return true;
 	}
-	
+
 	point2<ptrdiff_t> imagemagickDims( image->columns, image->rows );
 	rod.x1 = 0;
 	rod.x2 = imagemagickDims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = imagemagickDims.y;
-	
-	image = DestroyImage( image );
-	imageInfo = DestroyImageInfo( imageInfo );
+
+	image          = DestroyImage( image );
+	imageInfo      = DestroyImageInfo( imageInfo );
 	exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
 
 	return true;
@@ -159,12 +162,12 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename = getAbsoluteFirstFilename();
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<< exception::filename( filename )
-			);
+		    << exception::user( "No input file." )
+		    << exception::filename( filename )
+		                       );
 	}
 
 	ImageInfo* imageInfo = AcquireImageInfo();
@@ -215,7 +218,7 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 
 	if( image )
 		image = DestroyImage( image );
-	imageInfo = DestroyImageInfo( imageInfo );
+	imageInfo      = DestroyImageInfo( imageInfo );
 	exceptionsInfo = DestroyExceptionInfo( exceptionsInfo );
 }
 

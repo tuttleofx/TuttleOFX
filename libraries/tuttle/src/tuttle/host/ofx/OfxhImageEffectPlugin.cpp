@@ -109,14 +109,14 @@ OfxhImageEffectPlugin::~OfxhImageEffectPlugin()
 bool OfxhImageEffectPlugin::operator==( const OfxhImageEffectPlugin& other ) const
 {
 	if( OfxhPlugin::operator!=( other ) ||
-	    *_baseDescriptor != *(other._baseDescriptor) )
+	    *_baseDescriptor != *( other._baseDescriptor ) )
 		return false;
 	return true;
 }
 
 void OfxhImageEffectPlugin::setApiHandler( APICache::OfxhPluginAPICacheI& api )
 {
-	_pc = &dynamic_cast<OfxhImageEffectPluginCache&>(api);
+	_pc = &dynamic_cast<OfxhImageEffectPluginCache&>( api );
 }
 
 APICache::OfxhPluginAPICacheI& OfxhImageEffectPlugin::getApiHandler()
@@ -143,7 +143,8 @@ const OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptor() cons
 
 void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied )
 {
-	std::string key(context); // for constness
+	std::string key( context ); // for constness
+
 	_contexts.insert( key, ied );
 	_knownContexts.insert( context );
 }
@@ -154,7 +155,6 @@ void OfxhImageEffectPlugin::addContext( const std::string& context )
 	//TCOUT( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
 }
 
-
 const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 {
 	return _knownContexts;
@@ -163,15 +163,15 @@ const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
 bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 {
 	/*
-	std::cout << context << " supportsContext? " << _knownContexts.size() << std::endl;
-	
-	for( ContextSet::iterator it = _knownContexts.begin(),
+	   std::cout << context << " supportsContext? " << _knownContexts.size() << std::endl;
+
+	   for( ContextSet::iterator it = _knownContexts.begin(),
 	     itEnd = _knownContexts.end();
 	     it != itEnd;
 	 ++it )
-	{
-		TCOUT( "context " << *it );
-	}
+	   {
+	    TCOUT( "context " << *it );
+	   }
 	 */
 	return _knownContexts.find( context ) != _knownContexts.end();
 }
@@ -203,8 +203,8 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	{
 		_pluginHandle.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::dev( "loadAndDescribeAction: OfxPlugin is NULL." )
-			<< exception::ofxApi( getApiHandler()._apiName ) );
+		    << exception::dev( "loadAndDescribeAction: OfxPlugin is NULL." )
+		    << exception::ofxApi( getApiHandler()._apiName ) );
 	}
 
 	int rval = op->mainEntry( kOfxActionLoad, 0, 0, 0 );
@@ -213,8 +213,8 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	{
 		_pluginHandle.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::dev( "Load Action failed." )
-			<< exception::ofxApi( getApiHandler()._apiName ) );
+		    << exception::dev( "Load Action failed." )
+		    << exception::ofxApi( getApiHandler()._apiName ) );
 	}
 
 	rval = op->mainEntry( kOfxActionDescribe, getDescriptor().getHandle(), 0, 0 );
@@ -223,8 +223,8 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 	{
 		_pluginHandle.reset( NULL );
 		BOOST_THROW_EXCEPTION( exception::Data()
-			<< exception::dev( "Describe Action failed." )
-			<< exception::ofxApi( getApiHandler()._apiName ) );
+		    << exception::dev( "Describe Action failed." )
+		    << exception::ofxApi( getApiHandler()._apiName ) );
 	}
 	initContexts();
 }
@@ -237,14 +237,14 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 	if( it != _contexts.end() )
 	{
 		//COUT( "found context description : " << it->second->getLabel() );
-		return *(it->second);
+		return *( it->second );
 	}
-	
+
 	if( _knownContexts.find( context ) == _knownContexts.end() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
-			<< exception::dev( "Context not found." )
-			<< exception::ofxContext( context ) );
+		    << exception::dev( "Context not found." )
+		    << exception::ofxContext( context ) );
 	}
 	return describeInContextAction( context );
 }
@@ -269,9 +269,9 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::describeInContextAction( c
 	{
 		BOOST_THROW_EXCEPTION( OfxhException( rval, "kOfxImageEffectActionDescribeInContext failed." ) );
 	}
-	std::string key(context); // for constness
+	std::string key( context ); // for constness
 	_contexts.insert( key, newContext.release() );
-	return _contexts.at(context);
+	return _contexts.at( context );
 }
 
 imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const std::string& context )
@@ -286,7 +286,7 @@ imageEffect::OfxhImageEffectNode* OfxhImageEffectPlugin::createInstance( const s
 	{
 		BOOST_THROW_EXCEPTION( exception::BadHandle() );
 	}
-	OfxhImageEffectNodeDescriptor& desc = getDescriptorInContext( context );
+	OfxhImageEffectNodeDescriptor& desc        = getDescriptorInContext( context );
 	imageEffect::OfxhImageEffectNode* instance = Core::instance().getHost().newInstance( *this, desc, context ); /// @todo tuttle: don't use singleton here.
 	instance->createInstanceAction(); // Is it not possible to move this in a constructor ? In some cases it's interesting to initialize host side values before creation of plugin side objets (eg. node duplication or creation from file).
 	return instance;

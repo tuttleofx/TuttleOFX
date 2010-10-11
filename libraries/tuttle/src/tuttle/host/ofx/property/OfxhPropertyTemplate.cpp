@@ -51,7 +51,6 @@ double OfxhDoubleValue::kEmpty = 0;
 void* OfxhPointerValue::kEmpty = 0;
 std::string OfxhStringValue::kEmpty;
 
-
 inline int castToAPIType( int i )
 {
 	return i;
@@ -75,8 +74,7 @@ inline const char* castToAPIType( const std::string& s )
 template<class T>
 OfxhPropertyTemplate<T>::OfxhPropertyTemplate()
 	: OfxhProperty( "", T::typeCode, 0, false )
-{
-}
+{}
 
 template<class T>
 OfxhPropertyTemplate<T>::OfxhPropertyTemplate( const std::string& name,
@@ -103,9 +101,9 @@ OfxhPropertyTemplate<T>::OfxhPropertyTemplate( const std::string& name,
 
 template<class T>
 OfxhPropertyTemplate<T>::OfxhPropertyTemplate( const OfxhPropertyTemplate<T>& pt )
-	: OfxhProperty( pt ),
-	_value( pt._value ),
-	_defaultValue( pt._defaultValue )
+	: OfxhProperty( pt )
+	, _value( pt._value )
+	, _defaultValue( pt._defaultValue )
 {}
 
 #if defined( WINDOWS ) && !defined( __GNUC__ )

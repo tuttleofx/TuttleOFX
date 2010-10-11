@@ -22,14 +22,14 @@ namespace bfs = boost::filesystem;
 using namespace boost::gil;
 
 OpenImageIOReaderPlugin::OpenImageIOReaderPlugin( OfxImageEffectHandle handle )
-: ReaderPlugin( handle )
-{
-}
+	: ReaderPlugin( handle )
+{}
 
-OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams(const OfxTime time)
+OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams( const OfxTime time )
 {
 	OpenImageIOReaderProcessParams params;
-	params._filepath = getAbsoluteFilenameAt(time);
+
+	params._filepath = getAbsoluteFilenameAt( time );
 	return params;
 }
 
@@ -42,6 +42,7 @@ void OpenImageIOReaderPlugin::render( const OFX::RenderArguments& args )
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = this->_clipDst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = this->_clipDst->getPixelComponents();
+
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )
 	{
@@ -119,16 +120,16 @@ void OpenImageIOReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args
 	}
 	else
 	{
-		ReaderPlugin::changedParam(args, paramName);
+		ReaderPlugin::changedParam( args, paramName );
 	}
 }
 
 bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	using namespace OpenImageIO;
-	const std::string filename( getAbsoluteFilenameAt(args.time) );
+	const std::string filename( getAbsoluteFilenameAt( args.time ) );
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		rod.x1 = 0;
 		rod.x2 = 0;
@@ -148,7 +149,7 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 	rod.x2 = spec.width * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
 	rod.y2 = spec.height;
-	
+
 	in->close();
 	return true;
 }
@@ -159,22 +160,22 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	const std::string filename( getAbsoluteFirstFilename() );
 
 	// spec.nchannels;
-//	switch( spec.format )
-//	{
-//		case TypeDesc::UINT8:
-//		case TypeDesc::UNKNOWN:
-//	}
+	//	switch( spec.format )
+	//	{
+	//		case TypeDesc::UINT8:
+	//		case TypeDesc::UNKNOWN:
+	//	}
 
 	ReaderPlugin::getClipPreferences( clipPreferences );
 
-	if( ! bfs::exists( filename ) )
+	if( !bfs::exists( filename ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<< exception::filename( filename )
-			);
+		    << exception::user( "No input file." )
+		    << exception::filename( filename )
+		                       );
 	}
-	
+
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
 	if( !in.get() )
 		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
@@ -189,26 +190,26 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
 			switch( spec.format.basetype )
 			{
-	//			case TypeDesc::UCHAR:
+				//			case TypeDesc::UCHAR:
 				case TypeDesc::UINT8:
-	//			case TypeDesc::CHAR:
+				//			case TypeDesc::CHAR:
 				case TypeDesc::INT8:
 					bd = OFX::eBitDepthUByte;
 					break;
 				case TypeDesc::HALF:
-	//			case TypeDesc::USHORT:
+				//			case TypeDesc::USHORT:
 				case TypeDesc::UINT16:
-	//			case TypeDesc::SHORT:
+				//			case TypeDesc::SHORT:
 				case TypeDesc::INT16:
 					bd = OFX::eBitDepthUShort;
 					break;
-	//			case TypeDesc::UINT:
+				//			case TypeDesc::UINT:
 				case TypeDesc::UINT32:
-	//			case TypeDesc::INT:
+				//			case TypeDesc::INT:
 				case TypeDesc::INT32:
-	//			case TypeDesc::ULONGLONG:
+				//			case TypeDesc::ULONGLONG:
 				case TypeDesc::UINT64:
-	//			case TypeDesc::LONGLONG:
+				//			case TypeDesc::LONGLONG:
 				case TypeDesc::INT64:
 				case TypeDesc::FLOAT:
 				case TypeDesc::DOUBLE:

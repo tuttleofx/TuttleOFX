@@ -27,17 +27,17 @@ struct TextProcessParams
 class TextPlugin : public OFX::ImageEffect
 {
 public:
-    TextPlugin( OfxImageEffectHandle handle );
+	TextPlugin( OfxImageEffectHandle handle );
 
 public:
-    void render( const OFX::RenderArguments &args );
-	
+	void render( const OFX::RenderArguments& args );
+
 	TextProcessParams getProcessParams() const;
-	
+
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _clipSrc; ///< Source image clip
-    OFX::Clip* _clipDst; ///< Destination image clip
+	// do not need to delete these, the ImageEffect is managing them for us
+	OFX::Clip* _clipSrc; ///< Source image clip
+	OFX::Clip* _clipDst; ///< Destination image clip
 	OFX::StringParam* _text; ///< the text to rasterize in the image
 	OFX::StringParam* _font;
 	OFX::IntParam* _size;

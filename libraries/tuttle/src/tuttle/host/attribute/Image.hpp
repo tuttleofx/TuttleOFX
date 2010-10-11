@@ -24,7 +24,7 @@ protected:
 	memory::IMemoryPool& _memoryPool;
 
 public:
-	explicit Image( ClipImage& clip, const OfxRectD& bounds, OfxTime t );
+	explicit Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime t );
 	virtual ~Image();
 
 	boost::uint8_t* getPixelData() { return reinterpret_cast<boost::uint8_t*>( _data->data() ); }
@@ -38,9 +38,9 @@ public:
 	static VIEW_T gilViewFromImage( Image* img );
 
 public:
-#ifndef TUTTLE_PRODUCTION
+	#ifndef TUTTLE_PRODUCTION
 	void debugSaveAsPng( const std::string& filename );
-#endif
+	#endif
 
 private:
 	template < class S_VIEW >

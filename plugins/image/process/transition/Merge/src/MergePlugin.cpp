@@ -413,8 +413,9 @@ void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std:
 
 bool MergePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const OfxRectD irod = rectanglesIntersection(_srcClipA->getCanonicalRod(args.time),
-									   _srcClipB->getCanonicalRod(args.time));
+	const OfxRectD irod = rectanglesIntersection( _srcClipA->getCanonicalRod( args.time ),
+	                                              _srcClipB->getCanonicalRod( args.time ) );
+
 	// Intersection of A & B
 	rod.x1 = irod.x1;
 	rod.x2 = irod.x2;
@@ -422,7 +423,6 @@ bool MergePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments&
 	rod.y2 = irod.y2;
 	return true;
 }
-
 
 }
 }

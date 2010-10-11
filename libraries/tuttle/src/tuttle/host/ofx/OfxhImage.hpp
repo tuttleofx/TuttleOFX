@@ -57,9 +57,10 @@ class OfxhImage : public property::OfxhSet
 protected:
 	/// called during ctors to get bits from the clip props into ours
 	void initClipBits( attribute::OfxhClip& instance );
-	static int _count; ///< temp.... for check
-	int _id; ///< temp.... for check
-	int _referenceCount; ///< reference count on this image
+	static std::ptrdiff_t _count; ///< temp.... for check
+	std::ptrdiff_t _id; ///< temp.... for check
+	std::ptrdiff_t _referenceCount; ///< reference count on this image
+	std::string _clipName; ///< for debug
 
 public:
 	// default constructor
@@ -129,6 +130,9 @@ public:
 		return property::OfxhSet::getHandle();
 	}
 
+	std::string getClipName() const { return _clipName; }
+	std::ptrdiff_t getId() const { return _id; }
+	
 	/// get the bounds of the pixels in memory
 	OfxRectI getBounds() const;
 
@@ -142,17 +146,18 @@ public:
 	EPixelComponent getComponentsType() const;
 
 	int getReference() const {  return _referenceCount; }
-	
-	void addReference() {  ++_referenceCount; COUT( "+  Image::addReference, id:" << _id << ", ref:" << getReference() ); }
+
+	void addReference( const std::size_t n = 1 ) {  _referenceCount += n; COUT( "+"<<n<<"  Image::addReference, id:" << _id << ", ref:" << getReference() ); }
 	/// release the reference count, which, if zero, deletes this
 	bool releaseReference()
 	{
 		--_referenceCount;
-		COUT( "-  Image::releaseReference, id:" << _id << ", ref:" << getReference() );
+		COUT( "-  Image::releaseReference, id:" << getId() << ", ref:" << getReference() );
 		if( _referenceCount < 0 )
-			BOOST_THROW_EXCEPTION( std::logic_error("Try to release an undeclared reference to an Image.") );
+			BOOST_THROW_EXCEPTION( std::logic_error( "Try to release an undeclared reference to an Image." ) );
 		return _referenceCount <= 0;
 	}
+
 };
 
 }
@@ -160,4 +165,4 @@ public:
 }
 }
 
-#endif // OFX_CLIP_H
+#endif

@@ -19,32 +19,33 @@ namespace ifft {
 
 using namespace boost::gil;
 
-IfftPlugin::IfftPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+IfftPlugin::IfftPlugin( OfxImageEffectHandle handle )
+	: ImageEffect( handle )
 {
-    _srcClipMod = fetchClip( kSourcePhase );
-    _srcClipPhase = fetchClip( kSourceModule );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_srcClipMod   = fetchClip( kSourcePhase );
+	_srcClipPhase = fetchClip( kSourceModule );
+	_clipDst      = fetchClip( kOfxImageEffectOutputClipName );
 }
 
-OFX::Clip* IfftPlugin::getSrcClipRe( ) const
+OFX::Clip* IfftPlugin::getSrcClipRe() const
 {
-    return _srcClipMod;
+	return _srcClipMod;
 }
 
-OFX::Clip* IfftPlugin::getSrcClipIm( ) const
+OFX::Clip* IfftPlugin::getSrcClipIm() const
 {
-    return _srcClipPhase;
+	return _srcClipPhase;
 }
 
-OFX::Clip* IfftPlugin::getDstClip( ) const
+OFX::Clip* IfftPlugin::getDstClip() const
 {
-    return _clipDst;
+	return _clipDst;
 }
 
 FftTransformProcessParams IfftPlugin::getProcessParams() const
 {
 	FftTransformProcessParams params;
+
 	return params;
 }
 
@@ -52,92 +53,93 @@ FftTransformProcessParams IfftPlugin::getProcessParams() const
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void IfftPlugin::render( const OFX::RenderArguments &args )
+void IfftPlugin::render( const OFX::RenderArguments& args )
 {
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                IfftProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                IfftProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                IfftProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
+	// do the rendering
+	if( dstComponents == OFX::ePixelComponentRGBA )
+	{
+		switch( dstBitDepth )
+		{
+			case OFX::eBitDepthUByte:
+			{
+				IfftProcess<rgba8_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthUShort:
+			{
+				IfftProcess<rgba16_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthFloat:
+			{
+				IfftProcess<rgba32f_view_t> p( *this );
+				p.setupAndProcess( args );
+				break;
+			}
+			case OFX::eBitDepthNone:
+				COUT_FATALERROR( "BitDepthNone not recognize." );
+				return;
+			case OFX::eBitDepthCustom:
+				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				return;
+		}
+	}
 	/*
-	///@todo: gray transform
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                IfftProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                IfftProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                IfftProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthNone :
-                COUT_FATALERROR( "BitDepthNone not recognize." );
-                return;
-            case OFX::eBitDepthCustom :
-                COUT_FATALERROR( "BitDepthCustom not recognize." );
-                return;
-        }
-    }
-	*/
+	   ///@todo: gray transform
+	   else if( dstComponents == OFX::ePixelComponentAlpha )
+	   {
+	    switch( dstBitDepth )
+	    {
+	        case OFX::eBitDepthUByte :
+	        {
+	            IfftProcess<gray8_view_t> p( *this );
+	            p.setupAndProcess( args );
+	            break;
+	        }
+	        case OFX::eBitDepthUShort :
+	        {
+	            IfftProcess<gray16_view_t> p( *this );
+	            p.setupAndProcess( args );
+	            break;
+	        }
+	        case OFX::eBitDepthFloat :
+	        {
+	            IfftProcess<gray32f_view_t> p( *this );
+	            p.setupAndProcess( args );
+	            break;
+	        }
+	        case OFX::eBitDepthNone :
+	            COUT_FATALERROR( "BitDepthNone not recognize." );
+	            return;
+	        case OFX::eBitDepthCustom :
+	            COUT_FATALERROR( "BitDepthCustom not recognize." );
+	            return;
+	    }
+	   }
+	 */
 }
 
-void IfftPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void IfftPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-    if( paramName == kHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kHelpString );
-    }
+	if( paramName == kHelpButton )
+	{
+		sendMessage( OFX::Message::eMessageMessage,
+		             "", // No XML resources
+		             kHelpString );
+	}
 }
 
 bool IfftPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const OfxRectD irod = rectanglesIntersection( _srcClipMod->getCanonicalRod(args.time),
-												  _srcClipPhase->getCanonicalRod(args.time));
+	const OfxRectD irod = rectanglesIntersection( _srcClipMod->getCanonicalRod( args.time ),
+	                                              _srcClipPhase->getCanonicalRod( args.time ) );
+
 	// Intersection of A & B
 	rod.x1 = irod.x1;
 	rod.x2 = irod.x2;

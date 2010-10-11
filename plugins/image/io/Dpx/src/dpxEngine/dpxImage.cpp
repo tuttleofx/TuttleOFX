@@ -1,15 +1,16 @@
-#include "tuttle/common/utils/global.hpp"
 #include "dpxImage.hpp"
 #include "dpxUtils.hpp"
+#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
-#include <vector>
-#include <boost/cstdint.hpp>
 #include <boost/detail/endian.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/detail/endian.hpp>
 #include <boost/scoped_array.hpp>
+#include <boost/cstdint.hpp>
 
+#include <vector>
 #include <string>
 #include <cstring>
 #include <sstream>
@@ -61,6 +62,133 @@ inline boost::uint16_t reverseBytes( boost::uint16_t v )
 
 //////////////////////////////////// END CUT
 
+
+std::ostream& operator<<( std::ostream& os, const FileInformation& v )
+{
+	std::string magic_str("1234");
+	for( unsigned int i = 0; i<4; ++i )
+	{
+		magic_str[i] = (reinterpret_cast<const char*>( &v.magic_num ))[i];
+	}
+	os << VAR( magic_str ) << std::endl;
+	os << VAR( v.magic_num ) << std::endl;
+	os << VAR( v.offset ) << std::endl;
+	os << VAR( v.vers ) << std::endl;
+	os << VAR( v.file_size ) << std::endl;
+	os << VAR( v.ditto_key ) << std::endl;
+	os << VAR( v.gen_hdr_size ) << std::endl;
+	os << VAR( v.ind_hdr_size ) << std::endl;
+	os << VAR( v.user_data_size ) << std::endl;
+	os << VAR( v.file_name ) << std::endl;
+	os << VAR( v.create_time ) << std::endl;
+	os << VAR( v.creator ) << std::endl;
+	os << VAR( v.project ) << std::endl;
+	os << VAR( v.copyright ) << std::endl;
+	os << VAR( v.key ) << std::endl;
+	return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const ImageInformation::_image_element& v )
+{
+	os << VAR( v.data_sign ) << std::endl;
+	os << VAR( v.ref_low_data ) << std::endl;
+	os << VAR( v.ref_low_quantity ) << std::endl;
+	os << VAR( v.ref_high_data ) << std::endl;
+	os << VAR( v.ref_high_quantity ) << std::endl;
+	os << VAR( (int)v.descriptor ) << std::endl;
+	os << VAR( (int)v.transfer ) << std::endl;
+	os << VAR( (int)v.colorimetric ) << std::endl;
+	os << VAR( (int)v.bit_size ) << std::endl;
+	os << VAR( v.packing ) << std::endl;
+	os << VAR( v.encoding ) << std::endl;
+	os << VAR( v.data_offset ) << std::endl;
+	os << VAR( v.eol_padding ) << std::endl;
+	os << VAR( v.eo_image_padding ) << std::endl;
+	os << VAR( v.description ) << std::endl;
+	return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const ImageInformation& v )
+{
+	os << VAR( v.orientation ) << std::endl;
+	os << VAR( v.element_number ) << std::endl;
+	os << VAR( v.pixelsPerLine ) << std::endl;
+	os << VAR( v.linesPerImageEle ) << std::endl;
+	for( unsigned int i = 0; i < 8; ++i )
+	{
+		os << "v.image_element["<<i<<"]:" << std::endl;
+		os <<  v.image_element[i] << std::endl;
+	}
+	return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const ImageOrientation& v )
+{
+	os << VAR( v.x_offset ) << std::endl;
+	os << VAR( v.y_offset ) << std::endl;
+	os << VAR( v.x_center ) << std::endl;
+	os << VAR( v.y_center ) << std::endl;
+	os << VAR( v.x_orig_size ) << std::endl;
+	os << VAR( v.y_orig_size ) << std::endl;
+	os << VAR( v.file_name ) << std::endl;
+	os << VAR( v.creation_time ) << std::endl;
+	os << VAR( v.input_dev ) << std::endl;
+	os << VAR( v.input_serial ) << std::endl;
+	os << VAR( v.border ) << std::endl;
+	os << VAR( v.pixel_aspect ) << std::endl;
+	return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const MotionPictureFilm& v )
+{
+	os << VAR( (int)v.film_mfg_id ) << std::endl;
+	os << VAR( (int)v.film_type ) << std::endl;
+	os << VAR( (int)v.offset ) << std::endl;
+	os << VAR( v.prefix ) << std::endl;
+	os << VAR( v.count ) << std::endl;
+	os << VAR( v.format ) << std::endl;
+	os << VAR( v.frame_position ) << std::endl;
+	os << VAR( v.sequence_len ) << std::endl;
+	os << VAR( v.held_count ) << std::endl;
+	os << VAR( v.frame_rate ) << std::endl;
+	os << VAR( v.shutter_angle ) << std::endl;
+	os << VAR( v.frame_id ) << std::endl;
+	os << VAR( v.slate_info ) << std::endl;
+	return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const TelevisionHeader& v )
+{
+	os << VAR( v.tim_code ) << std::endl;
+	os << VAR( v.userBits ) << std::endl;
+	os << VAR( (int)v.interlace ) << std::endl;
+	os << VAR( (int)v.field_num ) << std::endl;
+	os << VAR( (int)v.video_signal ) << std::endl;
+	os << VAR( (int)v.unused ) << std::endl;
+	os << VAR( v.hor_sample_rate ) << std::endl;
+	os << VAR( v.ver_sample_rate ) << std::endl;
+	os << VAR( v.frame_rate ) << std::endl;
+	os << VAR( v.time_offset ) << std::endl;
+	os << VAR( v.gamma ) << std::endl;
+	os << VAR( v.black_level ) << std::endl;
+	os << VAR( v.black_gain ) << std::endl;
+	os << VAR( v.break_point ) << std::endl;
+	os << VAR( v.white_level ) << std::endl;
+	os << VAR( v.integration_times ) << std::endl;
+	return os;
+}
+
+std::ostream& operator<<( std::ostream& os, const DpxHeader& v )
+{
+	os << VAR_ENDL( v._fileInfo ) << std::endl;
+	os << VAR_ENDL( v._imageInfo ) << std::endl;
+	os << VAR_ENDL( v._imageOrientation ) << std::endl;
+	os << VAR_ENDL( v._motionPicture ) << std::endl;
+	os << VAR_ENDL( v._television ) << std::endl;
+	return os;
+}
+
+
 DpxImage::DpxImage()
 {}
 
@@ -76,45 +204,39 @@ void DpxImage::read( const path& filename, bool reinterpretation )
 
 	if( !f )
 	{
-		std::ostringstream msg;
-		msg << "Unable to open ";
-		msg << filename;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to open file." )
+			<< exception::filename( filename.string() ) );
 	}
 	readHeader( f );
 
 	// initialize raw data
 	_dataSize = dataSize();
-	if (_dataSize != 0)
+	if( !_dataSize )
 	{
-		// read and throws away characters until 'offset' characters have been read
-		f.ignore( _header.dataOffset() - f.tellg() );
-		// Data have to be packed on uint32_t size to allow indianess fast
-		// reinterpretation
-		_data.reset( new uint8_t[ _dataSize + ( _dataSize % sizeof( uint32_t ) ) ] );
-		// read data
-		if( !f.read( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
-		{
-			std::ostringstream msg;
-			msg << "Unable to read data ";
-			msg << "( " << filename << " )" ;
-			BOOST_THROW_EXCEPTION( std::exception() );
-		}
-		if( reinterpretation && isEndianReinterpNeeded() )
-		{
-			_indyData = reinterpretEndianness();
-		}
-		else
-		{
-			_indyData = _data;
-		}
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::dev( "DPX: Empty data size." )
+			<< exception::filename( filename.string() ) );
+	}
+	// read and throws away characters until 'offset' characters have been read
+	f.ignore( _header.dataOffset() - f.tellg() );
+	// Data have to be packed on uint32_t size to allow indianess fast
+	// reinterpretation
+	_data.reset( new uint8_t[ _dataSize + ( _dataSize % sizeof( uint32_t ) ) ] );
+	// read data
+	if( !f.read( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::dev( "DPX: Unable to read data." )
+			<< exception::filename( filename.string() ) );
+	}
+	if( reinterpretation && isEndianReinterpNeeded() )
+	{
+		_indyData = reinterpretEndianness();
 	}
 	else
 	{
-		std::ostringstream msg;
-		msg << "Unhandled dpx data type.";
-		msg << "( " << filename << " )" ;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		_indyData = _data;
 	}
 	f.close();
 }
@@ -128,11 +250,9 @@ void DpxImage::readHeader( const path& filename )
 
 	if( !f )
 	{
-		std::ostringstream msg;
-		msg << "Unable to open ";
-		msg << filename;
-		std::cerr << msg << std::endl;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::dev( "DPX: Unable to open file." )
+			<< exception::filename( filename.string() ) );
 	}
 
 	readHeader( f );
@@ -141,85 +261,86 @@ void DpxImage::readHeader( const path& filename )
 
 void DpxImage::readHeader( ifstream& f )
 {
-	FileInformation* gen;
 
 	// reads beginning data from _header (we need to get the
 	// header size given in file)...
 	f.seekg( 0, std::ios::beg );
 	if( !f.read( reinterpret_cast<char*>( &_header ), 36 ) )
 	{
-		std::ostringstream msg;
-		msg << "Unable to read header...";
-		std::cerr << "Unable to read dpx header..." << std::endl;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to read dpx header..." ) );
 	}
 
 	// ...file information
-	gen = &( _header._fileInfo );
-	_header._fileInfo.magic_num = gen->magic_num;
+	FileInformation& gen = _header._fileInfo;
+	_header._fileInfo.magic_num = gen.magic_num;
 	std::size_t hdrSize = 0;
 
 	if( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
 	{
-		uint32_t genhdrsize = swapEndian<uint32_t>( gen->gen_hdr_size );
+		uint32_t genhdrsize = swapEndian<uint32_t>( gen.gen_hdr_size );
 		hdrSize = ( genhdrsize > 0 ? genhdrsize : sizeof( DpxHeader ) ) - 36;
 	}
-	else if (_header._fileInfo.magic_num == DPX_MAGIC)
+	else if( _header._fileInfo.magic_num == DPX_MAGIC )
 	{
-		hdrSize = ( gen->gen_hdr_size > 0 ? gen->gen_hdr_size : sizeof( DpxHeader ) ) - 36;
+		hdrSize = ( gen.gen_hdr_size > 0 ? gen.gen_hdr_size : sizeof( DpxHeader ) ) - 36;
 	}
 	else
 	{
-		BOOST_THROW_EXCEPTION(std::logic_error("Not a dpx image !"));
+		std::string magic_str("1234");
+		for( unsigned int i = 0; i<4; ++i )
+		{
+			magic_str[i] = (reinterpret_cast<const char*>( &_header._fileInfo.magic_num ))[i];
+		}
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Not a dpx image !" )
+			<< exception::dev() + "Magic number not recognized "
+			+ "(int:" + _header._fileInfo.magic_num + ", str:" + magic_str + ")" );
 	}
 	// Read meta dynamic infos
-	scoped_array<uint8_t> hdrBuffer(new uint8_t[hdrSize]);
+	scoped_array<uint8_t> hdrBuffer( new uint8_t[hdrSize] );
 	// reads data from _header...
 	if( !f.read( (char*)hdrBuffer.get(), hdrSize ) )
 	{
-		std::ostringstream msg;
-		msg << "DPX: Unable to read header...";
-		std::cerr << msg << std::endl;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to read dpx header." ) );
 	}
 	// Read dynamic data
 	std::size_t bufpos = 0;
-	readDynamicHdrData((uint8_t*)gen->file_name, sizeof(gen->file_name), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->file_name);
-	readDynamicHdrData((uint8_t*)gen->create_time, sizeof(gen->create_time), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->create_time);
-	readDynamicHdrData((uint8_t*)gen->creator, sizeof(gen->creator), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->creator);
-	readDynamicHdrData((uint8_t*)gen->project, sizeof(gen->project), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->project);
-	readDynamicHdrData((uint8_t*)gen->copyright, sizeof(gen->copyright), hdrBuffer.get(), bufpos);
-	bufpos += sizeof(gen->copyright);
-	memcpy(&gen->key, hdrBuffer.get() + bufpos, sizeof(uint32_t));
-	bufpos += sizeof(uint32_t);
-	memcpy(&gen->reserved, hdrBuffer.get() + bufpos, sizeof(gen->reserved));
-	bufpos += sizeof(gen->reserved);
+	readDynamicHdrData( (uint8_t*)gen.file_name, sizeof( gen.file_name ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen.file_name );
+	readDynamicHdrData( (uint8_t*)gen.create_time, sizeof( gen.create_time ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen.create_time );
+	readDynamicHdrData( (uint8_t*)gen.creator, sizeof( gen.creator ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen.creator );
+	readDynamicHdrData( (uint8_t*)gen.project, sizeof( gen.project ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen.project );
+	readDynamicHdrData( (uint8_t*)gen.copyright, sizeof( gen.copyright ), hdrBuffer.get(), bufpos );
+	bufpos += sizeof( gen.copyright );
+	memcpy( &gen.key, hdrBuffer.get() + bufpos, sizeof( uint32_t ) );
+	bufpos += sizeof( uint32_t );
+	memcpy( &gen.reserved, hdrBuffer.get() + bufpos, sizeof( gen.reserved ) );
+	bufpos += sizeof( gen.reserved );
 	// Copy the remaining header infos
-	memcpy(&(_header._imageInfo), hdrBuffer.get() + bufpos, hdrSize - bufpos);
+	memcpy( &( _header._imageInfo ), hdrBuffer.get() + bufpos, hdrSize - bufpos );
 
-	if ( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
+	if( _header._fileInfo.magic_num == DPX_MAGIC_SWAP )
 	{
 		_header.swapHeader();
 	}
 	if( _header._imageInfo.orientation > 1 )
 	{
-		std::ostringstream msg;
-		msg << "DPX: bad orientation value";
-		std::cerr << msg << std::endl;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to read dpx." )
+			<< exception::dev( "Bad orientation value." ) );
 	}
 
 	uint8_t bitSize = _header._imageInfo.image_element[0].bit_size;
 	if( bitSize != 8 && bitSize != 10 && bitSize != 12 && bitSize != 16 )
 	{
-		std::ostringstream msg;
-		msg << "DPX: bad bit size value (= " << bitSize << ")";
-		std::cerr << msg << std::endl;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to read dpx." )
+			<< exception::dev() + "Bad bit size value (" + bitSize + ")." );
 	}
 
 	uint16_t packing = _header._imageInfo.image_element[0].packing;
@@ -229,10 +350,9 @@ void DpxImage::readHeader( ifstream& f )
 	}
 	if( packing != 0 && packing != 1 && packing != 5 )
 	{
-		std::ostringstream msg;
-		msg << "bad packing value";
-		std::cerr << msg << std::endl;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "Unable to read dpx." )
+			<< exception::dev() + "Bad packing value (" + packing + ")." );
 	}
 }
 
@@ -261,72 +381,73 @@ void DpxHeader::swapHeader()
 		_imageInfo.image_element[i].ref_low_data      = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_low_data );
 		_imageInfo.image_element[i].ref_low_quantity  = swapEndian<float>( _imageInfo.image_element[i].ref_low_quantity );
 		_imageInfo.image_element[i].ref_high_data     = swapEndian<uint32_t>( _imageInfo.image_element[i].ref_high_data );
-		_imageInfo.image_element[i].ref_high_quantity = swapEndian<float>(_imageInfo.image_element[i].ref_high_quantity );
-		_imageInfo.image_element[i].packing           = swapEndian<short>(_imageInfo.image_element[i].packing );
-		_imageInfo.image_element[i].encoding          = swapEndian<short>(_imageInfo.image_element[i].encoding );
-		_imageInfo.image_element[i].data_offset       = swapEndian<uint32_t>(_imageInfo.image_element[i].data_offset );
-		_imageInfo.image_element[i].eol_padding       = swapEndian<uint32_t>(_imageInfo.image_element[i].eol_padding );
-		_imageInfo.image_element[i].eo_image_padding  = swapEndian<uint32_t>(_imageInfo.image_element[i].eo_image_padding );
+		_imageInfo.image_element[i].ref_high_quantity = swapEndian<float>( _imageInfo.image_element[i].ref_high_quantity );
+		_imageInfo.image_element[i].packing           = swapEndian<short>( _imageInfo.image_element[i].packing );
+		_imageInfo.image_element[i].encoding          = swapEndian<short>( _imageInfo.image_element[i].encoding );
+		_imageInfo.image_element[i].data_offset       = swapEndian<uint32_t>( _imageInfo.image_element[i].data_offset );
+		_imageInfo.image_element[i].eol_padding       = swapEndian<uint32_t>( _imageInfo.image_element[i].eol_padding );
+		_imageInfo.image_element[i].eo_image_padding  = swapEndian<uint32_t>( _imageInfo.image_element[i].eo_image_padding );
 	}
 
 	//..file orientation
-	_imageOrientation.x_offset        =   swapEndian<uint32_t>(_imageOrientation.x_offset );
-	_imageOrientation.y_offset        =   swapEndian<uint32_t>(_imageOrientation.y_offset );
-	_imageOrientation.x_center        =   swapEndian<uint32_t>(_imageOrientation.x_center );
-	_imageOrientation.y_center        =   swapEndian<uint32_t>(_imageOrientation.y_center );
-	_imageOrientation.x_orig_size     =   swapEndian<uint32_t>(_imageOrientation.x_orig_size );
-	_imageOrientation.y_orig_size     =   swapEndian<uint32_t>(_imageOrientation.y_orig_size );
-	_imageOrientation.border[0]       =   swapEndian<short>(_imageOrientation.border[0] );
-	_imageOrientation.border[1]       =   swapEndian<short>(_imageOrientation.border[1] );
-	_imageOrientation.border[2]       =   swapEndian<short>(_imageOrientation.border[2] );
-	_imageOrientation.border[3]       =   swapEndian<short>(_imageOrientation.border[3] );
-	_imageOrientation.pixel_aspect[0] =   swapEndian<uint32_t>(_imageOrientation.pixel_aspect[0] );
-	_imageOrientation.pixel_aspect[1] =   swapEndian<uint32_t>(_imageOrientation.pixel_aspect[1] );
+	_imageOrientation.x_offset        =   swapEndian<uint32_t>( _imageOrientation.x_offset );
+	_imageOrientation.y_offset        =   swapEndian<uint32_t>( _imageOrientation.y_offset );
+	_imageOrientation.x_center        =   swapEndian<uint32_t>( _imageOrientation.x_center );
+	_imageOrientation.y_center        =   swapEndian<uint32_t>( _imageOrientation.y_center );
+	_imageOrientation.x_orig_size     =   swapEndian<uint32_t>( _imageOrientation.x_orig_size );
+	_imageOrientation.y_orig_size     =   swapEndian<uint32_t>( _imageOrientation.y_orig_size );
+	_imageOrientation.border[0]       =   swapEndian<short>( _imageOrientation.border[0] );
+	_imageOrientation.border[1]       =   swapEndian<short>( _imageOrientation.border[1] );
+	_imageOrientation.border[2]       =   swapEndian<short>( _imageOrientation.border[2] );
+	_imageOrientation.border[3]       =   swapEndian<short>( _imageOrientation.border[3] );
+	_imageOrientation.pixel_aspect[0] =   swapEndian<uint32_t>( _imageOrientation.pixel_aspect[0] );
+	_imageOrientation.pixel_aspect[1] =   swapEndian<uint32_t>( _imageOrientation.pixel_aspect[1] );
 
-	//..motion picture film 
-	_motionPicture.prefix         =   swapEndian<uint32_t>(_motionPicture.prefix );
-	_motionPicture.count          =   swapEndian<uint32_t>(_motionPicture.count );
-	_motionPicture.frame_position =   swapEndian<uint32_t>(_motionPicture.frame_position );
-	_motionPicture.sequence_len   =   swapEndian<uint32_t>(_motionPicture.sequence_len );
-	_motionPicture.held_count     =   swapEndian<uint32_t>(_motionPicture.held_count );
-	_motionPicture.frame_rate     =   swapEndian<float>(_motionPicture.frame_rate );
-	_motionPicture.shutter_angle  =   swapEndian<float>(_motionPicture.shutter_angle );
+	//..motion picture film
+	_motionPicture.prefix         =   swapEndian<uint32_t>( _motionPicture.prefix );
+	_motionPicture.count          =   swapEndian<uint32_t>( _motionPicture.count );
+	_motionPicture.frame_position =   swapEndian<uint32_t>( _motionPicture.frame_position );
+	_motionPicture.sequence_len   =   swapEndian<uint32_t>( _motionPicture.sequence_len );
+	_motionPicture.held_count     =   swapEndian<uint32_t>( _motionPicture.held_count );
+	_motionPicture.frame_rate     =   swapEndian<float>( _motionPicture.frame_rate );
+	_motionPicture.shutter_angle  =   swapEndian<float>( _motionPicture.shutter_angle );
 
-	//..television 
-	_television.tim_code          =   swapEndian<uint32_t>(_television.tim_code );
-	_television.userBits          =   swapEndian<uint32_t>(_television.userBits );
-	_television.hor_sample_rate   =   swapEndian<float>(_television.hor_sample_rate );
-	_television.ver_sample_rate   =   swapEndian<float>(_television.ver_sample_rate );
-	_television.frame_rate        =   swapEndian<float>(_television.frame_rate );
-	_television.time_offset       =   swapEndian<float>(_television.time_offset );
-	_television.gamma             =   swapEndian<float>(_television.gamma );
-	_television.black_level       =   swapEndian<float>(_television.black_level );
-	_television.black_gain        =   swapEndian<float>(_television.black_gain );
-	_television.break_point       =   swapEndian<float>(_television.break_point );
-	_television.white_level       =   swapEndian<float>(_television.white_level );
-	_television.integration_times =   swapEndian<float>(_television.integration_times );
+	//..television
+	_television.tim_code          =   swapEndian<uint32_t>( _television.tim_code );
+	_television.userBits          =   swapEndian<uint32_t>( _television.userBits );
+	_television.hor_sample_rate   =   swapEndian<float>( _television.hor_sample_rate );
+	_television.ver_sample_rate   =   swapEndian<float>( _television.ver_sample_rate );
+	_television.frame_rate        =   swapEndian<float>( _television.frame_rate );
+	_television.time_offset       =   swapEndian<float>( _television.time_offset );
+	_television.gamma             =   swapEndian<float>( _television.gamma );
+	_television.black_level       =   swapEndian<float>( _television.black_level );
+	_television.black_gain        =   swapEndian<float>( _television.black_gain );
+	_television.break_point       =   swapEndian<float>( _television.break_point );
+	_television.white_level       =   swapEndian<float>( _television.white_level );
+	_television.integration_times =   swapEndian<float>( _television.integration_times );
 }
 
-std::size_t mystrnlen (const char *string, std::size_t maxlen)
+std::size_t mystrnlen( const char* string, std::size_t maxlen )
 {
-  const char *end = static_cast<const char *>( memchr( string, '\0', maxlen ) );
-  return end ? (std::size_t) ( end - string ) : maxlen;
+	const char* end = static_cast<const char*>( memchr( string, '\0', maxlen ) );
+
+	return end ? ( std::size_t )( end - string ) : maxlen;
 }
 
-std::size_t DpxImage::readDynamicHdrData(uint8_t *dst, std::size_t maxLen, uint8_t *buffer, std::size_t bufpos)
+std::size_t DpxImage::readDynamicHdrData( uint8_t* dst, std::size_t maxLen, uint8_t* buffer, std::size_t bufpos )
 {
 	// Strings always
 	buffer += bufpos;
-//	strncpy((char*)dst, (char*)buffer, maxLen);
-	strncpy( (char *) dst, (char *) buffer, maxLen);
+	//	strncpy((char*)dst, (char*)buffer, maxLen);
+	strncpy( (char*) dst, (char*) buffer, maxLen );
 	int startPos = bufpos;
-	bufpos += mystrnlen( (const char*) dst, maxLen);
+	bufpos += mystrnlen( (const char*) dst, maxLen );
 	// First skip 0x00 and following 0xFF caracters
-	while( buffer[bufpos] == 0x00 && (bufpos - startPos) < maxLen )
+	while( buffer[bufpos] == 0x00 && ( bufpos - startPos ) < maxLen )
 	{
 		bufpos++;
 	}
-	while( buffer[bufpos] == 0xFF && (bufpos - startPos) < maxLen )
+	while( buffer[bufpos] == 0xFF && ( bufpos - startPos ) < maxLen )
 	{
 		bufpos++;
 	}
@@ -342,11 +463,9 @@ void DpxImage::write( const path& filename )
 
 	if( !f )
 	{
-		std::ostringstream msg;
-		msg << "Unable to open ";
-		msg << filename;
-		std::cerr << msg << std::endl;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "DPX: Unable to open file." )
+			<< exception::filename(filename.string()) );
 	}
 	_header.setDataOffset( 2048 );
 	writeHeader( f );
@@ -356,17 +475,18 @@ void DpxImage::write( const path& filename )
 	{
 		if( !f.write( reinterpret_cast<char*>( &zeros[0] ), zeros.size() ) )
 		{
-			BOOST_THROW_EXCEPTION( std::exception() );
+			BOOST_THROW_EXCEPTION( exception::File()
+				<< exception::user( "DPX: Unable to write." )
+				<< exception::dev( "Error writting padding." ) );
 		}
 	}
 
 	// write image data
 	if( !f.write( reinterpret_cast<char*>( _data.get() ), _dataSize ) )
 	{
-		std::ostringstream msg;
-		msg << "Unable to read data ";
-		msg << "( " << filename << " )" ;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user( "DPX: Unable to open read data." )
+			<< exception::filename(filename.string()) );
 	}
 	f.close();
 }
@@ -375,39 +495,35 @@ void DpxImage::writeHeader( ofstream& f )
 {
 	// Write data
 	DpxHeader header = _header;
-	if ( header.bigEndian() )
+
+	if( header.bigEndian() )
 	{
 		header.swapHeader();
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._fileInfo ), sizeof( FileInformation ) ) )
 	{
-		std::ostringstream msg;
-		msg << "DpxImage::Unable to write data (FileInformation)" ;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::Data()
+			<< exception::user( "DpxImage: Unable to write data (FileInformation)." ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._imageInfo ), sizeof( ImageInformation ) ) )
 	{
-		std::ostringstream msg;
-		msg << "DpxImage::Unable to write data (ImageInformation)" ;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::Data()
+			<< exception::user( "DpxImage: Unable to write data (ImageInformation)." ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._imageOrientation ), sizeof( ImageOrientation ) ) )
 	{
-		std::ostringstream msg;
-		msg << "DpxImage::Unable to write data (ImageOrientation)" ;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::Data()
+			<< exception::user( "DpxImage: Unable to write data (ImageOrientation)." ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._motionPicture ), sizeof( MotionPictureFilm ) ) )
 	{
-		std::ostringstream msg;
-		msg << "DpxImage::Unable to write data (MotionPictureFilm)" ;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::Data()
+			<< exception::user( "DpxImage: Unable to write data (MotionPictureFilm)." ) );
 	}
 	if( !f.write( reinterpret_cast<char*>( &header._television ), sizeof( TelevisionHeader ) ) )
 	{
-		std::ostringstream msg;
-		msg << "DpxImage::Unable to write data (TelevisionHeader)" ;
-		BOOST_THROW_EXCEPTION( std::exception() );
+		BOOST_THROW_EXCEPTION( exception::Data()
+			<< exception::user( "DpxImage: Unable to write data (TelevisionHeader)." ) );
 	}
 }
 
@@ -446,11 +562,11 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 			{
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
-				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
-				std::size_t dataSize16    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint16_t );
-				uint16_t* pData16    = (uint16_t*)pData.get();
-				uint16_t* pSrcData16 = (uint16_t*)_data.get();
-				uint16_t* pData16End = pData16 + dataSize16;
+				pData.reset( new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )] );
+				std::size_t dataSize16 = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint16_t );
+				uint16_t* pData16      = (uint16_t*)pData.get();
+				uint16_t* pSrcData16   = (uint16_t*)_data.get();
+				uint16_t* pData16End   = pData16 + dataSize16;
 				do
 				{
 					*pData16++ = swapEndian<uint16_t>( *pSrcData16++ );
@@ -466,11 +582,11 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 			{
 				// Data have to be packed on uint32_t size to allow indianess fast
 				// reinterpretation
-				pData.reset(new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )]);
-				std::size_t dataSize32    = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint32_t );
-				uint32_t* pData32    = (uint32_t*)pData.get();
-				uint32_t* pSrcData32 = (uint32_t*)_data.get();
-				uint32_t* pData32End = pData32 + dataSize32;
+				pData.reset( new uint8_t[_dataSize + ( _dataSize % sizeof( uint32_t ) )] );
+				std::size_t dataSize32 = ( _dataSize + ( _dataSize % sizeof( uint32_t ) ) ) / sizeof( uint32_t );
+				uint32_t* pData32      = (uint32_t*)pData.get();
+				uint32_t* pSrcData32   = (uint32_t*)_data.get();
+				uint32_t* pData32End   = pData32 + dataSize32;
 				do
 				{
 					*pData32++ = swapEndian<uint32_t>( *pSrcData32++ );
@@ -509,31 +625,30 @@ inline const std::size_t DpxImage::components() const
 
 const std::size_t DpxImage::dataSize() const
 {
-	std::size_t sz               = 0;
 	boost::uint16_t packing = _header.packing();
 
 	switch( componentsType() )
 	{
 		case eCompTypeR8G8B8:
-			sz = sizeof( boost::uint8_t ) * 3 * width() * height();
+			return sizeof( boost::uint8_t ) * 3 * width() * height();
 			break;
 		case eCompTypeR10G10B10:
 			// Packing means that pixel are packed on bytes
 			if( packing )
-				sz = sizeof( boost::uint32_t ) * width() * height();
+				return sizeof( boost::uint32_t ) * width() * height();
 			// Unpacked means that pixels are bit aligned
 			else
-				sz = ( std::size_t ) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
+				return (std::size_t) std::ceil( ( 10 * 3 * width() * height() ) / 8.0f );
 			break;
 		case eCompTypeR8G8B8A8:
 		case eCompTypeA8B8G8R8:
-			sz = sizeof( boost::uint8_t ) * 4 * width() * height();
+			return sizeof( boost::uint8_t ) * 4 * width() * height();
 			break;
 		case eCompTypeR12G12B12:
-			sz = 6 * width() * height();
+			return 6 * width() * height();
 			break;
 		case eCompTypeR16G16B16:
-			sz = sizeof( uint16_t ) * 3 * width() * height();
+			return sizeof( uint16_t ) * 3 * width() * height();
 			break;
 		case eCompTypeR10G10B10A10:
 		case eCompTypeA10B10G10R10:
@@ -549,23 +664,26 @@ const std::size_t DpxImage::dataSize() const
 					return int(floor( x / 3.0f ) * 8 * 2 + 12);
 			}
 			else
-				sz = 5 * width() * height();
+				return 5 * width() * height();
 			break;
 		case eCompTypeR12G12B12A12:
 		case eCompTypeA12B12G12R12:
 			if( packing )
-				sz = sizeof( boost::uint64_t ) * width() * height();
+				return sizeof( boost::uint64_t ) * width() * height();
 			else
-				sz = ( std::size_t ) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
+				return (std::size_t) std::ceil( ( 12 * 4 * width() * height() ) / 8.0f );
 			break;
 		case eCompTypeR16G16B16A16:
 		case eCompTypeA16B16G16R16:
-			sz = sizeof( boost::uint64_t ) * width() * height();
+			return sizeof( boost::uint64_t ) * width() * height();
 			break;
-		default:
+		case eCompTypeUnknown:
 			break;
 	}
-	return sz;
+
+	BOOST_THROW_EXCEPTION( exception::File()
+		<< exception::dev( "Unhandled dpx data type." ) );
+	return 0;
 }
 
 const DpxImage::EDPX_CompType DpxImage::componentsType() const

@@ -3,164 +3,243 @@
 
 #include <iostream>
 #include <vector>
+#include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/properties.hpp>
 #include <boost/graph/visitors.hpp>
 
 namespace tuttle {
 namespace host {
 namespace graph {
+namespace visitor {
 
-//visitor: cycle detector
-struct cycle_detector : public boost::dfs_visitor<>
+/**
+ * @brief detect if there is a cycle inside a directed graph
+ * or if we can garantee that it's a DAG, Directed Acyclic Graph.
+ */
+class CycleDetector : public boost::default_dfs_visitor
 {
-	public:
-		cycle_detector( bool& has_cycle )
-			: _has_cycle( has_cycle )
-		{
-			_has_cycle = false;
-		}
+public:
+	CycleDetector()
+		: _hasCycle( false )
+	{}
 
-		template<class EdgeDescriptor, class Graph>
-		void back_edge( EdgeDescriptor, Graph& )
-		{
-			_has_cycle = true;
-		}
+	template<class EdgeDescriptor, class Graph>
+	void back_edge( EdgeDescriptor, const Graph& )
+	{
+		_hasCycle = true;
+	}
 
-	protected:
-		bool& _has_cycle;
+public:
+	bool _hasCycle;
 };
 
-//visitor: test_dfs
-struct test_dfs_visitor : public boost::dfs_visitor<>
+template<class TGraph>
+class MarkUsed : public boost::default_dfs_visitor
 {
-	public:
-		test_dfs_visitor() {}
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+	typedef typename TGraph::Edge Edge;
 
-		template<class VertexDescriptor, class Graph>
-		void initialize_vertex( VertexDescriptor v, Graph& g )
-		{
-			TCOUT("initialize_vertex: " << get( vertex_properties, g )[v]);
-		}
+	MarkUsed( TGraph& graph )
+		: _graph( graph )
+	{}
 
-		template<class VertexDescriptor, class Graph>
-		void start_vertex( VertexDescriptor v, Graph& g )
-		{
-			TCOUT("start_vertex: " << get( vertex_properties, g )[v]);
-		}
+	/**
+	 * Set all vertex with unused default value.
+	 */
+	template <class VertexDescriptor, class Graph>
+	void initialize_vertex( VertexDescriptor v, const Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-		template<class VertexDescriptor, class Graph>
-		void discover_vertex( VertexDescriptor v, Graph& g )
-		{
-			TCOUT("discover_vertex: " << get( vertex_properties, g )[v]);
-		}
+		//TCOUT( "MarkUsed &&&&& init" << vertex.getName() );
+		vertex.setUsed( false );
+	}
 
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			TCOUT("finish_vertex: " << get( vertex_properties, g )[v]);
-		}
+	/**
+	 * Set visited vertex used.
+	 */
+	template <class VertexDescriptor, class Graph>
+	void discover_vertex( VertexDescriptor v, const Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
 
-		template<class EdgeDescriptor, class Graph>
-		void examine_edge( EdgeDescriptor e, Graph& g )
-		{
-			TCOUT("examine_edge: " << get( edge_properties, g )[e]);
-		}
+		//COUT_VAR( vertex.getName() );
+		vertex.setUsed();
+	}
 
-		template<class EdgeDescriptor, class Graph>
-		void tree_edge( EdgeDescriptor e, Graph& g )
-		{
-			TCOUT("tree_edge: " << get( edge_properties, g )[e] << "  source: ");
-			TCOUT(get( vertex_properties, g )[source( e, g )]);
-		}
+private:
+	TGraph& _graph;
+};
 
-		template<class EdgeDescriptor, class Graph>
-		void back_edge( EdgeDescriptor e, Graph& g )
-		{
-			TCOUT("back_edge: " << get( edge_properties, g )[e]);
-		}
+template<class TGraph>
+class Test_dfs : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+	typedef typename TGraph::Edge Edge;
 
-		template<class EdgeDescriptor, class Graph>
-		void forward_or_cross_edge( EdgeDescriptor e, Graph& g )
-		{
-			TCOUT("forward_or_cross_edge: " << get( edge_properties, g )[e] );
-		}
+	Test_dfs( TGraph& graph )
+		: _graph( graph )
+	{
+		COUT_X( 80, "_" );
+		TCOUT( "Test_dfs" );
+	}
+
+	~Test_dfs()
+	{
+		TCOUT( "~Test_dfs" );
+		COUT_X( 80, "_" );
+	}
+
+	template <class VertexDescriptor, class Graph>
+	void initialize_vertex( VertexDescriptor v, const Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TCOUT( "initialize_vertex: " << vertex );
+	}
+
+	template <class VertexDescriptor, class Graph>
+	void start_vertex( VertexDescriptor v, const Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TCOUT( "start_vertex: " << vertex );
+	}
+
+	template <class VertexDescriptor, class Graph>
+	void discover_vertex( VertexDescriptor v, const Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TCOUT( "discover_vertex: " << vertex );
+	}
+
+	template <class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, const Graph& g )
+	{
+		Vertex& vertex = _graph.instance( v );
+
+		TCOUT( "finish_vertex: " << vertex );
+	}
+
+	template<class EdgeDescriptor, class Graph>
+	void examine_edge( EdgeDescriptor e, Graph& g )
+	{
+		Edge& edge = _graph.instance( e );
+
+		//		Vertex& vertexSource = _graph.sourceInstance(e);
+		//		Vertex& vertexDest   = _graph.targetInstance(e);
+
+		TCOUT( "examine_edge: " << edge );
+	}
+
+	template <class EdgeDescriptor, class Graph>
+	void tree_edge( EdgeDescriptor e, const Graph& g )
+	{
+		Edge& edge = _graph.instance( e );
+
+		TCOUT( "tree_edge: " << edge  );
+	}
+
+	template <class EdgeDescriptor, class Graph>
+	void back_edge( EdgeDescriptor e, const Graph& g )
+	{
+		Edge& edge = _graph.instance( e );
+
+		TCOUT( "back_edge: " << edge  );
+	}
+
+	template <class EdgeDescriptor, class Graph>
+	void forward_or_cross_edge( EdgeDescriptor e, const Graph& g )
+	{
+		Edge& edge = _graph.instance( e );
+
+		TCOUT( "forward_or_cross_edge: " << edge );
+	}
+
+private:
+	TGraph& _graph;
+};
+
+class Test_bfs : public boost::default_bfs_visitor
+{
+public:
+	Test_bfs() {}
+
+	template<class VertexDescriptor, class Graph>
+	void initialize_vertex( VertexDescriptor v, Graph& g )
+	{
+		std::cout << "initialize_vertex "
+		          << g[v] << std::endl;
+	}
+
+	template<class VertexDescriptor, class Graph>
+	void discover_vertex( VertexDescriptor v, Graph& g )
+	{
+		std::cout << "discover_vertex "
+		          << g[v]
+		          << "  outedges: " << out_degree( v, g )
+		          << std::endl;
+
+	}
+
+	template<class VertexDescriptor, class Graph>
+	void examine_vertex( VertexDescriptor v, Graph& g )
+	{
+		std::cout << "examine_vertex "
+		          << g[v] << std::endl;
+	}
+
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor v, Graph& g )
+	{
+		std::cout << "finish_vertex "
+		          << g[v] << std::endl;
+	}
+
+	template<class EdgeDescriptor, class Graph>
+	void examine_edge( EdgeDescriptor e, Graph& g )
+	{
+		std::cout << "examine_edge "
+		          << g[e] << std::endl;
+	}
+
+	template<class EdgeDescriptor, class Graph>
+	void tree_edge( EdgeDescriptor e, Graph& g )
+	{
+		std::cout << "tree_edge "
+		          << g[e] << std::endl;
+	}
+
+	template<class EdgeDescriptor, class Graph>
+	void non_tree_edge( EdgeDescriptor e, Graph& g )
+	{
+		std::cout << "non_tree_edge "
+		          << g[e] << std::endl;
+	}
+
+	template<class EdgeDescriptor, class Graph>
+	void gray_target( EdgeDescriptor e, Graph& g )
+	{
+		std::cout << "gray_target "
+		          << g[e] << std::endl;
+	}
+
+	template<class EdgeDescriptor, class Graph>
+	void black_target( EdgeDescriptor e, Graph& g )
+	{
+		std::cout << "black_target "
+		          << g[e] << std::endl;
+	}
 
 };
 
-//visitor: test_bfs
-struct test_bfs_visitor : public boost::bfs_visitor<>
-{
-	public:
-		test_bfs_visitor() {}
-
-		template<class VertexDescriptor, class Graph>
-		void initialize_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "initialize_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-		}
-
-		template<class VertexDescriptor, class Graph>
-		void discover_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "discover_vertex "
-			          << get( vertex_properties, g )[v]
-			          << "  outedges: " << out_degree( v, g )
-			          << std::endl;
-
-		}
-
-		template<class VertexDescriptor, class Graph>
-		void examine_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "examine_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-		}
-
-		template<class VertexDescriptor, class Graph>
-		void finish_vertex( VertexDescriptor v, Graph& g )
-		{
-			std::cout << "finish_vertex "
-			          << get( vertex_properties, g )[v] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void examine_edge( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "examine_edge "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void tree_edge( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "tree_edge "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void non_tree_edge( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "non_tree_edge "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void gray_target( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "gray_target "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-
-		template<class EdgeDescriptor, class Graph>
-		void black_target( EdgeDescriptor e, Graph& g )
-		{
-			std::cout << "black_target "
-			          << get( edge_properties, g )[e] << std::endl;
-		}
-
-};
-
+}
 }
 }
 }

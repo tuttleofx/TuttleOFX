@@ -9,8 +9,7 @@ namespace plugin {
 namespace dpx {
 namespace reader {
 
-const static std::string kDPXReaderHelpButton = "Help";
-const static std::string kDPXReaderHelpString = "<b>DPX File reader</b> plugin is used to read dpx files.  <br />";
+const static std::string kParamDisplayHeader = "displayHeader";
 
 }
 }

@@ -35,24 +35,23 @@ namespace host {
 namespace ofx {
 
 OfxhBinary::OfxhBinary()
-	: _binaryPath(),
-	_invalid( false ),
-	_dlHandle( NULL ),
-	_exists( false ),
-	_time( 0 ),
-	_size( 0 ),
-	_users( 0 )
-{
-}
+	: _binaryPath()
+	, _invalid( false )
+	, _dlHandle( NULL )
+	, _exists( false )
+	, _time( 0 )
+	, _size( 0 )
+	, _users( 0 )
+{}
 
 OfxhBinary::OfxhBinary( const std::string& binaryPath )
-  : _binaryPath( binaryPath ),
-	_invalid( false ),
-	_dlHandle( NULL ),
-	_exists( false ),
-	_time( 0 ),
-	_size( 0 ),
-	_users( 0 )
+	: _binaryPath( binaryPath )
+	, _invalid( false )
+	, _dlHandle( NULL )
+	, _exists( false )
+	, _time( 0 )
+	, _size( 0 )
+	, _users( 0 )
 {
 	init( binaryPath );
 }
@@ -137,9 +136,9 @@ void* OfxhBinary::findSymbol( const std::string& symbol )
 		#endif
 	}
 	BOOST_THROW_EXCEPTION( exception::File()
-		<< exception::user( "Error while loading plugin." )
-		<< exception::filename( _binaryPath )
-		<< exception::dev( "Symbol " + quotes(symbol) + " not found." ) );
+	    << exception::user( "Error while loading plugin." )
+	    << exception::filename( _binaryPath )
+	    << exception::dev( "Symbol " + quotes( symbol ) + " not found." ) );
 	return NULL;
 }
 

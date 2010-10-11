@@ -28,8 +28,8 @@ typedef any_image < boost::mpl::vector
 
 template<class View>
 PngReaderProcess<View>::PngReaderProcess( PngReaderPlugin& instance )
-	: ImageGilProcessor<View>( instance ),
-	_plugin( instance )
+	: ImageGilProcessor<View>( instance )
+	, _plugin( instance )
 {
 	this->setNoMultiThreading();
 }
@@ -37,10 +37,11 @@ PngReaderProcess<View>::PngReaderProcess( PngReaderPlugin& instance )
 template<class View>
 void PngReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	PngReaderProcessParams params = _plugin.getProcessParams(args.time);
-	if( ! bfs::exists( params._filepath ) )
+	PngReaderProcessParams params = _plugin.getProcessParams( args.time );
+
+	if( !bfs::exists( params._filepath ) )
 	{
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatFailed, std::string("Unable to open : ") + params._filepath ) );
+		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, std::string( "Unable to open : " ) + params._filepath ) );
 	}
 
 	ImageGilProcessor<View>::setup( args );
@@ -55,7 +56,7 @@ void PngReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getProcessParams(this->_renderArgs.time)._filepath );
+	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
 }
 
 /**
@@ -64,6 +65,7 @@ template<class View>
 View& PngReaderProcess<View>::readImage( View& dst, const std::string& filepath )
 {
 	any_image_t anyImg;
+
 	try
 	{
 		png_read_image( filepath, anyImg );
@@ -71,15 +73,15 @@ View& PngReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 	}
 	catch( boost::exception& e )
 	{
-		e << exception::filename(filepath);
-		COUT_ERROR( boost::diagnostic_information(e) );
-//		throw;
+		e << exception::filename( filepath );
+		COUT_ERROR( boost::diagnostic_information( e ) );
+		//		throw;
 	}
-	catch( ... )
+	catch(... )
 	{
-//		BOOST_THROW_EXCEPTION( exception::Unknown()
-//			<< exception::user( "Unable to write image")
-//			<< exception::filename(filepath) );
+		//		BOOST_THROW_EXCEPTION( exception::Unknown()
+		//			<< exception::user( "Unable to write image")
+		//			<< exception::filename(filepath) );
 		COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	return dst;

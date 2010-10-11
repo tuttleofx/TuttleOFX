@@ -95,6 +95,8 @@ OfxMultiThreadSuiteV1* gThreadSuite = 0;
 OfxMessageSuiteV1* gMessageSuite    = 0;
 OfxProgressSuiteV1* gProgressSuite  = 0;
 OfxTimeLineSuiteV1* gTimeLineSuite  = 0;
+OfxParametricParameterSuiteV1* gParametricParameterSuite = 0;
+NukeOfxCameraSuiteV1* gCameraParameterSuite = 0;
 
 // @brief the set of descriptors, one per context used by kOfxActionDescribeInContext,
 //'eContextNone' is the one used by the kOfxActionDescribe
@@ -293,7 +295,7 @@ std::string mapPixelComponentEnumToString( const EPixelComponent e )
 		case ePixelComponentCustom:
 			return "ePixelComponentCustom";
 	}
-	BOOST_THROW_EXCEPTION( std::invalid_argument( "PixelComponentEnum: " + boost::lexical_cast<std::string>(e) ) );
+	BOOST_THROW_EXCEPTION( std::invalid_argument( "EPixelComponent: " + boost::lexical_cast<std::string>(e) ) );
 }
 
 /** @brief turns a premultiplication string into and enum */
@@ -1216,7 +1218,7 @@ Clip* ImageEffect::fetchClip( const std::string& name )
 	// fetch the property set handle of the effect
 	OfxImageClipHandle clipHandle   = 0;
 	OfxPropertySetHandle propHandle = 0;
-	OfxStatus stat                  = OFX::Private::gEffectSuite->clipGetHandle( _effectHandle, name.c_str(), &clipHandle, &propHandle );
+	OfxStatus stat                  = OFX::Private::gEffectSuite->clipGetHandle( getHandle(), name.c_str(), &clipHandle, &propHandle );
 	throwSuiteStatusException( stat );
 
 	// and make one
@@ -1227,6 +1229,12 @@ Clip* ImageEffect::fetchClip( const std::string& name )
 
 	// return it
 	return newClip;
+}
+
+/** @brief Fetch a parametric param */
+CameraParam* ImageEffect::fetchCameraParam( const std::string& name )
+{
+	return fetchAttribute<CameraParam>( getHandle(), name );
 }
 
 /** @brief does the host want us to abort rendering? */
@@ -1500,7 +1508,6 @@ void ClipPreferencesSetter::setClipBitDepth( Clip& clip, EBitDepth bitDepth )
 		// set the value supported by the host or set nothing
 		// by setting this value, we may have less problem depending on host implementations
 		outArgs_.propSetString( propName.c_str(), mapBitDepthEnumToString( _imageEffectHostDescription->getPixelDepth() ) );
-		return;
 	}
 }
 
@@ -1701,6 +1708,8 @@ void loadAction( void )
 		gMessageSuite  = (OfxMessageSuiteV1*)     fetchSuite( kOfxMessageSuite, 1 );
 		gProgressSuite = (OfxProgressSuiteV1*)     fetchSuite( kOfxProgressSuite, 1, true );
 		gTimeLineSuite = (OfxTimeLineSuiteV1*)     fetchSuite( kOfxTimeLineSuite, 1, true );
+		gParametricParameterSuite = static_cast<OfxParametricParameterSuiteV1*>( OFX::fetchSuite( kOfxParametricParameterSuite, 1, true ) );
+		gCameraParameterSuite = static_cast<NukeOfxCameraSuiteV1*>( OFX::fetchSuite( kNukeOfxCameraSuite, 1, true ) );
 
 		// OK check and fetch host information
 		fetchHostDescription( gHost );
@@ -1737,6 +1746,8 @@ void unloadAction( const char* id )
 		gThreadSuite   = 0;
 		gMessageSuite  = 0;
 		gInteractSuite = 0;
+		gParametricParameterSuite = 0;
+		gCameraParameterSuite = 0;
 	}
 
 	{

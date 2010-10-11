@@ -13,18 +13,18 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-
-class ParamRGB : public Param, public ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
+class ParamRGB : public Param
+	, public ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
 {
 public:
 	ParamRGB( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamRGB* clone() const { return new ParamRGB( *this ); }
 
 	OfxRGBColourD getDefault() const;
-	void get( double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC;
-	void getAtTime( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC;
-	void set( const double &r, const double &g, const double &b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void setAtTime( const OfxTime time, const double &r, const double &g, const double &b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void          get( double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC;
+	void          getAtTime( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC;
+	void          set( const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void          setAtTime( const OfxTime time, const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 };
 
 }

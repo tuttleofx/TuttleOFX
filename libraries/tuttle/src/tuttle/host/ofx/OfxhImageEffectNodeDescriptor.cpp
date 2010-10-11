@@ -9,7 +9,6 @@ namespace host {
 namespace ofx {
 namespace imageEffect {
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // descriptor
 
@@ -41,31 +40,31 @@ static property::OfxhPropSpec effectDescriptorStuff[] = {
 };
 
 OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor()
-	: OfxhImageEffectNodeBase( effectDescriptorStuff ),
-	_plugin( NULL )
+	: OfxhImageEffectNodeBase( effectDescriptorStuff )
+	, _plugin( NULL )
 {
 	/// @todo tuttle...
 }
 
 OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( OfxhPlugin& plug )
-	: OfxhImageEffectNodeBase( effectDescriptorStuff ),
-	_plugin( &plug )
+	: OfxhImageEffectNodeBase( effectDescriptorStuff )
+	, _plugin( &plug )
 {
 	_properties.setStringProperty( kOfxPluginPropFilePath, plug.getBinary().getBundlePath() );
 	tuttle::host::Core::instance().getHost().initDescriptor( *this );
 }
 
 OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( const OfxhImageEffectNodeDescriptor& other, OfxhPlugin& plug )
-	: OfxhImageEffectNodeBase( other._properties ),
-	_plugin( &plug )
+	: OfxhImageEffectNodeBase( other._properties )
+	, _plugin( &plug )
 {
 	_properties.setStringProperty( kOfxPluginPropFilePath, plug.getBinary().getBundlePath() );
 	tuttle::host::Core::instance().getHost().initDescriptor( *this );
 }
 
 OfxhImageEffectNodeDescriptor::OfxhImageEffectNodeDescriptor( const std::string& bundlePath, OfxhPlugin& plug )
-	: OfxhImageEffectNodeBase( effectDescriptorStuff ),
-	_plugin( &plug )
+	: OfxhImageEffectNodeBase( effectDescriptorStuff )
+	, _plugin( &plug )
 {
 	_properties.setStringProperty( kOfxPluginPropFilePath, bundlePath );
 	tuttle::host::Core::instance().getHost().initDescriptor( *this );
@@ -76,13 +75,12 @@ OfxhImageEffectNodeDescriptor::~OfxhImageEffectNodeDescriptor()
 
 bool OfxhImageEffectNodeDescriptor::operator==( const This& other ) const
 {
-	if( OfxhImageEffectNodeBase::operator!=(other) ||
-	    attribute::OfxhParamSetDescriptor::operator!=(other) ||
+	if( OfxhImageEffectNodeBase::operator!=( other ) ||
+	    attribute::OfxhParamSetDescriptor::operator!=( other ) ||
 	    _clipsByOrder != other._clipsByOrder )
 		return false;
 	return true;
 }
-
 
 /**
  * @brief create a new clip and add this to the clip map

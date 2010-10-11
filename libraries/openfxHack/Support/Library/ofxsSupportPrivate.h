@@ -86,6 +86,12 @@ extern OfxProgressSuiteV1* gProgressSuite;
 /** @brief Pointer to the optional progress suite */
 extern OfxTimeLineSuiteV1* gTimeLineSuite;
 
+/** @brief Pointer to the parametric parameter suite */
+extern OfxParametricParameterSuiteV1* gParametricParameterSuite;
+
+/** @brief Pointer to the camera parameter suite (nuke ofx extension) */
+extern NukeOfxCameraSuiteV1* gCameraParameterSuite;
+
 /** @brief Support lib function called on an ofx load action */
 void loadAction( void );
 

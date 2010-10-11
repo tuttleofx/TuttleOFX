@@ -39,10 +39,9 @@ namespace host {
 namespace ofx {
 
 OfxhMemory::OfxhMemory()
-: _ptr( 0 )
-, _locked( false )
-{
-}
+	: _ptr( 0 )
+	, _locked( false )
+{}
 
 OfxhMemory::~OfxhMemory()
 {
