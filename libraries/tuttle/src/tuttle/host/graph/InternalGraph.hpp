@@ -21,14 +21,6 @@
 #include <utility>
 #include <vector>
 
-// definition of basic boost::graph properties
-enum vertex_properties_t { vertex_properties };
-enum edge_properties_t { edge_properties };
-namespace boost {
-BOOST_INSTALL_PROPERTY( vertex, properties );
-BOOST_INSTALL_PROPERTY( edge, properties );
-}
-
 // include this file after the definition of basic boost::graph properties
 #include <tuttle/host/graph/Visitors.hpp>
 

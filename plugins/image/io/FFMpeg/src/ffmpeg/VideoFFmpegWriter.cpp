@@ -17,8 +17,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	, _fps( 25.0f )
 	, _format( "default" )
 	, _codec( "default" )
-	, _bitrate( 400000 )
-	, _bitrateTolerance( 4000 * 10000 )
+	, _bitRate( 400000 )
+	, _bitRateTolerance( 4000 * 10000 )
 	, _gopSize( 12 )
 	, _bFrames( 0 )
 	, _mbDecision( FF_MB_DECISION_SIMPLE )
@@ -106,8 +106,8 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 
 		_stream->codec->codec_id           = codecId;
 		_stream->codec->codec_type         = CODEC_TYPE_VIDEO;
-		_stream->codec->bit_rate           = _bitrate;
-		_stream->codec->bit_rate_tolerance = _bitrateTolerance;
+		_stream->codec->bit_rate           = _bitRate;
+		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = width();
 		_stream->codec->height             = height();
 		_stream->codec->time_base          = av_d2q( 1.0 / _fps, 100 );

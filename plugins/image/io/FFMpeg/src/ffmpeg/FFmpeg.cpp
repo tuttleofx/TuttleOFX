@@ -1,5 +1,6 @@
 #include "FFmpeg.hpp"
 
+
 bool FFmpeg::_hasBeenInit = globalInit();
 
 bool FFmpeg::globalInit()
@@ -392,6 +393,7 @@ const std::string FFmpeg::pixelFormat_toString( const PixelFormat p )
 	   return "Error PixelFormat not handle.";
 	 */
 }
+
 
 /*
  #define VALUE_AND_NAME(e) e, #e

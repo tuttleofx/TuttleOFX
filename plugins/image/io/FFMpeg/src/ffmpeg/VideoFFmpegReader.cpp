@@ -94,6 +94,7 @@ bool VideoFFmpegReader::open( const std::string& filename )
 	{
 		_aspect = av_q2d( codecContext->sample_aspect_ratio );
 	}
+	_bitRate = codecContext->bit_rate;
 
 	_data.resize( width() * height() * 3 );
 

@@ -71,6 +71,11 @@ public:
 		return _interlacment;
 	}
 
+	int bitRate() const
+	{
+		return _bitRate;
+	}
+
 	double fps() const
 	{
 		if( _fpsDen )
@@ -78,12 +83,12 @@ public:
 		return 1.0f;
 	}
 
-	uint64_t nbFrames()
+	uint64_t nbFrames( ) const
 	{
 		return _nbFrames;
 	}
 
-	int frame()
+	int frame( ) const
 	{
 		return _lastDecodedPos;
 	}
@@ -98,43 +103,47 @@ public:
 		return &_data[0];
 	}
 
-	std::string codecName()
+	std::string codecName( ) const
 	{
 		if( !_videoCodec )
 			return "";
 		return ( _videoCodec->long_name ) + std::string( " (" ) + std::string( _videoCodec->name ) + std::string( ", " ) + boost::lexical_cast<std::string>( static_cast<int>( _videoCodec->id ) ) + std::string( ")" );
 	}
 
-	std::string formatName()
+	std::string formatName( ) const
 	{
 		if( !_format )
 			return "";
 		return ( _format->long_name ) + std::string( " (" ) + std::string( _format->name ) + std::string( ")" );
 	}
 
-	std::string codecIDString()
+	std::string codecIDString( ) const
 	{
 		if( !_videoCodec )
 			return "";
 		return codecID_toString( _videoCodec->id );
 	}
 
-	std::string codecTypeString()
+	std::string codecTypeString( ) const
 	{
 		if( !_videoCodec )
 			return "";
 		return codecType_toString( _videoCodec->type );
 	}
 
-	std::string pixelFormatString()
+	PixelFormat pixelFormat( ) const
 	{
 		if( !_videoCodec || !_avctxOptions ||_videoCodec->type <= 0 || !_avctxOptions[_videoCodec->type] )
-			return "";
-		return pixelFormat_toString( _avctxOptions[_videoCodec->type]->pix_fmt );
+			return PIX_FMT_NONE;
+		return _avctxOptions[_videoCodec->type]->pix_fmt;
 	}
 
-public:
-	// private:
+	std::string pixelFormatString( ) const
+	{
+		return pixelFormat_toString( pixelFormat() );
+	}
+
+public: // private:
 	AVFormatContext* _context;
 	AVInputFormat* _format;
 	AVFormatParameters* _params;
@@ -152,6 +161,7 @@ public:
 	int _width;
 	int _height;
 	double _aspect;
+	int _bitRate;
 	std::vector<unsigned char> _data;
 	bool _offsetTime;
 	int _lastSearchPos;

@@ -2,6 +2,7 @@
 #define __VIDEOFFMPEGWRITER_HPP__
 
 #include "FFmpeg.hpp"
+#include "VideoFFmpegReader.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 
@@ -98,9 +99,9 @@ public:
 		return _formatsLongNames;
 	}
 
-	void setBitrate( const int bitrate )
+	void setBitRate( const int bitRate )
 	{
-		_bitrate = bitrate;
+		_bitRate = bitRate;
 	}
 
 	void setFormat( const unsigned int id )
@@ -138,6 +139,17 @@ public:
 		_codec = codec;
 	}
 
+	void configureFromRead( const VideoFFmpegReader& reader )
+	{
+		width( reader.width() );
+		height( reader.height() );
+		aspectRatio( reader.aspectRatio() );
+		fps( reader.fps() );
+		setBitRate( reader.bitRate() );
+		setFormat( reader.formatName() );
+		setCodec( reader.codecName() );
+	}
+
 private:
 	AVCodecContext* _avctxOptions[CODEC_TYPE_NB];
 	AVFormatContext* _avformatOptions;
@@ -158,8 +170,8 @@ private:
 	float _fps;
 	std::string _format;
 	std::string _codec;
-	int _bitrate;
-	int _bitrateTolerance;
+	int _bitRate;
+	int _bitRateTolerance;
 	int _gopSize;
 	int _bFrames;
 	int _mbDecision;
