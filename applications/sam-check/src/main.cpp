@@ -13,6 +13,7 @@ namespace po = boost::program_options;
 static int _blackImage = 0;
 static int _nullFileSize = 0;
 static int _corruptedImage = 0;
+static int _missingFiles = 0;
 static std::streambuf * const _stdCout = std::cout.rdbuf(); // back up cout's streambuf
 static std::streambuf * const _stdCerr = std::cerr.rdbuf(); // back up cout's streambuf
 
@@ -28,6 +29,7 @@ enum EImageStatus
 	eImageStatusOK,
 	eImageStatusBlack,
 	eImageStatusFileSizeError,
+	eImageStatusNoFile,
 	eImageStatusImageError
 };
 
@@ -36,6 +38,9 @@ enum EImageStatus
  */
 EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& graph, const fs::path& filename )
 {
+	if( fs::exists( filename ) == 0 )
+		return eImageStatusNoFile;
+	
 	if( fs::file_size( filename ) == 0 )
 		return eImageStatusFileSizeError;
 
@@ -62,7 +67,7 @@ EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& grap
 	}
 }
 
-void checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, const fs::path& filename )
+EImageStatus checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, const fs::path& filename )
 {
 	EImageStatus s = checkImageStatus( read, stat, graph, filename );
 
@@ -79,6 +84,10 @@ void checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, const fs::pa
 			std::cout << "Null file size: ";
 			++_nullFileSize;
 			break;
+		case eImageStatusNoFile:
+			std::cout << "Missing file: ";
+			++_missingFiles;
+			break;
 		case eImageStatusImageError:
 			std::cout << "Corrupted image: ";
 			++_corruptedImage;
@@ -86,6 +95,7 @@ void checkFile( Graph::Node& read, Graph::Node& stat, Graph& graph, const fs::pa
 	}
 	std::cout << filename << std::endl;
 	std::cout.rdbuf(0); // remove cout's streambuf
+	return s;
 }
 
 void checkSequence( Graph::Node& read, Graph::Node& stat, Graph& graph, const Sequence& seq )
@@ -215,9 +225,10 @@ int main( int argc, char** argv )
 	std::cout << "Black images: " << _blackImage << std::endl;
 	std::cout << "Null file size: " << _nullFileSize << std::endl;
 	std::cout << "Corrupted images: " << _corruptedImage << std::endl;
+	std::cout << "Holes in sequence: " << _missingFiles << std::endl;
 	std::cout << "________________________________________" << std::endl;
 	std::cout.rdbuf(0); // remove cerr's streambuf
 
-	return _blackImage + _nullFileSize + _corruptedImage;;
+	return _blackImage + _nullFileSize + _corruptedImage + _missingFiles;
 }
 
