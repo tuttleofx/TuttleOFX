@@ -25,15 +25,16 @@ inline std::string mapChangeEnumToString( const EChange change )
 {
 	switch( change )
 	{
-		case eChangeNone:
-			return "eChangeNone";
 		case eChangeTime:
 			return kOfxChangeTime;
 		case eChangeUserEdited:
 			return kOfxChangeUserEdited;
 		case eChangePluginEdited:
 			return kOfxChangePluginEdited;
+		case eChangeNone:
+			return "eChangeNone";
 	}
+	return "eChangeNone";
 }
 
 inline EChange mapChangeStringToEnum( const std::string& change )
