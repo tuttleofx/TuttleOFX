@@ -97,8 +97,8 @@ inline void exportAsDOT( std::ostream& os, const InternalGraph<Vertex, Edge, Out
 	using namespace boost;
 	boost::write_graphviz( os,
 	                       g.getGraph(),
-	                       boost::make_label_writer( get( &Vertex::_name, g.getGraph() ) ),
-	                       boost::make_label_writer( get( &Edge::_name, g.getGraph() ) ),
+	                       boost::make_label_writer( get( &IVertex::_name, g.getGraph() ) ),
+	                       boost::make_label_writer( get( &IEdge::_name, g.getGraph() ) ),
 	                       boost::make_graph_attributes_writer( graph_attr, vertex_attr, edge_attr ) );
 }
 

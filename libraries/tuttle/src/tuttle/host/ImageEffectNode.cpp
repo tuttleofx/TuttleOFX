@@ -526,7 +526,7 @@ void ImageEffectNode::validBitDepthConnections() const
 }
 
 
-INode::InputsTimeMap ImageEffectNode::getFramesNeeded( const OfxTime time )
+INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 {
 	const bool temporalClipAccess = this->getProperties().fetchIntProperty( kOfxImageEffectPropTemporalClipAccess ).getValue();
 	InputsTimeMap result;
@@ -536,7 +536,7 @@ INode::InputsTimeMap ImageEffectNode::getFramesNeeded( const OfxTime time )
 		getFramesNeededAction( time, clipMap );
 		BOOST_FOREACH( const ClipRangeMap::value_type& v, clipMap )
 		{
-			const std::string fullname = v.first->getFullName();
+			const std::string fullname = v.first->getIdentifier();
 			BOOST_FOREACH( const ClipRangeMap::value_type::second_type::value_type& range, v.second )
 			{
 				for( OfxTime t = range.min; t < range.max; t += 1.0 )
@@ -550,7 +550,7 @@ INode::InputsTimeMap ImageEffectNode::getFramesNeeded( const OfxTime time )
 	{
 		BOOST_FOREACH( ClipImageVector::const_reference v, _clipsByOrder )
 		{
-			result[v.getFullName()].insert(time);
+			result[v.getIdentifier()].insert(time);
 		}
 	}
 	return result;

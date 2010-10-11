@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	//	std::vector<boost::default_color_type > colormap(boost::num_vertices(graph.getGraph()));
 	graph::visitor::Test_dfs<InternalGraph> testVisitorA( graph );
 	//	boost::depth_first_search( graph.getGraph(), boost::root_vertex(nodesDescriptor[n1]), boost::visitor(testVisitorA) );//, colormap );
-	graph.dfs( testVisitorA, nodesDescriptor[n1] );
+	graph.depthFirstVisit( testVisitorA, nodesDescriptor[n1] );
 
 	TCOUT( "__________________________________________________" );
 	TCOUT( "graphT:" );
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
 	graph::visitor::Test_dfs<InternalGraph> testVisitorB( graph );
 	//	boost::depth_first_search( graphT.getGraph(), boost::visitor(testVisitorB) );
 
-	graphT.dfs( testVisitorB, mmap["v3"] );
+	graphT.depthFirstVisit( testVisitorB, mmap["v3"] );
 	/*
 	   graph_traits<graph_type>::out_edge_iterator ei, edge_end;
 	   for( boost::tie(ei, edge_end) = out_edges(*i, g); ei != edge_end; ++ei )
@@ -206,10 +206,10 @@ BOOST_AUTO_TEST_CASE( create_internalGraph )
         g[v]._name = "albert" + boost::lexical_cast<std::string>(i);
     }
 
-    //zero some_property for all vertices
-    for( Graph::vertex_iterator i = vertices(g).first, iEnd = vertices(g).second;
-                                i != iEnd;
- ++i )
+	//zero some_property for all vertices
+	for( Graph::vertex_iterator i = vertices(g).first, iEnd = vertices(g).second;
+	                            i != iEnd;
+	                            ++i )
     {
         TCOUT(": " << g[*i]._name);
     }

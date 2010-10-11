@@ -43,7 +43,7 @@ public:
 
 	typedef std::map<std::string, std::set<OfxTime> > InputsTimeMap;
 
-	virtual InputsTimeMap getFramesNeeded( const OfxTime time ) = 0;
+	virtual InputsTimeMap getTimesNeeded( const OfxTime time ) const = 0;
 
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.

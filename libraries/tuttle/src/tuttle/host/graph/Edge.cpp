@@ -5,24 +5,21 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-std::ostream& Edge::exportDotDebug( std::ostream& os ) const
+Edge::Edge()
+{}
+
+Edge::Edge( const std::string& out, const std::string& in, const std::string& inAttrName )
+: IEdge( out, in, inAttrName )
 {
-	std::ostringstream s;
-	s << subDotEntry( "label", getName() );
-	s << subDotEntry( "id", _localId );
-	
-	os << "[" << std::endl;
-	os << dotEntry( "type", "Edge" ) << ", " << std::endl;
-	os << dotEntry( "label", s.str() ) << std::endl;
-	os << "]" << std::endl;
-	return os;
 }
 
-std::ostream& operator<<( std::ostream& os, const Edge& v )
-{
-	os << v.getName() ;
-	return os;
-}
+Edge::Edge( const Edge& e )
+: IEdge( e )
+{}
+
+Edge::~Edge()
+{}
+
 
 }
 }

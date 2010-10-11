@@ -49,10 +49,12 @@ class DeployTime : public boost::default_dfs_visitor
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
+	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::edge_descriptor edge_descriptor;
 
-	DeployTime( const TGraph& graph, TGraph& graphAtTime )
+	DeployTime( TGraph& graph, const OfxTime time )
 		: _graph( graph )
-		, _graphAtTime( _graphAtTime )
+		, _time( time )
 	{}
 
 	template<class VertexDescriptor, class Graph>
@@ -62,16 +64,62 @@ public:
 
 		TCOUT( "[DEPLOY TIME] " << vertex );
 		if( vertex.isFake() )
+		{
+			BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( v ) )
+			{
+				Edge& e = _graph.instance( ed );
+				e._timesNeeded[_time].insert( _time );
+//				TCOUT( "--- insert edge: " << _time );
+			}
+			vertex._times.insert( _time );
 			return;
+		}
 
-		INode::InputsTimeMap map = vertex.getProcessNode()->getFramesNeeded();
+		// merge times nedded for all out edges
+		BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( v ) )
+		{
+			const Edge& edge = _graph.instance( ed );
+//			TCOUT( "-- outEdge: " << edge );
+			typename Edge::TimeMap::const_iterator timesNeeded = edge._timesNeeded.find( _time );
+			if( timesNeeded != edge._timesNeeded.end() )
+			{
+				vertex._times.insert( (*timesNeeded).second.begin(), (*timesNeeded).second.end() );
+//				std::cout << "--- insert vertex: ";
+//				std::copy( (*timesNeeded).second.begin(),
+//				           (*timesNeeded).second.end(),
+//						   std::ostream_iterator<OfxTime>(std::cout, ",") );
+//				std::cout << std::endl;
+			}
+		}
+		
+		// Set all times needed on each input edges
+		BOOST_FOREACH( const OfxTime t, vertex._times )
+		{
+			TCOUT( "-  time: "<< t );
+			INode::InputsTimeMap mapInputsTimes = vertex.getProcessNode()->getTimesNeeded( t );
+//			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
+//			{
+//				TCOUT_VAR( v.first );
+//			}
+			BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( v ) )
+			{
+				Edge& edge = _graph.instance( ed );
+//				TCOUT( "-- inEdge "<<t<<": " << edge );
+				const Vertex& input = _graph.targetInstance( ed );
+//				TCOUT_VAR( input.getName() );
+//				std::cout << "--- insert edges: ";
+//				std::copy( mapInputsTimes[input.getName()+".Output"].begin(),
+//				           mapInputsTimes[input.getName()+".Output"].end(),
+//						   std::ostream_iterator<OfxTime>(std::cout, ",") );
+				edge._timesNeeded[t] = mapInputsTimes[input.getName()+".Output"];
+			}
+		}
 
-		vertex.getProcessNode()->preProcess1( vertex.getProcessOptions() );
 	}
 
 private:
-	const TGraph& _graph;
-	TGraph& _graphAtTime;
+	TGraph& _graph;
+	OfxTime _time;
 };
 
 template<class TGraph>

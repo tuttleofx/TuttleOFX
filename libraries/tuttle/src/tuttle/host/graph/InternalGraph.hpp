@@ -69,6 +69,7 @@ public:
 
 	typedef std::pair<adjacency_iterator, adjacency_iterator> adjacency_vertex_range_t;
 	typedef std::pair<out_edge_iterator, out_edge_iterator> out_edge_range_t;
+	typedef std::pair<in_edge_iterator, in_edge_iterator> in_edge_range_t;
 	typedef std::pair<vertex_iterator, vertex_iterator> vertex_range_t;
 	typedef std::pair<edge_iterator, edge_iterator> edge_range_t;
 
@@ -246,52 +247,38 @@ public:
 		return _graph;
 	}
 
-	edge_range_t getEdges() const
-	{
-		return edges( _graph );
-	}
+	edge_range_t getEdges() { return edges( _graph ); }
+	const edge_range_t getEdges() const { return edges( _graph ); }
 
-	vertex_range_t getVertices() const
-	{
-		return vertices( _graph );
-	}
+	in_edge_range_t getInEdges( const vertex_descriptor& v ) { return in_edges( v, _graph ); }
+	const in_edge_range_t getInEdges( const vertex_descriptor& v ) const { return in_edges( v, _graph ); }
 
-	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const
-	{
-		return adjacent_vertices( v, _graph );
-	}
+	out_edge_range_t getOutEdges( const vertex_descriptor& v ) { return out_edges( v, _graph ); }
+	const out_edge_range_t getOutEdges( const vertex_descriptor& v ) const { return out_edges( v, _graph ); }
 
-	std::size_t getVertexCount() const
-	{
-		return num_vertices( _graph );
-	}
+	vertex_range_t getVertices() const { return vertices( _graph ); }
 
-	std::size_t getEdgeCount() const
-	{
-		return num_edges( _graph );
-	}
+	adjacency_vertex_range_t getAdjacentVertices( const vertex_descriptor& v ) const { return adjacent_vertices( v, _graph ); }
 
-	degree_t getInDegree( const vertex_descriptor& v ) const
-	{
-		return in_degree( v, _graph );
-	}
+	std::size_t getVertexCount() const { return num_vertices( _graph ); }
 
-	degree_t getOutDegree( const vertex_descriptor& v ) const
-	{
-		return out_degree( v, _graph );
-	}
+	std::size_t getEdgeCount() const { return num_edges( _graph ); }
+
+	degree_t getInDegree( const vertex_descriptor& v ) const { return in_degree( v, _graph ); }
+
+	degree_t getOutDegree( const vertex_descriptor& v ) const { return out_degree( v, _graph ); }
 
 	bool hasCycle()
 	{
 		// we use a depth first search visitor
 		visitor::CycleDetector vis;
 
-		this->dfs( vis );
+		this->depthFirstSearch( vis );
 		return vis._hasCycle;
 	}
 
 	template<class Visitor>
-	void dfs( Visitor vis, const vertex_descriptor& vroot )
+	void depthFirstVisit( Visitor& vis, const vertex_descriptor& vroot )
 	{
 		std::vector<boost::default_color_type > colormap( boost::num_vertices( _graph ), boost::white_color );
 		BOOST_FOREACH( const vertex_descriptor &vd, getVertices() )
@@ -309,7 +296,28 @@ public:
 	}
 
 	template<class Visitor>
-	void dfs( Visitor vis )
+	void depthFirstVisitReverse( Visitor& vis, const vertex_descriptor& vroot )
+	{
+		boost::reverse_graph<GraphContainer> revGraph(_graph);
+
+		std::vector<boost::default_color_type > colormap( boost::num_vertices( revGraph ), boost::white_color );
+		BOOST_FOREACH( const vertex_descriptor& vd, vertices( revGraph ) )
+		{
+			vis.initialize_vertex( vd, revGraph );
+		}
+
+		// use depth_first_visit (and not depth_first_search) because
+		// we visit vertices from vroot, without visiting nodes not
+		// reachable from vroot
+		boost::depth_first_visit( revGraph,
+		                          vroot,
+		                          vis,
+		                          boost::make_iterator_property_map( colormap.begin(), boost::get( boost::vertex_index, revGraph ) )
+		                          );
+	}
+
+	template<class Visitor>
+	void depthFirstSearch( Visitor& vis )
 	{
 		boost::depth_first_search( _graph,
 		                           boost::visitor( vis )
@@ -317,7 +325,7 @@ public:
 	}
 
 	template<class Visitor>
-	void dfs_reverse( Visitor vis )
+	void depthFirstSearchReverse( Visitor& vis )
 	{
 		boost::reverse_graph<GraphContainer> revGraph(_graph);
 
@@ -327,10 +335,37 @@ public:
 	}
 
 	template<class Visitor>
-	void bfs( Visitor vis, const vertex_descriptor& vroot )
+	void depthFirstSearch( Visitor& vis, const vertex_descriptor& vroot )
+	{
+		boost::depth_first_search( _graph,
+		                           vroot,
+		                           boost::visitor( vis )
+		                           );
+	}
+
+	template<class Visitor>
+	void depthFirstSearchReverse( Visitor& vis, const vertex_descriptor& vroot )
+	{
+		boost::reverse_graph<GraphContainer> revGraph(_graph);
+		boost::depth_first_search( revGraph,
+		                           vroot,
+		                           boost::visitor( vis )
+		                           );
+	}
+
+	template<class Visitor>
+	void breadthFirstSearch( Visitor& vis, const vertex_descriptor& vroot )
 	{
 		boost::breadth_first_search( _graph,
 		                             vroot,
+		                             boost::visitor( vis )
+		                             );
+	}
+
+	template<class Visitor>
+	void breadthFirstSearch( Visitor& vis )
+	{
+		boost::breadth_first_search( _graph,
 		                             boost::visitor( vis )
 		                             );
 	}
