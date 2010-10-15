@@ -70,16 +70,16 @@ static const boost::regex regexPatternFrame(
  * @brief Numbers inside a filename.
  * Each number can be a time inside a sequence.
  */
-class SeqNumbers
+class FileNumbers
 {
 public:
-	typedef SeqNumbers This;
+	typedef FileNumbers This;
 	typedef Sequence::Time Time;
 	typedef std::pair<Time, std::string> Pair;
 	typedef std::vector<Pair> Vec;
 
 public:
-	SeqNumbers()
+	FileNumbers()
 	{
 		// we preverse reserve and take memory,
 		// that realloc and takes time.
@@ -119,8 +119,8 @@ public:
 			return 0;
 		return s[0] == '0' ? s.size() : 0;
 	}
-
 	Time        getTime( const std::size_t& i ) const { return _numbers[i].first; }
+	
 	std::size_t size() const                          { return _numbers.size(); }
 
 	bool operator<( const This& v )
@@ -139,6 +139,19 @@ public:
 		}
 		return false; // equals
 	}
+	bool rangeEquals( const This& v, const size_t begin, const size_t end ) const
+	{
+		for( size_t i = begin; i < end; ++i )
+		{
+			const Pair& me = this->_numbers[i];
+			const Pair& other = v._numbers[i];
+
+			//me.second.size() != other.second.size() ) // we don't check the padding...
+			if( me.first != other.first )
+				return false;
+		}
+		return true;
+	}
 
 	friend std::ostream& operator<<( std::ostream& os, const This& p );
 
@@ -146,12 +159,12 @@ private:
 	Vec _numbers;
 };
 
-std::ostream& operator<<( std::ostream& os, const SeqNumbers& p )
+std::ostream& operator<<( std::ostream& os, const FileNumbers& p )
 {
 	os << "[";
 	//	std::for_each( p._numbers.begin(), p._numbers.end(), os <<
 	//		boost::bind( &SeqNumbers::Vec::value_type::second, boost::lambda::_1 ) << "," );
-	BOOST_FOREACH( const SeqNumbers::Vec::value_type & v, p._numbers )
+	BOOST_FOREACH( const FileNumbers::Vec::value_type & v, p._numbers )
 	{
 		os << v.second << ",";
 	}
@@ -162,11 +175,11 @@ std::ostream& operator<<( std::ostream& os, const SeqNumbers& p )
 /**
  * @brief Unique identification for a sequence
  */
-class SeqId
+class FileStrings
 {
 public:
-	typedef SeqId This;
-	typedef std::list<std::string> Vec;
+	typedef FileStrings This;
+	typedef std::vector<std::string> Vec;
 
 public:
 	Vec&       getId()       { return _id; }
@@ -195,6 +208,8 @@ public:
 		return true;
 	}
 
+	const std::string& operator[]( const std::size_t i ) const { return _id[i]; }
+	
 	std::size_t getHash() const
 	{
 		std::size_t seed = 0;
@@ -213,7 +228,7 @@ private:
 	Vec _id;
 };
 
-std::ostream& operator<<( std::ostream& os, const SeqId& p )
+std::ostream& operator<<( std::ostream& os, const FileStrings& p )
 {
 	os << "[";
 	std::for_each( p._id.begin(), p._id.end(), os << boost::lambda::_1 << "," );
@@ -223,9 +238,9 @@ std::ostream& operator<<( std::ostream& os, const SeqId& p )
 
 // How we can replace this with a wrapper?
 // Like boost::function, boost::bind,...
-struct SeqIdHash : std::unary_function<SeqId, std::size_t>
+struct SeqIdHash : std::unary_function<FileStrings, std::size_t>
 {
-	std::size_t operator()( const SeqId& p ) const
+	std::size_t operator()( const FileStrings& p ) const
 	{
 		return p.getHash();
 	}
@@ -239,7 +254,7 @@ struct SeqIdHash : std::unary_function<SeqId, std::size_t>
  * @param[out] nums: list of integers
  * @return number of decteted numbers
  */
-TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, SeqId& id, SeqNumbers& nums )
+TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings& id, FileNumbers& nums )
 {
 	static const boost::regex re( "[\\-\\+]?\\d+" );
 	static const int subs[] = { -1, 0, }; // get before match and current match
@@ -266,6 +281,65 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, SeqId& id, 
 }
 
 /**
+ * @brief extract the padding from a list of frame numbers
+ * @param[in] timesStr list of frame numbers in string format
+ */
+std::size_t extractPadding( const std::list<std::string>& timesStr )
+{
+	BOOST_ASSERT( timesStr.size() > 0 );
+	const std::size_t padding = timesStr.front().size();
+	BOOST_FOREACH( const std::string& s, timesStr )
+	{
+		if( padding != s.size() )
+			return 0;
+	}
+	return padding;
+}
+
+std::size_t extractPadding( const std::list<FileNumbers>& times, const std::size_t i )
+{
+	BOOST_ASSERT( timesStr.size() > 0 );
+	const std::size_t padding = times.front().getString(i).size();
+	BOOST_FOREACH( const FileNumbers& s, times )
+	{
+		if( padding != s.getString(i).size() )
+			return 0;
+	}
+	return padding;
+}
+
+/**
+ * @brief return if the padding is strict (at least one frame begins with a '0' padding character).
+ * @param[in] timesStr list of frame numbers in string format
+ * @param[in] padding previously detected padding
+ */
+bool extractIsStrictPadding( const std::list<std::string>& timesStr, const std::size_t padding )
+{
+	if( padding == 0 )
+		return false;
+	
+	BOOST_FOREACH( const std::string& s, timesStr )
+	{
+		if( s[0] == '0' )
+			return true;
+	}
+	return false;
+}
+
+bool extractIsStrictPadding( const std::list<FileNumbers>& times, const std::size_t i, const std::size_t padding )
+{
+	if( padding == 0 )
+		return false;
+
+	BOOST_FOREACH( const FileNumbers& s, times )
+	{
+		if( s.getString(i)[0] == '0' )
+			return true;
+	}
+	return false;
+}
+
+/**
  * @brief Extract step from a sorted list of time values.
  */
 std::size_t extractStep( const std::list<Sequence::Time>& times )
@@ -289,7 +363,7 @@ std::size_t extractStep( const std::list<Sequence::Time>& times )
 /**
  * @brief Extract step from a sorted list of time values.
  */
-std::size_t extractStep( const std::list<SeqNumbers>& times, const std::size_t i )
+std::size_t extractStep( const std::list<FileNumbers>& times, const std::size_t i )
 {
 	if( times.size() == 1 )
 		return 1;
@@ -297,7 +371,7 @@ std::size_t extractStep( const std::list<SeqNumbers>& times, const std::size_t i
 	std::size_t step = ( *( ++times.begin() ) ).getTime( i ) - times.front().getTime( i ); // times[1] - times[0]
 	// to get the step we use so smallest step, others are considered as missing frames
 	// no check if multiple steps inside a sequence... ignored case.
-	for( std::list<SeqNumbers>::const_iterator itA = times.begin(), itB = ++times.begin(), itEnd = times.end();
+	for( std::list<FileNumbers>::const_iterator itA = times.begin(), itB = ++times.begin(), itEnd = times.end();
 	     itB != itEnd;
 	     ++itA, ++itB )
 	{
@@ -506,7 +580,7 @@ bool Sequence::initFromDetection( const boost::filesystem::path& directory, cons
  *          so there is no reason to create a copy.
  * @return a sequence object with all informations
  */
-Sequence buildSequence( const boost::filesystem::path& directory, const SeqId& id, std::list<SeqNumbers>& nums )
+std::list<Sequence> buildSequence( const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums )
 {
 	typedef Sequence::Time Time;
 	nums.sort();
@@ -525,7 +599,7 @@ Sequence buildSequence( const boost::filesystem::path& directory, const SeqId& i
 	for( std::size_t i = 0; i < len; ++i )
 	{
 		const Time t = nums.front().getTime( i );
-		BOOST_FOREACH( std::list<SeqNumbers>::value_type & sn, nums )
+		BOOST_FOREACH( const FileNumbers& sn, nums )
 		{
 			if( sn.getTime( i ) != t )
 			{
@@ -539,63 +613,106 @@ Sequence buildSequence( const boost::filesystem::path& directory, const SeqId& i
 	//	{
 	//		TCOUT( "seq " << i++ << " : " <<  sn);
 	//	}
-	std::size_t idNum = 0;
+	std::size_t idChangeBegin = 0;
+	std::size_t idChangeEnd = 0;
 	//	TCOUT_VAR(allIds.size());
 	if( allIds.size() == 0 )
 	{
-		idNum = 0;
-	}
-	else if( allIds.size() == 1 )
-	{
-		idNum = allIds[0];
+		idChangeBegin = idChangeEnd = 0;
 	}
 	else
 	{
-		BOOST_FOREACH( const std::size_t & s, allIds )
-		{
-			COUT_VAR( s );
-		}
-		BOOST_THROW_EXCEPTION( std::logic_error( "Multi-sequence unsupported." ) );
+		idChangeBegin = allIds.front();
+		idChangeEnd = allIds.back();
 	}
 	//	TCOUT_VAR( idNum );
 
-	Sequence s;
+	Sequence seqCommon;
 	// fill information in the sequence...
-	s._directory = directory;
-	SeqId::Vec::const_iterator idIt = id.getId().begin();
-	for( std::size_t i = 0; i < idNum; ++i )
+	seqCommon._directory = directory;
+	for( std::size_t i = 0; i < idChangeBegin; ++i )
 	{
-		s._prefix += *idIt++;
-		s._prefix += nums.front().getString( i );
+		seqCommon._prefix += id[ i ];
+		seqCommon._prefix += nums.front().getString( i );
 	}
-	s._prefix += *idIt++;
-	for( std::size_t i = idNum + 1; i < len; ++i )
+	seqCommon._prefix += id[ idChangeBegin ];
+	for( std::size_t i = idChangeEnd + 1; i < len; ++i )
 	{
-		s._suffix += *idIt++;
-		s._suffix += nums.front().getString( i );
+		seqCommon._suffix += id[ i ];
+		seqCommon._suffix += nums.front().getString( i );
 	}
-	s._suffix += *idIt++;
-	BOOST_ASSERT( idIt == id.getId().end() );
+	seqCommon._suffix += id[ len ];
 
-	s._padding       = nums.front().getPadding( idNum );
-	s._strictPadding = ( s._padding != 0 );
-	if( s._strictPadding )
+	std::list<Sequence> result;
+
+	if( allIds.size() <= 1 )
 	{
-		BOOST_FOREACH( const std::list<SeqNumbers>::value_type & sn, nums )
+		// standard case, one sequence detected
+		seqCommon._firstTime = nums.front().getTime( idChangeEnd );
+		seqCommon._lastTime  = nums.back().getTime( idChangeEnd );
+		seqCommon._nbFiles   = nums.size();
+
+		seqCommon._step = extractStep( nums, idChangeEnd );
+		seqCommon._padding = extractPadding( nums, idChangeEnd );
+		seqCommon._strictPadding = extractIsStrictPadding( nums, idChangeEnd, seqCommon._padding );
+		result.push_back(seqCommon);
+		return result;
+	}
+
+	// it's a multi-sequence...
+	
+	const FileNumbers* previous = &nums.front();
+	Sequence s = seqCommon;
+	s._prefix += previous->getString( idChangeBegin );
+	for( std::size_t i = idChangeBegin+1; i < idChangeEnd; ++i )
+	{
+		s._prefix += id[i];
+		s._prefix += previous->getString( i );
+	}
+	s._prefix += id[ idChangeEnd ];
+	result.push_back( s );
+
+	std::list<Time> times;
+	std::list<std::string> timesStr;
+	std::size_t iCurrent = 0;
+	std::size_t iBegin = 0;
+	BOOST_FOREACH( const FileNumbers& sn, nums )
+	{
+		if( ! sn.rangeEquals( *previous, idChangeBegin, idChangeEnd ) )
 		{
-			// if multiple paddings
-			//			s._padding = std::max( sn.getString(idNum).size(), s._padding );
-			if( sn.getString( idNum ).size() != s._padding )
-				s._strictPadding = 0;
-			//				BOOST_THROW_EXCEPTION( std::logic_error( "Multiple paddings inside the same sequence." ) );
-		}
-	}
-	s._step = extractStep( nums, idNum );
+			// update the last added sequence
+			result.back()._nbFiles = times.size();
+			result.back()._firstTime = times.front();
+			result.back()._lastTime = times.back();
+			result.back()._step = extractStep(times);
+			result.back()._padding = extractPadding(timesStr);
+			result.back()._strictPadding = extractIsStrictPadding(timesStr, result.back()._padding);
+			times.clear();
 
-	s._firstTime = nums.front().getTime( idNum );
-	s._lastTime  = nums.back().getTime( idNum );
-	s._nbFiles   = nums.size();
-	return s;
+			// create a new sequence initilized with "sn" values
+			iBegin = iCurrent;
+			s = seqCommon;
+			s._prefix += sn.getString( idChangeBegin );
+			for( std::size_t i = idChangeBegin+1; i < idChangeEnd; ++i )
+			{
+				s._prefix += id[i];
+				s._prefix += sn.getString( i );
+			}
+			s._prefix += id[ idChangeEnd ];
+			s._padding   = sn.getPadding( idChangeEnd );
+			result.push_back( s );
+			previous = &sn;
+		}
+		times.push_back( sn.getTime(idChangeEnd) );
+		++iCurrent;
+	}
+	// update the last added sequence
+	result.back()._nbFiles = times.size();
+	result.back()._firstTime = times.front();
+	result.back()._lastTime = times.back();
+	result.back()._step = extractStep(times);
+	
+	return result;
 }
 
 std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
@@ -607,13 +724,13 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 	if( !exists( directory ) )
 		return output;
 
-	typedef boost::unordered_map<SeqId, std::list<SeqNumbers>, SeqIdHash> SeqIdMap;
+	typedef boost::unordered_map<FileStrings, std::list<FileNumbers>, SeqIdHash> SeqIdMap;
 	SeqIdMap sequences;
 
 	//	TCOUT( "listdir begin" );
 
-	SeqId id; // an object uniquely identify a sequence
-	SeqNumbers nums; // the list of numbers inside one filename
+	FileStrings id; // an object uniquely identify a sequence
+	FileNumbers nums; // the list of numbers inside one filename
 
 	fs::directory_iterator itEnd;
 	for( fs::directory_iterator iter( directory ); iter != itEnd; ++iter )
@@ -637,7 +754,7 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 			else
 			{
 				// create an entry in the map
-				std::list<SeqNumbers> li;
+				std::list<FileNumbers> li;
 				li.push_back( nums );
 				sequences.insert( SeqIdMap::value_type( id, li ) );
 			}
@@ -652,12 +769,14 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 
 	BOOST_FOREACH( SeqIdMap::value_type & p, sequences )
 	{
-		Sequence s = buildSequence( directory, p.first, p.second );
-
-		// don't detect sequence of directories
-		if( !fs::is_directory( s.getAbsoluteFirstFilename() ) )
+		const std::list<Sequence> ss = buildSequence( directory, p.first, p.second );
+		BOOST_FOREACH( const std::list<Sequence>::value_type & s, ss )
 		{
-			output.push_back( s );
+			// don't detect sequence of directories
+			if( !fs::is_directory( s.getAbsoluteFirstFilename() ) )
+			{
+				output.push_back( s );
+			}
 		}
 	}
 

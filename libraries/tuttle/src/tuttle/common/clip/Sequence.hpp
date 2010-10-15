@@ -20,8 +20,8 @@ namespace tuttle {
 namespace common {
 
 namespace {
-class SeqId;
-class SeqNumbers;
+class FileStrings;
+class FileNumbers;
 }
 
 /**
@@ -171,7 +171,7 @@ protected:
 
 private:
 	friend std::ostream& operator<<( std::ostream& os, const This& v );
-	friend Sequence              buildSequence(  const boost::filesystem::path& directory, const SeqId& id, std::list<SeqNumbers>& nums );
+	friend std::list<Sequence> buildSequence(  const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums );
 	friend std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory );
 
 protected:
