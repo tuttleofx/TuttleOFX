@@ -298,7 +298,7 @@ std::size_t extractPadding( const std::list<std::string>& timesStr )
 
 std::size_t extractPadding( const std::list<FileNumbers>& times, const std::size_t i )
 {
-	BOOST_ASSERT( timesStr.size() > 0 );
+	BOOST_ASSERT( times.size() > 0 );
 	const std::size_t padding = times.front().getString(i).size();
 	BOOST_FOREACH( const FileNumbers& s, times )
 	{
