@@ -125,9 +125,10 @@ public:
 	inline std::string             getAbsoluteLastFilename() const  { return ( _directory / getFilenameAt( getLastTime() ) ).file_string(); }
 
 	/// @return pattern character in standard style
-	inline char getPatternCharacter() const { return isStrictPadding() ? '#' : '@'; }
+	inline char getPatternCharacter() const { return getPadding() ? '#' : '@'; }
 	/// @return a string pattern using standard style
 	inline std::string getStandardPattern() const { return getPrefix() + std::string( getPadding() ? getPadding() : 1, getPatternCharacter() ) + getSuffix(); }
+	inline std::string getAbsoluteStandardPattern() const { return (getDirectory() / getStandardPattern()).file_string(); }
 	/// @return a string pattern using C Style
 	inline std::string getCStylePattern() const
 	{
@@ -136,6 +137,7 @@ public:
 		else
 			return getPrefix() + "%d" + getSuffix();
 	}
+	inline std::string getAbsoluteCStylePattern() const { return (getDirectory() / getCStylePattern()).file_string(); }
 
 	inline std::pair<Time, Time> getRange() const          { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }
 	inline std::size_t           getStep() const           { return _step; }
@@ -146,7 +148,12 @@ public:
 	inline std::size_t           getPadding() const        { return _padding; }
 	inline bool                  isStrictPadding() const   { return _strictPadding; }
 	inline bool                  hasMissingFile() const    { return getNbMissingFiles() != 0; }
-	inline std::size_t           getNbMissingFiles() const { return ( ( ( getLastTime() - getFirstTime() ) / getStep() ) + 1 ) - getNbFiles(); }
+	inline std::size_t           getNbMissingFiles() const
+	{
+		if( !getStep() )
+			return 0;
+		return ( ( ( getLastTime() - getFirstTime() ) / getStep() ) + 1 ) - getNbFiles();
+	}
 	/// @brief filename without frame number
 	inline std::string getIdentification() const { return _prefix + _suffix; }
 	inline std::string getPrefix() const         { return _prefix; }
@@ -160,6 +167,11 @@ public:
 	bool isIn( const std::string& filename, Time& time );
 
 	static EPattern checkPattern( const std::string& pattern );
+
+	bool operator<( const This& other ) const
+	{
+		return getAbsoluteStandardPattern() < other.getAbsoluteStandardPattern();
+	}
 
 protected:
 	inline void clear();

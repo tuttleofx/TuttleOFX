@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <list>
 #include <boost/timer.hpp>
+#include <set>
 
 namespace tuttle {
 namespace common {
@@ -127,7 +128,7 @@ public:
 	{
 		// can't have multiple size, if multiple size they must have a
 		// different SeqId
-		BOOST_ASSERT( _numbers.size() != v._numbers.size() );
+		BOOST_ASSERT( _numbers.size() == v._numbers.size() );
 		for( Vec::const_iterator i = _numbers.begin(), iEnd = _numbers.end(), vi = v._numbers.begin();
 		     i != iEnd;
 		     ++i, ++vi )
@@ -256,7 +257,8 @@ struct SeqIdHash : std::unary_function<FileStrings, std::size_t>
  */
 TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings& id, FileNumbers& nums )
 {
-	static const boost::regex re( "[\\-\\+]?\\d+" );
+	static const std::size_t max = std::numeric_limits<std::size_t>::digits10;
+	static const boost::regex re( "[\\-\\+]?\\d*?\\d{1,"+boost::lexical_cast<std::string>(max)+"}" );
 	static const int subs[] = { -1, 0, }; // get before match and current match
 	boost::sregex_token_iterator m( str.begin(), str.end(), re, subs );
 	boost::sregex_token_iterator end;
@@ -339,25 +341,53 @@ bool extractIsStrictPadding( const std::list<FileNumbers>& times, const std::siz
 	return false;
 }
 
+template<typename T>
+T greatestCommonDivisor( T a, T b )
+{
+	T r;
+	while( (r = a % b) != 0 )
+	{
+		a = b;
+		b = r;
+	}
+	return b;
+}
+
+/**
+ * @brief Find the biggest common step from a set of all steps.
+ */
+std::size_t extractStep( const std::set<std::size_t>& steps )
+{
+	if( steps.size() == 1 )
+		return *steps.begin();
+
+	std::set<std::size_t> allSteps;
+	for( std::set<std::size_t>::const_iterator itA = steps.begin(), itB = ++steps.begin(), itEnd = steps.end();
+	     itB != itEnd;
+	     ++itA, ++itB )
+	{
+		allSteps.insert( greatestCommonDivisor( *itB, *itA ) );
+	}
+	return extractStep( allSteps );
+}
+
 /**
  * @brief Extract step from a sorted list of time values.
  */
 std::size_t extractStep( const std::list<Sequence::Time>& times )
 {
-	if( times.size() == 1 )
+	if( times.size() <= 1 )
 		return 1;
-	// init with first step
-	std::size_t step = *( ++times.begin() ) - times.front(); // times[1] - times[0]
-	// to get the step we use so smallest step, others are considered as missing frames
-	// no check if multiple steps inside a sequence... ignored case.
+
+	std::set<std::size_t> allSteps;
+
 	for( std::list<Sequence::Time>::const_iterator itA = times.begin(), itB = ++times.begin(), itEnd = times.end();
 	     itB != itEnd;
 	     ++itA, ++itB )
 	{
-		std::size_t localStep = *itB - *itA;
-		step = std::min( step, localStep );
+		allSteps.insert( *itB - *itA );
 	}
-	return step;
+	return extractStep( allSteps );
 }
 
 /**
@@ -365,20 +395,18 @@ std::size_t extractStep( const std::list<Sequence::Time>& times )
  */
 std::size_t extractStep( const std::list<FileNumbers>& times, const std::size_t i )
 {
-	if( times.size() == 1 )
+	if( times.size() <= 1 )
 		return 1;
-	// init with first step
-	std::size_t step = ( *( ++times.begin() ) ).getTime( i ) - times.front().getTime( i ); // times[1] - times[0]
-	// to get the step we use so smallest step, others are considered as missing frames
-	// no check if multiple steps inside a sequence... ignored case.
+
+	std::set<std::size_t> allSteps;
+
 	for( std::list<FileNumbers>::const_iterator itA = times.begin(), itB = ++times.begin(), itEnd = times.end();
 	     itB != itEnd;
 	     ++itA, ++itB )
 	{
-		std::size_t localStep = itB->getTime( i ) - itA->getTime( i );
-		step = std::min( step, localStep );
+		allSteps.insert( itB->getTime( i ) - itA->getTime( i ) );
 	}
-	return step;
+	return extractStep( allSteps );
 }
 
 /// @}
@@ -585,8 +613,8 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	typedef Sequence::Time Time;
 	nums.sort();
 
-	BOOST_ASSERT( nums.size() > 1 );
-	// assert all SeqNumber has the same size...
+	BOOST_ASSERT( nums.size() > 0 );
+	// assert all FileNumbers have the same size...
 	BOOST_ASSERT( nums.front().size() == nums.back().size() );
 
 	std::size_t len = nums.front().size();
@@ -704,6 +732,7 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 			previous = &sn;
 		}
 		times.push_back( sn.getTime(idChangeEnd) );
+		timesStr.push_back( sn.getString(idChangeEnd) );
 		++iCurrent;
 	}
 	// update the last added sequence
@@ -711,6 +740,8 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	result.back()._firstTime = times.front();
 	result.back()._lastTime = times.back();
 	result.back()._step = extractStep(times);
+	result.back()._padding = extractPadding(timesStr);
+	result.back()._strictPadding = extractIsStrictPadding(timesStr, result.back()._padding);
 	
 	return result;
 }
@@ -798,6 +829,7 @@ std::ostream& operator<<( std::ostream& os, const Sequence& s )
 	   << " " << s.getNbFiles() << " file" << ( ( s.getNbFiles() > 1 ) ? "s" : "" );
 	if( s.hasMissingFile() )
 		os << ", " << s.getNbMissingFiles() << " missing file" << ( ( s.getNbMissingFiles() > 1 ) ? "s" : "" );
+
 	return os;
 }
 
