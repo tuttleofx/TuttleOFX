@@ -4,6 +4,7 @@
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/foreach.hpp>
 
+#include <algorithm>
 #include <iostream>
 
 int main( int argc, char** argv )
@@ -35,6 +36,7 @@ int main( int argc, char** argv )
 				if( fs::is_directory( path ) )
 				{
 					std::vector<Sequence> sequences = sequencesInDir( path );
+					std::sort( sequences.begin(), sequences.end() );
 					BOOST_FOREACH( const std::vector<Sequence>::value_type & s, sequences )
 					{
 						//						if( s.getNbFiles() != 1 )
