@@ -152,12 +152,17 @@ public:
 
 		if( hasCycle() )
 		{
-			/// @todo tuttle: remove added edge
+			removeEdge( addedEdge );
 			BOOST_THROW_EXCEPTION( exception::Logic()
 			    << exception::user( "Connection error because the graph becomes cyclic." ) );
 		}
 
 		return addedEdge;
+	}
+
+	void removeEdge( const edge_descriptor& e )
+	{
+		boost::remove_edge( e, _graph );
 	}
 
 	vertex_descriptor& getVertexDescriptor( const VertexKey& vertexKey )

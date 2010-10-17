@@ -136,7 +136,7 @@ typedef ::boost::error_info<struct tag_ofxContext, ::std::string> ofxContext;
 typedef ::boost::error_info<struct tag_ofxApi, ::std::string> ofxApi;
 /**
  * @brief Plugin string identifier.
- * @remark Dev or User information.
+ * @remark Dev information.
  */
 typedef ::boost::error_info<struct tag_pluginIdentifier, ::std::string> pluginIdentifier;
 /**
@@ -144,6 +144,16 @@ typedef ::boost::error_info<struct tag_pluginIdentifier, ::std::string> pluginId
  * @remark User information.
  */
 typedef ::boost::error_info<struct tag_pluginName, ::std::string> pluginName;
+/**
+ * @brief Node name.
+ * @remark User information.
+ */
+typedef ::boost::error_info<struct tag_nodeName, ::std::string> nodeName;
+/**
+ * @brief Time.
+ * @remark Dev or user information.
+ */
+typedef ::boost::error_info<struct tag_nodeName, OfxTime> time;
 /**
  * @brief Problem with a file.
  * @remark User information.

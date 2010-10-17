@@ -1045,7 +1045,7 @@ void OfxhImageEffectNode::getFramesNeededAction( OfxTime   time,
 	}
 }
 
-void OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
+bool OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
                                             const std::string& field,
                                             const OfxRectI&    renderRoI,
                                             OfxPointD          renderScale,
@@ -1084,6 +1084,8 @@ void OfxhImageEffectNode::isIdentityAction( OfxTime&           time,
 
 	time = outArgs.getDoubleProperty( kOfxPropTime );
 	clip = outArgs.getStringProperty( kOfxPropName );
+	
+	return status == kOfxStatOK;
 }
 
 /**

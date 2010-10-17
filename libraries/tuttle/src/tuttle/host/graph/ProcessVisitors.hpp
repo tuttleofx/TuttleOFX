@@ -125,6 +125,69 @@ private:
 	OfxTime _time;
 };
 
+/**
+ * @warning in progress...
+ */
+template<class TGraph>
+class RemoveIdentityNodes : public boost::default_dfs_visitor
+{
+public:
+	typedef typename TGraph::GraphContainer GraphContainer;
+	typedef typename TGraph::Vertex Vertex;
+	typedef typename Vertex::Key VertexKey;
+	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::edge_descriptor edge_descriptor;
+
+	RemoveIdentityNodes( TGraph& graph )
+		: _graph( graph )
+	{}
+
+	template<class VertexDescriptor, class Graph>
+	void finish_vertex( VertexDescriptor vd, Graph& g )
+	{
+		Vertex& vertex = _graph.instance( vd );
+
+		TCOUT( "[RemoveIdentityNodes] finish_vertex " << vertex );
+		if( vertex.isFake() )
+			return;
+
+		std::string clip;
+		OfxTime time;
+		if( vertex.getProcessNode()->isIdentity( vertex.getProcessOptions(), clip, time ) )
+		{
+			try
+			{
+				if( clip.size() == 0 )
+				{
+					BOOST_THROW_EXCEPTION( exception::Logic()
+						<< exception::dev() + "Empty clip name. It's seems to be an error in the plugin" );
+				}
+//				Vertex& replace = _graph.getVertex( VertexKey( clip, time ) );
+				VertexKey replaceKey( clip, time );
+				BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( vd ) )
+				{
+					const Edge& e = _graph.instance( ed );
+					const Vertex& in = _graph.sourceInstance( ed );
+					_graph.connect( replaceKey,
+					                in.getKey(),
+					                e.getInAttrName() );
+				}
+				_graph.removeVertex( vd );
+			}
+			catch( boost::exception& e )
+			{
+				e << exception::user() + "A node is declared identity without given a valid input clip ("+quotes(clip)+", "+time+ ")."
+				  << exception::nodeName( vertex.getName() )
+				  << exception::time( vertex.getProcessOptions()._time );
+				throw;
+			}
+		}
+	}
+
+private:
+	TGraph& _graph;
+};
+
 template<class TGraph>
 class PreProcess1 : public boost::default_dfs_visitor
 {

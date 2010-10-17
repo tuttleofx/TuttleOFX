@@ -556,6 +556,17 @@ INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 	return result;
 }
 
+bool ImageEffectNode::isIdentity( const graph::ProcessOptions& processOptions, std::string& clip, OfxTime& time ) const
+{
+	time = processOptions._time;
+	OfxRectI roi;
+	roi.x1 = processOptions._renderRoI.x1;
+	roi.x2 = processOptions._renderRoI.x2;
+	roi.y1 = processOptions._renderRoI.y1;
+	roi.y2 = processOptions._renderRoI.y2;
+	return isIdentityAction( time, processOptions._field, roi, processOptions._renderScale, clip );
+}
+
 
 void ImageEffectNode::beginSequence( graph::ProcessOptions& processOptions )
 {

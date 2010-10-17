@@ -211,7 +211,8 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 			}
 		}
 
-		InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( VertexAtTime::Key(_outputId, time) );
+		VertexAtTime::Key outputAtTimeKey(_outputId, time);
+		InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( outputAtTimeKey );
 
 		TCOUT( "---------------------------------------- set default options" );
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
@@ -231,7 +232,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
 #endif
-
+		
 		TCOUT( "---------------------------------------- preprocess 1" );
 		graph::visitor::PreProcess1<InternalGraphAtTimeImpl> preProcess1Visitor( renderGraphAtTime );
 		renderGraphAtTime.depthFirstVisit( preProcess1Visitor, outputAtTime );
@@ -244,14 +245,19 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
 		renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
 
+		TCOUT( "---------------------------------------- remove identity nodes" );
+		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
+		renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
+
+		TCOUT( "---------------------------------------- reconnect clips" );
+		connectClips<InternalGraphAtTimeImpl>( renderGraphAtTime );
+		
 		TCOUT( "---------------------------------------- optimize graph" );
 		graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( renderGraphAtTime );
 		renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
 #endif
-		
-		// remove isIdentity nodes
 		
 		/*
 		InternalGraphImpl tmpGraph;

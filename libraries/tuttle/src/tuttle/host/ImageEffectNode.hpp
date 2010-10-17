@@ -93,6 +93,7 @@ public:
 	void debugOutputImage( const OfxTime time ) const;
 
 	InputsTimeMap getTimesNeeded( const OfxTime time ) const;
+	bool isIdentity( const graph::ProcessOptions& processOptions, std::string& clip, OfxTime& time ) const;
 	void beginSequence( graph::ProcessOptions& processOptions );
 	void preProcess1( graph::ProcessOptions& processOptions );
 	void preProcess2_reverse( graph::ProcessOptions& processOptions );

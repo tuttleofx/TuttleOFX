@@ -367,7 +367,7 @@ public:
 	                                   ClipRangeMap& rangeMap ) const OFX_EXCEPTION_SPEC;
 
 	// is identity
-	virtual void isIdentityAction( OfxTime&           time,
+	virtual bool isIdentityAction( OfxTime&           time,
 	                               const std::string& field,
 	                               const OfxRectI&    renderRoI,
 	                               OfxPointD          renderScale,
