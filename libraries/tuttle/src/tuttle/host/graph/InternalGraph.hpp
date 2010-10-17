@@ -65,6 +65,8 @@ public:
 	typedef std::pair<vertex_iterator, vertex_iterator> vertex_range_t;
 	typedef std::pair<edge_iterator, edge_iterator> edge_range_t;
 
+	typedef typename Vertex::Key VertexKey;
+
 	// constructors etc.
 	InternalGraph()
 	{}
@@ -112,7 +114,7 @@ public:
 	{
 		vertex_descriptor vd = boost::add_vertex( prop, _graph );
 
-		_vertexDescriptorMap[prop.getName()] = vd;
+		_vertexDescriptorMap[prop.getKey()] = vd;
 		return vd;
 	}
 
@@ -125,19 +127,19 @@ public:
 		rebuildVertexDescriptorMap();
 	}
 
-	void connect( const std::string& out, const std::string& in, const std::string& inAttr )
+	void connect( const VertexKey& out, const VertexKey& in, const std::string& inAttr )
 	{
 		try
 		{
-			vertex_descriptor& descOut = getVertexDescriptor( out );
-			vertex_descriptor& descIn  = getVertexDescriptor( in );
+			const vertex_descriptor& descOut = getVertexDescriptor( out );
+			const vertex_descriptor& descIn  = getVertexDescriptor( in );
 
 			Edge e( out, in, inAttr );
 			addEdge( descOut, descIn, e );
 		}
 		catch( boost::exception& e )
 		{
-			e << exception::user( "Error while connecting " + out + " <-- " + in + "." + inAttr );
+			e << exception::user() + "Error while connecting " + out + " <-- " + in + "." + inAttr;
 			throw;
 		}
 	}
@@ -158,24 +160,24 @@ public:
 		return addedEdge;
 	}
 
-	vertex_descriptor& getVertexDescriptor( const std::string& vertexName )
+	vertex_descriptor& getVertexDescriptor( const VertexKey& vertexKey )
 	{
-		return _vertexDescriptorMap[vertexName];
+		return _vertexDescriptorMap[vertexKey];
 	}
 
-	const vertex_descriptor& getVertexDescriptor( const std::string& vertexName ) const
+	const vertex_descriptor& getVertexDescriptor( const VertexKey& vertexKey ) const
 	{
-		return _vertexDescriptorMap[vertexName];
+		return _vertexDescriptorMap[vertexKey];
 	}
 
-	Vertex& getVertex( const std::string& vertexName )
+	Vertex& getVertex( const VertexKey& vertexKey )
 	{
-		return instance( getVertexDescriptor( vertexName ) );
+		return instance( getVertexDescriptor( vertexKey ) );
 	}
 
-	const Vertex& getVertex( const std::string& vertexName ) const
+	const Vertex& getVertex( const VertexKey& vertexKey ) const
 	{
-		return instance( getVertexDescriptor( vertexName ) );
+		return instance( getVertexDescriptor( vertexKey ) );
 	}
 
 	const vertex_descriptor source( const edge_descriptor& e ) const
@@ -397,7 +399,7 @@ private:
 
 protected:
 	GraphContainer _graph;
-	boost::unordered_map<std::string, vertex_descriptor> _vertexDescriptorMap;
+	boost::unordered_map<VertexKey, vertex_descriptor> _vertexDescriptorMap;
 
 };
 

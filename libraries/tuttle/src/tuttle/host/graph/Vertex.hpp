@@ -10,6 +10,8 @@ namespace graph {
 class Vertex : public IVertex
 {
 public:
+	typedef std::string Key;
+public:
 	Vertex( const std::string& name = "Undefined" );
 	Vertex( const std::string& name, INode& processNode );
 	Vertex( const Vertex& v );
@@ -20,6 +22,8 @@ public:
 		_times           = v._times;
 		return *this;
 	}
+
+	Key getKey() const { return getName(); }
 
 	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );

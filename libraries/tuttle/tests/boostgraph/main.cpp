@@ -16,11 +16,14 @@ namespace graph {
 class TestVertex
 {
 public:
+	typedef std::string Key;
+public:
 	TestVertex() {}
 	TestVertex( const std::string& name ) : _name( name ) {}
 	~TestVertex() {}
 	std::string _name;
-	const std::string&           getName() const { return _name; }
+	const std::string& getName() const { return _name; }
+	const std::string& getKey() const { return getName(); }
 	friend std::ostream& operator<<( std::ostream& os, const TestVertex& v );
 };
 inline std::ostream& operator<<( std::ostream& os, const TestVertex& v )

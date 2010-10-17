@@ -8,7 +8,7 @@ namespace graph {
 Edge::Edge()
 {}
 
-Edge::Edge( const std::string& out, const std::string& in, const std::string& inAttrName )
+Edge::Edge( const Vertex::Key& out, const Vertex::Key& in, const std::string& inAttrName )
 : IEdge( out, in, inAttrName )
 {
 }

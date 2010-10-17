@@ -27,6 +27,9 @@ inline void connectClips( TGraph& graph )
 		typename TGraph::Vertex& vertexSource = graph.sourceInstance( ed );
 		typename TGraph::Vertex& vertexDest   = graph.targetInstance( ed );
 
+		TCOUT( "[connectClips] " << edge );
+		TCOUT( vertexSource << "->" << vertexDest );
+		
 		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
 		{
 			INode& sourceNode = *vertexSource.getProcessNode();

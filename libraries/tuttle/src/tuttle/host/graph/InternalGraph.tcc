@@ -75,7 +75,7 @@ void InternalGraph<VERTEX, EDGE, OutEdgeList, VertexList, EdgeList>::rebuildVert
 	_vertexDescriptorMap.clear();
 	BOOST_FOREACH( vertex_descriptor vd, getVertices() )
 	{
-		_vertexDescriptorMap[instance( vd ).getName()] = vd;
+		_vertexDescriptorMap[instance( vd ).getKey()] = vd;
 	}
 }
 

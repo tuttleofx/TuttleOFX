@@ -1,16 +1,33 @@
 #ifndef _TUTTLE_HOST_PROCESSGRAPH_HPP_
 #define _TUTTLE_HOST_PROCESSGRAPH_HPP_
 
+#include "Vertex.hpp"
+#include "VertexAtTime.hpp"
+#include "Edge.hpp"
+#include "EdgeAtTime.hpp"
+#include "InternalGraph.hpp"
+
 #include <tuttle/host/Graph.hpp>
 
 #include <string>
 
+/**
+ * @brief If there is a define PROCESSGRAPH_USE_LINK, we don't create a copy of all nodes and
+ * The ProcessGraph only contains link to the node in the original Graph.
+ */
 #define PROCESSGRAPH_USE_LINK
 
 namespace tuttle {
 namespace host {
 namespace graph {
 
+/**
+ * @brief Created from a user Graph, this class allows you to launch the process.
+ *
+ * Internally this class use multiple graphs with different representation of the graph.
+ * It create a new graph with a vertex for each node at each time.
+ * It reorder the nodes to optimise memory usage.
+ */
 class ProcessGraph
 {
 public:
@@ -19,6 +36,8 @@ public:
 	typedef Graph::Edge Edge;
 	typedef Graph::Attribute Attribute;
 	typedef InternalGraph<Vertex, Edge, boost::vecS, boost::vecS> InternalGraphImpl;
+//	typedef InternalGraphImpl InternalGraphAtTimeImpl;
+	typedef InternalGraph<VertexAtTime, EdgeAtTime, boost::vecS, boost::vecS> InternalGraphAtTimeImpl;
 	typedef Graph::vertex_descriptor vertex_descriptor;
 	typedef Graph::edge_descriptor edge_descriptor;
 #ifdef PROCESSGRAPH_USE_LINK
