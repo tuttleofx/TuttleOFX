@@ -335,8 +335,9 @@ public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
 
-	Process( TGraph& graph, memory::MemoryCache& result )
+	Process( TGraph& graph, memory::IMemoryCache& cache, memory::IMemoryCache& result )
 		: _graph( graph )
+		, _cache( cache )
 		, _result( result )
 	{
 	}
@@ -359,13 +360,22 @@ public:
 		
 		if( vertex.getProcessOptions()._finalNode )
 		{
-//			_result.put( vertex._name, vertex._time, vertex._image);
+			memory::CACHE_ELEMENT img = _cache.get( vertex._name + "." kOfxOutputAttributeName, vertex._time );
+			if( ! img.get() )
+			{
+				BOOST_THROW_EXCEPTION( exception::Logic()
+					<< exception::user() + "Output buffer not found in memoryCache at the end of the node process."
+					<< exception::nodeName( vertex._name )
+					<< exception::time( vertex._time ) );
+			}
+			_result.put( vertex._name, vertex._time, img );
 		}
 	}
 
 private:
 	TGraph& _graph;
-	memory::MemoryCache& _result;
+	memory::IMemoryCache& _cache;
+	memory::IMemoryCache& _result;
 };
 
 template<class TGraph>

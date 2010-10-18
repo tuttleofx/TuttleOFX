@@ -306,7 +306,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		*/
 
 		TCOUT( "---------------------------------------- process" );
-		graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, result );
+		graph::visitor::Process<InternalGraphAtTimeImpl> processVisitor( renderGraphAtTime, Core::instance().getMemoryCache(), result );
 		renderGraphAtTime.depthFirstVisit( processVisitor, outputAtTime );
 
 		TCOUT( "---------------------------------------- postprocess" );
@@ -319,6 +319,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		Core::instance().getMemoryCache().clearUnused();
 		TCOUT_VAR( Core::instance().getMemoryCache().size() );
 		TCOUT_VAR( Core::instance().getMemoryCache() );
+		TCOUT_VAR( result );
 
 	}
 
