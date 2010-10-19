@@ -66,7 +66,7 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 	if( time != _effect.getCurrentTime() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()
-		        << exception::user( "Access to another time than current is not supported at the moment." ) );
+		        << exception::user() + "Access to another time than current is not supported at the moment (currentTime:" + _effect.getCurrentTime() + "," + time + ")." );
 	}
 	return _effect.getRegionOfDefinition();
 }

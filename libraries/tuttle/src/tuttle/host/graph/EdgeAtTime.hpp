@@ -18,11 +18,16 @@ public:
 	EdgeAtTime( const EdgeAtTime& other );
 	virtual ~EdgeAtTime();
 
+	std::ostream& exportDotDebug( std::ostream& os ) const;
+	
 	inline EdgeAtTime& operator=( const Edge& e )
 	{
 		IEdge::operator=( e );
 		return *this;
 	}
+	
+	OfxTime _inTime;
+	OfxTime _outTime;
 };
 
 }

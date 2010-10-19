@@ -83,10 +83,9 @@ public:
 		{
 			const Edge& edge = _graph.instance( ed );
 //			TCOUT( "-- outEdge: " << edge );
-			typename Edge::TimeMap::const_iterator timesNeeded = edge._timesNeeded.find( _time );
-			if( timesNeeded != edge._timesNeeded.end() )
+			BOOST_FOREACH( const typename Edge::TimeMap::value_type& timesNeeded, edge._timesNeeded )
 			{
-				vertex._times.insert( (*timesNeeded).second.begin(), (*timesNeeded).second.end() );
+				vertex._times.insert( timesNeeded.second.begin(), timesNeeded.second.end() );
 //				std::cout << "--- insert vertex: ";
 //				std::copy( (*timesNeeded).second.begin(),
 //				           (*timesNeeded).second.end(),
@@ -111,10 +110,10 @@ public:
 				const Vertex& input = _graph.targetInstance( ed );
 //				TCOUT_VAR( input.getName() );
 //				std::cout << "--- insert edges: ";
-//				std::copy( mapInputsTimes[input.getName()+".Output"].begin(),
-//				           mapInputsTimes[input.getName()+".Output"].end(),
+//				std::copy( mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].begin(),
+//				           mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].end(),
 //						   std::ostream_iterator<OfxTime>(std::cout, ",") );
-				edge._timesNeeded[t] = mapInputsTimes[input.getName()+".Output"];
+				edge._timesNeeded[t] = mapInputsTimes[input.getName()+"." kOfxOutputAttributeName ];
 			}
 		}
 

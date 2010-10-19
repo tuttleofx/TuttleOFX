@@ -39,7 +39,7 @@ public:
 	inline const std::string& getInAttrName() const { return _inAttrName; }
 	inline const std::string& getName() const       { return _name; }
 
-	std::ostream& exportDotDebug( std::ostream& os ) const;
+	virtual std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const IEdge& v );
 
 public:

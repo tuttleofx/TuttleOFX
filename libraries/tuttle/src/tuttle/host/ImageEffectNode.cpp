@@ -539,7 +539,7 @@ INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 			const std::string fullname = v.first->getIdentifier();
 			BOOST_FOREACH( const ClipRangeMap::value_type::second_type::value_type& range, v.second )
 			{
-				for( OfxTime t = range.min; t < range.max; t += 1.0 )
+				for( OfxTime t = range.min; t <= range.max; t += 1.0 )
 				{
 					result[ fullname ].insert(t);
 				}
@@ -749,7 +749,7 @@ void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 	#ifdef TUTTLE_DEBUG_OUTPUT_ALL_NODES
 	IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
 
-	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + ".Output", time );
+	boost::shared_ptr<Image> image = memoryCache.get( this->getName() + "." kOfxOutputAttributeName, time );
 
 	// big hack, for debug...
 	image->debugSaveAsPng( "data/debug/" + boost::lexical_cast<std::string>( time ) + "_" + this->getName() + ".png" );

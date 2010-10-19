@@ -184,14 +184,15 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		graph::exportDebugAsDOT( "graphprocess_a.dot", renderGraph );
 #endif
 
-		TCOUT( "---------------------------------------- build deploy renderGraphAtTime" );
-		/// @todo tuttle: create a new graph with time information
+		TCOUT( "---------------------------------------- build renderGraphAtTime" );
+		// create a new graph with time information
 		InternalGraphAtTimeImpl renderGraphAtTime;
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
 			Vertex& v = renderGraph.instance( vd );
 			BOOST_FOREACH( const OfxTime t, v._times )
 			{
+				TCOUT_VAR2( v, t );
 				renderGraphAtTime.addVertex( VertexAtTime(v, t) );
 			}
 		}
@@ -200,13 +201,19 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 			Edge& e = renderGraph.instance( ed );
 			Vertex& in = renderGraph.sourceInstance( ed );
 			Vertex& out = renderGraph.targetInstance( ed );
+			TCOUT_X( 20, "." );
+			TCOUT_VAR( e );
 			BOOST_FOREACH( const Edge::TimeMap::value_type& tm, e._timesNeeded )
 			{
 				BOOST_FOREACH( const OfxTime t2, tm.second )
 				{
-					renderGraphAtTime.connect( VertexAtTime::Key(in.getKey(), t2),
-											   VertexAtTime::Key(out.getKey(), tm.first),
-											   e.getInAttrName() );
+					TCOUT_VAR2( in.getKey(), tm.first );
+					TCOUT_VAR2( out.getKey(), t2 );
+					TCOUT_VAR( e.getInAttrName() );
+					renderGraphAtTime.connect(
+						VertexAtTime::Key(in.getKey(), tm.first),
+						VertexAtTime::Key(out.getKey(), t2),
+						e.getInAttrName() );
 				}
 			}
 		}
@@ -222,6 +229,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 			v.setProcessOptions( defaultOptions );
 			v.getProcessOptions()._inDegree  = renderGraphAtTime.getInDegree( vd );
 			v.getProcessOptions()._outDegree = renderGraphAtTime.getOutDegree( vd );
+			v.getProcessOptions()._time = v._time;
 		}
 		// for each final nodes
 		BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )

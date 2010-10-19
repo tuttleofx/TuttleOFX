@@ -26,6 +26,8 @@ public:
 		return *this;
 	}
 
+	std::ostream& exportDotDebug( std::ostream& os ) const;
+
 public:
 	typedef std::set<OfxTime> TimesSet;
 	typedef std::map<OfxTime, TimesSet> TimeMap;

@@ -1,6 +1,7 @@
 #include "Vertex.hpp"
 #include "GraphExporter.hpp"
 
+#include <tuttle/host/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -27,13 +28,28 @@ Vertex::Vertex( const Vertex& v )
 
 std::ostream& Vertex::exportDotDebug( std::ostream& os ) const
 {
-	IVertex::exportDotDebug( os );
-//	os << "(allTimes=" << _times.size() << "\"";
-//	std::copy(
-//        _times.begin(),
-//        _times.end(),
-//        std::ostream_iterator<OfxTime>( os, "," ) );
-//	os << "\")\n";
+	std::ostringstream s;
+	s << subDotEntry( "label", getName() );
+	if( ! isFake() )
+	{
+		/// @todo remove this. Temporary solution
+		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() );
+	}
+	s << subDotEntry( "localMemory", getProcessOptions()._localInfos._memory );
+	s << subDotEntry( "globalMemory", getProcessOptions()._globalInfos._memory );
+	s << subDotEntry( "allTimes", _times.size() );
+	std::ostringstream times;
+	std::copy(
+        _times.begin(),
+        _times.end(),
+        std::ostream_iterator<OfxTime>( times, "," ) );
+	s << subDotEntry( "times", times.str() );
+
+	os << "[" << std::endl;
+	os << dotEntry( "type", "Node" ) << ", " << std::endl;
+	os << dotEntry( "label", s.str() ) << ", " << std::endl;
+	os << "]" << std::endl;
+	return os;
 	return os;
 }
 
