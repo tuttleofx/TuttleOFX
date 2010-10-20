@@ -7,9 +7,10 @@
 #include <boost/version.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/exception.hpp>
-#include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/exception/errinfo_file_name.hpp>
+#include <boost/exception/diagnostic_information.hpp>
+#include <boost/exception/get_error_info.hpp>
 
 #include <ofxCorePlugin.h>
 #include <ofxImageEffect.h>
@@ -153,7 +154,7 @@ typedef ::boost::error_info<struct tag_nodeName, ::std::string> nodeName;
  * @brief Time.
  * @remark Dev or user information.
  */
-typedef ::boost::error_info<struct tag_nodeName, OfxTime> time;
+typedef ::boost::error_info<struct tag_time, OfxTime> time;
 /**
  * @brief Problem with a file.
  * @remark User information.
