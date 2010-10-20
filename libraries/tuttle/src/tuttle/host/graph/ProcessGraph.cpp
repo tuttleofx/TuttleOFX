@@ -218,8 +218,8 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 			}
 		}
 
-		VertexAtTime::Key outputAtTimeKey(_outputId, time);
-		InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( outputAtTimeKey );
+		VertexAtTime::Key outputKeyAtTime(_outputId, time);
+		InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( outputKeyAtTime );
 
 		TCOUT( "---------------------------------------- set default options" );
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
@@ -253,9 +253,13 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		graph::visitor::PreProcess3<InternalGraphAtTimeImpl> preProcess3Visitor( renderGraphAtTime );
 		renderGraphAtTime.depthFirstVisit( preProcess3Visitor, outputAtTime );
 
-		TCOUT( "---------------------------------------- remove identity nodes" );
-		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
-		renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
+//		TCOUT( "---------------------------------------- remove identity nodes" );
+//		graph::visitor::RemoveIdentityNodes<InternalGraphAtTimeImpl> removeIdentityVisitor( renderGraphAtTime );
+//		renderGraphAtTime.depthFirstVisit( removeIdentityVisitor, outputAtTime );
+
+#ifndef TUTTLE_PRODUCTION
+		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
+#endif
 
 		TCOUT( "---------------------------------------- reconnect clips" );
 		connectClips<InternalGraphAtTimeImpl>( renderGraphAtTime );
@@ -264,7 +268,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		graph::visitor::OptimizeGraph<InternalGraphAtTimeImpl> optimizeGraphVisitor( renderGraphAtTime );
 		renderGraphAtTime.depthFirstVisit( optimizeGraphVisitor, outputAtTime );
 #ifndef TUTTLE_PRODUCTION
-		graph::exportDebugAsDOT( "graphprocess_c.dot", renderGraphAtTime );
+		graph::exportDebugAsDOT( "graphprocess_d.dot", renderGraphAtTime );
 #endif
 		
 		/*

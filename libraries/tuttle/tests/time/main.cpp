@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		TCOUT( "__________________________________________________2" );
 		// Setup parameters
 		read1.getParam( "filename" ).set( "data/input-###.png" );
-		timeshift1.getParam("offset").set( 0 );
+		timeshift1.getParam("offset").set( 3 );
 		write1.getParam( "filename" ).set( "data/output_####.png" );
 
 		TCOUT( "__________________________________________________3" );

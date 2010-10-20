@@ -63,12 +63,14 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 
 	/// @todo tuttle: renderscale, time, ?
 
-	if( time != _effect.getCurrentTime() )
-	{
-		BOOST_THROW_EXCEPTION( exception::Unsupported()
-		        << exception::user() + "Access to another time than current is not supported at the moment (currentTime:" + _effect.getCurrentTime() + "," + time + ")." );
-	}
-	return _effect.getRegionOfDefinition();
+//	if( time != _effect.getCurrentTime() )
+//	{
+//		BOOST_THROW_EXCEPTION( exception::Unsupported()
+//		        << exception::user() + "Access to another time than current is not supported at the moment (imageEffect Time: " + _effect.getCurrentTime() + ", fetched time: " + time + ").\n"
+//			                         + "Clip identifier: " + getIdentifier()
+//				<< exception::nodeName( getName() ) );
+//	}
+	return _effect.getRegionOfDefinition( time );
 }
 
 /// Get the Raw Unmapped Pixel Depth

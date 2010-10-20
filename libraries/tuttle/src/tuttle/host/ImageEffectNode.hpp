@@ -17,11 +17,11 @@ class ImageEffectNode : public INode
 {
 public:
 	typedef ImageEffectNode This;
+	typedef std::map<OfxTime,OfxRectD> RodMap;
 
 protected:
 	OfxPointD _frameRange;
-	OfxRectD _rod;
-	OfxTime _currentTime;
+	RodMap _rods;
 
 public:
 	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
@@ -86,9 +86,26 @@ public:
 
 	const attribute::Attribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>( this )->getSingleInputAttribute(); }
 
-	OfxRectD getRegionOfDefinition() const { return _rod; }
-
-	OfxTime getCurrentTime() const { return _currentTime; }
+	OfxRectD getRegionOfDefinition( const OfxTime time ) const
+	{
+		RodMap::const_iterator it = _rods.find( time );
+		if( it == _rods.end() )
+		{
+			std::ostringstream ss;
+			ss << "Defined times : ";
+			BOOST_FOREACH( const RodMap::value_type& v, _rods )
+			{
+				ss << v.first << ", ";
+			}
+			BOOST_THROW_EXCEPTION( exception::Bug()
+			    << exception::dev() + "Rod not defined at this time.\n"
+				                    + ss.str()
+				<< exception::nodeName( getName() )
+				<< exception::pluginIdentifier( getPlugin().getIdentifier() )
+				<< exception::time( time ) );
+		}
+		return it->second;
+	}
 
 	void debugOutputImage( const OfxTime time ) const;
 
@@ -98,7 +115,7 @@ public:
 	void preProcess1( graph::ProcessOptions& processOptions );
 	void preProcess2_reverse( graph::ProcessOptions& processOptions );
 	void preProcess3( graph::ProcessOptions& processOptions );
-	void preProcess_infos( graph::ProcessInfos& nodeInfos ) const;
+	void preProcess_infos( const OfxTime time, graph::ProcessInfos& nodeInfos ) const;
 	void process( graph::ProcessOptions& processOptions );
 	void postProcess( graph::ProcessOptions& processOptions );
 	void endSequence( graph::ProcessOptions& processOptions );
@@ -273,14 +290,9 @@ public:
 	                        OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 private:
-	void setRegionOfDefinition( const OfxRectD& rod )
+	void setRegionOfDefinition( const OfxRectD& rod, const OfxTime time )
 	{
-		_rod = rod;
-	}
-
-	void setCurrentTime( const OfxTime time )
-	{
-		_currentTime = time;
+		_rods[time] = rod;
 	}
 
 	void checkClipsConnections() const;

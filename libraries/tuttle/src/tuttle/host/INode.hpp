@@ -41,7 +41,8 @@ public:
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
 
-	typedef std::map<std::string, std::set<OfxTime> > InputsTimeMap;
+	typedef std::set<OfxTime> TimesSet;
+	typedef std::map<std::string, TimesSet> InputsTimeMap;
 
 	virtual InputsTimeMap getTimesNeeded( const OfxTime time ) const = 0;
 
@@ -86,7 +87,7 @@ public:
 	 * @param[in] processOptions
 	 * @remark depth first search
 	 */
-	virtual void preProcess_infos( graph::ProcessInfos& nodeInfos ) const = 0;
+	virtual void preProcess_infos( const OfxTime time, graph::ProcessInfos& nodeInfos ) const = 0;
 	/**
 	 * @brief Process this node. All inputs are compute.
 	 * @param[in] processOptions

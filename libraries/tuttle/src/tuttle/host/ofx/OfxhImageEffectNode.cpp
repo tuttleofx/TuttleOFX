@@ -705,7 +705,7 @@ void OfxhImageEffectNode::endSequenceRenderAction( OfxTime   startFrame,
 OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
                                                              OfxPointD renderScale ) const
 {
-	OfxRectD rod;
+	OfxRectD rod = { 0, 0, 0, 0 };
 
 	// figure out the default contexts
 	if( _context == kOfxImageEffectContextGenerator ||
@@ -726,12 +726,15 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		{
 			// filter and paint default to the input clip
 			attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
+			/// @todo tuttle: depending on framesNeeded !
 			rod = clip.fetchRegionOfDefinition( time );
 		}
 		catch( boost::exception& e )
 		{
-			e << exception::dev() + "Need a clip " + quotes( kOfxImageEffectSimpleSourceClipName ) + ".";
+			if( ! boost::get_error_info<exception::dev>( e ) )
+				e << exception::dev() + "Error while computing the default ROD.";
 			e << exception::ofxContext( _context );
+			e << exception::pluginIdentifier( getPlugin().getIdentifier() );
 			throw;
 		}
 	}
@@ -742,6 +745,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 			// transition is the union of the two clips
 			attribute::OfxhClipImage& clipFrom = getClip( kOfxImageEffectTransitionSourceFromClipName );
 			attribute::OfxhClipImage& clipTo   = getClip( kOfxImageEffectTransitionSourceToClipName );
+			/// @todo tuttle: depending on framesNeeded !
 			rod = clipFrom.fetchRegionOfDefinition( time );
 			rod = rectUnion( rod, clipTo.fetchRegionOfDefinition( time ) );
 		}
@@ -753,6 +757,8 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 	}
 	else if( _context == kOfxImageEffectContextGeneral )
 	{
+		/// @todo tuttle: depending on framesNeeded !
+
 		// general context is the union of all the non optional clips
 		bool gotOne = false;
 		for( ClipImageMap::const_iterator it = _clips.begin(), itEnd = _clips.end();
@@ -783,6 +789,7 @@ OfxRectD OfxhImageEffectNode::calcDefaultRegionOfDefinition( OfxTime   time,
 		// retimer
 		try
 		{
+			/// @todo tuttle: depending on framesNeeded !
 			const attribute::OfxhClipImage& clip = getClip( kOfxImageEffectSimpleSourceClipName );
 			/*attribute::ParamDoubleInstance& param = */ dynamic_cast<const attribute::OfxhParamDouble&>( getParam( kOfxImageEffectRetimerParamName ) );
 			rod = clip.fetchRegionOfDefinition( std::floor( time ) );
@@ -927,6 +934,7 @@ void OfxhImageEffectNode::getRegionOfInterestAction( OfxTime time,
 			    getContext() == kOfxImageEffectContextGenerator ||
 			    getContext() == kOfxImageEffectContextReader )
 			{
+				/// @todo tuttle: depending on framesNeeded !
 				OfxRectD rod = it->second->fetchRegionOfDefinition( time );
 				if( it->second->supportsTiles() )
 				{

@@ -107,13 +107,13 @@ public:
 			{
 				Edge& edge = _graph.instance( ed );
 //				TCOUT( "-- inEdge "<<t<<": " << edge );
-				const Vertex& input = _graph.targetInstance( ed );
+//				const Vertex& input = _graph.targetInstance( ed );
 //				TCOUT_VAR( input.getName() );
 //				std::cout << "--- insert edges: ";
 //				std::copy( mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].begin(),
 //				           mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].end(),
 //						   std::ostream_iterator<OfxTime>(std::cout, ",") );
-				edge._timesNeeded[t] = mapInputsTimes[input.getName()+"." kOfxOutputAttributeName ];
+				edge._timesNeeded[t] = mapInputsTimes[edge.getInAttrName()];
 			}
 		}
 
@@ -207,6 +207,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
+		TCOUT( vertex.getProcessOptions()._time );
 		vertex.getProcessNode()->preProcess1( vertex.getProcessOptions() );
 	}
 
@@ -296,7 +297,7 @@ public:
 		if( !vertex.isFake() )
 		{
 			// compute local infos, need to be a real node !
-			vertex.getProcessNode()->preProcess_infos( procOptions._localInfos );
+			vertex.getProcessNode()->preProcess_infos( procOptions._time, procOptions._localInfos );
 		}
 
 		// compute global infos for inputs

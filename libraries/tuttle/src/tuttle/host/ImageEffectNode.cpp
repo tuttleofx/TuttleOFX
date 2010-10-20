@@ -536,12 +536,12 @@ INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 		getFramesNeededAction( time, clipMap );
 		BOOST_FOREACH( const ClipRangeMap::value_type& v, clipMap )
 		{
-			const std::string fullname = v.first->getIdentifier();
+			const std::string name = v.first->getName();
 			BOOST_FOREACH( const ClipRangeMap::value_type::second_type::value_type& range, v.second )
 			{
 				for( OfxTime t = range.min; t <= range.max; t += 1.0 )
 				{
-					result[ fullname ].insert(t);
+					result[ name ].insert(t);
 				}
 			}
 		}
@@ -550,7 +550,7 @@ INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 	{
 		BOOST_FOREACH( ClipImageVector::const_reference v, _clipsByOrder )
 		{
-			result[v.getIdentifier()].insert(time);
+			result[v.getName()].insert(time);
 		}
 	}
 	return result;
@@ -581,7 +581,7 @@ void ImageEffectNode::beginSequence( graph::ProcessOptions& processOptions )
 void ImageEffectNode::preProcess1( graph::ProcessOptions& processOptions )
 {
 //	TCOUT( "preProcess1_finish: " << getName() << " at time: " << processOptions._time );
-	setCurrentTime( processOptions._time );
+//	setCurrentTime( processOptions._time );
 
 	checkClipsConnections();
 
@@ -594,9 +594,10 @@ void ImageEffectNode::preProcess1( graph::ProcessOptions& processOptions )
 	getRegionOfDefinitionAction( processOptions._time,
 	                             processOptions._renderScale,
 	                             rod );
-	setRegionOfDefinition( rod );
+	setRegionOfDefinition( rod, processOptions._time );
 	processOptions._renderRoD = rod;
-	processOptions._renderRoI = rod;
+	processOptions._renderRoI = rod; ///< @todo tuttle: tile supports
+	
 //	TCOUT_VAR( rod );
 }
 
@@ -622,10 +623,10 @@ void ImageEffectNode::preProcess3( graph::ProcessOptions& processOptions )
 	validBitDepthConnections();
 }
 
-void ImageEffectNode::preProcess_infos( graph::ProcessInfos& nodeInfos ) const
+void ImageEffectNode::preProcess_infos( const OfxTime time, graph::ProcessInfos& nodeInfos ) const
 {
 //	TCOUT( "preProcess_infos: " << getName() );
-	const OfxRectD rod             = getRegionOfDefinition();
+	const OfxRectD rod             = getRegionOfDefinition( time );
 	const std::size_t bitDepth     = this->getOutputClip().getBitDepth(); // value in bytes
 	const std::size_t nbComponents = getOutputClip().getNbComponents();
 	nodeInfos._memory = ( rod.x2 - rod.x1 ) * ( rod.y2 - rod.y1 ) * nbComponents * bitDepth;

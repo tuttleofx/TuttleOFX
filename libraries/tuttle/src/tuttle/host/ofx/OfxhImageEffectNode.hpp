@@ -86,7 +86,7 @@ protected:
 	std::string _outputPreMultiplication;  ///< set by clip prefs
 	std::string _outputFielding;  ///< set by clip prefs
 	double _outputFrameRate; ///< set by clip prefs
-
+	
 public:
 	/// constructor based on clip descriptor
 	OfxhImageEffectNode( const OfxhImageEffectPlugin&         plugin,

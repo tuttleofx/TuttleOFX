@@ -7,6 +7,8 @@
 
 #include <tuttle/host/ofx/OfxhIObject.hpp>
 
+#include <boost/foreach.hpp>
+
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -76,7 +78,17 @@ public:
 		ClipImageMap::const_iterator it = _clips.find( name );
 
 		if( it == _clips.end() )
-			BOOST_THROW_EXCEPTION( OfxhException( "Clip not found (" + name + ")." ) );
+		{
+			std::ostringstream ss;
+			ss << "Clip not found (" << name << ").\n";
+			ss << "List of existing clips [";
+			BOOST_FOREACH( const ClipImageMap::value_type& c, _clips )
+			{
+				ss << "(\"" << c.first << "\":\"" << c.second->getIdentifier() << "\"), ";
+			}
+			ss << "].\n";
+			BOOST_THROW_EXCEPTION( OfxhException( ss.str() ) );
+		}
 		return *it->second;
 	}
 
