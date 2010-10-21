@@ -1,7 +1,7 @@
-#ifndef _TUTTLE_HOST_VERTEXATTIMEPROCESSDATA_HPP_
-#define _TUTTLE_HOST_VERTEXATTIMEPROCESSDATA_HPP_
+#ifndef _TUTTLE_HOST_PROCESSVERTEXATTIMEDATA_HPP_
+#define _TUTTLE_HOST_PROCESSVERTEXATTIMEDATA_HPP_
 
-#include "VertexProcessData.hpp"
+#include "ProcessVertexData.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhClipImage.hpp>
 #include <tuttle/host/ofx/OfxhCore.hpp>
@@ -12,12 +12,12 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-class VertexAtTimeProcessInfo
+class ProcessVertexAtTimeInfo
 {
-typedef VertexAtTimeProcessInfo This;
+typedef ProcessVertexAtTimeInfo This;
 
 public:
-	VertexAtTimeProcessInfo()
+	ProcessVertexAtTimeInfo()
 		: _nodes( 0 )
 		, _memory( 0 )
 	{}
@@ -25,7 +25,7 @@ public:
 	std::size_t _nodes;
 	std::size_t _memory;
 
-	VertexAtTimeProcessInfo& operator+=( const VertexAtTimeProcessInfo& p )
+	ProcessVertexAtTimeInfo& operator+=( const ProcessVertexAtTimeInfo& p )
 	{
 		_nodes  += p._nodes;
 		_memory += p._memory;
@@ -36,12 +36,12 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 };
 
-class VertexAtTimeProcessData
+class ProcessVertexAtTimeData
 {
-typedef VertexAtTimeProcessData This;
+typedef ProcessVertexAtTimeData This;
 
 public:
-	VertexAtTimeProcessData()
+	ProcessVertexAtTimeData()
 		: _nodeData( NULL )
 		, _time( 0 )
 		, _finalNode( false )
@@ -51,7 +51,7 @@ public:
 		_localInfos._nodes = 1; // local infos can contain only 1 node by definition...
 	}
 
-	VertexAtTimeProcessData( const VertexProcessData& nodeData, const OfxTime time )
+	ProcessVertexAtTimeData( const ProcessVertexData& nodeData, const OfxTime time )
 		: _nodeData( &nodeData )
 		, _time( time )
 		, _finalNode( false )
@@ -61,12 +61,12 @@ public:
 		_localInfos._nodes = 1; // local infos can contain only 1 node by definition...
 	}
 
-	VertexAtTimeProcessData( const This& other )
+	ProcessVertexAtTimeData( const This& other )
 		: _nodeData( other._nodeData )
 	{
 		operator=( other );
 	}
-	~VertexAtTimeProcessData() {}
+	~ProcessVertexAtTimeData() {}
 
 	This& operator=( const This& v )
 	{
@@ -87,7 +87,7 @@ public:
 	friend std::ostream& operator<<( std::ostream& os, const This& vData );
 
 public:
-	const VertexProcessData* _nodeData;
+	const ProcessVertexData* _nodeData;
 
 	OfxTime _time;
 	bool _finalNode;
@@ -95,9 +95,9 @@ public:
 	std::size_t _outDegree; ///< number of connected input clips
 	std::size_t _inDegree; ///< number of nodes using the output of this node
 
-	VertexAtTimeProcessInfo _localInfos;
-	VertexAtTimeProcessInfo _inputsInfos;
-	VertexAtTimeProcessInfo _globalInfos;
+	ProcessVertexAtTimeInfo _localInfos;
+	ProcessVertexAtTimeInfo _inputsInfos;
+	ProcessVertexAtTimeInfo _globalInfos;
 
 	/// @group API Specific datas
 	/// @{

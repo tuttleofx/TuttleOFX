@@ -32,7 +32,7 @@ std::ostream& VertexAtTime::exportDotDebug( std::ostream& os ) const
 	if( ! isFake() )
 	{
 		/// @todo remove this. Temporary solution
-		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() );
+		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode&>( getProcessNode() ).getOutputClip().getBitDepthString() );
 	}
 	s << subDotEntry( "localMemory", _data._localInfos._memory );
 	s << subDotEntry( "globalMemory", _data._globalInfos._memory );

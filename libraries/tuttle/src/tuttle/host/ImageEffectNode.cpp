@@ -5,8 +5,8 @@
 #include <tuttle/host/Core.hpp> // for Core::instance().getMemoryCache()
 #include <tuttle/host/attribute/ClipImage.hpp>
 #include <tuttle/host/attribute/allParams.hpp>
-#include <tuttle/host/graph/VertexProcessData.hpp>
-#include <tuttle/host/graph/VertexAtTimeProcessData.hpp>
+#include <tuttle/host/graph/ProcessVertexData.hpp>
+#include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
 
 #include <tuttle/host/ofx/OfxhUtilities.hpp>
 #include <tuttle/host/ofx/OfxhBinary.hpp>
@@ -301,8 +301,6 @@ void ImageEffectNode::beginSequenceRenderAction( OfxTime   startFrame,
                                          bool      interactive,
                                          OfxPointD renderScale ) OFX_EXCEPTION_SPEC
 {
-	_frameRange.x = startFrame;
-	_frameRange.y = endFrame;
 	OfxhImageEffectNode::beginSequenceRenderAction( startFrame, endFrame, step, interactive, renderScale );
 }
 
@@ -531,12 +529,12 @@ bool ImageEffectNode::getTimeDomain( OfxRangeD& range ) const
 }
 
 
-void ImageEffectNode::beginSequence( graph::VertexProcessData& vData )
+void ImageEffectNode::beginSequence( graph::ProcessVertexData& vData )
 {
 //	TCOUT( "begin: " << getName() );
 	beginSequenceRenderAction(
-			vData._startFrame,
-			vData._endFrame,
+			vData._renderTimeRange.x,
+			vData._renderTimeRange.y,
 			vData._step,
 			vData._interactive,
 			vData._renderScale
@@ -574,7 +572,7 @@ INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 }
 
 
-void ImageEffectNode::preProcess1( graph::VertexAtTimeProcessData& vData )
+void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 {
 //	TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
 //	setCurrentTime( vData._time );
@@ -590,7 +588,6 @@ void ImageEffectNode::preProcess1( graph::VertexAtTimeProcessData& vData )
 	getRegionOfDefinitionAction( vData._time,
 	                             vData._nodeData->_renderScale,
 	                             rod );
-	setRegionOfDefinition( rod, vData._time );
 	vData._apiImageEffect._renderRoD = rod;
 	vData._apiImageEffect._renderRoI = rod; ///< @todo tuttle: tile supports
 	
@@ -598,7 +595,7 @@ void ImageEffectNode::preProcess1( graph::VertexAtTimeProcessData& vData )
 }
 
 
-void ImageEffectNode::preProcess2_reverse( graph::VertexAtTimeProcessData& vData )
+void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData )
 {
 //	TCOUT( "preProcess2_finish: " << getName() << " at time: " << vData._time );
 
@@ -613,7 +610,7 @@ void ImageEffectNode::preProcess2_reverse( graph::VertexAtTimeProcessData& vData
 }
 
 
-void ImageEffectNode::preProcess3( graph::VertexAtTimeProcessData& vData )
+void ImageEffectNode::preProcess3( graph::ProcessVertexAtTimeData& vData )
 {
 //	TCOUT( "preProcess3_finish: " << getName() << " at time: " << vData._time );
 	maximizeBitDepthFromReadsToWrites();
@@ -622,7 +619,7 @@ void ImageEffectNode::preProcess3( graph::VertexAtTimeProcessData& vData )
 }
 
 
-bool ImageEffectNode::isIdentity( const graph::VertexAtTimeProcessData& vData, std::string& clip, OfxTime& time ) const
+bool ImageEffectNode::isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const
 {
 	time = vData._time;
 	OfxRectI roi;
@@ -634,7 +631,7 @@ bool ImageEffectNode::isIdentity( const graph::VertexAtTimeProcessData& vData, s
 }
 
 
-void ImageEffectNode::preProcess_infos( const OfxTime time, graph::VertexAtTimeProcessInfo& nodeInfos ) const
+void ImageEffectNode::preProcess_infos( const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const
 {
 //	TCOUT( "preProcess_infos: " << getName() );
 	const OfxRectD rod             = getRegionOfDefinition( time );
@@ -644,7 +641,7 @@ void ImageEffectNode::preProcess_infos( const OfxTime time, graph::VertexAtTimeP
 }
 
 
-void ImageEffectNode::process( graph::VertexAtTimeProcessData& vData )
+void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 {
 //	TCOUT( "process: " << getName() );
 	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
@@ -719,17 +716,17 @@ void ImageEffectNode::process( graph::VertexAtTimeProcessData& vData )
 }
 
 
-void ImageEffectNode::postProcess( graph::VertexAtTimeProcessData& vData )
+void ImageEffectNode::postProcess( graph::ProcessVertexAtTimeData& vData )
 {
 //	TCOUT( "postProcess: " << getName() );
 }
 
 
-void ImageEffectNode::endSequence( graph::VertexProcessData& vData )
+void ImageEffectNode::endSequence( graph::ProcessVertexData& vData )
 {
 //	TCOUT( "end: " << getName() );
-	endSequenceRenderAction( vData._startFrame,
-	                 vData._endFrame,
+	endSequenceRenderAction( vData._renderTimeRange.x,
+	                 vData._renderTimeRange.y,
 	                 vData._step,
 	                 vData._interactive,
 	                 vData._renderScale );

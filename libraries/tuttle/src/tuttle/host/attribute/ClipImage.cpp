@@ -35,7 +35,6 @@ ClipImage::ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribut
 	, _continuousSamples( false )
 	, _memoryCache( Core::instance().getMemoryCache() )
 {
-	_frameRange = _effect.getEffectFrameRange();
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleFullName", 1, 1, getFullName().c_str() ) );
 	getEditableProperties().addProperty( new ofx::property::String( "TuttleIdentifier", 1, 1, "" ) );
 }

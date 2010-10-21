@@ -34,7 +34,7 @@ std::ostream& Vertex::exportDotDebug( std::ostream& os ) const
 	if( ! isFake() )
 	{
 		/// @todo remove this. Temporary solution
-		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() );
+		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode&>( getProcessNode() ).getOutputClip().getBitDepthString() );
 	}
 	s << subDotEntry( "allTimes", _data._times.size() );
 	std::ostringstream times;

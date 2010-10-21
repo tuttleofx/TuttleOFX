@@ -1,4 +1,4 @@
-#include "VertexAtTimeProcessData.hpp"
+#include "ProcessVertexAtTimeData.hpp"
 #include "tuttle/host/INode.hpp"
 
 #include <boost/foreach.hpp>
@@ -10,7 +10,7 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-std::ostream& operator<<( std::ostream& os, const VertexAtTimeProcessInfo& infos )
+std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTimeInfo& infos )
 {
 	os << "nodes:" << infos._nodes << std::endl;
 	std::ostringstream s;
@@ -19,7 +19,7 @@ std::ostream& operator<<( std::ostream& os, const VertexAtTimeProcessInfo& infos
 	return os;
 }
 
-std::ostream& operator<<( std::ostream& os, const VertexAtTimeProcessData& vData )
+std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTimeData& vData )
 {
 	os << "time:" << vData._time << std::endl;
 
@@ -44,7 +44,7 @@ std::ostream& operator<<( std::ostream& os, const VertexAtTimeProcessData& vData
 			os << "renderScale:" << vData._nodeData->_renderScale << std::endl;
 
 			os << "clips:" << vData._apiImageEffect._inputsRoI.size() << std::endl;
-			BOOST_FOREACH( const VertexAtTimeProcessData::ImageEffect::MapClipImageRod::value_type & item, vData._apiImageEffect._inputsRoI )
+			BOOST_FOREACH( const ProcessVertexAtTimeData::ImageEffect::MapClipImageRod::value_type & item, vData._apiImageEffect._inputsRoI )
 			{
 				if( item.first )
 				{

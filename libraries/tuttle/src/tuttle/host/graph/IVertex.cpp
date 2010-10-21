@@ -27,7 +27,7 @@ IVertex::IVertex( const std::string& name, INode& processNode )
 
 IVertex::IVertex( const IVertex& v )
 {
-	this->operator=( v );
+	IVertex::operator=( v );
 	_id = _count++;
 }
 
@@ -43,7 +43,7 @@ std::ostream& IVertex::exportDotDebug( std::ostream& os ) const
 	if( ! isFake() )
 	{
 		/// @todo remove this. Temporary solution
-		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() );
+		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode&>( getProcessNode() ).getOutputClip().getBitDepthString() );
 	}
 	
 	os << "[" << std::endl;

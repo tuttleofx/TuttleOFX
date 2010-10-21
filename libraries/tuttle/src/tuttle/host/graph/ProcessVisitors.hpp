@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PROCESSVISITORS_HPP_
 #define _TUTTLE_PROCESSVISITORS_HPP_
 
-#include "VertexProcessData.hpp"
+#include "ProcessVertexData.hpp"
 
 #include <tuttle/host/memory/MemoryCache.hpp>
 
@@ -32,8 +32,8 @@ inline void connectClips( TGraph& graph )
 		
 		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
 		{
-			INode& sourceNode = *vertexSource.getProcessNode();
-			INode& targetNode = *vertexDest.getProcessNode();
+			INode& sourceNode = vertexSource.getProcessNode();
+			INode& targetNode = vertexDest.getProcessNode();
 			sourceNode.connect( targetNode, sourceNode.getAttribute( edge.getInAttrName() ) );
 		}
 	}
@@ -98,7 +98,7 @@ public:
 		BOOST_FOREACH( const OfxTime t, vertex._data._times )
 		{
 			TCOUT( "-  time: "<< t );
-			INode::InputsTimeMap mapInputsTimes = vertex.getProcessNode()->getTimesNeeded( t );
+			INode::InputsTimeMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
 //				TCOUT_VAR( v.first );
@@ -152,7 +152,7 @@ public:
 
 		std::string clip;
 		OfxTime time;
-		if( vertex.getProcessNode()->isIdentity( vertex.getProcessDataAtTime(), clip, time ) )
+		if( vertex.getProcessNode().isIdentity( vertex.getProcessDataAtTime(), clip, time ) )
 		{
 			try
 			{
@@ -208,7 +208,7 @@ public:
 			return;
 
 		TCOUT( vertex.getProcessDataAtTime()._time );
-		vertex.getProcessNode()->preProcess1( vertex.getProcessDataAtTime() );
+		vertex.getProcessNode().preProcess1( vertex.getProcessDataAtTime() );
 	}
 
 private:
@@ -235,7 +235,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess2_reverse( vertex.getProcessDataAtTime() );
+		vertex.getProcessNode().preProcess2_reverse( vertex.getProcessDataAtTime() );
 	}
 
 private:
@@ -261,7 +261,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess3( vertex.getProcessDataAtTime() );
+		vertex.getProcessNode().preProcess3( vertex.getProcessDataAtTime() );
 	}
 
 private:
@@ -293,11 +293,11 @@ public:
 		using namespace boost::graph;
 		Vertex& vertex = _graph.instance( v );
 
-		VertexAtTimeProcessData& procOptions = vertex.getProcessDataAtTime();
+		ProcessVertexAtTimeData& procOptions = vertex.getProcessDataAtTime();
 		if( !vertex.isFake() )
 		{
 			// compute local infos, need to be a real node !
-			vertex.getProcessNode()->preProcess_infos( procOptions._time, procOptions._localInfos );
+			vertex.getProcessNode().preProcess_infos( procOptions._time, procOptions._localInfos );
 		}
 
 		// compute global infos for inputs
@@ -356,7 +356,7 @@ public:
 		// check if abort ?
 
 		// launch the process
-		vertex.getProcessNode()->process( vertex.getProcessDataAtTime() );
+		vertex.getProcessNode().process( vertex.getProcessDataAtTime() );
 		
 		if( vertex.getProcessDataAtTime()._finalNode )
 		{
@@ -408,7 +408,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->postProcess( vertex.getProcessDataAtTime() );
+		vertex.getProcessNode().postProcess( vertex.getProcessDataAtTime() );
 	}
 
 private:

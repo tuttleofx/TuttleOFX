@@ -36,20 +36,19 @@ void ProcessGraph::relink()
 {
 	_graph.removeUnconnectedVertices( _graph.getVertexDescriptor( _outputId ) );
 
-	InternalGraphImpl::vertex_range_t vrange = _graph.getVertices();
-	for( InternalGraphImpl::vertex_iterator it = vrange.first; it != vrange.second; ++it )
+	BOOST_FOREACH( vertex_descriptor vd, _graph.getVertices() )
 	{
-		graph::Vertex& v = _graph.instance( *it );
+		Vertex& v = _graph.instance( vd );
 
 		// fake node has no ProcessNode
 		if( !v.isFake() )
 		{
 #ifdef PROCESSGRAPH_USE_LINK
-			tuttle::host::INode* origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+			tuttle::host::INode& origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
 #else
-			const tuttle::host::INode* const origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
+			const tuttle::host::INode& origNode = v.getProcessNode(); // pointer of the copied graph, we don't owns it !
 #endif
-			std::string key( origNode->getName() );
+			std::string key( origNode.getName() );
 			NodeMap::iterator it = _nodes.find( key );
 			tuttle::host::INode* newNode;
 			if( it != _nodes.end() )
@@ -59,10 +58,10 @@ void ProcessGraph::relink()
 			else
 			{
 #ifdef PROCESSGRAPH_USE_LINK
-				newNode = origNode;
+				newNode = &origNode;
 				_nodes[key] = dynamic_cast<Node*>( newNode ); // link to the original node
 #else
-				newNode = origNode->clone();
+				newNode = origNode.clone();
 				/// @todo tuttle: no dynamic_cast here, _nodes must use tuttle::host::Node
 				_nodes.insert( key, dynamic_cast<Node*>( newNode ) ); // owns the new pointer
 #endif
@@ -99,9 +98,9 @@ void ProcessGraph::relink()
    cout << index(*ii) << " ";
    cout << endl;
 */
-
+/*
 template<class TGraph>
-class OrderEdgeByMemorySize
+class SortEdgeByMemorySize
 {
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
@@ -109,7 +108,7 @@ public:
 	typedef typename TGraph::Edge Edge;
 	typedef typename TGraph::edge_descriptor edge_descriptor;
 
-	OrderEdgeByMemorySize( const TGraph& graph )
+	SortEdgeByMemorySize( const TGraph& graph )
 		: _graph( graph )
 	{}
 
@@ -127,6 +126,7 @@ public:
 private:
 	const TGraph& _graph;
 };
+*/
 
 memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 {
@@ -142,9 +142,9 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
-	VertexProcessData defaultOptions;
-	defaultOptions._startFrame  = tBegin;
-	defaultOptions._endFrame    = tEnd;
+	ProcessVertexData defaultOptions;
+	defaultOptions._renderTimeRange.x = tBegin;
+	defaultOptions._renderTimeRange.y = tEnd;
 	defaultOptions._step        = 1;
 	defaultOptions._interactive = false;
 	// imageEffect specific...
@@ -170,7 +170,12 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 
 	BOOST_FOREACH( vertex_descriptor vd, _graph.getVertices() )
 	{
-		_graph.instance(vd).setProcessData( defaultOptions );
+		Vertex& v = _graph.instance(vd);
+		if( ! v.isFake() )
+		{
+			v.setProcessData( defaultOptions );
+			v.getProcessNode().setData( &v._data );
+		}
 	}
 
 	///@todo tuttle: compute the time domain for each node
@@ -236,6 +241,14 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 						VertexAtTime::Key(out.getKey(), t2),
 						e.getInAttrName() );
 				}
+			}
+		}
+		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
+		{
+			VertexAtTime& v = renderGraphAtTime.instance(vd);
+			if( ! v.isFake() )
+			{
+				v.getProcessNode().setData( &v._data );
 			}
 		}
 
@@ -316,7 +329,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 				e._name += boost::lexical_cast<std::string>(e._localId); // tmp
 				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory  );
 			}
-			std::sort( edges.begin(), edges.end(), OrderEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
+			std::sort( edges.begin(), edges.end(), SortEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
 			COUT( "after sort edges of " << v.getName() );
 			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
 			{

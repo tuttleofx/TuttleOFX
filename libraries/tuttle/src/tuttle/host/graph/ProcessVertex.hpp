@@ -21,8 +21,8 @@ public:
 	~ProcessVertex() {}
 
 	const std::string& getName() const        { return _vertex.getName(); }
-	INode*              getProcessNode()       { return _vertex.getProcessNode(); }
-	const INode* const  getProcessNode() const { return _vertex.getProcessNode(); }
+	INode&             getProcessNode()       { return _vertex.getProcessNode(); }
+	const INode&       getProcessNode() const { return _vertex.getProcessNode(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const ProcessVertex& v );
 

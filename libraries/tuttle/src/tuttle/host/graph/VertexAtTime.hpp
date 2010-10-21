@@ -3,8 +3,8 @@
 
 #include "IVertex.hpp"
 #include "Vertex.hpp"
-#include "VertexProcessData.hpp"
-#include "VertexAtTimeProcessData.hpp"
+#include "ProcessVertexData.hpp"
+#include "ProcessVertexAtTimeData.hpp"
 
 #include <ostream>
 
@@ -26,18 +26,25 @@ public:
 	VertexAtTime( const VertexAtTime& other );
 	virtual ~VertexAtTime( );
 
+	VertexAtTime& operator=( const VertexAtTime& v )
+	{
+		IVertex::operator=(v);
+		_data           = v._data;
+		return *this;
+	}
+
 	Key getKey() const { return Key(getName(), _data._time); }
 
-	const VertexProcessData& getProcessData() const { return *_data._nodeData; }
-	VertexAtTimeProcessData&       getProcessDataAtTime()       { return _data; }
-	const VertexAtTimeProcessData& getProcessDataAtTime() const { return _data; }
+	const ProcessVertexData& getProcessData() const { return *_data._nodeData; }
+	ProcessVertexAtTimeData&       getProcessDataAtTime()       { return _data; }
+	const ProcessVertexAtTimeData& getProcessDataAtTime() const { return _data; }
 
 	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const VertexAtTime& v );
 	friend std::ostream& operator<<( std::ostream& os, const Key& v );
 
 public:
-	VertexAtTimeProcessData _data;
+	ProcessVertexAtTimeData _data;
 
 };
 

@@ -2,6 +2,7 @@
 #define	_TUTTLE_IVERTEX_HPP_
 
 #include <tuttle/host/INode.hpp>
+#include <tuttle/host/exceptions.hpp>
 #include <tuttle/common/utils/global.hpp>
 
 #include <iostream>
@@ -24,8 +25,6 @@ public:
 
 	IVertex& operator=( const IVertex& v )
 	{
-		if( this == &v )
-			return *this;
 		_name           = v._name;
 		_processNode    = v._processNode;
 		_fake           = v._fake;
@@ -37,11 +36,30 @@ public:
 	void                  setUsed( const bool used = true )                  { _used = used; }
 	bool                  isUsed() const                                     { return _used; }
 	const std::string&    getName() const                                    { return _name; }
-	INode*                 getProcessNode()                                   { return _processNode; }
-	const INode* const     getProcessNode() const                             { return _processNode; }
-	void                  setProcessNode( INode* p )                          { _processNode = p; }
+	INode&                getProcessNode()
+	{
+		if( !_processNode )
+		{
+			BOOST_THROW_EXCEPTION( exception::Bug()
+				<< exception::dev() + "Process node not set on IVertex \"" + getName() + "\"." );
+		}
+		return *_processNode;
+	}
+	const INode&          getProcessNode() const
+	{
+		if( !_processNode )
+		{
+			BOOST_THROW_EXCEPTION( exception::Bug()
+				<< exception::dev() + "Process node not set on IVertex \"" + getName() + "\"." );
+		}
+		return *_processNode;
+	}
+	void                  setProcessNode( INode* p )
+	{
+		_processNode = p;
+	}
 	
-	virtual const VertexProcessData& getProcessData() const = 0;
+	virtual const ProcessVertexData& getProcessData() const = 0;
 
 	virtual std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const IVertex& v );

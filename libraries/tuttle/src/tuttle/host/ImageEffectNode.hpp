@@ -2,8 +2,12 @@
 #define _TUTTLE_HOST_IMAGEEFFECTNODE_HPP_
 
 #include "INode.hpp"
-#include "attribute/Param.hpp"
-#include "attribute/ClipImage.hpp"
+
+#include <tuttle/host/attribute/Param.hpp>
+#include <tuttle/host/attribute/ClipImage.hpp>
+
+#include <tuttle/host/graph/ProcessVertexData.hpp>
+#include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
 
 #include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
 
@@ -17,11 +21,6 @@ class ImageEffectNode : public INode
 {
 public:
 	typedef ImageEffectNode This;
-	typedef std::map<OfxTime,OfxRectD> RodMap;
-
-protected:
-	OfxPointD _frameRange;
-	RodMap _rods;
 
 public:
 	ImageEffectNode( ofx::imageEffect::OfxhImageEffectPlugin&         plugin,
@@ -88,23 +87,7 @@ public:
 
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
-		RodMap::const_iterator it = _rods.find( time );
-		if( it == _rods.end() )
-		{
-			std::ostringstream ss;
-			ss << "Defined times : ";
-			BOOST_FOREACH( const RodMap::value_type& v, _rods )
-			{
-				ss << v.first << ", ";
-			}
-			BOOST_THROW_EXCEPTION( exception::Bug()
-			    << exception::dev() + "Rod not defined at this time.\n"
-				                    + ss.str()
-				<< exception::nodeName( getName() )
-				<< exception::pluginIdentifier( getPlugin().getIdentifier() )
-				<< exception::time( time ) );
-		}
-		return it->second;
+		return getData(time)._apiImageEffect._renderRoD;
 	}
 
 	void debugOutputImage( const OfxTime time ) const;
@@ -113,18 +96,18 @@ public:
 	/// @{
 	bool getTimeDomain( OfxRangeD& range ) const;
 
-	void beginSequence( graph::VertexProcessData& vData );
+	void beginSequence( graph::ProcessVertexData& vData );
 
 	InputsTimeMap getTimesNeeded( const OfxTime time ) const;
-	void preProcess1( graph::VertexAtTimeProcessData& vData );
-	void preProcess2_reverse( graph::VertexAtTimeProcessData& vData );
-	void preProcess3( graph::VertexAtTimeProcessData& vData );
-	bool isIdentity( const graph::VertexAtTimeProcessData& vData, std::string& clip, OfxTime& time ) const;
-	void preProcess_infos( const OfxTime time, graph::VertexAtTimeProcessInfo& nodeInfos ) const;
-	void process( graph::VertexAtTimeProcessData& vData );
-	void postProcess( graph::VertexAtTimeProcessData& vData );
+	void preProcess1( graph::ProcessVertexAtTimeData& vData );
+	void preProcess2_reverse( graph::ProcessVertexAtTimeData& vData );
+	void preProcess3( graph::ProcessVertexAtTimeData& vData );
+	bool isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const;
+	void preProcess_infos( const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const;
+	void process( graph::ProcessVertexAtTimeData& vData );
+	void postProcess( graph::ProcessVertexAtTimeData& vData );
 
-	void endSequence( graph::VertexProcessData& vData );
+	void endSequence( graph::ProcessVertexData& vData );
 	/// @}
 
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
@@ -276,18 +259,7 @@ public:
 
 	const OfxPointD& getEffectFrameRange() const
 	{
-		return _frameRange;
-	}
-
-	void setEffectFrameRange( const OfxPointD& range )
-	{
-		_frameRange = range;
-	}
-
-	void setEffectFrameRange( const double begin, const double end )
-	{
-		_frameRange.x = begin;
-		_frameRange.y = end;
+		return getData()._renderTimeRange;
 	}
 
 	void beginSequenceRenderAction( OfxTime   startFrame,
@@ -297,11 +269,6 @@ public:
 	                        OfxPointD renderScale ) OFX_EXCEPTION_SPEC;
 
 private:
-	void setRegionOfDefinition( const OfxRectD& rod, const OfxTime time )
-	{
-		_rods[time] = rod;
-	}
-
 	void checkClipsConnections() const;
 
 	void initComponents();

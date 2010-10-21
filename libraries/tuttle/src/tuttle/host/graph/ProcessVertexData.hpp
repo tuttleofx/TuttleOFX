@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_HOST_VERTEXPROCESSDATA_HPP_
-#define _TUTTLE_HOST_VERTEXPROCESSDATA_HPP_
+#ifndef _TUTTLE_HOST_PROCESSVERTEXDATA_HPP_
+#define _TUTTLE_HOST_PROCESSVERTEXDATA_HPP_
 
 #include <tuttle/host/INode.hpp>
 
@@ -11,26 +11,28 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-class VertexProcessData
+class ProcessVertexData
 {
-typedef VertexProcessData This;
+typedef ProcessVertexData This;
 
 public:
-	VertexProcessData( const INode::ENodeType apiType = INode::eNodeTypeUnknown )
+	ProcessVertexData( const INode::ENodeType apiType = INode::eNodeTypeUnknown )
 		: _apiType( apiType )
-		, _startFrame( 0 )
-		, _endFrame( 0 )
 		, _step( 0 )
 		, _interactive( 0 )
 		, _outDegree( 0 )
 		, _inDegree( 0 )
 	{
+		_timeDomain.x = kOfxFlagInfiniteMin;
+		_timeDomain.y = kOfxFlagInfiniteMax;
+		_renderTimeRange.x = kOfxFlagInfiniteMin;
+		_renderTimeRange.y = kOfxFlagInfiniteMax;
 		_renderScale.x = 1.0;
 		_renderScale.y = 1.0;
 	}
 
-	VertexProcessData( const VertexProcessData& other ) { operator=( other ); }
-	~VertexProcessData() {}
+	ProcessVertexData( const ProcessVertexData& other ) { operator=( other ); }
+	~ProcessVertexData() {}
 
 public:
 	friend std::ostream& operator<<( std::ostream& os, const This& vData );
@@ -40,8 +42,8 @@ public:
 	OfxPointD _renderScale;
 
 	INode::ENodeType _apiType;
-	OfxTime _startFrame;
-	OfxTime _endFrame;
+	OfxPointD _renderTimeRange;
+	OfxPointD _timeDomain;
 	OfxTime _step;
 	bool _interactive;
 

@@ -16,14 +16,17 @@ namespace attribute {
 class Attribute;
 }
 namespace graph {
-class VertexProcessData;
-class VertexAtTimeProcessData;
-class VertexAtTimeProcessInfo;
+class ProcessVertexAtTimeData;
+class ProcessVertexData;
+class ProcessVertexAtTimeInfo;
 }
 
 class INode
 {
 public:
+	typedef INode This;
+	typedef std::set<OfxTime> TimesSet;
+	typedef std::map<std::string, TimesSet> InputsTimeMap;
 	enum ENodeType
 	{
 		eNodeTypeUnknown,
@@ -32,8 +35,6 @@ public:
 		eNodeTypeGraph,
 	};
 	
-	typedef std::set<OfxTime> TimesSet;
-	typedef std::map<std::string, TimesSet> InputsTimeMap;
 
 
 public:
@@ -59,7 +60,7 @@ public:
 	 * @param[in] processOptions
 	 * @remark called on each node without predefined order.
 	 */
-	virtual void beginSequence( graph::VertexProcessData& processOptions ) = 0;
+	virtual void beginSequence( graph::ProcessVertexData& processOptions ) = 0;
 
 	/**
 	 * @brief Asks the plugin all times it needs for each of it's input clips.
@@ -72,21 +73,21 @@ public:
 	 * @param[in] processOptions
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	virtual void preProcess1( graph::VertexAtTimeProcessData& processOptions ) {}
+	virtual void preProcess1( graph::ProcessVertexAtTimeData& processOptions ) {}
 	
 	/**
 	 * @brief Initialization pass to propagate informations from outputs to inputs.
 	 * @param[in] processOptions
 	 * @remark Called on each node in a REVERSE depth first search order. So you have the guarantee that it has been called on each output nodes before. Output nodes are those who used the result of the current node.
 	 */
-	virtual void preProcess2_reverse( graph::VertexAtTimeProcessData& processOptions ) {}
+	virtual void preProcess2_reverse( graph::ProcessVertexAtTimeData& processOptions ) {}
 
 	/**
 	 * @brief Initialization pass to propagate informations from inputs to outputs.
 	 * @param[in] processOptions
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	virtual void preProcess3( graph::VertexAtTimeProcessData& processOptions ) {}
+	virtual void preProcess3( graph::ProcessVertexAtTimeData& processOptions ) {}
 
 	/**
 	 * @brief The node can declare to be an identity operation.
@@ -97,7 +98,7 @@ public:
 	 * @param[out] time the time to use as identity
 	 * @return if the node is an identity operation
 	 */
-	virtual bool isIdentity( const graph::VertexAtTimeProcessData& processOptions, std::string& clip, OfxTime& time ) const = 0;
+	virtual bool isIdentity( const graph::ProcessVertexAtTimeData& processOptions, std::string& clip, OfxTime& time ) const = 0;
 	
 	/**
 	 * @brief Fill ProcessInfo to compute statistics for the current process,
@@ -105,28 +106,47 @@ public:
 	 * @param[in] processOptions
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	virtual void preProcess_infos( const OfxTime time, graph::VertexAtTimeProcessInfo& nodeInfos ) const = 0;
+	virtual void preProcess_infos( const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const = 0;
 
 	/**
 	 * @brief Process this node. All inputs are compute.
 	 * @param[in] processOptions
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	virtual void process( graph::VertexAtTimeProcessData& processOptions ) = 0;
+	virtual void process( graph::ProcessVertexAtTimeData& processOptions ) = 0;
 
 	/**
 	 * @brief The process of all nodes is done for one frame, now finalize this node.
 	 * @param[in] processOptions
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	virtual void postProcess( graph::VertexAtTimeProcessData& processOptions ) = 0;
+	virtual void postProcess( graph::ProcessVertexAtTimeData& processOptions ) = 0;
 
 	/**
 	 * @brief End of the whole frame range process, now finalize this node.
 	 * @param[in] processOptions
 	 * @remark called on each node without predefined order.
 	 */
-	virtual void endSequence( graph::VertexProcessData& processOptions ) = 0;
+	virtual void endSequence( graph::ProcessVertexData& processOptions ) = 0;
+
+
+protected:
+	typedef graph::ProcessVertexData Data;
+	typedef graph::ProcessVertexAtTimeData DataAtTime;
+	typedef std::map<OfxTime,DataAtTime*> DataAtTimeMap;
+
+	Data* _data;
+	DataAtTimeMap _dataAtTime;
+
+public:
+	void setData( Data* data );
+	void setData( DataAtTime* dataAtTime );
+	
+	Data& getData();
+	const Data& getData() const;
+	const DataAtTime& getData( const OfxTime time ) const;
+	DataAtTime& getData( const OfxTime time );
+
 	#endif
 };
 

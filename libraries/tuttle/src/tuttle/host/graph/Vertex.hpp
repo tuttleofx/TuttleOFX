@@ -2,7 +2,7 @@
 #define _TUTTLE_HOST_VERTEX_HPP_
 
 #include "IVertex.hpp"
-#include "VertexProcessData.hpp"
+#include "ProcessVertexData.hpp"
 
 namespace tuttle {
 namespace host {
@@ -26,15 +26,16 @@ public:
 
 	Key getKey() const { return getName(); }
 
-	void setProcessData( const VertexProcessData& d ) { _data = d; }
-	VertexProcessData&       getProcessData()       { return _data; }
-	const VertexProcessData& getProcessData() const { return _data; }
+	void setProcessData( const ProcessVertexData& d ) { _data = d; }
+
+	ProcessVertexData&       getProcessData()       { return _data; }
+	const ProcessVertexData& getProcessData() const { return _data; }
 	
 	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 
 public:
-	VertexProcessData _data;
+	ProcessVertexData _data;
 };
 
 }

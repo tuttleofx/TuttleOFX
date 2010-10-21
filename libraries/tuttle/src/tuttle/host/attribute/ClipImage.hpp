@@ -27,7 +27,6 @@ friend class ImageEffectNode;
 
 protected:
 	std::string _name;
-	OfxPointD _frameRange; ///< get frame range
 	bool _isConnected;
 	bool _continuousSamples;
 	memory::IMemoryCache& _memoryCache;
