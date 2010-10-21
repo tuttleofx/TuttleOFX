@@ -4,8 +4,8 @@
 #include "Core.hpp"
 #include "exceptions.hpp"
 #include <tuttle/host/graph/InternalGraph.hpp>
-#include <tuttle/host/graph/Vertex.hpp>
-#include <tuttle/host/graph/Edge.hpp>
+#include <tuttle/host/graph/ProcessVertex.hpp> /// @todo tuttle: use Vertex here...
+#include <tuttle/host/graph/ProcessEdge.hpp>
 #include <tuttle/host/attribute/Attribute.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 #include <tuttle/common/utils/global.hpp>
@@ -25,8 +25,8 @@ namespace host {
 class Graph
 {
 public:
-	typedef graph::Vertex Vertex;
-	typedef graph::Edge Edge;
+	typedef graph::ProcessVertex Vertex; /// @todo tuttle Vertex...
+	typedef graph::ProcessEdge Edge; /// @todo tuttle Edge...
 	typedef ImageEffectNode Node; /// @todo tuttle ProcessNode...
 	typedef attribute::Attribute Attribute;
 	typedef graph::InternalGraph<Vertex, Edge> InternalGraphImpl;

@@ -36,7 +36,7 @@ void ProcessGraph::relink()
 {
 	_graph.removeUnconnectedVertices( _graph.getVertexDescriptor( _outputId ) );
 
-	BOOST_FOREACH( vertex_descriptor vd, _graph.getVertices() )
+	BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, _graph.getVertices() )
 	{
 		Vertex& v = _graph.instance( vd );
 
@@ -168,7 +168,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 //			<< userMsg );
 //	}
 
-	BOOST_FOREACH( vertex_descriptor vd, _graph.getVertices() )
+	BOOST_FOREACH( InternalGraphImpl::vertex_descriptor vd, _graph.getVertices() )
 	{
 		Vertex& v = _graph.instance(vd);
 		if( ! v.isFake() )
@@ -219,7 +219,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 			BOOST_FOREACH( const OfxTime t, v._data._times )
 			{
 				TCOUT_VAR2( v, t );
-				renderGraphAtTime.addVertex( VertexAtTime(v, t) );
+				renderGraphAtTime.addVertex( ProcessVertexAtTime(v, t) );
 			}
 		}
 		BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, renderGraph.getEdges() )
@@ -237,28 +237,28 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 					TCOUT_VAR2( out.getKey(), t2 );
 					TCOUT_VAR( e.getInAttrName() );
 					renderGraphAtTime.connect(
-						VertexAtTime::Key(in.getKey(), tm.first),
-						VertexAtTime::Key(out.getKey(), t2),
+						ProcessVertexAtTime::Key(in.getKey(), tm.first),
+						ProcessVertexAtTime::Key(out.getKey(), t2),
 						e.getInAttrName() );
 				}
 			}
 		}
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
 		{
-			VertexAtTime& v = renderGraphAtTime.instance(vd);
+			ProcessVertexAtTime& v = renderGraphAtTime.instance(vd);
 			if( ! v.isFake() )
 			{
 				v.getProcessNode().setData( &v._data );
 			}
 		}
 
-		VertexAtTime::Key outputKeyAtTime(_outputId, time);
+		ProcessVertexAtTime::Key outputKeyAtTime(_outputId, time);
 		InternalGraphAtTimeImpl::vertex_descriptor& outputAtTime = renderGraphAtTime.getVertexDescriptor( outputKeyAtTime );
 
 		TCOUT( "---------------------------------------- set default options" );
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraphAtTime.getVertices() )
 		{
-			VertexAtTime& v = renderGraphAtTime.instance( vd );
+			ProcessVertexAtTime& v = renderGraphAtTime.instance( vd );
 
 			v.getProcessDataAtTime()._inDegree  = renderGraphAtTime.getInDegree( vd );
 			v.getProcessDataAtTime()._outDegree = renderGraphAtTime.getOutDegree( vd );
@@ -266,7 +266,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		// for each final nodes
 		BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )
 		{
-			VertexAtTime& v = renderGraphAtTime.targetInstance( ed );
+			ProcessVertexAtTime& v = renderGraphAtTime.targetInstance( ed );
 			v.getProcessDataAtTime()._finalNode = true;
 		}
 #ifndef TUTTLE_PRODUCTION

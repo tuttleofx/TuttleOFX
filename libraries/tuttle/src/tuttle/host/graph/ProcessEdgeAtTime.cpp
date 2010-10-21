@@ -1,38 +1,38 @@
-#include "EdgeAtTime.hpp"
+#include "ProcessEdgeAtTime.hpp"
 #include "GraphExporter.hpp"
 
 namespace tuttle {
 namespace host {
 namespace graph {
 
-EdgeAtTime::EdgeAtTime()
+ProcessEdgeAtTime::ProcessEdgeAtTime()
 {
 }
 
-EdgeAtTime::EdgeAtTime( const VertexAtTime::Key& out, const VertexAtTime::Key& in, const std::string& inAttrName )
+ProcessEdgeAtTime::ProcessEdgeAtTime( const ProcessVertexAtTime::Key& out, const ProcessVertexAtTime::Key& in, const std::string& inAttrName )
 : IEdge( out.first, in.first, inAttrName )
 , _inTime( in.second )
 , _outTime( out.second )
 {
 }
 
-EdgeAtTime::EdgeAtTime( const Edge& e )
+ProcessEdgeAtTime::ProcessEdgeAtTime( const ProcessEdge& e )
 : IEdge( e )
 {
 }
 
-EdgeAtTime::EdgeAtTime( const EdgeAtTime& other )
+ProcessEdgeAtTime::ProcessEdgeAtTime( const ProcessEdgeAtTime& other )
 : IEdge( other )
 , _inTime( other._inTime )
 , _outTime( other._outTime )
 {
 }
 
-EdgeAtTime::~EdgeAtTime()
+ProcessEdgeAtTime::~ProcessEdgeAtTime()
 {
 }
 
-std::ostream& EdgeAtTime::exportDotDebug( std::ostream& os ) const
+std::ostream& ProcessEdgeAtTime::exportDotDebug( std::ostream& os ) const
 {
 	std::ostringstream s;
 	s << subDotEntry( "label", getName() );

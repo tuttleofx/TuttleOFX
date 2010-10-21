@@ -40,7 +40,7 @@ class MarkUsed : public boost::default_dfs_visitor
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
-	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::Edge ProcessEdge;
 
 	MarkUsed( TGraph& graph )
 		: _graph( graph )
@@ -80,7 +80,7 @@ class Test_dfs : public boost::default_dfs_visitor
 public:
 	typedef typename TGraph::GraphContainer GraphContainer;
 	typedef typename TGraph::Vertex Vertex;
-	typedef typename TGraph::Edge Edge;
+	typedef typename TGraph::Edge ProcessEdge;
 
 	Test_dfs( TGraph& graph )
 		: _graph( graph )
@@ -130,7 +130,7 @@ public:
 	template<class EdgeDescriptor, class Graph>
 	void examine_edge( EdgeDescriptor e, Graph& g )
 	{
-		Edge& edge = _graph.instance( e );
+		ProcessEdge& edge = _graph.instance( e );
 
 		//		Vertex& vertexSource = _graph.sourceInstance(e);
 		//		Vertex& vertexDest   = _graph.targetInstance(e);
@@ -141,7 +141,7 @@ public:
 	template <class EdgeDescriptor, class Graph>
 	void tree_edge( EdgeDescriptor e, const Graph& g )
 	{
-		Edge& edge = _graph.instance( e );
+		ProcessEdge& edge = _graph.instance( e );
 
 		TCOUT( "tree_edge: " << edge  );
 	}
@@ -149,7 +149,7 @@ public:
 	template <class EdgeDescriptor, class Graph>
 	void back_edge( EdgeDescriptor e, const Graph& g )
 	{
-		Edge& edge = _graph.instance( e );
+		ProcessEdge& edge = _graph.instance( e );
 
 		TCOUT( "back_edge: " << edge  );
 	}
@@ -157,7 +157,7 @@ public:
 	template <class EdgeDescriptor, class Graph>
 	void forward_or_cross_edge( EdgeDescriptor e, const Graph& g )
 	{
-		Edge& edge = _graph.instance( e );
+		ProcessEdge& edge = _graph.instance( e );
 
 		TCOUT( "forward_or_cross_edge: " << edge );
 	}

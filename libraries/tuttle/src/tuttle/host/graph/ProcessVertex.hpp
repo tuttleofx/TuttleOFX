@@ -1,33 +1,41 @@
-#ifndef _TUTTLE_PROCESSVERTEX_HPP_
-#define _TUTTLE_PROCESSVERTEX_HPP_
+#ifndef _TUTTLE_HOST_VERTEX_HPP_
+#define _TUTTLE_HOST_VERTEX_HPP_
 
-#include "Vertex.hpp"
-
-#include <tuttle/host/INode.hpp>
-
-#include <string>
-#include <iostream>
+#include "IVertex.hpp"
+#include "ProcessVertexData.hpp"
 
 namespace tuttle {
 namespace host {
 namespace graph {
 
-class ProcessVertex
+class ProcessVertex : public IVertex
 {
 public:
-	ProcessVertex( Vertex& vertex )
-		: _vertex( vertex ) {}
+	typedef std::string Key;
+public:
+	ProcessVertex( const std::string& name = "Undefined" );
+	ProcessVertex( const std::string& name, INode& processNode );
+	ProcessVertex( const ProcessVertex& v );
 
-	~ProcessVertex() {}
+	ProcessVertex& operator=( const ProcessVertex& v )
+	{
+		IVertex::operator=(v);
+		_data           = v._data;
+		return *this;
+	}
 
-	const std::string& getName() const        { return _vertex.getName(); }
-	INode&             getProcessNode()       { return _vertex.getProcessNode(); }
-	const INode&       getProcessNode() const { return _vertex.getProcessNode(); }
+	Key getKey() const { return getName(); }
 
+	void setProcessData( const ProcessVertexData& d ) { _data = d; }
+
+	ProcessVertexData&       getProcessData()       { return _data; }
+	const ProcessVertexData& getProcessData() const { return _data; }
+	
+	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const ProcessVertex& v );
 
-private:
-	Vertex& _vertex;
+public:
+	ProcessVertexData _data;
 };
 
 }

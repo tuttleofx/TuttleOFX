@@ -1,4 +1,4 @@
-#include "VertexAtTime.hpp"
+#include "ProcessVertexAtTime.hpp"
 #include "GraphExporter.hpp"
 
 #include <tuttle/host/ImageEffectNode.hpp>
@@ -7,25 +7,25 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-VertexAtTime::VertexAtTime( )
+ProcessVertexAtTime::ProcessVertexAtTime( )
 { }
 
-VertexAtTime::VertexAtTime( const Vertex& v, const OfxTime t )
+ProcessVertexAtTime::ProcessVertexAtTime( const ProcessVertex& v, const OfxTime t )
 : IVertex( v )
 , _data( v._data, t )
 { }
 
-VertexAtTime::VertexAtTime( const VertexAtTime& other )
+ProcessVertexAtTime::ProcessVertexAtTime( const ProcessVertexAtTime& other )
 : IVertex( other )
 , _data( other._data )
 { }
 
-VertexAtTime::~VertexAtTime( )
+ProcessVertexAtTime::~ProcessVertexAtTime( )
 { }
 
 
 
-std::ostream& VertexAtTime::exportDotDebug( std::ostream& os ) const
+std::ostream& ProcessVertexAtTime::exportDotDebug( std::ostream& os ) const
 {
 	std::ostringstream s;
 	s << subDotEntry( "label", getName() );
@@ -46,13 +46,13 @@ std::ostream& VertexAtTime::exportDotDebug( std::ostream& os ) const
 }
 
 
-std::ostream& operator<<( std::ostream& os, const VertexAtTime& v )
+std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime& v )
 {
 	os << v.getName() << "_" << v._data._time;
 	return os;
 }
 
-std::ostream& operator<<( std::ostream& os, const VertexAtTime::Key& v )
+std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime::Key& v )
 {
 	os << v.first << "_" << v.second;
 	return os;

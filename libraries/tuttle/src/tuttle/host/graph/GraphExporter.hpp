@@ -30,7 +30,7 @@ struct SubDotEntry : public DotEntry<T>
 	friend std::ostream& operator<<( std::ostream& os, const SubDotEntry<TT>& d );
 };
 }
-template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
+template<typename Vertex, typename ProcessEdge, typename OutEdgeList, typename VertexList, typename EdgeList>
 class InternalGraph;
 
 /**
@@ -43,21 +43,21 @@ detail::DotEntry<T> dotEntry( const std::string& key, const T& value );
 template<class T>
 detail::SubDotEntry<T> subDotEntry( const std::string& key, const T& value );
 
-template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
-inline void exportSimple( std::ostream& os, const InternalGraph<Vertex, Edge, OutEdgeList, VertexList, EdgeList>& g );
+template<typename Vertex, typename ProcessEdge, typename OutEdgeList, typename VertexList, typename EdgeList>
+inline void exportSimple( std::ostream& os, const InternalGraph<Vertex, ProcessEdge, OutEdgeList, VertexList, EdgeList>& g );
 
-template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
-inline void exportAsDOT( std::ostream& os, const InternalGraph<Vertex, Edge, OutEdgeList, VertexList, EdgeList>& g );
+template<typename Vertex, typename ProcessEdge, typename OutEdgeList, typename VertexList, typename EdgeList>
+inline void exportAsDOT( std::ostream& os, const InternalGraph<Vertex, ProcessEdge, OutEdgeList, VertexList, EdgeList>& g );
 
-template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
-inline void exportAsDOT( const std::string& filename, const InternalGraph<Vertex, Edge, OutEdgeList, VertexList, EdgeList>& g );
+template<typename Vertex, typename ProcessEdge, typename OutEdgeList, typename VertexList, typename EdgeList>
+inline void exportAsDOT( const std::string& filename, const InternalGraph<Vertex, ProcessEdge, OutEdgeList, VertexList, EdgeList>& g );
 
 
-template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
-inline void exportDebugAsDOT( std::ostream& os, const InternalGraph<Vertex, Edge, OutEdgeList, VertexList, EdgeList>& g );
+template<typename Vertex, typename ProcessEdge, typename OutEdgeList, typename VertexList, typename EdgeList>
+inline void exportDebugAsDOT( std::ostream& os, const InternalGraph<Vertex, ProcessEdge, OutEdgeList, VertexList, EdgeList>& g );
 
-template<typename Vertex, typename Edge, typename OutEdgeList, typename VertexList, typename EdgeList>
-inline void exportDebugAsDOT( const std::string& filename, const InternalGraph<Vertex, Edge, OutEdgeList, VertexList, EdgeList>& g );
+template<typename Vertex, typename ProcessEdge, typename OutEdgeList, typename VertexList, typename EdgeList>
+inline void exportDebugAsDOT( const std::string& filename, const InternalGraph<Vertex, ProcessEdge, OutEdgeList, VertexList, EdgeList>& g );
 
 }
 }

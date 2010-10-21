@@ -1,8 +1,8 @@
-#ifndef _TUTTLE_HOST_VERTEXATTIME_HPP_
-#define	_TUTTLE_HOST_VERTEXATTIME_HPP_
+#ifndef _TUTTLE_HOST_PROCESSVERTEXATTIME_HPP_
+#define	_TUTTLE_HOST_PROCESSVERTEXATTIME_HPP_
 
 #include "IVertex.hpp"
-#include "Vertex.hpp"
+#include "ProcessVertex.hpp"
 #include "ProcessVertexData.hpp"
 #include "ProcessVertexAtTimeData.hpp"
 
@@ -12,7 +12,7 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-class VertexAtTime : public IVertex
+class ProcessVertexAtTime : public IVertex
 {
 public:
 	struct Key : public std::pair<std::string, OfxTime>
@@ -21,12 +21,12 @@ public:
 		Key( const std::string& s, const OfxTime& t ):Parent(s, t){}
 	};
 public:
-	VertexAtTime( );
-	VertexAtTime( const Vertex& v, const OfxTime t );
-	VertexAtTime( const VertexAtTime& other );
-	virtual ~VertexAtTime( );
+	ProcessVertexAtTime( );
+	ProcessVertexAtTime( const ProcessVertex& v, const OfxTime t );
+	ProcessVertexAtTime( const ProcessVertexAtTime& other );
+	virtual ~ProcessVertexAtTime( );
 
-	VertexAtTime& operator=( const VertexAtTime& v )
+	ProcessVertexAtTime& operator=( const ProcessVertexAtTime& v )
 	{
 		IVertex::operator=(v);
 		_data           = v._data;
@@ -40,7 +40,7 @@ public:
 	const ProcessVertexAtTimeData& getProcessDataAtTime() const { return _data; }
 
 	std::ostream& exportDotDebug( std::ostream& os ) const;
-	friend std::ostream& operator<<( std::ostream& os, const VertexAtTime& v );
+	friend std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime& v );
 	friend std::ostream& operator<<( std::ostream& os, const Key& v );
 
 public:
@@ -48,8 +48,8 @@ public:
 
 };
 
-std::ostream& operator<<( std::ostream& os, const VertexAtTime& v );
-std::ostream& operator<<( std::ostream& os, const VertexAtTime::Key& v );
+std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime& v );
+std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTime::Key& v );
 
 }
 }

@@ -1,10 +1,11 @@
 #ifndef _TUTTLE_HOST_PROCESSGRAPH_HPP_
 #define _TUTTLE_HOST_PROCESSGRAPH_HPP_
 
-#include "Vertex.hpp"
-#include "VertexAtTime.hpp"
-#include "Edge.hpp"
-#include "EdgeAtTime.hpp"
+#include "ProcessVertex.hpp"
+#include "ProcessVertexAtTime.hpp"
+#include "ProcessEdge.hpp"
+#include "ProcessEdgeAtTime.hpp"
+
 #include "InternalGraph.hpp"
 
 #include <tuttle/host/Graph.hpp>
@@ -36,10 +37,7 @@ public:
 	typedef Graph::Edge Edge;
 	typedef Graph::Attribute Attribute;
 	typedef InternalGraph<Vertex, Edge, boost::vecS, boost::vecS> InternalGraphImpl;
-//	typedef InternalGraphImpl InternalGraphAtTimeImpl;
-	typedef InternalGraph<VertexAtTime, EdgeAtTime, boost::vecS, boost::vecS> InternalGraphAtTimeImpl;
-	typedef Graph::vertex_descriptor vertex_descriptor;
-	typedef Graph::edge_descriptor edge_descriptor;
+	typedef InternalGraph<ProcessVertexAtTime, ProcessEdgeAtTime, boost::vecS, boost::vecS> InternalGraphAtTimeImpl;
 #ifdef PROCESSGRAPH_USE_LINK
 	typedef std::map<std::string, Node*> NodeMap;
 #else
