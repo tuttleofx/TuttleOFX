@@ -1404,7 +1404,7 @@ const std::string& OfxhImageEffectNode::bestSupportedBitDepth( const std::string
 	return none;
 }
 
-void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC
+bool OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC
 {
 	property::OfxhPropSpec outStuff[] = {
 		{ kOfxImageEffectPropFrameRange, property::eDouble, 2, false, "0.0" },
@@ -1423,6 +1423,11 @@ void OfxhImageEffectNode::getTimeDomainAction( OfxRangeD& range ) const OFX_EXCE
 
 	range.min = outArgs.getDoubleProperty( kOfxImageEffectActionGetTimeDomain, 0 );
 	range.max = outArgs.getDoubleProperty( kOfxImageEffectActionGetTimeDomain, 1 );
+
+	if( status == kOfxStatOK )
+		return true;
+
+	return false;
 }
 
 /**

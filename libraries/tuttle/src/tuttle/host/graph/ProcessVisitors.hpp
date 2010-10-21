@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PROCESSVISITORS_HPP_
 #define _TUTTLE_PROCESSVISITORS_HPP_
 
-#include "ProcessOptions.hpp"
+#include "VertexProcessData.hpp"
 
 #include <tuttle/host/memory/MemoryCache.hpp>
 
@@ -74,7 +74,7 @@ public:
 				e._timesNeeded[_time].insert( _time );
 //				TCOUT( "--- insert edge: " << _time );
 			}
-			vertex._times.insert( _time );
+			vertex._data._times.insert( _time );
 			return;
 		}
 
@@ -85,7 +85,7 @@ public:
 //			TCOUT( "-- outEdge: " << edge );
 			BOOST_FOREACH( const typename Edge::TimeMap::value_type& timesNeeded, edge._timesNeeded )
 			{
-				vertex._times.insert( timesNeeded.second.begin(), timesNeeded.second.end() );
+				vertex._data._times.insert( timesNeeded.second.begin(), timesNeeded.second.end() );
 //				std::cout << "--- insert vertex: ";
 //				std::copy( (*timesNeeded).second.begin(),
 //				           (*timesNeeded).second.end(),
@@ -95,7 +95,7 @@ public:
 		}
 		
 		// Set all times needed on each input edges
-		BOOST_FOREACH( const OfxTime t, vertex._times )
+		BOOST_FOREACH( const OfxTime t, vertex._data._times )
 		{
 			TCOUT( "-  time: "<< t );
 			INode::InputsTimeMap mapInputsTimes = vertex.getProcessNode()->getTimesNeeded( t );
@@ -152,7 +152,7 @@ public:
 
 		std::string clip;
 		OfxTime time;
-		if( vertex.getProcessNode()->isIdentity( vertex.getProcessOptions(), clip, time ) )
+		if( vertex.getProcessNode()->isIdentity( vertex.getProcessDataAtTime(), clip, time ) )
 		{
 			try
 			{
@@ -177,7 +177,7 @@ public:
 			{
 				e << exception::user() + "A node is declared identity without given a valid input clip ("+quotes(clip)+", "+time+ ")."
 				  << exception::nodeName( vertex.getName() )
-				  << exception::time( vertex.getProcessOptions()._time );
+				  << exception::time( vertex.getProcessDataAtTime()._time );
 				throw;
 			}
 		}
@@ -207,8 +207,8 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		TCOUT( vertex.getProcessOptions()._time );
-		vertex.getProcessNode()->preProcess1( vertex.getProcessOptions() );
+		TCOUT( vertex.getProcessDataAtTime()._time );
+		vertex.getProcessNode()->preProcess1( vertex.getProcessDataAtTime() );
 	}
 
 private:
@@ -235,7 +235,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess2_reverse( vertex.getProcessOptions() );
+		vertex.getProcessNode()->preProcess2_reverse( vertex.getProcessDataAtTime() );
 	}
 
 private:
@@ -261,7 +261,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->preProcess3( vertex.getProcessOptions() );
+		vertex.getProcessNode()->preProcess3( vertex.getProcessDataAtTime() );
 	}
 
 private:
@@ -293,7 +293,7 @@ public:
 		using namespace boost::graph;
 		Vertex& vertex = _graph.instance( v );
 
-		ProcessOptions& procOptions = vertex.getProcessOptions();
+		VertexAtTimeProcessData& procOptions = vertex.getProcessDataAtTime();
 		if( !vertex.isFake() )
 		{
 			// compute local infos, need to be a real node !
@@ -307,8 +307,8 @@ public:
 		{
 //			Edge& outEdge = _graph.instance(*oe);
 			Vertex& outVertex = _graph.targetInstance( oe );
-			procOptions._inputsInfos += outVertex.getProcessOptions()._localInfos;
-			procOptions._globalInfos += outVertex.getProcessOptions()._globalInfos;
+			procOptions._inputsInfos += outVertex.getProcessDataAtTime()._localInfos;
+			procOptions._globalInfos += outVertex.getProcessDataAtTime()._globalInfos;
 		}
 		procOptions._globalInfos += procOptions._localInfos;
 
@@ -356,19 +356,19 @@ public:
 		// check if abort ?
 
 		// launch the process
-		vertex.getProcessNode()->process( vertex.getProcessOptions() );
+		vertex.getProcessNode()->process( vertex.getProcessDataAtTime() );
 		
-		if( vertex.getProcessOptions()._finalNode )
+		if( vertex.getProcessDataAtTime()._finalNode )
 		{
-			memory::CACHE_ELEMENT img = _cache.get( vertex._name + "." kOfxOutputAttributeName, vertex._time );
+			memory::CACHE_ELEMENT img = _cache.get( vertex._name + "." kOfxOutputAttributeName, vertex._data._time );
 			if( ! img.get() )
 			{
 				BOOST_THROW_EXCEPTION( exception::Logic()
 					<< exception::user() + "Output buffer not found in memoryCache at the end of the node process."
 					<< exception::nodeName( vertex._name )
-					<< exception::time( vertex._time ) );
+					<< exception::time( vertex._data._time ) );
 			}
-			_result.put( vertex._name, vertex._time, img );
+			_result.put( vertex._name, vertex._data._time, img );
 		}
 	}
 
@@ -408,7 +408,7 @@ public:
 		if( vertex.isFake() )
 			return;
 
-		vertex.getProcessNode()->postProcess( vertex.getProcessOptions() );
+		vertex.getProcessNode()->postProcess( vertex.getProcessDataAtTime() );
 	}
 
 private:

@@ -1,8 +1,10 @@
-#ifndef _VERTEXATTIME_HPP_
-#define	_VERTEXATTIME_HPP_
+#ifndef _TUTTLE_HOST_VERTEXATTIME_HPP_
+#define	_TUTTLE_HOST_VERTEXATTIME_HPP_
 
 #include "IVertex.hpp"
 #include "Vertex.hpp"
+#include "VertexProcessData.hpp"
+#include "VertexAtTimeProcessData.hpp"
 
 #include <ostream>
 
@@ -24,20 +26,18 @@ public:
 	VertexAtTime( const VertexAtTime& other );
 	virtual ~VertexAtTime( );
 
-	VertexAtTime& operator=( const Vertex& v )
-	{
-		IVertex::operator=(v);
-//		_time           = v._time;
-		return *this;
-	}
+	Key getKey() const { return Key(getName(), _data._time); }
 
-	Key getKey() const { return Key(getName(), _time); }
+	const VertexProcessData& getProcessData() const { return *_data._nodeData; }
+	VertexAtTimeProcessData&       getProcessDataAtTime()       { return _data; }
+	const VertexAtTimeProcessData& getProcessDataAtTime() const { return _data; }
 
+	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const VertexAtTime& v );
 	friend std::ostream& operator<<( std::ostream& os, const Key& v );
 
 public:
-	OfxTime _time;
+	VertexAtTimeProcessData _data;
 
 };
 

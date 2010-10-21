@@ -374,7 +374,7 @@ public:
 	                               std::string&       clip ) const OFX_EXCEPTION_SPEC;
 
 	// time domain
-	virtual void getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC;
+	virtual bool getTimeDomainAction( OfxRangeD& range ) const OFX_EXCEPTION_SPEC;
 
 	/**
 	 * Get the interact description, this will also call describe on the interact

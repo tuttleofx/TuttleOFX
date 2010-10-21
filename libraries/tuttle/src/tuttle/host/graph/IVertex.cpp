@@ -45,10 +45,7 @@ std::ostream& IVertex::exportDotDebug( std::ostream& os ) const
 		/// @todo remove this. Temporary solution
 		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() );
 	}
-	s << subDotEntry( "localMemory", getProcessOptions()._localInfos._memory );
-	s << subDotEntry( "globalMemory", getProcessOptions()._globalInfos._memory );
-	s << subDotEntry( "time", getProcessOptions()._time );
-
+	
 	os << "[" << std::endl;
 	os << dotEntry( "type", "Node" ) << ", " << std::endl;
 	os << dotEntry( "label", s.str() ) << ", " << std::endl;

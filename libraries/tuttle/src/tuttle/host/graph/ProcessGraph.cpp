@@ -118,9 +118,9 @@ public:
 		const Vertex& v1 = _graph.targetInstance( ed1 );
 		const Vertex& v2 = _graph.targetInstance( ed2 );
 
-		bool res= v1.getProcessOptions()._globalInfos._memory < v2.getProcessOptions()._globalInfos._memory;
-//		COUT_VAR2(v1.getName(), v1.getProcessOptions()._globalInfos._memory);
-//		COUT_VAR2(v2.getName(), v2.getProcessOptions()._globalInfos._memory);
+		bool res= v1.getProcessDataAtTime()._globalInfos._memory < v2.getProcessDataAtTime()._globalInfos._memory;
+//		COUT_VAR2(v1.getName(), v1.getProcessDataAtTime()._globalInfos._memory);
+//		COUT_VAR2(v2.getName(), v2.getProcessDataAtTime()._globalInfos._memory);
 //		COUT_VAR(res);
 		return res;
 	}
@@ -142,19 +142,41 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 	OfxRectD renderWindow = { 0, 0, 0, 0 };
 
 	//--- BEGIN RENDER
-	ProcessOptions defaultOptions;
-	defaultOptions._time        = tBegin;
+	VertexProcessData defaultOptions;
 	defaultOptions._startFrame  = tBegin;
 	defaultOptions._endFrame    = tEnd;
 	defaultOptions._step        = 1;
 	defaultOptions._interactive = false;
 	// imageEffect specific...
-	defaultOptions._field       = kOfxImageFieldBoth;
+//	defaultOptions._field       = kOfxImageFieldBoth;
 	defaultOptions._renderScale = renderScale;
-	defaultOptions._renderRoI   = renderWindow;
+//	defaultOptions._renderRoI   = renderWindow;
 
 	///@todo tuttle: exception if there is non-optional clips unconnected.
+//	graph::visitor::UnconnectedClips<InternalGraphImpl> unconnectedClipsVisitor( renderGraph );
+//	renderGraph.depthFirstSearch( unconnectedClipsVisitor );
+//	if( unconnectedClipsVisitor.value )
+//	{
+//		exception::user userMsg("Some non optional clips are unconnected. We can't do the process.\n");
+//		userMsg << "Unconnected clips : ";
+//		BOOST_FOREACH( clip, unconnectedClipsVisitor.clips )
+//		{
+//			userMsg << clip->getFullName() << ",";
+//		}
+//		userMsg << std::endl;
+//		BOOST_THROW_EXCEPTION( exception::Logic()
+//			<< userMsg );
+//	}
 
+	BOOST_FOREACH( vertex_descriptor vd, _graph.getVertices() )
+	{
+		_graph.instance(vd).setProcessData( defaultOptions );
+	}
+
+	///@todo tuttle: compute the time domain for each node
+//	graph::visitor::TimeDomain<InternalGraphImpl> timeDomainVisitor( renderGraph );
+//	renderGraph.depthFirstSearch( timeDomainVisitor );
+	
 	TCOUT( "process begin" );
 	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
 	{
@@ -167,7 +189,6 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 	// at each frame
 	for( int time = tBegin; time <= tEnd; ++time )
 	{
-		defaultOptions._time = time;
 		TCOUT( "________________________________________ frame: " << time );
 		// use an internal copy for inside the process
 		InternalGraphImpl renderGraph = _graph;
@@ -190,7 +211,7 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
 			Vertex& v = renderGraph.instance( vd );
-			BOOST_FOREACH( const OfxTime t, v._times )
+			BOOST_FOREACH( const OfxTime t, v._data._times )
 			{
 				TCOUT_VAR2( v, t );
 				renderGraphAtTime.addVertex( VertexAtTime(v, t) );
@@ -226,16 +247,14 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		{
 			VertexAtTime& v = renderGraphAtTime.instance( vd );
 
-			v.setProcessOptions( defaultOptions );
-			v.getProcessOptions()._inDegree  = renderGraphAtTime.getInDegree( vd );
-			v.getProcessOptions()._outDegree = renderGraphAtTime.getOutDegree( vd );
-			v.getProcessOptions()._time = v._time;
+			v.getProcessDataAtTime()._inDegree  = renderGraphAtTime.getInDegree( vd );
+			v.getProcessDataAtTime()._outDegree = renderGraphAtTime.getOutDegree( vd );
 		}
 		// for each final nodes
 		BOOST_FOREACH( InternalGraphAtTimeImpl::edge_descriptor ed, boost::out_edges( outputAtTime, renderGraphAtTime.getGraph() ) )
 		{
 			VertexAtTime& v = renderGraphAtTime.targetInstance( ed );
-			v.getProcessOptions()._finalNode = true;
+			v.getProcessDataAtTime()._finalNode = true;
 		}
 #ifndef TUTTLE_PRODUCTION
 		graph::exportDebugAsDOT( "graphprocess_b.dot", renderGraphAtTime );
@@ -295,21 +314,21 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 				e._localId = i++;
 				e._name += " -- ";
 				e._name += boost::lexical_cast<std::string>(e._localId); // tmp
-				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessOptions()._globalInfos._memory  );
+				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory  );
 			}
 			std::sort( edges.begin(), edges.end(), OrderEdgeByMemorySize<InternalGraphImpl>(renderGraph) );
 			COUT( "after sort edges of " << v.getName() );
 			BOOST_FOREACH( InternalGraphImpl::edge_descriptor ed, boost::out_edges( vd, renderGraph.getGraph() ) )
 			{
 				Edge& e = renderGraph.instance(ed);
-				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessOptions()._globalInfos._memory );
+				COUT( e.getName() << " - " <<  renderGraph.targetInstance(ed).getProcessDataAtTime()._globalInfos._memory );
 			}
 			InternalGraphImpl::out_edge_iterator oe_it, oe_itEnd;
 			boost::tie( oe_it, oe_itEnd ) = boost::out_edges( vd, renderGraph.getGraph() );
 			for( ; oe_it != oe_itEnd; ++oe_it )
 			{
 				Edge& e = renderGraph.instance(*oe_it);
-				COUT( e.getName() << " - " <<  renderGraph.targetInstance(*oe_it).getProcessOptions()._globalInfos._memory );
+				COUT( e.getName() << " - " <<  renderGraph.targetInstance(*oe_it).getProcessDataAtTime()._globalInfos._memory );
 			}
 		}
 #ifndef TUTTLE_PRODUCTION

@@ -109,16 +109,23 @@ public:
 
 	void debugOutputImage( const OfxTime time ) const;
 
+	/// @group Implementation of INode virtual functions
+	/// @{
+	bool getTimeDomain( OfxRangeD& range ) const;
+
+	void beginSequence( graph::VertexProcessData& vData );
+
 	InputsTimeMap getTimesNeeded( const OfxTime time ) const;
-	bool isIdentity( const graph::ProcessOptions& processOptions, std::string& clip, OfxTime& time ) const;
-	void beginSequence( graph::ProcessOptions& processOptions );
-	void preProcess1( graph::ProcessOptions& processOptions );
-	void preProcess2_reverse( graph::ProcessOptions& processOptions );
-	void preProcess3( graph::ProcessOptions& processOptions );
-	void preProcess_infos( const OfxTime time, graph::ProcessInfos& nodeInfos ) const;
-	void process( graph::ProcessOptions& processOptions );
-	void postProcess( graph::ProcessOptions& processOptions );
-	void endSequence( graph::ProcessOptions& processOptions );
+	void preProcess1( graph::VertexAtTimeProcessData& vData );
+	void preProcess2_reverse( graph::VertexAtTimeProcessData& vData );
+	void preProcess3( graph::VertexAtTimeProcessData& vData );
+	bool isIdentity( const graph::VertexAtTimeProcessData& vData, std::string& clip, OfxTime& time ) const;
+	void preProcess_infos( const OfxTime time, graph::VertexAtTimeProcessInfo& nodeInfos ) const;
+	void process( graph::VertexAtTimeProcessData& vData );
+	void postProcess( graph::VertexAtTimeProcessData& vData );
+
+	void endSequence( graph::VertexProcessData& vData );
+	/// @}
 
 	friend std::ostream& operator<<( std::ostream& os, const This& g );
 	#endif

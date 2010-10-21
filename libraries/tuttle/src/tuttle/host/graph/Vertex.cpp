@@ -15,12 +15,13 @@ Vertex::Vertex( const std::string& name )
 
 Vertex::Vertex( const std::string& name, INode& processNode )
 : IVertex( name, processNode )
+, _data( processNode.getNodeType() )
 {
 }
 
 Vertex::Vertex( const Vertex& v )
 : IVertex( v )
-, _times( v._times )
+, _data( v._data )
 {
 }
 
@@ -35,13 +36,11 @@ std::ostream& Vertex::exportDotDebug( std::ostream& os ) const
 		/// @todo remove this. Temporary solution
 		s << subDotEntry( "bitdepth", static_cast<const ImageEffectNode*>( getProcessNode() )->getOutputClip().getBitDepthString() );
 	}
-	s << subDotEntry( "localMemory", getProcessOptions()._localInfos._memory );
-	s << subDotEntry( "globalMemory", getProcessOptions()._globalInfos._memory );
-	s << subDotEntry( "allTimes", _times.size() );
+	s << subDotEntry( "allTimes", _data._times.size() );
 	std::ostringstream times;
 	std::copy(
-        _times.begin(),
-        _times.end(),
+        _data._times.begin(),
+        _data._times.end(),
         std::ostream_iterator<OfxTime>( times, "," ) );
 	s << subDotEntry( "times", times.str() );
 

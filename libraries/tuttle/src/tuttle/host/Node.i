@@ -2,7 +2,7 @@
 %include <tuttle/host/Node.i>
 
 %{
-#include <tuttle/host/graph/ProcessOptions.hpp>
+#include <tuttle/host/graph/VertexProcessData.hpp>
 #include <tuttle/host/INode.hpp>
 %}
 

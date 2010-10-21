@@ -28,7 +28,6 @@ public:
 			return *this;
 		_name           = v._name;
 		_processNode    = v._processNode;
-		_processOptions = v._processOptions;
 		_fake           = v._fake;
 		_used           = v._used;
 		return *this;
@@ -41,9 +40,8 @@ public:
 	INode*                 getProcessNode()                                   { return _processNode; }
 	const INode* const     getProcessNode() const                             { return _processNode; }
 	void                  setProcessNode( INode* p )                          { _processNode = p; }
-	ProcessOptions&       getProcessOptions()                                { return _processOptions; }
-	const ProcessOptions& getProcessOptions() const                          { return _processOptions; }
-	void                  setProcessOptions( const ProcessOptions& options ) { _processOptions = options; }
+	
+	virtual const VertexProcessData& getProcessData() const = 0;
 
 	virtual std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const IVertex& v );
@@ -53,7 +51,6 @@ public:
 	
 private:
 	INode* _processNode;
-	graph::ProcessOptions _processOptions;
 	bool _fake;
 	bool _used;
 	static int _count;

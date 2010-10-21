@@ -1,7 +1,8 @@
-#ifndef _TUTTLE_VERTEX_HPP_
-#define _TUTTLE_VERTEX_HPP_
+#ifndef _TUTTLE_HOST_VERTEX_HPP_
+#define _TUTTLE_HOST_VERTEX_HPP_
 
 #include "IVertex.hpp"
+#include "VertexProcessData.hpp"
 
 namespace tuttle {
 namespace host {
@@ -19,18 +20,21 @@ public:
 	Vertex& operator=( const Vertex& v )
 	{
 		IVertex::operator=(v);
-		_times           = v._times;
+		_data           = v._data;
 		return *this;
 	}
 
 	Key getKey() const { return getName(); }
 
+	void setProcessData( const VertexProcessData& d ) { _data = d; }
+	VertexProcessData&       getProcessData()       { return _data; }
+	const VertexProcessData& getProcessData() const { return _data; }
+	
 	std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const Vertex& v );
 
 public:
-	typedef std::set<OfxTime> TimesSet;
-	TimesSet _times;
+	VertexProcessData _data;
 };
 
 }
