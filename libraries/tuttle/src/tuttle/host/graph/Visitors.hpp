@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_VISITORS_HPP_
-#define _TUTTLE_VISITORS_HPP_
+#ifndef _TUTTLE_HOST_VISITORS_HPP_
+#define _TUTTLE_HOST_VISITORS_HPP_
 
 #include <iostream>
 #include <vector>

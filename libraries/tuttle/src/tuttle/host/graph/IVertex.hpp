@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_IVERTEX_HPP_
-#define	_TUTTLE_IVERTEX_HPP_
+#ifndef _TUTTLE_HOST_IVERTEX_HPP_
+#define	_TUTTLE_HOST_IVERTEX_HPP_
 
 #include <tuttle/host/INode.hpp>
 #include <tuttle/host/exceptions.hpp>

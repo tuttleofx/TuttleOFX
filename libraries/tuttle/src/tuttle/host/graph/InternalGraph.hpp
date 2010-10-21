@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_INTERNALGRAPH_HPP_
-#define _TUTTLE_INTERNALGRAPH_HPP_
+#ifndef _TUTTLE_HOST_INTERNALGRAPH_HPP_
+#define _TUTTLE_HOST_INTERNALGRAPH_HPP_
 
 #include <tuttle/host/exceptions.hpp>
 

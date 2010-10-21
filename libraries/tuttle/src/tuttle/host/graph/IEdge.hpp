@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_IEDGE_HPP_
-#define	_TUTTLE_IEDGE_HPP_
+#ifndef _TUTTLE_HOST_IEDGE_HPP_
+#define	_TUTTLE_HOST_IEDGE_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 

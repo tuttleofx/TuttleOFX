@@ -1,5 +1,8 @@
-#ifndef _TUTTLE_PROCESSEDGE_HPP_
-#define _TUTTLE_PROCESSEDGE_HPP_
+#ifndef _TUTTLE_HOST_EDGE_HPP_
+#define _TUTTLE_HOST_EDGE_HPP_
+
+#include "IEdge.hpp"
+#include "UVertex.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 
@@ -9,15 +12,15 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-class UEdge
+class UEdge : public IEdge
 {
 public:
 	UEdge()
 	{}
+	
+	UEdge( const UVertex::Key& out, const UVertex::Key& in, const std::string& inAttrName );
 
 	~UEdge() {}
-
-//	const std::string name() const { return _edge.getName(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const UEdge& v );
 

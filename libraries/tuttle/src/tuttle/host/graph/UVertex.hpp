@@ -1,5 +1,7 @@
-#ifndef _TUTTLE_PROCESSVERTEX_HPP_
-#define _TUTTLE_PROCESSVERTEX_HPP_
+#ifndef _TUTTLE_HOST_VERTEX_HPP_
+#define _TUTTLE_HOST_VERTEX_HPP_
+
+#include "IVertex.hpp"
 
 #include <tuttle/host/INode.hpp>
 
@@ -10,17 +12,17 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
-class UVertex
+class UVertex : public IVertex
 {
+public:
+	typedef std::string Key;
 public:
 	UVertex()
 	{}
+	
+	UVertex( const std::string& name, INode& processNode );
 
 	~UVertex() {}
-
-//	const std::string& getName() const        { return _vertex.getName(); }
-//	INode&             getProcessNode()       { return _vertex.getProcessNode(); }
-//	const INode&       getProcessNode() const { return _vertex.getProcessNode(); }
 
 	friend std::ostream& operator<<( std::ostream& os, const UVertex& v );
 };

@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_HOST_VERTEX_HPP_
-#define _TUTTLE_HOST_VERTEX_HPP_
+#ifndef _TUTTLE_HOST_PROCESSVERTEX_HPP_
+#define _TUTTLE_HOST_PROCESSVERTEX_HPP_
 
 #include "IVertex.hpp"
 #include "ProcessVertexData.hpp"
