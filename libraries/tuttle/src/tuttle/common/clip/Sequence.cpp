@@ -636,17 +636,16 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 			}
 		}
 	}
-	//	unsigned int i = 0;
-	//	BOOST_FOREACH( const std::list<SeqNumbers>::value_type& sn, nums )
-	//	{
-	//		TCOUT( "seq " << i++ << " : " <<  sn);
-	//	}
+//	unsigned int i = 0;
+//	BOOST_FOREACH( const std::list<FileNumbers>::value_type& sn, nums )
+//	{
+//		TCOUT( "seq " << i++ << " : " <<  sn);
+//	}
 	std::size_t idChangeBegin = 0;
 	std::size_t idChangeEnd = 0;
-	//	TCOUT_VAR(allIds.size());
 	if( allIds.size() == 0 )
 	{
-		idChangeBegin = idChangeEnd = 0;
+		idChangeBegin = idChangeEnd = len-1;
 	}
 	else
 	{
