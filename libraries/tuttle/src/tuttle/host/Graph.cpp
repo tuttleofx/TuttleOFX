@@ -78,7 +78,7 @@ Graph::Node& Graph::createNode( const std::string& id )
 
 void Graph::addToGraph( Node& node )
 {
-	graph::ProcessVertex v( node.getName(), node );
+	Vertex v( node.getName(), node );
 
 	COUT_DEBUG( node.getName() );
 

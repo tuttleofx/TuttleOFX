@@ -28,6 +28,30 @@ namespace tuttle {
 namespace host {
 namespace graph {
 
+
+namespace detail {
+
+template<class GraphIn, class GraphOut>
+class Copier
+{
+public:
+	Copier( const GraphIn& gIn, GraphOut& gOut )
+	: _gIn(gIn)
+	, _gOut(gOut)
+	{}
+    template<class VIn, class VOut>
+    void operator()(const VIn& vIn, VOut& vOut)
+	{
+		std::cout << "Copier::operator()(vIn, vOut)" << std::endl;
+		_gOut[vOut] = _gIn[vIn];
+	}
+private:
+	const GraphIn& _gIn;
+	GraphOut& _gOut;
+};
+
+}
+
 template < typename VERTEX, typename EDGE, typename OutEdgeList = boost::setS, typename VertexList = boost::vecS, typename EdgeList = boost::listS >
 class InternalGraph
 {
@@ -95,7 +119,8 @@ public:
 	template<typename V, typename E, typename OEL, typename VL, typename EL>
 	This& operator=( const InternalGraph<V, E, OEL, VL, EL>& g )
 	{
-		boost::copy_graph( g.getGraph(), _graph );
+		detail::Copier< typename InternalGraph<V, E, OEL, VL, EL>::GraphContainer, GraphContainer > c(g.getGraph(), _graph);
+		boost::copy_graph( g.getGraph(), _graph, boost::vertex_copy(c).edge_copy(c) );
 		rebuildVertexDescriptorMap();
 		return *this;
 	}
@@ -373,6 +398,15 @@ public:
 	{
 		// make a transposed copy of g in _graph
 		boost::transpose_graph( g._graph, _graph );
+		rebuildVertexDescriptorMap();
+	}
+
+	template<typename V, typename E, typename OEL, typename VL, typename EL>
+	void copyTransposed( const InternalGraph<V, E, OEL, VL, EL>& g )
+	{
+		detail::Copier< typename InternalGraph<V, E, OEL, VL, EL>::GraphContainer, GraphContainer > c(g.getGraph(), _graph);
+		// make a transposed copy of g in _graph
+		boost::transpose_graph( g.getGraph(), _graph, boost::vertex_copy(c).edge_copy(c) );
 		rebuildVertexDescriptorMap();
 	}
 

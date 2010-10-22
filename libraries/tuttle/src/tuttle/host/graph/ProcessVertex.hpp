@@ -2,6 +2,7 @@
 #define _TUTTLE_HOST_PROCESSVERTEX_HPP_
 
 #include "IVertex.hpp"
+#include "UVertex.hpp"
 #include "ProcessVertexData.hpp"
 
 namespace tuttle {
@@ -14,13 +15,20 @@ public:
 	typedef std::string Key;
 public:
 	ProcessVertex( const std::string& name = "Undefined" );
-	ProcessVertex( const std::string& name, INode& processNode );
+	ProcessVertex( const UVertex& v );
 	ProcessVertex( const ProcessVertex& v );
 
 	ProcessVertex& operator=( const ProcessVertex& v )
 	{
 		IVertex::operator=(v);
 		_data           = v._data;
+		return *this;
+	}
+
+	ProcessVertex& operator=( const UVertex& v )
+	{
+		IVertex::operator=(v);
+		_data._apiType = v.getProcessNode().getNodeType();
 		return *this;
 	}
 

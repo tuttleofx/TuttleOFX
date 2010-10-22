@@ -24,6 +24,8 @@ public:
 
 	~UVertex() {}
 
+	Key getKey() const { return getName(); }
+	
 	friend std::ostream& operator<<( std::ostream& os, const UVertex& v );
 };
 

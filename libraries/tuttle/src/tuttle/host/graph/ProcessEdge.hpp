@@ -2,6 +2,7 @@
 #define _TUTTLE_PROCESSEDGE_HPP_
 
 #include "IEdge.hpp"
+#include "UEdge.hpp"
 #include "ProcessVertex.hpp"
 
 #include <map>
@@ -23,6 +24,12 @@ public:
 	{
 		IEdge::operator=( e );
 		_timesNeeded = e._timesNeeded;
+		return *this;
+	}
+
+	inline ProcessEdge& operator=( const UEdge& e )
+	{
+		IEdge::operator=( e );
 		return *this;
 	}
 

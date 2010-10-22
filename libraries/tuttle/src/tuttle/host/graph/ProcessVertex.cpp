@@ -13,9 +13,9 @@ ProcessVertex::ProcessVertex( const std::string& name )
 {
 }
 
-ProcessVertex::ProcessVertex( const std::string& name, INode& processNode )
-: IVertex( name, processNode )
-, _data( processNode.getNodeType() )
+ProcessVertex::ProcessVertex( const UVertex& v )
+: IVertex( v )
+, _data( v.getProcessNode().getNodeType() )
 {
 }
 

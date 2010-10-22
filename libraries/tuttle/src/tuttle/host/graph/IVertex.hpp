@@ -58,8 +58,6 @@ public:
 	{
 		_processNode = p;
 	}
-	
-	virtual const ProcessVertexData& getProcessData() const = 0;
 
 	virtual std::ostream& exportDotDebug( std::ostream& os ) const;
 	friend std::ostream& operator<<( std::ostream& os, const IVertex& v );

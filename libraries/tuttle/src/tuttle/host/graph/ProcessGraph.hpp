@@ -33,8 +33,8 @@ class ProcessGraph
 {
 public:
 	typedef Graph::Node Node; /// @todo tuttle ProcessNode...
-	typedef Graph::Vertex Vertex;
-	typedef Graph::Edge Edge;
+	typedef graph::ProcessVertex Vertex;
+	typedef graph::ProcessEdge Edge;
 	typedef Graph::Attribute Attribute;
 	typedef InternalGraph<Vertex, Edge, boost::vecS, boost::vecS> InternalGraphImpl;
 	typedef InternalGraph<ProcessVertexAtTime, ProcessEdgeAtTime, boost::vecS, boost::vecS> InternalGraphAtTimeImpl;
