@@ -14,6 +14,18 @@
 #include <boost/current_function.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
+// compatibility problems...
+#include <cstddef>
+namespace std {
+#ifdef __WINDOWS__
+	typedef SSIZE_T ssize_t;
+#else
+	typedef ::ssize_t ssize_t;
+#endif
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
 // Define functions to display infos in the console
 #include <iostream>
 

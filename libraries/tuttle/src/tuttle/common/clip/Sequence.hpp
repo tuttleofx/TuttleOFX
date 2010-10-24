@@ -31,8 +31,7 @@ class Sequence
 {
 public:
 	typedef Sequence This;
-	//typedef std::ssize_t Time;
-	typedef SSIZE_T Time;
+	typedef std::ssize_t Time;
 
 public:
 	/**
