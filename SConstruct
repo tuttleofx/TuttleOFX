@@ -101,7 +101,7 @@ class Tuttle( SConsProject ):
 		envLocal = self.createEnv( libs )
 		envLocal.Append( CPPPATH = dirs )
 		plugin = envLocal.SharedLibrary( target=pluginName, source=allSources )
-		pluginInstall = envLocal.InstallAs( self.getOutputOfxPlugin(pluginFilename), plugin )
+		pluginInstall = envLocal.InstallAs( self.getOutputOfxPlugin(pluginFilename), plugin[0] )
 
 		resources_dir =  self.getRealAbsoluteCwd() + os.sep + 'Resources'
 		if os.path.isdir( resources_dir ) :
@@ -115,7 +115,7 @@ class Tuttle( SConsProject ):
 
 		if self.windows:
 			mode = 'Release'
-			if envLocal['debug']:
+			if envLocal['mode'] is "debug":
 				mode = 'Debug'
 			visual_project = envLocal.MSVSProject(
 				target = os.path.join('visualc', pluginName + envLocal['MSVSPROJECTSUFFIX']),

@@ -3,7 +3,7 @@
 
 #ifdef __WINDOWS__
 
- #include <tuttle/patterns/StaticSingleton.hpp>
+ #include <tuttle/common/patterns/StaticSingleton.hpp>
  #include <crtdbg.h>
 
 /**

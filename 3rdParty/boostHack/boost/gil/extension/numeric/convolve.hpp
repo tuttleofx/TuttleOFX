@@ -176,7 +176,8 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 				case convolve_option_extend_zero:
 				{
 					PixelAccum* it_buffer=&buffer.front();
-					it_buffer = std::fill_n(it_buffer,left_out,acc_zero);
+					std::fill_n(it_buffer,left_out,acc_zero);
+					it_buffer += left_out;
 					
 					it_buffer = assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
 
@@ -188,7 +189,8 @@ void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& ds
 					PixelAccum* it_buffer=&buffer.front();
 					PixelAccum filler;
 					pixel_assigns_t<PIXEL_SRC_REF,PixelAccum>()(*src.x_at(srcRoi_left,yy_src),filler);
-					it_buffer = std::fill_n(it_buffer,left_out,filler);
+					std::fill_n(it_buffer,left_out,filler);
+					it_buffer += left_out;
 
 					it_buffer = assign_pixels(src.x_at(srcRoi_left,yy_src),src.x_at(srcRoi_right,yy_src),it_buffer);
 

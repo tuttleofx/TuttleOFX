@@ -43,6 +43,7 @@
 #include <string>
 #include <set>
 #include <algorithm>
+#include <iostream>
 
 namespace tuttle {
 namespace host {
@@ -204,7 +205,7 @@ public:
 	}
 
 	// populate the cache.  must call scanPluginFiles() after to check for changes.
-	void readCache( std::istream& is );
+	//void readCache( std::istream& is );
 
 	// seek a particular file on the OFX plugin path
 	std::string seekPluginFile( const std::string& baseName ) const;

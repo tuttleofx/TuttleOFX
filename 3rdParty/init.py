@@ -6,6 +6,13 @@ import sys
 import urllib
 import subprocess
 
+osname            = os.name.lower()
+sysplatform       = sys.platform.lower()
+windows           = osname == "nt" and sysplatform.startswith("win")
+macos             = sysplatform.startswith("darwin")
+linux             = not windows and not macos
+unix              = not windows
+
 global current_file # global variable used in dlProgress function
 current_file = ''
 
@@ -19,8 +26,9 @@ knowExtensions = { 'tar': 'tar xf',
                    'tar.gz': 'tar xfz',
                    'tgz': 'tar xfz',
                    'tar.bz2': 'tar xfj',
-                   'zip': 'unzip' }
-                   
+                   'zip': 'unzip',
+                   'exe': '' }
+
 def getKnowExtensions( filename ):
 	global knowExtensions
 	return [f for f in knowExtensions.keys() if filename.endswith(f)]
@@ -31,6 +39,8 @@ def uncompress(filename, ext, inNewDirectory):
 	               'unzip' : {'directory':'-d',},
 	             }
 	cmdFromExtension = knowExtensions[ext]
+	if not cmdFromExtension:
+		return
 	cmd = cmdFromExtension.split()
 	bin = cmd[0]
 	if( inNewDirectory ):
@@ -47,11 +57,11 @@ def getAndUncompress( libraries ):
 		print '--', libname
 		parts = url.split('/')
 		filename = [p for p in parts if len(getKnowExtensions(p))]
-		if len(filename) == 0:
-			print '-'*40
-			print 'No filename with a regognize extension in "'+libname+'" url="'+url+'"'
-			print '-'*40
-			continue
+		#if len(filename) == 0:
+		#	print '-'*40
+		#	print 'No filename with a regognize extension in "'+libname+'" url="'+url+'"'
+		#	print '-'*40
+		#	continue
 		filename = filename[0]
 		print url, ' -> ', filename
 		ext = getKnowExtensions(filename)[0]
@@ -88,17 +98,12 @@ def getAndUncompress( libraries ):
 
 
 getAndUncompress(
-	[ ('zlib','http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz', False),
-	  ('png', 'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz', False),
+	[ ('zlib','http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz', False) if not windows else ('zlib','http://prdownloads.sourceforge.net/gnuwin32/zlib-1.2.3.exe', False),
+	  ('png', 'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz', False) if not windows else ('png','http://prdownloads.sourceforge.net/gnuwin32/libpng-1.2.37-setup.exe', False),
 	  ('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', True),
 	  ('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', True),
-	  ('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_43_0.tar.bz2', False),
-	  #('artoolkitplus', 'http://fabien.castan.free.fr/rom/ARToolKitPlus_2.1.1_linux-fixed.tar.bz2', False),
-	  #('sba', 'http://www.ics.forth.gr/~lourakis/sba/sba-1.6.tgz', False),
-	  #('opencv', 'http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.1/OpenCV-2.1.0.tar.bz2/download', False),
-	  #('cminpack','http://devernay.free.fr/hacks/cminpack-1.0.3.tar.gz', False),
-	  #('gsl', 'ftp://mirror.cict.fr/gnu/gsl/gsl-1.14.tar.gz', False),
-	  #('cuda','http://developer.download.nvidia.com/compute/cuda/3_0/toolkit/cudatoolkit_3.0_linux_32_ubuntu9.04.run', False),
+	  ('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_44_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_44_setup.exe', False),
+	  ('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
 	]
 	)
 

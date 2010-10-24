@@ -48,27 +48,14 @@
 #include <cstring>
 #include <cstdlib>
 
-namespace tuttle {
-namespace host {
-namespace ofx {
+// Define this to enable ofx plugin cache debug messages.
+//#define CACHE_DEBUG
 
 #if defined ( __linux__ )
 
  #define DIRLIST_SEP_CHARS ":;"
  #define DIRSEP "/"
 #include <dirent.h>
-
-static const char* getArchStr()
-{
-	if( sizeof( void* ) == 4 )
-	{
-		return "Linux-x86";
-	}
-	else
-	{
-		return "Linux-x86-64";
-	}
-}
 
  #define ARCHSTR getArchStr()
 
@@ -91,16 +78,32 @@ static const char* getArchStr()
 // CINTERFACE needs to be declared if compiling with VC++
 #include <shlobj.h>
 #include <tchar.h>
-#endif
-
-// Define this to enable ofx plugin cache debug messages.
-//#define CACHE_DEBUG
-
-#if defined ( WINDOWS )
-
 #ifndef _MSC_VER
   #define SHGFP_TYPE_CURRENT 0
 #endif
+
+#endif
+
+namespace tuttle {
+namespace host {
+namespace ofx {
+
+#if defined ( __linux__ )
+
+static const char* getArchStr()
+{
+	if( sizeof( void* ) == 4 )
+	{
+		return "Linux-x86";
+	}
+	else
+	{
+		return "Linux-x86-64";
+	}
+}
+
+#endif
+#if defined ( WINDOWS )
 
 const TCHAR* getStdOFXPluginPath( const std::string& hostId = "Plugins" )
 {
@@ -463,3 +466,5 @@ std::ostream& operator<<( std::ostream& os, const OfxhPluginCache& v )
 }
 }
 }
+
+

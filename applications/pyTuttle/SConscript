@@ -28,7 +28,7 @@ envSwig.Append( SWIGPATH=envSwig['CPPPATH'] )
 envSwig.Append( SWIGOUTDIR=pythonOutputDir )
 envSwig.Replace( SHLIBPREFIX = '' )
 envSwig.Replace( LIBPREFIX = '' )
-swigWrap = envSwig.SharedLibrary( target='_'+name, source=sources_swig+sources_common )
+swigWrap = envSwig.SharedLibrary( target='_'+name, source=sources_swig ) #+sources_common )
 swigWrapInstall = envSwig.Install( pythonOutputDir, swigWrap )
 
 

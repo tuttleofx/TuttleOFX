@@ -23,7 +23,7 @@ private:
 
 protected:
 	StaticSingleton() {}
-	~StaticSingleton() = 0;
+	virtual ~StaticSingleton() = 0;
 
 public:
 	/**
