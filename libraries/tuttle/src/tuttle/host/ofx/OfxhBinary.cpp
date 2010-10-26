@@ -139,7 +139,7 @@ void* OfxhBinary::findSymbol( const std::string& symbol )
 		BOOST_THROW_EXCEPTION( exception::File()
 			<< exception::user() + "Error while loading plugin."
 			<< exception::filename( _binaryPath )
-			<< exception::dev( "Can't search symbol " + quotes( symbol ) + " (invalid:" + _invalid + ", dlHandle:" + _dlHandle + ")." ) );
+			<< exception::dev() + "Can't search symbol " + quotes( symbol ) + " (invalid:" + _invalid + ", dlHandle:" + _dlHandle + ")." );
 	}
 	#if defined( UNIX )
 		return dlsym( _dlHandle, symbol.c_str() );
