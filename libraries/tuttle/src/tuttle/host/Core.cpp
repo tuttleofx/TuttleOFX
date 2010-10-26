@@ -47,6 +47,7 @@ Core::~Core()
 
 void Core::preload()
 {
+#ifndef WINDOWS
 	//	typedef boost::archive::binary_oarchive OArchive;
 	//	typedef boost::archive::binary_iarchive IArchive;
 	//	typedef boost::archive::text_oarchive OArchive;
@@ -71,9 +72,9 @@ void Core::preload()
 	{
 		COUT_ERROR( "Exception when reading cache file (" << e.what() << ")." );
 	}
-
+#endif
 	_pluginCache.scanPluginFiles();
-
+#ifndef WINDOWS
 	if( _pluginCache.isDirty() )
 	{
 		/// flush out the current cache
@@ -83,7 +84,7 @@ void Core::preload()
 		oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
 		ofsb.close();
 	}
-
+#endif
 }
 
 std::ostream& operator<<( std::ostream& os, const Core& v )

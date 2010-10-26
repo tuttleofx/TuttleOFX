@@ -80,32 +80,39 @@ void OfxhBinary::load()
 	#if defined ( UNIX )
 	_dlHandle = dlopen( _binaryPath.c_str(), RTLD_LAZY );
 	#else
+	//std::cout << "LoadLibrary" << _binaryPath << std::endl;
 	_dlHandle = LoadLibrary( _binaryPath.c_str() );
+	//std::cout << "_dlHandle: " << _dlHandle << std::endl;
 	#endif
 	if( _dlHandle == 0 )
 	{
-		#if defined ( UNIX )
-		std::cerr << "couldn't open library " << _binaryPath << " because " << dlerror() << std::endl;
-		#else
-		LPVOID lpMsgBuf = NULL;
-		DWORD err       = GetLastError();
-
-		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		               FORMAT_MESSAGE_FROM_SYSTEM |
-		               FORMAT_MESSAGE_IGNORE_INSERTS,
-		               NULL,
-		               err,
-		               MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
-		               (LPTSTR) &lpMsgBuf,
-		               0, NULL );
-
-		std::cerr << "couldn't open library " << _binaryPath << " because " << (char*)lpMsgBuf << " was returned" << std::endl;
-		if( lpMsgBuf != NULL )
-		{
-			LocalFree( lpMsgBuf );
-		}
-		#endif
 		_invalid = true;
+		#if defined ( UNIX )
+			BOOST_THROW_EXCEPTION( exception::File()
+				<< exception::user() + "Couldn't open library because " + quotes(dlerror())
+				<< exception::filename( _binaryPath ) );
+		#else
+			LPVOID lpMsgBuf = NULL;
+			DWORD err       = GetLastError();
+
+			FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
+						   FORMAT_MESSAGE_FROM_SYSTEM |
+						   FORMAT_MESSAGE_IGNORE_INSERTS,
+						   NULL,
+						   err,
+						   MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ),
+						   (LPTSTR) &lpMsgBuf,
+						   0, NULL );
+			exception::user userMsg;
+			userMsg + "Couldn't open library because " + quotes((char*)lpMsgBuf) + " was returned";
+			if( lpMsgBuf != NULL )
+			{
+				LocalFree( lpMsgBuf );
+			}
+			BOOST_THROW_EXCEPTION( exception::File()
+				<< userMsg
+				<< exception::filename( _binaryPath ) );
+		#endif
 	}
 }
 
@@ -124,22 +131,21 @@ void OfxhBinary::unload()
 }
 
 /// look up a symbol in the binary file and return it as a pointer.
-/// returns null pointer if not found, or if the library is not loaded.
+/// returns null pointer if not found.
 void* OfxhBinary::findSymbol( const std::string& symbol )
 {
-	if( _dlHandle != 0 )
+	if( _invalid || _dlHandle == 0 )
 	{
-		#if defined( UNIX )
-		return dlsym( _dlHandle, symbol.c_str() );
-		#elif defined ( WINDOWS )
-		return (void*)GetProcAddress( _dlHandle, symbol.c_str() );
-		#endif
+		BOOST_THROW_EXCEPTION( exception::File()
+			<< exception::user() + "Error while loading plugin."
+			<< exception::filename( _binaryPath )
+			<< exception::dev( "Can't search symbol " + quotes( symbol ) + " (invalid:" + _invalid + ", dlHandle:" + _dlHandle + ")." ) );
 	}
-	BOOST_THROW_EXCEPTION( exception::File()
-	    << exception::user( "Error while loading plugin." )
-	    << exception::filename( _binaryPath )
-	    << exception::dev( "Symbol " + quotes( symbol ) + " not found." ) );
-	return NULL;
+	#if defined( UNIX )
+		return dlsym( _dlHandle, symbol.c_str() );
+	#elif defined ( WINDOWS )
+		return (void*)GetProcAddress( _dlHandle, symbol.c_str() );
+	#endif
 }
 
 void OfxhBinary::ref()
