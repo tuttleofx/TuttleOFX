@@ -51,29 +51,12 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 
 	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
 
-	convolve_boundary_option option = convolve_option_extend_mirror;
-	switch( _params._border )
-	{
-		case eBorderMirror:
-			option = convolve_option_extend_mirror;
-			break;
-		case eBorderConstant:
-			option = convolve_option_extend_constant;
-			break;
-		case eBorderBlack:
-			option = convolve_option_extend_zero;
-			break;
-		case eBorderPadded:
-			option = convolve_option_extend_padded;
-			break;
-	}
-
 	if( _params._size.x == 0 )
-		correlate_cols<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, option );
+		correlate_cols<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, _params._boundary_option );
 	else if( _params._size.y == 0 )
-		correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, option );
+		correlate_rows<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, _params._boundary_option );
 	else
-		correlate_rows_cols<Pixel>( this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, option );
+		correlate_rows_cols<Pixel>( this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, _params._boundary_option );
 }
 
 }

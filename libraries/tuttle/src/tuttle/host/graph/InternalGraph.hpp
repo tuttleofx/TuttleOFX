@@ -42,7 +42,6 @@ public:
     template<class VIn, class VOut>
     void operator()(const VIn& vIn, VOut& vOut)
 	{
-		std::cout << "Copier::operator()(vIn, vOut)" << std::endl;
 		_gOut[vOut] = _gIn[vIn];
 	}
 private:

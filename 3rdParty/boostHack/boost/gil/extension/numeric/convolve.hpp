@@ -399,8 +399,12 @@ void convolve_cols_fixed(const SrcView& src, const Kernel& ker, const DstView& d
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void correlate_rows_cols(const SrcView& src, const Kernel& kernelX, const Kernel& kernelY, const DstView& dst, const typename SrcView::point_t& dst_tl,
-                    convolve_boundary_option option=convolve_option_extend_zero)
+void correlate_rows_cols( const SrcView& src,
+                          const Kernel& kernelX,
+						  const Kernel& kernelY,
+						  const DstView& dst,
+						  const typename SrcView::point_t& dst_tl,
+						  convolve_boundary_option option=convolve_option_extend_zero )
 {
 	// dst with dst_tl shift must be inside src
 	BOOST_ASSERT( dst.width() + dst_tl.x <= src.width() );

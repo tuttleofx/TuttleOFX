@@ -5,18 +5,22 @@
 #include <tuttle/common/utils/global.hpp>
 
 #include <ofxsImageEffect.h>
-#include <boost/gil/extension/numeric/kernel.hpp>
 #include <boost/gil/gil_all.hpp>
+#include <boost/gil/extension/numeric/kernel.hpp>
+#include <boost/gil/extension/numeric/convolve.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace blur {
 
+namespace bgil = boost::gil;
+
 template<typename Scalar>
 struct BlurProcessParams
 {
 	boost::gil::point2<double> _size;
-	EBorder _border;
+	EParamBorder _border;
+	boost::gil::convolve_boundary_option _boundary_option;
 
 	boost::gil::kernel_1d<Scalar> _gilKernelX;
 	boost::gil::kernel_1d<Scalar> _gilKernelY;
