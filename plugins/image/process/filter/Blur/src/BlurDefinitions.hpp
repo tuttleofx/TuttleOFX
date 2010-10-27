@@ -14,12 +14,12 @@ const static std::string kParamBorderConstant = "Constant";
 const static std::string kParamBorderBlack    = "Black";
 const static std::string kParamBorderPadded   = "Padded";
 
-enum EBorder
+enum EParamBorder
 {
-	eBorderMirror = 0,
-	eBorderConstant,
-	eBorderBlack,
-	eBorderPadded
+	eParamBorderMirror = 0,
+	eParamBorderConstant,
+	eParamBorderBlack,
+	eParamBorderPadded
 };
 
 }

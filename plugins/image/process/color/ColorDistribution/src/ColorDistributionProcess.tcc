@@ -132,7 +132,6 @@ struct pixel_color_distribution_t
 		                 );
 		return p2;
 	}
-
 };
 
 template< EParamDistribution IN,
@@ -143,11 +142,9 @@ struct transform_pixel_color_distribution_t
 	Pixel operator()( const Pixel& p1 ) const
 	{
 		Pixel p2;
-
 		pixel_color_distribution_t<Pixel, IN, OUT>( )( p1, p2 );
 		return p2;
 	}
-
 };
 
 template<class View>

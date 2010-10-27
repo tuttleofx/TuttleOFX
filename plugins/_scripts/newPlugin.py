@@ -76,7 +76,7 @@ if __name__ == '__main__':
 		pluginLongLabel = raw_input( 'Plugin long label (default "'+pluginLabel+'") ?: ' )
 		if not pluginLongLabel:
 			pluginLongLabel = pluginLabel
-		pluginGroup = raw_input( 'Plugin group (default "tuttle") ?: ' )
+		pluginGroup = raw_input( 'Plugin group ? (default "tuttle"): ' )
 		if not pluginGroup:
 			pluginGroup = 'tuttle'
 		defaultNamespace = className[0].lower() + className[1:]
@@ -84,14 +84,17 @@ if __name__ == '__main__':
 		if not namespace:
 			namespace = defaultNamespace
 		print
-		print 'Setting up the declaration string (eg. "fr.COMPANY.PROJECT.'+className.lower()+'"):'
-		id = ['fr']
+		print 'Setting up the declaration string (eg. "fr.PROJECT.COMPANY.'+className.lower()+'"):'
+		country = raw_input( 'country ? (default "fr"): ' )
+		if not country:
+			country = 'fr'
+		id = [country]
+		projectName = raw_input( 'project ? (default "tuttle"): ' )
+		if not projectName:
+			projectName = 'tuttle'
 		companyName = raw_input( 'company ?: ' )
 		if companyName:
 			id.append( companyName )
-		projectName = raw_input( 'project ?: ' )
-		if not projectName:
-			projectName = 'tuttle'
 		id.append( projectName )
 		id.append( className.lower() )
 		pluginUniqueId = '.'.join(id)

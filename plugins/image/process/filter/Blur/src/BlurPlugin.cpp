@@ -25,13 +25,29 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
 {
 	BlurProcessParams<Scalar> params;
 	params._size   = ofxToGil( _paramSize->getValue() ) * ofxToGil( renderScale  );
-	params._border = static_cast<EBorder>( _paramBorder->getValue() );
+	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
 
 	//	COUT_X(80, "X");
 	params._gilKernelX = buildGaussian1DKernel<Scalar>( params._size.x );
 	//	COUT_X(80, "Y");
 	params._gilKernelY = buildGaussian1DKernel<Scalar>( params._size.y );
-
+	
+	params._boundary_option = bgil::convolve_option_extend_mirror;
+	switch( params._border )
+	{
+		case eParamBorderMirror:
+			params._boundary_option = bgil::convolve_option_extend_mirror;
+			break;
+		case eParamBorderConstant:
+			params._boundary_option = bgil::convolve_option_extend_constant;
+			break;
+		case eParamBorderBlack:
+			params._boundary_option = bgil::convolve_option_extend_zero;
+			break;
+		case eParamBorderPadded:
+			params._boundary_option = bgil::convolve_option_extend_padded;
+			break;
+	}
 	return params;
 }
 
@@ -119,7 +135,7 @@ bool BlurPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& 
 
 	switch( params._border )
 	{
-		case eBorderPadded:
+		case eParamBorderPadded:
 			rod.x1 = srcRod.x1 + params._gilKernelX.left_size();
 			rod.y1 = srcRod.y1 + params._gilKernelY.left_size();
 			rod.x2 = srcRod.x2 - params._gilKernelX.right_size();
