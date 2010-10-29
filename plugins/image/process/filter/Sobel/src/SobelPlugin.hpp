@@ -27,6 +27,10 @@ struct SobelProcessParams
 	boost::gil::kernel_1d<Scalar> _xKernelGaussian;
 	boost::gil::kernel_1d<Scalar> _yKernelGaussianDerivative;
 	boost::gil::kernel_1d<Scalar> _yKernelGaussian;
+
+	bool _computeGradientNorm;
+	bool _gradientNormManhattan;
+	bool _computeGradientDirection;
 };
 
 /**
@@ -57,6 +61,9 @@ public:
 	OFX::Double2DParam* _paramSize;
 	OFX::BooleanParam* _paramNormalizedKernel;
     OFX::ChoiceParam* _paramBorder;
+	OFX::BooleanParam* _paramComputeGradientNorm;
+	OFX::BooleanParam* _paramGradientNormManhattan;
+	OFX::BooleanParam* _paramComputeGradientDirection;
 };
 
 }

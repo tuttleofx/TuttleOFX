@@ -26,6 +26,10 @@ enum EParamBorder
 	eParamBorderPadded
 };
 
+const static std::string kParamComputeGradientNorm = "computeGradientNorm";
+const static std::string kParamGradientNormManhattan = "gradientNormManhattan";
+const static std::string kParamComputeGradientDirection = "computeGradientDirection";
+
 
 }
 }

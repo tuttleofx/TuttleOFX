@@ -82,6 +82,20 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	border->appendOption( kParamBorderBlack );
 	border->appendOption( kParamBorderPadded );
 
+	OFX::BooleanParamDescriptor* computeNorm = desc.defineBooleanParam( kParamComputeGradientNorm );
+	computeNorm->setLabel( "Compute norm" );
+	computeNorm->setHint( "To disable the norm computation, if you don't need it." );
+	computeNorm->setDefault( true );
+
+	OFX::BooleanParamDescriptor* normManhattan = desc.defineBooleanParam( kParamGradientNormManhattan );
+	normManhattan->setLabel( "Use the manhattan norm." );
+	normManhattan->setHint( "Use manhattan norm instead of standard one." );
+	normManhattan->setDefault( true );
+
+	OFX::BooleanParamDescriptor* computeGradientDirection = desc.defineBooleanParam( kParamComputeGradientDirection );
+	computeGradientDirection->setLabel( "Gradient direction." );
+	computeGradientDirection->setHint( "To disable the gradient direction computation, if you don't need it." );
+	computeGradientDirection->setDefault( true );
 }
 
 /**

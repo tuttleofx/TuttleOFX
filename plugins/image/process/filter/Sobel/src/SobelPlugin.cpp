@@ -26,6 +26,9 @@ ImageEffect( handle )
 	_paramSize = fetchDouble2DParam( kParamSize );
 	_paramNormalizedKernel = fetchBooleanParam( kParamNormalizedKernel );
 	_paramBorder = fetchChoiceParam( kParamBorder );
+	_paramComputeGradientNorm = fetchBooleanParam( kParamComputeGradientNorm );
+	_paramGradientNormManhattan = fetchBooleanParam( kParamGradientNormManhattan );
+	_paramComputeGradientDirection = fetchBooleanParam( kParamComputeGradientDirection );
 }
 
 SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -65,6 +68,11 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 		params._yKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( params._size.y, normalizedKernel );
 		params._yKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel );
 	}
+	
+	params._computeGradientNorm = _paramComputeGradientNorm->getValue();
+	params._gradientNormManhattan = _paramGradientNormManhattan->getValue();
+	params._computeGradientDirection = _paramComputeGradientDirection->getValue();
+
 	return params;
 }
 
