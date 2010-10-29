@@ -10,15 +10,17 @@ libraries = [ libs.openfxHack,
 			  libs.boost_gil,
 			 ]
 
+name = project.getName()
 sourcesDir = 'src'
 samCheckSources = project.scanFiles( [sourcesDir] )
 
 samCheckEnv = project.createEnv( libraries )
 samCheckEnv.Append( CPPPATH=sourcesDir )
-samCheck = samCheckEnv.Program( target=project.getName(), source=samCheckSources )
+samCheck = samCheckEnv.Program( target=name, source=samCheckSources )
 
 samCheckInstall = samCheckEnv.Install( project.inOutputBin(), samCheck )
-samCheckEnv.Alias('all', samCheckInstall )
+samCheckEnv.Alias( name, samCheckInstall )
+samCheckEnv.Alias( 'all', samCheckInstall )
 
 
 
