@@ -8,8 +8,8 @@ namespace tuttle {
 namespace plugin {
 namespace sobel {
 
-const static std::string kParamSize           = "size";
-
+const static std::string kParamSize             = "size";
+const static std::string kParamUnidimensional   = "unidimensional";
 const static std::string kParamNormalizedKernel = "normalizedKernel";
 
 const static std::string kParamBorder = "border";

@@ -61,10 +61,15 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );
 	size->setLabel( "Size" );
-	size->setDefault( 3, 3 );
+	size->setDefault( 1.0, 1.0 );
 	size->setRange( 0.0, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
 	size->setDisplayRange( 0, 0, 10, 10 );
 	size->setDoubleType( OFX::eDoubleTypeScale );
+
+	OFX::BooleanParamDescriptor* unidimensional = desc.defineBooleanParam( kParamUnidimensional );
+	unidimensional->setLabel( "Unidimensional" );
+	unidimensional->setHint( "Instead of using a square convolution matrix, use 1D kernels." );
+	unidimensional->setDefault( false );
 
 	OFX::BooleanParamDescriptor* normalizedKernel = desc.defineBooleanParam( kParamNormalizedKernel );
 	normalizedKernel->setLabel( "Normalized kernel" );

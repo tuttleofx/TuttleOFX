@@ -18,7 +18,7 @@ namespace tuttle {
 namespace plugin {
 namespace sobel {
 
-using namespace boost::gil;
+namespace bgil = boost::gil;
 namespace bm = boost::math;
 
 template< typename Channel>
@@ -75,9 +75,8 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 {
 	using namespace boost;
 	using namespace boost::gil;
-//	namespace bgil = boost::gil;
 	typedef typename View::value_type Pixel;
-	Pixel pixelZero; pixel_zeros_t<Pixel>()(pixelZero);
+	Pixel pixelZero; bgil::pixel_zeros_t<Pixel>()(pixelZero);
 
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
@@ -86,7 +85,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	};
 	
 	typedef typename View::point_t Point;
-	typedef typename channel_mapping_type<View>::type Channel;
+	typedef typename bgil::channel_mapping_type<View>::type Channel;
 	typedef typename mpl::if_< is_floating_point<Channel>,
 	                           Channel,
 							   bgil::bits32f>::type ChannelFloat;
@@ -99,30 +98,68 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	                          procWindowSize.x, procWindowSize.y );
 
 	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
-	
-	correlate_rows_cols<PixelGray>(
-		color_converted_view<PixelGray>( this->_srcView ),
-		_params._xKernelGaussianDerivative,
-		_params._xKernelGaussian,
-		kth_channel_view<0>(this->_dstView),
-		proc_tl,
-		_params._boundary_option );
+
+	if( _params._xKernelGaussianDerivative.size() == 0 || ( !_params._unidimensional && _params._xKernelGaussian.size() == 0 ) )
+	{
+		fill_pixels( kth_channel_view<0>(dst), pixelZero );
+	}
+	else
+	{
+		if( _params._unidimensional )
+		{
+			correlate_rows<PixelGray>(
+				color_converted_view<PixelGray>( this->_srcView ),
+				_params._xKernelGaussianDerivative,
+				kth_channel_view<0>(this->_dstView),
+				proc_tl,
+				_params._boundary_option );
+		}
+		else
+		{
+			correlate_rows_cols<PixelGray>(
+				color_converted_view<PixelGray>( this->_srcView ),
+				_params._xKernelGaussianDerivative,
+				_params._xKernelGaussian,
+				kth_channel_view<0>(this->_dstView),
+				proc_tl,
+				_params._boundary_option );
+		}
+	}
 	if( progressForward( dst.height() ) )
 		return;
 
-	correlate_rows_cols<PixelGray>(
-		color_converted_view<PixelGray>( this->_srcView ),
-		_params._yKernelGaussian,
-		_params._yKernelGaussianDerivative,
-		kth_channel_view<1>(dst),
-		proc_tl,
-		_params._boundary_option );
+	if( _params._yKernelGaussianDerivative.size() == 0 || ( !_params._unidimensional && _params._yKernelGaussian.size() == 0 ) )
+	{
+		fill_pixels( kth_channel_view<1>(dst), pixelZero );
+	}
+	else
+	{
+		if( _params._unidimensional )
+		{
+			correlate_cols<PixelGray>(
+				color_converted_view<PixelGray>( this->_srcView ),
+				_params._yKernelGaussianDerivative,
+				kth_channel_view<1>(dst),
+				proc_tl,
+				_params._boundary_option );
+		}
+		else
+		{
+			correlate_rows_cols<PixelGray>(
+				color_converted_view<PixelGray>( this->_srcView ),
+				_params._yKernelGaussian,
+				_params._yKernelGaussianDerivative,
+				kth_channel_view<1>(dst),
+				proc_tl,
+				_params._boundary_option );
+		}
+	}
 	if( progressForward( dst.height() ) )
 		return;
 
 	if( ! _params._computeGradientNorm )
 	{
-		fill_pixels( kth_channel_view<2>(dst), pixelZero ); // dst: gradient direction
+		fill_pixels( kth_channel_view<2>(dst), pixelZero );
 	}
 	else if( _params._gradientNormManhattan )
 	{
@@ -149,7 +186,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 
 	if( ! _params._computeGradientDirection )
 	{
-		fill_pixels( kth_channel_view<3>(dst), pixelZero ); // dst: gradient direction
+		fill_pixels( kth_channel_view<3>(dst), pixelZero );
 	}
 	else
 	{
