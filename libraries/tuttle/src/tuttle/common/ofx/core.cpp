@@ -46,36 +46,6 @@ std::ostream& operator<<( std::ostream& os, const OfxPlugin& v )
 	return os;
 }
 
-std::ostream& operator<<( std::ostream& out, const OfxPointI& p )
-{
-	return out << "x:" << p.x << " y:" << p.y;
-}
-
-std::ostream& operator<<( std::ostream& out, const OfxPointD& p )
-{
-	return out << "x:" << p.x << " y:" << p.y;
-}
-
-std::ostream& operator<<( std::ostream& out, const OfxRangeI& r )
-{
-	return out << "min:" << r.min << " max:" << r.max;
-}
-
-std::ostream& operator<<( std::ostream& out, const OfxRangeD& r )
-{
-	return out << "min:" << r.min << " max:" << r.max;
-}
-
-std::ostream& operator<<( std::ostream& out, const OfxRectI& r )
-{
-	return out << "x1:" << r.x1 << " y1:" << r.y1 << " x2:" << r.x2 << " y2:" << r.y2;
-}
-
-std::ostream& operator<<( std::ostream& out, const OfxRectD& r )
-{
-	return out << "x1:" << r.x1 << " y1:" << r.y1 << " x2:" << r.x2 << " y2:" << r.y2;
-}
-
 /*
    typedef struct OfxRangeI
    {
