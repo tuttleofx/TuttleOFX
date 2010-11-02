@@ -92,10 +92,10 @@ if __name__ == '__main__':
 		projectName = raw_input( 'project ? (default "tuttle"): ' )
 		if not projectName:
 			projectName = 'tuttle'
+		id.append( projectName )
 		companyName = raw_input( 'company ?: ' )
 		if companyName:
 			id.append( companyName )
-		id.append( projectName )
 		id.append( className.lower() )
 		pluginUniqueId = '.'.join(id)
 

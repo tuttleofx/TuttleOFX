@@ -61,10 +61,15 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );
 	size->setLabel( "Size" );
-	size->setDefault( 3, 3 );
+	size->setDefault( 1.0, 1.0 );
 	size->setRange( 0.0, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
 	size->setDisplayRange( 0, 0, 10, 10 );
 	size->setDoubleType( OFX::eDoubleTypeScale );
+
+	OFX::BooleanParamDescriptor* unidimensional = desc.defineBooleanParam( kParamUnidimensional );
+	unidimensional->setLabel( "Unidimensional" );
+	unidimensional->setHint( "Instead of using a square convolution matrix, use 1D kernels." );
+	unidimensional->setDefault( false );
 
 	OFX::BooleanParamDescriptor* normalizedKernel = desc.defineBooleanParam( kParamNormalizedKernel );
 	normalizedKernel->setLabel( "Normalized kernel" );
@@ -82,6 +87,20 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	border->appendOption( kParamBorderBlack );
 	border->appendOption( kParamBorderPadded );
 
+	OFX::BooleanParamDescriptor* computeNorm = desc.defineBooleanParam( kParamComputeGradientNorm );
+	computeNorm->setLabel( "Compute norm" );
+	computeNorm->setHint( "To disable the norm computation, if you don't need it." );
+	computeNorm->setDefault( true );
+
+	OFX::BooleanParamDescriptor* normManhattan = desc.defineBooleanParam( kParamGradientNormManhattan );
+	normManhattan->setLabel( "Use the manhattan norm." );
+	normManhattan->setHint( "Use manhattan norm instead of standard one." );
+	normManhattan->setDefault( true );
+
+	OFX::BooleanParamDescriptor* computeGradientDirection = desc.defineBooleanParam( kParamComputeGradientDirection );
+	computeGradientDirection->setLabel( "Gradient direction." );
+	computeGradientDirection->setHint( "To disable the gradient direction computation, if you don't need it." );
+	computeGradientDirection->setDefault( true );
 }
 
 /**

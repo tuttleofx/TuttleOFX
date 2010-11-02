@@ -25,7 +25,11 @@ ImageEffect( handle )
 
 	_paramSize = fetchDouble2DParam( kParamSize );
 	_paramNormalizedKernel = fetchBooleanParam( kParamNormalizedKernel );
+	_paramUnidimensional = fetchBooleanParam( kParamUnidimensional );
 	_paramBorder = fetchChoiceParam( kParamBorder );
+	_paramComputeGradientNorm = fetchBooleanParam( kParamComputeGradientNorm );
+	_paramGradientNormManhattan = fetchBooleanParam( kParamGradientNormManhattan );
+	_paramComputeGradientDirection = fetchBooleanParam( kParamComputeGradientDirection );
 }
 
 SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -53,8 +57,12 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	}
 
 	bool normalizedKernel = _paramNormalizedKernel->getValue();
+
+	params._unidimensional = _paramUnidimensional->getValue();
 	params._xKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( params._size.x, normalizedKernel );
-	params._xKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel );
+	if( ! params._unidimensional )
+		params._xKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel );
+
 	if( params._size.x == params._size.y )
 	{
 		params._yKernelGaussianDerivative = params._xKernelGaussianDerivative;
@@ -63,8 +71,14 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	else
 	{
 		params._yKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( params._size.y, normalizedKernel );
-		params._yKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel );
+		if( ! params._unidimensional )
+			params._yKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel );
 	}
+
+	params._computeGradientNorm = _paramComputeGradientNorm->getValue();
+	params._gradientNormManhattan = _paramGradientNormManhattan->getValue();
+	params._computeGradientDirection = _paramComputeGradientDirection->getValue();
+
 	return params;
 }
 
@@ -74,13 +88,14 @@ void SobelPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std:
 
 bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-//	SobelProcessParams<Scalar> params = getProcessParams();
-//	if( params._in == params._out )
-//	{
-//		identityClip = _clipSrc;
-//		identityTime = args.time;
-//		return true;
-//	}
+	SobelProcessParams<Scalar> params = getProcessParams();
+	if( ( params._xKernelGaussianDerivative.size() == 0 || ( !params._unidimensional && params._xKernelGaussian.size() == 0 ) ) &&
+	    ( params._yKernelGaussianDerivative.size() == 0 || ( !params._unidimensional && params._yKernelGaussian.size() == 0 ) ) )
+	{
+		identityClip = _srcClip;
+		identityTime = args.time;
+		return true;
+	}
 	return false;
 }
 
