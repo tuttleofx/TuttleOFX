@@ -110,7 +110,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			correlate_rows<PixelGray>(
 				color_converted_view<PixelGray>( this->_srcView ),
 				_params._xKernelGaussianDerivative,
-				kth_channel_view<0>(this->_dstView),
+				kth_channel_view<0>(dst),
 				proc_tl,
 				_params._boundary_option );
 		}
@@ -120,7 +120,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				color_converted_view<PixelGray>( this->_srcView ),
 				_params._xKernelGaussianDerivative,
 				_params._xKernelGaussian,
-				kth_channel_view<0>(this->_dstView),
+				kth_channel_view<0>(dst),
 				proc_tl,
 				_params._boundary_option );
 		}

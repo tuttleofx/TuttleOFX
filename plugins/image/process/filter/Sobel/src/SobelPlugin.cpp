@@ -82,9 +82,43 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	return params;
 }
 
-void SobelPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+//void SobelPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+//{
+//}
+
+bool SobelPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+
+	SobelProcessParams<Scalar> params = getProcessParams();
+
+	switch( params._border )
+	{
+		case eParamBorderPadded:
+			rod.x1 = srcRod.x1 + std::max( params._xKernelGaussianDerivative.left_size(), params._yKernelGaussian.left_size() );
+			rod.y1 = srcRod.y1 + std::max( params._xKernelGaussian.left_size(), params._yKernelGaussianDerivative.left_size() );
+			rod.x2 = srcRod.x2 - std::max( params._xKernelGaussianDerivative.right_size(), params._yKernelGaussian.right_size() );
+			rod.y2 = srcRod.y2 - std::max( params._xKernelGaussian.right_size(), params._yKernelGaussianDerivative.right_size() );
+			return true;
+		default:
+			break;
+	}
+	return false;
 }
+
+void SobelPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+{
+	SobelProcessParams<Scalar> params = getProcessParams();
+	OfxRectD srcRod                  = _clipSrc->getCanonicalRod( args.time );
+
+	OfxRectD srcRoi;
+	srcRoi.x1 = srcRod.x1 - std::max( params._xKernelGaussianDerivative.left_size(), params._yKernelGaussian.left_size() );
+	srcRoi.y1 = srcRod.y1 - std::max( params._xKernelGaussian.left_size(), params._yKernelGaussianDerivative.left_size() );
+	srcRoi.x2 = srcRod.x2 + std::max( params._xKernelGaussianDerivative.right_size(), params._yKernelGaussian.right_size() );
+	srcRoi.y2 = srcRod.y2 + std::max( params._xKernelGaussian.right_size(), params._yKernelGaussianDerivative.right_size() );
+	rois.setRegionOfInterest( *_clipSrc, srcRoi );
+}
+
 
 bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {

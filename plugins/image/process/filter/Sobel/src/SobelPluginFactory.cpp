@@ -14,7 +14,7 @@ namespace tuttle {
 namespace plugin {
 namespace sobel {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**
