@@ -92,7 +92,7 @@ bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& iden
 	if( ( params._xKernelGaussianDerivative.size() == 0 || ( !params._unidimensional && params._xKernelGaussian.size() == 0 ) ) &&
 	    ( params._yKernelGaussianDerivative.size() == 0 || ( !params._unidimensional && params._yKernelGaussian.size() == 0 ) ) )
 	{
-		identityClip = _srcClip;
+		identityClip = _clipSrc;
 		identityTime = args.time;
 		return true;
 	}
