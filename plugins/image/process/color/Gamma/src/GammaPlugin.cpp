@@ -14,8 +14,8 @@ namespace gamma {
 GammaPlugin::GammaPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
-	_srcClip   = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_dstClip   = fetchClip( kOfxImageEffectOutputClipName );
+	_clipSrc   = fetchClip( kOfxImageEffectSimpleSourceClipName );
+	_clipDst   = fetchClip( kOfxImageEffectOutputClipName );
 	_gammaType = fetchChoiceParam( kGammaType );
 	_master    = fetchDoubleParam( kMasterValue );
 	_red       = fetchDoubleParam( kRedValue );
@@ -94,8 +94,8 @@ void GammaPlugin::render( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _dstClip->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _dstClip->getPixelComponents();
+	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
 	// do the rendering
 	if( dstComponents == OFX::ePixelComponentRGBA )

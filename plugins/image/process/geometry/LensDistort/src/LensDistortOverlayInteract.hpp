@@ -32,7 +32,7 @@ public:
 	bool penMotion( const OFX::PenArgs& args );
 };
 
-class LensDistortEffectOverlayDescriptor : public OFX::EffectOverlayDescriptor
+class LensDistortOverlayDescriptor : public OFX::EffectOverlayDescriptor
 {
 public:
 	OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect* effect )

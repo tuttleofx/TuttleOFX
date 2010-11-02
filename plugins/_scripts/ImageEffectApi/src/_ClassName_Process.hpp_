@@ -23,6 +23,8 @@ protected :
 public:
     %CLASSNAME%Process( %CLASSNAME%Plugin& effect );
 
+	void setup( const OFX::RenderArguments& args );
+
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 

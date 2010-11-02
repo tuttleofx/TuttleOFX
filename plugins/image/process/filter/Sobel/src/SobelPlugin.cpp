@@ -20,8 +20,8 @@ namespace sobel {
 SobelPlugin::SobelPlugin( OfxImageEffectHandle handle ) :
 ImageEffect( handle )
 {
-    _srcClip = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _dstClip = fetchClip( kOfxImageEffectOutputClipName );
+    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
+    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
 	_paramSize = fetchDouble2DParam( kParamSize );
 	_paramNormalizedKernel = fetchBooleanParam( kParamNormalizedKernel );
@@ -92,8 +92,8 @@ void SobelPlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _dstClip->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _dstClip->getPixelComponents( );
+    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
+    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
     if( dstComponents == OFX::ePixelComponentRGBA )

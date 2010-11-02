@@ -42,7 +42,7 @@ void LensDistortPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setSupportsTiles( true );
 
-	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<LensDistortEffectOverlayDescriptor>() );
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<LensDistortOverlayDescriptor>() );
 }
 
 /**
