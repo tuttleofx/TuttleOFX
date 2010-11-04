@@ -1,3 +1,6 @@
+#include "SobelPlugin.hpp"
+#include "SobelAlgorithm.hpp"
+
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
@@ -12,45 +15,10 @@
 
 #include <cmath>
 
-#include "SobelPlugin.hpp"
 
 namespace tuttle {
 namespace plugin {
 namespace sobel {
-
-namespace bgil = boost::gil;
-namespace bm = boost::math;
-
-template< typename Channel>
-struct transform_channel_gradientDirection_t
-{
-	void operator()( const Channel& a, const Channel& b, Channel& res ) const
-	{
-		if( b == 0 )
-			res = 0;
-		else
-			res = std::atan( a / b );
-	}
-};
-
-template<typename Channel>
-struct transform_channel_norm_t
-{
-	void operator()( const Channel& a, const Channel& b, Channel& res ) const
-	{
-		res = std::sqrt( bm::pow<2>(a) + bm::pow<2>(b) );
-	}
-};
-
-template<typename Channel>
-struct transform_channel_normManhattan_t
-{
-	void operator()( const Channel& a, const Channel& b, Channel& res ) const
-	{
-		res = std::abs(a) + std::abs(b);
-	}
-};
-
 
 template<class View>
 SobelProcess<View>::SobelProcess( SobelPlugin &effect )
@@ -167,7 +135,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
-			transform_pixel_by_channel_t<transform_channel_normManhattan_t>(),
+			transform_pixel_by_channel_t<channel_normManhattan_t>(),
 			*this
 			);
 	}
@@ -177,7 +145,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			kth_channel_view<0>(dst), // srcX
 			kth_channel_view<1>(dst), // srcY
 			kth_channel_view<2>(dst), // dst: gradient direction
-			transform_pixel_by_channel_t<transform_channel_norm_t>(),
+			transform_pixel_by_channel_t<channel_norm_t>(),
 			*this
 			);
 	}
@@ -190,13 +158,26 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	}
 	else
 	{
-		transform_pixels_progress(
-			kth_channel_view<0>(dst), // srcX
-			kth_channel_view<1>(dst), // srcY
-			kth_channel_view<3>(dst), // dst: gradient direction
-			transform_pixel_by_channel_t<transform_channel_gradientDirection_t>(),
-			*this
-			);
+		if( _params._gradientDirectionAbs )
+		{
+			transform_pixels_progress(
+				kth_channel_view<0>(dst), // srcX
+				kth_channel_view<1>(dst), // srcY
+				kth_channel_view<3>(dst), // dst: gradient direction
+				transform_pixel_by_channel_t<channel_gradientDirectionAbs_t>(),
+				*this
+				);
+		}
+		else
+		{
+			transform_pixels_progress(
+				kth_channel_view<0>(dst), // srcX
+				kth_channel_view<1>(dst), // srcY
+				kth_channel_view<3>(dst), // dst: gradient direction
+				transform_pixel_by_channel_t<channel_gradientDirection_t>(),
+				*this
+				);
+		}
 	}
 	if( progressForward( dst.height() ) )
 		return;

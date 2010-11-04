@@ -15,8 +15,8 @@ IfftProcess<View>::IfftProcess( IfftPlugin& instance )
 	: ImageGilProcessor<View>( instance )
 	, _plugin( instance )
 {
-	_srcClipRe = instance.fetchClip( kSourcePhase );
-	_srcClipIm = instance.fetchClip( kSourceModule );
+	_clipSrcRe = instance.fetchClip( kSourcePhase );
+	_clipSrcIm = instance.fetchClip( kSourceModule );
 	_clipDst   = instance.fetchClip( kOfxImageEffectOutputClipName );
 	this->setNoMultiThreading();
 }
@@ -27,12 +27,12 @@ void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilProcessor<View>::setup( args );
 
 	// Re source view
-	this->_srcMod.reset( _srcClipRe->fetchImage( args.time ) );
+	this->_srcMod.reset( _clipSrcRe->fetchImage( args.time ) );
 	if( !this->_srcMod.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( this->_srcMod->getRowBytes() <= 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewRe = this->getView( this->_srcMod.get(), _srcClipRe->getPixelRod( args.time ) );
+	this->_srcViewRe = this->getView( this->_srcMod.get(), _clipSrcRe->getPixelRod( args.time ) );
 
 	// Make sure bit depths are same
 	if( this->_srcMod->getPixelDepth() != this->_dst->getPixelDepth() ||
@@ -40,12 +40,12 @@ void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch() );
 
 	// Im source view
-	this->_srcPhase.reset( _srcClipIm->fetchImage( args.time ) );
+	this->_srcPhase.reset( _clipSrcIm->fetchImage( args.time ) );
 	if( !this->_srcPhase.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( this->_srcPhase->getRowBytes() <= 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewIm = this->getView( this->_srcPhase.get(), _srcClipIm->getPixelRod( args.time ) );
+	this->_srcViewIm = this->getView( this->_srcPhase.get(), _clipSrcIm->getPixelRod( args.time ) );
 
 	// Make sure bit depths are same
 	if( this->_srcPhase->getPixelDepth() != this->_dst->getPixelDepth() ||

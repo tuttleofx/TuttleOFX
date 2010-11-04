@@ -1,44 +1,23 @@
+#include "InvertAlgorithm.hpp"
+
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <tuttle/plugin/image/gil/channel.hpp>
+
+#include <ofxsImageEffect.h>
+#include <ofxsMultiThread.h>
+
+#include <boost/gil/gil_all.hpp>
 
 #include <cmath>
 #include <vector>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace invert {
-
-struct inverter
-{
-	template< class P>
-	P operator()( const P& p ) const
-	{
-		using namespace boost::gil;
-		P p2;
-		// @todo TODO_OFX Improve this: Don't consider alpha
-		// http://stlab.adobe.com/gil/html/color__convert_8hpp-source.html
-		// typedef typename channel_type<P2>::type T2;
-		// channel_convert<T2>(alpha_or_max(src))
-		// mpl::contains<typename color_space_type<Pixel>::type,alpha_t>() -> mpl::true_ ?
-		const int nc = std::min( (int)num_channels<P>::type::value, 3 );
-
-		for( int n = 0; n < nc; ++n )
-		{
-			p2[n] = channel_traits< typename channel_type< P >::type >::max_value() - p[n] +
-			        channel_traits< typename channel_type< P >::type >::min_value();
-		}
-		if( num_channels<P>::type::value > 3 )
-			p2[3] = p[3];
-		return p2;
-	}
-
-};
 
 template<class View>
 InvertProcess<View>::InvertProcess( InvertPlugin& instance )
@@ -65,7 +44,25 @@ void InvertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 	                          procWindowSize.x, procWindowSize.y );
 
-	transform_pixels_progress( src, dst, inverter(), *this );
+//	if( params._alpha )
+//	{
+//		transform_pixels_progress(
+//			src,
+//			dst,
+//			transform_pixel_by_channel_t<channel_invert_t>(),
+//			*this
+//			);
+//	}
+//	else
+//	{
+		transform_pixels_progress(
+			src,
+			dst,
+			pixel_invert_colors_t(),
+			*this
+			);
+//	}
+
 }
 
 }

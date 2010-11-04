@@ -19,10 +19,10 @@ MergePlugin::MergePlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
 	_mergeFunction = fetchChoiceParam( kMergeFunction );
-	_srcClipA      = fetchClip( kMergeSourceA );
-	_srcClipB      = fetchClip( kMergeSourceB );
+	_clipSrcA      = fetchClip( kMergeSourceA );
+	_clipSrcB      = fetchClip( kMergeSourceB );
 	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
-	assert( _mergeFunction && _srcClipA && _srcClipB && _clipDst );
+	assert( _mergeFunction && _clipSrcA && _clipSrcB && _clipDst );
 }
 
 /**
@@ -413,8 +413,8 @@ void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std:
 
 bool MergePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const OfxRectD irod = rectanglesIntersection( _srcClipA->getCanonicalRod( args.time ),
-	                                              _srcClipB->getCanonicalRod( args.time ) );
+	const OfxRectD irod = rectanglesIntersection( _clipSrcA->getCanonicalRod( args.time ),
+	                                              _clipSrcB->getCanonicalRod( args.time ) );
 
 	// Intersection of A & B
 	rod.x1 = irod.x1;

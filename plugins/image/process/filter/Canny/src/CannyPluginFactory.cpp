@@ -79,6 +79,12 @@ void CannyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* thinning = desc.defineBooleanParam( kParamThinning );
 	thinning->setLabel( "Thinning" );
 	thinning->setDefault( true );
+
+	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
+	border->setLabel( "Border" );
+//	border->setHint( "Border method." );
+	border->appendOption( kParamBorderBlack );
+	border->appendOption( kParamBorderPadded );
 }
 
 /**

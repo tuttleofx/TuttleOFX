@@ -16,6 +16,7 @@ template<class View>
 class CannyProcess : public ImageGilFilterProcessor<View>
 {
 public:
+	typedef typename View::value_type Pixel;
 	typedef float Scalar;
 protected :
     CannyPlugin&    _plugin;        ///< Rendering plugin

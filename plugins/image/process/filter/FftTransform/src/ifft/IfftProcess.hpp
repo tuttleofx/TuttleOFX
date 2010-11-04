@@ -29,11 +29,11 @@ class IfftProcess : public ImageGilProcessor<View>
 protected:
 	IfftPlugin&    _plugin;               ///< @brief Rendering plugin
 
-	OFX::Clip* _srcClipRe;                ///< @brief Real source image clip
+	OFX::Clip* _clipSrcRe;                ///< @brief Real source image clip
 	View _srcViewRe;                      ///< @brief image to get real part from
 	boost::scoped_ptr<OFX::Image> _srcMod; ///< @brief src view Re
 
-	OFX::Clip* _srcClipIm;                ///< @brief Imaginary source image clip
+	OFX::Clip* _clipSrcIm;                ///< @brief Imaginary source image clip
 	View _srcViewIm;                      ///< @brief image to get imaginary part from
 	boost::scoped_ptr<OFX::Image> _srcPhase; ///< @brief src view Im
 

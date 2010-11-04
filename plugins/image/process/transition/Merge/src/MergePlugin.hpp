@@ -29,12 +29,12 @@ public:
 
 	inline OFX::Clip* getSrcClipA() const
 	{
-		return _srcClipA;
+		return _clipSrcA;
 	}
 
 	inline OFX::Clip* getSrcClipB() const
 	{
-		return _srcClipB;
+		return _clipSrcB;
 	}
 
 	inline OFX::Clip* getDstClip() const
@@ -50,8 +50,8 @@ public:
 protected:
 	OFX::ChoiceParam* _mergeFunction;   ///< Functor structure
 	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _srcClipA;               ///< Source image clip A
-	OFX::Clip* _srcClipB;               ///< Source image clip B
+	OFX::Clip* _clipSrcA;               ///< Source image clip A
+	OFX::Clip* _clipSrcB;               ///< Source image clip B
 	OFX::Clip* _clipDst;                ///< Destination image clip
 };
 

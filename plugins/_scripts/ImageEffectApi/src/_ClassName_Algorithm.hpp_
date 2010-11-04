@@ -1,0 +1,18 @@
+#ifndef _TUTTLE_PLUGIN_%D_CLASSNAME%_ALGORITHM_HPP_
+#define _TUTTLE_PLUGIN_%D_CLASSNAME%_ALGORITHM_HPP_
+
+#include <tuttle/plugin/image/gil/channel.hpp>
+
+namespace tuttle {
+namespace plugin {
+namespace %NAMESPACE% {
+
+namespace bgil = boost::gil;
+
+
+
+}
+}
+}
+
+#endif

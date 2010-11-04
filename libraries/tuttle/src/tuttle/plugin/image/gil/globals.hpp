@@ -1,7 +1,7 @@
 #ifndef _GIL_GLOBALS_HPP_
 #define _GIL_GLOBALS_HPP_
 
-#include "tuttle/common/math/minmax.hpp"
+#include <tuttle/common/math/minmax.hpp>
 
 #include <ofxCore.h>
 

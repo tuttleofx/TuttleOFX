@@ -1,40 +1,23 @@
 #include "DiffPlugin.hpp"
 #include "DiffProcess.hpp"
-#include "DiffDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace quality {
 
-using namespace boost::gil;
 
 DiffPlugin::DiffPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: OFX::ImageEffect( handle )
 {
-	_srcClipA      = fetchClip( kDiffSourceA );
-	_srcClipB      = fetchClip( kDiffSourceB );
+	_clipSrcA      = fetchClip( kDiffSourceA );
+	_clipSrcB      = fetchClip( kDiffSourceB );
 	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
 	_qualityMesure = fetchRGBAParam( kOutputQualityMesure );
-}
-
-OFX::Clip* DiffPlugin::getSrcClipA() const
-{
-	return _srcClipA;
-}
-
-OFX::Clip* DiffPlugin::getSrcClipB() const
-{
-	return _srcClipB;
-}
-
-OFX::Clip* DiffPlugin::getDstClip() const
-{
-	return _clipDst;
 }
 
 DiffProcessParams DiffPlugin::getProcessParams() const
@@ -44,12 +27,35 @@ DiffProcessParams DiffPlugin::getProcessParams() const
 	return params;
 }
 
+void DiffPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
+{
+	if( paramName == kHelpButton )
+	{
+		sendMessage( OFX::Message::eMessageMessage,
+		             "", // No XML resources
+		             kHelpString );
+	}
+}
+
+bool DiffPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+{
+	const OfxRectD irod = rectanglesIntersection( _clipSrcA->getCanonicalRod( args.time ),
+	                                              _clipSrcB->getCanonicalRod( args.time ) );
+
+	// Intersection of A & B
+	rod.x1 = irod.x1;
+	rod.x2 = irod.x2;
+	rod.y1 = irod.y1;
+	rod.y2 = irod.y2;
+	return true;
+}
 /**
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
 void DiffPlugin::render( const OFX::RenderArguments& args )
 {
+	using namespace boost::gil;
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
 	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
@@ -117,28 +123,6 @@ void DiffPlugin::render( const OFX::RenderArguments& args )
 	}
 }
 
-void DiffPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
-{
-	if( paramName == kHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kHelpString );
-	}
-}
-
-bool DiffPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-{
-	const OfxRectD irod = rectanglesIntersection( _srcClipA->getCanonicalRod( args.time ),
-	                                              _srcClipB->getCanonicalRod( args.time ) );
-
-	// Intersection of A & B
-	rod.x1 = irod.x1;
-	rod.x2 = irod.x2;
-	rod.y1 = irod.y1;
-	rod.y2 = irod.y2;
-	return true;
-}
 
 }
 }

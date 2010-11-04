@@ -22,19 +22,19 @@ using namespace boost::gil;
 IfftPlugin::IfftPlugin( OfxImageEffectHandle handle )
 	: ImageEffect( handle )
 {
-	_srcClipMod   = fetchClip( kSourcePhase );
-	_srcClipPhase = fetchClip( kSourceModule );
+	_clipSrcMod   = fetchClip( kSourcePhase );
+	_clipSrcPhase = fetchClip( kSourceModule );
 	_clipDst      = fetchClip( kOfxImageEffectOutputClipName );
 }
 
 OFX::Clip* IfftPlugin::getSrcClipRe() const
 {
-	return _srcClipMod;
+	return _clipSrcMod;
 }
 
 OFX::Clip* IfftPlugin::getSrcClipIm() const
 {
-	return _srcClipPhase;
+	return _clipSrcPhase;
 }
 
 OFX::Clip* IfftPlugin::getDstClip() const
@@ -137,8 +137,8 @@ void IfftPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 
 bool IfftPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const OfxRectD irod = rectanglesIntersection( _srcClipMod->getCanonicalRod( args.time ),
-	                                              _srcClipPhase->getCanonicalRod( args.time ) );
+	const OfxRectD irod = rectanglesIntersection( _clipSrcMod->getCanonicalRod( args.time ),
+	                                              _clipSrcPhase->getCanonicalRod( args.time ) );
 
 	// Intersection of A & B
 	rod.x1 = irod.x1;

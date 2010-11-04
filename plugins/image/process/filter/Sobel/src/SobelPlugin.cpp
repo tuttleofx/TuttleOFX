@@ -30,6 +30,7 @@ ImageEffect( handle )
 	_paramComputeGradientNorm = fetchBooleanParam( kParamComputeGradientNorm );
 	_paramGradientNormManhattan = fetchBooleanParam( kParamGradientNormManhattan );
 	_paramComputeGradientDirection = fetchBooleanParam( kParamComputeGradientDirection );
+	_paramGradientDirectionAbs = fetchBooleanParam( kParamGradientDirectionAbs );
 }
 
 SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -78,6 +79,7 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	params._computeGradientNorm = _paramComputeGradientNorm->getValue();
 	params._gradientNormManhattan = _paramGradientNormManhattan->getValue();
 	params._computeGradientDirection = _paramComputeGradientDirection->getValue();
+	params._gradientDirectionAbs = _paramGradientDirectionAbs->getValue();
 
 	return params;
 }

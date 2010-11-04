@@ -35,6 +35,38 @@ void %CLASSNAME%Plugin::changedParam( const OFX::InstanceChangedArgs &args, cons
     }
 }
 
+//bool %CLASSNAME%Plugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
+//{
+//	%CLASSNAME%ProcessParams<Scalar> params = getProcessParams();
+//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+//
+//	switch( params._border )
+//	{
+//		case eParamBorderPadded:
+//			rod.x1 = srcRod.x1 + 1;
+//			rod.y1 = srcRod.y1 + 1;
+//			rod.x2 = srcRod.x2 - 1;
+//			rod.y2 = srcRod.y2 - 1;
+//			return true;
+//		default:
+//			break;
+//	}
+//	return false;
+//}
+//
+//void %CLASSNAME%Plugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+//{
+//	%CLASSNAME%ProcessParams<Scalar> params = getProcessParams();
+//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+//
+//	OfxRectD srcRoi;
+//	srcRoi.x1 = srcRod.x1 - 1;
+//	srcRoi.y1 = srcRod.y1 - 1;
+//	srcRoi.x2 = srcRod.x2 + 1;
+//	srcRoi.y2 = srcRod.y2 + 1;
+//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
+//}
+
 bool %CLASSNAME%Plugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
 //	%CLASSNAME%ProcessParams<Scalar> params = getProcessParams();

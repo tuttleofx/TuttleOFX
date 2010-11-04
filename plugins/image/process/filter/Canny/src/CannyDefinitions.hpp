@@ -12,6 +12,15 @@ const static std::string kParamNonMaximaSuppression = "nonMaximaSuppr";
 const static std::string kParamHysteresisThresholding = "hysteresisThreshold";
 const static std::string kParamThinning = "thinning";
 
+const static std::string kParamBorder = "border";
+const static std::string kParamBorderBlack = "Black";
+const static std::string kParamBorderPadded = "Padded";
+
+enum EParamBorder
+{
+	eParamBorderBlack,
+	eParamBorderPadded
+};
 
 }
 }

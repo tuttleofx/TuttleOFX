@@ -1,8 +1,8 @@
-*
+/*
 !/.gitignore
 !/README
 !/init.sh
 !/boost_unit_testing_framework.patch
-!/boost_gil_extensions
+!/boostHack
 !Jamfile.v2
 !Jamroot

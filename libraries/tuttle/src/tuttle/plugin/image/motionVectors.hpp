@@ -2,6 +2,7 @@
 #define _TUTTLE_PLUGIN_IMAGE_MOTIONVECTORS_HPP_
 
 #include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/image/gil/channel.hpp>
 
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
@@ -11,24 +12,6 @@
 #include <boost/type_traits/is_same.hpp>
 
 #include <cmath>
-
-namespace boost {
-namespace gil {
-
-template <typename ChannelValue>
-struct base_channel_value
-{
-	typedef ChannelValue type;
-};
-
-template <typename ChannelValue, typename MinV, typename MaxV>
-struct base_channel_value<scoped_channel_value<ChannelValue, MinV, MaxV> >
-{
-	typedef ChannelValue type;
-};
-
-}
-}
 
 namespace tuttle {
 namespace plugin {

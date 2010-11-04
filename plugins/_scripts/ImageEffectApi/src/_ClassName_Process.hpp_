@@ -16,6 +16,7 @@ template<class View>
 class %CLASSNAME%Process : public ImageGilFilterProcessor<View>
 {
 public:
+	typedef typename View::value_type Pixel;
 	typedef float Scalar;
 protected :
     %CLASSNAME%Plugin&    _plugin;        ///< Rendering plugin
