@@ -17,9 +17,11 @@ class %CLASSNAME%Process : public ImageGilFilterProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
+	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef float Scalar;
 protected :
-    %CLASSNAME%Plugin&    _plugin;        ///< Rendering plugin
+    %CLASSNAME%Plugin&    _plugin;            ///< Rendering plugin
+	%CLASSNAME%ProcessParams<Scalar> _params; ///< parameters
 
 public:
     %CLASSNAME%Process( %CLASSNAME%Plugin& effect );

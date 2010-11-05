@@ -8,6 +8,8 @@ namespace tuttle {
 namespace plugin {
 namespace canny {
 
+const static std::string kParamUpperThres = "upperThres";
+const static std::string kParamLowerThres = "lowerThres";
 const static std::string kParamNonMaximaSuppression = "nonMaximaSuppr";
 const static std::string kParamHysteresisThresholding = "hysteresisThreshold";
 const static std::string kParamThinning = "thinning";

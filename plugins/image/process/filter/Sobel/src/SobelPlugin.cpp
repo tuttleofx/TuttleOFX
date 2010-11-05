@@ -28,6 +28,7 @@ ImageEffect( handle )
 	_paramUnidimensional = fetchBooleanParam( kParamUnidimensional );
 	_paramBorder = fetchChoiceParam( kParamBorder );
 	_paramComputeGradientNorm = fetchBooleanParam( kParamComputeGradientNorm );
+	_paramNormalizedNorm = fetchBooleanParam( kParamNormalizedNorm );
 	_paramGradientNormManhattan = fetchBooleanParam( kParamGradientNormManhattan );
 	_paramComputeGradientDirection = fetchBooleanParam( kParamComputeGradientDirection );
 	_paramGradientDirectionAbs = fetchBooleanParam( kParamGradientDirectionAbs );
@@ -77,6 +78,7 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	}
 
 	params._computeGradientNorm = _paramComputeGradientNorm->getValue();
+	params._normalizedNorm = _paramNormalizedNorm->getValue();
 	params._gradientNormManhattan = _paramGradientNormManhattan->getValue();
 	params._computeGradientDirection = _paramComputeGradientDirection->getValue();
 	params._gradientDirectionAbs = _paramGradientDirectionAbs->getValue();
@@ -151,18 +153,18 @@ void SobelPlugin::render( const OFX::RenderArguments &args )
     {
         switch( dstBitDepth )
         {
-            case OFX::eBitDepthUByte :
-            {
-                SobelProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                SobelProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
+//            case OFX::eBitDepthUByte :
+//            {
+//                SobelProcess<rgba8_view_t> p( *this );
+//                p.setupAndProcess( args );
+//                break;
+//            }
+//            case OFX::eBitDepthUShort :
+//            {
+//                SobelProcess<rgba16_view_t> p( *this );
+//                p.setupAndProcess( args );
+//                break;
+//            }
             case OFX::eBitDepthFloat :
             {
                 SobelProcess<rgba32f_view_t> p( *this );

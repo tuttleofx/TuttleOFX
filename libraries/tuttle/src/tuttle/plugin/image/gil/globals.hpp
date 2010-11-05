@@ -28,6 +28,9 @@ View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
 	return subimage_view( tileView, rod.x1 - bounds.x1, rod.y1 - bounds.y1, rod.x2 - rod.x1, rod.y2 - rod.y1 );
 }
 
+/**
+ * @todo tuttle: to rewrite !!!
+ */
 struct alpha_max_filler
 {
 	template< class P>
@@ -44,6 +47,9 @@ struct alpha_max_filler
 
 };
 
+/**
+ * @todo tuttle: to rewrite !!!
+ */
 struct black_filler
 {
 	template< class P>
@@ -109,7 +115,8 @@ void fill_alpha_max( const View& v )
 }
 
 /**
- * @brief Remplit une image en noir (tous les canneaux a 0 sauf la couche alpha a 1 (ou 255, ou ...))
+ * @brief Fill an image in black, all channels to 0.0 value and alpha channel to 1.0 (if exists)
+ * @todo tuttle: to rewrite !!!
  */
 template <class View>
 void fill_black( View& v )

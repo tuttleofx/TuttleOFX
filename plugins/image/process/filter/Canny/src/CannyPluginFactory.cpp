@@ -59,15 +59,6 @@ void CannyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-//	min
-//	max
-//	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );
-//	size->setLabel( "Size" );
-//	size->setDefault( 3, 3 );
-//	size->setRange( 0.0, 0.0, std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
-//	size->setDisplayRange( 0, 0, 10, 10 );
-//	size->setDoubleType( OFX::eDoubleTypeScale );
-
 	OFX::BooleanParamDescriptor* nonMaximaSuppression = desc.defineBooleanParam( kParamNonMaximaSuppression );
 	nonMaximaSuppression->setLabel( "Non-maxima suppression" );
 	nonMaximaSuppression->setDefault( true );
@@ -75,6 +66,18 @@ void CannyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* hysteresisThresholding = desc.defineBooleanParam( kParamHysteresisThresholding );
 	hysteresisThresholding->setLabel( "Hysteresis thresholding" );
 	hysteresisThresholding->setDefault( true );
+
+	OFX::DoubleParamDescriptor* upperThres = desc.defineDoubleParam( kParamUpperThres );
+	upperThres->setLabel( "Upper thresold" );
+	upperThres->setDefault( 0.5 );
+	upperThres->setRange( 0.0, std::numeric_limits<double>::max() );
+	upperThres->setDisplayRange( 0.0, 1.0 );
+
+	OFX::DoubleParamDescriptor* lowerThres = desc.defineDoubleParam( kParamLowerThres );
+	lowerThres->setLabel( "Lower thresold" );
+	lowerThres->setDefault( 0.1 );
+	lowerThres->setRange( 0.0, std::numeric_limits<double>::max() );
+	lowerThres->setDisplayRange( 0.0, 1.0 );
 
 	OFX::BooleanParamDescriptor* thinning = desc.defineBooleanParam( kParamThinning );
 	thinning->setLabel( "Thinning" );
