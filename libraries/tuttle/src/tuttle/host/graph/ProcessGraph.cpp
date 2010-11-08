@@ -65,8 +65,8 @@ void ProcessGraph::relink()
 				/// @todo tuttle: no dynamic_cast here, _nodes must use tuttle::host::Node
 				_nodes.insert( key, dynamic_cast<Node*>( newNode ) ); // owns the new pointer
 #endif
-				// our vertices have a link to our Nodes
 			}
+			// our vertices have a link to our Nodes
 			v.setProcessNode( newNode );
 		}
 	}
@@ -183,8 +183,12 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 //	renderGraph.depthFirstSearch( timeDomainVisitor );
 	
 	TCOUT( "process begin" );
-	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
+//	BOOST_FOREACH( NodeMap::value_type& p, _nodes )
+	for( NodeMap::iterator it = _nodes.begin(), itEnd = _nodes.end();
+	     it != itEnd;
+	     ++it )
 	{
+		NodeMap::value_type& p = *it;
 		p.second->beginSequence( defaultOptions );
 	}
 
@@ -216,8 +220,12 @@ memory::MemoryCache ProcessGraph::process( const int tBegin, const int tEnd )
 		BOOST_FOREACH( InternalGraphAtTimeImpl::vertex_descriptor vd, renderGraph.getVertices() )
 		{
 			Vertex& v = renderGraph.instance( vd );
-			BOOST_FOREACH( const OfxTime t, v._data._times )
+			//BOOST_FOREACH( const OfxTime t, v._data._times )
+            for( ProcessVertexData::TimesSet::iterator it = v._data._times.begin(), itEnd = v._data._times.end();
+                 it != itEnd;
+                 ++it )
 			{
+                const OfxTime t = *it;
 				TCOUT_VAR2( v, t );
 				renderGraphAtTime.addVertex( ProcessVertexAtTime(v, t) );
 			}

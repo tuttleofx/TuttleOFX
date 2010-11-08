@@ -17,7 +17,7 @@
 // compatibility problems...
 #include <cstddef>
 namespace std {
-#ifdef __WINDOWS__
+#ifdef _MSC_VER
 	typedef SSIZE_T ssize_t;
 #else
 	typedef ::ssize_t ssize_t;
