@@ -96,16 +96,24 @@ def getAndUncompress( libraries ):
 		except Exception, e:
 			print 'uncompress error (', str(e), ')'
 
-
-getAndUncompress(
-	[ ('zlib','http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz', False) if not windows else ('zlib','http://prdownloads.sourceforge.net/gnuwin32/zlib-1.2.3.exe', False),
-	  ('png', 'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz', False) if not windows else ('png','http://prdownloads.sourceforge.net/gnuwin32/libpng-1.2.37-setup.exe', False),
-	  ('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', True),
-	  ('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', True),
-	  ('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_44_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_44_setup.exe', False),
-	  ('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
+allLibs = [
+		('zlib','http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz', False) if not windows else ('zlib','http://prdownloads.sourceforge.net/gnuwin32/zlib-1.2.3.exe', False),
+		('png', 'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz', False) if not windows else ('png','http://prdownloads.sourceforge.net/gnuwin32/libpng-1.2.37-setup.exe', False),
+		('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', True),
+		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', True),
+		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_44_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_44_setup.exe', False),
+		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
 	]
-	)
+
+if len( sys.argv ) == 1:
+	getAndUncompress( allLibs )
+else:
+	libDic = {}
+	for lib in allLibs:
+		libDic[lib[0]] = lib
+	
+	for libname in sys.argv[1:]:
+		getAndUncompress( [libDic[libname]] )
 
 #subprocess.Popen( ['patch', 'boost/libs/test/build/Jamfile.v2', 'boost_unit_testing_framework.patch'] )
 
