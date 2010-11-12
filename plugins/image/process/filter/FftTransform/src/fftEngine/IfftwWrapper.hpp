@@ -8,9 +8,9 @@
 #include <cstdlib>
 
 namespace tuttle {
-	namespace plugin {
-	namespace filter {
-	namespace fft {
+namespace plugin {
+namespace filter {
+namespace fft {
 
 	struct Complex
 	{
@@ -38,9 +38,10 @@ namespace tuttle {
 		virtual bool complex2p( const Complex* in, float* phaseOut, size_t w, size_t h );
 	};
 
-	}
-	}
-	}
+}
+}
+}
+}
 
-#endif  /* _IFFTWWRAPPER_HPP */
+#endif
 

@@ -5,7 +5,7 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/algorithm.hpp>
-#include <tuttle/plugin/image/gil/channel.hpp>
+#include <boost/gil/extension/channel.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>

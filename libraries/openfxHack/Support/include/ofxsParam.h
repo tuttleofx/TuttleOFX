@@ -891,6 +891,8 @@ public:
 	/** @brief whether the param is enabled */
 	void setEnabled( bool v );
 
+	void setIsSecretAndDisabled( bool v ) { setEnabled(!v); setIsSecret(v); }
+
 	/** @brief fetch the labels */
 	void getLabels( std::string& label, std::string& shortLabel, std::string& longLabel ) const;
 

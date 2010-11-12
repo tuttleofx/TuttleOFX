@@ -186,6 +186,22 @@ struct pixel_assigns_t {
     }
 };
 
+/// \ingroup PixelNumericOperations
+///definition and a generic implementation for casting and assigning a pixel to another
+///user should specialize it for better performance
+template <typename Scalar,  // models pixel concept
+          typename PixelR> // models pixel concept
+struct pixel_assigns_scalar_t
+{
+    PixelR& operator()( const Scalar& s,
+                        PixelR& dst ) const
+	{
+        static_for_each( dst,
+                         std::bind1st( channel_assigns_t<Scalar, typename channel_type<PixelR>::type>(), s ) );
+        return dst;
+    }
+};
+
 } }  // namespace boost::gil
 
 #endif

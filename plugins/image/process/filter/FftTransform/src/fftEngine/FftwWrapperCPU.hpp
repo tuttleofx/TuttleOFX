@@ -8,9 +8,9 @@
 #include "IfftwWrapper.hpp"
 
 namespace tuttle {
-	namespace plugin {
-	namespace filter {
-	namespace fft {
+namespace plugin {
+namespace filter {
+namespace fft {
 
 	class FftwWrapperCPU : public IfftwWrapper
 	{
@@ -23,9 +23,10 @@ namespace tuttle {
 	private:
 	};
 
-	}
-	}
-	}
+}
+}
+}
+}
 
-#endif  /* _FFTWWRAPPERCPU_HPP */
+#endif
 

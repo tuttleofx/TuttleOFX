@@ -1,8 +1,6 @@
-#include "Progress.hpp"
+#include "OfxProgress.hpp"
 
-#ifndef WITHOUT_OFX
- #include <ofxsMultiThread.h>
-#endif
+#include <ofxsMultiThread.h>
 
 namespace tuttle {
 namespace plugin {
@@ -13,15 +11,11 @@ namespace plugin {
  * @param[in]       numSteps   number of steps
  *
  */
-void Progress::progressBegin( const int numSteps, const std::string& msg )
+void OfxProgress::progressBegin( const int numSteps, const std::string& msg )
 {
 	_counter = 0.0;
-	#ifndef WITHOUT_OFX
-	_stepSize = 1.0 / static_cast<double>( numSteps * OFX::MultiThread::getNumCPUs() );
-	_effect.progressStart( msg );
-	#else
 	_stepSize = 1.0 / static_cast<double>( numSteps );
-	#endif
+	_effect.progressStart( msg );
 }
 
 /**
@@ -33,11 +27,12 @@ void Progress::progressBegin( const int numSteps, const std::string& msg )
  *         false = continu rendering
  *
  */
-bool Progress::progressForward( const int nSteps )
+bool OfxProgress::progressForward( const int nSteps )
 {
-	#ifndef WITHOUT_OFX
 	_mutex.lock();
+	
 	_counter += _stepSize * static_cast<double>( nSteps );
+
 	if( _effect.abort() )
 	{
 		_mutex.unlock();
@@ -48,29 +43,21 @@ bool Progress::progressForward( const int nSteps )
 	_effect.progressUpdate( _counter );
 	_mutex.unlock();
 	return false;
-	#else
-	_counter += _stepSize * static_cast<double>( nSteps );
-	//	COUT_DEBUG( "progress: " << _counter );
-	return false;
-	#endif
 }
 
 /**
  * @brief Ends the algorithm progress bar.
  *
  */
-void Progress::progressEnd()
+void OfxProgress::progressEnd()
 {
-	#ifndef WITHOUT_OFX
 	// Wait for the end
 	_mutex.lock();
 	_mutex.unlock();
 	_effect.progressEnd();
-	#endif
 }
 
-#ifndef WITHOUT_OFX
-Progress& Progress::operator=( const Progress& p )
+OfxProgress& OfxProgress::operator=( const OfxProgress& p )
 {
 	if( this == &p )
 		return *this;                                                                                                                                                                                                                                                                                               // Gracefully handle self assignment
@@ -78,8 +65,6 @@ Progress& Progress::operator=( const Progress& p )
 	_stepSize = p._stepSize;
 	return *this;
 }
-
-#endif
 
 }
 }

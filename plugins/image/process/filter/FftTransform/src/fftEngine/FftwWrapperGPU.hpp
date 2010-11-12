@@ -12,9 +12,9 @@
 #include <cuda.h>
 
 namespace tuttle {
-	namespace plugin {
-	namespace filter {
-	namespace fft {
+namespace plugin {
+namespace filter {
+namespace fft {
 
 	inline CUdeviceptr voidToDev( void* v )
 	{
@@ -43,9 +43,10 @@ namespace tuttle {
 		CUcontext _ictx;
 	};
 
-	}
-	}
-	}
+}
+}
+}
+}
 
-#endif  /* _FFTWWRAPPERGPU_HPP */
+#endif
 

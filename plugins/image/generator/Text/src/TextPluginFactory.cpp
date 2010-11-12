@@ -3,21 +3,8 @@
 #include "TextDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/exceptions.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
-
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <cmath>
 #include <limits>
-#include <boost/numeric/conversion/cast.hpp>
 
 namespace tuttle {
 namespace plugin {

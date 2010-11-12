@@ -1,90 +1,24 @@
 #include "ImageStatisticsPlugin.hpp"
 #include "ImageStatisticsProcess.hpp"
+
+#include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/typedefs.hpp>
+#include <tuttle/plugin/param/gilColor.hpp>
+
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations3.hpp>
 #include <boost/gil/extension/toolbox/hsl.hpp>
+
 #include <boost/units/pow.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/erase.hpp>
 #include <boost/mpl/find.hpp>
 
-#include <tuttle/common/utils/global.hpp>
 
 namespace boost {
 namespace gil {
-
-////////////////////////////////////////////////////////////////////////////////
-
-/// \ingroup ChannelNumericOperations
-/// \brief ch2 = min( ch1, ch2 )
-/// structure for adding one channel to another
-/// this is a generic implementation; user should specialize it for better performance
-template <typename ChannelSrc, typename ChannelDst>
-struct channel_assign_min_t : public std::binary_function<ChannelSrc, ChannelDst, ChannelDst>
-{
-	typename channel_traits<ChannelDst>::reference operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
-	                                                           typename channel_traits<ChannelDst>::reference ch2 ) const
-	{
-		return ch2 = std::min( ChannelDst( ch1 ), ch2 );
-	}
-
-};
-
-/// \ingroup PixelNumericOperations
-/// \brief p2 = min( p1, p2 )
-template <typename PixelSrc, // models pixel concept
-          typename PixelDst>
-// models pixel value concept
-struct pixel_assign_min_t
-{
-	PixelDst& operator()( const PixelSrc& p1,
-	                      PixelDst& p2 ) const
-	{
-		static_for_each( p1, p2,
-		                 channel_assign_min_t<typename channel_type<PixelSrc>::type,
-		                                      typename channel_type<PixelDst>::type>() );
-		return p2;
-	}
-
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-/// \ingroup ChannelNumericOperations
-/// \brief ch2 = max( ch1, ch2 )
-/// this is a generic implementation; user should specialize it for better performance
-template <typename ChannelSrc, typename ChannelDst>
-struct channel_assign_max_t : public std::binary_function<ChannelSrc, ChannelDst, ChannelDst>
-{
-	typename channel_traits<ChannelDst>::reference operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
-	                                                           typename channel_traits<ChannelDst>::reference ch2 ) const
-	{
-		return ch2 = std::max( ChannelDst( ch1 ), ch2 );
-	}
-
-};
-
-/// \ingroup PixelNumericOperations
-/// \brief p2 = max( p1, p2 )
-template <typename PixelSrc, // models pixel concept
-          typename PixelDst>
-// models pixel value concept
-struct pixel_assign_max_t
-{
-	PixelDst& operator()( const PixelSrc& p1,
-	                      PixelDst& p2 ) const
-	{
-		static_for_each( p1, p2,
-		                 channel_assign_max_t<typename channel_type<PixelSrc>::type,
-		                                      typename channel_type<PixelDst>::type>() );
-		return p2;
-	}
-
-};
-
-////////////////////////////////////////////////////////////////////////////////
 
 namespace details {
 
@@ -359,69 +293,29 @@ struct ComputeOutputParams
 
 };
 
-template <int n, typename Param, typename Pixel>
-struct setPixelValueAtTimeImpl
-{
-	void operator()( Param& param, const OfxTime time, const Pixel& pixel );
-};
-
-template <typename Param, typename Pixel>
-struct setPixelValueAtTimeImpl<3, Param, Pixel>
-{
-	void operator()( Param& param, const OfxTime time, const Pixel& pixel )
-	{
-		param.setValueAtTime( time,
-		                      pixel[0],
-		                      pixel[1],
-		                      pixel[2]
-		                      );
-	}
-
-};
-
-template <typename Param, typename Pixel>
-struct setPixelValueAtTimeImpl<4, Param, Pixel>
-{
-	void operator()( Param& param, const OfxTime time, const Pixel& pixel )
-	{
-		param.setValueAtTime( time,
-		                      pixel[0],
-		                      pixel[1],
-		                      pixel[2],
-		                      pixel[3]
-		                      );
-	}
-
-};
-
-template <typename Param, typename Pixel>
-void setPixelValuesAtTime( Param& param, const OfxTime time, const Pixel& pixel  )
-{
-	setPixelValueAtTimeImpl<num_channels<Pixel>::value, Param, Pixel>() ( param, time, pixel );
-}
 
 template <typename OutputParamsRGBA, typename OutputParamsHSL>
 void setOutputParams( const OutputParamsRGBA& outputParamsRGBA, const OutputParamsHSL& outputParamsHSL, const OfxTime time, ImageStatisticsPlugin& plugin )
 {
-	setPixelValuesAtTime( *plugin._paramOutputAverage, time, outputParamsRGBA._average );
+	setRGBAParamValuesAtTime( *plugin._paramOutputAverage, time, outputParamsRGBA._average );
 	//	COUT_VAR4( outputParamsRGBA._average[0], outputParamsRGBA._average[1], outputParamsRGBA._average[2], outputParamsRGBA._average[3] );
-	setPixelValuesAtTime( *plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
+	setRGBAParamValuesAtTime( *plugin._paramOutputChannelMin, time, outputParamsRGBA._channelMin );
 	//	COUT_VAR4( outputParamsRGBA._channelMin[0], outputParamsRGBA._channelMin[1], outputParamsRGBA._channelMin[2], outputParamsRGBA._channelMin[3] );
-	setPixelValuesAtTime( *plugin._paramOutputChannelMax, time, outputParamsRGBA._channelMax );
-	setPixelValuesAtTime( *plugin._paramOutputLuminosityMin, time, outputParamsRGBA._luminosityMin );
-	setPixelValuesAtTime( *plugin._paramOutputLuminosityMax, time, outputParamsRGBA._luminosityMax );
-	setPixelValuesAtTime( *plugin._paramOutputKurtosis, time, outputParamsRGBA._kurtosis );
-	setPixelValuesAtTime( *plugin._paramOutputSkewness, time, outputParamsRGBA._skewness );
+	setRGBAParamValuesAtTime( *plugin._paramOutputChannelMax, time, outputParamsRGBA._channelMax );
+	setRGBAParamValuesAtTime( *plugin._paramOutputLuminosityMin, time, outputParamsRGBA._luminosityMin );
+	setRGBAParamValuesAtTime( *plugin._paramOutputLuminosityMax, time, outputParamsRGBA._luminosityMax );
+	setRGBAParamValuesAtTime( *plugin._paramOutputKurtosis, time, outputParamsRGBA._kurtosis );
+	setRGBAParamValuesAtTime( *plugin._paramOutputSkewness, time, outputParamsRGBA._skewness );
 
-	setPixelValuesAtTime( *plugin._paramOutputAverageHSL, time, outputParamsHSL._average );
+	set012ParamValuesAtTime( plugin._paramOutputAverageHSL, time, outputParamsHSL._average );
 	//	COUT_VAR4( outputParamsHSL._average[0], outputParamsHSL._average[1], outputParamsHSL._average[2], outputParamsHSL._average[3] );
-	setPixelValuesAtTime( *plugin._paramOutputChannelMinHSL, time, outputParamsHSL._channelMin );
+	set012ParamValuesAtTime( *plugin._paramOutputChannelMinHSL, time, outputParamsHSL._channelMin );
 	//	COUT_VAR4( outputParamsHSL._channelMin[0], outputParamsHSL._channelMin[1], outputParamsHSL._channelMin[2], outputParamsHSL._channelMin[3] );
-	setPixelValuesAtTime( *plugin._paramOutputChannelMaxHSL, time, outputParamsHSL._channelMax );
-	setPixelValuesAtTime( *plugin._paramOutputLuminosityMinHSL, time, outputParamsHSL._luminosityMin );
-	setPixelValuesAtTime( *plugin._paramOutputLuminosityMaxHSL, time, outputParamsHSL._luminosityMax );
-	setPixelValuesAtTime( *plugin._paramOutputKurtosisHSL, time, outputParamsHSL._kurtosis );
-	setPixelValuesAtTime( *plugin._paramOutputSkewnessHSL, time, outputParamsHSL._skewness );
+	set012ParamValuesAtTime( *plugin._paramOutputChannelMaxHSL, time, outputParamsHSL._channelMax );
+	set012ParamValuesAtTime( *plugin._paramOutputLuminosityMinHSL, time, outputParamsHSL._luminosityMin );
+	set012ParamValuesAtTime( *plugin._paramOutputLuminosityMaxHSL, time, outputParamsHSL._luminosityMax );
+	set012ParamValuesAtTime( *plugin._paramOutputKurtosisHSL, time, outputParamsHSL._kurtosis );
+	set012ParamValuesAtTime( *plugin._paramOutputSkewnessHSL, time, outputParamsHSL._skewness );
 }
 
 template<class View>

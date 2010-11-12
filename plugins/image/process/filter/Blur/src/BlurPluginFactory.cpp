@@ -3,14 +3,6 @@
 #include "BlurDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsParam.h>
-#include <ofxsMultiThread.h>
-
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 #include <limits>
 

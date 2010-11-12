@@ -5,7 +5,7 @@
 #include "ofxsMultiThread.h"
 #include "ofxsUtilities.h"
 #include "exceptions.hpp"
-#include "Progress.hpp"
+#include "OfxProgress.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 
@@ -26,7 +26,7 @@ View getView( OFX::Image* img, const OfxRectI& rod );
  */
 template <class View>
 class ImageGilProcessor : public OFX::MultiThread::Processor
-	, public tuttle::plugin::Progress
+	, public tuttle::plugin::OfxProgress
 {
 public:
 	typedef typename View::value_type Pixel;
@@ -168,7 +168,7 @@ public:
 
 template <class View>
 ImageGilProcessor<View>::ImageGilProcessor( OFX::ImageEffect& effect )
-	: Progress( effect )
+	: OfxProgress( effect )
 	, _nbThreads( 0 )
 	,                 // auto, maximum allowable number of CPUs will be used
 	_effect( effect )
