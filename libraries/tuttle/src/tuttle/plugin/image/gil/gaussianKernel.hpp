@@ -91,13 +91,9 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bo
 }
 
 /**
- * @brief gaussian function
+ * @brief gaussian derivative function
  * @f[
- * G(x) = \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{x^2}{2 \sigma^2}}
- * @f]
- * or simplified...
- * @f[
- * G(x) = a e^{- { \frac{(x-b)^2 }{ 2 c^2} } }
+ * G(x) = - x/a e^{- { \frac{(x-b)^2 }{ 2 c^2} } }
  * @f]
  *
  * @return y <- gauss(x)

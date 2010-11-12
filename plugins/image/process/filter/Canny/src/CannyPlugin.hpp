@@ -15,9 +15,10 @@ template<typename Scalar>
 struct CannyProcessParams
 {
 	EParamBorder _border;
+
+	bool _hysteresis;
 	double _upperThres;
 	double _lowerThres;
-	
 };
 
 /**
@@ -45,9 +46,11 @@ public:
     // do not need to delete these, the ImageEffect is managing them for us
     OFX::Clip* _clipSrc; ///< Source image clip
     OFX::Clip* _clipDst; ///< Destination image clip
+
+	OFX::ChoiceParam* _paramBorder;
+    OFX::BooleanParam* _paramHysteresis;
     OFX::DoubleParam* _paramUpperThres;
     OFX::DoubleParam* _paramLowerThres;
-    OFX::ChoiceParam* _paramBorder;
 };
 
 }
