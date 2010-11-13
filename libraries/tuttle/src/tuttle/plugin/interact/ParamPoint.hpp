@@ -6,6 +6,7 @@
 #include "InteractObject.hpp"
 #include "PointInteract.hpp"
 #include "interact.hpp"
+#include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/plugin/coordinateSystem.hpp>
 
 #include <ofxsParam.h>

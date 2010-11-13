@@ -3,12 +3,6 @@
 #include "CannyDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -59,11 +53,7 @@ void CannyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::BooleanParamDescriptor* nonMaximaSuppression = desc.defineBooleanParam( kParamNonMaximaSuppression );
-	nonMaximaSuppression->setLabel( "Non-maxima suppression" );
-	nonMaximaSuppression->setDefault( true );
-	
-	OFX::BooleanParamDescriptor* hysteresisThresholding = desc.defineBooleanParam( kParamHysteresisThresholding );
+	OFX::BooleanParamDescriptor* hysteresisThresholding = desc.defineBooleanParam( kParamHysteresis );
 	hysteresisThresholding->setLabel( "Hysteresis thresholding" );
 	hysteresisThresholding->setDefault( true );
 
@@ -78,10 +68,6 @@ void CannyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	lowerThres->setDefault( 0.1 );
 	lowerThres->setRange( 0.0, std::numeric_limits<double>::max() );
 	lowerThres->setDisplayRange( 0.0, 1.0 );
-
-	OFX::BooleanParamDescriptor* thinning = desc.defineBooleanParam( kParamThinning );
-	thinning->setLabel( "Thinning" );
-	thinning->setDefault( true );
 
 	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
 	border->setLabel( "Border" );

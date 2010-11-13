@@ -3,8 +3,9 @@
 #include "interact.hpp"
 #include "overlay.hpp"
 
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/common/utils/global.hpp>
 
 namespace tuttle {
 namespace plugin {

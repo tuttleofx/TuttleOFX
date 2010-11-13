@@ -6,6 +6,7 @@
 #include "ParamPoint.hpp"
 #include "overlay.hpp"
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/ofxToGil.hpp>
 
 #include <ofxsParam.h>
 

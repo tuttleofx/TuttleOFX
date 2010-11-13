@@ -4,7 +4,7 @@
 #include "lensDistortProcessParams.hpp"
 
 #include <tuttle/common/math/rectOp.hpp>
-#include <tuttle/plugin/Progress.hpp>
+#include <tuttle/plugin/IProgress.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxCore.h>
@@ -309,7 +309,7 @@ template <typename Sampler, // Models SamplerConcept
           typename DstView, // Models MutableRandomAccess2DImageViewConcept
           typename MapFn>
 // Models MappingFunctionConcept
-void resample_pixels( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, const OfxRectI& procWindow, tuttle::plugin::Progress* p, Sampler sampler = Sampler() )
+void resample_pixels( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, const OfxRectI& procWindow, tuttle::plugin::IProgress* p, Sampler sampler = Sampler() )
 {
 	typename DstView::point_t dst_p;
 	typename DstView::value_type black;

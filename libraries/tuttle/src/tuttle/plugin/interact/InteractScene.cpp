@@ -1,4 +1,5 @@
 #include "InteractScene.hpp"
+#include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/common/utils/global.hpp>
 
 namespace tuttle {

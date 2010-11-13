@@ -1,18 +1,22 @@
 #ifndef _TUTTLE_PLUGIN_GIL_IMAGEVIEWFACTORY_HPP_
 #define _TUTTLE_PLUGIN_GIL_IMAGEVIEWFACTORY_HPP_
 
+#include <boost/gil/image_view_factory.hpp>
+#include <boost/gil/utilities.hpp>
+
 // code which need to be included in boost::gil
-// to allow writting:
+namespace boost {
+namespace gil {
+
+// allows to write:
 // channel_view_type<red_t>(myview)
 // instead of:
 // kth_channel_view_type<0>(myview)
-namespace boost {
-namespace gil {
 template <typename Channel, typename View>
 struct channel_type_to_index
 {
-	static const int value = gil::detail::type_to_index<
-	    typename color_space_type<View>::type,                       // color (mpl::vector)
+	static const int value = ::boost::gil::detail::type_to_index<
+	    typename ::boost::gil::color_space_type<View>::type,                       // color (mpl::vector)
 	    Channel                       // channel type
 	    >::type::value;                     //< index of the channel in the color (mpl::vector)
 };

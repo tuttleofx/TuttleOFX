@@ -149,27 +149,14 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			*this
 			);
 	}
-//	// normalize the image
-//	if( _params._normalizedNorm )
-//	{
-//		pixel_max_by_channel_t<PixelGray> max();
-//		// compute the maximum value
-//		transform_pixels_progress(
-//			kth_channel_view<2>(dst),
-//			max,
-//			*this );
-//		// normalize the image by the max
-//		transform_pixels_progress(
-//			kth_channel_view<2>(dst),
-//			pixel_normalize_t<PixelGray>(max.value),
-//			*this );
-//	}
 	if( progressForward( dst.height() ) )
 		return;
 
 	if( ! _params._computeGradientDirection )
 	{
 		fill_pixels( kth_channel_view<3>(dst), pixelZero );
+		if( progressForward( dst.height() ) )
+			return;
 	}
 	else
 	{
@@ -194,8 +181,6 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				);
 		}
 	}
-	if( progressForward( dst.height() ) )
-		return;
 }
 
 }

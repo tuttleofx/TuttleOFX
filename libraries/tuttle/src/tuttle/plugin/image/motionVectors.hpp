@@ -1,8 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_IMAGE_MOTIONVECTORS_HPP_
 #define _TUTTLE_PLUGIN_IMAGE_MOTIONVECTORS_HPP_
 
-#include <tuttle/plugin/Progress.hpp>
-#include <tuttle/plugin/image/gil/channel.hpp>
+#include <tuttle/plugin/IProgress.hpp>
+#include <boost/gil/extension/channel.hpp>
 
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
@@ -30,7 +30,7 @@ template< typename View>
 // Models RandomAccess2DImageViewConcept
 bool modifyVectors( const View& xVecView, const View& yVecView,
                     const double angle, const double intensity,
-                    tuttle::plugin::Progress* p )
+                    tuttle::plugin::IProgress* p )
 {
 	BOOST_ASSERT( yVecView.width() != 0 );
 	BOOST_ASSERT( yVecView.height() != 0 );
@@ -38,7 +38,7 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 	BOOST_ASSERT( yVecView.height() == xVecView.height() );
 
 	typedef typename View::point_t Point2Integer;
-	typedef typename boost::gil::base_channel_value<typename boost::gil::channel_type<View>::type>::type VecChannel;
+	typedef typename boost::gil::channel_base_type<typename boost::gil::channel_type<View>::type>::type VecChannel;
 	typedef typename boost::gil::point2<VecChannel> VecPoint2;
 
 	const double cosAngle = std::cos( angle );
@@ -78,7 +78,7 @@ bool modifyVectors( const View& xVecView, const View& yVecView,
 template<typename GView, typename View, typename Point, typename Scalar>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
                              const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::convolve_boundary_option boundary_option,
-                             tuttle::plugin::Progress* p )
+                             tuttle::plugin::IProgress* p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
@@ -94,7 +94,7 @@ bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& i
 template<typename GView, typename View, typename Point, typename Scalar>
 bool correlateMotionVectors( GView& xGradientView, GView& yGradientView, View& img, const Point& topleft,
                              const boost::gil::kernel_1d<Scalar>& kernel, const boost::gil::kernel_1d<Scalar>& kernelSecondary, const boost::gil::convolve_boundary_option boundary_option,
-                             tuttle::plugin::Progress* p )
+                             tuttle::plugin::IProgress* p )
 {
 	typedef typename GView::value_type GPixel;
 	using namespace boost::gil;
@@ -119,7 +119,7 @@ bool motionvectors_resample_pixels( const SrcView& srcView, const OfxRectI& srcR
                                     const VecView& xVecView, const VecView& yVecView, const OfxRectI& vecRod,
                                     const DstView& dstView, const OfxRectI& dstRod,
                                     const OfxRectI& procWindowRoW,
-                                    tuttle::plugin::Progress* p,
+                                    tuttle::plugin::IProgress* p,
                                     Sampler sampler = Sampler() )
 {
 	BOOST_ASSERT( srcView.width() == srcRod.x2 - srcRod.x1 );

@@ -875,16 +875,22 @@ public:
 	void setOutputFielding( EField v );
 };
 
+static const OfxPointD kNoRenderScale = { 1.0, 1.0 };
+
 /** @brief POD data structure passing in the instance changed args */
 struct InstanceChangedArgs
 {
-	InstanceChangeReason reason;      /**< @brief why did it change */
-	double time;       /**< time of the change */
-	OfxPointD renderScale; /**< the renderscale on the instance */
+	InstanceChangedArgs( const OfxTime time = 0.0, const OfxPointD renderScale = kNoRenderScale, const InstanceChangeReason reason = OFX::eChangePluginEdit )
+	: time(time)
+	, renderScale( renderScale )
+	, reason( reason )
+	{}
+	
+	OfxTime time; //< time of the change
+	OfxPointD renderScale; ///< the renderscale on the instance
+	InstanceChangeReason reason; ///< why did it change
 };
 
-
-static const OfxPointD kNoRenderScale = { 1.0, 1.0 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /** @brief Wraps up an effect instance, plugin implementations need to inherit from this */

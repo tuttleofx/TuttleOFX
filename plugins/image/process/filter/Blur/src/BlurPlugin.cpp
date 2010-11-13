@@ -3,6 +3,8 @@
 #include "BlurDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/image/ofxToGil.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>

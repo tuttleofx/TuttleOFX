@@ -1,17 +1,17 @@
-#ifndef _TUTTLE_PLUGIN_GIL_CHANNEL_HPP_
-#define _TUTTLE_PLUGIN_GIL_CHANNEL_HPP_
+#ifndef _GIL_EXTENSION_CHANNEL_HPP_
+#define _GIL_EXTENSION_CHANNEL_HPP_
 
 namespace boost {
 namespace gil {
 
 template <typename ChannelValue>
-struct base_channel_value
+struct channel_base_type
 {
 	typedef ChannelValue type;
 };
 
 template <typename ChannelValue, typename MinV, typename MaxV>
-struct base_channel_value<scoped_channel_value<ChannelValue, MinV, MaxV> >
+struct channel_base_type<scoped_channel_value<ChannelValue, MinV, MaxV> >
 {
 	typedef ChannelValue type;
 };

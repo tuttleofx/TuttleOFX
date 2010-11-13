@@ -2,9 +2,12 @@
 #include "%CLASSNAME%Process.hpp"
 #include "%CLASSNAME%Definitions.hpp"
 
+#include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/common/utils/global.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
