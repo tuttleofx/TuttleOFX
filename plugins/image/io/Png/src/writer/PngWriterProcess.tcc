@@ -87,11 +87,13 @@ void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath 
 		{
 			typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
 			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+			break;
 		}
 		case eParamComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
 			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+			break;
 		}
 	}
 }
