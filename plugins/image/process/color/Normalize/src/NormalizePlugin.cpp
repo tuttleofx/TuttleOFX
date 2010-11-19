@@ -122,6 +122,27 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 	}
 }
 
+void NormalizePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+{
+	NormalizeProcessParams<Scalar> params = getProcessParams();
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	switch( params._mode )
+	{
+		case eParamModeAnalyse:
+		{
+			// in this case, we need the full input image to do the analyse.
+			rois.setRegionOfInterest( *_clipSrc, srcRod );
+			break;
+		}
+		case eParamModeCustom:
+		{
+			rois.setRegionOfInterest( *_clipSrc, args.regionOfInterest );
+			break;
+		}
+	}
+
+}
+
 bool NormalizePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
 	NormalizeProcessParams<Scalar> params = getProcessParams();

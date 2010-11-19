@@ -13,7 +13,7 @@ namespace tuttle {
 namespace plugin {
 namespace normalize {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**
@@ -37,6 +37,7 @@ void NormalizePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }
 
 /**

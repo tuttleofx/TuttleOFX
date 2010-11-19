@@ -60,22 +60,22 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 			_ratio[n] = (_params._dstMaxColor[n] - _params._dstMinColor[n]) / (smax[n] - smin[n]);
 	}
 
-	COUT("");
-	COUT_VAR( get_color( _sMin, red_t() ) );
-	COUT_VAR( get_color( _sMin, green_t() ) );
-	COUT_VAR( get_color( _sMin, blue_t() ) );
-	COUT_VAR( get_color( _sMin, alpha_t() ) );
-	COUT("");
-	COUT_VAR( get_color( _dMin, red_t() ) );
-	COUT_VAR( get_color( _dMin, green_t() ) );
-	COUT_VAR( get_color( _dMin, blue_t() ) );
-	COUT_VAR( get_color( _dMin, alpha_t() ) );
-	COUT("");
-	COUT_VAR( get_color( _ratio, red_t() ) );
-	COUT_VAR( get_color( _ratio, green_t() ) );
-	COUT_VAR( get_color( _ratio, blue_t() ) );
-	COUT_VAR( get_color( _ratio, alpha_t() ) );
-	COUT("");
+//	COUT("");
+//	COUT_VAR( get_color( _sMin, red_t() ) );
+//	COUT_VAR( get_color( _sMin, green_t() ) );
+//	COUT_VAR( get_color( _sMin, blue_t() ) );
+//	COUT_VAR( get_color( _sMin, alpha_t() ) );
+//	COUT("");
+//	COUT_VAR( get_color( _dMin, red_t() ) );
+//	COUT_VAR( get_color( _dMin, green_t() ) );
+//	COUT_VAR( get_color( _dMin, blue_t() ) );
+//	COUT_VAR( get_color( _dMin, alpha_t() ) );
+//	COUT("");
+//	COUT_VAR( get_color( _ratio, red_t() ) );
+//	COUT_VAR( get_color( _ratio, green_t() ) );
+//	COUT_VAR( get_color( _ratio, blue_t() ) );
+//	COUT_VAR( get_color( _ratio, alpha_t() ) );
+//	COUT("");
 }
 
 /**
@@ -116,8 +116,8 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				typedef channel_view_type<LocalChannel,View> LocalView;
 				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localDstView( LocalView::make(dst) );
 				typename LocalView::type localSrcView( LocalView::make(src) );
+				typename LocalView::type localDstView( LocalView::make(dst) );
 
 				transform_pixels_progress(
 					localSrcView,
@@ -141,8 +141,8 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				typedef channel_view_type<LocalChannel,View> LocalView;
 				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localDstView( LocalView::make(dst) );
 				typename LocalView::type localSrcView( LocalView::make(src) );
+				typename LocalView::type localDstView( LocalView::make(dst) );
 
 				transform_pixels_progress(
 					localSrcView,
@@ -166,8 +166,8 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				typedef channel_view_type<LocalChannel,View> LocalView;
 				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localDstView( LocalView::make(dst) );
 				typename LocalView::type localSrcView( LocalView::make(src) );
+				typename LocalView::type localDstView( LocalView::make(dst) );
 
 				transform_pixels_progress(
 					localSrcView,
@@ -191,8 +191,8 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			{
 				typedef channel_view_type<LocalChannel,View> LocalView;
 				typedef typename LocalView::type::value_type LocalPixel;
-				typename LocalView::type localDstView( LocalView::make(dst) );
 				typename LocalView::type localSrcView( LocalView::make(src) );
+				typename LocalView::type localDstView( LocalView::make(dst) );
 
 				transform_pixels_progress(
 					localSrcView,
