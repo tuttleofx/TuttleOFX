@@ -29,7 +29,6 @@ struct SobelProcessParams
 	bool _unidimensional;
 
 	bool _computeGradientNorm;
-	bool _normalizedNorm;
 	bool _gradientNormManhattan;
 	bool _computeGradientDirection;
 	bool _gradientDirectionAbs;
@@ -67,7 +66,6 @@ public:
 	OFX::BooleanParam* _paramUnidimensional;
     OFX::ChoiceParam* _paramBorder;
 	OFX::BooleanParam* _paramComputeGradientNorm;
-	OFX::BooleanParam* _paramNormalizedNorm;
 	OFX::BooleanParam* _paramGradientNormManhattan;
 	OFX::BooleanParam* _paramComputeGradientDirection;
 	OFX::BooleanParam* _paramGradientDirectionAbs;
