@@ -155,6 +155,12 @@ struct pixel_halves_t {
     }
 };
 
+template <typename Pixel>
+void pixel_halves(Pixel& p)
+{
+    pixel_halves_t<Pixel>()(p);
+}
+
 /// \ingroup PixelNumericOperations
 /// \brief construct for setting a pixel to zero (for whatever zero means)
 template <typename PixelRef> // models pixel concept
@@ -165,10 +171,10 @@ struct pixel_zeros_t {
     }
 };
 
-// Hailin: This is how you can do it:
 template <typename Pixel>
-void zero_channels(Pixel& p) {
-    static_for_each(p,channel_zeros_t<typename channel_type<Pixel>::type>());
+void pixel_zeros(Pixel& p)
+{
+    pixel_zeros_t<Pixel>()(p);
 }
 
 
@@ -186,6 +192,14 @@ struct pixel_assigns_t {
     }
 };
 
+template <typename Pixel,  // models pixel concept
+          typename PixelR> // models pixel concept
+void pixel_assigns(const Pixel& src, Pixel& dst)
+{
+	pixel_assigns_t<Pixel,PixelR>()(src, dst);
+}
+
+
 /// \ingroup PixelNumericOperations
 ///definition and a generic implementation for casting and assigning a pixel to another
 ///user should specialize it for better performance
@@ -193,7 +207,7 @@ template <typename Scalar,  // models pixel concept
           typename PixelR> // models pixel concept
 struct pixel_assigns_scalar_t
 {
-    PixelR& operator()( const Scalar& s,
+    PixelR& operator()( const Scalar s,
                         PixelR& dst ) const
 	{
         static_for_each( dst,
@@ -201,6 +215,53 @@ struct pixel_assigns_scalar_t
         return dst;
     }
 };
+
+template <typename Scalar,  // models pixel concept
+          typename PixelR> // models pixel concept
+void pixel_assigns_scalar(const Scalar s, PixelR& dst)
+{
+	pixel_assigns_scalar_t<Scalar,PixelR>()(s, dst);
+}
+
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for setting a pixel to the min channel value (see channel_traits::min_value)
+template <typename PixelR> // models pixel concept
+struct pixel_assigns_min_t
+{
+	typedef typename boost::gil::channel_type<PixelR>::type Channel;
+    PixelR& operator()(PixelR& dst) const
+	{
+		pixel_assigns_scalar_t<Channel,PixelR>()( channel_traits<Channel>::min_value(), dst);
+        return dst;
+    }
+};
+
+template <typename Pixel>
+void pixel_assigns_min(Pixel& p)
+{
+    pixel_assigns_min_t<Pixel>()(p);
+}
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for setting a pixel to the max channel value (see channel_traits::max_value)
+template <typename PixelR> // models pixel concept
+struct pixel_assigns_max_t
+{
+	typedef typename boost::gil::channel_type<PixelR>::type Channel;
+    PixelR& operator() (PixelR& dst) const
+	{
+		pixel_assigns_scalar_t<Channel,PixelR>()( channel_traits<Channel>::max_value() , dst);
+        return dst;
+    }
+};
+
+template <typename Pixel>
+void pixel_assigns_max(Pixel& p)
+{
+    pixel_assigns_max_t<Pixel>()(p);
+}
+
 
 } }  // namespace boost::gil
 

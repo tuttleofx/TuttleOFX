@@ -256,10 +256,10 @@ F transform_pixels_locator_progress( const View& src, const OfxRectI& srcRod,
 									 const OfxRectI& renderWin, F& fun, IProgress& p )
 {
 	const std::ptrdiff_t renderWidth = renderWin.x2 - renderWin.x1;
-	typename View::xy_locator sloc = dst.xy_at( renderWin.x1-srcRod.x1, renderWin.y1-srcRod.y1 );
+	typename View::xy_locator sloc = src.xy_at( renderWin.x1-srcRod.x1, renderWin.y1-srcRod.y1 );
 	for( std::ptrdiff_t y = renderWin.y1; y < renderWin.y2; ++y )
 	{
-		typename ViewDst::x_iterator dstIt = dst.x_at( dstRod.x1, y-dstRod.y1 );
+		typename ViewDst::x_iterator dstIt = dst.x_at( renderWin.x1-dstRod.x1, y-dstRod.y1 );
 		for( std::ptrdiff_t x = renderWin.x1;
 		     x < renderWin.x2;
 		     ++x, ++sloc.x(), ++dstIt )
@@ -285,7 +285,7 @@ F transform_pixels_locator_progress( const View& src, const OfxRectI& srcRod,
 	typename View::xy_locator sloc = src.xy_at( renderWin.x1-srcRod.x1, renderWin.y1-srcRod.y1 );
 	for( std::ptrdiff_t y = renderWin.y1; y < renderWin.y2; ++y )
 	{
-		typename ViewDst::x_iterator dstIt = dst.x_at( dstRod.x1, y-dstRod.y1 );
+		typename ViewDst::x_iterator dstIt = dst.x_at( renderWin.x1-dstRod.x1, y-dstRod.y1 );
 		for( std::ptrdiff_t x = renderWin.x1;
 		     x < renderWin.x2;
 		     ++x, ++sloc.x(), ++dstIt )
@@ -315,7 +315,7 @@ F transform_pixels_locator_progress( const View1& src1, const OfxRectI& src1Rod,
 	typename View2::xy_locator s2loc = src2.xy_at( renderWin.x1-src2Rod.x1, renderWin.y1-src2Rod.y1 );
 	for( std::ptrdiff_t y = renderWin.y1; y < renderWin.y2; ++y )
 	{
-		typename ViewDst::x_iterator dstIt = dst.x_at( dstRod.x1, y-dstRod.y1 );
+		typename ViewDst::x_iterator dstIt = dst.x_at( renderWin.x1-dstRod.x1, y-dstRod.y1 );
 		for( std::ptrdiff_t x = renderWin.x1;
 		     x < renderWin.x2;
 		     ++x, ++s1loc.x(), ++s2loc.x(), ++dstIt )

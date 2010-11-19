@@ -85,6 +85,13 @@ Point2 pointsMaxXY( const std::vector<Point2>& points )
 	return p;
 }
 
+template<class Point, class Rect>
+bool pointInRect( const Point& p, const Rect& rec )
+{
+	return p.x >= rec.x1 && p.x <= rec.x2 &&
+		   p.y >= rec.y1 && p.y <= rec.y2;
+}
+
 template<class R>
 R rectanglesBoundingBox( const R& a, const R& b )
 {
@@ -115,6 +122,7 @@ R rectangleGrow( const R& rect, const V marge )
 	res.y1 -= marge;
 	res.x2 += marge;
 	res.y2 += marge;
+	return res;
 }
 
 template<class R, class V>
