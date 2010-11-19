@@ -2,6 +2,8 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 
+#include <boost/gil/image_view_factory.hpp>
+#include <boost/gil/algorithm.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/math/constants/constants.hpp>
 
@@ -19,6 +21,7 @@ CannyProcess<View>::CannyProcess( CannyPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
+	this->setNoMultiThreading();
 }
 
 template <class View>
@@ -51,17 +54,16 @@ void CannyProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	OfxPointI srcShift = { this->_dstPixelRod.x1 - this->_srcPixelRod.x1,
 	                       this->_dstPixelRod.y1 - this->_srcPixelRod.y1 };
 
-//	if( _params._border == eParamBorderBlack )
-//	{
-//		// fill borders
-//	}
+	if( _params._border == eParamBorderBlack )
+	{
+		View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+												  procWindowSize.x, procWindowSize.y );
 
-	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-							                  procWindowSize.x, procWindowSize.y );
+		// fill borders
+		Pixel pixelZero; bgil::pixel_zeros_t<Pixel>()( pixelZero );
+		boost::gil::fill_pixels( dst, pixelZero );
+	}
 
-	// fill borders
-	Pixel pixelZero; bgil::pixel_zeros_t<Pixel>()( pixelZero );
-	boost::gil::fill_pixels( dst, pixelZero );
 
 	/**
 	 * Computation of gradient norm local maxima in regard of gradient direction
@@ -111,6 +113,7 @@ void CannyProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				 x < procWindowOutputCrop.x2;
 				 ++x, ++src_loc.x(), ++dst_it )
 			{
+				bgil::pixel_zeros_t<Pixel>()( *dst_it );
 				static const unsigned int vecX = 0;
 				static const unsigned int vecY = 1;
 				static const unsigned int norm = 2;
@@ -173,6 +176,7 @@ void CannyProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	// Hysteresis by flooding
 	if( _params._hysteresis )
 	{
+		OfxRectI rectLimit = rectangleReduce(procWindowOutputCrop,1);
 		const Point2 nextLine( -procWindowCropSize.x, 1 );
 		typename View::xy_locator dst_loc = this->_dstView.xy_at( procWindowOutputCrop.x1, procWindowOutputCrop.y1 );
 		for( int y = procWindowOutputCrop.y1;
@@ -185,7 +189,7 @@ void CannyProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			{
 				if( (*dst_loc)[0] >= _params._upperThres )
 				{
-					(*dst_loc)[2] = bgil::channel_traits<Channel>::max_value();
+					(*dst_loc)[1] = bgil::channel_traits<Channel>::max_value();
 					std::queue<Point2> fifo; ///< @todo tuttle: use host allocator
 					fifo.push( Point2( x, y ) );
 					while( !fifo.empty() )
@@ -197,11 +201,18 @@ void CannyProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 							for( int dx = -1; dx < 2; ++dx )
 							{
 								typename View::iterator pix = this->_dstView.at( p.x+dx, p.y+dy );
-								if( (*pix)[0] > _params._lowerThres && (*pix)[1] != bgil::channel_traits<Channel>::max_value() )
+								if( (*pix)[0] > _params._lowerThres &&
+								    (*pix)[2] != bgil::channel_traits<Channel>::max_value() )
 								{
-									(*pix)[1] = bgil::channel_traits<Channel>::max_value();
+									(*pix)[2] = bgil::channel_traits<Channel>::max_value();
 									if( (*pix)[0] < _params._upperThres )
-										fifo.push( Point2( p.x+dx, p.y+dy ) );
+									{
+										Point2 np( p.x+dx, p.y+dy );
+										// inside a subwindow of the rendering,
+										// we can't append border pixels
+										if( pointInRect( np, rectLimit ) )
+											fifo.push( np );
+									}
 								}
 							}
 						}
@@ -212,6 +223,14 @@ void CannyProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 		}
 	}
 
+	if( _params._fillAllChannels )
+	{
+		View tmp_dst = subimage_view( this->_dstView, procWindowOutputCrop.x1, procWindowOutputCrop.y1,
+												  procWindowCropSize.x, procWindowCropSize.y );
+		bgil::copy_pixels( bgil::kth_channel_view<2>(tmp_dst), bgil::kth_channel_view<0>(tmp_dst) );
+		bgil::copy_pixels( bgil::kth_channel_view<2>(tmp_dst), bgil::kth_channel_view<1>(tmp_dst) );
+		bgil::copy_pixels( bgil::kth_channel_view<2>(tmp_dst), bgil::kth_channel_view<3>(tmp_dst) );
+	}
 }
 
 }

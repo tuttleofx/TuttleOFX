@@ -8,9 +8,9 @@ namespace tuttle {
 namespace plugin {
 namespace canny {
 
+const static std::string kParamHysteresis = "hysteresis";
 const static std::string kParamUpperThres = "upperThres";
 const static std::string kParamLowerThres = "lowerThres";
-const static std::string kParamHysteresis = "hysteresis";
 const static std::string kParamThinning = "thinning";
 
 const static std::string kParamBorder = "border";
@@ -22,6 +22,8 @@ enum EParamBorder
 	eParamBorderBlack,
 	eParamBorderPadded
 };
+
+const static std::string kParamFillAllChannels = "fillAllChannels";
 
 }
 }
