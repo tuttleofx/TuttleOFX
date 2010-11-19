@@ -20,67 +20,42 @@ ImageEffect( handle )
 {
     _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	_paramBorder = fetchChoiceParam( kParamBorder );
 }
 
 ThinningProcessParams<ThinningPlugin::Scalar> ThinningPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	ThinningProcessParams<Scalar> params;
+	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
 	return params;
 }
 
-void ThinningPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+bool ThinningPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-    if( paramName == kParamHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kParamHelpString );
-    }
-}
+	ThinningProcessParams<Scalar> params = getProcessParams();
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 
-//bool ThinningPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-//{
-//	ThinningProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	switch( params._border )
-//	{
-//		case eParamBorderPadded:
-//			rod.x1 = srcRod.x1 + 1;
-//			rod.y1 = srcRod.y1 + 1;
-//			rod.x2 = srcRod.x2 - 1;
-//			rod.y2 = srcRod.y2 - 1;
-//			return true;
-//		default:
-//			break;
-//	}
-//	return false;
-//}
-//
-//void ThinningPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-//{
-//	ThinningProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	OfxRectD srcRoi;
-//	srcRoi.x1 = srcRod.x1 - 1;
-//	srcRoi.y1 = srcRod.y1 - 1;
-//	srcRoi.x2 = srcRod.x2 + 1;
-//	srcRoi.y2 = srcRod.y2 + 1;
-//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-//}
-
-bool ThinningPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
-{
-//	ThinningProcessParams<Scalar> params = getProcessParams();
-//	if( params._in == params._out )
-//	{
-//		identityClip = _clipSrc;
-//		identityTime = args.time;
-//		return true;
-//	}
+	switch( params._border )
+	{
+		case eParamBorderPadded:
+			rod = rectangleReduce( srcRod, 2 );
+			return true;
+		default:
+			break;
+	}
 	return false;
 }
+
+void ThinningPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+{
+	ThinningProcessParams<Scalar> params = getProcessParams();
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	
+	OfxRectD srcRoi = rectangleGrow( srcRod, 2 );
+
+	rois.setRegionOfInterest( *_clipSrc, srcRoi );
+}
+
 
 /**
  * @brief The overridden render function

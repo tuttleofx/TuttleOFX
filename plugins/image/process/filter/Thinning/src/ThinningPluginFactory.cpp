@@ -10,7 +10,7 @@ namespace tuttle {
 namespace plugin {
 namespace thinning {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**
@@ -34,6 +34,7 @@ void ThinningPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }
 
 /**
@@ -55,8 +56,14 @@ void ThinningPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );
-	helpButton->setLabel( "Help" );
+	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
+	border->setLabel( "Gradient border" );
+	border->setHint( "Border method for gradient computation." );
+	border->appendOption( kParamBorderBlack );
+	border->appendOption( kParamBorderPadded );
+//	border->appendOption( kParamBorderMirror );
+//	border->appendOption( kParamBorderConstant );
+	border->setDefault( 1 );
 }
 
 /**
