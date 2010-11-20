@@ -532,12 +532,17 @@ void Sequence::init( const boost::filesystem::path& directory, const std::string
 	_nbFiles       = 0;
 }
 
-bool Sequence::init( const boost::filesystem::path& directory, const std::string& pattern, const Time first, const Time last, const Time step, const EPattern accept )
+bool Sequence::init( const boost::filesystem::path& directory, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept )
 {
+	clear();
 	if( !initFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not regognize as a pattern, maybe a still file
 
-	init( directory, _prefix, _padding, _suffix, first, last, step, _strictPadding );
+	_directory     = directory;
+	_firstTime     = firstTime;
+	_lastTime      = lastTime;
+	_step          = step;
+	_nbFiles       = 0;
 	return true;
 }
 
