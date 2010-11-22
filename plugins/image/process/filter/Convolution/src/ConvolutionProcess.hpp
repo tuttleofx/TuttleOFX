@@ -16,7 +16,10 @@ template<class View>
 class ConvolutionProcess : public ImageGilFilterProcessor<View>
 {
 public:
+	typedef float Scalar;
 	typedef typename View::value_type Pixel;
+	typedef typename View::point_t Point;
+	typedef typename View::coord_t Coord;
 	typedef typename image_from_view<View>::type Image;
 
 protected:

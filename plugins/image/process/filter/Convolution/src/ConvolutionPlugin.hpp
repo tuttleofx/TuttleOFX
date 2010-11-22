@@ -3,6 +3,7 @@
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/gil/gil_all.hpp>
 
 #include <vector>
@@ -14,7 +15,7 @@ namespace convolution {
 struct ConvolutionProcessParams
 {
 	boost::gil::point2<unsigned int> _size;
-	std::vector<double> _coef;
+	boost::numeric::ublas::matrix<double> _convMatrix;
 };
 
 /**

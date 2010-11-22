@@ -38,7 +38,6 @@ void BlurProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
-	using boost::numeric_cast;
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {

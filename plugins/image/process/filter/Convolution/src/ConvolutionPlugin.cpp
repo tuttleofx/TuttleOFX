@@ -41,14 +41,14 @@ ConvolutionProcessParams ConvolutionPlugin::getProcessParams() const
 	params._size.x = boost::numeric_cast<unsigned int>( size.x );
 	params._size.y = boost::numeric_cast<unsigned int>( size.y );
 
-	params._coef.resize( params._size.x * params._size.y );
+	params._convMatrix.resize( params._size.x, params._size.y );
 	for( unsigned int y = 0; y < params._size.y; ++y )
 	{
-		unsigned int yy = y * params._size.x;
+//		unsigned int yy = y * params._size.x;
 		for( unsigned int x = 0; x < params._size.x; ++x )
 		{
-			params._coef[yy + x] = _paramCoef[y][x]->getValue();
-			COUT( "coef[" << y << "][" << x << "] = " << params._coef[yy + x] );
+			params._convMatrix(x, y) = _paramCoef[y][x]->getValue();
+			COUT( "coef[" << y << "][" << x << "] = " << params._convMatrix(x, y) );
 		}
 	}
 	return params;
