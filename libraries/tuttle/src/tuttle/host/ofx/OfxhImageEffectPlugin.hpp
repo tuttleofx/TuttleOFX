@@ -164,7 +164,7 @@ private:
 }
 
 #ifndef SWIG
-BOOST_CLASS_EXPORT( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin )
+BOOST_CLASS_EXPORT_KEY( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin )
 #endif
 
 #endif

@@ -27,6 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 // ofx host
 #include "OfxhBinary.hpp"
 #include "OfxhMemory.hpp"
@@ -42,6 +43,7 @@
 
 ///@todo tuttle: remove this !
 #include <tuttle/host/Core.hpp>
+#include <tuttle/host/serialization.hpp>
 
 // ofx
 #include <ofxImageEffect.h>
@@ -304,4 +306,6 @@ void OfxhImageEffectPlugin::unloadAction()
 }
 }
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT( tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin )
 

@@ -34,6 +34,7 @@
 
 #include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/exceptions.hpp>
+#include <tuttle/host/serialization.hpp>
 
 // ofx
 #include <ofxImageEffect.h>

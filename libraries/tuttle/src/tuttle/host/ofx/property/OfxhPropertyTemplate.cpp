@@ -26,14 +26,19 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include "OfxhPropertyTemplate.hpp"
 #include "OfxhGetHook.hpp"
 #include "OfxhNotifyHook.hpp"
 
 #include <tuttle/host/ofx/OfxhCore.hpp>
+#include <tuttle/host/serialization.hpp>
 
 #include <ofxCore.h>
 #include <ofxImageEffect.h>
+
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -339,3 +344,13 @@ template class OfxhPropertyTemplate<OfxhPointerValue>;
 }
 }
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT( tuttle::host::ofx::property::Int )
+BOOST_CLASS_EXPORT_IMPLEMENT( tuttle::host::ofx::property::Double )
+BOOST_CLASS_EXPORT_IMPLEMENT( tuttle::host::ofx::property::Pointer )
+BOOST_CLASS_EXPORT_IMPLEMENT( tuttle::host::ofx::property::String )
+//BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Int )
+//BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Double )
+//BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Pointer )
+//BOOST_CLASS_EXPORT( tuttle::host::ofx::property::String )
+

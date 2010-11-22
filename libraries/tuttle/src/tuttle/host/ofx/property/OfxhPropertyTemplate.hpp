@@ -269,10 +269,11 @@ struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::hos
 template<>
 struct is_virtual_base_of<tuttle::host::ofx::property::OfxhProperty, tuttle::host::ofx::property::Pointer>: public mpl::true_ {};
 }
-BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Int )
-BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Double )
-BOOST_CLASS_EXPORT( tuttle::host::ofx::property::Pointer )
-BOOST_CLASS_EXPORT( tuttle::host::ofx::property::String )
+
+BOOST_CLASS_EXPORT_KEY( tuttle::host::ofx::property::Int )
+BOOST_CLASS_EXPORT_KEY( tuttle::host::ofx::property::Double )
+BOOST_CLASS_EXPORT_KEY( tuttle::host::ofx::property::Pointer )
+BOOST_CLASS_EXPORT_KEY( tuttle::host::ofx::property::String )
 #endif
 
 #endif
