@@ -163,7 +163,7 @@ public:
 	}
 
 	/** @brief set which components  is used, defaults to none set, this must be called at least once! */
-	void setClipComponent( EPixelComponent v )
+	void setClipComponent( const EPixelComponent v )
 	{
 		switch( v )
 		{
@@ -186,23 +186,26 @@ public:
 	{
 		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedComponents, comp );
 		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, comp );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedComponents, comp );
 	}
 
 	/** @brief set which component is used, defaults to none set, this must be called at least once! */
-	void setClipBitDepth( EBitDepth v )
+	void setClipBitDepth( const EBitDepth v )
 	{
 		switch( v )
 		{
-			case ePixelComponentRGBA:
-				setClipBitDepth( kOfxImageComponentRGBA );
+			case eBitDepthFloat:
+				setClipBitDepth( kOfxBitDepthFloat );
 				break;
-			case ePixelComponentAlpha:
-				setClipBitDepth( kOfxImageComponentAlpha );
+			case eBitDepthUShort:
+				setClipBitDepth( kOfxBitDepthShort );
 				break;
-			case ePixelComponentCustom:
+			case eBitDepthUByte:
+				setClipBitDepth( kOfxBitDepthByte );
 				break;
-			case ePixelComponentNone:
-				setClipBitDepth( kOfxImageComponentNone );
+			case eBitDepthCustom:
+			case eBitDepthNone:
+				setClipBitDepth( kOfxBitDepthNone );
 				break;
 		}
 	}
@@ -212,6 +215,7 @@ public:
 	{
 		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedPixelDepths, comp );
 		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropPixelDepth, comp );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedPixelDepth, comp );
 	}
 
 	void setClipRod( const OfxRectD rod )

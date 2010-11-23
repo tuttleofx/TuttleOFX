@@ -421,7 +421,11 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 			if( !clip.isOutput() && clip.isConnected() )
 			{
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
-				if( linkClip.getNode().asImageEffectNode().isSupportedBitDepth( validBitDepth ) )
+				if( ( linkClip.getNode().getNodeType() == INode::eNodeTypeImageEffect &&
+				      linkClip.getNode().asImageEffectNode().isSupportedBitDepth( validBitDepth )
+				    ) ||
+				      linkClip.getNode().getNodeType() == INode::eNodeTypeBuffer
+				  )
 				{
 					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
 				}
@@ -451,7 +455,8 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 
 				//TCOUT_X( 20, "-" );
 				//TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
-				if( linkClip.getNode().asImageEffectNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
+				if( linkClip.getNode().getNodeType() == INode::eNodeTypeImageEffect &&
+				    linkClip.getNode().asImageEffectNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
 				{
 					if( linkClip.getNode().asImageEffectNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
 					{
@@ -577,17 +582,24 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 //	TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
 //	setCurrentTime( vData._time );
 
+	COUT_INFOS;
 	checkClipsConnections();
 
+	COUT_INFOS;
 	getClipPreferencesAction();
+	COUT_INFOS;
 	initComponents();
+	COUT_INFOS;
 	initPixelAspectRatio();
+	COUT_INFOS;
 	maximizeBitDepthFromReadsToWrites();
 
+	COUT_INFOS;
 	OfxRectD rod;
 	getRegionOfDefinitionAction( vData._time,
 	                             vData._nodeData->_renderScale,
 	                             rod );
+	COUT_INFOS;
 	vData._apiImageEffect._renderRoD = rod;
 	vData._apiImageEffect._renderRoI = rod; ///< @todo tuttle: tile supports
 	
