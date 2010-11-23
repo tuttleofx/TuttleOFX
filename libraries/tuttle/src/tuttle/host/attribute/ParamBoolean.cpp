@@ -1,15 +1,17 @@
 #include "ParamBoolean.hpp"
 
+#include <tuttle/host/INode.hpp>
+
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-ParamBoolean::ParamBoolean( ImageEffectNode&                           effect,
+ParamBoolean::ParamBoolean( INode&                           effect,
                             const std::string&                         name,
                             const ofx::attribute::OfxhParamDescriptor& descriptor,
                             const std::size_t                          index )
 	: Param( effect )
-	, ofx::attribute::OfxhParamBoolean( descriptor, name, effect, index )
+	, ofx::attribute::OfxhParamBoolean( descriptor, name, effect.getParamSet(), index )
 {
 	_value = getDefault();
 }

@@ -1,10 +1,12 @@
 #include "Param.hpp"
 
+#include <tuttle/host/INode.hpp>
+
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-Param::Param( ImageEffectNode& effect )
+Param::Param( INode& effect )
 	: Attribute( effect )
 {}
 

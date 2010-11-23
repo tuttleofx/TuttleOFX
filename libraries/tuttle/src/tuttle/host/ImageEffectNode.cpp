@@ -63,9 +63,9 @@ ImageEffectNode::~ImageEffectNode()
 
 void ImageEffectNode::connect( const INode& sourceEffect, attribute::Attribute& attr )
 {
-	const ImageEffectNode& source = dynamic_cast<const ImageEffectNode&>( sourceEffect );
+	const INode& source = sourceEffect;
 
-	const attribute::ClipImage& output = dynamic_cast<attribute::ClipImage&>( source.getClip( kOfxImageEffectOutputClipName ) );
+	const attribute::ClipImage& output = dynamic_cast<const attribute::ClipImage&>( source.getClip( kOfxImageEffectOutputClipName ) );
 	attribute::ClipImage& input        = dynamic_cast<attribute::ClipImage&>( attr ); // throw an exception if not a ClipImage attribute
 
 	input.setConnectedClip( output );
@@ -421,7 +421,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 			if( !clip.isOutput() && clip.isConnected() )
 			{
 				const attribute::ClipImage& linkClip = clip.getConnectedClip();
-				if( linkClip.getNode().isSupportedBitDepth( validBitDepth ) )
+				if( linkClip.getNode().asImageEffectNode().isSupportedBitDepth( validBitDepth ) )
 				{
 					clip.setBitDepthStringIfUpperAndNotModifiedByPlugin( validBitDepth );
 				}
@@ -451,9 +451,9 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 
 				//TCOUT_X( 20, "-" );
 				//TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
-				if( linkClip.getNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
+				if( linkClip.getNode().asImageEffectNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
 				{
-					if( linkClip.getNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
+					if( linkClip.getNode().asImageEffectNode().supportsMultipleClipDepths() ) /// @todo tuttle: is this test correct in all cases?
 					{
 						linkClip.setBitDepthStringIfUpper( outputClipBitDepthStr );
 					}
@@ -733,8 +733,9 @@ void ImageEffectNode::endSequence( graph::ProcessVertexData& vData )
 }
 
 
-std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
+std::ostream& ImageEffectNode::print( std::ostream& os ) const
 {
+	const ImageEffectNode& v = *this;
 	os << "________________________________________________________________________________" << std::endl;
 	os << "Plug-in:" << v.getLabel() << std::endl;
 	os << "Description:" << v.getLongLabel() << std::endl;
@@ -757,6 +758,10 @@ std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
 	return os;
 }
 
+std::ostream& operator<<( std::ostream& os, const ImageEffectNode& v )
+{
+	return v.print(os);
+}
 
 void ImageEffectNode::debugOutputImage( const OfxTime time ) const
 {

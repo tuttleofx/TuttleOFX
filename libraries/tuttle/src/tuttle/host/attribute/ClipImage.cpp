@@ -2,6 +2,8 @@
 
 #include <tuttle/host/HostDescriptor.hpp>
 #include <tuttle/host/Core.hpp>
+#include <tuttle/host/ImageEffectNode.hpp>
+#include <tuttle/host/InputBufferNode.hpp>
 
 #include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhBinary.hpp>
@@ -28,9 +30,9 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-ClipImage::ClipImage( ImageEffectNode& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
+ClipImage::ClipImage( INode& effect, const tuttle::host::ofx::attribute::OfxhClipImageDescriptor& desc )
 	: Attribute( effect )
-	, tuttle::host::ofx::attribute::OfxhClipImage( effect, desc )
+	, tuttle::host::ofx::attribute::OfxhClipImage( desc )
 	, _isConnected( false )
 	, _continuousSamples( false )
 	, _memoryCache( Core::instance().getMemoryCache() )
@@ -62,14 +64,16 @@ OfxRectD ClipImage::fetchRegionOfDefinition( const OfxTime time ) const
 
 	/// @todo tuttle: renderscale, time, ?
 
-//	if( time != _effect.getCurrentTime() )
-//	{
-//		BOOST_THROW_EXCEPTION( exception::Unsupported()
-//		        << exception::user() + "Access to another time than current is not supported at the moment (imageEffect Time: " + _effect.getCurrentTime() + ", fetched time: " + time + ").\n"
-//			                         + "Clip identifier: " + getIdentifier()
-//				<< exception::nodeName( getName() ) );
-//	}
-	return _effect.getRegionOfDefinition( time );
+	switch( getNode().getNodeType() )
+	{
+		case INode::eNodeTypeImageEffect:
+			return getNode().asImageEffectNode().getRegionOfDefinition( time );
+		case INode::eNodeTypeBuffer:
+			return getNode().asInputBufferNode().getRegionOfDefinition( time );
+		default:
+			BOOST_THROW_EXCEPTION( exception::Bug()
+			    << exception::dev( "fetchRegionOfDefinition unsupported on " + mapNodeTypeEnumToString(getNode().getNodeType()) + " node." ) );
+	}
 }
 
 /// Get the Raw Unmapped Pixel Depth
@@ -91,7 +95,7 @@ const std::string& ClipImage::getUnmappedComponents() const
  */
 double ClipImage::getFrameRate() const
 {
-	return getNode().getFrameRate();
+	return getNode().asImageEffectNode().getFrameRate();
 }
 
 // Frame Range (startFrame, endFrame) -
@@ -110,7 +114,7 @@ void ClipImage::getFrameRange( double& startFrame, double& endFrame ) const
  */
 const double ClipImage::getUnmappedFrameRate() const
 {
-	return getNode().getFrameRate();
+	return getNode().asImageEffectNode().getFrameRate();
 }
 
 // Unmapped Frame Range -

@@ -5,7 +5,6 @@
 
 #include "ParamDouble.hpp"
 #include <tuttle/host/ofx/attribute/OfxhMultiDimParam.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 
 #include <ofxPixels.h>
 
@@ -17,7 +16,7 @@ class ParamRGB : public Param
 	, public ofx::attribute::OfxhMultiDimParam<ParamDouble, 3 >
 {
 public:
-	ParamRGB( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamRGB( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamRGB* clone() const { return new ParamRGB( *this ); }
 
 	OfxRGBColourD getDefault() const;

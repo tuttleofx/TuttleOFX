@@ -1,14 +1,16 @@
 #include "ParamPushButton.hpp"
 
+#include <tuttle/host/INode.hpp>
+
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-ParamPushButton::ParamPushButton( ImageEffectNode&                           effect,
+ParamPushButton::ParamPushButton( INode&                           effect,
                                   const std::string&                         name,
                                   const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
-	, ofx::attribute::OfxhParamPushButton( descriptor, name, effect )
+	, ofx::attribute::OfxhParamPushButton( descriptor, name, effect.getParamSet() )
 {}
 
 void ParamPushButton::copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC

@@ -4,7 +4,6 @@
 #include "Param.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhParamChoice.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -17,7 +16,7 @@ protected:
 	int _value;
 
 public:
-	ParamChoice( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamChoice( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamChoice* clone() const { return new ParamChoice( *this ); }
 
 	int getDefault() const;

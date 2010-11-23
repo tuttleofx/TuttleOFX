@@ -5,7 +5,6 @@
 #include "ParamDouble.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhMultiDimParam.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -15,7 +14,7 @@ class ParamDouble2D : public Param
 	, public ofx::attribute::OfxhMultiDimParam<ParamDouble, 2 >
 {
 public:
-	ParamDouble2D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamDouble2D( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamDouble2D* clone() const { return new ParamDouble2D( *this ); }
 
 	OfxPointD getDefault() const;

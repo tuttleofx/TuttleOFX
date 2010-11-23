@@ -1,15 +1,17 @@
 #include "ParamDouble.hpp"
 
+#include <tuttle/host/INode.hpp>
+
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-ParamDouble::ParamDouble( ImageEffectNode&                           effect,
+ParamDouble::ParamDouble( INode&                           effect,
                           const std::string&                         name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor,
                           const std::size_t                          index )
 	: Param( effect )
-	, ofx::attribute::OfxhParamDouble( descriptor, name, effect, index )
+	, ofx::attribute::OfxhParamDouble( descriptor, name, effect.getParamSet(), index )
 {
 	_value = getDefault();
 }

@@ -1,14 +1,16 @@
 #include "ParamDouble2D.hpp"
 
+#include <tuttle/host/INode.hpp>
+
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-ParamDouble2D::ParamDouble2D( ImageEffectNode&                           effect,
+ParamDouble2D::ParamDouble2D( INode&                           effect,
                               const std::string&                         name,
                               const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
-	, ofx::attribute::OfxhMultiDimParam<ParamDouble, 2>( descriptor, name, effect )
+	, ofx::attribute::OfxhMultiDimParam<ParamDouble, 2>( descriptor, name, effect.getParamSet() )
 {
 	_controls.replace<0>( new ParamDouble( effect, name + ".x", descriptor, 0 ) );
 	_controls.replace<1>( new ParamDouble( effect, name + ".y", descriptor, 1 ) );

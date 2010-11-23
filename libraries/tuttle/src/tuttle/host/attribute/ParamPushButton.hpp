@@ -4,7 +4,6 @@
 #include "Param.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhParamPushButton.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -14,7 +13,7 @@ class ParamPushButton : public Param
 	, public ofx::attribute::OfxhParamPushButton
 {
 public:
-	ParamPushButton( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamPushButton( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamPushButton* clone() const { return new ParamPushButton( *this ); }
 
 	void copy( const ParamPushButton& p ) OFX_EXCEPTION_SPEC;

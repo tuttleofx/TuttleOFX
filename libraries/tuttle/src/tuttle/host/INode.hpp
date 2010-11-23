@@ -1,7 +1,10 @@
 #ifndef _TUTTLE_HOST_INODE_HPP_
 #define _TUTTLE_HOST_INODE_HPP_
 
+#include <tuttle/host/exceptions.hpp>
+
 #include <ofxCore.h>
+#include <ofxAttribute.h>
 
 #include <iostream>
 #include <string>
@@ -12,6 +15,14 @@
 namespace tuttle {
 namespace host {
 
+namespace ofx {
+namespace attribute {
+class OfxhParam;
+class OfxhParamSet;
+class OfxhClip;
+class OfxhClipImage;
+}
+}
 namespace attribute {
 class Attribute;
 }
@@ -20,6 +31,10 @@ class ProcessVertexAtTimeData;
 class ProcessVertexData;
 class ProcessVertexAtTimeInfo;
 }
+
+class ImageEffectNode;
+class InputBufferNode;
+
 
 class INode
 {
@@ -33,22 +48,40 @@ public:
 		eNodeTypeImageEffect,
 		eNodeTypeParam,
 		eNodeTypeGraph,
+		eNodeTypeBuffer,
 	};
 	
-
-
 public:
 	INode() {}
 	INode( const INode& e ) {}
 	virtual ~INode()                                = 0;
 	virtual INode*              clone() const       = 0;
 	virtual const std::string& getName() const     = 0;
+	virtual void setName( const std::string& name ) = 0;
 	virtual const ENodeType    getNodeType() const = 0;
+
+	ImageEffectNode& asImageEffectNode();
+	const ImageEffectNode& asImageEffectNode() const;
+
+	InputBufferNode& asInputBufferNode();
+	const InputBufferNode& asInputBufferNode() const;
 
 	virtual attribute::Attribute& getAttribute( const std::string& name ) = 0;
 	//	const attribute::Attribute& getAttribute( const std::string& name ) const { return const_cast<ProcessNode*>(this)->getAttribute( name ); }
 	virtual attribute::Attribute&       getSingleInputAttribute()       = 0;
 	virtual const attribute::Attribute& getSingleInputAttribute() const = 0;
+	
+	virtual const ofx::attribute::OfxhParam& getParam( const std::string& name ) const = 0;
+	virtual ofx::attribute::OfxhParam&       getParam( const std::string& name ) = 0;
+
+	virtual ofx::attribute::OfxhClipImage&       getClip( const std::string& name ) = 0;
+	virtual const ofx::attribute::OfxhClipImage& getClip( const std::string& name ) const = 0;
+
+	ofx::attribute::OfxhClipImage&       getOutputClip()       { return getClip( kOfxOutputAttributeName ); }
+	const ofx::attribute::OfxhClipImage& getOutputClip() const { return getClip( kOfxOutputAttributeName ); }
+
+	virtual ofx::attribute::OfxhParamSet& getParamSet() = 0;
+	virtual const ofx::attribute::OfxhParamSet& getParamSet() const = 0;
 
 	#ifndef SWIG
 	virtual void connect( const INode&, attribute::Attribute& ) = 0;
@@ -129,7 +162,10 @@ public:
 	 */
 	virtual void endSequence( graph::ProcessVertexData& processOptions ) = 0;
 
+	virtual std::ostream& print( std::ostream& os ) const = 0;
 
+	friend std::ostream& operator<<( std::ostream& os, const This& v );
+	
 protected:
 	typedef graph::ProcessVertexData Data;
 	typedef graph::ProcessVertexAtTimeData DataAtTime;
@@ -149,6 +185,27 @@ public:
 
 	#endif
 };
+
+
+inline std::string mapNodeTypeEnumToString( const INode::ENodeType e )
+{
+	switch( e )
+	{
+		case INode::eNodeTypeUnknown:
+			return "NodeTypeUnknown";
+		case INode::eNodeTypeImageEffect:
+			return "NodeTypeImageEffect";
+		case INode::eNodeTypeParam:
+			return "NodeTypeParam";
+		case INode::eNodeTypeGraph:
+			return "NodeTypeGraph";
+		case INode::eNodeTypeBuffer:
+			return "NodeTypeBuffer";
+	}
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev() + "Unrecognized ENodeType enum. (" + e + ")." );
+}
+
 
 }
 }

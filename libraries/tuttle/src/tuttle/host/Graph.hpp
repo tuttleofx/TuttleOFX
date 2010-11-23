@@ -2,6 +2,7 @@
 #define _TUTTLE_HOST_CORE_GRAPH_HPP_
 
 #include "Core.hpp"
+#include "INode.hpp"
 #include "exceptions.hpp"
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/UVertex.hpp>
@@ -27,7 +28,7 @@ class Graph
 public:
 	typedef graph::UVertex Vertex;
 	typedef graph::UEdge Edge;
-	typedef ImageEffectNode Node; /// @todo tuttle ProcessNode...
+	typedef INode Node; /// @todo tuttle INode...
 	typedef attribute::Attribute Attribute;
 	typedef graph::InternalGraph<Vertex, Edge> InternalGraphImpl;
 	typedef InternalGraphImpl::vertex_descriptor vertex_descriptor;
@@ -40,6 +41,12 @@ public:
 	Graph();
 	//Graph( const Graph& other );
 	~Graph();
+
+	/**
+	 * @brief Create a new input node in the current graph,
+	 *        to give an input buffer.
+	 */
+	InputBufferNode& createInputBuffer();
 
 	/**
 	 * @brief Create a new node in the current graph.

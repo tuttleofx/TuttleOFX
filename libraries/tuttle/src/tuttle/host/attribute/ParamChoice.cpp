@@ -1,14 +1,16 @@
 #include "ParamChoice.hpp"
 
+#include <tuttle/host/INode.hpp>
+
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-ParamChoice::ParamChoice( ImageEffectNode&                           effect,
+ParamChoice::ParamChoice( INode&                           effect,
                           const std::string&                         name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
-	, ofx::attribute::OfxhParamChoice( descriptor, name, effect )
+	, ofx::attribute::OfxhParamChoice( descriptor, name, effect.getParamSet() )
 {
 	_value = getDefault();
 }

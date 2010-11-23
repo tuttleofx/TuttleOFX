@@ -4,7 +4,6 @@
 #include "Param.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhParamPage.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -14,7 +13,7 @@ class ParamPage : public Param
 	, public ofx::attribute::OfxhParamPage
 {
 public:
-	ParamPage( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamPage( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamPage* clone() const { return new ParamPage( *this ); }
 
 	void copy( const ParamPage& p ) OFX_EXCEPTION_SPEC;

@@ -5,7 +5,6 @@
 
 #include <tuttle/host/attribute/Param.hpp>
 #include <tuttle/host/attribute/ClipImage.hpp>
-
 #include <tuttle/host/graph/ProcessVertexData.hpp>
 #include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
 
@@ -32,6 +31,7 @@ public:
 	~ImageEffectNode();
 
 	const std::string&               getName() const                           { return ofx::imageEffect::OfxhImageEffectNodeBase::getName(); }
+	void                             setName( const std::string& name )        { return ofx::imageEffect::OfxhImageEffectNodeBase::setName(name); }
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const { return ofx::attribute::OfxhParamSet::getParam( name ); }
 	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
 //	const attribute::Param& getParam( const std::string& name ) const { return dynamic_cast<const attribute::Param&>( ofx::attribute::OfxhParamSet::getParam( name ) ); }
@@ -49,8 +49,8 @@ public:
 
 	void connect( const INode& sourceEffect, attribute::Attribute& attr );
 
-	ofx::attribute::OfxhClipImage&       getOutputClip()       { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
-	const ofx::attribute::OfxhClipImage& getOutputClip() const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( getClip( kOfxImageEffectOutputClipName ) ); }
+	ofx::attribute::OfxhClipImage&       getClip( const std::string& name )       { return dynamic_cast<ofx::attribute::OfxhClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
+	const ofx::attribute::OfxhClipImage& getClip( const std::string& name ) const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
 
 	attribute::Attribute& getAttribute( const std::string& name ) { return dynamic_cast<attribute::ClipImage&>( getClip( name ) ); }
 	attribute::Attribute& getSingleInputAttribute()
@@ -85,6 +85,9 @@ public:
 
 	const attribute::Attribute& getSingleInputAttribute() const { return const_cast<ImageEffectNode*>( this )->getSingleInputAttribute(); }
 
+	ofx::attribute::OfxhParamSet& getParamSet() { return *this; }
+	const ofx::attribute::OfxhParamSet& getParamSet() const { return *this; }
+
 	OfxRectD getRegionOfDefinition( const OfxTime time ) const
 	{
 		return getData(time)._apiImageEffect._renderRoD;
@@ -110,7 +113,10 @@ public:
 	void endSequence( graph::ProcessVertexData& vData );
 	/// @}
 
-	friend std::ostream& operator<<( std::ostream& os, const This& g );
+	std::ostream& print( std::ostream& os ) const;
+
+	friend std::ostream& operator<<( std::ostream& os, const This& v );
+
 	#endif
 
 	#ifdef SWIG

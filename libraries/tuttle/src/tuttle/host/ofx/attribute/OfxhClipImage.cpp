@@ -1,7 +1,5 @@
 #include "OfxhClipImage.hpp"
 
-#include <tuttle/host/ofx/OfxhImageEffectNode.hpp>
-
 namespace tuttle {
 namespace host {
 namespace ofx {
@@ -10,9 +8,8 @@ namespace attribute {
 /**
  * clip clipimage instance
  */
-OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffectNode& effectInstance, const attribute::OfxhClipImageDescriptor& desc )
+OfxhClipImage::OfxhClipImage( const attribute::OfxhClipImageDescriptor& desc )
 	: attribute::OfxhClip( desc )
-	, _effectInstance( effectInstance )
 	//				, _pixelDepth( kOfxBitDepthNone )
 	//				, _components( kOfxImageComponentNone )
 {
@@ -43,7 +40,6 @@ OfxhClipImage::OfxhClipImage( imageEffect::OfxhImageEffectNode& effectInstance, 
 
 OfxhClipImage::OfxhClipImage( const OfxhClipImage& other )
 	: attribute::OfxhClip( other )
-	, _effectInstance( other._effectInstance ) ///< @todo tuttle bad link in copy....
 {}
 
 /// given the colour component, find the nearest set of supported colour components
@@ -58,10 +54,11 @@ const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) cons
 	if( isSupportedComponent( s ) )
 		return s;
 
-	/// were we fed some custom non chromatic component by getUnmappedComponents? Return it.
-	/// we should never be here mind, so a bit weird
-	if( !_effectInstance.isChromaticComponent( s ) )
-		return s;
+/// @todo tuttle: can we remove this check ?
+//	/// were we fed some custom non chromatic component by getUnmappedComponents? Return it.
+//	/// we should never be here mind, so a bit weird
+//	if( !_effectInstance.isChromaticComponent( s ) )
+//		return s;
 
 	/// Means we have RGBA or Alpha being passed in and the clip
 	/// only supports the other one, so return that

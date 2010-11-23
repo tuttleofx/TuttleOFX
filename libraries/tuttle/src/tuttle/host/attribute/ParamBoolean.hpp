@@ -4,7 +4,6 @@
 #include "Param.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhParamBoolean.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -17,7 +16,7 @@ protected:
 	bool _value;
 
 public:
-	ParamBoolean( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor, const std::size_t index = 0 );
+	ParamBoolean( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor, const std::size_t index = 0 );
 	virtual ParamBoolean* clone() const { return new ParamBoolean( *this ); }
 
 	bool getDefault() const;

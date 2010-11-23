@@ -1,14 +1,16 @@
 #include "ParamString.hpp"
 
+#include <tuttle/host/INode.hpp>
+
 namespace tuttle {
 namespace host {
 namespace attribute {
 
-ParamString::ParamString( ImageEffectNode&                           effect,
+ParamString::ParamString( INode&                           effect,
                           const std::string&                         name,
                           const ofx::attribute::OfxhParamDescriptor& descriptor )
 	: Param( effect )
-	, ofx::attribute::OfxhParamString( descriptor, name, effect )
+	, ofx::attribute::OfxhParamString( descriptor, name, effect.getParamSet() )
 {
 	_value = getDefault();
 }

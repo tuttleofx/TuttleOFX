@@ -25,8 +25,7 @@ class OfxhImageEffectNodeDescriptor;
 namespace attribute {
 
 /**
- * a clip image instance
- * @todo tuttle: template this class with the Node Type, so replace OfxhImageEffectNode by template parameter
+ * @brief a clip image instance
  */
 class OfxhClipImage
 	: public attribute::OfxhClip
@@ -35,11 +34,8 @@ class OfxhClipImage
 public:
 	typedef OfxhClipImage This;
 
-protected:
-	imageEffect::OfxhImageEffectNode& _effectInstance; ///< effect instance
-
 public:
-	OfxhClipImage( imageEffect::OfxhImageEffectNode& effectInstance, const attribute::OfxhClipImageDescriptor& desc );
+	OfxhClipImage( const attribute::OfxhClipImageDescriptor& desc );
 	OfxhClipImage( const OfxhClipImage& other );
 
 	virtual ~OfxhClipImage() {}

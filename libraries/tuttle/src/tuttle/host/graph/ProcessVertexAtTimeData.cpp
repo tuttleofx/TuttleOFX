@@ -59,6 +59,9 @@ std::ostream& operator<<( std::ostream& os, const ProcessVertexAtTimeData& vData
 		case INode::eNodeTypeParam:
 			os << "api: Param" << std::endl;
 			break;
+		case INode::eNodeTypeBuffer:
+			os << "api: Input Buffer" << std::endl;
+			break;
 		case INode::eNodeTypeUnknown:
 			os << "api: Unknown" << std::endl;
 			break;

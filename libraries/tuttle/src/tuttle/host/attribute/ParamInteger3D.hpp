@@ -5,7 +5,6 @@
 #include "ParamInteger.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhMultiDimParam.hpp>
-#include <tuttle/host/ImageEffectNode.hpp>
 
 namespace tuttle {
 namespace host {
@@ -15,7 +14,7 @@ class ParamInteger3D : public Param
 	, public ofx::attribute::OfxhMultiDimParam<ParamInteger, 3 >
 {
 public:
-	ParamInteger3D( ImageEffectNode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
+	ParamInteger3D( INode& effect, const std::string& name, const ofx::attribute::OfxhParamDescriptor& descriptor );
 	ParamInteger3D* clone() const { return new ParamInteger3D( *this ); }
 
 	Ofx3DPointI getDefault() const;
