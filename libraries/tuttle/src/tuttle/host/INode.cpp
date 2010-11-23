@@ -34,12 +34,12 @@ const InputBufferNode& INode::asInputBufferNode( ) const
 }
 
 
-void INode::setData( Data* data )
+void INode::setProcessData( Data* data )
 {
 	_data = data;
 }
 
-void INode::setData( DataAtTime* dataAtTime )
+void INode::setProcessData( DataAtTime* dataAtTime )
 {
 	_dataAtTime[dataAtTime->_time] = dataAtTime;
 }

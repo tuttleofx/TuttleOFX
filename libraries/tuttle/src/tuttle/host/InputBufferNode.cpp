@@ -1,4 +1,5 @@
 #include "InputBufferNode.hpp"
+#include "Core.hpp"
 #include "exceptions.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhClipImageDescriptor.hpp>
@@ -54,7 +55,7 @@ ofx::attribute::OfxhParam&       InputBufferNode::getParam( const std::string& n
 }
 
 
-ofx::attribute::OfxhClipImage&       InputBufferNode::getClip( const std::string& name )
+attribute::ClipImage&       InputBufferNode::getClip( const std::string& name )
 {
 	if( name != kOfxImageEffectOutputClipName )
 	{
@@ -64,7 +65,7 @@ ofx::attribute::OfxhClipImage&       InputBufferNode::getClip( const std::string
 	return _outputClip;
 }
 
-const ofx::attribute::OfxhClipImage&       InputBufferNode::getClip( const std::string& name ) const
+const attribute::ClipImage&       InputBufferNode::getClip( const std::string& name ) const
 {
 	if( name != kOfxImageEffectOutputClipName )
 	{
@@ -96,6 +97,16 @@ std::ostream& InputBufferNode::print( std::ostream& os ) const
 	return os;
 }
 
+
+void InputBufferNode::process( graph::ProcessVertexAtTimeData& vData )
+{
+	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
+	memory::CACHE_ELEMENT image;
+	image.reset( new attribute::Image( _outputClip, vData._apiImageEffect._renderRoI, vData._time ) );
+	memoryCache.put( _outputClip.getIdentifier(), vData._time, image );
+}
+
+
 std::ostream& operator<<( std::ostream& os, const InputBufferNode& v )
 {
 	return v.print(os);
@@ -103,3 +114,4 @@ std::ostream& operator<<( std::ostream& os, const InputBufferNode& v )
 
 }
 }
+

@@ -19,12 +19,12 @@ namespace ofx {
 namespace attribute {
 class OfxhParam;
 class OfxhParamSet;
-class OfxhClip;
-class OfxhClipImage;
 }
 }
 namespace attribute {
 class Attribute;
+class Clip;
+class ClipImage;
 }
 namespace graph {
 class ProcessVertexAtTimeData;
@@ -74,11 +74,11 @@ public:
 	virtual const ofx::attribute::OfxhParam& getParam( const std::string& name ) const = 0;
 	virtual ofx::attribute::OfxhParam&       getParam( const std::string& name ) = 0;
 
-	virtual ofx::attribute::OfxhClipImage&       getClip( const std::string& name ) = 0;
-	virtual const ofx::attribute::OfxhClipImage& getClip( const std::string& name ) const = 0;
+	virtual attribute::ClipImage&       getClip( const std::string& name ) = 0;
+	virtual const attribute::ClipImage& getClip( const std::string& name ) const = 0;
 
-	ofx::attribute::OfxhClipImage&       getOutputClip()       { return getClip( kOfxOutputAttributeName ); }
-	const ofx::attribute::OfxhClipImage& getOutputClip() const { return getClip( kOfxOutputAttributeName ); }
+	attribute::ClipImage&       getOutputClip()       { return getClip( kOfxOutputAttributeName ); }
+	const attribute::ClipImage& getOutputClip() const { return getClip( kOfxOutputAttributeName ); }
 
 	virtual ofx::attribute::OfxhParamSet& getParamSet() = 0;
 	virtual const ofx::attribute::OfxhParamSet& getParamSet() const = 0;
@@ -175,8 +175,8 @@ protected:
 	DataAtTimeMap _dataAtTime;
 
 public:
-	void setData( Data* data );
-	void setData( DataAtTime* dataAtTime );
+	void setProcessData( Data* data );
+	void setProcessData( DataAtTime* dataAtTime );
 	
 	Data& getData();
 	const Data& getData() const;

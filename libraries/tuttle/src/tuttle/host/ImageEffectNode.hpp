@@ -49,8 +49,8 @@ public:
 
 	void connect( const INode& sourceEffect, attribute::Attribute& attr );
 
-	ofx::attribute::OfxhClipImage&       getClip( const std::string& name )       { return dynamic_cast<ofx::attribute::OfxhClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
-	const ofx::attribute::OfxhClipImage& getClip( const std::string& name ) const { return dynamic_cast<ofx::attribute::OfxhClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
+	attribute::ClipImage&       getClip( const std::string& name )       { return dynamic_cast<attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
+	const attribute::ClipImage& getClip( const std::string& name ) const { return dynamic_cast<attribute::ClipImage&>( ofx::attribute::OfxhClipImageSet::getClip( name ) ); }
 
 	attribute::Attribute& getAttribute( const std::string& name ) { return dynamic_cast<attribute::ClipImage&>( getClip( name ) ); }
 	attribute::Attribute& getSingleInputAttribute()

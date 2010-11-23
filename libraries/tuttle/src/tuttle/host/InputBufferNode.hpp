@@ -4,6 +4,8 @@
 #include "INode.hpp"
 #include <tuttle/host/attribute/Param.hpp>
 #include <tuttle/host/attribute/ClipImage.hpp>
+#include <tuttle/host/attribute/ClipImage.hpp>
+#include <tuttle/host/ofx/attribute/OfxhClipImageDescriptor.hpp>
 #include <tuttle/host/graph/ProcessVertexData.hpp>
 #include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
 
@@ -12,6 +14,92 @@ namespace host {
 
 class InputBufferNode : public INode
 {
+public:
+	/** @brief Enumerates the pixel depths supported */
+	enum EBitDepth
+	{
+		eBitDepthCustom = -1, ///< some non standard bit depth
+		eBitDepthNone = 0, ///< bit depth that indicates no data is present
+		eBitDepthUByte = 1,
+		eBitDepthUShort = 2,
+		eBitDepthFloat = 3
+	};
+
+	/** @brief Enumerates the component types supported */
+	enum EPixelComponent
+	{
+		ePixelComponentNone,
+		ePixelComponentRGBA,
+		ePixelComponentAlpha,
+		ePixelComponentCustom ///< some non standard pixel type
+	};
+
+	/** @brief Enumerates the ways a fielded image can be extracted from a clip */
+	enum EFieldExtraction
+	{
+		eFieldExtractBoth,   /**< @brief extract both fields */
+		eFieldExtractSingle, /**< @brief extracts a single field, so you have a half height image */
+		eFieldExtractDoubled /**< @brief extracts a single field, but doubles up the field, so you have a full height image */
+	};
+
+	const std::string mapBitDepthEnumToString( const EBitDepth e )
+	{
+		switch(e)
+		{
+			case eBitDepthUByte:
+				return kOfxBitDepthByte;
+			case eBitDepthUShort:
+				return kOfxBitDepthShort;
+			case eBitDepthFloat:
+				return kOfxBitDepthFloat;
+			case eBitDepthNone:
+				return kOfxBitDepthNone;
+			case eBitDepthCustom:
+				return "eBitDepthCustom";
+		}
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev( "EBitDepth: " + boost::lexical_cast<std::string>(e) ) );
+		return kOfxBitDepthNone;
+	}
+
+	/** @brief turns a pixel component string into and enum */
+	EPixelComponent mapPixelComponentStringToEnum( const std::string& str )
+	{
+		if( str == kOfxImageComponentRGBA )
+		{
+			return ePixelComponentRGBA;
+		}
+		else if( str == kOfxImageComponentAlpha )
+		{
+			return ePixelComponentAlpha;
+		}
+		else if( str == kOfxImageComponentNone )
+		{
+			return ePixelComponentNone;
+		}
+		else
+		{
+			return ePixelComponentCustom;
+		}
+	}
+
+	std::string mapPixelComponentEnumToString( const EPixelComponent e )
+	{
+		switch(e)
+		{
+			case ePixelComponentRGBA:
+				return kOfxImageComponentRGBA;
+			case ePixelComponentAlpha:
+				return kOfxImageComponentAlpha;
+			case ePixelComponentNone:
+				return kOfxImageComponentNone;
+			case ePixelComponentCustom:
+				return "ePixelComponentCustom";
+		}
+		BOOST_THROW_EXCEPTION( exception::Bug()
+			<< exception::dev( "EPixelComponent: " + boost::lexical_cast<std::string>(e) ) );
+	}
+
 public:
 	InputBufferNode( );
 	InputBufferNode( const InputBufferNode& orig );
@@ -25,6 +113,8 @@ public:
 	static const std::string _label;
 	std::string _name;
 	attribute::ClipImage _outputClip;
+	unsigned char* _rawBuffer;
+	OfxRectD _rod;
 	
 	const std::string& getLabel() const     { return _label; }
 	const std::string& getName() const     { return _name; }
@@ -37,11 +127,108 @@ public:
 	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const;
 	ofx::attribute::OfxhParam&       getParam( const std::string& name );
 
-	ofx::attribute::OfxhClipImage&       getClip( const std::string& name );
-	const ofx::attribute::OfxhClipImage& getClip( const std::string& name ) const;
+	attribute::ClipImage&       getClip( const std::string& name );
+	const attribute::ClipImage& getClip( const std::string& name ) const;
 
 	ofx::attribute::OfxhParamSet& getParamSet();
 	const ofx::attribute::OfxhParamSet& getParamSet() const;
+
+
+
+
+
+
+	void setClipRawBuffer( unsigned char* rawBuffer )
+	{
+		_rawBuffer = rawBuffer;
+	}
+
+	/** @brief set how fielded images are extracted from the clip defaults to eFieldExtractDoubled */
+	void setClipFieldExtraction( EFieldExtraction v )
+	{
+		switch( v )
+		{
+			case eFieldExtractBoth:
+				_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropFieldExtraction, kOfxImageFieldBoth );
+				break;
+
+			case eFieldExtractSingle:
+				_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropFieldExtraction, kOfxImageFieldSingle );
+				break;
+
+			case eFieldExtractDoubled:
+				_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropFieldExtraction, kOfxImageFieldDoubled );
+				break;
+		}
+	}
+
+	/** @brief set which components  is used, defaults to none set, this must be called at least once! */
+	void setClipComponent( EPixelComponent v )
+	{
+		switch( v )
+		{
+			case ePixelComponentRGBA:
+				setClipComponent( kOfxImageComponentRGBA );
+				break;
+			case ePixelComponentAlpha:
+				setClipComponent( kOfxImageComponentAlpha );
+				break;
+			case ePixelComponentCustom:
+				break;
+			case ePixelComponentNone:
+				setClipComponent( kOfxImageComponentNone );
+				break;
+		}
+	}
+
+	/** @brief set which components is used, defaults to none set, this must be called at least once! */
+	void setClipComponent( const std::string& comp )
+	{
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedComponents, comp );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, comp );
+	}
+
+	/** @brief set which component is used, defaults to none set, this must be called at least once! */
+	void setClipBitDepth( EBitDepth v )
+	{
+		switch( v )
+		{
+			case ePixelComponentRGBA:
+				setClipBitDepth( kOfxImageComponentRGBA );
+				break;
+			case ePixelComponentAlpha:
+				setClipBitDepth( kOfxImageComponentAlpha );
+				break;
+			case ePixelComponentCustom:
+				break;
+			case ePixelComponentNone:
+				setClipBitDepth( kOfxImageComponentNone );
+				break;
+		}
+	}
+
+	/** @brief set which bit depth is used, defaults to none set, this must be called at least once! */
+	void setClipBitDepth( const std::string& comp )
+	{
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedPixelDepths, comp );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropPixelDepth, comp );
+	}
+
+	void setClipRod( const OfxRectD rod )
+	{
+		_rod = rod;
+	}
+
+
+
+
+
+
+
+
+
+
+
 
 	#ifndef SWIG
 	void connect( const INode&, attribute::Attribute& ) {}
@@ -55,10 +242,10 @@ public:
 
 	/**
 	 * @brief Begin of the a new frame range to process. Initilize this node.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark called on each node without predefined order.
 	 */
-	void beginSequence( graph::ProcessVertexData& processOptions ) {}
+	void beginSequence( graph::ProcessVertexData& vData ) {}
 
 	/**
 	 * @brief Asks the plugin all times it needs for each of it's input clips.
@@ -68,64 +255,68 @@ public:
 
 	/**
 	 * @brief Initialization pass to propagate informations from inputs to outputs.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	void preProcess1( graph::ProcessVertexAtTimeData& processOptions ) {}
+	void preProcess1( graph::ProcessVertexAtTimeData& vData )
+	{
+		vData._apiImageEffect._renderRoD = _rod;
+		vData._apiImageEffect._renderRoI = _rod;
+	}
 
 	/**
 	 * @brief Initialization pass to propagate informations from outputs to inputs.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark Called on each node in a REVERSE depth first search order. So you have the guarantee that it has been called on each output nodes before. Output nodes are those who used the result of the current node.
 	 */
-	void preProcess2_reverse( graph::ProcessVertexAtTimeData& processOptions ) {}
+	void preProcess2_reverse( graph::ProcessVertexAtTimeData& vData ) {}
 
 	/**
 	 * @brief Initialization pass to propagate informations from inputs to outputs.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	void preProcess3( graph::ProcessVertexAtTimeData& processOptions ) {}
+	void preProcess3( graph::ProcessVertexAtTimeData& vData ) {}
 
 	/**
 	 * @brief The node can declare to be an identity operation.
 	 * In this case, the node is not processed and the rendering engine direcly use the indicated input clip at a particular time.
 	 *
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @param[out] clip the input clip to use as identity
 	 * @param[out] time the time to use as identity
 	 * @return if the node is an identity operation
 	 */
-	bool isIdentity( const graph::ProcessVertexAtTimeData& processOptions, std::string& clip, OfxTime& time ) const { return false; }
+	bool isIdentity( const graph::ProcessVertexAtTimeData& vData, std::string& clip, OfxTime& time ) const { return false; }
 
 	/**
 	 * @brief Fill ProcessInfo to compute statistics for the current process,
 	 *        like memory used by this node, by all input nodes, etc.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
 	void preProcess_infos( const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const {}
 
 	/**
 	 * @brief Process this node. All inputs are compute.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	void process( graph::ProcessVertexAtTimeData& processOptions ) {}
+	void process( graph::ProcessVertexAtTimeData& vData );
 
 	/**
 	 * @brief The process of all nodes is done for one frame, now finalize this node.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark Called on each node in a depth first search order. So you have the guarantee that it has been called on each input nodes before.
 	 */
-	void postProcess( graph::ProcessVertexAtTimeData& processOptions ) {}
+	void postProcess( graph::ProcessVertexAtTimeData& vData ) {}
 
 	/**
 	 * @brief End of the whole frame range process, now finalize this node.
-	 * @param[in] processOptions
+	 * @param[in] vData
 	 * @remark called on each node without predefined order.
 	 */
-	void endSequence( graph::ProcessVertexData& processOptions ) {}
+	void endSequence( graph::ProcessVertexData& vData ) {}
 
 	std::ostream& print( std::ostream& os ) const;
 

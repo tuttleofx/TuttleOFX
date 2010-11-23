@@ -6,7 +6,7 @@ namespace ofx {
 namespace attribute {
 
 /**
- * clip clipimage instance
+ * clipimage instance
  */
 OfxhClipImage::OfxhClipImage( const attribute::OfxhClipImageDescriptor& desc )
 	: attribute::OfxhClip( desc )
