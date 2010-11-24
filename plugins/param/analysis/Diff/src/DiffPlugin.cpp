@@ -29,12 +29,12 @@ DiffProcessParams DiffPlugin::getProcessParams() const
 
 void DiffPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kHelpString );
-	}
+//	if( paramName == kHelpButton )
+//	{
+//		sendMessage( OFX::Message::eMessageMessage,
+//		             "", // No XML resources
+//		             kHelpString );
+//	}
 }
 
 bool DiffPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
