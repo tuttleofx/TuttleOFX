@@ -24,7 +24,7 @@ void NormalizePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "Normalize", "Normalize",
 		            "Normalize" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );

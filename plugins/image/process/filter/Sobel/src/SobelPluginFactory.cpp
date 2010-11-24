@@ -19,7 +19,7 @@ void SobelPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "Sobel", "Sobel",
 		            "Sobel" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
