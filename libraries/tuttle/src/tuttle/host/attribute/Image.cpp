@@ -17,13 +17,10 @@ namespace host {
 namespace attribute {
 
 Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
-	: ofx::imageEffect::OfxhImage( clip )
-	,                                     ///< this ctor will set basic props on the image
-	_memoryPool( Core::instance().getMemoryPool() )
+	: ofx::imageEffect::OfxhImage( clip ) ///< this ctor will set basic props on the image
+	, _memlen(0)
+	, _rowlen(0)
 {
-	size_t memlen = 0;
-	size_t rowlen = 0;
-
 	_ncomp = 0;
 	// Set rod in canonical & pixel coord.
 	OfxRectI ibounds;
@@ -52,18 +49,18 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
 	// make some memory according to the bit depth
 	if( clip.getBitDepthString() == kOfxBitDepthByte )
 	{
-		memlen = _ncomp * dimensions.x * dimensions.y;
-		rowlen = _ncomp * dimensions.x;
+		_memlen = _ncomp * dimensions.x * dimensions.y;
+		_rowlen = _ncomp * dimensions.x;
 	}
 	else if( clip.getBitDepthString() == kOfxBitDepthShort )
 	{
-		memlen = _ncomp * dimensions.x * dimensions.y * sizeof( boost::uint16_t );
-		rowlen = _ncomp * dimensions.x * sizeof( boost::uint16_t );
+		_memlen = _ncomp * dimensions.x * dimensions.y * sizeof( boost::uint16_t );
+		_rowlen = _ncomp * dimensions.x * sizeof( boost::uint16_t );
 	}
 	else if( clip.getBitDepthString() == kOfxBitDepthFloat )
 	{
-		memlen = int(_ncomp * dimensions.x * dimensions.y * sizeof( float ) );
-		rowlen = int(_ncomp * dimensions.x * sizeof( float ) );
+		_memlen = int(_ncomp * dimensions.x * dimensions.y * sizeof( float ) );
+		_rowlen = int(_ncomp * dimensions.x * sizeof( float ) );
 	}
 	else
 	{
@@ -71,16 +68,9 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
 		    << exception::user() + "Unsupported pixel depth: " + quotes( clip.getBitDepthString() ) );
 	}
 
-	_data = _memoryPool.allocate( memlen );
-	// now blank it
-	//memset( getPixelData(), 0, memlen );
-
 	// render scale x and y of 1.0
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 0 );
 	setDoubleProperty( kOfxImageEffectPropRenderScale, 1.0, 1 );
-
-	// data ptr
-	setPointerProperty( kOfxImagePropData, getPixelData() );
 
 	// bounds and rod
 	setIntProperty( kOfxImagePropBounds, ibounds.x1, 0 );
@@ -95,7 +85,7 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
 	setIntProperty( kOfxImagePropRegionOfDefinition, ibounds.y2, 3 );
 
 	// row bytes
-	setIntProperty( kOfxImagePropRowBytes, rowlen );
+	setIntProperty( kOfxImagePropRowBytes, _rowlen );
 }
 
 Image::~Image()
@@ -111,20 +101,7 @@ boost::uint8_t* Image::pixel( int x, int y )
 		int offset   = ( y = bounds.y1 ) * rowBytes + ( x - bounds.x1 ) * _ncomp;
 		return &( getPixelData()[offset] );
 	}
-	return 0;
-}
-
-template < class VIEW_T >
-VIEW_T Image::gilViewFromImage( Image* img )
-{
-	using namespace boost::gil;
-	OfxRectI bounds = img->getBounds();
-
-	typedef typename VIEW_T::value_type value_t;
-	return interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
-	                         std::abs( bounds.y2 - bounds.y1 ),
-	                         ( value_t* )( img->getPixelData() ),
-	                         img->getRowBytes() );
+	return NULL;
 }
 
 template < class D_VIEW, class S_VIEW >
@@ -154,19 +131,19 @@ void Image::debugSaveAsPng( const std::string& filename )
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					rgba8_view_t view = gilViewFromImage<rgba8_view_t >( this );
+					rgba8_view_t view = getGilView<rgba8_view_t >();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					rgba16_view_t view = gilViewFromImage<rgba16_view_t >( this );
+					rgba16_view_t view = getGilView<rgba16_view_t >();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					rgba32f_view_t view = gilViewFromImage<rgba32f_view_t >( this );
+					rgba32f_view_t view = getGilView<rgba32f_view_t >();
 					png_write_view( filename, color_converted_view<rgba8_pixel_t>( view ) );
 					break;
 				}
@@ -179,19 +156,19 @@ void Image::debugSaveAsPng( const std::string& filename )
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					gray8_view_t view = gilViewFromImage<gray8_view_t >( this );
+					gray8_view_t view = getGilView<gray8_view_t >();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					gray16_view_t view = gilViewFromImage<gray16_view_t >( this );
+					gray16_view_t view = getGilView<gray16_view_t >();
 					png_write_view( filename, view );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					gray32f_view_t view = gilViewFromImage<gray32f_view_t >( this );
+					gray32f_view_t view = getGilView<gray32f_view_t >();
 					png_write_view( filename, color_converted_view<rgb8_pixel_t>( view ) );
 					break;
 				}
@@ -220,19 +197,19 @@ void Image::copy( Image* dst, S_VIEW& src, const OfxPointI& dstCorner,
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					rgba8_view_t dView = gilViewFromImage<rgba8_view_t >( dst );
+					rgba8_view_t dView = dst->getGilView<rgba8_view_t >();
 					Image::copy( dView, src, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					rgba16_view_t dView = gilViewFromImage<rgba16_view_t >( dst );
+					rgba16_view_t dView = dst->getGilView<rgba16_view_t >();
 					Image::copy( dView, src, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					rgba32f_view_t dView = gilViewFromImage<rgba32f_view_t >( dst );
+					rgba32f_view_t dView = dst->getGilView<rgba32f_view_t >();
 					Image::copy( dView, src, dstCorner, srcCorner, count );
 					break;
 				}
@@ -245,19 +222,19 @@ void Image::copy( Image* dst, S_VIEW& src, const OfxPointI& dstCorner,
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					gray8_view_t dView = gilViewFromImage<gray8_view_t >( dst );
+					gray8_view_t dView = dst->getGilView<gray8_view_t >();
 					Image::copy( dView, src, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					gray16_view_t dView = gilViewFromImage<gray16_view_t >( dst );
+					gray16_view_t dView = dst->getGilView<gray16_view_t >();
 					Image::copy( dView, src, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					gray32f_view_t dView = gilViewFromImage<gray32f_view_t >( dst );
+					gray32f_view_t dView = dst->getGilView<gray32f_view_t >();
 					Image::copy( dView, src, dstCorner, srcCorner, count );
 					break;
 				}
@@ -282,19 +259,19 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					rgba8_view_t sView = gilViewFromImage<rgba8_view_t >( src );
+					rgba8_view_t sView = src->getGilView<rgba8_view_t >();
 					Image::copy( dst, sView, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					rgba16_view_t sView = gilViewFromImage<rgba16_view_t >( src );
+					rgba16_view_t sView = src->getGilView<rgba16_view_t >();
 					Image::copy( dst, sView, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					rgba32f_view_t sView = gilViewFromImage<rgba32f_view_t >( src );
+					rgba32f_view_t sView = src->getGilView<rgba32f_view_t >();
 					Image::copy( dst, sView, dstCorner, srcCorner, count );
 					break;
 				}
@@ -307,19 +284,19 @@ void Image::copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 			{
 				case ofx::imageEffect::eBitDepthUByte:
 				{
-					gray8_view_t sView = gilViewFromImage<gray8_view_t >( src );
+					gray8_view_t sView = src->getGilView<gray8_view_t >();
 					Image::copy( dst, sView, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthUShort:
 				{
-					gray16_view_t sView = gilViewFromImage<gray16_view_t >( src );
+					gray16_view_t sView = src->getGilView<gray16_view_t >();
 					Image::copy( dst, sView, dstCorner, srcCorner, count );
 					break;
 				}
 				case ofx::imageEffect::eBitDepthFloat:
 				{
-					gray32f_view_t sView = gilViewFromImage<gray32f_view_t >( src );
+					gray32f_view_t sView = src->getGilView<gray32f_view_t >();
 					Image::copy( dst, sView, dstCorner, srcCorner, count );
 					break;
 				}

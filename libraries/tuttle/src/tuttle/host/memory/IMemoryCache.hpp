@@ -13,9 +13,11 @@ class Image;
 }
 namespace memory {
 
-// configure the cache with this element
-// CACHE_ELEMENT should be a smart_ptr of some kind
-// pointer will be stored in a container so no auto_ptr is allowed
+/**
+ * @brief configure the cache with this element
+ * CACHE_ELEMENT should be a smart_ptr of some kind
+ * pointer will be stored in a container so no auto_ptr is allowed
+ */
 typedef ::boost::shared_ptr<tuttle::host::attribute::Image> CACHE_ELEMENT; ///< @todo temporary solution..
 
 struct Key

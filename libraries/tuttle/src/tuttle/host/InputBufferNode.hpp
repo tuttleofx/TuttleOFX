@@ -113,8 +113,11 @@ public:
 	static const std::string _label;
 	std::string _name;
 	attribute::ClipImage _outputClip;
-	unsigned char* _rawBuffer;
+
 	OfxRectD _rod;
+	EPixelComponent _pixelComponent;
+	EBitDepth _bitDepth;
+	char* _rawBuffer;
 	
 	const std::string& getLabel() const     { return _label; }
 	const std::string& getName() const     { return _name; }
@@ -138,7 +141,7 @@ public:
 
 
 
-	void setClipRawBuffer( unsigned char* rawBuffer )
+	void setClipRawBuffer( char* rawBuffer )
 	{
 		_rawBuffer = rawBuffer;
 	}
@@ -165,6 +168,7 @@ public:
 	/** @brief set which components  is used, defaults to none set, this must be called at least once! */
 	void setClipComponent( const EPixelComponent v )
 	{
+		_pixelComponent = v;
 		switch( v )
 		{
 			case ePixelComponentRGBA:
@@ -181,17 +185,25 @@ public:
 		}
 	}
 
-	/** @brief set which components is used, defaults to none set, this must be called at least once! */
-	void setClipComponent( const std::string& comp )
+	std::size_t getClipNbComponents() const
 	{
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedComponents, comp );
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, comp );
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedComponents, comp );
+		switch( _pixelComponent )
+		{
+			case ePixelComponentRGBA:
+				return 4;
+			case ePixelComponentAlpha:
+				return 1;
+			case ePixelComponentCustom:
+			case ePixelComponentNone:
+				break;
+		}
+		return 0;
 	}
 
 	/** @brief set which component is used, defaults to none set, this must be called at least once! */
 	void setClipBitDepth( const EBitDepth v )
 	{
+		_bitDepth = v;
 		switch( v )
 		{
 			case eBitDepthFloat:
@@ -210,6 +222,42 @@ public:
 		}
 	}
 
+	std::size_t getClipBitDepthSize() const
+	{
+		switch( _bitDepth )
+		{
+			case eBitDepthFloat:
+				return 4;
+			case eBitDepthUShort:
+				return 2;
+			case eBitDepthUByte:
+				return 1;
+			case eBitDepthCustom:
+			case eBitDepthNone:
+				break;
+		}
+		return 0;
+	}
+
+	void setClipRod( const OfxRectD rod )
+	{
+		_rod = rod;
+	}
+
+	void updateClipInfos()
+	{
+		_outputClip.getEditableProperties().setDoubleProperty( kOfxImagePropRowBytes, (_rod.x2 - _rod.x1) * getClipNbComponents() * getClipBitDepthSize() );
+	}
+
+private:
+	/** @brief set which components is used, defaults to none set, this must be called at least once! */
+	void setClipComponent( const std::string& comp )
+	{
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedComponents, comp );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, comp );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedComponents, comp );
+	}
+
 	/** @brief set which bit depth is used, defaults to none set, this must be called at least once! */
 	void setClipBitDepth( const std::string& comp )
 	{
@@ -218,10 +266,6 @@ public:
 		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedPixelDepth, comp );
 	}
 
-	void setClipRod( const OfxRectD rod )
-	{
-		_rod = rod;
-	}
 
 
 
@@ -230,10 +274,7 @@ public:
 
 
 
-
-
-
-
+public:
 	#ifndef SWIG
 	void connect( const INode&, attribute::Attribute& ) {}
 
@@ -249,7 +290,10 @@ public:
 	 * @param[in] vData
 	 * @remark called on each node without predefined order.
 	 */
-	void beginSequence( graph::ProcessVertexData& vData ) {}
+	void beginSequence( graph::ProcessVertexData& vData )
+	{
+		updateClipInfos();
+	}
 
 	/**
 	 * @brief Asks the plugin all times it needs for each of it's input clips.

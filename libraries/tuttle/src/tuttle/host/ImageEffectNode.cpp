@@ -675,7 +675,9 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		memory::CACHE_ELEMENT image;
 		if( clip.isOutput() )
 		{
-			image.reset( new attribute::Image( clip, vData._apiImageEffect._renderRoI, vData._time ) );
+			attribute::Image* img = new attribute::Image( clip, vData._apiImageEffect._renderRoI, vData._time );
+			img->setPoolData( Core::instance().getMemoryPool().allocate( img->getMemlen() ) );
+			image.reset( img );
 			memoryCache.put( clip.getIdentifier(), vData._time, image );
 		}
 		else

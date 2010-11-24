@@ -1,6 +1,7 @@
 #include "InputBufferNode.hpp"
 #include "Core.hpp"
 #include "exceptions.hpp"
+#include "memory/LinkData.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhClipImageDescriptor.hpp>
 
@@ -101,8 +102,9 @@ std::ostream& InputBufferNode::print( std::ostream& os ) const
 void InputBufferNode::process( graph::ProcessVertexAtTimeData& vData )
 {
 	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
-	memory::CACHE_ELEMENT image;
-	image.reset( new attribute::Image( _outputClip, vData._apiImageEffect._renderRoI, vData._time ) );
+	attribute::Image* img = new attribute::Image( _outputClip, vData._apiImageEffect._renderRoI, vData._time );
+	img->setPoolData( new memory::LinkData( _rawBuffer, img->getMemlen() ) );
+	memory::CACHE_ELEMENT image( img );
 	memoryCache.put( _outputClip.getIdentifier(), vData._time, image );
 }
 

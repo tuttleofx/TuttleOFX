@@ -5,6 +5,10 @@
 
 #include <tuttle/host/memory/IMemoryPool.hpp>
 
+/// @tuttle: remove include dependencies to gil
+#include <boost/gil/image_view.hpp>
+#include <boost/gil/image_view_factory.hpp>
+
 #include <boost/cstdint.hpp>
 
 namespace tuttle {
@@ -19,23 +23,38 @@ class ClipImage;
 class Image : public tuttle::host::ofx::imageEffect::OfxhImage
 {
 protected:
-	size_t _ncomp; ///< number of components
+	std::size_t _ncomp; ///< number of components
+	std::size_t _memlen; ///< memory size
+	std::size_t _rowlen; ///< memory size for 1 row
 	memory::IPoolDataPtr _data; ///< where we are keeping our image data
-	memory::IMemoryPool& _memoryPool;
 
 public:
 	explicit Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime t );
 	virtual ~Image();
 
+	void setPoolData( const memory::IPoolDataPtr& pData )
+	{
+		_data = pData;
+		setPointerProperty( kOfxImagePropData, getPixelData() );
+	}
+
+	std::size_t getMemlen() const { return _memlen; }
+	std::size_t getRowlen() const { return _rowlen; }
+	
 	boost::uint8_t* getPixelData() { return reinterpret_cast<boost::uint8_t*>( _data->data() ); }
 
 	boost::uint8_t* pixel( int x, int y );
+	
+	/**
+	 * @todo clean this!
+	 * move outside from class or use copyFrom (don't specify dst)
+	 * use ref, change order, etc.
+	 */
 	static void     copy( Image* dst, Image* src, const OfxPointI& dstCorner,
 	                      const OfxPointI& srcCorner, const OfxPointI& count );
 
-	/// @todo use const reference and no pointer !
 	template < class VIEW_T >
-	static VIEW_T gilViewFromImage( Image* img );
+	VIEW_T getGilView();
 
 public:
 	#ifndef TUTTLE_PRODUCTION
@@ -50,6 +69,29 @@ private:
 	static void copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 	                  const OfxPointI& srcCorner, const OfxPointI& count );
 };
+
+
+template < class VIEW_T >
+VIEW_T Image::getGilView()
+{
+	COUT_INFOS;
+	COUT_VAR(this);
+	OfxRectI rod = this->getROD();
+	OfxRectI bounds = this->getBounds();
+
+	COUT_VAR( bounds );
+	COUT_VAR( std::abs( bounds.x2 - bounds.x1 ) );
+	COUT_VAR( std::abs( bounds.y2 - bounds.y1 ) );
+	COUT_VAR( this->getPixelData() );
+	COUT_VAR( this->getRowBytes() );
+	
+	typedef typename VIEW_T::value_type Pixel;
+	return boost::gil::interleaved_view( std::abs( bounds.x2 - bounds.x1 ),
+	                         std::abs( bounds.y2 - bounds.y1 ),
+	                         ( Pixel* )( this->getPixelData() ),
+	                         this->getRowBytes() );
+}
+
 
 }
 }

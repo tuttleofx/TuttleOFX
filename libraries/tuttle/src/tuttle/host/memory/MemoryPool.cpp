@@ -38,13 +38,13 @@ public:
 		return _id == other._id;
 	}
 
-	virtual void addRef();
-	virtual void release();
+	void addRef();
+	void release();
 
-	virtual char*             data()               { return _pData; }
-	virtual const char*       data() const         { return _pData; }
-	virtual const std::size_t size() const         { return _size; }
-	virtual const std::size_t reservedSize() const { return _reservedSize; }
+	char*             data()               { return _pData; }
+	const char*       data() const         { return _pData; }
+	const std::size_t size() const         { return _size; }
+	const std::size_t reservedSize() const { return _reservedSize; }
 
 private:
 	static std::size_t _count; ///< unique id generator
