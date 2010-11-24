@@ -145,15 +145,11 @@ void OfxhImage::initClipBits( attribute::OfxhClip& instance )
 
 	// get and set the clip instance pixel aspect ratio
 	setDoubleProperty( kOfxImagePropPixelAspectRatio, clipProperties.getDoubleProperty( kOfxImagePropPixelAspectRatio ) );
-
-	// get and set the clip instance pixel aspect ratio
-	setDoubleProperty( kOfxImagePropPixelAspectRatio, clipProperties.getDoubleProperty( kOfxImagePropPixelAspectRatio ) );
 }
 
 OfxRectI OfxhImage::getBounds() const
 {
 	OfxRectI bounds;
-
 	getIntPropertyN( kOfxImagePropBounds, &bounds.x1, 4 );
 	return bounds;
 }
@@ -161,8 +157,7 @@ OfxRectI OfxhImage::getBounds() const
 OfxRectI OfxhImage::getROD() const
 {
 	OfxRectI rod;
-
-	getIntPropertyN( kOfxImagePropBounds, &rod.x1, 4 );
+	getIntPropertyN( kOfxImagePropRegionOfDefinition, &rod.x1, 4 );
 	return rod;
 }
 

@@ -845,6 +845,8 @@ Note, this has been deprecated.
  * Y values are y1 <= Y < y2
  *
  * The ::kOfxImagePropBounds property contains the actuall addressable pixels in an image, which may be less than its full region of definition.
+ *
+ * @remark tuttle: all other Rod are double, why use intergers here?
  */
 #define kOfxImagePropRegionOfDefinition "OfxImagePropRegionOfDefinition"
 
