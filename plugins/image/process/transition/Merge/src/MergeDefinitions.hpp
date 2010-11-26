@@ -8,8 +8,8 @@ namespace plugin {
 namespace merge {
 
 // Descriptors name
-const static std::string kMergeSourceA       = "SourceA";
-const static std::string kMergeSourceB       = "SourceB";
+const static std::string kMergeSourceA       = "A";
+const static std::string kMergeSourceB       = "B";
 const static std::string kMergeHelpButton    = "Help";
 const static std::string kMergeFunction      = "mergingFunction";
 const static std::string kMergeFunctionLabel = "Merging function";
