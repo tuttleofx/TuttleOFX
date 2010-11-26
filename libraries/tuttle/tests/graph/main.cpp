@@ -116,10 +116,10 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		g.connect( invert1, write3 );
 
 		TCOUT( "__________3.5" );
-		g.connect( invert1, merge1.getAttribute( "SourceA" ) );
-		//	g.connect( bitdepth, merge1.getAttribute("SourceA") );
+		g.connect( invert1, merge1.getAttribute( "A" ) );
+		//	g.connect( bitdepth, merge1.getAttribute("A") );
 		TCOUT( "__________3.5" );
-		g.connect( read3, merge1.getAttribute( "SourceB" ) );
+		g.connect( read3, merge1.getAttribute( "B" ) );
 		TCOUT( "__________3.5" );
 		//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
