@@ -14,6 +14,7 @@ template<template<class> class Func>
 struct transform_pixel_by_channel_t
 {
 	template<typename Pixel>
+	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& a ) const
 	{
 		Pixel result;
@@ -25,6 +26,7 @@ struct transform_pixel_by_channel_t
 		return result;
 	}
 	template<typename Pixel>
+	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& a, const Pixel& b ) const
 	{
 		Pixel result;
@@ -37,6 +39,7 @@ struct transform_pixel_by_channel_t
 		return result;
 	}
 	template<typename Pixel>
+	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& a, const Pixel& b, const Pixel& c ) const
 	{
 		Pixel result;
@@ -50,6 +53,7 @@ struct transform_pixel_by_channel_t
 		return result;
 	}
 	template<typename Pixel>
+	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& a, const Pixel& b, const Pixel& c, const Pixel& d ) const
 	{
 		Pixel result;
