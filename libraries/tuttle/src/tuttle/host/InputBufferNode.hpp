@@ -246,24 +246,24 @@ public:
 
 	void updateClipInfos()
 	{
-		_outputClip.getEditableProperties().setDoubleProperty( kOfxImagePropRowBytes, (_rod.x2 - _rod.x1) * getClipNbComponents() * getClipBitDepthSize() );
+//		_outputClip.getEditableProperties().setDoubleProperty( kOfxImagePropRowBytes, (_rod.x2 - _rod.x1) * getClipNbComponents() * getClipBitDepthSize() );
 	}
 
 private:
 	/** @brief set which components is used, defaults to none set, this must be called at least once! */
-	void setClipComponent( const std::string& comp )
+	void setClipComponent( const std::string& v )
 	{
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedComponents, comp );
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, comp );
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedComponents, comp );
+//		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedComponents, v );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropComponents, v );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedComponents, v );
 	}
 
 	/** @brief set which bit depth is used, defaults to none set, this must be called at least once! */
-	void setClipBitDepth( const std::string& comp )
+	void setClipBitDepth( const std::string& v )
 	{
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedPixelDepths, comp );
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropPixelDepth, comp );
-		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedPixelDepth, comp );
+//		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropSupportedPixelDepths, v );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageEffectPropPixelDepth, v );
+		_outputClip.getEditableProperties().setStringProperty( kOfxImageClipPropUnmappedPixelDepth, v );
 	}
 
 
