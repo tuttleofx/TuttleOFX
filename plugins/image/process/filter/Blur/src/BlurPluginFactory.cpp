@@ -18,8 +18,8 @@ static const bool kSupportTiles = true;
  */
 void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleBlur", "TuttleBlur",
-	                "TuttleBlur" );
+	desc.setLabels( "TuttleBlur", "Blur",
+	                "Blur" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
 	// add the supported contexts, only filter at the moment

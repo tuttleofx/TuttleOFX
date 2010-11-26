@@ -22,7 +22,7 @@ static const bool kSupportTiles = true;
  */
 void NormalizePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Normalize", "Normalize",
+	desc.setLabels( "TuttleNormalize", "Normalize",
 		            "Normalize" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 

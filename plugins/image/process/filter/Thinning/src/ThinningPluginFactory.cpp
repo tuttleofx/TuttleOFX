@@ -19,7 +19,7 @@ static const bool kSupportTiles = true;
  */
 void ThinningPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Thinning", "Thinning",
+	desc.setLabels( "TuttleThinning", "Thinning",
 		            "Thinning" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 

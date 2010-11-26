@@ -14,7 +14,7 @@ namespace convolution {
  */
 void ConvolutionPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Convolution", "Convolution",
+	desc.setLabels( "TuttleConvolution", "Convolution",
 	                "Convolution" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 

@@ -17,7 +17,7 @@ static const bool kSupportTiles = false;
  */
 void CannyPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Canny", "Canny",
+	desc.setLabels( "TuttleCanny", "Canny",
 		            "Canny" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
