@@ -185,7 +185,7 @@ DiffProcess<View>::mse( const SView& v1, const SView& v2, const SView& dst )
 {
 	typedef boost::gil::pixel<boost::gil::bits32f, boost::gil::layout<typename boost::gil::color_space_type<SView>::type> > Pixel32F;
 	typedef typename boost::gil::channel_type<Pixel32F>::type Value32F;
-	Pixel32F veqm = tuttle::get_black<Pixel32F>();
+	Pixel32F veqm = get_black<Pixel32F>();
 	int w         = v1.width();
 	int h         = v1.height();
 

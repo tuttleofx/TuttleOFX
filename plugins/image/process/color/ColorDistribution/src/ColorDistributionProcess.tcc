@@ -2,7 +2,7 @@
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/algorithm.hpp>
-#include <tuttle/plugin/image/gil/typedefs.hpp>
+#include <boost/gil/extension/typedefs.hpp>
 
 #include <tuttle/plugin/exceptions.hpp>
 

@@ -18,10 +18,8 @@
 #include <memory>
 #include <typeinfo>
 
-namespace boost {
-namespace gil {
-
-using tuttle::plugin::IProgress;
+namespace tuttle {
+namespace plugin {
 
 //////////////////////////////////////////////////////////////////////////////////////
 ///
