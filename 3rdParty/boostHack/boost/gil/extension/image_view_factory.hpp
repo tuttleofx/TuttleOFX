@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_GIL_IMAGEVIEWFACTORY_HPP_
-#define _TUTTLE_PLUGIN_GIL_IMAGEVIEWFACTORY_HPP_
+#ifndef _GIL_EXTENSION_IMAGEVIEWFACTORY_HPP_
+#define _GIL_EXTENSION_IMAGEVIEWFACTORY_HPP_
 
 #include <boost/gil/image_view_factory.hpp>
 #include <boost/gil/utilities.hpp>

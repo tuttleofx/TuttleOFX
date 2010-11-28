@@ -17,16 +17,24 @@ InvertPlugin::InvertPlugin( OfxImageEffectHandle handle )
 {
 	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
+	
+	_processGroup = fetchGroupParam( kParamProcessGroup );
+	_processR = fetchBooleanParam( kParamProcessR );
+	_processG = fetchBooleanParam( kParamProcessG );
+	_processB = fetchBooleanParam( kParamProcessB );
+	_processA = fetchBooleanParam( kParamProcessA );
 }
 
-OFX::Clip* InvertPlugin::getSrcClip() const
+InvertProcessParams InvertPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
-	return _clipSrc;
-}
+	InvertProcessParams params;
 
-OFX::Clip* InvertPlugin::getDstClip() const
-{
-	return _clipDst;
+	params._red     = _processR->getValue();
+	params._green     = _processG->getValue();
+	params._blue     = _processB->getValue();
+	params._alpha     = _processA->getValue();
+
+	return params;
 }
 
 /**
@@ -70,36 +78,36 @@ void InvertPlugin::render( const OFX::RenderArguments& args )
 				return;
 		}
 	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				InvertProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				InvertProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				InvertProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
+//	else if( dstComponents == OFX::ePixelComponentAlpha )
+//	{
+//		switch( dstBitDepth )
+//		{
+//			case OFX::eBitDepthUByte:
+//			{
+//				InvertProcess<gray8_view_t> fred( *this );
+//				fred.setupAndProcess( args );
+//				break;
+//			}
+//			case OFX::eBitDepthUShort:
+//			{
+//				InvertProcess<gray16_view_t> fred( *this );
+//				fred.setupAndProcess( args );
+//				break;
+//			}
+//			case OFX::eBitDepthFloat:
+//			{
+//				InvertProcess<gray32f_view_t> fred( *this );
+//				fred.setupAndProcess( args );
+//				break;
+//			}
+//			case OFX::eBitDepthNone:
+//				COUT_FATALERROR( "BitDepthNone not recognize." );
+//				return;
+//			case OFX::eBitDepthCustom:
+//				COUT_FATALERROR( "BitDepthCustom not recognize." );
+//				return;
+//		}
+//	}
 }
 
 void InvertPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
