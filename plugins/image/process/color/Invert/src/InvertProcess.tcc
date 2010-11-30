@@ -7,7 +7,7 @@
 #include <tuttle/plugin/image/gil/algorithm.hpp>
 
 #include <boost/gil/extension/numeric/pixel_by_channel.hpp>
-#include <boost/gil/extension/image_view_factory.hpp>
+#include <boost/gil/extension/toolbox/channel_view.hpp>
 #include <boost/gil/algorithm.hpp>
 #include <boost/gil/rgba.hpp>
 
