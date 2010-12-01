@@ -12,6 +12,7 @@
 #include <ofxsMultiThread.h>
 
 #include <boost/gil/gil_all.hpp>
+#include <boost/lambda/lambda.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -26,6 +27,7 @@ ImageEffect( handle )
 
 	_paramSize = fetchDouble2DParam( kParamSize );
 	_paramNormalizedKernel = fetchBooleanParam( kParamNormalizedKernel );
+	_paramKernelEpsilon = fetchDoubleParam( kParamKernelEpsilon );
 	_paramUnidimensional = fetchBooleanParam( kParamUnidimensional );
 	_paramBorder = fetchChoiceParam( kParamBorder );
 	_paramComputeGradientNorm = fetchBooleanParam( kParamComputeGradientNorm );
@@ -59,11 +61,12 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	}
 
 	bool normalizedKernel = _paramNormalizedKernel->getValue();
+	double kernelEpsilon = _paramKernelEpsilon->getValue();
 
 	params._unidimensional = _paramUnidimensional->getValue();
-	params._xKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( params._size.x, normalizedKernel );
+	params._xKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
 	if( ! params._unidimensional )
-		params._xKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel );
+		params._xKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
 
 	if( params._size.x == params._size.y )
 	{
@@ -72,9 +75,9 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	}
 	else
 	{
-		params._yKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( params._size.y, normalizedKernel );
+		params._yKernelGaussianDerivative = buildGaussianDerivative1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
 		if( ! params._unidimensional )
-			params._yKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel );
+			params._yKernelGaussian = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
 	}
 
 	params._computeGradientNorm = _paramComputeGradientNorm->getValue();
@@ -85,9 +88,40 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	return params;
 }
 
-//void SobelPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
-//{
-//}
+template< typename Scalar >
+std::ostream& operator<<( std::ostream& os, boost::gil::kernel_1d<Scalar>& kernel )
+{
+	using namespace boost;
+	os << "[";
+	std::for_each( kernel.begin(), kernel.end(), os << lambda::_1 << "," );
+	os << "]";
+	return os;
+}
+
+void SobelPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+{
+    if( paramName == kParamInfos )
+    {
+		SobelProcessParams<Scalar> params = getProcessParams(args.renderScale);
+
+		std::ostringstream infos;
+		infos << "Kernel size for values (" << params._size.x << "x" << params._size.y << ") is:" << std::endl;
+		infos << "  for X (" << params._xKernelGaussian.size() << "x" << params._xKernelGaussianDerivative.size() << ")" << std::endl;
+		infos << "  for Y (" << params._yKernelGaussian.size() << "x" << params._yKernelGaussianDerivative.size() << ")" << std::endl;
+		infos << std::endl;
+		infos << "X :" << std::endl;
+		infos << params._xKernelGaussian << std::endl;
+		infos << params._xKernelGaussianDerivative << std::endl;
+		infos << "Y :" << std::endl;
+		infos << params._yKernelGaussian << std::endl;
+		infos << params._yKernelGaussianDerivative << std::endl;
+		infos << std::endl;
+        
+		sendMessage( OFX::Message::eMessageMessage,
+                     "", // No XML resources
+                     infos.str() );
+    }
+}
 
 bool SobelPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {

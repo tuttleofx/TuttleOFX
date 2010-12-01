@@ -47,7 +47,7 @@ public:
 public:
 	SobelProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
-//    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
@@ -63,6 +63,7 @@ public:
 
 	OFX::Double2DParam* _paramSize;
 	OFX::BooleanParam* _paramNormalizedKernel;
+	OFX::DoubleParam* _paramKernelEpsilon;
 	OFX::BooleanParam* _paramUnidimensional;
     OFX::ChoiceParam* _paramBorder;
 	OFX::BooleanParam* _paramComputeGradientNorm;

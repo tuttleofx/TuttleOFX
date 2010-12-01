@@ -17,7 +17,7 @@ static const bool kSupportTiles = true;
  */
 void SobelPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Sobel", "Sobel",
+	desc.setLabels( "TuttleSobel", "Sobel",
 		            "Sobel" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
@@ -71,6 +71,11 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	normalizedKernel->setHint( "Use a normalized kernel to compute the gradient." );
 	normalizedKernel->setDefault( true );
 
+	OFX::DoubleParamDescriptor* kernelEpsilon = desc.defineDoubleParam( kParamKernelEpsilon );
+	kernelEpsilon->setLabel( "Kernel espilon value" );
+	kernelEpsilon->setHint( "Threshold at which we no longer consider the values of the function." );
+	kernelEpsilon->setDefault( 0.1 );
+
 	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
 	border->setLabel( "Gradient border" );
 	border->setHint( "Border method for gradient computation." );
@@ -98,6 +103,9 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	gradientDirectionAbs->setLabel( "Angle between 0 and PI" );
 	gradientDirectionAbs->setHint( "Limit gradient direction between 0 and PI." );
 	gradientDirectionAbs->setDefault( true );
+
+	OFX::PushButtonParamDescriptor* infosButton = desc.definePushButtonParam( kParamInfos );
+	infosButton->setLabel( "Infos" );
 }
 
 /**

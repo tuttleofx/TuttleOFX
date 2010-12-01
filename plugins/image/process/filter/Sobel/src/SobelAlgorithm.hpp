@@ -21,6 +21,7 @@ namespace bm = boost::math;
 template< typename Channel>
 struct channel_gradientDirection_t
 {
+	GIL_FORCEINLINE
 	void operator()( const Channel& x, const Channel& y, Channel& res ) const
 	{
 		res = std::atan2( y, x );
@@ -33,6 +34,7 @@ struct channel_gradientDirection_t
 template< typename Channel>
 struct channel_gradientDirectionAbs_t
 {
+	GIL_FORCEINLINE
 	void operator()( const Channel& x, const Channel& y, Channel& res ) const
 	{
 		channel_gradientDirection_t<Channel>()(x, y, res);
@@ -47,6 +49,7 @@ struct channel_gradientDirectionAbs_t
 template<typename Channel>
 struct channel_norm_t
 {
+	GIL_FORCEINLINE
 	void operator()( const Channel& a, const Channel& b, Channel& res ) const
 	{
 		res = std::sqrt( bm::pow<2>(a) + bm::pow<2>(b) );
@@ -59,6 +62,7 @@ struct channel_norm_t
 template<typename Channel>
 struct channel_normManhattan_t
 {
+	GIL_FORCEINLINE
 	void operator()( const Channel& a, const Channel& b, Channel& res ) const
 	{
 		res = std::abs(a) + std::abs(b);
