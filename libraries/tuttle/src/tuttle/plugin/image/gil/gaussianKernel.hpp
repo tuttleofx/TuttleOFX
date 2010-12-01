@@ -4,7 +4,8 @@
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <boost/gil/extension/numeric/convolve.hpp>
 
-#include <boost/units/pow.hpp>
+#include <boost/math/constants/constants.hpp>
+#include <boost/math/special_functions/pow.hpp>
 #include <boost/lambda/core.hpp>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/algorithm.hpp>
@@ -33,8 +34,9 @@ static const double kConvolutionEpsilon = 0.1; ///< arbitrary value...
 template<typename Scalar>
 Scalar gaussianValueAt( const Scalar x, const Scalar amplitude, const Scalar yscale = 1, const Scalar xcenter = 0 )
 {
-	namespace bu = boost::units;
-	return yscale * std::exp( -bu::pow<2>( x - xcenter ) / ( 2.0 * bu::pow<2>( amplitude ) ) );
+	namespace bm = boost::math;
+//	return yscale * std::exp( -bu::pow<2>( x - xcenter ) / ( 2.0 * bu::pow<2>( amplitude ) ) );
+	return yscale * std::exp( -bm::pow<2>( x - xcenter ) / ( 2.0 * amplitude ) ) / ( 2.0 * amplitude * bm::constants::pi<Scalar>() );
 }
 
 /**
@@ -43,7 +45,7 @@ Scalar gaussianValueAt( const Scalar x, const Scalar amplitude, const Scalar ysc
  * * fill kernel values
  */
 template<typename Scalar>
-boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bool normalize = true )
+boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bool normalize = true, const double epsilon = kConvolutionEpsilon )
 {
 	using namespace boost;
 	if( size == 0 )
@@ -61,7 +63,7 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bo
 		sum += v;
 		++x;
 	}
-	while( ( v = gaussianValueAt<Scalar>( x, size ) ) > kConvolutionEpsilon );
+	while( std::abs( v = gaussianValueAt<Scalar>( x, size ) ) > epsilon );
 
 	std::vector<Scalar> kernel( rightKernel.size() * 2 + 1 );
 	Scalar kernelCenter = gaussianValueAt<Scalar>( 0, size );
@@ -101,8 +103,9 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bo
 template<typename Scalar>
 Scalar gaussianDerivativeValueAt( const Scalar x, const Scalar amplitude, const Scalar yscale = 1, const Scalar xcenter = 0 )
 {
-	namespace bu = boost::units;
-	return ( x / yscale ) * std::exp( -bu::pow<2>( x - xcenter ) / ( 2.0 * bu::pow<2>( amplitude ) ) );
+	namespace bm = boost::math;
+//	return ( x / yscale ) * std::exp( -bu::pow<2>( x - xcenter ) / ( 2.0 * bu::pow<2>( amplitude ) ) );
+	return ( /*-*/ x / yscale ) * std::exp( -bm::pow<2>( x - xcenter ) / ( 2.0 * amplitude ) ) / ( amplitude * bm::constants::pi<Scalar>() );
 }
 
 /**
@@ -111,7 +114,7 @@ Scalar gaussianDerivativeValueAt( const Scalar x, const Scalar amplitude, const 
  * * fill kernel values
  */
 template<typename Scalar>
-boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, const bool normalize = true )
+boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size, const bool normalize = true, const double epsilon = kConvolutionEpsilon )
 {
 	using namespace boost;
 	if( size == 0 )
@@ -129,7 +132,7 @@ boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size
 		sum += v;
 		++x;
 	}
-	while( ( v = gaussianDerivativeValueAt<Scalar>( x, size ) ) > kConvolutionEpsilon );
+	while( std::abs( v = gaussianDerivativeValueAt<Scalar>( x, size ) ) > epsilon );
 
 	if( rightKernel.size() == 0 || sum == 0 )
 		return boost::gil::kernel_1d<Scalar>();
