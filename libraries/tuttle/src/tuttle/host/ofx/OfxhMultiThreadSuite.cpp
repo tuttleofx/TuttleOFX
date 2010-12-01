@@ -60,9 +60,9 @@ OfxStatus multiThread( OfxThreadFunctionV1 func,
 
 OfxStatus multiThreadNumCPUs( unsigned int* const nCPUs )
 {
-	*nCPUs = 1; /// @todo tuttle: needs to have an option to disable multithreading (force only one cpu).
-	//	*nCPUs = boost::thread::hardware_concurrency();
-	COUT_DEBUG( "nCPUs: " << *nCPUs );
+//	*nCPUs = 1; /// @todo tuttle: needs to have an option to disable multithreading (force only one cpu).
+	*nCPUs = boost::thread::hardware_concurrency();
+	COUT( "nCPUs: " << *nCPUs );
 	return kOfxStatOK;
 }
 
