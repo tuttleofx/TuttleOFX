@@ -6,7 +6,6 @@ libraries = [ libs.openfxHack,
               libs.boost_filesystem,
 			  libs.dl,
 			  libs.boost_gil,
-			  libs.png,
 			 ]
 
 name = project.getName()
@@ -17,7 +16,8 @@ samEnv = project.createEnv( libraries )
 samEnv.Append( CPPPATH=sourcesDir )
 sam = samEnv.Program( target=name, source=samSources )
 
-samInstall = samEnv.Install( project.inOutputBin(), sam )
+outputDir = os.path.join(project.inOutputBin(),'example')
+samInstall = samEnv.Install( outputDir, sam )
 samEnv.Alias(name, samInstall )
 samEnv.Alias('all', samInstall )
 
