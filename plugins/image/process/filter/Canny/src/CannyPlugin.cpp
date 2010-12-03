@@ -18,22 +18,12 @@ ImageEffect( handle )
     _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
     _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 
-	_paramHysteresis = fetchBooleanParam( kParamHysteresis );
-	_paramUpperThres = fetchDoubleParam( kParamUpperThres );
-	_paramLowerThres = fetchDoubleParam( kParamLowerThres );
-	_paramFillAllChannels = fetchBooleanParam( kParamFillAllChannels );
 	_paramBorder = fetchChoiceParam( kParamBorder );
 }
 
 CannyProcessParams<CannyPlugin::Scalar> CannyPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
 	CannyProcessParams<Scalar> params;
-
-	params._hysteresis = _paramHysteresis->getValue();
-	params._upperThres = _paramUpperThres->getValue();
-	params._lowerThres = std::min( _paramLowerThres->getValue(), params._upperThres );
-
-	params._fillAllChannels = _paramFillAllChannels->getValue();
 
 	params._border     = static_cast<EParamBorder>( _paramBorder->getValue() );
 

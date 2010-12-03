@@ -14,12 +14,6 @@ namespace canny {
 template<typename Scalar>
 struct CannyProcessParams
 {
-	bool _hysteresis;
-	double _upperThres;
-	double _lowerThres;
-
-	bool _fillAllChannels;
-
 	EParamBorder _border;
 };
 
@@ -49,10 +43,6 @@ public:
     OFX::Clip* _clipSrc; ///< Source image clip
     OFX::Clip* _clipDst; ///< Destination image clip
 
-    OFX::BooleanParam* _paramHysteresis;
-    OFX::DoubleParam* _paramUpperThres;
-    OFX::DoubleParam* _paramLowerThres;
-    OFX::BooleanParam* _paramFillAllChannels;
 	OFX::ChoiceParam* _paramBorder;
 };
 
