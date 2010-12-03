@@ -12,7 +12,7 @@
 namespace tuttle {
 
 template<class P>
-OfxRectD pointsBoundingBox( const P& a, const P& b, const P& c, const P& d )
+inline OfxRectD pointsBoundingBox( const P& a, const P& b, const P& c, const P& d )
 {
 	OfxRectD res;
 	res.x1 = min( a.x, b.x, c.x, d.x );
@@ -48,7 +48,7 @@ inline OfxRectD pointsBoundingBox( const std::vector<Point2>& points )
 }
 
 template<class Point2>
-Point2 pointsMinXY( const std::vector<Point2>& points )
+inline Point2 pointsMinXY( const std::vector<Point2>& points )
 {
 	// if( !points.size() )
 	//  BOOST_THROW_EXCEPTION...
@@ -67,7 +67,7 @@ Point2 pointsMinXY( const std::vector<Point2>& points )
 }
 
 template<class Point2>
-Point2 pointsMaxXY( const std::vector<Point2>& points )
+inline Point2 pointsMaxXY( const std::vector<Point2>& points )
 {
 	// if( !points.size() )
 	//  BOOST_THROW_EXCEPTION...
@@ -86,14 +86,25 @@ Point2 pointsMaxXY( const std::vector<Point2>& points )
 }
 
 template<class Point, class Rect>
-bool pointInRect( const Point& p, const Rect& rec )
+inline bool pointInRect( const Point& p, const Rect& rec )
 {
 	return p.x >= rec.x1 && p.x <= rec.x2 &&
 		   p.y >= rec.y1 && p.y <= rec.y2;
 }
 
+inline OfxRectI translateRegion( const OfxRectI& windowRoW, const OfxRectI& dependingTo )
+{
+	OfxRectI windowOutput = windowRoW;
+
+	windowOutput.x1 -= dependingTo.x1; // to output clip coordinates
+	windowOutput.y1 -= dependingTo.y1;
+	windowOutput.x2 -= dependingTo.x1;
+	windowOutput.y2 -= dependingTo.y1;
+	return windowOutput;
+}
+
 template<class R>
-R rectanglesBoundingBox( const R& a, const R& b )
+inline R rectanglesBoundingBox( const R& a, const R& b )
 {
 	R res;
 	res.x1 = std::min( a.x1, b.x1 );
@@ -104,7 +115,7 @@ R rectanglesBoundingBox( const R& a, const R& b )
 }
 
 template<class R>
-R rectanglesIntersection( const R& a, const R& b )
+inline R rectanglesIntersection( const R& a, const R& b )
 {
 	R res;
 	res.x1 = std::max( a.x1, b.x1 );
@@ -115,7 +126,7 @@ R rectanglesIntersection( const R& a, const R& b )
 }
 
 template<class R, class V>
-R rectangleGrow( const R& rect, const V marge )
+inline R rectangleGrow( const R& rect, const V marge )
 {
 	R res = rect;
 	res.x1 -= marge;
@@ -126,7 +137,7 @@ R rectangleGrow( const R& rect, const V marge )
 }
 
 template<class R, class V>
-R rectangleReduce( const R& rect, const V marge )
+inline R rectangleReduce( const R& rect, const V marge )
 {
 	R res = rect;
 	res.x1 += marge;

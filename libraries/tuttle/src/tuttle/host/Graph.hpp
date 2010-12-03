@@ -73,9 +73,9 @@ public:
 	//	void unconnectNode( const Node& node );
 
 	memory::MemoryCache compute( const std::list<std::string>& nodes, const int tBegin, const int tEnd );
-	memory::MemoryCache compute( const std::list<std::string>& nodes, const int time ) { return compute( nodes, time, time ); }
+	inline memory::MemoryCache compute( const std::list<std::string>& nodes, const int time ) { return compute( nodes, time, time ); }
 
-	memory::MemoryCache compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
+	inline memory::MemoryCache compute( const std::list<Node*>& nodes, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> nodesStr;
 		//nodesStr.reserve(nodes.size());
@@ -86,39 +86,39 @@ public:
 		return compute( nodesStr, tBegin, tEnd );
 	}
 
-	memory::MemoryCache compute( const std::list<Node*>& nodes, const int time ) { return compute( nodes, time, time ); }
+	inline memory::MemoryCache compute( const std::list<Node*>& nodes, const int time ) { return compute( nodes, time, time ); }
 
-	memory::MemoryCache compute( const std::string& node, const int tBegin, const int tEnd )
+	inline memory::MemoryCache compute( const std::string& node, const int tBegin, const int tEnd )
 	{
 		std::list<std::string> outputs;
 		outputs.push_back( node );
 		return compute( outputs, tBegin, tEnd );
 	}
 
-	memory::MemoryCache compute( const Node& node, const int tBegin, const int tEnd )
+	inline memory::MemoryCache compute( const Node& node, const int tBegin, const int tEnd )
 	{
 		return compute( node.getName(), tBegin, tEnd );
 	}
 
-	memory::MemoryCache compute( const std::string& node, const int time )
+	inline memory::MemoryCache compute( const std::string& node, const int time )
 	{
 		return compute( node, time, time );
 	}
 
-	memory::MemoryCache compute( const Node& node, const int time )
+	inline memory::MemoryCache compute( const Node& node, const int time )
 	{
 		return compute( node.getName(), time );
 	}
 
-	const InternalGraphImpl& getGraph() const { return _graph; }
-	const NodeMap&           getNodes() const { return _nodes; }
-	NodeMap&                 getNodes()       { return _nodes; }
+	inline const InternalGraphImpl& getGraph() const { return _graph; }
+	inline const NodeMap&           getNodes() const { return _nodes; }
+	inline NodeMap&                 getNodes()       { return _nodes; }
 	std::list<Node*>         getNodesByContext( const std::string& type );
 	std::list<Node*>         getNodesByPlugin( const std::string& pluginId );
 	//	const Node&          getNode( const std::string& name ) const { return getNodes()[name]; }
-	const Node&             getNode( const std::string& id ) const { return _nodes.at( id ); }
-	Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
-	const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
+	inline const Node&             getNode( const std::string& id ) const { return _nodes.at( id ); }
+	inline Node&                   getNode( const std::string& name )     { return getNodes().at( name ); }
+	inline const InstanceCountMap& getInstanceCount() const               { return _instanceCount; }
 
 public:
 	#ifndef SWIG

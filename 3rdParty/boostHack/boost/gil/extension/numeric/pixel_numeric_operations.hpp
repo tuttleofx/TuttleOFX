@@ -172,9 +172,16 @@ struct pixel_zeros_t {
 };
 
 template <typename Pixel>
-void pixel_zeros(Pixel& p)
+Pixel& pixel_zeros(Pixel& p)
 {
-    pixel_zeros_t<Pixel>()(p);
+    return pixel_zeros_t<Pixel>()(p);
+}
+
+template <typename Pixel>
+Pixel pixel_zeros()
+{
+	Pixel p;
+	return pixel_zeros_t<Pixel>()(p);
 }
 
 

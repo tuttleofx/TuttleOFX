@@ -26,6 +26,7 @@ protected:
 	std::size_t _ncomp; ///< number of components
 	std::size_t _memlen; ///< memory size
 	std::size_t _rowlen; ///< memory size for 1 row
+	std::string _fullname;
 	memory::IPoolDataPtr _data; ///< where we are keeping our image data
 
 public:
@@ -37,6 +38,8 @@ public:
 		_data = pData;
 		setPointerProperty( kOfxImagePropData, getPixelData() );
 	}
+
+	std::string getFullName() const { return _fullname; }
 
 	std::size_t getMemlen() const { return _memlen; }
 	std::size_t getRowlen() const { return _rowlen; }

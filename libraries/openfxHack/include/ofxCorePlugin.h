@@ -25,10 +25,10 @@ extern "C" {
   #define OfxExport __attribute__ ( ( visibility( "default" ) ) )
  #else
   #define OfxExport
-  #warning "PluginDecl not set because of a too old gcc version. The plug-in may not compile with the option -fvisible=hidden."
+  #warning "OfxExport not set because of a too old gcc version. The plug-in may not compile with the option -fvisible=hidden."
  #endif
 #else
- #error "PluginDecl not defined for this compiler..."
+ #error "OfxExport not defined for this compiler..."
 #endif
 
 /** @brief Blind data structure to manipulate sets of properties through */
