@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Canny Plugin
+## Main BJam makefile for TuttleOFX LocalMaxima Plugin
 ###############################################################################
 import os ;
  
@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/Canny/obj
+    : build-dir $(DIST)/LocalMaxima/obj
     ;
  
 ###############################################################################
@@ -27,7 +27,7 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Canny : 
+plugin LocalMaxima : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
     opengl
@@ -36,5 +36,5 @@ plugin Canny :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Canny : $(DIST) ;
+auto_install LocalMaxima : $(DIST) ;
  

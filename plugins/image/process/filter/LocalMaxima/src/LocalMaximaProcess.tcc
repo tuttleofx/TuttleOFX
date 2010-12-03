@@ -1,5 +1,5 @@
-#include "CannyPlugin.hpp"
-#include "CannyAlgorithm.hpp"
+#include "LocalMaximaPlugin.hpp"
+#include "LocalMaximaAlgorithm.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/algorithm.hpp>
@@ -16,10 +16,10 @@
 
 namespace tuttle {
 namespace plugin {
-namespace canny {
+namespace localmaxima {
 
 template<class View>
-CannyProcess<View>::CannyProcess( CannyPlugin &effect )
+LocalMaximaProcess<View>::LocalMaximaProcess( LocalMaximaPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
@@ -27,7 +27,7 @@ CannyProcess<View>::CannyProcess( CannyPlugin &effect )
 }
 
 template <class View>
-void CannyProcess<View>::setup( const OFX::RenderArguments& args )
+void LocalMaximaProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
@@ -38,7 +38,7 @@ void CannyProcess<View>::setup( const OFX::RenderArguments& args )
  * @param[in] procWindowRoW  Processing window
  */
 template<class View>
-void CannyProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+void LocalMaximaProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	namespace bgil = boost::gil;
 	namespace bm = boost::math;

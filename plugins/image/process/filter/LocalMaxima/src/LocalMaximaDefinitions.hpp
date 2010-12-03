@@ -1,12 +1,12 @@
-#ifndef _TUTTLE_PLUGIN_CANNY_DEFINITIONS_HPP_
-#define _TUTTLE_PLUGIN_CANNY_DEFINITIONS_HPP_
+#ifndef _TUTTLE_PLUGIN_LOCALMAXIMA_DEFINITIONS_HPP_
+#define _TUTTLE_PLUGIN_LOCALMAXIMA_DEFINITIONS_HPP_
 
 #include <tuttle/common/utils/global.hpp>
 
 
 namespace tuttle {
 namespace plugin {
-namespace canny {
+namespace localmaxima {
 
 const static std::string kParamBorder = "border";
 const static std::string kParamBorderBlack = "Black";

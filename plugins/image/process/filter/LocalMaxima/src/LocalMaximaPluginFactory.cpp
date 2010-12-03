@@ -1,12 +1,12 @@
-#include "CannyPluginFactory.hpp"
-#include "CannyPlugin.hpp"
-#include "CannyDefinitions.hpp"
+#include "LocalMaximaPluginFactory.hpp"
+#include "LocalMaximaPlugin.hpp"
+#include "LocalMaximaDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace canny {
+namespace localmaxima {
 
 static const bool kSupportTiles = false;
 
@@ -15,10 +15,10 @@ static const bool kSupportTiles = false;
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void CannyPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void LocalMaximaPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleCanny", "Canny",
-		            "Canny" );
+	desc.setLabels( "TuttleLocalMaxima", "LocalMaxima",
+		            "LocalMaxima" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
 	// add the supported contexts, only filter at the moment
@@ -40,7 +40,7 @@ void CannyPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void CannyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void LocalMaximaPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                   OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -68,10 +68,10 @@ void CannyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* CannyPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* LocalMaximaPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::EContext context )
 {
-	return new CannyPlugin( handle );
+	return new LocalMaximaPlugin( handle );
 }
 
 }

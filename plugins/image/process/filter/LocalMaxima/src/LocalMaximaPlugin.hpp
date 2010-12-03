@@ -1,7 +1,7 @@
-#ifndef _TUTTLE_PLUGIN_CANNY_PLUGIN_HPP_
-#define _TUTTLE_PLUGIN_CANNY_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_LOCALMAXIMA_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_LOCALMAXIMA_PLUGIN_HPP_
 
-#include "CannyDefinitions.hpp"
+#include "LocalMaximaDefinitions.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
@@ -9,26 +9,26 @@
 
 namespace tuttle {
 namespace plugin {
-namespace canny {
+namespace localmaxima {
 
 template<typename Scalar>
-struct CannyProcessParams
+struct LocalMaximaProcessParams
 {
 	EParamBorder _border;
 };
 
 /**
- * @brief Canny plugin
+ * @brief LocalMaxima plugin
  */
-class CannyPlugin : public OFX::ImageEffect
+class LocalMaximaPlugin : public OFX::ImageEffect
 {
 public:
 	typedef float Scalar;
 public:
-    CannyPlugin( OfxImageEffectHandle handle );
+    LocalMaximaPlugin( OfxImageEffectHandle handle );
 
 public:
-	CannyProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+	LocalMaximaProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
