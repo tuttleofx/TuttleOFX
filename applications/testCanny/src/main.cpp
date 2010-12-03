@@ -1,0 +1,157 @@
+#include <tuttle/host/Graph.hpp>
+
+#include <boost/gil/gil_all.hpp>
+#include <boost/gil/extension/io/png_io.hpp>
+
+#include <boost/gil/image_view_factory.hpp>
+#include <boost/timer.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
+#include "tuttle/host/InputBufferNode.hpp"
+
+void sam_terminate( void )
+{
+	std::cerr << "Sorry, Sam has encountered a fatal error." << std::endl;
+	std::cerr << "Please report this bug." << std::endl;
+	exit( -1 );
+}
+
+void sam_unexpected( void )
+{
+	std::cerr << "Sorry, Sam has encountered an unexpected exception." << std::endl;
+	std::cerr << "Please report this bug." << std::endl;
+	BOOST_THROW_EXCEPTION( std::runtime_error( "Sorry, Sam has encountered an unexpected exception.\nPlease report this bug." ) );
+}
+
+int main( int argc, char** argv )
+{
+	std::set_terminate( &sam_terminate );
+	std::set_unexpected( &sam_unexpected );
+	try
+	{
+		using namespace tuttle::host;
+		COUT( "__________________________________________________0" );
+		// Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
+		// Core::instance().getPluginCache().scanPluginFiles();
+		Core::instance().preload();
+
+		COUT( Core::instance().getImageEffectPluginCache() );
+
+		COUT( "__________________________________________________1" );
+
+		boost::gil::rgba32f_image_t imgRead;
+		boost::gil::png_read_and_convert_image( argv[1], //"data/input.png",
+											    imgRead );
+		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
+
+		COUT( "__________________________________________________2" );
+
+		Graph g;
+//		Graph::Node& inputBuffer1 = g.createNode( "fr.tuttle.inputbuffer" );
+		InputBufferNode& inputBuffer1 = g.createInputBuffer();
+		Graph::Node& read        = g.createNode( "fr.tuttle.pngreader" );
+		Graph::Node& bitdepth    = g.createNode( "fr.tuttle.bitdepth" );
+		Graph::Node& sobel       = g.createNode( "fr.tuttle.duranduboi.sobel" );
+		Graph::Node& normalize   = g.createNode( "fr.tuttle.duranduboi.normalize" );
+		Graph::Node& localmaxima = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
+		Graph::Node& floodfill   = g.createNode( "fr.tuttle.duranduboi.floodfill" );
+		Graph::Node& thinning    = g.createNode( "fr.tuttle.duranduboi.thinning" );
+		Graph::Node& write1      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write2      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write3      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write4      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write5      = g.createNode( "fr.tuttle.pngwriter" );
+
+		COUT( "__________________________________________________3" );
+
+		OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
+		inputBuffer1.setClipRod( ibRod );
+		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthFloat );
+		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentRGBA );
+		inputBuffer1.setClipRawBuffer( /*static_cast<char*>*/(char*)(boost::gil::interleaved_view_get_raw_data( imgView )) );
+
+		// Setup parameters
+		//		read1.getParam( "filename" ).set( "data/input1.avi" );
+//		read1.getParam( "filename" ).set( "data/input.png" );
+		bitdepth.getParam( "outputBitDepth" ).set( 3 );
+
+		sobel.getParam( "border" ).set( 3 );
+		sobel.getParam( "size" ).set( 2.0, 2.0 );
+		sobel.getParam( "normalizedKernel" ).set( false );
+		sobel.getParam( "computeGradientDirection" ).set( false );
+		sobel.getParam( "kernelEpsilon" ).set( 0.001 );
+		normalize.getParam( "mode" ).set( 0 ); //"analyse" );
+		normalize.getParam( "analyseMode" ).set( 0 ); //"perChannel" );
+		normalize.getParam( "processR" ).set( false );
+		normalize.getParam( "processG" ).set( false );
+		normalize.getParam( "processB" ).set( true  );
+		normalize.getParam( "processA" ).set( false );
+		floodfill.getParam( "upperThres" ).set( 0.1 );
+		floodfill.getParam( "lowerThres" ).set( 0.025 );
+//		canny.getParam( "fillAllChannels" ).set( true );
+
+		write1.getParam( "components" ).set( 1 );
+		write2.getParam( "components" ).set( 1 );
+		write3.getParam( "components" ).set( 1 );
+		write4.getParam( "components" ).set( 1 );
+		
+		write1.getParam( "filename" ).set( "data/canny/0_sobel.png" );
+		write2.getParam( "filename" ).set( "data/canny/1_normalize.png" );
+		write3.getParam( "filename" ).set( "data/canny/2_localMaxima.png" );
+		write4.getParam( "filename" ).set( "data/canny/3_floodfill.png" );
+		write5.getParam( "filename" ).set( "data/canny/4_thinning.png" );
+		
+		COUT( "__________________________________________________4" );
+		g.connect( inputBuffer1, sobel );
+//		g.connect( read1, bitdepth );
+//		g.connect( bitdepth, sobel1 );
+		g.connect( sobel, normalize );
+		g.connect( normalize, localmaxima );
+//		g.connect( canny, thinning );
+		g.connect( localmaxima, floodfill );
+		g.connect( floodfill, thinning );
+
+		g.connect( sobel, write1 );
+		g.connect( normalize, write2 );
+		g.connect( localmaxima, write3 );
+		g.connect( floodfill, write4 );
+		g.connect( thinning, write5 );
+
+		COUT( "__________________________________________________5" );
+		std::list<std::string> outputs;
+		outputs.push_back( write1.getName() );
+		outputs.push_back( write2.getName() );
+		outputs.push_back( write3.getName() );
+		outputs.push_back( write4.getName() );
+		outputs.push_back( write5.getName() );
+		outputs.push_back( thinning.getName() );
+
+		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
+		memory::MemoryCache res = g.compute( thinning, 0 );
+//		memory::MemoryCache res = g.compute( outputs, 0 );
+		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
+		COUT( "Process took: " << t2 - t1 );
+
+		std::cout << res << std::endl;
+		memory::CACHE_ELEMENT imgRes = res.get( thinning.getName(), 0 );
+
+		COUT_VAR( imgRes->getROD() );
+		COUT_VAR( imgRes->getBounds() );
+		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
+		boost::gil::png_write_view( "data/canny/manual_output.png", boost::gil::color_converted_view<boost::gil::rgba8_pixel_t>( imgResView ) );
+	}
+	catch( tuttle::exception::Common& e )
+	{
+		std::cout << "Tuttle Exception : main de sam." << std::endl;
+		std::cerr << boost::diagnostic_information( e );
+	}
+	catch(... )
+	{
+		std::cerr << "Exception ... : main de sam." << std::endl;
+		std::cerr << boost::current_exception_diagnostic_information();
+
+	}
+
+	return 0;
+}
+
