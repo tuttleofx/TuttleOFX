@@ -1,5 +1,5 @@
-#ifndef _GIL_TYPEDEFS_HPP_
-#define _GIL_TYPEDEFS_HPP_
+#ifndef _GIL_EXTENSION_TYPEDEFS_HPP_
+#define _GIL_EXTENSION_TYPEDEFS_HPP_
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/gil/gil_all.hpp>

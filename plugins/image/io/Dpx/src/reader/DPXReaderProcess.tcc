@@ -3,9 +3,9 @@
 #include "DPXReaderProcess.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/typedefs.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+#include <boost/gil/extension/typedefs.hpp>
 
 #include <cstdlib>
 #include <cassert>

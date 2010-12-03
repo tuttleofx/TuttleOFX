@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_NORMALIZE_ALGORITHM_HPP_
 
 #include <boost/gil/extension/channel.hpp>
-#include <boost/gil/extension/image_view_factory.hpp>
+#include <boost/gil/extension/toolbox/channel_view.hpp>
 #include <boost/gil/extension/numeric/color_base_algorithm.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>

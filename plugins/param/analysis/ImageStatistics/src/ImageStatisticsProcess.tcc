@@ -3,8 +3,8 @@
 
 #include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/typedefs.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
+#include <boost/gil/extension/typedefs.hpp>
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>

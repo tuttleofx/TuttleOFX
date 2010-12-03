@@ -21,10 +21,13 @@ class InvertProcess : public ImageGilFilterProcessor<View>
 {
 protected:
 	InvertPlugin& _plugin;  ///< Rendering plugin
+	InvertProcessParams _params; ///< parameters
 
 public:
 	InvertProcess( InvertPlugin& instance );
 
+	void setup( const OFX::RenderArguments& args );
+	
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 

@@ -8,6 +8,7 @@
 #include <boost/gil/extension/numeric/kernel.hpp>
 #include <boost/gil/extension/numeric/convolve.hpp>
 #include <boost/gil/extension/numeric/pixel_by_channel.hpp>
+#include <boost/gil/extension/typedefs.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
@@ -54,9 +55,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	
 	typedef typename View::point_t Point;
 	typedef typename bgil::channel_mapping_type<View>::type Channel;
-	typedef typename mpl::if_< is_floating_point<Channel>,
-	                           Channel,
-							   bgil::bits32f>::type ChannelFloat;
+	typedef typename floating_channel_type_t<Channel>::type ChannelFloat;
 	typedef bgil::pixel<ChannelFloat, gray_layout_t> PixelGray;
 	typedef bgil::image<PixelGray, false> ImageGray;
 	typedef typename ImageGray::view_t ViewGray;
