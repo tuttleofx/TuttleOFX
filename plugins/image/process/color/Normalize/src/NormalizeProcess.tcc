@@ -87,7 +87,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	using namespace boost::gil;
 	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	const OfxRectI procWindowSrc = this->translateRegion( procWindowRoW, this->_srcPixelRod );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
 							           procWindowRoW.y2 - procWindowRoW.y1 };
 	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,

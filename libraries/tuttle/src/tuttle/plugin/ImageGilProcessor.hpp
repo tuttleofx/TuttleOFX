@@ -8,6 +8,7 @@
 #include "OfxProgress.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/common/math/rectOp.hpp>
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/throw_exception.hpp>
@@ -144,17 +145,6 @@ public:
 
 	/** @brief this is called by multiThreadFunction to actually process images, override in derived classes */
 	virtual void multiThreadProcessImages( const OfxRectI& windowRoW ) = 0;
-
-	OfxRectI translateRegion( const OfxRectI& windowRoW, const OfxRectI& dependingTo ) const
-	{
-		OfxRectI windowOutput = windowRoW;
-
-		windowOutput.x1 -= dependingTo.x1; // to output clip coordinates
-		windowOutput.y1 -= dependingTo.y1;
-		windowOutput.x2 -= dependingTo.x1;
-		windowOutput.y2 -= dependingTo.y1;
-		return windowOutput;
-	}
 
 	// to output clip coordinates
 	OfxRectI translateRoWToOutputClipCoordinates( const OfxRectI& windowRoW ) const
