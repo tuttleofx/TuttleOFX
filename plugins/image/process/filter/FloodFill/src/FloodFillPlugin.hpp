@@ -16,6 +16,7 @@ struct FloodFillProcessParams
 {
 	Scalar _upperThres;
 	Scalar _lowerThres;
+	EParamMethod _method;
 };
 
 /**
@@ -47,6 +48,7 @@ public:
 
     OFX::DoubleParam* _paramUpperThres;
     OFX::DoubleParam* _paramLowerThres;
+    OFX::ChoiceParam* _paramMethod;
 };
 
 }

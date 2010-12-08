@@ -67,11 +67,14 @@ void FloodFillPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	lowerThres->setRange( 0.0, std::numeric_limits<double>::max() );
 	lowerThres->setDisplayRange( 0.0, 1.0 );
 
-//	OFX::BooleanParamDescriptor* fill = desc.defineBooleanParam( kParamFillAllChannels );
-//	fill->setLabel( "Fill all channels" );
-//	fill->setHint( "Fill all channels with result" );
-//	fill->setDefault( true );
-
+	OFX::ChoiceParamDescriptor* method = desc.defineChoiceParam( kParamMethod );
+	method->setLabel( "Method" );
+	method->appendOption( kParamMethod4Connections );
+	method->appendOption( kParamMethod8Connections );
+#ifndef TUTTLE_PRODUCTION
+	method->appendOption( kParamMethodBruteForce );
+#endif
+	method->setDefault( 1 );
 }
 
 /**

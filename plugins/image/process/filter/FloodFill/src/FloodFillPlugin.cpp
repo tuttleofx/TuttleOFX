@@ -23,6 +23,7 @@ FloodFillPlugin::FloodFillPlugin( OfxImageEffectHandle handle )
 	
 	_paramUpperThres = fetchDoubleParam( kParamUpperThres );
 	_paramLowerThres = fetchDoubleParam( kParamLowerThres );
+	_paramMethod = fetchChoiceParam( kParamMethod );
 }
 
 FloodFillProcessParams<FloodFillPlugin::Scalar> FloodFillPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -31,6 +32,7 @@ FloodFillProcessParams<FloodFillPlugin::Scalar> FloodFillPlugin::getProcessParam
 
 	params._upperThres = _paramUpperThres->getValue();
 	params._lowerThres = _paramLowerThres->getValue();
+	params._method = static_cast<EParamMethod>( _paramMethod->getValue() );
 
 	return params;
 }

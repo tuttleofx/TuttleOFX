@@ -7,6 +7,7 @@
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <boost/gil/extension/toolbox/channel_view.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -44,13 +45,44 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 
 	fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
 
-	flood_fill<Connectivity4>( this->_srcView, this->_srcPixelRod,
-	                           this->_dstView, this->_dstPixelRod,
-	                           procWindowRoWCrop,
-	                           IsUpper<Scalar>(_params._upperThres),
-	                           IsUpper<Scalar>(_params._lowerThres)
-	                          );
-
+	switch( _params._method )
+	{
+		case eParamMethod4:
+		{
+			flood_fill<Connexity4, IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
+				this->_srcView, this->_srcPixelRod,
+				this->_dstView, this->_dstPixelRod,
+				procWindowRoWCrop,
+				IsUpper<Scalar>(_params._upperThres),
+				IsUpper<Scalar>(_params._lowerThres)
+				);
+			break;
+		}
+		case eParamMethod8:
+		{
+			flood_fill<Connexity8, IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
+	//			channel_view<red_t>(this->_srcView), this->_srcPixelRod,
+	//			channel_view<red_t>(this->_dstView), this->_dstPixelRod,
+				this->_srcView, this->_srcPixelRod,
+				this->_dstView, this->_dstPixelRod,
+				procWindowRoWCrop,
+				IsUpper<Scalar>(_params._upperThres),
+				IsUpper<Scalar>(_params._lowerThres)
+				);
+			break;
+		}
+		case eParamMethodBruteForce: // not in production
+		{
+			flood_fill_bruteForce<IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
+				this->_srcView, this->_srcPixelRod,
+				this->_dstView, this->_dstPixelRod,
+				procWindowRoWCrop,
+				IsUpper<Scalar>(_params._upperThres),
+				IsUpper<Scalar>(_params._lowerThres)
+				);
+			break;
+		}
+	}
 }
 
 }

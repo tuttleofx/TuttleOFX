@@ -2,48 +2,92 @@
 #define _TUTTLE_PLUGIN_FLOODFILL_ALGORITHM_HPP_
 
 #include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <boost/gil/extension/channel.hpp>
 
 #include <queue>
+
+#include "FloodFillDefinitions.hpp"
 
 namespace tuttle {
 namespace plugin {
 namespace floodFill {
 
 
-
+/**
+ * @brief fill all pixels inside the @p window, with the color @p pixelValue.
+ */
 template<class View>
-void fill_pixels( View& dstView, const OfxRectI& procWindow,
+TUTTLE_FORCEINLINE
+void fill_pixels( View& dstView, const OfxRectI& window,
 				  const typename View::value_type& pixelValue )
 {
 	typedef typename View::value_type Pixel;
 
-	View dst = subimage_view( dstView, procWindow.x1, procWindow.y1,
-	                                   procWindow.x2-procWindow.x1, procWindow.y2-procWindow.y1 );
+	View dst = subimage_view( dstView, window.x1, window.y1,
+	                                   window.x2-window.x1, window.y2-window.y1 );
 	boost::gil::fill_pixels( dst, pixelValue );
 }
 
-
-
-
-struct Connectivity4
+/**
+ * @brief fill a range of pixels (on the same line or with an 1d_traversable image).
+ */
+template<class DIterator, class DPixel>
+TUTTLE_FORCEINLINE
+void fill_range( DIterator dstBegin, const DIterator& dstEnd, const DPixel& value )
 {
-	template<typename T>
-	void operator()( T& first, T& last, const T& min, const T& max ) const
-	{}
+	do
+	{
+#ifdef DEBUG_FLOODFILL
+		if( (*dstBegin)[0] != value[0] )
+		{
+			*dstBegin = value;
+		}
+#else
+		*dstBegin = value;
+#endif
+		++dstBegin;
+	}
+	while( dstBegin != dstEnd );
+}
+
+/**
+ * @brief fill all pixels respecting the @p condition in a range of pixels (on the same line or with an 1d_traversable image).
+ */
+template<class SIterator, class DIterator, class DPixel, class Test>
+TUTTLE_FORCEINLINE
+void fill_range_if( SIterator srcBegin, const SIterator& srcEnd,
+                    DIterator dstBegin, const DPixel& value,
+                    const Test& condition )
+{
+	do
+	{
+		if( condition( (*srcBegin)[0] ) )
+		{
+#ifdef DEBUG_FLOODFILL
+			if( (*dstBegin)[0] != value[0] )
+			{
+				*dstBegin = value;
+			}
+#else
+			*dstBegin = value;
+#endif
+		}
+		++srcBegin;
+		++dstBegin;
+	}
+	while( srcBegin != srcEnd );
+}
+
+struct Connexity4
+{
+	static const std::ssize_t x = 0;
 };
 
-struct Connectivity8
+struct Connexity8
 {
-	template<typename T>
-	void operator()( T& first, T& last, const T& min, const T& max ) const
-	{
-		if( first > min )
-			--first;
-		if( last < max )
-			++last;
-	}
+	static const std::ssize_t x = 1;
 };
 
 template<typename T>
@@ -53,6 +97,7 @@ struct IsUpper
 	IsUpper( const T& threshold )
 	: _threshold(threshold)
 	{}
+	TUTTLE_FORCEINLINE
 	bool operator()( const T& p ) const
 	{
 		return (p >= _threshold);
@@ -60,8 +105,421 @@ struct IsUpper
 };
 
 
-template<class ConnectivityFunctor, class StrongTest, class SoftTest, class SView, class DView>
+typedef enum
+{
+	eDirectionAbove = 0,
+	eDirectionBellow = 1
+} EDirection;
+
+TUTTLE_FORCEINLINE
+EDirection invertDirection( const EDirection d )
+{
+	return d == eDirectionAbove ? eDirectionBellow : eDirectionAbove;
+}
+
+/**
+ * @brief A range of pixels in a line to propagate.
+ */
+template<class SView, class DView>
+struct FloodElement
+{
+	typedef typename SView::xy_locator SLocator;
+	typedef typename DView::xy_locator DLocator;
+	typedef typename SView::value_type SPixel;
+	typedef typename DView::value_type DPixel;
+
+	SLocator _srcBegin; //< locator on the first pixel of the source image of the range to propagate
+	SLocator _srcEnd;   //< like end() in the stl, this is the pixel after the last pixel of the range
+	DLocator _dstBegin; //< locator on the first pixel of the dest image
+	std::ssize_t _xBegin; //< x coordinate of the first pixel
+	std::ssize_t _xEnd; //< x coordinate of the pixel after the last pixel of the range
+	std::ssize_t _y; //< y coordinate
+	EDirection _direction; //< the direction of the propagation to apply
+};
+
+/**
+ * @brief Flood fill an image, with 2 conditions.
+ * Fill all pixels respecting the soft condition if connected with a pixel respecting the strong condition.
+ *
+ * @param[in] srcView input image
+ * @param[in] srcRod input image ROD
+ * @param[out] dstView input image
+ * @param[in] dstRod output image ROD
+ * @param[in] procWindow region to process
+ * @param[in] strongCondition functor with the strong test
+ * @param[in] softCondition functor with the soft test
+ *
+ * @remark Implementation is based on standard filling algorithms. So we use ranges by line (x axis),
+ * and check connections between these x ranges and possible x ranges in the above or bellow lines.
+ */
+template<class Connexity, class StrongTest, class SoftTest, class SView, class DView>
 void flood_fill( const SView& srcView, const OfxRectI& srcRod,
+                 DView& dstView, const OfxRectI& dstRod,
+				 const OfxRectI& procWindow,
+				 const StrongTest& strongTest, const SoftTest& softTest )
+{
+	typedef typename SView::xy_locator SLocator;
+	typedef typename DView::xy_locator DLocator;
+	typedef typename SView::value_type SPixel;
+	typedef typename DView::value_type DPixel;
+	typedef typename boost::gil::channel_type<SPixel>::type SChannel;
+	typedef typename boost::gil::channel_base_type<SChannel>::type SType;
+	typedef typename SLocator::cached_location_t SCachedLocation;
+	typedef typename DLocator::cached_location_t DCachedLocation;
+
+	typedef FloodElement<SView, DView> FloodElem;
+
+	static const DPixel white = get_white<DPixel>();
+	
+#ifdef DEBUG_FLOODFILL
+	DPixel red = get_black<DPixel>();
+	red[0] = 1.0;
+	DPixel yellow = get_black<DPixel>();
+	yellow[0] = 1.0;
+	yellow[1] = 1.0;
+#endif
+	
+	COUT_VAR4( white[0], white[1], white[2], white[3] );
+
+	const OfxRectI rod = rectanglesIntersection( srcRod, dstRod );
+
+	const std::size_t procWidth = (procWindow.x2 - procWindow.x1);
+	const std::size_t halfProcWidth = procWidth / 2;
+
+	const SLocator sloc_ref( srcView.xy_at(0,0) );
+	const SLocator dloc_ref( dstView.xy_at(0,0) );
+
+	std::vector<FloodElem> propagation;
+	propagation.reserve( halfProcWidth );
+
+	SLocator src_loc = srcView.xy_at( procWindow.x1 - srcRod.x1, procWindow.y1 - srcRod.y1 );
+	DLocator dst_loc = dstView.xy_at( procWindow.x1 - dstRod.x1, procWindow.y1 - dstRod.y1 );
+
+//	// LT CT RT
+//	// LC    RC
+//	// LB CB RB
+//	const SCachedLocation sLT( src_loc.cache_location(-Connectivity::x,-1) );
+//	const SCachedLocation sRT( src_loc.cache_location( Connectivity::x,-1) );
+//	const SCachedLocation sLB( src_loc.cache_location(-Connectivity::x, 1) );
+//	const SCachedLocation sRB( src_loc.cache_location( Connectivity::x, 1) );
+//
+//	const DCachedLocation dLT( dst_loc.cache_location(-Connectivity::x,-1) );
+//	const DCachedLocation dRT( dst_loc.cache_location( Connectivity::x,-1) );
+//	const DCachedLocation dLB( dst_loc.cache_location(-Connectivity::x, 1) );
+//	const DCachedLocation dRB( dst_loc.cache_location( Connectivity::x, 1) );
+
+	boost::gil::point2<std::ptrdiff_t> endToBegin( -(procWindow.x2-procWindow.x1),1);
+	boost::gil::point2<std::ptrdiff_t> nextLine(0,1);
+	boost::gil::point2<std::ptrdiff_t> previousLine( 0,-1);
+
+	for( std::ssize_t y = procWindow.y1;
+	     y < procWindow.y2;
+	     ++y )
+	{
+		{
+			std::size_t xLastBegin = 0;
+			SLocator srcLastBegin;
+			DLocator dstLastBegin;
+			bool inside = false;
+			bool containsStrong = false;
+
+			for( std::ssize_t x = procWindow.x1;
+				 x < procWindow.x2;
+				 ++x, ++dst_loc.x(), ++src_loc.x() )
+			{
+				if( (*dst_loc)[0] == white[0] )
+				{
+					if( ! inside )
+					{
+						xLastBegin = x;
+						srcLastBegin = src_loc;
+						dstLastBegin = dst_loc;
+						inside = true;
+					}
+					containsStrong = true;
+				}
+				else if( softTest( (*src_loc)[0] ) )
+				{
+					if( ! inside )
+					{
+						xLastBegin = x;
+						srcLastBegin = src_loc;
+						dstLastBegin = dst_loc;
+						inside = true;
+					}
+					if( ! containsStrong )
+					{
+						if( strongTest( (*src_loc)[0] ) )
+						{
+							containsStrong = true;
+						}
+					}
+				}
+				else
+				{
+					// do the same thing at the end of a line
+					if( /*inside &&*/ containsStrong )
+					{
+						// visit line above
+						FloodElem el;
+						el._srcBegin = srcLastBegin;
+						el._srcEnd = src_loc;
+						el._dstBegin = dstLastBegin;
+						el._xBegin = xLastBegin;
+						el._xEnd = x;
+						el._y = y;
+						el._direction = eDirectionAbove;
+						propagation.push_back( el );
+
+						// current line
+						// fill output from first to last
+						fill_range( dstLastBegin.x(), dst_loc.x(), white );
+
+						// visit line bellow
+						if( y < rod.y2  )
+						{
+	//						fill_range_if( srcLastBegin[sLB], src_loc[sRB], dstLastBegin[dLB], white, softTest );
+							// fill line bellow for current range if respect softTest
+							fill_range_if( srcLastBegin.x_at(-Connexity::x,1), src_loc.x_at(Connexity::x,1),
+										   dstLastBegin.x_at(-Connexity::x,1),
+										   white, softTest );
+						}
+					}
+					// re-init values
+					inside = false;
+					containsStrong = false;
+				}
+			}
+			// if all the last pixels are a group of detected pixels
+			if( /*inside &&*/ containsStrong )
+			{
+				// visit line above
+				FloodElem el;
+				el._srcBegin = srcLastBegin;
+				el._srcEnd = src_loc;
+				el._dstBegin = dstLastBegin;
+				el._xBegin = xLastBegin;
+				el._xEnd = procWindow.x2;
+				el._y = y;
+				el._direction = eDirectionAbove;
+				propagation.push_back( el );
+
+				// current line
+				// fill output from first to last
+				fill_range( dstLastBegin.x(), dst_loc.x(), white );
+
+				// visit line bellow
+				if( y < rod.y2  )
+				{
+					// fill line bellow for current range if respect softTest
+					fill_range_if( srcLastBegin.x_at(-Connexity::x,1), src_loc.x_at(Connexity::x,1),
+								   dstLastBegin.x_at(-Connexity::x,1),
+								   white, softTest );
+				}
+			}
+		}
+		// move to the beginning of the next line
+		dst_loc += endToBegin;
+		src_loc += endToBegin;
+
+		// do the propagation on the above lines
+		while( !propagation.empty() )
+		{
+			FloodElem iElem = propagation.back();
+			propagation.pop_back();
+
+			// after having been up, we can get down up to next line (at the maximum)
+			if( iElem._direction == eDirectionBellow &&
+			    iElem._y > y+1 )
+				continue;
+
+			// i: the "input" range
+			// g: is the full range, where we can found f elements
+			// f: ranges "founded" (connected with i range)
+			// s: futur range to "search"
+			//
+			// first step:
+			// [ggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggg] // current line to apply the propagation
+			// [sssssssssssss].[iiiiiiiiiiiiiiiiiiiiiiiiiiii].[ssssssssssssss]
+			//                              ^
+			//                              |  direction: above
+			// 
+			// example 1:
+			// [sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss] // search in the same direction
+			// [fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff] // current line to apply the propagation
+			// [sssssssssssss].[iiiiiiiiiiiiiiiiiiiiiiiiiiii].[ssssssssssssss] // search in the opposite direction
+			//                              ^
+			//                              |  direction: above
+			//
+			// example 2:
+			// [sssssssssssssss].....[sssss]...[sss]..[ssssssssssssssssssssss] // search in the same direction
+			// [fffffffffffffff].....[fffff]...[fff]..[ffffffffffffffffffffff] // current line to apply the propagation
+			// [sssssssssssss].[iiiiiiiiiiiiiiiiiiiiiiiiiiii].[ssssssssssssss] // search in the opposite direction
+			//                              ^
+			//                              |  direction: above
+			//
+			// example 3:
+			// .....................[sssss]....[sss]..[ssssssssssssssssssssss] // search in the same direction
+			// .....................[fffff]....[fff]..[ffffffffffffffffffffff] // current line to apply the propagation
+			// ................[iiiiiiiiiiiiiiiiiiiiiiiiiiii].[ssssssssssssss] // search in the opposite direction
+			//                              ^
+			//                              |  direction: above
+
+			FloodElem gElem = iElem;
+
+			if( gElem._direction == eDirectionAbove )
+			{
+				gElem._srcBegin += previousLine;
+				gElem._srcEnd   += previousLine;
+				gElem._dstBegin += previousLine;
+				--(gElem._y);
+			}
+			else
+			{
+				gElem._srcBegin += nextLine;
+				gElem._srcEnd   += nextLine;
+				gElem._dstBegin += nextLine;
+				++(gElem._y);
+			}
+
+			// x propagation
+			// left
+			if( Connexity::x ||
+			    softTest( (*gElem._srcBegin)[0] ) ) // check first
+			{
+				while( gElem._xBegin-1 >= rod.x1 &&
+					   softTest( (*(gElem._srcBegin.x()-1))[0] ) )
+				{
+					--(gElem._xBegin);
+					--(gElem._srcBegin.x());
+					--(gElem._dstBegin.x());
+				}
+			}
+			// right
+			if( Connexity::x ||
+			    softTest( (*(gElem._srcEnd.x()-1))[0] ) ) // check last
+			{
+				while( gElem._xEnd < rod.x2 &&
+					   softTest( (*gElem._srcEnd)[0] ) )
+				{
+					++(gElem._xEnd);
+					++(gElem._srcEnd.x());
+				}
+			}
+
+			// new sub-ranges
+			{
+				bool inside = false;
+				bool modified = false;
+				std::list<FloodElem> localPropagation;
+				FloodElem localElem = gElem;
+				localElem._srcEnd = localElem._srcBegin;
+				DLocator dstEnd = localElem._dstBegin;
+
+				for( std::ssize_t xx = gElem._xBegin;
+					 xx < gElem._xEnd;
+					 ++xx )
+				{
+					if( softTest( (*localElem._srcEnd)[0] ) )
+					{
+						if( ! inside )
+						{
+							localElem._srcBegin = localElem._srcEnd;
+							localElem._dstBegin = dstEnd;
+							localElem._xBegin = xx;
+							inside = true;
+						}
+						if( !modified )
+						{
+							if( (*dstEnd)[0] != white[0] )
+							{
+								modified = true;
+							}
+						}
+#ifdef DEBUG_FLOODFILL
+						// use one color for each case to debug
+						if( (*dstEnd)[0] != white[0] )
+						{
+							if( iElem._direction == eDirectionAbove )
+								*dstEnd = red;
+							else
+								*dstEnd = yellow;
+						}
+#else
+						*dstEnd = white;
+#endif
+					}
+					else
+					{
+						if( inside )
+						{
+							localElem._xEnd = xx;
+							// if we just have modified a pixel in the output,
+							// possibly we have to propagate something
+							if( modified )
+							{
+								// propagation in the same direction
+								localPropagation.push_back( localElem );
+							}
+							inside = false;
+						}
+						modified = false;
+					}
+					++localElem._srcEnd.x();
+					++dstEnd.x();
+				}
+				if( inside )
+				{
+					localElem._xEnd = gElem._xEnd;
+					if( modified )
+					{
+						// propagation in the same direction
+						localPropagation.push_back( localElem );
+					}
+				}
+
+				if( ! localPropagation.empty() )
+				{
+					// propagation in the opposite direction
+					if( localPropagation.front()._xBegin - 1 + Connexity::x < iElem._xBegin )
+					{
+						FloodElem leftElem = iElem; // same line as source
+						leftElem._direction = invertDirection( iElem._direction );
+						leftElem._xBegin = localPropagation.front()._xBegin;
+						leftElem._xEnd = iElem._xBegin - 1;
+						leftElem._srcBegin = localPropagation.front()._srcBegin;
+						leftElem._dstBegin = localPropagation.front()._dstBegin;
+						leftElem._srcEnd = iElem._srcEnd.xy_at( -1, 0 );
+						propagation.push_back( leftElem );
+					}
+					if( localPropagation.back()._xEnd + 1 - Connexity::x > iElem._xEnd )
+					{
+						FloodElem rightElem = iElem; // same line as source
+						rightElem._direction = invertDirection( iElem._direction );
+						rightElem._xBegin = iElem._xEnd + 1;
+						std::size_t shift = rightElem._xBegin - localPropagation.back()._xBegin;
+						rightElem._srcBegin = localPropagation.back()._srcBegin.xy_at( shift, 0 );
+						rightElem._dstBegin = localPropagation.back()._dstBegin.xy_at( shift, 0 );
+						rightElem._xEnd = localPropagation.back()._xEnd;
+						rightElem._srcEnd = rightElem._srcBegin.xy_at( rightElem._xEnd - rightElem._xBegin, 0 );
+						propagation.push_back( rightElem );
+					}
+
+					propagation.insert( propagation.end(), localPropagation.begin(), localPropagation.end() );
+				}
+			}
+		}
+	}
+}
+
+
+/**
+ * @brief Simplest implementation of flood fill algorithm.
+ * @see flood_fill, faster implementation of the same algorithm
+ * @remark not in production (only use for debugging)
+ */
+template<class StrongTest, class SoftTest, class SView, class DView>
+void flood_fill_bruteForce( const SView& srcView, const OfxRectI& srcRod,
 				 DView& dstView, const OfxRectI& dstRod,
 				 const OfxRectI& procWindow,
 				 const StrongTest& strongTest, const SoftTest& softTest )
@@ -73,7 +531,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
     typedef typename DView::value_type DPixel;
     typedef typename bgil::channel_type<DView>::type DChannel;
 	typedef typename DView::iterator DIterator;
-	
+
 	typedef bgil::point2<std::ptrdiff_t> Point2;
 
 	static const std::size_t gradMax = 0;
