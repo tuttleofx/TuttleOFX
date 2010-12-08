@@ -50,7 +50,7 @@ void NormalizeProcess<View>::setup( const OFX::RenderArguments& args )
 			break;
 		}
 	}
-	for( ssize_t n = 0; n < boost::gil::num_channels<Pixel>::type::value; ++n )
+	for( std::ssize_t n = 0; n < boost::gil::num_channels<Pixel>::type::value; ++n )
 	{
 		_sMin[n] = smin[n];
 		_dMin[n] = _params._dstMinColor[n];
