@@ -1,7 +1,7 @@
 #include "J2KWriter.hpp"
 #include "J2KCommon.hpp"
-#include <tuttle/plugin/image/gil/typedefs.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+#include <boost/gil/extension/typedefs.hpp>
 
 #include <iostream>
 #include <cstring>

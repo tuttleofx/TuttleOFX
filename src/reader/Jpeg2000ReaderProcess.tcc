@@ -1,5 +1,5 @@
 #include "Jpeg2000ReaderPlugin.hpp"
-#include <tuttle/plugin/image/gil/typedefs.hpp>
+#include <boost/gil/extension/typedefs.hpp>
 
 namespace tuttle {
 namespace plugin {
