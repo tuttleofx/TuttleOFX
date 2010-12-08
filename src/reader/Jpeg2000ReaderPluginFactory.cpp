@@ -17,7 +17,7 @@ namespace reader {
  */
 void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "DuJpeg2000Reader", "Jpeg2000Reader",
+	desc.setLabels( "privateDuJpeg2000Reader", "Jpeg2000Reader",
 		            "Jpeg2000 image reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 

@@ -16,7 +16,7 @@ namespace writer {
  */
 void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "DuJpeg2000Writer", "Jpeg2000Writer",
+	desc.setLabels( "privateDuJpeg2000Writer", "Jpeg2000Writer",
 		            "Jpeg 2000 image writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
