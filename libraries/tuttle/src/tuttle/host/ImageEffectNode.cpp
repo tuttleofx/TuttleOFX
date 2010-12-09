@@ -582,24 +582,17 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 //	TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
 //	setCurrentTime( vData._time );
 
-	COUT_INFOS;
 	checkClipsConnections();
 
-	COUT_INFOS;
 	getClipPreferencesAction();
-	COUT_INFOS;
 	initComponents();
-	COUT_INFOS;
 	initPixelAspectRatio();
-	COUT_INFOS;
 	maximizeBitDepthFromReadsToWrites();
 
-	COUT_INFOS;
 	OfxRectD rod;
 	getRegionOfDefinitionAction( vData._time,
 	                             vData._nodeData->_renderScale,
 	                             rod );
-	COUT_INFOS;
 	vData._apiImageEffect._renderRoD = rod;
 	vData._apiImageEffect._renderRoI = rod; ///< @todo tuttle: tile supports
 	
