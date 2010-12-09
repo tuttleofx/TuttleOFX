@@ -16,6 +16,7 @@ struct FloodFillProcessParams
 {
 	Scalar _upperThres;
 	Scalar _lowerThres;
+	bool _relativeMinMax;
 	EParamMethod _method;
 };
 
@@ -48,6 +49,7 @@ public:
 
     OFX::DoubleParam* _paramUpperThres;
     OFX::DoubleParam* _paramLowerThres;
+    OFX::BooleanParam* _paramRelativeMinMax;
     OFX::ChoiceParam* _paramMethod;
 };
 

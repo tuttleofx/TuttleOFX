@@ -12,6 +12,7 @@ namespace floodFill {
 
 const static std::string kParamUpperThres = "upperThres";
 const static std::string kParamLowerThres = "lowerThres";
+const static std::string kParamMinMaxRelative = "minMaxRelative";
 
 const static std::string kParamMethod = "method";
 const static std::string kParamMethod4Connections = "4 connections";

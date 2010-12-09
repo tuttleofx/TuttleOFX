@@ -23,6 +23,7 @@ FloodFillPlugin::FloodFillPlugin( OfxImageEffectHandle handle )
 	
 	_paramUpperThres = fetchDoubleParam( kParamUpperThres );
 	_paramLowerThres = fetchDoubleParam( kParamLowerThres );
+	_paramRelativeMinMax = fetchBooleanParam( kParamMinMaxRelative );
 	_paramMethod = fetchChoiceParam( kParamMethod );
 }
 
@@ -32,6 +33,7 @@ FloodFillProcessParams<FloodFillPlugin::Scalar> FloodFillPlugin::getProcessParam
 
 	params._upperThres = _paramUpperThres->getValue();
 	params._lowerThres = _paramLowerThres->getValue();
+	params._relativeMinMax = _paramRelativeMinMax->getValue();
 	params._method = static_cast<EParamMethod>( _paramMethod->getValue() );
 
 	return params;

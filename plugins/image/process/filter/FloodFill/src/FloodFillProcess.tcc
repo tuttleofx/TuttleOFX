@@ -4,10 +4,12 @@
 #include <tuttle/common/math/rectOp.hpp>
 
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/toolbox/channel_view.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations3.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -24,8 +26,27 @@ FloodFillProcess<View>::FloodFillProcess( FloodFillPlugin &effect )
 template<class View>
 void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	using namespace boost::gil;
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
+	if( _params._relativeMinMax )
+	{
+		typedef channel_view_type<red_t,View> LocalView;
+		typename LocalView::type localView( LocalView::make(this->_srcView) );
+		pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
+		transform_pixels_progress(
+			localView,
+			minmax,
+			*this );
+		
+		_lowerThres = (_params._lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+		_upperThres = (_params._upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
+	}
+	else
+	{
+		_lowerThres = _params._lowerThres;
+		_upperThres = _params._upperThres;
+	}
 
 }
 
@@ -53,8 +74,8 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				this->_srcView, this->_srcPixelRod,
 				this->_dstView, this->_dstPixelRod,
 				procWindowRoWCrop,
-				IsUpper<Scalar>(_params._upperThres),
-				IsUpper<Scalar>(_params._lowerThres)
+				IsUpper<Scalar>(_upperThres),
+				IsUpper<Scalar>(_lowerThres)
 				);
 			break;
 		}
@@ -66,8 +87,8 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				this->_srcView, this->_srcPixelRod,
 				this->_dstView, this->_dstPixelRod,
 				procWindowRoWCrop,
-				IsUpper<Scalar>(_params._upperThres),
-				IsUpper<Scalar>(_params._lowerThres)
+				IsUpper<Scalar>(_upperThres),
+				IsUpper<Scalar>(_lowerThres)
 				);
 			break;
 		}
@@ -77,8 +98,8 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				this->_srcView, this->_srcPixelRod,
 				this->_dstView, this->_dstPixelRod,
 				procWindowRoWCrop,
-				IsUpper<Scalar>(_params._upperThres),
-				IsUpper<Scalar>(_params._lowerThres)
+				IsUpper<Scalar>(_upperThres),
+				IsUpper<Scalar>(_lowerThres)
 				);
 			break;
 		}

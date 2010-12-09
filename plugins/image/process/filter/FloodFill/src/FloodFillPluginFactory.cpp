@@ -19,9 +19,9 @@ static const bool kSupportTiles = false;
  */
 void FloodFillPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "FloodFill", "FloodFill",
+	desc.setLabels( "TuttleFloodFill", "FloodFill",
 		            "FloodFill" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
@@ -66,6 +66,11 @@ void FloodFillPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	lowerThres->setDefault( 0.1 );
 	lowerThres->setRange( 0.0, std::numeric_limits<double>::max() );
 	lowerThres->setDisplayRange( 0.0, 1.0 );
+
+	OFX::BooleanParamDescriptor* minmax = desc.defineBooleanParam( kParamMinMaxRelative );
+	minmax->setLabel( "Relative to min/max" );
+	minmax->setHint( "Use theshold values relative to min/max" );
+	minmax->setDefault( true );
 
 	OFX::ChoiceParamDescriptor* method = desc.defineChoiceParam( kParamMethod );
 	method->setLabel( "Method" );

@@ -23,6 +23,9 @@ protected :
     FloodFillPlugin&    _plugin;            ///< Rendering plugin
 	FloodFillProcessParams<Scalar> _params; ///< parameters
 
+	Scalar _lowerThres;
+	Scalar _upperThres;
+
 public:
     FloodFillProcess( FloodFillPlugin& effect );
 

@@ -179,8 +179,6 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 	yellow[1] = 1.0;
 #endif
 	
-	COUT_VAR4( white[0], white[1], white[2], white[3] );
-
 	const OfxRectI rod = rectanglesIntersection( srcRod, dstRod );
 
 	const std::size_t procWidth = (procWindow.x2 - procWindow.x1);
