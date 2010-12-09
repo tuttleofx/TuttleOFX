@@ -70,7 +70,7 @@ void ParamMathPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleMathParam", "MathParam",
 	                "Math Param" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/param" );
 
 	OFX::ChoiceParamDescriptor* op = desc.defineChoiceParam( "operation" );
 	op->appendOption( "Multiply" );
