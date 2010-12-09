@@ -130,10 +130,14 @@ class Tuttle( SConsProject ):
 			envLocal.Alias( 'visualProject',   visual_project )
 
 
+#______________________________________________________________________________#
 
 project = Tuttle()
 Export('project')
 Export({'libs':project.libs})
+
+#______________________________________________________________________________#
+
 project.begin()
 project.SConscript()
 project.end()
