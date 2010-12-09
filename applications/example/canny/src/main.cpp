@@ -52,7 +52,7 @@ int main( int argc, char** argv )
 		Graph::Node& read        = g.createNode( "fr.tuttle.pngreader" );
 		Graph::Node& bitdepth    = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& sobel       = g.createNode( "fr.tuttle.duranduboi.sobel" );
-		Graph::Node& normalize   = g.createNode( "fr.tuttle.duranduboi.normalize" );
+//		Graph::Node& normalize   = g.createNode( "fr.tuttle.duranduboi.normalize" );
 		Graph::Node& localmaxima = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
 		Graph::Node& floodfill   = g.createNode( "fr.tuttle.duranduboi.floodfill" );
 		Graph::Node& thinning    = g.createNode( "fr.tuttle.duranduboi.thinning" );
@@ -60,7 +60,6 @@ int main( int argc, char** argv )
 		Graph::Node& write2      = g.createNode( "fr.tuttle.pngwriter" );
 		Graph::Node& write3      = g.createNode( "fr.tuttle.pngwriter" );
 		Graph::Node& write4      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write5      = g.createNode( "fr.tuttle.pngwriter" );
 
 		COUT( "__________________________________________________3" );
 
@@ -79,61 +78,63 @@ int main( int argc, char** argv )
 		sobel.getParam( "size" ).set( 2.0, 2.0 );
 		sobel.getParam( "normalizedKernel" ).set( false );
 		sobel.getParam( "computeGradientDirection" ).set( false );
-		sobel.getParam( "kernelEpsilon" ).set( 0.001 );
-		normalize.getParam( "mode" ).set( 0 ); //"analyse" );
-		normalize.getParam( "analyseMode" ).set( 0 ); //"perChannel" );
-		normalize.getParam( "processR" ).set( false );
-		normalize.getParam( "processG" ).set( false );
-		normalize.getParam( "processB" ).set( true  );
-		normalize.getParam( "processA" ).set( false );
+		sobel.getParam( "kernelEpsilon" ).set( 0.01 );
+//		normalize.getParam( "mode" ).set( 0 ); //"analyse" );
+//		normalize.getParam( "analyseMode" ).set( 0 ); //"perChannel" );
+//		normalize.getParam( "processR" ).set( false );
+//		normalize.getParam( "processG" ).set( false );
+//		normalize.getParam( "processB" ).set( true  );
+//		normalize.getParam( "processA" ).set( false );
 		floodfill.getParam( "upperThres" ).set( 0.1 );
 		floodfill.getParam( "lowerThres" ).set( 0.025 );
 //		canny.getParam( "fillAllChannels" ).set( true );
 
 		write1.getParam( "components" ).set( 1 );
 		write2.getParam( "components" ).set( 1 );
+		write2.getParam( "components" ).set( 1 );
 		write3.getParam( "components" ).set( 1 );
-		write4.getParam( "components" ).set( 1 );
 		
 		write1.getParam( "filename" ).set( "data/canny/0_sobel.png" );
-		write2.getParam( "filename" ).set( "data/canny/1_normalize.png" );
-		write3.getParam( "filename" ).set( "data/canny/2_localMaxima.png" );
-		write4.getParam( "filename" ).set( "data/canny/3_floodfill.png" );
-		write5.getParam( "filename" ).set( "data/canny/4_thinning.png" );
+		write2.getParam( "filename" ).set( "data/canny/1_localMaxima.png" );
+		write3.getParam( "filename" ).set( "data/canny/2_floodfill.png" );
+		write4.getParam( "filename" ).set( "data/canny/3_thinning.png" );
 		
 		COUT( "__________________________________________________4" );
 		g.connect( inputBuffer1, sobel );
 //		g.connect( read1, bitdepth );
 //		g.connect( bitdepth, sobel1 );
-		g.connect( sobel, normalize );
-		g.connect( normalize, localmaxima );
-//		g.connect( canny, thinning );
+		g.connect( sobel, localmaxima );
 		g.connect( localmaxima, floodfill );
 		g.connect( floodfill, thinning );
 
 		g.connect( sobel, write1 );
-		g.connect( normalize, write2 );
-		g.connect( localmaxima, write3 );
-		g.connect( floodfill, write4 );
-		g.connect( thinning, write5 );
+		g.connect( localmaxima, write2 );
+		g.connect( floodfill, write3 );
+		g.connect( thinning, write4 );
 
 		COUT( "__________________________________________________5" );
 		std::list<std::string> outputs;
-		outputs.push_back( write1.getName() );
-		outputs.push_back( write2.getName() );
-		outputs.push_back( write3.getName() );
-		outputs.push_back( write4.getName() );
-		outputs.push_back( write5.getName() );
+//		outputs.push_back( write1.getName() );
+//		outputs.push_back( write2.getName() );
+//		outputs.push_back( write2.getName() );
+//		outputs.push_back( write3.getName() );
+//		outputs.push_back( write4.getName() );
 		outputs.push_back( thinning.getName() );
 
-		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
-		memory::MemoryCache res = g.compute( thinning, 0 );
+		boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
+		memory::MemoryCache res0 = g.compute( thinning, 0 );
 //		memory::MemoryCache res = g.compute( outputs, 0 );
-		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
-		COUT( "Process took: " << t2 - t1 );
+		boost::posix_time::ptime t2a(boost::posix_time::microsec_clock::local_time());
 
-		std::cout << res << std::endl;
-		memory::CACHE_ELEMENT imgRes = res.get( thinning.getName(), 0 );
+		boost::posix_time::ptime t1b(boost::posix_time::microsec_clock::local_time());
+		memory::MemoryCache res1 = g.compute( thinning, 0, 19 );
+		boost::posix_time::ptime t2b(boost::posix_time::microsec_clock::local_time());
+
+		COUT( "Process 0 took: " << t2a - t1a );
+		COUT( "Process 1 took: " << (t2b - t1b)/20.0 );
+
+		std::cout << res0 << std::endl;
+		memory::CACHE_ELEMENT imgRes = res0.get( thinning.getName(), 0 );
 
 		COUT_VAR( imgRes->getROD() );
 		COUT_VAR( imgRes->getBounds() );
