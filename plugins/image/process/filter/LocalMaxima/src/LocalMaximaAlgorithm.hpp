@@ -96,11 +96,6 @@ struct pixel_locator_gradientLocalMaxima_t
 			// |LB|__|__|
 			g1 = src[RC][norm] * invd + src[RT][norm] * d;
 			g2 = src[LC][norm] * invd + src[LB][norm] * d;
-//			if( (*src)[norm] > src[srcLC][norm] &&
-//				(*src)[norm] > src[srcRC][norm] )
-//			{
-//				dst[0] = (*src)[norm]; // winner !
-//			}
 		}
 		// B
 		else if ( ((*src)[vecX] > 0 && -(*src)[vecY] >= (*src)[vecX]) ||
@@ -118,11 +113,6 @@ struct pixel_locator_gradientLocalMaxima_t
 			// |LB|CB|__|
 			g1 = src[CT][norm] * invd + src[RT][norm] * d;
 			g2 = src[CB][norm] * invd + src[LB][norm] * d;
-//			if( (*src)[norm] > src[srcLB][norm] &&
-//				(*src)[norm] > src[srcRT][norm] )
-//			{
-//				dst[0] = (*src)[norm];
-//			}
 		}
 		// C
 		else if( ((*src)[vecX] <= 0 && (*src)[vecX] > (*src)[vecY]) ||
@@ -140,11 +130,6 @@ struct pixel_locator_gradientLocalMaxima_t
 			// |__|CB|RB|
 			g1 = src[CT][norm] * invd + src[LT][norm] * d;
 			g2 = src[CB][norm] * invd + src[RB][norm] * d;
-//			if( (*src)[norm] > src[srcCB][norm] &&
-//				(*src)[norm] > src[srcCT][norm] )
-//			{
-//				dst[0] = (*src)[norm];
-//			}
 		}
 		// D
 		else if( ((*src)[vecY] < 0 && (*src)[vecX] <= (*src)[vecY]) ||
@@ -163,12 +148,6 @@ struct pixel_locator_gradientLocalMaxima_t
 			// |__|__|RB|
 			g1 = src[LC][norm] * invd + src[LT][norm] * d;
 			g2 = src[RC][norm] * invd + src[RB][norm] * d;
-			
-//			if( (*src)[norm] > src[srcRB][norm] &&
-//				(*src)[norm] > src[srcLT][norm] )
-//			{
-//				dst[0] = (*src)[norm];
-//			}
 		}
 		DPixel dst = _black;
 		if( (*src)[norm] >= g1 && (*src)[norm] >= g2 )

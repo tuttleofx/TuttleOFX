@@ -58,10 +58,12 @@ struct pixel_locator_thinning_t
 	DPixel operator()( const SLocator& src ) const
 	{
 		using namespace boost::gil;
+
 		if( *src != _white )
 		{
 			return _black;
 		}
+		
 		std::size_t id =  ( src[LT] == _white )       |
 			             (( src[LC] == _white ) << 1) |
 			             (( src[LB] == _white ) << 2) |
@@ -71,15 +73,6 @@ struct pixel_locator_thinning_t
 			             (( src[RT] == _white ) << 6) |
 			             (( src[RC] == _white ) << 7) |
 			             (( src[RB] == _white ) << 8);
-//		std::size_t id =  ( src[LT] == _white )       |
-//			             (( src[CT] == _white ) << 1) |
-//			             (( src[RT] == _white ) << 2) |
-//			             (( src[LC] == _white ) << 3) |
-//			             (( *src    == _white ) << 4) |
-//			             (( src[RC] == _white ) << 5) |
-//			             (( src[LB] == _white ) << 6) |
-//			             (( src[CB] == _white ) << 7) |
-//			             (( src[RB] == _white ) << 8);
 		if( _lut[id] )
 		{
 			return _white;
