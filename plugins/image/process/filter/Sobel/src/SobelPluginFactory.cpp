@@ -61,20 +61,42 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	size->setDisplayRange( 0, 0, 10, 10 );
 	size->setDoubleType( OFX::eDoubleTypeScale );
 
+	OFX::GroupParamDescriptor* advanced = desc.defineGroupParam( kParamGroupAdvanced );
+	advanced->setLabel( "Advanced" );
+
 	OFX::BooleanParamDescriptor* unidimensional = desc.defineBooleanParam( kParamUnidimensional );
 	unidimensional->setLabel( "Unidimensional" );
 	unidimensional->setHint( "Instead of using a square convolution matrix, use 1D kernels." );
 	unidimensional->setDefault( false );
+	unidimensional->setParent( advanced );
+
+	OFX::BooleanParamDescriptor* reverseKernel = desc.defineBooleanParam( kParamReverseKernel );
+	reverseKernel->setLabel( "Reverse" );
+	reverseKernel->setHint( "Reverse the kernel (convolution or correlation)." );
+	reverseKernel->setDefault( false );
+	reverseKernel->setParent( advanced );
 
 	OFX::BooleanParamDescriptor* normalizedKernel = desc.defineBooleanParam( kParamNormalizedKernel );
 	normalizedKernel->setLabel( "Normalized kernel" );
 	normalizedKernel->setHint( "Use a normalized kernel to compute the gradient." );
 	normalizedKernel->setDefault( true );
+	normalizedKernel->setParent( advanced );
 
 	OFX::DoubleParamDescriptor* kernelEpsilon = desc.defineDoubleParam( kParamKernelEpsilon );
 	kernelEpsilon->setLabel( "Kernel espilon value" );
 	kernelEpsilon->setHint( "Threshold at which we no longer consider the values of the function." );
 	kernelEpsilon->setDefault( 0.1 );
+	kernelEpsilon->setParent( advanced );
+
+	OFX::ChoiceParamDescriptor* pass = desc.defineChoiceParam( kParamPass );
+	pass->setLabel( "Pass" );
+	pass->setHint( "The sobel filter is computed using a 2D separable filter. So it consists in 2 passes.\n"
+	               "By default we compute the 2 passes, but with this option you can separate each pass." );
+	pass->appendOption( kParamPassFull );
+	pass->appendOption( kParamPass1 );
+	pass->appendOption( kParamPass2 );
+	pass->setDefault( 0 );
+	pass->setParent( advanced );
 
 	OFX::ChoiceParamDescriptor* border = desc.defineChoiceParam( kParamBorder );
 	border->setLabel( "Gradient border" );

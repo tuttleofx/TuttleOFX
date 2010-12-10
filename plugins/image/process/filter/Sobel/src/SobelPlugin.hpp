@@ -18,6 +18,15 @@ template<typename Scalar>
 struct SobelProcessParams
 {
 	boost::gil::point2<double> _size;
+
+	EParamPass _pass;
+	bool _unidimensional;
+
+	bool _computeGradientNorm;
+	bool _gradientNormManhattan;
+	bool _computeGradientDirection;
+	bool _gradientDirectionAbs;
+
 	EParamBorder _border;
 	boost::gil::convolve_boundary_option _boundary_option;
 
@@ -25,13 +34,6 @@ struct SobelProcessParams
 	boost::gil::kernel_1d<Scalar> _xKernelGaussian;
 	boost::gil::kernel_1d<Scalar> _yKernelGaussianDerivative;
 	boost::gil::kernel_1d<Scalar> _yKernelGaussian;
-
-	bool _unidimensional;
-
-	bool _computeGradientNorm;
-	bool _gradientNormManhattan;
-	bool _computeGradientDirection;
-	bool _gradientDirectionAbs;
 };
 
 /**
@@ -63,6 +65,8 @@ public:
 
 	OFX::Double2DParam* _paramSize;
 	OFX::BooleanParam* _paramNormalizedKernel;
+	OFX::BooleanParam* _paramReverseKernel;
+	OFX::ChoiceParam* _paramPass;
 	OFX::DoubleParam* _paramKernelEpsilon;
 	OFX::BooleanParam* _paramUnidimensional;
     OFX::ChoiceParam* _paramBorder;

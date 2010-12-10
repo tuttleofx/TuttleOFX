@@ -8,10 +8,23 @@ namespace tuttle {
 namespace plugin {
 namespace sobel {
 
-const static std::string kParamSize             = "size";
-const static std::string kParamUnidimensional   = "unidimensional";
+const static std::string kParamSize = "size";
+const static std::string kParamGroupAdvanced = "advanced";
+const static std::string kParamUnidimensional = "unidimensional";
+const static std::string kParamReverseKernel = "reverseKernel";
 const static std::string kParamNormalizedKernel = "normalizedKernel";
 const static std::string kParamKernelEpsilon = "kernelEpsilon";
+const static std::string kParamPass = "pass";
+const static std::string kParamPassFull = "full";
+const static std::string kParamPass1 = "1";
+const static std::string kParamPass2 = "2";
+
+enum EParamPass
+{
+	eParamPassFull = 0,
+	eParamPass1,
+	eParamPass2
+};
 
 const static std::string kParamBorder = "border";
 const static std::string kParamBorderMirror = "Mirror";

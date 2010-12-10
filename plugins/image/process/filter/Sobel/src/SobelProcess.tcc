@@ -83,13 +83,40 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 		}
 		else
 		{
-			correlate_rows_cols<PixelGray>(
-				color_converted_view<PixelGray>( this->_srcView ),
-				_params._xKernelGaussianDerivative,
-				_params._xKernelGaussian,
-				kth_channel_view<0>(dst),
-				proc_tl,
-				_params._boundary_option );
+			switch( _params._pass )
+			{
+				case eParamPassFull:
+				{
+					correlate_rows_cols<PixelGray>(
+						color_converted_view<PixelGray>( this->_srcView ),
+						_params._xKernelGaussianDerivative,
+						_params._xKernelGaussian,
+						kth_channel_view<0>(dst),
+						proc_tl,
+						_params._boundary_option );
+					break;
+				}
+				case eParamPass1:
+				{
+					correlate_rows<PixelGray>(
+						color_converted_view<PixelGray>( this->_srcView ),
+						_params._xKernelGaussianDerivative,
+						kth_channel_view<0>(dst),
+						proc_tl,
+						_params._boundary_option );
+					break;
+				}
+				case eParamPass2:
+				{
+					correlate_cols<PixelGray>(
+						kth_channel_view<0>( this->_srcView ),
+						_params._xKernelGaussian,
+						kth_channel_view<0>(dst),
+						proc_tl,
+						_params._boundary_option );
+					break;
+				}
+			}
 		}
 	}
 	if( progressForward( dst.height() ) )
@@ -112,13 +139,40 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 		}
 		else
 		{
-			correlate_rows_cols<PixelGray>(
-				color_converted_view<PixelGray>( this->_srcView ),
-				_params._yKernelGaussian,
-				_params._yKernelGaussianDerivative,
-				kth_channel_view<1>(dst),
-				proc_tl,
-				_params._boundary_option );
+			switch( _params._pass )
+			{
+				case eParamPassFull:
+				{
+					correlate_rows_cols<PixelGray>(
+						color_converted_view<PixelGray>( this->_srcView ),
+						_params._yKernelGaussian,
+						_params._yKernelGaussianDerivative,
+						kth_channel_view<1>(dst),
+						proc_tl,
+						_params._boundary_option );
+					break;
+				}
+				case eParamPass1:
+				{
+					correlate_rows<PixelGray>(
+						color_converted_view<PixelGray>( this->_srcView ),
+						_params._yKernelGaussian,
+						kth_channel_view<1>(dst),
+						proc_tl,
+						_params._boundary_option );
+					break;
+				}
+				case eParamPass2:
+				{
+					correlate_cols<PixelGray>(
+						kth_channel_view<1>( this->_srcView ),
+						_params._yKernelGaussianDerivative,
+						kth_channel_view<1>(dst),
+						proc_tl,
+						_params._boundary_option );
+					break;
+				}
+			}
 		}
 	}
 	if( progressForward( dst.height() ) )
