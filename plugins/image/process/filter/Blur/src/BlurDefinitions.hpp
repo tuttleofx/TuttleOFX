@@ -22,6 +22,10 @@ enum EParamBorder
 	eParamBorderPadded
 };
 
+const static std::string kParamGroupAdvanced = "advanced";
+const static std::string kParamNormalizedKernel = "normalizedKernel";
+const static std::string kParamKernelEpsilon = "kernelEpsilon";
+
 }
 }
 }

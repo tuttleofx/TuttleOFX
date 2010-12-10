@@ -68,6 +68,22 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	border->appendOption( kParamBorderConstant );
 	border->appendOption( kParamBorderBlack );
 	border->appendOption( kParamBorderPadded );
+
+
+	OFX::GroupParamDescriptor* advanced = desc.defineGroupParam( kParamGroupAdvanced );
+	advanced->setLabel( "Advanced" );
+
+	OFX::BooleanParamDescriptor* normalizedKernel = desc.defineBooleanParam( kParamNormalizedKernel );
+	normalizedKernel->setLabel( "Normalized kernel" );
+	normalizedKernel->setHint( "Use a normalized kernel to compute the gradient." );
+	normalizedKernel->setDefault( true );
+	normalizedKernel->setParent( advanced );
+
+	OFX::DoubleParamDescriptor* kernelEpsilon = desc.defineDoubleParam( kParamKernelEpsilon );
+	kernelEpsilon->setLabel( "Kernel espilon value" );
+	kernelEpsilon->setHint( "Threshold at which we no longer consider the values of the function." );
+	kernelEpsilon->setDefault( 0.1 );
+	kernelEpsilon->setParent( advanced );
 }
 
 /**

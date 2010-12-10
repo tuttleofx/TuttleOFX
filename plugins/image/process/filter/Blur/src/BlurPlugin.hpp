@@ -54,6 +54,8 @@ public:
 
 	OFX::Double2DParam* _paramSize;
 	OFX::ChoiceParam* _paramBorder;
+	OFX::BooleanParam* _paramNormalizedKernel;
+	OFX::DoubleParam* _paramKernelEpsilon;
 };
 
 }

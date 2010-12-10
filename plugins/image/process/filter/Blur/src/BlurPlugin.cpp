@@ -21,6 +21,8 @@ BlurPlugin::BlurPlugin( OfxImageEffectHandle handle )
 
 	_paramSize   = fetchDouble2DParam( kParamSize );
 	_paramBorder = fetchChoiceParam( kParamBorder );
+	_paramNormalizedKernel = fetchBooleanParam( kParamNormalizedKernel );
+	_paramKernelEpsilon = fetchDoubleParam( kParamKernelEpsilon );
 }
 
 BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -29,10 +31,11 @@ BlurProcessParams<BlurPlugin::Scalar> BlurPlugin::getProcessParams( const OfxPoi
 	params._size   = ofxToGil( _paramSize->getValue() ) * ofxToGil( renderScale  );
 	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
 
-	//	COUT_X(80, "X");
-	params._gilKernelX = buildGaussian1DKernel<Scalar>( params._size.x );
-	//	COUT_X(80, "Y");
-	params._gilKernelY = buildGaussian1DKernel<Scalar>( params._size.y );
+	bool normalizedKernel = _paramNormalizedKernel->getValue();
+	double kernelEpsilon = _paramKernelEpsilon->getValue();
+
+	params._gilKernelX = buildGaussian1DKernel<Scalar>( params._size.x, normalizedKernel, kernelEpsilon );
+	params._gilKernelY = buildGaussian1DKernel<Scalar>( params._size.y, normalizedKernel, kernelEpsilon );
 	
 	params._boundary_option = bgil::convolve_option_extend_mirror;
 	switch( params._border )
