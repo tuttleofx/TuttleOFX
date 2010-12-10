@@ -179,7 +179,7 @@ public:
 
 	void setDirty()
 	{
-		//COUT("OfxhPluginCache::setDirty()");
+		//TCOUT("OfxhPluginCache::setDirty()");
 		_dirty = true;
 	}
 

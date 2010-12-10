@@ -39,20 +39,20 @@ public:
 	pointer allocate( const size_type n, const void* = 0 )
 	{
 		++size_all;
-		COUT( "Use OfxAllocator to allocate" );
+		TCOUT( "Use OfxAllocator to allocate" );
 		T* t = static_cast<T*>( OFX::memory::allocate( n * sizeof( T ) /*, ImageEffect* handle = 0*/ ) );
 		//		T* t = (T*) malloc( n * sizeof(T) );
-		COUT( "allocate done (address:" << t << ") (+" << n << ") " << size_all );
+		TCOUT( "allocate done (address:" << t << ") (+" << n << ") " << size_all );
 		return t;
 	}
 
 	void deallocate( void* ptr, size_type )
 	{
 		--size_all;
-		COUT( "Use OfxAllocator to deallocate (address:" << ptr << ") (-)" << size_all );
+		TCOUT( "Use OfxAllocator to deallocate (address:" << ptr << ") (-)" << size_all );
 		OFX::memory::free( ptr );
 		//free( ptr );
-		COUT( "deallocate done." );
+		TCOUT( "deallocate done." );
 	}
 
 	void construct( pointer p, const T& val ) { new ( (T*) p )T( val ); }

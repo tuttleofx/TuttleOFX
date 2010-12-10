@@ -65,7 +65,7 @@ OfxhImage::OfxhImage()
 	, _referenceCount( 1 )
 	, _clipName( "No clip !" )
 {
-	COUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 }
 
 /**
@@ -77,7 +77,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance )
 	, _referenceCount( 1 )
 	, _clipName( instance.getName() )
 {
-	COUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 	initClipBits( instance );
 }
 
@@ -98,7 +98,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 	, _referenceCount( 1 )
 	, _clipName( instance.getName() )
 {
-	COUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TCOUT( "++ OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 	initClipBits( instance );
 
 	// set other data
@@ -122,7 +122,7 @@ OfxhImage::OfxhImage( attribute::OfxhClip& instance,
 
 OfxhImage::~OfxhImage()
 {
-	COUT( "-- ~OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
+	TCOUT( "-- ~OfxhImage, clipName:" << getClipName() << ", id:" << getId() << ", ref:" << getReference() );
 }
 
 /// called during ctor to get bits from the clip props into ours

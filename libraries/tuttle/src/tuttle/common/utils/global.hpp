@@ -122,15 +122,28 @@ namespace std {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#define TCOUT COUT
-#define TCOUT_X COUT_X
-#define TCOUT_VAR COUT_VAR
-#define TCOUT_VAR2 COUT_VAR2
-#define TCOUT_VAR3 COUT_VAR3
-#define TCOUT_VAR4 COUT_VAR4
-#define TCOUT_INFOS COUT_INFOS
-#define TCOUT_WITHINFOS COUT_WITHINFOS
-#define TCOUT_EXCEPTION COUT_EXCEPTION
+// TCOUT* defines are used by developpers for temporary displays during development stages.
+// They are removed in production mode.
+#ifndef TUTTLE_PRODUCTION
+	#define TCOUT COUT
+	#define TCOUT_X COUT_X
+	#define TCOUT_VAR COUT_VAR
+	#define TCOUT_VAR2 COUT_VAR2
+	#define TCOUT_VAR3 COUT_VAR3
+	#define TCOUT_VAR4 COUT_VAR4
+	#define TCOUT_INFOS COUT_INFOS
+	#define TCOUT_WITHINFOS COUT_WITHINFOS
+	#define TCOUT_EXCEPTION COUT_EXCEPTION
+#else
+	#define TCOUT COUT_DEBUG
+	#define TCOUT_X COUT_X_DEBUG
+	#define TCOUT_VAR COUT_VAR_DEBUG
+	#define TCOUT_VAR2 COUT_VAR2_DEBUG
+	#define TCOUT_VAR3 COUT_VAR3_DEBUG
+	#define TCOUT_VAR4 COUT_VAR4_DEBUG
+	#define TCOUT_INFOS COUT_INFOS_DEBUG
+	#define TCOUT_WITHINFOS COUT_WITHINFOS_DEBUG
+	#define TCOUT_EXCEPTION COUT_EXCEPTION_DEBUG
+#endif
 
 #endif

@@ -28,6 +28,7 @@
 /// @see IF_DEBUG
 #define IF_DEBUG(... )  __VA_ARGS__
 
+#define COUT_X_DEBUG COUT_X
 #define COUT_VAR_DEBUG COUT_VAR
 #define COUT_VAR2_DEBUG COUT_VAR2
 #define COUT_VAR3_DEBUG COUT_VAR3

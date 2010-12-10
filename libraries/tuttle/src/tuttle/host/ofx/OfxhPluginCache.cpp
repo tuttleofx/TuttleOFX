@@ -200,7 +200,7 @@ void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
 void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse )
 {
 	#ifdef CACHE_DEBUG
-	COUT( "looking in " << dir << " for plugins" );
+	TCOUT( "looking in " << dir << " for plugins" );
 	#endif
 
 	#if defined ( WINDOWS )
@@ -247,7 +247,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
 			{
 				#ifdef CACHE_DEBUG
-				COUT( "found non-cached binary " << binpath );
+				TCOUT( "found non-cached binary " << binpath );
 				#endif
 				setDirty();
 				try
@@ -272,7 +272,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 			else
 			{
 				#ifdef CACHE_DEBUG
-				COUT( "found cached binary " << binpath );
+				TCOUT( "found cached binary " << binpath );
 				#endif
 			}
 		}

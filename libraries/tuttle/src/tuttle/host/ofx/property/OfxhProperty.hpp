@@ -125,22 +125,22 @@ public:
 	{
 		if( _name != other._name )
 		{
-			//COUT( "OfxhProperty::operator== not same name : " << _name << " != " << other._name );
+			//TCOUT( "OfxhProperty::operator== not same name : " << _name << " != " << other._name );
 			return false;
 		}
 		if( _type != other._type )
 		{
-			//COUT( "OfxhProperty::operator== not same type : " << _type << " != " << other._type );
+			//TCOUT( "OfxhProperty::operator== not same type : " << _type << " != " << other._type );
 			return false;
 		}
 		if( _dimension != other._dimension )
 		{
-			//COUT( "OfxhProperty::operator== not same size : " << _dimension << " != " << other._dimension );
+			//TCOUT( "OfxhProperty::operator== not same size : " << _dimension << " != " << other._dimension );
 			return false;
 		}
 		if( _pluginReadOnly != other._pluginReadOnly )
 		{
-			//COUT( "OfxhProperty::operator== not sale read only : " << _pluginReadOnly << " != " << other._pluginReadOnly );
+			//TCOUT( "OfxhProperty::operator== not sale read only : " << _pluginReadOnly << " != " << other._pluginReadOnly );
 			return false;
 		}
 		return true;

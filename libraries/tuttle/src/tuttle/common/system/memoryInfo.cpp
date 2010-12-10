@@ -44,9 +44,9 @@ MemoryInfo getMemoryInfo()
 	        infos._totalSwap    =
 	            infos._freeSwap = std::numeric_limits<std::size_t>::max();
 	#endif
-	COUT_X( 40, "-=" );
-	COUT( "Memory infos" );
-	COUT( infos );
+	TCOUT_X( 40, "-=" );
+	TCOUT( "Memory infos" );
+	TCOUT( infos );
 
 	return infos;
 }

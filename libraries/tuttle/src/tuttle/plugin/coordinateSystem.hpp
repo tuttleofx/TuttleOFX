@@ -34,9 +34,9 @@ Point pointNormalizedXYToCanonicalXY( const Point& point, const Point& imgSize )
 //	template<typename Point>
 //    Point pointCanonicalXYToNormalizedXX( const Point& point, const Point& imgSize )
 //	{
-//		COUT( "canonicalXY : " << point.x << ", " << point.y );
+//		TCOUT( "canonicalXY : " << point.x << ", " << point.y );
 //		Point p( point.x / imgSize.x, ((point.y+((imgSize.x-imgSize.y)*0.5)) / imgSize.x) );
-//		COUT( "normalizedXX : " << p.x << ", " << p.y );
+//		TCOUT( "normalizedXX : " << p.x << ", " << p.y );
 //		return p;
 //	}
 

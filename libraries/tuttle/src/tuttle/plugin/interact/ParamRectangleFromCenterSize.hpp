@@ -248,16 +248,16 @@ EMoveType ParamRectangleFromCenterSize<TFrame, coord>::selectIfIntesect( const O
 	EMoveType m = _center.selectIfIntesect( args );
 	if( m != eMoveTypeNone )
 	{
-		COUT( "intersect center." );
+		TCOUT( "intersect center." );
 		_selectType = eSelectTypeC;
 		return m;
 	}
 	// intersect borders
 	_selectType = selectType( args );
-	COUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
+	TCOUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
 	if( _selectType != eSelectTypeNone )
 	{
-		COUT( "intersect border." );
+		TCOUT( "intersect border." );
 		return eMoveTypeXY;
 	}
 	return eMoveTypeNone;

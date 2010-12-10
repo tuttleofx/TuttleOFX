@@ -194,7 +194,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 {
 	if( getPluginHandle() )
 	{
-		//COUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
+		//TCOUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
 		return;
 	}
 	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( *this, getApiHandler().getHost() ) );
@@ -235,10 +235,10 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 {
 	ContextMap::iterator it = _contexts.find( context );
 
-	//COUT( "context : " << context );
+	//TCOUT( "context : " << context );
 	if( it != _contexts.end() )
 	{
-		//COUT( "found context description : " << it->second->getLabel() );
+		//TCOUT( "found context description : " << it->second->getLabel() );
 		return *( it->second );
 	}
 
