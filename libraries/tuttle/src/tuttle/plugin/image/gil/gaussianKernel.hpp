@@ -124,7 +124,7 @@ boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size
 	std::vector<Scalar> rightKernel;
 	rightKernel.reserve( 10 );
 	int x = 1;
-	Scalar v   = gaussianValueAt<Scalar>( x, size );
+	Scalar v   = gaussianDerivativeValueAt<Scalar>( x, size );
 	Scalar sum = 0.0;
 	do
 	{
