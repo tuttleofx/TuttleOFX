@@ -29,7 +29,7 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 private:
-	template <EParamDistribution IN>
+	template <class IN>
 	GIL_FORCEINLINE
 	void processSwitchOut( const EParamDistribution out, const View& src, const View& dst );
 

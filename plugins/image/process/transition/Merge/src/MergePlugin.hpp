@@ -27,32 +27,28 @@ private:
 public:
 	MergePlugin( OfxImageEffectHandle handle );
 
-	inline OFX::Clip* getSrcClipA() const
-	{
-		return _clipSrcA;
-	}
+public:
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 
-	inline OFX::Clip* getSrcClipB() const
-	{
-		return _clipSrcB;
-	}
+	void render( const OFX::RenderArguments& args );
 
-	inline OFX::Clip* getDstClip() const
-	{
-		return _clipDst;
-	}
+private:
+	template< class View >
+	void render( const OFX::RenderArguments& args );
+	template< class View, template <typename> class Functor >
+	void render( const OFX::RenderArguments& args );
+	template< class View, template <typename> class Functor >
+	void render_if( const OFX::RenderArguments& args, boost::mpl::false_ );
+	template< class View, template <typename> class Functor >
+	void render_if( const OFX::RenderArguments& args, boost::mpl::true_ );
 
 public:
-	virtual void render( const OFX::RenderArguments& args );
-	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	virtual bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-
-protected:
-	OFX::ChoiceParam* _mergeFunction;   ///< Functor structure
-	// do not need to delete these, the ImageEffect is managing them for us
 	OFX::Clip* _clipSrcA;               ///< Source image clip A
 	OFX::Clip* _clipSrcB;               ///< Source image clip B
 	OFX::Clip* _clipDst;                ///< Destination image clip
+
+	OFX::ChoiceParam* _paramMerge;   ///< Functor structure
 };
 
 }

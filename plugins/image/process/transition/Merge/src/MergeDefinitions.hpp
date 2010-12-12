@@ -17,26 +17,26 @@ const static std::string kMergeFunctionLabel = "Merging function";
 // Plugin internal data
 const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used to merge two clips A and B.  <br />";
 
-enum EMergeFunction
+enum EParamMerge
 {
-	eMergeFunctionATop, eMergeFunctionAverage,
-	eMergeFunctionColor,
-	eMergeFunctionColorBurn, eMergeFunctionColorDodge,
-	eMergeFunctionConjointOver, eMergeFunctionCopy,
-	eMergeFunctionDifference, eMergeFunctionDisjointOver,
-	eMergeFunctionDivide, eMergeFunctionExclusion,
-	eMergeFunctionFreeze, eMergeFunctionFrom,
-	eMergeFunctionGeometric, eMergeFunctionHardLight,
-	eMergeFunctionHypot, eMergeFunctionIn,
-	eMergeFunctionInterpolated, eMergeFunctionMask,
-	eMergeFunctionMatte, eMergeFunctionLighten,
-	eMergeFunctionDarken, eMergeFunctionMinus,
-	eMergeFunctionMultiply, eMergeFunctionOut,
-	eMergeFunctionOver, eMergeFunctionOverlay,
-	eMergeFunctionPinLight, eMergeFunctionPlus,
-	eMergeFunctionReflect, eMergeFunctionScreen,
-	eMergeFunctionStencil, eMergeFunctionUnder,
-	eMergeFunctionXOR
+	eParamMergeATop, eParamMergeAverage,
+	eParamMergeColor,
+	eParamMergeColorBurn, eParamMergeColorDodge,
+	eParamMergeConjointOver, eParamMergeCopy,
+	eParamMergeDifference, eParamMergeDisjointOver,
+	eParamMergeDivide, eParamMergeExclusion,
+	eParamMergeFreeze, eParamMergeFrom,
+	eParamMergeGeometric, eParamMergeHardLight,
+	eParamMergeHypot, eParamMergeIn,
+	eParamMergeInterpolated, eParamMergeMask,
+	eParamMergeMatte, eParamMergeLighten,
+	eParamMergeDarken, eParamMergeMinus,
+	eParamMergeMultiply, eParamMergeOut,
+	eParamMergeOver, eParamMergeOverlay,
+	eParamMergePinLight, eParamMergePlus,
+	eParamMergeReflect, eParamMergeScreen,
+	eParamMergeStencil, eParamMergeUnder,
+	eParamMergeXOR
 };
 
 }

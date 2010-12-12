@@ -105,7 +105,7 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	mergeFunction->appendOption( "stencil: B(1-a)" );
 	mergeFunction->appendOption( "under: A(1-b)+B" );
 	mergeFunction->appendOption( "xor: A(1-b)+B(1-a)" );
-	mergeFunction->setDefault( eMergeFunctionPlus );
+	mergeFunction->setDefault( eParamMergePlus );
 
 	desc.definePushButtonParam( kMergeHelpButton );
 }

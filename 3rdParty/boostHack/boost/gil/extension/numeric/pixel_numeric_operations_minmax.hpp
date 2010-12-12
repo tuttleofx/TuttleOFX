@@ -7,8 +7,7 @@
 #ifndef GIL_PIXEL_NUMERIC_OPERATIONS3_HPP
 #define GIL_PIXEL_NUMERIC_OPERATIONS3_HPP
 
-
-#include "channel_numeric_operations3.hpp"
+#include "channel_numeric_operations_minmax.hpp"
 #include <boost/gil/extension/channel.hpp>
 
 #include <boost/gil/gil_config.hpp>
@@ -82,19 +81,35 @@ struct pixel_minmax_by_channel_t
  * @brief Normalize an image.
  */
 template<typename Pixel, typename CPixel = Pixel>
-struct pixel_normalize_t
+struct pixel_scale_t
 {
 	typedef typename boost::gil::channel_type<Pixel>::type Channel;
 	typedef typename boost::gil::channel_base_type<Channel>::type ChannelBaseType;
 
-	const CPixel _sCenter;
-	const CPixel _dCenter;
 	const CPixel _ratio;
+	CPixel _shift;
 
-	pixel_normalize_t( const CPixel& sCenter, const CPixel& dCenter, const CPixel& ratio )
-	: _sCenter(sCenter)
-	, _dCenter(dCenter)
-	, _ratio(ratio)
+	pixel_scale_t( const CPixel& ratio, const CPixel& sCenter, const CPixel& dCenter )
+	: _ratio(ratio)
+	{
+		BOOST_STATIC_ASSERT( boost::is_floating_point<ChannelBaseType>::value );
+		// res = ( ( src - sCenter ) * _ratio ) + dCenter;
+		// res = (src * _ratio) + (dCenter - (sCenter*ratio))
+		// shift = (dCenter - (sCenter*ratio))
+		pixel_assigns_t<CPixel,CPixel>()(
+			pixel_minus_t<CPixel,CPixel,CPixel>()(
+				dCenter,
+				pixel_multiplies_t<CPixel,CPixel,CPixel>()(
+					sCenter,
+					ratio
+					)
+				),
+			_shift );
+	}
+
+	pixel_scale_t( const CPixel& ratio, const CPixel& shift )
+	: _ratio(ratio)
+	, _shift(shift)
 	{
 		BOOST_STATIC_ASSERT( boost::is_floating_point<ChannelBaseType>::value );
 	}
@@ -102,14 +117,14 @@ struct pixel_normalize_t
 	Pixel operator()( const Pixel& src ) const
 	{
 		Pixel res;
-//		res = ( ( src - _sCenter ) * _ratio ) + _dCenter;
-		pixel_assigns_t<Pixel,Pixel>()(
-			pixel_plus_t<Pixel,Pixel,Pixel>()(
-				pixel_multiplies_t<Pixel,Pixel,Pixel>()(
-					pixel_minus_t<Pixel,Pixel,Pixel>()( src, _sCenter ),
+		// res = (src * _ratio) + _shift
+		pixel_assigns_t<CPixel,Pixel>()(
+			pixel_plus_t<CPixel,CPixel,CPixel>()(
+				pixel_multiplies_t<Pixel,CPixel,CPixel>()(
+					src,
 					_ratio
 					),
-				_dCenter ),
+				_shift ),
 			res );
 
 		return res;

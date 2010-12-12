@@ -7,9 +7,9 @@
 #include <boost/gil/extension/typedefs.hpp>
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations3.hpp>
-#include <boost/gil/extension/toolbox/hsl.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations_minmax.hpp>
+#include <boost/gil/extension/color/hsl.hpp>
 
 #include <boost/units/pow.hpp>
 #include <boost/mpl/vector.hpp>

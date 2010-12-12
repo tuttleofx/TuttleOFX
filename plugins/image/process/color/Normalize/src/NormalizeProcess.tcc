@@ -9,7 +9,7 @@
 
 #include <boost/gil/color_base_algorithm.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -103,7 +103,7 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		transform_pixels_progress(
 			src,
 			dst,
-			pixel_normalize_t<Pixel,Pixel>(_sMin, _dMin, _ratio),
+			pixel_scale_t<Pixel,Pixel>(_ratio, _sMin, _dMin),
 			*this );
 	}
 	else
@@ -122,10 +122,10 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				transform_pixels_progress(
 					localSrcView,
 					localDstView,
-					pixel_normalize_t<LocalPixel,LocalPixel>(
-						LocalPixel( get_color( _sMin, red_t() ) ),
-						LocalPixel( get_color( _dMin, red_t() ) ),
-						LocalPixel( get_color( _ratio, red_t() ) )
+					pixel_scale_t<LocalPixel,LocalPixel>(
+						LocalPixel( get_color( _ratio, LocalChannel() ) ),
+						LocalPixel( get_color( _sMin, LocalChannel() ) ),
+						LocalPixel( get_color( _dMin, LocalChannel() ) )
 						),
 					*this );
 			}
@@ -147,10 +147,10 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				transform_pixels_progress(
 					localSrcView,
 					localDstView,
-					pixel_normalize_t<LocalPixel>(
-						LocalPixel( get_color( _sMin, green_t() ) ),
-						LocalPixel( get_color( _dMin, green_t() ) ),
-						LocalPixel( get_color( _ratio, green_t() ) )
+					pixel_scale_t<LocalPixel>(
+						LocalPixel( get_color( _ratio, LocalChannel() ) ),
+						LocalPixel( get_color( _sMin, LocalChannel() ) ),
+						LocalPixel( get_color( _dMin, LocalChannel() ) )
 						),
 					*this );
 			}
@@ -172,10 +172,10 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				transform_pixels_progress(
 					localSrcView,
 					localDstView,
-					pixel_normalize_t<LocalPixel>(
-						LocalPixel( get_color( _sMin, blue_t() ) ),
-						LocalPixel( get_color( _dMin, blue_t() ) ),
-						LocalPixel( get_color( _ratio, blue_t() ) )
+					pixel_scale_t<LocalPixel>(
+						LocalPixel( get_color( _ratio, LocalChannel() ) ),
+						LocalPixel( get_color( _sMin, LocalChannel() ) ),
+						LocalPixel( get_color( _dMin, LocalChannel() ) )
 						),
 					*this );
 			}
@@ -197,10 +197,10 @@ void NormalizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 				transform_pixels_progress(
 					localSrcView,
 					localDstView,
-					pixel_normalize_t<LocalPixel>(
-						LocalPixel( get_color( _sMin, alpha_t() ) ),
-						LocalPixel( get_color( _dMin, alpha_t() ) ),
-						LocalPixel( get_color( _ratio, alpha_t() ) )
+					pixel_scale_t<LocalPixel>(
+						LocalPixel( get_color( _ratio, LocalChannel() ) ),
+						LocalPixel( get_color( _sMin, LocalChannel() ) ),
+						LocalPixel( get_color( _dMin, LocalChannel() ) )
 						),
 					*this );
 			}

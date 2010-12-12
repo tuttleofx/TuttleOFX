@@ -1,5 +1,5 @@
 #include "gil/toolbox/ViewsMerging.hpp"
-#include <boost/gil/extension/toolbox/hsl.hpp>
+#include <boost/gil/extension/color/hsl.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
@@ -25,23 +25,23 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 
 	// sources view
 	// clip A
-	_srcA.reset( _plugin.getSrcClipA()->fetchImage( args.time ) );
+	_srcA.reset( _plugin._clipSrcA->fetchImage( args.time ) );
 	if( !_srcA.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcA->getRowBytes() <= 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewA = this->getView( _srcA.get(), _plugin.getSrcClipA()->getPixelRod( args.time ) );
+	this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcA->getPixelRod( args.time ) );
 	//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRodA = _plugin.getSrcClipA()->getPixelRod( args.time );
+	_srcPixelRodA = _plugin._clipSrcA->getPixelRod( args.time );
 	// clip B
-	_srcB.reset( _plugin.getSrcClipB()->fetchImage( args.time ) );
+	_srcB.reset( _plugin._clipSrcB->fetchImage( args.time ) );
 	if( !_srcB.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
 	if( _srcB->getRowBytes() <= 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	this->_srcViewB = this->getView( _srcB.get(), _plugin.getSrcClipB()->getPixelRod( args.time ) );
+	this->_srcViewB = this->getView( _srcB.get(), _plugin._clipSrcB->getPixelRod( args.time ) );
 	//	_srcPixelRodB = _srcB->getRegionOfDefinition(); // bug in nuke, returns bounds
-	_srcPixelRodB = _plugin.getSrcClipB()->getPixelRod( args.time );
+	_srcPixelRodB = _plugin._clipSrcB->getPixelRod( args.time );
 
 	// Make sure bit depths are the same
 	if( _srcA->getPixelDepth() != this->_dst->getPixelDepth() ||

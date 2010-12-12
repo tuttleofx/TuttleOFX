@@ -1,117 +1,51 @@
-#ifndef GIL_VIEWS_MERGING_HPP
-#define GIL_VIEWS_MERGING_HPP
+#ifndef _BOOST_GIL_VIEWS_MERGING_HPP_
+#define _BOOST_GIL_VIEWS_MERGING_HPP_
 
 #include <boost/static_assert.hpp>
-#include <boost/gil/gil_all.hpp>
-#include <boost/mpl/integral_c.hpp>
+#include <boost/gil/typedefs.hpp>
+#include <boost/gil/utilities.hpp>
 
 namespace boost {
 namespace gil {
-
-////////////////////////////////////////////////////////////////////////////////
-///
-///                 VIEWS MERGING
-///
-////////////////////////////////////////////////////////////////////////////////
-
-/// @todo tuttle: use enum, no reason to use a type here.
-/// Functor that operates with pixels (user have to define what to do)
-/// for example: a rgb view that need yuv to merge
-typedef mpl::integral_c<char, 0>::type fun_op_pixel_t;
-/// Functor that need alpha
-typedef mpl::integral_c<char, 1>::type fun_op_alpha_t;
-/// Functor that doesn't need alpha
-typedef mpl::integral_c<char, 2>::type fun_op_no_alpha_t;
-
-/**
- * \defgroup ViewsMerging
- * \brief merging functor base class
- */
-template <typename Pixel, typename OPERATES>
-struct merge_functor
-{
-	typedef OPERATES operating_mode_t;
-};
-
-/**
- * \defgroup ViewsMerging
- * \brief merging functor that allows users to implement pixel merging operator
- */
-template <typename Pixel>
-struct merge_functor<Pixel, fun_op_pixel_t>
-{
-	typedef fun_op_pixel_t operating_mode_t;
-	// no pure virtual here because virtual is not inlined with all compilators
-	inline void operator()( const Pixel& A,
-	                        const Pixel& B, Pixel& d );
-};
-
-/**
- * \defgroup ViewsMerging
- * \brief merging functor that allows users to implement channel merging
- *		  operator with alpha
- */
-template <typename Pixel>
-struct merge_functor<Pixel, fun_op_alpha_t>
-{
-	typedef typename channel_type<Pixel>::type value_t;
-	typedef fun_op_alpha_t operating_mode_t;
-	value_t a;      /// Alpha source A
-	value_t b;      /// Alpha source B
-
-	// no pure virtual here because virtual is not inlined with all compilators
-	template<typename Channel>
-	inline void operator()( const Channel& A, const Channel& B, Channel& d );
-};
-
-/**
- * \defgroup ViewsMerging
- * \brief merging functor that allows users to implement channel merging
- *		  operator with no alpha
- */
-template <typename Pixel>
-struct merge_functor<Pixel, fun_op_no_alpha_t>
-{
-	typedef fun_op_no_alpha_t operating_mode_t;
-
-	// no pure virtual here because virtual is not inlined with all compilators
-	template<typename Channel>
-	inline void operator()( const Channel& A, const Channel& B, Channel& d );
-};
 
 namespace detail {
 template<class OPERATES>
 struct merger {};
 
 template<>
-struct merger<fun_op_pixel_t>
+struct merger<merge_per_pixel>
 {
 	template <class Pixel, class Functor>
-	static inline void merge( const Pixel& A, const Pixel& B, Pixel& d, Functor& fun )
+	GIL_FORCEINLINE
+	void operator()( const Pixel& A, const Pixel& B, Pixel& d, Functor& fun ) const
 	{
 		fun( A, B, d );
 	}
-
 };
+
 template<>
-struct merger<fun_op_alpha_t>
+struct merger<merge_per_channel_with_alpha>
 {
 	template <class Pixel, class Functor>
-	static inline void merge( const Pixel& A, const Pixel& B, Pixel& d, Functor& fun )
+	GIL_FORCEINLINE
+	void operator()( const Pixel& A, const Pixel& B, Pixel& d, Functor& fun ) const
 	{
-		fun.a = get_color( A, alpha_t() );
-		fun.b = get_color( B, alpha_t() );
+		fun.a = alpha_or_max( A );
+		fun.b = alpha_or_max( B );
 		static_for_each( A, B, d, fun );
 	}
 
 };
+
 template<>
-struct merger<fun_op_no_alpha_t>
+struct merger<merge_per_channel>
 {
 	template <class Pixel, class Functor>
-	static inline void merge( const Pixel& A,
-	                          const Pixel& B, Pixel& d,
-	                          Functor& fun )
+	GIL_FORCEINLINE
+	void operator()( const Pixel& A,
+	                 const Pixel& B,
+	                 Pixel& d,
+	                 Functor& fun ) const
 	{
 		static_for_each( A, B, d, fun );
 	}
@@ -120,21 +54,16 @@ struct merger<fun_op_no_alpha_t>
 } // end namespace detail
 
 /**
- * \defgroup ViewsMerging
- * \brief Merge two views by means of a given functor.
+ * @defgroup ViewsMerging
+ * @brief Merge two views by means of a given functor.
  **/
 template < class F, class View>
 void merge_pixels( const View& srcA, const View& srcB, View& dst, F fun )
 {
-	typedef detail::merger<typename F::operating_mode_t> merger_t;
+	detail::merger<typename F::operating_mode_t> merge_op;
 	// If merging functor needs alpha, check if destination contains alpha.
-	typedef typename
-	mpl::contains<
-	    typename color_space_type<typename View::value_type>::type,
-	    alpha_t>::type has_alpha_t;
-	BOOST_STATIC_ASSERT( ( has_alpha_t::value &&
-	                       ( F::operating_mode_t::value == fun_op_alpha_t::value ) )
-	                     || F::operating_mode_t::value != fun_op_alpha_t::value );
+	typedef typename contains_color< typename View::value_type, alpha_t>::type has_alpha_t;
+//	BOOST_STATIC_ASSERT(( boost::is_same<typename F::operating_mode_t, merge_per_channel_with_alpha>::value ? has_alpha_t::value : true ));
 
 	// Merge views.
 	for( std::ptrdiff_t y = 0; y < dst.height(); ++y )
@@ -143,11 +72,11 @@ void merge_pixels( const View& srcA, const View& srcB, View& dst, F fun )
 		typename View::x_iterator srcIt2 = srcB.row_begin( y );
 		typename View::x_iterator dstIt  = dst.row_begin( y );
 		for( std::ptrdiff_t x = 0; x < dst.width(); ++x )
-			merger_t::merge( srcIt1[x], srcIt2[x], dstIt[x], fun );
+			merge_op( srcIt1[x], srcIt2[x], dstIt[x], fun );
 	}
 }
 
 }
-}  // namespace boost::gil
+}
 
 #endif

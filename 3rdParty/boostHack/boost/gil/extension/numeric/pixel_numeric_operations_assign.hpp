@@ -1,5 +1,5 @@
-#ifndef GIL_PIXEL_NUMERIC_OPERATIONS2_HPP
-#define GIL_PIXEL_NUMERIC_OPERATIONS2_HPP
+#ifndef GIL_PIXEL_NUMERIC_OPERATIONS_ASSIGN_HPP
+#define GIL_PIXEL_NUMERIC_OPERATIONS_ASSIGN_HPP
 
 /*!
 /// \brief Structures for pixel-wise numeric operations
@@ -14,7 +14,7 @@
 #include <boost/gil/gil_config.hpp>
 #include <boost/gil/pixel.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
-#include "channel_numeric_operations2.hpp"
+#include "channel_numeric_operations_assign.hpp"
 
 namespace boost { namespace gil {
 

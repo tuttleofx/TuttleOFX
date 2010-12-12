@@ -4,7 +4,7 @@
 #include <boost/gil/extension/channel.hpp>
 
 #include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/numeric/channel_numeric_operations2.hpp>
+#include <boost/gil/extension/numeric/channel_numeric_operations_assign.hpp>
 #include <boost/math/special_functions/pow.hpp>
 #include <boost/math/constants/constants.hpp>
 

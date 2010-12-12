@@ -7,7 +7,7 @@
 
 #include <boost/gil/image.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations2.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
 
 enum
 {

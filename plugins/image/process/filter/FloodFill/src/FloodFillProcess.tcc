@@ -8,8 +8,8 @@
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations_minmax.hpp>
 #include <boost/gil/extension/toolbox/channel_view.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations3.hpp>
 
 namespace tuttle {
 namespace plugin {
