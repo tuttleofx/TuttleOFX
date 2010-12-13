@@ -51,17 +51,18 @@ int main( int argc, char** argv )
 		InputBufferNode& inputBuffer1 = g.createInputBuffer();
 //		Graph::Node& read        = g.createNode( "fr.tuttle.pngreader" );
 		Graph::Node& bitdepth    = g.createNode( "fr.tuttle.bitdepth" );
-		Graph::Node& blur        = g.createNode( "fr.tuttle.blur" );
+		Graph::Node& blur1        = g.createNode( "fr.tuttle.blur" );
+		Graph::Node& blur2        = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& sobel1      = g.createNode( "fr.tuttle.duranduboi.sobel" );
 		Graph::Node& sobel2      = g.createNode( "fr.tuttle.duranduboi.sobel" );
 //		Graph::Node& normalize   = g.createNode( "fr.tuttle.duranduboi.normalize" );
 		Graph::Node& localmaxima = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
 		Graph::Node& floodfill   = g.createNode( "fr.tuttle.duranduboi.floodfill" );
 		Graph::Node& thinning    = g.createNode( "fr.tuttle.duranduboi.thinning" );
-		Graph::Node& write1      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write2      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write3      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write4      = g.createNode( "fr.tuttle.pngwriter" );
+//		Graph::Node& write1      = g.createNode( "fr.tuttle.pngwriter" );
+//		Graph::Node& write2      = g.createNode( "fr.tuttle.pngwriter" );
+//		Graph::Node& write3      = g.createNode( "fr.tuttle.pngwriter" );
+//		Graph::Node& write4      = g.createNode( "fr.tuttle.pngwriter" );
 
 		TCOUT( "__________________________________________________3" );
 
@@ -76,22 +77,28 @@ int main( int argc, char** argv )
 //		read1.getParam( "filename" ).set( "data/input.png" );
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
 
-		blur.getParam( "border" ).set( 3 );
-		blur.getParam( "size" ).set( 1.0, 1.0 );
-		blur.getParam( "normalizedKernel" ).set( false );
-		blur.getParam( "kernelEpsilon" ).set( 0.01 );
+		blur1.getParam( "border" ).set( 3 );
+		blur1.getParam( "size" ).set( 1.0, 0.0 );
+		blur1.getParam( "normalizedKernel" ).set( false );
+		blur1.getParam( "kernelEpsilon" ).set( 0.1 );
+		blur2.getParam( "border" ).set( 3 );
+		blur2.getParam( "size" ).set( 0.0, 1.0 );
+		blur2.getParam( "normalizedKernel" ).set( false );
+		blur2.getParam( "kernelEpsilon" ).set( 0.1 );
+
 		sobel1.getParam( "border" ).set( 3 );
-		sobel1.getParam( "size" ).set( 1.5, 1.5 );
+		sobel1.getParam( "size" ).set( 1.0, 1.0 );
 		sobel1.getParam( "normalizedKernel" ).set( false );
 		sobel1.getParam( "computeGradientDirection" ).set( false );
-		sobel1.getParam( "kernelEpsilon" ).set( 0.01 );
+		sobel1.getParam( "kernelEpsilon" ).set( 0.1 );
 		sobel1.getParam( "pass" ).set( 1 );
 		sobel2.getParam( "border" ).set( 3 );
-		sobel2.getParam( "size" ).set( 1.5, 1.5 );
+		sobel2.getParam( "size" ).set( 1.0, 1.0 );
 		sobel2.getParam( "normalizedKernel" ).set( false );
 		sobel2.getParam( "computeGradientDirection" ).set( false );
-		sobel2.getParam( "kernelEpsilon" ).set( 0.01 );
+		sobel2.getParam( "kernelEpsilon" ).set( 0.1 );
 		sobel2.getParam( "pass" ).set( 2 );
+
 //		normalize.getParam( "mode" ).set( 0 ); //"analyse" );
 //		normalize.getParam( "analyseMode" ).set( 0 ); //"perChannel" );
 //		normalize.getParam( "processR" ).set( false );
@@ -102,30 +109,31 @@ int main( int argc, char** argv )
 		floodfill.getParam( "lowerThres" ).set( 0.025 );
 //		canny.getParam( "fillAllChannels" ).set( true );
 
-		write1.getParam( "components" ).set( 1 );
-		write2.getParam( "components" ).set( 1 );
-		write2.getParam( "components" ).set( 1 );
-		write3.getParam( "components" ).set( 1 );
-		
-		write1.getParam( "filename" ).set( "data/canny/0_sobel.png" );
-		write2.getParam( "filename" ).set( "data/canny/1_localMaxima.png" );
-		write3.getParam( "filename" ).set( "data/canny/2_floodfill.png" );
-		write4.getParam( "filename" ).set( "data/canny/3_thinning.png" );
+//		write1.getParam( "components" ).set( 1 );
+//		write2.getParam( "components" ).set( 1 );
+//		write2.getParam( "components" ).set( 1 );
+//		write3.getParam( "components" ).set( 1 );
+//
+//		write1.getParam( "filename" ).set( "data/canny/0_sobel.png" );
+//		write2.getParam( "filename" ).set( "data/canny/1_localMaxima.png" );
+//		write3.getParam( "filename" ).set( "data/canny/2_floodfill.png" );
+//		write4.getParam( "filename" ).set( "data/canny/3_thinning.png" );
 		
 		TCOUT( "__________________________________________________4" );
-		g.connect( inputBuffer1, blur );
-		g.connect( blur, sobel1 );
-		g.connect( sobel1, sobel2 );
 //		g.connect( read1, bitdepth );
 //		g.connect( bitdepth, sobel1 );
+		g.connect( inputBuffer1, blur1 );
+		g.connect( blur1, blur2 );
+		g.connect( blur2, sobel1 );
+		g.connect( sobel1, sobel2 );
 		g.connect( sobel2, localmaxima );
 		g.connect( localmaxima, floodfill );
 		g.connect( floodfill, thinning );
 
-		g.connect( sobel1, write1 );
-		g.connect( localmaxima, write2 );
-		g.connect( floodfill, write3 );
-		g.connect( thinning, write4 );
+//		g.connect( sobel1, write1 );
+//		g.connect( localmaxima, write2 );
+//		g.connect( floodfill, write3 );
+//		g.connect( thinning, write4 );
 
 		TCOUT( "__________________________________________________5" );
 		std::list<std::string> outputs;
