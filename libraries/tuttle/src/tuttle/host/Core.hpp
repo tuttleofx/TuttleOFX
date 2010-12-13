@@ -31,6 +31,7 @@ private:
 	memory::IMemoryCache& _memoryCache;
 
 public:
+	      ofx::OfxhPluginCache& getPluginCache()       { return _pluginCache; }
 	const ofx::OfxhPluginCache& getPluginCache() const { return _pluginCache; }
 	const Host&                 getHost() const        { return _host; }
 	#endif
