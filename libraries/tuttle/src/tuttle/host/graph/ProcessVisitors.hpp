@@ -360,8 +360,9 @@ public:
 		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
 		vertex.getProcessNode().process( vertex.getProcessDataAtTime() );
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
+		_cumulativeTime += t2 - t1;
 		
-		COUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 );
+		TCOUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
 		
 		if( vertex.getProcessDataAtTime()._finalNode )
 		{
@@ -381,6 +382,7 @@ private:
 	TGraph& _graph;
 	memory::IMemoryCache& _cache;
 	memory::IMemoryCache& _result;
+	boost::posix_time::time_duration _cumulativeTime;
 };
 
 template<class TGraph>
