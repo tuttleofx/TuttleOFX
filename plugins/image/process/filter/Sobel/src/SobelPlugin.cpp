@@ -220,18 +220,18 @@ void SobelPlugin::render( const OFX::RenderArguments &args )
     {
         switch( dstBitDepth )
         {
-//            case OFX::eBitDepthUByte :
-//            {
-//                SobelProcess<rgba8_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-//            case OFX::eBitDepthUShort :
-//            {
-//                SobelProcess<rgba16_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
+            case OFX::eBitDepthUByte :
+            {
+                SobelProcess<rgba8_view_t> p( *this );
+                p.setupAndProcess( args );
+                break;
+            }
+            case OFX::eBitDepthUShort :
+            {
+                SobelProcess<rgba16_view_t> p( *this );
+                p.setupAndProcess( args );
+                break;
+            }
             case OFX::eBitDepthFloat :
             {
                 SobelProcess<rgba32f_view_t> p( *this );

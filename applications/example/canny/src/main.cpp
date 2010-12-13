@@ -40,42 +40,47 @@ int main( int argc, char** argv )
 		TCOUT( "__________________________________________________1" );
 
 		boost::gil::rgba32f_image_t imgRead;
+//		boost::gil::rgba8_image_t imgRead;
 		boost::gil::png_read_and_convert_image( argv[1], //"data/input.png",
 											    imgRead );
 		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
+//		boost::gil::rgba8_view_t imgView( view( imgRead ) );
 
 		TCOUT( "__________________________________________________2" );
 
 		Graph g;
 //		Graph::Node& inputBuffer1 = g.createNode( "fr.tuttle.inputbuffer" );
-		InputBufferNode& inputBuffer1 = g.createInputBuffer();
 //		Graph::Node& read        = g.createNode( "fr.tuttle.pngreader" );
-		Graph::Node& bitdepth    = g.createNode( "fr.tuttle.bitdepth" );
+//		Graph::Node& bitdepth    = g.createNode( "fr.tuttle.bitdepth" );
+		InputBufferNode& inputBuffer1 = g.createInputBuffer();
 		Graph::Node& blur1        = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& blur2        = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& sobel1      = g.createNode( "fr.tuttle.duranduboi.sobel" );
 		Graph::Node& sobel2      = g.createNode( "fr.tuttle.duranduboi.sobel" );
-//		Graph::Node& normalize   = g.createNode( "fr.tuttle.duranduboi.normalize" );
 		Graph::Node& localmaxima = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
 		Graph::Node& floodfill   = g.createNode( "fr.tuttle.duranduboi.floodfill" );
 		Graph::Node& thinning    = g.createNode( "fr.tuttle.duranduboi.thinning" );
-//		Graph::Node& write1      = g.createNode( "fr.tuttle.pngwriter" );
-//		Graph::Node& write2      = g.createNode( "fr.tuttle.pngwriter" );
-//		Graph::Node& write3      = g.createNode( "fr.tuttle.pngwriter" );
-//		Graph::Node& write4      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write0      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write1      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write2      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write3      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write4      = g.createNode( "fr.tuttle.pngwriter" );
 
 		TCOUT( "__________________________________________________3" );
 
 		OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
 		inputBuffer1.setClipRod( ibRod );
+//		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthUByte );
 		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthFloat );
 		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentRGBA );
 		inputBuffer1.setClipRawBuffer( /*static_cast<char*>*/(char*)(boost::gil::interleaved_view_get_raw_data( imgView )) );
 
 		// Setup parameters
-		//		read1.getParam( "filename" ).set( "data/input1.avi" );
-//		read1.getParam( "filename" ).set( "data/input.png" );
+		/*
+		read1.getParam( "filename" ).set( "data/input1.avi" );
+		read1.getParam( "filename" ).set( "data/input.png" );
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
+		*/
 
 		blur1.getParam( "border" ).set( 3 );
 		blur1.getParam( "size" ).set( 1.0, 0.0 );
@@ -107,17 +112,18 @@ int main( int argc, char** argv )
 //		normalize.getParam( "processA" ).set( false );
 		floodfill.getParam( "upperThres" ).set( 0.1 );
 		floodfill.getParam( "lowerThres" ).set( 0.025 );
-//		canny.getParam( "fillAllChannels" ).set( true );
 
-//		write1.getParam( "components" ).set( 1 );
-//		write2.getParam( "components" ).set( 1 );
-//		write2.getParam( "components" ).set( 1 );
-//		write3.getParam( "components" ).set( 1 );
-//
-//		write1.getParam( "filename" ).set( "data/canny/0_sobel.png" );
-//		write2.getParam( "filename" ).set( "data/canny/1_localMaxima.png" );
-//		write3.getParam( "filename" ).set( "data/canny/2_floodfill.png" );
-//		write4.getParam( "filename" ).set( "data/canny/3_thinning.png" );
+		write0.getParam( "components" ).set( 1 );
+		write1.getParam( "components" ).set( 1 );
+		write2.getParam( "components" ).set( 1 );
+		write2.getParam( "components" ).set( 1 );
+		write3.getParam( "components" ).set( 1 );
+
+		write0.getParam( "filename" ).set( "data/canny/0_blur.png" );
+		write1.getParam( "filename" ).set( "data/canny/1_sobel.png" );
+		write2.getParam( "filename" ).set( "data/canny/2_localMaxima.png" );
+		write3.getParam( "filename" ).set( "data/canny/3_floodfill.png" );
+		write4.getParam( "filename" ).set( "data/canny/4_thinning.png" );
 		
 		TCOUT( "__________________________________________________4" );
 //		g.connect( read1, bitdepth );
@@ -130,31 +136,33 @@ int main( int argc, char** argv )
 		g.connect( localmaxima, floodfill );
 		g.connect( floodfill, thinning );
 
-//		g.connect( sobel1, write1 );
-//		g.connect( localmaxima, write2 );
-//		g.connect( floodfill, write3 );
-//		g.connect( thinning, write4 );
+		g.connect( blur2, write0 );
+		g.connect( sobel2, write1 );
+		g.connect( localmaxima, write2 );
+		g.connect( floodfill, write3 );
+		g.connect( thinning, write4 );
 
 		TCOUT( "__________________________________________________5" );
 		std::list<std::string> outputs;
-//		outputs.push_back( write1.getName() );
-//		outputs.push_back( write2.getName() );
-//		outputs.push_back( write2.getName() );
-//		outputs.push_back( write3.getName() );
-//		outputs.push_back( write4.getName() );
+		outputs.push_back( write0.getName() );
+		outputs.push_back( write1.getName() );
+		outputs.push_back( write2.getName() );
+		outputs.push_back( write2.getName() );
+		outputs.push_back( write3.getName() );
+		outputs.push_back( write4.getName() );
 		outputs.push_back( thinning.getName() );
 
 		boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
-		memory::MemoryCache res0 = g.compute( thinning, 0 );
-//		memory::MemoryCache res = g.compute( outputs, 0 );
+//		memory::MemoryCache res0 = g.compute( thinning, 0 );
+		memory::MemoryCache res0 = g.compute( outputs, 0 );
 		boost::posix_time::ptime t2a(boost::posix_time::microsec_clock::local_time());
 
-		boost::posix_time::ptime t1b(boost::posix_time::microsec_clock::local_time());
-		memory::MemoryCache res1 = g.compute( thinning, 0, 9 );
-		boost::posix_time::ptime t2b(boost::posix_time::microsec_clock::local_time());
+//		boost::posix_time::ptime t1b(boost::posix_time::microsec_clock::local_time());
+//		memory::MemoryCache res1 = g.compute( thinning, 0, 9 );
+//		boost::posix_time::ptime t2b(boost::posix_time::microsec_clock::local_time());
 
 		COUT( "Process 0 took: " << t2a - t1a );
-		COUT( "Process 1 took: " << (t2b - t1b)/10.0 );
+//		COUT( "Process 1 took: " << (t2b - t1b)/10.0 );
 
 		std::cout << res0 << std::endl;
 		memory::CACHE_ELEMENT imgRes = res0.get( thinning.getName(), 0 );
@@ -162,6 +170,7 @@ int main( int argc, char** argv )
 		TCOUT_VAR( imgRes->getROD() );
 		TCOUT_VAR( imgRes->getBounds() );
 		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
+//		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
 		boost::gil::png_write_view( "data/canny/manual_output.png", boost::gil::color_converted_view<boost::gil::rgba8_pixel_t>( imgResView ) );
 	}
 	catch( tuttle::exception::Common& e )

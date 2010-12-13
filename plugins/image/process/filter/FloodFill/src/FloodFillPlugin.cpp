@@ -102,7 +102,7 @@ void FloodFillPlugin::render( const OFX::RenderArguments &args )
     if( dstComponents == OFX::ePixelComponentRGBA )
     {
         switch( dstBitDepth )
-        {/*
+        {
             case OFX::eBitDepthUByte :
             {
                 FloodFillProcess<rgba8_view_t> p( *this );
@@ -114,7 +114,7 @@ void FloodFillPlugin::render( const OFX::RenderArguments &args )
                 FloodFillProcess<rgba16_view_t> p( *this );
                 p.setupAndProcess( args );
                 break;
-            }*/
+            }
             case OFX::eBitDepthFloat :
             {
                 FloodFillProcess<rgba32f_view_t> p( *this );
@@ -127,36 +127,36 @@ void FloodFillPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
         }
-    }/*
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                FloodFillProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                FloodFillProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                FloodFillProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }*/
+    }
+//    else if( dstComponents == OFX::ePixelComponentAlpha )
+//    {
+//        switch( dstBitDepth )
+//        {
+//            case OFX::eBitDepthUByte :
+//            {
+//                FloodFillProcess<gray8_view_t> p( *this );
+//                p.setupAndProcess( args );
+//                break;
+//            }
+//            case OFX::eBitDepthUShort :
+//            {
+//                FloodFillProcess<gray16_view_t> p( *this );
+//                p.setupAndProcess( args );
+//                break;
+//            }
+//            case OFX::eBitDepthFloat :
+//            {
+//                FloodFillProcess<gray32f_view_t> p( *this );
+//                p.setupAndProcess( args );
+//                break;
+//            }
+//			default:
+//			{
+//				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+//				break;
+//			}
+//        }
+//    }
 	else
 	{
 		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
