@@ -15,7 +15,7 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-template <class T, int DIM>
+template <class T, std::size_t DIM>
 class OfxhMultiDimParam : public OfxhParam
 	, public OfxhKeyframeParam
 {
@@ -98,7 +98,7 @@ public:
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int index = 0; index < DIM; ++index )
+		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
@@ -109,7 +109,7 @@ public:
 	/// implementation of var args function
 	virtual void getV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int index = 0; index < DIM; ++index )
+		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			_controls[index].getAtTime( time, *v );
@@ -119,7 +119,7 @@ public:
 	/// implementation of var args function
 	virtual void setV( va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		for( int index = 0; index < DIM; ++index )
+		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
 			_controls[index].set( v, eChangeNone );
@@ -130,7 +130,7 @@ public:
 	/// implementation of var args function
 	virtual void setV( const OfxTime time, va_list arg, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		for( int index = 0; index < DIM; ++index )
+		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
 			_controls[index].setAtTime( time, v, eChangeNone );
@@ -141,7 +141,7 @@ public:
 	/// implementation of var args function
 	virtual void deriveV( const OfxTime time, va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int index = 0; index < DIM; ++index )
+		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			_controls[index].derive( time, *v );
@@ -151,7 +151,7 @@ public:
 	/// implementation of var args function
 	virtual void integrateV( const OfxTime time1, const OfxTime time2, va_list arg ) const OFX_EXCEPTION_SPEC
 	{
-		for( int index = 0; index < DIM; ++index )
+		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );

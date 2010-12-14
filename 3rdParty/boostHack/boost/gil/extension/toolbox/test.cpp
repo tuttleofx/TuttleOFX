@@ -281,7 +281,7 @@ struct foo
 
       float d = ( static_cast<float>( _dst_max )
                 * ( ( static_cast<float>( src ) - static_cast<float>( min ))
-                  / static_cast<float>( diff ))));
+                  / static_cast<float>( diff )));
 
       dst_channel = static_cast<DST_CHANNEL>( dst );
    }
