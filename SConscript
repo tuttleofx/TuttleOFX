@@ -4,10 +4,11 @@ Import( 'libs' )
 
 tuttleFlags = { 'LIBPATH': [project.inOutputLib()],
                 'CCFLAGS': project.CC['warning2'],
+                'CPPDEFINES':[('TUTTLE_PLUGIN_PATH','"'+project.inOutputBin()+'"')],
                }
 
 if project.env['mode'] == 'production' :
-	tuttleFlags['CCFLAGS'].append( project.CC['define']+'TUTTLE_PRODUCTION' )
+	tuttleFlags['CPPDEFINES'].append( 'TUTTLE_PRODUCTION' )
 
 if 'sharedNoUndefined' in project.CC:
 	tuttleFlags['SHLINKFLAGS'] = [project.CC['sharedNoUndefined']]

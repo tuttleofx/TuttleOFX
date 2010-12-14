@@ -1,13 +1,13 @@
 #include <tuttle/host/Graph.hpp>
+#include <tuttle/host/InputBufferNode.hpp>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/io/png_io.hpp>
-
 #include <boost/gil/image_view_factory.hpp>
+#include <boost/preprocessor/stringize.hpp>
+
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-
-#include "tuttle/host/InputBufferNode.hpp"
 
 void sam_terminate( void )
 {
@@ -31,7 +31,7 @@ int main( int argc, char** argv )
 	{
 		using namespace tuttle::host;
 		TCOUT( "__________________________________________________0" );
-		// Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
+		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 		// Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
 
