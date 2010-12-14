@@ -1,11 +1,13 @@
 #include "Jpeg2000ReaderPlugin.hpp"
 #include "Jpeg2000ReaderProcess.hpp"
 #include "Jpeg2000ReaderDefinitions.hpp"
-#include "tuttle/plugin/context/WriterDefinition.hpp"
 
+#include <tuttle/plugin/context/WriterDefinition.hpp>
 #include <tuttle/common/utils/global.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
@@ -22,8 +24,6 @@ using namespace boost::filesystem;
 Jpeg2000ReaderPlugin::Jpeg2000ReaderPlugin( OfxImageEffectHandle handle )
 : ReaderPlugin( handle )
 {
-	memset(&_fileInfos, 0, sizeof(FileInfo));
-	_fileInfos._failed = true;
 }
 
 Jpeg2000ReaderPlugin::~Jpeg2000ReaderPlugin()

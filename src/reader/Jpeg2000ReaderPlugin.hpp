@@ -32,6 +32,15 @@ public:
 
 	struct FileInfo
 	{
+	    FileInfo()
+		: _time(0)
+		, _failed(true)
+		, _width(0)
+		, _height(0)
+		, _components(0)
+		, _precision(0)
+		, _precisionType(OFX::eBitDepthNone)
+	    {}
 		OfxTime _time;
 		bool _failed;
 		std::size_t _width;
