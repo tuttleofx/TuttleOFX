@@ -82,22 +82,24 @@ int main( int argc, char** argv )
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
 		*/
 
-		blur1.getParam( "border" ).set( 3 );
+		blur1.getParam( "border" ).set( "Padded" );
 		blur1.getParam( "size" ).set( 1.0, 0.0 );
 		blur1.getParam( "normalizedKernel" ).set( false );
 		blur1.getParam( "kernelEpsilon" ).set( 0.1 );
-		blur2.getParam( "border" ).set( 3 );
+		
+		blur2.getParam( "border" ).set( "Padded" );
 		blur2.getParam( "size" ).set( 0.0, 1.0 );
 		blur2.getParam( "normalizedKernel" ).set( false );
 		blur2.getParam( "kernelEpsilon" ).set( 0.1 );
 
-		sobel1.getParam( "border" ).set( 3 );
+		sobel1.getParam( "border" ).set( "Padded" );
 		sobel1.getParam( "size" ).set( 1.0, 1.0 );
 		sobel1.getParam( "normalizedKernel" ).set( false );
 		sobel1.getParam( "computeGradientDirection" ).set( false );
 		sobel1.getParam( "kernelEpsilon" ).set( 0.1 );
 		sobel1.getParam( "pass" ).set( 1 );
-		sobel2.getParam( "border" ).set( 3 );
+
+		sobel2.getParam( "border" ).set( "Padded" );
 		sobel2.getParam( "size" ).set( 1.0, 1.0 );
 		sobel2.getParam( "normalizedKernel" ).set( false );
 		sobel2.getParam( "computeGradientDirection" ).set( false );
