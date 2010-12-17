@@ -118,9 +118,10 @@ protected:
 		}
 		else
 		{
-			COUT_WARNING( "Warning! Plugin: " <<
-			              plugin->getRawIdentifier() <<
-			              " loaded twice!" );
+			COUT_WARNING( "Warning! Plugin: "
+			              << plugin->getRawIdentifier()
+			              << " loaded twice!"
+				          << " (" << plugin->getBinary().getFilePath() << ")" );
 		}
 		_plugins.push_back( plugin );
 
