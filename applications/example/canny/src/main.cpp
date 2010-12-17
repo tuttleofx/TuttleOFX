@@ -39,12 +39,12 @@ int main( int argc, char** argv )
 
 		TCOUT( "__________________________________________________1" );
 
-		boost::gil::rgba32f_image_t imgRead;
-//		boost::gil::rgba8_image_t imgRead;
+//		boost::gil::rgba32f_image_t imgRead;
+		boost::gil::rgba8_image_t imgRead;
 		boost::gil::png_read_and_convert_image( argv[1], //"data/input.png",
 											    imgRead );
-		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
-//		boost::gil::rgba8_view_t imgView( view( imgRead ) );
+//		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
+		boost::gil::rgba8_view_t imgView( view( imgRead ) );
 
 		TCOUT( "__________________________________________________2" );
 
@@ -55,6 +55,8 @@ int main( int argc, char** argv )
 		InputBufferNode& inputBuffer1 = g.createInputBuffer();
 		Graph::Node& blur1        = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& blur2        = g.createNode( "fr.tuttle.blur" );
+		Graph::Node& bitdepth1    = g.createNode( "fr.tuttle.bitdepth" );
+		Graph::Node& bitdepth2    = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& sobel1      = g.createNode( "fr.tuttle.duranduboi.sobel" );
 		Graph::Node& sobel2      = g.createNode( "fr.tuttle.duranduboi.sobel" );
 		Graph::Node& localmaxima = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
@@ -70,8 +72,8 @@ int main( int argc, char** argv )
 
 		OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
 		inputBuffer1.setClipRod( ibRod );
-//		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthUByte );
-		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthFloat );
+		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthUByte );
+//		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthFloat );
 		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentRGBA );
 		inputBuffer1.setClipRawBuffer( /*static_cast<char*>*/(char*)(boost::gil::interleaved_view_get_raw_data( imgView )) );
 
@@ -82,6 +84,8 @@ int main( int argc, char** argv )
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
 		*/
 
+		bitdepth1.getParam( "outputBitDepth" ).set( 3 );
+		bitdepth2.getParam( "outputBitDepth" ).set( 1 );
 		blur1.getParam( "border" ).set( 3 );
 		blur1.getParam( "size" ).set( 1.0, 0.0 );
 		blur1.getParam( "normalizedKernel" ).set( false );
@@ -128,13 +132,15 @@ int main( int argc, char** argv )
 		TCOUT( "__________________________________________________4" );
 //		g.connect( read1, bitdepth );
 //		g.connect( bitdepth, sobel1 );
-		g.connect( inputBuffer1, blur1 );
+		g.connect( inputBuffer1, bitdepth1 );
+		g.connect( bitdepth1, blur1 );
 		g.connect( blur1, blur2 );
 		g.connect( blur2, sobel1 );
 		g.connect( sobel1, sobel2 );
 		g.connect( sobel2, localmaxima );
 		g.connect( localmaxima, floodfill );
 		g.connect( floodfill, thinning );
+		g.connect( thinning, bitdepth2 );
 
 		g.connect( blur2, write0 );
 		g.connect( sobel2, write1 );
@@ -150,7 +156,7 @@ int main( int argc, char** argv )
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
-		outputs.push_back( thinning.getName() );
+		outputs.push_back( bitdepth2.getName() );
 
 		boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
 //		memory::MemoryCache res0 = g.compute( thinning, 0 );
@@ -165,12 +171,12 @@ int main( int argc, char** argv )
 //		COUT( "Process 1 took: " << (t2b - t1b)/10.0 );
 
 		std::cout << res0 << std::endl;
-		memory::CACHE_ELEMENT imgRes = res0.get( thinning.getName(), 0 );
+		memory::CACHE_ELEMENT imgRes = res0.get( bitdepth2.getName(), 0 );
 
 		TCOUT_VAR( imgRes->getROD() );
 		TCOUT_VAR( imgRes->getBounds() );
-		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
-//		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
+//		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
+		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
 		boost::gil::png_write_view( "data/canny/manual_output.png", boost::gil::color_converted_view<boost::gil::rgba8_pixel_t>( imgResView ) );
 	}
 	catch( tuttle::exception::Common& e )
