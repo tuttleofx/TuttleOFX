@@ -203,10 +203,10 @@ public:
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Double, double );
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Bool, bool );
 
-	inline virtual void set( const char* value, const EChange change ) OFX_EXCEPTION_SPEC                                      { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a string parameter." ) ); }
-	inline virtual void set( const char* value ) OFX_EXCEPTION_SPEC                                                            { set( value, eChangeUserEdited ); }
-	inline virtual void setAtTime( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a string parameter." ) ); }
-	inline virtual void setAtTime( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC                                  { set( time, value, eChangeUserEdited ); }
+	inline void set( const char* value, const EChange change ) OFX_EXCEPTION_SPEC                                      { set( std::string( value ), change ); }
+	inline void set( const char* value ) OFX_EXCEPTION_SPEC                                                            { set( value, eChangeUserEdited ); }
+	inline void setAtTime( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { setAtTime( time, std::string( value ), change ); }
+	inline void setAtTime( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC                                  { setAtTime( time, value, eChangeUserEdited ); }
 
 	#ifndef SWIG
 	/// get a value, implemented by instances to deconstruct var args

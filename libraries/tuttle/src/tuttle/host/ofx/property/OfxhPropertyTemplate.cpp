@@ -215,14 +215,14 @@ typename T::ReturnType OfxhPropertyTemplate<T>::getConstlessValueRaw( int index 
 template<class T>
 void OfxhPropertyTemplate<T>::getValueNRaw( APIType* value, const int count ) const OFX_EXCEPTION_SPEC
 {
-	size_t size = count;
+	std::size_t size = count;
 
 	if( size > _value.size() )
 	{
 		size = _value.size();
 	}
 
-	for( size_t i = 0; i < size; i++ )
+	for( std::size_t i = 0; i < size; ++i )
 	{
 		value[i] = castToAPIType( _value[i] );
 	}
@@ -239,7 +239,7 @@ void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 	}
 
-	if( _value.size() <= (size_t) index )
+	if( _value.size() <= static_cast<std::size_t>(index) )
 	{
 		_value.resize( index + 1 );
 	}
@@ -258,11 +258,11 @@ void OfxhPropertyTemplate<T>::setValue( const typename T::Type& value, const int
 template<class T>
 void OfxhPropertyTemplate<T>::setValueN( const typename T::APIType* value, const int count, const EModifiedBy who ) OFX_EXCEPTION_SPEC
 {
-	if( _dimension && ( (size_t) count > _value.size() ) )
+	if( _dimension && ( static_cast<std::size_t>(count) > _value.size() ) )
 	{
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadIndex ) );
 	}
-	if( _value.size() != (size_t) count )
+	if( _value.size() != static_cast<std::size_t>(count) )
 	{
 		_value.resize( count );
 	}
@@ -280,7 +280,7 @@ void OfxhPropertyTemplate<T>::setValueN( const typename T::APIType* value, const
  * get the dimension of the property
  */
 template <class T>
-size_t OfxhPropertyTemplate<T>::getDimension() const OFX_EXCEPTION_SPEC
+std::size_t OfxhPropertyTemplate<T>::getDimension() const OFX_EXCEPTION_SPEC
 {
 	if( _dimension != 0 )
 	{
@@ -295,7 +295,7 @@ size_t OfxhPropertyTemplate<T>::getDimension() const OFX_EXCEPTION_SPEC
 		}
 		else
 		{
-			return (int) _value.size();
+			return _value.size();
 		}
 	}
 }
@@ -306,13 +306,13 @@ void OfxhPropertyTemplate<T>::reset() OFX_EXCEPTION_SPEC
 	if( _getHook )
 	{
 		_getHook->reset( _name );
-		int dim = getDimension();
+		std::size_t dim = getDimension();
 
 		if( !isFixedSize() )
 		{
 			_value.resize( dim );
 		}
-		for( int i = 0; i < dim; ++i )
+		for( std::size_t i = 0; i < dim; ++i )
 		{
 			_value[i] = _getHook->getProperty<T >( _name, i );
 		}

@@ -5,16 +5,6 @@ namespace host {
 namespace ofx {
 namespace attribute {
 
-void OfxhParamString::set( const char* v, const EChange change ) OFX_EXCEPTION_SPEC
-{
-	this->set( std::string( v ), change );
-}
-
-void OfxhParamString::setAtTime( const OfxTime time, const char* v, const EChange change ) OFX_EXCEPTION_SPEC
-{
-	this->setAtTime( time, std::string( v ), change );
-}
-
 void OfxhParamString::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	const char** value = va_arg( arg, const char** );
