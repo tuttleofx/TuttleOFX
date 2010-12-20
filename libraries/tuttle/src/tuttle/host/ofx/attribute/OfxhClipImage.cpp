@@ -48,6 +48,7 @@ const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) cons
 {
 	static const std::string none( kOfxImageComponentNone );
 	static const std::string rgba( kOfxImageComponentRGBA );
+	static const std::string rgb( kOfxImageComponentRGB );
 	static const std::string alpha( kOfxImageComponentAlpha );
 
 	/// is it there
@@ -62,11 +63,20 @@ const std::string& OfxhClipImage::findSupportedComp( const std::string& s ) cons
 
 	/// Means we have RGBA or Alpha being passed in and the clip
 	/// only supports the other one, so return that
-	if( s == kOfxImageComponentRGBA && isSupportedComponent( kOfxImageComponentAlpha ) )
-		return alpha;
-
-	if( s == kOfxImageComponentAlpha && isSupportedComponent( kOfxImageComponentRGBA ) )
-		return rgba;
+	if( s == rgba )
+	{
+		if( isSupportedComponent( rgb ) )
+			return rgb;
+		if( isSupportedComponent( alpha ) )
+			return alpha;
+	}
+	else if( s == alpha )
+	{
+		if( isSupportedComponent( rgba ) )
+			return rgba;
+		if( isSupportedComponent( rgb ) )
+			return rgb;
+	}
 
 	/// wierd, must be some custom bit , if only one, choose that, otherwise no idea
 	/// how to map, you need to derive to do so.

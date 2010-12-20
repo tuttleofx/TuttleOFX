@@ -190,6 +190,10 @@ EPixelComponent OfxhImage::getComponentsType() const
 	{
 		compType = ePixelComponentRGBA;
 	}
+	else if( sType == kOfxImageComponentRGB )
+	{
+		compType = ePixelComponentRGB;
+	}
 	else if( sType == kOfxImageComponentAlpha )
 	{
 		compType = ePixelComponentAlpha;

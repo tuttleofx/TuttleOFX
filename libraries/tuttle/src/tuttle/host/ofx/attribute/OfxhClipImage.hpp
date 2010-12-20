@@ -157,6 +157,7 @@ public:
 	 *
 	 *  kOfxImageComponentNone (implying a clip is unconnected, not valid for an image)
 	 *  kOfxImageComponentRGBA
+	 *  kOfxImageComponentRGB
 	 *  kOfxImageComponentAlpha
 	 *  and any custom ones you may think of
 	 */

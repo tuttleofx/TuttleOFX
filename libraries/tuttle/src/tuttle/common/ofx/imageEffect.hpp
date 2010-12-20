@@ -43,6 +43,7 @@ enum EPixelComponent
 {
 	ePixelComponentNone,
 	ePixelComponentRGBA,
+	ePixelComponentRGB,
 	ePixelComponentAlpha,
 	ePixelComponentCustom ///< some non standard pixel type
 };
@@ -54,10 +55,12 @@ inline std::size_t numberOfComponents( const EPixelComponent c )
 {
 	switch( c )
 	{
-		case ePixelComponentAlpha:
-			return 1;
 		case ePixelComponentRGBA:
 			return 4;
+		case ePixelComponentRGB:
+			return 3;
+		case ePixelComponentAlpha:
+			return 1;
 		case ePixelComponentNone:
 			return 0;
 		case ePixelComponentCustom:

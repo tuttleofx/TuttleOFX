@@ -29,6 +29,7 @@ public:
 	enum EPixelComponent
 	{
 		ePixelComponentNone,
+		ePixelComponentRGB,
 		ePixelComponentRGBA,
 		ePixelComponentAlpha,
 		ePixelComponentCustom ///< some non standard pixel type
@@ -69,6 +70,10 @@ public:
 		{
 			return ePixelComponentRGBA;
 		}
+		else if( str == kOfxImageComponentRGB )
+		{
+			return ePixelComponentRGB;
+		}
 		else if( str == kOfxImageComponentAlpha )
 		{
 			return ePixelComponentAlpha;
@@ -89,6 +94,8 @@ public:
 		{
 			case ePixelComponentRGBA:
 				return kOfxImageComponentRGBA;
+			case ePixelComponentRGB:
+				return kOfxImageComponentRGB;
 			case ePixelComponentAlpha:
 				return kOfxImageComponentAlpha;
 			case ePixelComponentNone:
@@ -174,6 +181,9 @@ public:
 			case ePixelComponentRGBA:
 				setClipComponent( kOfxImageComponentRGBA );
 				break;
+			case ePixelComponentRGB:
+				setClipComponent( kOfxImageComponentRGB );
+				break;
 			case ePixelComponentAlpha:
 				setClipComponent( kOfxImageComponentAlpha );
 				break;
@@ -191,6 +201,8 @@ public:
 		{
 			case ePixelComponentRGBA:
 				return 4;
+			case ePixelComponentRGB:
+				return 3;
 			case ePixelComponentAlpha:
 				return 1;
 			case ePixelComponentCustom:

@@ -37,6 +37,10 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
 	{
 		_ncomp = 4;
 	}
+	else if( clip.getComponentsString() == kOfxImageComponentRGB )
+	{
+		_ncomp = 3;
+	}
 	else if( clip.getComponentsString() == kOfxImageComponentAlpha )
 	{
 		_ncomp = 1;

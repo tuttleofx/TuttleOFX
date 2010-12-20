@@ -268,6 +268,10 @@ EPixelComponent mapPixelComponentStringToEnum( const std::string& str )
 	{
 		return ePixelComponentRGBA;
 	}
+	else if( str == kOfxImageComponentRGB )
+	{
+		return ePixelComponentRGBA;
+	}
 	else if( str == kOfxImageComponentAlpha )
 	{
 		return ePixelComponentAlpha;
@@ -288,6 +292,8 @@ std::string mapPixelComponentEnumToString( const EPixelComponent e )
 	{
 		case ePixelComponentRGBA:
 			return kOfxImageComponentRGBA;
+		case ePixelComponentRGB:
+			return kOfxImageComponentRGB;
 		case ePixelComponentAlpha:
 			return kOfxImageComponentAlpha;
 		case ePixelComponentNone:
@@ -419,6 +425,9 @@ void ClipDescriptor::addSupportedComponent( EPixelComponent v )
 	{
 		case ePixelComponentRGBA:
 			_clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentRGBA, n );
+			break;
+		case ePixelComponentRGB:
+			_clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentRGB, n );
 			break;
 		case ePixelComponentAlpha:
 			_clipProps.propSetString( kOfxImageEffectPropSupportedComponents, kOfxImageComponentAlpha, n );
@@ -710,6 +719,7 @@ Image::Image( OfxPropertySetHandle props )
 	switch( _pixelComponents )
 	{
 		case ePixelComponentRGBA: _pixelBytes   = 4; break;
+		case ePixelComponentRGB: _pixelBytes   = 3; break;
 		case ePixelComponentAlpha: _pixelBytes  = 1; break;
 		case ePixelComponentCustom: _pixelBytes = 0; break;
 		case ePixelComponentNone: _pixelBytes   = 0; break;
@@ -1461,6 +1471,9 @@ void ClipPreferencesSetter::setClipComponents( Clip& clip, EPixelComponent comps
 	switch( comps )
 	{
 		case ePixelComponentRGBA:
+			outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGBA );
+			break;
+		case ePixelComponentRGB:
 			outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGBA );
 			break;
 		case ePixelComponentAlpha:

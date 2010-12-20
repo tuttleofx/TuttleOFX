@@ -1106,6 +1106,8 @@ bool OfxhImageEffectNode::isChromaticComponent( const std::string& str ) const
 {
 	if( str == kOfxImageComponentRGBA )
 		return true;
+	if( str == kOfxImageComponentRGB )
+		return true;
 	if( str == kOfxImageComponentAlpha )
 		return true;
 	return false;
@@ -1356,6 +1358,10 @@ const std::string& OfxhImageEffectNode::findMostChromaticComponents( const std::
 	if( a == kOfxImageComponentRGBA )
 		return a;
 	if( b == kOfxImageComponentRGBA )
+		return b;
+	if( a == kOfxImageComponentRGB )
+		return a;
+	if( b == kOfxImageComponentRGB )
 		return b;
 	return a;
 }

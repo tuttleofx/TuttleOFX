@@ -36,7 +36,8 @@ Host::Host()
 	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, false /*true*/ ); ///< @todo tuttle: we hope to do this !
 	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, false /*true*/ ); ///< @todo tuttle: we hope to do this !
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGBA, 0 );
-	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentAlpha, 1 );
+	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGB, 1 );
+	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentAlpha, 2 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextFilter, 0 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGenerator, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextRetimer, 2 );

@@ -118,6 +118,7 @@ enum EPixelComponent
 {
 	ePixelComponentNone,
 	ePixelComponentRGBA,
+	ePixelComponentRGB,
 	ePixelComponentAlpha,
 	ePixelComponentCustom ///< some non standard pixel type
 };

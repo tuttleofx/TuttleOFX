@@ -179,6 +179,10 @@ EPixelComponent mapPixelComponentStringToEnum( const std::string& str )
 	{
 		return ePixelComponentRGBA;
 	}
+	else if( str == kOfxImageComponentRGB )
+	{
+		return ePixelComponentRGBA;
+	}
 	else if( str == kOfxImageComponentAlpha )
 	{
 		return ePixelComponentAlpha;
@@ -199,6 +203,8 @@ std::string mapPixelComponentEnumToString( const EPixelComponent e )
 	{
 		case ePixelComponentRGBA:
 			return kOfxImageComponentRGBA;
+		case ePixelComponentRGB:
+			return kOfxImageComponentRGB;
 		case ePixelComponentAlpha:
 			return kOfxImageComponentAlpha;
 		case ePixelComponentNone:
