@@ -64,8 +64,7 @@ void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& pr
 	                           procWindowSize.x,
 	                           procWindowSize.y );
 
-//	copy_and_convert_pixels( convert_clamp<typename SView::value_type>( src ), dst );
-	copy_and_convert_pixels( src, dst );
+	copy_and_convert_pixels( clamp_view(src), dst );
 }
 
 }
