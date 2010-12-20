@@ -23,7 +23,6 @@ LocalMaximaProcess<View>::LocalMaximaProcess( LocalMaximaPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
-	this->setNoMultiThreading();
 }
 
 template <class View>
