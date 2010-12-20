@@ -98,19 +98,20 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments& args )
 	{
 		switch( dstBitDepth )
 		{
-			/*
-			   case OFX::eBitDepthUByte :
-			   {
-			       ImageStatisticsProcess<rgba8_view_t> p( *this );
-			       p.setupAndProcess( args );
-			       break;
-			   }
-			   case OFX::eBitDepthUShort :
-			   {
-			       ImageStatisticsProcess<rgba16_view_t> p( *this );
-			       p.setupAndProcess( args );
-			       break;
-			   }*/
+		   case OFX::eBitDepthUByte :
+		   {
+				COUT_FATALERROR( "BitDepthUByte not recognize." );
+//				ImageStatisticsProcess<rgba8_view_t> p( *this );
+//				p.setupAndProcess( args );
+				break;
+		   }
+		   case OFX::eBitDepthUShort :
+		   {
+				COUT_FATALERROR( "BitDepthUShort not recognize." );
+//				ImageStatisticsProcess<rgba16_view_t> p( *this );
+//				p.setupAndProcess( args );
+				break;
+		   }
 			case OFX::eBitDepthFloat:
 			{
 				ImageStatisticsProcess<rgba32f_view_t> p( *this );
@@ -124,37 +125,43 @@ void ImageStatisticsPlugin::render( const OFX::RenderArguments& args )
 				COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}
-	} /*
+	}
+	/*
 	     else if( dstComponents == OFX::ePixelComponentAlpha )
 	     {
-	     switch( dstBitDepth )
-	     {
-	        case OFX::eBitDepthUByte :
-	        {
-	            ImageStatisticsProcess<gray8_view_t> p( *this );
-	            p.setupAndProcess( args );
-	            break;
-	        }
-	        case OFX::eBitDepthUShort :
-	        {
-	            ImageStatisticsProcess<gray16_view_t> p( *this );
-	            p.setupAndProcess( args );
-	            break;
-	        }
-	        case OFX::eBitDepthFloat :
-	        {
-	            ImageStatisticsProcess<gray32f_view_t> p( *this );
-	            p.setupAndProcess( args );
-	            break;
-	        }
-	        case OFX::eBitDepthNone :
-	            COUT_FATALERROR( "BitDepthNone not recognize." );
-	            return;
-	        case OFX::eBitDepthCustom :
-	            COUT_FATALERROR( "BitDepthCustom not recognize." );
-	            return;
+			 switch( dstBitDepth )
+			 {
+				case OFX::eBitDepthUByte :
+				{
+					ImageStatisticsProcess<gray8_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthUShort :
+				{
+					ImageStatisticsProcess<gray16_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthFloat :
+				{
+					ImageStatisticsProcess<gray32f_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthNone :
+					COUT_FATALERROR( "BitDepthNone not recognize." );
+					return;
+				case OFX::eBitDepthCustom :
+					COUT_FATALERROR( "BitDepthCustom not recognize." );
+					return;
+			 }
 	     }
-	     }*/
+	 */
+	else
+	{
+		COUT_FATALERROR( "Unrecognized components." );
+	}
 }
 
 void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
