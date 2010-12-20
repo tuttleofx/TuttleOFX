@@ -161,8 +161,8 @@ int main( int argc, char** argv )
 		outputs.push_back( bitdepth2.getName() );
 
 		boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
-//		memory::MemoryCache res0 = g.compute( thinning, 0 );
-		memory::MemoryCache res0 = g.compute( outputs, 0 );
+		memory::MemoryCache res0 = g.compute( bitdepth2, 0 );
+//		memory::MemoryCache res0 = g.compute( outputs, 0 );
 		boost::posix_time::ptime t2a(boost::posix_time::microsec_clock::local_time());
 
 //		boost::posix_time::ptime t1b(boost::posix_time::microsec_clock::local_time());

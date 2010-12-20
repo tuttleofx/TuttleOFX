@@ -3,6 +3,7 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/basic_colors.hpp>
 
 #include <cmath>
 #include <vector>

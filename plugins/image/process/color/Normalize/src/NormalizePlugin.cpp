@@ -10,9 +10,11 @@
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
+
+#include <boost/gil/extension/color/convert.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
+#include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -95,29 +97,75 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 		if( ! _clipSrc->isConnected() )
 			return;
 
-		switch( _clipSrc->getPixelDepth() )
-		{
-			case OFX::eBitDepthFloat:
-			{
-				typedef rgba32f_view_t View;
-				typedef View::value_type Pixel;
-				boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
-				if( ! src.get() )
-					BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-				if( src->getRowBytes() <= 0 )
-					BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-				OfxRectI srcPixelRod = _clipSrc->getPixelRod( args.time, args.renderScale );
-				View srcView = getView<View>( src.get(), srcPixelRod );
+		boost::scoped_ptr<OFX::Image> src( _clipSrc->fetchImage( args.time ) );
+		if( ! src.get() )
+			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
+		if( src->getRowBytes() <= 0 )
+			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+		OfxRectI srcPixelRod = _clipSrc->getPixelRod( args.time, args.renderScale );
 
-				Pixel smin;
-				Pixel smax;
-				NoProgress progress;
-				analyseInputMinMax<View>( srcView, static_cast<EParamAnalyseMode>( _analyseMode->getValue() ), smin, smax, progress );
-				setRGBAParamValues( _srcMinColor, smin );
-				setRGBAParamValues( _srcMaxColor, smax );
+		EParamAnalyseMode mode = static_cast<EParamAnalyseMode>( _analyseMode->getValue() );
+		NoProgress progress;
+		rgba32f_pixel_t min, max;
+
+		switch( _clipSrc->getPixelComponents() )
+		{
+			case OFX::ePixelComponentRGBA:
+			{
+				switch( _clipSrc->getPixelDepth() )
+				{
+					case OFX::eBitDepthFloat:
+					{
+						typedef rgba32f_view_t View;
+						typedef View::value_type Pixel;
+						View srcView = getView<View>( src.get(), srcPixelRod );
+						analyseInputMinMax<View>( srcView, mode, min, max, progress );
+						break;
+					}
+					case OFX::eBitDepthUShort:
+					{
+						typedef rgba16_view_t View;
+						typedef View::value_type Pixel;
+						View srcView = getView<View>( src.get(), srcPixelRod );
+						Pixel smin, smax;
+						analyseInputMinMax<View>( srcView, mode, smin, smax, progress );
+						color_convert(smin, min);
+						color_convert(smax, max);
+						break;
+					}
+					case OFX::eBitDepthUByte:
+					{
+						typedef rgba8_view_t View;
+						typedef View::value_type Pixel;
+						View srcView = getView<View>( src.get(), srcPixelRod );
+						Pixel smin, smax;
+						analyseInputMinMax<View>( srcView, mode, smin, smax, progress );
+						color_convert(smin, min);
+						color_convert(smax, max);
+						break;
+					}
+					case OFX::eBitDepthNone:
+					case OFX::eBitDepthCustom:
+					{
+						BOOST_THROW_EXCEPTION( exception::Unsupported() );
+					}
+				}
 				break;
 			}
+			case OFX::ePixelComponentRGB:
+			{
+			}
+			case OFX::ePixelComponentAlpha:
+			{
+			}
+			case OFX::ePixelComponentCustom:
+			case OFX::ePixelComponentNone:
+			{
+				BOOST_THROW_EXCEPTION( exception::Unsupported() );
+			}
 		}
+		setRGBAParamValues( _srcMinColor, min );
+		setRGBAParamValues( _srcMaxColor, max );
 
 	}
 }

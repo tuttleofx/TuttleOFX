@@ -2,6 +2,7 @@
 #include "BitDepthDefinitions.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
@@ -63,7 +64,8 @@ void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& pr
 	                           procWindowSize.x,
 	                           procWindowSize.y );
 
-	copy_and_convert_pixels( clamp<typename SView::value_type>( src ), dst );
+//	copy_and_convert_pixels( convert_clamp<typename SView::value_type>( src ), dst );
+	copy_and_convert_pixels( src, dst );
 }
 
 }

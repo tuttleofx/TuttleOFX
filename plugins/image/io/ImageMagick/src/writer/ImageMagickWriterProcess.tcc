@@ -2,6 +2,7 @@
 #include "ImageMagickWriterPlugin.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
@@ -70,12 +71,12 @@ void ImageMagickWriterProcess<View>::writeImage( View& src, const std::string& f
 	//	if( params._premult )
 	//	{
 	//		typedef pixel<Bits, rgb_layout_t> OutPixelType;
-	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ), params._quality );
+	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ), params._quality );
 	//	}
 	//	else
 	//	{
 	//		typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+	//		imagemagick_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
 	//	}
 }
 

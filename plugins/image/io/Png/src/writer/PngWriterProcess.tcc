@@ -2,6 +2,7 @@
 #include "PngWriterPlugin.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
@@ -86,13 +87,13 @@ void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath 
 		case eParamComponentsRGBA:
 		{
 			typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
 			break;
 		}
 		case eParamComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
-			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp<OutPixelType>( src ) ) ) );
+			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
 			break;
 		}
 	}

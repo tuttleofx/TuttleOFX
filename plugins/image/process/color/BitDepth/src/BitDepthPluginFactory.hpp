@@ -6,9 +6,12 @@
 namespace tuttle {
 namespace plugin {
 namespace bitDepth {
-static const bool kSupportTiles = false;
+
+static const bool kSupportTiles = true;
+
 mDeclarePluginFactory( BitDepthPluginFactory, {}, {}
                        );
+
 }
 }
 }

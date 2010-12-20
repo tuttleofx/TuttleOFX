@@ -2,6 +2,7 @@
 
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/basic_colors.hpp>
 
 namespace tuttle {
 namespace plugin {
