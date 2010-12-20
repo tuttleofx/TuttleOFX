@@ -362,7 +362,7 @@ public:
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 		_cumulativeTime += t2 - t1;
 		
-		TCOUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
+		COUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
 		
 		if( vertex.getProcessDataAtTime()._finalNode )
 		{
