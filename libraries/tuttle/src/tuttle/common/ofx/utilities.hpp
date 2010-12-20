@@ -48,12 +48,12 @@ inline T maximum( const T& a, const T& b )
 
 /// clamp the value
 template<class T>
-inline T clamp( const T& v, const T& mn, const T& mx )
+inline T clamp( const T& v, const T& min, const T& max )
 {
-	if( v < mn )
-		return mn;
-	if( v > mx )
-		return mx;
+	if( v < min )
+		return min;
+	if( v > max )
+		return max;
 	return v;
 }
 
