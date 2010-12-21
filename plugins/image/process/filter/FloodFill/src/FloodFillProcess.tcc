@@ -31,7 +31,8 @@ void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 	_params = _plugin.getProcessParams( args.renderScale );
 	if( _params._relativeMinMax )
 	{
-		typedef channel_view_type<red_t,View> LocalView;
+//		typedef channel_view_type<red_t,View> LocalView;
+		typedef kth_channel_view_type<0,View> LocalView;
 		typename LocalView::type localView( LocalView::make(this->_srcView) );
 		pixel_minmax_by_channel_t<typename LocalView::type::value_type> minmax( localView(0,0) );
 		transform_pixels_progress(
@@ -47,7 +48,6 @@ void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 		_lowerThres = _params._lowerThres;
 		_upperThres = _params._upperThres;
 	}
-
 }
 
 /**
@@ -82,8 +82,6 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		case eParamMethod8:
 		{
 			flood_fill<Connexity8, IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
-	//			channel_view<red_t>(this->_srcView), this->_srcPixelRod,
-	//			channel_view<red_t>(this->_dstView), this->_dstPixelRod,
 				this->_srcView, this->_srcPixelRod,
 				this->_dstView, this->_dstPixelRod,
 				procWindowRoWCrop,
@@ -94,13 +92,13 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		}
 		case eParamMethodBruteForce: // not in production
 		{
-			flood_fill_bruteForce<IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
-				this->_srcView, this->_srcPixelRod,
-				this->_dstView, this->_dstPixelRod,
-				procWindowRoWCrop,
-				IsUpper<Scalar>(_upperThres),
-				IsUpper<Scalar>(_lowerThres)
-				);
+//			flood_fill_bruteForce<IsUpper<Scalar>, IsUpper<Scalar>, View, View>(
+//				this->_srcView, this->_srcPixelRod,
+//				this->_dstView, this->_dstPixelRod,
+//				procWindowRoWCrop,
+//				IsUpper<Scalar>(_upperThres),
+//				IsUpper<Scalar>(_lowerThres)
+//				);
 			break;
 		}
 	}

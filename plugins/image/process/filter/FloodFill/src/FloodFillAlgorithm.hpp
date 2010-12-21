@@ -331,6 +331,9 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 			if( iElem._direction == eDirectionBellow &&
 			    iElem._y > y+1 )
 				continue;
+			if( (iElem._direction == eDirectionAbove && iElem._y < procWindow.y1 ) ||
+			    (iElem._direction == eDirectionBellow && iElem._y >= procWindow.y2 ) )
+				continue;
 
 			// i: the "input" range
 			// g: is the full range, where we can found f elements
