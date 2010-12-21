@@ -51,7 +51,7 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-//	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );

@@ -216,67 +216,78 @@ void SobelPlugin::render( const OFX::RenderArguments &args )
     OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                SobelProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                SobelProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                SobelProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-//    else if( dstComponents == OFX::ePixelComponentAlpha )
-//    {
-//        switch( dstBitDepth )
-//        {
-//            case OFX::eBitDepthUByte :
-//            {
-//                SobelProcess<gray8_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-//            case OFX::eBitDepthUShort :
-//            {
-//                SobelProcess<gray16_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-//            case OFX::eBitDepthFloat :
-//            {
-//                SobelProcess<gray32f_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-//			default:
-//			{
-//				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-//				break;
-//			}
-//        }
-//    }
-	else
+    switch( dstComponents )
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		case OFX::ePixelComponentRGBA:
+		{
+			switch( dstBitDepth )
+			{
+				case OFX::eBitDepthUByte :
+				{
+					SobelProcess<rgba8_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthUShort :
+				{
+					SobelProcess<rgba16_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthFloat :
+				{
+					SobelProcess<rgba32f_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthNone:
+				case OFX::eBitDepthCustom:
+				{
+					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+					break;
+				}
+			}
+			break;
+		}
+//		case OFX::ePixelComponentAlpha:
+//		{
+//			switch( dstBitDepth )
+//			{
+//				case OFX::eBitDepthUByte :
+//				{
+//					SobelProcess<gray8_view_t> p( *this );
+//					p.setupAndProcess( args );
+//					break;
+//				}
+//				case OFX::eBitDepthUShort :
+//				{
+//					SobelProcess<gray16_view_t> p( *this );
+//					p.setupAndProcess( args );
+//					break;
+//				}
+//				case OFX::eBitDepthFloat :
+//				{
+//					SobelProcess<gray32f_view_t> p( *this );
+//					p.setupAndProcess( args );
+//					break;
+//				}
+//				case OFX::eBitDepthNone:
+//				case OFX::eBitDepthCustom:
+//				{
+//					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+//					break;
+//				}
+//			}
+//			break;
+//		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+			break;
+		}
 	}
 }
 
