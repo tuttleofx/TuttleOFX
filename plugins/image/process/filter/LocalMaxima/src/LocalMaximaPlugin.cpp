@@ -97,36 +97,71 @@ void LocalMaximaPlugin::render( const OFX::RenderArguments &args )
     OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
 
     // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                LocalMaximaProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                LocalMaximaProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                LocalMaximaProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
+    switch( dstComponents )
+	{
+		case OFX::ePixelComponentRGBA:
+		{
+			switch( dstBitDepth )
 			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
+				case OFX::eBitDepthUByte :
+				{
+					LocalMaximaProcess<rgba8_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthUShort :
+				{
+					LocalMaximaProcess<rgba16_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthFloat :
+				{
+					LocalMaximaProcess<rgba32f_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+					break;
+				}
 			}
-        }
-    }
-//    else if( dstComponents == OFX::ePixelComponentAlpha )
+			break;
+		}
+		case OFX::ePixelComponentRGB:
+		{
+			switch( dstBitDepth )
+			{
+				case OFX::eBitDepthUByte :
+				{
+					LocalMaximaProcess<rgb8_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthUShort :
+				{
+					LocalMaximaProcess<rgb16_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthFloat :
+				{
+					LocalMaximaProcess<rgb32f_view_t> p( *this );
+					p.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+					break;
+				}
+			}
+			break;
+		}
+//    case OFX::ePixelComponentAlpha:
 //    {
 //        switch( dstBitDepth )
 //        {
@@ -154,10 +189,15 @@ void LocalMaximaPlugin::render( const OFX::RenderArguments &args )
 //				break;
 //			}
 //        }
+//		break;
 //    }
-	else
-	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+			break;
+		}
 	}
 }
 
