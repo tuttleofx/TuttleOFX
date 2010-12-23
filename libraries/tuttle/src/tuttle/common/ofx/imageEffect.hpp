@@ -66,8 +66,8 @@ inline std::size_t numberOfComponents( const EPixelComponent c )
 		case ePixelComponentCustom:
 			BOOST_THROW_EXCEPTION( exception::Value()
 			    << exception::user() + "Can't retrieve the number of values inside a custom pixel component." );
-			return 0;
 	}
+	return 0;
 }
 
 /// get me deepest bit depth

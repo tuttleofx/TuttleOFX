@@ -1,6 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_GIL_MATH_HPP_
 #define	_TUTTLE_PLUGIN_GIL_MATH_HPP_
 
+#include "basic_colors.hpp"
+
 namespace tuttle {
 namespace plugin {
 
@@ -66,7 +68,9 @@ D_VIEW& normalize( const S_VIEW& src, D_VIEW& dst, const T a, const T b )
 	int h          = dst.height();
 
 	if( m == M )
+	{
 		fill_black( dst );
+	}
 	else if( m != a || M != b )
 	{
 		int nc = dst.num_channels();
