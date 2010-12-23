@@ -1,5 +1,7 @@
 #include "Jpeg2000WriterPlugin.hpp"
 
+#include <tuttle/plugin/image/gil/clamp.hpp>
+
 #include <boost/assert.hpp>
 
 namespace tuttle {
@@ -41,7 +43,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			rgb8_image_t img( this->_srcView.dimensions() );
 			rgb8_view_t vw( view(img) );
 			// Convert pixels in PIX_FMT_RGB24
-			copy_and_convert_pixels( clamp<rgb8_pixel_t>(this->_srcView), flipped_up_down_view( vw ) );
+			copy_and_convert_pixels( clamp_view(this->_srcView), flipped_up_down_view( vw ) );
 			// Convert pixels to destination
 			copy_and_convert_pixels( this->_srcView, this->_dstView );
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
@@ -56,7 +58,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 		{
 			rgb16_image_t img( this->_srcView.dimensions() );
 			rgb16_view_t vw( view(img) );
-			copy_and_convert_pixels( clamp<rgb16_pixel_t>(this->_srcView), flipped_up_down_view( vw ) );
+			copy_and_convert_pixels( clamp_view(this->_srcView), flipped_up_down_view( vw ) );
 			// Convert pixels to destination
 			copy_and_convert_pixels( this->_srcView, this->_dstView );
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
@@ -71,7 +73,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			rgb32_image_t img( this->_srcView.dimensions() );
 			rgb32_view_t vw( view(img) );
 			// Convert pixels in PIX_FMT_RGB24
-			copy_and_convert_pixels( clamp<rgb32_pixel_t>(this->_srcView), flipped_up_down_view( vw ) );
+			copy_and_convert_pixels( clamp_view(this->_srcView), flipped_up_down_view( vw ) );
 			// Convert pixels to destination
 			copy_and_convert_pixels( this->_srcView, this->_dstView );
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
