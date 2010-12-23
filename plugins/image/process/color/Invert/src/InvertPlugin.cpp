@@ -48,66 +48,79 @@ void InvertPlugin::render( const OFX::RenderArguments& args )
 	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
 	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
+	switch( dstComponents )
 	{
-		switch( dstBitDepth )
+		case OFX::ePixelComponentRGBA:
 		{
-			case OFX::eBitDepthUByte:
+			switch( dstBitDepth )
 			{
-				InvertProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
+				case OFX::eBitDepthUByte:
+				{
+					InvertProcess<rgba8_view_t> fred( *this );
+					fred.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthUShort:
+				{
+					InvertProcess<rgba16_view_t> fred( *this );
+					fred.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthFloat:
+				{
+					InvertProcess<rgba32f_view_t> fred( *this );
+					fred.setupAndProcess( args );
+					break;
+				}
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+					break;
+				}
 			}
-			case OFX::eBitDepthUShort:
-			{
-				InvertProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				InvertProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
+			break;
+		}
+//		case OFX::ePixelComponentAlpha:
+//		{
+//			switch( dstBitDepth )
+//			{
+//				case OFX::eBitDepthUByte:
+//				{
+//					InvertProcess<gray8_view_t> fred( *this );
+//					fred.setupAndProcess( args );
+//					break;
+//				}
+//				case OFX::eBitDepthUShort:
+//				{
+//					InvertProcess<gray16_view_t> fred( *this );
+//					fred.setupAndProcess( args );
+//					break;
+//				}
+//				case OFX::eBitDepthFloat:
+//				{
+//					InvertProcess<gray32f_view_t> fred( *this );
+//					fred.setupAndProcess( args );
+//					break;
+//				}
+//				case OFX::eBitDepthCustom:
+//				case OFX::eBitDepthNone:
+//				{
+//					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
+//					break;
+//				}
+//			}
+//			break;
+//		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+			break;
 		}
 	}
-//	else if( dstComponents == OFX::ePixelComponentAlpha )
-//	{
-//		switch( dstBitDepth )
-//		{
-//			case OFX::eBitDepthUByte:
-//			{
-//				InvertProcess<gray8_view_t> fred( *this );
-//				fred.setupAndProcess( args );
-//				break;
-//			}
-//			case OFX::eBitDepthUShort:
-//			{
-//				InvertProcess<gray16_view_t> fred( *this );
-//				fred.setupAndProcess( args );
-//				break;
-//			}
-//			case OFX::eBitDepthFloat:
-//			{
-//				InvertProcess<gray32f_view_t> fred( *this );
-//				fred.setupAndProcess( args );
-//				break;
-//			}
-//			case OFX::eBitDepthNone:
-//				COUT_FATALERROR( "BitDepthNone not recognize." );
-//				return;
-//			case OFX::eBitDepthCustom:
-//				COUT_FATALERROR( "BitDepthCustom not recognize." );
-//				return;
-//		}
-//	}
 }
 
 void InvertPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

@@ -64,7 +64,7 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
 	return true;
 }
 
-void WriterPlugin::render( const OFX::RenderArguments& args )
+OfxStatus WriterPlugin::render( const OFX::RenderArguments& args )
 {
 	_oneRender = false;
 }

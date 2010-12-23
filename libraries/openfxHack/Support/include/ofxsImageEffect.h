@@ -997,7 +997,7 @@ public:
 	virtual void syncPrivateData( void );
 
 	/** @brief client render function, this is one of the few that must be overridden */
-	virtual void render( const RenderArguments& args ) = 0;
+	virtual OfxStatus render( const RenderArguments& args ) = 0;
 
 	/** @brief client begin sequence render function */
 	virtual void beginSequenceRender( const BeginSequenceRenderArguments& args );

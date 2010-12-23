@@ -1,10 +1,9 @@
 #include "GammaPlugin.hpp"
 #include "GammaProcess.hpp"
-#include "GammaDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -12,10 +11,8 @@ namespace plugin {
 namespace gamma {
 
 GammaPlugin::GammaPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc   = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst   = fetchClip( kOfxImageEffectOutputClipName );
 	_gammaType = fetchChoiceParam( kGammaType );
 	_master    = fetchDoubleParam( kMasterValue );
 	_red       = fetchDoubleParam( kRedValue );
@@ -90,76 +87,9 @@ GammaProcessParams<GammaPlugin::Scalar> GammaPlugin::getProcessParams( const Ofx
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void GammaPlugin::render( const OFX::RenderArguments& args )
+OfxStatus GammaPlugin::render( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				GammaProcess<rgba8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				GammaProcess<rgba16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				GammaProcess<rgba32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
-				break;
-			}
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				GammaProcess<gray8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				GammaProcess<gray16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				GammaProcess<gray32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
-				break;
-			}
-		}
-	}
-	else
-	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
-	}
+	return doGilRender<GammaPlugin,GammaProcess>( args );
 }
 
 void GammaPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

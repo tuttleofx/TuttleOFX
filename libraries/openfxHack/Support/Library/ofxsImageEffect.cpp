@@ -2237,23 +2237,23 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	OFX::Log::print( "START mainEntry (%s)", actionRaw );
 	OFX::Log::indent();
 	OfxStatus stat = kOfxStatReplyDefault;
+	// turn the action into a std::string
+	std::string action( actionRaw );
+	OfxPlugInfoMap::iterator it = plugInfoMap.find( plugname );
+	if( it == plugInfoMap.end() )
+		BOOST_THROW_EXCEPTION( std::logic_error( "Action not recognized: " + action ) );
+
+	OFX::PluginFactory* factory = it->second._factory;
+
+	// Cast the raw handle to be an image effect handle, because that is what it is
+	OfxImageEffectHandle handle = (OfxImageEffectHandle) handleRaw;
+
+	// Turn the arguments into wrapper objects to make our lives easier
+	OFX::PropertySet inArgs( inArgsRaw );
+	OFX::PropertySet outArgs( outArgsRaw );
+
 	try
 	{
-		// turn the action into a std::string
-		std::string action( actionRaw );
-		OfxPlugInfoMap::iterator it = plugInfoMap.find( plugname );
-		if( it == plugInfoMap.end() )
-			BOOST_THROW_EXCEPTION( std::logic_error( "Action not recognized: " + action ) );
-
-		OFX::PluginFactory* factory = it->second._factory;
-
-		// Cast the raw handle to be an image effect handle, because that is what it is
-		OfxImageEffectHandle handle = (OfxImageEffectHandle) handleRaw;
-
-		// Turn the arguments into wrapper objects to make our lives easier
-		OFX::PropertySet inArgs( inArgsRaw );
-		OFX::PropertySet outArgs( outArgsRaw );
-
 		// figure the actions
 		if( action == kOfxActionLoad )
 		{

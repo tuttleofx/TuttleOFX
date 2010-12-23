@@ -12,7 +12,7 @@
 namespace tuttle {
 namespace plugin {
 
-class WriterPlugin : public OFX::ImageEffect
+class WriterPlugin : public ImageEffectGilPlugin
 {
 public:
 	WriterPlugin( OfxImageEffectHandle handle );
@@ -23,7 +23,7 @@ public:
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-	void render( const OFX::RenderArguments& args );
+	OfxStatus render( const OFX::RenderArguments& args );
 
 protected:
 	inline bool varyOnTime() const { return _isSequence; }

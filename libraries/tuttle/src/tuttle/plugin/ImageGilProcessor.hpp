@@ -11,6 +11,8 @@
 #include <tuttle/common/math/rectOp.hpp>
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/exception/info.hpp>
+#include <boost/exception/error_info.hpp>
 #include <boost/throw_exception.hpp>
 
 #include <cstdlib>
@@ -86,35 +88,52 @@ public:
 	}
 
 	/** @brief fetch output and inputs clips */
-	virtual void setupAndProcess( const OFX::RenderArguments& args )
+	virtual OfxStatus setupAndProcess( const OFX::RenderArguments& args )
 	{
 		_renderArgs = args;
 		try
 		{
 			setup( args );
 		}
-		catch( exception::ImageNotReady& e )
-		{
-			// stop the process but don't display an error
-			COUT_ERROR_DEBUG( boost::diagnostic_information( e ) );
-			progressEnd();
-			return;
-		}
 		catch( exception::Common& e )
 		{
-			COUT_ERROR( boost::diagnostic_information( e ) );
 			progressEnd();
-			throw;
+
+			if( _effect.abort() )
+			{
+				// get an error because the host try to abort the rendering
+				return kOfxStatOK;
+			}
+			else
+			{
+				COUT_ERROR( boost::diagnostic_information( e ) );
+				if( OfxStatus* const status = boost::get_error_info<exception::ofxStatus>(e) )
+				{
+					return *status;
+				}
+				return kOfxStatErrUnknown;
+			}
 		}
-		catch(... )
+		catch(...)
 		{
-			COUT_ERROR( boost::current_exception_diagnostic_information() );
 			progressEnd();
-			throw;
+
+			if( _effect.abort() )
+			{
+				// get an error because the host try to abort the rendering
+				return kOfxStatOK;
+			}
+			else
+			{
+				COUT_ERROR( boost::current_exception_diagnostic_information() );
+				return kOfxStatErrUnknown;
+			}
 		}
 
 		// Call the base class process member
 		this->process();
+
+		return kOfxStatOK;
 	}
 
 	/**
