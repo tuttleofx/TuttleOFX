@@ -205,6 +205,18 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	if( progressForward( dst.height() ) )
 		return;
 
+	computeGradientDirection( dst, boost::mpl::bool_<(boost::gil::num_channels<View>::value >= 4)>() );
+}
+
+template<class View>
+void SobelProcess<View>::computeGradientDirection( View& dst, boost::mpl::true_ )
+{
+	using namespace boost;
+	using namespace boost::gil;
+
+	typedef typename View::value_type Pixel;
+	Pixel pixelZero; bgil::pixel_zeros_t<Pixel>()(pixelZero);
+	
 	if( ! _params._computeGradientDirection )
 	{
 		fill_pixels( kth_channel_view<3>(dst), pixelZero );

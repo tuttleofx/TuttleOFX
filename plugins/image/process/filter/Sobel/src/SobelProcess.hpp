@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_SOBEL_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <boost/mpl/bool.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -26,6 +26,9 @@ public:
 
 	void setup( const OFX::RenderArguments& args );
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+
+	void computeGradientDirection( View& dst, boost::mpl::true_ );
+	void computeGradientDirection( View& dst, boost::mpl::false_ ){}
 };
 
 }

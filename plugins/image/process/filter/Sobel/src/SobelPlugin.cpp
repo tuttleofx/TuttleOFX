@@ -214,6 +214,10 @@ void SobelPlugin::render( const OFX::RenderArguments &args )
 			return;
 		}
 		case OFX::ePixelComponentRGB:
+		{
+			doGilRender<SobelProcess, boost::gil::rgb_layout_t>( *this, args, bitDepth );
+			return;
+		}
 		case OFX::ePixelComponentAlpha:
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
