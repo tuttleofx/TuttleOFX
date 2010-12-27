@@ -1,9 +1,11 @@
-#ifndef _VIDEOFFMPEGREADER_HPP_
-#define _VIDEOFFMPEGREADER_HPP_
+#ifndef _TUTTLE_PLUGIN_VIDEOFFMPEGREADER_HPP_
+#define _TUTTLE_PLUGIN_VIDEOFFMPEGREADER_HPP_
 
 #include "FFmpeg.hpp"
 
 #include <boost/lexical_cast.hpp>
+#include <boost/cstdint.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -35,8 +37,8 @@ private:
 
 	void    openVideoCodec();
 	void    closeVideoCodec();
-	int64_t getTimeStamp( int pos ) const;
-	int     getFrame( int64_t timestamp ) const;
+	boost::int64_t getTimeStamp( const int pos ) const;
+	int     getFrame( const boost::int64_t timestamp ) const;
 
 	/**
 	 * @brief Seek to the nearest previous keyframe from pos.

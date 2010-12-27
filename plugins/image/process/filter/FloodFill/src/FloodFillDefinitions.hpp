@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_FLOODFILL_DEFINITIONS_HPP_
 #define _TUTTLE_PLUGIN_FLOODFILL_DEFINITIONS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 
 //#define DEBUG_FLOODFILL

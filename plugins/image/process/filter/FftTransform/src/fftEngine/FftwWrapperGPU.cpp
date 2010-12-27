@@ -1,9 +1,11 @@
 /**
  * This plugin uses fftw3 which is GPL licensed, thus, this (only) is GPL licensed.
  */
+#ifdef with_cuda
 
 #include "FftwWrapperGPU.hpp"
 #include "IfftwWrapper.hpp"
+
 #include <cufft.h>
 
 #include <cuda.h>
@@ -14,7 +16,6 @@
 
 namespace tuttle {
 namespace plugin {
-namespace filter {
 namespace fft {
 
 FftwWrapperGPU::FftwWrapperGPU()
@@ -84,6 +85,6 @@ bool FftwWrapperGPU::ifft( Complex* in, float* out, size_t w, size_t h )
 }
 }
 }
-}
 
+#endif
 

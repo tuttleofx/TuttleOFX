@@ -2,17 +2,12 @@
 #include "ImageMagickWriterPlugin.hpp"
 #include "ImageMagickWriterProcess.hpp"
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace imagemagick {
 namespace writer {
-
-using namespace boost::gil;
 
 ImageMagickWriterPlugin::ImageMagickWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
@@ -38,75 +33,28 @@ ImageMagickWriterProcessParams ImageMagickWriterPlugin::getProcessParams( const 
 void ImageMagickWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
+	
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();
+	OFX::EBitDepth bitDepth         = _clipSrc->getPixelDepth();
+	OFX::EPixelComponent components = _clipSrc->getPixelComponents();
 
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
+	switch( components )
 	{
-		switch( dstBitDepth )
+		case OFX::ePixelComponentRGBA:
 		{
-			case OFX::eBitDepthUByte:
-			{
-				ImageMagickWriterProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				ImageMagickWriterProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				ImageMagickWriterProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
+			doGilRender<ImageMagickWriterProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			return;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
 		}
 	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				ImageMagickWriterProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				ImageMagickWriterProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				ImageMagickWriterProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else
-	{
-		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToString( dstComponents ) << ")" );
-	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 }

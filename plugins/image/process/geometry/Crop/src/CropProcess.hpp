@@ -2,7 +2,7 @@
 #define _VOLET_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 namespace tuttle {

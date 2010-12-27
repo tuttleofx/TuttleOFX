@@ -5,10 +5,6 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
-#include <ofxsImageEffect.h>
-
 namespace tuttle {
 namespace plugin {
 namespace gamma {
@@ -34,7 +30,7 @@ public:
 	GammaPlugin( OfxImageEffectHandle handle );
 
 public:
-	OfxStatus render( const OFX::RenderArguments& args );
+	void render( const OFX::RenderArguments& args );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 	GammaProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;

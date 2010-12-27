@@ -1,7 +1,7 @@
 #ifndef JPEGREADER_DEFINITIONS_HPP
 #define JPEGREADER_DEFINITIONS_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/context/ReaderDefinition.hpp>
 
 namespace tuttle {

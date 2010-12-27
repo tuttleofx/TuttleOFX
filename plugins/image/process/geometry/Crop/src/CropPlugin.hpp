@@ -1,8 +1,7 @@
 #ifndef VOLET_PLUGIN_H
 #define VOLET_PLUGIN_H
 
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -12,24 +11,20 @@ namespace crop {
  * @brief
  *
  */
-class CropPlugin : public OFX::ImageEffect
+class CropPlugin : public ImageEffectGilPlugin
 {
 public:
 	CropPlugin( OfxImageEffectHandle handle );
-	OFX::Clip* getSrcClip() const;
-	OFX::Clip* getDstClip() const;
-	OfxRectD   getCropRect( OfxRectD* clipROD = NULL );
+	OfxRectD   getCropRect( const OfxRectD& rod, const double par );
+	OfxRectD   getCropRect( const OfxTime time );
 	bool       displayRect();
 
 public:
-	virtual void render( const OFX::RenderArguments& args );
+	void render( const OFX::RenderArguments& args );
 	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool         getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 
 protected:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip*            _clipSrc;       ///< Source image clip
-	OFX::Clip*            _clipDst;       ///< Destination image clip
 	OFX::ChoiceParam*     _formats;       ///< Image formats
 	OFX::BooleanParam*    _rect;          ///< Display overlay rect
 

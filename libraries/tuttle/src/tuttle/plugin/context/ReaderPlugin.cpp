@@ -27,6 +27,11 @@ void ReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std
 
 void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
+	const std::string filename( getAbsoluteFirstFilename() );
+	if( !bfs::exists( filename ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::FileNotExist( filename ) );
+	}
 	// If pattern detected (frame varying on time)
 	clipPreferences.setOutputFrameVarying( varyOnTime() );
 }
@@ -36,6 +41,16 @@ bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
 	range.min = getFirstTime();
 	range.max = getLastTime();
 	return true;
+}
+
+void ReaderPlugin::render( const OFX::RenderArguments& args )
+{
+	const std::string filename( getAbsoluteFilenameAt( args.time ) );
+	if( ! boost::filesystem::exists( filename ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::FileNotExist( filename ) );
+	}
+	
 }
 
 }

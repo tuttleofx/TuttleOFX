@@ -6,9 +6,7 @@
 #define _TUTTLE_PLUGIN_FFTTRANSFORM_PLUGIN_HPP_
 
 #include "FftDefinitions.hpp"
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -23,12 +21,10 @@ struct FftTransformProcessParams
 /**
  * @brief FftTransform plugin
  */
-class FftPlugin : public OFX::ImageEffect
+class FftPlugin : public ImageEffectGilPlugin
 {
 public:
 	FftPlugin( OfxImageEffectHandle handle );
-	OFX::Clip* getSrcClip() const;
-	OFX::Clip* getDstClip() const;
 
 public:
 	void render( const OFX::RenderArguments& args );

@@ -2,9 +2,6 @@
 #include "ConvolutionProcess.hpp"
 #include "ConvolutionDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -14,11 +11,8 @@ namespace plugin {
 namespace convolution {
 
 ConvolutionPlugin::ConvolutionPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
-
 	_paramSize = fetchInt2DParam( kParamSize );
 
 	_paramCoef.resize( kParamSizeMax );
@@ -60,72 +54,7 @@ ConvolutionProcessParams ConvolutionPlugin::getProcessParams() const
  */
 void ConvolutionPlugin::render( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				ConvolutionProcess<rgba8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				ConvolutionProcess<rgba16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				ConvolutionProcess<rgba32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				ConvolutionProcess<gray8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				ConvolutionProcess<gray16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				ConvolutionProcess<gray32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
+	doGilRender<ConvolutionProcess>( *this, args );
 }
 
 void ConvolutionPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )

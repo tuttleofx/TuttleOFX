@@ -2,8 +2,10 @@
 #define _TUTTLE_PLUGIN_PLUGIN_HPP_
 
 #include <ofxsImageEffect.h>
-#include <string>
+
 #include <boost/preprocessor/stringize.hpp>
+#include <string>
+
 namespace tuttle {
 namespace plugin {
 

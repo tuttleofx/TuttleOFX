@@ -1,12 +1,10 @@
-#include <tuttle/common/utils/global.hpp>
-
 #include "MergePlugin.hpp"
 #include "MergeProcess.hpp"
 #include "MergeDefinitions.hpp"
 
+#include "gil/toolbox/MergeFunctors.hpp"
+
 #include <tuttle/common/math/rectOp.hpp>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 
 #include <boost/gil/gil_all.hpp>
 
@@ -18,10 +16,8 @@ namespace tuttle {
 namespace plugin {
 namespace merge {
 
-using namespace boost::gil;
-
 MergePlugin::MergePlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: OFX::ImageEffect( handle )
 {
 	_clipSrcA      = fetchClip( kMergeSourceA );
 	_clipSrcB      = fetchClip( kMergeSourceB );
@@ -56,72 +52,109 @@ void MergePlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+    OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
+    OFX::EPixelComponent components = _clipDst->getPixelComponents( );
 
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                render<rgba8_view_t>(args);
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                render<rgba16_view_t>(args);
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                render<rgba32f_view_t>(args);
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                render<gray8_view_t>(args);
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                render<gray16_view_t>(args);
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                render<gray32f_view_t>(args);
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-	else
+	switch( components )
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		case OFX::ePixelComponentRGBA:
+		{
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthUByte:
+				{
+					render<rgba8_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthUShort:
+				{
+					render<rgba16_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthFloat:
+				{
+					render<rgba32f_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+				}
+			}
+		}
+		/*
+		case OFX::ePixelComponentRGB:
+		{
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthUByte:
+				{
+					render<rgb8_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthUShort:
+				{
+					render<rgb16_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthFloat:
+				{
+					render<rgb32f_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+				}
+			}
+		}
+		*/
+		case OFX::ePixelComponentAlpha:
+		{
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthUByte :
+				{
+					render<gray8_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthUShort :
+				{
+					render<gray16_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthFloat :
+				{
+					render<gray32f_view_t>(args);
+					return;
+				}
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+				}
+			}
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+		}
 	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
-
 
 template< class View >
 void MergePlugin::render( const OFX::RenderArguments& args )
 {
+	using namespace boost::gil;
 	typedef typename View::value_type Pixel;
 	EParamMerge merge = static_cast<EParamMerge>(_paramMerge->getValue());
 
@@ -329,8 +362,8 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 		}
 		default:
 		{
-			COUT_ERROR( "Unrecognized merge operation (" << merge << ")." );
-			break;
+			BOOST_THROW_EXCEPTION( exception::Bug()
+				<< exception::user() + "Unrecognized merge operation (" + merge + ")." );
 		}
 	}
 }
@@ -346,7 +379,8 @@ void MergePlugin::render_if( const OFX::RenderArguments& args, boost::mpl::true_
 template< class View, template <typename> class Functor >
 void MergePlugin::render_if( const OFX::RenderArguments& args, boost::mpl::false_ )
 {
-	COUT_FATALERROR( "Need an alpha channel for this Merge operation." );
+	BOOST_THROW_EXCEPTION( exception::Unsupported()
+		<< exception::user() + "Need an alpha channel for this Merge operation." );
 }
 
 template< class View, template <typename> class Functor >

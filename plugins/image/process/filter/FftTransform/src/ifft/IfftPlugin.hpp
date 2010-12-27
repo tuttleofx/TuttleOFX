@@ -5,9 +5,7 @@
 #ifndef _TUTTLE_PLUGIN_IFFT_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_IFFT_PLUGIN_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -24,9 +22,6 @@ class IfftPlugin : public OFX::ImageEffect
 {
 public:
 	IfftPlugin( OfxImageEffectHandle handle );
-	OFX::Clip* getSrcClipRe() const;
-	OFX::Clip* getSrcClipIm() const;
-	OFX::Clip* getDstClip() const;
 
 public:
 	void render( const OFX::RenderArguments& args );

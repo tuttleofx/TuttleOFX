@@ -1,7 +1,7 @@
 #ifndef _LENSDISTORTDEFINITIONS_HPP
 #define _LENSDISTORTDEFINITIONS_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <ofxCore.h>
 #include <string>

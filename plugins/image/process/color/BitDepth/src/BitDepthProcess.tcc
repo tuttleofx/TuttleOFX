@@ -5,12 +5,8 @@
 #include <tuttle/plugin/image/gil/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
-#include <cstdlib>
-#include <cassert>
 #include <cmath>
 #include <vector>
 #include <iostream>

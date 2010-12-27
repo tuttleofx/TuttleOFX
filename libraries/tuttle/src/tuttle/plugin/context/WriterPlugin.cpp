@@ -1,12 +1,14 @@
 #include "WriterPlugin.hpp"
 
+#include <ofxCore.h>
+
 namespace tuttle {
 namespace plugin {
 
 namespace bfs = boost::filesystem;
 
 WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 	, _oneRender( false )
 	, _oneRenderAtTime( 0 )
 {
@@ -64,7 +66,16 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
 	return true;
 }
 
-OfxStatus WriterPlugin::render( const OFX::RenderArguments& args )
+void WriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
+{
+	boost::filesystem::path dir( getAbsoluteDirectory() );
+	if( !exists( dir ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::NoDirectory( dir.string() ) );
+	}
+}
+
+void WriterPlugin::render( const OFX::RenderArguments& args )
 {
 	_oneRender = false;
 }

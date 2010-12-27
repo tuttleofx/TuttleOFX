@@ -6,11 +6,6 @@
 #include <tuttle/plugin/image/gil/gaussianKernel.hpp>
 #include <tuttle/plugin/image/ofxToGil.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/lambda/lambda.hpp>
 
@@ -19,12 +14,9 @@ namespace plugin {
 namespace sobel {
 
 
-SobelPlugin::SobelPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+SobelPlugin::SobelPlugin( OfxImageEffectHandle handle )
+: ImageEffectGilPlugin( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-
 	_paramSize = fetchDouble2DParam( kParamSize );
 	_paramNormalizedKernel = fetchBooleanParam( kParamNormalizedKernel );
 	_paramReverseKernel = fetchBooleanParam( kParamReverseKernel );
@@ -210,85 +202,27 @@ bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& iden
  */
 void SobelPlugin::render( const OFX::RenderArguments &args )
 {
-	using namespace boost::gil;
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
+	OFX::EPixelComponent components = _clipDst->getPixelComponents( );
 
-    // do the rendering
-    switch( dstComponents )
+    switch( components )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
-			switch( dstBitDepth )
-			{
-				case OFX::eBitDepthUByte :
-				{
-					SobelProcess<rgba8_view_t> p( *this );
-					p.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthUShort :
-				{
-					SobelProcess<rgba16_view_t> p( *this );
-					p.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthFloat :
-				{
-					SobelProcess<rgba32f_view_t> p( *this );
-					p.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthNone:
-				case OFX::eBitDepthCustom:
-				{
-					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-					break;
-				}
-			}
-			break;
+			doGilRender<SobelProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			return;
 		}
-//		case OFX::ePixelComponentAlpha:
-//		{
-//			switch( dstBitDepth )
-//			{
-//				case OFX::eBitDepthUByte :
-//				{
-//					SobelProcess<gray8_view_t> p( *this );
-//					p.setupAndProcess( args );
-//					break;
-//				}
-//				case OFX::eBitDepthUShort :
-//				{
-//					SobelProcess<gray16_view_t> p( *this );
-//					p.setupAndProcess( args );
-//					break;
-//				}
-//				case OFX::eBitDepthFloat :
-//				{
-//					SobelProcess<gray32f_view_t> p( *this );
-//					p.setupAndProcess( args );
-//					break;
-//				}
-//				case OFX::eBitDepthNone:
-//				case OFX::eBitDepthCustom:
-//				{
-//					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-//					break;
-//				}
-//			}
-//			break;
-//		}
 		case OFX::ePixelComponentRGB:
 		case OFX::ePixelComponentAlpha:
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
 		{
-			COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
-			break;
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
 		}
 	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 

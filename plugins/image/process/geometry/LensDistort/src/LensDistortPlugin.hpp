@@ -1,9 +1,11 @@
-#ifndef _LENSDISTORTPLUGIN_HPP_
-#define _LENSDISTORTPLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_LENSDISTORTPLUGIN_HPP_
+#define _TUTTLE_PLUGIN_LENSDISTORTPLUGIN_HPP_
 
 #include "lensDistortDefinitions.hpp"
 #include "lensDistortProcessParams.hpp"
-#include <ofxsImageEffect.h>
+
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+
 #include <boost/gil/utilities.hpp>
 #include <string>
 
@@ -14,7 +16,7 @@ namespace lens {
 /**
  * @brief Main class of the lens distortion
  */
-class LensDistortPlugin : public OFX::ImageEffect
+class LensDistortPlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef double Scalar;
@@ -22,9 +24,6 @@ public:
 
 public:
 	///@{
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipDst; ///< output image clip
-	OFX::Clip* _clipSrc; ///< source image clip
 	OFX::Clip* _srcRefClip; ///< source ref image clip
 	///@}
 
@@ -67,11 +66,11 @@ public:
 public:
 	LensDistortPlugin( OfxImageEffectHandle handle );
 
-	virtual void render( const OFX::RenderArguments& args );
-	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	bool         isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
-	bool         getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void         getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
+	void render( const OFX::RenderArguments& args );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
+	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 
 public:
 	/**

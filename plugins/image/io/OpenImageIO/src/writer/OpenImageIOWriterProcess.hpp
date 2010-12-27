@@ -1,7 +1,7 @@
 #ifndef OPENIMAGEIO_WRITER_PROCESS_HPP
 #define OPENIMAGEIO_WRITER_PROCESS_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
 namespace tuttle {

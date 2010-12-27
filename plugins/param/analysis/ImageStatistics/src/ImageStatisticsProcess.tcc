@@ -1,7 +1,7 @@
 #include "ImageStatisticsPlugin.hpp"
 #include "ImageStatisticsProcess.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
 #include <boost/gil/extension/typedefs.hpp>

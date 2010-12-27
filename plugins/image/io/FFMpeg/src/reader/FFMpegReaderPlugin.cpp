@@ -4,11 +4,6 @@
 
 #include <ffmpeg/VideoFFmpegReader.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 
@@ -139,72 +134,41 @@ void FFMpegReaderPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
 void FFMpegReaderPlugin::render( const OFX::RenderArguments& args )
 {
 	if( !ensureVideoIsOpen() )
-		return;
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown() );
+	}
 
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				FFMpegReaderProcess<rgba8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				FFMpegReaderProcess<rgba16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				FFMpegReaderProcess<rgba32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognized." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognized." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				FFMpegReaderProcess<gray8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				FFMpegReaderProcess<gray16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				FFMpegReaderProcess<gray32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
+	doGilRender<FFMpegReaderProcess>( *this, args );
+
+//	// instantiate the render code based on the pixel depth of the dst clip
+//	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+//	OFX::EPixelComponent components = _clipDst->getPixelComponents();
+//
+//	switch( components )
+//	{
+//		case OFX::ePixelComponentRGBA:
+//		{
+//			doGilRender<BasicKeyerPlugin, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+//			return;
+//		}
+//		case OFX::ePixelComponentRGB:
+//		{
+//			doGilRender<BasicKeyerPlugin, boost::gil::rgb_layout_t>( *this, args, bitDepth );
+//			return;
+//		}
+//		case OFX::ePixelComponentAlpha:
+//		{
+//			doGilRender<BasicKeyerPlugin, boost::gil::gray_layout_t>( *this, args, bitDepth );
+//			return;
+//		}
+//		case OFX::ePixelComponentCustom:
+//		case OFX::ePixelComponentNone:
+//		{
+//			BOOST_THROW_EXCEPTION( exception::Unsupported()
+//				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+//		}
+//	}
+//	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 void FFMpegReaderPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )

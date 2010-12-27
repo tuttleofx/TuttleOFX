@@ -3,12 +3,9 @@
 
 #include "ReaderDefinition.hpp"
 
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-
-#include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -17,13 +14,15 @@ class ReaderPlugin : public OFX::ImageEffect
 {
 public:
 	ReaderPlugin( OfxImageEffectHandle handle );
-	virtual ~ReaderPlugin();
+	virtual ~ReaderPlugin() = 0;
 
 public:
 	virtual void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	virtual bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod ) = 0;
 	virtual void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	virtual bool getTimeDomain( OfxRangeD& range );
+
+	virtual void render( const OFX::RenderArguments& args );
 
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const

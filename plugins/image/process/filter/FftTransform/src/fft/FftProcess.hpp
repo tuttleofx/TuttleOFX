@@ -6,7 +6,9 @@
 #define _TUTTLE_PLUGIN_FFTTRANSFORM_PROCESS_HPP_
 
 #include <fftEngine/FftwWrapperCPU.hpp>
+#ifdef with_cuda
 #include <fftEngine/FftwWrapperGPU.hpp>
+#endif
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>

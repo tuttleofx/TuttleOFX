@@ -3,9 +3,7 @@
 
 #include "NormalizeDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -31,7 +29,7 @@ struct NormalizeProcessParams
 /**
  * @brief Normalize plugin
  */
-class NormalizePlugin : public OFX::ImageEffect
+class NormalizePlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef float Scalar;
@@ -49,12 +47,7 @@ public:
 
     void render( const OFX::RenderArguments &args );
 	
-	
 public:
-    // do not need to delete these, the ImageEffect is managing them for us
-    OFX::Clip* _clipSrc; ///< Source image clip
-    OFX::Clip* _clipDst; ///< Destination image clip
-
 	OFX::ChoiceParam* _mode;
 	OFX::ChoiceParam* _analyseMode;
 	OFX::PushButtonParam* _analyseNow;

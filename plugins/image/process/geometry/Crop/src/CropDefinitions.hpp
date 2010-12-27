@@ -1,7 +1,7 @@
 #ifndef CROP_DEFINITIONS_HPP
 #define CROP_DEFINITIONS_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {

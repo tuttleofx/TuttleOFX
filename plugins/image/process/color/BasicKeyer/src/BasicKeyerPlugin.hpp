@@ -3,9 +3,7 @@
 
 #include "BasicKeyerDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -25,7 +23,7 @@ struct BasicKeyerProcessParams
 /**
  * @brief BasicKeyer plugin
  */
-class BasicKeyerPlugin : public OFX::ImageEffect
+class BasicKeyerPlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef boost::gil::point2<double> Point2;
@@ -44,9 +42,6 @@ public:
 	typedef std::vector<OFX::Double2DParam*> Double2DParamVector;
 	typedef std::vector<OFX::RGBAParam*> RGBAParamVector;
 
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc;       ///< Source image clip
-	OFX::Clip* _clipDst;       ///< Destination image clip
 	Double2DParamVector _paramPoints;
 	RGBAParamVector _paramColors;
 	OFX::ChoiceParam* _paramMode;

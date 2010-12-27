@@ -2,9 +2,6 @@
 #include "ColorDistributionProcess.hpp"
 #include "ColorDistributionDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -12,10 +9,8 @@ namespace plugin {
 namespace colorDistribution {
 
 ColorDistributionPlugin::ColorDistributionPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc  = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst  = fetchClip( kOfxImageEffectOutputClipName );
 	_paramIn  = fetchChoiceParam( kParamIn );
 	_paramOut = fetchChoiceParam( kParamOut );
 }
@@ -56,74 +51,7 @@ bool ColorDistributionPlugin::isIdentity( const OFX::RenderArguments& args, OFX:
  */
 void ColorDistributionPlugin::render( const OFX::RenderArguments& args )
 {
-	using namespace boost::gil;
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				ColorDistributionProcess<rgba8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				ColorDistributionProcess<rgba16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				ColorDistributionProcess<rgba32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
-				break;
-			}
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				ColorDistributionProcess<gray8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				ColorDistributionProcess<gray16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				ColorDistributionProcess<gray32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
-				break;
-			}
-		}
-	}
-	else
-	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
-	}
+	doGilRender<ColorDistributionProcess>( *this, args );
 }
 
 }

@@ -1,11 +1,8 @@
-#ifndef MERGE_PLUGIN_H
-#define MERGE_PLUGIN_H
+#ifndef _TUTTLE_PLUGIN_MERGEPLUGIN_HPP_
+#define _TUTTLE_PLUGIN_MERGEPLUGIN_HPP_
 
-#include "gil/toolbox/MergeFunctors.hpp"
-
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <boost/gil/color_convert.hpp> // use the hack version
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -55,4 +52,4 @@ public:
 }
 }
 
-#endif  // MERGE_PLUGIN_H
+#endif

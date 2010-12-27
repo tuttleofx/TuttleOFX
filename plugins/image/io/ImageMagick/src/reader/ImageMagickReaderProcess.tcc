@@ -127,19 +127,6 @@ ImageMagickReaderProcess<View>::ImageMagickReaderProcess( ImageMagickReaderPlugi
 	this->setNoMultiThreading();
 }
 
-template<class View>
-void ImageMagickReaderProcess<View>::setup( const OFX::RenderArguments& args )
-{
-	ImageMagickReaderProcessParams params = _plugin.getProcessParams( args.time );
-
-	if( !bfs::exists( params._filepath ) )
-	{
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, std::string( "Unable to open : " ) + params._filepath ) );
-	}
-
-	ImageGilProcessor<View>::setup( args );
-}
-
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW

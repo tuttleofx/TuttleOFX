@@ -5,6 +5,7 @@
 #include "FftProcess.hpp"
 #include "FftPlugin.hpp"
 #include "../fftEngine/IfftwWrapper.hpp"
+
 namespace tuttle {
 namespace plugin {
 namespace fftTransform {
@@ -28,12 +29,12 @@ void FftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 
-	View src = subimage_view( this->_srcView, procWindow.x1, procWindow.y1,
-	                          procWindow.x2 - procWindow.x1,
-	                          procWindow.y2 - procWindow.y1 );
-	View dst = subimage_view( this->_dstView, procWindow.x1, procWindow.y1,
-	                          procWindow.x2 - procWindow.x1,
-	                          procWindow.y2 - procWindow.y1 );
+	View src = subimage_view( this->_srcView, procWindowRoW.x1, procWindowRoW.y1,
+	                          procWindowRoW.x2 - procWindowRoW.x1,
+	                          procWindowRoW.y2 - procWindowRoW.y1 );
+	View dst = subimage_view( this->_dstView, procWindowRoW.x1, procWindowRoW.y1,
+	                          procWindowRoW.x2 - procWindowRoW.x1,
+	                          procWindowRoW.y2 - procWindowRoW.y1 );
 
 	// Create a planar floating point view
 	//	typedef pixel<bits32f, layout<typename color_space_type<View>::type> > Pixel32f;
@@ -48,7 +49,7 @@ void FftProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 	// Convert source view type to planar view
 	copy_and_convert_pixels( src, svw );
 	// Apply fft on each plane
-	tuttle::filter::fft::FftwWrapperCPU fft;
+	tuttle::plugin::fft::FftwWrapperCPU fft;
 
 	FftTransformProcessParams params = _plugin.getProcessParams();
 

@@ -3,7 +3,7 @@
 #include "BasicKeyerAlgorithm.hpp"
 #include "BasicKeyerDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
@@ -18,10 +18,8 @@ namespace basicKeyer {
 using namespace boost::gil;
 
 BasicKeyerPlugin::BasicKeyerPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc       = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
 	_paramMode     = fetchChoiceParam( kParamMode );
 	_paramNbPoints = fetchIntParam( kParamNbPoints );
 
@@ -68,13 +66,13 @@ BasicKeyerProcessParams<View> BasicKeyerPlugin::getProcessParams() const
     {
         case OFX::ePixelComponentRGBA:
             processComponents<rgba_t>();
-            break;
+            return;
         case OFX::ePixelComponentAlpha:
             processComponents<gray_t>();
-            break;
+            return;
         case OFX::ePixelComponentCustom:
         case OFX::ePixelComponentNone:
-            break;
+            return;
     }
    }
 
@@ -87,17 +85,17 @@ BasicKeyerProcessParams<View> BasicKeyerPlugin::getProcessParams() const
         case OFX::eBitDepthUByte :
         {
             processBitDepth<ColorSpace, bits8_t> p( *this );
-            break;
+            return;
         }
         case OFX::eBitDepthUShort :
         {
             processBitDepth<ColorSpace, bits16_t> p( *this );
-            break;
+            return;
         }
         case OFX::eBitDepthFloat :
         {
             processBitDepth<ColorSpace, bits32f_t> p( *this );
-            break;
+            return;
         }
         case OFX::eBitDepthNone :
             COUT_FATALERROR( "BitDepthNone not recognize." );
@@ -125,71 +123,27 @@ BasicKeyerProcessParams<View> BasicKeyerPlugin::getProcessParams() const
  */
 void BasicKeyerPlugin::render( const OFX::RenderArguments& args )
 {
-	//    // instantiate the render code based on the pixel depth of the dst clip
-	//    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-	//    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
-	//
-	//    // do the rendering
-	//    if( dstComponents == OFX::ePixelComponentRGBA )
-	//    {
-	//        switch( dstBitDepth )
-	//        {
-	//            case OFX::eBitDepthUByte :
-	//            {
-	//                BasicKeyerProcess<rgba8_view_t> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthUShort :
-	//            {
-	//                BasicKeyerProcess<rgba16_view_t> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthFloat :
-	//            {
-	BasicKeyerProcess<rgba32f_view_t> p( *this );
-	p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthNone :
-	//                COUT_FATALERROR( "BitDepthNone not recognize." );
-	//                return;
-	//            case OFX::eBitDepthCustom :
-	//                COUT_FATALERROR( "BitDepthCustom not recognize." );
-	//                return;
-	//        }
-	//    }
-	//    else if( dstComponents == OFX::ePixelComponentAlpha )
-	//    {
-	//        switch( dstBitDepth )
-	//        {
-	//            case OFX::eBitDepthUByte :
-	//            {
-	//                BasicKeyerProcess<gray8_view_t> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthUShort :
-	//            {
-	//                BasicKeyerProcess<gray16_view_t> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthFloat :
-	//            {
-	//                BasicKeyerProcess<gray32f_view_t> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthNone :
-	//                COUT_FATALERROR( "BitDepthNone not recognize." );
-	//                return;
-	//            case OFX::eBitDepthCustom :
-	//                COUT_FATALERROR( "BitDepthCustom not recognize." );
-	//                return;
-	//        }
-	//    }
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent components = _clipDst->getPixelComponents();
+
+	switch( components )
+	{
+		case OFX::ePixelComponentRGBA:
+		{
+			doGilRender<BasicKeyerProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			return;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 void BasicKeyerPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

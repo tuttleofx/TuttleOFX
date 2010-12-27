@@ -1,7 +1,7 @@
 #ifndef _BITDEPTH_DEFINITIONS_HPP_
 #define _BITDEPTH_DEFINITIONS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {

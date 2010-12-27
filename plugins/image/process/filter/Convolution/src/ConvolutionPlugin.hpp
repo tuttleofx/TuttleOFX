@@ -1,10 +1,9 @@
 #ifndef _TUTTLE_PLUGIN_CONVOLUTION_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_CONVOLUTION_PLUGIN_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+
 #include <boost/numeric/ublas/matrix.hpp>
-#include <boost/gil/gil_all.hpp>
 
 #include <vector>
 
@@ -21,7 +20,7 @@ struct ConvolutionProcessParams
 /**
  * @brief Convolution plugin
  */
-class ConvolutionPlugin : public OFX::ImageEffect
+class ConvolutionPlugin : public ImageEffectGilPlugin
 {
 public:
 	ConvolutionPlugin( OfxImageEffectHandle handle );
@@ -34,10 +33,6 @@ public:
 	ConvolutionProcessParams getProcessParams() const;
 
 public:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc; ///< Source image clip
-	OFX::Clip* _clipDst; ///< Destination image clip
-
 	OFX::Int2DParam* _paramSize;
 	std::vector<std::vector<OFX::DoubleParam*> > _paramCoef;
 };

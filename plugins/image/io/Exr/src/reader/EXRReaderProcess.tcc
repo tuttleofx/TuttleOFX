@@ -42,16 +42,9 @@ EXRReaderProcess<View>::EXRReaderProcess( EXRReaderPlugin& instance )
 template<class View>
 void EXRReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	EXRReaderProcessParams params = _plugin.getProcessParams( args.time );
-
-	if( !bfs::exists( params._filepath ) )
-	{
-		BOOST_THROW_EXCEPTION( exception::File()
-		    << exception::user( "Unable to open." )
-		    << exception::filename( params._filepath ) );
-	}
-
 	ImageGilProcessor<View>::setup( args );
+
+	const EXRReaderProcessParams params = _plugin.getProcessParams( args.time );
 
 	_exrImage.reset( new Imf::InputFile( params._filepath.c_str() ) );
 	const Imf::Header& h = _exrImage->header();

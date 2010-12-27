@@ -3,13 +3,8 @@
 #include "NormalizeDefinitions.hpp"
 #include "NormalizeAlgorithm.hpp"
 
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/NoProgress.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/plugin/param/gilColor.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 
 #include <boost/gil/extension/color/convert.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
@@ -20,13 +15,9 @@ namespace tuttle {
 namespace plugin {
 namespace normalize {
 
-
-NormalizePlugin::NormalizePlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+NormalizePlugin::NormalizePlugin( OfxImageEffectHandle handle )
+: ImageEffectGilPlugin( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
-
 	_mode = fetchChoiceParam( kParamMode );
 	_analyseMode = fetchChoiceParam( kParamAnalyseMode );
 	_analyseNow = fetchPushButtonParam( kParamAnalyseNow );
@@ -213,72 +204,42 @@ void NormalizePlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
     // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
+    OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
+    OFX::EPixelComponent components = _clipDst->getPixelComponents( );
 
     // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-//            case OFX::eBitDepthUByte :
-//            {
-//                NormalizeProcess<rgba8_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-//            case OFX::eBitDepthUShort :
-//            {
-//                NormalizeProcess<rgba16_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-            case OFX::eBitDepthFloat :
-            {
-                NormalizeProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-//            case OFX::eBitDepthUByte :
-//            {
-//                NormalizeProcess<gray8_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-//            case OFX::eBitDepthUShort :
-//            {
-//                NormalizeProcess<gray16_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-//            case OFX::eBitDepthFloat :
-//            {
-//                NormalizeProcess<gray32f_view_t> p( *this );
-//                p.setupAndProcess( args );
-//                break;
-//            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-	else
+	switch( components )
 	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
+		case OFX::ePixelComponentRGBA:
+		{
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthFloat:
+				{
+					doGilRender<NormalizeProcess, rgba_layout_t, bits32f>( *this, args );
+					return;
+				}
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort:
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+				}
+			}
+			break;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+		}
 	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 

@@ -1,11 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_IMAGESTATISTICS_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_IMAGESTATISTICS_PLUGIN_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
-
 #include "ImageStatisticsDefinitions.hpp"
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -20,7 +17,7 @@ struct ImageStatisticsProcessParams
 /**
  * @brief ImageStatistics plugin
  */
-class ImageStatisticsPlugin : public OFX::ImageEffect
+class ImageStatisticsPlugin : public ImageEffectGilPlugin
 {
 public:
 	ImageStatisticsPlugin( OfxImageEffectHandle handle );
@@ -34,10 +31,6 @@ public:
 	ImageStatisticsProcessParams getProcessParams( const OfxRectI& srcRod ) const;
 
 public:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc; ///< Source image clip
-	OFX::Clip* _clipDst; ///< Destination image clip
-
 	OFX::ChoiceParam* _paramCoordinateSystem;
 	OFX::Double2DParam* _paramRectCenter;
 	OFX::Double2DParam* _paramRectSize;

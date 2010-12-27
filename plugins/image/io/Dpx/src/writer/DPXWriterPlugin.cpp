@@ -4,10 +4,7 @@
 
 #include <dpxEngine/dpxImage.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <boost/filesystem.hpp>
 
 #include <boost/gil/gil_all.hpp>
 
@@ -47,7 +44,8 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 			params._bitDepth = 16;
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue, "Incorrect bit depth." ) );
+			BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Incorrect bit depth." );
 			break;
 	}
 	return params;
@@ -60,41 +58,28 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent components = _clipDst->getPixelComponents();
+
+	switch( components )
 	{
-		switch( dstBitDepth )
+		case OFX::ePixelComponentRGBA:
 		{
-			case OFX::eBitDepthUByte:
-			{
-				DPXWriterProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				DPXWriterProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				DPXWriterProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
+			doGilRender<DPXWriterProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			return;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
 		}
 	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

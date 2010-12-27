@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_CONVOLUTION_DEFINITIONS_HPP_
 #define _TUTTLE_PLUGIN_CONVOLUTION_DEFINITIONS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <boost/lexical_cast.hpp>
 

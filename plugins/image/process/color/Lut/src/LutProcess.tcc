@@ -8,7 +8,7 @@
 #include "lutEngine/Lut.hpp"
 #include "lutEngine/TetraInterpolator.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
@@ -30,7 +30,7 @@ LutProcess<View>::LutProcess( LutPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance )
 	, _plugin( instance )
 {
-	_lut3D = &_plugin.lut3D();
+	_lut3D = &_plugin._lut3D;
 }
 
 /**

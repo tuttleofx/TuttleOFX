@@ -7,7 +7,6 @@
 
 namespace tuttle {
 namespace plugin {
-namespace filter {
 namespace fft {
 
 FftwWrapperCPU::FftwWrapperCPU()
@@ -151,7 +150,6 @@ bool FftwWrapperCPU::ifft( Complex* in, float* out, size_t w, size_t h )
 	}
 }
 
-}
 }
 }
 }

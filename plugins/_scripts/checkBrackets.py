@@ -36,6 +36,7 @@ if __name__ == '__main__':
 		brackets = '{}'
 		if len(sys.argv) > 2:
 			brackets = sys.argv[2]
+			print 'Using brackets: "'+brackets+'"'
 #		else:
 #			userBrackets = raw_input( 'brackets (default="{}"): ' )
 #			if userBrackets:

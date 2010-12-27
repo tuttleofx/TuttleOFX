@@ -29,10 +29,11 @@ public:
 
 	void updateInfos();
 
-	void render( const OFX::RenderArguments& args );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+	
+	void render( const OFX::RenderArguments& args );
 
 public:
 	/// @name user parameters

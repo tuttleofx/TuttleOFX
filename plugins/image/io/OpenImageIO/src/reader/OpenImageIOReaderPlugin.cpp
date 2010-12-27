@@ -2,12 +2,7 @@
 #include "OpenImageIOReaderProcess.hpp"
 #include "OpenImageIOReaderDefinitions.hpp"
 
-#include <tuttle/plugin/context/ReaderPlugin.hpp>
-
 #include <OpenImageIO/imageio.h>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
@@ -31,83 +26,6 @@ OpenImageIOReaderProcessParams OpenImageIOReaderPlugin::getProcessParams( const 
 
 	params._filepath = getAbsoluteFilenameAt( time );
 	return params;
-}
-
-/**
- * @brief The overridden render function
- * @param[in]   args     Rendering parameters
- */
-void OpenImageIOReaderPlugin::render( const OFX::RenderArguments& args )
-{
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = this->_clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = this->_clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				OpenImageIOReaderProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				OpenImageIOReaderProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				OpenImageIOReaderProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				OpenImageIOReaderProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				OpenImageIOReaderProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				OpenImageIOReaderProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else
-	{
-		COUT_FATALERROR( dstComponents << " not recognize." );
-	}
 }
 
 void OpenImageIOReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -140,11 +58,12 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
 	if( !in )
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
+	{
+		BOOST_THROW_EXCEPTION( exception::Value() );
+	}
 	ImageSpec spec;
 	in->open( filename, spec );
 
-	point2<ptrdiff_t> dims;
 	rod.x1 = 0;
 	rod.x2 = spec.width * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;
@@ -157,6 +76,8 @@ bool OpenImageIOReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefiniti
 void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	using namespace OpenImageIO;
+	ReaderPlugin::getClipPreferences( clipPreferences );
+	
 	const std::string filename( getAbsoluteFirstFilename() );
 
 	// spec.nchannels;
@@ -166,19 +87,12 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	//		case TypeDesc::UNKNOWN:
 	//	}
 
-	ReaderPlugin::getClipPreferences( clipPreferences );
-
-	if( !bfs::exists( filename ) )
-	{
-		BOOST_THROW_EXCEPTION( exception::File()
-		    << exception::user( "No input file." )
-		    << exception::filename( filename )
-		                       );
-	}
 
 	boost::scoped_ptr<ImageInput> in( ImageInput::create( filename ) );
 	if( !in.get() )
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue ) );
+	{
+		BOOST_THROW_EXCEPTION( exception::Value() );
+	}
 
 	ImageSpec spec;
 	in->open( filename, spec );
@@ -221,7 +135,7 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 				case TypeDesc::UNKNOWN:
 				case TypeDesc::NONE:
 				default:
-					BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat ) );
+					BOOST_THROW_EXCEPTION( exception::ImageFormat() );
 			}
 			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 			break;
@@ -246,6 +160,17 @@ void OpenImageIOReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 	in->close();
+}
+
+/**
+ * @brief The overridden render function
+ * @param[in]   args     Rendering parameters
+ */
+void OpenImageIOReaderPlugin::render( const OFX::RenderArguments& args )
+{
+	ReaderPlugin::render( args );
+
+	doGilRender<OpenImageIOReaderProcess>( *this, args );
 }
 
 }

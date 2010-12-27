@@ -2,24 +2,15 @@
 #include "ThinningProcess.hpp"
 #include "ThinningDefinitions.hpp"
 
-#include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/common/utils/global.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace thinning {
 
-
-ThinningPlugin::ThinningPlugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+ThinningPlugin::ThinningPlugin( OfxImageEffectHandle handle )
+: ImageEffectGilPlugin( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
 	_paramBorder = fetchChoiceParam( kParamBorder );
 }
 
@@ -63,76 +54,8 @@ void ThinningPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments
  */
 void ThinningPlugin::render( const OFX::RenderArguments &args )
 {
-	using namespace boost::gil;
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
-
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                ThinningProcess<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                ThinningProcess<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                ThinningProcess<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                ThinningProcess<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                ThinningProcess<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                ThinningProcess<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-	else
-	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
-	}
+	doGilRender<ThinningProcess>( *this, args );
 }
-
 
 }
 }

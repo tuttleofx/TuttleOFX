@@ -5,6 +5,7 @@ namespace tuttle {
 namespace plugin {
 namespace lut {
 
+static const std::string kHelp      = "help";
 static const std::string kInputFilename      = "filename";
 static const std::string kInputFilenameLabel = "3D Lut input filename";
 

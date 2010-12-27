@@ -1,9 +1,7 @@
-#ifndef LOG2LIN_PLUGIN_H
-#define LOG2LIN_PLUGIN_H
+#ifndef _TUTTLE_PLUGIN_LOG2LIN_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_LOG2LIN_PLUGIN_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -14,21 +12,14 @@ namespace log2lin {
  * @brief
  *
  */
-class Log2LinPlugin : public OFX::ImageEffect
+class Log2LinPlugin : public ImageEffectGilPlugin
 {
 public:
 	Log2LinPlugin( OfxImageEffectHandle handle );
-	OFX::Clip* getSrcClip() const;
-	OFX::Clip* getDstClip() const;
 
 public:
-	virtual void render( const OFX::RenderArguments& args );
-	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-
-protected:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc;                 ///< Source image clip
-	OFX::Clip* _clipDst;                 ///< Destination image clip
+	void render( const OFX::RenderArguments& args );
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 };
 
 }

@@ -2,12 +2,6 @@
 #include "%CLASSNAME%Process.hpp"
 #include "%CLASSNAME%Definitions.hpp"
 
-#include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/common/utils/global.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -15,11 +9,10 @@ namespace plugin {
 namespace %NAMESPACE% {
 
 
-%CLASSNAME%Plugin::%CLASSNAME%Plugin( OfxImageEffectHandle handle ) :
-ImageEffect( handle )
+%CLASSNAME%Plugin::%CLASSNAME%Plugin( OfxImageEffectHandle handle )
+: ImageEffectGilPlugin( handle )
 {
-    _clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-    _clipDst = fetchClip( kOfxImageEffectOutputClipName );
+//    _clipSrcMatte = fetchClip( kClipMatte );
 }
 
 %CLASSNAME%ProcessParams<%CLASSNAME%Plugin::Scalar> %CLASSNAME%Plugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -88,74 +81,7 @@ bool %CLASSNAME%Plugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*
  */
 void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
 {
-	using namespace boost::gil;
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
-
-    // do the rendering
-    if( dstComponents == OFX::ePixelComponentRGBA )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                %CLASSNAME%Process<rgba8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                %CLASSNAME%Process<rgba16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                %CLASSNAME%Process<rgba32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-    else if( dstComponents == OFX::ePixelComponentAlpha )
-    {
-        switch( dstBitDepth )
-        {
-            case OFX::eBitDepthUByte :
-            {
-                %CLASSNAME%Process<gray8_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthUShort :
-            {
-                %CLASSNAME%Process<gray16_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-            case OFX::eBitDepthFloat :
-            {
-                %CLASSNAME%Process<gray32f_view_t> p( *this );
-                p.setupAndProcess( args );
-                break;
-            }
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-				break;
-			}
-        }
-    }
-	else
-	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
-	}
+	doGilRender<%CLASSNAME%Plugin,%CLASSNAME%Process>( args );
 }
 
 

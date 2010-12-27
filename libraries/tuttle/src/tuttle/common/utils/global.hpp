@@ -1,5 +1,5 @@
-#ifndef __TUTTLE_GLOBAL__
-#define __TUTTLE_GLOBAL__
+#ifndef _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
+#define _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 
 //#define TUTTLE_NO_COUT
 
@@ -29,20 +29,16 @@ namespace std {
 // Define functions to display infos in the console
 #include <iostream>
 
-#ifdef _DEBUG
- #    define TUTTLE_FORCEINLINE inline
+#ifdef NDEBUG
+#  if defined( _MSC_VER )
+#    define TUTTLE_FORCEINLINE __forceinline
+#  elif defined( __GNUC__ ) && __GNUC__ > 3
+#    define TUTTLE_FORCEINLINE inline __attribute__ ( ( always_inline ) )
+#  else
+#    define TUTTLE_FORCEINLINE inline
+#  endif
 #else
- #ifdef NDEBUG
-  #if   defined( _MSC_VER )
-   #    define TUTTLE_FORCEINLINE __forceinline
-  #elif defined( __GNUC__ ) && __GNUC__ > 3
-   #    define TUTTLE_FORCEINLINE inline __attribute__ ( ( always_inline ) )
-  #else
-   #    define TUTTLE_FORCEINLINE inline
-  #endif
- #else
-  #    define TUTTLE_FORCEINLINE inline
- #endif
+#  define TUTTLE_FORCEINLINE inline
 #endif
 
 #ifndef COUT

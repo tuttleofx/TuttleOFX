@@ -1,6 +1,6 @@
 #include "VideoFFmpegWriter.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <boost/cstdint.hpp>
 
@@ -211,7 +211,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			AVPacket pkt;
 			av_init_packet( &pkt );
 
-			if( _stream->codec->coded_frame && _stream->codec->coded_frame->pts != static_cast<int64_t>( AV_NOPTS_VALUE ) ) // static_cast<unsigned long> (
+			if( _stream->codec->coded_frame && _stream->codec->coded_frame->pts != static_cast<boost::int64_t>( AV_NOPTS_VALUE ) ) // static_cast<unsigned long> (
 				pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
 
 			if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )

@@ -54,19 +54,6 @@ RawReaderProcess<View>::RawReaderProcess( RawReaderPlugin& instance )
 	//	_rawProcessor.set_dataerror_handler( xxxCallback, reinterpret_cast<void*>(this) );
 }
 
-template<class View>
-void RawReaderProcess<View>::setup( const OFX::RenderArguments& args )
-{
-	_params = _plugin.getProcessParams( args.time );
-
-	if( !bfs::exists( _params._filepath ) )
-	{
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, std::string( "Unable to open : " ) + _params._filepath ) );
-	}
-
-	ImageGilProcessor<View>::setup( args );
-}
-
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW

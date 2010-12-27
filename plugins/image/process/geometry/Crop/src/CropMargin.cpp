@@ -18,7 +18,7 @@ bool CropMargin::draw( const OFX::DrawArgs& args )
 	if( plugin && plugin->displayRect() )
 	{
 		OfxRectD rect[2];
-		rect[0] = plugin->getCropRect();
+		rect[0] = plugin->getCropRect( args.time );
 		// get the project size
 		OfxPointD projSize, projOffset;
 		projOffset = _effect->getProjectOffset();

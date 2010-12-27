@@ -3,7 +3,7 @@
 
 #include "DiffDefinitions.hpp"
 
-#include <ofxsImageEffect.h>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {

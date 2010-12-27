@@ -1,7 +1,7 @@
 #ifndef _EXRREADER_DEFINITIONS_HPP_
 #define _EXRREADER_DEFINITIONS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/context/ReaderDefinition.hpp>
 
 namespace tuttle {

@@ -1,12 +1,10 @@
 #ifndef _TUTTLE_PLUGIN_FFMPEG_READER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_FFMPEG_READER_PLUGIN_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <string>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <ffmpeg/VideoFFmpegReader.hpp>
+
+#include <string>
 
 namespace tuttle {
 namespace plugin {

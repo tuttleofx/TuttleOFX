@@ -2,12 +2,10 @@
 #include "DPXReaderProcess.hpp"
 #include "DPXReaderDefinitions.hpp"
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include "dpxEngine/dpxImage.hpp"
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
-#include "dpxEngine/dpxImage.hpp"
-#include "tuttle/plugin/context/ReaderPlugin.hpp"
 
 namespace tuttle {
 namespace plugin {
@@ -16,7 +14,6 @@ namespace reader {
 
 using namespace boost::filesystem;
 using namespace tuttle::io;
-
 using namespace boost::gil;
 
 DPXReaderPlugin::DPXReaderPlugin( OfxImageEffectHandle handle )
@@ -29,49 +26,6 @@ DPXReaderProcessParams DPXReaderPlugin::getProcessParams( const OfxTime time )
 
 	params._filepath = getAbsoluteFilenameAt( time );
 	return params;
-}
-
-/**
- * @brief The overridden render function
- * @param[in]   args     Rendering parameters
- */
-void DPXReaderPlugin::render( const OFX::RenderArguments& args )
-{
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				DPXReaderProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				DPXReaderProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				DPXReaderProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
 }
 
 void DPXReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -109,14 +63,6 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
-
-	if( !bfs::exists( filename ) )
-	{
-		BOOST_THROW_EXCEPTION( exception::File()
-		    << exception::user( "No input file." )
-		    << exception::filename( filename )
-		                       );
-	}
 
 	switch( getExplicitConversion() )
 	{
@@ -173,6 +119,36 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	}
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
+}
+/**
+ * @brief The overridden render function
+ * @param[in]   args     Rendering parameters
+ */
+void DPXReaderPlugin::render( const OFX::RenderArguments& args )
+{
+	ReaderPlugin::render( args );
+
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent components = _clipDst->getPixelComponents();
+
+	switch( components )
+	{
+		case OFX::ePixelComponentRGBA:
+		{
+			doGilRender<DPXReaderProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			return;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 }

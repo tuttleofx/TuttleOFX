@@ -2,8 +2,6 @@
 #include "%CLASSNAME%Plugin.hpp"
 #include "%CLASSNAME%Definitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
-
 #include <limits>
 
 namespace tuttle {

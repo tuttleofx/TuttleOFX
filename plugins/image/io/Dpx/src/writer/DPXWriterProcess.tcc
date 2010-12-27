@@ -34,6 +34,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	BOOST_ASSERT( this->_srcPixelRod == this->_dstPixelRod );
 	DPXWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
+	
 	int packing                   = params._compressed == false;
 	try
 	{

@@ -121,8 +121,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( exception::OfxCustom()
-		    << exception::ofxStatus( rval )
+		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
 		    << exception::user( "Loading plugin failed." )
 		    << exception::dev( "kOfxActionLoad failed." )
 		    << exception::pluginIdentifier( op.getIdentifier() ) );
@@ -132,8 +131,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( exception::OfxCustom()
-		    << exception::ofxStatus( rval )
+		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
 		    << exception::user( "Loading plugin failed." )
 		    << exception::dev( "kOfxActionDescribe failed." )
 		    << exception::pluginIdentifier( op.getIdentifier() ) );
@@ -154,8 +152,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
-		BOOST_THROW_EXCEPTION( exception::OfxCustom()
-		    << exception::ofxStatus( rval )
+		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
 		    << exception::user( "Unloading plugin failed at initialization.." )
 		    << exception::dev( "kOfxActionUnload failed." )
 		    << exception::pluginIdentifier( op.getIdentifier() ) );

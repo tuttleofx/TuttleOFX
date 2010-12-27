@@ -12,6 +12,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/path.hpp>
 
 #include <cmath>
 #include <vector>
@@ -39,7 +40,9 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
+
 	PngWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
+	
 	try
 	{
 		switch( params._bitDepth )

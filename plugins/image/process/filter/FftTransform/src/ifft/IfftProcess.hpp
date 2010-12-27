@@ -10,7 +10,9 @@
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <fftEngine/FftwWrapperCPU.hpp>
+#ifdef with_cuda
 #include <fftEngine/FftwWrapperGPU.hpp>
+#endif
 
 #include <boost/scoped_ptr.hpp>
 

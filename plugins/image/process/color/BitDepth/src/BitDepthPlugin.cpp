@@ -2,7 +2,7 @@
 #include "BitDepthProcess.hpp"
 #include "BitDepthDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
@@ -15,10 +15,8 @@ using namespace boost;
 using namespace boost::gil;
 
 BitDepthPlugin::BitDepthPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc          = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst          = fetchClip( kOfxImageEffectOutputClipName );
 	_paramOutBitDepth = fetchChoiceParam( kParamOutputBitDepth );
 }
 
@@ -59,23 +57,22 @@ void BitDepthPlugin::render( const OFX::RenderArguments& args )
 				case OFX::eBitDepthUByte:
 				{
 					setupDestView<rgba8_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthUShort:
 				{
 					setupDestView<rgba16_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthFloat:
 				{
 					setupDestView<rgba32f_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(srcBitDepth) << ") not recognized by the plugin." );
-					break;
+					BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrUnsupported, "Bit depth (" + mapBitDepthEnumToString(srcBitDepth) + ") not recognized by the plugin." ) );
 				}
 			}
 			break;
@@ -87,23 +84,23 @@ void BitDepthPlugin::render( const OFX::RenderArguments& args )
 				case OFX::eBitDepthUByte:
 				{
 					setupDestView<rgb8_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthUShort:
 				{
 					setupDestView<rgb16_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthFloat:
 				{
 					setupDestView<rgb32f_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(srcBitDepth) << ") not recognized by the plugin." );
-					break;
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(srcBitDepth) + ") not recognized by the plugin." );
 				}
 			}
 			break;
@@ -115,23 +112,23 @@ void BitDepthPlugin::render( const OFX::RenderArguments& args )
 				case OFX::eBitDepthUByte:
 				{
 					setupDestView<gray8_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthUShort:
 				{
 					setupDestView<gray16_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthFloat:
 				{
 					setupDestView<gray32f_view_t>( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(srcBitDepth) << ") not recognized by the plugin." );
-					break;
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(srcBitDepth) + ") not recognized by the plugin." );
 				}
 			}
 			break;
@@ -139,10 +136,11 @@ void BitDepthPlugin::render( const OFX::RenderArguments& args )
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
 		{
-			COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(srcComponents) << ") not supported by the plugin." );
-			break;
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(srcComponents) + ") not supported by the plugin." );
 		}
 	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 /**
@@ -165,25 +163,25 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments& args )
 				{
 					BitDepthProcess<sview_t, rgba8_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthUShort:
 				{
 					BitDepthProcess<sview_t, rgba16_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthFloat:
 				{
 					BitDepthProcess<sview_t, rgba32f_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-					break;
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(dstBitDepth) + ") not recognized by the plugin." );
 				}
 			}
 			break;
@@ -196,25 +194,25 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments& args )
 				{
 					BitDepthProcess<sview_t, rgb8_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthUShort:
 				{
 					BitDepthProcess<sview_t, rgb16_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthFloat:
 				{
 					BitDepthProcess<sview_t, rgb32f_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-					break;
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(dstBitDepth) + ") not recognized by the plugin." );
 				}
 			}
 			break;
@@ -227,25 +225,25 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments& args )
 				{
 					BitDepthProcess<sview_t, gray8_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthUShort:
 				{
 					BitDepthProcess<sview_t, gray16_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthFloat:
 				{
 					BitDepthProcess<sview_t, gray32f_view_t> fred( *this );
 					fred.setupAndProcess( args );
-					break;
+					return;
 				}
 				case OFX::eBitDepthCustom:
 				case OFX::eBitDepthNone:
 				{
-					COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString(dstBitDepth) << ") not recognized by the plugin." );
-					break;
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(dstBitDepth) + ") not recognized by the plugin." );
 				}
 			}
 			break;
@@ -253,10 +251,11 @@ void BitDepthPlugin::setupDestView( const OFX::RenderArguments& args )
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
 		{
-			COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString(dstComponents) << ") not supported by the plugin." );
-			break;
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(dstComponents) + ") not supported by the plugin." );
 		}
 	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 }

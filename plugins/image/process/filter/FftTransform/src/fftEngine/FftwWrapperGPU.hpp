@@ -7,13 +7,13 @@
 
 #include "IfftwWrapper.hpp"
 
+//#include <cuda.h>
+
 #include <cstdlib>
 #include <vector>
-#include <cuda.h>
 
 namespace tuttle {
 namespace plugin {
-namespace filter {
 namespace fft {
 
 	inline CUdeviceptr voidToDev( void* v )
@@ -43,7 +43,6 @@ namespace fft {
 		CUcontext _ictx;
 	};
 
-}
 }
 }
 }

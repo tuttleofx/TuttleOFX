@@ -1,6 +1,6 @@
 #include "dpxImage.hpp"
 #include "dpxUtils.hpp"
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/detail/endian.hpp>

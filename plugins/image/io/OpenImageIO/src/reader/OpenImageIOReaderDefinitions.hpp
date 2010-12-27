@@ -1,7 +1,7 @@
 #ifndef OPENIMAGEIOREADER_DEFINITIONS_HPP
 #define OPENIMAGEIOREADER_DEFINITIONS_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/context/ReaderDefinition.hpp>
 
 namespace tuttle {

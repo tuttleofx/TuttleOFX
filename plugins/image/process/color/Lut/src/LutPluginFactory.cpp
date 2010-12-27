@@ -52,7 +52,6 @@ void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX:
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -65,8 +64,8 @@ void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX:
 	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( "Help" );
-	helpButton->setScriptName( "help" );
+	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kHelp );
+	helpButton->setLabel( "Help" );
 }
 
 /**

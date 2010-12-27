@@ -9,7 +9,6 @@
 
 namespace tuttle {
 namespace plugin {
-namespace filter {
 namespace fft {
 
 	class FftwWrapperCPU : public IfftwWrapper
@@ -23,7 +22,6 @@ namespace fft {
 	private:
 	};
 
-}
 }
 }
 }

@@ -1,7 +1,7 @@
 #ifndef _LENSDISTORTPROCESSPARAMS_HPP_
 #define _LENSDISTORTPROCESSPARAMS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 
 namespace tuttle {

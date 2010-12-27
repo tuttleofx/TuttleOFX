@@ -3,7 +3,7 @@
 
 #include "LensDistortPlugin.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/InteractInfos.hpp>
 #include <tuttle/plugin/interact/InteractScene.hpp>

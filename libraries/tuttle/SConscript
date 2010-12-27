@@ -17,7 +17,6 @@ project.StaticLibrary( 'tuttlePlugin',
                        includes  = ['src','src/tuttle/host/core'],
                        libraries = [ libs.tuttleCommon,
                                      libs.openfxPluginSupportHack,
-                                     libs.openfxHack,
                                      libs.boost,
                                     ],
                        shared = True

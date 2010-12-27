@@ -10,7 +10,6 @@
 
 namespace tuttle {
 namespace plugin {
-namespace filter {
 namespace fft {
 
 IfftwWrapper::IfftwWrapper()
@@ -93,6 +92,7 @@ bool IfftwWrapper::fftMag( const float* in, float* out, size_t w, size_t h )
 		// Normalize to dB
 		out[i] = 10.0f * std::log( 10.0f ) * ( out[i] / magmax );
 	}
+	return true;
 }
 
 /**
@@ -200,7 +200,6 @@ bool IfftwWrapper::complex2p( const Complex* in, float* phaseOut, size_t w, size
 	return false;
 }
 
-}
 }
 }
 }

@@ -3,9 +3,13 @@
 
 #include "WriterDefinition.hpp"
 
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <ofxsImageEffect.h>
+
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #include <boost/gil/gil_all.hpp>
 
@@ -16,14 +20,15 @@ class WriterPlugin : public ImageEffectGilPlugin
 {
 public:
 	WriterPlugin( OfxImageEffectHandle handle );
-	virtual ~WriterPlugin();
+	virtual ~WriterPlugin() = 0;
 
 public:
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-	OfxStatus render( const OFX::RenderArguments& args );
+	virtual void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
+	virtual void render( const OFX::RenderArguments& args );
 
 protected:
 	inline bool varyOnTime() const { return _isSequence; }
@@ -42,6 +47,19 @@ public:
 			return _filePattern.getAbsoluteFilenameAt( time );
 		else
 			return _paramFilepath->getValue();
+	}
+
+	std::string getAbsoluteDirectory() const
+	{
+		namespace bfs = boost::filesystem;
+		if( _isSequence )
+			return _filePattern.getDirectory().string();
+		else
+		{
+			bfs::path filepath( _paramFilepath->getValue() );
+//			return bfs::absolute(filepath).parent_path().string();
+			return filepath.parent_path().string();
+		}
 	}
 
 	std::string getAbsoluteFirstFilename() const

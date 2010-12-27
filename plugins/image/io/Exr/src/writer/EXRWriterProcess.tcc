@@ -46,6 +46,7 @@ void EXRWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( ( procWindowRoW == this->_dstPixelRod ) );
 	BOOST_ASSERT( ( this->_srcPixelRod == this->_dstPixelRod ) );
 	EXRWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
+	
 	try
 	{
 		switch( params._bitDepth )

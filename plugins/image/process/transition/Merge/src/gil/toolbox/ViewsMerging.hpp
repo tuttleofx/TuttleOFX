@@ -1,6 +1,8 @@
 #ifndef _BOOST_GIL_VIEWS_MERGING_HPP_
 #define _BOOST_GIL_VIEWS_MERGING_HPP_
 
+#include "MergeAbstractFunctor.hpp"
+
 #include <boost/static_assert.hpp>
 #include <boost/gil/typedefs.hpp>
 #include <boost/gil/utilities.hpp>

@@ -1,16 +1,13 @@
-#ifndef _PNG_WRITER_PLUGIN_HPP_
-#define _PNG_WRITER_PLUGIN_HPP_
-
-#include <tuttle/plugin/context/WriterPlugin.hpp>
+#ifndef _TUTTLE_PLUGIN_PNG_WRITER_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_PNG_WRITER_PLUGIN_HPP_
 
 #include "PngWriterDefinitions.hpp"
+#include <tuttle/plugin/context/WriterPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace png {
 namespace writer {
-
-using namespace boost::gil;
 
 struct PngWriterProcessParams
 {
@@ -29,7 +26,8 @@ public:
 
 public:
 	PngWriterProcessParams getProcessParams( const OfxTime time );
-	virtual void           render( const OFX::RenderArguments& args );
+
+	void                   render( const OFX::RenderArguments& args );
 
 public:
 	OFX::ChoiceParam* _paramOutputComponents;     ///< Choose components RGBA or RGB

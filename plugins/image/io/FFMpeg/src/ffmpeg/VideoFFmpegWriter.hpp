@@ -4,7 +4,7 @@
 #include "FFmpeg.hpp"
 #include "VideoFFmpegReader.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <iostream>
 #include <string>

@@ -1,6 +1,7 @@
 #ifndef _BOOST_GIL_MERGEABSTRACTFUNCTOR_HPP_
 #define _BOOST_GIL_MERGEABSTRACTFUNCTOR_HPP_
 
+#include <boost/gil/color_convert.hpp>
 #include <boost/gil/pixel.hpp>
 
 namespace boost {

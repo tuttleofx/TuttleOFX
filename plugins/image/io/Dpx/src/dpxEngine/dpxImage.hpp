@@ -1,7 +1,7 @@
 #ifndef DPX_IMAGE_HPP
 #define DPX_IMAGE_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <boost/cstdint.hpp>
 #include <boost/detail/endian.hpp>

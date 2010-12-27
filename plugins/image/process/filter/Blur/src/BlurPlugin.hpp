@@ -2,9 +2,8 @@
 #define _TUTTLE_PLUGIN_BLUR_PLUGIN_HPP_
 
 #include "BlurDefinitions.hpp"
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
-#include <ofxsImageEffect.h>
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/numeric/kernel.hpp>
 #include <boost/gil/extension/numeric/convolve.hpp>
@@ -12,8 +11,6 @@
 namespace tuttle {
 namespace plugin {
 namespace blur {
-
-namespace bgil = boost::gil;
 
 template<typename Scalar>
 struct BlurProcessParams
@@ -29,10 +26,9 @@ struct BlurProcessParams
 /**
  * @brief Blur plugin
  */
-class BlurPlugin : public OFX::ImageEffect
+class BlurPlugin : public ImageEffectGilPlugin
 {
-typedef float Scalar;
-
+	typedef float Scalar;
 public:
 	BlurPlugin( OfxImageEffectHandle handle );
 
@@ -48,10 +44,6 @@ public:
 	void render( const OFX::RenderArguments& args );
 
 public:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc; ///< Source image clip
-	OFX::Clip* _clipDst; ///< Destination image clip
-
 	OFX::Double2DParam* _paramSize;
 	OFX::ChoiceParam* _paramBorder;
 	OFX::BooleanParam* _paramNormalizedKernel;

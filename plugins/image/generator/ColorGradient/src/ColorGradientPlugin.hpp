@@ -3,9 +3,7 @@
 
 #include "ColorGradientDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -25,7 +23,7 @@ struct ColorGradientProcessParams
 /**
  * @brief ColorGradient plugin
  */
-class ColorGradientPlugin : public OFX::ImageEffect
+class ColorGradientPlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef boost::gil::point2<double> Point2;
@@ -48,9 +46,6 @@ public:
 	typedef std::vector<OFX::Double2DParam*> Double2DParamVector;
 	typedef std::vector<OFX::RGBAParam*> RGBAParamVector;
 
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc;       ///< Source image clip
-	OFX::Clip* _clipDst;       ///< Destination image clip
 	Double2DParamVector _points;
 	RGBAParamVector _colors;
 	OFX::ChoiceParam* _gradientType;

@@ -3,7 +3,7 @@ Import( 'libs' )
 
 
 tuttleFlags = { 'LIBPATH': [project.inOutputLib()],
-                'CCFLAGS': project.CC['warning2'],
+                'CCFLAGS': project.CC['warning3'],
                 'CPPDEFINES':[('TUTTLE_PLUGIN_PATH','"'+project.inOutputBin()+'"')],
                }
 

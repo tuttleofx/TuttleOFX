@@ -3,7 +3,8 @@ Import( 'libs' )
 
 project.createOfxPlugin( dirs = ['src'],
                          libs = [
-								  libs.tuttlePlugin,
-								  libs.boost_gil,
-                                 ] )
+								   libs.tuttlePlugin,
+								   libs.boost_gil,
+								   libs.fftw3,
+								  ] )
 

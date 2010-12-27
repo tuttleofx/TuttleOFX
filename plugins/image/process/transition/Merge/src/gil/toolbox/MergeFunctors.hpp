@@ -2,10 +2,12 @@
 #define _BOOST_GIL_MERGEFUNCTORS_HPP_
 
 #include "MergeAbstractFunctor.hpp"
+
 #include <boost/gil/color_convert.hpp>
 #include <boost/gil/extension/color/hsl.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_signed.hpp>
+
 #include <cmath>
 
 namespace boost {

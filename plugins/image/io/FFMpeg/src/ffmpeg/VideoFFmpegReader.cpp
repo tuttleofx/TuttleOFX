@@ -1,12 +1,10 @@
 #include "VideoFFmpegReader.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <boost/cstdint.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
-
-#include <stdint.h>
 
 namespace fs = boost::filesystem;
 
@@ -45,7 +43,9 @@ VideoFFmpegReader::~VideoFFmpegReader()
 
 	av_free( _avFrame );
 	for( int i = 0; i < CODEC_TYPE_NB; ++i )
+	{
 		av_free( _avctxOptions[i] );
+	}
 	av_free( _avformatOptions );
 
 }
@@ -198,6 +198,7 @@ bool VideoFFmpegReader::setupStreamInfo()
 		switch( codecContext->codec_type )
 		{
 			case CODEC_TYPE_VIDEO:
+			{
 				_videoIdx.push_back( i );
 				if( _currVideoIdx < 0 )
 				{
@@ -206,7 +207,7 @@ bool VideoFFmpegReader::setupStreamInfo()
 				_width  = codecContext->width;
 				_height = codecContext->height;
 				break;
-
+			}
 			// ignore all audio streams
 			case CODEC_TYPE_AUDIO:
 			case CODEC_TYPE_UNKNOWN:
@@ -312,23 +313,23 @@ void VideoFFmpegReader::closeVideoCodec()
 		avcodec_close( stream->codec );
 }
 
-int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
+boost::int64_t VideoFFmpegReader::getTimeStamp( int pos ) const
 {
-	int64_t timestamp = boost::numeric_cast<int64_t>( ( (double) pos / fps() ) * AV_TIME_BASE );
+	boost::int64_t timestamp = boost::numeric_cast<boost::int64_t>( ( (double) pos / fps() ) * AV_TIME_BASE );
 
 	if( boost::numeric_cast<boost::uint64_t>( _context->start_time ) != AV_NOPTS_VALUE )
 		timestamp += _context->start_time;
 	return timestamp;
 }
 
-int VideoFFmpegReader::getFrame( int64_t timestamp ) const
+int VideoFFmpegReader::getFrame( const boost::int64_t timestamp ) const
 {
-	return (uint64_t)( ( timestamp - _context->start_time ) * fps() / AV_TIME_BASE );
+	return boost::numeric_cast<boost::uint64_t>( ( timestamp - _context->start_time ) * fps() / AV_TIME_BASE );
 }
 
-bool VideoFFmpegReader::seek( size_t pos )
+bool VideoFFmpegReader::seek( const std::size_t pos )
 {
-	int64_t offset = getTimeStamp( pos );
+	boost::int64_t offset = getTimeStamp( pos );
 
 	if( _offsetTime )
 	{
@@ -355,7 +356,7 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 	// search for our picture.
 	double pts = 0;
 
-	if( (boost::uint64_t) _pkt.dts != AV_NOPTS_VALUE )
+	if( boost::numeric_cast<boost::uint64_t>(_pkt.dts) != AV_NOPTS_VALUE )
 	{
 		AVStream* stream = getVideoStream();
 		if( stream )
@@ -369,7 +370,7 @@ bool VideoFFmpegReader::decodeImage( const int frame )
 		curPos = _lastSearchPos + 1;
 	_lastSearchPos = curPos;
 
-	if( (boost::uint64_t) _context->start_time != AV_NOPTS_VALUE )
+	if( boost::numeric_cast<boost::uint64_t>(_context->start_time) != AV_NOPTS_VALUE )
 		curPos -= int(_context->start_time * fps() / AV_TIME_BASE);
 
 	int hasPicture   = 0;

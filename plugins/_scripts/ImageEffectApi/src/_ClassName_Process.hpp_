@@ -2,7 +2,6 @@
 #define _TUTTLE_PLUGIN_%D_CLASSNAME%_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -19,7 +18,7 @@ public:
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef float Scalar;
-protected :
+protected:
     %CLASSNAME%Plugin&    _plugin;            ///< Rendering plugin
 	%CLASSNAME%ProcessParams<Scalar> _params; ///< parameters
 

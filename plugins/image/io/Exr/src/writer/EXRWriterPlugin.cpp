@@ -2,11 +2,6 @@
 #include "EXRWriterProcess.hpp"
 #include "EXRWriterDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -39,45 +34,8 @@ EXRWriterProcessParams EXRWriterPlugin::getProcessParams( const OfxTime time )
 void EXRWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
 
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				EXRWriterProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				EXRWriterProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				EXRWriterProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else
-	{
-		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToString( dstComponents ) << ")" );
-	}
+	doGilRender<EXRWriterProcess>( *this, args );
 }
 
 }

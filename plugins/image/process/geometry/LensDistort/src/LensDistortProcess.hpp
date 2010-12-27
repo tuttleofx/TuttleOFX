@@ -1,7 +1,7 @@
 #ifndef LENSDISTORTPROCESS_HPP
 #define LENSDISTORTPROCESS_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include "lensDistortAlgorithm.hpp"
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>

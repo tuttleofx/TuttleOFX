@@ -5,24 +5,17 @@
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <tuttle/plugin/interact/InteractInfos.hpp>
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/common/math/rectOp.hpp>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace imageStatistics {
 
-using namespace boost::gil;
-
 ImageStatisticsPlugin::ImageStatisticsPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
-
 	_paramCoordinateSystem = fetchChoiceParam( kParamCoordinateSystem );
 	_paramRectCenter       = fetchDouble2DParam( kParamRectCenter );
 	_paramRectSize         = fetchDouble2DParam( kParamRectSize );
@@ -79,7 +72,8 @@ void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestAr
 	srcRealRoiD.y1 = srcRealRoi.y1;
 	srcRealRoiD.x2 = srcRealRoi.x2;
 	srcRealRoiD.y2 = srcRealRoi.y2;
-	COUT_VAR( srcRealRoiD );
+//	COUT_VAR( srcRealRoiD );
+	
 	rois.setRegionOfInterest( *_clipSrc, srcRealRoiD );
 }
 
@@ -90,78 +84,41 @@ void ImageStatisticsPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestAr
 void ImageStatisticsPlugin::render( const OFX::RenderArguments& args )
 {
 	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
+	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent components = _clipDst->getPixelComponents();
 
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
+	switch( components )
 	{
-		switch( dstBitDepth )
+		case OFX::ePixelComponentRGBA:
 		{
-		   case OFX::eBitDepthUByte :
-		   {
-				COUT_FATALERROR( "BitDepthUByte not recognize." );
-//				ImageStatisticsProcess<rgba8_view_t> p( *this );
-//				p.setupAndProcess( args );
-				break;
-		   }
-		   case OFX::eBitDepthUShort :
-		   {
-				COUT_FATALERROR( "BitDepthUShort not recognize." );
-//				ImageStatisticsProcess<rgba16_view_t> p( *this );
-//				p.setupAndProcess( args );
-				break;
-		   }
-			case OFX::eBitDepthFloat:
+			switch( bitDepth )
 			{
-				ImageStatisticsProcess<rgba32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
+				case OFX::eBitDepthFloat:
+				{
+					doGilRender<ImageStatisticsProcess, boost::gil::rgba_layout_t, boost::gil::bits32f>( *this, args );
+					return;
+				}
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort:
+				case OFX::eBitDepthNone:
+				case OFX::eBitDepthCustom:
+				{
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+				}
 			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
+			break;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
 		}
 	}
-	/*
-	     else if( dstComponents == OFX::ePixelComponentAlpha )
-	     {
-			 switch( dstBitDepth )
-			 {
-				case OFX::eBitDepthUByte :
-				{
-					ImageStatisticsProcess<gray8_view_t> p( *this );
-					p.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthUShort :
-				{
-					ImageStatisticsProcess<gray16_view_t> p( *this );
-					p.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthFloat :
-				{
-					ImageStatisticsProcess<gray32f_view_t> p( *this );
-					p.setupAndProcess( args );
-					break;
-				}
-				case OFX::eBitDepthNone :
-					COUT_FATALERROR( "BitDepthNone not recognize." );
-					return;
-				case OFX::eBitDepthCustom :
-					COUT_FATALERROR( "BitDepthCustom not recognize." );
-					return;
-			 }
-	     }
-	 */
-	else
-	{
-		COUT_FATALERROR( "Unrecognized components." );
-	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 void ImageStatisticsPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

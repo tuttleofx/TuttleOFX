@@ -3,7 +3,7 @@
 
 #include "InvertDefinitions.hpp"
 
-#include <ofxsImageEffect.h>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -22,7 +22,7 @@ struct InvertProcessParams
  * @brief
  *
  */
-class InvertPlugin : public OFX::ImageEffect
+class InvertPlugin : public ImageEffectGilPlugin
 {
 public:
 	InvertPlugin( OfxImageEffectHandle handle );
@@ -30,14 +30,11 @@ public:
 public:
 	InvertProcessParams getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
+ 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+
 	void render( const OFX::RenderArguments& args );
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
 protected:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc;      ///< Source image clip
-	OFX::Clip* _clipDst;      ///< Destination image clip
-
 	OFX::GroupParam* _processGroup;
 	OFX::BooleanParam* _processR;
 	OFX::BooleanParam* _processG;

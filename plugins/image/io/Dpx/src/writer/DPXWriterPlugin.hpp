@@ -1,5 +1,5 @@
-#ifndef _DPXWRITER_PLUGIN_HPP_
-#define _DPXWRITER_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_DPXWRITER_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_DPXWRITER_PLUGIN_HPP_
 
 #include <tuttle/plugin/context/WriterPlugin.hpp>
 
@@ -27,8 +27,10 @@ public:
 
 public:
 	DPXWriterProcessParams getProcessParams( const OfxTime time );
-	virtual void           render( const OFX::RenderArguments& args );
-	void                   changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	
+	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+
+	void render( const OFX::RenderArguments& args );
 
 protected:
 	OFX::ChoiceParam*    _componentsType;  ///< Dpx components type

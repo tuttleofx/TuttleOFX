@@ -2,7 +2,7 @@
 #define _JPEGWRITER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/context/WriterDefinition.hpp>
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {

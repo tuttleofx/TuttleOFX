@@ -174,7 +174,13 @@ struct Common : virtual public ::std::exception
  * @brief You have to specify the exception::ofxStatus(kOfxStatXXX) yourself.
  * When you call a base level function (C API) which returns an ofxStatus, you can use this exception and fill it with the returned value using ofxStatus tag.
  */
-struct OfxCustom : virtual public Common {};
+struct OfxCustom : virtual public Common
+{
+	OfxCustom( const OfxStatus status )
+	{
+		*this << ofxStatus( status );
+	}
+};
 
 /** @brief Status error code for a failed operation */
 struct Failed : virtual public Common
@@ -379,7 +385,54 @@ struct Data : virtual public Value {};
  * @brief File manipulation error.
  * eg. read only, file doesn't exists, etc.
  */
-struct File : virtual public Value {};
+struct File : virtual public Value
+{
+	File()
+	{}
+	File( const std::string path )
+	{
+		*this << filename(path);
+	}
+};
+
+/**
+ * @brief File doesn't exists.
+ */
+struct FileNotExist : virtual public File
+{
+	FileNotExist()
+	{}
+	FileNotExist( const std::string path )
+	{
+		*this << filename(path);
+	}
+};
+
+/**
+ * @brief Directory doesn't exists.
+ */
+struct NoDirectory : virtual public File
+{
+	NoDirectory()
+	{}
+	NoDirectory( const std::string path )
+	{
+		*this << filename(path);
+	}
+};
+
+/**
+ * @brief Read only file.
+ */
+struct ReadOnlyFile : virtual public File
+{
+	ReadOnlyFile()
+	{}
+	ReadOnlyFile( const std::string path )
+	{
+		*this << filename(path);
+	}
+};
 /// @}
 
 }

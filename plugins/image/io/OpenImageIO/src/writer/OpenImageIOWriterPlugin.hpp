@@ -1,10 +1,11 @@
-#ifndef _OPENIMAGEIO_WRITER_PLUGIN_HPP_
-#define _OPENIMAGEIO_WRITER_PLUGIN_HPP_
-
-#include <tuttle/plugin/context/WriterPlugin.hpp>
-#include <OpenImageIO/typedesc.h>
+#ifndef _TUTTLE_PLUGIN_OPENIMAGEIO_WRITER_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_OPENIMAGEIO_WRITER_PLUGIN_HPP_
 
 #include "OpenImageIOWriterDefinitions.hpp"
+
+#include <tuttle/plugin/context/WriterPlugin.hpp>
+
+#include <OpenImageIO/typedesc.h>
 
 namespace tuttle {
 namespace plugin {
@@ -28,7 +29,7 @@ public:
 
 public:
 	OpenImageIOWriterProcessParams getProcessParams( const OfxTime time );
-	void                           render( const OFX::RenderArguments& args );
+	void                      render( const OFX::RenderArguments& args );
 
 public:
 	OFX::ChoiceParam* _components;     ///< Choose components RGBA/RGB

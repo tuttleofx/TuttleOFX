@@ -10,13 +10,8 @@
 #include <ImathBox.h>
 #include <ImfChannelList.h>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
-
-using namespace boost::filesystem;
 
 namespace tuttle {
 namespace plugin {
@@ -47,62 +42,6 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 	return params;
 }
 
-/**
- * @brief The overridden render function
- * @param[in]   args     Rendering parameters
- */
-void EXRReaderPlugin::render( const OFX::RenderArguments& args )
-{
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				EXRReaderProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				EXRReaderProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				EXRReaderProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-}
-
-bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-{
-	InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
-	const Header& h             = in.header();
-	const Imath::V2i dataWindow = h.dataWindow().size();
-
-	rod.x1 = 0;
-	rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
-	rod.y1 = 0;
-	rod.y2 = dataWindow.y + 1;
-	return true;
-}
-
 void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 	if( paramName == "Help" )
@@ -122,7 +61,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		{
 			case 0:
 			{
-				for( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
 				{
 					_vChannelChoice[j]->setIsSecret( false );
 				}
@@ -131,7 +70,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 			}
 			case 1:
 			{
-				for( size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
+				for( std::size_t j = 0; j < _vChannelChoice.size() - 1; ++j )
 				{
 					_vChannelChoice[j]->setIsSecret( true );
 				}
@@ -140,7 +79,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 			}
 			case 2:
 			{
-				for( size_t j = 0; j < _vChannelChoice.size(); ++j )
+				for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
 				{
 					_vChannelChoice[j]->setIsSecret( true );
 				}
@@ -153,19 +92,73 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		ReaderPlugin::changedParam( args, paramName );
 	}
 }
+void EXRReaderPlugin::updateCombos()
+{
+	const std::string filename( getAbsoluteFirstFilename() );
+
+	if( bfs::exists( filename ) )
+	{
+		// read dims
+		InputFile in( filename.c_str() );
+		const Header& h       = in.header();
+		const ChannelList& cl = h.channels();
+		int nc                = 0;
+
+		_outComponents->resetOptions();
+		// Unhide output component type setup
+		_outComponents->setIsSecret( false );
+		// Hide output channel selection till we don't select a channel.
+		for( std::size_t i = 0; i < _vChannelChoice.size(); ++i )
+		{
+			_vChannelChoice[i]->setIsSecret( true );
+		}
+		_vChannelNames.clear();
+		for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
+		{
+			_vChannelNames.push_back( it.name() );
+			for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
+			{
+				_vChannelChoice[j]->appendOption( it.name() );
+			}
+			++nc;
+			switch( nc )
+			{
+				case 1:
+				{
+					_outComponents->appendOption( "Gray" );
+					_outComponents->setValue( 0 );
+					for( std::size_t j = 0; j < _vChannelChoice.size(); ++j )
+						_vChannelChoice[j]->setValue( 0 );
+					break;
+				}
+				case 3:
+				{
+					_outComponents->appendOption( "RGB" );
+					_outComponents->setValue( 1 );
+					size_t nc = _vChannelChoice.size() - 1;
+					for( std::size_t j = 0; j < nc; ++j )
+						_vChannelChoice[nc - j - 1]->setValue( j );
+					_vChannelChoice[3]->setValue( 0 );
+					break;
+				}
+				case 4:
+				{
+					_outComponents->appendOption( "RGBA" );
+					_outComponents->setValue( 2 );
+					size_t nc = _vChannelChoice.size();
+					for( std::size_t j = 0; j < nc; ++j )
+						_vChannelChoice[nc - j - 1]->setValue( j );
+					break;
+				}
+			}
+		}
+	}
+}
 
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	const std::string filename( getAbsoluteFirstFilename() );
-
-	if( !bfs::exists( filename ) )
-	{
-		BOOST_THROW_EXCEPTION( exception::File()
-		    << exception::user( "No input file." )
-		    << exception::filename( filename )
-		                       );
-	}
 	switch( getExplicitConversion() )
 	{
 		case eReaderParamExplicitConversionAuto:
@@ -193,68 +186,29 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info from exr
 }
 
-void EXRReaderPlugin::updateCombos()
+bool EXRReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	const std::string filename( getAbsoluteFirstFilename() );
+	InputFile in( getAbsoluteFilenameAt( args.time ).c_str() );
+	const Header& h             = in.header();
+	const Imath::V2i dataWindow = h.dataWindow().size();
 
-	if( bfs::exists( filename ) )
-	{
-		// read dims
-		InputFile in( filename.c_str() );
-		const Header& h       = in.header();
-		const ChannelList& cl = h.channels();
-		int nc                = 0;
-
-		_outComponents->resetOptions();
-		// Unhide output component type setup
-		_outComponents->setIsSecret( false );
-		// Hide output channel selection till we don't select a channel.
-		for( size_t i = 0; i < _vChannelChoice.size(); ++i )
-		{
-			_vChannelChoice[i]->setIsSecret( true );
-		}
-		_vChannelNames.clear();
-		for( ChannelList::ConstIterator it = cl.begin(); it != cl.end(); ++it )
-		{
-			_vChannelNames.push_back( it.name() );
-			for( size_t j = 0; j < _vChannelChoice.size(); ++j )
-			{
-				_vChannelChoice[j]->appendOption( it.name() );
-			}
-			++nc;
-			switch( nc )
-			{
-				case 1:
-				{
-					_outComponents->appendOption( "Gray" );
-					_outComponents->setValue( 0 );
-					for( size_t j = 0; j < _vChannelChoice.size(); ++j )
-						_vChannelChoice[j]->setValue( 0 );
-					break;
-				}
-				case 3:
-				{
-					_outComponents->appendOption( "RGB" );
-					_outComponents->setValue( 1 );
-					size_t nc = _vChannelChoice.size() - 1;
-					for( size_t j = 0; j < nc; ++j )
-						_vChannelChoice[nc - j - 1]->setValue( j );
-					_vChannelChoice[3]->setValue( 0 );
-					break;
-				}
-				case 4:
-				{
-					_outComponents->appendOption( "RGBA" );
-					_outComponents->setValue( 2 );
-					size_t nc = _vChannelChoice.size();
-					for( size_t j = 0; j < nc; ++j )
-						_vChannelChoice[nc - j - 1]->setValue( j );
-					break;
-				}
-			}
-		}
-	}
+	rod.x1 = 0;
+	rod.x2 = ( dataWindow.x + 1 ) * this->_clipDst->getPixelAspectRatio();
+	rod.y1 = 0;
+	rod.y2 = dataWindow.y + 1;
+	return true;
 }
+
+/**
+ * @brief The overridden render function
+ * @param[in]   args     Rendering parameters
+ */
+void EXRReaderPlugin::render( const OFX::RenderArguments& args )
+{
+	ReaderPlugin::render( args );
+	doGilRender<EXRReaderProcess>( *this, args );
+}
+
 
 }
 }

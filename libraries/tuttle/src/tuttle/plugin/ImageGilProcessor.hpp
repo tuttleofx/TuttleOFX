@@ -1,14 +1,16 @@
 #ifndef _TUTTLE_PLUGIN_IMAGEGILPROCESSOR_HPP_
 #define _TUTTLE_PLUGIN_IMAGEGILPROCESSOR_HPP_
 
-#include "ofxsImageEffect.h"
-#include "ofxsMultiThread.h"
-#include "ofxsUtilities.h"
 #include "exceptions.hpp"
 #include "OfxProgress.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/common/math/rectOp.hpp>
+
+#include <ofxsImageEffect.h>
+#include <ofxsMultiThread.h>
+#include <ofxsUtilities.h>
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/exception/info.hpp>
@@ -88,7 +90,7 @@ public:
 	}
 
 	/** @brief fetch output and inputs clips */
-	virtual OfxStatus setupAndProcess( const OFX::RenderArguments& args )
+	virtual void setupAndProcess( const OFX::RenderArguments& args )
 	{
 		_renderArgs = args;
 		try
@@ -99,41 +101,34 @@ public:
 		{
 			progressEnd();
 
-			if( _effect.abort() )
+			// throw an error, only if the host is not trying to abort the rendering
+			// else return without error
+			if( ! _effect.abort() )
 			{
-				// get an error because the host try to abort the rendering
-				return kOfxStatOK;
-			}
-			else
-			{
-				COUT_ERROR( boost::diagnostic_information( e ) );
-				if( OfxStatus* const status = boost::get_error_info<exception::ofxStatus>(e) )
+				OfxStatus status = kOfxStatErrUnknown;
+				if( OfxStatus* const s = boost::get_error_info<exception::ofxStatus>(e) )
 				{
-					return *status;
+					status = *s;
 				}
-				return kOfxStatErrUnknown;
+				BOOST_THROW_EXCEPTION( exception::OfxCustom(status)
+					<< exception::user() + boost::diagnostic_information( e ) );
 			}
 		}
 		catch(...)
 		{
 			progressEnd();
 
-			if( _effect.abort() )
+			// throw an error, only if the host is not trying to abort the rendering
+			// else return without error
+			if( ! _effect.abort() )
 			{
-				// get an error because the host try to abort the rendering
-				return kOfxStatOK;
-			}
-			else
-			{
-				COUT_ERROR( boost::current_exception_diagnostic_information() );
-				return kOfxStatErrUnknown;
+				BOOST_THROW_EXCEPTION( exception::Unknown()
+					<< exception::user() + boost::current_exception_diagnostic_information() );
 			}
 		}
 
 		// Call the base class process member
 		this->process();
-
-		return kOfxStatOK;
 	}
 
 	/**

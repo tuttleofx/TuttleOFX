@@ -3,10 +3,6 @@
 #include "ColorGradientAlgorithm.hpp"
 #include "ColorGradientDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 //#include <boost/algorithm/string/classification.hpp>
@@ -18,11 +14,8 @@ namespace colorGradient {
 using namespace boost::gil;
 
 ColorGradientPlugin::ColorGradientPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
-
 	_gradientType = fetchChoiceParam( kGradientType );
 	_nbPoints     = fetchIntParam( kNbPoints );
 
@@ -65,71 +58,45 @@ ColorGradientProcessParams<View> ColorGradientPlugin::getProcessParams() const
 template<template<typename> class Functor>
 void ColorGradientPlugin::renderFunctor( const OFX::RenderArguments& args )
 {
-	//    // instantiate the render code based on the pixel depth of the dst clip
-	//    OFX::EBitDepth dstBitDepth = _clipDst->getPixelDepth( );
-	//    OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents( );
-	//
-	//    // do the rendering
-	//    if( dstComponents == OFX::ePixelComponentRGBA )
-	//    {
-	//        switch( dstBitDepth )
-	//        {
-	//            case OFX::eBitDepthUByte :
-	//            {
-	//                ColorGradientProcess<rgba8_view_t, Functor> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthUShort :
-	//            {
-	//                ColorGradientProcess<rgba16_view_t, Functor> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthFloat :
-	//            {
-	ColorGradientProcess<rgba32f_view_t, Functor> p( *this );
-	p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthNone :
-	//                COUT_FATALERROR( "BitDepthNone not recognize." );
-	//                return;
-	//            case OFX::eBitDepthCustom :
-	//                COUT_FATALERROR( "BitDepthCustom not recognize." );
-	//                return;
-	//        }
-	//    }
-	//    else if( dstComponents == OFX::ePixelComponentAlpha )
-	//    {
-	//        switch( dstBitDepth )
-	//        {
-	//            case OFX::eBitDepthUByte :
-	//            {
-	//                ColorGradientProcess<gray8_view_t, Functor> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthUShort :
-	//            {
-	//                ColorGradientProcess<gray16_view_t, Functor> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthFloat :
-	//            {
-	//                ColorGradientProcess<gray32f_view_t, Functor> p( *this );
-	//                p.setupAndProcess( args );
-	//                break;
-	//            }
-	//            case OFX::eBitDepthNone :
-	//                COUT_FATALERROR( "BitDepthNone not recognize." );
-	//                return;
-	//            case OFX::eBitDepthCustom :
-	//                COUT_FATALERROR( "BitDepthCustom not recognize." );
-	//                return;
-	//        }
-	//    }
+	using namespace boost::gil;
+	
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
+	OFX::EPixelComponent components = _clipDst->getPixelComponents( );
+
+	switch( components )
+	{
+		case OFX::ePixelComponentRGBA:
+		{
+			switch( bitDepth )
+			{
+				case OFX::eBitDepthFloat:
+				{
+					ColorGradientProcess<rgba32f_view_t, Functor> p( *this );
+					p.setupAndProcess( args );
+					return;
+				}
+				case OFX::eBitDepthUByte:
+				case OFX::eBitDepthUShort:
+				case OFX::eBitDepthCustom:
+				case OFX::eBitDepthNone:
+				{
+					BOOST_THROW_EXCEPTION( exception::Unsupported()
+						<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(bitDepth) + ") not recognized by the plugin." );
+				}
+			}
+			break;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 /**
@@ -141,15 +108,22 @@ void ColorGradientPlugin::render( const OFX::RenderArguments& args )
 	switch( static_cast<EGradientType>( _gradientType->getValue() ) )
 	{
 		case eGradientType1DLinear:
+		{
 			renderFunctor<ColorGrandient1DLinearFunctor>( args );
-			break;
+			return;
+		}
 		case eGradientType1DRadial:
+		{
 			renderFunctor<ColorGrandient1DLinearFunctor>( args ); /// @todo tuttle: not implemented yet
-			break;
+			return;
+		}
 		case eGradientType2D:
+		{
 			renderFunctor<ColorGrandient2DLinearFunctor>( args );
-			break;
+			return;
+		}
 	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 void ColorGradientPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

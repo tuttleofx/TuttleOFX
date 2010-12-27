@@ -5,7 +5,7 @@
 #ifndef _TUTTLE_PLUGIN_FFTTRANSFORM_DEFINITIONS_HPP_
 #define _TUTTLE_PLUGIN_FFTTRANSFORM_DEFINITIONS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {

@@ -1,6 +1,6 @@
 #include "InvertAlgorithm.hpp"
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>

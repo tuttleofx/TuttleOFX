@@ -1,10 +1,8 @@
-#ifndef _EXR_READER_PLUGIN_HPP_
-#define _EXR_READER_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_EXR_READER_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_EXR_READER_PLUGIN_HPP_
 
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 #include <ImfInputFile.h>
-
-namespace bgil = boost::gil;
 
 namespace tuttle {
 namespace plugin {
@@ -22,16 +20,17 @@ struct EXRReaderProcessParams
  */
 class EXRReaderPlugin : public ReaderPlugin
 {
-
 public:
 	EXRReaderPlugin( OfxImageEffectHandle handle );
 	EXRReaderProcessParams getProcessParams( const OfxTime time );
 
 public:
-	void                                  render( const OFX::RenderArguments& args );
 	void                                  changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	bool                                  getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void                                  getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+	bool                                  getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+
+	void                             render( const OFX::RenderArguments& args );
+
 	const std::vector<std::string>&       channelNames() const  { return _vChannelNames; }
 	const std::vector<OFX::ChoiceParam*>& channelChoice() const { return _vChannelChoice; }
 

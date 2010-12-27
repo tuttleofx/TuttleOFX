@@ -1,12 +1,10 @@
 #ifndef _TUTTLE_PLUGIN_FFMPEG_WRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_FFMPEG_WRITER_PLUGIN_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <string>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <ffmpeg/VideoFFmpegWriter.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <string>
 
 namespace tuttle {
 namespace plugin {
@@ -24,7 +22,7 @@ struct FFMpegProcessParams
 /**
  * @brief FFMpeg plugin
  */
-class FFMpegWriterPlugin : public OFX::ImageEffect
+class FFMpegWriterPlugin : public ImageEffectGilPlugin
 {
 public:
 	FFMpegWriterPlugin( OfxImageEffectHandle handle );
@@ -40,9 +38,6 @@ public:
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
 public:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip*          _clipSrc;       ///< Source image clip
-	OFX::Clip*          _clipDst;       ///< Destination image clip
 	OFX::StringParam*   _filepath;      ///< Ffmpeg filepath
 	OFX::ChoiceParam*   _format;
 	OFX::ChoiceParam*   _formatLong;

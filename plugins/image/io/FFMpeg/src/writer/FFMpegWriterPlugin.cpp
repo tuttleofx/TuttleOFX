@@ -4,9 +4,6 @@
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -14,16 +11,12 @@ namespace plugin {
 namespace ffmpeg {
 namespace writer {
 
-using namespace boost::gil;
-
 FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_clipSrc           = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
 	_filepath          = fetchStringParam( kParamFilename );
 	_format            = fetchChoiceParam( kParamFormat );
 	_formatLong        = fetchChoiceParam( kParamFormatLong );
@@ -85,9 +78,17 @@ bool FFMpegWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip
 
 void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
-	_writer.filename( _filepath->getValue() );
-	_writer.setFormat( _format->getValue() );
-	_writer.setCodec( _codec->getValue() );
+	FFMpegProcessParams params = getProcessParams();
+
+	boost::filesystem::path filepath(params._filepath);
+	if( !exists( filepath.parent_path() ) )
+	{
+		BOOST_THROW_EXCEPTION( exception::NoDirectory( filepath.parent_path().string() ) );
+	}
+
+	_writer.filename( params._filepath );
+	_writer.setFormat( params._format );
+	_writer.setCodec( params._codec );
 	_writer.fps( _clipSrc->getFrameRate() );
 	_writer.aspectRatio( _clipSrc->getPixelAspectRatio() );
 }
@@ -98,71 +99,33 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
  */
 void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				FFMpegWriterProcess<rgba8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				FFMpegWriterProcess<rgba16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				FFMpegWriterProcess<rgba32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				FFMpegWriterProcess<gray8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				FFMpegWriterProcess<gray16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				FFMpegWriterProcess<gray32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
+	doGilRender<FFMpegWriterProcess>( *this, args );
+	
+//	// instantiate the render code based on the pixel depth of the dst clip
+//	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+//	OFX::EPixelComponent components = _clipDst->getPixelComponents();
+//
+//	switch( components )
+//	{
+//		case OFX::ePixelComponentRGBA:
+//		{
+//			doGilRender<BasicKeyerPlugin, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+//			return;
+//		}
+//		case OFX::ePixelComponentAlpha:
+//		{
+//			doGilRender<BasicKeyerPlugin, boost::gil::gray_layout_t>( *this, args, bitDepth );
+//			return;
+//		}
+//		case OFX::ePixelComponentRGB:
+//		case OFX::ePixelComponentCustom:
+//		case OFX::ePixelComponentNone:
+//		{
+//			BOOST_THROW_EXCEPTION( exception::Unsupported()
+//				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+//		}
+//	}
+//	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 void FFMpegWriterPlugin::endSequenceRender( const OFX::EndSequenceRenderArguments& args )

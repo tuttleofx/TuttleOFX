@@ -2,9 +2,6 @@
 #include "DebugImageEffectApiProcess.hpp"
 #include "DebugImageEffectApiDefinitions.hpp"
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
 
 #include <sstream>
@@ -13,28 +10,13 @@ namespace tuttle {
 namespace plugin {
 namespace debugImageEffectApi {
 
-using namespace boost::gil;
-
 DebugImageEffectApiPlugin::DebugImageEffectApiPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipSrc = fetchClip( kOfxImageEffectSimpleSourceClipName );
-	_clipDst = fetchClip( kOfxImageEffectOutputClipName );
-
 	_hostInfos   = fetchStringParam( kHostInfos );
 	_currentTime = fetchDoubleParam( kCurrentTime );
 	_beginTime   = fetchDoubleParam( kBeginTime );
 	_endTime     = fetchDoubleParam( kEndTime );
-}
-
-OFX::Clip* DebugImageEffectApiPlugin::getSrcClip() const
-{
-	return _clipSrc;
-}
-
-OFX::Clip* DebugImageEffectApiPlugin::getDstClip() const
-{
-	return _clipDst;
 }
 
 DebugImageEffectApiParams DebugImageEffectApiPlugin::getParams() const
@@ -50,71 +32,7 @@ DebugImageEffectApiParams DebugImageEffectApiPlugin::getParams() const
  */
 void DebugImageEffectApiPlugin::render( const OFX::RenderArguments& args )
 {
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				DebugImageEffectApiProcess<rgba8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				DebugImageEffectApiProcess<rgba16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				DebugImageEffectApiProcess<rgba32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				DebugImageEffectApiProcess<gray8_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				DebugImageEffectApiProcess<gray16_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				DebugImageEffectApiProcess<gray32f_view_t> p( *this );
-				p.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
+	doGilRender<DebugImageEffectApiProcess>( *this, args );
 }
 
 void DebugImageEffectApiPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

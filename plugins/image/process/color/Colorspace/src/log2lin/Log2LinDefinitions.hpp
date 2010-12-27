@@ -1,7 +1,7 @@
 #ifndef LOG2LIN_DEFINITIONS_HPP
 #define LOG2LIN_DEFINITIONS_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {

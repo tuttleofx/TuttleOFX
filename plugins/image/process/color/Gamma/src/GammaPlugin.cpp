@@ -1,9 +1,6 @@
 #include "GammaPlugin.hpp"
 #include "GammaProcess.hpp"
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -87,9 +84,9 @@ GammaProcessParams<GammaPlugin::Scalar> GammaPlugin::getProcessParams( const Ofx
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-OfxStatus GammaPlugin::render( const OFX::RenderArguments& args )
+void GammaPlugin::render( const OFX::RenderArguments& args )
 {
-	return doGilRender<GammaPlugin,GammaProcess>( args );
+	doGilRender<GammaProcess>( *this, args );
 }
 
 void GammaPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )

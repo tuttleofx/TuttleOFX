@@ -2,9 +2,6 @@
 #include "PngWriterPlugin.hpp"
 #include "PngWriterProcess.hpp"
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
@@ -35,8 +32,8 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )
 			params._bitDepth = 16;
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrValue, "Incorrect bit depth." ) );
-			break;
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user( "Incorrect bit depth." ) );
 	}
 	return params;
 }
@@ -48,75 +45,8 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )
 void PngWriterPlugin::render( const OFX::RenderArguments& args )
 {
 	WriterPlugin::render( args );
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				PngWriterProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				PngWriterProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				PngWriterProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				PngWriterProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				PngWriterProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				PngWriterProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else
-	{
-		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToString( dstComponents ) << ")" );
-	}
+	
+	doGilRender<PngWriterProcess>( *this, args );
 }
 
 }

@@ -1,9 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_RAWREADERPROCESS_HPP_
 #define _TUTTLE_PLUGIN_RAWREADERPROCESS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/exceptions.hpp>
 
 #include <libraw/libraw.h>
 
@@ -21,8 +19,6 @@ class RawReaderProcess : public ImageGilProcessor<View>
 
 public:
 	RawReaderProcess( RawReaderPlugin& instance );
-
-	void setup( const OFX::RenderArguments& args );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 

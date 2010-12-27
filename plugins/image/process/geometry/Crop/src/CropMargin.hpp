@@ -1,7 +1,7 @@
 #ifndef VOLET_MARGIN_HPP
 #define VOLET_MARGIN_HPP
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>

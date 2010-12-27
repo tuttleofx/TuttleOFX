@@ -1,9 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_TEXT_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_TEXT_PLUGIN_HPP_
 
-#include <tuttle/common/utils/global.hpp>
-#include <ofxsImageEffect.h>
-#include <boost/gil/gil_all.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -24,7 +22,7 @@ struct TextProcessParams
 /**
  * @brief Text plugin
  */
-class TextPlugin : public OFX::ImageEffect
+class TextPlugin : public ImageEffectGilPlugin
 {
 public:
 	TextPlugin( OfxImageEffectHandle handle );
@@ -35,9 +33,6 @@ public:
 	TextProcessParams getProcessParams() const;
 
 public:
-	// do not need to delete these, the ImageEffect is managing them for us
-	OFX::Clip* _clipSrc; ///< Source image clip
-	OFX::Clip* _clipDst; ///< Destination image clip
 	OFX::StringParam* _text; ///< the text to rasterize in the image
 	OFX::StringParam* _font;
 	OFX::IntParam* _size;

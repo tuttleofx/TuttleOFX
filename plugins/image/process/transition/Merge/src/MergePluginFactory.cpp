@@ -1,5 +1,5 @@
 #include "MergePluginFactory.hpp"
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include "MergePlugin.hpp"
 #include "MergeDefinitions.hpp"
 

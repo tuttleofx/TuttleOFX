@@ -1,7 +1,7 @@
 #ifndef _EXR_READER_PROCESS_HPP_
 #define _EXR_READER_PROCESS_HPP_
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
 #include <ofxsImageEffect.h>

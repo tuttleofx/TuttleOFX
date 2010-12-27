@@ -47,10 +47,10 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments& args )
 	using namespace boost::gil;
 
 	// destination view
-	boost::scoped_ptr<OFX::Image> dst( _plugin.getDstClip()->fetchImage( args.time ) );
+	boost::scoped_ptr<OFX::Image> dst( _plugin._clipDst->fetchImage( args.time ) );
 	if( !dst.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	this->_dstView = this->getView( dst.get(), _plugin.getDstClip()->getPixelRod( args.time ) );
+	this->_dstView = this->getView( dst.get(), _plugin._clipDst->getPixelRod( args.time ) );
 
 	boost::function_requires<PixelLocatorConcept<Locator> >();
 	gil_function_requires < StepIteratorConcept<typename Locator::x_iterator> >();
@@ -58,7 +58,7 @@ void CheckerboardProcess<View>::setup( const OFX::RenderArguments& args )
 	// params
 	CheckerboardParams<View> params = getParams();
 
-	OfxRectD rod = _plugin.getDstClip()->getCanonicalRod( args.time );
+	OfxRectD rod = _plugin._clipDst->getCanonicalRod( args.time );
 	Point dims( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	Point tileSize( dims.x / params._boxes.x, dims.x / params._boxes.y );
 	int yshift = boost::numeric_cast<int>( ( dims.x - dims.y ) * 0.5 );

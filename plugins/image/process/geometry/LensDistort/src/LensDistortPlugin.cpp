@@ -2,7 +2,6 @@
 #include "LensDistortProcess.hpp"
 #include "lensDistortAlgorithm.hpp" // to compute RoI
 
-#include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/plugin/coordinateSystem.hpp>
 
@@ -21,10 +20,8 @@ OfxRectD LensDistortPlugin::_srcRealRoi = { 0, 0, 0, 0 };
 const static std::string kLensDistortHelpString( "<p>Apply or correct a lens distortion on an image.</p>" );
 
 LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ImageEffectGilPlugin( handle )
 {
-	_clipDst    = fetchClip( kOfxImageEffectOutputClipName );
-	_clipSrc    = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_srcRefClip = fetchClip( kClipOptionalSourceRef );
 
 	_reverse              = fetchBooleanParam( kParamReverse );
@@ -67,74 +64,7 @@ void LensDistortPlugin::initParamsProps()
  */
 void LensDistortPlugin::render( const OFX::RenderArguments& args )
 {
-	using namespace bgil;
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipDst->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipDst->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				LensDistortProcess<rgba8_view_t> effect( *this );
-				effect.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				LensDistortProcess<rgba16_view_t> effect( *this );
-				effect.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				LensDistortProcess<rgba32f_view_t> effect( *this );
-				effect.setupAndProcess( args );
-				break;
-			}
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
-				break;
-			}
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				LensDistortProcess<gray8_view_t> effect( *this );
-				effect.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				LensDistortProcess<gray16_view_t> effect( *this );
-				effect.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				LensDistortProcess<gray32f_view_t> effect( *this );
-				effect.setupAndProcess( args );
-				break;
-			}
-			default:
-			{
-				COUT_ERROR( "Bit depth (" << mapBitDepthEnumToString( dstBitDepth ) << ") not recognized by the plugin." );
-				break;
-			}
-		}
-	}
-	else
-	{
-		COUT_ERROR( "Pixel components (" << mapPixelComponentEnumToString( dstComponents ) << ") not supported by the plugin." );
-	}
+	doGilRender<LensDistortProcess>( *this, args );
 }
 
 void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -168,7 +98,8 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 				_asymmetric->setEnabled( true );
 				break;
 			default:
-				COUT_ERROR( "Lens type value not recognize." );
+				BOOST_THROW_EXCEPTION( exception::Bug()
+					<< exception::user() + "Lens type value not recognize." );
 				break;
 		}
 	}
