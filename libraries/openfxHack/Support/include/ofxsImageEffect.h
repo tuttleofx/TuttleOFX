@@ -52,7 +52,9 @@
 #include <ofxTimeLine.h>
 
 #include <map>
+#include <vector>
 #include <string>
+#include <algorithm>
 #include <sstream>
 
 /** @brief Nasty macro used to define empty protected copy ctors and assign ops */
@@ -284,8 +286,12 @@ public:
 	bool supportsProgressSuite;
 	bool supportsTimeLineSuite;
 public:
+	bool supportsPixelComponent( const OFX::EPixelComponent component ) const
+	{
+		return std::find( _supportedComponents.begin(), _supportedComponents.end(), component ) != _supportedComponents.end();
+	}
 	/** @return the pixel depth used by host application, if it doesn't support multiple clip depth. */
-	EBitDepth getPixelDepth()
+	EBitDepth getPixelDepth() const
 	{
 		if( _supportedPixelDepths.size() == 1 )
 		{

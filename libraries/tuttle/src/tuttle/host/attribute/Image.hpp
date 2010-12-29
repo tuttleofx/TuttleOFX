@@ -83,7 +83,7 @@ VIEW_T Image::getGilView()
 	TCOUT_VAR( bounds );
 	TCOUT_VAR( std::abs( bounds.x2 - bounds.x1 ) );
 	TCOUT_VAR( std::abs( bounds.y2 - bounds.y1 ) );
-	TCOUT_VAR( this->getPixelData() );
+//	TCOUT_VAR( this->getPixelData() );
 	TCOUT_VAR( this->getRowBytes() );
 	
 	typedef typename VIEW_T::value_type Pixel;
