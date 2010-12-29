@@ -58,6 +58,7 @@ void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 
 	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls

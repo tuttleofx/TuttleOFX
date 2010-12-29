@@ -45,7 +45,7 @@ void ImageMagickReaderPlugin::render( const OFX::RenderArguments& args )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
-			doGilRender<ImageMagickReaderProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			doGilRender<ImageMagickReaderProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentRGB:

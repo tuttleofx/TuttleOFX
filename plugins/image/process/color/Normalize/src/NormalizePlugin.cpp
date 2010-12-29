@@ -216,7 +216,7 @@ void NormalizePlugin::render( const OFX::RenderArguments &args )
 			{
 				case OFX::eBitDepthFloat:
 				{
-					doGilRender<NormalizeProcess, rgba_layout_t, bits32f>( *this, args );
+					doGilRender<NormalizeProcess, false, rgba_layout_t, bits32f>( *this, args );
 					return;
 				}
 				case OFX::eBitDepthUByte:

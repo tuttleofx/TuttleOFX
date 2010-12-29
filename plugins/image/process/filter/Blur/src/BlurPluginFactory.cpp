@@ -46,12 +46,14 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
@@ -82,7 +84,8 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::DoubleParamDescriptor* kernelEpsilon = desc.defineDoubleParam( kParamKernelEpsilon );
 	kernelEpsilon->setLabel( "Kernel espilon value" );
 	kernelEpsilon->setHint( "Threshold at which we no longer consider the values of the function." );
-	kernelEpsilon->setDefault( 0.1 );
+	kernelEpsilon->setDefault( 0.01 );
+	kernelEpsilon->setDisplayRange( 0, 0.01 );
 	kernelEpsilon->setParent( advanced );
 }
 

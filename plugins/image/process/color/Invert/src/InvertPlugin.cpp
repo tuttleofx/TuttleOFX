@@ -46,7 +46,7 @@ void InvertPlugin::render( const OFX::RenderArguments& args )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
-			doGilRender<InvertProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			doGilRender<InvertProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentRGB:

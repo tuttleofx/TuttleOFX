@@ -57,6 +57,7 @@ void JpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 
 	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 

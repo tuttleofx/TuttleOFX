@@ -55,6 +55,7 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	// Dpx only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kReaderParamFilename );

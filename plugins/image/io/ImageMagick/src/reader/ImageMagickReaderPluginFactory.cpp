@@ -57,6 +57,7 @@ void ImageMagickReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
 
 	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 

@@ -136,7 +136,7 @@ void DPXReaderPlugin::render( const OFX::RenderArguments& args )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
-			doGilRender<DPXReaderProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			doGilRender<DPXReaderProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentRGB:
