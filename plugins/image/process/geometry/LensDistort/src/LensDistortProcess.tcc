@@ -3,13 +3,6 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/common/math/rectOp.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <cmath>
-#include <vector>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 
 namespace tuttle {
 namespace plugin {
@@ -57,13 +50,18 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 	switch( _interpolation )
 	{
 		case eParamInterpolationNearest:
+		{
 			lensDistort<nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
+		}
 		case eParamInterpolationBilinear:
+		{
 			lensDistort<bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
+		}
 	}
-	COUT_ERROR( "Interpolation method not recognize." );
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::user( "Interpolation method not recognize." ) );
 }
 
 template<class View>
@@ -73,6 +71,7 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 	switch( _lensType )
 	{
 		case eParamLensTypeStandard:
+		{
 			if( _p._distort )
 			{
 				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<NormalLensDistortParams<double>&>( _p ), procWindow, this );
@@ -82,22 +81,30 @@ void LensDistortProcess<View>::lensDistort( View& srcView, View& dstView, const 
 				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<NormalLensUndistortParams<double>&>( _p ), procWindow, this );
 			}
 			return;
+		}
 		case eParamLensTypeFisheye:
+		{
 			if( _p._distort )
 				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<FisheyeLensDistortParams<double>&>( _p ), procWindow, this );
 			else
 				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<FisheyeLensUndistortParams<double>&>( _p ), procWindow, this );
 			return;
+		}
 		case eParamLensTypeAdvanced:
+		{
 			if( _p._distort )
 				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<AdvancedLensDistortParams<double>&>( _p ), procWindow, this );
 			else
 				resample_pixels_progress<Sampler>( srcView, dstView, static_cast<AdvancedLensUndistortParams<double>&>( _p ), procWindow, this );
 			return;
+		}
 	}
-	COUT_ERROR( "Lens type not recognize." );
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::user( "Lens type not recognize." ) );
 }
 
 }
 }
 }
+
+
