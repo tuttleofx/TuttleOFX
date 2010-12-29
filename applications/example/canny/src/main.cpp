@@ -31,7 +31,7 @@ int main( int argc, char** argv )
 	{
 		using namespace tuttle::host;
 		TCOUT( "__________________________________________________0" );
-		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
+//		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 		// Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
 
@@ -40,11 +40,13 @@ int main( int argc, char** argv )
 		TCOUT( "__________________________________________________1" );
 
 //		boost::gil::rgba32f_image_t imgRead;
-		boost::gil::rgba8_image_t imgRead;
+//		boost::gil::rgba8_image_t imgRead;
+		boost::gil::gray8_image_t imgRead;
 		boost::gil::png_read_and_convert_image( argv[1], //"data/input.png",
 											    imgRead );
 //		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
-		boost::gil::rgba8_view_t imgView( view( imgRead ) );
+//		boost::gil::rgba8_view_t imgView( view( imgRead ) );
+		boost::gil::gray8_view_t imgView( view( imgRead ) );
 
 		TCOUT( "__________________________________________________2" );
 
@@ -53,20 +55,22 @@ int main( int argc, char** argv )
 //		Graph::Node& read        = g.createNode( "fr.tuttle.pngreader" );
 //		Graph::Node& bitdepth    = g.createNode( "fr.tuttle.bitdepth" );
 		InputBufferNode& inputBuffer1 = g.createInputBuffer();
-		Graph::Node& blur1        = g.createNode( "fr.tuttle.blur" );
-		Graph::Node& blur2        = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& bitdepth1    = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& bitdepth2    = g.createNode( "fr.tuttle.bitdepth" );
-		Graph::Node& sobel1      = g.createNode( "fr.tuttle.duranduboi.sobel" );
-		Graph::Node& sobel2      = g.createNode( "fr.tuttle.duranduboi.sobel" );
-		Graph::Node& localmaxima = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
-		Graph::Node& floodfill   = g.createNode( "fr.tuttle.duranduboi.floodfill" );
-		Graph::Node& thinning    = g.createNode( "fr.tuttle.duranduboi.thinning" );
-		Graph::Node& write0      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write1      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write2      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write3      = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write4      = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& blur1        = g.createNode( "fr.tuttle.blur" );
+		Graph::Node& blur2        = g.createNode( "fr.tuttle.blur" );
+		Graph::Node& sobel1       = g.createNode( "fr.tuttle.duranduboi.sobel" );
+		Graph::Node& sobel2       = g.createNode( "fr.tuttle.duranduboi.sobel" );
+		Graph::Node& localMaxima  = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
+		Graph::Node& floodfill    = g.createNode( "fr.tuttle.duranduboi.floodfill" );
+		Graph::Node& thinning     = g.createNode( "fr.tuttle.duranduboi.thinning" );
+		Graph::Node& write00       = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write0       = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write1a       = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write1b       = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write2       = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write3       = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& write4       = g.createNode( "fr.tuttle.pngwriter" );
 
 		TCOUT( "__________________________________________________3" );
 
@@ -74,7 +78,8 @@ int main( int argc, char** argv )
 		inputBuffer1.setClipRod( ibRod );
 		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthUByte );
 //		inputBuffer1.setClipBitDepth( InputBufferNode::eBitDepthFloat );
-		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentRGBA );
+//		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentRGBA );
+		inputBuffer1.setClipComponent( InputBufferNode::ePixelComponentAlpha );
 		inputBuffer1.setClipRawBuffer( /*static_cast<char*>*/(char*)(boost::gil::interleaved_view_get_raw_data( imgView )) );
 
 		// Setup parameters
@@ -86,6 +91,7 @@ int main( int argc, char** argv )
 
 		bitdepth1.getParam( "outputBitDepth" ).set( 3 );
 		bitdepth2.getParam( "outputBitDepth" ).set( 1 );
+
 		blur1.getParam( "border" ).set( "Padded" );
 		blur1.getParam( "size" ).set( 1.0, 0.0 );
 		blur1.getParam( "normalizedKernel" ).set( false );
@@ -102,6 +108,7 @@ int main( int argc, char** argv )
 		sobel1.getParam( "computeGradientDirection" ).set( false );
 		sobel1.getParam( "kernelEpsilon" ).set( 0.1 );
 		sobel1.getParam( "pass" ).set( 1 );
+		sobel1.getParam( "outputComponent" ).set( "RGB" );
 
 		sobel2.getParam( "border" ).set( "Padded" );
 		sobel2.getParam( "size" ).set( 1.0, 1.0 );
@@ -109,6 +116,9 @@ int main( int argc, char** argv )
 		sobel2.getParam( "computeGradientDirection" ).set( false );
 		sobel2.getParam( "kernelEpsilon" ).set( 0.1 );
 		sobel2.getParam( "pass" ).set( 2 );
+		sobel2.getParam( "outputComponent" ).set( "RGB" );
+
+		localMaxima.getParam( "outputComponent" ).set( "Alpha" );
 
 //		normalize.getParam( "mode" ).set( 0 ); //"analyse" );
 //		normalize.getParam( "analyseMode" ).set( 0 ); //"perChannel" );
@@ -119,14 +129,18 @@ int main( int argc, char** argv )
 		floodfill.getParam( "upperThres" ).set( 0.1 );
 		floodfill.getParam( "lowerThres" ).set( 0.025 );
 
-		write0.getParam( "components" ).set( 1 );
-		write1.getParam( "components" ).set( 1 );
-		write2.getParam( "components" ).set( 1 );
-		write2.getParam( "components" ).set( 1 );
-		write3.getParam( "components" ).set( 1 );
+		write00.getParam( "components" ).set( "rgba" );
+		write0.getParam( "components" ).set( "rgba" );
+		write1a.getParam( "components" ).set( "rgba" );
+		write1b.getParam( "components" ).set( "rgba" );
+		write2.getParam( "components" ).set( "rgba" );
+		write2.getParam( "components" ).set( "rgba" );
+		write3.getParam( "components" ).set( "rgba" );
 
+		write00.getParam( "filename" ).set( "data/canny/0_input.png" );
 		write0.getParam( "filename" ).set( "data/canny/0_blur.png" );
-		write1.getParam( "filename" ).set( "data/canny/1_sobel.png" );
+		write1a.getParam( "filename" ).set( "data/canny/1a_sobel.png" );
+		write1b.getParam( "filename" ).set( "data/canny/1b_sobel.png" );
 		write2.getParam( "filename" ).set( "data/canny/2_localMaxima.png" );
 		write3.getParam( "filename" ).set( "data/canny/3_floodfill.png" );
 		write4.getParam( "filename" ).set( "data/canny/4_thinning.png" );
@@ -139,21 +153,25 @@ int main( int argc, char** argv )
 		g.connect( blur1, blur2 );
 		g.connect( blur2, sobel1 );
 		g.connect( sobel1, sobel2 );
-		g.connect( sobel2, localmaxima );
-		g.connect( localmaxima, floodfill );
+		g.connect( sobel2, localMaxima );
+		g.connect( localMaxima, floodfill );
 		g.connect( floodfill, thinning );
 		g.connect( thinning, bitdepth2 );
 
+		g.connect( bitdepth1, write00 );
 		g.connect( blur2, write0 );
-		g.connect( sobel2, write1 );
-		g.connect( localmaxima, write2 );
+		g.connect( sobel1, write1a );
+		g.connect( sobel2, write1b );
+		g.connect( localMaxima, write2 );
 		g.connect( floodfill, write3 );
 		g.connect( thinning, write4 );
 
 		TCOUT( "__________________________________________________5" );
 		std::list<std::string> outputs;
+		outputs.push_back( write00.getName() );
 		outputs.push_back( write0.getName() );
-		outputs.push_back( write1.getName() );
+		outputs.push_back( write1a.getName() );
+		outputs.push_back( write1b.getName() );
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
@@ -175,11 +193,12 @@ int main( int argc, char** argv )
 		std::cout << res0 << std::endl;
 		memory::CACHE_ELEMENT imgRes = res0.get( bitdepth2.getName(), 0 );
 
-		TCOUT_VAR( imgRes->getROD() );
-		TCOUT_VAR( imgRes->getBounds() );
+		COUT_VAR( imgRes->getROD() );
+		COUT_VAR( imgRes->getBounds() );
 //		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
-		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
-		boost::gil::png_write_view( "data/canny/manual_output.png", boost::gil::color_converted_view<boost::gil::rgba8_pixel_t>( imgResView ) );
+//		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
+		boost::gil::gray8_view_t imgResView = imgRes->getGilView<boost::gil::gray8_view_t>();
+		boost::gil::png_write_view( "data/canny/manual_output.png", boost::gil::color_converted_view<boost::gil::rgb8_pixel_t>( imgResView ) );
 	}
 	catch( tuttle::exception::Common& e )
 	{
