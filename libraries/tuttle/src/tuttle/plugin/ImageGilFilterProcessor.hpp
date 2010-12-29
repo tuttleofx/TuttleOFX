@@ -11,14 +11,14 @@ namespace plugin {
 /**
  * @brief Base class that can be used to process images of any type using boost::gil library view to access images.
  */
-template <class View>
-class ImageGilFilterProcessor : public ImageGilProcessor<View>
+template <class SView, class DView = SView>
+class ImageGilFilterProcessor : public ImageGilProcessor<DView>
 {
 protected:
 	OFX::Clip* _clipSrc;       ///< Source image clip
 	boost::scoped_ptr<OFX::Image> _src;
 	OfxRectI _srcPixelRod;
-	View _srcView; ///< @brief source clip (filters have only one input)
+	SView _srcView; ///< @brief source clip (filters have only one input)
 
 public:
 	ImageGilFilterProcessor( OFX::ImageEffect& effect );
@@ -27,21 +27,21 @@ public:
 	virtual void setup( const OFX::RenderArguments& args );
 };
 
-template <class View>
-ImageGilFilterProcessor<View>::ImageGilFilterProcessor( OFX::ImageEffect& effect )
-	: ImageGilProcessor<View>( effect )
+template<class SView, class DView>
+ImageGilFilterProcessor<SView, DView>::ImageGilFilterProcessor( OFX::ImageEffect& effect )
+	: ImageGilProcessor<DView>( effect )
 {
 	_clipSrc = effect.fetchClip( kOfxImageEffectSimpleSourceClipName );
 }
 
-template <class View>
-ImageGilFilterProcessor<View>::~ImageGilFilterProcessor()
+template<class SView, class DView>
+ImageGilFilterProcessor<SView, DView>::~ImageGilFilterProcessor()
 {}
 
-template <class View>
-void ImageGilFilterProcessor<View>::setup( const OFX::RenderArguments& args )
+template<class SView, class DView>
+void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& args )
 {
-	ImageGilProcessor<View>::setup( args );
+	ImageGilProcessor<DView>::setup( args );
 
 	// source view
 	this->_src.reset( _clipSrc->fetchImage( args.time ) );
@@ -51,12 +51,12 @@ void ImageGilFilterProcessor<View>::setup( const OFX::RenderArguments& args )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
-	this->_srcView = this->getView( this->_src.get(), _srcPixelRod );
+	this->_srcView = tuttle::plugin::getView<SView>( this->_src.get(), _srcPixelRod );
 
-	// Make sure bit depths are same
-	if( this->_src->getPixelDepth() != this->_dst->getPixelDepth() ||
-	    this->_src->getPixelComponents() != this->_dst->getPixelComponents() )
-		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch() );
+//	// Make sure bit depths are same
+//	if( this->_src->getPixelDepth() != this->_dst->getPixelDepth() ||
+//	    this->_src->getPixelComponents() != this->_dst->getPixelComponents() )
+//		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch() );
 }
 
 }
