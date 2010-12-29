@@ -59,13 +59,13 @@ void FloodFillPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	
 	OFX::DoubleParamDescriptor* upperThres = desc.defineDoubleParam( kParamUpperThres );
 	upperThres->setLabel( "Upper thresold" );
-	upperThres->setDefault( 0.5 );
+	upperThres->setDefault( 0.1 );
 	upperThres->setRange( 0.0, std::numeric_limits<double>::max() );
 	upperThres->setDisplayRange( 0.0, 1.0 );
 
 	OFX::DoubleParamDescriptor* lowerThres = desc.defineDoubleParam( kParamLowerThres );
 	lowerThres->setLabel( "Lower thresold" );
-	lowerThres->setDefault( 0.1 );
+	lowerThres->setDefault( 0.025 );
 	lowerThres->setRange( 0.0, std::numeric_limits<double>::max() );
 	lowerThres->setDisplayRange( 0.0, 1.0 );
 
