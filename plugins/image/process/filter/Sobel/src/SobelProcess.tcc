@@ -10,6 +10,7 @@
 #include <boost/gil/extension/numeric/pixel_by_channel.hpp>
 #include <boost/gil/extension/typedefs.hpp>
 #include <boost/gil/utilities.hpp>
+#include <boost/mpl/bool.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/math/special_functions/pow.hpp>
@@ -21,17 +22,18 @@ namespace tuttle {
 namespace plugin {
 namespace sobel {
 
-template<class View>
-SobelProcess<View>::SobelProcess( SobelPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+template<class SView, class DView>
+SobelProcess<SView,DView>::SobelProcess( SobelPlugin &effect )
+: ImageGilFilterProcessor<SView,DView>( effect )
 , _plugin( effect )
 {
+	boost::gil::pixel_zeros_t<DPixel>()(_pixelZero);
 }
 
-template <class View>
-void SobelProcess<View>::setup( const OFX::RenderArguments& args )
+template <class SView, class DView>
+void SobelProcess<SView,DView>::setup( const OFX::RenderArguments& args )
 {
-	ImageGilFilterProcessor<View>::setup( args );
+	ImageGilFilterProcessor<SView,DView>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 }
 
@@ -39,13 +41,11 @@ void SobelProcess<View>::setup( const OFX::RenderArguments& args )
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window
  */
-template<class View>
-void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+template<class SView, class DView>
+void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost;
 	using namespace boost::gil;
-	typedef typename View::value_type Pixel;
-	Pixel pixelZero; bgil::pixel_zeros_t<Pixel>()(pixelZero);
 
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
@@ -53,29 +53,26 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
 	
-	typedef typename View::point_t Point;
-	typedef typename bgil::channel_mapping_type<View>::type Channel;
-	typedef typename floating_channel_type_t<Channel>::type ChannelFloat;
-	typedef bgil::pixel<ChannelFloat, gray_layout_t> PixelGray;
-	typedef bgil::image<PixelGray, false> ImageGray;
-	typedef typename ImageGray::view_t ViewGray;
+	typedef typename bgil::channel_mapping_type<DView>::type DChannel;
+	typedef typename floating_channel_type_t<DChannel>::type DChannelFloat;
+	typedef bgil::pixel<DChannelFloat, gray_layout_t> DPixelGray;
 
-	View dst = subimage_view( this->_dstView,
+	DView dst = subimage_view( this->_dstView,
 	                          procWindowOutput.x1, procWindowOutput.y1,
 	                          procWindowSize.x, procWindowSize.y );
 
 	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
-
+	
 	if( _params._xKernelGaussianDerivative.size() == 0 || ( !_params._unidimensional && _params._xKernelGaussian.size() == 0 ) )
 	{
-		fill_pixels( kth_channel_view<0>(dst), pixelZero );
+		fill_pixels( kth_channel_view<0>(dst), _pixelZero );
 	}
 	else
 	{
 		if( _params._unidimensional )
 		{
-			correlate_rows<PixelGray>(
-				color_converted_view<PixelGray>( this->_srcView ),
+			correlate_rows<DPixelGray>(
+				color_converted_view<DPixelGray>( this->_srcView ),
 				_params._xKernelGaussianDerivative,
 				kth_channel_view<0>(dst),
 				proc_tl,
@@ -87,8 +84,8 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols<PixelGray>(
-						color_converted_view<PixelGray>( this->_srcView ),
+					correlate_rows_cols<DPixelGray>(
+						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._xKernelGaussianDerivative,
 						_params._xKernelGaussian,
 						kth_channel_view<0>(dst),
@@ -98,8 +95,8 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				}
 				case eParamPass1:
 				{
-					correlate_rows<PixelGray>(
-						color_converted_view<PixelGray>( this->_srcView ),
+					correlate_rows<DPixelGray>(
+						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._xKernelGaussianDerivative,
 						kth_channel_view<0>(dst),
 						proc_tl,
@@ -108,7 +105,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				}
 				case eParamPass2:
 				{
-					correlate_cols<PixelGray>(
+					correlate_cols<DPixelGray>(
 						kth_channel_view<0>( this->_srcView ),
 						_params._xKernelGaussian,
 						kth_channel_view<0>(dst),
@@ -124,14 +121,14 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 
 	if( _params._yKernelGaussianDerivative.size() == 0 || ( !_params._unidimensional && _params._yKernelGaussian.size() == 0 ) )
 	{
-		fill_pixels( kth_channel_view<1>(dst), pixelZero );
+		fill_pixels( kth_channel_view<1>(dst), _pixelZero );
 	}
 	else
 	{
 		if( _params._unidimensional )
 		{
-			correlate_cols<PixelGray>(
-				color_converted_view<PixelGray>( this->_srcView ),
+			correlate_cols<DPixelGray>(
+				color_converted_view<DPixelGray>( this->_srcView ),
 				_params._yKernelGaussianDerivative,
 				kth_channel_view<1>(dst),
 				proc_tl,
@@ -143,8 +140,8 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols<PixelGray>(
-						color_converted_view<PixelGray>( this->_srcView ),
+					correlate_rows_cols<DPixelGray>(
+						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._yKernelGaussian,
 						_params._yKernelGaussianDerivative,
 						kth_channel_view<1>(dst),
@@ -154,8 +151,8 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				}
 				case eParamPass1:
 				{
-					correlate_rows<PixelGray>(
-						color_converted_view<PixelGray>( this->_srcView ),
+					correlate_rows<DPixelGray>(
+						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._yKernelGaussian,
 						kth_channel_view<1>(dst),
 						proc_tl,
@@ -164,12 +161,8 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				}
 				case eParamPass2:
 				{
-					correlate_cols<PixelGray>(
-						kth_channel_view<1>( this->_srcView ),
-						_params._yKernelGaussianDerivative,
-						kth_channel_view<1>(dst),
-						proc_tl,
-						_params._boundary_option );
+					typedef boost::mpl::bool_<( num_channels<SView>::value >= 2 )> Enable;
+					computeYPass2<DPixelGray>( dst, proc_tl, Enable() );
 					break;
 				}
 			}
@@ -180,7 +173,7 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 
 	if( ! _params._computeGradientNorm )
 	{
-		fill_pixels( kth_channel_view<2>(dst), pixelZero );
+		fill_pixels( kth_channel_view<2>(dst), _pixelZero );
 	}
 	else if( _params._gradientNormManhattan )
 	{
@@ -205,21 +198,18 @@ void SobelProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	if( progressForward( dst.height() ) )
 		return;
 
-	computeGradientDirection( dst, boost::mpl::bool_<(boost::gil::num_channels<View>::value >= 4)>() );
+	computeGradientDirection( dst, boost::mpl::bool_<(boost::gil::num_channels<DView>::value >= 4)>() );
 }
 
-template<class View>
-void SobelProcess<View>::computeGradientDirection( View& dst, boost::mpl::true_ )
+template<class SView, class DView>
+void SobelProcess<SView, DView>::computeGradientDirection( DView& dst, boost::mpl::true_ )
 {
 	using namespace boost;
 	using namespace boost::gil;
-
-	typedef typename View::value_type Pixel;
-	Pixel pixelZero; bgil::pixel_zeros_t<Pixel>()(pixelZero);
 	
 	if( ! _params._computeGradientDirection )
 	{
-		fill_pixels( kth_channel_view<3>(dst), pixelZero );
+		fill_pixels( kth_channel_view<3>(dst), _pixelZero );
 		if( progressForward( dst.height() ) )
 			return;
 	}

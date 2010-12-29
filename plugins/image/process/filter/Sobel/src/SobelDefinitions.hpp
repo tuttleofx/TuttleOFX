@@ -45,6 +45,16 @@ const static std::string kParamGradientNormManhattan = "gradientNormManhattan";
 const static std::string kParamComputeGradientDirection = "computeGradientDirection";
 const static std::string kParamGradientDirectionAbs = "gradientDirectionAbs";
 
+const static std::string kParamOutputComponent = "outputComponent";
+const static std::string kParamOutputComponentRGBA = "RGBA";
+const static std::string kParamOutputComponentRGB = "RGB";
+
+enum EParamOutputComponent
+{
+	eParamOutputComponentRGBA = 0,
+	eParamOutputComponentRGB,
+};
+
 const static std::string kParamInfos = "infos";
 
 

@@ -45,13 +45,13 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );
@@ -85,7 +85,8 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::DoubleParamDescriptor* kernelEpsilon = desc.defineDoubleParam( kParamKernelEpsilon );
 	kernelEpsilon->setLabel( "Kernel espilon value" );
 	kernelEpsilon->setHint( "Threshold at which we no longer consider the values of the function." );
-	kernelEpsilon->setDefault( 0.1 );
+	kernelEpsilon->setDefault( 0.01 );
+	kernelEpsilon->setDisplayRange( 0, 0.01 );
 	kernelEpsilon->setParent( advanced );
 
 	OFX::ChoiceParamDescriptor* pass = desc.defineChoiceParam( kParamPass );
@@ -119,7 +120,7 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* computeGradientDirection = desc.defineBooleanParam( kParamComputeGradientDirection );
 	computeGradientDirection->setLabel( "Gradient direction" );
 	computeGradientDirection->setHint( "To disable the gradient direction computation, if you don't need it." );
-	computeGradientDirection->setDefault( true );
+	computeGradientDirection->setDefault( false );
 
 	OFX::BooleanParamDescriptor* gradientDirectionAbs = desc.defineBooleanParam( kParamGradientDirectionAbs );
 	gradientDirectionAbs->setLabel( "Angle between 0 and PI" );
@@ -128,6 +129,12 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::PushButtonParamDescriptor* infosButton = desc.definePushButtonParam( kParamInfos );
 	infosButton->setLabel( "Infos" );
+
+	OFX::ChoiceParamDescriptor* outputComponent = desc.defineChoiceParam( kParamOutputComponent );
+	outputComponent->setLabel( "Output component" );
+	outputComponent->appendOption( OFX::getImageEffectHostDescription()->supportsPixelComponent(OFX::ePixelComponentRGBA) ? kParamOutputComponentRGBA : "---" );
+	outputComponent->appendOption( OFX::getImageEffectHostDescription()->supportsPixelComponent(OFX::ePixelComponentRGB) ? kParamOutputComponentRGB : "---" );
+	outputComponent->setIsSecret( OFX::getImageEffectHostDescription()->_supportedComponents.size() == 1 );
 }
 
 /**

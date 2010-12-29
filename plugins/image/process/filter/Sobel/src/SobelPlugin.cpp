@@ -9,6 +9,201 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/lambda/lambda.hpp>
 
+
+namespace {
+namespace sobel {
+
+namespace exception = tuttle::plugin::exception;
+
+template< template<class,class> class Process,
+          bool sPlanar, class SLayout, class SBits,
+		  bool dPlanar, class DLayout, class DBits,
+          class Plugin >
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args )
+{
+	typedef boost::gil::pixel<SBits, SLayout> SPixel;
+	typedef boost::gil::image<SPixel, sPlanar> SImage;
+	typedef typename SImage::view_t SView;
+
+	typedef boost::gil::pixel<DBits, DLayout> DPixel;
+	typedef boost::gil::image<DPixel, dPlanar> DImage;
+	typedef typename DImage::view_t DView;
+
+	Process<SView, DView> procObj( plugin );
+
+	procObj.setupAndProcess( args );
+}
+
+template< template<class,class> class Process,
+          bool sPlanar, class SLayout, class SBits,
+          bool dPlanar, class DLayout,
+          class Plugin >
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth dBitDepth )
+{
+    switch( dBitDepth )
+	{
+		case OFX::eBitDepthUByte:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, DLayout, boost::gil::bits8>( plugin, args );
+			return;
+		}
+		case OFX::eBitDepthUShort:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, DLayout, boost::gil::bits16>( plugin, args );
+			return;
+		}
+		case OFX::eBitDepthFloat:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, DLayout, boost::gil::bits32f>( plugin, args );
+			return;
+		}
+		case OFX::eBitDepthCustom:
+		case OFX::eBitDepthNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(dBitDepth) + ") not recognized by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
+}
+
+template< template<class,class> class Process,
+          bool sPlanar, class SLayout, class SBits,
+          bool dPlanar,
+          class Plugin >
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
+{
+    switch( dComponent )
+	{
+		case OFX::ePixelComponentRGBA:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, boost::gil::rgba_layout_t>( plugin, args, dBitDepth );
+			return;
+		}
+		case OFX::ePixelComponentRGB:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, boost::gil::rgb_layout_t>( plugin, args, dBitDepth );
+			return;
+		}
+//		{
+//			localDoGilRender2<Process, sPlanar, SLayout, SBits, dPlanar, boost::gil::gray_layout_t>( plugin, args, dBitDepth );
+//			return;
+//		}
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel component (" + mapPixelComponentEnumToString(dComponent) + ") not supported by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
+}
+
+template< template<class,class> class Process,
+          bool sPlanar, class SLayout, class SBits,
+          class Plugin >
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
+{
+	if( dPlanar )
+	{
+//		localDoGilRender2<Process, sPlanar, SLayout, SBits, true>( plugin, args, dComponent, dBitDepth );
+	}
+	else
+	{
+		localDoGilRender2<Process, sPlanar, SLayout, SBits, false>( plugin, args, dComponent, dBitDepth );
+	}
+}
+
+template< template<class,class> class Process,
+          bool sPlanar, class SLayout,
+          class Plugin >
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
+{
+    switch( sBitDepth )
+	{
+		case OFX::eBitDepthUByte:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, boost::gil::bits8>( plugin, args, dPlanar, dComponent, dBitDepth );
+			return;
+		}
+		case OFX::eBitDepthUShort:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, boost::gil::bits16>( plugin, args, dPlanar, dComponent, dBitDepth );
+			return;
+		}
+		case OFX::eBitDepthFloat:
+		{
+			localDoGilRender2<Process, sPlanar, SLayout, boost::gil::bits32f>( plugin, args, dPlanar, dComponent, dBitDepth );
+			return;
+		}
+		case OFX::eBitDepthCustom:
+		case OFX::eBitDepthNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Bit depth (" + mapBitDepthEnumToString(sBitDepth) + ") not recognized by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
+}
+
+template< template<class,class> class Process,
+          bool sPlanar,
+          class Plugin >
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::EPixelComponent sComponent, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
+{
+    switch( sComponent )
+	{
+		case OFX::ePixelComponentRGBA:
+		{
+			localDoGilRender2<Process, sPlanar, boost::gil::rgba_layout_t>( plugin, args, sBitDepth, dPlanar, dComponent, dBitDepth );
+			return;
+		}
+		case OFX::ePixelComponentRGB:
+		{
+			localDoGilRender2<Process, sPlanar, boost::gil::rgb_layout_t>( plugin, args, sBitDepth, dPlanar, dComponent, dBitDepth );
+			return;
+		}
+		case OFX::ePixelComponentAlpha:
+		{
+			localDoGilRender2<Process, sPlanar, boost::gil::gray_layout_t>( plugin, args, sBitDepth, dPlanar, dComponent, dBitDepth );
+			return;
+		}
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel component (" + mapPixelComponentEnumToString(sComponent) + ") not supported by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
+}
+
+
+template< template<class,class> class Process,
+          class Plugin >
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const bool sPlanar, const OFX::EPixelComponent sComponent, const OFX::EBitDepth sBitDepth, const bool dPlanar, const OFX::EPixelComponent dComponent, const OFX::EBitDepth dBitDepth )
+{
+	if( sPlanar )
+	{
+//		localDoGilRender2<Process, true>( plugin, args, sComponent, sBitDepth, dPlanar, dComponent, dBitDepth );
+	}
+	else
+	{
+		localDoGilRender2<Process, false>( plugin, args, sComponent, sBitDepth, dPlanar, dComponent, dBitDepth );
+	}
+}
+
+template< template<class,class> class Process,
+          class Plugin>
+void localDoGilRender2( Plugin& plugin, const OFX::RenderArguments& args, const OFX::Clip& sClip, const OFX::Clip& dClip )
+{
+	localDoGilRender2<Process, Plugin>( plugin, args, false, sClip.getPixelComponents(), sClip.getPixelDepth(), false, dClip.getPixelComponents(), dClip.getPixelDepth() );
+}
+
+}
+}
+
 namespace tuttle {
 namespace plugin {
 namespace sobel {
@@ -28,6 +223,7 @@ SobelPlugin::SobelPlugin( OfxImageEffectHandle handle )
 	_paramGradientNormManhattan = fetchBooleanParam( kParamGradientNormManhattan );
 	_paramComputeGradientDirection = fetchBooleanParam( kParamComputeGradientDirection );
 	_paramGradientDirectionAbs = fetchBooleanParam( kParamGradientDirectionAbs );
+	_paramOutputComponent = fetchChoiceParam( kParamOutputComponent );
 }
 
 SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -125,6 +321,24 @@ void SobelPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std:
     }
 }
 
+void SobelPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	EParamOutputComponent comp = static_cast<EParamOutputComponent>(_paramOutputComponent->getValue());
+	switch( comp )
+	{
+		case eParamOutputComponentRGBA:
+		{
+			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
+			break;
+		}
+		case eParamOutputComponentRGB:
+		{
+			clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGB );
+			break;
+		}
+	}
+}
+
 bool SobelPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
 	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
@@ -202,31 +416,14 @@ bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& iden
  */
 void SobelPlugin::render( const OFX::RenderArguments &args )
 {
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
-	OFX::EPixelComponent components = _clipDst->getPixelComponents( );
+	COUT_X( 20, "-" );
+	COUT_VAR( mapPixelComponentEnumToString( _clipSrc->getPixelComponents() ) );
+	COUT_VAR( mapBitDepthEnumToString( _clipSrc->getPixelDepth() ) );
 
-    switch( components )
-	{
-		case OFX::ePixelComponentRGBA:
-		{
-			doGilRender<SobelProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentRGB:
-		{
-			doGilRender<SobelProcess, boost::gil::rgb_layout_t>( *this, args, bitDepth );
-			return;
-		}
-		case OFX::ePixelComponentAlpha:
-		case OFX::ePixelComponentCustom:
-		case OFX::ePixelComponentNone:
-		{
-			BOOST_THROW_EXCEPTION( exception::Unsupported()
-				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
-		}
-	}
-	BOOST_THROW_EXCEPTION( exception::Unknown() );
+	COUT_VAR( mapPixelComponentEnumToString( _clipDst->getPixelComponents() ) );
+	COUT_VAR( mapBitDepthEnumToString( _clipDst->getPixelDepth() ) );
+
+	::sobel::localDoGilRender2<SobelProcess>( *this, args, *_clipSrc, *_clipDst );
 }
 
 

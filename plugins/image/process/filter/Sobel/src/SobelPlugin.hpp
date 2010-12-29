@@ -50,6 +50,7 @@ public:
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
@@ -68,6 +69,7 @@ public:
 	OFX::BooleanParam* _paramGradientNormManhattan;
 	OFX::BooleanParam* _paramComputeGradientDirection;
 	OFX::BooleanParam* _paramGradientDirectionAbs;
+    OFX::ChoiceParam* _paramOutputComponent;
 };
 
 }

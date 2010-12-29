@@ -12,14 +12,19 @@ namespace sobel {
  * @brief Sobel process
  *
  */
-template<class View>
-class SobelProcess : public ImageGilFilterProcessor<View>
+template<class SView, class DView>
+class SobelProcess : public ImageGilFilterProcessor<SView, DView>
 {
 public:
 	typedef float Scalar;
+	typedef typename SView::point_t Point;
+	typedef typename DView::value_type DPixel;
+
 protected :
     SobelPlugin&    _plugin;        ///< Rendering plugin
 	SobelProcessParams<Scalar> _params; ///< user parameters
+
+	DPixel _pixelZero;
 
 public:
     SobelProcess( SobelPlugin& effect );
@@ -27,8 +32,33 @@ public:
 	void setup( const OFX::RenderArguments& args );
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	void computeGradientDirection( View& dst, boost::mpl::true_ );
-	void computeGradientDirection( View& dst, boost::mpl::false_ ){}
+	template<class ProcPixelGray>
+	void computeXPass2( DView& dst, const Point& proc_tl, boost::mpl::true_ );
+	template<class ProcPixelGray>
+	void computeXPass2( DView& dst, const Point& proc_tl, boost::mpl::false_ )
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug() );
+	}
+
+	template<class ProcPixelGray>
+	void computeYPass2( DView& dst, const Point& proc_tl, boost::mpl::true_ )
+	{
+		using namespace boost::gil;
+		correlate_cols<ProcPixelGray>(
+			kth_channel_view<1>( this->_srcView ),
+			_params._yKernelGaussianDerivative,
+			kth_channel_view<1>(dst),
+			proc_tl,
+			_params._boundary_option );
+	}
+	template<class ProcPixelGray>
+	void computeYPass2( DView& dst, const Point& proc_tl, boost::mpl::false_ )
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug() );
+	}
+
+	void computeGradientDirection( DView& dst, boost::mpl::true_ );
+	void computeGradientDirection( DView& dst, boost::mpl::false_ ){}
 };
 
 }
