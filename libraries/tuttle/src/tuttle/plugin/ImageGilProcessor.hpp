@@ -105,13 +105,7 @@ public:
 			// else return without error
 			if( ! _effect.abort() )
 			{
-				OfxStatus status = kOfxStatErrUnknown;
-				if( OfxStatus* const s = boost::get_error_info<exception::ofxStatus>(e) )
-				{
-					status = *s;
-				}
-				BOOST_THROW_EXCEPTION( exception::OfxCustom(status)
-					<< exception::user() + boost::diagnostic_information( e ) );
+				throw;
 			}
 		}
 		catch(...)
@@ -122,8 +116,7 @@ public:
 			// else return without error
 			if( ! _effect.abort() )
 			{
-				BOOST_THROW_EXCEPTION( exception::Unknown()
-					<< exception::user() + boost::current_exception_diagnostic_information() );
+				throw;
 			}
 		}
 
