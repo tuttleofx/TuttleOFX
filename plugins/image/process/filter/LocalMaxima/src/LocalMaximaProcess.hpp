@@ -12,13 +12,18 @@ namespace localmaxima {
  * @brief LocalMaxima process
  *
  */
-template<class View>
-class LocalMaximaProcess : public ImageGilFilterProcessor<View>
+template<class SView, class DView>
+class LocalMaximaProcess : public ImageGilFilterProcessor<SView, DView>
 {
 public:
-	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::channel_type<View>::type Channel;
+	typedef typename SView::value_type SPixel;
+	typedef typename boost::gil::channel_type<SView>::type SChannel;
+
+	typedef typename DView::value_type DPixel;
+	typedef typename boost::gil::channel_type<DView>::type DChannel;
+
 	typedef float Scalar;
+	
 protected :
     LocalMaximaPlugin&    _plugin;            ///< Rendering plugin
 	LocalMaximaProcessParams<Scalar> _params; ///< parameters

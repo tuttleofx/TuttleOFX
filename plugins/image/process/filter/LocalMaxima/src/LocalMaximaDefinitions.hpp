@@ -18,6 +18,18 @@ enum EParamBorder
 	eParamBorderPadded
 };
 
+const static std::string kParamOutputComponent = "outputComponent";
+const static std::string kParamOutputComponentRGBA = "RGBA";
+const static std::string kParamOutputComponentRGB = "RGB";
+const static std::string kParamOutputComponentAlpha = "Alpha";
+
+enum EParamOutputComponent
+{
+	eParamOutputComponentRGBA = 0,
+	eParamOutputComponentRGB,
+	eParamOutputComponentAlpha
+};
+
 //const static std::string kParamFillAllChannels = "fillAllChannels";
 
 }

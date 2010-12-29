@@ -11,24 +11,21 @@
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/math/constants/constants.hpp>
 
-#include <queue>
-#include <utility>
-
 namespace tuttle {
 namespace plugin {
 namespace localmaxima {
 
-template<class View>
-LocalMaximaProcess<View>::LocalMaximaProcess( LocalMaximaPlugin &effect )
-: ImageGilFilterProcessor<View>( effect )
+template<class SView, class DView>
+LocalMaximaProcess<SView, DView>::LocalMaximaProcess( LocalMaximaPlugin &effect )
+: ImageGilFilterProcessor<SView, DView>( effect )
 , _plugin( effect )
 {
 }
 
-template <class View>
-void LocalMaximaProcess<View>::setup( const OFX::RenderArguments& args )
+template<class SView, class DView>
+void LocalMaximaProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 {
-	ImageGilFilterProcessor<View>::setup( args );
+	ImageGilFilterProcessor<SView, DView>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 }
 
@@ -36,8 +33,8 @@ void LocalMaximaProcess<View>::setup( const OFX::RenderArguments& args )
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window
  */
-template<class View>
-void LocalMaximaProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+template<class SView, class DView>
+void LocalMaximaProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	namespace bgil = boost::gil;
 	namespace bm = boost::math;
@@ -54,18 +51,18 @@ void LocalMaximaProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 
 	if( _params._border == eParamBorderBlack )
 	{
-		View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+		DView dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 												  procWindowSize.x, procWindowSize.y );
 
 		// fill borders
-		Pixel pixelZero; bgil::pixel_zeros_t<Pixel>()( pixelZero );
+		DPixel pixelZero; bgil::pixel_zeros_t<DPixel>()( pixelZero );
 		boost::gil::fill_pixels( dst, pixelZero );
 	}
 
 	transform_pixels_locator_progress( this->_srcView, this->_srcPixelRod,
 	                                   this->_dstView, this->_dstPixelRod,
 									   procWindowRoWCrop,
-									   pixel_locator_gradientLocalMaxima_t<View>(this->_srcView),
+									   pixel_locator_gradientLocalMaxima_t<SView,DView>(this->_srcView),
 									   *this );
 }
 

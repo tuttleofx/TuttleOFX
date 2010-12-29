@@ -28,15 +28,15 @@ template<class SView, class DView=SView>
 struct pixel_locator_gradientLocalMaxima_t
 {
 	typedef typename SView::locator SLocator;
-	typedef typename DView::locator DLocator;
 	typedef typename SView::value_type SPixel;
 	typedef typename boost::gil::channel_type<SPixel>::type SChannel;
 	typedef typename boost::gil::channel_base_type<SChannel>::type SType;
-	typedef typename DView::value_type DPixel;
 	typedef typename SLocator::cached_location_t SCachedLocation;
 
-	SPixel _white;
-	SPixel _black;
+	typedef typename DView::locator DLocator;
+	typedef typename DView::value_type DPixel;
+
+	DPixel _black;
 	const SLocator _loc_ref;
 	// LT CT RT
 	// LC    RC
@@ -53,7 +53,6 @@ struct pixel_locator_gradientLocalMaxima_t
 	static const unsigned int vecX = 0;
 	static const unsigned int vecY = 1;
 	static const unsigned int norm = 2;
-//	static const unsigned int direction = 3;
 
 	pixel_locator_gradientLocalMaxima_t( const SView& src )
 	: _loc_ref(src.xy_at(0,0))
@@ -70,7 +69,6 @@ struct pixel_locator_gradientLocalMaxima_t
 	{
 		using namespace boost::gil;
 		pixel_assigns_min( _black );
-		pixel_assigns_max( _white );
 	}
 
 	DPixel operator()( const SLocator& src ) const
@@ -152,7 +150,7 @@ struct pixel_locator_gradientLocalMaxima_t
 		DPixel dst = _black;
 		if( (*src)[norm] >= g1 && (*src)[norm] >= g2 )
 		{
-			dst[0] = (*src)[norm]; // wins !
+			static_fill( dst, (*src)[norm] ); // wins !
 		}
 		return dst;
 	}

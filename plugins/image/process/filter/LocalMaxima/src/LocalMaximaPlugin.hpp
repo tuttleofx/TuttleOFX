@@ -24,21 +24,22 @@ class LocalMaximaPlugin : public ImageEffectGilPlugin
 public:
 	typedef float Scalar;
 public:
-    LocalMaximaPlugin( OfxImageEffectHandle handle );
+	LocalMaximaPlugin( OfxImageEffectHandle handle );
 
 public:
 	LocalMaximaProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
+	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-    void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments &args );
 	
 public:
 	OFX::ChoiceParam* _paramBorder;
+	OFX::ChoiceParam* _paramOutputComponent;
 };
 
 }
