@@ -131,7 +131,7 @@ void BasicKeyerPlugin::render( const OFX::RenderArguments& args )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
-			doGilRender<BasicKeyerProcess, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			doGilRender<BasicKeyerProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentRGB:

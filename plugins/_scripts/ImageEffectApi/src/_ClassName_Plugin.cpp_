@@ -81,7 +81,7 @@ bool %CLASSNAME%Plugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*
  */
 void %CLASSNAME%Plugin::render( const OFX::RenderArguments &args )
 {
-	doGilRender<%CLASSNAME%Plugin,%CLASSNAME%Process>( args );
+	doGilRender<%CLASSNAME%Process>( *this, args );
 }
 
 
