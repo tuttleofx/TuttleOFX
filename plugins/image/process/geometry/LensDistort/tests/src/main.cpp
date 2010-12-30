@@ -91,7 +91,6 @@ int main( int argc, char** argv )
 	   _p._scale = 1.0;
 	 */
 	//--------------------------------------------------------------------//
-	// Recuperation des valeurs des parametres
 	ELensType _lensType           = eNormalLens;
 	EInterpolation _interpolation = eBilinear;
 	_p._coef1 = coef1;
