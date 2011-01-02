@@ -6,7 +6,7 @@
 #include "IfftPlugin.hpp"
 #include "IfftDefinitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <ofxsImageEffect.h>
 
 namespace tuttle {
 namespace plugin {

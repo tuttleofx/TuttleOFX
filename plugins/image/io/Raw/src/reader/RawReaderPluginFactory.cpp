@@ -2,20 +2,10 @@
 #include "RawReaderDefinitions.hpp"
 #include "RawReaderPlugin.hpp"
 
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/exceptions.hpp"
+#include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
-
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <cmath>
-#include <cassert>
 
 namespace tuttle {
 namespace plugin {
@@ -42,8 +32,10 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
 	// plugin flags
-	desc.setSupportsMultipleClipDepths( true );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 

@@ -2,12 +2,10 @@
 #include "OpenImageIOReaderDefinitions.hpp"
 #include "OpenImageIOReaderPlugin.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -26,6 +24,7 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
+	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
@@ -34,8 +33,10 @@ void OpenImageIOReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 
 	// plugin flags
-	desc.setSupportsMultipleClipDepths( true );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 
@@ -49,8 +50,6 @@ void OpenImageIOReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
-	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -58,7 +57,6 @@ void OpenImageIOReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
 
 	// Controls
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kReaderParamFilename );
-	assert( filename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );

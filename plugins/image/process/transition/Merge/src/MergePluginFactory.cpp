@@ -1,15 +1,12 @@
 #include "MergePluginFactory.hpp"
-#include <tuttle/plugin/global.hpp>
 #include "MergePlugin.hpp"
 #include "MergeDefinitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -35,6 +32,7 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }
 
 /**
@@ -46,15 +44,12 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                             OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClipA = desc.defineClip( kMergeSourceA );
-
-	assert( srcClipA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipA->setSupportsTiles( kSupportTiles );
 	srcClipA->setOptional( false );
 
 	OFX::ClipDescriptor* srcClipB = desc.defineClip( kMergeSourceB );
-	assert( srcClipB );
 	srcClipB->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipB->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipB->setSupportsTiles( kSupportTiles );
@@ -62,14 +57,12 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Define some merging function
 	OFX::ChoiceParamDescriptor* mergeFunction = desc.defineChoiceParam( kMergeFunction );
-	assert( mergeFunction );
 	mergeFunction->setLabels( kMergeFunctionLabel, kMergeFunctionLabel, kMergeFunctionLabel );
 	mergeFunction->appendOption( "atop: Ab+B(1-a)" );
 	mergeFunction->appendOption( "average: (A+B)/2" );

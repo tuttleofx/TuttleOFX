@@ -2,7 +2,7 @@
 #include "SobelPlugin.hpp"
 #include "SobelDefinitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <ofxsImageEffect.h>
 
 namespace tuttle {
 namespace plugin {

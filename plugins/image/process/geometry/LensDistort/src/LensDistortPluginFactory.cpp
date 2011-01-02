@@ -1,18 +1,12 @@
 #include "LensDistortPluginFactory.hpp"
 #include "LensDistortPlugin.hpp"
 #include "LensDistortOverlayInteract.hpp"
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <cmath>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {

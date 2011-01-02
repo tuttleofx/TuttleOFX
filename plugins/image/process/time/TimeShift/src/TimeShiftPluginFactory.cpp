@@ -2,7 +2,7 @@
 #include "TimeShiftPlugin.hpp"
 #include "TimeShiftDefinitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <ofxsImageEffect.h>
 
 namespace tuttle {
 namespace plugin {
@@ -19,8 +19,8 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle/image/process/time" );
 
 	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
@@ -29,6 +29,8 @@ void TimeShiftPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setTemporalClipAccess( true );
+	desc.setSupportsTiles( true );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }
 
 /**
@@ -40,13 +42,14 @@ void TimeShiftPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 
 	OFX::DoubleParamDescriptor* offset = desc.defineDoubleParam( kOffset );

@@ -2,16 +2,10 @@
 #include "LutPlugin.hpp"
 #include "LutDefinitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
-
-#include <string>
 
 namespace tuttle {
 namespace plugin {
@@ -35,8 +29,8 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthUShort );
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
-	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
+	//desc.setRenderThreadSafety( OFX::eRenderFullySafe ); //< @todo tuttle: remove process data from LutPlugin
 }
 
 /**
@@ -47,19 +41,19 @@ void LutPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void LutPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc, OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kInputFilename );
-	assert( filename );
 	filename->setDefault( "" );
 	filename->setLabels( kInputFilenameLabel, kInputFilenameLabel, kInputFilenameLabel );
 	filename->setStringType( OFX::eStringTypeFilePath );

@@ -1,18 +1,11 @@
 #include "ImageMagickReaderPluginFactory.hpp"
 #include "ImageMagickReaderDefinitions.hpp"
 #include "ImageMagickReaderPlugin.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-#include "tuttle/plugin/exceptions.hpp"
 
-#include <string>
-#include <iostream>
-#include <stdio.h>
-#include <cmath>
-#include <cassert>
+#include <tuttle/plugin/exceptions.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -31,6 +24,7 @@ void ImageMagickReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
+	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
@@ -39,8 +33,10 @@ void ImageMagickReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setSupportsMultipleClipDepths( true );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 

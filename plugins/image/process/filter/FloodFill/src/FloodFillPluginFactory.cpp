@@ -2,7 +2,7 @@
 #include "FloodFillPlugin.hpp"
 #include "FloodFillDefinitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <ofxImageEffect.h>
 
 #include <limits>
 
@@ -34,6 +34,7 @@ void FloodFillPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }
 
 /**
