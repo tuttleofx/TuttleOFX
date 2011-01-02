@@ -1,5 +1,5 @@
-#ifndef VOLET_PLUGIN_H
-#define VOLET_PLUGIN_H
+#ifndef _TUTTLE_PLUGIN_CROP_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_CROP_PLUGIN_HPP_
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
@@ -20,13 +20,14 @@ public:
 	bool       displayRect();
 
 public:
-	void render( const OFX::RenderArguments& args );
 	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool         getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	
+	void render( const OFX::RenderArguments& args );
 
 protected:
-	OFX::ChoiceParam*     _formats;       ///< Image formats
-	OFX::BooleanParam*    _rect;          ///< Display overlay rect
+	OFX::ChoiceParam*     _paramFormats;       ///< Image formats
+	OFX::BooleanParam*    _paramOverlayRect;          ///< Display overlay rect
 
 };
 

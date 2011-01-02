@@ -5,20 +5,16 @@
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/basic_colors.hpp>
 
-#include <cmath>
-#include <vector>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
 
-using namespace boost::gil;
 
 namespace tuttle {
 namespace plugin {
 namespace crop {
+
+using namespace boost::gil;
 
 template<class View>
 CropProcess<View>::CropProcess( CropPlugin& instance )

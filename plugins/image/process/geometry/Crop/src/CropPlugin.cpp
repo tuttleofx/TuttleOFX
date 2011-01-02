@@ -15,23 +15,14 @@ using namespace boost::gil;
 CropPlugin::CropPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-	_formats = fetchChoiceParam( kParamPresets );
-	_rect    = fetchBooleanParam( kParamDisplayRect );
+	_paramFormats = fetchChoiceParam( kParamPresets );
+	_paramOverlayRect    = fetchBooleanParam( kParamDisplayRect );
 }
 
 
 bool CropPlugin::displayRect()
 {
-	return _rect->getValue();
-}
-
-/**
- * @brief The overridden render function
- * @param[in]   args     Rendering parameters
- */
-void CropPlugin::render( const OFX::RenderArguments& args )
-{
-	doGilRender<CropProcess>( *this, args );
+	return _paramOverlayRect->getValue();
 }
 
 void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
@@ -47,7 +38,7 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 		// Compute bands sizes in pixels
 		int f, bandSize;
 		double ratio;
-		_formats->getValue( f );
+		_paramFormats->getValue( f );
 		OFX::IntParam* upBand    = fetchIntParam( kParamUp );
 		OFX::IntParam* downBand  = fetchIntParam( kParamDown );
 		OFX::IntParam* leftBand  = fetchIntParam( kParamLeft );
@@ -128,7 +119,7 @@ OfxRectD CropPlugin::getCropRect( const OfxRectD& rod, const double par )
 
 OfxRectD CropPlugin::getCropRect( const OfxTime time )
 {
-	const OfxRectD srcRod = _clipSrc->getCanonicalRod( timeLineGetTime() );
+	const OfxRectD srcRod = _clipSrc->getCanonicalRod( time );
 	const double par       = _clipSrc->getPixelAspectRatio();
 	return getCropRect( srcRod, par );
 }
@@ -140,12 +131,18 @@ bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& 
 	if( bop->getValue() == false )
 	{
 		rod = getCropRect( args.time );
+		return true;
 	}
-	else
-	{
-		rod = _clipSrc->getCanonicalRod( args.time );
-	}
-	return true;
+	return false;
+}
+
+/**
+ * @brief The overridden render function
+ * @param[in]   args     Rendering parameters
+ */
+void CropPlugin::render( const OFX::RenderArguments& args )
+{
+	doGilRender<CropProcess>( *this, args );
 }
 
 }
