@@ -41,6 +41,7 @@
 #include "ofxParametricParam.h"
 #include "extensions/nuke/camera.h"
 #include <cstring>
+#include <boost/numeric/conversion/cast.hpp>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
@@ -710,6 +711,7 @@ PushButtonParamDescriptor::PushButtonParamDescriptor( const std::string& name, O
 ParametricParamDescriptor::ParametricParamDescriptor( const std::string& name, OfxPropertySetHandle props )
 	: ParamDescriptor( name, eParametricParam, props )
 {
+//	OFX::Private::gParamSuite->paramGetHandle( paramSet, name, &_descriptor, NULL);
 }
 
 void ParametricParamDescriptor::setDimension( const std::size_t dimension )
@@ -725,6 +727,13 @@ void ParametricParamDescriptor::setLabel( const std::string label )
 void ParametricParamDescriptor::setDimensionLabel( const std::string label, const std::size_t id )
 {
 	getProps().propSetString( kOfxParamPropDimensionLabel, label, (int)id );
+}
+
+void ParametricParamDescriptor::setUIColour( const std::size_t id, const OfxRGBColourD color )
+{
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.r, boost::numeric_cast<int>(id*3 + 0) );
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.g, boost::numeric_cast<int>(id*3 + 1) );
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.b, boost::numeric_cast<int>(id*3 + 2) );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -788,7 +797,13 @@ void ParamSetDescriptor::setPageParamOrder( PageParamDescriptor& p )
 /** @brief calls the raw OFX routine to define a param */
 void ParamSetDescriptor::defineRawParam( const std::string& name, ParamTypeEnum paramType, OfxPropertySetHandle& props )
 {
+	COUT_INFOS;
+	COUT_VAR2( name, mapParamTypeEnumToString( paramType ) );
+	COUT_VAR( props );
+	COUT_VAR( OFX::Private::gParamSuite );
+
 	OfxStatus stat = OFX::Private::gParamSuite->paramDefine( _paramSetHandle, mapParamTypeEnumToString( paramType ), name.c_str(), &props );
+	COUT_INFOS;
 
 	throwSuiteStatusException( stat );
 }

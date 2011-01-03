@@ -669,6 +669,7 @@ class ParametricParamDescriptor : public ParamDescriptor
 protected:
 	mDeclareProtectedAssignAndCC( ParametricParamDescriptor );
 	ParametricParamDescriptor( void ) { assert( false ); }
+	//OfxParamHandle _descriptor;
 
 protected:
 	/** @brief hidden constructor */
@@ -682,6 +683,9 @@ public:
 
 	void setLabel( const std::string label );
 	void setDimensionLabel( const std::string label, const std::size_t id );
+
+	void setUIColour( const std::size_t id, const OfxRGBColourD color );
+	
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -738,13 +742,17 @@ protected:
 		{
 			// ok define one and add it in
 			OfxPropertySetHandle props;
+			COUT_INFOS;
 			defineRawParam( name, paramType, props );
 
+			COUT_INFOS;
 			// make out support descriptor class
 			paramPtr = new T( name, props );
 
+			COUT_INFOS;
 			// add it to our map of described ones
 			_definedParams[name] = paramPtr;
+			COUT_INFOS;
 		}
 		return true;
 	}
