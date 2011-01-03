@@ -24,8 +24,8 @@ using namespace boost::gil;
 Jpeg2000WriterPlugin::Jpeg2000WriterPlugin( OfxImageEffectHandle handle )
 : WriterPlugin( handle )
 {
-	_cineProfil = fetchChoiceParam( kParamCinemaProfil );
-	_lossless = fetchBooleanParam( kParamLossless );
+	_paramCineProfil = fetchChoiceParam( kParamCinemaProfil );
+	_paramLossless = fetchBooleanParam( kParamLossless );
 }
 
 Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
@@ -50,8 +50,8 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
 			break;
 	}
-	_cineProfil->getValue( params._cineProfil );
-	_lossless->getValue( params._lossless );
+	_paramCineProfil->getValue( params._cineProfil );
+	_paramLossless->getValue( params._lossless );
 	return params;
 }
 
@@ -60,16 +60,16 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 	WriterPlugin::changedParam( args, paramName );
 	if( paramName == kParamCinemaProfil && args.reason == OFX::eChangeUserEdit )
 	{
-		if (_cineProfil->getValue() != 0)
+		if (_paramCineProfil->getValue() != 0)
 		{
-			_lossless->setEnabled(false);
+			_paramLossless->setEnabled(false);
 			// DCI needs 12b
 			_paramBitDepth->setValue(1);
 			_paramBitDepth->setEnabled(false);
 		}
 		else
 		{
-			_lossless->setEnabled(true);
+			_paramLossless->setEnabled(true);
 			_paramBitDepth->setEnabled(true);
 		}
 	}
@@ -88,75 +88,8 @@ void Jpeg2000WriterPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 void Jpeg2000WriterPlugin::render( const OFX::RenderArguments &args )
 {
 	WriterPlugin::render( args );
-	// instantiate the render code based on the pixel depth of the dst clip
-	OFX::EBitDepth dstBitDepth         = _clipSrc->getPixelDepth();
-	OFX::EPixelComponent dstComponents = _clipSrc->getPixelComponents();
-
-	// do the rendering
-	if( dstComponents == OFX::ePixelComponentRGBA )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				Jpeg2000WriterProcess<rgba8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				Jpeg2000WriterProcess<rgba16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				Jpeg2000WriterProcess<rgba32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else if( dstComponents == OFX::ePixelComponentAlpha )
-	{
-		switch( dstBitDepth )
-		{
-			case OFX::eBitDepthUByte:
-			{
-				Jpeg2000WriterProcess<gray8_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthUShort:
-			{
-				Jpeg2000WriterProcess<gray16_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthFloat:
-			{
-				Jpeg2000WriterProcess<gray32f_view_t> fred( *this );
-				fred.setupAndProcess( args );
-				break;
-			}
-			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
-				return;
-			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
-				return;
-		}
-	}
-	else
-	{
-		COUT_FATALERROR( "Pixel component unrecognize ! (" << mapPixelComponentEnumToString( dstComponents ) << ")" );
-	}
+	
+	doGilRender<Jpeg2000WriterProcess>( *this, args );
 }
 
 }

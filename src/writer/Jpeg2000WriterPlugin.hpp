@@ -29,11 +29,11 @@ public:
 	
 	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
-    void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments &args );
 
 protected:
-	OFX::ChoiceParam    *_cineProfil;
-	OFX::BooleanParam   *_lossless;
+	OFX::ChoiceParam    *_paramCineProfil;
+	OFX::BooleanParam   *_paramLossless;
 };
 
 }
