@@ -79,6 +79,8 @@ OfxStatus mainEntryStr( const char*          actionRaw,
  */
 namespace OFX {
 /** forward class declarations */
+struct tag_ofxStatus;
+
 class ClipDescriptor;
 class ImageEffectDescriptor;
 
@@ -273,6 +275,8 @@ public:
 	bool supportsChoiceAnimation;
 	bool supportsBooleanAnimation;
 	bool supportsCustomAnimation;
+	bool supportsParametricParameter;
+	bool supportsCameraParameter;
 	int maxParameters;
 	int maxPages;
 	int pageRowCount;
