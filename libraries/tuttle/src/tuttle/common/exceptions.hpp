@@ -78,6 +78,10 @@ private:
 }
 #endif
 
+namespace OFX {
+struct tag_ofxStatus;
+}
+
 namespace tuttle {
 
 /**
@@ -109,6 +113,7 @@ namespace exception {
  * @remark User information.
  */
 typedef ::boost::error_info<struct tag_userMessage, ::boost::error_info_sstream> user;
+
 /**
  * @brief This is detailed informations for developpers.
  * Not always a real human readable message :)
@@ -117,11 +122,12 @@ typedef ::boost::error_info<struct tag_userMessage, ::boost::error_info_sstream>
 //typedef ::boost::error_info<struct tag_message,std::string> dev;
 typedef ::boost::error_info<struct tag_devMessage, ::boost::error_info_sstream> dev;
 //typedef ::boost::error_info_sstream<struct tag_message> dev;
+
 /**
  * @brief The ofx error status code.
  * @remark Dev information.
  */
-typedef ::boost::error_info<struct tag_ofxStatus, ::OfxStatus> ofxStatus;
+typedef ::boost::error_info<OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
 inline std::string to_string( const ofxStatus& e ) { return ofx::mapStatusToString( e.value() ); }
 
 /**
@@ -227,7 +233,11 @@ struct MissingHostFeature : virtual Common
 	{
 		* this << ofxStatus( kOfxStatErrMissingHostFeature );
 	}
-
+	MissingHostFeature( const std::string& feature )
+	{
+		* this << ofxStatus( kOfxStatErrMissingHostFeature );
+		* this << user() + "Missing feature: " + quotes(feature);
+	}
 };
 
 /** @brief Status error code for an unsupported feature/operation */
