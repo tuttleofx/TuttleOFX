@@ -9,7 +9,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace histogramkeyer {
+namespace histogramKeyer {
 
 typedef std::map<double, double> Curve;
 

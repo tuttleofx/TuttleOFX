@@ -5,7 +5,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace histogramkeyer {
+namespace histogramKeyer {
 
 /**
  * @brief HistogramKeyer process

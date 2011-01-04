@@ -6,7 +6,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace histogramkeyer {
+namespace histogramKeyer {
 
 const static unsigned int nbCurves = 6;
 

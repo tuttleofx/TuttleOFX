@@ -2,7 +2,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace histogramkeyer {
+namespace histogramKeyer {
 
 template<class View>
 HistogramKeyerProcess<View>::HistogramKeyerProcess( HistogramKeyerPlugin &effect )

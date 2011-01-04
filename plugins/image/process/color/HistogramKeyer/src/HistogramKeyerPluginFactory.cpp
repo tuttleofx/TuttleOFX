@@ -6,7 +6,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace histogramkeyer {
+namespace histogramKeyer {
 
 static const bool kSupportTiles = true;
 

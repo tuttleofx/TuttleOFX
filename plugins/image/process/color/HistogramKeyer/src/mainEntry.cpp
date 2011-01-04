@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::histogramkeyer::HistogramKeyerPluginFactory, "fr.tuttle.histogramkeyer" );
+	mAppendPluginFactory( ids, tuttle::plugin::histogramKeyer::HistogramKeyerPluginFactory, "fr.tuttle.histogramkeyer" );
 }
 
 }
