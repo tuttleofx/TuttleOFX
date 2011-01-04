@@ -1,24 +1,24 @@
-#include "CristoPlugin.hpp"
-#include "CristoProcess.hpp"
-#include "CristoDefinitions.hpp"
+#include "HistogramKeyerPlugin.hpp"
+#include "HistogramKeyerProcess.hpp"
+#include "HistogramKeyerDefinitions.hpp"
 
 #include <boost/gil/gil_all.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace cristo {
+namespace histogramkeyer {
 
 
-CristoPlugin::CristoPlugin( OfxImageEffectHandle handle )
+HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
 //    _clipSrcMatte = fetchClip( kClipMatte );
 //	_paramColorSelection = fetchParametricParam( kParamColorSelection );
 }
 
-CristoProcessParams<CristoPlugin::Scalar> CristoPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
+HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
 {
-	CristoProcessParams<Scalar> params;
+	HistogramKeyerProcessParams<Scalar> params;
 //	for( int curveId = 0; curveId < nbCurves; ++curveId )
 //	{
 //		int n = _paramColorSelection->getNControlPoints( curveId, time );
@@ -32,7 +32,7 @@ CristoProcessParams<CristoPlugin::Scalar> CristoPlugin::getProcessParams( const 
 	return params;
 }
 
-void CristoPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
     if( paramName == kParamHelpButton )
     {
@@ -42,9 +42,9 @@ void CristoPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
     }
 }
 
-//void CristoPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+//void HistogramKeyerPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 //{
-//	CristoProcessParams<Scalar> params = getProcessParams();
+//	HistogramKeyerProcessParams<Scalar> params = getProcessParams();
 //	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 //
 //	OfxRectD srcRoi;
@@ -55,9 +55,9 @@ void CristoPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
 //	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 //}
 
-bool CristoPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
+bool HistogramKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
-//	CristoProcessParams<Scalar> params = getProcessParams();
+//	HistogramKeyerProcessParams<Scalar> params = getProcessParams();
 //	if( params._in == params._out )
 //	{
 //		identityClip = _clipSrc;
@@ -71,9 +71,9 @@ bool CristoPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void CristoPlugin::render( const OFX::RenderArguments &args )
+void HistogramKeyerPlugin::render( const OFX::RenderArguments &args )
 {
-	doGilRender<CristoProcess>( *this, args );
+	doGilRender<HistogramKeyerProcess>( *this, args );
 }
 
 

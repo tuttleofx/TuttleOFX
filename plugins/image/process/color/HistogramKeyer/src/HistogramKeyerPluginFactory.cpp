@@ -1,12 +1,12 @@
-#include "CristoPluginFactory.hpp"
-#include "CristoPlugin.hpp"
-#include "CristoDefinitions.hpp"
+#include "HistogramKeyerPluginFactory.hpp"
+#include "HistogramKeyerPlugin.hpp"
+#include "HistogramKeyerDefinitions.hpp"
 
 #include <limits>
 
 namespace tuttle {
 namespace plugin {
-namespace cristo {
+namespace histogramkeyer {
 
 static const bool kSupportTiles = true;
 
@@ -15,10 +15,10 @@ static const bool kSupportTiles = true;
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void CristoPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleCristo", "Cristo",
-		            "Cristo" );
+	desc.setLabels( "TuttleHistogramKeyer", "HistogramKeyer",
+		            "HistogramKeyer" );
 	desc.setPluginGrouping( "tuttle" );
 
 	// add the supported contexts, only filter at the moment
@@ -53,7 +53,7 @@ void CristoPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void CristoPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                   OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -110,10 +110,10 @@ void CristoPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* CristoPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* HistogramKeyerPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                             OFX::EContext context )
 {
-	return new CristoPlugin( handle );
+	return new HistogramKeyerPlugin( handle );
 }
 
 }

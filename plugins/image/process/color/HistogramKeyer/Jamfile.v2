@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Cristo Plugin
+## Main BJam makefile for TuttleOFX HistogramKeyer Plugin
 ###############################################################################
 import os ;
  
@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/Cristo/obj
+    : build-dir $(DIST)/HistogramKeyer/obj
     ;
  
 ###############################################################################
@@ -27,7 +27,7 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Cristo : 
+plugin HistogramKeyer : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
     opengl
@@ -36,5 +36,5 @@ plugin Cristo :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Cristo : $(DIST) ;
+auto_install HistogramKeyer : $(DIST) ;
  

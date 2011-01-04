@@ -1,7 +1,7 @@
-#ifndef _TUTTLE_PLUGIN_CRISTO_PLUGIN_HPP_
-#define _TUTTLE_PLUGIN_CRISTO_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_HISTOGRAMKEYER_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_HISTOGRAMKEYER_PLUGIN_HPP_
 
-#include "CristoDefinitions.hpp"
+#include "HistogramKeyerDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
@@ -9,28 +9,28 @@
 
 namespace tuttle {
 namespace plugin {
-namespace cristo {
+namespace histogramkeyer {
 
 typedef std::map<double, double> Curve;
 
 template<typename Scalar>
-struct CristoProcessParams
+struct HistogramKeyerProcessParams
 {
 	boost::array<Curve, 6> _curves;
 };
 
 /**
- * @brief Cristo plugin
+ * @brief HistogramKeyer plugin
  */
-class CristoPlugin : public ImageEffectGilPlugin
+class HistogramKeyerPlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef float Scalar;
 public:
-    CristoPlugin( OfxImageEffectHandle handle );
+    HistogramKeyerPlugin( OfxImageEffectHandle handle );
 
 public:
-	CristoProcessParams<Scalar> getProcessParams( const OfxTime time, const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+	HistogramKeyerProcessParams<Scalar> getProcessParams( const OfxTime time, const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
