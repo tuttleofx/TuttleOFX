@@ -80,6 +80,8 @@ private:
 
 namespace OFX {
 struct tag_ofxStatus;
+typedef ::boost::error_info<OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
+inline std::string to_string( const ofxStatus& e ) { return ::tuttle::ofx::mapStatusToString( e.value() ); }
 }
 
 namespace tuttle {
@@ -127,8 +129,7 @@ typedef ::boost::error_info<struct tag_devMessage, ::boost::error_info_sstream> 
  * @brief The ofx error status code.
  * @remark Dev information.
  */
-typedef ::boost::error_info<OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
-inline std::string to_string( const ofxStatus& e ) { return ofx::mapStatusToString( e.value() ); }
+typedef ::OFX::ofxStatus ofxStatus;
 
 /**
  * @brief The ofx context name.
