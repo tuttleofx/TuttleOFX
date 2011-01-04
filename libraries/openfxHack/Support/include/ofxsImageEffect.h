@@ -409,6 +409,8 @@ public:
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
 	void setLabel( const std::string& label ) { setLabels(label, label, label); }
 
+	void setDescription( const std::string& description );
+
 	/** @brief Set the plugin grouping, defaults to "" */
 	void setPluginGrouping( const std::string& group );
 

@@ -519,6 +519,11 @@ void ImageEffectDescriptor::setLabels( const std::string& label, const std::stri
 	_effectProps.propSetString( kOfxPropLongLabel, longLabel, false );
 }
 
+void ImageEffectDescriptor::setDescription( const std::string& description )
+{
+	_effectProps.propSetString( kOfxPropPluginDescription, description, false );
+}
+
 /** @brief Set the plugin grouping */
 void ImageEffectDescriptor::setPluginGrouping( const std::string& group )
 {
