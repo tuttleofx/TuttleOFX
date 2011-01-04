@@ -17,7 +17,7 @@ static const bool kSupportTiles = true;
  */
 void CristoPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "Cristo", "Cristo",
+	desc.setLabels( "TuttleCristo", "Cristo",
 		            "Cristo" );
 	desc.setPluginGrouping( "tuttle" );
 
@@ -33,6 +33,19 @@ void CristoPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+
+	desc.setDescription(
+		"Test parametric parameters.\n"
+		"Full description of the plugin....\n"
+		"\n"
+		"bla bla\n"
+		"\n"
+	);
+
+	if( ! OFX::getImageEffectHostDescription()->supportsParametricParameter )
+	{
+		BOOST_THROW_EXCEPTION( exception::MissingHostFeature( "Parametric parameter" ) );
+	}
 }
 
 /**
@@ -49,14 +62,16 @@ void CristoPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
+	COUT_INFOS;
 	OFX::ParametricParamDescriptor* curves = desc.defineParametricParam( kParamColorSelection );
+	COUT_VAR( curves );
+	COUT_INFOS;
 	curves->setDimension( nbCurves );
 	curves->setDimensionLabel( kParamColorSelectionRed, 0 );
 	curves->setDimensionLabel( kParamColorSelectionGreen, 1 );
@@ -65,9 +80,28 @@ void CristoPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	curves->setDimensionLabel( kParamColorSelectionSaturation, 4 );
 	curves->setDimensionLabel( kParamColorSelectionLightness, 5 );
 	curves->setHint( "Color selection" );
+	curves->setUIColour( 0, {1,0,0} );
+	curves->setUIColour( 1, {0,1,0} );
+	curves->setUIColour( 2, {0,0,1} );
+	curves->setUIColour( 3, {1,1,1} );
+	curves->setUIColour( 4, {1,1,1} );
+	curves->setUIColour( 5, {1,1,1} );
+
+//for(int component = 0; component < 3; ++component) {
+//// add a control point at 0, value is 1
+//gParametricParamHost->parametricParamAddControlPoint(descriptor,
+//											  component, // curve to set
+//											  0.0,   // time, ignored in this case, as we are not adding a ket
+//											  0.0,   // parametric position, zero
+//											  1.0,   // value to be, 1
+//											  false);   // don't add a key
+//// add a control point at 1, value is 0
+//gParametricParamHost->parametricParamAddControlPoint(descriptor, component, 0.0, 1.0, 0.0, false);
+//}
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );
 	helpButton->setLabel( "Help" );
+	COUT_INFOS;
 }
 
 /**
