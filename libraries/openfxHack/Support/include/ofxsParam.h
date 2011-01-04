@@ -734,25 +734,21 @@ protected:
 			}
 			else
 			{
-				COUT_ERROR( "Parameter already defined with another type ! (" + name + ")" );
-				return false; ///< @todo tuttle: SHOULD THROW SOMETHING HERE!!!!!!!
+				BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrExists, "Parameter already defined with another type ! (" + name + ")" ) );
+				return false;
 			}
 		}
 		else
 		{
 			// ok define one and add it in
 			OfxPropertySetHandle props;
-			COUT_INFOS;
 			defineRawParam( name, paramType, props );
 
-			COUT_INFOS;
 			// make out support descriptor class
 			paramPtr = new T( name, props );
 
-			COUT_INFOS;
 			// add it to our map of described ones
 			_definedParams[name] = paramPtr;
-			COUT_INFOS;
 		}
 		return true;
 	}
@@ -770,13 +766,19 @@ protected:
 	/** @brief Hidden ctor */
 	ParamSetDescriptor( void );
 
-	/** @brief set the param set handle */
-	void setParamSetHandle( OfxParamSetHandle h );
-
 	/** @brief find a param in the map */
 	ParamDescriptor* findPreviouslyDefinedParam( const std::string& name );
 
+	/** @brief set the param set handle */
+	void setOfxParamSetHandle( OfxParamSetHandle h );
+
 public:
+
+	OfxParamSetHandle getOfxParamSetHandle()
+	{
+		return _paramSetHandle;
+	}
+
 	virtual ~ParamSetDescriptor();
 	/** @brief tries to fetch a ParamDescriptor, returns 0 if it isn't there*/
 	ParamDescriptor* getParamDescriptor( const std::string& name ) const;

@@ -752,7 +752,7 @@ ParamDescriptor* ParamSetDescriptor::getParamDescriptor( const std::string& name
 }
 
 /** @brief set the param set handle */
-void ParamSetDescriptor::setParamSetHandle( OfxParamSetHandle h )
+void ParamSetDescriptor::setOfxParamSetHandle( OfxParamSetHandle h )
 {
 	// set me handle
 	_paramSetHandle = h;

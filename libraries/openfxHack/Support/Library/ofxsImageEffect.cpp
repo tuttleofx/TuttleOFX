@@ -493,7 +493,7 @@ ImageEffectDescriptor::ImageEffectDescriptor( OfxImageEffectHandle handle )
 	OfxParamSetHandle paramSetHandle;
 	stat = OFX::Private::gEffectSuite->getParamSet( handle, &paramSetHandle );
 	throwSuiteStatusException( stat );
-	setParamSetHandle( paramSetHandle );
+	setOfxParamSetHandle( paramSetHandle );
 }
 
 /** @brief dtor */
