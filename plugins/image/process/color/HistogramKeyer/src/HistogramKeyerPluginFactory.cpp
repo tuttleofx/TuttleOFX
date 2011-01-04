@@ -72,6 +72,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	OFX::ParametricParamDescriptor* curves = desc.defineParametricParam( kParamColorSelection );
 	COUT_VAR( curves );
 	COUT_INFOS;
+	curves->setRange( 0.0, 1.0 );
 	curves->setDimension( nbCurves );
 	curves->setDimensionLabel( kParamColorSelectionRed, 0 );
 	curves->setDimensionLabel( kParamColorSelectionGreen, 1 );
@@ -86,6 +87,12 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	curves->setUIColour( 3, {1,1,1} );
 	curves->setUIColour( 4, {1,1,1} );
 	curves->setUIColour( 5, {1,1,1} );
+
+	for( int i = 0; i < nbCurves; ++i )
+	{
+		curves->addControlPoint( i, 0, 0, 0, false );
+		curves->addControlPoint( i, 0, 1, 1, false );
+	}
 
 //for(int component = 0; component < 3; ++component) {
 //// add a control point at 0, value is 1

@@ -41,7 +41,6 @@
 #include "ofxParametricParam.h"
 #include "extensions/nuke/camera.h"
 #include <cstring>
-#include <boost/numeric/conversion/cast.hpp>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
@@ -711,10 +710,21 @@ PushButtonParamDescriptor::PushButtonParamDescriptor( const std::string& name, O
 ParametricParamDescriptor::ParametricParamDescriptor( const std::string& name, OfxPropertySetHandle props )
 	: ParamDescriptor( name, eParametricParam, props )
 {
-//	OFX::Private::gParamSuite->paramGetHandle( paramSet, name, &_descriptor, NULL);
 }
 
-void ParametricParamDescriptor::setDimension( const std::size_t dimension )
+void ParametricParamDescriptor::setParamSet( ParamSetDescriptor& paramSet )
+{
+	_paramSet = &paramSet;
+	OFX::Private::gParamSuite->paramGetHandle( _paramSet->getOfxParamSetHandle(), getName().c_str(), &_ofxParamHandle, NULL );
+}
+
+void ParametricParamDescriptor::setRange( const double min, const double max )
+{
+	getProps().propSetDouble( kOfxParamPropParametricRange, min, 0 );
+	getProps().propSetDouble( kOfxParamPropParametricRange, max, 1 );
+}
+
+void ParametricParamDescriptor::setDimension( const int dimension )
 {
 	getProps().propSetInt( kOfxParamPropParametricDimension, dimension );
 }
@@ -724,16 +734,27 @@ void ParametricParamDescriptor::setLabel( const std::string label )
 	getProps().propSetString( kOfxPropLabel, label );
 }
 
-void ParametricParamDescriptor::setDimensionLabel( const std::string label, const std::size_t id )
+void ParametricParamDescriptor::setDimensionLabel( const std::string label, const int id )
 {
-	getProps().propSetString( kOfxParamPropDimensionLabel, label, (int)id );
+	getProps().propSetString( kOfxParamPropDimensionLabel, label, id );
 }
 
-void ParametricParamDescriptor::setUIColour( const std::size_t id, const OfxRGBColourD color )
+void ParametricParamDescriptor::setUIColour( const int id, const OfxRGBColourD color )
 {
-	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.r, boost::numeric_cast<int>(id*3 + 0) );
-	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.g, boost::numeric_cast<int>(id*3 + 1) );
-	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.b, boost::numeric_cast<int>(id*3 + 2) );
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.r, id*3 + 0 );
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.g, id*3 + 1 );
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.b, id*3 + 2 );
+}
+
+void ParametricParamDescriptor::addControlPoint( const int id, const OfxTime time, const double x, const double y, const bool addKey )
+{
+	OFX::Private::gParametricParameterSuite->parametricParamAddControlPoint(
+		_ofxParamHandle,
+		id,
+		time,
+		x,
+		y,
+		addKey );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -951,6 +972,10 @@ ParametricParamDescriptor* ParamSetDescriptor::defineParametricParam( const std:
 	ParametricParamDescriptor* param = NULL;
 
 	defineParamDescriptor( name, eParametricParam, param );
+
+	// Parametric parameters need the ParamSet !
+	param->setParamSet( *this ); ///< @todo tuttle: more generic way for all param types ?
+
 	return param;
 }
 

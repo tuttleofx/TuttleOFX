@@ -669,23 +669,30 @@ class ParametricParamDescriptor : public ParamDescriptor
 protected:
 	mDeclareProtectedAssignAndCC( ParametricParamDescriptor );
 	ParametricParamDescriptor( void ) { assert( false ); }
-	//OfxParamHandle _descriptor;
 
 protected:
 	/** @brief hidden constructor */
 	ParametricParamDescriptor( const std::string& name, OfxPropertySetHandle props );
 
+	OfxParamHandle _ofxParamHandle;
+	ParamSetDescriptor* _paramSet;
+	
 	// so it can make one
 	friend class ParamSetDescriptor;
+	void setParamSet( ParamSetDescriptor& paramSet );
 
 public:
-	void setDimension( const std::size_t dimension );
+	void setDimension( const int dimension );
+
+	void setRange( const double min, const double max );
 
 	void setLabel( const std::string label );
-	void setDimensionLabel( const std::string label, const std::size_t id );
 
-	void setUIColour( const std::size_t id, const OfxRGBColourD color );
-	
+	void setDimensionLabel( const std::string label, const int id );
+
+	void setUIColour( const int id, const OfxRGBColourD color );
+
+	void addControlPoint( const int id, const OfxTime time, const double x, const double y, const bool addKey );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
