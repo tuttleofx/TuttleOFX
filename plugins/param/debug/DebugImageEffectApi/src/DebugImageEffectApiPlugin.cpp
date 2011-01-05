@@ -37,7 +37,7 @@ void DebugImageEffectApiPlugin::render( const OFX::RenderArguments& args )
 
 void DebugImageEffectApiPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	COUT( "changed param : " << paramName << " time: " << args.time << " render scale : " << args.renderScale.x << ", " << args.renderScale.y << " reason : " << args.reason );
+	TUTTLE_COUT( "changed param : " << paramName << " time: " << args.time << " render scale : " << args.renderScale.x << ", " << args.renderScale.y << " reason : " << args.reason );
 	if( paramName == kGoTo )
 	{
 		this->timeLineGotoTime( args.time - 2 );

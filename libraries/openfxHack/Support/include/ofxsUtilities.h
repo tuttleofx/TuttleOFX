@@ -3,11 +3,11 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-#ifndef TUTTLE_NO_COUT
-#ifdef COUT
-#undef COUT
+#ifndef TUTTLE_NO_TUTTLE_COUT
+#ifdef TUTTLE_COUT
+#undef TUTTLE_COUT
 #endif
-#define COUT(... ) ::std::cout << "[PLUGIN] " << __VA_ARGS__ << std::endl
+#define TUTTLE_COUT(... ) ::std::cout << "[PLUGIN] " << __VA_ARGS__ << std::endl
 #ifdef CERR
 #undef CERR
 #endif

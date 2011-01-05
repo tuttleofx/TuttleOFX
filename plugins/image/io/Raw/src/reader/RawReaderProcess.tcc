@@ -21,7 +21,7 @@ static int progressCallback( void* data, LibRaw_progress p, int iteration, int e
 {
 	typedef RawReaderProcess<View> PluginProcess;
 	PluginProcess* process = reinterpret_cast<PluginProcess*>( data );
-	COUT( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
+	TUTTLE_COUT( "Callback: " << libraw_strprogress( p ) << "  pass " << iteration << " of " << expected );
 	if( process->progressForward( iteration ) )
 		return 1; // cancel processing immediately
 	return 0; // can continue
@@ -91,13 +91,13 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 
 		if( const int ret = _rawProcessor.open_file( filepath.c_str() ) )
 		{
-			COUT_ERROR( "Cannot open " << filepath << " : " << libraw_strerror( ret ) );
+			TUTTLE_COUT_ERROR( "Cannot open " << filepath << " : " << libraw_strerror( ret ) );
 			return dst;
 		}
 
 		if( const int ret = _rawProcessor.unpack() )
 		{
-			COUT_ERROR( "Cannot unpack " << filepath << " : " << libraw_strerror( ret ) );
+			TUTTLE_COUT_ERROR( "Cannot unpack " << filepath << " : " << libraw_strerror( ret ) );
 			return dst;
 		}
 
@@ -109,36 +109,36 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 
 		if( LIBRAW_SUCCESS != ret )
 		{
-			COUT_ERROR( "Cannot do postprocessing on " << filepath << " : " << libraw_strerror( ret ) );
+			TUTTLE_COUT_ERROR( "Cannot do postprocessing on " << filepath << " : " << libraw_strerror( ret ) );
 			if( LIBRAW_FATAL_ERROR( ret ) )
 				return dst;
 		}
 		//		libraw_processed_image_t* image = _rawProcessor.dcraw_make_mem_image( &ret );
 		//		if( ! image )
 		//		{
-		//			COUT_ERROR( "Cannot unpack " << filepath << " to memory buffer: " << libraw_strerror( ret ) );
+		//			TUTTLE_COUT_ERROR( "Cannot unpack " << filepath << " to memory buffer: " << libraw_strerror( ret ) );
 		//			return dst;
 		//		}
 
 		//		int ret = _rawProcessor.dcraw_document_mode_processing();
 		//		if( LIBRAW_SUCCESS != ret )
 		//		{
-		//			COUT_ERROR( "Cannot do document_mode_processing on " << filepath << " : " << libraw_strerror( ret ) );
+		//			TUTTLE_COUT_ERROR( "Cannot do document_mode_processing on " << filepath << " : " << libraw_strerror( ret ) );
 		//			if( LIBRAW_FATAL_ERROR( ret ) )
 		//				return dst;
 		//		}
 
 		// The metadata are accessible through data fields of the class
-		COUT( "Image size: " << _rawProcessor.imgdata.sizes.width << ", " << _rawProcessor.imgdata.sizes.height );
+		TUTTLE_COUT( "Image size: " << _rawProcessor.imgdata.sizes.width << ", " << _rawProcessor.imgdata.sizes.height );
 
-		//		COUT_VAR2( image->width, image->height );
-		COUT_VAR2( _rawProcessor.imgdata.sizes.width, _rawProcessor.imgdata.sizes.height );
+		//		TUTTLE_COUT_VAR2( image->width, image->height );
+		TUTTLE_COUT_VAR2( _rawProcessor.imgdata.sizes.width, _rawProcessor.imgdata.sizes.height );
 
 		//		// And let us print its dump; the data are accessible through data fields of the class
 		//		for( int i = 0;
 		//			i < _rawProcessor.imgdata.sizes.iwidth *  _rawProcessor.imgdata.sizes.iheight;
 		//			++i )
-		//				COUT( "i=" << i <<
+		//				TUTTLE_COUT( "i=" << i <<
 		//					  " R=" << _rawProcessor.imgdata.image[i][0] <<
 		//					  " G=" << _rawProcessor.imgdata.image[i][1] <<
 		//					  " B=" << _rawProcessor.imgdata.image[i][2] <<
@@ -150,9 +150,9 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 		RawView imageView = interleaved_view( _size.width, _size.height, //image->width, image->height,
 		                                      (const RawPixel*)( _rawProcessor.imgdata.image /*image->data*/ ),
 		                                      _size.width /*image->width*/ * sizeof( RawPixel ) /*image->data_size*/ );
-		COUT_VAR( sizeof( RawPixel ) );
-		COUT_VAR( imageView.dimensions() );
-		COUT_VAR( dst.dimensions() );
+		TUTTLE_COUT_VAR( sizeof( RawPixel ) );
+		TUTTLE_COUT_VAR( imageView.dimensions() );
+		TUTTLE_COUT_VAR( dst.dimensions() );
 		copy_and_convert_pixels( imageView, dst );
 		//		free( image );
 		_rawProcessor.recycle();
@@ -160,7 +160,7 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 	catch( boost::exception& e )
 	{
 		e << exception::filename( filepath );
-		COUT_ERROR( boost::diagnostic_information( e ) );
+		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}
 	catch(... )
@@ -168,7 +168,7 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 		//		BOOST_THROW_EXCEPTION( exception::Unknown()
 		//			<< exception::user( "Unable to write image")
 		//			<< exception::filename(filepath) );
-		COUT_ERROR( boost::current_exception_diagnostic_information() );
+		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	return dst;
 }

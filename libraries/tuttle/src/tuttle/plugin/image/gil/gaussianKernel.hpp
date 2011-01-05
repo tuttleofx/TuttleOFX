@@ -81,8 +81,8 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bo
 	std::copy( rightKernel.rbegin(), rightKernel.rend(), kernel.begin() );
 	std::copy( rightKernel.begin(), rightKernel.end(), kernel.begin() + rightKernel.size() + 1 );
 
-	//	COUT_VAR( rightKernel.size() );
-	//	COUT_VAR( kernel.size() );
+	//	TUTTLE_COUT_VAR( rightKernel.size() );
+	//	TUTTLE_COUT_VAR( kernel.size() );
 	//	std::cout << "[";
 	//	std::for_each(rightKernel.begin(), rightKernel.end(), std::cout << lambda::_1 << ',');
 	//	std::cout << "]" << std::endl;
@@ -153,8 +153,8 @@ boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size
 
 	std::for_each( kernel.begin(), kernel.begin() + rightKernel.size(), lambda::_1 *= -1 );
 
-	//	COUT_VAR( rightKernel.size() );
-	//	COUT_VAR( kernel.size() );
+	//	TUTTLE_COUT_VAR( rightKernel.size() );
+	//	TUTTLE_COUT_VAR( kernel.size() );
 	//	std::cout << "[";
 	//	std::for_each(rightKernel.begin(), rightKernel.end(), std::cout << lambda::_1 << ',');
 	//	std::cout << "]" << std::endl;

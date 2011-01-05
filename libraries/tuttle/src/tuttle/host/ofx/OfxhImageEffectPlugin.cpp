@@ -154,7 +154,7 @@ void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEff
 void OfxhImageEffectPlugin::addContext( const std::string& context )
 {
 	_knownContexts.insert( context );
-	//TCOUT( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
+	//TUTTLE_TCOUT( "OfxhImageEffectPlugin::addContext " << context << " on plugin " << this->getRawIdentifier() );
 }
 
 const std::set<std::string>& OfxhImageEffectPlugin::getContexts() const
@@ -172,7 +172,7 @@ bool OfxhImageEffectPlugin::supportsContext( const std::string& context ) const
 	     it != itEnd;
 	 ++it )
 	   {
-	    TCOUT( "context " << *it );
+	    TUTTLE_TCOUT( "context " << *it );
 	   }
 	 */
 	return _knownContexts.find( context ) != _knownContexts.end();
@@ -194,7 +194,7 @@ void OfxhImageEffectPlugin::loadAndDescribeActions()
 {
 	if( getPluginHandle() )
 	{
-		//TCOUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
+		//TUTTLE_TCOUT( "loadAndDescribeAction already called on plugin " + getApiHandler()._infos._apiName );
 		return;
 	}
 	_pluginHandle.reset( new tuttle::host::ofx::OfxhPluginHandle( *this, getApiHandler().getHost() ) );
@@ -235,10 +235,10 @@ OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptorInContext( co
 {
 	ContextMap::iterator it = _contexts.find( context );
 
-	//TCOUT( "context : " << context );
+	//TUTTLE_TCOUT( "context : " << context );
 	if( it != _contexts.end() )
 	{
-		//TCOUT( "found context description : " << it->second->getLabel() );
+		//TUTTLE_TCOUT( "found context description : " << it->second->getLabel() );
 		return *( it->second );
 	}
 

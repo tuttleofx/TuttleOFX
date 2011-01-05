@@ -28,8 +28,8 @@ inline void connectClips( TGraph& graph )
 		typename TGraph::Vertex& vertexSource = graph.sourceInstance( ed );
 		typename TGraph::Vertex& vertexDest   = graph.targetInstance( ed );
 
-		TCOUT( "[connectClips] " << edge );
-		TCOUT( vertexSource << "->" << vertexDest );
+		TUTTLE_TCOUT( "[connectClips] " << edge );
+		TUTTLE_TCOUT( vertexSource << "->" << vertexDest );
 		
 		if( ! vertexDest.isFake() && ! vertexSource.isFake() )
 		{
@@ -66,14 +66,14 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[DEPLOY TIME] " << vertex );
+		TUTTLE_TCOUT( "[DEPLOY TIME] " << vertex );
 		if( vertex.isFake() )
 		{
 			BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( v ) )
 			{
 				Edge& e = _graph.instance( ed );
 				e._timesNeeded[_time].insert( _time );
-//				TCOUT( "--- insert edge: " << _time );
+//				TUTTLE_TCOUT( "--- insert edge: " << _time );
 			}
 			vertex._data._times.insert( _time );
 			return;
@@ -83,7 +83,7 @@ public:
 		BOOST_FOREACH( const edge_descriptor& ed, _graph.getInEdges( v ) )
 		{
 			const Edge& edge = _graph.instance( ed );
-//			TCOUT( "-- outEdge: " << edge );
+//			TUTTLE_TCOUT( "-- outEdge: " << edge );
 			BOOST_FOREACH( const typename Edge::TimeMap::value_type& timesNeeded, edge._timesNeeded )
 			{
 				vertex._data._times.insert( timesNeeded.second.begin(), timesNeeded.second.end() );
@@ -98,18 +98,18 @@ public:
 		// Set all times needed on each input edges
 		BOOST_FOREACH( const OfxTime t, vertex._data._times )
 		{
-			TCOUT( "-  time: "<< t );
+			TUTTLE_TCOUT( "-  time: "<< t );
 			INode::InputsTimeMap mapInputsTimes = vertex.getProcessNode().getTimesNeeded( t );
 //			BOOST_FOREACH( const INode::InputsTimeMap::value_type& v, mapInputsTimes )
 //			{
-//				TCOUT_VAR( v.first );
+//				TUTTLE_TCOUT_VAR( v.first );
 //			}
 			BOOST_FOREACH( const edge_descriptor& ed, _graph.getOutEdges( v ) )
 			{
 				Edge& edge = _graph.instance( ed );
-//				TCOUT( "-- inEdge "<<t<<": " << edge );
+//				TUTTLE_TCOUT( "-- inEdge "<<t<<": " << edge );
 //				const Vertex& input = _graph.targetInstance( ed );
-//				TCOUT_VAR( input.getName() );
+//				TUTTLE_TCOUT_VAR( input.getName() );
 //				std::cout << "--- insert edges: ";
 //				std::copy( mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].begin(),
 //				           mapInputsTimes[input.getName()+"." kOfxOutputAttributeName].end(),
@@ -147,7 +147,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( vd );
 
-		TCOUT( "[RemoveIdentityNodes] finish_vertex " << vertex );
+		TUTTLE_TCOUT( "[RemoveIdentityNodes] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -204,11 +204,11 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
+		TUTTLE_TCOUT( "[PREPROCESS 1] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
-		TCOUT( vertex.getProcessDataAtTime()._time );
+		TUTTLE_TCOUT( vertex.getProcessDataAtTime()._time );
 		vertex.getProcessNode().preProcess1( vertex.getProcessDataAtTime() );
 	}
 
@@ -232,7 +232,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
+		TUTTLE_TCOUT( "[PREPROCESS 2] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -258,7 +258,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
+		TUTTLE_TCOUT( "[PREPROCESS 3] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 
@@ -284,7 +284,7 @@ public:
 	OptimizeGraph( TGraph& graph )
 		: _graph( graph )
 	{
-//		COUT_X( 80, ":" );
+//		TUTTLE_COUT_X( 80, ":" );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -319,10 +319,10 @@ public:
 //		}
 
 
-//		TCOUT_X( 80, "." );
-//		TCOUT( vertex.getName() );
-//		TCOUT( procOptions );
-//		TCOUT_X( 80, "." );
+//		TUTTLE_TCOUT_X( 80, "." );
+//		TUTTLE_TCOUT( vertex.getName() );
+//		TUTTLE_TCOUT( procOptions );
+//		TUTTLE_TCOUT_X( 80, "." );
 	}
 
 private:
@@ -347,7 +347,7 @@ public:
 	void finish_vertex( VertexDescriptor v, Graph& g )
 	{
 		Vertex& vertex = _graph.instance( v );
-//		COUT( "[PROCESS] finish_vertex " << vertex );
+//		TUTTLE_COUT( "[PROCESS] finish_vertex " << vertex );
 
 		// do nothing on the empty output node
 		// it's just a link to final nodes
@@ -362,7 +362,7 @@ public:
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 		_cumulativeTime += t2 - t1;
 		
-		COUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
+		TUTTLE_COUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
 		
 		if( vertex.getProcessDataAtTime()._finalNode )
 		{
@@ -401,7 +401,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[POSTPROCESS] initialize_vertex " << vertex );
+//		TUTTLE_TCOUT( "[POSTPROCESS] initialize_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 	}
@@ -411,7 +411,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-//		TCOUT( "[POSTPROCESS] finish_vertex " << vertex );
+//		TUTTLE_TCOUT( "[POSTPROCESS] finish_vertex " << vertex );
 		if( vertex.isFake() )
 			return;
 

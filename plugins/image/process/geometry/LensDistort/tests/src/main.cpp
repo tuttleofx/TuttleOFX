@@ -23,14 +23,14 @@ int main( int argc, char** argv )
 {
 	if( argc <= 2 )
 	{
-		COUT_FATALERROR( "need one argument (image filename) : " << argv[0] << " image.jpg 0.5" );
+		TUTTLE_COUT_FATALERROR( "need one argument (image filename) : " << argv[0] << " image.jpg 0.5" );
 		return 1;
 	}
 	std::string path( argv[1] );
 	std::string ext( path, path.rfind( '.' ) + 1, 3 );
 
-	COUT_VAR( path );
-	COUT_VAR( ext );
+	TUTTLE_COUT_VAR( path );
+	TUTTLE_COUT_VAR( ext );
 
 	boost::gil::rgba8_image_t img_read;
 	/*
@@ -42,7 +42,7 @@ int main( int argc, char** argv )
 	    tiff_read_image( path.c_str(), img_read );*/
 	else
 	{
-		COUT_FATALERROR( "Image file extension not recognize : " << ext );
+		TUTTLE_COUT_FATALERROR( "Image file extension not recognize : " << ext );
 		return 1;
 	}
 
@@ -51,10 +51,10 @@ int main( int argc, char** argv )
 
 	if( ( ss >> coef1 ).fail() )
 	{
-		COUT_FATALERROR( "Value not recognize : " << argv[2] );
+		TUTTLE_COUT_FATALERROR( "Value not recognize : " << argv[2] );
 		return 1;
 	}
-	COUT_VAR( coef1 );
+	TUTTLE_COUT_VAR( coef1 );
 
 	boost::gil::rgb32f_image_t img_src( img_read.dimensions() );
 	boost::gil::rgb32f_image_t img_dst( img_read.dimensions() );
@@ -114,13 +114,13 @@ int main( int argc, char** argv )
 	_p._lensCenterDst = point2<double>( 0.5, 0.5 ) * imgSize;
 	_p._lensCenterSrc = _p._lensCenterDst + imgShift;
 
-	COUT( "---" );
-	COUT_VAR2( _p._lensCenterSrc.x, _p._lensCenterSrc.y );
-	COUT_VAR2( _p._lensCenterDst.x, _p._lensCenterDst.y );
-	COUT_VAR2( _p._imgCenterSrc.x, _p._imgCenterSrc.y );
-	COUT_VAR2( _p._imgCenterDst.x, _p._imgCenterDst.y );
-	COUT_VAR( _p._imgDiagonal );
-	COUT_VAR( _p._pixelRatio );
+	TUTTLE_COUT( "---" );
+	TUTTLE_COUT_VAR2( _p._lensCenterSrc.x, _p._lensCenterSrc.y );
+	TUTTLE_COUT_VAR2( _p._lensCenterDst.x, _p._lensCenterDst.y );
+	TUTTLE_COUT_VAR2( _p._imgCenterSrc.x, _p._imgCenterSrc.y );
+	TUTTLE_COUT_VAR2( _p._imgCenterDst.x, _p._imgCenterDst.y );
+	TUTTLE_COUT_VAR( _p._imgDiagonal );
+	TUTTLE_COUT_VAR( _p._pixelRatio );
 
 	ofx::Progress progress;
 	OfxRectI procWindow;

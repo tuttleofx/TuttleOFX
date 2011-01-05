@@ -110,19 +110,19 @@ public:
 	{
 		using namespace boost::gil;
 		point_t pM = _droiteEquation.pointOrthogonalProjection( pA );
-		//		COUT( "________________________________________" );
-		//		COUT_VAR( _pB );
-		//		COUT_VAR( _pC );
-		//		COUT_VAR( pA );
-		//		COUT_VAR( pM );
+		//		TUTTLE_COUT( "________________________________________" );
+		//		TUTTLE_COUT_VAR( _pB );
+		//		TUTTLE_COUT_VAR( _pC );
+		//		TUTTLE_COUT_VAR( pA );
+		//		TUTTLE_COUT_VAR( pM );
 		double distB = distance( pM, _pB );
 		double distC = distance( pM, _pC );
 		double norm  = distB + distC;
-		//		COUT_VAR3( distB, distC, norm );
+		//		TUTTLE_COUT_VAR3( distB, distC, norm );
 		distB /= norm;
 		distC /= norm;
-		//		COUT_VAR2( _pB, _pC );
-		//		COUT_VAR2( distB, distC );
+		//		TUTTLE_COUT_VAR2( _pB, _pC );
+		//		TUTTLE_COUT_VAR2( distB, distC );
 		// distB * _colors[0] + distC * _colors[1];
 		return pixel_plus_t<result_type, result_type, result_type>() (
 		           pixel_multiplies_scalar_t<result_type, double, result_type>() ( _colors[0], distB ),

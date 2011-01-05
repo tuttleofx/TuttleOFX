@@ -42,7 +42,7 @@ ConvolutionProcessParams ConvolutionPlugin::getProcessParams() const
 		for( unsigned int x = 0; x < params._size.x; ++x )
 		{
 			params._convMatrix(x, y) = _paramCoef[y][x]->getValue();
-			COUT( "coef[" << y << "][" << x << "] = " << params._convMatrix(x, y) );
+			TUTTLE_COUT( "coef[" << y << "][" << x << "] = " << params._convMatrix(x, y) );
 		}
 	}
 	return params;

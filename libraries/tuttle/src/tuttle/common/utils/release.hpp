@@ -2,27 +2,27 @@
 #define __TUTTLE_RELEASE__
 
 /*
- * In release mode, COUT_*_DEBUG are disabled.
+ * In release mode, TUTTLE_COUT_*_DEBUG are disabled.
  */
 
-/// @see COUT
-#define COUT_DEBUG(... )
-/// @see  COUT_INFOS
-#define COUT_INFOS_DEBUG
-/// @see  COUT_INFOS
-#define COUT_WITHINFOS_DEBUG(... )
+/// @see TUTTLE_COUT
+#define TUTTLE_COUT_DEBUG(... )
+/// @see  TUTTLE_COUT_INFOS
+#define TUTTLE_COUT_INFOS_DEBUG
+/// @see  TUTTLE_COUT_INFOS
+#define TUTTLE_COUT_WITHINFOS_DEBUG(... )
 /// @see IF_DEBUG
 #define IF_DEBUG(... )
 
-#define COUT_X_DEBUG( N, ... )
-#define COUT_VAR_DEBUG(... )
-#define COUT_VAR2_DEBUG(... )
-#define COUT_VAR3_DEBUG(... )
-#define COUT_VAR4_DEBUG(... )
-#define COUT_WITHINFOS_DEBUG(... )
-#define COUT_WARNING_DEBUG(... )
-#define COUT_ERROR_DEBUG(... )
-#define COUT_FATALERROR_DEBUG(... )
-#define COUT_EXCEPTION_DEBUG(... )
+#define TUTTLE_COUT_X_DEBUG( N, ... )
+#define TUTTLE_COUT_VAR_DEBUG(... )
+#define TUTTLE_COUT_VAR2_DEBUG(... )
+#define TUTTLE_COUT_VAR3_DEBUG(... )
+#define TUTTLE_COUT_VAR4_DEBUG(... )
+#define TUTTLE_COUT_WITHINFOS_DEBUG(... )
+#define TUTTLE_COUT_WARNING_DEBUG(... )
+#define TUTTLE_COUT_ERROR_DEBUG(... )
+#define TUTTLE_COUT_FATALERROR_DEBUG(... )
+#define TUTTLE_COUT_EXCEPTION_DEBUG(... )
 
 #endif

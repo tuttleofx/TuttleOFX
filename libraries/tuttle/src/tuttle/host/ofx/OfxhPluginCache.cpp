@@ -200,7 +200,7 @@ void OfxhPluginCache::setPluginHostPath( const std::string& hostId )
 void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const std::string& dir, bool recurse )
 {
 	#ifdef CACHE_DEBUG
-	TCOUT( "looking in " << dir << " for plugins" );
+	TUTTLE_TCOUT( "looking in " << dir << " for plugins" );
 	#endif
 
 	#if defined ( WINDOWS )
@@ -247,7 +247,7 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 			if( _knownBinFiles.find( binpath ) == _knownBinFiles.end() )
 			{
 				#ifdef CACHE_DEBUG
-				TCOUT( "found non-cached binary " << binpath );
+				TUTTLE_TCOUT( "found non-cached binary " << binpath );
 				#endif
 				setDirty();
 				try
@@ -266,13 +266,13 @@ void OfxhPluginCache::scanDirectory( std::set<std::string>& foundBinFiles, const
 				}
 				catch(... )
 				{
-					COUT_CURRENT_EXCEPTION;
+					TUTTLE_COUT_CURRENT_EXCEPTION;
 				}
 			}
 			else
 			{
 				#ifdef CACHE_DEBUG
-				TCOUT( "found cached binary " << binpath );
+				TUTTLE_TCOUT( "found cached binary " << binpath );
 				#endif
 			}
 		}
@@ -371,7 +371,7 @@ void OfxhPluginCache::scanPluginFiles()
 				}
 				else
 				{
-					COUT_ERROR( "Ignoring plugin " << plug.getIdentifier() <<
+					TUTTLE_COUT_ERROR( "Ignoring plugin " << plug.getIdentifier() <<
 					            " as unsupported (" << reason << ")" );
 				}
 			}

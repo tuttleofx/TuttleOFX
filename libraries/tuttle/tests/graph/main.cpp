@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	//Core::instance().getPluginCache().scanPluginFiles();
 //	Core::instance().preload();
 //
-//	TCOUT( tuttle::host::Core::instance().getImageEffectPluginCache() );
+//	TUTTLE_TCOUT( tuttle::host::Core::instance().getImageEffectPluginCache() );
 //
 //	Graph g;
 //	BOOST_CHECK_NO_THROW(EffectInstance* invert = g.createNode( "fr.tuttle.invert" ));
@@ -64,9 +64,9 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		//Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		//Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
-		TCOUT( Core::instance().getImageEffectPluginCache() );
+		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
 
-		TCOUT( "__________________________________________________1" );
+		TUTTLE_TCOUT( "__________________________________________________1" );
 
 		Graph g;
 		Graph::Node& read1 = g.createNode( "fr.tuttle.pngreader" );
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		Graph::Node& write2 = g.createNode( "fr.tuttle.dpxwriter" );
 		Graph::Node& write3 = g.createNode( "fr.tuttle.exrwriter" );
 
-		TCOUT( "__________________________________________________2" );
+		TUTTLE_TCOUT( "__________________________________________________2" );
 		// Setup parameters
 		read1.getParam( "filename" ).set( "data/input.png" );
 		//		read2.getParam( "filename" ).set( "data/input.dpx" );
@@ -97,34 +97,34 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		write3.getParam( "filename" ).set( "data/output3.exr" );
 		write4.getParam( "filename" ).set( "data/output4.png" );
 
-		TCOUT( "__________________________________________________3" );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "__________________________________________________3" );
+		TUTTLE_TCOUT( "connect" );
 		g.connect( read1, invert1 );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "connect" );
 		//		g.connect( invert1, bitdepth );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "connect" );
 		g.connect( invert1, invert2 );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "connect" );
 		g.connect( invert2, invert3 );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "connect" );
 		g.connect( invert3, write1 );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "connect" );
 		g.connect( invert1, invert4 );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "connect" );
 		g.connect( invert4, write2 );
-		TCOUT( "connect" );
+		TUTTLE_TCOUT( "connect" );
 		g.connect( invert1, write3 );
 
-		TCOUT( "__________3.5" );
+		TUTTLE_TCOUT( "__________3.5" );
 		g.connect( invert1, merge1.getAttribute( "A" ) );
 		//	g.connect( bitdepth, merge1.getAttribute("A") );
-		TCOUT( "__________3.5" );
+		TUTTLE_TCOUT( "__________3.5" );
 		g.connect( read3, merge1.getAttribute( "B" ) );
-		TCOUT( "__________3.5" );
+		TUTTLE_TCOUT( "__________3.5" );
 		//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
 
-		TCOUT( "__________________________________________________4" );
+		TUTTLE_TCOUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		outputs.push_back( write2.getName() );
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		outputs.push_back( write4.getName() );
 		g.compute( outputs, 0, 1 );
 
-		TCOUT( "__________________________________________________5" );
+		TUTTLE_TCOUT( "__________________________________________________5" );
 	}
 	catch(... )
 	{

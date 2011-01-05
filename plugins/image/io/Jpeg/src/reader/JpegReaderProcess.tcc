@@ -61,7 +61,7 @@ View& JpegReaderProcess<View>::readImage( View& dst, const std::string& filepath
 	catch( boost::exception& e )
 	{
 		e << exception::filename( filepath );
-		COUT_ERROR( boost::diagnostic_information( e ) );
+		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}
 	catch(... )
@@ -69,7 +69,7 @@ View& JpegReaderProcess<View>::readImage( View& dst, const std::string& filepath
 		//		BOOST_THROW_EXCEPTION( exception::Unknown()
 		//			<< exception::user( "Unable to write image")
 		//			<< exception::filename(filepath) );
-		COUT_ERROR( boost::current_exception_diagnostic_information() );
+		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	return dst;
 }

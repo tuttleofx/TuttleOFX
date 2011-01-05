@@ -142,7 +142,7 @@ void ImageMagickReaderProcess<View>::multiThreadProcessImages( const OfxRectI& p
 template<class SView, class DView>
 void copy_and_convert_from_buffer( Image* image, DView& dst )
 {
-	COUT_VAR( sizeof( typename SView::value_type ) );
+	TUTTLE_COUT_VAR( sizeof( typename SView::value_type ) );
 	//	boost::scoped_ptr<PixelPacket> buffer( GetImagePixels( image, 0, 0, dst.width(), dst.height() ) );
 	PixelPacket* buffer = GetImagePixels( image, 0, 0, dst.width(), dst.height() );
 
@@ -159,7 +159,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 {
 	BOOST_STATIC_ASSERT( sizeof( Quantum ) == 2 ); // imagemagick compiled in 16 bits not 8 !
 
-	COUT_VAR( filepath );
+	TUTTLE_COUT_VAR( filepath );
 
 	ImageInfo* imageInfo = AcquireImageInfo();
 	GetImageInfo( imageInfo );
@@ -176,23 +176,23 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 	switch( image->colorspace )
 	{
 		case RGBColorspace:
-			COUT( "RGBColorspace" );
+			TUTTLE_COUT( "RGBColorspace" );
 			break;
 		case GRAYColorspace:
-			COUT( "GRAYColorspace" );
+			TUTTLE_COUT( "GRAYColorspace" );
 			break;
 		case TransparentColorspace:
-			COUT( "TransparentColorspace" );
+			TUTTLE_COUT( "TransparentColorspace" );
 			break;
 		default:
-			COUT( "Particular colorspace: needs a conversion to RGB." );
+			TUTTLE_COUT( "Particular colorspace: needs a conversion to RGB." );
 	}
 
 	if( image->colorspace != RGBColorspace &&
 	    image->colorspace != GRAYColorspace &&
 	    image->colorspace != TransparentColorspace )
 	{
-		COUT( "Change colorspace to RGB." );
+		TUTTLE_COUT( "Change colorspace to RGB." );
 		SetImageColorspace( image, RGBColorspace );
 	}
 
@@ -222,7 +222,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				default:
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					COUT( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>( bitDepth ) );
+					TUTTLE_COUT( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>( bitDepth ) );
 					//					BOOST_THROW_EXCEPTION( exception::Unsupported()
 					//						<< exception::user( "Unknown combination of color type and bit depth (RGB, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
@@ -252,7 +252,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				default:
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					COUT( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>( bitDepth ) );
+					TUTTLE_COUT( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>( bitDepth ) );
 					//					BOOST_THROW_EXCEPTION( exception::Unsupported()
 					//						<< exception::user( "Unknown combination of color type and bit depth (RGBA, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;
@@ -283,7 +283,7 @@ View& ImageMagickReaderProcess<View>::readImage( View& dst, const std::string& f
 				default:
 				{
 					copy_and_convert_from_buffer<bgra16_view_t, View>( image, dst );
-					COUT( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>( bitDepth ) );
+					TUTTLE_COUT( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>( bitDepth ) );
 					//					BOOST_THROW_EXCEPTION( exception::Unsupported()
 					//						<< exception::user( "Unknown combination of color type and bit depth (Gray, " + boost::lexical_cast<std::string>(bitDepth) ) );
 					break;

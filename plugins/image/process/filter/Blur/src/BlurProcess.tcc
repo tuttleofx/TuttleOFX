@@ -20,9 +20,9 @@ void BlurProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 
-	//	COUT_X( 20, "_" );
-	//	COUT_VAR( _params._size );
-	//	COUT_VAR2( _params._gilKernelX.size(), _params._gilKernelY.size() );
+	//	TUTTLE_COUT_X( 20, "_" );
+	//	TUTTLE_COUT_VAR( _params._size );
+	//	TUTTLE_COUT_VAR2( _params._gilKernelX.size(), _params._gilKernelY.size() );
 	//	std::cout << "x [";
 	//	std::for_each(_params._gilKernelX.begin(), _params._gilKernelX.end(), std::cout << boost::lambda::_1 << ',');
 	//	std::cout << "]" << std::endl;

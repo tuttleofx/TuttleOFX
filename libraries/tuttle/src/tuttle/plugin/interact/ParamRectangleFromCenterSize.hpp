@@ -204,9 +204,9 @@ typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangle
 	const Point2 p              = ofxToGil( args.penPosition );
 	const double margeCanonical = this->getMarge() * args.pixelScale.x;
 
-	COUT_VAR( this->getMarge() );
-	COUT_VAR( args.pixelScale.x );
-	COUT_VAR( margeCanonical );
+	TUTTLE_COUT_VAR( this->getMarge() );
+	TUTTLE_COUT_VAR( args.pixelScale.x );
+	TUTTLE_COUT_VAR( margeCanonical );
 	const OfxRectD rod = _frame.getFrame( this->getTime() );
 	const Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 	const Point2 pCenter = _center.getPoint();
@@ -248,16 +248,16 @@ EMoveType ParamRectangleFromCenterSize<TFrame, coord>::selectIfIntesect( const O
 	EMoveType m = _center.selectIfIntesect( args );
 	if( m != eMoveTypeNone )
 	{
-		TCOUT( "intersect center." );
+		TUTTLE_TCOUT( "intersect center." );
 		_selectType = eSelectTypeC;
 		return m;
 	}
 	// intersect borders
 	_selectType = selectType( args );
-	TCOUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
+	TUTTLE_TCOUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
 	if( _selectType != eSelectTypeNone )
 	{
-		TCOUT( "intersect border." );
+		TUTTLE_TCOUT( "intersect border." );
 		return eMoveTypeXY;
 	}
 	return eMoveTypeNone;

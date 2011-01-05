@@ -220,7 +220,7 @@ property::OfxhSet& OfxhImageEffectNode::getParamSetProps()
 // do nothing
 size_t OfxhImageEffectNode::getDimension( const std::string& name ) const OFX_EXCEPTION_SPEC
 {
-	COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ << " with name=" << name );
+	TUTTLE_COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ << " with name=" << name );
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	return 0;
 }
@@ -232,7 +232,7 @@ size_t OfxhImageEffectNode::upperGetDimension( const std::string& name )
 
 void OfxhImageEffectNode::notify( const std::string& name, bool singleValue, int indexOrN ) OFX_EXCEPTION_SPEC
 {
-	COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ );
+	TUTTLE_COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ );
 }
 
 /**
@@ -240,7 +240,7 @@ void OfxhImageEffectNode::notify( const std::string& name, bool singleValue, int
  */
 void OfxhImageEffectNode::reset( const std::string& name ) OFX_EXCEPTION_SPEC
 {
-	COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ );
+	TUTTLE_COUT_ERROR( "failing in " << __PRETTY_FUNCTION__ );
 	BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 }
 
@@ -662,7 +662,7 @@ void OfxhImageEffectNode::renderAction( OfxTime            time,
 	inArgs.setIntPropertyN( kOfxImageEffectPropRenderWindow, &renderRoI.x1, 4 );
 	inArgs.setDoublePropertyN( kOfxImageEffectPropRenderScale, &renderScale.x, 2 );
 
-	//TCOUT("OfxhImageEffect::renderAction inArgs=" << inArgs;
+	//TUTTLE_TCOUT("OfxhImageEffect::renderAction inArgs=" << inArgs;
 
 	OfxStatus status = mainEntry( kOfxImageEffectActionRender, this->getHandle(), &inArgs, 0 );
 

@@ -62,7 +62,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	catch( exception::Common& e )
 	{
 		e << exception::filename( params._filepath );
-		COUT_ERROR( boost::diagnostic_information( e ) );
+		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}
 	catch(... )
@@ -70,7 +70,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 		//		BOOST_THROW_EXCEPTION( exception::Unknown()
 		//			<< exception::user( "Unable to write image")
 		//			<< exception::filename(params._filepath) );
-		COUT_ERROR( boost::current_exception_diagnostic_information() );
+		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
 	copy_pixels( this->_srcView, this->_dstView );
 }

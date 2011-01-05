@@ -88,21 +88,21 @@ MemoryPool::~MemoryPool()
 {
 	if( !_dataUsed.empty() )
 	{
-		COUT_ERROR( "Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
+		TUTTLE_COUT_ERROR( "Error inside memory pool. Some data always mark used at the destruction (nb elements:" << _dataUsed.size() << ")" );
 	}
-	TCOUT_X( 20, "-" );
-	TCOUT( "~MemoryPool()" );
-	TCOUT_VAR( _dataUsed.size() );
-	TCOUT_VAR( _dataUnused.size() );
-	TCOUT_VAR( _allDatas.size() );
-	TCOUT_VAR( _memoryAuthorized );
-	TCOUT( "" );
-	TCOUT_VAR( getUsedMemorySize() );
-	TCOUT_VAR( getAllocatedMemorySize() );
-	TCOUT_VAR( getMaxMemorySize() );
-	TCOUT_VAR( getAvailableMemorySize() );
-	TCOUT_VAR( getWastedMemorySize() );
-	TCOUT_X( 20, "-" );
+	TUTTLE_TCOUT_X( 20, "-" );
+	TUTTLE_TCOUT( "~MemoryPool()" );
+	TUTTLE_TCOUT_VAR( _dataUsed.size() );
+	TUTTLE_TCOUT_VAR( _dataUnused.size() );
+	TUTTLE_TCOUT_VAR( _allDatas.size() );
+	TUTTLE_TCOUT_VAR( _memoryAuthorized );
+	TUTTLE_TCOUT( "" );
+	TUTTLE_TCOUT_VAR( getUsedMemorySize() );
+	TUTTLE_TCOUT_VAR( getAllocatedMemorySize() );
+	TUTTLE_TCOUT_VAR( getMaxMemorySize() );
+	TUTTLE_TCOUT_VAR( getAvailableMemorySize() );
+	TUTTLE_TCOUT_VAR( getWastedMemorySize() );
+	TUTTLE_TCOUT_X( 20, "-" );
 }
 
 void MemoryPool::referenced( PoolData* pData )
@@ -186,8 +186,8 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 std::size_t MemoryPool::updateMemoryAuthorizedWithRAM()
 {
 	_memoryAuthorized = getUsedMemorySize() + getMemoryInfo()._totalRam;
-	TCOUT_X( 5, " - MEMORYPOOL::updateMemoryAuthorizedWithRAM - " );
-	TCOUT_VAR( _memoryAuthorized );
+	TUTTLE_TCOUT_X( 5, " - MEMORYPOOL::updateMemoryAuthorizedWithRAM - " );
+	TUTTLE_TCOUT_VAR( _memoryAuthorized );
 	return _memoryAuthorized;
 }
 

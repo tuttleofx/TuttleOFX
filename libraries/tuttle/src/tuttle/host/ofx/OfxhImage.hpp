@@ -147,12 +147,12 @@ public:
 
 	int getReference() const {  return _referenceCount; }
 
-	void addReference( const std::size_t n = 1 ) {  _referenceCount += n; TCOUT( "+"<<n<<"  Image::addReference, id:" << _id << ", ref:" << getReference() ); }
+	void addReference( const std::size_t n = 1 ) {  _referenceCount += n; TUTTLE_TCOUT( "+"<<n<<"  Image::addReference, id:" << _id << ", ref:" << getReference() ); }
 	/// release the reference count, which, if zero, deletes this
 	bool releaseReference()
 	{
 		--_referenceCount;
-		TCOUT( "-  Image::releaseReference, id:" << getId() << ", ref:" << getReference() );
+		TUTTLE_TCOUT( "-  Image::releaseReference, id:" << getId() << ", ref:" << getReference() );
 		if( _referenceCount < 0 )
 			BOOST_THROW_EXCEPTION( std::logic_error( "Try to release an undeclared reference to an Image." ) );
 		return _referenceCount <= 0;

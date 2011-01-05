@@ -112,7 +112,7 @@ void MemoryCache::clearUnused()
 
 void MemoryCache::clearAll()
 {
-	TCOUT( " - MEMORYCACHE::CLEARALL - " );
+	TUTTLE_TCOUT( " - MEMORYCACHE::CLEARALL - " );
 	_map.clear();
 }
 

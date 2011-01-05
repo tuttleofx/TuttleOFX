@@ -84,12 +84,12 @@ int main( int argc, char** argv )
 			}
 			if( dstIsSeq )
 			{
-				COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ")" );
+				TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ")" );
 				copy_sequence( srcSeq, dstSeq );
 			}
 			else
 			{
-				COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
+				TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
 				copy_sequence( srcSeq, dstPath );
 			}
 		}

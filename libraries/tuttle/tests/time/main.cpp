@@ -19,9 +19,9 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		using namespace tuttle::host;
 
 		Core::instance().preload();
-//		TCOUT( Core::instance().getImageEffectPluginCache() );
+//		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
 
-		TCOUT( "__________________________________________________1" );
+		TUTTLE_TCOUT( "__________________________________________________1" );
 
 		Graph g;
 		Graph::Node& read1 = g.createNode( "fr.tuttle.pngreader" );
@@ -29,24 +29,24 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		Graph::Node& timeshift1 = g.createNode( "fr.tuttle.timeshift" );
 		Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
 
-		TCOUT( "__________________________________________________2" );
+		TUTTLE_TCOUT( "__________________________________________________2" );
 		// Setup parameters
 		read1.getParam( "filename" ).set( "data/input-###.png" );
 		timeshift1.getParam("offset").set( 0 );
 		write1.getParam( "filename" ).set( "data/output_####.png" );
 
-		TCOUT( "__________________________________________________3" );
+		TUTTLE_TCOUT( "__________________________________________________3" );
 		g.connect( read1, invert1 );
 		g.connect( invert1, timeshift1 );
 		g.connect( timeshift1, write1 );
 //		g.connect( invert1, write1 );
 
-		TCOUT( "__________________________________________________4" );
+		TUTTLE_TCOUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		g.compute( outputs, 1, 1 );
 
-		TCOUT( "__________________________________________________5" );
+		TUTTLE_TCOUT( "__________________________________________________5" );
 	}
 	catch(... )
 	{

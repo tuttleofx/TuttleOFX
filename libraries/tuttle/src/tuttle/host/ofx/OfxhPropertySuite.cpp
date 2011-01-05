@@ -30,7 +30,7 @@ OfxStatus propSet( OfxPropertySetHandle properties,
 
 		if( prop.getPluginReadOnly() )
 		{
-			COUT_ERROR( "Plugin is trying to set a property (" << property << " at index " << index << ") which is read-only." );
+			TUTTLE_COUT_ERROR( "Plugin is trying to set a property (" << property << " at index " << index << ") which is read-only." );
 			return kOfxStatErrValue;
 		}
 
@@ -77,7 +77,7 @@ OfxStatus propSetN( OfxPropertySetHandle properties,
 
 		if( prop.getPluginReadOnly() )
 		{
-			COUT_ERROR( "Plugin is trying to set property " << property << " of size " << count << ") which is read-only." );
+			TUTTLE_COUT_ERROR( "Plugin is trying to set property " << property << " of size " << count << ") which is read-only." );
 			return kOfxStatErrValue;
 		}
 
@@ -196,7 +196,7 @@ OfxStatus propReset( OfxPropertySetHandle properties, const char* property )
 
 		//		if( prop.getPluginReadOnly() )
 		//		{
-		//			COUT_ERROR("Plugin is trying to reset a read-only property " << property );
+		//			TUTTLE_COUT_ERROR("Plugin is trying to reset a read-only property " << property );
 		//			return kOfxStatErrValue;
 		//		}
 

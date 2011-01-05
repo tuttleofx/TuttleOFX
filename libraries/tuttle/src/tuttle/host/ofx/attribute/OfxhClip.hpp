@@ -54,7 +54,7 @@ public:
 
 	void notify( const std::string& name, bool isSingle, int indexOrN ) OFX_EXCEPTION_SPEC
 	{
-		COUT_WITHINFOS( "What we should do here?" );
+		TUTTLE_COUT_WITHINFOS( "What we should do here?" );
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	}
 
@@ -62,7 +62,7 @@ public:
 
 	void reset( const std::string& name ) OFX_EXCEPTION_SPEC
 	{
-		COUT_WITHINFOS( "What we should do here?" );
+		TUTTLE_COUT_WITHINFOS( "What we should do here?" );
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature ) );
 	}
 

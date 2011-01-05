@@ -19,11 +19,11 @@ ConvolutionProcess<View>::ConvolutionProcess( ConvolutionPlugin& instance )
 template <class View>
 void ConvolutionProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	COUT_INFOS;
+	TUTTLE_COUT_INFOS;
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams();
 
-	COUT_VAR( _params._size );
+	TUTTLE_COUT_VAR( _params._size );
 }
 
 /**

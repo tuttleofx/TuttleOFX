@@ -32,7 +32,7 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 
 void RawReaderPlugin::updateInfos()
 {
-	COUT( "updateInfos begin" );
+	TUTTLE_COUT( "updateInfos begin" );
 	RawReaderProcessParams params = getProcessParams( this->timeLineGetBounds().min );
 
 	LibRaw rawProcessor;
@@ -45,12 +45,12 @@ void RawReaderPlugin::updateInfos()
 
 	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
-		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
+		TUTTLE_COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
 		return;
 	}
 	if( const int ret = rawProcessor.adjust_sizes_info_only() )
 	{
-		COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
+		TUTTLE_COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
 		return;
 	}
 
@@ -156,18 +156,18 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 
 	if( const int ret = rawProcessor.open_file( params._filepath.c_str() ) )
 	{
-		COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
+		TUTTLE_COUT_ERROR( "Cannot open \"" << params._filepath << "\": " << libraw_strerror( ret ) );
 		return false;
 	}
 	if( const int ret = rawProcessor.adjust_sizes_info_only() )
 	{
-		COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
+		TUTTLE_COUT_ERROR( "Cannot decode infos \"" << params._filepath << "\": " << libraw_strerror( ret ) );
 		return false;
 	}
 
 	//	point2<ptrdiff_t> dims( sizes.raw_width, sizes.raw_height );
 	point2<ptrdiff_t> dims( sizes.width, sizes.height );
-	COUT_VAR( dims );
+	TUTTLE_COUT_VAR( dims );
 	rod.x1 = 0;
 	rod.x2 = dims.x * this->_clipDst->getPixelAspectRatio();
 	rod.y1 = 0;

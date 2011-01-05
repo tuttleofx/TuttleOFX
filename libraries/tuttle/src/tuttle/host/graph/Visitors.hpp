@@ -54,7 +54,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		//TCOUT( "MarkUsed &&&&& init" << vertex.getName() );
+		//TUTTLE_TCOUT( "MarkUsed &&&&& init" << vertex.getName() );
 		vertex.setUsed( false );
 	}
 
@@ -66,7 +66,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		//COUT_VAR( vertex.getName() );
+		//TUTTLE_COUT_VAR( vertex.getName() );
 		vertex.setUsed();
 	}
 
@@ -85,14 +85,14 @@ public:
 	Test_dfs( TGraph& graph )
 		: _graph( graph )
 	{
-		COUT_X( 80, "_" );
-		TCOUT( "Test_dfs" );
+		TUTTLE_COUT_X( 80, "_" );
+		TUTTLE_TCOUT( "Test_dfs" );
 	}
 
 	~Test_dfs()
 	{
-		TCOUT( "~Test_dfs" );
-		COUT_X( 80, "_" );
+		TUTTLE_TCOUT( "~Test_dfs" );
+		TUTTLE_COUT_X( 80, "_" );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -100,7 +100,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "initialize_vertex: " << vertex );
+		TUTTLE_TCOUT( "initialize_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -108,7 +108,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "start_vertex: " << vertex );
+		TUTTLE_TCOUT( "start_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -116,7 +116,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "discover_vertex: " << vertex );
+		TUTTLE_TCOUT( "discover_vertex: " << vertex );
 	}
 
 	template <class VertexDescriptor, class Graph>
@@ -124,7 +124,7 @@ public:
 	{
 		Vertex& vertex = _graph.instance( v );
 
-		TCOUT( "finish_vertex: " << vertex );
+		TUTTLE_TCOUT( "finish_vertex: " << vertex );
 	}
 
 	template<class EdgeDescriptor, class Graph>
@@ -135,7 +135,7 @@ public:
 		//		Vertex& vertexSource = _graph.sourceInstance(e);
 		//		Vertex& vertexDest   = _graph.targetInstance(e);
 
-		TCOUT( "examine_edge: " << edge );
+		TUTTLE_TCOUT( "examine_edge: " << edge );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -143,7 +143,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TCOUT( "tree_edge: " << edge  );
+		TUTTLE_TCOUT( "tree_edge: " << edge  );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -151,7 +151,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TCOUT( "back_edge: " << edge  );
+		TUTTLE_TCOUT( "back_edge: " << edge  );
 	}
 
 	template <class EdgeDescriptor, class Graph>
@@ -159,7 +159,7 @@ public:
 	{
 		ProcessEdge& edge = _graph.instance( e );
 
-		TCOUT( "forward_or_cross_edge: " << edge );
+		TUTTLE_TCOUT( "forward_or_cross_edge: " << edge );
 	}
 
 private:

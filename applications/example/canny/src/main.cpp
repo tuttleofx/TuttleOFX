@@ -30,14 +30,14 @@ int main( int argc, char** argv )
 	try
 	{
 		using namespace tuttle::host;
-		TCOUT( "__________________________________________________0" );
+		TUTTLE_TCOUT( "__________________________________________________0" );
 //		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 		// Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
 
-		TCOUT( Core::instance().getImageEffectPluginCache() );
+		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
 
-		TCOUT( "__________________________________________________1" );
+		TUTTLE_TCOUT( "__________________________________________________1" );
 
 //		boost::gil::rgba32f_image_t imgRead;
 //		boost::gil::rgba8_image_t imgRead;
@@ -48,7 +48,7 @@ int main( int argc, char** argv )
 //		boost::gil::rgba8_view_t imgView( view( imgRead ) );
 		boost::gil::gray8_view_t imgView( view( imgRead ) );
 
-		TCOUT( "__________________________________________________2" );
+		TUTTLE_TCOUT( "__________________________________________________2" );
 
 		Graph g;
 //		Graph::Node& inputBuffer1 = g.createNode( "fr.tuttle.inputbuffer" );
@@ -72,7 +72,7 @@ int main( int argc, char** argv )
 		Graph::Node& write3       = g.createNode( "fr.tuttle.pngwriter" );
 		Graph::Node& write4       = g.createNode( "fr.tuttle.pngwriter" );
 
-		TCOUT( "__________________________________________________3" );
+		TUTTLE_TCOUT( "__________________________________________________3" );
 
 		OfxRectD ibRod = { 0, 0, imgView.width(), imgView.height() };
 		inputBuffer1.setClipRod( ibRod );
@@ -145,7 +145,7 @@ int main( int argc, char** argv )
 		write3.getParam( "filename" ).set( "data/canny/3_floodfill.png" );
 		write4.getParam( "filename" ).set( "data/canny/4_thinning.png" );
 		
-		TCOUT( "__________________________________________________4" );
+		TUTTLE_TCOUT( "__________________________________________________4" );
 //		g.connect( read1, bitdepth );
 //		g.connect( bitdepth, sobel1 );
 		g.connect( inputBuffer1, bitdepth1 );
@@ -166,7 +166,7 @@ int main( int argc, char** argv )
 		g.connect( floodfill, write3 );
 		g.connect( thinning, write4 );
 
-		TCOUT( "__________________________________________________5" );
+		TUTTLE_TCOUT( "__________________________________________________5" );
 		std::list<std::string> outputs;
 		outputs.push_back( write00.getName() );
 		outputs.push_back( write0.getName() );
@@ -187,14 +187,14 @@ int main( int argc, char** argv )
 //		memory::MemoryCache res1 = g.compute( thinning, 0, 9 );
 //		boost::posix_time::ptime t2b(boost::posix_time::microsec_clock::local_time());
 
-		COUT( "Process 0 took: " << t2a - t1a );
-//		COUT( "Process 1 took: " << (t2b - t1b)/10.0 );
+		TUTTLE_COUT( "Process 0 took: " << t2a - t1a );
+//		TUTTLE_COUT( "Process 1 took: " << (t2b - t1b)/10.0 );
 
 		std::cout << res0 << std::endl;
 		memory::CACHE_ELEMENT imgRes = res0.get( bitdepth2.getName(), 0 );
 
-		COUT_VAR( imgRes->getROD() );
-		COUT_VAR( imgRes->getBounds() );
+		TUTTLE_COUT_VAR( imgRes->getROD() );
+		TUTTLE_COUT_VAR( imgRes->getBounds() );
 //		boost::gil::rgba32f_view_t imgResView = imgRes->getGilView<boost::gil::rgba32f_view_t>();
 //		boost::gil::rgba8_view_t imgResView = imgRes->getGilView<boost::gil::rgba8_view_t>();
 		boost::gil::gray8_view_t imgResView = imgRes->getGilView<boost::gil::gray8_view_t>();

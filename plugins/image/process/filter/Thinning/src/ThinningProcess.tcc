@@ -49,13 +49,13 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 	OfxRectI procWindowRoWCrop1 = rectanglesIntersection( rectangleGrow( procWindowRoW, border ), srcRodCrop1 );
 	OfxRectI procWindowRoWCrop2 = rectanglesIntersection( procWindowRoW, srcRodCrop2 );
 	
-//	COUT_X( 20, "-");
-//	COUT_VAR( this->_srcPixelRod );
-//	COUT_VAR( srcRodCrop1 );
-//	COUT("");
-//	COUT_VAR( procWindowRoW );
-//	COUT_VAR( procWindowRoWCrop1 );
-//	COUT_X( 20, "-");
+//	TUTTLE_COUT_X( 20, "-");
+//	TUTTLE_COUT_VAR( this->_srcPixelRod );
+//	TUTTLE_COUT_VAR( srcRodCrop1 );
+//	TUTTLE_COUT("");
+//	TUTTLE_COUT_VAR( procWindowRoW );
+//	TUTTLE_COUT_VAR( procWindowRoWCrop1 );
+//	TUTTLE_COUT_X( 20, "-");
 
 	/// @todo use an allocator
 	OfxPointI tmpSize;

@@ -98,10 +98,10 @@ BasicKeyerProcessParams<View> BasicKeyerPlugin::getProcessParams() const
             return;
         }
         case OFX::eBitDepthNone :
-            COUT_FATALERROR( "BitDepthNone not recognize." );
+            TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
             return;
         case OFX::eBitDepthCustom :
-            COUT_FATALERROR( "BitDepthCustom not recognize." );
+            TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
             return;
     }
    }

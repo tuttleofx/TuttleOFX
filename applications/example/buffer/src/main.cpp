@@ -21,14 +21,14 @@ int main( int argc, char** argv )
 	try
 	{
 		using namespace tuttle::host;
-		COUT( "__________________________________________________0" );
+		TUTTLE_COUT( "__________________________________________________0" );
 		// Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		// Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
 
-		COUT( Core::instance().getImageEffectPluginCache() );
+		TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
 
-		COUT( "__________________________________________________1" );
+		TUTTLE_COUT( "__________________________________________________1" );
 
 		Graph g;
 		//		Graph::Node& read1   = g.createNode( "fr.tuttle.ffmpegreader" );
@@ -47,19 +47,19 @@ int main( int argc, char** argv )
 		Graph::Node& bitdepth1 = g.createNode( "fr.tuttle.bitdepth" );
 
 		
-		COUT( "__________________________________________________2" );
+		TUTTLE_COUT( "__________________________________________________2" );
 		// Setup parameters
 		//		read1.getParam( "filename" ).set( "data/input1.avi" );
 		read1.getParam( "filename" ).set( "data/input.png" );
 		read2.getParam( "filename" ).set( "data/input.dpx" );
 		read3.getParam( "filename" ).set( "data/input.exr" );
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
-		COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getString() );
+		TUTTLE_COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getString() );
 		blur1.getParam( "size" ).set( 6.5, 15.0 );
 		//		blur1.getParam( "size" ).setAtIndex( 65.43, 1 );
 		//	crop1.getParam( "Down" ).set( 400 );
 
-		COUT( "__________________________________________________3" );
+		TUTTLE_COUT( "__________________________________________________3" );
 		g.connect( read1, bitdepth );
 		g.connect( bitdepth, invert1 );
 		g.connect( invert1, invert2 );
@@ -70,14 +70,14 @@ int main( int argc, char** argv )
 		g.connect( bitdepth1, merge1.getAttribute( "SourceA" ) );
 		g.connect( read3, merge1.getAttribute( "SourceB" ) );
 
-		COUT( "__________________________________________________4" );
+		TUTTLE_COUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( merge1.getName() );
 		outputs.push_back( invert1.getName() );
 		
 		memory::MemoryCache values = g.compute( outputs, 0, 0 );
-		COUT( "__________________________________________________5" );
-		COUT_VAR( invert1.getName() );
+		TUTTLE_COUT( "__________________________________________________5" );
+		TUTTLE_COUT_VAR( invert1.getName() );
 		memory::CACHE_ELEMENT img = values.get( invert1.getName(), 0 );
 
 		if( ! img.get() )
@@ -85,16 +85,16 @@ int main( int argc, char** argv )
 			std::cout << "No buffer..." << std::endl;
 			return 1;
 		}
-		COUT( "__________________________________________________6" );
+		TUTTLE_COUT( "__________________________________________________6" );
 		ofx::imageEffect::EBitDepth bd = img->getBitDepth();
 		ofx::imageEffect::EPixelComponent pc = img->getComponentsType();
 		OfxRectI bounds = img->getBounds();
 
-		COUT_VAR( mapBitDepthEnumToString( bd ) );
-		COUT_VAR( mapPixelComponentEnumToString( pc ) );
-		COUT_VAR4( bounds.x1, bounds.y1, bounds.x2, bounds.y2 );
-		COUT_VAR( img->getClipName() );
-		COUT_VAR( img->getPixelData() );
+		TUTTLE_COUT_VAR( mapBitDepthEnumToString( bd ) );
+		TUTTLE_COUT_VAR( mapPixelComponentEnumToString( pc ) );
+		TUTTLE_COUT_VAR4( bounds.x1, bounds.y1, bounds.x2, bounds.y2 );
+		TUTTLE_COUT_VAR( img->getClipName() );
+		TUTTLE_COUT_VAR( img->getPixelData() );
 	}
 	catch( tuttle::exception::Common& e )
 	{

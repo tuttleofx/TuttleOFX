@@ -95,7 +95,7 @@ Image::Image( ClipImage& clip, const OfxRectD& bounds, const OfxTime time )
 
 Image::~Image()
 {
-	TCOUT_VAR( getFullName() );
+	TUTTLE_TCOUT_VAR( getFullName() );
 }
 
 boost::uint8_t* Image::pixel( int x, int y )

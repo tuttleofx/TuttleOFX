@@ -276,9 +276,9 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings
 	{
 		id.getId().push_back( "" ); // we end with an empty string
 	}
-	//	TCOUT_VAR(str);
-	//	TCOUT_VAR(id);
-	//	TCOUT_VAR(nums);
+	//	TUTTLE_TCOUT_VAR(str);
+	//	TUTTLE_TCOUT_VAR(id);
+	//	TUTTLE_TCOUT_VAR(nums);
 	return nums.size();
 }
 
@@ -623,7 +623,7 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	BOOST_ASSERT( nums.front().size() == nums.back().size() );
 
 	std::size_t len = nums.front().size();
-	//	TCOUT_VAR(len);
+	//	TUTTLE_TCOUT_VAR(len);
 
 	// detect which part is the sequence number
 	// for the moment, accept only one sequence
@@ -644,7 +644,7 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 //	unsigned int i = 0;
 //	BOOST_FOREACH( const std::list<FileNumbers>::value_type& sn, nums )
 //	{
-//		TCOUT( "seq " << i++ << " : " <<  sn);
+//		TUTTLE_TCOUT( "seq " << i++ << " : " <<  sn);
 //	}
 	std::size_t idChangeBegin = 0;
 	std::size_t idChangeEnd = 0;
@@ -657,7 +657,7 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 		idChangeBegin = allIds.front();
 		idChangeEnd = allIds.back();
 	}
-	//	TCOUT_VAR( idNum );
+	//	TUTTLE_TCOUT_VAR( idNum );
 
 	Sequence seqCommon;
 	// fill information in the sequence...
@@ -762,7 +762,7 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 	typedef boost::unordered_map<FileStrings, std::list<FileNumbers>, SeqIdHash> SeqIdMap;
 	SeqIdMap sequences;
 
-	//	TCOUT( "listdir begin" );
+	//	TUTTLE_TCOUT( "listdir begin" );
 
 	FileStrings id; // an object uniquely identify a sequence
 	FileNumbers nums; // the list of numbers inside one filename
@@ -796,9 +796,9 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 		}
 	}
 
-	//	TCOUT( "listdir end" );
+	//	TUTTLE_TCOUT( "listdir end" );
 
-	//	TCOUT_VAR( sequences.size() );
+	//	TUTTLE_TCOUT_VAR( sequences.size() );
 
 	output.reserve( sequences.size() );
 

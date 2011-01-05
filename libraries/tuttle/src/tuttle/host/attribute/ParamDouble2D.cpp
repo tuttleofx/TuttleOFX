@@ -39,7 +39,7 @@ void ParamDouble2D::getAtTime( const OfxTime time, double& x, double& y ) const 
 
 void ParamDouble2D::set( const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	TCOUT( "ParamDouble2D::set x:" << x << " y:" << y );
+	TUTTLE_TCOUT( "ParamDouble2D::set x:" << x << " y:" << y );
 	_controls.at<0>().set( x, change );
 	_controls.at<1>().set( y, change );
 	this->paramChanged( change );

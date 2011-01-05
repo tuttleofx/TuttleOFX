@@ -27,15 +27,15 @@ public:
 public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
-		//		COUT_VAR( time );
+		//		TUTTLE_COUT_VAR( time );
 		if( _isSequence )
 		{
-			//			COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
+			//			TUTTLE_COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
 			return _filePattern.getAbsoluteFilenameAt( time );
 		}
 		else
 		{
-			//			COUT_VAR( _paramFilepath->getValue() );
+			//			TUTTLE_COUT_VAR( _paramFilepath->getValue() );
 			return _paramFilepath->getValue();
 		}
 	}

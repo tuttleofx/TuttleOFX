@@ -21,14 +21,14 @@ int main( int argc, char** argv )
 	try
 	{
 		using namespace tuttle::host;
-		COUT( "__________________________________________________0" );
+		TUTTLE_COUT( "__________________________________________________0" );
 		// Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
 		// Core::instance().getPluginCache().scanPluginFiles();
 		Core::instance().preload();
 
-		COUT( Core::instance().getImageEffectPluginCache() );
+		TUTTLE_COUT( Core::instance().getImageEffectPluginCache() );
 
-		COUT( "__________________________________________________1" );
+		TUTTLE_COUT( "__________________________________________________1" );
 
 		Graph g;
 		//		Graph::Node& read1   = g.createNode( "fr.tuttle.ffmpegreader" );
@@ -50,14 +50,14 @@ int main( int argc, char** argv )
 		Graph::Node& write3    = g.createNode( "fr.tuttle.exrwriter" );
 		Graph::Node& write4    = g.createNode( "fr.tuttle.ffmpegwriter" );
 
-		COUT( "__________________________________________________2" );
+		TUTTLE_COUT( "__________________________________________________2" );
 		// Setup parameters
 		//		read1.getParam( "filename" ).set( "data/input1.avi" );
 		read1.getParam( "filename" ).set( "data/input.png" );
 		read2.getParam( "filename" ).set( "data/input.dpx" );
 		read3.getParam( "filename" ).set( "data/input.exr" );
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
-		COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getString() );
+		TUTTLE_COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getString() );
 		blur1.getParam( "size" ).set( 6.5, 15.0 );
 		//		blur1.getParam( "size" ).setAtIndex( 65.43, 1 );
 		//	crop1.getParam( "Down" ).set( 400 );
@@ -66,7 +66,7 @@ int main( int argc, char** argv )
 		write3.getParam( "filename" ).set( "data/output3.exr" );
 		write4.getParam( "filename" ).set( "data/output4.avi" );
 
-		COUT( "__________________________________________________3" );
+		TUTTLE_COUT( "__________________________________________________3" );
 		g.connect( read1, bitdepth );
 		g.connect( bitdepth, invert1 );
 		g.connect( invert1, invert2 );
@@ -82,7 +82,7 @@ int main( int argc, char** argv )
 		//	g.connect( merge1, crop1 );
 		g.connect( merge1, write4 );
 
-		COUT( "__________________________________________________4" );
+		TUTTLE_COUT( "__________________________________________________4" );
 		std::list<std::string> outputs;
 		outputs.push_back( write1.getName() );
 		//		outputs.push_back( write2.getName() );

@@ -97,7 +97,7 @@ OfxStatus paramGetHandle( OfxParamSetHandle     paramSet,
 	}
 	catch( OfxhException& e )
 	{
-		COUT_EXCEPTION( e );
+		TUTTLE_COUT_EXCEPTION( e );
 		return e.getStatus();
 	}
 	catch(... )

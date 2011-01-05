@@ -271,8 +271,8 @@ void ImageEffectNode::progressEnd()
 /// false if you should abandon processing, true to continue
 bool ImageEffectNode::progressUpdate( double progress )
 {
-	//	COUT( "\033[sprogress: " << std::setw(3) << int(progress * 100)  << "\033[r");
-	//	COUT_VAR( progress );
+	//	TUTTLE_COUT( "\033[sprogress: " << std::setw(3) << int(progress * 100)  << "\033[r");
+	//	TUTTLE_COUT_VAR( progress );
 	return true;
 }
 
@@ -437,7 +437,7 @@ void ImageEffectNode::maximizeBitDepthFromReadsToWrites()
 
 void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 {
-	//TCOUT( "maximizeBitDepthFromWritesToReads: " << getName() );
+	//TUTTLE_TCOUT( "maximizeBitDepthFromWritesToReads: " << getName() );
 	if( !supportsMultipleClipDepths() )
 	{
 		attribute::ClipImage& outputClip         = dynamic_cast<attribute::ClipImage&>( getOutputClip() );
@@ -453,8 +453,8 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 				/// through the graph ? through a graph inside ProcessOptions ?
 				/*const */ attribute::ClipImage& linkClip = clip.getConnectedClip();
 
-				//TCOUT_X( 20, "-" );
-				//TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
+				//TUTTLE_TCOUT_X( 20, "-" );
+				//TUTTLE_TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
 				if( linkClip.getNode().getNodeType() == INode::eNodeTypeImageEffect &&
 				    linkClip.getNode().asImageEffectNode().isSupportedBitDepth( outputClipBitDepthStr ) ) // need to be supported by the other node
 				{
@@ -467,11 +467,11 @@ void ImageEffectNode::maximizeBitDepthFromWritesToReads()
 						linkClip.setBitDepthStringIfUpperAndNotModifiedByPlugin( outputClipBitDepthStr );
 					}
 				}
-				//TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
+				//TUTTLE_TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << "-->" << linkClip.getFullName() << "(" << linkClip.getBitDepth() << ")" );
 			}
 			//else
 			//{
-			//	TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << ", unconnected ? " << clip.isConnected() << ", output ? " << clip.isOutput() );
+			//	TUTTLE_TCOUT( clip.getFullName() << "(" << clip.getBitDepth() << ")" << ", unconnected ? " << clip.isConnected() << ", output ? " << clip.isOutput() );
 			//}
 		}
 	}
@@ -489,18 +489,18 @@ void ImageEffectNode::coutBitDepthConnections() const
 		const ofx::property::String& propPixelDepth       = clip.getProperties().fetchStringProperty( kOfxImageEffectPropPixelDepth );
 		const ofx::property::String& propComponent        = clip.getProperties().fetchStringProperty( kOfxImageEffectPropComponents );
 		const ofx::property::Double& propPixelAspectRatio = clip.getProperties().fetchDoubleProperty( kOfxImagePropPixelAspectRatio );
-		TCOUT( "-- " << "clip: " << " = " << clip.getFullName() );
-		TCOUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
+		TUTTLE_TCOUT( "-- " << "clip: " << " = " << clip.getFullName() );
+		TUTTLE_TCOUT( "-- " << kOfxImageEffectPropPixelDepth << " = " << propPixelDepth.getValue()
 		             << " : " << ( propPixelDepth.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
-		TCOUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
+		TUTTLE_TCOUT( "-- " << kOfxImageEffectPropComponents << " = " << propComponent.getValue()
 		             << " : " << ( propComponent.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
-		TCOUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
+		TUTTLE_TCOUT( "-- " << kOfxImagePropPixelAspectRatio << " = " << propPixelAspectRatio.getValue()
 		             << " : " << ( propPixelAspectRatio.getModifiedBy() == ofx::property::eModifiedByPlugin ? "(plugin)" : "(host)" ) );
 
 		if( !clip.isOutput() && clip.isConnected() )
 		{
 			const attribute::ClipImage& linkClip = clip.getConnectedClip();
-			TCOUT( "  Connection between " << clip.getFullName() << " (" << clip.getBitDepth() << " bytes)" << " => " << linkClip.getFullName() << " (" << linkClip.getBitDepth() << " bytes)." );
+			TUTTLE_TCOUT( "  Connection between " << clip.getFullName() << " (" << clip.getBitDepth() << " bytes)" << " => " << linkClip.getFullName() << " (" << linkClip.getBitDepth() << " bytes)." );
 		}
 	}
 }
@@ -536,7 +536,7 @@ bool ImageEffectNode::getTimeDomain( OfxRangeD& range ) const
 
 void ImageEffectNode::beginSequence( graph::ProcessVertexData& vData )
 {
-//	TCOUT( "begin: " << getName() );
+//	TUTTLE_TCOUT( "begin: " << getName() );
 	beginSequenceRenderAction(
 			vData._renderTimeRange.x,
 			vData._renderTimeRange.y,
@@ -579,7 +579,7 @@ INode::InputsTimeMap ImageEffectNode::getTimesNeeded( const OfxTime time ) const
 
 void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 {
-//	TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
+//	TUTTLE_TCOUT( "preProcess1_finish: " << getName() << " at time: " << vData._time );
 //	setCurrentTime( vData._time );
 
 	checkClipsConnections();
@@ -596,13 +596,13 @@ void ImageEffectNode::preProcess1( graph::ProcessVertexAtTimeData& vData )
 	vData._apiImageEffect._renderRoD = rod;
 	vData._apiImageEffect._renderRoI = rod; ///< @todo tuttle: tile supports
 	
-//	TCOUT_VAR( rod );
+//	TUTTLE_TCOUT_VAR( rod );
 }
 
 
 void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData )
 {
-//	TCOUT( "preProcess2_finish: " << getName() << " at time: " << vData._time );
+//	TUTTLE_TCOUT( "preProcess2_finish: " << getName() << " at time: " << vData._time );
 
 	maximizeBitDepthFromWritesToReads();
 
@@ -610,14 +610,14 @@ void ImageEffectNode::preProcess2_reverse( graph::ProcessVertexAtTimeData& vData
 	                           vData._nodeData->_renderScale,
 	                           vData._apiImageEffect._renderRoI,
 	                           vData._apiImageEffect._inputsRoI );
-//	TCOUT_VAR( vData._renderRoD );
-//	TCOUT_VAR( vData._renderRoI );
+//	TUTTLE_TCOUT_VAR( vData._renderRoD );
+//	TUTTLE_TCOUT_VAR( vData._renderRoI );
 }
 
 
 void ImageEffectNode::preProcess3( graph::ProcessVertexAtTimeData& vData )
 {
-//	TCOUT( "preProcess3_finish: " << getName() << " at time: " << vData._time );
+//	TUTTLE_TCOUT( "preProcess3_finish: " << getName() << " at time: " << vData._time );
 	maximizeBitDepthFromReadsToWrites();
 //	coutBitDepthConnections();
 	validBitDepthConnections();
@@ -638,7 +638,7 @@ bool ImageEffectNode::isIdentity( const graph::ProcessVertexAtTimeData& vData, s
 
 void ImageEffectNode::preProcess_infos( const OfxTime time, graph::ProcessVertexAtTimeInfo& nodeInfos ) const
 {
-//	TCOUT( "preProcess_infos: " << getName() );
+//	TUTTLE_TCOUT( "preProcess_infos: " << getName() );
 	const OfxRectD rod             = getRegionOfDefinition( time );
 	const std::size_t bitDepth     = this->getOutputClip().getBitDepth(); // value in bytes
 	const std::size_t nbComponents = getOutputClip().getNbComponents();
@@ -648,7 +648,7 @@ void ImageEffectNode::preProcess_infos( const OfxTime time, graph::ProcessVertex
 
 void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 {
-//	TCOUT( "process: " << getName() );
+//	TUTTLE_TCOUT( "process: " << getName() );
 	memory::IMemoryCache& memoryCache( Core::instance().getMemoryCache() );
 	// keep the hand on all needed datas during the process function
 	std::list<memory::CACHE_ELEMENT> allNeededDatas;
@@ -659,7 +659,7 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.x2 ) ),
 		boost::numeric_cast<int>( ceil( vData._apiImageEffect._renderRoI.y2 ) )
 	};
-//	TCOUT_VAR( roi );
+//	TUTTLE_TCOUT_VAR( roi );
 
 	// acquire needed images
 	BOOST_FOREACH( ClipImageMap::value_type& i, _clips )
@@ -725,13 +725,13 @@ void ImageEffectNode::process( graph::ProcessVertexAtTimeData& vData )
 
 void ImageEffectNode::postProcess( graph::ProcessVertexAtTimeData& vData )
 {
-//	TCOUT( "postProcess: " << getName() );
+//	TUTTLE_TCOUT( "postProcess: " << getName() );
 }
 
 
 void ImageEffectNode::endSequence( graph::ProcessVertexData& vData )
 {
-//	TCOUT( "end: " << getName() );
+//	TUTTLE_TCOUT( "end: " << getName() );
 	endSequenceRenderAction( vData._renderTimeRange.x,
 	                 vData._renderTimeRange.y,
 	                 vData._step,

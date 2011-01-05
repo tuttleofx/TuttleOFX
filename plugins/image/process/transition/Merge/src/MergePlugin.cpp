@@ -177,7 +177,7 @@ void MergePlugin::render( const OFX::RenderArguments& args )
 //			case eParamMergeStencil:
 //			case eParamMergeUnder:
 //			case eParamMergeXOR:
-//				COUT_FATALERROR( "Need an alpha channel for this Merge operation." );
+//				TUTTLE_COUT_FATALERROR( "Need an alpha channel for this Merge operation." );
 //				return;
 //			default:
 //				break;

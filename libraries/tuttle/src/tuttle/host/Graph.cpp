@@ -99,7 +99,7 @@ void Graph::addToGraph( Node& node )
 {
 	Vertex v( node.getName(), node );
 
-	COUT_DEBUG( node.getName() );
+	TUTTLE_COUT_DEBUG( node.getName() );
 
 	_graph.addVertex( v );
 }

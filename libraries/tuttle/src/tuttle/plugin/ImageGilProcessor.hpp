@@ -217,9 +217,9 @@ View getView( OFX::Image* img, const OfxRectI& rod )
 
 	//	OfxRectI imgrod = img->getRegionOfDefinition(); // bug in nuke returns bounds... not the clip rod with renderscale...
 	OfxRectI bounds = img->getBounds();
-	//	COUT_VAR( bounds );
-	//	COUT_VAR( imgrod );
-	//	COUT_VAR( rod );
+	//	TUTTLE_COUT_VAR( bounds );
+	//	TUTTLE_COUT_VAR( imgrod );
+	//	TUTTLE_COUT_VAR( rod );
 	point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
 	                                    bounds.y2 - bounds.y1 );
 
