@@ -818,13 +818,7 @@ void ParamSetDescriptor::setPageParamOrder( PageParamDescriptor& p )
 /** @brief calls the raw OFX routine to define a param */
 void ParamSetDescriptor::defineRawParam( const std::string& name, ParamTypeEnum paramType, OfxPropertySetHandle& props )
 {
-	COUT_INFOS;
-	COUT_VAR2( name, mapParamTypeEnumToString( paramType ) );
-	COUT_VAR( props );
-	COUT_VAR( OFX::Private::gParamSuite );
-
 	OfxStatus stat = OFX::Private::gParamSuite->paramDefine( _paramSetHandle, mapParamTypeEnumToString( paramType ), name.c_str(), &props );
-	COUT_INFOS;
 
 	throwSuiteStatusException( stat );
 }

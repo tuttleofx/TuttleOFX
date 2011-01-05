@@ -68,10 +68,10 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	COUT_INFOS;
+	TUTTLE_COUT_INFOS;
 	OFX::ParametricParamDescriptor* curves = desc.defineParametricParam( kParamColorSelection );
-	COUT_VAR( curves );
-	COUT_INFOS;
+	TUTTLE_COUT_VAR( curves );
+	TUTTLE_COUT_INFOS;
 	curves->setRange( 0.0, 1.0 );
 	curves->setDimension( nbCurves );
 	curves->setDimensionLabel( kParamColorSelectionRed, 0 );
@@ -108,7 +108,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 
 	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );
 	helpButton->setLabel( "Help" );
-	COUT_INFOS;
+	TUTTLE_COUT_INFOS;
 }
 
 /**
