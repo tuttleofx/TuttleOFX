@@ -712,7 +712,19 @@ ParametricParamDescriptor::ParametricParamDescriptor( const std::string& name, O
 {
 }
 
-void ParametricParamDescriptor::setDimension( const std::size_t dimension )
+void ParametricParamDescriptor::setParamSet( ParamSetDescriptor& paramSet )
+{
+	_paramSet = &paramSet;
+	OFX::Private::gParamSuite->paramGetHandle( _paramSet->getOfxParamSetHandle(), getName().c_str(), &_ofxParamHandle, NULL );
+}
+
+void ParametricParamDescriptor::setRange( const double min, const double max )
+{
+	getProps().propSetDouble( kOfxParamPropParametricRange, min, 0 );
+	getProps().propSetDouble( kOfxParamPropParametricRange, max, 1 );
+}
+
+void ParametricParamDescriptor::setDimension( const int dimension )
 {
 	getProps().propSetInt( kOfxParamPropParametricDimension, dimension );
 }
@@ -722,9 +734,27 @@ void ParametricParamDescriptor::setLabel( const std::string label )
 	getProps().propSetString( kOfxPropLabel, label );
 }
 
-void ParametricParamDescriptor::setDimensionLabel( const std::string label, const std::size_t id )
+void ParametricParamDescriptor::setDimensionLabel( const std::string label, const int id )
 {
-	getProps().propSetString( kOfxParamPropDimensionLabel, label, (int)id );
+	getProps().propSetString( kOfxParamPropDimensionLabel, label, id );
+}
+
+void ParametricParamDescriptor::setUIColour( const int id, const OfxRGBColourD color )
+{
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.r, id*3 + 0 );
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.g, id*3 + 1 );
+	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.b, id*3 + 2 );
+}
+
+void ParametricParamDescriptor::addControlPoint( const int id, const OfxTime time, const double x, const double y, const bool addKey )
+{
+	OFX::Private::gParametricParameterSuite->parametricParamAddControlPoint(
+		_ofxParamHandle,
+		id,
+		time,
+		x,
+		y,
+		addKey );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -743,7 +773,7 @@ ParamDescriptor* ParamSetDescriptor::getParamDescriptor( const std::string& name
 }
 
 /** @brief set the param set handle */
-void ParamSetDescriptor::setParamSetHandle( OfxParamSetHandle h )
+void ParamSetDescriptor::setOfxParamSetHandle( OfxParamSetHandle h )
 {
 	// set me handle
 	_paramSetHandle = h;
@@ -788,7 +818,13 @@ void ParamSetDescriptor::setPageParamOrder( PageParamDescriptor& p )
 /** @brief calls the raw OFX routine to define a param */
 void ParamSetDescriptor::defineRawParam( const std::string& name, ParamTypeEnum paramType, OfxPropertySetHandle& props )
 {
+	COUT_INFOS;
+	COUT_VAR2( name, mapParamTypeEnumToString( paramType ) );
+	COUT_VAR( props );
+	COUT_VAR( OFX::Private::gParamSuite );
+
 	OfxStatus stat = OFX::Private::gParamSuite->paramDefine( _paramSetHandle, mapParamTypeEnumToString( paramType ), name.c_str(), &props );
+	COUT_INFOS;
 
 	throwSuiteStatusException( stat );
 }
@@ -936,6 +972,10 @@ ParametricParamDescriptor* ParamSetDescriptor::defineParametricParam( const std:
 	ParametricParamDescriptor* param = NULL;
 
 	defineParamDescriptor( name, eParametricParam, param );
+
+	// Parametric parameters need the ParamSet !
+	param->setParamSet( *this ); ///< @todo tuttle: more generic way for all param types ?
+
 	return param;
 }
 

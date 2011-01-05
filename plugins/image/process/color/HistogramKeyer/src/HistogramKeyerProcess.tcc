@@ -1,18 +1,18 @@
-#include "CristoAlgorithm.hpp"
+#include "HistogramKeyerAlgorithm.hpp"
 
 namespace tuttle {
 namespace plugin {
-namespace cristo {
+namespace histogramKeyer {
 
 template<class View>
-CristoProcess<View>::CristoProcess( CristoPlugin &effect )
+HistogramKeyerProcess<View>::HistogramKeyerProcess( HistogramKeyerPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
 }
 
 template<class View>
-void CristoProcess<View>::setup( const OFX::RenderArguments& args )
+void HistogramKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.time, args.renderScale );
@@ -24,7 +24,7 @@ void CristoProcess<View>::setup( const OFX::RenderArguments& args )
  * @param[in] procWindowRoW  Processing window
  */
 template<class View>
-void CristoProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+void HistogramKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );

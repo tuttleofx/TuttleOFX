@@ -493,7 +493,7 @@ ImageEffectDescriptor::ImageEffectDescriptor( OfxImageEffectHandle handle )
 	OfxParamSetHandle paramSetHandle;
 	stat = OFX::Private::gEffectSuite->getParamSet( handle, &paramSetHandle );
 	throwSuiteStatusException( stat );
-	setParamSetHandle( paramSetHandle );
+	setOfxParamSetHandle( paramSetHandle );
 }
 
 /** @brief dtor */
@@ -517,6 +517,11 @@ void ImageEffectDescriptor::setLabels( const std::string& label, const std::stri
 	_effectProps.propSetString( kOfxPropLabel, label );
 	_effectProps.propSetString( kOfxPropShortLabel, shortLabel, false );
 	_effectProps.propSetString( kOfxPropLongLabel, longLabel, false );
+}
+
+void ImageEffectDescriptor::setDescription( const std::string& description )
+{
+	_effectProps.propSetString( kOfxPropPluginDescription, description, false );
 }
 
 /** @brief Set the plugin grouping */
@@ -1652,25 +1657,27 @@ void fetchHostDescription( OfxHost* host )
 		PropertySet hostProps( host->host );
 
 		// and get some properties
-		gHostDescription.hostName                   = hostProps.propGetString( kOfxPropName );
-		gHostDescription.hostIsBackground           = hostProps.propGetInt( kOfxImageEffectHostPropIsBackground ) != 0;
-		gHostDescription.supportsOverlays           = hostProps.propGetInt( kOfxImageEffectPropSupportsOverlays ) != 0;
-		gHostDescription.supportsMultiResolution    = hostProps.propGetInt( kOfxImageEffectPropSupportsMultiResolution ) != 0;
-		gHostDescription.supportsTiles              = hostProps.propGetInt( kOfxImageEffectPropSupportsTiles ) != 0;
-		gHostDescription.temporalClipAccess         = hostProps.propGetInt( kOfxImageEffectPropTemporalClipAccess ) != 0;
-		gHostDescription.supportsMultipleClipDepths = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
-		gHostDescription.supportsMultipleClipPARs   = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipPARs ) != 0;
-		gHostDescription.supportsSetableFrameRate   = hostProps.propGetInt( kOfxImageEffectPropSetableFrameRate ) != 0;
-		gHostDescription.supportsSetableFielding    = hostProps.propGetInt( kOfxImageEffectPropSetableFielding ) != 0;
-		gHostDescription.supportsStringAnimation    = hostProps.propGetInt( kOfxParamHostPropSupportsStringAnimation ) != 0;
-		gHostDescription.supportsCustomInteract     = hostProps.propGetInt( kOfxParamHostPropSupportsCustomInteract ) != 0;
-		gHostDescription.supportsChoiceAnimation    = hostProps.propGetInt( kOfxParamHostPropSupportsChoiceAnimation ) != 0;
-		gHostDescription.supportsBooleanAnimation   = hostProps.propGetInt( kOfxParamHostPropSupportsBooleanAnimation ) != 0;
-		gHostDescription.supportsCustomAnimation    = hostProps.propGetInt( kOfxParamHostPropSupportsCustomAnimation ) != 0;
-		gHostDescription.maxParameters              = hostProps.propGetInt( kOfxParamHostPropMaxParameters );
-		gHostDescription.maxPages                   = hostProps.propGetInt( kOfxParamHostPropMaxPages );
-		gHostDescription.pageRowCount               = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 0 );
-		gHostDescription.pageColumnCount            = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 1 );
+		gHostDescription.hostName                    = hostProps.propGetString( kOfxPropName );
+		gHostDescription.hostIsBackground            = hostProps.propGetInt( kOfxImageEffectHostPropIsBackground ) != 0;
+		gHostDescription.supportsOverlays            = hostProps.propGetInt( kOfxImageEffectPropSupportsOverlays ) != 0;
+		gHostDescription.supportsMultiResolution     = hostProps.propGetInt( kOfxImageEffectPropSupportsMultiResolution ) != 0;
+		gHostDescription.supportsTiles               = hostProps.propGetInt( kOfxImageEffectPropSupportsTiles ) != 0;
+		gHostDescription.temporalClipAccess          = hostProps.propGetInt( kOfxImageEffectPropTemporalClipAccess ) != 0;
+		gHostDescription.supportsMultipleClipDepths  = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipDepths ) != 0;
+		gHostDescription.supportsMultipleClipPARs    = hostProps.propGetInt( kOfxImageEffectPropSupportsMultipleClipPARs ) != 0;
+		gHostDescription.supportsSetableFrameRate    = hostProps.propGetInt( kOfxImageEffectPropSetableFrameRate ) != 0;
+		gHostDescription.supportsSetableFielding     = hostProps.propGetInt( kOfxImageEffectPropSetableFielding ) != 0;
+		gHostDescription.supportsStringAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsStringAnimation ) != 0;
+		gHostDescription.supportsCustomInteract      = hostProps.propGetInt( kOfxParamHostPropSupportsCustomInteract ) != 0;
+		gHostDescription.supportsChoiceAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsChoiceAnimation ) != 0;
+		gHostDescription.supportsBooleanAnimation    = hostProps.propGetInt( kOfxParamHostPropSupportsBooleanAnimation ) != 0;
+		gHostDescription.supportsCustomAnimation     = hostProps.propGetInt( kOfxParamHostPropSupportsCustomAnimation ) != 0;
+		gHostDescription.supportsParametricParameter = gParametricParameterSuite != NULL;
+		gHostDescription.supportsCameraParameter     = gCameraParameterSuite != NULL;
+		gHostDescription.maxParameters               = hostProps.propGetInt( kOfxParamHostPropMaxParameters );
+		gHostDescription.maxPages                    = hostProps.propGetInt( kOfxParamHostPropMaxPages );
+		gHostDescription.pageRowCount                = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 0 );
+		gHostDescription.pageColumnCount             = hostProps.propGetInt( kOfxParamHostPropPageRowColumnCount, 1 );
 		int numComponents = hostProps.propGetDimension( kOfxImageEffectPropSupportedComponents );
 		for( int i = 0; i < numComponents; ++i )
 			gHostDescription._supportedComponents.push_back( mapPixelComponentStringToEnum( hostProps.propGetString( kOfxImageEffectPropSupportedComponents, i ) ) );
@@ -2544,10 +2551,20 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 
 	catch( boost::exception& e )
 	{
+		typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
+		
 		std::cerr << "Caught boost::exception on action " << actionRaw << std::endl;
+		if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
+		{
+			stat = *status;
+		}
+		else
+		{
+			stat = kOfxStatFailed;
+		}
 		std::cerr << boost::diagnostic_information(e);
-		stat = kOfxStatFailed;
 	}
+	
 	// catch all exceptions
 	catch( std::exception& e )
 	{

@@ -79,6 +79,8 @@ OfxStatus mainEntryStr( const char*          actionRaw,
  */
 namespace OFX {
 /** forward class declarations */
+struct tag_ofxStatus;
+
 class ClipDescriptor;
 class ImageEffectDescriptor;
 
@@ -273,6 +275,8 @@ public:
 	bool supportsChoiceAnimation;
 	bool supportsBooleanAnimation;
 	bool supportsCustomAnimation;
+	bool supportsParametricParameter;
+	bool supportsCameraParameter;
 	int maxParameters;
 	int maxPages;
 	int pageRowCount;
@@ -404,6 +408,8 @@ public:
 	/** @brief, set the label properties in a plugin */
 	void setLabels( const std::string& label, const std::string& shortLabel, const std::string& longLabel );
 	void setLabel( const std::string& label ) { setLabels(label, label, label); }
+
+	void setDescription( const std::string& description );
 
 	/** @brief Set the plugin grouping, defaults to "" */
 	void setPluginGrouping( const std::string& group );

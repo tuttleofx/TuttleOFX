@@ -55,9 +55,9 @@ if __name__ == '__main__':
         toReplace = [(replaceInput,replaceOutput)]
 
         if multipleCase:
+            toReplace.append( (swapcapitalized(replaceInput), swapcapitalized(replaceOutput)) )
             toReplace.append( (replaceInput.upper(), replaceOutput.upper()) )
             toReplace.append( (replaceInput.lower(), replaceOutput.lower()) )
-            toReplace.append( (swapcapitalized(replaceInput), swapcapitalized(replaceOutput)) )
         
         print 'ro replace:', toReplace
 
