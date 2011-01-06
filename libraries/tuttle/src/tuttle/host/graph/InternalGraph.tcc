@@ -1,5 +1,7 @@
 #include "GraphExporter.hpp"
 
+#include <boost/graph/graphviz.hpp>
+
 namespace tuttle {
 namespace host {
 namespace graph {
