@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 #define _TUTTLE_COMMON_UTILS_GLOBAL_HPP_
 
-//#define TUTTLE_NO_TUTTLE_COUT
+//#define TUTTLE_NO_COUT
 
 ////////////////////////////////////////////////////////////////////////////////
 // windows stuff
@@ -55,7 +55,7 @@ namespace std {
  #define VAR4( a, b, c, d )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d
  #define VAR_ENDL( a )  # a << ":" << ::std::endl << a
 
-#ifndef TUTTLE_NO_TUTTLE_COUT
+#ifndef TUTTLE_NO_COUT
 /**
  * @param[in] ... : all parameters with an operator << defined
  * @brief terminal display
