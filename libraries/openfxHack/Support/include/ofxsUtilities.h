@@ -3,7 +3,7 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-#ifndef TUTTLE_NO_TUTTLE_COUT
+#ifndef TUTTLE_NO_COUT
 #ifdef TUTTLE_COUT
 #undef TUTTLE_COUT
 #endif
