@@ -64,7 +64,7 @@ bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionA
 	FileInfo fileInfo = retrieveFileInfo( args.time );
 	if ( fileInfo._failed )
 	{
-		COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
+		TUTTLE_COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
 		return false;
 	}
 
@@ -123,7 +123,7 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 {
 	if( retrieveFileInfo(args.time)._failed )
 	{
-		COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
+		TUTTLE_COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
 		return;
 	}
 	// Full image decoding
@@ -156,10 +156,10 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
+				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
 			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}
 	}
@@ -186,16 +186,16 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 			case OFX::eBitDepthNone:
-				COUT_FATALERROR( "BitDepthNone not recognize." );
+				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
 			case OFX::eBitDepthCustom:
-				COUT_FATALERROR( "BitDepthCustom not recognize." );
+				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
 		}
 	}
 	else
 	{
-		COUT_FATALERROR( dstComponents << " not recognize." );
+		TUTTLE_COUT_FATALERROR( dstComponents << " not recognize." );
 	}
 }
 
