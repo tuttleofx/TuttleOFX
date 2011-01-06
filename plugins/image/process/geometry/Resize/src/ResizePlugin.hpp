@@ -12,7 +12,7 @@ namespace resize {
 template<typename Scalar>
 struct ResizeProcessParams
 {
-	
+	boost::gil::point2<Scalar> _size;
 };
 
 /**
@@ -30,7 +30,7 @@ public:
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
-//	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 //	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
@@ -38,6 +38,8 @@ public:
 	
 public:
 //    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
+
+	OFX::Double2DParam* _paramSize;
 };
 
 }

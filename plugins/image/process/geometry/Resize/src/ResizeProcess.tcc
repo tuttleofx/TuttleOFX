@@ -1,5 +1,9 @@
 #include "ResizeAlgorithm.hpp"
 
+#include <boost/gil/gil_all.hpp>
+#include <boost/gil/extension/numeric/sampler.hpp>
+#include <boost/gil/extension/numeric/resample.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace resize {
@@ -9,6 +13,7 @@ ResizeProcess<View>::ResizeProcess( ResizePlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
+	this->setNoMultiThreading();
 }
 
 template<class View>
@@ -29,31 +34,21 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	
-	for( int y = procWindowOutput.y1;
-			 y < procWindowOutput.y2;
-			 ++y )
-	{
-		typename View::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
-		for( int x = procWindowOutput.x1;
-			 x < procWindowOutput.x2;
-			 ++x, ++src_it, ++dst_it )
-		{
-			(*dst_it) = (*src_it);
-		}
-		if( this->progressForward() )
-			return;
-	}
-	/*
+	
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
 							     procWindowRoW.y2 - procWindowRoW.y1 };
-	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
-							                  procWindowSize.x, procWindowSize.y );
-	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-							                  procWindowSize.x, procWindowSize.y );
-	copy_pixels( src, dst );
-	*/
+//	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
+//							                  procWindowSize.x, procWindowSize.y );
+//	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+//							                  procWindowSize.x, procWindowSize.y );
+//
+//	resize_view( src, dst, bilinear_sampler() );
+	
+	resize_view( this->_srcView, this->_dstView, bilinear_sampler() );
+	
+//	copy_pixels( src, dst );
+	
 
 }
 
