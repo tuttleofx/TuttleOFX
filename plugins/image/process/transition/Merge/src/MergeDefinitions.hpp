@@ -8,14 +8,28 @@ namespace plugin {
 namespace merge {
 
 // Descriptors name
-const static std::string kMergeSourceA       = "A";
-const static std::string kMergeSourceB       = "B";
-const static std::string kMergeHelpButton    = "Help";
-const static std::string kMergeFunction      = "mergingFunction";
-const static std::string kMergeFunctionLabel = "Merging function";
+const static std::string kParamSourceA       = "A";
+const static std::string kParamSourceB       = "B";
+const static std::string kParamFunction      = "mergingFunction";
+const static std::string kParamFunctionLabel = "Merging function";
+
+const static std::string kParamOffsetA       = "offsetA";
+const static std::string kParamOffsetB       = "offsetB";
+const static std::string kParamRod           = "rod";
+const static std::string kParamRodIntersect  = "intersection";
+const static std::string kParamRodUnion      = "union";
+const static std::string kParamRodA          = "A";
+const static std::string kParamRodB          = "B";
+
+enum EParamRod
+{
+	eParamRodIntersect = 0,
+	eParamRodUnion,
+	eParamRodA,
+	eParamRodB
+};
 
 // Plugin internal data
-const static std::string kMergeHelpString = "<b>Clip merging</b> plugin is used to merge two clips A and B.  <br />";
 
 enum EParamMerge
 {
