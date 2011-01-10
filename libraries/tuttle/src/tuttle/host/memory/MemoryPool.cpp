@@ -107,25 +107,37 @@ MemoryPool::~MemoryPool()
 
 void MemoryPool::referenced( PoolData* pData )
 {
-	//	DataList::iterator it = std::find( _dataUnused.begin(), _dataUnused.end(), pData );
-	DataList::iterator it = _dataUnused.find( pData );
+	{
+		boost::mutex::scoped_lock lockerUnusedData( _dataUnusedMutex );
+		//	DataList::iterator it = std::find( _dataUnused.begin(), _dataUnused.end(), pData );
+		DataList::iterator it = _dataUnused.find( pData );
 
-	if( it != _dataUnused.end() )
-	{
-		_dataUnused.erase( it );
+		if( it != _dataUnused.end() )
+		{
+			_dataUnused.erase( it );
+		}
+		else // a really new data
+		{
+			boost::mutex::scoped_lock lockerAllData( _allDataMutex );
+			_allDatas.push_back( pData );
+			_dataMap[pData->data()] = pData;
+		}
 	}
-	else // a really new data
-	{
-		_allDatas.push_back( pData );
-		_dataMap[pData->data()] = pData;
-	}
+
+	boost::mutex::scoped_lock lockerUsedData( _dataUsedMutex );
 	_dataUsed.insert( pData );
 }
 
 void MemoryPool::released( PoolData* pData )
 {
-	_dataUsed.erase( pData );
-	_dataUnused.insert( pData );
+	{
+		boost::mutex::scoped_lock lockerUsedData( _dataUsedMutex );
+		_dataUsed.erase( pData );
+	}
+	{
+		boost::mutex::scoped_lock lockerUnusedData( _dataUnusedMutex );
+		_dataUnused.insert( pData );
+	}
 }
 
 namespace  {
@@ -166,18 +178,22 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 
 boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 {
-	// checking within unused data
-	PoolData* const pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
-
-	if( pData != NULL )
 	{
-		pData->_size = size;
-		return pData;
+		boost::mutex::scoped_lock lockerUnusedData( _dataUnusedMutex );
+		// checking within unused data
+		PoolData* const pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
+
+		if( pData != NULL )
+		{
+			pData->_size = size;
+			return pData;
+		}
 	}
-	if( size > getAvailableMemorySize() )
+	const std::size_t availableSize = getAvailableMemorySize();
+	if( size > availableSize )
 	{
 		std::stringstream s;
-		s << "MemoryPool can't allocate size:" << size << " because memorySizeAvailable=" << getAvailableMemorySize();
+		s << "MemoryPool can't allocate size:" << size << " because memorySizeAvailable=" << availableSize;
 		BOOST_THROW_EXCEPTION( std::length_error( s.str() ) );
 	}
 	return new PoolData( *this, size );
@@ -185,7 +201,7 @@ boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 
 std::size_t MemoryPool::updateMemoryAuthorizedWithRAM()
 {
-	_memoryAuthorized = getUsedMemorySize() + getMemoryInfo()._totalRam;
+	_memoryAuthorized = /*getUsedMemorySize() +*/ getMemoryInfo()._totalRam;
 	TUTTLE_TCOUT_X( 5, " - MEMORYPOOL::updateMemoryAuthorizedWithRAM - " );
 	TUTTLE_TCOUT_VAR( _memoryAuthorized );
 	return _memoryAuthorized;
@@ -207,12 +223,19 @@ std::size_t accumulateWastedSize( const std::size_t& sum, const IPoolData* pData
 
 std::size_t MemoryPool::getUsedMemorySize() const
 {
+	boost::mutex::scoped_lock lockerUsedData( _dataUsedMutex );
 	return std::accumulate( _dataUsed.begin(), _dataUsed.end(), 0, &accumulateReservedSize );
+}
+
+std::size_t MemoryPool::getAllocatedAndUnusedMemorySize() const
+{
+	boost::mutex::scoped_lock lockerUnusedData( _dataUnusedMutex );
+	return std::accumulate( _dataUnused.begin(), _dataUnused.end(), 0, &accumulateReservedSize );
 }
 
 std::size_t MemoryPool::getAllocatedMemorySize() const
 {
-	return getUsedMemorySize() + std::accumulate( _dataUnused.begin(), _dataUnused.end(), 0, &accumulateReservedSize );
+	return getUsedMemorySize() + getAllocatedAndUnusedMemorySize();
 }
 
 std::size_t MemoryPool::getMaxMemorySize() const
@@ -227,17 +250,24 @@ std::size_t MemoryPool::getAvailableMemorySize() const
 
 std::size_t MemoryPool::getWastedMemorySize() const
 {
+	boost::mutex::scoped_lock lockerUsedData( _dataUsedMutex );
 	return std::accumulate( _dataUsed.begin(), _dataUsed.end(), 0, std::ptr_fun( &accumulateWastedSize ) );
 }
 
 void MemoryPool::clear( std::size_t size )
-{}
+{
+	/// @todo tuttle
+}
 
 void MemoryPool::clearOne()
-{}
+{
+	/// @todo tuttle
+}
 
 void MemoryPool::clearAll()
 {
+	/// @todo tuttle
+	boost::mutex::scoped_lock lockerUnusedData( _dataUnusedMutex );
 	_dataUnused.clear();
 }
 

@@ -37,6 +37,7 @@ class IMemoryPool
 public:
 	virtual ~IMemoryPool()                               = 0;
 	virtual size_t       getUsedMemorySize() const       = 0;
+	virtual std::size_t  getAllocatedAndUnusedMemorySize() const = 0;
 	virtual size_t       getAllocatedMemorySize() const  = 0;
 	virtual size_t       getAvailableMemorySize() const  = 0;
 	virtual size_t       getWastedMemorySize() const     = 0;
