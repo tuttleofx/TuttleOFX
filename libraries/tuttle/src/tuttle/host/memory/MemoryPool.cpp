@@ -109,7 +109,6 @@ void MemoryPool::referenced( PoolData* pData )
 {
 	{
 		boost::mutex::scoped_lock lockerUnusedData( _dataUnusedMutex );
-		//	DataList::iterator it = std::find( _dataUnused.begin(), _dataUnused.end(), pData );
 		DataList::iterator it = _dataUnused.find( pData );
 
 		if( it != _dataUnused.end() )
@@ -123,9 +122,10 @@ void MemoryPool::referenced( PoolData* pData )
 			_dataMap[pData->data()] = pData;
 		}
 	}
-
-	boost::mutex::scoped_lock lockerUsedData( _dataUsedMutex );
-	_dataUsed.insert( pData );
+	{
+		boost::mutex::scoped_lock lockerUsedData( _dataUsedMutex );
+		_dataUsed.insert( pData );
+	}
 }
 
 void MemoryPool::released( PoolData* pData )
@@ -178,17 +178,20 @@ struct DataFitSize : public std::unary_function<PoolData*, void>
 
 boost::intrusive_ptr<IPoolData> MemoryPool::allocate( const std::size_t size )
 {
+	PoolData* pData = NULL;
+
 	{
 		boost::mutex::scoped_lock lockerUnusedData( _dataUnusedMutex );
 		// checking within unused data
-		PoolData* const pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
-
-		if( pData != NULL )
-		{
-			pData->_size = size;
-			return pData;
-		}
+		pData = std::for_each( _dataUnused.begin(), _dataUnused.end(), DataFitSize( size ) ).bestMatch();
 	}
+
+	if( pData != NULL )
+	{
+		pData->_size = size;
+		return pData;
+	}
+
 	const std::size_t availableSize = getAvailableMemorySize();
 	if( size > availableSize )
 	{
