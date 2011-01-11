@@ -1,4 +1,7 @@
 #include "gil/toolbox/ViewsMerging.hpp"
+#include "MergePlugin.hpp"
+#include "MergeDefinitions.hpp"
+#include "MergeProcess.hpp"
 #include <boost/gil/extension/color/hsl.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
@@ -7,6 +10,7 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <boost/gil/gil_all.hpp>
+#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -33,6 +37,7 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	this->_srcViewA = this->getView( _srcA.get(), _plugin._clipSrcA->getPixelRod( args.time ) );
 	//	_srcPixelRodA = _srcA->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRodA = _plugin._clipSrcA->getPixelRod( args.time );
+
 	// clip B
 	_srcB.reset( _plugin._clipSrcB->fetchImage( args.time ) );
 	if( !_srcB.get() )
@@ -51,6 +56,8 @@ void MergeProcess<View, Functor>::setup( const OFX::RenderArguments& args )
 	{
 		BOOST_THROW_EXCEPTION( exception::BitDepthMismatch() );
 	}
+
+	_params = _plugin.getProcessParams( args.renderScale );
 }
 
 /**
@@ -66,22 +73,86 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
 
-	View srcViewA = subimage_view( this->_srcViewA,
-	                               procWindowRoW.x1 - _srcPixelRodA.x1,
-	                               procWindowRoW.y1 - _srcPixelRodA.y1,
-	                               procWindowSize.x,
-	                               procWindowSize.y );
-	View srcViewB = subimage_view( this->_srcViewB,
-	                               procWindowRoW.x1 - _srcPixelRodB.x1,
-	                               procWindowRoW.y1 - _srcPixelRodB.y1,
-	                               procWindowSize.x,
-	                               procWindowSize.y );
-	View dstView = subimage_view( this->_dstView,
-	                              procWindowRoW.x1 - this->_dstPixelRod.x1,
-	                              procWindowRoW.y1 - this->_dstPixelRod.y1,
+	OfxRectI srcRodA = translateRegion( _srcPixelRodA, _params._offsetA );
+	OfxRectI srcRodB = translateRegion( _srcPixelRodB, _params._offsetB );
+	
+	OfxRectI intersect = rectanglesIntersection( srcRodA, srcRodB );
+	OfxRectI procIntersect = rectanglesIntersection( procWindowRoW, intersect );
+
+	switch( _params._rod )
+	{
+		case eParamRodIntersect:
+		{
+			// nothing to do in this case
+			// this is the standard case
+			// we merge the intersection of the 2 images
+			break;
+		}
+		case eParamRodUnion:
+		{
+			Pixel pixelZero; pixel_zeros_t<Pixel>()( pixelZero );
+			const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+			View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+													  procWindowSize.x, procWindowSize.y );
+			fill_pixels( dst, pixelZero );
+			/// @todo tuttle:
+			///  * add color choice
+			///  * fill A and B
+			///  * fill only the good regions
+			break;
+		}
+		case eParamRodA:
+		{
+			// fill with A
+			const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodA );
+			const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+
+			View src = subimage_view( this->_srcViewA, procWindowSrc.x1, procWindowSrc.y1,
+													   procWindowSize.x, procWindowSize.y );
+			View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+													  procWindowSize.x, procWindowSize.y );
+			/// @todo tuttle:
+			///  * fill only the good regions
+			copy_pixels( src, dst );
+			break;
+		}
+		case eParamRodB:
+		{
+			// fill with B
+			const OfxRectI procWindowSrc = translateRegion( procWindowRoW, srcRodB );
+			const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
+
+			View src = subimage_view( this->_srcViewB, procWindowSrc.x1, procWindowSrc.y1,
+													   procWindowSize.x, procWindowSize.y );
+			View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
+													  procWindowSize.x, procWindowSize.y );
+			/// @todo tuttle:
+			///  * fill only the good regions
+			copy_pixels( src, dst );
+			break;
+		}
+	}
+
+	View srcViewA_inter = subimage_view( this->_srcViewA,
+						   procIntersect.x1 - srcRodA.x1,
+						   procIntersect.y1 - srcRodA.y1,
+						   procWindowSize.x,
+						   procWindowSize.y );
+	View srcViewB_inter = subimage_view( this->_srcViewB,
+						   procIntersect.x1 - srcRodB.x1,
+						   procIntersect.y1 - srcRodB.y1,
+						   procWindowSize.x,
+						   procWindowSize.y );
+
+	View dstView_inter = subimage_view( this->_dstView,
+	                              procIntersect.x1 - this->_dstPixelRod.x1,
+	                              procIntersect.y1 - this->_dstPixelRod.y1,
 	                              procWindowSize.x,
 	                              procWindowSize.y );
-	merge_pixels( srcViewA, srcViewB, dstView, Functor() );
+
+	merge_pixels( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
+
+
 }
 
 }

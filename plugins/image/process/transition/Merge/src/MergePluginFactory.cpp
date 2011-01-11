@@ -22,6 +22,8 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Merge two images" );
 	desc.setPluginGrouping( "tuttle/image/process/transition" );
 
+	desc.setDescription( "<b>Clip merging</b>\nPlugin is used to merge two clips A and B.  <br />" );
+
 	// add the supported contexts
 	//	desc.addSupportedContext( OFX::eContextTransition ); ///@todo tuttle: Changing inputs by SourceFrom and SourceTo and adding a Transition paramater (single double)
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -43,13 +45,13 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                             OFX::EContext               context )
 {
-	OFX::ClipDescriptor* srcClipA = desc.defineClip( kMergeSourceA );
+	OFX::ClipDescriptor* srcClipA = desc.defineClip( kParamSourceA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipA->setSupportsTiles( kSupportTiles );
 	srcClipA->setOptional( false );
 
-	OFX::ClipDescriptor* srcClipB = desc.defineClip( kMergeSourceB );
+	OFX::ClipDescriptor* srcClipB = desc.defineClip( kParamSourceB );
 	srcClipB->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipB->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipB->setSupportsTiles( kSupportTiles );
@@ -62,8 +64,8 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Define some merging function
-	OFX::ChoiceParamDescriptor* mergeFunction = desc.defineChoiceParam( kMergeFunction );
-	mergeFunction->setLabels( kMergeFunctionLabel, kMergeFunctionLabel, kMergeFunctionLabel );
+	OFX::ChoiceParamDescriptor* mergeFunction = desc.defineChoiceParam( kParamFunction );
+	mergeFunction->setLabels( kParamFunctionLabel, kParamFunctionLabel, kParamFunctionLabel );
 	mergeFunction->appendOption( "atop: Ab+B(1-a)" );
 	mergeFunction->appendOption( "average: (A+B)/2" );
 	mergeFunction->appendOption( "color: hue from B, saturation from B, lightness from A" );
@@ -99,8 +101,23 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	mergeFunction->appendOption( "under: A(1-b)+B" );
 	mergeFunction->appendOption( "xor: A(1-b)+B(1-a)" );
 	mergeFunction->setDefault( eParamMergePlus );
+	
+	OFX::Int2DParamDescriptor* offsetA = desc.defineInt2DParam( kParamOffsetA );
+	offsetA->setLabel( "A offset" );
+	offsetA->setDefault( 0, 0 );
+	offsetA->setDisplayRange( 0, 0, 300, 300 );
 
-	desc.definePushButtonParam( kMergeHelpButton );
+	OFX::Int2DParamDescriptor* offsetB = desc.defineInt2DParam( kParamOffsetB );
+	offsetB->setLabel( "B offset" );
+	offsetB->setDefault( 0, 0 );
+	offsetB->setDisplayRange( 0, 0, 300, 300 );
+
+	OFX::ChoiceParamDescriptor* rod = desc.defineChoiceParam( kParamRod );
+	rod->appendOption( kParamRodIntersect );
+	rod->appendOption( kParamRodUnion );
+	rod->appendOption( kParamRodA );
+	rod->appendOption( kParamRodB );
+	rod->setDefault( eParamRodB );
 }
 
 /**
