@@ -61,9 +61,7 @@ private:
 	DataList _dataUsed;
 	DataList _dataUnused;
 	std::size_t _memoryAuthorized;
-	mutable boost::mutex _allDataMutex;
-	mutable boost::mutex _dataUsedMutex;
-	mutable boost::mutex _dataUnusedMutex;
+	mutable boost::mutex _mutex;
 };
 
 }
