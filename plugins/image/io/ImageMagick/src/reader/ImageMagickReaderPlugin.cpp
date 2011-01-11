@@ -26,6 +26,8 @@ ImageMagickReaderProcessParams ImageMagickReaderPlugin::getProcessParams( const 
 	ImageMagickReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
+	params._flip = _paramFlip->getValue();
+
 	return params;
 }
 
@@ -123,7 +125,7 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 
 	switch( getExplicitConversion() )
 	{
-		case eReaderParamExplicitConversionAuto:
+		case eParamReaderExplicitConversionAuto:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); // by default
 			if( image )
@@ -140,17 +142,17 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 			}
 			break;
 		}
-		case eReaderParamExplicitConversionByte:
+		case eParamReaderExplicitConversionByte:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 			break;
 		}
-		case eReaderParamExplicitConversionShort:
+		case eParamReaderExplicitConversionShort:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 			break;
 		}
-		case eReaderParamExplicitConversionFloat:
+		case eParamReaderExplicitConversionFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 			break;

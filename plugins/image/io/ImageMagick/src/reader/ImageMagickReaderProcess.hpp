@@ -1,5 +1,5 @@
-#ifndef IMAGEMAGICK_READER_PROCESS_HPP
-#define IMAGEMAGICK_READER_PROCESS_HPP
+#ifndef _TUTTLE_PLUGIN_IMAGEMAGICK_READER_PROCESS_HPP_
+#define _TUTTLE_PLUGIN_IMAGEMAGICK_READER_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
@@ -19,9 +19,12 @@ class ImageMagickReaderProcess : public ImageGilProcessor<View>
 {
 protected:
 	ImageMagickReaderPlugin&    _plugin;        ///< Rendering plugin
+	ImageMagickReaderProcessParams _params;
 
 public:
 	ImageMagickReaderProcess( ImageMagickReaderPlugin& instance );
+
+	void setup( const OFX::RenderArguments& args );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 

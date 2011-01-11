@@ -56,7 +56,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kReaderParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
@@ -67,7 +67,7 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	filtering->appendOption( kParamFilteringAuto );
 	filtering->appendOption( kParamFilteringNone );
 
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kReaderParamExplicitConversion );
+	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kParamReaderExplicitConversion );
 	explicitConversion->setLabel( "Explicit conversion" );
 	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
 	explicitConversion->appendOption( kTuttlePluginBitDepth8 );

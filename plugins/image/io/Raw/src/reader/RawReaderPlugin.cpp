@@ -181,7 +181,7 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	const std::string filename( getAbsoluteFirstFilename() );
 	switch( getExplicitConversion() )
 	{
-		case eReaderParamExplicitConversionAuto:
+		case eParamReaderExplicitConversionAuto:
 		{
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
 			int bitDepth      = 32;    //raw_read_precision( filename );
@@ -199,17 +199,17 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 			break;
 		}
-		case eReaderParamExplicitConversionByte:
+		case eParamReaderExplicitConversionByte:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 			break;
 		}
-		case eReaderParamExplicitConversionShort:
+		case eParamReaderExplicitConversionShort:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 			break;
 		}
-		case eReaderParamExplicitConversionFloat:
+		case eParamReaderExplicitConversionFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 			break;

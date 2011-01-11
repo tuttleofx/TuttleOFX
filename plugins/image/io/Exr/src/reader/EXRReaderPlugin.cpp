@@ -50,7 +50,7 @@ void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const 
 		             "", // No XML resources
 		             kExrReaderHelpString );
 	}
-	else if( paramName == kReaderParamFilename )
+	else if( paramName == kParamReaderFilename )
 	{
 		ReaderPlugin::changedParam( args, paramName );
 		updateCombos();
@@ -161,22 +161,22 @@ void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 	const std::string filename( getAbsoluteFirstFilename() );
 	switch( getExplicitConversion() )
 	{
-		case eReaderParamExplicitConversionAuto:
+		case eParamReaderExplicitConversionAuto:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); /// @todo tuttle: retrieve info from exr, can be 8, 16, 32 as interger or floating point values
 			break;
 		}
-		case eReaderParamExplicitConversionByte:
+		case eParamReaderExplicitConversionByte:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 			break;
 		}
-		case eReaderParamExplicitConversionShort:
+		case eParamReaderExplicitConversionShort:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 			break;
 		}
-		case eReaderParamExplicitConversionFloat:
+		case eParamReaderExplicitConversionFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 			break;
