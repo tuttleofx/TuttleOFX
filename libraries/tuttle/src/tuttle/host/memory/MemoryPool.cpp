@@ -251,17 +251,18 @@ void MemoryPool::clear( std::size_t size )
 	/// @todo tuttle
 }
 
-void MemoryPool::clearOne()
-{
-	/// @todo tuttle
-}
-
-void MemoryPool::clearAll()
+void MemoryPool::clear()
 {
 	/// @todo tuttle
 	boost::mutex::scoped_lock locker( _mutex );
 	_dataUnused.clear();
 }
+
+void MemoryPool::clearOne()
+{
+	/// @todo tuttle
+}
+
 
 }
 }

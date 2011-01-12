@@ -44,7 +44,7 @@ public:
 	virtual size_t       getMaxMemorySize() const        = 0;
 	virtual void         clear( size_t size )            = 0;
 	virtual void         clearOne()                      = 0;
-	virtual void         clearAll()                      = 0;
+	virtual void         clear()                         = 0;
 	virtual IPoolDataPtr allocate( const size_t size )   = 0;
 	virtual std::size_t  updateMemoryAuthorizedWithRAM() = 0;
 };

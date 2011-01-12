@@ -51,8 +51,8 @@ public:
 	std::size_t getWastedMemorySize() const;
 
 	void clear( std::size_t size );
+	void clear();
 	void clearOne();
-	void clearAll();
 
 private:
 	typedef boost::unordered_set<PoolData*> DataList;
