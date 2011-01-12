@@ -32,7 +32,7 @@ void BitDepthProcess<SView, DView>::setup( const OFX::RenderArguments& args )
 	this->_src.reset( this->_clipSrc->fetchImage( args.time ) );
 	if( !this->_src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( this->_src->getRowBytes() <= 0 )
+	if( this->_src->getRowBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	this->_srcView = ::tuttle::plugin::getView<SView>( this->_src.get(), this->_clipSrc->getPixelRod( args.time ) );
 	//	this->_srcPixelRod = this->_src->getRegionOfDefinition(); // bug in nuke, returns bounds
