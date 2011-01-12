@@ -42,16 +42,22 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	using namespace boost::gil;
 
 	PngWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
+
+	View srcView = this->_srcView;
+	if( params._flip )
+	{
+		srcView = flipped_up_down_view( srcView );
+	}
 	
 	try
 	{
 		switch( params._bitDepth )
 		{
 			case 8:
-				writeImage<bits8>( this->_srcView, params._filepath );
+				writeImage<bits8>( srcView, params._filepath );
 				break;
 			case 16:
-				writeImage<bits16>( this->_srcView, params._filepath );
+				writeImage<bits16>( srcView, params._filepath );
 				break;
 			default:
 				BOOST_THROW_EXCEPTION( exception::ImageFormat()
@@ -90,13 +96,13 @@ void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath 
 		case eParamComponentsRGBA:
 		{
 			typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
+			png_write_view( filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
 			break;
 		}
 		case eParamComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
-			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
+			png_write_view( filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
 			break;
 		}
 	}
