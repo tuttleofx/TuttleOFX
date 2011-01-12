@@ -64,22 +64,22 @@ public:
 			return kOfxFlagInfiniteMax;
 	}
 
-	EReaderParamExplicitConversion getExplicitConversion() const
+	EParamReaderExplicitConversion getExplicitConversion() const
 	{
-		return static_cast<EReaderParamExplicitConversion>( _paramExplicitConv->getValue() );
+		return static_cast<EParamReaderExplicitConversion>( _paramExplicitConv->getValue() );
 	}
 
 	OFX::EBitDepth getOfxExplicitConversion() const
 	{
 		switch( getExplicitConversion() )
 		{
-			case eReaderParamExplicitConversionByte:
+			case eParamReaderExplicitConversionByte:
 				return OFX::eBitDepthUByte;
-			case eReaderParamExplicitConversionShort:
+			case eParamReaderExplicitConversionShort:
 				return OFX::eBitDepthUShort;
-			case eReaderParamExplicitConversionFloat:
+			case eParamReaderExplicitConversionFloat:
 				return OFX::eBitDepthFloat;
-			case eReaderParamExplicitConversionAuto:
+			case eParamReaderExplicitConversionAuto:
 				BOOST_THROW_EXCEPTION( exception::Value() );
 		}
 		return OFX::eBitDepthNone;
@@ -94,6 +94,7 @@ public:
 	/// @{
 	OFX::StringParam*    _paramFilepath;     ///< File path
 	OFX::ChoiceParam*    _paramExplicitConv; ///< Explicit conversion
+	OFX::BooleanParam*   _paramFlip;         ///< vertically flip the buffer
 	/// @}
 
 private:
