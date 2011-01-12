@@ -61,13 +61,13 @@ void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kWriterParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kWriterParamBitDepth );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
 	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
@@ -83,16 +83,16 @@ void ImageMagickWriterPluginFactory::describeInContext( OFX::ImageEffectDescript
 	quality->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	quality->setDefault( 80 );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint( "Force render (writing)" );
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	renderAlways->setDefault( false );
 
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kWriterParamForceNewRender );
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
 	forceNewRender->setLabel( "Force new render" );
 	forceNewRender->setIsSecret( true );
 	forceNewRender->setIsPersistant( false );

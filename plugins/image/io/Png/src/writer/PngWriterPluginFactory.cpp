@@ -2,10 +2,7 @@
 #include "PngWriterDefinitions.hpp"
 #include "PngWriterPlugin.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -60,8 +57,7 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kWriterParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
@@ -74,30 +70,14 @@ void PngWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	components->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	components->setDefault( 0 );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kWriterParamBitDepth );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
 	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth16 );
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( 1 );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
-	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint( "Force render (writing)" );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	renderAlways->setDefault( false );
-
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kWriterParamForceNewRender );
-	forceNewRender->setLabel( "Force new render" );
-	forceNewRender->setIsSecret( true );
-	forceNewRender->setIsPersistant( false );
-	forceNewRender->setAnimates( false );
-	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	forceNewRender->setEvaluateOnChange( true );
-	forceNewRender->setDefault( 0 );
+	describeWriterParamsInContext( desc, context );
 }
 
 /**

@@ -20,12 +20,14 @@ class PngReaderProcess : public ImageGilProcessor<View>
 protected:
 	PngReaderPlugin&    _plugin;        ///< Rendering plugin
 
+	PngReaderProcessParams _params;
+
 public:
 	PngReaderProcess( PngReaderPlugin& instance );
 
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	View& readImage( View& dst, const std::string& filepath );
+	View& readImage( View& dst );
 };
 
 }

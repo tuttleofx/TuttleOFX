@@ -61,7 +61,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kWriterParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
@@ -75,7 +75,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	componentsType->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	componentsType->setDefault( 1 );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kWriterParamBitDepth );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
 	bitDepth->setLabel( "Bit depth" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth10 );
@@ -89,16 +89,16 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	compressed->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	compressed->setDefault( false );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
+	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
 	render->setLabels( "Render", "Render", "Render step" );
 	render->setHint( "Force render (writing)" );
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
+	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
 	renderAlways->setLabel( "Render always" );
 	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	renderAlways->setDefault( false );
 
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kWriterParamForceNewRender );
+	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
 	forceNewRender->setLabel( "Force new render" );
 	forceNewRender->setIsSecret( true );
 	forceNewRender->setIsPersistant( false );
