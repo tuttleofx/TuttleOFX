@@ -11,6 +11,7 @@ namespace reader {
 struct JpegReaderProcessParams
 {
 	std::string _filepath;       ///< filepath
+	bool _flip;
 };
 
 /**

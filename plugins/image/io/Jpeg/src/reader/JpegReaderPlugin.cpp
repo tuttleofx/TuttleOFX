@@ -22,6 +22,8 @@ JpegReaderProcessParams JpegReaderPlugin::getProcessParams( const OfxTime time )
 	JpegReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
+	params._flip = _paramFlip->getValue();
+	
 	return params;
 }
 

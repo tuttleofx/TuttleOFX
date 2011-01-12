@@ -25,6 +25,7 @@ protected:
 public:
 	PngReaderProcess( PngReaderPlugin& instance );
 
+	void setup( const OFX::RenderArguments& args );
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	View& readImage( View& dst );

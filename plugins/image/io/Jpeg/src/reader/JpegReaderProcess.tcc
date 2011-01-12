@@ -25,6 +25,7 @@ typedef any_image < boost::mpl::vector
                     < rgba8_image_t, rgba16_image_t, rgba32f_image_t,
                       rgb8_image_t,  rgb16_image_t,  rgb32f_image_t >
                     > any_image_t;
+typedef any_image_t::view_t any_view_t;
 
 template<class View>
 JpegReaderProcess<View>::JpegReaderProcess( JpegReaderPlugin& instance )
@@ -43,24 +44,33 @@ void JpegReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
+	_params = _plugin.getProcessParams( this->_renderArgs.time );
+
+	readImage( this->_dstView );
 }
 
 /**
  */
 template<class View>
-View& JpegReaderProcess<View>::readImage( View& dst, const std::string& filepath )
+View& JpegReaderProcess<View>::readImage( View& dst )
 {
 	any_image_t anyImg;
 
 	try
 	{
-		jpeg_read_image( filepath, anyImg );
-		copy_and_convert_pixels( subimage_view( flipped_up_down_view( view( anyImg ) ), 0, 0, dst.width(), dst.height() ), dst );
+		jpeg_read_image( _params._filepath, anyImg );
+
+		any_view_t srcView = view( anyImg );
+		if( _params._flip )
+		{
+			srcView = flipped_up_down_view( srcView );
+		}
+		srcView = subimage_view( srcView, 0, 0, dst.width(), dst.height() );
+		copy_and_convert_pixels( srcView, dst );
 	}
 	catch( boost::exception& e )
 	{
-		e << exception::filename( filepath );
+		e << exception::filename( _params._filepath );
 		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}

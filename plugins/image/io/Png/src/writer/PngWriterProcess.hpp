@@ -22,13 +22,16 @@ public:
 protected:
 	PngWriterPlugin&    _plugin;        ///< Rendering plugin
 
+	PngWriterProcessParams _params;
+	
 public:
 	PngWriterProcess( PngWriterPlugin& instance );
 
+	void setup( const OFX::RenderArguments& args );
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	template<class Bits>
-	void writeImage( View& src, const std::string& filepath );
+	void writeImage( View& src );
 };
 
 }
