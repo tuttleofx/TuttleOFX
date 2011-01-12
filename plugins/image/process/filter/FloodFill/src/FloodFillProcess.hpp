@@ -23,6 +23,7 @@ protected :
     FloodFillPlugin&    _plugin;            ///< Rendering plugin
 	FloodFillProcessParams<Scalar> _params; ///< parameters
 
+	bool _isConstantImage;
 	Scalar _lowerThres;
 	Scalar _upperThres;
 
