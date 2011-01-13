@@ -2,10 +2,7 @@
 #include "JpegWriterDefinitions.hpp"
 #include "JpegWriterPlugin.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -83,23 +80,7 @@ void JpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	quality->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	quality->setDefault( 80 );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
-	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint( "Force render (writing)" );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	renderAlways->setDefault( false );
-
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
-	forceNewRender->setLabel( "Force new render" );
-	forceNewRender->setIsSecret( true );
-	forceNewRender->setIsPersistant( false );
-	forceNewRender->setAnimates( false );
-	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	forceNewRender->setEvaluateOnChange( true );
-	forceNewRender->setDefault( 0 );
+	describeWriterParamsInContext( desc, context );
 }
 
 /**

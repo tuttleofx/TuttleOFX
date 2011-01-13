@@ -35,6 +35,14 @@ JpegReaderProcess<View>::JpegReaderProcess( JpegReaderPlugin& instance )
 	this->setNoMultiThreading();
 }
 
+template<class View>
+void JpegReaderProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	ImageGilProcessor<View>::setup( args );
+
+	_params = _plugin.getProcessParams( args.time );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
@@ -44,8 +52,6 @@ void JpegReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	_params = _plugin.getProcessParams( this->_renderArgs.time );
-
 	readImage( this->_dstView );
 }
 

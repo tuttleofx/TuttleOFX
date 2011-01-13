@@ -10,7 +10,9 @@
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-
+/**
+ * Simple functional test, to read and write an image.
+ */
 
 using namespace boost::unit_test;
 
@@ -59,6 +61,25 @@ BOOST_AUTO_TEST_CASE( process_reader )
 	BOOST_CHECK_EQUAL( imgRes->getBounds().y1, 0 );
 	BOOST_CHECK_NE( imgRes->getBounds().x2, 0 );
 	BOOST_CHECK_NE( imgRes->getBounds().y2, 0 );
+}
+
+BOOST_AUTO_TEST_CASE( process_nofile )
+{
+	using namespace tuttle::host;
+	TUTTLE_TCOUT( "__________________________________________________0" );
+	Graph g;
+
+	TUTTLE_TCOUT( "__________________________________________________1" );
+	Graph::Node& read = g.createNode( "fr.tuttle.imagemagickreader" );
+
+	TUTTLE_TCOUT( "__________________________________________________3" );
+	read.getParam( "filename" ).set( "data/no-such-file.png" );
+
+	TUTTLE_TCOUT( "__________________________________________________4" );
+//	g.connect( read, write );
+
+	TUTTLE_TCOUT( "__________________________________________________5" );
+	BOOST_REQUIRE_THROW( g.compute( read, 0 ), boost::exception );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
