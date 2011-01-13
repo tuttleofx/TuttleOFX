@@ -35,7 +35,8 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 {
 	if (varyOnTime() && ( time < getFirstTime() || time > getLastTime() ) )
 	{
-		BOOST_THROW_EXCEPTION(OFX::Exception::Suite(kOfxStatErrBadIndex, "Time value outside bounds."));
+		BOOST_THROW_EXCEPTION( exception::BadIndex()
+			<< exception::user("Time value outside bounds.") );
 	}
 	Jpeg2000ReaderProcessParams params;
 
@@ -45,17 +46,11 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 
 void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-	if( paramName == kReaderParamFilename )
+	if( paramName == kParamReaderFilename )
 	{
 		_reader.close();
 		_fileInfos._failed = true;
 	}
-	else if( paramName == "Help" )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kJpeg2000HelpString );
-    }
 	ReaderPlugin::changedParam(args, paramName);
 }
 
@@ -83,10 +78,11 @@ void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipP
 	FileInfo fileInfo = retrieveFileInfo( getFirstTime() );
 	if ( fileInfo._failed )
 	{
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, "Unable to read file infos." ) );
+		BOOST_THROW_EXCEPTION( exception::Failed()
+			<< exception::user( "Unable to read file infos." ) );
 	}
 
-	if( getExplicitConversion() == eReaderParamExplicitConversionAuto )
+	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
 		clipPreferences.setPixelAspectRatio( *_clipDst, 1.0 );
 		switch( fileInfo._components )

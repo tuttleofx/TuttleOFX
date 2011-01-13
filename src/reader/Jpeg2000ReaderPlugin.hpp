@@ -11,7 +11,8 @@ namespace reader {
 
 struct Jpeg2000ReaderProcessParams
 {
-	std::string _paramFilepath;      ///< filepath
+	std::string _paramFilepath; ///< filepath
+	bool _flip;            ///< Vertically flip the image
 };
 
 /**

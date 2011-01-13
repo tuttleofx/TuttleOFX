@@ -17,9 +17,6 @@ enum EParamBitDepth
 	eParamBitDepth32
 };
 
-const static std::string kJpeg2000HelpButton = "Help";
-const static std::string kJpeg2000HelpString = "<b>Jpeg200 io</b> plugin is used to read jpeg 2000 files.  <br />";
-
 }
 }
 }

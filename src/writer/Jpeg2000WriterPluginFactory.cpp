@@ -3,7 +3,7 @@
 #include "Jpeg2000WriterDefinitions.hpp"
 
 #include <openjpeg/J2KWriter.hpp>
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -19,6 +19,8 @@ void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.setLabels( "privateDuJpeg2000Writer", "Jpeg2000Writer",
 		            "Jpeg 2000 image writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
+
+	desc.setDescription( "<b>Jpeg2000 io</b> plugin is used to output jpeg 2000 files.<br />In the filename pattern, put @ where you want your incrementation to be.<br />" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
@@ -48,20 +50,18 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	// Create the mandated output clip
 	OFX::ClipDescriptor *dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kWriterParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kWriterParamBitDepth );
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
 	bitDepth->setLabel( "Precision" );
 	bitDepth->appendOption( kTuttlePluginBitDepth8 );
 	bitDepth->appendOption( kTuttlePluginBitDepth12 );
@@ -83,24 +83,7 @@ void Jpeg2000WriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 	cineProfil->appendOption( "4K Digital Cinema at 24 fps" );
 	cineProfil->setDefault( 0 );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kWriterParamRender );
-	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint("Force render (writing)");
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kWriterParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( false );
-
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kWriterParamForceNewRender );
-	forceNewRender->setLabel( "Force new render" );
-	forceNewRender->setIsSecret( true );
-//	forceNewRender->setIsPersistant( false );
-	forceNewRender->setAnimates( false );
-	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	forceNewRender->setEvaluateOnChange( true );
-	forceNewRender->setDefault( 0 );
-	OFX::PushButtonParamDescriptor *helpButton = desc.definePushButtonParam( kJpeg2000HelpButton );
-	helpButton->setScriptName( "help" );
+	describeWriterParamsInContext( desc, context );
 }
 
 /**

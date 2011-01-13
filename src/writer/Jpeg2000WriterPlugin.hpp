@@ -10,10 +10,11 @@ namespace writer {
 
 struct Jpeg2000ProcessParams
 {
-	std::string _filepath;      ///< filepath
-	int _bitDepth;				///< Precision (in bits)
-	int _cineProfil;			///< Cinema Profile
-	bool _lossless;				///< Lossless compression
+	std::string _filepath; ///< filepath
+	int _bitDepth;         ///< Precision (in bits)
+	int _cineProfil;       ///< Cinema Profile
+	bool _lossless;        ///< Lossless compression
+	bool _flip;            ///< Vertically flip the image
 };
 
 /**
