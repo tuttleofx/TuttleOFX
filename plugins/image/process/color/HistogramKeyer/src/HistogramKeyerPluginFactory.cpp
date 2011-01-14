@@ -21,6 +21,15 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		            "HistogramKeyer" );
 	desc.setPluginGrouping( "tuttle" );
 
+	desc.setDescription(
+		"<b>HistogramKeyer</b>\n"
+		"Test parametric parameters.\n"
+		"Full description of the plugin....\n"
+		"\n"
+		"bla bla\n"
+		"\n"
+	);
+
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -33,14 +42,6 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-
-	desc.setDescription(
-		"Test parametric parameters.\n"
-		"Full description of the plugin....\n"
-		"\n"
-		"bla bla\n"
-		"\n"
-	);
 
 	if( ! OFX::getImageEffectHostDescription()->supportsParametricParameter )
 	{
@@ -74,6 +75,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	TUTTLE_COUT_INFOS;
 	curves->setRange( 0.0, 1.0 );
 	curves->setDimension( nbCurves );
+	curves->setIdentity();
 	curves->setDimensionLabel( kParamColorSelectionRed, 0 );
 	curves->setDimensionLabel( kParamColorSelectionGreen, 1 );
 	curves->setDimensionLabel( kParamColorSelectionBlue, 2 );
@@ -88,26 +90,6 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	curves->setUIColour( 4, {1,1,1} );
 	curves->setUIColour( 5, {1,1,1} );
 
-	for( int i = 0; i < nbCurves; ++i )
-	{
-		curves->addControlPoint( i, 0, 0, 0, false );
-		curves->addControlPoint( i, 0, 1, 1, false );
-	}
-
-//for(int component = 0; component < 3; ++component) {
-//// add a control point at 0, value is 1
-//gParametricParamHost->parametricParamAddControlPoint(descriptor,
-//											  component, // curve to set
-//											  0.0,   // time, ignored in this case, as we are not adding a ket
-//											  0.0,   // parametric position, zero
-//											  1.0,   // value to be, 1
-//											  false);   // don't add a key
-//// add a control point at 1, value is 0
-//gParametricParamHost->parametricParamAddControlPoint(descriptor, component, 0.0, 1.0, 0.0, false);
-//}
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );
-	helpButton->setLabel( "Help" );
 	TUTTLE_COUT_INFOS;
 }
 
