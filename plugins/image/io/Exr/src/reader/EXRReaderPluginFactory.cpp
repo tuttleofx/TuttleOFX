@@ -2,10 +2,7 @@
 #include "EXRReaderPluginFactory.hpp"
 #include "EXRReaderPlugin.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -23,6 +20,8 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabels( "TuttleExrReader", "ExrReader",
 	                "Exr file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
+
+	desc.setDescription( "<b>EXR File reader</b> plugin is used to read exr files.  <br />" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
@@ -49,41 +48,13 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void EXRReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                 OFX::EContext               context )
 {
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
 	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
-	assert( filename );
-	filename->setLabel( "Filename" );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *filename );
-
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kParamReaderExplicitConversion );
-	explicitConversion->setLabel( "Explicit conversion" );
-	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
-	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth16 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
-	explicitConversion->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	explicitConversion->setAnimates( false );
-	desc.addClipPreferencesSlaveParam( *explicitConversion );
-
-	if( OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
-	{
-		explicitConversion->setDefault( 0 );
-	}
-	else
-	{
-		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
-	}
+	describeReaderParamsInContext( desc, context );
 
 	OFX::ChoiceParamDescriptor* outComponents = desc.defineChoiceParam( kParamOutputComponents );
 	assert( outComponents );

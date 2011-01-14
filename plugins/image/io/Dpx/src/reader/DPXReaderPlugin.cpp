@@ -25,6 +25,8 @@ DPXReaderProcessParams DPXReaderPlugin::getProcessParams( const OfxTime time )
 	DPXReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
+	params._flip = _paramFlip->getValue();
+
 	return params;
 }
 

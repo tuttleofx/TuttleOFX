@@ -2,10 +2,7 @@
 #include "EXRWriterPlugin.hpp"
 #include "EXRWriterDefinitions.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -21,6 +18,8 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabels( "TuttleExrWriter", "ExrWriter",
 	                "Exr file writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
+
+	desc.setDescription( "<b>EXR File writer</b> plugin is used to write exr files.<br />" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
@@ -48,14 +47,12 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
 	// Exr only supports RGB(A)
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	// Exr only supports RGB(A)
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -63,7 +60,6 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	// Controls
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
@@ -86,22 +82,7 @@ void EXRWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitDepth->setDefault( 1 );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
-	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint( "Force render (writing)" );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setDefault( false );
-
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
-	forceNewRender->setLabel( "Force new render" );
-	forceNewRender->setIsSecret( true );
-	forceNewRender->setIsPersistant( false );
-	forceNewRender->setAnimates( false );
-	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	forceNewRender->setEvaluateOnChange( true );
-	forceNewRender->setDefault( 0 );
+	describeWriterParamsInContext( desc, context );
 }
 
 /**

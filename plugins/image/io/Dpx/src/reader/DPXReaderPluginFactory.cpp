@@ -2,10 +2,7 @@
 #include "DPXReaderPluginFactory.hpp"
 #include "DPXReaderPlugin.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -21,6 +18,8 @@ void DPXReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabels( "TuttleDpxReader", "DpxReader",
 	                "Dpx file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
+
+	desc.setDescription( "Digital Picture Exchange (DPX), ANSI/SMPTE standard (268M-2003)" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
@@ -53,32 +52,8 @@ void DPXReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
-	filename->setLabel( "Filename" );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *filename );
+	describeReaderParamsInContext( desc, context );
 
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kParamReaderExplicitConversion );
-	explicitConversion->setLabel( "Explicit conversion" );
-	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
-	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth16 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
-	explicitConversion->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	explicitConversion->setAnimates( false );
-	desc.addClipPreferencesSlaveParam( *explicitConversion );
-
-	if( OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
-	{
-		explicitConversion->setDefault( 0 );
-	}
-	else
-	{
-		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
-	}
-	
 	OFX::PushButtonParamDescriptor* displayHeader = desc.definePushButtonParam( kParamDisplayHeader );
 	displayHeader->setLabel( "See Header" );
 	displayHeader->setHint( "See the file header without formating (debug purpose only)." );

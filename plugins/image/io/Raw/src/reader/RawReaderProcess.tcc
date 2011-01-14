@@ -54,6 +54,13 @@ RawReaderProcess<View>::RawReaderProcess( RawReaderPlugin& instance )
 	//	_rawProcessor.set_dataerror_handler( xxxCallback, reinterpret_cast<void*>(this) );
 }
 
+template<class View>
+void RawReaderProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	ImageGilProcessor<View>::setup( args );
+	_params = _plugin.getProcessParams( args.time );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
@@ -63,14 +70,7 @@ void RawReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 {
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
-	readImage( this->_dstView, _plugin.getProcessParams( this->_renderArgs.time )._filepath );
-}
 
-/**
- */
-template<class View>
-View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath )
-{
 	try
 	{
 		_out.output_bps = 16;
@@ -89,16 +89,18 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 				break;
 		}
 
-		if( const int ret = _rawProcessor.open_file( filepath.c_str() ) )
+		if( const int ret = _rawProcessor.open_file( _params._filepath.c_str() ) )
 		{
-			TUTTLE_COUT_ERROR( "Cannot open " << filepath << " : " << libraw_strerror( ret ) );
-			return dst;
+			BOOST_THROW_EXCEPTION( exception::Unknown()
+				<< exception::user() + "Cannot open file: " + libraw_strerror( ret )
+				<< exception::filename( _params._filepath ) );
 		}
 
 		if( const int ret = _rawProcessor.unpack() )
 		{
-			TUTTLE_COUT_ERROR( "Cannot unpack " << filepath << " : " << libraw_strerror( ret ) );
-			return dst;
+			BOOST_THROW_EXCEPTION( exception::Unknown()
+				<< exception::user() + "Cannot unpack file: " + libraw_strerror( ret )
+				<< exception::filename( _params._filepath ) );
 		}
 
 		// we should call dcraw_process before thumbnail extraction because for
@@ -109,9 +111,17 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 
 		if( LIBRAW_SUCCESS != ret )
 		{
-			TUTTLE_COUT_ERROR( "Cannot do postprocessing on " << filepath << " : " << libraw_strerror( ret ) );
 			if( LIBRAW_FATAL_ERROR( ret ) )
-				return dst;
+			{
+				BOOST_THROW_EXCEPTION( exception::Unknown()
+					<< exception::user() + "Cannot do postprocessing: " + libraw_strerror( ret )
+					<< exception::filename( _params._filepath ) );
+			}
+			else
+			{
+				TUTTLE_COUT_ERROR( "Error on postprocessing (" << quotes(_params._filepath) << "): " << libraw_strerror( ret ) );
+				TUTTLE_COUT_ERROR( "Try to continue..." );
+			}
 		}
 		//		libraw_processed_image_t* image = _rawProcessor.dcraw_make_mem_image( &ret );
 		//		if( ! image )
@@ -150,16 +160,22 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 		RawView imageView = interleaved_view( _size.width, _size.height, //image->width, image->height,
 		                                      (const RawPixel*)( _rawProcessor.imgdata.image /*image->data*/ ),
 		                                      _size.width /*image->width*/ * sizeof( RawPixel ) /*image->data_size*/ );
+		
+		View dst = this->_dstView;
 		TUTTLE_COUT_VAR( sizeof( RawPixel ) );
 		TUTTLE_COUT_VAR( imageView.dimensions() );
 		TUTTLE_COUT_VAR( dst.dimensions() );
+		if( _params._flip )
+		{
+			dst = flipped_up_down_view( this->_dstView );
+		}
 		copy_and_convert_pixels( imageView, dst );
 		//		free( image );
 		_rawProcessor.recycle();
 	}
 	catch( boost::exception& e )
 	{
-		e << exception::filename( filepath );
+		e << exception::filename( _params._filepath );
 		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}
@@ -170,7 +186,6 @@ View& RawReaderProcess<View>::readImage( View& dst, const std::string& filepath 
 		//			<< exception::filename(filepath) );
 		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
 	}
-	return dst;
 }
 
 }

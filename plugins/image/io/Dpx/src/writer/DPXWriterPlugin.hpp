@@ -14,6 +14,7 @@ struct DPXWriterProcessParams
 	int _bitDepth;               ///< Output bit depth
 	int _componentsType;         ///< Components type
 	bool _compressed;            ///< Bit streaming
+	bool _flip;
 };
 
 /**

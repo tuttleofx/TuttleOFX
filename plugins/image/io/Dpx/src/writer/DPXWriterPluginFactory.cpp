@@ -2,10 +2,7 @@
 #include "DPXWriterPlugin.hpp"
 #include "DPXWriterDefinitions.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -22,6 +19,8 @@ void DPXWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Dpx file writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
+	desc.setDescription( "Digital Picture Exchange (DPX), ANSI/SMPTE standard (268M-2003)" );
+	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -48,7 +47,6 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
                                                 OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
@@ -89,23 +87,7 @@ void DPXWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 	compressed->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	compressed->setDefault( false );
 
-	OFX::PushButtonParamDescriptor* render = desc.definePushButtonParam( kParamWriterRender );
-	render->setLabels( "Render", "Render", "Render step" );
-	render->setHint( "Force render (writing)" );
-
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamWriterRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	renderAlways->setDefault( false );
-
-	OFX::IntParamDescriptor* forceNewRender = desc.defineIntParam( kParamWriterForceNewRender );
-	forceNewRender->setLabel( "Force new render" );
-	forceNewRender->setIsSecret( true );
-	forceNewRender->setIsPersistant( false );
-	forceNewRender->setAnimates( false );
-	forceNewRender->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	forceNewRender->setEvaluateOnChange( true );
-	forceNewRender->setDefault( 0 );
+	describeWriterParamsInContext( desc, context );
 }
 
 /**

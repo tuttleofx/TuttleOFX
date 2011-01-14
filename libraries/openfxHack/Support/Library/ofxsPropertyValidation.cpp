@@ -876,6 +876,12 @@ static PropertyDescription gDouble3DParamProps[] =
 	PropertyDescription( kOfxParamPropDimensionLabel,       OFX::eString, 3, eDescDefault, "x", "y", "z", eDescFinished ),
 };
 
+/** @brief properties for a group param */
+static PropertyDescription gGroupParamProps[] =
+{
+	PropertyDescription( kOfxParamPropGroupOpen,            OFX::eInt, 2, eDescFinished ),
+};
+
 /** @brief properties for a page param */
 static PropertyDescription gPageParamProps[] =
 {
@@ -990,6 +996,7 @@ static PropertySetDescription gPushButtonParamPropSet( "PushButton parameter",
 /** @brief Property set for push button params */
 static PropertySetDescription gGroupParamPropSet( "Group Parameter",
                                                   mPropDescriptionArg( gBasicParamProps ),
+                                                  mPropDescriptionArg( gGroupParamProps ),
                                                   NULLPTR );
 
 /** @brief Property set for push button params */

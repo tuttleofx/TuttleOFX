@@ -2,10 +2,7 @@
 #include "RawReaderDefinitions.hpp"
 #include "RawReaderPlugin.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -21,6 +18,8 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabels( "TuttleRawReader", "RawReader",
 	                "Raw file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
+
+	desc.setDescription( "<b>Raw File reader</b> plugin is used to read raw files.  <br />" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
@@ -49,41 +48,17 @@ void RawReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
-	filename->setLabel( "Filename" );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *filename );
+	describeReaderParamsInContext( desc, context );
 
 	OFX::ChoiceParamDescriptor* filtering = desc.defineChoiceParam( kParamFiltering );
 	filtering->setLabel( "Filtering" );
 	filtering->appendOption( kParamFilteringAuto );
 	filtering->appendOption( kParamFilteringNone );
-
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kParamReaderExplicitConversion );
-	explicitConversion->setLabel( "Explicit conversion" );
-	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
-	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth16 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
-	desc.addClipPreferencesSlaveParam( *explicitConversion );
-
-	if( OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
-	{
-		explicitConversion->setDefault( 0 );
-	}
-	else
-	{
-		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
-	}
 }
 
 /**

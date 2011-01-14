@@ -679,12 +679,17 @@ GroupParamDescriptor::GroupParamDescriptor( const std::string& name, OfxProperty
 	: ParamDescriptor( name, eGroupParam, props )
 {}
 
+void GroupParamDescriptor::setOpen( const bool open )
+{
+	getProps().propSetInt( kOfxParamPropGroupOpen, open );
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // page param descriptor
 
 /** @brief hidden constructor */
 PageParamDescriptor::PageParamDescriptor( const std::string& name, OfxPropertySetHandle props )
-	: ParamDescriptor( name, eGroupParam, props )
+	: ParamDescriptor( name, ePageParam, props )
 {}
 
 /** @brief adds a child parameter. Note the two existing pseudo params, gColumnSkip  and gRowSkip */

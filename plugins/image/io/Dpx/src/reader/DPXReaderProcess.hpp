@@ -39,6 +39,8 @@ protected:
 
 protected:
 	DPXReaderPlugin&    _plugin;        ///< Rendering plugin
+	DPXReaderProcessParams _params;
+	
 	tuttle::io::DpxImage _dpxImage;
 
 };

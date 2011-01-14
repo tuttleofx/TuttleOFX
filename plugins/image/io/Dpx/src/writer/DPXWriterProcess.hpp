@@ -31,8 +31,11 @@ class DPXWriterProcess : public ImageGilFilterProcessor<View>
 {
 protected:
 	DPXWriterPlugin&      _plugin;        ///< Rendering plugin
+	DPXWriterProcessParams _params;
 	tuttle::io::DpxHeader _dpxHeader;     ///< Dpx image header
 	tuttle::io::DpxImage _dpxImg;         ///< Dpx image reader
+
+	void setup( const OFX::RenderArguments& args );
 
 	template<class WImage>
 	void writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType compType, const int packing );

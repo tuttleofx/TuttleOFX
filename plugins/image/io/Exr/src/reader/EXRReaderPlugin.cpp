@@ -39,18 +39,14 @@ EXRReaderProcessParams EXRReaderPlugin::getProcessParams( const OfxTime time )
 
 	params._filepath      = getAbsoluteFilenameAt( time );
 	params._outComponents = _outComponents->getValue();
+	params._flip          = _paramFlip->getValue();
+
 	return params;
 }
 
 void EXRReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == "Help" )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kExrReaderHelpString );
-	}
-	else if( paramName == kParamReaderFilename )
+	if( paramName == kParamReaderFilename )
 	{
 		ReaderPlugin::changedParam( args, paramName );
 		updateCombos();

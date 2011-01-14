@@ -612,6 +612,8 @@ protected:
 	/** @brief hidden constructor */
 	GroupParamDescriptor( const std::string& name, OfxPropertySetHandle props );
 
+	void setOpen( const bool open = true );
+	
 	// so it can make one
 	friend class ParamSetDescriptor;
 

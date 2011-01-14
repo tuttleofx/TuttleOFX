@@ -15,7 +15,6 @@ void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
                                     OFX::EContext               context )
 {
 	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
-	assert( filename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );

@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE( process_reader )
 	Graph::Node& read = g.createNode( "fr.tuttle.rawreader" );
 
 	TUTTLE_TCOUT( "__________________________________________________3" );
-	read.getParam( "filename" ).set( "data/input.raw" );
+	read.getParam( "filename" ).set( "data/input.CR2" );
 
 	TUTTLE_TCOUT( "__________________________________________________4" );
 //	g.connect( read, write );
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( process_nofile )
 	Graph::Node& read = g.createNode( "fr.tuttle.rawreader" );
 
 	TUTTLE_TCOUT( "__________________________________________________3" );
-	read.getParam( "filename" ).set( "data/no-such-file.raw" );
+	read.getParam( "filename" ).set( "data/no-such-file.CR2" );
 
 	TUTTLE_TCOUT( "__________________________________________________4" );
 //	g.connect( read, write );
