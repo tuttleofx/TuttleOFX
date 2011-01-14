@@ -89,6 +89,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	curves->setUIColour( 3, {1,1,1} );
 	curves->setUIColour( 4, {1,1,1} );
 	curves->setUIColour( 5, {1,1,1} );
+//	curves.setInteractDescriptor( new OFX::DefaultEffectOverlayWrap<HistogramCurveOverlayDescriptor>() );
 
 	TUTTLE_COUT_INFOS;
 }
