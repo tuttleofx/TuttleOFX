@@ -10,8 +10,6 @@ namespace %NAMESPACE% {
 
 const static std::string kParamHelpButton = "Help";
 
-const static std::string kParamHelpString = "<b>%PLUGIN_LONG_LABEL%</b> plugin is used to ???.  <br />";
-
 
 }
 }
