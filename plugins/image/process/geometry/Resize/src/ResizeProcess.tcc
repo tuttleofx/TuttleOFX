@@ -32,12 +32,10 @@ template<class View>
 void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	
-	
-	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
-	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-							     procWindowRoW.y2 - procWindowRoW.y1 };
+//	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+//	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+//	const OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
+//							     procWindowRoW.y2 - procWindowRoW.y1 };
 //	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
 //							                  procWindowSize.x, procWindowSize.y );
 //	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
@@ -46,10 +44,6 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 //	resize_view( src, dst, bilinear_sampler() );
 	
 	resize_view( this->_srcView, this->_dstView, bilinear_sampler() );
-	
-//	copy_pixels( src, dst );
-	
-
 }
 
 }
