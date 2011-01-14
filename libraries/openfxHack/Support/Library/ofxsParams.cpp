@@ -231,7 +231,7 @@ void ValueParamDescriptor::setCacheInvalidation( CacheInvalidationEnum v )
 	}
 }
 
-  void ValueParamDescriptor::setInteractDescriptor(ParamInteractWrap* desc)
+void ValueParamDescriptor::setInteractDescriptor(ParamInteractWrap* desc)
 {
 	_interact.reset( desc );
 	getProps().propSetPointer( kOfxParamPropInteractV1, (void*)desc->getMainEntry() );
@@ -760,6 +760,28 @@ void ParametricParamDescriptor::addControlPoint( const int id, const OfxTime tim
 		x,
 		y,
 		addKey );
+}
+
+void ParametricParamDescriptor::setIdentity( const int id )
+{
+	addControlPoint( id, 0, 0, 0, false );
+	addControlPoint( id, 0, 1, 1, false );
+}
+
+void ParametricParamDescriptor::setIdentity()
+{
+	const int nbCurves = getProps().propGetInt( kOfxParamPropParametricDimension );
+	for( int i = 0; i < nbCurves; ++i )
+	{
+		setIdentity( i );
+	}
+}
+
+void ParametricParamDescriptor::setInteractDescriptor( ParamInteractWrap* desc )
+{
+	_interact.reset( desc );
+	getProps().propSetPointer( kOfxParamPropParametricInteractBackground, (void*)desc->getMainEntry() );
+    desc->getDescriptor().setParamName( getName() );
 }
 
 ////////////////////////////////////////////////////////////////////////////////
