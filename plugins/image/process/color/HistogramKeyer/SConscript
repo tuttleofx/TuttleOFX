@@ -6,5 +6,6 @@ project.createOfxPlugin( dirs = ['src'],
                                  libs.tuttlePlugin,
                                  libs.boost_gil,
                                  libs.boost_system,
+                                 libs.gl,
                                  ] )
 

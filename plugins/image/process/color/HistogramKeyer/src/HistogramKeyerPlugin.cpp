@@ -13,7 +13,11 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
 //    _clipSrcMatte = fetchClip( kClipMatte );
-//	_paramColorSelection = fetchParametricParam( kParamColorSelection );
+
+	if( OFX::getImageEffectHostDescription()->supportsParametricParameter )
+	{
+//		_paramColorSelection = fetchParametricParam( kParamColorSelection );
+	}
 }
 
 HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const

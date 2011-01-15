@@ -1,6 +1,7 @@
 #include "HistogramKeyerPluginFactory.hpp"
 #include "HistogramKeyerPlugin.hpp"
 #include "HistogramKeyerDefinitions.hpp"
+#include "HistogramKeyerOverlay.hpp"
 
 #include <limits>
 
@@ -43,10 +44,12 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 
-	if( ! OFX::getImageEffectHostDescription()->supportsParametricParameter )
-	{
-		BOOST_THROW_EXCEPTION( exception::MissingHostFeature( "Parametric parameter" ) );
-	}
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<HistogramKeyerOverlayDescriptor>() );
+
+//	if( ! OFX::getImageEffectHostDescription()->supportsParametricParameter )
+//	{
+//		BOOST_THROW_EXCEPTION( exception::MissingHostFeature( "Parametric parameter" ) );
+//	}
 }
 
 /**
@@ -69,29 +72,32 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	TUTTLE_COUT_INFOS;
-	OFX::ParametricParamDescriptor* curves = desc.defineParametricParam( kParamColorSelection );
-	TUTTLE_COUT_VAR( curves );
-	TUTTLE_COUT_INFOS;
-	curves->setRange( 0.0, 1.0 );
-	curves->setDimension( nbCurves );
-	curves->setIdentity();
-	curves->setDimensionLabel( kParamColorSelectionRed, 0 );
-	curves->setDimensionLabel( kParamColorSelectionGreen, 1 );
-	curves->setDimensionLabel( kParamColorSelectionBlue, 2 );
-	curves->setDimensionLabel( kParamColorSelectionHue, 3 );
-	curves->setDimensionLabel( kParamColorSelectionSaturation, 4 );
-	curves->setDimensionLabel( kParamColorSelectionLightness, 5 );
-	curves->setHint( "Color selection" );
-	curves->setUIColour( 0, {1,0,0} );
-	curves->setUIColour( 1, {0,1,0} );
-	curves->setUIColour( 2, {0,0,1} );
-	curves->setUIColour( 3, {1,1,1} );
-	curves->setUIColour( 4, {1,1,1} );
-	curves->setUIColour( 5, {1,1,1} );
-//	curves.setInteractDescriptor( new OFX::DefaultEffectOverlayWrap<HistogramCurveOverlayDescriptor>() );
+	if( OFX::getImageEffectHostDescription()->supportsParametricParameter )
+	{
+//		TUTTLE_COUT_INFOS;
+		OFX::ParametricParamDescriptor* curves = desc.defineParametricParam( kParamColorSelection );
+//		TUTTLE_COUT_VAR( curves );
+//		TUTTLE_COUT_INFOS;
+		curves->setRange( 0.0, 1.0 );
+		curves->setDimension( nbCurves );
+		curves->setIdentity();
+		curves->setDimensionLabel( kParamColorSelectionRed, 0 );
+		curves->setDimensionLabel( kParamColorSelectionGreen, 1 );
+		curves->setDimensionLabel( kParamColorSelectionBlue, 2 );
+		curves->setDimensionLabel( kParamColorSelectionHue, 3 );
+		curves->setDimensionLabel( kParamColorSelectionSaturation, 4 );
+		curves->setDimensionLabel( kParamColorSelectionLightness, 5 );
+		curves->setHint( "Color selection" );
+		curves->setUIColour( 0, {1,0,0} );
+		curves->setUIColour( 1, {0,1,0} );
+		curves->setUIColour( 2, {0,0,1} );
+		curves->setUIColour( 3, {1,1,1} );
+		curves->setUIColour( 4, {1,1,1} );
+		curves->setUIColour( 5, {1,1,1} );
+	//	curves.setInteractDescriptor( new OFX::DefaultEffectOverlayWrap<HistogramCurveOverlayDescriptor>() );
+	}
 
-	TUTTLE_COUT_INFOS;
+//	TUTTLE_COUT_INFOS;
 }
 
 /**
