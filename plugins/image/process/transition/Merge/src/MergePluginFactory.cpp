@@ -45,17 +45,17 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                             OFX::EContext               context )
 {
-	OFX::ClipDescriptor* srcClipA = desc.defineClip( kParamSourceA );
-	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClipA->setSupportsTiles( kSupportTiles );
-	srcClipA->setOptional( false );
-
 	OFX::ClipDescriptor* srcClipB = desc.defineClip( kParamSourceB );
 	srcClipB->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClipB->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClipB->setSupportsTiles( kSupportTiles );
 	srcClipB->setOptional( false );
+
+	OFX::ClipDescriptor* srcClipA = desc.defineClip( kParamSourceA );
+	srcClipA->addSupportedComponent( OFX::ePixelComponentRGBA );
+	srcClipA->addSupportedComponent( OFX::ePixelComponentAlpha );
+	srcClipA->setSupportsTiles( kSupportTiles );
+	srcClipA->setOptional( false );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -117,7 +117,7 @@ void MergePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	rod->appendOption( kParamRodUnion );
 	rod->appendOption( kParamRodA );
 	rod->appendOption( kParamRodB );
-	rod->setDefault( eParamRodB );
+	rod->setDefault( eParamRodIntersect );
 }
 
 /**
