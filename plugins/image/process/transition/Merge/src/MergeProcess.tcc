@@ -78,7 +78,12 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 	
 	OfxRectI intersect = rectanglesIntersection( srcRodA, srcRodB );
 	OfxRectI procIntersect = rectanglesIntersection( procWindowRoW, intersect );
+	OfxPointI procIntersectSize = {
+		procIntersect.x2 - procIntersect.x1,
+		procIntersect.y2 - procIntersect.y1
+	};
 
+	/// @todo tuttle: fill only the good regions
 	switch( _params._rod )
 	{
 		case eParamRodIntersect:
@@ -90,15 +95,15 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 		}
 		case eParamRodUnion:
 		{
+			/// @todo tuttle:
+			///  * add color choice
+			///  * fill A and B
+			///  * fill only the good regions
 			Pixel pixelZero; pixel_zeros_t<Pixel>()( pixelZero );
 			const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 			View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 													  procWindowSize.x, procWindowSize.y );
 			fill_pixels( dst, pixelZero );
-			/// @todo tuttle:
-			///  * add color choice
-			///  * fill A and B
-			///  * fill only the good regions
 			break;
 		}
 		case eParamRodA:
@@ -111,8 +116,7 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 													   procWindowSize.x, procWindowSize.y );
 			View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 													  procWindowSize.x, procWindowSize.y );
-			/// @todo tuttle:
-			///  * fill only the good regions
+			/// @todo tuttle: fill only the good regions
 			copy_pixels( src, dst );
 			break;
 		}
@@ -126,8 +130,7 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 													   procWindowSize.x, procWindowSize.y );
 			View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 													  procWindowSize.x, procWindowSize.y );
-			/// @todo tuttle:
-			///  * fill only the good regions
+			/// @todo tuttle: fill only the good regions
 			copy_pixels( src, dst );
 			break;
 		}
@@ -136,19 +139,19 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 	View srcViewA_inter = subimage_view( this->_srcViewA,
 						   procIntersect.x1 - srcRodA.x1,
 						   procIntersect.y1 - srcRodA.y1,
-						   procWindowSize.x,
-						   procWindowSize.y );
+						   procIntersectSize.x,
+						   procIntersectSize.y );
 	View srcViewB_inter = subimage_view( this->_srcViewB,
 						   procIntersect.x1 - srcRodB.x1,
 						   procIntersect.y1 - srcRodB.y1,
-						   procWindowSize.x,
-						   procWindowSize.y );
+						   procIntersectSize.x,
+						   procIntersectSize.y );
 
 	View dstView_inter = subimage_view( this->_dstView,
 	                              procIntersect.x1 - this->_dstPixelRod.x1,
 	                              procIntersect.y1 - this->_dstPixelRod.y1,
-	                              procWindowSize.x,
-	                              procWindowSize.y );
+	                              procIntersectSize.x,
+	                              procIntersectSize.y );
 
 	merge_pixels( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
 
