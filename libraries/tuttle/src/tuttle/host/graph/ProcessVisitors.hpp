@@ -362,7 +362,8 @@ public:
 		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 		_cumulativeTime += t2 - t1;
 		
-		TUTTLE_COUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
+//		TUTTLE_COUT( "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" );
+		std::cout << "** Process " << quotes(vertex._name) << " " << vertex._data._time << " took: " << t2 - t1 << " (cumul: " << _cumulativeTime << ")" << std::endl;
 		
 		if( vertex.getProcessDataAtTime()._finalNode )
 		{
