@@ -31,6 +31,15 @@ public:
 	bool penMotion( const OFX::PenArgs& args );
 };
 
+class HistogramKeyerParamOverlayDescriptor : public OFX::ParamInteractDescriptor
+{
+public:
+	OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect* effect )
+	{
+		return new HistogramKeyerOverlay( handle, effect );
+	}
+};
+
 class HistogramKeyerOverlayDescriptor : public OFX::EffectOverlayDescriptor
 {
 public:
@@ -38,7 +47,6 @@ public:
 	{
 		return new HistogramKeyerOverlay( handle, effect );
 	}
-
 };
 
 }

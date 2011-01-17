@@ -231,7 +231,7 @@ void ValueParamDescriptor::setCacheInvalidation( CacheInvalidationEnum v )
 	}
 }
 
-void ValueParamDescriptor::setInteractDescriptor(ParamInteractWrap* desc)
+void ValueParamDescriptor::setInteractDescriptor( ParamInteractWrap* desc)
 {
 	_interact.reset( desc );
 	getProps().propSetPointer( kOfxParamPropInteractV1, (void*)desc->getMainEntry() );

@@ -290,26 +290,24 @@ OfxStatus interactMainEntry( const char*          actionRaw,
                              InteractDescriptor&  desc );
 }
 
-class InteractWrap
+class EffectInteractWrap
 {
 public:
-	InteractWrap() {}
-	virtual ~InteractWrap() = 0;
+	virtual ~EffectInteractWrap() = 0;
 	virtual OfxPluginEntryPoint* getMainEntry() = 0;
-	virtual OFX::InteractDescriptor& getDescriptor() =0;
+	virtual InteractDescriptor& getDescriptor() =0;
 };
 
-typedef InteractWrap EffectInteractWrap;
-
-class ParamInteractWrap : public InteractWrap
+class ParamInteractWrap : public EffectInteractWrap
 {
 public:
-	virtual ParamInteractDescriptor& getDescriptor() =0;
 	virtual ~ParamInteractWrap() = 0;
+	virtual OfxPluginEntryPoint* getMainEntry() = 0;
+	virtual ParamInteractDescriptor& getDescriptor() =0;
 };
 
 template<class DESC>
-class InteractMainEntry : public InteractWrap
+class InteractMainEntry
 {
   public:
     virtual ~InteractMainEntry() = 0;
@@ -317,7 +315,6 @@ protected:
 	static OfxStatus overlayInteractMainEntry( const char* action, const void* handle, OfxPropertySetHandle in, OfxPropertySetHandle out )
 	{
 		static DESC desc;
-
 		return OFX::Private::interactMainEntry( action, handle, in, out, desc );
 	}
 };
@@ -326,7 +323,7 @@ template<class DESC>
 InteractMainEntry<DESC>::~InteractMainEntry() {}
 
 template<class DESC>
-class DefaultEffectOverlayWrap : public InteractMainEntry<DESC>
+class DefaultEffectOverlayWrap : public InteractMainEntry<DESC>, public EffectInteractWrap
 {
 public:
       typedef DESC Descriptor;
@@ -338,17 +335,17 @@ public:
 };
 
 template<class DESC>
-class DefaultParamInteractWrap : public InteractMainEntry<DESC>
+class DefaultParamInteractWrap : public InteractMainEntry<DESC>, public ParamInteractWrap
 {
 public:
 	typedef DESC Descriptor;
 	Descriptor _descriptor;
 public:
-	OfxPluginEntryPoint* getMainEntry()                                                  { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
+	OfxPluginEntryPoint* getMainEntry() { return InteractMainEntry<DESC>::overlayInteractMainEntry; }
 
-	OFX::InteractDescriptor& getDescriptor() { return _descriptor; }
+	OFX::ParamInteractDescriptor& getDescriptor() { return _descriptor; }
 
-	void                 setParamName( const std::string& pName )                        { _paramNameStatic = pName; }
+	void setParamName( const std::string& pName ) { _paramNameStatic = pName; }
 
 protected:
 	static std::string _paramNameStatic;
