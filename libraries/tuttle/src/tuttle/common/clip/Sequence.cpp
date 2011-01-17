@@ -430,7 +430,7 @@ Sequence::Sequence( const boost::filesystem::path& seqPath, const EPattern accep
 Sequence::~Sequence()
 {}
 
-bool Sequence::isIn( const std::string& filename, Time& time )
+bool Sequence::isIn( const std::string& filename, Time& time, std::string& timeStr )
 {
 	std::size_t min = _prefix.size() + _suffix.size();
 
@@ -443,9 +443,8 @@ bool Sequence::isIn( const std::string& filename, Time& time )
 
 	try
 	{
-		time = boost::lexical_cast<Time>(
-		    filename.substr( _prefix.size(),
-		                     filename.size() - _suffix.size() - _prefix.size() ) );
+		timeStr = filename.substr( _prefix.size(), filename.size() - _suffix.size() - _prefix.size() );
+		time = boost::lexical_cast<Time>( timeStr );
 	}
 	catch(... )
 	{
@@ -567,6 +566,7 @@ bool Sequence::initFromDetection( const boost::filesystem::path& directory, cons
 	if( !exists( directory ) )
 		return true; // an empty sequence
 
+	std::list<std::string> allTimesStr;
 	std::list<Time> allTimes;
 
 	fs::directory_iterator itEnd;
@@ -578,9 +578,12 @@ bool Sequence::initFromDetection( const boost::filesystem::path& directory, cons
 		//			continue; // skip directories
 
 		Time time;
-		if( isIn( iter->filename(), time ) )
+		std::string timeStr;
+		// if the file is inside the sequence
+		if( isIn( iter->filename(), time, timeStr ) )
 		{
 			// create a big list of all times in our sequence
+			allTimesStr.push_back( timeStr );
 			allTimes.push_back( time );
 		}
 	}
@@ -597,6 +600,8 @@ bool Sequence::initFromDetection( const boost::filesystem::path& directory, cons
 	allTimes.sort();
 
 	_step = extractStep( allTimes );
+	_padding = extractPadding( allTimesStr );
+	_strictPadding = extractIsStrictPadding( allTimesStr, _padding );
 
 	_firstTime = allTimes.front();
 	_lastTime  = allTimes.back();

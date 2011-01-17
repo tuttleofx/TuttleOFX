@@ -164,7 +164,7 @@ public:
 	 * @param[out] time: the time extract from the filename (only if contained in the sequence)
 	 * @return if the filename is contained inside the sequence
 	 */
-	bool isIn( const std::string& filename, Time& time );
+	bool isIn( const std::string& filename, Time& time, std::string& timeStr );
 
 	static EPattern checkPattern( const std::string& pattern );
 
@@ -232,7 +232,7 @@ inline bool Sequence::initFromDetection( const boost::filesystem::path& seqPath,
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
 
-	return this->initFromDetection( dir, seqPath.filename() );
+	return this->initFromDetection( dir, seqPath.filename(), accept );
 }
 
 inline void Sequence::clear()
