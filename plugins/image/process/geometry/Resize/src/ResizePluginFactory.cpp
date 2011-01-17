@@ -59,10 +59,10 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );
 	size->setDefault( 720, 576 );
 	size->setLabel( "Size" );
-
-	OFX::Double2DParamDescriptor* scale = desc.defineDouble2DParam( kParamScale );
-	scale->setDefault( 1.0, 1.0 );
-	scale->setLabel( "Scale" );
+//
+//	OFX::Double2DParamDescriptor* scale = desc.defineDouble2DParam( kParamScale );
+//	scale->setDefault( 1.0, 1.0 );
+//	scale->setLabel( "Scale" );
 
 }
 

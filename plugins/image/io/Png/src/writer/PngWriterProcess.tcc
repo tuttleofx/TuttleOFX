@@ -30,6 +30,14 @@ PngWriterProcess<View>::PngWriterProcess( PngWriterPlugin& instance )
 	this->setNoMultiThreading();
 }
 
+template<class View>
+void PngWriterProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	ImageGilFilterProcessor<View>::setup( args );
+	
+	_params = _plugin.getProcessParams( args.time );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
@@ -41,17 +49,21 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 	using namespace boost::gil;
 
-	PngWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
+	View srcView = this->_srcView;
+	if( _params._flip )
+	{
+		srcView = flipped_up_down_view( srcView );
+	}
 	
 	try
 	{
-		switch( params._bitDepth )
+		switch( _params._bitDepth )
 		{
 			case 8:
-				writeImage<bits8>( this->_srcView, params._filepath );
+				writeImage<bits8>( srcView );
 				break;
 			case 16:
-				writeImage<bits16>( this->_srcView, params._filepath );
+				writeImage<bits16>( srcView );
 				break;
 			default:
 				BOOST_THROW_EXCEPTION( exception::ImageFormat()
@@ -61,7 +73,7 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	}
 	catch( exception::Common& e )
 	{
-		e << exception::filename( params._filepath );
+		e << exception::filename( _params._filepath );
 		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}
@@ -80,23 +92,22 @@ void PngWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
  */
 template<class View>
 template<class Bits>
-void PngWriterProcess<View>::writeImage( View& src, const std::string& filepath )
+void PngWriterProcess<View>::writeImage( View& src )
 {
 	using namespace boost::gil;
-	PngWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 
-	switch( params._components )
+	switch( _params._components )
 	{
 		case eParamComponentsRGBA:
 		{
 			typedef pixel<Bits, layout<typename color_space_type<View>::type> > OutPixelType;
-			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
+			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
 			break;
 		}
 		case eParamComponentsRGB:
 		{
 			typedef pixel<Bits, rgb_layout_t> OutPixelType;
-			png_write_view( filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ) );
+			png_write_view( _params._filepath, color_converted_view<OutPixelType>( clamp_view( src ) ) );
 			break;
 		}
 	}

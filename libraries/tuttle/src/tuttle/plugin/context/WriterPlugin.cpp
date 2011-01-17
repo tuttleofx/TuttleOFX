@@ -14,24 +14,26 @@ WriterPlugin::WriterPlugin( OfxImageEffectHandle handle )
 {
 	_clipSrc             = fetchClip( kOfxImageEffectSimpleSourceClipName );
 	_clipDst             = fetchClip( kOfxImageEffectOutputClipName );
-	_paramFilepath       = fetchStringParam( kWriterParamFilename );
-	_paramRenderButton   = fetchPushButtonParam( kWriterParamRender );
-	_paramRenderAlways   = fetchBooleanParam( kWriterParamRenderAlways );
-	_paramBitDepth       = fetchChoiceParam( kWriterParamBitDepth );
-	_paramForceNewRender = fetchIntParam( kWriterParamForceNewRender );
+	_paramFilepath       = fetchStringParam( kParamWriterFilename );
+	_paramRenderButton   = fetchPushButtonParam( kParamWriterRender );
+	_paramRenderAlways   = fetchBooleanParam( kParamWriterRenderAlways );
+	_paramBitDepth       = fetchChoiceParam( kParamWriterBitDepth );
+	_paramForceNewRender = fetchIntParam( kParamWriterForceNewRender );
+	_paramFlip           = fetchBooleanParam( kParamWriterFlip );
 	_isSequence          = _filePattern.initFromDetection( _paramFilepath->getValue() );
 }
 
 WriterPlugin::~WriterPlugin()
-{}
+{
+}
 
 void WriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kWriterParamFilename )
+	if( paramName == kParamWriterFilename )
 	{
 		_isSequence = _filePattern.initFromDetection( _paramFilepath->getValue() );
 	}
-	else if( paramName == kWriterParamRender )
+	else if( paramName == kParamWriterRender )
 	{
 		_oneRender       = true;
 		_oneRenderAtTime = args.time;

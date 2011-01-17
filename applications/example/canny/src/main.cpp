@@ -89,8 +89,8 @@ int main( int argc, char** argv )
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
 		*/
 
-		bitdepth1.getParam( "outputBitDepth" ).set( 3 );
-		bitdepth2.getParam( "outputBitDepth" ).set( 1 );
+		bitdepth1.getParam( "outputBitDepth" ).set( "float" );
+		bitdepth2.getParam( "outputBitDepth" ).set( "byte" );
 
 		blur1.getParam( "border" ).set( "Padded" );
 		blur1.getParam( "size" ).set( 1.0, 0.0 );

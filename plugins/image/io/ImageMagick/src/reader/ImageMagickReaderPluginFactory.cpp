@@ -2,10 +2,7 @@
 #include "ImageMagickReaderDefinitions.hpp"
 #include "ImageMagickReaderPlugin.hpp"
 
-#include <tuttle/plugin/exceptions.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -50,40 +47,12 @@ void ImageMagickReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
-	assert( dstClip );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kReaderParamFilename );
-	assert( filename );
-	filename->setLabel( "Filename" );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	desc.addClipPreferencesSlaveParam( *filename );
-
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kReaderParamExplicitConversion );
-	explicitConversion->setLabel( "Explicit conversion" );
-	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
-	explicitConversion->appendOption( kTuttlePluginBitDepth8 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth16 );
-	explicitConversion->appendOption( kTuttlePluginBitDepth32f );
-	explicitConversion->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	explicitConversion->setAnimates( false );
-	desc.addClipPreferencesSlaveParam( *explicitConversion );
-
-	if( OFX::getImageEffectHostDescription()->supportsMultipleClipDepths )
-	{
-		explicitConversion->setDefault( 0 );
-	}
-	else
-	{
-		explicitConversion->setIsSecret( true );
-		explicitConversion->setDefault( static_cast<int>( OFX::getImageEffectHostDescription()->getPixelDepth() ) );
-	}
+	describeReaderParamsInContext( desc, context );
 }
 
 /**

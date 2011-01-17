@@ -12,8 +12,8 @@ namespace writer {
 JpegWriterPlugin::JpegWriterPlugin( OfxImageEffectHandle handle )
 	: WriterPlugin( handle )
 {
-	_premult = fetchBooleanParam( kParamPremult );
-	_quality = fetchIntParam( kParamQuality );
+	_paramPremult = fetchBooleanParam( kParamPremult );
+	_paramQuality = fetchIntParam( kParamQuality );
 }
 
 JpegWriterProcessParams JpegWriterPlugin::getProcessParams( const OfxTime time )
@@ -21,8 +21,9 @@ JpegWriterProcessParams JpegWriterPlugin::getProcessParams( const OfxTime time )
 	JpegWriterProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
-	params._quality  = this->_quality->getValue();
-	params._premult  = this->_premult->getValue();
+	params._quality  = this->_paramQuality->getValue();
+	params._premult  = this->_paramPremult->getValue();
+	params._flip     = this->_paramFlip->getValue();
 	return params;
 }
 

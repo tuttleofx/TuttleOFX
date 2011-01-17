@@ -876,10 +876,38 @@ static PropertyDescription gDouble3DParamProps[] =
 	PropertyDescription( kOfxParamPropDimensionLabel,       OFX::eString, 3, eDescDefault, "x", "y", "z", eDescFinished ),
 };
 
+/** @brief properties for a group param */
+static PropertyDescription gGroupParamProps[] =
+{
+	PropertyDescription( kOfxParamPropGroupOpen,            OFX::eInt, 2, eDescFinished ),
+};
+
 /** @brief properties for a page param */
 static PropertyDescription gPageParamProps[] =
 {
 	PropertyDescription( kOfxParamPropPageChild,            OFX::eString, -1, eDescFinished ),
+};
+
+/** @brief properties for a parametric param */
+static PropertyDescription gParametricParamProps[] =
+{
+	PropertyDescription( kOfxParamPropAnimates,                     OFX::eInt,     1, eDescDefault, 1, eDescFinished ),
+	PropertyDescription( kOfxParamPropCanUndo,                      OFX::eInt,     1, eDescDefault, 1, eDescFinished ),
+	PropertyDescription( kOfxParamPropParametricDimension,          OFX::eInt,     1, eDescDefault, 1, eDescFinished ),
+	PropertyDescription( kOfxParamPropParametricUIColour,           OFX::eDouble, -1, eDescFinished ),
+	PropertyDescription( kOfxParamPropParametricInteractBackground, OFX::ePointer, 1, eDescDefault, ( void* )( 0 ), eDescFinished ),
+	PropertyDescription( kOfxParamPropParametricRange,              OFX::eDouble,  2, eDescDefault, 0.0, 1.0, eDescFinished ),
+};
+
+/** @brief properties for a camera param */
+static PropertyDescription gCameraParamProps[] =
+{
+	PropertyDescription( kOfxPropType,                             OFX::eString, 1, eDescDefault, "NukeCamera", eDescFinished ),
+	PropertyDescription( kOfxPropName,                           OFX::eString, 1, eDescFinished ),
+	PropertyDescription( kOfxPropLabel,                          OFX::eString, 1,  eDescFinished ),
+	PropertyDescription( kOfxPropShortLabel,                     OFX::eString, 1,  eDescFinished ),
+	PropertyDescription( kOfxPropLongLabel,                      OFX::eString, 1, eDescFinished ),
+	PropertyDescription( kOfxImageClipPropOptional,              OFX::eInt, 1, eDescDefault, 0, eDescFinished ),
 };
 
 /** @brief Property set for 1D ints */
@@ -990,12 +1018,24 @@ static PropertySetDescription gPushButtonParamPropSet( "PushButton parameter",
 /** @brief Property set for push button params */
 static PropertySetDescription gGroupParamPropSet( "Group Parameter",
                                                   mPropDescriptionArg( gBasicParamProps ),
+                                                  mPropDescriptionArg( gGroupParamProps ),
                                                   NULLPTR );
 
 /** @brief Property set for push button params */
-static PropertySetDescription gPageParamPropSet( "Group Parameter",
+static PropertySetDescription gPageParamPropSet( "Page Parameter",
                                                  mPropDescriptionArg( gBasicParamProps ),
                                                  mPropDescriptionArg( gPageParamProps ),
+                                                 NULLPTR );
+
+static PropertySetDescription gParametricParamPropSet( "Parametric Parameter",
+                                                 mPropDescriptionArg( gBasicParamProps ),
+                                                 mPropDescriptionArg( gInteractOverideParamProps ),
+                                                 mPropDescriptionArg( gValueHolderParamProps ),
+                                                 mPropDescriptionArg( gParametricParamProps ),
+                                                 NULLPTR );
+
+static PropertySetDescription gCameraParamPropSet( "Camera Parameter",
+                                                 mPropDescriptionArg( gCameraParamProps ),
                                                  NULLPTR );
 
 #endif
@@ -1164,7 +1204,14 @@ void validateParameterProperties( ParamTypeEnum     paramType,
 		case ePushButtonParam:
 			gPushButtonParamPropSet.validate( paramProps, checkDefaults );
 			break;
-		default:
+		case eParametricParam:
+			gParametricParamPropSet.validate( paramProps, checkDefaults );
+			break;
+		case eCameraParam:
+			gCameraParamPropSet.validate( paramProps, checkDefaults );
+			break;
+		case eDummyParam:
+//		default:
 			break;
 	}
 	#endif

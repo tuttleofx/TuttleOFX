@@ -19,29 +19,68 @@ namespace merge {
 MergePlugin::MergePlugin( OfxImageEffectHandle handle )
 	: OFX::ImageEffect( handle )
 {
-	_clipSrcA      = fetchClip( kMergeSourceA );
-	_clipSrcB      = fetchClip( kMergeSourceB );
+	_clipSrcA      = fetchClip( kParamSourceA );
+	_clipSrcB      = fetchClip( kParamSourceB );
 	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
 
-	_paramMerge = fetchChoiceParam( kMergeFunction );
+	_paramMerge = fetchChoiceParam( kParamFunction );
+	_paramOffsetA = fetchInt2DParam( kParamOffsetA );
+	_paramOffsetB = fetchInt2DParam( kParamOffsetB );
+	_paramRod = fetchChoiceParam( kParamRod );
 }
 
-void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
+MergeProcessParams<MergePlugin::Scalar> MergePlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
-	if( paramName == kMergeHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kMergeHelpString );
-	}
+	MergeProcessParams<Scalar> params;
+
+	params._rod = static_cast<EParamRod>( _paramRod->getValue() );
+
+	OfxPointI offsetA = _paramOffsetA->getValue();
+	params._offsetA.x = offsetA.x / renderScale.x;
+	params._offsetA.y = offsetA.y / renderScale.y;
+
+	OfxPointI offsetB = _paramOffsetB->getValue();
+	params._offsetB.x = offsetB.x / renderScale.x;
+	params._offsetB.y = offsetB.y / renderScale.y;
+
+	return params;
 }
+
+//void MergePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
+//{
+//}
 
 bool MergePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	// Intersection of A & B
-	rod = rectanglesIntersection( _clipSrcA->getCanonicalRod( args.time ),
-	                              _clipSrcB->getCanonicalRod( args.time ) );
-	return true;
+	MergeProcessParams<Scalar> params = getProcessParams( args.renderScale );
+
+	OfxRectD srcRodA = translateRegion( _clipSrcA->getCanonicalRod( args.time ), params._offsetA );
+	OfxRectD srcRodB = translateRegion( _clipSrcB->getCanonicalRod( args.time ), params._offsetB );
+	
+	switch( params._rod )
+	{
+		case eParamRodIntersect:
+		{
+			rod = rectanglesIntersection( srcRodA, srcRodB );
+			return true;
+		}
+		case eParamRodUnion:
+		{
+			rod = rectanglesBoundingBox( srcRodA, srcRodB );
+			return true;
+		}
+		case eParamRodA:
+		{
+			rod = srcRodA;
+			return true;
+		}
+		case eParamRodB:
+		{
+			rod = srcRodB;
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -84,7 +123,6 @@ void MergePlugin::render( const OFX::RenderArguments &args )
 				}
 			}
 		}
-		/*
 		case OFX::ePixelComponentRGB:
 		{
 			switch( bitDepth )
@@ -112,7 +150,6 @@ void MergePlugin::render( const OFX::RenderArguments &args )
 				}
 			}
 		}
-		*/
 		case OFX::ePixelComponentAlpha:
 		{
 			switch( bitDepth )
@@ -140,7 +177,6 @@ void MergePlugin::render( const OFX::RenderArguments &args )
 				}
 			}
 		}
-		case OFX::ePixelComponentRGB:
 		case OFX::ePixelComponentCustom:
 		case OFX::ePixelComponentNone:
 		{

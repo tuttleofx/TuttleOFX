@@ -48,6 +48,7 @@ DPXWriterProcessParams DPXWriterPlugin::getProcessParams( const OfxTime time )
 				<< exception::user() + "Incorrect bit depth." );
 			break;
 	}
+	params._flip = _paramFlip->getValue();
 	return params;
 }
 
@@ -84,16 +85,7 @@ void DPXWriterPlugin::render( const OFX::RenderArguments& args )
 
 void DPXWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kDPXWriterHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kDPXWriterHelpString );
-	}
-	else
-	{
-		WriterPlugin::changedParam( args, paramName );
-	}
+	WriterPlugin::changedParam( args, paramName );
 }
 
 }

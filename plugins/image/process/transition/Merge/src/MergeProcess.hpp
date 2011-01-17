@@ -25,8 +25,14 @@ namespace merge {
 template<class View, class Functor>
 class MergeProcess : public ImageGilProcessor<View>
 {
+public:
+	typedef typename View::value_type Pixel;
+	
 protected:
 	MergePlugin& _plugin; ///< Rendering plugin
+
+	MergeProcessParams<MergePlugin::Scalar> _params;
+
 	View _srcViewA; ///< Source view A
 	View _srcViewB; ///< Source view B
 	boost::scoped_ptr<OFX::Image> _srcA;

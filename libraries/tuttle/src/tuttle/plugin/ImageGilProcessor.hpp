@@ -70,7 +70,7 @@ public:
 		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-		if( _dst->getRowBytes() <= 0 )
+		if( _dst->getRowBytes() == 0 )
 			BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		//		_dstPixelRod = _dst->getRegionOfDefinition(); // bug in nuke, returns bounds
 		_dstPixelRod       = _clipDst->getPixelRod( args.time, args.renderScale );

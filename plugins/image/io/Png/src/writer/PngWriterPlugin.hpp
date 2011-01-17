@@ -14,6 +14,7 @@ struct PngWriterProcessParams
 	std::string _filepath;        ///< filepath
 	EParamComponents _components; ///< output components
 	int _bitDepth;                ///< Output bit depth
+	bool _flip;
 };
 
 /**

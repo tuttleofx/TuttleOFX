@@ -14,6 +14,7 @@ struct JpegWriterProcessParams
 	bool _premult;              ///< Premultiply by alpha or directly use RGB channels
 	int _bitDepth;              ///< Output bit depth
 	int _quality;
+	bool _flip;
 };
 
 /**
@@ -29,8 +30,8 @@ public:
 	void               render( const OFX::RenderArguments& args );
 
 public:
-	OFX::BooleanParam* _premult; ///< premult output by alpha
-	OFX::IntParam* _quality; ///< quality / compression for jpeg
+	OFX::BooleanParam* _paramPremult; ///< premult output by alpha
+	OFX::IntParam* _paramQuality; ///< quality / compression for jpeg
 };
 
 }

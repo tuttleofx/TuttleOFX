@@ -27,6 +27,8 @@ RawReaderProcessParams RawReaderPlugin::getProcessParams( const OfxTime time )
 
 	params._filepath  = getAbsoluteFilenameAt( time );
 	params._filtering = static_cast<EFiltering>( _paramFiltering->getValue() );
+	params._flip      = _paramFlip->getValue();
+
 	return params;
 }
 
@@ -127,20 +129,14 @@ void RawReaderPlugin::updateInfos()
 
 void RawReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kRawReaderHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kRawReaderHelpString );
-	}
-	//	else if( paramName == kRawReaderUpdateInfosButton )
-	//	{
-	//		updateInfos();
-	//	}
-	else
-	{
-		ReaderPlugin::changedParam( args, paramName );
-	}
+//	else if( paramName == kRawReaderUpdateInfosButton )
+//	{
+//		updateInfos();
+//	}
+//	else
+//	{
+	ReaderPlugin::changedParam( args, paramName );
+//	}
 }
 
 bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
@@ -178,10 +174,10 @@ bool RawReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArgume
 void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
-	const std::string filename( getAbsoluteFirstFilename() );
+//	const std::string filename( getAbsoluteFirstFilename() );
 	switch( getExplicitConversion() )
 	{
-		case eReaderParamExplicitConversionAuto:
+		case eParamReaderExplicitConversionAuto:
 		{
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
 			int bitDepth      = 32;    //raw_read_precision( filename );
@@ -193,23 +189,26 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 				case 16:
 					bd = OFX::eBitDepthUShort;
 					break;
+				case 32:
+					bd = OFX::eBitDepthFloat;
+					break;
 				default:
 					BOOST_THROW_EXCEPTION( exception::ImageFormat() );
 			}
 			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 			break;
 		}
-		case eReaderParamExplicitConversionByte:
+		case eParamReaderExplicitConversionByte:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 			break;
 		}
-		case eReaderParamExplicitConversionShort:
+		case eParamReaderExplicitConversionShort:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 			break;
 		}
-		case eReaderParamExplicitConversionFloat:
+		case eParamReaderExplicitConversionFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 			break;

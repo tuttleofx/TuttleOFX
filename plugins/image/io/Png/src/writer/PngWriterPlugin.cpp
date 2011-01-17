@@ -35,6 +35,7 @@ PngWriterProcessParams PngWriterPlugin::getProcessParams( const OfxTime time )
 			BOOST_THROW_EXCEPTION( exception::Unsupported()
 				<< exception::user( "Incorrect bit depth." ) );
 	}
+	params._flip = _paramFlip->getValue();
 	return params;
 }
 

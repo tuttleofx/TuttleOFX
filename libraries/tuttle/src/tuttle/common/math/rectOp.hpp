@@ -92,14 +92,25 @@ inline bool pointInRect( const Point& p, const Rect& rec )
 		   p.y >= rec.y1 && p.y <= rec.y2;
 }
 
-inline OfxRectI translateRegion( const OfxRectI& windowRoW, const OfxRectI& dependingTo )
+template<class Rect>
+inline Rect translateRegion( const Rect& windowRoW, const Rect& dependingTo )
 {
-	OfxRectI windowOutput = windowRoW;
-
+	Rect windowOutput = windowRoW;
 	windowOutput.x1 -= dependingTo.x1; // to output clip coordinates
 	windowOutput.y1 -= dependingTo.y1;
 	windowOutput.x2 -= dependingTo.x1;
 	windowOutput.y2 -= dependingTo.y1;
+	return windowOutput;
+}
+
+template<class Rect, class Point>
+inline Rect translateRegion( const Rect& windowRoW, const Point& move )
+{
+	Rect windowOutput = windowRoW;
+	windowOutput.x1 += move.x;
+	windowOutput.y1 += move.y;
+	windowOutput.x2 += move.x;
+	windowOutput.y2 += move.y;
 	return windowOutput;
 }
 

@@ -25,6 +25,8 @@ DPXReaderProcessParams DPXReaderPlugin::getProcessParams( const OfxTime time )
 	DPXReaderProcessParams params;
 
 	params._filepath = getAbsoluteFilenameAt( time );
+	params._flip = _paramFlip->getValue();
+
 	return params;
 }
 
@@ -66,7 +68,7 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 
 	switch( getExplicitConversion() )
 	{
-		case eReaderParamExplicitConversionAuto:
+		case eParamReaderExplicitConversionAuto:
 		{
 			DpxImage dpxImg;
 			dpxImg.readHeader( filename );
@@ -101,17 +103,17 @@ void DPXReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 			clipPreferences.setClipBitDepth( *_clipDst, bd );
 			break;
 		}
-		case eReaderParamExplicitConversionByte:
+		case eParamReaderExplicitConversionByte:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 			break;
 		}
-		case eReaderParamExplicitConversionShort:
+		case eParamReaderExplicitConversionShort:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
 			break;
 		}
-		case eReaderParamExplicitConversionFloat:
+		case eParamReaderExplicitConversionFloat:
 		{
 			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
 			break;

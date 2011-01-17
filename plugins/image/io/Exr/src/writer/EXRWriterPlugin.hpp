@@ -14,6 +14,7 @@ struct EXRWriterProcessParams
 	std::string _filepath;       ///< filepath
 	EParamBitDepth _bitDepth;        ///< Bit depth
 	ECompType _componentsType;   ///< Components type
+	bool _flip;
 };
 
 /**

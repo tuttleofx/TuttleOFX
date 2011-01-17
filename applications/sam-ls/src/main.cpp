@@ -45,6 +45,12 @@ int main( int argc, char** argv )
 				}
 				else
 				{
+					Sequence s;
+					s.initFromDetection( path, Sequence::ePatternFrame );
+					if( s.getNbFiles() )
+					{
+						TUTTLE_COUT( s );
+					}
 					//					cout << "* File: " << path << endl;
 				}
 			}
@@ -52,8 +58,12 @@ int main( int argc, char** argv )
 			{
 				try
 				{
-					Sequence s( path );
-					TUTTLE_COUT( s );
+					Sequence s;
+					s.initFromDetection( path );
+					if( s.getNbFiles() )
+					{
+						TUTTLE_COUT( s );
+					}
 				}
 				catch(... )
 				{

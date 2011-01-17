@@ -40,10 +40,12 @@ public:
 public:
 	EXRWriterProcess( EXRWriterPlugin& instance );
 
+	void setup( const OFX::RenderArguments& args );
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 protected:
 	EXRWriterPlugin&      _plugin;        ///< Rendering plugin
+	EXRWriterProcessParams _params;
 
 	template<class WPixel>
 	void writeImage( View& src, std::string& filepath, Imf::PixelType pixType );

@@ -22,6 +22,14 @@ DPXWriterProcess<View>::DPXWriterProcess( DPXWriterPlugin& instance )
 	this->setNoMultiThreading();
 }
 
+template<class View>
+void DPXWriterProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	using namespace boost::gil;
+	ImageGilProcessor<View>::setup( args );
+	_params = _plugin.getProcessParams( args.time );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
@@ -33,30 +41,37 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	// no tiles and no multithreading supported
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	BOOST_ASSERT( this->_srcPixelRod == this->_dstPixelRod );
-	DPXWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
-	
-	int packing                   = params._compressed == false;
+
+
+	View src = this->_srcView;
+	if( _params._flip )
+	{
+		src = flipped_up_down_view( this->_srcView );
+	}
+
+	int packing = ( _params._compressed == false );
+
 	try
 	{
-		switch( params._bitDepth )
+		switch( _params._bitDepth )
 		{
 			case 16:
 			{
-				switch( params._componentsType )
+				switch( _params._componentsType )
 				{
 					case 0:
 					{
-						writeImage<rgb16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
+						writeImage<rgb16_image_t>( src, _params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16, packing );
 						break;
 					}
 					case 1:
 					{
-						writeImage<rgba16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
+						writeImage<rgba16_image_t>( src, _params._filepath, 16, tuttle::io::DpxImage::eCompTypeR16G16B16A16, packing );
 						break;
 					}
 					case 2:
 					{
-						writeImage<abgr16_image_t>( this->_srcView, params._filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
+						writeImage<abgr16_image_t>( src, _params._filepath, 16, tuttle::io::DpxImage::eCompTypeA16B16G16R16, packing );
 						break;
 					}
 				}
@@ -64,7 +79,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 			case 12:
 			{
-				switch( params._componentsType )
+				switch( _params._componentsType )
 				{
 					case 0:
 						///@todo to get it working:
@@ -90,7 +105,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 			case 10:
 			{
-				switch( params._componentsType )
+				switch( _params._componentsType )
 				{
 					case 0:
 						//						writeImage<rgb10_packed_image_t>( src, filepath, 10, tuttle::io::DpxImage::eCompTypeR10G10B10, packing );
@@ -113,16 +128,16 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 			}
 			case 8:
 			{
-				switch( params._componentsType )
+				switch( _params._componentsType )
 				{
 					case 0:
-						writeImage<rgb8_image_t>( this->_srcView, params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8, packing );
+						writeImage<rgb8_image_t>( src, _params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8, packing );
 						break;
 					case 1:
-						writeImage<rgba8_image_t>( this->_srcView, params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8A8, packing );
+						writeImage<rgba8_image_t>( src, _params._filepath, 8, tuttle::io::DpxImage::eCompTypeR8G8B8A8, packing );
 						break;
 					case 2:
-						writeImage<abgr8_image_t>( this->_srcView, params._filepath, 8, tuttle::io::DpxImage::eCompTypeA8B8G8R8, packing );
+						writeImage<abgr8_image_t>( src, _params._filepath, 8, tuttle::io::DpxImage::eCompTypeA8B8G8R8, packing );
 						break;
 				}
 				break;
@@ -134,7 +149,7 @@ void DPXWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	}
 	catch( exception::Common& e )
 	{
-		e << exception::filename( params._filepath );
+		e << exception::filename( _params._filepath );
 		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
 		//		throw;
 	}
@@ -154,11 +169,10 @@ template<class View>
 template<class WImage>
 void DPXWriterProcess<View>::writeImage( View& src, const std::string& filepath, const int bitDepth, const tuttle::io::DpxImage::EDPX_CompType eCompType, const int packing )
 {
-	View flippedView = flipped_up_down_view( src );
 	WImage img( src.width(), src.height() );
 
 	typename WImage::view_t vw( view( img ) );
-	copy_and_convert_pixels( clamp_view( flippedView ), vw );
+	copy_and_convert_pixels( clamp_view( src ), vw );
 	boost::uint8_t* pData = (boost::uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 	// Little endian
 	_dpxHeader.setBigEndian( false );

@@ -147,7 +147,7 @@ Camera descriptor property sets are defined to have the following properties
         - \ref kOfxPropLongLabel - (read/write)
         - \ref kOfxImageClipPropOptional - (read/write)
 
-Instance property sets have all the descriptor properties (as read only) and the following properities...
+Instance property sets have all the descriptor properties (as read only) and the following properties...
         - \ref kOfxImageClipPropConnected - (read only)
 */
 typedef struct NukeOfxCameraSuiteV1 {

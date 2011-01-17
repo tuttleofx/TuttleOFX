@@ -25,6 +25,7 @@ class EXRReaderProcess : public ImageGilProcessor<View>
 protected:
 	typedef typename View::value_type Pixel;
 	EXRReaderPlugin&    _plugin;                        ///< Rendering plugin
+	EXRReaderProcessParams _params;
 	boost::scoped_ptr<Imf::InputFile>   _exrImage;      ///< Pointer to an exr image
 
 	template<class DView>

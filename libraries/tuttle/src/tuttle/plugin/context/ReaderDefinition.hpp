@@ -6,14 +6,15 @@
 namespace tuttle {
 namespace plugin {
 
-static const std::string kReaderParamFilename           = "filename";
-static const std::string kReaderParamExplicitConversion = "explicitConversion";
-enum EReaderParamExplicitConversion
+static const std::string kParamReaderFlip           = "flip";
+static const std::string kParamReaderFilename           = "filename";
+static const std::string kParamReaderExplicitConversion = "explicitConversion";
+enum EParamReaderExplicitConversion
 {
-	eReaderParamExplicitConversionAuto = 0,
-	eReaderParamExplicitConversionByte,
-	eReaderParamExplicitConversionShort,
-	eReaderParamExplicitConversionFloat
+	eParamReaderExplicitConversionAuto = 0,
+	eParamReaderExplicitConversionByte,
+	eParamReaderExplicitConversionShort,
+	eParamReaderExplicitConversionFloat
 };
 
 }

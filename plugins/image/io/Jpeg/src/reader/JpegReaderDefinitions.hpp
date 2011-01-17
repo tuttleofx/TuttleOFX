@@ -9,9 +9,6 @@ namespace plugin {
 namespace jpeg {
 namespace reader {
 
-static const std::string kJpegReaderHelpButton = "Help";
-static const std::string kJpegReaderHelpString = "<b>JPEG File reader</b> plugin is used to read jpeg files.  <br />";
-
 }
 }
 }

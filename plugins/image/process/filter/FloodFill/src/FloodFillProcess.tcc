@@ -40,11 +40,13 @@ void FloodFillProcess<View>::setup( const OFX::RenderArguments& args )
 			minmax,
 			*this );
 		
+		_isConstantImage = minmax.max[0] == minmax.min[0];
 		_lowerThres = (_params._lowerThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
 		_upperThres = (_params._upperThres * (minmax.max[0]-minmax.min[0])) + minmax.min[0];
 	}
 	else
 	{
+		_isConstantImage = false;
 		_lowerThres = _params._lowerThres;
 		_upperThres = _params._upperThres;
 	}
@@ -65,6 +67,9 @@ void FloodFillProcess<View>::multiThreadProcessImages( const OfxRectI& procWindo
 	OfxRectI procWindowRoWCrop = rectanglesIntersection( procWindowRoW, srcRodCrop );
 
 	fill_pixels( this->_dstView, procWindowOutput, get_black<Pixel>() );
+
+	if( _isConstantImage )
+		return;
 
 	switch( _params._method )
 	{

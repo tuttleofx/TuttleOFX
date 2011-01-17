@@ -34,7 +34,9 @@ template<class View>
 DPXReaderProcess<View>::DPXReaderProcess( DPXReaderPlugin& instance )
 	: ImageGilProcessor<View>( instance )
 	, _plugin( instance )
-{}
+{
+	this->setNoMultiThreading();
+}
 
 template<class View>
 DPXReaderProcess<View>::~DPXReaderProcess()
@@ -45,8 +47,8 @@ void DPXReaderProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
 	ImageGilProcessor<View>::setup( args );
-	DPXReaderProcessParams params = _plugin.getProcessParams( args.time );
-	_dpxImage.read( params._filepath, true );
+	_params = _plugin.getProcessParams( args.time );
+	_dpxImage.read( _params._filepath, true );
 }
 
 /**
@@ -67,6 +69,11 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 	using namespace mpl;
 	using namespace boost::gil;
 
+	if( _params._flip )
+	{
+		dst = flipped_up_down_view( dst );
+	}
+
 	switch( _dpxImage.componentsType() )
 	{
 		case tuttle::io::DpxImage::eCompTypeR8G8B8:
@@ -75,7 +82,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			rgb8c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 			                                     (const rgb8_pixel_t*)( _dpxImage.data() ),
 			                                     _dpxImage.width() * 3 );
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			copy_and_convert_pixels( src, dst );
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeR8G8B8A8:
@@ -85,7 +92,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			                                      (const rgba8_pixel_t*)( _dpxImage.data() ),
 			                                      _dpxImage.width() * 4 );
 
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			copy_and_convert_pixels( src, dst );
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeA8B8G8R8:
@@ -95,7 +102,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			                                      (const abgr8_pixel_t*)( _dpxImage.data() ),
 			                                      _dpxImage.width() * 4 );
 
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			copy_and_convert_pixels( src, dst );
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeR10G10B10:
@@ -110,7 +117,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					rgb16_image_t img( dst.width(), dst.height() );
 					rgb16_view_t vw( view( img ) );
 					bitStreamToView<rgb10_stream_ptr_t>( vw, 3, 10 );
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 				default:
@@ -135,7 +142,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 							++dit;
 						}
 					}
-					copy_and_convert_pixels( vw16, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw16, dst );
 					break;
 				}
 			}
@@ -154,7 +161,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
 					bitStreamToView<rgba10_stream_ptr_t>( vw, 4, 10 );
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 				default:
@@ -177,7 +184,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
 					bitStreamToView<abgr10_stream_ptr_t>( vw, 4, 10 );
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 				case 1:
@@ -202,7 +209,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					rgb16_image_t img( dst.width(), dst.height() );
 					rgb16_view_t vw( view( img ) );
 					bitStreamToView<rgb12_stream_ptr_t>( vw, 3, 12 );
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 				default:
@@ -227,7 +234,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 							++dit;
 						}
 					}
-					copy_and_convert_pixels( vw16, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw16, dst );
 					break;
 				}
 			}
@@ -245,7 +252,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
 					bitStreamToView<rgba12_stream_ptr_t>( vw, 4, 12 );
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 				default:
@@ -254,7 +261,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					                                            ( rgba12_packed_pixel_t* )( _dpxImage.data() ),
 					                                            _dpxImage.width() * sizeof( uint64_t ) );
 
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 			}
@@ -272,7 +279,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					rgba16_image_t img( dst.width(), dst.height() );
 					rgba16_view_t vw( view( img ) );
 					bitStreamToView<abgr12_stream_ptr_t>( vw, 4, 12 );
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 				default:
@@ -281,7 +288,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 					                                            ( abgr12_packed_pixel_t* )( _dpxImage.data() ),
 					                                            _dpxImage.width() * sizeof( uint64_t ) );
 
-					copy_and_convert_pixels( vw, flipped_up_down_view( dst ) );
+					copy_and_convert_pixels( vw, dst );
 					break;
 				}
 			}
@@ -293,7 +300,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			rgb16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 			                                      (const rgb16_pixel_t*)( _dpxImage.data() ),
 			                                      _dpxImage.width() * 6 );
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			copy_and_convert_pixels( src, dst );
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeR16G16B16A16:
@@ -303,7 +310,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			                                       (const rgba16_pixel_t*)( _dpxImage.data() ),
 			                                       _dpxImage.width() * sizeof( uint64_t ) );
 
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			copy_and_convert_pixels( src, dst );
 			break;
 		}
 		case tuttle::io::DpxImage::eCompTypeA16B16G16R16:
@@ -313,7 +320,7 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			                                       (const abgr16_pixel_t*)( _dpxImage.data() ),
 			                                       _dpxImage.width() * sizeof( uint64_t ) );
 
-			copy_and_convert_pixels( flipped_up_down_view( src ), dst );
+			copy_and_convert_pixels( src, dst );
 			break;
 		}
 		default:

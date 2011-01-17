@@ -612,6 +612,8 @@ protected:
 	/** @brief hidden constructor */
 	GroupParamDescriptor( const std::string& name, OfxPropertySetHandle props );
 
+	void setOpen( const bool open = true );
+	
 	// so it can make one
 	friend class ParamSetDescriptor;
 
@@ -676,6 +678,7 @@ protected:
 
 	OfxParamHandle _ofxParamHandle;
 	ParamSetDescriptor* _paramSet;
+	std::auto_ptr<ParamInteractWrap> _interact;
 	
 	// so it can make one
 	friend class ParamSetDescriptor;
@@ -693,6 +696,13 @@ public:
 	void setUIColour( const int id, const OfxRGBColourD color );
 
 	void addControlPoint( const int id, const OfxTime time, const double x, const double y, const bool addKey );
+
+	void setIdentity( const int id );
+
+	void setIdentity();
+
+	void setInteractDescriptor( ParamInteractWrap* desc );
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////

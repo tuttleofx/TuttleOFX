@@ -30,7 +30,7 @@ void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 	this->_srcMod.reset( _clipSrcRe->fetchImage( args.time ) );
 	if( !this->_srcMod.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( this->_srcMod->getRowBytes() <= 0 )
+	if( this->_srcMod->getRowBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	this->_srcViewRe = this->getView( this->_srcMod.get(), _clipSrcRe->getPixelRod( args.time ) );
 
@@ -43,7 +43,7 @@ void IfftProcess<View>::setup( const OFX::RenderArguments& args )
 	this->_srcPhase.reset( _clipSrcIm->fetchImage( args.time ) );
 	if( !this->_srcPhase.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	if( this->_srcPhase->getRowBytes() <= 0 )
+	if( this->_srcPhase->getRowBytes() == 0 )
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	this->_srcViewIm = this->getView( this->_srcPhase.get(), _clipSrcIm->getPixelRod( args.time ) );
 

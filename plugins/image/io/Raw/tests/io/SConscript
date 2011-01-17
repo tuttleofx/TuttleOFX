@@ -1,0 +1,9 @@
+Import( 'project' )
+Import( 'libs' )
+
+libraries = [libs.tuttleHost,
+             libs.boost_unittestframework]
+
+testEnv = project.createEnv( libraries )
+testEnv.UnitTest( target=project.getName(3), source=project.scanFiles( ['.'] ) )
+

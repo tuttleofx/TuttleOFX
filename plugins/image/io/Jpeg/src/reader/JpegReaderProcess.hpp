@@ -20,12 +20,15 @@ class JpegReaderProcess : public ImageGilProcessor<View>
 protected:
 	JpegReaderPlugin&    _plugin;        ///< Rendering plugin
 
+	JpegReaderProcessParams _params;
+	
 public:
 	JpegReaderProcess( JpegReaderPlugin& instance );
 
+	void setup( const OFX::RenderArguments& args );
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	View& readImage( View& dst, const std::string& filepath );
+	View& readImage( View& dst );
 };
 
 }

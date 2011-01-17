@@ -18,9 +18,6 @@ const static std::string kParamColorSelectionHue = "hue";
 const static std::string kParamColorSelectionSaturation = "saturation";
 const static std::string kParamColorSelectionLightness = "lightness";
 
-const static std::string kParamHelpButton = "Help";
-const static std::string kParamHelpString = "<b>HistogramKeyer</b> plugin is used to ???.  <br />";
-
 
 }
 }

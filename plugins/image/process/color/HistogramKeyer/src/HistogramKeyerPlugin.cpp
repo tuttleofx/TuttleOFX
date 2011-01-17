@@ -13,7 +13,11 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
 //    _clipSrcMatte = fetchClip( kClipMatte );
-//	_paramColorSelection = fetchParametricParam( kParamColorSelection );
+
+	if( OFX::getImageEffectHostDescription()->supportsParametricParameter )
+	{
+//		_paramColorSelection = fetchParametricParam( kParamColorSelection );
+	}
 }
 
 HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
@@ -34,12 +38,6 @@ HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::
 
 void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-    if( paramName == kParamHelpButton )
-    {
-        sendMessage( OFX::Message::eMessageMessage,
-                     "", // No XML resources
-                     kParamHelpString );
-    }
 }
 
 //void HistogramKeyerPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )

@@ -56,13 +56,13 @@ void OpenImageIOReaderPluginFactory::describeInContext( OFX::ImageEffectDescript
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kReaderParamFilename );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamReaderFilename );
 	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	desc.addClipPreferencesSlaveParam( *filename );
 
-	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kReaderParamExplicitConversion );
+	OFX::ChoiceParamDescriptor* explicitConversion = desc.defineChoiceParam( kParamReaderExplicitConversion );
 	explicitConversion->setLabel( "Explicit conversion" );
 	explicitConversion->appendOption( kTuttlePluginBitDepthAuto );
 	explicitConversion->appendOption( kTuttlePluginBitDepth8 );

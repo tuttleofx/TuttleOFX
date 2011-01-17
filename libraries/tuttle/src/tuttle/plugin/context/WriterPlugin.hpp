@@ -89,14 +89,15 @@ public:
 public:
 	/// @group Attributes
 	/// @{
+	OFX::Clip* _clipSrc;       ///< Input image clip
+	OFX::Clip* _clipDst;       ///< Ouput image clip
+
 	OFX::PushButtonParam* _paramRenderButton;     ///< Render push button
 	OFX::StringParam*     _paramFilepath;         ///< Target file path
 	OFX::BooleanParam*    _paramRenderAlways;     ///< Render always
 	OFX::ChoiceParam*     _paramBitDepth;         ///< Bit depth
 	OFX::IntParam*        _paramForceNewRender;   ///< Hack parameter, to force a new rendering
-
-	OFX::Clip* _clipSrc;       ///< Input image clip
-	OFX::Clip* _clipDst;       ///< Ouput image clip
+	OFX::BooleanParam*    _paramFlip;             ///< Vertically flip the image
 	/// @}
 };
 
