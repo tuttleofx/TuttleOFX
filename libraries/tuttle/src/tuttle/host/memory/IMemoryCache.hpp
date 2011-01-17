@@ -35,6 +35,7 @@ struct Key
 	double _time;
 	friend std::ostream& operator<<( std::ostream& os, const Key& v );
 };
+
 struct KeyHash : std::unary_function<Key, std::size_t>
 {
 	std::size_t operator()( const Key& p ) const

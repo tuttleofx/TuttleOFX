@@ -11,7 +11,6 @@
 #include <boost/graph/copy.hpp>
 #include <boost/graph/transpose_graph.hpp>
 #include <boost/graph/dominator_tree.hpp>
-#include <boost/graph/graphviz.hpp>
 #include <boost/foreach.hpp>
 #include <boost/exception/all.hpp>
 #include <boost/unordered_map.hpp>

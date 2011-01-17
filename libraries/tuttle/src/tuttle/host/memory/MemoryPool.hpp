@@ -5,6 +5,7 @@
 
 #include <boost/ptr_container/ptr_list.hpp>
 #include <boost/unordered_set.hpp>
+#include <boost/thread.hpp>
 
 #include <map>
 #include <list>
@@ -43,14 +44,15 @@ public:
 	void released( PoolData* );
 
 	std::size_t getUsedMemorySize() const;
+	std::size_t getAllocatedAndUnusedMemorySize() const;
 	std::size_t getAllocatedMemorySize() const;
 	std::size_t getMaxMemorySize() const;
 	std::size_t getAvailableMemorySize() const;
 	std::size_t getWastedMemorySize() const;
 
 	void clear( std::size_t size );
+	void clear();
 	void clearOne();
-	void clearAll();
 
 private:
 	typedef boost::unordered_set<PoolData*> DataList;
@@ -59,6 +61,7 @@ private:
 	DataList _dataUsed;
 	DataList _dataUnused;
 	std::size_t _memoryAuthorized;
+	mutable boost::mutex _mutex;
 };
 
 }

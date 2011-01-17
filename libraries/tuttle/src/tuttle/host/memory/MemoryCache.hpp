@@ -6,6 +6,7 @@
 
 //#include <boost/ptr_container/ptr_map.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/thread.hpp>
 //#include <map>
 
 namespace tuttle {
@@ -25,6 +26,8 @@ private:
 	typedef boost::unordered_map<Key, CACHE_ELEMENT, KeyHash> MAP;
 	//	typedef std::map<Key, CACHE_ELEMENT> MAP;
 	MAP _map;
+	mutable boost::mutex _mutexMap;  ///< Mutex for cache data map.
+
 	MAP::const_iterator getIteratorForValue( const CACHE_ELEMENT& ) const;
 	MAP::iterator       getIteratorForValue( const CACHE_ELEMENT& );
 
