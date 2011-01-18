@@ -29,6 +29,7 @@ BOOST_AUTO_TEST_CASE( imageeffectplugin_serialization )
 	using namespace tuttle::host::ofx;
 	using namespace tuttle::host::ofx::imageEffect;
 
+	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 	Core::instance().preload();
 	OfxhImageEffectPlugin* plugin = Core::instance().getImageEffectPluginById( "fr.tuttle.invert" );
 

@@ -18,6 +18,7 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		using namespace std;
 		using namespace tuttle::host;
 
+		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 		Core::instance().preload();
 //		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
 

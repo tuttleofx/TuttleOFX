@@ -18,6 +18,7 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 	using namespace std;
 	using namespace tuttle::host;
 
+	Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 	tuttle::host::Core::instance().preload();
 
 	// get some plugins examples
