@@ -22,6 +22,8 @@ public:
 	MemoryCache() {}
 	~MemoryCache() {}
 
+	MemoryCache& operator=( const MemoryCache& cache );
+
 private:
 	typedef boost::unordered_map<Key, CACHE_ELEMENT, KeyHash> MAP;
 	//	typedef std::map<Key, CACHE_ELEMENT> MAP;

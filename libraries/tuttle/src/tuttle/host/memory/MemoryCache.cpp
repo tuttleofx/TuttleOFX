@@ -9,6 +9,16 @@ namespace tuttle {
 namespace host {
 namespace memory {
 
+MemoryCache& MemoryCache::operator=( const MemoryCache& cache )
+{
+	if( &cache == this )
+		return *this;
+	boost::mutex::scoped_lock lockerMap1( cache._mutexMap );
+	boost::mutex::scoped_lock lockerMap2( _mutexMap );
+	_map = cache._map;
+	return *this;
+}
+
 void MemoryCache::put( const std::string& identifier, const double time, CACHE_ELEMENT pData )
 {
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
