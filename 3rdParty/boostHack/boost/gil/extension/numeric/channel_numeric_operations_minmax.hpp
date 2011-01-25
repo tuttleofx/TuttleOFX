@@ -21,6 +21,7 @@ namespace boost { namespace gil {
 template <typename ChannelSrc, typename ChannelDst>
 struct channel_assign_min_t : public std::binary_function<ChannelSrc, ChannelDst, ChannelDst>
 {
+	GIL_FORCEINLINE
 	typename channel_traits<ChannelDst>::reference operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
 	                                                           typename channel_traits<ChannelDst>::reference ch2 ) const
 	{
@@ -35,6 +36,7 @@ struct channel_assign_min_t : public std::binary_function<ChannelSrc, ChannelDst
 template <typename ChannelSrc, typename ChannelDst>
 struct channel_assign_max_t : public std::binary_function<ChannelSrc, ChannelDst, ChannelDst>
 {
+	GIL_FORCEINLINE
 	typename channel_traits<ChannelDst>::reference operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
 	                                                           typename channel_traits<ChannelDst>::reference ch2 ) const
 	{

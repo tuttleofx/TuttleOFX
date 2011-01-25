@@ -23,6 +23,7 @@ namespace boost { namespace gil {
 template <typename PixelSrc, // models pixel concept
           typename PixelDst> // models pixel concept
 struct pixel_plus_assign_t {
+	GIL_FORCEINLINE
     PixelDst& operator()( const PixelSrc& p1,
                           PixelDst& p2 ) const {
         static_for_each( p1, p2,
@@ -37,6 +38,7 @@ struct pixel_plus_assign_t {
 template <typename PixelSrc, // models pixel concept
           typename PixelDst> // models pixel concept
 struct pixel_minus_assign_t {
+	GIL_FORCEINLINE
     PixelDst& operator()( const PixelSrc& p1,
                           PixelDst& p2 ) const {
         static_for_each( p1, p2,
@@ -51,6 +53,7 @@ struct pixel_minus_assign_t {
 template <typename Scalar, // models a scalar type
 	      typename PixelDst>  // models pixel concept
 struct pixel_multiplies_scalar_assign_t {
+	GIL_FORCEINLINE
     PixelDst& operator()( const Scalar& s,
 	                      PixelDst& p ) const {
         static_for_each( p, std::bind1st( channel_multiplies_scalar_assign_t<Scalar, typename channel_type<PixelDst>::type>(), s ) );
@@ -64,6 +67,7 @@ template <typename Scalar, // models a scalar type
 	      typename PixelDst>  // models pixel concept
 struct pixel_divides_scalar_assign_t
 {
+	GIL_FORCEINLINE
     PixelDst& operator()( const Scalar& s,
 	                      PixelDst& p ) const
 	{

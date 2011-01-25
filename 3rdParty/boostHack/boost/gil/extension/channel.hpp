@@ -1,6 +1,9 @@
 #ifndef _GIL_EXTENSION_CHANNEL_HPP_
 #define _GIL_EXTENSION_CHANNEL_HPP_
 
+#include <boost/gil/channel.hpp>
+#include <boost/gil/color_base_algorithm.hpp>
+
 namespace boost {
 namespace gil {
 
