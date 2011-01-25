@@ -12,9 +12,6 @@ namespace tuttle {
 namespace plugin {
 namespace sobel {
 
-namespace bgil = boost::gil;
-namespace bm = boost::math;
-
 /**
  * @brief Compute the direction from the (x, y) coordinates of the input vector.
  */
@@ -39,7 +36,7 @@ struct channel_gradientDirectionAbs_t
 	{
 		channel_gradientDirection_t<Channel>()(x, y, res);
 		if( res < 0 )
-			res += bm::constants::pi<typename bgil::channel_base_type<Channel>::type>();
+			res += boost::math::constants::pi<typename boost::gil::channel_base_type<Channel>::type>();
 	}
 };
 
@@ -52,7 +49,7 @@ struct channel_norm_t
 	GIL_FORCEINLINE
 	void operator()( const Channel& a, const Channel& b, Channel& res ) const
 	{
-		res = std::sqrt( bm::pow<2>(a) + bm::pow<2>(b) );
+		res = std::sqrt( boost::math::pow<2>(a) + boost::math::pow<2>(b) );
 	}
 };
 
