@@ -10,6 +10,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <boost/gil/gil_all.hpp>
 
@@ -44,7 +45,7 @@ public:
 	std::string getAbsoluteFilenameAt( const OfxTime time ) const
 	{
 		if( _isSequence )
-			return _filePattern.getAbsoluteFilenameAt( time );
+			return _filePattern.getAbsoluteFilenameAt( boost::numeric_cast<common::Sequence::Time>(time) );
 		else
 			return _paramFilepath->getValue();
 	}
