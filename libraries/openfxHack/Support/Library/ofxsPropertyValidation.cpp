@@ -366,6 +366,7 @@ static PropertyDescription gPluginDescriptorProps[] =
 	PropertyDescription( kOfxPropLabel,                      OFX::eString, 1, eDescFinished ),
 	PropertyDescription( kOfxPropShortLabel,                 OFX::eString, 1, eDescFinished ),
 	PropertyDescription( kOfxPropLongLabel,                  OFX::eString, 1, eDescFinished ),
+	PropertyDescription( kOfxPropPluginDescription,          OFX::eString, 1, eDescFinished ),
 	PropertyDescription( kOfxImageEffectPluginPropGrouping,  OFX::eString, 1, eDescFinished ),
 	PropertyDescription( kOfxPluginPropFilePath,             OFX::eString, 1, eDescFinished ),
 
