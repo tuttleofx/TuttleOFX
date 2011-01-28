@@ -473,7 +473,7 @@ void correlate_rows_auto(const SrcView& src, const Kernel& ker, const DstView& d
 ///correlate a 1D variable-size kernel along the rows of an image
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl = typename SrcView::point_t(0,0),
                     const convolve_boundary_option option = convolve_option_extend_zero )
 {
 	correlate_rows_imp<false,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
@@ -503,7 +503,7 @@ void correlate_cols_auto(const SrcView& src, const Kernel& ker, const DstView& d
 ///correlate a 1D variable-size kernel along the columns of an image
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl = typename SrcView::point_t(0,0),
                     const convolve_boundary_option option = convolve_option_extend_zero )
 {
 	correlate_cols_imp<false,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
