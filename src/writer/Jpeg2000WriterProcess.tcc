@@ -23,6 +23,14 @@ Jpeg2000WriterProcess<View>::~Jpeg2000WriterProcess()
 	_writer.close();
 }
 
+template<class View>
+void Jpeg2000WriterProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	ImageGilFilterProcessor<View>::setup( args );
+
+	_params = _plugin.getProcessParams( args.time );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
@@ -33,7 +41,6 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	using namespace boost::gil;
 	BOOST_ASSERT( procWindowRoW == this->_srcPixelRod );
 
-	_params = _plugin.getProcessParams( this->_renderArgs.time );
 	_writer.setCinemaMode( (OPJ_CINEMA_MODE)_params._cineProfil );
 	_writer.setLossless( _params._lossless );
 
@@ -42,6 +49,9 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 	{
 		srcView = flipped_up_down_view( srcView );
 	}
+
+	TUTTLE_COUT_VAR( this->_srcView.dimensions() );
+	TUTTLE_COUT_VAR( srcView.dimensions() );
 
 	switch(_params._bitDepth)
 	{
@@ -66,7 +76,9 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			rgb16_image_t img( srcView.dimensions() );
 			rgb16_view_t vw( view(img) );
 
-			copy_and_convert_pixels( clamp_view(srcView), flipped_up_down_view( vw ) );
+			TUTTLE_COUT_VAR( vw.dimensions() );
+
+			copy_and_convert_pixels( clamp_view(srcView), vw );
 
 			uint8_t* pixels = (uint8_t*)boost::gil::interleaved_view_get_raw_data( vw );
 

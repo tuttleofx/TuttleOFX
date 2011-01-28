@@ -33,7 +33,8 @@ Jpeg2000ReaderPlugin::~Jpeg2000ReaderPlugin()
 
 Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime time)
 {
-	if (varyOnTime() && ( time < getFirstTime() || time > getLastTime() ) )
+	if( varyOnTime() &&
+	    ( time < getFirstTime() || time > getLastTime() ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::BadIndex()
 			<< exception::user("Time value outside bounds.") );
@@ -41,6 +42,8 @@ Jpeg2000ReaderProcessParams Jpeg2000ReaderPlugin::getProcessParams(const OfxTime
 	Jpeg2000ReaderProcessParams params;
 
 	params._paramFilepath = getAbsoluteFilenameAt(time);
+	params._flip = _paramFlip->getValue();
+
 	return params;
 }
 

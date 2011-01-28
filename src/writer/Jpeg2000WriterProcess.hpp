@@ -37,7 +37,9 @@ class Jpeg2000WriterProcess : public ImageGilFilterProcessor<View>
 public:
     Jpeg2000WriterProcess( Jpeg2000WriterPlugin& instance );
     ~Jpeg2000WriterProcess();
-	
+
+	void setup( const OFX::RenderArguments& args );
+
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 protected :

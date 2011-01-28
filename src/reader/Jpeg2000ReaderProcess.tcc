@@ -20,6 +20,14 @@ Jpeg2000ReaderProcess<View>::~Jpeg2000ReaderProcess()
 	_plugin._reader.close();
 }
 
+template<class View>
+void Jpeg2000ReaderProcess<View>::setup( const OFX::RenderArguments& args )
+{
+	ImageGilProcessor<View>::setup( args );
+
+	_params = _plugin.getProcessParams( args.time );
+}
+
 /**
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
@@ -28,21 +36,27 @@ template<class View>
 void Jpeg2000ReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+
+	View dstView = this->_dstView;
+	if( _params._flip )
+	{
+		dstView = flipped_up_down_view( dstView );
+	}
 	switch(_plugin._reader.components())
 	{
 		case 1:
 		{
-			switchLayoutCopy<gray_layout_t>();
+			switchLayoutCopy<gray_layout_t>( dstView );
 			break;
 		}
 		case 3:
 		{
-			switchLayoutCopy<rgb_layout_t>();
+			switchLayoutCopy<rgb_layout_t>( dstView );
 			break;
 		}
 		case 4:
 		{
-			switchLayoutCopy<rgba_layout_t>();
+			switchLayoutCopy<rgba_layout_t>( dstView );
 			break;
 		}
 		default:
@@ -54,7 +68,7 @@ void Jpeg2000ReaderProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 
 template<class View>
 template<class Layout>
-void Jpeg2000ReaderProcess<View>::switchLayoutCopy()
+void Jpeg2000ReaderProcess<View>::switchLayoutCopy( const View& dstView )
 {
 	using namespace boost::gil;
 
@@ -63,25 +77,25 @@ void Jpeg2000ReaderProcess<View>::switchLayoutCopy()
 		case 8:
 		{
 			typedef pixel<bits8, Layout > PixelT;
-			switchPrecisionCopy<PixelT>( flipped_up_down_view( this->_dstView ) );
+			switchPrecisionCopy<PixelT>( dstView );
 			break;
 		}
 		case 12:
 		{
 			typedef pixel<bits12, Layout > PixelT;
-			switchPrecisionCopy<PixelT>(flipped_up_down_view( this->_dstView ));
+			switchPrecisionCopy<PixelT>( dstView );
 			break;
 		}
 		case 16:
 		{
 			typedef pixel<bits16, Layout > PixelT;
-			switchPrecisionCopy<PixelT>(flipped_up_down_view( this->_dstView ));
+			switchPrecisionCopy<PixelT>( dstView );
 			break;
 		}
 		case 32:
 		{
 			typedef pixel<bits32, Layout > PixelT;
-			switchPrecisionCopy<PixelT>(flipped_up_down_view( this->_dstView ));
+			switchPrecisionCopy<PixelT>( dstView );
 			break;
 		}
 		default:
@@ -93,7 +107,7 @@ void Jpeg2000ReaderProcess<View>::switchLayoutCopy()
 
 template<class View>
 template<class WorkingPixel>
-void Jpeg2000ReaderProcess<View>::switchPrecisionCopy(const View & wv)
+void Jpeg2000ReaderProcess<View>::switchPrecisionCopy( const View & dstView )
 {
 	using namespace boost::gil;
 	tuttle::io::J2KReader & reader = _plugin._reader;
@@ -109,7 +123,7 @@ void Jpeg2000ReaderProcess<View>::switchPrecisionCopy(const View & wv)
 
 	for( typename View::y_coord_t y = 0; y < h; ++y )
 	{
-		typename View::x_iterator it = wv.row_begin( y );
+		typename View::x_iterator it = dstView.row_begin( y );
 
 		for( typename View::x_coord_t x = 0; x < w; ++x )
 		{

@@ -30,19 +30,22 @@ class Jpeg2000ReaderProcess : public ImageGilProcessor<View>
 {
 protected :
     Jpeg2000ReaderPlugin&	_plugin;		///< Rendering plugin
+	Jpeg2000ReaderProcessParams _params;
 
 public:
     Jpeg2000ReaderProcess( Jpeg2000ReaderPlugin& instance );
 	~Jpeg2000ReaderProcess();
 
+	void setup( const OFX::RenderArguments& args );
+
 	// Do some processing
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 	template<class Layout>
-	void switchLayoutCopy();
+	void switchLayoutCopy( const View& dstView );
 
 	template<class WorkingPixel>
-	void switchPrecisionCopy(const View & wv);
+	void switchPrecisionCopy( const View& dstView );
 };
 
 }
