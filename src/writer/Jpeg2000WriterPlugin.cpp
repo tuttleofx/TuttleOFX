@@ -11,13 +11,13 @@
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 
-using namespace boost::filesystem;
 
 namespace tuttle {
 namespace plugin {
 namespace jpeg2000 {
 namespace writer {
 
+using namespace boost::filesystem;
 using namespace tuttle::io;
 using namespace boost::gil;
 
@@ -47,7 +47,8 @@ Jpeg2000ProcessParams Jpeg2000WriterPlugin::getProcessParams(const OfxTime time)
 			params._bitDepth = 32;
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite(kOfxStatErrValue, "Incorrect bit depth.") );
+			BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::dev("Incorrect bit depth.") );
 			break;
 	}
 	params._cineProfil = _paramCineProfil->getValue();

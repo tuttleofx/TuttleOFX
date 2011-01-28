@@ -32,9 +32,8 @@ void J2KReader::open(const std::string & filename)
 	close();
 	if( ! fs::exists( filename ) )
 	{
-		BOOST_THROW_EXCEPTION( exception::File()
-			<< exception::user( "No input file." )
-			<<exception::filename(filename) );
+		BOOST_THROW_EXCEPTION( exception::FileNotExist()
+			<< exception::filename(filename) );
 	}
 
 	fs::ifstream inputDataStream;
@@ -63,7 +62,7 @@ void J2KReader::open(const std::string & filename)
 		inputDataStream.close();
 		BOOST_THROW_EXCEPTION( exception::Value()
 			<< exception::dev( "Invalid magic number." )
-			<<exception::filename(filename) );
+			<< exception::filename(filename) );
 	}
 
 	inputDataStream.seekg(0, std::ios::end);
@@ -86,7 +85,7 @@ void J2KReader::open(const std::string & filename)
 		_dataLength = 0;
 		BOOST_THROW_EXCEPTION( exception::Value()
 			<< exception::dev( "Unable to read image data." )
-			<<exception::filename(filename) );
+			<< exception::filename(filename) );
 	}
 	inputDataStream.close();
 	_dataLength = dataLength;

@@ -20,7 +20,8 @@ void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 		            "Jpeg2000 image reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "<b>Jpeg200 io</b> plugin is used to read jpeg 2000 files.  <br />" );
+	desc.setDescription( "Jpeg200 io.\n"
+	                     "Plugin is used to read jpeg 2000 files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
@@ -32,8 +33,10 @@ void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setSupportsMultipleClipDepths( true );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 
@@ -47,6 +50,7 @@ void Jpeg2000ReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor 
 {
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+//	srcClip->addSupportedComponent( OFX::ePixelComponentRGB ); /// @todo: support RGB
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 

@@ -56,10 +56,11 @@ void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 
 bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
+	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
 	FileInfo fileInfo = retrieveFileInfo( args.time );
 	if ( fileInfo._failed )
 	{
-		TUTTLE_COUT_ERROR( "Jpeg2000ReaderPlugin::render: file info failed." );
+		TUTTLE_COUT_ERROR( "Jpeg2000ReaderPlugin::getRegionOfDefinition: file info failed." );
 		return false;
 	}
 
@@ -73,8 +74,13 @@ bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionA
 
 void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	ReaderPlugin::getClipPreferences( clipPreferences );
+	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
+	TUTTLE_COUT_VAR( getAbsoluteFirstFilename() );
+	TUTTLE_COUT_VAR( getFirstTime() );
+	TUTTLE_COUT_VAR( getAbsoluteFilenameAt(getFirstTime()) );
 
+	ReaderPlugin::getClipPreferences( clipPreferences );
+	
 	FileInfo fileInfo = retrieveFileInfo( getFirstTime() );
 	if ( fileInfo._failed )
 	{
@@ -211,14 +217,17 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	}
 
 	// Open new source
+	std::string filename = getAbsoluteFilenameAt(time);
 	try
 	{
-		_reader.open( getAbsoluteFilenameAt(time) );
+		_reader.open( filename );
 	}
-	catch(std::exception & e)
+	catch( boost::exception & e )
 	{
 		_fileInfos._failed = true;
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
+		e << exception::filename(filename)
+		  << exception::time( time );
+		throw;
 	}
 	_fileInfos._failed = false;
 	// No choice if we want to get
@@ -227,16 +236,21 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 	{
 		_reader.decode(true);
 	}
-	catch(std::exception & e)
+	catch( boost::exception & e )
 	{
 		_fileInfos._failed = true;
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatFailed, e.what()) );
+		e << exception::filename( filename )
+		  << exception::time( time );
+		throw;
 	}
 
 	if( !_reader.componentsConform() )
 	{
 		_fileInfos._failed = true;
-		BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat, "Jpeg2000 image components aren't conform.") );
+		BOOST_THROW_EXCEPTION( exception::ImageFormat()
+			<< exception::user( "Jpeg2000 image components aren't conform." )
+			<< exception::filename( filename )
+			<< exception::time( time ) );
 	}
 
 	_fileInfos._time = time;
@@ -259,7 +273,10 @@ Jpeg2000ReaderPlugin::FileInfo Jpeg2000ReaderPlugin::retrieveFileInfo( const Ofx
 			break;
 		default:
 			_fileInfos._failed = true;
-			BOOST_THROW_EXCEPTION( OFX::Exception::Suite( kOfxStatErrImageFormat, std::string("Bit depth not handled ! (") + boost::lexical_cast<std::string>(_reader.precision()) + ")" ) );
+			BOOST_THROW_EXCEPTION( exception::ImageFormat()
+			<< exception::user() + "Bit depth not handled ! (" + _reader.precision() + ")"
+			<< exception::filename( filename )
+			<< exception::time( time ) );
 	}
 
 	return _fileInfos;

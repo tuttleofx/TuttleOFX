@@ -2,8 +2,9 @@
 #include "Jpeg2000WriterPlugin.hpp"
 #include "Jpeg2000WriterDefinitions.hpp"
 
-#include <openjpeg/J2KWriter.hpp>
 #include <tuttle/plugin/context/WriterPluginFactory.hpp>
+
+#include <openjpeg/J2KWriter.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -20,7 +21,9 @@ void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 		            "Jpeg 2000 image writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "<b>Jpeg2000 io</b> plugin is used to output jpeg 2000 files.<br />In the filename pattern, put @ where you want your incrementation to be.<br />" );
+	desc.setDescription( "Jpeg2000 writer\n"
+		                 "plugin is used to output jpeg 2000 files.\n"
+	                     "In the filename pattern, put @ where you want your incrementation to be." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );
@@ -32,8 +35,10 @@ void Jpeg2000WriterPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setSupportsMultipleClipDepths( true );
+	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setHostFrameThreading( false );
 	desc.setSupportsMultiResolution( false );
+	desc.setSupportsMultipleClipDepths( true );
 	desc.setSupportsTiles( kSupportTiles );
 }
 
