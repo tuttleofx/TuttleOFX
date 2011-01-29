@@ -59,6 +59,8 @@ public:
 
 	void setPoint( const Scalar x, const Scalar y )
 	{
+		if( _relativePoint.getSelected() )
+			return;
 		if( this->_frame.isEnabled() )
 		{
 			OfxRectD rod = this->_frame.getFrame( this->getTime() );

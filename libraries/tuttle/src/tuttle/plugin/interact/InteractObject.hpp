@@ -19,6 +19,7 @@ typedef boost::gil::point2<Scalar> Point2;
 class InteractObject /*: public OFX::InteractI*/
 {
 public:
+	InteractObject();
 	virtual ~InteractObject() = 0;
 
 	/** @brief the function called to draw in the interact */

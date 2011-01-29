@@ -26,17 +26,23 @@ typedef std::vector<InteractObject*> InteractObjectsVectorLink;
 
 public:
 	InteractScene( OFX::ParamSet& params, const InteractInfos& infos );
-	~InteractScene();
+	virtual ~InteractScene();
 
 private:
 	OFX::ParamSet& _params;
 	const InteractInfos& _infos;
+	bool _multiSelectionEnabled;
+	bool _hasSelection;
+
 	InteractObjectsVector _objects;
 	IsActiveFunctorVector _isActive;
+
 	InteractObjectsVectorLink _selected;
 	EMoveType _moveType;
 	Point2 _moveOffset;
 	bool _mouseDown;
+	bool _beginSelection;
+	OfxRectD _selectionRect;
 
 public:
 	InteractObjectsVector&       getObjects()       { return _objects; }

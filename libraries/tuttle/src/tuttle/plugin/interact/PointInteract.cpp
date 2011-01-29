@@ -5,7 +5,9 @@
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/math/rectOp.hpp>
+
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -19,18 +21,21 @@ PointInteract::~PointInteract() {}
 
 bool PointInteract::draw( const OFX::DrawArgs& args ) const
 {
-	double margeCanonical = getMarge() * args.pixelScale.x;
-
-	Point2 p( getPoint() );
+	const double margeCanonical = getMarge() * args.pixelScale.x;
+	const Point2 p( getPoint() );
 
 	glEnable( GL_LINE_STIPPLE );
+	glLineWidth( getSelected() ? 4.0 : 1.0 );
 	glColor3d( 1.0, 1.0, 1.0 );
+
 	glLineStipple( 1, 0xAAAA );
 	overlay::displayPointRect( p, margeCanonical );
 	glLineStipple( 1, 0xFFFF );
 	overlay::displayCross( p, 3.0 * margeCanonical );
 
+	glLineWidth( 1.0 );
 	glDisable( GL_LINE_STIPPLE );
+
 	return true;
 }
 
@@ -47,14 +52,7 @@ EMoveType PointInteract::intersect( const OFX::PenArgs& args, Point2& offset )
 
 bool PointInteract::isIn( const OfxRectD& rect )
 {
-	Point2 p = getPoint();
-
-	if( p.x >= rect.x1 && p.x <= rect.x2 &&
-	    p.y >= rect.y1 && p.y <= rect.y2 )
-	{
-		return true;
-	}
-	return false;
+	return pointInRect( getPoint(), rect );
 }
 
 bool PointInteract::moveXYSelected( const Point2& point )
