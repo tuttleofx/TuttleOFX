@@ -56,8 +56,8 @@ public:
 
 	ESelectType selectType( const OFX::PenArgs& args ) const;
 
-	EMoveType selectIfIntesect( const OFX::PenArgs& args );
-	bool      selectIfIsIn( const OfxRectD& );
+	EMoveType intersect( const OFX::PenArgs& args );
+	bool      isIn( const OfxRectD& );
 
 	Point2 getPoint() const
 	{
@@ -205,21 +205,21 @@ typename ParamRectangleFromTwoCorners<TFrame, coord>::ESelectType ParamRectangle
 }
 
 template<class TFrame, ECoordonateSystem coord>
-EMoveType ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIntesect( const OFX::PenArgs& args )
+EMoveType ParamRectangleFromTwoCorners<TFrame, coord>::intersect( const OFX::PenArgs& args )
 {
 	this->_offset.x = 0;
 	this->_offset.y = 0;
 	_selectType     = selectType( args );
 	if( _selectType != eSelectTypeNone )
 		return eMoveTypeXY;
-	EMoveType m = PointInteract::selectIfIntesect( args );
+	EMoveType m = PointInteract::intersect( args );
 	if( m != eMoveTypeNone )
 		_selectType = eSelectTypeC;
 	return m;
 }
 
 template<class TFrame, ECoordonateSystem coord>
-bool ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIsIn( const OfxRectD& rect )
+bool ParamRectangleFromTwoCorners<TFrame, coord>::isIn( const OfxRectD& rect )
 {
 	_selectType = eSelectTypeNone;
 	OfxRectD rod = _relativeFrame.getFrame( this->getTime() );
@@ -234,7 +234,6 @@ bool ParamRectangleFromTwoCorners<TFrame, coord>::selectIfIsIn( const OfxRectD& 
 	if( rect.x1 <= min.x  && rect.x2 >= max.x &&
 	    rect.y1 <= min.y  && rect.y2 >= max.y )
 	{
-		_offset = Point2( 0, 0 );
 		return true;
 	}
 	return false;

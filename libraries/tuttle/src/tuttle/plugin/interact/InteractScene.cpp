@@ -45,7 +45,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	//				 it != itEnd;
 	//				 ++it )
 	//			{
-	//				if( it->selectIfIsIn(_selectionRect) )
+	//				if( it->isIn(_selectionRect) )
 	//				{
 	//					_selected.push_back( *it );
 	//					isIn |= true;
@@ -63,31 +63,39 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	switch( _moveType )
 	{
 		case eMoveTypeXY:
+		{
 			for( InteractObjectsVectorLink::iterator it = _selected.begin(), itEnd = _selected.end();
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= ( *it )->moveXYSelected( move );
+				moveSomething |= ( *it )->moveXYSelected( move + _moveOffset );
 			}
 			break;
+		}
 		case eMoveTypeX:
+		{
 			for( InteractObjectsVectorLink::iterator it = _selected.begin(), itEnd = _selected.end();
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= ( *it )->moveXSelected( move );
+				moveSomething |= ( *it )->moveXSelected( move.x + _moveOffset.x );
 			}
 			break;
+		}
 		case eMoveTypeY:
+		{
 			for( InteractObjectsVectorLink::iterator it = _selected.begin(), itEnd = _selected.end();
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= ( *it )->moveYSelected( move );
+				moveSomething |= ( *it )->moveYSelected( move.y + _moveOffset.y );
 			}
 			break;
+		}
 		case eMoveTypeNone:
+		{
 			break;
+		}
 	}
 	return moveSomething;
 }
@@ -100,13 +108,13 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 	_moveType  = eMoveTypeNone;
 	_params.beginEditBlock( "InteractObjectsGroup" );
 
-	//		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
-	//		     it != itEnd;
-	//		     ++it )
-	//		{
-	//			result |= it->penDown(args);
-	//		}
-	Point2 penPosition                       = ofxToGil( args.penPosition );
+//		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
+//		     it != itEnd;
+//		     ++it )
+//		{
+//			result |= it->penDown(args);
+//		}
+	Point2 penPosition = ofxToGil( args.penPosition );
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 	     it != itEnd;
@@ -115,18 +123,22 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 		if( itActive->active() )
 		{
 			EMoveType m;
-			if( ( m = it->selectIfIntesect( args ) ) != eMoveTypeNone )
+			Point2 offset = Point2(0.0,0.0);
+			if( ( m = it->intersect( args, offset ) ) != eMoveTypeNone )
 			{
+				// first time
 				if( _moveType == eMoveTypeNone )
 				{
 					_selected.push_back( &( *it ) );
 					_moveType = m;
+					_moveOffset = offset;
 				}
 				else if( m == eMoveTypeXY ) // if we already register an object X or Y and we found an XY intersection
 				{
 					_selected.clear();
 					_selected.push_back( &( *it ) );
 					_moveType = m;
+					_moveOffset = offset;
 				}
 				result = true;
 				if( m == eMoveTypeXY )
@@ -134,12 +146,12 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 			}
 		}
 	}
-	//		if( _multiselectionEnabled )
-	//		{
-	//			_multiselection = true;
-	//			_moveType = eMoveTypeXY;
-	//			return true;
-	//		}
+//		if( _multiselectionEnabled )
+//		{
+//			_multiselection = true;
+//			_moveType = eMoveTypeXY;
+//			return true;
+//		}
 	_mouseDown = result;
 	return result;
 }
@@ -154,11 +166,14 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 	     ++it, ++itActive )
 	{
 		if( itActive->active() )
-			it->unselect();
-		//			result |= it->penUp(args);
+		{
+			it->setSelected(false);
+//			result |= it->penUp(args);
+		}
 	}
-	_params.endEditBlock();
 	_selected.clear();
+	_moveOffset = Point2(0.0,0.0);
+	_params.endEditBlock();
 	return result;
 }
 

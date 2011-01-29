@@ -35,6 +35,7 @@ private:
 	IsActiveFunctorVector _isActive;
 	InteractObjectsVectorLink _selected;
 	EMoveType _moveType;
+	Point2 _moveOffset;
 	bool _mouseDown;
 
 public:

@@ -17,7 +17,6 @@ public:
 
 protected:
 	const InteractInfos& _infos;
-	Point2 _offset;
 
 public:
 	double         getTime() const { return _infos._effect->timeLineGetTime(); }
@@ -26,11 +25,13 @@ public:
 	virtual double getMarge() const { return _infos._marge * _infos._projectSize.x; }
 
 	virtual bool      draw( const OFX::DrawArgs& args ) const;
-	virtual EMoveType selectIfIntesect( const OFX::PenArgs& args );
-	virtual bool      selectIfIsIn( const OfxRectD& );
+
+	virtual EMoveType intersect( const OFX::PenArgs& args, Point2& offset );
+	virtual bool      isIn( const OfxRectD& );
+
 	virtual bool      moveXYSelected( const Point2& );
-	virtual bool      moveXSelected( const Point2& );
-	virtual bool      moveYSelected( const Point2& );
+	virtual bool      moveXSelected( const Scalar& );
+	virtual bool      moveYSelected( const Scalar& );
 
 };
 

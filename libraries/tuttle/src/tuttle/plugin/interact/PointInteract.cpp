@@ -13,7 +13,6 @@ namespace interact {
 
 PointInteract::PointInteract( const InteractInfos& infos )
 	: _infos( infos )
-	, _offset( 0, 0 )
 {}
 
 PointInteract::~PointInteract() {}
@@ -35,25 +34,24 @@ bool PointInteract::draw( const OFX::DrawArgs& args ) const
 	return true;
 }
 
-EMoveType PointInteract::selectIfIntesect( const OFX::PenArgs& args )
+EMoveType PointInteract::intersect( const OFX::PenArgs& args, Point2& offset )
 {
 	const Point2 mouse = ofxToGil( args.penPosition );
-	Point2 p           = getPoint();
+	const Point2 p = getPoint();
 
-	_offset = p - mouse;
-	double margeCanonical = getMarge() * args.pixelScale.x;
-	EMoveType m           = clicPoint( p, mouse, margeCanonical );
+	offset = p - mouse;
+	const double margeCanonical = getMarge() * args.pixelScale.x;
+	const EMoveType m           = clicPoint( p, mouse, margeCanonical );
 	return m;
 }
 
-bool PointInteract::selectIfIsIn( const OfxRectD& rect )
+bool PointInteract::isIn( const OfxRectD& rect )
 {
 	Point2 p = getPoint();
 
 	if( p.x >= rect.x1 && p.x <= rect.x2 &&
 	    p.y >= rect.y1 && p.y <= rect.y2 )
 	{
-		_offset = Point2( 0, 0 );
 		return true;
 	}
 	return false;
@@ -61,19 +59,19 @@ bool PointInteract::selectIfIsIn( const OfxRectD& rect )
 
 bool PointInteract::moveXYSelected( const Point2& point )
 {
-	setPoint( point.x + _offset.x, point.y + _offset.y );
+	setPoint( point.x, point.y );
 	return true;
 }
 
-bool PointInteract::moveXSelected( const Point2& point )
+bool PointInteract::moveXSelected( const Scalar& x )
 {
-	setPoint( point.x + _offset.x, getPoint().y );
+	setPoint( x, getPoint().y );
 	return true;
 }
 
-bool PointInteract::moveYSelected( const Point2& point )
+bool PointInteract::moveYSelected( const Scalar& y )
 {
-	setPoint( getPoint().x, point.y + _offset.y );
+	setPoint( getPoint().x, y );
 	return true;
 }
 

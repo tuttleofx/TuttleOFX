@@ -19,23 +19,26 @@ typedef boost::gil::point2<Scalar> Point2;
 class InteractObject /*: public OFX::InteractI*/
 {
 public:
-	typedef boost::gil::point2<double> Point2;
-
-public:
 	virtual ~InteractObject() = 0;
 
 	/** @brief the function called to draw in the interact */
 	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
 
-	virtual EMoveType selectIfIntesect( const OFX::PenArgs& args ) { return eMoveTypeNone; }
-	virtual bool      selectIfIsIn( const OfxRectD& )              { return false; }
-	virtual void      unselect()                                   {}
+	virtual EMoveType intersect( const OFX::PenArgs& args, Point2& offset ) { offset = Point2(0.0,0.0); return eMoveTypeNone; }
+	virtual bool      isIn( const OfxRectD& )              { return false; }
 
-	virtual void endMove()                       {}
+	bool getSelected() const { return _selected; }
+	void setSelected( const bool s ) { _selected = s; }
+
 	virtual bool moveXYSelected( const Point2& ) { return false; }
-	virtual bool moveXSelected( const Point2& )  { return false; }
-	virtual bool moveYSelected( const Point2& )  { return false; }
+	virtual bool moveXSelected( const Scalar& x )  { return false; }
+	virtual bool moveYSelected( const Scalar& y )  { return false; }
+	
 	virtual void beginMove()                     {}
+	virtual void endMove()                       {}
+
+private:
+	bool _selected;
 };
 
 }
