@@ -21,7 +21,8 @@ void EXRReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Exr file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "<b>EXR File reader</b> plugin is used to read exr files.  <br />" );
+	desc.setDescription( "EXR File reader\n"
+	                     "Plugin is used to read exr files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

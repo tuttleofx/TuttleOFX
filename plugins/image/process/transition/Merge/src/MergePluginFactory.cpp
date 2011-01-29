@@ -22,7 +22,8 @@ void MergePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Merge two images" );
 	desc.setPluginGrouping( "tuttle/image/process/transition" );
 
-	desc.setDescription( "<b>Clip merging</b>\nPlugin is used to merge two clips A and B.  <br />" );
+	desc.setDescription( "Clip merging\n"
+	                     "Plugin is used to merge two clips A and B." );
 
 	// add the supported contexts
 	//	desc.addSupportedContext( OFX::eContextTransition ); ///@todo tuttle: Changing inputs by SourceFrom and SourceTo and adding a Transition paramater (single double)
