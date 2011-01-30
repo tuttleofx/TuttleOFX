@@ -25,7 +25,9 @@ public:
 	/** @brief the function called to draw in the interact */
 	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
 
-	virtual EMoveType intersect( const OFX::PenArgs& args, Point2& offset ) { offset = Point2(0.0,0.0); return eMoveTypeNone; }
+	virtual Point2 getDistance( const Point2& p ) const { return Point2(0.0, 0.0); }
+	
+	virtual EMoveType intersect( const OFX::PenArgs& args ) { return eMoveTypeNone; }
 	virtual bool      isIn( const OfxRectD& )              { return false; }
 
 	bool getSelected() const { return _selected; }

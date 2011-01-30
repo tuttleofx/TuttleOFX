@@ -25,8 +25,9 @@ public:
 	virtual double getMarge() const { return _infos._marge * _infos._projectSize.x; }
 
 	virtual bool      draw( const OFX::DrawArgs& args ) const;
+	Point2 getDistance( const Point2& p ) const { return getPoint() - p; }
 
-	virtual EMoveType intersect( const OFX::PenArgs& args, Point2& offset );
+	virtual EMoveType intersect( const OFX::PenArgs& args );
 	virtual bool      isIn( const OfxRectD& );
 
 	virtual bool      moveXYSelected( const Point2& );

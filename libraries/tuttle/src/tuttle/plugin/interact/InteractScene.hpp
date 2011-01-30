@@ -46,7 +46,6 @@ private:
 
 	SelectedObjectsLinkVector _selected;
 	EMoveType _moveType;
-	Point2 _moveOffset;
 	bool _mouseDown;
 	bool _beginSelection;
 	OfxRectD _selectionRect;

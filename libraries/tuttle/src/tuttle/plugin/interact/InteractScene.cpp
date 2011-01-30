@@ -124,6 +124,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 	bool result = false;
 	_mouseDown = true;
 	_moveType  = eMoveTypeNone;
+	SelectedObject oneSelectedObj;
 
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
@@ -133,28 +134,62 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 		if( ! itActive->active() )
 			continue;
 		EMoveType m;
-		Point2 offset = Point2(0.0,0.0);
-		if( ( m = it->intersect( args, offset ) ) != eMoveTypeNone )
+		if( ( m = it->intersect( args ) ) != eMoveTypeNone )
 		{
+			static const Point2 noOffset = Point2(0.0,0.0);
 			// first time
 			if( _moveType == eMoveTypeNone )
 			{
-				_selected.push_back( SelectedObject( &(*it), offset ) );
+				oneSelectedObj = SelectedObject( &(*it), noOffset );
 				_moveType = m;
-				_moveOffset = offset;
 			}
 			else if( m == eMoveTypeXY ) // if we already register an object X or Y and we found an XY intersection
 			{
-				_selected.clear();
-				_selected.push_back( SelectedObject( &(*it), offset ) );
+				oneSelectedObj = SelectedObject( &(*it), noOffset );
 				_moveType = m;
-				_moveOffset = offset;
 			}
 			result = true;
 			if( m == eMoveTypeXY )
 				break;
 		}
 	}
+
+	if( _hasSelection )
+	{
+		if( result )
+		{
+			bool objInSelection = false;
+			// compute the offset for each object
+			const Point2 penPosition = ofxToGil( args.penPosition );
+			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
+				 it != itEnd;
+				 ++it )
+			{
+				it->second = it->first->getDistance( penPosition );
+				if( it->first == oneSelectedObj.first )
+				{
+					objInSelection = true;
+				}
+			}
+			if( !objInSelection )
+			{
+				_hasSelection = false;
+			}
+		}
+		else
+		{
+			_hasSelection = false;
+		}
+	}
+	if( ! _hasSelection )
+	{
+		_selected.clear();
+		if( result )
+		{
+			_selected.push_back( oneSelectedObj );
+		}
+	}
+
 	if( _multiSelectionEnabled )
 	{
 		if( !result )
@@ -194,14 +229,13 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 			 it != itEnd;
 			 ++it, ++itActive )
 		{
-			Point2 offset = Point2(0.0,0.0);
 			if( ! itActive->active() )
 				continue;
 			if( it->isIn( _selectionRect ) )
 			{
-				// todo: compute offset !
+				static const Point2 noOffset = Point2(0.0,0.0);
 				it->setSelected(true);
-				_selected.push_back( SelectedObject( &(*it), offset ) );
+				_selected.push_back( SelectedObject( &(*it), noOffset ) );
 				_hasSelection = true;
 			}
 			else
@@ -224,7 +258,6 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 	}
 
 	_mouseDown = false;
-	_moveOffset = Point2(0.0,0.0);
 	_beginSelection = false;
 	
 	_params.endEditBlock();

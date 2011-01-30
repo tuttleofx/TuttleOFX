@@ -103,7 +103,7 @@ public:
 
 	ESelectType selectType( const OFX::PenArgs& args ) const;
 
-	EMoveType intersect( const OFX::PenArgs& args, Point2& offset );
+	EMoveType intersect( const OFX::PenArgs& args );
 	bool      isIn( const OfxRectD& );
 
 	Point2 getPoint() const
@@ -240,17 +240,16 @@ typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangle
 }
 
 template<class TFrame, ECoordonateSystem coord>
-EMoveType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::PenArgs& args, Point2& offset )
+EMoveType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::PenArgs& args )
 {
 	// intersect center point
-	EMoveType m = _center.intersect( args, offset );
+	EMoveType m = _center.intersect( args );
 	if( m != eMoveTypeNone )
 	{
 		TUTTLE_TCOUT( "intersect center." );
 		_selectType = eSelectTypeC;
 		return m;
 	}
-	offset = Point2(0.0,0.0);
 	// intersect borders
 	_selectType = selectType( args );
 	TUTTLE_TCOUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
