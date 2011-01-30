@@ -10,8 +10,8 @@ namespace interact {
 InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos )
 	: _params( params )
 	, _infos( infos )
-	, _multiSelectionEnabled( true )
 	, _mouseDown( false )
+	, _multiSelectionEnabled( true )
 	, _beginSelection( false )
 {
 }
@@ -79,7 +79,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		return true;
 	}
 
-	if( _selected.size == 0 )
+	if( _selected.size() == 0 )
 		return false;
 
 	const Point2 penPosition = ofxToGil( args.penPosition );
@@ -91,7 +91,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 			     it != itEnd;
 			     ++it )
 			{
-				it->first->moveXY( penPosition + it->second );
+				it->first->setPositionXY( penPosition + it->second );
 			}
 			break;
 		}
@@ -101,7 +101,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 			     it != itEnd;
 			     ++it )
 			{
-				it->first->moveX( penPosition.x + it->second.x );
+				it->first->setPositionX( penPosition.x + it->second.x );
 			}
 			break;
 		}
@@ -111,7 +111,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 			     it != itEnd;
 			     ++it )
 			{
-				it->first->moveY( penPosition.y + it->second.y );
+				it->first->setPositionY( penPosition.y + it->second.y );
 			}
 			break;
 		}

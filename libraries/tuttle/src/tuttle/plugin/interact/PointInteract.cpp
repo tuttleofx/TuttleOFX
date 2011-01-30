@@ -54,24 +54,6 @@ bool PointInteract::isIn( const OfxRectD& rect )
 	return pointInRect( getPoint(), rect );
 }
 
-bool PointInteract::moveXY( const Point2& point )
-{
-	setPoint( point.x, point.y );
-	return true;
-}
-
-bool PointInteract::moveX( const Scalar& x )
-{
-	setPoint( x, getPoint().y );
-	return true;
-}
-
-bool PointInteract::moveY( const Scalar& y )
-{
-	setPoint( getPoint().x, y );
-	return true;
-}
-
 }
 }
 }

@@ -24,8 +24,6 @@ public:
 
 	/** @brief the function called to draw in the interact */
 	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
-
-	virtual Point2 getDistance( const Point2& p ) const { return Point2(0.0, 0.0); }
 	
 	virtual EMoveType intersect( const OFX::PenArgs& args ) const { return eMoveTypeNone; }
 	virtual bool isIn( const OfxRectD& ) const { return false; }
@@ -33,9 +31,10 @@ public:
 	bool getSelected() const { return _selected; }
 	void setSelected( const bool s ) { _selected = s; }
 
-	virtual void moveXY( const Point2& ) {}
-	virtual void moveX( const Scalar& x ) {}
-	virtual void moveY( const Scalar& y ) {}
+	virtual Point2 getDistance( const Point2& p ) const { return Point2(0.0, 0.0); }
+	virtual void setPositionXY( const Point2& ) {}
+	virtual void setPositionX( const Scalar& x ) {}
+	virtual void setPositionY( const Scalar& y ) {}
 	
 	virtual void beginMove() {}
 	virtual void endMove() {}

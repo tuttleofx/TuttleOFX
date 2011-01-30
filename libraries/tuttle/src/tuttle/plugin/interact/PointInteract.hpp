@@ -22,18 +22,18 @@ public:
 	double         getTime() const { return _infos._effect->timeLineGetTime(); }
 	virtual Point2 getPoint() const                           = 0;
 	virtual void   setPoint( const Scalar x, const Scalar y ) = 0;
+	
+	virtual Point2 getDistance( const Point2& p ) const { return getPoint() - p; }
+	virtual void   setPosition( const Point2& p ) { setPoint(p.x, p.y); }
+	virtual void   setPositionX( const Scalar x ) { setPoint( x, getPoint().y ); }
+	virtual void   setPositionY( const Scalar y ) { setPoint( getPoint().x, y ); }
+
 	virtual double getMarge() const { return _infos._marge * _infos._projectSize.x; }
 
 	virtual bool      draw( const OFX::DrawArgs& args ) const;
-	Point2 getDistance( const Point2& p ) const { return getPoint() - p; }
 
 	virtual EMoveType intersect( const OFX::PenArgs& args );
 	virtual bool      isIn( const OfxRectD& );
-
-	virtual bool      moveXY( const Point2& );
-	virtual bool      moveX( const Scalar& );
-	virtual bool      moveY( const Scalar& );
-
 };
 
 }
