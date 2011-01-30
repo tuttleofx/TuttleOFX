@@ -8,14 +8,14 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
-struct Frame
+struct IFrame
 {
-	virtual ~Frame()                                      = 0;
+	virtual ~IFrame()                                      = 0;
 	virtual bool     isEnabled() const                    = 0;
 	virtual OfxRectD getFrame( const OfxTime time ) const = 0;
 };
 
-struct FrameClip : virtual public Frame
+struct FrameClip : virtual public IFrame
 {
 	const OFX::Clip& _clip;
 	FrameClip( const OFX::Clip* clip )
@@ -38,7 +38,7 @@ struct FrameClip : virtual public Frame
 
 };
 
-struct FrameOptionalClip : virtual public Frame
+struct FrameOptionalClip : virtual public IFrame
 {
 	const OFX::Clip& _optionalClip;
 	const OFX::Clip& _clip;

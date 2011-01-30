@@ -81,31 +81,31 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	{
 		case eMoveTypeXY:
 		{
-			for( InteractObjectsVectorLink::iterator it = _selected.begin(), itEnd = _selected.end();
+			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= ( *it )->moveXYSelected( move + _moveOffset );
+				moveSomething |= it->first->moveXYSelected( move + it->second );
 			}
 			break;
 		}
 		case eMoveTypeX:
 		{
-			for( InteractObjectsVectorLink::iterator it = _selected.begin(), itEnd = _selected.end();
+			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= ( *it )->moveXSelected( move.x + _moveOffset.x );
+				moveSomething |= it->first->moveXSelected( move.x + it->second.x );
 			}
 			break;
 		}
 		case eMoveTypeY:
 		{
-			for( InteractObjectsVectorLink::iterator it = _selected.begin(), itEnd = _selected.end();
+			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= ( *it )->moveYSelected( move.y + _moveOffset.y );
+				moveSomething |= it->first->moveYSelected( move.y + it->second.y );
 			}
 			break;
 		}
@@ -139,14 +139,14 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 			// first time
 			if( _moveType == eMoveTypeNone )
 			{
-				_selected.push_back( &( *it ) );
+				_selected.push_back( SelectedObject( &(*it), offset ) );
 				_moveType = m;
 				_moveOffset = offset;
 			}
 			else if( m == eMoveTypeXY ) // if we already register an object X or Y and we found an XY intersection
 			{
 				_selected.clear();
-				_selected.push_back( &( *it ) );
+				_selected.push_back( SelectedObject( &(*it), offset ) );
 				_moveType = m;
 				_moveOffset = offset;
 			}
@@ -194,12 +194,14 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 			 it != itEnd;
 			 ++it, ++itActive )
 		{
+			Point2 offset = Point2(0.0,0.0);
 			if( ! itActive->active() )
 				continue;
 			if( it->isIn( _selectionRect ) )
 			{
+				// todo: compute offset !
 				it->setSelected(true);
-				_selected.push_back( &(*it) );
+				_selected.push_back( SelectedObject( &(*it), offset ) );
 				_hasSelection = true;
 			}
 			else

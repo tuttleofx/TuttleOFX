@@ -1,10 +1,10 @@
-#include "Frame.hpp"
+#include "Color.hpp"
 
 namespace tuttle {
 namespace plugin {
 namespace interact {
 
-IFrame::~IFrame() {}
+IColor::~IColor() {}
 
 }
 }
