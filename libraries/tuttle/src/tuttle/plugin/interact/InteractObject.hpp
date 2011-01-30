@@ -27,18 +27,18 @@ public:
 
 	virtual Point2 getDistance( const Point2& p ) const { return Point2(0.0, 0.0); }
 	
-	virtual EMoveType intersect( const OFX::PenArgs& args ) { return eMoveTypeNone; }
-	virtual bool      isIn( const OfxRectD& )              { return false; }
+	virtual EMoveType intersect( const OFX::PenArgs& args ) const { return eMoveTypeNone; }
+	virtual bool isIn( const OfxRectD& ) const { return false; }
 
 	bool getSelected() const { return _selected; }
 	void setSelected( const bool s ) { _selected = s; }
 
-	virtual bool moveXYSelected( const Point2& ) { return false; }
-	virtual bool moveXSelected( const Scalar& x )  { return false; }
-	virtual bool moveYSelected( const Scalar& y )  { return false; }
+	virtual void moveXY( const Point2& ) {}
+	virtual void moveX( const Scalar& x ) {}
+	virtual void moveY( const Scalar& y ) {}
 	
-	virtual void beginMove()                     {}
-	virtual void endMove()                       {}
+	virtual void beginMove() {}
+	virtual void endMove() {}
 
 private:
 	bool _selected;

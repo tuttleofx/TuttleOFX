@@ -30,9 +30,9 @@ public:
 	virtual EMoveType intersect( const OFX::PenArgs& args );
 	virtual bool      isIn( const OfxRectD& );
 
-	virtual bool      moveXYSelected( const Point2& );
-	virtual bool      moveXSelected( const Scalar& );
-	virtual bool      moveYSelected( const Scalar& );
+	virtual bool      moveXY( const Point2& );
+	virtual bool      moveX( const Scalar& );
+	virtual bool      moveY( const Scalar& );
 
 };
 

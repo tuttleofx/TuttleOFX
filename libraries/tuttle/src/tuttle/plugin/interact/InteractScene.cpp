@@ -30,12 +30,16 @@ bool InteractScene::draw( const OFX::DrawArgs& args )
 		result = true;
 	}
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
+	ColorVector::iterator itColor = _colors.begin();
+
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 	     it != itEnd;
-	     ++it, ++itActive )
+	     ++it, ++itActive, ++itColor )
 	{
 		if( itActive->active() )
 		{
+			OfxRGBAColourD color = itColor->getColor( args.time );
+			glColor4d( color.r, color.g, color.b, color.a );
 			result |= it->draw( args );
 		}
 	}
@@ -75,8 +79,10 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		return true;
 	}
 
-	bool moveSomething = false;
-	Point2 move        = ofxToGil( args.penPosition );
+	if( _selected.size == 0 )
+		return false;
+
+	const Point2 penPosition = ofxToGil( args.penPosition );
 	switch( _moveType )
 	{
 		case eMoveTypeXY:
@@ -85,7 +91,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= it->first->moveXYSelected( move + it->second );
+				it->first->moveXY( penPosition + it->second );
 			}
 			break;
 		}
@@ -95,7 +101,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= it->first->moveXSelected( move.x + it->second.x );
+				it->first->moveX( penPosition.x + it->second.x );
 			}
 			break;
 		}
@@ -105,7 +111,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 			     it != itEnd;
 			     ++it )
 			{
-				moveSomething |= it->first->moveYSelected( move.y + it->second.y );
+				it->first->moveY( penPosition.y + it->second.y );
 			}
 			break;
 		}
@@ -114,7 +120,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 			break;
 		}
 	}
-	return moveSomething;
+	return true;
 }
 
 bool InteractScene::penDown( const OFX::PenArgs& args )
@@ -217,6 +223,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 	return false;
 }
 
+
 bool InteractScene::penUp( const OFX::PenArgs& args )
 {
 //	TUTTLE_COUT("penUp");
@@ -242,6 +249,7 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 				it->setSelected(true);
 				_selected.push_back( SelectedObject( &(*it), noOffset ) );
 				_hasSelection = true;
+				result = true;
 			}
 			else
 			{

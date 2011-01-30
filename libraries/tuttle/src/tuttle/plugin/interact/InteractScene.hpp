@@ -37,16 +37,16 @@ public:
 private:
 	OFX::ParamSet& _params;
 	const InteractInfos& _infos;
-	bool _multiSelectionEnabled;
-	bool _hasSelection;
+	bool _mouseDown;
 
 	InteractObjectsVector _objects;
 	IsActiveFunctorVector _isActive;
 	ColorVector _colors;
 
+	bool _multiSelectionEnabled;
+	bool _hasSelection;
 	SelectedObjectsLinkVector _selected;
 	EMoveType _moveType;
-	bool _mouseDown;
 	bool _beginSelection;
 	OfxRectD _selectionRect;
 
