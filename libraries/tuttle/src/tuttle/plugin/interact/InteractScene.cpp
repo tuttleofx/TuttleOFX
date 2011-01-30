@@ -119,6 +119,7 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 
 bool InteractScene::penDown( const OFX::PenArgs& args )
 {
+	const Point2 penPosition = ofxToGil( args.penPosition );
 //	TUTTLE_COUT_X( 20, "-" );
 //	TUTTLE_COUT("penDown");
 	bool result = false;
@@ -136,16 +137,15 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 		EMoveType m;
 		if( ( m = it->intersect( args ) ) != eMoveTypeNone )
 		{
-			static const Point2 noOffset = Point2(0.0,0.0);
 			// first time
 			if( _moveType == eMoveTypeNone )
 			{
-				oneSelectedObj = SelectedObject( &(*it), noOffset );
+				oneSelectedObj = SelectedObject( &(*it), it->getDistance( penPosition ) );
 				_moveType = m;
 			}
 			else if( m == eMoveTypeXY ) // if we already register an object X or Y and we found an XY intersection
 			{
-				oneSelectedObj = SelectedObject( &(*it), noOffset );
+				oneSelectedObj = SelectedObject( &(*it), it->getDistance( penPosition ) );
 				_moveType = m;
 			}
 			result = true;
@@ -160,7 +160,6 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 		{
 			bool objInSelection = false;
 			// compute the offset for each object
-			const Point2 penPosition = ofxToGil( args.penPosition );
 			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
 				 it != itEnd;
 				 ++it )
@@ -183,6 +182,12 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 	}
 	if( ! _hasSelection )
 	{
+		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
+			 it != itEnd;
+			 ++it )
+		{
+			it->setSelected(false);
+		}
 		_selected.clear();
 		if( result )
 		{
@@ -245,16 +250,6 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 		}
 //		TUTTLE_COUT_VAR( _selected.size() );
 		_beginSelection = false;
-	}
-	if( !_hasSelection )
-	{
-		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
-			 it != itEnd;
-			 ++it )
-		{
-			it->setSelected(false);
-		}
-		_selected.clear();
 	}
 
 	_mouseDown = false;
