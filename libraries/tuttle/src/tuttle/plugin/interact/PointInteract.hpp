@@ -23,7 +23,7 @@ public:
 	virtual Point2 getPoint() const                           = 0;
 	virtual void   setPoint( const Scalar x, const Scalar y ) = 0;
 	
-	virtual Point2 getDistance( const Point2& p ) const { return getPoint() - p; }
+	virtual Point2 getPosition() const { return getPoint(); }
 	virtual void   setPosition( const Point2& p ) { setPoint(p.x, p.y); }
 	virtual void   setPositionX( const Scalar x ) { setPoint( x, getPoint().y ); }
 	virtual void   setPositionY( const Scalar y ) { setPoint( getPoint().x, y ); }
@@ -32,7 +32,7 @@ public:
 
 	virtual bool      draw( const OFX::DrawArgs& args ) const;
 
-	virtual EMoveType intersect( const OFX::PenArgs& args );
+	virtual MotionType intersect( const OFX::PenArgs& args );
 	virtual bool      isIn( const OfxRectD& );
 };
 

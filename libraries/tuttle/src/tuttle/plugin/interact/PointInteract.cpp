@@ -39,13 +39,15 @@ bool PointInteract::draw( const OFX::DrawArgs& args ) const
 	return true;
 }
 
-EMoveType PointInteract::intersect( const OFX::PenArgs& args )
+MotionType PointInteract::intersect( const OFX::PenArgs& args )
 {
 	const Point2 mouse = ofxToGil( args.penPosition );
 	const Point2 p = getPoint();
 
 	const double margeCanonical = getMarge() * args.pixelScale.x;
-	const EMoveType m           = clicPoint( p, mouse, margeCanonical );
+	MotionType m;
+	m._mode = eMotionTranslate;
+	m._axis = clicPoint( p, mouse, margeCanonical );
 	return m;
 }
 

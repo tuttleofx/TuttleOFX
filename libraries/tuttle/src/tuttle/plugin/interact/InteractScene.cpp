@@ -12,7 +12,8 @@ InteractScene::InteractScene( OFX::ParamSet& params, const InteractInfos& infos 
 	, _infos( infos )
 	, _mouseDown( false )
 	, _multiSelectionEnabled( true )
-	, _beginSelection( false )
+	, _creatingSelection( false )
+	, _manipulator( infos )
 {
 }
 
@@ -22,16 +23,11 @@ InteractScene::~InteractScene()
 bool InteractScene::draw( const OFX::DrawArgs& args )
 {
 	bool result = false;
-	if( _beginSelection )
-	{
-		glColor4d( 1.0, 1.0, 1.0, 0.5 );
-		overlay::displayRect( _selectionRect );
-		glColor4d( 1.0, 1.0, 1.0, 1.0 );
-		result = true;
-	}
+
+	result |= drawSelection( args );
+
 	IsActiveFunctorVector::iterator itActive = _isActive.begin();
 	ColorVector::iterator itColor = _colors.begin();
-
 	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
 	     it != itEnd;
 	     ++it, ++itActive, ++itColor )
@@ -51,10 +47,10 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	if( !_mouseDown )
 		return false;
 
-	if( _beginSelection )
+	if( _creatingSelection )
 	{
 		// create selection
-//		TUTTLE_COUT("create a selection");
+		TUTTLE_COUT("create a selection");
 		_selectionRect.x2 = args.penPosition.x;
 		_selectionRect.y2 = args.penPosition.y;
 		_hasSelection = false;
@@ -80,43 +76,37 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 	}
 
 	if( _selected.size() == 0 )
+	{
+		TUTTLE_COUT_INFOS;
 		return false;
+	}
+	TUTTLE_COUT_INFOS;
 
 	const Point2 penPosition = ofxToGil( args.penPosition );
-	switch( _moveType )
+	switch( _motionType._mode )
 	{
-		case eMoveTypeXY:
+		case eMotionTranslate:
 		{
-			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPositionXY( penPosition + it->second );
-			}
+			translate( penPosition - _beginPenPosition );
 			break;
 		}
-		case eMoveTypeX:
+		case eMotionRotate:
 		{
-			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPositionX( penPosition.x + it->second.x );
-			}
+			TUTTLE_COUT_INFOS;
+			// todo
+			//rotate( center, angle );
 			break;
 		}
-		case eMoveTypeY:
+		case eMotionScale:
 		{
-			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
-			     it != itEnd;
-			     ++it )
-			{
-				it->first->setPositionY( penPosition.y + it->second.y );
-			}
+			TUTTLE_COUT_INFOS;
+			// todo
+			//scale( angle, factor );
 			break;
 		}
-		case eMoveTypeNone:
+		case eMotionNone:
 		{
+			TUTTLE_COUT_INFOS;
 			break;
 		}
 	}
@@ -126,37 +116,51 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 bool InteractScene::penDown( const OFX::PenArgs& args )
 {
 	const Point2 penPosition = ofxToGil( args.penPosition );
+	_beginPenPosition = penPosition;
+	
 //	TUTTLE_COUT_X( 20, "-" );
 //	TUTTLE_COUT("penDown");
 	bool result = false;
 	_mouseDown = true;
-	_moveType  = eMoveTypeNone;
+	_motionType._mode = eMotionNone;
+	_motionType._axis = eAxisNone;
 	SelectedObject oneSelectedObj;
 
-	IsActiveFunctorVector::iterator itActive = _isActive.begin();
-	for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
-	     it != itEnd;
-	     ++it, ++itActive )
+//	if( _hasSelection  )
+//	{
+//		_motionType = _manipulator.intersect( args );
+//		if( _motionType._mode != eMotionNone )
+//		{
+//			result = true;
+//		}
+//	}
+	if( !result )
 	{
-		if( ! itActive->active() )
-			continue;
-		EMoveType m;
-		if( ( m = it->intersect( args ) ) != eMoveTypeNone )
+		IsActiveFunctorVector::iterator itActive = _isActive.begin();
+		for( InteractObjectsVector::iterator it = _objects.begin(), itEnd = _objects.end();
+			 it != itEnd;
+			 ++it, ++itActive )
 		{
-			// first time
-			if( _moveType == eMoveTypeNone )
+			if( ! itActive->active() )
+				continue;
+			MotionType m = it->intersect( args );
+			if( m._axis != eAxisNone )
 			{
-				oneSelectedObj = SelectedObject( &(*it), it->getDistance( penPosition ) );
-				_moveType = m;
+				// first time
+				if( _motionType._axis == eAxisNone )
+				{
+					oneSelectedObj = SelectedObject( &(*it), it->getPosition() );
+					_motionType = m;
+				}
+				else if( m._axis == eAxisXY ) // if we already register an object X or Y and we found an XY intersection
+				{
+					oneSelectedObj = SelectedObject( &(*it), it->getPosition() );
+					_motionType = m;
+				}
+				result = true;
+				if( m._axis == eAxisXY )
+					break;
 			}
-			else if( m == eMoveTypeXY ) // if we already register an object X or Y and we found an XY intersection
-			{
-				oneSelectedObj = SelectedObject( &(*it), it->getDistance( penPosition ) );
-				_moveType = m;
-			}
-			result = true;
-			if( m == eMoveTypeXY )
-				break;
 		}
 	}
 
@@ -166,11 +170,11 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 		{
 			bool objInSelection = false;
 			// compute the offset for each object
-			for( SelectedObjectsLinkVector::iterator it = _selected.begin(), itEnd = _selected.end();
+			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
 				 it != itEnd;
 				 ++it )
 			{
-				it->second = it->first->getDistance( penPosition );
+				it->second = it->first->getPosition();
 				if( it->first == oneSelectedObj.first )
 				{
 					objInSelection = true;
@@ -206,7 +210,7 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 		if( !result )
 		{
 			_hasSelection = false;
-			_beginSelection = true;
+			_creatingSelection = true;
 		}
 	}
 	_mouseDown = true;
@@ -229,7 +233,7 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 //	TUTTLE_COUT("penUp");
 	bool result = false;
 
-	if( _beginSelection )
+	if( _creatingSelection )
 	{
 		_selectionRect.x2 = args.penPosition.x;
 		_selectionRect.y2 = args.penPosition.y;
@@ -245,9 +249,8 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 				continue;
 			if( it->isIn( _selectionRect ) )
 			{
-				static const Point2 noOffset = Point2(0.0,0.0);
 				it->setSelected(true);
-				_selected.push_back( SelectedObject( &(*it), noOffset ) );
+				_selected.push_back( SelectedObject( &(*it), it->getPosition() ) );
 				_hasSelection = true;
 				result = true;
 			}
@@ -257,16 +260,128 @@ bool InteractScene::penUp( const OFX::PenArgs& args )
 			}
 		}
 //		TUTTLE_COUT_VAR( _selected.size() );
-		_beginSelection = false;
+		_creatingSelection = false;
 	}
 
 	_mouseDown = false;
-	_beginSelection = false;
+	_creatingSelection = false;
 	
 	_params.endEditBlock();
 
 //	TUTTLE_COUT_X( 20, "-" );
 	return result;
+}
+
+
+bool InteractScene::drawSelection( const OFX::DrawArgs& args )
+{
+	bool result = false;
+	if( _creatingSelection )
+	{
+		glColor4d( 1.0, 1.0, 1.0, 0.5 );
+		overlay::displayRect( _selectionRect );
+		glColor4d( 1.0, 1.0, 1.0, 1.0 );
+		result = true;
+	}
+	else if( _hasSelection /*&& _manipulator*/ )
+	{
+		result |= _manipulator.draw( args );
+	}
+	return result;
+}
+
+void InteractScene::translate( const Point2& vec )
+{
+	switch( _axis )
+	{
+		case eAxisXY:
+		{
+			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+			     it != itEnd;
+			     ++it )
+			{
+				it->first->setPositionXY( it->second + vec );
+			}
+			break;
+		}
+		case eAxisX:
+		{
+			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+			     it != itEnd;
+			     ++it )
+			{
+				it->first->setPositionX( it->second.x + vec.x );
+			}
+			break;
+		}
+		case eAxisY:
+		{
+			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+			     it != itEnd;
+			     ++it )
+			{
+				it->first->setPositionY( it->second.y + vec.y );
+			}
+			break;
+		}
+		case eAxisNone:
+		{
+			break;
+		}
+	}
+}
+
+void InteractScene::rotate( const Point2& center, const Scalar angle )
+{
+	for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+		 it != itEnd;
+		 ++it )
+	{
+//		Point2 nPt = rotate( it->second, center, angle );
+		Point2 nPt = it->second;
+		it->first->setPositionXY( nPt );
+	}
+}
+
+void InteractScene::scale( const Point2& center, const Scalar factor )
+{
+	switch( _axis )
+	{
+		case eAxisXY:
+		{
+			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+			     it != itEnd;
+			     ++it )
+			{
+				it->first->setPositionXY( it->second );
+			}
+			break;
+		}
+		case eAxisX:
+		{
+			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+			     it != itEnd;
+			     ++it )
+			{
+				it->first->setPositionX( it->second.x );
+			}
+			break;
+		}
+		case eAxisY:
+		{
+			for( SelectedObjectVector::iterator it = _selected.begin(), itEnd = _selected.end();
+			     it != itEnd;
+			     ++it )
+			{
+				it->first->setPositionY( it->second.y );
+			}
+			break;
+		}
+		case eAxisNone:
+		{
+			break;
+		}
+	}
 }
 
 }

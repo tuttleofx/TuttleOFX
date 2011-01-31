@@ -103,7 +103,7 @@ public:
 
 	ESelectType selectType( const OFX::PenArgs& args ) const;
 
-	EMoveType intersect( const OFX::PenArgs& args );
+	MotionType intersect( const OFX::PenArgs& args );
 	bool      isIn( const OfxRectD& );
 
 	Point2 getPoint() const
@@ -240,11 +240,11 @@ typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangle
 }
 
 template<class TFrame, ECoordonateSystem coord>
-EMoveType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::PenArgs& args )
+MotionType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::PenArgs& args )
 {
 	// intersect center point
-	EMoveType m = _center.intersect( args );
-	if( m != eMoveTypeNone )
+	MotionType m = _center.intersect( args );
+	if( m._mode != eMotionNone )
 	{
 		TUTTLE_TCOUT( "intersect center." );
 		_selectType = eSelectTypeC;
@@ -255,10 +255,13 @@ EMoveType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::Pen
 	TUTTLE_TCOUT( "_selectType : " << mapESelectTypeToString( _selectType ) );
 	if( _selectType != eSelectTypeNone )
 	{
-		TUTTLE_TCOUT( "intersect border." );
-		return eMoveTypeXY;
+		m._mode = eMotionTranslate;
+		m._axis = eAxisXY;
+		return m;
 	}
-	return eMoveTypeNone;
+	m._mode = eMotionNone;
+	m._axis = eAxisNone;
+	return m;
 }
 
 template<class TFrame, ECoordonateSystem coord>
