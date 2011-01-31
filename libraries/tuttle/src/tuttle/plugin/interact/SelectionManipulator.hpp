@@ -14,7 +14,7 @@ public:
 	SelectionManipulator( const InteractInfos& infos );
 	virtual ~SelectionManipulator();
 
-	MotionType intersect( const OFX::PenArgs& args ) const
+	MotionType intersect( const OFX::PenArgs& args )
 	{
 		const Point2 mouse = ofxToGil( args.penPosition );
 		const Point2 p = _selectionPos;
@@ -30,16 +30,16 @@ public:
 	
 	Point2 getDistance( const Point2& p ) const { return Point2(0.0, 0.0); }
 
-	void setPositionXY( const Point2& p )
+	void setPosition( const Point2& p )
 	{
 		_selectionPos = p;
 	}
-	void setPositionX( const Scalar& x )
+	void setPositionX( const Scalar x )
 	{
 		_selectionPos.x = x;
 		_selectionPos.y = getPosition().y;
 	}
-	void setPositionY( const Scalar& y )
+	void setPositionY( const Scalar y )
 	{
 		_selectionPos.x = getPosition().x;
 		_selectionPos.y = y;

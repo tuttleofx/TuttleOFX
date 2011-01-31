@@ -80,7 +80,6 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 		TUTTLE_COUT_INFOS;
 		return false;
 	}
-	TUTTLE_COUT_INFOS;
 
 	const Point2 penPosition = ofxToGil( args.penPosition );
 	switch( _motionType._mode )
@@ -115,15 +114,19 @@ bool InteractScene::penMotion( const OFX::PenArgs& args )
 
 bool InteractScene::penDown( const OFX::PenArgs& args )
 {
-	const Point2 penPosition = ofxToGil( args.penPosition );
-	_beginPenPosition = penPosition;
-	
 //	TUTTLE_COUT_X( 20, "-" );
 //	TUTTLE_COUT("penDown");
-	bool result = false;
+	const Point2 penPosition = ofxToGil( args.penPosition );
 	_mouseDown = true;
+	_beginPenPosition = penPosition;
+	_selectionRect.x1 = args.penPosition.x;
+	_selectionRect.y1 = args.penPosition.y;
+	_selectionRect.x2 = args.penPosition.x;
+	_selectionRect.y2 = args.penPosition.y;
 	_motionType._mode = eMotionNone;
 	_motionType._axis = eAxisNone;
+
+	bool result = false;
 	SelectedObject oneSelectedObj;
 
 //	if( _hasSelection  )
@@ -213,11 +216,6 @@ bool InteractScene::penDown( const OFX::PenArgs& args )
 			_creatingSelection = true;
 		}
 	}
-	_mouseDown = true;
-	_selectionRect.x1 = args.penPosition.x;
-	_selectionRect.y1 = args.penPosition.y;
-	_selectionRect.x2 = args.penPosition.x;
-	_selectionRect.y2 = args.penPosition.y;
 	
 	if( _multiSelectionEnabled || result )
 	{
@@ -292,7 +290,8 @@ bool InteractScene::drawSelection( const OFX::DrawArgs& args )
 
 void InteractScene::translate( const Point2& vec )
 {
-	switch( _axis )
+	//TUTTLE_COUT_VAR2( vec.x, vec.y );
+	switch( _motionType._axis )
 	{
 		case eAxisXY:
 		{
@@ -300,7 +299,7 @@ void InteractScene::translate( const Point2& vec )
 			     it != itEnd;
 			     ++it )
 			{
-				it->first->setPositionXY( it->second + vec );
+				it->first->setPosition( it->second + vec );
 			}
 			break;
 		}
@@ -339,13 +338,13 @@ void InteractScene::rotate( const Point2& center, const Scalar angle )
 	{
 //		Point2 nPt = rotate( it->second, center, angle );
 		Point2 nPt = it->second;
-		it->first->setPositionXY( nPt );
+		it->first->setPosition( nPt );
 	}
 }
 
 void InteractScene::scale( const Point2& center, const Scalar factor )
 {
-	switch( _axis )
+	switch( _motionType._axis )
 	{
 		case eAxisXY:
 		{
@@ -353,7 +352,7 @@ void InteractScene::scale( const Point2& center, const Scalar factor )
 			     it != itEnd;
 			     ++it )
 			{
-				it->first->setPositionXY( it->second );
+				it->first->setPosition( it->second );
 			}
 			break;
 		}

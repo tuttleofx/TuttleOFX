@@ -25,19 +25,19 @@ public:
 	/** @brief the function called to draw in the interact */
 	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
 	
-	virtual MotionType intersect( const OFX::PenArgs& args ) const
+	virtual MotionType intersect( const OFX::PenArgs& args )
 	{
 		MotionType m;
 		m._axis = eAxisNone;
 		m._mode = eMotionNone;
 		return m;
 	}
-	virtual bool isIn( const OfxRectD& ) const { return false; }
+	virtual bool isIn( const OfxRectD& ) { return false; }
 
 	virtual Point2 getPosition() const { return Point2(0.0, 0.0); }
-	virtual void setPositionXY( const Point2& ) {}
-	virtual void setPositionX( const Scalar& x ) {}
-	virtual void setPositionY( const Scalar& y ) {}
+	virtual void setPosition( const Point2& ) {}
+	virtual void setPositionX( const Scalar x ) {}
+	virtual void setPositionY( const Scalar y ) {}
 	
 	virtual void beginMove( const Point2& penPosition ) {}
 	virtual void endMove( const Point2& penPosition ) {}

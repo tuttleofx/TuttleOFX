@@ -39,8 +39,8 @@ inline EAxis clicPoint( const Point& point, const Point& mouse, const double mar
 	dist.x = std::abs( point.x - mouse.x );
 	dist.y = std::abs( point.y - mouse.y );
 
-	double bigMarge  = marge * 3.0;
-	double tinyMarge = marge * 0.5;
+	const double bigMarge  = marge * 3.0;
+	const double tinyMarge = marge * 0.5;
 	if( dist.x < marge && dist.y < marge )
 	{
 		return eAxisXY;

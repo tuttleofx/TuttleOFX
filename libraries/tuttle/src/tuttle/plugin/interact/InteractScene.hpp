@@ -43,7 +43,6 @@ private:
 	const InteractInfos& _infos;
 	bool _mouseDown;
 	MotionType _motionType;
-	EAxis _axis;
 
 	InteractObjectsVector _objects;
 	IsActiveFunctorVector _isActive;
