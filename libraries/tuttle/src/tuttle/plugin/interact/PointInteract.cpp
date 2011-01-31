@@ -26,7 +26,6 @@ bool PointInteract::draw( const OFX::DrawArgs& args ) const
 
 	glEnable( GL_LINE_STIPPLE );
 	glLineWidth( getSelected() ? 4.0 : 1.0 );
-	glColor3d( 1.0, 1.0, 1.0 );
 
 	glLineStipple( 1, 0xAAAA );
 	overlay::displayPointRect( p, margeCanonical );
