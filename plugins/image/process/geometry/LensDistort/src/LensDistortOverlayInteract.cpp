@@ -85,8 +85,8 @@ LensDistortOverlayInteract::LensDistortOverlayInteract( OfxInteractHandle handle
 	_plugin = static_cast<LensDistortPlugin*>( _effect );
 
 	const interact::FrameOptionalClip frame( _plugin->_srcRefClip, _plugin->_clipSrc );
-	interact::PointInteract* centerPoint = new interact::ParamPoint<interact::FrameOptionalClip, eCoordonateSystemXXcn>( _infos, _plugin->_center, frame );
-	_interactScene.push_back( new interact::ParamPointRelativePoint<interact::FrameOptionalClip, eCoordonateSystemXXcn>( _infos, _plugin->_gridCenter, frame, centerPoint ), new interact::IsActiveBooleanParamFunctor<>( _plugin->_gridCenterOverlay ) );
+	interact::PointInteract* centerPoint = new interact::ParamPoint<interact::FrameOptionalClip, eCoordinateSystemXXcn>( _infos, _plugin->_center, frame );
+	_interactScene.push_back( new interact::ParamPointRelativePoint<interact::FrameOptionalClip, eCoordinateSystemXXcn>( _infos, _plugin->_gridCenter, frame, centerPoint ), new interact::IsActiveBooleanParamFunctor<>( _plugin->_gridCenterOverlay ) );
 	_interactScene.push_back( centerPoint, new interact::IsActiveBooleanParamFunctor<>( _plugin->_centerOverlay ) );
 }
 

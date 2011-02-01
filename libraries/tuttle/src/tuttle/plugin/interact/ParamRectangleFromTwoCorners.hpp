@@ -14,7 +14,7 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 class ParamRectangleFromTwoCorners : public PointInteract
 {
 public:
@@ -139,7 +139,7 @@ public:
 
 };
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 ParamRectangleFromTwoCorners<TFrame, coord>::ParamRectangleFromTwoCorners( const InteractInfos& infos, OFX::Double2DParam* paramA, OFX::Double2DParam* paramB, const TFrame& relativeFrame )
 	: PointInteract( infos )
 	, _paramA( paramA )
@@ -147,10 +147,10 @@ ParamRectangleFromTwoCorners<TFrame, coord>::ParamRectangleFromTwoCorners( const
 	, _relativeFrame( relativeFrame )
 {}
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 ParamRectangleFromTwoCorners<TFrame, coord>::~ParamRectangleFromTwoCorners() {}
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 bool ParamRectangleFromTwoCorners<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
 {
 	PointInteract::draw( args );
@@ -162,7 +162,7 @@ bool ParamRectangleFromTwoCorners<TFrame, coord>::draw( const OFX::DrawArgs& arg
 	return true;
 }
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 typename ParamRectangleFromTwoCorners<TFrame, coord>::ESelectType ParamRectangleFromTwoCorners<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
 	const Point2 p        = ofxToGil( args.penPosition );
@@ -204,7 +204,7 @@ typename ParamRectangleFromTwoCorners<TFrame, coord>::ESelectType ParamRectangle
 	return eSelectTypeNone;
 }
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 MotionType ParamRectangleFromTwoCorners<TFrame, coord>::intersect( const OFX::PenArgs& args )
 {
 	MotionType m;
@@ -223,7 +223,7 @@ MotionType ParamRectangleFromTwoCorners<TFrame, coord>::intersect( const OFX::Pe
 	return m;
 }
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 bool ParamRectangleFromTwoCorners<TFrame, coord>::isIn( const OfxRectD& rect )
 {
 	_selectType = eSelectTypeNone;

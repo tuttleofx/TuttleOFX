@@ -16,23 +16,23 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
-template<ECoordonateSystem coord>
-struct CoordonateSystemNotCentered
+template<ECoordinateSystem coord>
+struct CoordinateSystemNotCentered
 {
-	static const ECoordonateSystem value = coord;
+	static const ECoordinateSystem value = coord;
 };
 template<>
-struct CoordonateSystemNotCentered<eCoordonateSystemXXcn>
+struct CoordinateSystemNotCentered<eCoordinateSystemXXcn>
 {
-	static const ECoordonateSystem value = eCoordonateSystemXXn;
+	static const ECoordinateSystem value = eCoordinateSystemXXn;
 };
 template<>
-struct CoordonateSystemNotCentered<eCoordonateSystemXYc>
+struct CoordinateSystemNotCentered<eCoordinateSystemXYc>
 {
-	static const ECoordonateSystem value = eCoordonateSystemXYc;
+	static const ECoordinateSystem value = eCoordinateSystemXYc;
 };
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 class ParamRectangleFromCenterSize : public PointInteract
 {
 public:
@@ -41,7 +41,7 @@ public:
 
 private:
 	ParamPoint<TFrame, coord> _center;
-	ParamPoint<TFrame, CoordonateSystemNotCentered<coord>::value> _size;
+	ParamPoint<TFrame, CoordinateSystemNotCentered<coord>::value> _size;
 	TFrame _frame;
 
 	/**
@@ -179,7 +179,7 @@ public:
 
 };
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 ParamRectangleFromCenterSize<TFrame, coord>::ParamRectangleFromCenterSize( const InteractInfos& infos, OFX::Double2DParam* paramCenter, OFX::Double2DParam* paramSize, const TFrame& frame )
 	: PointInteract( infos )
 	, _center( infos, paramCenter, frame )
@@ -187,10 +187,10 @@ ParamRectangleFromCenterSize<TFrame, coord>::ParamRectangleFromCenterSize( const
 	, _frame( frame )
 {}
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 ParamRectangleFromCenterSize<TFrame, coord>::~ParamRectangleFromCenterSize() {}
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 bool ParamRectangleFromCenterSize<TFrame, coord>::draw( const OFX::DrawArgs& args ) const
 {
 	_center.draw( args );
@@ -198,7 +198,7 @@ bool ParamRectangleFromCenterSize<TFrame, coord>::draw( const OFX::DrawArgs& arg
 	return true;
 }
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangleFromCenterSize<TFrame, coord>::selectType( const OFX::PenArgs& args ) const
 {
 	const Point2 p              = ofxToGil( args.penPosition );
@@ -239,7 +239,7 @@ typename ParamRectangleFromCenterSize<TFrame, coord>::ESelectType ParamRectangle
 	return eSelectTypeNone;
 }
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 MotionType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::PenArgs& args )
 {
 	// intersect center point
@@ -264,7 +264,7 @@ MotionType ParamRectangleFromCenterSize<TFrame, coord>::intersect( const OFX::Pe
 	return m;
 }
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 bool ParamRectangleFromCenterSize<TFrame, coord>::isIn( const OfxRectD& rect )
 {
 	_selectType = eSelectTypeNone;
