@@ -22,16 +22,18 @@ path-constant DIST 		 	 : ./dist ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
+    :
+	requirements
    		# multithreading on
   		<threading>multi
 		<variant>release:<warnings-as-errors>on
-		<toolset>gcc,<address-model>64:<cxxflags>-fPIC
+		<cxxflags>-fPIC
+		<define>BOOST_HAS_ICU=0
   		#
   		# GCC specific flags
   		#
   		# removes deprecated header used by boost
-        <toolset>gcc:<cxxflags>-Wno-deprecated
+	        <toolset>gcc:<cxxflags>-Wno-deprecated
     ;
 
 ###############################################################################
@@ -51,8 +53,8 @@ use-project /tuttletests 	: libraries/tuttle/tests ;
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-use-project /sam 			: applications/sam ;
-use-project /samtests 		: applications/sam/tests ;
+#use-project /sam 			: applications/sam ;
+#use-project /samtests 		: applications/sam/tests ;
 
 #
 # TUTTLEOFX PLUGINS
@@ -68,7 +70,7 @@ alias /tests :
 # all targets have to be marked as explicit
 explicit 	/tuttle
 			/tuttletests
-			/sam
-			/samtests
+#			/sam
+#			/samtests
 			/plugins
 			/tests	;

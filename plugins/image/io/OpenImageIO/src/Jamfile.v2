@@ -22,7 +22,6 @@ project
 #        /tuttleplugin/<link>static
 #        /boost/filesystem/<link>static
 #		/boost/system/<link>static
-#		/boost/regex/<link>static
 #        /openImageIO/<link>static
 #        ;
 #explicit OpenImageIO ;

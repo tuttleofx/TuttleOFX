@@ -20,10 +20,9 @@ use-project /png 	: $(3RD_PARTY)/libpng ;
 plugin Png : 
         [ glob-tree *.cpp ]
         /tuttleplugin/<link>static
-        /boost/filesystem/<link>static
-		/boost/system/<link>static
-		/boost/regex/<link>static
-        /png/<link>static
+        #/boost/filesystem/<link>static
+	#/boost/system/<link>static
+        /png
         ;
 explicit Png ;
 

@@ -7,23 +7,14 @@
 ###############################################################################
 project
     : requirements
-        <threading>multi
         <include>.
     : build-dir $(DIST)/Raw/obj
     ;
-
-#use-project /raw 	: $(3RD_PARTY)/libraw ;
 
 ###############################################################################
 # Product 
 ###############################################################################
 #plugin Raw :
-#        [ glob-tree *.cpp ]
-#        /tuttleplugin/<link>static
-#        /boost/filesystem/<link>static
-#		/boost/system/<link>static
-#		/boost/regex/<link>static
-#        /raw/<link>static
 #        ;
 
 alias Raw ;

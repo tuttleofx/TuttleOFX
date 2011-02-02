@@ -8,13 +8,11 @@
 project
     : requirements	
         <include>.
-        <include>../zlib
-        <threading>multi
-        <link>static
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements
         <include>.
+#	<link>static
     : build-dir $(DIST)/3rdParty/png/obj
     ;
 
@@ -27,7 +25,7 @@ alias headers : [ glob-tree *.h ] ;
 
 lib png : 
         [ glob *.c ]
-        /zlib/<link>static
+        /zlib
         ;
 
 install dist_src	

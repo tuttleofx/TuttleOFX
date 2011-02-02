@@ -9,6 +9,8 @@ project
     : requirements	
 			<include>include
 			<link>static
+
+			<cxxflags>-fPIC
 	: usage-requirements
 			<include>include
     : build-dir $(DIST)/openFX/Support/obj
