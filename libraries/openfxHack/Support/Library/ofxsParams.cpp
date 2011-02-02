@@ -2281,6 +2281,11 @@ GroupParam::GroupParam( const ParamSet* paramSet, const std::string& name, OfxPa
 	: Param( paramSet, name, eGroupParam, handle )
 {}
 
+void GroupParam::setOpen( const bool open )
+{
+	getProps().propSetInt( kOfxParamPropGroupOpen, open );
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Wraps up a page param
 
