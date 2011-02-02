@@ -303,7 +303,7 @@ public:
 		}
 		else
 		{
-			TUTTLE_COUT_WARNING("The host doesn't support multiple clip depths, but didn't define supported pixel depth. (size: " << _supportedPixelDepths.size() << ")" );
+			OFXS_COUT_WARNING("The host doesn't support multiple clip depths, but didn't define supported pixel depth. (size: " << _supportedPixelDepths.size() << ")" );
 			return eBitDepthFloat;
 		}
 	}
