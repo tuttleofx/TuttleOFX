@@ -27,17 +27,11 @@ bool CropPlugin::displayRect()
 
 void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kCropHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kCropHelpString );
-	}
-	else if( paramName == kParamPresets )
+	if( paramName == kParamPresets )
 	{
 		// Compute bands sizes in pixels
 		int f, bandSize;
-		double ratio;
+		double ratio = 0.0;
 		_paramFormats->getValue( f );
 		OFX::IntParam* upBand    = fetchIntParam( kParamUp );
 		OFX::IntParam* downBand  = fetchIntParam( kParamDown );
@@ -51,26 +45,23 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 		switch( f )
 		{
 			// 4/3
-			case k1_1_33:
+			case eParamPreset_1_33:
 				ratio = 4.0 / 3.0;
 				break;
 			// 16 / 9
-			case k1_1_77:
+			case eParamPreset_1_77:
 				ratio = 16.0 / 9.0;
 				break;
 			// 1:1.85
-			case k1_1_85:
+			case eParamPreset_1_85:
 				ratio = 1.85;
 				break;
 			// Cinemascope
-			case k1_2_35:
+			case eParamPreset_2_35:
 				ratio = 2.35;
 				break;
-			case k1_2_40:
+			case eParamPreset_2_40:
 				ratio = 2.40;
-				break;
-			default:
-				ratio = 0;
 				break;
 		}
 
