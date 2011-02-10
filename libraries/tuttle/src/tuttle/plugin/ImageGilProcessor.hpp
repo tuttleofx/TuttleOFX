@@ -101,23 +101,23 @@ public:
 		{
 			progressEnd();
 
-			// throw an error, only if the host is not trying to abort the rendering
-			// else return without error
-			if( ! _effect.abort() )
+			// if the host is trying to abort the rendering return without error
+			if( _effect.abort() )
 			{
-				throw;
+				return;
 			}
+			throw;
 		}
 		catch(...)
 		{
 			progressEnd();
 
-			// throw an error, only if the host is not trying to abort the rendering
-			// else return without error
-			if( ! _effect.abort() )
+			// if the host is trying to abort the rendering return without error
+			if( _effect.abort() )
 			{
-				throw;
+				return;
 			}
+			throw;
 		}
 
 		// Call the base class process member

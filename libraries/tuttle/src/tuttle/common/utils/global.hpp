@@ -44,16 +44,16 @@ namespace std {
 #ifndef TUTTLE_COUT
 
 /**
- * @def   INFOS
+ * @def   TUTTLE_INFOS
  * @brief informations : filename, line number, function name
  **/
- #define INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << ::std::endl << "function: " << BOOST_CURRENT_FUNCTION
+ #define TUTTLE_INFOS  "file: " << __FILE__ << ",  line: " << __LINE__ << ::std::endl << "function: " << BOOST_CURRENT_FUNCTION
 
- #define VAR( a )  # a << ": " << a
- #define VAR2( a, b )  # a << ": " << a << ", " << # b << ": " << b
- #define VAR3( a, b, c )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c
- #define VAR4( a, b, c, d )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d
- #define VAR_ENDL( a )  # a << ":" << ::std::endl << a
+ #define TUTTLE_VAR( a )  # a << ": " << a
+ #define TUTTLE_VAR2( a, b )  # a << ": " << a << ", " << # b << ": " << b
+ #define TUTTLE_VAR3( a, b, c )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c
+ #define TUTTLE_VAR4( a, b, c, d )  # a << ": " << a << ", " << # b << ": " << b << ", " << # c << ": " << c << ", " << # d << ": " << d
+ #define TUTTLE_VAR_ENDL( a )  # a << ":" << ::std::endl << a
 
 #ifndef TUTTLE_NO_COUT
 /**
@@ -61,7 +61,7 @@ namespace std {
  * @brief terminal display
  **/
  #define TUTTLE_COUT(... )  ::std::cout << __VA_ARGS__ << ::std::endl
- #define CERR(... )  ::std::cerr << __VA_ARGS__ << ::std::endl
+ #define TUTTLE_CERR(... )  ::std::cerr << __VA_ARGS__ << ::std::endl
 
  #define TUTTLE_COUT_X( N, ... ) \
     for( unsigned int i = 0; i < N; ++i ) { ::std::cout << __VA_ARGS__; } \
@@ -69,42 +69,42 @@ namespace std {
 
 #else
  #define TUTTLE_COUT(...)
- #define CERR(...)
+ #define TUTTLE_CERR(...)
  #define TUTTLE_COUT_X( N, ... )
 #endif
 
 
- #define TUTTLE_COUT_VAR( a )  TUTTLE_COUT( VAR( a ) )
- #define TUTTLE_COUT_VAR2( a, b )  TUTTLE_COUT( VAR2( a, b ) )
- #define TUTTLE_COUT_VAR3( a, b, c )  TUTTLE_COUT( VAR3( a, b, c ) )
- #define TUTTLE_COUT_VAR4( a, b, c, d )  TUTTLE_COUT( VAR4( a, b, c, d ) )
+ #define TUTTLE_COUT_VAR( a )  TUTTLE_COUT( TUTTLE_VAR( a ) )
+ #define TUTTLE_COUT_VAR2( a, b )  TUTTLE_COUT( TUTTLE_VAR2( a, b ) )
+ #define TUTTLE_COUT_VAR3( a, b, c )  TUTTLE_COUT( TUTTLE_VAR3( a, b, c ) )
+ #define TUTTLE_COUT_VAR4( a, b, c, d )  TUTTLE_COUT( TUTTLE_VAR4( a, b, c, d ) )
 
 /**
  * @brief terminal information display
  **/
- #define TUTTLE_COUT_INFOS TUTTLE_COUT( INFOS )
+ #define TUTTLE_COUT_INFOS TUTTLE_COUT( TUTTLE_INFOS )
 
 /**
  * @param[in] ... : all parameters with an operator << defined
  * @brief terminal information display
  **/
  #define TUTTLE_COUT_WITHINFOS(... )  \
-    TUTTLE_COUT( INFOS << \
+    TUTTLE_COUT( TUTTLE_INFOS << \
           ::std::endl << "\t" << __VA_ARGS__ )
 
  #define TUTTLE_COUT_WARNING(... )  \
-    CERR( "Warning:" << \
-    ::std::endl << INFOS << \
+    TUTTLE_CERR( "Warning:" << \
+    ::std::endl << TUTTLE_INFOS << \
     ::std::endl << "\t" << __VA_ARGS__  )
 
  #define TUTTLE_COUT_ERROR(... )  \
-    CERR( "Error:" << \
-    ::std::endl << INFOS << \
+    TUTTLE_CERR( "Error:" << \
+    ::std::endl << TUTTLE_INFOS << \
     ::std::endl << "\t" << __VA_ARGS__  )
 
  #define TUTTLE_COUT_FATALERROR(... )  \
-    CERR( "Fatal error:" << \
-    ::std::endl << INFOS << \
+    TUTTLE_CERR( "Fatal error:" << \
+    ::std::endl << TUTTLE_INFOS << \
     ::std::endl << "\t" << __VA_ARGS__  )
 
 #endif

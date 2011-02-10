@@ -43,9 +43,8 @@
  */
 namespace OFX {
 
-
 InteractDescriptor::~InteractDescriptor() {}
-InteractWrap::~InteractWrap() {}
+EffectInteractWrap::~EffectInteractWrap() {}
 ParamInteractWrap::~ParamInteractWrap() {}
 
 /** @brief fetch a pixel scale out of the property set */

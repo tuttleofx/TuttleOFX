@@ -17,9 +17,9 @@ static const bool kSupportTiles = false;
  */
 void Move2DPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleMove2D", "TuttleMove2D",
+	desc.setLabels( "TuttleMove2D", "Move2D",
 		            "Move2D" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );

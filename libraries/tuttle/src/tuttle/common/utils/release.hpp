@@ -1,5 +1,5 @@
-#ifndef __TUTTLE_RELEASE__
-#define __TUTTLE_RELEASE__
+#ifndef _TUTTLE_COMMON_RELEASE_HPP_
+#define _TUTTLE_COMMON_RELEASE_HPP_
 
 /*
  * In release mode, TUTTLE_COUT_*_DEBUG are disabled.
@@ -11,8 +11,8 @@
 #define TUTTLE_COUT_INFOS_DEBUG
 /// @see  TUTTLE_COUT_INFOS
 #define TUTTLE_COUT_WITHINFOS_DEBUG(... )
-/// @see IF_DEBUG
-#define IF_DEBUG(... )
+/// @see TUTTLE_IF_DEBUG
+#define TUTTLE_IF_DEBUG(... )
 
 #define TUTTLE_COUT_X_DEBUG( N, ... )
 #define TUTTLE_COUT_VAR_DEBUG(... )

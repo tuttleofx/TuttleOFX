@@ -1479,7 +1479,7 @@ void ClipPreferencesSetter::setClipComponents( Clip& clip, EPixelComponent comps
 			outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGBA );
 			break;
 		case ePixelComponentRGB:
-			outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGBA );
+			outArgs_.propSetString( propName.c_str(), kOfxImageComponentRGB );
 			break;
 		case ePixelComponentAlpha:
 			outArgs_.propSetString( propName.c_str(), kOfxImageComponentAlpha );
@@ -2245,6 +2245,13 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	OFX::Log::indent();
 	OfxStatus stat = kOfxStatReplyDefault;
 
+	// Cast the raw handle to be an image effect handle, because that is what it is
+	OfxImageEffectHandle handle = (OfxImageEffectHandle) handleRaw;
+
+	// Turn the arguments into wrapper objects to make our lives easier
+	OFX::PropertySet inArgs( inArgsRaw );
+	OFX::PropertySet outArgs( outArgsRaw );
+
 	try
 	{
 		// turn the action into a std::string
@@ -2252,15 +2259,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		OfxPlugInfoMap::iterator it = plugInfoMap.find( plugname );
 		if( it == plugInfoMap.end() )
 			BOOST_THROW_EXCEPTION( std::logic_error( "Action not recognized: " + action ) );
-
 		OFX::PluginFactory* factory = it->second._factory;
-
-		// Cast the raw handle to be an image effect handle, because that is what it is
-		OfxImageEffectHandle handle = (OfxImageEffectHandle) handleRaw;
-
-		// Turn the arguments into wrapper objects to make our lives easier
-		OFX::PropertySet inArgs( inArgsRaw );
-		OFX::PropertySet outArgs( outArgsRaw );
 
 		// figure the actions
 		if( action == kOfxActionLoad )
@@ -2512,6 +2511,25 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		}
 	}
 
+	catch( boost::exception& e )
+	{
+		typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
+
+		std::cerr << "----------" << std::endl;
+		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
+		if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
+		{
+			stat = *status;
+		}
+		else
+		{
+			stat = kOfxStatFailed;
+		}
+		std::cerr << boost::diagnostic_information(e);
+//		std::cerr << "* inArgs: " << inArgs << std::endl;
+		std::cerr << "----------" << std::endl;
+	}
+	
 	// catch suite exceptions
 	catch( OFX::Exception::Suite& e )
 	{
@@ -2549,22 +2567,6 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	}
 	#endif
 
-	catch( boost::exception& e )
-	{
-		typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
-		
-		std::cerr << "Caught boost::exception on action " << actionRaw << std::endl;
-		if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
-		{
-			stat = *status;
-		}
-		else
-		{
-			stat = kOfxStatFailed;
-		}
-		std::cerr << boost::diagnostic_information(e);
-	}
-	
 	// catch all exceptions
 	catch( std::exception& e )
 	{
@@ -2573,7 +2575,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	}
 
 	// Catch anything else, unknown
-	catch(... )
+	catch( ... )
 	{
 		std::cerr << "Caught Unknown exception (file:" << __FILE__ << " line:" << __LINE__ << ")" << std::endl;
 		stat = kOfxStatFailed;

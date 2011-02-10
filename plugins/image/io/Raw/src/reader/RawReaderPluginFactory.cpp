@@ -19,7 +19,8 @@ void RawReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Raw file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "<b>Raw File reader</b> plugin is used to read raw files.  <br />" );
+	desc.setDescription( "Raw File reader\n"
+	                     "Plugin is used to read raw files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

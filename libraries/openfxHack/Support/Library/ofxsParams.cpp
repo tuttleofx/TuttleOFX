@@ -231,7 +231,7 @@ void ValueParamDescriptor::setCacheInvalidation( CacheInvalidationEnum v )
 	}
 }
 
-void ValueParamDescriptor::setInteractDescriptor(ParamInteractWrap* desc)
+void ValueParamDescriptor::setInteractDescriptor( ParamInteractWrap* desc)
 {
 	_interact.reset( desc );
 	getProps().propSetPointer( kOfxParamPropInteractV1, (void*)desc->getMainEntry() );
@@ -2280,6 +2280,11 @@ void CustomParam::setValueAtTime( double t, const std::string& v )
 GroupParam::GroupParam( const ParamSet* paramSet, const std::string& name, OfxParamHandle handle )
 	: Param( paramSet, name, eGroupParam, handle )
 {}
+
+void GroupParam::setOpen( const bool open )
+{
+	getProps().propSetInt( kOfxParamPropGroupOpen, open );
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Wraps up a page param

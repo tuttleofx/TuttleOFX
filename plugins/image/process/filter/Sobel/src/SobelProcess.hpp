@@ -32,19 +32,19 @@ public:
 	void setup( const OFX::RenderArguments& args );
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
-	template<class ProcPixelGray>
-	void computeXPass2( DView& dst, const Point& proc_tl, boost::mpl::true_ );
-	template<class ProcPixelGray>
-	void computeXPass2( DView& dst, const Point& proc_tl, boost::mpl::false_ )
-	{
-		BOOST_THROW_EXCEPTION( exception::Bug() );
-	}
+//	template<class ProcPixelGray>
+//	void computeXPass2( DView& dst, const Point& proc_tl, boost::mpl::true_ );
+//	template<class ProcPixelGray>
+//	void computeXPass2( DView& dst, const Point& proc_tl, boost::mpl::false_ )
+//	{
+//		BOOST_THROW_EXCEPTION( exception::Bug() );
+//	}
 
 	template<class ProcPixelGray>
 	void computeYPass2( DView& dst, const Point& proc_tl, boost::mpl::true_ )
 	{
 		using namespace boost::gil;
-		correlate_cols<ProcPixelGray>(
+		correlate_cols_auto<ProcPixelGray>(
 			kth_channel_view<1>( this->_srcView ),
 			_params._yKernelGaussianDerivative,
 			kth_channel_view<1>(dst),

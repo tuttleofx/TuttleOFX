@@ -61,8 +61,7 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		using namespace std;
 		using namespace tuttle::host;
 
-		//Core::instance().getPluginCache().addDirectoryToPath( "/path/to/plugins" );
-		//Core::instance().getPluginCache().scanPluginFiles();
+		Core::instance().getPluginCache().addDirectoryToPath( BOOST_PP_STRINGIZE(TUTTLE_PLUGIN_PATH) );
 		Core::instance().preload();
 		TUTTLE_TCOUT( Core::instance().getImageEffectPluginCache() );
 

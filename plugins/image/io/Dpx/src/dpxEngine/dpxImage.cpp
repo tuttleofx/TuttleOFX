@@ -70,50 +70,50 @@ std::ostream& operator<<( std::ostream& os, const FileInformation& v )
 	{
 		magic_str[i] = (reinterpret_cast<const char*>( &v.magic_num ))[i];
 	}
-	os << VAR( magic_str ) << std::endl;
-	os << VAR( v.magic_num ) << std::endl;
-	os << VAR( v.offset ) << std::endl;
-	os << VAR( v.vers ) << std::endl;
-	os << VAR( v.file_size ) << std::endl;
-	os << VAR( v.ditto_key ) << std::endl;
-	os << VAR( v.gen_hdr_size ) << std::endl;
-	os << VAR( v.ind_hdr_size ) << std::endl;
-	os << VAR( v.user_data_size ) << std::endl;
-	os << VAR( v.file_name ) << std::endl;
-	os << VAR( v.create_time ) << std::endl;
-	os << VAR( v.creator ) << std::endl;
-	os << VAR( v.project ) << std::endl;
-	os << VAR( v.copyright ) << std::endl;
-	os << VAR( v.key ) << std::endl;
+	os << TUTTLE_VAR( magic_str ) << std::endl;
+	os << TUTTLE_VAR( v.magic_num ) << std::endl;
+	os << TUTTLE_VAR( v.offset ) << std::endl;
+	os << TUTTLE_VAR( v.vers ) << std::endl;
+	os << TUTTLE_VAR( v.file_size ) << std::endl;
+	os << TUTTLE_VAR( v.ditto_key ) << std::endl;
+	os << TUTTLE_VAR( v.gen_hdr_size ) << std::endl;
+	os << TUTTLE_VAR( v.ind_hdr_size ) << std::endl;
+	os << TUTTLE_VAR( v.user_data_size ) << std::endl;
+	os << TUTTLE_VAR( v.file_name ) << std::endl;
+	os << TUTTLE_VAR( v.create_time ) << std::endl;
+	os << TUTTLE_VAR( v.creator ) << std::endl;
+	os << TUTTLE_VAR( v.project ) << std::endl;
+	os << TUTTLE_VAR( v.copyright ) << std::endl;
+	os << TUTTLE_VAR( v.key ) << std::endl;
 	return os;
 }
 
 std::ostream& operator<<( std::ostream& os, const ImageInformation::_image_element& v )
 {
-	os << VAR( v.data_sign ) << std::endl;
-	os << VAR( v.ref_low_data ) << std::endl;
-	os << VAR( v.ref_low_quantity ) << std::endl;
-	os << VAR( v.ref_high_data ) << std::endl;
-	os << VAR( v.ref_high_quantity ) << std::endl;
-	os << VAR( (int)v.descriptor ) << std::endl;
-	os << VAR( (int)v.transfer ) << std::endl;
-	os << VAR( (int)v.colorimetric ) << std::endl;
-	os << VAR( (int)v.bit_size ) << std::endl;
-	os << VAR( v.packing ) << std::endl;
-	os << VAR( v.encoding ) << std::endl;
-	os << VAR( v.data_offset ) << std::endl;
-	os << VAR( v.eol_padding ) << std::endl;
-	os << VAR( v.eo_image_padding ) << std::endl;
-	os << VAR( v.description ) << std::endl;
+	os << TUTTLE_VAR( v.data_sign ) << std::endl;
+	os << TUTTLE_VAR( v.ref_low_data ) << std::endl;
+	os << TUTTLE_VAR( v.ref_low_quantity ) << std::endl;
+	os << TUTTLE_VAR( v.ref_high_data ) << std::endl;
+	os << TUTTLE_VAR( v.ref_high_quantity ) << std::endl;
+	os << TUTTLE_VAR( (int)v.descriptor ) << std::endl;
+	os << TUTTLE_VAR( (int)v.transfer ) << std::endl;
+	os << TUTTLE_VAR( (int)v.colorimetric ) << std::endl;
+	os << TUTTLE_VAR( (int)v.bit_size ) << std::endl;
+	os << TUTTLE_VAR( v.packing ) << std::endl;
+	os << TUTTLE_VAR( v.encoding ) << std::endl;
+	os << TUTTLE_VAR( v.data_offset ) << std::endl;
+	os << TUTTLE_VAR( v.eol_padding ) << std::endl;
+	os << TUTTLE_VAR( v.eo_image_padding ) << std::endl;
+	os << TUTTLE_VAR( v.description ) << std::endl;
 	return os;
 }
 
 std::ostream& operator<<( std::ostream& os, const ImageInformation& v )
 {
-	os << VAR( v.orientation ) << std::endl;
-	os << VAR( v.element_number ) << std::endl;
-	os << VAR( v.pixelsPerLine ) << std::endl;
-	os << VAR( v.linesPerImageEle ) << std::endl;
+	os << TUTTLE_VAR( v.orientation ) << std::endl;
+	os << TUTTLE_VAR( v.element_number ) << std::endl;
+	os << TUTTLE_VAR( v.pixelsPerLine ) << std::endl;
+	os << TUTTLE_VAR( v.linesPerImageEle ) << std::endl;
 	for( unsigned int i = 0; i < 8; ++i )
 	{
 		os << "v.image_element["<<i<<"]:" << std::endl;
@@ -124,67 +124,67 @@ std::ostream& operator<<( std::ostream& os, const ImageInformation& v )
 
 std::ostream& operator<<( std::ostream& os, const ImageOrientation& v )
 {
-	os << VAR( v.x_offset ) << std::endl;
-	os << VAR( v.y_offset ) << std::endl;
-	os << VAR( v.x_center ) << std::endl;
-	os << VAR( v.y_center ) << std::endl;
-	os << VAR( v.x_orig_size ) << std::endl;
-	os << VAR( v.y_orig_size ) << std::endl;
-	os << VAR( v.file_name ) << std::endl;
-	os << VAR( v.creation_time ) << std::endl;
-	os << VAR( v.input_dev ) << std::endl;
-	os << VAR( v.input_serial ) << std::endl;
-	os << VAR( v.border ) << std::endl;
-	os << VAR( v.pixel_aspect ) << std::endl;
+	os << TUTTLE_VAR( v.x_offset ) << std::endl;
+	os << TUTTLE_VAR( v.y_offset ) << std::endl;
+	os << TUTTLE_VAR( v.x_center ) << std::endl;
+	os << TUTTLE_VAR( v.y_center ) << std::endl;
+	os << TUTTLE_VAR( v.x_orig_size ) << std::endl;
+	os << TUTTLE_VAR( v.y_orig_size ) << std::endl;
+	os << TUTTLE_VAR( v.file_name ) << std::endl;
+	os << TUTTLE_VAR( v.creation_time ) << std::endl;
+	os << TUTTLE_VAR( v.input_dev ) << std::endl;
+	os << TUTTLE_VAR( v.input_serial ) << std::endl;
+	os << TUTTLE_VAR( v.border ) << std::endl;
+	os << TUTTLE_VAR( v.pixel_aspect ) << std::endl;
 	return os;
 }
 
 std::ostream& operator<<( std::ostream& os, const MotionPictureFilm& v )
 {
-	os << VAR( (int)v.film_mfg_id ) << std::endl;
-	os << VAR( (int)v.film_type ) << std::endl;
-	os << VAR( (int)v.offset ) << std::endl;
-	os << VAR( v.prefix ) << std::endl;
-	os << VAR( v.count ) << std::endl;
-	os << VAR( v.format ) << std::endl;
-	os << VAR( v.frame_position ) << std::endl;
-	os << VAR( v.sequence_len ) << std::endl;
-	os << VAR( v.held_count ) << std::endl;
-	os << VAR( v.frame_rate ) << std::endl;
-	os << VAR( v.shutter_angle ) << std::endl;
-	os << VAR( v.frame_id ) << std::endl;
-	os << VAR( v.slate_info ) << std::endl;
+	os << TUTTLE_VAR( (int)v.film_mfg_id ) << std::endl;
+	os << TUTTLE_VAR( (int)v.film_type ) << std::endl;
+	os << TUTTLE_VAR( (int)v.offset ) << std::endl;
+	os << TUTTLE_VAR( v.prefix ) << std::endl;
+	os << TUTTLE_VAR( v.count ) << std::endl;
+	os << TUTTLE_VAR( v.format ) << std::endl;
+	os << TUTTLE_VAR( v.frame_position ) << std::endl;
+	os << TUTTLE_VAR( v.sequence_len ) << std::endl;
+	os << TUTTLE_VAR( v.held_count ) << std::endl;
+	os << TUTTLE_VAR( v.frame_rate ) << std::endl;
+	os << TUTTLE_VAR( v.shutter_angle ) << std::endl;
+	os << TUTTLE_VAR( v.frame_id ) << std::endl;
+	os << TUTTLE_VAR( v.slate_info ) << std::endl;
 	return os;
 }
 
 std::ostream& operator<<( std::ostream& os, const TelevisionHeader& v )
 {
-	os << VAR( v.tim_code ) << std::endl;
-	os << VAR( v.userBits ) << std::endl;
-	os << VAR( (int)v.interlace ) << std::endl;
-	os << VAR( (int)v.field_num ) << std::endl;
-	os << VAR( (int)v.video_signal ) << std::endl;
-	os << VAR( (int)v.unused ) << std::endl;
-	os << VAR( v.hor_sample_rate ) << std::endl;
-	os << VAR( v.ver_sample_rate ) << std::endl;
-	os << VAR( v.frame_rate ) << std::endl;
-	os << VAR( v.time_offset ) << std::endl;
-	os << VAR( v.gamma ) << std::endl;
-	os << VAR( v.black_level ) << std::endl;
-	os << VAR( v.black_gain ) << std::endl;
-	os << VAR( v.break_point ) << std::endl;
-	os << VAR( v.white_level ) << std::endl;
-	os << VAR( v.integration_times ) << std::endl;
+	os << TUTTLE_VAR( v.tim_code ) << std::endl;
+	os << TUTTLE_VAR( v.userBits ) << std::endl;
+	os << TUTTLE_VAR( (int)v.interlace ) << std::endl;
+	os << TUTTLE_VAR( (int)v.field_num ) << std::endl;
+	os << TUTTLE_VAR( (int)v.video_signal ) << std::endl;
+	os << TUTTLE_VAR( (int)v.unused ) << std::endl;
+	os << TUTTLE_VAR( v.hor_sample_rate ) << std::endl;
+	os << TUTTLE_VAR( v.ver_sample_rate ) << std::endl;
+	os << TUTTLE_VAR( v.frame_rate ) << std::endl;
+	os << TUTTLE_VAR( v.time_offset ) << std::endl;
+	os << TUTTLE_VAR( v.gamma ) << std::endl;
+	os << TUTTLE_VAR( v.black_level ) << std::endl;
+	os << TUTTLE_VAR( v.black_gain ) << std::endl;
+	os << TUTTLE_VAR( v.break_point ) << std::endl;
+	os << TUTTLE_VAR( v.white_level ) << std::endl;
+	os << TUTTLE_VAR( v.integration_times ) << std::endl;
 	return os;
 }
 
 std::ostream& operator<<( std::ostream& os, const DpxHeader& v )
 {
-	os << VAR_ENDL( v._fileInfo ) << std::endl;
-	os << VAR_ENDL( v._imageInfo ) << std::endl;
-	os << VAR_ENDL( v._imageOrientation ) << std::endl;
-	os << VAR_ENDL( v._motionPicture ) << std::endl;
-	os << VAR_ENDL( v._television ) << std::endl;
+	os << TUTTLE_VAR_ENDL( v._fileInfo ) << std::endl;
+	os << TUTTLE_VAR_ENDL( v._imageInfo ) << std::endl;
+	os << TUTTLE_VAR_ENDL( v._imageOrientation ) << std::endl;
+	os << TUTTLE_VAR_ENDL( v._motionPicture ) << std::endl;
+	os << TUTTLE_VAR_ENDL( v._television ) << std::endl;
 	return os;
 }
 

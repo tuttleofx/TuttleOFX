@@ -20,10 +20,10 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleHistogramKeyer", "HistogramKeyer",
 		            "HistogramKeyer" );
-	desc.setPluginGrouping( "tuttle" );
+	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription(
-		"<b>HistogramKeyer</b>\n"
+		"HistogramKeyer\n"
 		"Test parametric parameters.\n"
 		"Full description of the plugin....\n"
 		"\n"
@@ -94,7 +94,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		curves->setUIColour( 3, {1,1,1} );
 		curves->setUIColour( 4, {1,1,1} );
 		curves->setUIColour( 5, {1,1,1} );
-	//	curves.setInteractDescriptor( new OFX::DefaultEffectOverlayWrap<HistogramCurveOverlayDescriptor>() );
+		curves->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HistogramKeyerParamOverlayDescriptor>() );
 	}
 
 //	TUTTLE_COUT_INFOS;

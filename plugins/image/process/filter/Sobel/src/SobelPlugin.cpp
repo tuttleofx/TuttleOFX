@@ -228,6 +228,7 @@ SobelPlugin::SobelPlugin( OfxImageEffectHandle handle )
 
 SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
+	using namespace boost;
 	using namespace boost::gil;
 	SobelProcessParams<Scalar> params;
 
@@ -240,22 +241,21 @@ SobelProcessParams<SobelPlugin::Scalar> SobelPlugin::getProcessParams( const Ofx
 	params._computeGradientDirection = _paramComputeGradientDirection->getValue();
 	params._gradientDirectionAbs = _paramGradientDirectionAbs->getValue();
 
-
 	params._border = static_cast<EParamBorder>( _paramBorder->getValue() );
-	params._boundary_option = bgil::convolve_option_extend_mirror;
+	params._boundary_option = gil::convolve_option_extend_mirror;
 	switch( params._border )
 	{
 		case eParamBorderMirror:
-			params._boundary_option = bgil::convolve_option_extend_mirror;
+			params._boundary_option = gil::convolve_option_extend_mirror;
 			break;
 		case eParamBorderConstant:
-			params._boundary_option = bgil::convolve_option_extend_constant;
+			params._boundary_option = gil::convolve_option_extend_constant;
 			break;
 		case eParamBorderBlack:
-			params._boundary_option = bgil::convolve_option_extend_zero;
+			params._boundary_option = gil::convolve_option_extend_zero;
 			break;
 		case eParamBorderPadded:
-			params._boundary_option = bgil::convolve_option_extend_padded;
+			params._boundary_option = gil::convolve_option_extend_padded;
 			break;
 	}
 

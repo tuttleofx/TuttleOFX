@@ -26,6 +26,7 @@ namespace boost { namespace gil {
 /// this is a generic implementation; user should specialize it for better performance
 template <typename ChannelSrc,typename ChannelDst>
 struct channel_plus_assign_t : public std::binary_function<ChannelSrc,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
                 typename channel_traits<ChannelDst>::reference ch2 ) const {
@@ -39,6 +40,7 @@ struct channel_plus_assign_t : public std::binary_function<ChannelSrc,ChannelDst
 /// this is a generic implementation; user should specialize it for better performance
 template <typename ChannelSrc,typename ChannelDst>
 struct channel_minus_assign_t : public std::binary_function<ChannelSrc,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
                 typename channel_traits<ChannelDst>::reference ch2 ) const {
@@ -52,6 +54,7 @@ struct channel_minus_assign_t : public std::binary_function<ChannelSrc,ChannelDs
 /// this is a generic implementation; user should specialize it for better performance
 template <typename ChannelSrc,typename ChannelDst>
 struct channel_multiplies_assign_t : public std::binary_function<ChannelSrc,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
                 typename channel_traits<ChannelDst>::reference ch2 ) const {
@@ -65,6 +68,7 @@ struct channel_multiplies_assign_t : public std::binary_function<ChannelSrc,Chan
 /// this is a generic implementation; user should specialize it for better performance
 template <typename ChannelSrc,typename ChannelDst>
 struct channel_divides_assign_t : public std::binary_function<ChannelSrc,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( typename channel_traits<ChannelSrc>::const_reference ch1,
                 typename channel_traits<ChannelDst>::reference ch2 ) const {
@@ -79,6 +83,7 @@ struct channel_divides_assign_t : public std::binary_function<ChannelSrc,Channel
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Scalar, typename ChannelDst>
 struct channel_plus_scalar_assign_t : public std::binary_function<Scalar,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( const Scalar& s,
 	            typename channel_traits<ChannelDst>::reference ch ) const {
@@ -92,6 +97,7 @@ struct channel_plus_scalar_assign_t : public std::binary_function<Scalar,Channel
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Scalar, typename ChannelDst>
 struct channel_minus_scalar_assign_t : public std::binary_function<Scalar,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( const Scalar& s,
 	            typename channel_traits<ChannelDst>::reference ch ) const {
@@ -105,6 +111,7 @@ struct channel_minus_scalar_assign_t : public std::binary_function<Scalar,Channe
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Scalar, typename ChannelDst>
 struct channel_multiplies_scalar_assign_t : public std::binary_function<Scalar,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( const Scalar& s,
 	            typename channel_traits<ChannelDst>::reference ch ) const {
@@ -118,6 +125,7 @@ struct channel_multiplies_scalar_assign_t : public std::binary_function<Scalar,C
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Scalar, typename ChannelDst>
 struct channel_divides_scalar_assign_t : public std::binary_function<Scalar,ChannelDst,ChannelDst> {
+	GIL_FORCEINLINE
     typename channel_traits<ChannelDst>::reference
 	operator()( const Scalar& s,
 	            typename channel_traits<ChannelDst>::reference ch ) const {

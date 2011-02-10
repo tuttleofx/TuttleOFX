@@ -17,8 +17,6 @@ OfxRectD LensDistortPlugin::_dstRoi     = { 0, 0, 0, 0 };
 OfxRectD LensDistortPlugin::_srcRoi     = { 0, 0, 0, 0 };
 OfxRectD LensDistortPlugin::_srcRealRoi = { 0, 0, 0, 0 };
 
-const static std::string kLensDistortHelpString( "<p>Apply or correct a lens distortion on an image.</p>" );
-
 LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
@@ -45,7 +43,6 @@ LensDistortPlugin::LensDistortPlugin( OfxImageEffectHandle handle )
 	_gridCenterOverlay    = fetchBooleanParam( kParamGridCenterOverlay );
 	_gridScale            = fetchDouble2DParam( kParamGridScale );
 	_debugDisplayRoi      = fetchBooleanParam( kParamDebugDisplayRoi );
-	_helpButton           = fetchPushButtonParam( kParamHelp );
 
 	initParamsProps();
 }
@@ -119,13 +116,6 @@ void LensDistortPlugin::changedParam( const OFX::InstanceChangedArgs& args, cons
 	else if( paramName == kParamGridOverlay || paramName == kParamGridCenter || paramName == kParamGridScale )
 	{
 		redrawOverlays();
-	}
-	else if( paramName == kParamHelp )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // no XML override
-		             kLensDistortHelpString
-		             );
 	}
 }
 

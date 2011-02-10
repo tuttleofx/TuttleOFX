@@ -35,6 +35,7 @@ namespace boost { namespace gil {
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel1,typename Channel2,typename ChannelR>
 struct channel_plus_t : public std::binary_function<Channel1,Channel2,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel1>::const_reference ch1,
                         typename channel_traits<Channel2>::const_reference ch2) const {
         return ChannelR(ch1)+ChannelR(ch2);
@@ -46,6 +47,7 @@ struct channel_plus_t : public std::binary_function<Channel1,Channel2,ChannelR> 
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel1,typename Channel2,typename ChannelR>
 struct channel_minus_t : public std::binary_function<Channel1,Channel2,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel1>::const_reference ch1,
                         typename channel_traits<Channel2>::const_reference ch2) const {
         return ChannelR(ch1)-ChannelR(ch2);
@@ -57,6 +59,7 @@ struct channel_minus_t : public std::binary_function<Channel1,Channel2,ChannelR>
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel1,typename Channel2,typename ChannelR>
 struct channel_multiplies_t : public std::binary_function<Channel1,Channel2,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel1>::const_reference ch1,
                         typename channel_traits<Channel2>::const_reference ch2) const {
         return ChannelR(ch1)*ChannelR(ch2);
@@ -68,6 +71,7 @@ struct channel_multiplies_t : public std::binary_function<Channel1,Channel2,Chan
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel1,typename Channel2,typename ChannelR>
 struct channel_divides_t : public std::binary_function<Channel1,Channel2,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel1>::const_reference ch1,
                         typename channel_traits<Channel2>::const_reference ch2) const {
         return ChannelR(ch1)/ChannelR(ch2);
@@ -79,6 +83,7 @@ struct channel_divides_t : public std::binary_function<Channel1,Channel2,Channel
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel,typename Scalar,typename ChannelR>
 struct channel_plus_scalar_t : public std::binary_function<Channel,Scalar,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel>::const_reference ch,
                         const Scalar& s) const {
         return ChannelR(ch)+ChannelR(s);
@@ -90,6 +95,7 @@ struct channel_plus_scalar_t : public std::binary_function<Channel,Scalar,Channe
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel,typename Scalar,typename ChannelR>
 struct channel_minus_scalar_t : public std::binary_function<Channel,Scalar,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel>::const_reference ch,
                         const Scalar& s) const {
         return ChannelR(ch-s);
@@ -101,6 +107,7 @@ struct channel_minus_scalar_t : public std::binary_function<Channel,Scalar,Chann
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel,typename Scalar,typename ChannelR>
 struct channel_multiplies_scalar_t : public std::binary_function<Channel,Scalar,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel>::const_reference ch,
                         const Scalar& s) const {
         return ChannelR(ch)*ChannelR(s);
@@ -112,6 +119,7 @@ struct channel_multiplies_scalar_t : public std::binary_function<Channel,Scalar,
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel,typename Scalar,typename ChannelR>
 struct channel_divides_scalar_t : public std::binary_function<Channel,Scalar,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel>::const_reference ch,
                         const Scalar& s) const {
         return ChannelR(ch)/ChannelR(s);
@@ -123,6 +131,7 @@ struct channel_divides_scalar_t : public std::binary_function<Channel,Scalar,Cha
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel, int n,typename ChannelR>
 struct channel_pow_t : public std::unary_function<Channel,ChannelR> {
+	GIL_FORCEINLINE
     ChannelR operator()(typename channel_traits<Channel>::const_reference ch) const {
         return boost::math::pow<n>(ChannelR(ch));
     }
@@ -133,6 +142,7 @@ struct channel_pow_t : public std::unary_function<Channel,ChannelR> {
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel>
 struct channel_halves_t : public std::unary_function<Channel,Channel> {
+	GIL_FORCEINLINE
     typename channel_traits<Channel>::reference
     operator()(typename channel_traits<Channel>::reference ch) const {
         return ch/=2.0;
@@ -144,6 +154,7 @@ struct channel_halves_t : public std::unary_function<Channel,Channel> {
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel>
 struct channel_zeros_t : public std::unary_function<Channel,Channel> {
+	GIL_FORCEINLINE
     typename channel_traits<Channel>::reference
     operator()(typename channel_traits<Channel>::reference ch) const {
         return ch=Channel(0);
@@ -155,6 +166,7 @@ struct channel_zeros_t : public std::unary_function<Channel,Channel> {
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel1,typename Channel2>
 struct channel_assigns_t : public std::binary_function<Channel1,Channel2,Channel2> {
+	GIL_FORCEINLINE
     typename channel_traits<Channel2>::reference
     operator()(typename channel_traits<Channel1>::const_reference ch1,
                typename channel_traits<Channel2>::reference ch2) const {

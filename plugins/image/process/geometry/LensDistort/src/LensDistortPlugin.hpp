@@ -51,8 +51,6 @@ public:
 	OFX::Double2DParam* _gridScale; ///< grid scale
 
 	OFX::BooleanParam* _debugDisplayRoi; ///< debug display options
-
-	OFX::PushButtonParam* _helpButton; ///< display help informations
 	///@}
 
 	///@{

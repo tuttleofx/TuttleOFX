@@ -8,10 +8,10 @@
 #undef TUTTLE_COUT
 #endif
 #define TUTTLE_COUT(... ) ::std::cout << "[PLUGIN] " << __VA_ARGS__ << std::endl
-#ifdef CERR
-#undef CERR
+#ifdef TUTTLE_CERR
+#undef TUTTLE_CERR
 #endif
-#define CERR(... ) ::std::cerr << "[PLUGIN] " << __VA_ARGS__ << std::endl
+#define TUTTLE_CERR(... ) ::std::cerr << "[PLUGIN] " << __VA_ARGS__ << std::endl
 #endif
 
 #endif
