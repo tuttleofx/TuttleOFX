@@ -9,6 +9,8 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
+#include <limits>
+
 namespace tuttle {
 namespace plugin {
 namespace crop {
@@ -39,7 +41,7 @@ void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 
-	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<CropMarginOverlay>() );
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<CropEffectOverlay>() );
 }
 
 /**
@@ -62,49 +64,91 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
+	
+	OFX::ChoiceParamDescriptor* mode = desc.defineChoiceParam( kParamMode );
+	mode->setLabel( "Mode" );
+	mode->appendOption( kParamModeCrop );
+	mode->appendOption( kParamModeColor );
+//	mode->appendOption( kParamModeResize ); // good idea or not?
+	mode->setDefault( eParamModeCrop );
 
-	OFX::BooleanParamDescriptor* bop = desc.defineBooleanParam( kParamFillMode );
-	bop->setLabel( "Fill bands with black" );
-	bop->setScriptName( "BandsOperations" );
-	bop->setHint( "Fill bands with black color or repeat last pixel and reset Rod." );
-	bop->setDefault( true );
+	OFX::RGBAParamDescriptor* fillColor = desc.defineRGBAParam( kParamFillColor );
+	fillColor->setLabel( "Color" );
+	fillColor->setHint( "Color to fill bands" );
+	fillColor->setDefault( 0.0, 0.0, 0.0, 1.0 );
 
-	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamPresets );
-	format->setLabel( "Pre-defined formats" );
-	format->setScriptName( "formats" );
-	format->appendOption( "1.33 (4/3) bands" );
-	format->appendOption( "1.77 (16/9e) bands" );
-	format->appendOption( "1.85 bands" );
-	format->appendOption( "2.35 (Cinemascope) bands" );
-	format->appendOption( "2.40 bands" );
-	format->setDefault( 0 );
+	OFX::ChoiceParamDescriptor* axis = desc.defineChoiceParam( kParamAxis );
+	axis->setLabel( "Axis" );
+	axis->appendOption( kParamAxisXY );
+	axis->appendOption( kParamAxisX );
+	axis->appendOption( kParamAxisY );
+	axis->setDefault( eParamAxisY );
 
-	OFX::BooleanParamDescriptor* overlay = desc.defineBooleanParam( kParamDisplayRect );
-	overlay->setLabel( "Display overlay rectangle" );
+	OFX::ChoiceParamDescriptor* symmetric = desc.defineChoiceParam( kParamSymmetric );
+	symmetric->setLabel( "Symmetric" );
+	symmetric->appendOption( kParamSymmetricNone );
+	symmetric->appendOption( kParamSymmetricXY );
+	symmetric->appendOption( kParamSymmetricX );
+	symmetric->appendOption( kParamSymmetricY );
+	symmetric->setHint( "Is the crop region symmetric around image center?" );
+	symmetric->setDefault( true );
+
+	OFX::BooleanParamDescriptor* fixedRatio = desc.defineBooleanParam( kParamFixedRatio );
+	fixedRatio->setLabel( "Fixed ratio" );
+	fixedRatio->setHint( "Constrain the cropped region to this ratio." );
+	fixedRatio->setDefault( true );
+
+	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kParamRatio );
+	ratio->setLabel( "Ratio" );
+	ratio->setRange( 0, std::numeric_limits<double>::max() );
+	ratio->setDisplayRange( 0, 3 );
+	ratio->setDefault( 1.0 );
+	ratio->setHint( "Ratio X/Y of the cropped region." );
+
+	OFX::ChoiceParamDescriptor* preset = desc.defineChoiceParam( kParamPreset );
+	preset->setLabel( "Preset" );
+	preset->appendOption( kParamPreset_custom );
+	preset->appendOption( kParamPreset_1_33 );
+	preset->appendOption( kParamPreset_1_77 );
+	preset->appendOption( kParamPreset_1_85 );
+	preset->appendOption( kParamPreset_2_35 );
+	preset->appendOption( kParamPreset_2_40 );
+	preset->setDefault( 0 );
+
+	OFX::BooleanParamDescriptor* overlay = desc.defineBooleanParam( kParamOverlay );
+	overlay->setLabel( "Overlay" );
+	overlay->setHint( "Display overlay rectangle" );
 	overlay->setDefault( false );
 
-	OFX::BooleanParamDescriptor* anamorphic = desc.defineBooleanParam( kParamAnamorphic );
-	anamorphic->setLabels( "Anamorphic", "Anamorphic", "Anamorphic (stretch)" );
-	anamorphic->setDefault( false );
-	anamorphic->setIsSecret( true );
+	OFX::GroupParamDescriptor* cropRegion = desc.defineGroupParam( kParamGroupCropRegion );
 
-	OFX::GroupParamDescriptor* bandsGroup = desc.defineGroupParam( "Bands sizes" );
+	OFX::IntParamDescriptor* xMin       = desc.defineIntParam( kParamXMin );
+	xMin->setLabel( "X min" );
+	xMin->setRange( 0, std::numeric_limits<int>::max() );
+	xMin->setDisplayRange( 0, 3000 );
+	xMin->setDefault( 0 );
+	xMin->setParent( *cropRegion );
 
-	OFX::IntParamDescriptor* upBand       = desc.defineIntParam( kParamUp );
-	upBand->setLabel( "Up" );
-	upBand->setParent( *bandsGroup );
+	OFX::IntParamDescriptor* yMin = desc.defineIntParam( kParamYMin );
+	yMin->setLabel( "Y min" );
+	yMin->setRange( 0, std::numeric_limits<int>::max() );
+	yMin->setDisplayRange( 0, 3000 );
+	yMin->setDefault( 0 );
+	yMin->setParent( *cropRegion );
 
-	OFX::IntParamDescriptor* downBand = desc.defineIntParam( kParamDown );
-	downBand->setLabel( "Down" );
-	downBand->setParent( *bandsGroup );
+	OFX::IntParamDescriptor* xMax = desc.defineIntParam( kParamXMax );
+	xMax->setLabel( "X max" );
+	xMax->setRange( 0, std::numeric_limits<int>::max() );
+	xMax->setDisplayRange( 0, 3000 );
+	xMax->setDefault( 0 );
+	xMax->setParent( *cropRegion );
 
-	OFX::IntParamDescriptor* leftBand = desc.defineIntParam( kParamLeft );
-	leftBand->setLabel( "Left" );
-	leftBand->setParent( *bandsGroup );
-
-	OFX::IntParamDescriptor* rightBand = desc.defineIntParam( kParamRight );
-	rightBand->setLabel( "Right" );
-	rightBand->setParent( *bandsGroup );
+	OFX::IntParamDescriptor* yMax = desc.defineIntParam( kParamYMax );
+	yMax->setLabel( "Y max" );
+	yMax->setRange( 0, std::numeric_limits<int>::max() );
+	yMax->setDisplayRange( 0, 3000 );
+	yMax->setDefault( 0 );
+	yMax->setParent( *cropRegion );
 }
 
 /**

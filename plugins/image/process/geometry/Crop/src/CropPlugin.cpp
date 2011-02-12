@@ -2,6 +2,8 @@
 #include "CropPlugin.hpp"
 #include "CropProcess.hpp"
 
+#include <tuttle/plugin/image/ofxToGil.hpp>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/math/special_functions/round.hpp>
 
@@ -15,35 +17,152 @@ using namespace boost::gil;
 CropPlugin::CropPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
 {
-	_paramFormats = fetchChoiceParam( kParamPresets );
-	_paramOverlayRect    = fetchBooleanParam( kParamDisplayRect );
+	_paramMode = fetchChoiceParam( kParamMode );
+	_paramFillColor = fetchRGBAParam( kParamFillColor );
+	_paramAxis = fetchChoiceParam( kParamAxis );
+	_paramSymmetric = fetchChoiceParam( kParamSymmetric );
+	_paramFixedRatio = fetchBooleanParam( kParamFixedRatio );
+	_paramRatio = fetchDoubleParam( kParamRatio );
+	_paramPreset = fetchChoiceParam( kParamPreset );
+	_paramOverlay = fetchBooleanParam( kParamOverlay );
+	_paramCropRegion = fetchGroupParam( kParamGroupCropRegion );
+	_paramXMin = fetchIntParam( kParamXMin );
+	_paramYMin = fetchIntParam( kParamYMin );
+	_paramXMax = fetchIntParam( kParamXMax );
+	_paramYMax = fetchIntParam( kParamYMax );
+
+	changedParam( _changedArgs, kParamMode );
+	changedParam( _changedArgs, kParamAxis );
+	changedParam( _changedArgs, kParamFixedRatio );
+	changedParam( _changedArgs, kParamRatio );
+	changedParam( _changedArgs, kParamPreset );
 }
 
-
-bool CropPlugin::displayRect()
+void CropPlugin::changedClip( const OFX::InstanceChangedArgs& args, const std::string& clipName )
 {
-	return _paramOverlayRect->getValue();
+//	TUTTLE_TCOUT( "changedClip:" << clipName );
+	if( clipName == kOfxImageEffectSimpleSourceClipName )
+	{
+		changedParam( _changedArgs, kParamRatio );
+	}
 }
 
 void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kParamPresets )
+//	TUTTLE_TCOUT( "changedParam:" << paramName );
+	if( paramName == kParamMode )
 	{
-		// Compute bands sizes in pixels
-		int f, bandSize;
-		double ratio = 0.0;
-		_paramFormats->getValue( f );
-		OFX::IntParam* upBand    = fetchIntParam( kParamUp );
-		OFX::IntParam* downBand  = fetchIntParam( kParamDown );
-		OFX::IntParam* leftBand  = fetchIntParam( kParamLeft );
-		OFX::IntParam* rightBand = fetchIntParam( kParamRight );
-		OfxRectD rod             = _clipSrc->getCanonicalRod( timeLineGetTime() );
-		double par               = _clipSrc->getPixelAspectRatio();
-		int w                    = (int)std::abs( rod.x2 - rod.x1 );
-		int h                    = (int)std::abs( rod.y2 - rod.y1 );
-
-		switch( f )
+		EParamMode mode = static_cast<EParamMode>( _paramMode->getValue() );
+		switch( mode )
 		{
+			case eParamModeCrop:
+			{
+				_paramFillColor->setIsSecretAndDisabled( true );
+				break;
+			}
+			case eParamModeColor:
+			{
+				_paramFillColor->setIsSecretAndDisabled( false );
+				break;
+			}
+		}
+	}
+	else if( paramName == kParamAxis ||
+			 paramName == kParamSymmetric ||
+			 paramName == kParamFixedRatio )
+	{
+		EParamAxis axis = static_cast<EParamAxis>( _paramAxis->getValue() );
+		EParamSymmetric symmetric  = static_cast<EParamSymmetric>( _paramSymmetric->getValue() );
+		bool xMinSecret = false;
+		bool yMinSecret = false;
+		bool xMaxSecret = false;
+		bool yMaxSecret = false;
+		switch( axis )
+		{
+			case eParamAxisXY:
+			{
+				xMinSecret = false;
+				yMinSecret = false;
+
+				xMaxSecret = false;
+				yMaxSecret = false;
+				break;
+			}
+			case eParamAxisX:
+			{
+				xMinSecret = false;
+				xMaxSecret = false;
+
+				yMinSecret = true;
+				yMaxSecret = true;
+				break;
+			}
+			case eParamAxisY:
+			{
+				xMinSecret = true;
+				xMaxSecret = true;
+
+				yMinSecret = false;
+				yMaxSecret = false;
+				break;
+			}
+		}
+		if( symmetric == eParamSymmetricX ||
+			symmetric == eParamSymmetricXY )
+		{
+			xMaxSecret = true;
+		}
+		if( symmetric == eParamSymmetricY ||
+			symmetric == eParamSymmetricXY )
+		{
+			yMaxSecret = true;
+		}
+		bool fixedRatio = _paramFixedRatio->getValue();
+		if( fixedRatio )
+		{
+			yMinSecret = true;
+			yMaxSecret = true;
+		}
+		_paramXMin->setIsSecretAndDisabled( xMinSecret );
+		_paramYMin->setIsSecretAndDisabled( yMinSecret );
+		_paramXMax->setIsSecretAndDisabled( xMaxSecret );
+		_paramYMax->setIsSecretAndDisabled( yMaxSecret );
+	}
+	else if( paramName == kParamFixedRatio )
+	{
+//		if( _paramFixedRatio->getValue() )
+//		{
+//			_paramRatio->setIsSecretAndDisabled( false );
+//			_paramPreset->setIsSecretAndDisabled( false );
+//		}
+//		else
+//		{
+//			_paramRatio->setIsSecretAndDisabled( true );
+//			_paramPreset->setIsSecretAndDisabled( true );
+//		}
+	}
+	else if( paramName == kParamRatio )
+	{
+//		if( ??? )
+//		{
+			_paramPreset->setValue( eParamPreset_custom );
+//		}
+		if( _clipSrc->isConnected() )
+		{
+			CropProcessParams<rgba32f_pixel_t> params = getProcessParams<rgba32f_pixel_t>( args.time );
+			_paramYMin->setValue( params._cropRegion.y1 );
+			_paramYMax->setValue( params._cropRegion.y2 );
+		}
+	}
+	else if( paramName == kParamPreset )
+	{
+		double ratio = 0.0;
+		EParamPreset preset = static_cast<EParamPreset>(_paramPreset->getValue());
+
+		switch( preset )
+		{
+			case eParamPreset_custom:
+				break;
 			// 4/3
 			case eParamPreset_1_33:
 				ratio = 4.0 / 3.0;
@@ -64,65 +183,53 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 				ratio = 2.40;
 				break;
 		}
-
-		// If image ratio is lesser than the specified ratio, we need to add left and right bands
-		if( ( (double)( w ) / h ) > ratio )
+		if( preset != eParamPreset_custom )
 		{
-			bandSize = (int)round( ( w - ( h / ( 1.0 / ratio ) ) ) / 2.0 );
-			upBand->setValue( 0 );
-			downBand->setValue( 0 );
-			leftBand->setValue( (int)round( bandSize / par ) );
-			rightBand->setValue( (int)round( bandSize / par ) );
+			_paramRatio->setValue( ratio );
 		}
-		else if( ( (double)( w )  / h ) < ratio )
+	}
+	else if( args.reason != OFX::eChangePluginEdit &&
+			 ( paramName == kParamXMin ||
+	           paramName == kParamYMin ||
+	           paramName == kParamXMax ||
+	           paramName == kParamYMax ) )
+	{
+		bool fixedRatio = _paramFixedRatio->getValue();
+		if( fixedRatio )
 		{
-			// Add top and bottom bands
-			bandSize = (int)round( ( h - ( ( w ) / ratio ) ) / 2.0 );
-			upBand->setValue( bandSize );
-			downBand->setValue( bandSize );
-			leftBand->setValue( 0 );
-			rightBand->setValue( 0 );
+			CropProcessParams<rgba32f_pixel_t> params = getProcessParams<rgba32f_pixel_t>( args.time );
+			_paramXMin->setValue( params._cropRegion.x1 );
+			_paramYMin->setValue( params._cropRegion.y1 );
+			_paramXMax->setValue( params._cropRegion.x2 );
+			_paramYMax->setValue( params._cropRegion.y2 );
 		}
 		else
 		{
-			upBand->setValue( 0 );
-			downBand->setValue( 0 );
-			leftBand->setValue( 0 );
-			rightBand->setValue( 0 );
+			const double x = _paramXMax->getValue() - _paramXMin->getValue();
+			const double y = _paramYMax->getValue() - _paramYMin->getValue();
+			_paramRatio->setValue( (y!=0) ? (x/y) : 0 );
 		}
 	}
 }
 
-OfxRectD CropPlugin::getCropRect( const OfxRectD& rod, const double par )
-{
-	OfxRectD rect;
-	OFX::IntParam* upBand    = fetchIntParam( kParamUp );
-	OFX::IntParam* downBand  = fetchIntParam( kParamDown );
-	OFX::IntParam* leftBand  = fetchIntParam( kParamLeft );
-	OFX::IntParam* rightBand = fetchIntParam( kParamRight );
-
-	rect.x1 = par * leftBand->getValue();
-	rect.x2 = rod.x2 - par* rightBand->getValue();
-	rect.y1 = downBand->getValue();
-	rect.y2 = rod.y2 - upBand->getValue();
-	return rect;
-}
-
-OfxRectD CropPlugin::getCropRect( const OfxTime time )
-{
-	const OfxRectD srcRod = _clipSrc->getCanonicalRod( time );
-	const double par       = _clipSrc->getPixelAspectRatio();
-	return getCropRect( srcRod, par );
-}
-
 bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	OFX::BooleanParam* bop = fetchBooleanParam( kParamFillMode );
+	CropProcessParams<rgba32f_pixel_t> params = getProcessParams<rgba32f_pixel_t>( args.time, args.renderScale );
 
-	if( bop->getValue() == false )
+	switch( _paramMode->getValue() )
 	{
-		rod = getCropRect( args.time );
-		return true;
+		case eParamModeCrop:
+		{
+			rod.x1 = params._cropRegion.x1;
+			rod.y1 = params._cropRegion.y1;
+			rod.x2 = params._cropRegion.x2;
+			rod.y2 = params._cropRegion.y2;
+			return true;
+		}
+		case eParamModeColor:
+		{
+			break;
+		}
 	}
 	return false;
 }

@@ -1,5 +1,5 @@
-#ifndef VOLET_MARGIN_HPP
-#define VOLET_MARGIN_HPP
+#ifndef _TUTTLE_PLUGIN_CROP_MARGIN_HPP_
+#define _TUTTLE_PLUGIN_CROP_MARGIN_HPP_
 
 #include <tuttle/plugin/global.hpp>
 
@@ -11,10 +11,10 @@ namespace tuttle {
 namespace plugin {
 namespace crop {
 
-class CropMargin : public OFX::OverlayInteract
+class CropOverlay : public OFX::OverlayInteract
 {
 public:
-	CropMargin( OfxInteractHandle handle, OFX::ImageEffect* effect ) : OFX::OverlayInteract( handle )
+	CropOverlay( OfxInteractHandle handle, OFX::ImageEffect* effect ) : OFX::OverlayInteract( handle )
 	{
 		_effect = effect;
 	}
@@ -22,12 +22,12 @@ public:
 	virtual bool draw( const OFX::DrawArgs& args );
 };
 
-class CropMarginOverlay : public OFX::EffectOverlayDescriptor
+class CropEffectOverlay : public OFX::EffectOverlayDescriptor
 {
 public:
 	OFX::Interact* createInstance( OfxInteractHandle handle, OFX::ImageEffect* effect )
 	{
-		return new CropMargin( handle, effect );
+		return new CropOverlay( handle, effect );
 	}
 
 };
