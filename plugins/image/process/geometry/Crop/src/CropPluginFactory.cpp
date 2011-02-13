@@ -68,9 +68,9 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* mode = desc.defineChoiceParam( kParamMode );
 	mode->setLabel( "Mode" );
 	mode->appendOption( kParamModeCrop );
-	mode->appendOption( kParamModeColor );
+	mode->appendOption( kParamModeFillColor );
 //	mode->appendOption( kParamModeResize ); // good idea or not?
-	mode->setDefault( eParamModeCrop );
+	mode->setDefault( eParamModeFillColor );
 
 	OFX::RGBAParamDescriptor* fillColor = desc.defineRGBAParam( kParamFillColor );
 	fillColor->setLabel( "Color" );
@@ -83,6 +83,7 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	axis->appendOption( kParamAxisX );
 	axis->appendOption( kParamAxisY );
 	axis->setDefault( eParamAxisY );
+	axis->setEvaluateOnChange( false );
 
 	OFX::ChoiceParamDescriptor* symmetric = desc.defineChoiceParam( kParamSymmetric );
 	symmetric->setLabel( "Symmetric" );
@@ -92,18 +93,13 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	symmetric->appendOption( kParamSymmetricY );
 	symmetric->setHint( "Is the crop region symmetric around image center?" );
 	symmetric->setDefault( true );
+	symmetric->setEvaluateOnChange( false );
 
 	OFX::BooleanParamDescriptor* fixedRatio = desc.defineBooleanParam( kParamFixedRatio );
 	fixedRatio->setLabel( "Fixed ratio" );
 	fixedRatio->setHint( "Constrain the cropped region to this ratio." );
 	fixedRatio->setDefault( true );
-
-	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kParamRatio );
-	ratio->setLabel( "Ratio" );
-	ratio->setRange( 0, std::numeric_limits<double>::max() );
-	ratio->setDisplayRange( 0, 3 );
-	ratio->setDefault( 1.0 );
-	ratio->setHint( "Ratio X/Y of the cropped region." );
+	fixedRatio->setEvaluateOnChange( false );
 
 	OFX::ChoiceParamDescriptor* preset = desc.defineChoiceParam( kParamPreset );
 	preset->setLabel( "Preset" );
@@ -114,38 +110,47 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	preset->appendOption( kParamPreset_2_35 );
 	preset->appendOption( kParamPreset_2_40 );
 	preset->setDefault( 0 );
+	preset->setEvaluateOnChange( false );
+
+	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kParamRatio );
+	ratio->setLabel( "Ratio" );
+	ratio->setRange( 0, std::numeric_limits<double>::max() );
+	ratio->setDisplayRange( 0, 3 );
+	ratio->setDefault( 2.0 );
+	ratio->setHint( "Ratio X/Y of the cropped region." );
 
 	OFX::BooleanParamDescriptor* overlay = desc.defineBooleanParam( kParamOverlay );
 	overlay->setLabel( "Overlay" );
 	overlay->setHint( "Display overlay rectangle" );
 	overlay->setDefault( false );
+	overlay->setEvaluateOnChange( false );
 
 	OFX::GroupParamDescriptor* cropRegion = desc.defineGroupParam( kParamGroupCropRegion );
 
 	OFX::IntParamDescriptor* xMin       = desc.defineIntParam( kParamXMin );
 	xMin->setLabel( "X min" );
-	xMin->setRange( 0, std::numeric_limits<int>::max() );
+//	xMin->setRange( 0, std::numeric_limits<int>::max() );
 	xMin->setDisplayRange( 0, 3000 );
 	xMin->setDefault( 0 );
 	xMin->setParent( *cropRegion );
 
 	OFX::IntParamDescriptor* yMin = desc.defineIntParam( kParamYMin );
 	yMin->setLabel( "Y min" );
-	yMin->setRange( 0, std::numeric_limits<int>::max() );
+//	yMin->setRange( 0, std::numeric_limits<int>::max() );
 	yMin->setDisplayRange( 0, 3000 );
 	yMin->setDefault( 0 );
 	yMin->setParent( *cropRegion );
 
 	OFX::IntParamDescriptor* xMax = desc.defineIntParam( kParamXMax );
 	xMax->setLabel( "X max" );
-	xMax->setRange( 0, std::numeric_limits<int>::max() );
+//	xMax->setRange( 0, std::numeric_limits<int>::max() );
 	xMax->setDisplayRange( 0, 3000 );
 	xMax->setDefault( 0 );
 	xMax->setParent( *cropRegion );
 
 	OFX::IntParamDescriptor* yMax = desc.defineIntParam( kParamYMax );
 	yMax->setLabel( "Y max" );
-	yMax->setRange( 0, std::numeric_limits<int>::max() );
+//	yMax->setRange( 0, std::numeric_limits<int>::max() );
 	yMax->setDisplayRange( 0, 3000 );
 	yMax->setDefault( 0 );
 	yMax->setParent( *cropRegion );

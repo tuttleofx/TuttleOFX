@@ -31,11 +31,129 @@ CropPlugin::CropPlugin( OfxImageEffectHandle handle )
 	_paramXMax = fetchIntParam( kParamXMax );
 	_paramYMax = fetchIntParam( kParamYMax );
 
-	changedParam( _changedArgs, kParamMode );
+//	changedParam( _changedArgs, kParamMode );
 	changedParam( _changedArgs, kParamAxis );
 	changedParam( _changedArgs, kParamFixedRatio );
 	changedParam( _changedArgs, kParamRatio );
 	changedParam( _changedArgs, kParamPreset );
+}
+
+OfxRectI CropPlugin::getCropRegionValue() const
+{
+	OfxRectI cropRegion;
+
+	cropRegion.x1 = _paramXMin->getValue();
+	cropRegion.y1 = _paramYMin->getValue();
+	cropRegion.x2 = _paramXMax->getValue();
+	cropRegion.y2 = _paramYMax->getValue();
+	
+	return cropRegion;
+}
+
+OfxRectI CropPlugin::computeCropRegion( const OfxTime time, const bool fromRatio ) const
+{
+	OfxRectI cropRegion = getCropRegionValue();
+
+	if( ! _clipSrc->isConnected() )
+	{
+		return cropRegion;
+	}
+	const OfxRectI sRod = _clipSrc->getPixelRod( time );
+	const OfxPointI sRodSize = _clipSrc->getPixelRodSize( time );
+
+	const EParamAxis axis = static_cast<EParamAxis>( _paramAxis->getValue() );
+	const EParamSymmetric symmetric = static_cast<EParamSymmetric>( _paramSymmetric->getValue() );
+	switch( axis )
+	{
+		case eParamAxisXY:
+		{
+			if( symmetric == eParamSymmetricNone )
+					break;
+
+			if( symmetric == eParamSymmetricX ||
+			    symmetric == eParamSymmetricXY )
+			{
+					cropRegion.x1 %= int( sRodSize.x * 0.5 );
+					cropRegion.x2 = sRodSize.x - cropRegion.x1;
+			}
+			if( symmetric == eParamSymmetricY ||
+			    symmetric == eParamSymmetricXY )
+			{
+					cropRegion.y1 %= int( sRodSize.y * 0.5 );
+					cropRegion.y2 = sRodSize.y - cropRegion.y1;
+			}
+			break;
+		}
+		case eParamAxisX:
+		{
+			// don't modify Y axis
+			cropRegion.y1 = sRod.y1;
+			cropRegion.y2 = sRod.y2;
+			if( symmetric == eParamSymmetricX ||
+			    symmetric == eParamSymmetricXY )
+			{
+				cropRegion.x1 %= int( sRodSize.x * 0.5 );
+				cropRegion.x2 = sRodSize.x - cropRegion.x1;
+			}
+			break;
+		}
+		case eParamAxisY:
+		{
+			// don't modify X axis
+			cropRegion.x1 = sRod.x1;
+			cropRegion.x2 = sRod.x2;
+			if( symmetric == eParamSymmetricY ||
+			    symmetric == eParamSymmetricXY )
+			{
+				cropRegion.y1 %= int( sRodSize.y * 0.5 );
+				cropRegion.y2 = sRodSize.y - cropRegion.y1;
+			}
+			break;
+		}
+	}
+	bool fixedRatio = _paramFixedRatio->getValue();
+	if( fromRatio || fixedRatio )
+	{
+		double ratio = _paramRatio->getValue();
+		if( ratio == 0.0 )
+			ratio = 1.0;
+
+		switch( axis )
+		{
+			case eParamAxisXY:
+			{
+				const double xD2 = (cropRegion.x2 - cropRegion.x1) * 0.5;
+				const double yD2 = (cropRegion.y2 - cropRegion.y1) * 0.5;
+				const double yCenter = cropRegion.y1 + yD2;
+				const double nyD2 = xD2 / ratio;
+				cropRegion.y1 = int( yCenter-nyD2 );
+				cropRegion.y2 = int( yCenter+nyD2 );
+				break;
+			}
+			case eParamAxisY:
+			{
+				const double xD2 = (sRod.x2 - sRod.x1) * 0.5;
+				const double yD2 = (sRod.y2 - sRod.y1) * 0.5;
+				const double yCenter = sRod.y1 + yD2;
+				const double nyD2 = xD2 / ratio;
+				cropRegion.y1 = int( yCenter-nyD2 );
+				cropRegion.y2 = int( yCenter+nyD2 );
+				break;
+			}
+			case eParamAxisX:
+			{
+				const double xD2 = (sRod.x2 - sRod.x1) * 0.5;
+				const double yD2 = (sRod.y2 - sRod.y1) * 0.5;
+				const double xCenter = sRod.x1 + xD2;
+				const double nxD2 = yD2 * ratio;
+				cropRegion.x1 = int( xCenter-nxD2 );
+				cropRegion.x2 = int( xCenter+nxD2 );
+				break;
+			}
+		}
+	}
+
+	return cropRegion;
 }
 
 void CropPlugin::changedClip( const OFX::InstanceChangedArgs& args, const std::string& clipName )
@@ -50,96 +168,98 @@ void CropPlugin::changedClip( const OFX::InstanceChangedArgs& args, const std::s
 void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
 //	TUTTLE_TCOUT( "changedParam:" << paramName );
-	if( paramName == kParamMode )
-	{
-		EParamMode mode = static_cast<EParamMode>( _paramMode->getValue() );
-		switch( mode )
-		{
-			case eParamModeCrop:
-			{
-				_paramFillColor->setIsSecretAndDisabled( true );
-				break;
-			}
-			case eParamModeColor:
-			{
-				_paramFillColor->setIsSecretAndDisabled( false );
-				break;
-			}
-		}
-	}
-	else if( paramName == kParamAxis ||
+//	if( paramName == kParamMode )
+//	{
+//		EParamMode mode = static_cast<EParamMode>( _paramMode->getValue() );
+//		switch( mode )
+//		{
+//			case eParamModeCrop:
+//			{
+//				_paramFillColor->setIsSecretAndDisabled( true );
+//				break;
+//			}
+//			case eParamModeColor:
+//			{
+//				_paramFillColor->setIsSecretAndDisabled( false );
+//				break;
+//			}
+//		}
+//	}
+//	else
+	if( paramName == kParamAxis ||
 			 paramName == kParamSymmetric ||
 			 paramName == kParamFixedRatio )
 	{
 		EParamAxis axis = static_cast<EParamAxis>( _paramAxis->getValue() );
 		EParamSymmetric symmetric  = static_cast<EParamSymmetric>( _paramSymmetric->getValue() );
-		bool xMinSecret = false;
-		bool yMinSecret = false;
-		bool xMaxSecret = false;
-		bool yMaxSecret = false;
+		bool xMinEnabled = false;
+		bool yMinEnabled = false;
+		bool xMaxEnabled = false;
+		bool yMaxEnabled = false;
 		switch( axis )
 		{
 			case eParamAxisXY:
 			{
-				xMinSecret = false;
-				yMinSecret = false;
+				xMinEnabled = true;
+				yMinEnabled = true;
 
-				xMaxSecret = false;
-				yMaxSecret = false;
+				xMaxEnabled = true;
+				yMaxEnabled = true;
 				break;
 			}
 			case eParamAxisX:
 			{
-				xMinSecret = false;
-				xMaxSecret = false;
+				xMinEnabled = true;
+				xMaxEnabled = true;
 
-				yMinSecret = true;
-				yMaxSecret = true;
+				yMinEnabled = false;
+				yMaxEnabled = false;
 				break;
 			}
 			case eParamAxisY:
 			{
-				xMinSecret = true;
-				xMaxSecret = true;
+				xMinEnabled = false;
+				xMaxEnabled = false;
 
-				yMinSecret = false;
-				yMaxSecret = false;
+				yMinEnabled = true;
+				yMaxEnabled = true;
 				break;
 			}
 		}
 		if( symmetric == eParamSymmetricX ||
 			symmetric == eParamSymmetricXY )
 		{
-			xMaxSecret = true;
+			xMaxEnabled = false;
 		}
 		if( symmetric == eParamSymmetricY ||
 			symmetric == eParamSymmetricXY )
 		{
-			yMaxSecret = true;
+			yMaxEnabled = false;
 		}
 		bool fixedRatio = _paramFixedRatio->getValue();
 		if( fixedRatio )
 		{
-			yMinSecret = true;
-			yMaxSecret = true;
+			yMinEnabled = false;
+			yMaxEnabled = false;
 		}
-		_paramXMin->setIsSecretAndDisabled( xMinSecret );
-		_paramYMin->setIsSecretAndDisabled( yMinSecret );
-		_paramXMax->setIsSecretAndDisabled( xMaxSecret );
-		_paramYMax->setIsSecretAndDisabled( yMaxSecret );
-	}
-	else if( paramName == kParamFixedRatio )
-	{
-//		if( _paramFixedRatio->getValue() )
-//		{
-//			_paramRatio->setIsSecretAndDisabled( false );
-//			_paramPreset->setIsSecretAndDisabled( false );
-//		}
-//		else
-//		{
-//			_paramRatio->setIsSecretAndDisabled( true );
-//			_paramPreset->setIsSecretAndDisabled( true );
-//		}
+		_paramXMin->setEnabled( xMinEnabled );
+		_paramYMin->setEnabled( yMinEnabled );
+		_paramXMax->setEnabled( xMaxEnabled );
+		_paramYMax->setEnabled( yMaxEnabled );
+
+		if( paramName == kParamFixedRatio )
+		{
+			if( _paramFixedRatio->getValue() )
+			{
+				_paramRatio->setEnabled( true );
+				_paramPreset->setIsSecretAndDisabled( false );
+			}
+			else
+			{
+				_paramRatio->setEnabled( false );
+				_paramPreset->setIsSecretAndDisabled( true );
+			}
+		}
 	}
 	else if( paramName == kParamRatio )
 	{
@@ -147,12 +267,17 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 //		{
 			_paramPreset->setValue( eParamPreset_custom );
 //		}
-		if( _clipSrc->isConnected() )
-		{
-			CropProcessParams<rgba32f_pixel_t> params = getProcessParams<rgba32f_pixel_t>( args.time );
-			_paramYMin->setValue( params._cropRegion.y1 );
-			_paramYMax->setValue( params._cropRegion.y2 );
-		}
+//		bool fixedRatio = _paramFixedRatio->getValue();
+//
+//		if( fixedRatio &&
+//			_clipSrc->isConnected() )
+//		{
+//			OfxRectI cropRegion = computeCropRegion( args.time, true );
+//			_paramXMin->setValue( cropRegion.x1 );
+//			_paramXMax->setValue( cropRegion.x2 );
+//			_paramYMin->setValue( cropRegion.y1 );
+//			_paramYMax->setValue( cropRegion.y2 );
+//		}
 	}
 	else if( paramName == kParamPreset )
 	{
@@ -188,27 +313,40 @@ void CropPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::
 			_paramRatio->setValue( ratio );
 		}
 	}
-	else if( args.reason != OFX::eChangePluginEdit &&
-			 ( paramName == kParamXMin ||
-	           paramName == kParamYMin ||
-	           paramName == kParamXMax ||
-	           paramName == kParamYMax ) )
+
+	// if a param which have an impact on crop region
+	// we need to recompute this region
+	if( paramName == kParamXMin ||
+	    paramName == kParamYMin ||
+	    paramName == kParamXMax ||
+	    paramName == kParamYMax ||
+	    paramName == kParamAxis ||
+	    paramName == kParamSymmetric ||
+	    paramName == kParamRatio
+	   )
 	{
-		bool fixedRatio = _paramFixedRatio->getValue();
-		if( fixedRatio )
-		{
-			CropProcessParams<rgba32f_pixel_t> params = getProcessParams<rgba32f_pixel_t>( args.time );
-			_paramXMin->setValue( params._cropRegion.x1 );
-			_paramYMin->setValue( params._cropRegion.y1 );
-			_paramXMax->setValue( params._cropRegion.x2 );
-			_paramYMax->setValue( params._cropRegion.y2 );
-		}
-		else
-		{
-			const double x = _paramXMax->getValue() - _paramXMin->getValue();
-			const double y = _paramYMax->getValue() - _paramYMin->getValue();
-			_paramRatio->setValue( (y!=0) ? (x/y) : 0 );
-		}
+//		bool fixedRatio = _paramFixedRatio->getValue();
+		const OfxRectI cropRegionParams = getCropRegionValue();
+		const OfxRectI cropRegion = computeCropRegion( args.time );
+//		if( fixedRatio )
+//		{
+		if( cropRegionParams.x1 != cropRegion.x1 )
+			_paramXMin->setValue( cropRegion.x1 );
+		if( cropRegionParams.y1 != cropRegion.y1 )
+			_paramYMin->setValue( cropRegion.y1 );
+		if( cropRegionParams.x2 != cropRegion.x2 )
+			_paramXMax->setValue( cropRegion.x2 );
+		if( cropRegionParams.y2 != cropRegion.y2 )
+			_paramYMax->setValue( cropRegion.y2 );
+//		}
+//		else
+//		{
+			const double x = cropRegion.x2 - cropRegion.x1;
+			const double y = cropRegion.y2 - cropRegion.y1;
+			const double nRatio = (y!=0) ? (x/y) : 0;
+			if( nRatio != _paramRatio->getValue() )
+				_paramRatio->setValue( nRatio );
+//		}
 	}
 }
 
@@ -226,7 +364,7 @@ bool CropPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& 
 			rod.y2 = params._cropRegion.y2;
 			return true;
 		}
-		case eParamModeColor:
+		case eParamModeFillColor:
 		{
 			break;
 		}

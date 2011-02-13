@@ -31,6 +31,9 @@ public:
 	template<class Pixel>
 	CropProcessParams<Pixel> getProcessParams( const OfxTime time, const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
+	OfxRectI getCropRegionValue() const;
+	OfxRectI computeCropRegion( const OfxTime time, const bool fromRatio = false ) const;
+
 	void         changedClip( const OFX::InstanceChangedArgs& args, const std::string& clipName );
 	void         changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 	bool         getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
@@ -66,89 +69,10 @@ CropProcessParams<Pixel> CropPlugin::getProcessParams( const OfxTime time, const
 	OfxRGBAColourD color = _paramFillColor->getValue();
 	color_convert( ofxToGil( color ), params._color );
 
-	params._cropRegion.x1 = _paramXMin->getValue();
-	params._cropRegion.y1 = _paramYMin->getValue();
-	params._cropRegion.x2 = _paramXMax->getValue();
-	params._cropRegion.y2 = _paramYMax->getValue();
-
-	if( ! _clipSrc->isConnected() )
-	{
-		return params;
-	}
-	OfxRectI sRod = _clipSrc->getPixelRod( time );
-	OfxPointI sRodSize = _clipSrc->getPixelRodSize( time );
-	
-	EParamAxis axis = static_cast<EParamAxis>( _paramAxis->getValue() );
-	EParamSymmetric symmetric = static_cast<EParamSymmetric>( _paramSymmetric->getValue() );
-	switch( axis )
-	{
-		case eParamAxisXY:
-		{
-
-			if( symmetric == eParamSymmetricNone )
-					break;
-
-			if( symmetric == eParamSymmetricX ||
-			    symmetric == eParamSymmetricXY )
-			{
-					params._cropRegion.x1 %= int( sRodSize.x * 0.5 );
-					params._cropRegion.x2 = sRodSize.x - params._cropRegion.x1;
-			}
-			if( symmetric == eParamSymmetricY ||
-			    symmetric == eParamSymmetricXY )
-			{
-					params._cropRegion.y1 %= int( sRodSize.y * 0.5 );
-					params._cropRegion.y2 = sRodSize.y - params._cropRegion.y1;
-			}
-			break;
-		}
-		case eParamAxisX:
-		{
-			// don't modify Y axis
-			params._cropRegion.y1 = sRod.y1;
-			params._cropRegion.y2 = sRod.y2;
-			if( symmetric == eParamSymmetricX ||
-			    symmetric == eParamSymmetricXY )
-			{
-				params._cropRegion.x1 %= int( sRodSize.x * 0.5 );
-				params._cropRegion.x2 = sRodSize.x - params._cropRegion.x1;
-			}
-			break;
-		}
-		case eParamAxisY:
-		{
-			// don't modify X axis
-			params._cropRegion.x1 = sRod.x1;
-			params._cropRegion.x2 = sRod.x2;
-			if( symmetric == eParamSymmetricY ||
-			    symmetric == eParamSymmetricXY )
-			{
-				params._cropRegion.y1 %= int( sRodSize.y * 0.5 );
-				params._cropRegion.y2 = sRodSize.y - params._cropRegion.y1;
-			}
-			break;
-		}
-	}
-	bool fixedRatio = _paramFixedRatio->getValue();
-	if( fixedRatio )
-	{
-		OfxRectI& rec = params._cropRegion;
-
-		double ratio = _paramRatio->getValue();
-		if( ratio == 0.0 )
-			ratio = 1.0;
-
-		const double xD2 = (rec.x2 - rec.x1) * 0.5;
-		const double yD2 = (rec.y2 - rec.y1) * 0.5;
-		const double yCenter = rec.y1 + yD2;
-		const double nyD2 = xD2 / ratio;
-		params._cropRegion.y1 = int( yCenter-nyD2 );
-		params._cropRegion.y2 = int( yCenter+nyD2 );
-	}
+	params._cropRegion = computeCropRegion( time );
 
 	return params;
 }
-
 
 }
 }

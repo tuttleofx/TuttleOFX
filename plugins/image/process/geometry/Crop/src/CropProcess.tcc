@@ -26,9 +26,6 @@ CropProcess<View>::CropProcess( CropPlugin& instance )
 {
 }
 
-/**
- * @todo tuttle: needs to be rewrite
- */
 template<class View>
 void CropProcess<View>::setup( const OFX::RenderArguments& args )
 {
@@ -47,20 +44,28 @@ void CropProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	using namespace boost::gil;
 	// Currently, it's not possible to place the crop depending on the RoW and not on image source RoD.
 
-	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowOutput = translateRegion( procWindowRoW, this->_dstPixelRod );
 
 	fill_pixels( this->_dstView, procWindowOutput, _params._color );
 
-	const OfxRectI procCropRoW = rectanglesIntersection( _params._cropRegion, procWindowRoW );
-	const OfxRectI procCropOutput = this->translateRoWToOutputClipCoordinates( procCropRoW );
+	// proc region of source image to copy
+	const OfxRectI procCropRoW = rectanglesIntersection(
+									rectanglesIntersection(
+										_params._cropRegion,
+										procWindowRoW ),
+									this->_srcPixelRod );
 
+	const OfxRectI procCropOutput = translateRegion( procCropRoW, this->_dstPixelRod );
 	const OfxRectI procCropSrc = translateRegion( procCropRoW, this->_srcPixelRod );
-	const OfxPointI procCropSize = { procCropRoW.x2 - procCropRoW.x1,
-							   procCropRoW.y2 - procCropRoW.y1 };
+	const OfxPointI procCropSize = {
+		procCropRoW.x2 - procCropRoW.x1,
+		procCropRoW.y2 - procCropRoW.y1 };
+	
 	View src = subimage_view( this->_srcView, procCropSrc.x1, procCropSrc.y1,
 							                  procCropSize.x, procCropSize.y );
 	View dst = subimage_view( this->_dstView, procCropOutput.x1, procCropOutput.y1,
 							                  procCropSize.x, procCropSize.y );
+	
 	copy_pixels( src, dst );
 }
 

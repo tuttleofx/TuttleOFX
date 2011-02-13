@@ -13,12 +13,12 @@ static const bool kSupportTemporalClipAccess = false;
 
 static const std::string kParamMode = "mode";
 static const std::string kParamModeCrop = "crop";
-static const std::string kParamModeColor = "color";
+static const std::string kParamModeFillColor = "fill";
 //static const std::string kParamModeResize = "resize";
 enum EParamMode
 {
 	eParamModeCrop = 0,
-	eParamModeColor
+	eParamModeFillColor
 //	eParamModeResize
 };
 static const std::string kParamFillColor = "color";
