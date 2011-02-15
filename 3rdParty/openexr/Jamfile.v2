@@ -16,8 +16,6 @@ project
 		<os>MACOSX:<include>./config 
 	 	<os>NT:<define>WIN32
 	 	<os>NT:<define>_WINDOWS
-# 		<threading>multi
-#	    <link>static
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements

@@ -9,7 +9,6 @@ import os ;
 project
     : requirements	
         <include>src
-        <threading>multi
     : build-dir $(DIST)/Math/obj
     ;
 
@@ -19,11 +18,7 @@ project
 plugin Math : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
     ;
-
 ###############################################################################
 # Automatic install
 ###############################################################################

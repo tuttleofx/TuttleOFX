@@ -12,7 +12,6 @@ project
 		<warnings-as-errors>off
     : usage-requirements
         <include>.
-#	<link>static
     : build-dir $(DIST)/3rdParty/png/obj
     ;
 
