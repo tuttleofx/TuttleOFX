@@ -9,6 +9,8 @@
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
+#include <limits>
+
 namespace tuttle {
 namespace plugin {
 namespace crop {
@@ -23,6 +25,9 @@ void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Image crop" );
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
+	desc.setDescription( "Crop\n"
+	                     "Plugin is used to crop an image." );
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -36,7 +41,7 @@ void CropPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setSupportsTiles( kSupportTiles );
 	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 
-	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<CropMarginOverlay>() );
+	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<CropEffectOverlay>() );
 }
 
 /**
@@ -54,57 +59,101 @@ void CropPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
 
-	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
+	
+	OFX::ChoiceParamDescriptor* mode = desc.defineChoiceParam( kParamMode );
+	mode->setLabel( "Mode" );
+	mode->appendOption( kParamModeCrop );
+	mode->appendOption( kParamModeFillColor );
+//	mode->appendOption( kParamModeResize ); // good idea or not?
+	mode->setDefault( eParamModeFillColor );
 
-	OFX::BooleanParamDescriptor* bop = desc.defineBooleanParam( kParamFillMode );
-	bop->setLabels( kParamFillModeLabel, kParamFillModeLabel, kParamFillModeLabel );
-	bop->setScriptName( "BandsOperations" );
-	bop->setHint( "Fill bands with black color or repeat last pixel and reset Rod." );
-	bop->setDefault( true );
+	OFX::RGBAParamDescriptor* fillColor = desc.defineRGBAParam( kParamFillColor );
+	fillColor->setLabel( "Color" );
+	fillColor->setHint( "Color to fill bands" );
+	fillColor->setDefault( 0.0, 0.0, 0.0, 1.0 );
 
-	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamPresets );
-	format->setLabels( kParamPresetsLabel, kParamPresetsLabel, kParamPresetsLabel );
-	format->setScriptName( "formats" );
-	format->appendOption( "1.33 (4/3) bands" );
-	format->appendOption( "1.77 (16/9e) bands" );
-	format->appendOption( "1.85 bands" );
-	format->appendOption( "2.35 (Cinemascope) bands" );
-	format->appendOption( "2.40 bands" );
-	format->setDefault( 0 );
+	OFX::ChoiceParamDescriptor* axis = desc.defineChoiceParam( kParamAxis );
+	axis->setLabel( "Axis" );
+	axis->appendOption( kParamAxisXY );
+	axis->appendOption( kParamAxisX );
+	axis->appendOption( kParamAxisY );
+	axis->setDefault( eParamAxisY );
+	axis->setEvaluateOnChange( false );
 
-	OFX::BooleanParamDescriptor* shape = desc.defineBooleanParam( kParamDisplayRect );
-	shape->setLabels( kParamDisplayRectLabel, kParamDisplayRectLabel, kParamDisplayRectLabel );
-	shape->setDefault( false );
+	OFX::ChoiceParamDescriptor* symmetric = desc.defineChoiceParam( kParamSymmetric );
+	symmetric->setLabel( "Symmetric" );
+	symmetric->appendOption( kParamSymmetricNone );
+	symmetric->appendOption( kParamSymmetricXY );
+	symmetric->appendOption( kParamSymmetricX );
+	symmetric->appendOption( kParamSymmetricY );
+	symmetric->setHint( "Is the crop region symmetric around image center?" );
+	symmetric->setDefault( true );
+	symmetric->setEvaluateOnChange( false );
 
-	OFX::BooleanParamDescriptor* anamorphic = desc.defineBooleanParam( kParamAnamorphic );
-	anamorphic->setLabels( kParamAnamorphicLabel, kParamAnamorphicLabel, "Anamorphic (stretch)" );
-	anamorphic->setDefault( false );
-	anamorphic->setIsSecret( true );
+	OFX::BooleanParamDescriptor* fixedRatio = desc.defineBooleanParam( kParamFixedRatio );
+	fixedRatio->setLabel( "Fixed ratio" );
+	fixedRatio->setHint( "Constrain the cropped region to this ratio." );
+	fixedRatio->setDefault( true );
+	fixedRatio->setEvaluateOnChange( false );
 
-	OFX::GroupParamDescriptor* bandsGroup = desc.defineGroupParam( "Bands sizes" );
-	OFX::IntParamDescriptor* upBand       = desc.defineIntParam( kParamUp );
-	upBand->setLabels( kParamUpLabel, kParamUpLabel, kParamUpLabel );
-	upBand->setParent( *bandsGroup );
+	OFX::ChoiceParamDescriptor* preset = desc.defineChoiceParam( kParamPreset );
+	preset->setLabel( "Preset" );
+	preset->appendOption( kParamPreset_custom );
+	preset->appendOption( kParamPreset_1_33 );
+	preset->appendOption( kParamPreset_1_77 );
+	preset->appendOption( kParamPreset_1_85 );
+	preset->appendOption( kParamPreset_2_35 );
+	preset->appendOption( kParamPreset_2_40 );
+	preset->setDefault( 0 );
+	preset->setEvaluateOnChange( false );
 
-	OFX::IntParamDescriptor* downBand = desc.defineIntParam( kParamDown );
-	downBand->setLabels( kParamDownLabel, kParamDownLabel, kParamDownLabel );
-	downBand->setParent( *bandsGroup );
+	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kParamRatio );
+	ratio->setLabel( "Ratio" );
+	ratio->setRange( 0, std::numeric_limits<double>::max() );
+	ratio->setDisplayRange( 0, 3 );
+	ratio->setDefault( 2.0 );
+	ratio->setHint( "Ratio X/Y of the cropped region." );
 
-	OFX::IntParamDescriptor* leftBand = desc.defineIntParam( kParamLeft );
-	leftBand->setLabels( kParamLeftLabel, kParamLeftLabel, kParamLeftLabel );
-	leftBand->setParent( *bandsGroup );
+	OFX::BooleanParamDescriptor* overlay = desc.defineBooleanParam( kParamOverlay );
+	overlay->setLabel( "Overlay" );
+	overlay->setHint( "Display overlay rectangle" );
+	overlay->setDefault( false );
+	overlay->setEvaluateOnChange( false );
 
-	OFX::IntParamDescriptor* rightBand = desc.defineIntParam( kParamRight );
-	rightBand->setLabels( kParamRightLabel, kParamRightLabel, kParamRightLabel );
-	rightBand->setParent( *bandsGroup );
+	OFX::GroupParamDescriptor* cropRegion = desc.defineGroupParam( kParamGroupCropRegion );
 
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kCropHelpButton );
-	helpButton->setScriptName( "&Help" );
+	OFX::IntParamDescriptor* xMin       = desc.defineIntParam( kParamXMin );
+	xMin->setLabel( "X min" );
+//	xMin->setRange( 0, std::numeric_limits<int>::max() );
+	xMin->setDisplayRange( 0, 3000 );
+	xMin->setDefault( 0 );
+	xMin->setParent( *cropRegion );
+
+	OFX::IntParamDescriptor* yMin = desc.defineIntParam( kParamYMin );
+	yMin->setLabel( "Y min" );
+//	yMin->setRange( 0, std::numeric_limits<int>::max() );
+	yMin->setDisplayRange( 0, 3000 );
+	yMin->setDefault( 0 );
+	yMin->setParent( *cropRegion );
+
+	OFX::IntParamDescriptor* xMax = desc.defineIntParam( kParamXMax );
+	xMax->setLabel( "X max" );
+//	xMax->setRange( 0, std::numeric_limits<int>::max() );
+	xMax->setDisplayRange( 0, 3000 );
+	xMax->setDefault( 0 );
+	xMax->setParent( *cropRegion );
+
+	OFX::IntParamDescriptor* yMax = desc.defineIntParam( kParamYMax );
+	yMax->setLabel( "Y max" );
+//	yMax->setRange( 0, std::numeric_limits<int>::max() );
+	yMax->setDisplayRange( 0, 3000 );
+	yMax->setDefault( 0 );
+	yMax->setParent( *cropRegion );
 }
 
 /**
