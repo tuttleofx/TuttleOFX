@@ -44,8 +44,8 @@ public:
 		ePatternCStyle   = ePatternStandard * 2,
 		ePatternFrame    = ePatternCStyle * 2,
 
-		ePatternDefault = ePatternCStyle + ePatternStandard,
-		ePatternAll     = ePatternFrame + ePatternCStyle + ePatternStandard
+		ePatternDefault  = ePatternCStyle + ePatternStandard,
+		ePatternAll      = ePatternFrame + ePatternCStyle + ePatternStandard
 	};
 
 public:
@@ -192,12 +192,12 @@ protected:
 	std::string _prefix;         ///< filename prefix
 	std::string _suffix;         ///< filename suffix
 
-	bool _strictPadding;         ///<
+	bool       _strictPadding;  ///<
 	std::size_t _padding;        ///< padding, no padding if 0, fixed padding otherwise
 	std::size_t _step;           ///< step
-	Time _firstTime;             ///< begin time
-	Time _lastTime;              ///< end time
-	std::size_t _nbFiles;       ///< number of frames
+	Time        _firstTime;      ///< begin time
+	Time        _lastTime;       ///< end time
+	std::size_t _nbFiles;        ///< number of frames
 
 	static const char _fillCar = '0'; ///< Filling character
 };

@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_INODE_HPP_
 #define _TUTTLE_HOST_INODE_HPP_
 
-#include <tuttle/host/exceptions.hpp>
+#include <tuttle/host/exceptionsHost.hpp>
 
 #include <ofxCore.h>
 #include <ofxAttribute.h>

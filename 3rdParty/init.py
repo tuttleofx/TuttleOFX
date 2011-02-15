@@ -100,11 +100,11 @@ def uncompress(filename, ext, inNewDirectory):
 		cmd.append( filename.split('-')[0] )
 	cmd.append(filename)
 	print '\n', ' '.join(cmd)
-	if not os.path.exists( os.path.join( os.getcwd(), filename.split('-')[0])):
-		os.mkdir(os.path.join( os.getcwd() ,filename.split('-')[0]))
+	if not os.path.exists( os.path.join( os.getcwd(), filename.split('-')[0].lower())):
+		os.mkdir(os.path.join( os.getcwd() ,filename.split('-')[0].lower()))
 	p = subprocess.Popen(cmd).communicate()
-	print 'uncompress and  copy', filename[:-len(ext)-1], filename.split('-')[0], '\n'
-	copytree(filename[:-len(ext)-1], filename.split('-')[0])
+	print 'uncompress and  copy', filename[:-len(ext)-1], filename.split('-')[0].lower(), '\n'
+	copytree(filename[:-len(ext)-1], filename.split('-')[0].lower())
 	print 'end of uncompress\n'
 
 def getAndUncompress( libraries ):
@@ -134,23 +134,6 @@ def getAndUncompress( libraries ):
 				print 'Already uncompressed : ', dirname
 			else:
 				uncompress( filename, ext, inNewDirectory )
-				#if not os.path.isdir(dirname):
-				#	dirs = [f for f in os.listdir('.') if os.path.isdir(f)]
-				#	for d in dirs:
-				#		if dirname in d or d in dirname:
-				#			dirname = d
-				#			break;
-				#		else:
-				#			raise RuntimeError('Directory extracted from archive "'+filename+'" not found.')
-				#print 'link ', dirname, ' <- ', libname
-				#if os.name == "posix": # unix
-				#	try:
-				#		os.symlink(dirname, libname)
-				#	except Exception, e:
-				#		print 'cannot create link (', str(e), '), so rename the directory.'
-				#		os.rename(dirname, libname)
-				#elif os.name in ['nt', 'dos', 'ce']: # windows
-				#	os.rename(dirname, libname)
 		except Exception, e:
 			print 'uncompress error (', str(e), ')'
 
@@ -161,6 +144,7 @@ allLibs = [
 		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', False),
 		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_45_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_45_setup.exe', False),
 		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
+		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False)
 	]
 
 if len( sys.argv ) == 1:

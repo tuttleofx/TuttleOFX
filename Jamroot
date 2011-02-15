@@ -26,15 +26,24 @@ project
 	requirements
    		# multithreading on
   		<threading>multi
+  		<os>NT:<define>_WINDOWS
 		<variant>release:<warnings-as-errors>on
 		<cxxflags>-fPIC
-		<define>BOOST_HAS_ICU=0
+		# icu library off
+		#<define>BOOST_HAS_ICU=0
   		#
   		# GCC specific flags
   		#
   		# removes deprecated header used by boost
-	        <toolset>gcc:<cxxflags>-Wno-deprecated
+  		<toolset>gcc:<cxxflags>-Wno-deprecated
     ;
+
+#if [ os.name ] = NT	
+#	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+#else if [ os.name ] = LINUX 
+#	{	alias opengl : ; }
+#else if [ os.name ] = MACOSX 
+#	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # 3rd party libraries
@@ -53,24 +62,32 @@ use-project /tuttletests 	: libraries/tuttle/tests ;
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-#use-project /sam 			: applications/sam ;
-#use-project /samtests 		: applications/sam/tests ;
+use-project /sam-ls		: applications/sam-ls ;
+use-project /sam-cp		: applications/sam-cp ;
+use-project /sam-check		: applications/sam-check ;
+use-project /sam-plugins	: applications/sam-plugins ;
+use-project /pyTuttle           : applications/pyTuttle ;
+#use-project /samtests 		: applications/sam-ls/tests ;
 
 #
 # TUTTLEOFX PLUGINS
 #
-use-project /plugins 		: plugins ;
+use-project /plugins		: plugins ;
 
 alias /tests :	
 			/plugins
-			/tuttletests 
+			/tuttletests
 			/samtests
 			;
 
 # all targets have to be marked as explicit
-explicit 	/tuttle
+explicit		/tuttle
 			/tuttletests
-#			/sam
+			/sam-ls
+			/sam-cp
+			/sam-check
+			/sam-plugins
 #			/samtests
 			/plugins
+			/pyTuttle
 			/tests	;
