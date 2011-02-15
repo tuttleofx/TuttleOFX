@@ -1,0 +1,41 @@
+###############################################################################
+## Main BJam makefile for Sam command line tool
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements
+        <include>src
+    : usage-requirements
+        <include>src
+    : build-dir $(DIST)/sam-check/obj
+    ;
+
+###############################################################################
+# tuttle library
+###############################################################################
+exe sam-check :
+	[ glob src/*.cpp ]
+	/tuttlehost/<link>static
+	/tuttlecommon/<link>static
+	/boost/system
+	/boost/filesystem
+	/boost/serialization
+	:
+	<os>LINUX:<find-shared-library>dl
+    ;
+
+###############################################################################
+# Automatic install
+###############################################################################
+install dist_src	
+    : sam-check
+	/boost/system
+	/boost/filesystem
+	/boost/serialization
+    : <variant>debug:<location>$(DIST)/sam-check/bin/debug
+      <variant>release:<location>$(DIST)/sam-check/bin/release
+    ;
