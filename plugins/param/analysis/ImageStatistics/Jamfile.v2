@@ -7,22 +7,10 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>src
-  				<threading>multi 
-  				<os>NT:<define>_WINDOWS
+    : requirements
+	<include>src
     : build-dir $(DIST)/Average/obj
     ;
-
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
@@ -30,7 +18,6 @@ else if [ os.name ] = MACOSX
 plugin Average : 
     [ glob src/*.cpp ]
     /tuttlelib//tuttleplugin/<link>static
-    opengl
     ;
 
 ###############################################################################

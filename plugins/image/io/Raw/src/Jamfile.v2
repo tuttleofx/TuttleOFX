@@ -7,26 +7,23 @@
 ###############################################################################
 project
     : requirements
-        <threading>multi
-        <include>.
+        <include>reader
     : build-dir $(DIST)/Raw/obj
     ;
 
-#use-project /raw 	: $(3RD_PARTY)/libraw ;
+use-project /raw 	: $(3RD_PARTY)/libraw ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-#plugin Raw :
-#        [ glob-tree *.cpp ]
-#        /tuttleplugin/<link>static
-#        /boost/filesystem/<link>static
-#		/boost/system/<link>static
-#		/boost/regex/<link>static
-#        /raw/<link>static
-#        ;
-
-alias Raw ;
+plugin Raw : 
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	/boost/filesystem
+	/boost/system
+	/raw
+	;
+explicit Raw ;
 
 ###############################################################################
 # Automatic install

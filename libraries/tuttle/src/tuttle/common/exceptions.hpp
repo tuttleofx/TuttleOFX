@@ -20,6 +20,16 @@
 #include <string>
 #include <stdexcept>
 
+#define TUTTLE_COUT_EXCEPTION( e )  \
+    TUTTLE_CERR( "Exception:" << \
+    ::std::endl << TUTTLE_INFOS << \
+    ::std::endl << "\t" << ::boost::diagnostic_information( e ) )
+
+#define TUTTLE_COUT_CURRENT_EXCEPTION  \
+    TUTTLE_CERR( "Exception:" << \
+    ::std::endl << TUTTLE_INFOS << \
+    ::std::endl << "\t" << ::boost::current_exception_diagnostic_information() )
+
 namespace OFX {
 struct tag_ofxStatus;
 typedef ::boost::error_info<OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;

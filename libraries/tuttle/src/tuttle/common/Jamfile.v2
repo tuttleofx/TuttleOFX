@@ -1,0 +1,11 @@
+project : requirements
+			<include>.
+		: usage-requirements
+			<include>.
+		;
+
+lib tuttlecommon :
+		[ glob-tree *.cpp ]
+		/ofxPluginSupport/<link>static
+		/boost/regex
+		;

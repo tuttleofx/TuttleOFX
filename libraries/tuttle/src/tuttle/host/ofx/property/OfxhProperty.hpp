@@ -32,7 +32,7 @@
 #include <tuttle/host/ofx/OfxhCore.hpp>
 #include <tuttle/host/ofx/OfxhUtilities.hpp>
 #include <tuttle/host/ofx/OfxhException.hpp>
-#include <tuttle/host/exceptions.hpp>
+#include <tuttle/host/exceptionsHost.hpp>
 
 #include <boost/type_traits/is_virtual_base_of.hpp>
 #include <boost/serialization/extended_type_info.hpp>

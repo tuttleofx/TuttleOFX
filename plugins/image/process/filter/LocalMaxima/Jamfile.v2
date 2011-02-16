@@ -9,8 +9,6 @@ import os ;
 project
     : requirements	
 				<include>src
-  				<threading>multi 
-  				<os>NT:<define>_WINDOWS
     : build-dir $(DIST)/LocalMaxima/obj
     ;
  

@@ -9,7 +9,6 @@ import testing ;
 
 project 
     : requirements	<define>BOOST_TEST_MAIN
-					<threading>multi
     ;
 
 use-project /tuttle 	: ../.. ;

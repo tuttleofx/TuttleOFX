@@ -1,7 +1,7 @@
 #include "OfxhPluginBinary.hpp"
 #include "OfxhPluginCache.hpp"
 
-#include <tuttle/host/exceptions.hpp>
+#include <tuttle/host/exceptionsHost.hpp>
 
 namespace tuttle {
 namespace host {

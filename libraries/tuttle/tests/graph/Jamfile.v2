@@ -9,12 +9,12 @@ import testing ;
 
 project 
     : requirements	<define>BOOST_TEST_MAIN
-					<threading>multi
     ;
 
 alias dependencies
     : 
 		/boost//unit_test_framework
+		/tuttlecommon
 		/tuttlehost
     :
     <os>LINUX:<find-shared-library>dl

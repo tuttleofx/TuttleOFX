@@ -8,25 +8,20 @@ import os ;
 ###############################################################################
 project
     : requirements
-        <threading>multi
-		<include>.
+	<include>.
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
     : build-dir $(DIST)/Dpx/obj
     ;
-
-use-project /png 	: $(3RD_PARTY)/libpng ;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Dpx : 
-        [ glob-tree *.cpp ]
-        /tuttleplugin/<link>static
-        /png/<link>static
-        /boost/filesystem/<link>static
-		/boost/system/<link>static
-		/boost/regex/<link>static
-        ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	/boost/filesystem
+	/boost/system
+	;
 
 ###############################################################################
 # Automatic install

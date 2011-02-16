@@ -73,7 +73,7 @@ void Processor::multiThread( const unsigned int nCPUs )
 
 	if( realNbCPUs == 0 )
 	{
-		TUTTLE_COUT_ERROR( "Run process on 0 cpus... it seems to be a problem." );
+		OFXS_COUT_ERROR( "Run process on 0 cpus... it seems to be a problem." );
 	}
 	else if( realNbCPUs == 1 ) // if 1 cpu, don't bother with the threading
 	{

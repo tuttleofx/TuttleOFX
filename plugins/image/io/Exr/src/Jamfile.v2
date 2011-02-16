@@ -8,7 +8,6 @@ import os ;
 ###############################################################################
 project
     : requirements
-        <threading>multi
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
     : build-dir $(DIST)/Exr/obj
     ;
@@ -21,10 +20,9 @@ use-project /libexr : $(3RD_PARTY)/openexr ;
 plugin Exr : 
         [ glob-tree *.cpp ]
         /tuttleplugin/<link>static
-        /boost/filesystem/<link>static
-		/boost/system/<link>static
-		/boost/regex/<link>static
-        /libexr/<link>static
+        /boost/filesystem
+		/boost/system
+        /libexr
         ;
 
 ###############################################################################
