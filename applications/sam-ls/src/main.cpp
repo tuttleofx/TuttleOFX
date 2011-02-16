@@ -35,7 +35,7 @@ int main( int argc, char** argv )
 			{
 				if( fs::is_directory( path ) )
 				{
-					std::vector<Sequence> sequences = sequencesInDir( path );
+					std::vector<Sequence> sequences = tuttle::common::sequencesInDir( path );
 					std::sort( sequences.begin(), sequences.end() );
 					BOOST_FOREACH( const std::vector<Sequence>::value_type & s, sequences )
 					{
@@ -67,7 +67,7 @@ int main( int argc, char** argv )
 				}
 				catch(... )
 				{
-					std::cerr << "Unrecognized pattern \"" << path << "\"" << std::endl;
+					TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
 				}
 			}
 		}
@@ -75,7 +75,7 @@ int main( int argc, char** argv )
 	}
 	catch(... )
 	{
-		std::cerr << boost::current_exception_diagnostic_information() << std::endl;
+		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
 	}
 	return 0;
 }

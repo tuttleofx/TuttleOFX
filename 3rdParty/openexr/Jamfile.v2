@@ -16,8 +16,6 @@ project
 		<os>MACOSX:<include>./config 
 	 	<os>NT:<define>WIN32
 	 	<os>NT:<define>_WINDOWS
- 		<threading>multi
-	    <link>static
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements
@@ -34,11 +32,11 @@ project
 ###############################################################################
 lib IlmImf : 
         [ glob IlmImf/*.cpp ]
-        /z//zlib/<link>static
-        /base//Iex/<link>static
-        /base//Half/<link>static
-        /base//IlmThread/<link>static
-        /base//Imath/<link>static
+        /z//zlib
+        /base//Iex
+        /base//Half
+        /base//IlmThread
+        /base//Imath
         ;
 
 install dist_src 

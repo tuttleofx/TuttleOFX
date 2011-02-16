@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_INTERNALGRAPH_HPP_
 #define _TUTTLE_HOST_INTERNALGRAPH_HPP_
 
-#include <tuttle/host/exceptions.hpp>
+#include <tuttle/host/exceptionsHost.hpp>
 
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>

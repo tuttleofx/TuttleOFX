@@ -7,7 +7,7 @@
 #include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 
-#include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/globalPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {

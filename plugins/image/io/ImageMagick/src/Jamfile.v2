@@ -7,24 +7,22 @@
 ###############################################################################
 project
     : requirements
-        <threading>multi
         <include>.
     : build-dir $(DIST)/ImageMagick/obj
     ;
 
-#use-project /imagemagick 	: $(3RD_PARTY)/libimagemagick ;
+#use-project /imagemagick	: $(3RD_PARTY)/libimagemagick ;
 
 ###############################################################################
 # Product 
 ###############################################################################
 #plugin ImageMagick : 
-#        [ glob-tree *.cpp ]
-#        /tuttleplugin/<link>static
-#        /boost/filesystem/<link>static
-#		/boost/system/<link>static
-#		/boost/regex/<link>static
-#        /imagemagick/<link>static
-#        ;
+#	[ glob-tree *.cpp ]
+#	/tuttleplugin/<link>static
+#	/boost/filesystem
+#	/boost/system
+#	/imagemagick/<link>static
+#	;
 #explicit ImageMagick ;
 
 alias ImageMagick ;

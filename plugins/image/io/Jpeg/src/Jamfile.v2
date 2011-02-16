@@ -7,25 +7,16 @@
 ###############################################################################
 project
     : requirements
-        <threading>multi
         <include>.
     : build-dir $(DIST)/Jpeg/obj
     ;
 
-#use-project /jpeg 	: $(3RD_PARTY)/libjpeg ;
 
 ###############################################################################
 # Product 
 ###############################################################################
 #plugin Jpeg : 
-#        [ glob-tree *.cpp ]
-#        /tuttleplugin/<link>static
-#        /boost/filesystem/<link>static
-#		/boost/system/<link>static
-#		/boost/regex/<link>static
-#        /jpeg/<link>static
 #        ;
-#explicit Jpeg ;
 
 alias Jpeg ;
 

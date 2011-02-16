@@ -744,7 +744,7 @@ protected:
 		{
 			if( param->getType() == paramType )
 			{
-				TUTTLE_COUT_WARNING( "Parameter already defined ! (" + name + ")" );
+				OFXS_COUT_WARNING( "Parameter already defined ! (" + name + ")" );
 				paramPtr = (T*) param; // could be a dynamic cast here
 				return true;
 			}

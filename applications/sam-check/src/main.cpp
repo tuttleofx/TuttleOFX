@@ -126,39 +126,41 @@ int main( int argc, char** argv )
 		bool hasRange = false;
 		std::vector<int> range;
 
-        po::options_description desc( "Check image files.\n"
-		                              "\n"
-		                              "Usage:\n"
-		                              "\tsam-check -n fr.tuttle.pngreader /path/to/my/dir/images.####.png -r 50 100\n"
-		                              "\n"
-		                              "Return code:\n"
-		                              "\t* the number of corrupted images\n"
-		                              "\t* 0 if no error\n"
-		                              "\t* -1 error in the application itself\n"
-		                             );
-        desc.add_options()
-        ("help,h", "Display help")
-        ("reader,n", po::value(&readerId)/*->required()*/, "Reader node identifier \"fr.tuttle.XXXreader\".")
-        ("input,i", po::value(&inputs)/*->required()*/, "Input pathname (directory, file or sequence pattern).")
-        ("range,r", po::value(&range)->multitoken(), "Range (used only if input is a sequence pattern).")
-        ;
+		po::options_description desc(
+			"Check image files.\n"
+			"\n"
+			"Usage:\n"
+			"\tsam-check -n fr.tuttle.pngreader /path/to/my/dir/images.####.png -r 50 100\n"
+			"\n"
+			"Return code:\n"
+			"\t* the number of corrupted images\n"
+			"\t* 0 if no error\n"
+			"\t* -1 error in the application itself\n"
+		);
+		
+		desc.add_options()
+		("help,h", "Display help")
+		("reader,n", po::value(&readerId)/*->required()*/, "Reader node identifier \"fr.tuttle.XXXreader\".")
+		("input,i", po::value(&inputs)/*->required()*/, "Input pathname (directory, file or sequence pattern).")
+		("range,r", po::value(&range)->multitoken(), "Range (used only if input is a sequence pattern).")
+		;
 
 		po::positional_options_description pArgs;
 		pArgs.add("input", -1);
 
-        po::variables_map vm;
+		po::variables_map vm;
 		po::store( po::command_line_parser(argc, argv)
 					.options(desc)
 					.positional(pArgs).run(), vm );
 		po::notify(vm);
 
-        if( vm.count("help") || vm.count("input") == 0 )
+		if( vm.count("help") || vm.count("input") == 0 )
 		{
 			std::cout.rdbuf(_stdCout); // restore cout's original streambuf
-            std::cout << desc << std::endl;
+			std::cout << desc << std::endl;
 			std::cout.rdbuf(0); // remove cout's streambuf
-            return 0;
-        }
+			return 0;
+		}
 		readerId = vm["reader"].as<std::string>();
 		inputs = vm["input"].as< std::vector<std::string> >();
 		if( vm.count("range") )

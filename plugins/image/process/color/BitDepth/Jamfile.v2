@@ -9,7 +9,6 @@ import os ;
 project
     : requirements	
         <include>src
-        <threading>multi 
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
     : build-dir $(DIST)/BitDepth/obj
     ;

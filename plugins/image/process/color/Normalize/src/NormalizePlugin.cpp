@@ -40,15 +40,16 @@ NormalizePlugin::NormalizePlugin( OfxImageEffectHandle handle )
 
 NormalizeProcessParams<NormalizePlugin::Scalar> NormalizePlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
+	using namespace boost::gil;
 	NormalizeProcessParams<Scalar> params;
 
 	params._mode         = static_cast<EParamMode>( _mode->getValue() );
 	params._analyseMode  = static_cast<EParamAnalyseMode>( _analyseMode->getValue() );
-	
-	params._srcMinColor  = ofxToGil<boost::gil::bits32f>( _srcMinColor->getValue() );
-	params._srcMaxColor  = ofxToGil<boost::gil::bits32f>( _srcMaxColor->getValue() );
-	params._dstMinColor  = ofxToGil<boost::gil::bits32f>( _dstMinColor->getValue() );
-	params._dstMaxColor  = ofxToGil<boost::gil::bits32f>( _dstMaxColor->getValue() );
+
+	color_convert( ofxToGil( _srcMinColor->getValue() ), params._srcMinColor );
+	color_convert( ofxToGil( _srcMaxColor->getValue() ), params._srcMaxColor );
+	color_convert( ofxToGil( _dstMinColor->getValue() ), params._dstMinColor );
+	color_convert( ofxToGil( _dstMaxColor->getValue() ), params._dstMaxColor );
 
 	params._processR     = _processR->getValue();
 	params._processG     = _processG->getValue();
@@ -60,8 +61,8 @@ NormalizeProcessParams<NormalizePlugin::Scalar> NormalizePlugin::getProcessParam
 
 void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-    if( paramName == kParamMode )
-    {
+	if( paramName == kParamMode )
+	{
 		switch( static_cast<EParamMode>( _mode->getValue() ) )
 		{
 			case eParamModeAnalyse:
@@ -81,7 +82,7 @@ void NormalizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const 
 				break;
 			}
 		}
-    }
+	}
 	else if( paramName == kParamAnalyseNow )
 	{
 		using namespace boost::gil;
@@ -187,7 +188,7 @@ bool NormalizePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& 
 	NormalizeProcessParams<Scalar> params = getProcessParams();
 	if( params._mode == eParamModeCustom &&
 		params._srcMinColor == params._dstMinColor &&
-	    params._srcMaxColor == params._dstMaxColor )
+		params._srcMaxColor == params._dstMaxColor )
 	{
 		identityClip = _clipSrc;
 		identityTime = args.time;
@@ -203,11 +204,11 @@ bool NormalizePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& 
 void NormalizePlugin::render( const OFX::RenderArguments &args )
 {
 	using namespace boost::gil;
-    // instantiate the render code based on the pixel depth of the dst clip
-    OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
-    OFX::EPixelComponent components = _clipDst->getPixelComponents( );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth bitDepth = _clipDst->getPixelDepth( );
+	OFX::EPixelComponent components = _clipDst->getPixelComponents( );
 
-    // do the rendering
+	// do the rendering
 	switch( components )
 	{
 		case OFX::ePixelComponentRGBA:

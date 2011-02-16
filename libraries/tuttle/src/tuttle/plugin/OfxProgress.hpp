@@ -6,7 +6,7 @@
 #define _TUTTLE_PLUGIN_OFXPROGRESS_HPP_
 
 #include "IProgress.hpp"
-#include "exceptions.hpp"
+#include "exceptionsPlugin.hpp"
 
 #include <tuttle/common/utils/global.hpp>
 
