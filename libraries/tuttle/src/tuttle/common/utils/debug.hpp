@@ -1,8 +1,6 @@
 #ifndef _TUTTLE_COMMON_DEBUG_HPP_
 #define _TUTTLE_COMMON_DEBUG_HPP_
 
-#include <tuttle/common/system/system.hpp>
-
 // pre-processeur directives :
 //	# : convert to string
 //	## : concatenate (or before __VA_ARGS__ to indicate that it may be empty)
