@@ -29,6 +29,7 @@
 #include <boost/gil/algorithm.hpp>
 #include <boost/gil/metafunctions.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+#include <boost/mpl/bool.hpp>
 
 #include "pixel_numeric_operations.hpp"
 #include "algorithm.hpp"
@@ -71,7 +72,7 @@ bool operator<=(const point2<T>& p, const T2 v) { return (p.x<=v && p.y<=v); }
 /// \param correlator correlator functor
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView,typename Correlator>
 void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
-                        convolve_boundary_option option,
+                        const convolve_boundary_option option,
                         Correlator correlator) {
 	// assert dst frame with shift is inside src frame
     assert(src.dimensions()>=dst.dimensions());
@@ -266,6 +267,7 @@ private:
 public:
     correlator_n(std::size_t size_in) : _size(size_in) {}
     template <typename SrcIterator,typename KernelIterator,typename DstIterator>
+	GIL_FORCEINLINE
     void operator()(SrcIterator src_begin,SrcIterator src_end,
                     KernelIterator ker_begin,
                     DstIterator dst_begin) {
@@ -276,135 +278,247 @@ template <std::size_t Size,typename PixelAccum>
 struct correlator_k {
 public:
     template <typename SrcIterator,typename KernelIterator,typename DstIterator>
+	GIL_FORCEINLINE
     void operator()(SrcIterator src_begin,SrcIterator src_end,
                     KernelIterator ker_begin,
                     DstIterator dst_begin){
         correlate_pixels_k<Size,PixelAccum>(src_begin,src_end,ker_begin,dst_begin);
     }
 };
-} // namespace detail
 
 /// \ingroup ImageAlgorithms
 ///correlate a 1D variable-size kernel along the rows of an image
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
-                    convolve_boundary_option option=convolve_option_extend_zero) {
-    detail::correlate_rows_imp<PixelAccum>(src,ker,dst,dst_tl,option,detail::correlator_n<PixelAccum>(ker.size()));
-}
-
-/// \ingroup ImageAlgorithms
-///correlate a 1D variable-size kernel along the rows of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
-GIL_FORCEINLINE
-void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst,
-                    convolve_boundary_option option=convolve_option_extend_zero) {
-	typename SrcView::point_t zero(0,0);
-    detail::correlate_rows_imp<PixelAccum>(src,ker,dst,zero,option,detail::correlator_n<PixelAccum>(ker.size()));
-}
-
-/// \ingroup ImageAlgorithms
-///correlate a 1D variable-size kernel along the columns of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
-GIL_FORCEINLINE
-void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
-                    convolve_boundary_option option=convolve_option_extend_zero) {
-    correlate_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),typename SrcView::point_t(dst_tl.y, dst_tl.x),option);
-}
-
-/// \ingroup ImageAlgorithms
-///correlate a 1D variable-size kernel along the columns of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
-GIL_FORCEINLINE
-void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst,
-                    convolve_boundary_option option=convolve_option_extend_zero) {
-    correlate_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),option);
-}
-
-/// \ingroup ImageAlgorithms
-///convolve a 1D variable-size kernel along the rows of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
-GIL_FORCEINLINE
-void convolve_rows(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
-                   convolve_boundary_option option=convolve_option_extend_zero) {
-    correlate_rows<PixelAccum>(src,reverse_kernel(ker),dst,dst_tl,option);
-}
-
-/// \ingroup ImageAlgorithms
-///convolve a 1D variable-size kernel along the rows of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
-GIL_FORCEINLINE
-void convolve_rows(const SrcView& src, const Kernel& ker, const DstView& dst,
-                   convolve_boundary_option option=convolve_option_extend_zero) {
-    correlate_rows<PixelAccum>(src,reverse_kernel(ker),dst,option);
-}
-
-/// \ingroup ImageAlgorithms
-///convolve a 1D variable-size kernel along the columns of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
-GIL_FORCEINLINE
-void convolve_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
-                   convolve_boundary_option option=convolve_option_extend_zero) {
-    convolve_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),typename SrcView::point_t(dst_tl.y, dst_tl.x),option);
-}
-
-/// \ingroup ImageAlgorithms
-///convolve a 1D variable-size kernel along the columns of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
-GIL_FORCEINLINE
-void convolve_cols(const SrcView& src, const Kernel& ker, const DstView& dst,
-                   convolve_boundary_option option=convolve_option_extend_zero) {
-    convolve_rows<PixelAccum>(transposed_view(src),ker,transposed_view(dst),option);
+void correlate_1d_imp( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                   const convolve_boundary_option option, const boost::mpl::true_ rows, const boost::mpl::false_ /*fixed*/ )
+{
+	correlate_rows_imp<PixelAccum>(src,ker,dst,dst_tl,option,detail::correlator_n<PixelAccum>(ker.size()));
 }
 
 /// \ingroup ImageAlgorithms
 ///correlate a 1D fixed-size kernel along the rows of an image
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void correlate_rows_fixed(const SrcView& src, const Kernel& ker, const DstView& dst,
-                          convolve_boundary_option option=convolve_option_extend_zero) {
-	typename SrcView::point_t topleft(0,0);
-    detail::correlate_rows_imp<PixelAccum>(src,ker,dst,topleft,option,detail::correlator_k<Kernel::static_size,PixelAccum>());
+void correlate_1d_imp( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                   const convolve_boundary_option option, const boost::mpl::true_ rows, const boost::mpl::true_ /*fixed*/ )
+{
+	correlate_rows_imp<PixelAccum>(src,ker,dst,dst_tl,option,detail::correlator_k<Kernel::static_size,PixelAccum>());
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the columns of an image
+// can be remove with "fixed" param as template argument
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_1d_imp( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                   const convolve_boundary_option option, const boost::mpl::false_ rows, const boost::mpl::false_ fixed )
+{
+	correlate_1d_imp<PixelAccum>( transposed_view(src), ker, transposed_view(dst), typename SrcView::point_t(dst_tl.y, dst_tl.x), option, boost::mpl::true_(), fixed );
 }
 
 /// \ingroup ImageAlgorithms
 ///correlate a 1D fixed-size kernel along the columns of an image
 template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void correlate_cols_fixed(const SrcView& src, const Kernel& ker, const DstView& dst,
-                          convolve_boundary_option option=convolve_option_extend_zero) {
-    correlate_rows_fixed<PixelAccum>(transposed_view(src),ker,transposed_view(dst),option);
+void correlate_1d_imp( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                   const convolve_boundary_option option, const boost::mpl::false_ rows, const boost::mpl::true_ fixed )
+{
+	correlate_1d_imp<PixelAccum>( transposed_view(src), ker, transposed_view(dst), typename SrcView::point_t(dst_tl.y, dst_tl.x), option, boost::mpl::true_(), fixed );
 }
 
 /// \ingroup ImageAlgorithms
-///convolve a 1D fixed-size kernel along the rows of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+///correlate a 1D fixed-size kernel along the rows of an image
+template <bool rows, typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void convolve_rows_fixed(const SrcView& src, const Kernel& ker, const DstView& dst,
-                         convolve_boundary_option option=convolve_option_extend_zero) {
-    correlate_rows_fixed<PixelAccum>(src,reverse_kernel(ker),dst,option);
+void correlate_1d_auto_imp( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                          const convolve_boundary_option option, const boost::mpl::true_ fixed )
+{
+	// already a fixed-size kernel, so nothing special to do for the auto conversion variable-size to fixed-size kernel
+	correlate_1d_imp<PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option, boost::mpl::bool_<rows>(), fixed );
 }
 
 /// \ingroup ImageAlgorithms
-///convolve a 1D fixed-size kernel along the columns of an image
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+///correlate a 1D variable-size kernel along the rows of an image
+template <bool rows, typename PixelAccum, typename SrcView,typename Kernel,typename DstView>
 GIL_FORCEINLINE
-void convolve_cols_fixed(const SrcView& src, const Kernel& ker, const DstView& dst,
-                         convolve_boundary_option option=convolve_option_extend_zero) {
-    convolve_rows_fixed<PixelAccum>(transposed_view(src),ker,transposed_view(dst),option);
+void correlate_1d_auto_imp( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                          const convolve_boundary_option option, const boost::mpl::false_ /*fixed*/ )
+{
+	typedef boost::mpl::bool_<rows> Rows;
+	typedef boost::mpl::true_ Fixed;
+
+	switch( ker.size() )
+	{
+		case 3:
+		{
+			typedef kernel_1d_fixed<typename Kernel::value_type, 3> FixedKernel;
+			FixedKernel fker( ker.begin(), ker.center() );
+			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
+			break;
+		}
+		case 5:
+		{
+			typedef kernel_1d_fixed<typename Kernel::value_type, 5> FixedKernel;
+			FixedKernel fker( ker.begin(), ker.center() );
+			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
+			break;
+		}
+		case 7:
+		{
+			typedef kernel_1d_fixed<typename Kernel::value_type, 7> FixedKernel;
+			FixedKernel fker( ker.begin(), ker.center() );
+			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
+			break;
+		}
+		case 9:
+		{
+			typedef kernel_1d_fixed<typename Kernel::value_type, 9> FixedKernel;
+			FixedKernel fker( ker.begin(), ker.center() );
+			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
+			break;
+		}
+		case 11:
+		{
+			typedef kernel_1d_fixed<typename Kernel::value_type, 11> FixedKernel;
+			FixedKernel fker( ker.begin(), ker.center() );
+			correlate_1d_imp<PixelAccum,SrcView,FixedKernel,DstView>( src, fker, dst, dst_tl, option, Rows(), Fixed() );
+			break;
+		}
+		default:
+		{
+			correlate_1d_imp<PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option, Rows(), boost::mpl::false_() );
+			break;
+		}
+	}
 }
 
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <bool rows, typename PixelAccum, typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_1d_auto( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                        const convolve_boundary_option option, const boost::mpl::true_ autoEnabled )
+{
+	typedef typename Kernel::is_fixed_size_t Fixed;
+	correlate_1d_auto_imp<rows,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option, Fixed() );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <bool rows, typename PixelAccum, typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_1d_auto( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                        const convolve_boundary_option option, const boost::mpl::false_ autoEnabled )
+{
+	typedef typename Kernel::is_fixed_size_t Fixed;
+	typedef boost::mpl::bool_<rows> Rows;
+	correlate_1d_imp<PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option, Rows(), Fixed() );
+}
+
+} // namespace detail //
+
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <bool autoEnabled, bool rows, typename PixelAccum, typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_1d_imp( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                        const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	detail::correlate_1d_auto<rows,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option, boost::mpl::bool_<autoEnabled>() );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <bool rows, typename PixelAccum, typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_1d_auto( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                        const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_1d_imp<true,rows,PixelAccum,rows,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <bool rows, typename PixelAccum, typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_1d( const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                        const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_1d_imp<false,rows,PixelAccum,rows,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option);
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <bool autoEnabled,typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_rows_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                    const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_1d_imp<autoEnabled,true,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_rows_auto(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                    const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_rows_imp<true,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the rows of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_rows(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl = typename SrcView::point_t(0,0),
+                    const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_rows_imp<false,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the columns of an image
+template <bool autoEnabled,typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_cols_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                    const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_1d_imp<false,autoEnabled,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the columns of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_cols_auto(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
+                    const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_cols_imp<true,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+}
+
+/// \ingroup ImageAlgorithms
+///correlate a 1D variable-size kernel along the columns of an image
+template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+GIL_FORCEINLINE
+void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl = typename SrcView::point_t(0,0),
+                    const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_cols_imp<false,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+}
 
 /// \ingroup ImageAlgorithms
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
-template <typename PixelAccum,typename SrcView,typename Kernel,typename DstView>
+template <bool autoEnabled, typename PixelAccum,typename SrcView,typename KernelX,typename KernelY,typename DstView>
 GIL_FORCEINLINE
-void correlate_rows_cols( const SrcView& src,
-                          const Kernel& kernelX,
-						  const Kernel& kernelY,
+void correlate_rows_cols_imp( const SrcView& src,
+                          const KernelX& kernelX,
+						  const KernelY& kernelY,
 						  const DstView& dst,
 						  const typename SrcView::point_t& dst_tl,
-						  convolve_boundary_option option=convolve_option_extend_zero )
+						  const convolve_boundary_option option = convolve_option_extend_zero )
 {
 	// dst with dst_tl shift must be inside src
 	BOOST_ASSERT( dst.width() + dst_tl.x <= src.width() );
@@ -418,8 +532,9 @@ void correlate_rows_cols( const SrcView& src,
 	{
 		if( dst.dimensions() == src.dimensions() ) // no tiles... easy !
 		{
-			correlate_rows<PixelAccum>( src, kernelX, dst, option );
-			correlate_cols<PixelAccum>( dst, kernelY, dst, option );
+			typename SrcView::point_t zero(0,0);
+			correlate_rows_imp<autoEnabled,PixelAccum>( src, kernelX, dst, zero, option );
+			correlate_cols_imp<autoEnabled,PixelAccum>( dst, kernelY, dst, zero, option );
 		}
 		else
 		{
@@ -448,21 +563,47 @@ void correlate_rows_cols( const SrcView& src,
 			ViewAccum view_tmp = view( image_tmp );
 			const Point dst_tmp_tl( 0, top_in );
 
-			correlate_rows<PixelAccum>( src, kernelX, view_tmp, image_tmp_tl, option );
-			correlate_cols<PixelAccum>( view_tmp, kernelY, dst, dst_tmp_tl, option );
+			correlate_rows_imp<autoEnabled,PixelAccum>( src, kernelX, view_tmp, image_tmp_tl, option );
+			correlate_cols_imp<autoEnabled,PixelAccum>( view_tmp, kernelY, dst, dst_tmp_tl, option );
 		}
 	}
 	else if( kernelX.size() > 2 )
 	{
-		correlate_rows<PixelAccum>( src, kernelX, dst, dst_tl, option );
+		correlate_rows_imp<autoEnabled,PixelAccum>( src, kernelX, dst, dst_tl, option );
 	}
 	else if( kernelY.size() > 2 )
 	{
-		correlate_cols<PixelAccum>( src, kernelY, dst, dst_tl, option );
+		correlate_cols_imp<autoEnabled,PixelAccum>( src, kernelY, dst, dst_tl, option );
 	}
-
 }
 
+/// \ingroup ImageAlgorithms
+/// correlate a 2D separable variable-size kernel (kernelX and kernelY)
+template <typename PixelAccum,typename SrcView,typename KernelX,typename KernelY,typename DstView>
+GIL_FORCEINLINE
+void correlate_rows_cols_auto( const SrcView& src,
+                          const KernelX& kernelX,
+						  const KernelY& kernelY,
+						  const DstView& dst,
+						  const typename SrcView::point_t& dst_tl,
+						  const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_rows_cols_imp<true,PixelAccum,SrcView,KernelX, KernelY,DstView>( src, kernelX, kernelY, dst, dst_tl, option );
+}
+
+/// \ingroup ImageAlgorithms
+/// correlate a 2D separable variable-size kernel (kernelX and kernelY)
+template <typename PixelAccum,typename SrcView,typename KernelX,typename KernelY,typename DstView>
+GIL_FORCEINLINE
+void correlate_rows_cols( const SrcView& src,
+                          const KernelX& kernelX,
+						  const KernelY& kernelY,
+						  const DstView& dst,
+						  const typename SrcView::point_t& dst_tl,
+						  const convolve_boundary_option option = convolve_option_extend_zero )
+{
+	correlate_rows_cols_imp<false,PixelAccum,SrcView,KernelX,KernelY,DstView>( src, kernelX, kernelY, dst, dst_tl, option );
+}
 
 } }  // namespace boost::gil
 

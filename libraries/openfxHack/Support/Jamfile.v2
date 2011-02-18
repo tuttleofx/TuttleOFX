@@ -6,12 +6,12 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-			<include>include
-			<link>static
+	: requirements	
+		<include>include
+		<link>static
 	: usage-requirements
-			<include>include
-    : build-dir $(DIST)/openFX/Support/obj
+		<include>include
+	: build-dir $(DIST)/openFX/Support/obj
     ;
 
 

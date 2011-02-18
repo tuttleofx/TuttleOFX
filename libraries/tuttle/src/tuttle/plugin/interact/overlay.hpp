@@ -41,7 +41,8 @@ inline void displayPointRect( const Point2& p, const double marge )
 	glEnd();
 }
 
-inline void displayRect( const OfxRectD& r, const double marge = 0 )
+template<typename Rect>
+inline void displayRect( const Rect& r, const double marge = 0 )
 {
 	glBegin( GL_LINE_LOOP );
 	glVertex2f( r.x1 - marge, r.y1 - marge );

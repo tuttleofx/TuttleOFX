@@ -88,8 +88,29 @@ inline Point2 pointsMaxXY( const std::vector<Point2>& points )
 template<class Point, class Rect>
 inline bool pointInRect( const Point& p, const Rect& rec )
 {
-	return p.x >= rec.x1 && p.x <= rec.x2 &&
-		   p.y >= rec.y1 && p.y <= rec.y2;
+	Rect orientedRec;
+	if( rec.x1 < rec.x2 )
+	{
+		orientedRec.x1 = rec.x1;
+		orientedRec.x2 = rec.x2;
+	}
+	else
+	{
+		orientedRec.x1 = rec.x2;
+		orientedRec.x2 = rec.x1;
+	}
+	if( rec.y1 < rec.y2 )
+	{
+		orientedRec.y1 = rec.y1;
+		orientedRec.y2 = rec.y2;
+	}
+	else
+	{
+		orientedRec.y1 = rec.y2;
+		orientedRec.y2 = rec.y1;
+	}
+	return p.x >= orientedRec.x1 && p.x <= orientedRec.x2 &&
+	       p.y >= orientedRec.y1 && p.y <= orientedRec.y2;
 }
 
 template<class Rect>

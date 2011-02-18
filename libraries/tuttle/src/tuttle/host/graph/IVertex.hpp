@@ -2,7 +2,7 @@
 #define	_TUTTLE_HOST_IVERTEX_HPP_
 
 #include <tuttle/host/INode.hpp>
-#include <tuttle/host/exceptions.hpp>
+#include <tuttle/host/exceptionsHost.hpp>
 #include <tuttle/common/utils/global.hpp>
 
 #include <iostream>

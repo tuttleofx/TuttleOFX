@@ -1,64 +1,28 @@
 #ifndef _TUTTLE_PLUGIN_FLOODFILL_ALGORITHM_HPP_
 #define _TUTTLE_PLUGIN_FLOODFILL_ALGORITHM_HPP_
 
+#include "FloodFillDefinitions.hpp"
+
 #include <tuttle/common/math/rectOp.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/gil/fill.hpp>
 #include <tuttle/plugin/image/gil/basic_colors.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
 #include <boost/gil/extension/channel.hpp>
 
 #include <queue>
 
-#include "FloodFillDefinitions.hpp"
 
 namespace tuttle {
 namespace plugin {
 namespace floodFill {
-
-
-/**
- * @brief fill all pixels inside the @p window, with the color @p pixelValue.
- */
-template<class View>
-TUTTLE_FORCEINLINE
-void fill_pixels( View& dstView, const OfxRectI& window,
-				  const typename View::value_type& pixelValue )
-{
-	typedef typename View::value_type Pixel;
-
-	View dst = subimage_view( dstView, window.x1, window.y1,
-	                                   window.x2-window.x1, window.y2-window.y1 );
-	boost::gil::fill_pixels( dst, pixelValue );
-}
-
-/**
- * @brief fill a range of pixels (on the same line or with an 1d_traversable image).
- */
-template<class DIterator, class DPixel>
-TUTTLE_FORCEINLINE
-void fill_range( DIterator dstBegin, const DIterator& dstEnd, const DPixel& value )
-{
-	do
-	{
-#ifdef DEBUG_FLOODFILL
-		if( (*dstBegin)[0] != value[0] )
-		{
-			*dstBegin = value;
-		}
-#else
-		*dstBegin = value;
-#endif
-		++dstBegin;
-	}
-	while( dstBegin != dstEnd );
-}
 
 /**
  * @brief fill all pixels respecting the @p condition in a range of pixels (on the same line or with an 1d_traversable image).
  */
 template<class SIterator, class DIterator, class DPixel, class Test>
 TUTTLE_FORCEINLINE
-void fill_range_if( SIterator srcBegin, const SIterator& srcEnd,
+void fill_pixels_range_if( SIterator srcBegin, const SIterator& srcEnd,
                     DIterator dstBegin, const DPixel& value,
                     const Test& condition )
 {
@@ -272,14 +236,14 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 
 						// current line
 						// fill output from first to last
-						fill_range( dstLastBegin.x(), dst_loc.x(), white );
+						fill_pixels_range( dstLastBegin.x(), dst_loc.x(), white );
 
 						// visit line bellow
 						if( y < rod.y2  )
 						{
 	//						fill_range_if( srcLastBegin[sLB], src_loc[sRB], dstLastBegin[dLB], white, softTest );
 							// fill line bellow for current range if respect softTest
-							fill_range_if( srcLastBegin.x_at(-Connexity::x,1), src_loc.x_at(Connexity::x,1),
+							fill_pixels_range_if( srcLastBegin.x_at(-Connexity::x,1), src_loc.x_at(Connexity::x,1),
 										   dstLastBegin.x_at(-Connexity::x,1),
 										   white, softTest );
 						}
@@ -305,13 +269,13 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 
 				// current line
 				// fill output from first to last
-				fill_range( dstLastBegin.x(), dst_loc.x(), white );
+				fill_pixels_range( dstLastBegin.x(), dst_loc.x(), white );
 
 				// visit line bellow
 				if( y < rod.y2  )
 				{
 					// fill line bellow for current range if respect softTest
-					fill_range_if( srcLastBegin.x_at(-Connexity::x,1), src_loc.x_at(Connexity::x,1),
+					fill_pixels_range_if( srcLastBegin.x_at(-Connexity::x,1), src_loc.x_at(Connexity::x,1),
 								   dstLastBegin.x_at(-Connexity::x,1),
 								   white, softTest );
 				}

@@ -8,12 +8,12 @@
 project
     : requirements	
         <include>.
-        <threading>multi
-        <link>static
+        #<threading>multi
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements
         <include>.
+        #<link>static
     : build-dir $(DIST)/3rdParty/zlib/obj
     ;
 
@@ -21,7 +21,7 @@ project
 # z library
 ###############################################################################
 lib zlib : 
-    [ glob *.c ]
+    [ glob *.c : adler32.c crc32.c deflate.c example.c inflate.c inftrees.c minigzip.c trees.c ]
     ;
 
 install dist_src	

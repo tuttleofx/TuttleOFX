@@ -25,6 +25,7 @@ template <typename PixelSrc, // models pixel concept
 // models pixel value concept
 struct pixel_assign_min_t
 {
+	GIL_FORCEINLINE
 	PixelDst& operator()( const PixelSrc& p1,
 	                      PixelDst& p2 ) const
 	{
@@ -43,6 +44,7 @@ template <typename PixelSrc, // models pixel concept
 // models pixel value concept
 struct pixel_assign_max_t
 {
+	GIL_FORCEINLINE
 	PixelDst& operator()( const PixelSrc& p1,
 	                      PixelDst& p2 ) const
 	{
@@ -70,6 +72,7 @@ struct pixel_minmax_by_channel_t
 	}
 
 	template<typename Pixel>
+	GIL_FORCEINLINE
 	void operator()( const Pixel& v )
 	{
 		pixel_assign_min_t<Pixel,CPixel>()( v, min );
@@ -114,6 +117,7 @@ struct pixel_scale_t
 		BOOST_STATIC_ASSERT( boost::is_floating_point<ChannelBaseType>::value );
 	}
 
+	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& src ) const
 	{
 		Pixel res;

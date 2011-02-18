@@ -8,9 +8,6 @@
 project
     : requirements	
         <include>.
-        <include>../zlib
-        <threading>multi
-        <link>static
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
     : usage-requirements
@@ -27,7 +24,7 @@ alias headers : [ glob-tree *.h ] ;
 
 lib png : 
         [ glob *.c ]
-        /zlib/<link>static
+        /zlib
         ;
 
 install dist_src	

@@ -15,14 +15,15 @@ BOOST_AUTO_TEST_SUITE( memory_tests_suite01 )
 
 BOOST_AUTO_TEST_CASE( memoryPool )
 {
-	BOOST_REQUIRE_THROW( {
-	                         memory::MemoryPool pool( 0 );
-	                         BOOST_CHECK_EQUAL( 0U, pool.getMaxMemorySize() );
-	                         BOOST_CHECK_EQUAL( 0U, pool.getUsedMemorySize() );
-	                         BOOST_CHECK_EQUAL( 0U, pool.getAllocatedMemorySize() );
-	                         BOOST_CHECK_EQUAL( 0U, pool.getWastedMemorySize() );
-	                         pool.allocate( 10 );
-						 }, std::exception );
+	BOOST_REQUIRE_THROW(
+		{
+			 memory::MemoryPool emptyPool(0);
+			 BOOST_CHECK_EQUAL( 0U, emptyPool.getMaxMemorySize() );
+			 BOOST_CHECK_EQUAL( 0U, emptyPool.getUsedMemorySize() );
+			 BOOST_CHECK_EQUAL( 0U, emptyPool.getAllocatedMemorySize() );
+			 BOOST_CHECK_EQUAL( 0U, emptyPool.getWastedMemorySize() );
+			 emptyPool.allocate( 10 );
+		}, std::exception );
 
 	memory::MemoryPool pool( 30 );
 	// checking everything is clean

@@ -47,15 +47,18 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	using namespace boost;
 	using namespace boost::gil;
 
+//	TUTTLE_COUT( "Sobel X: " << _params._xKernelGaussianDerivative.size() << "x" << _params._xKernelGaussian.size() );
+//	TUTTLE_COUT( "Sobel Y: " << _params._yKernelGaussianDerivative.size() << "x" << _params._yKernelGaussian.size() );
+
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	OfxPointI procWindowSize  = {
 		procWindowRoW.x2 - procWindowRoW.x1,
 		procWindowRoW.y2 - procWindowRoW.y1
 	};
 	
-	typedef typename bgil::channel_mapping_type<DView>::type DChannel;
+	typedef typename channel_mapping_type<DView>::type DChannel;
 	typedef typename floating_channel_type_t<DChannel>::type DChannelFloat;
-	typedef bgil::pixel<DChannelFloat, gray_layout_t> DPixelGray;
+	typedef pixel<DChannelFloat, gray_layout_t> DPixelGray;
 
 	DView dst = subimage_view( this->_dstView,
 	                          procWindowOutput.x1, procWindowOutput.y1,
@@ -71,7 +74,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	{
 		if( _params._unidimensional )
 		{
-			correlate_rows<DPixelGray>(
+			correlate_rows_auto<DPixelGray>(
 				color_converted_view<DPixelGray>( this->_srcView ),
 				_params._xKernelGaussianDerivative,
 				kth_channel_view<0>(dst),
@@ -84,7 +87,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols<DPixelGray>(
+					correlate_rows_cols_auto<DPixelGray>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._xKernelGaussianDerivative,
 						_params._xKernelGaussian,
@@ -95,7 +98,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 				}
 				case eParamPass1:
 				{
-					correlate_rows<DPixelGray>(
+					correlate_rows_auto<DPixelGray>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._xKernelGaussianDerivative,
 						kth_channel_view<0>(dst),
@@ -105,7 +108,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 				}
 				case eParamPass2:
 				{
-					correlate_cols<DPixelGray>(
+					correlate_cols_auto<DPixelGray>(
 						kth_channel_view<0>( this->_srcView ),
 						_params._xKernelGaussian,
 						kth_channel_view<0>(dst),
@@ -127,7 +130,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 	{
 		if( _params._unidimensional )
 		{
-			correlate_cols<DPixelGray>(
+			correlate_cols_auto<DPixelGray>(
 				color_converted_view<DPixelGray>( this->_srcView ),
 				_params._yKernelGaussianDerivative,
 				kth_channel_view<1>(dst),
@@ -140,7 +143,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols<DPixelGray>(
+					correlate_rows_cols_auto<DPixelGray>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._yKernelGaussian,
 						_params._yKernelGaussianDerivative,
@@ -151,7 +154,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 				}
 				case eParamPass1:
 				{
-					correlate_rows<DPixelGray>(
+					correlate_rows_auto<DPixelGray>(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._yKernelGaussian,
 						kth_channel_view<1>(dst),

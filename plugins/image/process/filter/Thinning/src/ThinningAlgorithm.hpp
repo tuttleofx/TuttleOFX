@@ -21,8 +21,9 @@ struct pixel_locator_thinning_t
 	typedef typename SLocator::cached_location_t SCachedLocation;
 
 	const bool* _lut;
-	SPixel _white;
-	SPixel _black;
+	SPixel _sWhite;
+	DPixel _dWhite;
+	DPixel _dBlack;
 	const SLocator _loc_ref;
 	// LT CT RT
 	// LC    RC
@@ -51,33 +52,35 @@ struct pixel_locator_thinning_t
 	, RB(_loc_ref.cache_location( 1, 1))
 	{
 		using namespace boost::gil;
-		pixel_assigns_min( _black );
-		pixel_assigns_max( _white );
+		pixel_assigns_max( _sWhite );
+		pixel_assigns_min( _dBlack );
+		pixel_assigns_max( _dWhite );
 	}
 
 	DPixel operator()( const SLocator& src ) const
 	{
 		using namespace boost::gil;
 
-		if( *src != _white )
+		if( *src != _sWhite )
 		{
-			return _black;
+			return _dBlack;
 		}
 		
-		std::size_t id =  ( src[LT] == _white )       |
-			             (( src[LC] == _white ) << 1) |
-			             (( src[LB] == _white ) << 2) |
-			             (( src[CT] == _white ) << 3) |
-			             (( *src    == _white ) << 4) |
-			             (( src[CB] == _white ) << 5) |
-			             (( src[RT] == _white ) << 6) |
-			             (( src[RC] == _white ) << 7) |
-			             (( src[RB] == _white ) << 8);
+		std::size_t id =  ( src[LT] == _sWhite )       |
+			             (( src[LC] == _sWhite ) << 1) |
+			             (( src[LB] == _sWhite ) << 2) |
+			             (( src[CT] == _sWhite ) << 3) |
+			             (( *src    == _sWhite ) << 4) |
+			             (( src[CB] == _sWhite ) << 5) |
+			             (( src[RT] == _sWhite ) << 6) |
+			             (( src[RC] == _sWhite ) << 7) |
+			             (( src[RB] == _sWhite ) << 8);
+		
 		if( _lut[id] )
 		{
-			return _white;
+			return _dWhite;
 		}
-		return _black;
+		return _dBlack;
 	}
 };
 

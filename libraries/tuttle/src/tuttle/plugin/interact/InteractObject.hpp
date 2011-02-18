@@ -19,23 +19,34 @@ typedef boost::gil::point2<Scalar> Point2;
 class InteractObject /*: public OFX::InteractI*/
 {
 public:
-	typedef boost::gil::point2<double> Point2;
-
-public:
+	InteractObject();
 	virtual ~InteractObject() = 0;
 
 	/** @brief the function called to draw in the interact */
 	virtual bool draw( const OFX::DrawArgs& args ) const { return false; }
+	
+	virtual MotionType intersect( const OFX::PenArgs& args )
+	{
+		MotionType m;
+		m._axis = eAxisNone;
+		m._mode = eMotionNone;
+		return m;
+	}
+	virtual bool isIn( const OfxRectD& ) { return false; }
 
-	virtual EMoveType selectIfIntesect( const OFX::PenArgs& args ) { return eMoveTypeNone; }
-	virtual bool      selectIfIsIn( const OfxRectD& )              { return false; }
-	virtual void      unselect()                                   {}
+	virtual Point2 getPosition() const { return Point2(0.0, 0.0); }
+	virtual void setPosition( const Point2& ) {}
+	virtual void setPositionX( const Scalar x ) {}
+	virtual void setPositionY( const Scalar y ) {}
+	
+	virtual void beginMove( const Point2& penPosition ) {}
+	virtual void endMove( const Point2& penPosition ) {}
 
-	virtual void endMove()                       {}
-	virtual bool moveXYSelected( const Point2& ) { return false; }
-	virtual bool moveXSelected( const Point2& )  { return false; }
-	virtual bool moveYSelected( const Point2& )  { return false; }
-	virtual void beginMove()                     {}
+	bool getSelected() const { return _selected; }
+	void setSelected( const bool s ) { _selected = s; }
+
+private:
+	bool _selected;
 };
 
 }

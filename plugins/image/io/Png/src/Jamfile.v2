@@ -7,7 +7,6 @@
 ###############################################################################
 project
     : requirements
-        <threading>multi
         <include>.
     : build-dir $(DIST)/Png/obj
     ;
@@ -18,13 +17,12 @@ use-project /png 	: $(3RD_PARTY)/libpng ;
 # Product 
 ###############################################################################
 plugin Png : 
-        [ glob-tree *.cpp ]
-        /tuttleplugin/<link>static
-        /boost/filesystem/<link>static
-		/boost/system/<link>static
-		/boost/regex/<link>static
-        /png/<link>static
-        ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	/boost/filesystem
+	/boost/system
+	/png
+	;
 explicit Png ;
 
 ###############################################################################

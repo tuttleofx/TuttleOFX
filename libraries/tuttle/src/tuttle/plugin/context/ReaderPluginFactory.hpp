@@ -43,8 +43,9 @@ void describeReaderParamsInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::BooleanParamDescriptor* flip = desc.defineBooleanParam( kParamReaderFlip );
 	flip->setLabel( "Flip" );
 	flip->setHint( "Vertically flip the image." );
-	bool hostFlip = OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke";
-	flip->setDefault( hostFlip );
+	//bool hostFlip = OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke";
+	//flip->setDefault( hostFlip );
+	flip->setDefault( true );
 }
 
 }

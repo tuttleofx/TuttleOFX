@@ -4,6 +4,7 @@
 #include <ofxCore.h>
 #include <ofxPixels.h>
 
+#include <boost/gil/extension/typedefs.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/rgba.hpp>
 
@@ -31,11 +32,9 @@ inline OfxPointI gilToOfx( const boost::gil::point2<int>& p )
 	return r;
 }
 
-
-template<typename BitDepth>
-inline typename boost::gil::pixel<BitDepth, boost::gil::rgba_layout_t> ofxToGil( const OfxRGBAColourD& c )
+inline boost::gil::rgba64f_pixel_t ofxToGil( const OfxRGBAColourD& c )
 {
-	return boost::gil::pixel<BitDepth, boost::gil::rgba_layout_t>( c.r, c.g, c.b, c.a );
+	return boost::gil::rgba64f_pixel_t( c.r, c.g, c.b, c.a );
 }
 
 

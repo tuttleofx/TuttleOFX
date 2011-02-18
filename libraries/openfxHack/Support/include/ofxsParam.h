@@ -612,12 +612,11 @@ protected:
 	/** @brief hidden constructor */
 	GroupParamDescriptor( const std::string& name, OfxPropertySetHandle props );
 
-	void setOpen( const bool open = true );
-	
 	// so it can make one
 	friend class ParamSetDescriptor;
 
 public:
+	void setOpen( const bool open = true );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -745,7 +744,7 @@ protected:
 		{
 			if( param->getType() == paramType )
 			{
-				TUTTLE_COUT_WARNING( "Parameter already defined ! (" + name + ")" );
+				OFXS_COUT_WARNING( "Parameter already defined ! (" + name + ")" );
 				paramPtr = (T*) param; // could be a dynamic cast here
 				return true;
 			}
@@ -1618,6 +1617,7 @@ protected:
 	friend class ParamSet;
 
 public:
+	void setOpen( const bool open = true );
 };
 
 ////////////////////////////////////////////////////////////////////////////////

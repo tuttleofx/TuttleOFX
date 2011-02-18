@@ -9,15 +9,16 @@ import testing ;
 
 project 
     : requirements	<define>BOOST_TEST_MAIN
-					<threading>multi
     ;
 
 alias dependencies
     : 
 		/boost//unit_test_framework
+		/tuttlecommon
 		/tuttlehost
     :
+    <include>$(BOOST_ROOT) <define>BOOST_GIL_NO_IO
     <os>LINUX:<find-shared-library>dl
     ; 
 
-run   main.cpp dependencies ;
+run main.cpp dependencies ;

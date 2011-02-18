@@ -19,7 +19,8 @@ void JpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Jpeg file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "<b>JPEG File reader</b> plugin is used to read jpeg files.  <br />" );
+	desc.setDescription( "JPEG File reader\n"
+	                     "Plugin is used to read jpeg files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

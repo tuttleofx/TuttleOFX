@@ -18,10 +18,11 @@ namespace lens {
  */
 void LensDistortPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	// basic labels
 	desc.setLabels( "TuttleLensDistort", "LensDistort",
 	                "Create or correct lens distortion." );
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
+
+	desc.setDescription( "Apply or correct a lens distortion on an image." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextFilter );
@@ -48,7 +49,6 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( true );
@@ -251,9 +251,6 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	debugDisplayRoi->setDefault( false );
 	debugDisplayRoi->setEvaluateOnChange( false );
 	debugDisplayRoi->setHint( "Display RoI" );
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelp );
-	helpButton->setLabel( "Help" );
 }
 
 /**

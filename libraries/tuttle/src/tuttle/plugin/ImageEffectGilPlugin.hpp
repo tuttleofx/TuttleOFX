@@ -1,8 +1,8 @@
 #ifndef _TUTTLE_PLUGIN_IMAGEEFFECT_GIL_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_IMAGEEFFECT_GIL_PLUGIN_HPP_
 
-#include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/exceptions.hpp>
+#include <tuttle/plugin/globalPlugin.hpp>
+#include <tuttle/plugin/exceptionsPlugin.hpp>
 #include <tuttle/plugin/image/ofxToGil.hpp>
 
 #include <ofxsImageEffect.h>

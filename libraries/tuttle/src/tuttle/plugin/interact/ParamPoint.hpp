@@ -15,7 +15,7 @@ namespace tuttle {
 namespace plugin {
 namespace interact {
 
-template<class TFrame, ECoordonateSystem coord>
+template<class TFrame, ECoordinateSystem coord>
 class ParamPoint : public PointInteract
 {
 public:
@@ -25,7 +25,7 @@ public:
 		, _frame( frame )
 	{}
 
-	~ParamPoint() {}
+	virtual ~ParamPoint() {}
 
 protected:
 	OFX::Double2DParam& _param;
@@ -38,7 +38,7 @@ public:
 		{
 			OfxRectD rod = _frame.getFrame( this->getTime() );
 			Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
-			Point2 p = pointConvertCoordonateSystem<coord, eCoordonateSystemXY>( ofxToGil( _param.getValue() ), rodSize );
+			Point2 p = pointConvertCoordinateSystem<coord, eCoordinateSystemXY>( ofxToGil( _param.getValue() ), rodSize );
 			p += Point2( rod.x1, rod.y1 );
 			return p;
 		}
@@ -52,7 +52,7 @@ public:
 			OfxRectD rod = _frame.getFrame( this->getTime() );
 			Point2 rodSize( rod.x2 - rod.x1, rod.y2 - rod.y1 );
 			Point2 p( x - rod.x1, y - rod.y1 );
-			p = pointConvertCoordonateSystem<eCoordonateSystemXY, coord>( p, rodSize );
+			p = pointConvertCoordinateSystem<eCoordinateSystemXY, coord>( p, rodSize );
 			_param.setValue( p.x, p.y );
 			return;
 		}

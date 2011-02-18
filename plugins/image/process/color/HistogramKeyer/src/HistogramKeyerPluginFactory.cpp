@@ -23,7 +23,7 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription(
-		"<b>HistogramKeyer</b>\n"
+		"HistogramKeyer\n"
 		"Test parametric parameters.\n"
 		"Full description of the plugin....\n"
 		"\n"

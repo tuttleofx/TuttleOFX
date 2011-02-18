@@ -11,21 +11,21 @@ project
 		<include>src
     : usage-requirements
 		<include>src
-    	<include>../openfxHack/include
     : build-dir $(DIST)/tuttle/obj
     ;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
-use-project /tuttlehost : src/tuttle/host ;
+use-project /tuttlehost   : src/tuttle/host ;
 use-project /tuttleplugin : src/tuttle/plugin ;
+use-project /tuttlecommon : src/tuttle/common ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 install dist_src
-    : /tuttlehost /tuttleplugin
+    : /tuttlehost /tuttleplugin /tuttlecommon
     : <variant>debug:<location>$(DIST)/tuttle/bin/debug
       <variant>release:<location>$(DIST)/tuttle/bin/release
     ;

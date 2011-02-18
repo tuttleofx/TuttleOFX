@@ -7,7 +7,6 @@
 ###############################################################################
 project
     : requirements
-        <threading>multi
         <include>.
     : build-dir $(DIST)/OpenImageIO/obj
     ;
@@ -20,9 +19,8 @@ project
 #plugin OpenImageIO : 
 #        [ glob-tree *.cpp ]
 #        /tuttleplugin/<link>static
-#        /boost/filesystem/<link>static
-#		/boost/system/<link>static
-#		/boost/regex/<link>static
+#        /boost/filesystem
+#		/boost/system
 #        /openImageIO/<link>static
 #        ;
 #explicit OpenImageIO ;

@@ -26,8 +26,8 @@ ImageStatisticsOverlayInteract::ImageStatisticsOverlayInteract( OfxInteractHandl
 	_effect = effect;
 	_plugin = dynamic_cast<ImageStatisticsPlugin*>( _effect );
 
-	interact::InteractObject* objCanonical  = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXY>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip( _plugin->_clipSrc ) );
-	interact::InteractObject* objNormalized = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordonateSystemXYn>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip( _plugin->_clipSrc ) );
+	interact::InteractObject* objCanonical  = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordinateSystemXY>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip( _plugin->_clipSrc ) );
+	interact::InteractObject* objNormalized = new interact::ParamRectangleFromCenterSize<interact::FrameClip, eCoordinateSystemXYn>( _infos, _plugin->_paramRectCenter, _plugin->_paramRectSize, interact::FrameClip( _plugin->_clipSrc ) );
 	_interactScene.push_back( objCanonical, new interact::IsActiveChoiceParamFunctor<>( _plugin->_paramCoordinateSystem ) );
 	_interactScene.push_back( objNormalized, new interact::IsActiveChoiceParamFunctor<true>( _plugin->_paramCoordinateSystem ) );
 }

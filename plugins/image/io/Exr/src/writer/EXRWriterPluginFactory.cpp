@@ -19,7 +19,8 @@ void EXRWriterPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Exr file writer" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "<b>EXR File writer</b> plugin is used to write exr files.<br />" );
+	desc.setDescription( "EXR File writer\n"
+	                     "Plugin is used to write exr files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextWriter );

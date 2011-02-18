@@ -9,7 +9,6 @@ import os ;
 project
     : requirements
         <include>src
-        <threading>multi
     : build-dir $(DIST)/Colorspace/obj
     ;
 

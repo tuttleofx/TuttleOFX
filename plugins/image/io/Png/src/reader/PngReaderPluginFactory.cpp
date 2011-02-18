@@ -19,7 +19,8 @@ void PngReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Png file reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "<b>PNG File reader</b> plugin is used to read png files.  <br />" );
+	desc.setDescription( "PNG File reader\n"
+	                     "Plugin is used to read png files." );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

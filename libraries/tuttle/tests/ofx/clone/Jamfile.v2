@@ -9,7 +9,6 @@ import testing ;
 
 project 
     : requirements	<define>BOOST_TEST_MAIN
-			<threading>multi
     ;
 
 use-project /tuttle 	: ../../.. ;
@@ -17,6 +16,7 @@ use-project /tuttle 	: ../../.. ;
 alias dependencies
     : 
 		/boost//unit_test_framework
+		/tuttlecommon
 		/tuttlehost
     ; 
 
