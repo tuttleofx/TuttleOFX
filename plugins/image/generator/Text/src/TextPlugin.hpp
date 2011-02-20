@@ -3,6 +3,8 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
+#include "TextDefinitions.hpp"
+
 namespace tuttle {
 namespace plugin {
 namespace text {
@@ -10,12 +12,15 @@ namespace text {
 struct TextProcessParams
 {
 	std::string _text;
+	bool _isExpression;
 	std::string _font;
 	int _fontX;
 	int _fontY;
 	OfxRGBAColourD _fontColor;
 	boost::gil::point2<double> _position;
 	double _letterSpacing;
+	EParamVAlign _vAlign;
+	EParamHAlign _hAlign;
 	bool _verticalFlip;
 };
 
@@ -28,19 +33,22 @@ public:
 	TextPlugin( OfxImageEffectHandle handle );
 
 public:
-	void render( const OFX::RenderArguments& args );
-
 	TextProcessParams getProcessParams() const;
 
+	void render( const OFX::RenderArguments& args );
+
 public:
-	OFX::StringParam* _text; ///< the text to rasterize in the image
-	OFX::StringParam* _font;
-	OFX::IntParam* _size;
-	OFX::DoubleParam* _ratio;
-	OFX::RGBAParam* _color;
-	OFX::Double2DParam* _position;
-	OFX::DoubleParam* _letterSpacing;
-	OFX::BooleanParam* _verticalFlip;
+	OFX::StringParam* _paramText; ///< the text to rasterize in the image
+	OFX::BooleanParam* _paramIsExpression;
+	OFX::StringParam* _paramFont;
+	OFX::IntParam* _paramSize;
+	OFX::DoubleParam* _paramRatio;
+	OFX::RGBAParam* _paramColor;
+	OFX::Double2DParam* _paramPosition;
+	OFX::DoubleParam* _paramLetterSpacing;
+	OFX::ChoiceParam* _paramVAlign;
+	OFX::ChoiceParam* _paramHAlign;
+	OFX::BooleanParam* _paramVerticalFlip;
 };
 
 }
