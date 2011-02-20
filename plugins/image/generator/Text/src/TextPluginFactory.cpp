@@ -21,8 +21,8 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
@@ -48,6 +48,7 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
+	srcClip->setOptional(true);
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
