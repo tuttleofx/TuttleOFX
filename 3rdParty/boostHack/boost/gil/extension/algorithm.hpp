@@ -9,8 +9,9 @@ namespace gil {
 template<typename T>
 struct rect_t
 {
-	rect_t( const T vx1, const T vy1, const T vx2, const T vy2 ):
-	x1( vx1 ), y1( vy1 ), x2( vx2 ), y2( vy2 ) { }
+	rect_t( const T vx1, const T vy1, const T vx2, const T vy2 )
+	: x1( vx1 ), y1( vy1 ), x2( vx2 ), y2( vy2 )
+	{}
 
 	T x1,y1,x2,y2;
 };
