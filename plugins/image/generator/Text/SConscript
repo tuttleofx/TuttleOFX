@@ -7,5 +7,6 @@ project.createOfxPlugin( dirs = ['src'],
                                   libs.boost_gil,
                                   libs.freetype,
                                   libs.boost_filesystem,
+                                  libs.boost_python,
                                  ] )
 
