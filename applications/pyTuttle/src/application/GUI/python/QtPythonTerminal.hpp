@@ -25,7 +25,7 @@ public:
 		eLogTypeSize,
 	} ELogType;
 
-public slots:
+public Q_SLOTS:
 	void on_m_input_executeScript() { executeScript( m_ui.m_input->textToExecute() ); }
 
 protected:
