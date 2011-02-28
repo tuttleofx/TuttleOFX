@@ -552,7 +552,7 @@ bool Sequence::init( const boost::filesystem::path& seqPath, const Time first, c
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
 
-	return this->init( dir, seqPath.filename(), first, last, step, accept );
+	return this->init( dir, seqPath.filename().string(), first, last, step, accept );
 }
 
 bool Sequence::initFromDetection( const boost::filesystem::path& directory, const std::string& pattern, const EPattern accept )
@@ -580,7 +580,7 @@ bool Sequence::initFromDetection( const boost::filesystem::path& directory, cons
 		Time time;
 		std::string timeStr;
 		// if the file is inside the sequence
-		if( isIn( iter->filename(), time, timeStr ) )
+		if( isIn( iter->path().filename().string(), time, timeStr ) )
 		{
 			// create a big list of all times in our sequence
 			allTimesStr.push_back( timeStr );
@@ -783,7 +783,7 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
 		nums.clear(); // (clear but don't realloc the vector inside)
 
 		// if at least one number detected
-		if( seqConstruct( iter->filename(), id, nums ) )
+		if( seqConstruct( iter->path().filename().string(), id, nums ) )
 		{
 			const SeqIdMap::iterator it( sequences.find( id ) );
 			if( it != sequences.end() ) // is already in map
@@ -831,7 +831,7 @@ std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, 
 std::ostream& operator<<( std::ostream& os, const Sequence& s )
 {
 	os << s.getDirectory() / s.getStandardPattern()
-	                  << " [" << s.getFirstTime() << ":" << s.getLastTime();
+	   << " [" << s.getFirstTime() << ":" << s.getLastTime();
 	if( s.getStep() != 1 )
 		os << "x" << s.getStep();
 	os << "]"
