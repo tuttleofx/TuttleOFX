@@ -21,7 +21,6 @@ struct rect_t
 template <typename View, typename F> GIL_FORCEINLINE
 F transform_pixels( const View& dst, F& fun )
 {
-	assert( src.dimensions( ) == dst.dimensions( ) );
 	for( std::ptrdiff_t y = 0; y < dst.height( ); ++y )
 	{
 		typename View::x_iterator dstIt = dst.row_begin( y );
