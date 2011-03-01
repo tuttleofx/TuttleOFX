@@ -21,8 +21,8 @@ TextProcess<View>::TextProcess( TextPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance )
 	, _plugin( instance )
 {
-	TUTTLE_TCOUT_INFOS;
-	Py_Initialize();
+//	TUTTLE_TCOUT_INFOS;
+//	Py_Initialize();
 	TUTTLE_TCOUT_INFOS;
 	this->setNoMultiThreading();
 	TUTTLE_TCOUT_INFOS;
@@ -40,6 +40,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	{
 		return;
 	}
+
 	
 	if( ! _params._isExpression )
 	{
@@ -50,7 +51,11 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		try
 		{
 			TUTTLE_TCOUT_INFOS;
+			Py_Initialize();
+			
+			TUTTLE_TCOUT_INFOS;
 			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("__main__")))));
+//			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("toto")))));
 			//boost::python::object main_module = boost::python::import( "__main__" );
 			TUTTLE_TCOUT_INFOS;
 			boost::python::object main_namespace = main_module.attr( "__dict__" );
