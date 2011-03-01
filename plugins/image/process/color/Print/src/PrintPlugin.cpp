@@ -26,7 +26,9 @@ PrintProcessParams<PrintPlugin::Scalar> PrintPlugin::getProcessParams( const Ofx
 
 	params._mode = static_cast<EParamMode>( _paramMode->getValue() );
 	params._output = static_cast<EParamOutput>( _paramOutput->getValue() );
-	params._pixel = ofxToGil( _paramPixel->getValue() );
+	OfxPointI pix = _paramPixel->getValue();
+	params._pixel.x = pix.x;
+	params._pixel.y = pix.y;
 	OfxPointI rMin = _paramRegionMin->getValue();
 	OfxPointI rMax = _paramRegionMax->getValue();
 	params._region.x1 = rMin.x;
