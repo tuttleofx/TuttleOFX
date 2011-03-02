@@ -13,6 +13,7 @@
 #include <boost/throw_exception.hpp>
 #include <boost/assert.hpp>
 #include <boost/progress.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <iostream>
 #include <map>
@@ -22,6 +23,7 @@
 #include <list>
 #include <boost/timer.hpp>
 #include <set>
+#include <list>
 
 namespace tuttle {
 namespace common {
@@ -276,9 +278,17 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings
 	{
 		id.getId().push_back( "" ); // we end with an empty string
 	}
-	//	TUTTLE_TCOUT_VAR(str);
-	//	TUTTLE_TCOUT_VAR(id);
-	//	TUTTLE_TCOUT_VAR(nums);
+// 		TUTTLE_TCOUT_VAR(str);
+// 		TUTTLE_TCOUT_VAR(id);
+// 		TUTTLE_TCOUT_VAR(nums);
+/*
+	std::string extension = id.getId().at(id.getId().size()-1); 
+// 	TUTTLE_COUT( extension );
+// 	TUTTLE_COUT( (int)extension.find_first_of(".") );
+	if( extension.find_first_of(".")==0 )
+	    return nums.size();
+	else
+	    return 0;*/
 	return nums.size();
 }
 
@@ -413,22 +423,11 @@ std::size_t extractStep( const std::list<FileNumbers>& times, const std::size_t 
 
 }
 
-Sequence::Sequence()
+Sequence::Sequence( const boost::filesystem::path& directory, const MaskOptions options, const EPattern accept ) : FileObject( directory, eSequence, options )
 {
 	clear();
+	initFromDetection( accept );
 }
-
-Sequence::Sequence( const boost::filesystem::path& seqPath, const EPattern accept )
-{
-	clear();
-	if( !initFromDetection( seqPath, accept ) )
-	{
-		BOOST_THROW_EXCEPTION( std::logic_error( "Unrecognized pattern." ) );
-	}
-}
-
-Sequence::~Sequence()
-{}
 
 bool Sequence::isIn( const std::string& filename, Time& time, std::string& timeStr )
 {
@@ -513,14 +512,16 @@ bool Sequence::initFromPattern( const std::string& pattern, const EPattern& acce
 	}
 
 	prefix = std::string( matches[1].first, matches[1].second );
+	prefix = prefix.erase ( 0, _directory.string().size()+1 );
 	suffix = std::string( matches[3].first, matches[3].second );
+	
+// 	TUTTLE_COUT( "initFromPattern "<< _directory <<" prefix=" << prefix << " suffix=" << suffix);
 	return true;
 }
 
-void Sequence::init( const boost::filesystem::path& directory, const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step, const bool strictPadding )
+void Sequence::init( const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step, const bool strictPadding )
 {
 	clear();
-	_directory     = directory;
 	_prefix        = prefix;
 	_padding       = padding;
 	_suffix        = suffix;
@@ -531,13 +532,12 @@ void Sequence::init( const boost::filesystem::path& directory, const std::string
 	_nbFiles       = 0;
 }
 
-bool Sequence::init( const boost::filesystem::path& directory, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept )
+bool Sequence::init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept )
 {
 	clear();
 	if( !initFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not regognize as a pattern, maybe a still file
 
-	_directory     = directory;
 	_firstTime     = firstTime;
 	_lastTime      = lastTime;
 	_step          = step;
@@ -545,32 +545,31 @@ bool Sequence::init( const boost::filesystem::path& directory, const std::string
 	return true;
 }
 
-bool Sequence::init( const boost::filesystem::path& seqPath, const Time first, const Time last, const Time step, const EPattern accept )
+bool Sequence::init( const Time first, const Time last, const Time step, const EPattern accept )
 {
-	boost::filesystem::path dir = seqPath.parent_path();
+	boost::filesystem::path dir = _directory.parent_path();
 
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
-
-	return this->init( dir, seqPath.filename(), first, last, step, accept );
+	_directory = dir;
+	return this->init( _directory.filename(), first, last, step, accept );
 }
 
-bool Sequence::initFromDetection( const boost::filesystem::path& directory, const std::string& pattern, const EPattern accept )
+bool Sequence::initFromDetection( const std::string& pattern, const EPattern accept )
 {
 	clear();
-	_directory = directory;
 
 	if( !initFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not regognize as a pattern, maybe a still file
 
-	if( !exists( directory ) )
+	if( !exists( _directory ) )
 		return true; // an empty sequence
 
 	std::list<std::string> allTimesStr;
 	std::list<Time> allTimes;
 
 	fs::directory_iterator itEnd;
-	for( fs::directory_iterator iter( directory ); iter != itEnd; ++iter )
+	for( fs::directory_iterator iter( _directory ); iter != itEnd; ++iter )
 	{
 		// we don't make this check, which can take long time on big sequences (>1000 files)
 		// depending on your filesystem, we may need to do a stat() for each file
@@ -586,8 +585,9 @@ bool Sequence::initFromDetection( const boost::filesystem::path& directory, cons
 			allTimesStr.push_back( timeStr );
 			allTimes.push_back( time );
 		}
+// 		TUTTLE_COUT("initFrome detection 2 " <<  iter->filename());
 	}
-
+// 	TUTTLE_COUT("initFrome detection 2 end for");
 	if( allTimes.size() < 2 )
 	{
 		if( allTimes.size() == 1 )
@@ -618,7 +618,7 @@ bool Sequence::initFromDetection( const boost::filesystem::path& directory, cons
  *          so there is no reason to create a copy.
  * @return a sequence object with all informations
  */
-std::list<Sequence> buildSequence( const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums )
+std::list<Sequence> buildSequence( const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const MaskOptions& desc )
 {
 	typedef Sequence::Time Time;
 	nums.sort();
@@ -664,9 +664,9 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	}
 	//	TUTTLE_TCOUT_VAR( idNum );
 
-	Sequence seqCommon;
+	Sequence seqCommon( directory, desc );
 	// fill information in the sequence...
-	seqCommon._directory = directory;
+	
 	for( std::size_t i = 0; i < idChangeBegin; ++i )
 	{
 		seqCommon._prefix += id[ i ];
@@ -755,90 +755,216 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	return result;
 }
 
-std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory )
+bool isNotFilter( std::string filename, std::vector<std::string>& filters)
 {
-	typedef Sequence::Time Time;
+	if(filters.size()==0)
+		return true;
+	
+	for(uint i=0; i<filters.size(); i++)
+	{
+		std::string filter(filters.at(i));
+		filter = boost::regex_replace( filter, boost::regex( "\\*" ), "(.*)"  );
+		filter = boost::regex_replace( filter, boost::regex( "\\?" ), "(.)"  );
 
-	std::vector<Sequence> output;
+// 		TUTTLE_COUT(filename << " | " << filter <<" | " << regex_match(filename, boost::regex(filter)));
+		if (regex_match(filename, boost::regex(filter)))
+			return true;
+	}
+	return false;
+}
 
+std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc )
+{
+	std::vector<std::string> filters;
+	return fileObjectsInDir( directory, mask, desc, filters );
+}
+
+std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters )
+{
+	std::list<boost::shared_ptr<FileObject>> output;
+	
+	std::list<boost::shared_ptr<FileObject>>	outputDirectories;
+	std::list<boost::shared_ptr<FileObject>>	outputFiles;
+	std::list<boost::shared_ptr<FileObject>>	outputSequences;
+	
 	if( !exists( directory ) )
 		return output;
-
+	
+	// variables for sequence detection
 	typedef boost::unordered_map<FileStrings, std::list<FileNumbers>, SeqIdHash> SeqIdMap;
-	SeqIdMap sequences;
-
-	//	TUTTLE_TCOUT( "listdir begin" );
-
-	FileStrings id; // an object uniquely identify a sequence
-	FileNumbers nums; // the list of numbers inside one filename
-
+	SeqIdMap	sequences;
+	FileStrings	id; // an object uniquely identify a sequence
+	FileNumbers	nums; // the list of numbers inside one filename
+	
+	// for all files in the directory
 	fs::directory_iterator itEnd;
 	for( fs::directory_iterator iter( directory ); iter != itEnd; ++iter )
 	{
-		//		if( fs::is_directory( iter->status() ) )
-		//			continue; // skip directories
-
 		// clear previous infos
 		id.clear();
 		nums.clear(); // (clear but don't realloc the vector inside)
-
-		// if at least one number detected
-		if( seqConstruct( iter->filename(), id, nums ) )
+		
+// 		TUTTLE_COUT("dir " << iter->filename());
+		
+		if( !(iter->filename()[0]==0x2E) || (desc & eDotFile)  ) //0x2e == . for the test if we ask to show hidden files and if it is hidden
 		{
-			const SeqIdMap::iterator it( sequences.find( id ) );
-			if( it != sequences.end() ) // is already in map
+// 			TUTTLE_COUT("hidden file " << iter->filename());
+
+			// detect if is a folder
+			if( fs::is_directory( iter->status() ) )
 			{
-				// append the list of numbers
-				sequences.at( id ).push_back( nums );
+//				TUTTLE_COUT("d\t"<< iter->filename());
+				boost::shared_ptr<Folder> d( new Folder( directory, iter->filename(), desc ) );
+				outputDirectories.push_back( d );
 			}
-			else
+			else // it's a file or a file of a sequence
 			{
-				// create an entry in the map
-				std::list<FileNumbers> li;
-				li.push_back( nums );
-				sequences.insert( SeqIdMap::value_type( id, li ) );
+				if( isNotFilter( iter->filename(), filters) ) // filtering of entries with filters strings
+				{
+					// if at least one number detected
+					if( seqConstruct( iter->filename(), id, nums ) )
+					{
+						const SeqIdMap::iterator it( sequences.find( id ) );
+						if( it != sequences.end() ) // is already in map
+						{
+							// append the list of numbers
+							sequences.at( id ).push_back( nums );
+						}
+						else
+						{
+							// create an entry in the map
+							std::list<FileNumbers> li;
+							li.push_back( nums );
+							sequences.insert( SeqIdMap::value_type( id, li ) );
+						}
+					}
+					
+					else
+					{
+// 						TUTTLE_COUT("f\t"<< iter->filename());
+						boost::shared_ptr<File> f( new File( directory, iter->filename(), desc ) );
+						outputFiles.push_back( f );
+					}
+				}
 			}
 		}
 	}
-
-	//	TUTTLE_TCOUT( "listdir end" );
-
-	//	TUTTLE_TCOUT_VAR( sequences.size() );
-
-	output.reserve( sequences.size() );
-
+	
+	
+	// add sequences in the output list
 	BOOST_FOREACH( SeqIdMap::value_type & p, sequences )
 	{
-		const std::list<Sequence> ss = buildSequence( directory, p.first, p.second );
+		const std::list<Sequence> ss = buildSequence( directory, p.first, p.second, desc );
 		BOOST_FOREACH( const std::list<Sequence>::value_type & s, ss )
 		{
 			// don't detect sequence of directories
 			if( !fs::is_directory( s.getAbsoluteFirstFilename() ) )
 			{
-				output.push_back( s );
+				if(s.getNbFiles()==1) // if it's a sequence of 1 file, it isn't a sequence but only a file
+				{
+				    boost::shared_ptr<File> file( new File( s.getDirectory(), s.getFirstFilename(), s.getMaskOptions() ) );
+				    outputFiles.push_back( file );
+				}
+				else
+				{
+				    boost::shared_ptr<Sequence> seq( new Sequence( s ) );
+				    outputSequences.push_back( seq );
+				}
 			}
 		}
 	}
 
+	if(mask & eDirectory)
+	{
+		output.merge( outputDirectories );
+	}
+	// add files in the output list
+	if(mask & eFile)
+	{
+		output.merge( outputFiles );
+	}
+	// add sequences in the output list
+	if(mask & eSequence)
+	{
+		output.merge( outputSequences );
+	}
+// 	TUTTLE_COUT("find "<< output.size() <<" elements");
 	return output;
 }
 
-std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, const boost::regex& filter )
+// not work actually ....
+std::ostream& Folder::getProperties( std::ostream& os, const boost::filesystem::path& directory)
 {
-	return sequencesInDir( directory );
+	os << "d " << boost::filesystem::file_size( directory ) ;
+	return os;
 }
 
-std::ostream& operator<<( std::ostream& os, const Sequence& s )
+std::ostream& operator<<( std::ostream& os, const FileObject& fo )
 {
-	os << s.getDirectory() / s.getStandardPattern()
-	                  << " [" << s.getFirstTime() << ":" << s.getLastTime();
-	if( s.getStep() != 1 )
-		os << "x" << s.getStep();
-	os << "]"
-	   << " " << s.getNbFiles() << " file" << ( ( s.getNbFiles() > 1 ) ? "s" : "" );
-	if( s.hasMissingFile() )
-		os << ", " << s.getNbMissingFiles() << " missing file" << ( ( s.getNbMissingFiles() > 1 ) ? "s" : "" );
+	fo.getCout(os);
+	return os;
+}
 
+std::ostream& Folder::getCout( std::ostream& os ) const
+{
+	os << std::left;
+	if( showProperties() )
+	{
+		os <<std::setw(PROPERTIES_WIDTH) << "d ";
+	}
+	if( showPath() )
+	{
+		std::string path = (_directory / _folderName).string();
+		os << std::setw(NAME_WIDTH_WITH_DIR) << FOLDER_COLOR + path + STD_COLOR;
+	}
+	else
+	{
+		os << std::setw(NAME_WIDTH) << FOLDER_COLOR + _folderName + STD_COLOR ;
+	}
+	return os;
+}
+
+std::ostream& File::getCout( std::ostream& os ) const
+{
+      os << std::left;
+      if( showProperties() )
+      {
+	      os <<std::setw(PROPERTIES_WIDTH) << "f ";// + boost::filesystem::file_size( _directory/_filename );
+      }
+      if( showPath() )
+      {
+	      std::string path = (_directory / _filename).string();
+	      os << std::setw(NAME_WIDTH_WITH_DIR) << FILE_COLOR + path  + STD_COLOR;
+      }
+      else
+      {
+	      os << std::setw(NAME_WIDTH) << FILE_COLOR + _filename + STD_COLOR ;
+      }
+      return os;
+}
+
+std::ostream& Sequence::getCout( std::ostream& os ) const
+{
+	os << std::left;
+	if( showProperties() )
+	{
+		os <<std::setw(PROPERTIES_WIDTH) << "s";
+	}
+	if( showPath() )
+	{
+		std::string path = (_directory / getStandardPattern()).string();
+		os << std::setw(NAME_WIDTH_WITH_DIR) << SEQUENCE_COLOR + path + STD_COLOR ;
+	}
+	else
+	{
+		os << std::setw(NAME_WIDTH) << SEQUENCE_COLOR + getStandardPattern() + STD_COLOR ;
+	}
+	os << " [" << getFirstTime() << ":" << getLastTime();
+	if( getStep() != 1 )
+		os << "x" << getStep();
+	os << "] " << getNbFiles() << " file" << ( ( getNbFiles() > 1 ) ? "s" : "" );
+	if( hasMissingFile() )
+		os << ", "  << MISSING_FILE_IN_SEQUENCE_COLOR<< getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << STD_COLOR;
 	return os;
 }
 

@@ -19,11 +19,11 @@ project
 ###############################################################################
 exe sam-ls : 
     [ glob src/*.cpp ]
-    /tuttlehost/<link>static
     /tuttlecommon/<link>static
     /boost/system
     /boost/filesystem
     /boost/serialization
+    /boost/program_options
     :
 	<os>LINUX:<find-shared-library>dl
     ;
@@ -36,7 +36,7 @@ install dist_src
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
-		/tuttlecommon
+		/boost/program_options
 	: <variant>debug:<location>$(DIST)/sam-ls/bin/debug
 	  <variant>release:<location>$(DIST)/sam-ls/bin/release
     ;

@@ -29,6 +29,7 @@ project
   		<os>NT:<define>_WINDOWS
 		<variant>release:<warnings-as-errors>on
 		<cxxflags>-fPIC
+		<cxxflags>-std=c++0x
 		# icu library off
 		#<define>BOOST_HAS_ICU=0
   		#
@@ -66,7 +67,7 @@ use-project /sam-ls		: applications/sam-ls ;
 use-project /sam-cp		: applications/sam-cp ;
 use-project /sam-check		: applications/sam-check ;
 use-project /sam-plugins	: applications/sam-plugins ;
-use-project /pyTuttle           : applications/pyTuttle ;
+#use-project /pyTuttle           : applications/pyTuttle ;
 #use-project /samtests 		: applications/sam-ls/tests ;
 
 #
@@ -89,5 +90,5 @@ explicit		/tuttle
 			/sam-plugins
 #			/samtests
 			/plugins
-			/pyTuttle
+#			/pyTuttle
 			/tests	;
