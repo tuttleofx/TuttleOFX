@@ -85,7 +85,7 @@ def getKnowExtensions( filename ):
 	global knowExtensions
 	return [f for f in knowExtensions.keys() if filename.endswith(f)]
 
-def uncompress(filename, ext, inNewDirectory):
+def uncompress(filename, ext, inNewDirectory, libname):
 	global knowExtensions
 	binOptions = { 'tar' : {'directory':'--directory',},
 	               'unzip' : {'directory':'-d',},
@@ -97,14 +97,14 @@ def uncompress(filename, ext, inNewDirectory):
 	bin = cmd[0]
 	if( inNewDirectory ):
 		cmd.append( binOptions[bin]['directory'] )
-		cmd.append( filename.split('-')[0] )
+		cmd.append( libname )
 	cmd.append(filename)
 	print '\n', ' '.join(cmd)
-	if not os.path.exists( os.path.join( os.getcwd(), filename.split('-')[0].lower())):
-		os.mkdir(os.path.join( os.getcwd() ,filename.split('-')[0].lower()))
+	if not os.path.exists( os.path.join( os.getcwd(), libname)):
+		os.mkdir(os.path.join( os.getcwd() ,libname))
 	p = subprocess.Popen(cmd).communicate()
-	print 'uncompress and  copy', filename[:-len(ext)-1], filename.split('-')[0].lower(), '\n'
-	copytree(filename[:-len(ext)-1], filename.split('-')[0].lower())
+	print 'uncompress and  copy', filename[:-len(ext)-1], libname, '\n'
+	copytree(filename[:-len(ext)-1], libname)
 	print 'end of uncompress\n'
 
 def getAndUncompress( libraries ):
@@ -133,7 +133,7 @@ def getAndUncompress( libraries ):
 			if os.path.isdir(filename[:-len(ext)-1]) :
 				print 'Already uncompressed : ', dirname
 			else:
-				uncompress( filename, ext, inNewDirectory )
+				uncompress( filename, ext, inNewDirectory, libname )
 		except Exception, e:
 			print 'uncompress error (', str(e), ')'
 
