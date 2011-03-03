@@ -238,15 +238,15 @@ public:
 	inline std::string		getAbsoluteFilenameAt		( const Time time )	const;
 	inline std::string		getFilenameAt			( const Time time )	const;
 	inline std::string		getFirstFilename		()			const { return getFilenameAt( getFirstTime() ); }
-	inline std::string		getAbsoluteFirstFilename	()			const { return ( _directory / getFilenameAt( getFirstTime() ) ).file_string(); }
-	inline std::string		getAbsoluteLastFilename		()			const { return ( _directory / getFilenameAt( getLastTime()  ) ).file_string(); }
+	inline std::string		getAbsoluteFirstFilename	()			const { return ( _directory / getFilenameAt( getFirstTime() ) ).string(); }
+	inline std::string		getAbsoluteLastFilename		()			const { return ( _directory / getFilenameAt( getLastTime()  ) ).string(); }
 
 
 	/// @return pattern character in standard style
 	inline char			getPatternCharacter		()			const { return getPadding() ? '#' : '@'; }
 	/// @return a string pattern using standard style
 	inline std::string		getStandardPattern		()			const { return getPrefix() + std::string( getPadding() ? getPadding() : 1, getPatternCharacter() ) + getSuffix(); }
-	inline std::string		getAbsoluteStandardPattern	()			const { return (getDirectory() / getStandardPattern()).file_string(); }
+	inline std::string		getAbsoluteStandardPattern	()			const { return (getDirectory() / getStandardPattern()).string(); }
 	/// @return a string pattern using C Style
 	inline std::string		getCStylePattern		()			const
 	{
@@ -255,7 +255,7 @@ public:
 		else
 			return getPrefix() + "%d" + getSuffix();
 	}
-	inline std::string		getAbsoluteCStylePattern	()			const { return (getDirectory() / getCStylePattern()).file_string(); }
+	inline std::string		getAbsoluteCStylePattern	()			const { return (getDirectory() / getCStylePattern()).string(); }
 
 	inline std::pair<Time, Time>	getRange			()			const { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }
 	inline std::size_t		getStep				()			const { return _step; }
@@ -350,7 +350,7 @@ inline std::string Sequence::getFilenameAt( const Time time ) const
 
 inline std::string Sequence::getAbsoluteFilenameAt( const Time time ) const
 {
-	return ( _directory / getFilenameAt( time ) ).file_string();
+	return ( _directory / getFilenameAt( time ) ).string();
 }
 
 inline bool Sequence::initFromDetection( const EPattern& accept )
@@ -360,7 +360,7 @@ inline bool Sequence::initFromDetection( const EPattern& accept )
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
 
-	return this->initFromDetection( _directory.filename(), accept );
+	return this->initFromDetection( _directory.filename().string(), accept );
 }
 
 
