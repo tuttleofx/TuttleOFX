@@ -556,7 +556,9 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 		{
 			// 8 bits doesn't need convertion
 			case 8:
+			{
 				break;
+			}
 			// Need short swap
 			case 12:
 			{
@@ -576,7 +578,9 @@ boost::shared_array<boost::uint8_t> DpxImage::reinterpretEndianness() const
 			}
 			// 16 bits doesn't need convertion
 			case 16:
+			{
 				break;
+			}
 			// Need int swap
 			default:
 			{
@@ -689,8 +693,8 @@ const std::size_t DpxImage::dataSize() const
 const DpxImage::EDPX_CompType DpxImage::componentsType() const
 {
 	EDPX_CompType type      = eCompTypeUnknown;
-	unsigned int descriptor = _header.descriptor();
-	unsigned int bitSize    = _header.bitSize();
+	const unsigned int descriptor = _header.descriptor();
+	const unsigned int bitSize    = _header.bitSize();
 
 	if( descriptor == 50 )
 	{
