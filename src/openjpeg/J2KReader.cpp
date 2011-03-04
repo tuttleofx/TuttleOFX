@@ -6,7 +6,7 @@
 #include "ofxsCore.h"
 #include <openjpeg.h>
 
-#include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem.hpp>
 #include <cstdlib>
 #include <cstring>
 
