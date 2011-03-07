@@ -143,11 +143,6 @@ int main( int argc, char** argv )
 	{
 	    verbose = true;
 	}
-	
-	if (vm.count("recursive"))
-	{
-	    recursiveCopy = true;
-	}
 
 	bfs::path dstPath = paths.back();
 	paths.pop_back();
