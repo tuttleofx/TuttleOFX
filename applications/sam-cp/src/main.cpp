@@ -20,7 +20,14 @@ void copy_sequence( const ttl::Sequence s, const ttl::Sequence d )
 		if( bfs::exists( sFile ) )
 		{
 			bfs::path dFile = d.getAbsoluteFilenameAt(t);
-			bfs::copy_file( sFile, dFile );
+			if( bfs::exists( dFile ) )
+			{
+				TUTTLE_CERR("Could not copy: " << dFile.string() );
+			}
+			else
+			{
+				bfs::copy_file( sFile, dFile );
+			}
 		}
 	}
 }
@@ -32,7 +39,14 @@ void copy_sequence( const ttl::Sequence s, const bfs::path d )
 		bfs::path sFile = s.getFilenameAt(t);
 		if( bfs::exists( s.getDirectory()/sFile ) )
 		{
-			bfs::copy_file( s.getDirectory() / sFile, d / sFile );
+			if( bfs::exists( d / sFile ) )
+			{
+				TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
+			}
+			else
+			{
+				bfs::copy_file( s.getDirectory() / sFile, d / sFile );;
+			}
 		}
 	}
 }
@@ -54,13 +68,12 @@ int Split(std::vector<std::string>& vecteur, std::string &chaine, char separateu
 
 int main( int argc, char** argv )
 {
-
-// 	int					researchMask	= ttl::eSequence || ttl::eDirectory || ttl::eFile ;	// by default copy sequences, directories, files
-	ttl::MaskOptions			descriptionMask	= ttl::eNone;				// by default show nothing
+	ttl::MaskOptions			descriptionMask	= ttl::eNone;		// by default show nothing
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
 	std::vector<std::string>		filters;
 	std::string				outputPattern;
+	bool					verbose = false;
 	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
@@ -68,6 +81,7 @@ int main( int argc, char** argv )
 		("all,a"		, "do not ignore entries starting with .")
 		("extension,e"		, bpo::value<std::string>(), "list with a specific pattern, ex: *.jpg,*.png")
 		("help,h"		, "show this help")
+		("verbose,v"		, "explain what is being done")
 	;
 	
 	// describe hidden options
@@ -125,18 +139,40 @@ int main( int argc, char** argv )
 	    return 1;
 	}
 
+	if (vm.count("verbose"))
+	{
+	    verbose = true;
+	}
+	
+	if (vm.count("recursive"))
+	{
+	    recursiveCopy = true;
+	}
+
 	bfs::path dstPath = paths.back();
 	paths.pop_back();
 	
 	if(bfs::is_directory(dstPath.branch_path()))
 	{
-// 	    TUTTLE_COUT ("last file, not a directory: " << dstPath.branch_path() << " | " << dstPath.leaf());
-// 	    if( bfs::is_directory(dstPath.branch_path()) && (!dstPath.leaf().find("#") || !dstPath.leaf().find("@")) ) // we check we have a path and a pattern
-// 	    {
-// 		TUTTLE_COUT ("continue");
-		
+		if( !bfs::is_directory(dstPath) &&  paths.size()>1 )
+		{
+		    TUTTLE_CERR( "To copy multiple sequences, your destination must be a directory" );
+		    return -1;
+		}
 		ttl::Sequence dstSeq(dstPath.branch_path(), descriptionMask);
-		bool dstIsSeq = dstSeq.init( 0, 0, 1, ttl::Sequence::ePatternAll );
+
+		bool dstIsSeq;
+		if( dstPath.leaf().find("#") || dstPath.leaf().find("@") )
+		{
+// 			TUTTLE_COUT("Init with pattern: " << dstPath.leaf());
+			dstIsSeq = dstSeq.init( dstPath.string(), 0, 0, 1, ttl::Sequence::ePatternAll );
+		}
+		else
+		{
+// 			TUTTLE_COUT("Init without pattern");
+			dstIsSeq = dstSeq.init( 0, 0, 1, ttl::Sequence::ePatternAll );
+		}
+		
 		
 		BOOST_FOREACH( bfs::path srcPath, paths)
 		{
@@ -145,21 +181,29 @@ int main( int argc, char** argv )
 			if( !srcIsSeq )
 			{
 				TUTTLE_CERR( "Input is not a sequence. (" << srcPath << ")" );
-				return -1;
+// 				return -1;
 			}
-			if( srcSeq.getNbFiles() == 0 )
+			else
 			{
-				TUTTLE_CERR( "No existing file for the input sequence. (" << srcPath << ")" );
-				return -1;
-			}
-			if( dstIsSeq )
-			{
-				TUTTLE_COUT( "dst is seq" << srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ")" );
-				copy_sequence( srcSeq, dstSeq );
-			}
-			else{
-				TUTTLE_COUT( "dst no seq" << srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath.branch_path() / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
-				copy_sequence( srcSeq, dstPath.branch_path() );
+				if( srcSeq.getNbFiles() == 0 )
+				{
+					TUTTLE_CERR( "No existing file for the input sequence. (" << srcPath << ")" );
+// 					return -1;
+				}
+				else
+				{
+					if( dstIsSeq )
+					{
+						if(verbose)
+						  TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ") " << dstSeq.getStandardPattern() );
+						copy_sequence( srcSeq, dstSeq );
+					}
+					else{
+						if(verbose)
+						  TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath.branch_path() / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
+						copy_sequence( srcSeq, dstPath.branch_path() );
+					}
+				}
 			}
 		}
 

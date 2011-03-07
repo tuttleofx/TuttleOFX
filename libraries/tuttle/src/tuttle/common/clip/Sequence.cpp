@@ -535,6 +535,7 @@ void Sequence::init( const std::string& prefix, const std::size_t padding, const
 bool Sequence::init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept )
 {
 	clear();
+
 	if( !initFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not regognize as a pattern, maybe a still file
 
