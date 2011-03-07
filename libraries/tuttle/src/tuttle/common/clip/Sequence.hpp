@@ -331,15 +331,6 @@ protected:
 };
 
 
-/**
- * @brief Search all sequences in a directory, add directories and files.
- */
-// std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory, bool listDirectories, bool listFiles );
-/**
- * @brief Search all sequences in a directory.
- */
-// std::vector<Sequence> sequencesInDir( const boost::filesystem::path& directory );
-
 inline std::string Sequence::getFilenameAt( const Time time ) const
 {
 	std::ostringstream o;

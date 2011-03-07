@@ -281,14 +281,7 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings
 // 		TUTTLE_TCOUT_VAR(str);
 // 		TUTTLE_TCOUT_VAR(id);
 // 		TUTTLE_TCOUT_VAR(nums);
-/*
-	std::string extension = id.getId().at(id.getId().size()-1); 
-// 	TUTTLE_COUT( extension );
-// 	TUTTLE_COUT( (int)extension.find_first_of(".") );
-	if( extension.find_first_of(".")==0 )
-	    return nums.size();
-	else
-	    return 0;*/
+
 	return nums.size();
 }
 
@@ -586,9 +579,7 @@ bool Sequence::initFromDetection( const std::string& pattern, const EPattern acc
 			allTimesStr.push_back( timeStr );
 			allTimes.push_back( time );
 		}
-// 		TUTTLE_COUT("initFrome detection 2 " <<  iter->filename());
 	}
-// 	TUTTLE_COUT("initFrome detection 2 end for");
 	if( allTimes.size() < 2 )
 	{
 		if( allTimes.size() == 1 )
