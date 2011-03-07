@@ -66,8 +66,9 @@ use-project /tuttletests 	: libraries/tuttle/tests ;
 use-project /sam-ls		: applications/sam-ls ;
 use-project /sam-cp		: applications/sam-cp ;
 use-project /sam-check		: applications/sam-check ;
+use-project /sam-mv		: applications/sam-mv ;
 use-project /sam-plugins	: applications/sam-plugins ;
-#use-project /pyTuttle           : applications/pyTuttle ;
+#use-project /pyTuttle		: applications/pyTuttle ;
 #use-project /samtests 		: applications/sam-ls/tests ;
 
 #
@@ -87,6 +88,7 @@ explicit		/tuttle
 			/sam-ls
 			/sam-cp
 			/sam-check
+			/sam-mv
 			/sam-plugins
 #			/samtests
 			/plugins

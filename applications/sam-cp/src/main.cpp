@@ -20,6 +20,8 @@ void copy_sequence( const ttl::Sequence s, const ttl::Sequence d )
 		if( bfs::exists( sFile ) )
 		{
 			bfs::path dFile = d.getAbsoluteFilenameAt(t);
+			#ifndef MOVEFILES // copy file(s)
+// 			#warning move in off
 			if( bfs::exists( dFile ) )
 			{
 				TUTTLE_CERR("Could not copy: " << dFile.string() );
@@ -28,6 +30,17 @@ void copy_sequence( const ttl::Sequence s, const ttl::Sequence d )
 			{
 				bfs::copy_file( sFile, dFile );
 			}
+			#else // move file(s)
+// 			#warning move in on
+			if( bfs::exists( dFile ) )
+			{
+				TUTTLE_CERR("Could not move: " << dFile.string() );
+			}
+			else
+			{
+				bfs::rename( sFile, dFile );
+			}
+			#endif
 		}
 	}
 }
@@ -39,6 +52,7 @@ void copy_sequence( const ttl::Sequence s, const bfs::path d )
 		bfs::path sFile = s.getFilenameAt(t);
 		if( bfs::exists( s.getDirectory()/sFile ) )
 		{
+			#ifndef MOVEFILE // copy file(s)
 			if( bfs::exists( d / sFile ) )
 			{
 				TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
@@ -47,6 +61,16 @@ void copy_sequence( const ttl::Sequence s, const bfs::path d )
 			{
 				bfs::copy_file( s.getDirectory() / sFile, d / sFile );;
 			}
+			#else // move file(s)
+			if( bfs::exists( d / sFile ) )
+			{
+				TUTTLE_CERR("Could not move: " << (d / sFile).string() );
+			}
+			else
+			{
+				bfs::rename( s.getDirectory() / sFile, d / sFile );;
+			}
+			#endif
 		}
 	}
 }
