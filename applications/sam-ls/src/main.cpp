@@ -192,7 +192,7 @@ int main( int argc, char** argv )
 		    else
 		    {
 // 			TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
-			filters.push_back( path.leaf() );
+			filters.push_back( path.leaf().string() );
 			std::list<boost::shared_ptr<FileObject>> listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
 			BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject>>::value_type & s, listing )
 			{
