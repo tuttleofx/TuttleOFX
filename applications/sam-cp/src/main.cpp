@@ -102,8 +102,6 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("all,a"		, "do not ignore entries starting with .")
-		("extension,e"		, bpo::value<std::string>(), "list with a specific pattern, ex: *.jpg,*.png")
 		("help,h"		, "show this help")
 		("verbose,v"		, "explain what is being done")
 	;

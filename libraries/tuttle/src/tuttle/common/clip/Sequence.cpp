@@ -907,13 +907,34 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	if( showPath() )
 	{
 		std::string path = (_directory / _folderName).string();
-		os << std::setw(NAME_WIDTH_WITH_DIR) << FOLDER_COLOR + path + STD_COLOR;
+		if(_options & eColor)
+		{
+		  os << std::setw(NAME_WIDTH_WITH_DIR) << FOLDER_COLOR + path + STD_COLOR;
+		}
+		else
+		{
+		  os << std::setw(NAME_WIDTH_WITH_DIR) << path;
+		}
 	}
 	else
 	{
-		os << std::setw(NAME_WIDTH) << FOLDER_COLOR + _folderName + STD_COLOR ;
+		if(_options & eColor)
+		{
+		  os << std::setw(NAME_WIDTH) << FOLDER_COLOR + _folderName + STD_COLOR ;
+		}
+		else
+		{
+		  os << std::setw(NAME_WIDTH) << _folderName ;
+		}
 	}
 	return os;
+}
+
+std::vector<boost::filesystem::path>	Folder::getFiles() const
+{
+	std::vector<boost::filesystem::path> allPaths;
+	allPaths.push_back(_directory / _folderName);
+	return allPaths;
 }
 
 std::ostream& File::getCout( std::ostream& os ) const
@@ -926,13 +947,35 @@ std::ostream& File::getCout( std::ostream& os ) const
       if( showPath() )
       {
 	      std::string path = (_directory / _filename).string();
-	      os << std::setw(NAME_WIDTH_WITH_DIR) << FILE_COLOR + path  + STD_COLOR;
+	      if(_options & eColor)
+	      {
+		os << std::setw(NAME_WIDTH_WITH_DIR) << FILE_COLOR + path  + STD_COLOR;
+	      }
+	      else
+	      {
+		os << std::setw(NAME_WIDTH_WITH_DIR) << path ;
+	      }
+	      
       }
       else
       {
-	      os << std::setw(NAME_WIDTH) << FILE_COLOR + _filename + STD_COLOR ;
+	      if(_options & eColor)
+	      {
+		os << std::setw(NAME_WIDTH) << FILE_COLOR + _filename + STD_COLOR ;
+	      }
+	      else
+	      {
+		os << std::setw(NAME_WIDTH) << _filename ;
+	      }
       }
       return os;
+}
+
+std::vector<boost::filesystem::path>	File::getFiles() const
+{
+	std::vector<boost::filesystem::path> allPaths;
+	allPaths.push_back(_directory / _filename);
+	return allPaths;
 }
 
 std::ostream& Sequence::getCout( std::ostream& os ) const
@@ -945,19 +988,52 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	if( showPath() )
 	{
 		std::string path = (_directory / getStandardPattern()).string();
-		os << std::setw(NAME_WIDTH_WITH_DIR) << SEQUENCE_COLOR + path + STD_COLOR ;
+		if(_options & eColor)
+		{
+		  os << std::setw(NAME_WIDTH_WITH_DIR) << SEQUENCE_COLOR + path + STD_COLOR ;
+		}
+		else
+		{
+		  os << std::setw(NAME_WIDTH_WITH_DIR) << path ;
+		}
 	}
 	else
 	{
-		os << std::setw(NAME_WIDTH) << SEQUENCE_COLOR + getStandardPattern() + STD_COLOR ;
+		if(_options & eColor)
+		{
+		  os << std::setw(NAME_WIDTH) << SEQUENCE_COLOR + getStandardPattern() + STD_COLOR ;
+		}
+		else
+		{
+		  os << std::setw(NAME_WIDTH) << getStandardPattern() ;
+		}
 	}
 	os << " [" << getFirstTime() << ":" << getLastTime();
 	if( getStep() != 1 )
 		os << "x" << getStep();
 	os << "] " << getNbFiles() << " file" << ( ( getNbFiles() > 1 ) ? "s" : "" );
 	if( hasMissingFile() )
-		os << ", "  << MISSING_FILE_IN_SEQUENCE_COLOR<< getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << STD_COLOR;
+	{
+		if(_options & eColor)
+		{
+		  os << ", "  << MISSING_FILE_IN_SEQUENCE_COLOR<< getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << STD_COLOR;
+		}
+		else
+		{
+		  os << ", "  << getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" );
+		}
+	}
 	return os;
+}
+
+std::vector<boost::filesystem::path>	Sequence::getFiles() const
+{
+	std::vector<boost::filesystem::path> allPaths;
+	for( Sequence::Time t = getFirstTime(); t <= getLastTime(); t += getStep() )
+	{
+		allPaths.push_back( getAbsoluteFilenameAt(t) );
+	}
+	return allPaths;
 }
 
 }

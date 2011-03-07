@@ -40,7 +40,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 
 	int					researchMask		= eSequence;	// by default show sequences
-	MaskOptions				descriptionMask		= eNone;	// by default show nothing
+	MaskOptions				descriptionMask		= eColor;	// by default show nothing
 	bool					recursiveListing	= false;
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
@@ -58,6 +58,7 @@ int main( int argc, char** argv )
 		("mask,m"		, "mask sequences in path(s)")
 		("path-root,p"		, "show the root path for each objects")
 		("recursive,R"		, "list subdirectories recursively")
+		("no-color"		, "no color on the output")
 		("full-display"		, "show directories, files and sequences")
 	;
 	
@@ -150,6 +151,12 @@ int main( int argc, char** argv )
 	{
 	    recursiveListing = true;
 	}
+	
+	if (vm.count("no-color"))
+	{
+	    remove( descriptionMask, eColor );
+	}
+
 // 	for(uint i=0; i<filters.size(); i++)
 // 	  TUTTLE_COUT("filters = " << filters.at(i));
 // 	TUTTLE_COUT("research mask = " << researchMask);

@@ -34,7 +34,6 @@ class FileStrings;
 class FileNumbers;
 }
 
-
 /**
   * List all recognized pattern types.
   */
@@ -51,12 +50,19 @@ enum MaskOptions
 	eNone		= 0,			// 0
 	eProperties	= 1,			// show type of FileObject
 	ePath		= eProperties*2,	// show path of FileObject
-	eDotFile	= ePath*2		// show files which start with a dot (hidden files)
+	eDotFile	= ePath*2,		// show files which start with a dot (hidden files)
+	eColor		= eDotFile*2		// output with color
 };
 
 inline MaskOptions operator|=(MaskOptions& a, const MaskOptions& b)
 {
   a = (MaskOptions) (int(b) | int(a));
+  return a;
+}
+
+inline MaskOptions remove(MaskOptions& a, const MaskOptions& b)
+{
+  a = (MaskOptions) (int(~b) & int(a));
   return a;
 }
 
@@ -88,14 +94,17 @@ public:
 	}
 	virtual ~FileObject(){};
 	
-	friend  std::ostream& operator<<( std::ostream& os, const FileObject& fo );
-	virtual std::ostream& getCout   ( std::ostream& os ) const = 0;
+	friend  std::ostream&				operator<<( std::ostream& os, const FileObject& fo );
+	virtual std::ostream&				getCout   ( std::ostream& os ) const = 0;
 	
-	inline boost::filesystem::path	getDirectory	() const				{ return _directory; }
-	inline void			setDirectory	( const boost::filesystem::path& p )	{ _directory = p; }
+	virtual std::vector<boost::filesystem::path>	getFiles() const =0;
 	
-	MaskOptions			getMaskOptions	() const				{ return _options; }
+	inline boost::filesystem::path			getDirectory	() const				{ return _directory; }
+	inline void					setDirectory	( const boost::filesystem::path& p )	{ _directory = p; }
 	
+	MaskOptions					getMaskOptions	() const				{ return _options; }
+	MaskType					getMaskType	() const				{ return _type; }
+
 private:
 	void init( const boost::filesystem::path& directory, const MaskType& type, const MaskOptions& options )
 	{
@@ -129,7 +138,9 @@ public:
 	};
 	virtual ~Folder(){};
 	
-	std::ostream& getCout( std::ostream& os ) const;
+	std::ostream&				getCout( std::ostream& os ) const;
+	
+	std::vector<boost::filesystem::path>	getFiles() const;
 private:
 	std::ostream&		getProperties( std::ostream& os, const boost::filesystem::path& directory);
 	
@@ -146,7 +157,8 @@ public:
 	};
 	virtual ~File(){};
 	
-	std::ostream& getCout( std::ostream& os ) const ;
+	std::ostream&				getCout( std::ostream& os ) const ;
+	std::vector<boost::filesystem::path>	getFiles() const;
 private:
 	std::string		_filename;
 };
@@ -203,6 +215,7 @@ public:
 	Sequence( const boost::filesystem::path& directory, const MaskOptions options, const EPattern accept = ePatternDefault );
 	
 	Sequence( const Sequence& v ):FileObject( v._options ) { operator=( v ); }
+
 	
 	virtual ~Sequence(){};
 	
@@ -302,8 +315,8 @@ protected:
 private:
 	friend std::list<Sequence> buildSequence(  const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const MaskOptions& desc );
 	
-	std::ostream& getCout( std::ostream& os ) const ;
-	
+	std::ostream&				getCout( std::ostream& os ) const ;
+	std::vector<boost::filesystem::path>	getFiles() const;
 protected:
 	inline void clear()
 	{
