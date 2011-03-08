@@ -2,7 +2,10 @@
 #include "LutProcess.hpp"
 #include "LutDefinitions.hpp"
 
+#include <boost/filesystem/operations.hpp>
 #include <boost/gil/gil_all.hpp>
+
+namespace bfs = boost::filesystem;
 
 namespace tuttle {
 namespace plugin {
@@ -27,7 +30,7 @@ void LutPlugin::render( const OFX::RenderArguments& args )
 	{
 		std::string str;
 		_sFilename->getValue( str );
-		if( ! exists( str ) )
+		if( ! bfs::exists( str ) )
 		{
 			BOOST_THROW_EXCEPTION( exception::FileNotExist()
 				<< exception::filename(str) );
@@ -58,7 +61,7 @@ void LutPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::s
 	{
 		std::string str;
 		_sFilename->getValue( str );
-		if( exists( str ) )
+		if( bfs::exists( str ) )
 		{
 			if( ! _lutReader.read( str ) )
 			{

@@ -1,27 +1,30 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX FFMpeg Plugin
+## Main BJam makefile for libpng library
 ###############################################################################
-import os ;
 
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-    : build-dir $(DIST)/FFMpeg/obj
+	: requirements	
+		<include>.
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+	: usage-requirements
+		<include>.
+	: build-dir $(DIST)/3rdParty/raw/obj
     ;
 
 ###############################################################################
-# Product 
+# libraw library
 ###############################################################################
-plugin FFMpeg : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    ;
+alias	headers		: [ glob-tree *.h ] ;
 
-###############################################################################
-# Automatic install
-###############################################################################
-auto_install FFMpeg : $(DIST)/FFMpeg ;
+lib	raw		: 
+			  [ glob src/*.cpp ]
+			;
 
+install	dist_src	: raw
+			: <variant>debug:<location>$(DIST)/3rdParty/raw/bin/debug
+			  <variant>release:<location>$(DIST)/3rdParty/raw/bin/release
+			;

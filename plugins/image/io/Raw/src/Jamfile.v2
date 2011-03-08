@@ -6,23 +6,23 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>reader
-    : build-dir $(DIST)/Raw/obj
-    ;
+	: requirements
+		<include>reader
+	: build-dir $(DIST)/Raw/obj
+	;
 
-use-project /raw 	: $(3RD_PARTY)/libraw ;
+use-project	/raw	: $(3RD_PARTY)/libraw ;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Raw : 
-	[ glob-tree *.cpp ]
-	/tuttleplugin/<link>static
-	/boost/filesystem
-	/boost/system
-	/raw
-	;
+plugin	Raw : 
+		[ glob-tree *.cpp ]
+		/tuttleplugin/<link>static
+		/boost/filesystem
+		/boost/system
+		/raw
+		;
 explicit Raw ;
 
 ###############################################################################
