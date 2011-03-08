@@ -3,6 +3,8 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 
@@ -12,6 +14,7 @@
 
 namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
+namespace bal = boost::algorithm;
 // A helper function to simplify the main part.
 template<class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
@@ -19,21 +22,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
     copy(v.begin(), v.end(), std::ostream_iterator<T>(std::cout, " "));
     return os;
 }
-
-int Split(std::vector<std::string>& vecteur, std::string &chaine, char separateur)
-{
-	std::string::size_type stTemp = chaine.find(separateur);
-
-	while(stTemp != std::string::npos)
-	{
-		vecteur.push_back(chaine.substr(0, stTemp));
-		chaine = chaine.substr(stTemp + 1);
-		stTemp = chaine.find(separateur);
-	}
-	
-	vecteur.push_back(chaine);
-	return vecteur.size();
-} 
 
 int main( int argc, char** argv )
 {
@@ -95,8 +83,7 @@ int main( int argc, char** argv )
 
 	if (vm.count("extension"))
 	{
-	    std::string extensions = vm["extension"].as<std::string>();
-	    Split( filters, extensions, 0x2C);
+	    bal::split( filters, vm["extension"].as<std::string>(), bal::is_any_of(","));
 	}
 
 	if (vm.count("directories"))
