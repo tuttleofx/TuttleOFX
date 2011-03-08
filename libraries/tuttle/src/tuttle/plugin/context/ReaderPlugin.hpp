@@ -5,7 +5,7 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <tuttle/common/clip/Sequence.hpp>
-#include <tuttle/plugin/exceptionsPlugin.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 namespace tuttle {
 namespace plugin {

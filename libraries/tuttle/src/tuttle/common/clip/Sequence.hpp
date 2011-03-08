@@ -125,8 +125,8 @@ protected:
 	MaskOptions		_options;		///< specify output options of object, common for each objects
 };
 
-std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc );
-std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters );
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc );
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters );
 
 
 class Folder : public FileObject

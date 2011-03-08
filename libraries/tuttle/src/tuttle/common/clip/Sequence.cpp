@@ -765,19 +765,19 @@ bool isNotFilter( std::string filename, std::vector<std::string>& filters)
 	return false;
 }
 
-std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc )
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc )
 {
 	std::vector<std::string> filters;
 	return fileObjectsInDir( directory, mask, desc, filters );
 }
 
-std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters )
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters )
 {
-	std::list<boost::shared_ptr<FileObject>> output;
+	std::list<boost::shared_ptr<FileObject> > output;
 	
-	std::list<boost::shared_ptr<FileObject>>	outputDirectories;
-	std::list<boost::shared_ptr<FileObject>>	outputFiles;
-	std::list<boost::shared_ptr<FileObject>>	outputSequences;
+	std::list<boost::shared_ptr<FileObject> >	outputDirectories;
+	std::list<boost::shared_ptr<FileObject> >	outputFiles;
+	std::list<boost::shared_ptr<FileObject> >	outputSequences;
 	
 	if( !exists( directory ) )
 		return output;

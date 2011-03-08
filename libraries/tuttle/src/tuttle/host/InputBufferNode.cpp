@@ -1,6 +1,6 @@
 #include "InputBufferNode.hpp"
 #include "Core.hpp"
-#include "exceptionsHost.hpp"
+#include "exceptions.hpp"
 #include "memory/LinkData.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhClipImageDescriptor.hpp>
