@@ -364,7 +364,7 @@ inline bool Sequence::initFromDetection( const EPattern& accept )
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
 
-	return this->initFromDetection( _directory.filename(), accept );
+	return this->initFromDetection( _directory.filename().string(), accept );
 }
 
 

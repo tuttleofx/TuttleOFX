@@ -546,7 +546,7 @@ bool Sequence::init( const Time first, const Time last, const Time step, const E
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
 	_directory = dir;
-	return this->init( _directory.filename(), first, last, step, accept );
+	return this->init( _directory.filename().string(), first, last, step, accept );
 }
 
 bool Sequence::initFromDetection( const std::string& pattern, const EPattern accept )
@@ -573,7 +573,7 @@ bool Sequence::initFromDetection( const std::string& pattern, const EPattern acc
 		Time time;
 		std::string timeStr;
 		// if the file is inside the sequence
-		if( isIn( iter->path().filename(), time, timeStr ) )
+		if( isIn( iter->path().filename().string(), time, timeStr ) )
 		{
 			// create a big list of all times in our sequence
 			allTimesStr.push_back( timeStr );
@@ -798,7 +798,7 @@ std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesyst
 		
 // 		TUTTLE_COUT("dir " << iter->filename());
 		
-		if( !(iter->path().filename()[0]==0x2E) || (desc & eDotFile)  ) //0x2e == . for the test if we ask to show hidden files and if it is hidden
+		if( !(iter->path().filename().string()[0]==0x2E) || (desc & eDotFile)  ) //0x2e == . for the test if we ask to show hidden files and if it is hidden
 		{
 // 			TUTTLE_COUT("hidden file " << iter->filename());
 
@@ -806,15 +806,15 @@ std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesyst
 			if( fs::is_directory( iter->status() ) )
 			{
 //				TUTTLE_COUT("d\t"<< iter->filename());
-				boost::shared_ptr<Folder> d( new Folder( directory, iter->path().filename(), desc ) );
+				boost::shared_ptr<Folder> d( new Folder( directory, iter->path().filename().string(), desc ) );
 				outputDirectories.push_back( d );
 			}
 			else // it's a file or a file of a sequence
 			{
-				if( isNotFilter( iter->path().filename(), filters) ) // filtering of entries with filters strings
+				if( isNotFilter( iter->path().filename().string(), filters) ) // filtering of entries with filters strings
 				{
 					// if at least one number detected
-					if( seqConstruct( iter->path().filename(), id, nums ) )
+					if( seqConstruct( iter->path().filename().string(), id, nums ) )
 					{
 						const SeqIdMap::iterator it( sequences.find( id ) );
 						if( it != sequences.end() ) // is already in map
@@ -834,7 +834,7 @@ std::list<boost::shared_ptr<FileObject>> fileObjectsInDir( const boost::filesyst
 					else
 					{
 // 						TUTTLE_COUT("f\t"<< iter->filename());
-						boost::shared_ptr<File> f( new File( directory, iter->path().filename(), desc ) );
+						boost::shared_ptr<File> f( new File( directory, iter->path().filename().string(), desc ) );
 						outputFiles.push_back( f );
 					}
 				}

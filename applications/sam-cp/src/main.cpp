@@ -168,7 +168,7 @@ int main( int argc, char** argv )
 			ttl::Sequence dstSeq(dstPath.branch_path(), descriptionMask);
 
 			bool dstIsSeq;
-			if( dstPath.leaf().find("#") || dstPath.leaf().find("@") )
+			if( dstPath.leaf().string().find("#") || dstPath.leaf().string().find("@") )
 			{
 	// 			TUTTLE_COUT("Init with pattern: " << dstPath.leaf());
 				dstIsSeq = dstSeq.init( dstPath.string(), 0, 0, 1, ttl::Sequence::ePatternAll );
