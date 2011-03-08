@@ -54,6 +54,24 @@ enum MaskOptions
 	eColor		= eDotFile*2		// output with color
 };
 
+inline MaskType operator~(const MaskType& a)
+{
+  MaskType b = (MaskType) ( ~ int(a));
+  return b;
+}
+
+inline MaskType operator&=(MaskType& a, const MaskType& b)
+{
+  a = (MaskType) (int(b) & int(a));
+  return a;
+}
+
+inline MaskType operator|=(MaskType& a, const MaskType& b)
+{
+  a = (MaskType) (int(b) | int(a));
+  return a;
+}
+
 inline MaskOptions operator|=(MaskOptions& a, const MaskOptions& b)
 {
   a = (MaskOptions) (int(b) | int(a));

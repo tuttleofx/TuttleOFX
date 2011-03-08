@@ -69,9 +69,9 @@ void removeSequence( const ttl::Sequence& s )
 	}
 }
 
-void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject>> &listing, std::vector<boost::filesystem::path> &notRemoved )
+void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, std::vector<boost::filesystem::path> &notRemoved )
 {
-	BOOST_FOREACH( const std::list<boost::shared_ptr<ttl::FileObject>>::value_type & s, listing )
+	BOOST_FOREACH( const std::list<boost::shared_ptr<ttl::FileObject> >::value_type & s, listing )
 	{
 		if( !(s->getMaskType () == ttl::eDirectory))
 		{
@@ -282,14 +282,14 @@ int main( int argc, char** argv )
 				if( bfs::is_directory( *dir ) )
 				{
 // 				    TUTTLE_COUT( *dir );
-				    std::list<boost::shared_ptr<FileObject>> listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
+				    std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
 				    removeFileObject( listing, pathsNoRemoved );
 				}
 			    }
 			}
 			else
 			{
-			    std::list<boost::shared_ptr<FileObject>> listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+			    std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
 			    removeFileObject( listing, pathsNoRemoved );
 			}
 		    }
@@ -297,7 +297,7 @@ int main( int argc, char** argv )
 		    {
 // 			TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 			filters.push_back( path.leaf().string() );
-			std::list<boost::shared_ptr<FileObject>> listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
+			std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
 			removeFileObject( listing, pathsNoRemoved );
 		    }
 		}
