@@ -26,7 +26,7 @@ HistogramKeyerOverlay::HistogramKeyerOverlay( OfxInteractHandle handle, OFX::Ima
 bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 {
 	typedef boost::gil::point2<Scalar> Point2;
-	static const float lineWidth = 2.0;
+// 	static const float lineWidth = 2.0;
 	bool displaySomething = false;
 
 	glColor3f( 0.0f, 1.0f, 1.0f );
