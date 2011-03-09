@@ -4,8 +4,6 @@ Import( 'libs' )
 project.createOfxPlugin( dirs = ['src'],
                          libs = [
                                  libs.tuttlePlugin,
-                                 libs.boost_gil,
-                                 libs.boost_system,
-								 libs.caca
+                                 libs.caca
                                  ] )
 
