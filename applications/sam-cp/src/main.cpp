@@ -1,6 +1,7 @@
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -71,7 +72,14 @@ void copy_sequence( const ttl::Sequence s, const bfs::path d )
 			}
 			else
 			{
-				bfs::rename( s.getDirectory() / sFile, d / sFile );;
+// 				try
+// 				{
+					bfs::rename( s.getDirectory() / sFile, d / sFile );;
+// 				}
+// 				catch()
+// 				{
+					TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+// 				}
 			}
 			#endif
 		}
@@ -119,8 +127,13 @@ int main( int argc, char** argv )
 	if (vm.count("help"))
 	{
 	    TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
+	    #ifndef MOVEFILES
 	    TUTTLE_COUT( "NAME\n\tsam-cp - copy sequence(s) in a directory\n" );
 	    TUTTLE_COUT( "SYNOPSIS\n\tsam-cp [options] sequence[s] outputDirectory\n" );
+	    #else
+	    TUTTLE_COUT( "NAME\n\tsam-mv - move sequence(s) in a directory\n" );
+	    TUTTLE_COUT( "SYNOPSIS\n\tsam-mv [options] sequence[s] outputDirectory\n" );
+	    #endif
 	    TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
 	    return 1;
 	}
@@ -211,6 +224,10 @@ int main( int argc, char** argv )
 				}
 			}
 		}
+	}
+	catch (bfs::filesystem_error &ex)
+	{
+		TUTTLE_COUT( ex.what() );
 	}
 	catch(... )
 	{

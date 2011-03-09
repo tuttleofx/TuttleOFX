@@ -3,8 +3,6 @@
 
 #include <tuttle/common/utils/global.hpp>
 
-#include <ofxCore.h>
-
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>

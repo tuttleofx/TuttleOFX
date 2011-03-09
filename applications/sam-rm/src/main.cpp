@@ -1,6 +1,7 @@
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/exception.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
@@ -323,9 +324,13 @@ int main( int argc, char** argv )
 	    // delete not empty folder the first time
 	    removeFileObject( pathsNoRemoved );
 	}
+	catch (bfs::filesystem_error &ex)
+	{
+		TUTTLE_COUT( ex.what() );
+	}
 	catch(... )
 	{
-	    TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
 	}
 
 	return 0;
