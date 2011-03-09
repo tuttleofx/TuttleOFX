@@ -4,7 +4,7 @@
 
 lib tuttlehost :
     [ glob-tree *.cpp ]
-    /ofxPluginSupport/<link>static
+    /openfxHackProject/<link>static
     /boost/system
     /boost/filesystem
     /boost/thread
