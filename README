@@ -1,10 +1,6 @@
 
 TuttleOFX version 0
 
-	Project under early development.
-
-
-Presentation
 
 	Tuttle OFX is a library to connect and batch operations with OpenFx plugins.
 	It comes with a set of plugins that allows you to batch process on movies
@@ -12,10 +8,12 @@ Presentation
 	processing graph.
 
 
+	Project under early development.
+
+
 Licence
 
-	LGPL - GNU LESSER GENERAL PUBLIC LICENSE
-	see LICENCE file
+	see COPYING file
 
 
 Compilation
