@@ -10,6 +10,7 @@ project
 		<include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
+		<warnings>off
 	: usage-requirements
 		<include>.
 	: build-dir $(DIST)/3rdParty/raw/obj
@@ -21,7 +22,7 @@ project
 alias	headers		: [ glob-tree *.h ] ;
 
 lib	raw		: 
-			  [ glob src/*.cpp ]
+			  [ glob src/*.cpp internal/*.cpp ]
 			;
 
 install	dist_src	: raw

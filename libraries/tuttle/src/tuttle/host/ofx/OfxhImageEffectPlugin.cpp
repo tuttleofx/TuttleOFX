@@ -146,7 +146,7 @@ const OfxhImageEffectNodeDescriptor& OfxhImageEffectPlugin::getDescriptor() cons
 void OfxhImageEffectPlugin::addContext( const std::string& context, OfxhImageEffectNodeDescriptor* ied )
 {
 	std::string key( context ); // for constness
-
+	
 	_contexts.insert( key, ied );
 	_knownContexts.insert( context );
 }

@@ -18,11 +18,12 @@ project
 	 	<os>NT:<define>_WINDOWS
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
+		<warnings>off
     : usage-requirements
 		<include>./IlmImf
 		<os>NT:<include>./config.windows
 		<os>LINUX:<include>./config 
-		<os>MACOSX:<include>./config 
+		<os>MACOSX:<include>./config
     : build-dir $(DIST)/3rdParty/openexr/obj
     ;
 

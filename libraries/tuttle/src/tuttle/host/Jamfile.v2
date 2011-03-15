@@ -3,14 +3,15 @@
 ###############################################################################
 
 lib tuttlehost :
-    [ glob-tree *.cpp ]
-    /openfxHackProject/<link>static
-    /boost/system
-    /boost/filesystem
-    /boost/thread
-    /boost/date_time
-    /boost/serialization
-    :
-    <os>NT:<find-shared-library>shell32
-    <os>LINUX:<find-shared-library>dl
-    ;
+	[ glob-tree *.cpp ]
+#	/openfxHackProject/<link>static
+	/ofxPluginSupport/<link>static # ???? but it work ...
+	/boost/system
+	/boost/filesystem
+	/boost/thread
+	/boost/date_time
+	/boost/serialization
+	:
+	<os>NT:<find-shared-library>shell32
+	<os>LINUX:<find-shared-library>dl
+	;
