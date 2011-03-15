@@ -131,7 +131,7 @@ void MemoryCache::clearUnused()
 
 void MemoryCache::clearAll()
 {
-	TUTTLE_TCOUT( " - MEMORYCACHE::CLEARALL - " );
+	TUTTLE_COUT_DEBUG( " - MEMORYCACHE::CLEARALL - " );
 	boost::mutex::scoped_lock lockerMap( _mutexMap );
 	_map.clear();
 }
