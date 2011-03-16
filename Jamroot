@@ -78,6 +78,7 @@ alias /sam-tools		: /sam-ls
 				  /sam-cp
 				  /sam-mv
 				  /sam-rm
+				  /sam-plugins
 				;
 
 

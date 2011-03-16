@@ -16,11 +16,16 @@ namespace bpo = boost::program_options;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 
-void copy_sequence( const ttl::Sequence s, const ttl::Sequence d, int offset = 0 )
+void copy_sequence( const ttl::Sequence s, const ttl::Sequence d, int offset = 0, int firstImage = 0, int lastImage = 0 )
 {
+    if(s.getLastTime()-lastImage <= s.getFirstTime()+firstImage )
+    {
+        TUTTLE_COUT("error in index of first-image and/or last image");
+        return;
+    }
     if(offset>0)
     {
-        for( ttl::Sequence::Time t = s.getLastTime(); t >= s.getFirstTime(); t -= s.getStep() )
+        for( ttl::Sequence::Time t = s.getLastTime()-lastImage; t >= s.getFirstTime()+firstImage; t -= s.getStep() )
 	{
                 bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( bfs::exists( sFile ) )
@@ -52,7 +57,7 @@ void copy_sequence( const ttl::Sequence s, const ttl::Sequence d, int offset = 0
     }
     else
     {
-        for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+        for( ttl::Sequence::Time t = s.getFirstTime()+firstImage; t <= s.getLastTime()-lastImage; t += s.getStep() )
         {
                 bfs::path sFile = s.getAbsoluteFilenameAt(t);
                 if( bfs::exists( sFile ) )
@@ -85,11 +90,16 @@ void copy_sequence( const ttl::Sequence s, const ttl::Sequence d, int offset = 0
 
 }
 
-void copy_sequence( const ttl::Sequence s, const bfs::path d, int offset = 0 )
+void copy_sequence( const ttl::Sequence s, const bfs::path d, int offset = 0, int firstImage = 0, int lastImage = 0 )
 {
+    if(s.getLastTime()-lastImage <= s.getFirstTime()+firstImage )
+    {
+        TUTTLE_COUT("error in index of first-image and/or last image");
+        return;
+    }
     if(offset>0)
     {
-        for( ttl::Sequence::Time t = s.getLastTime(); t >= s.getFirstTime(); t -= s.getStep() )
+        for( ttl::Sequence::Time t = s.getLastTime()-lastImage; t >= s.getFirstTime()+firstImage; t -= s.getStep() )
 	{
 		bfs::path sFile = s.getFilenameAt(t);
                 bfs::path dFile = s.getFilenameAt(t+offset);
@@ -126,7 +136,7 @@ void copy_sequence( const ttl::Sequence s, const bfs::path d, int offset = 0 )
     }
     else
     {
-        for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+        for( ttl::Sequence::Time t = s.getFirstTime()+firstImage; t <= s.getLastTime()-lastImage; t += s.getStep() )
         {
                 bfs::path sFile = s.getFilenameAt(t);
                 bfs::path dFile = s.getFilenameAt(t+offset);
@@ -172,12 +182,16 @@ int main( int argc, char** argv )
 	std::string				outputPattern;
         bool					verbose             = false;
         int                                     offset              = 0;
+        int                                     firstImage          = 0;
+        int                                     lastImage           = 0;
 	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
 		("help,h"		, "show this help")
                 ("offset,o"             , bpo::value<int>(), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"")
+                ("first-image,f"       , bpo::value<unsigned int>(), "specify the first image")
+                ("last-image,l"        , bpo::value<unsigned int>(), "specify the last image")
 		("verbose,v"		, "explain what is being done")
 	;
 	
@@ -261,6 +275,16 @@ int main( int argc, char** argv )
             offset  = vm["offset"].as<int >();
         }
 
+        if (vm.count("first-image"))
+        {
+            firstImage  = vm["first-image"].as< unsigned int >();
+        }
+
+        if (vm.count("last-image"))
+        {
+            lastImage  = vm["last-image"].as< unsigned int >();
+        }
+
 	if (vm.count("verbose"))
 	{
 	    verbose = true;
@@ -329,12 +353,13 @@ int main( int argc, char** argv )
                                         {
                                                 if(verbose)
                                                   TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ") " );
-                                                copy_sequence( srcSeq, dstSeq, offset );
+
+                                                copy_sequence( srcSeq, dstSeq, offset, firstImage-srcSeq.getFirstTime(), srcSeq.getLastTime()-lastImage );
                                         }
                                         else{
                                                 if(verbose)
                                                   TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
-                                                copy_sequence( srcSeq, dstPath, offset );
+                                                copy_sequence( srcSeq, dstPath, offset, firstImage-srcSeq.getFirstTime(), srcSeq.getLastTime()-lastImage );
                                         }
                                 }
                         }
