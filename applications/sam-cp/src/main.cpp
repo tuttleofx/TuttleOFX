@@ -16,14 +16,16 @@ namespace bpo = boost::program_options;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 
-void copy_sequence( const ttl::Sequence s, const ttl::Sequence d )
+void copy_sequence( const ttl::Sequence s, const ttl::Sequence d, int offset = 0 )
 {
-	for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+    if(offset>0)
+    {
+        for( ttl::Sequence::Time t = s.getLastTime(); t >= s.getFirstTime(); t -= s.getStep() )
 	{
-		bfs::path sFile = s.getAbsoluteFilenameAt(t);
+                bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( bfs::exists( sFile ) )
 		{
-			bfs::path dFile = d.getAbsoluteFilenameAt(t);
+                        bfs::path dFile = d.getAbsoluteFilenameAt(t+offset);
 			#ifndef MOVEFILES // copy file(s)
 // 			#warning move in off
 			if( bfs::exists( dFile ) )
@@ -47,26 +49,63 @@ void copy_sequence( const ttl::Sequence s, const ttl::Sequence d )
 			#endif
 		}
 	}
+    }
+    else
+    {
+        for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+        {
+                bfs::path sFile = s.getAbsoluteFilenameAt(t);
+                if( bfs::exists( sFile ) )
+                {
+                        bfs::path dFile = d.getAbsoluteFilenameAt(t+offset);
+                        #ifndef MOVEFILES // copy file(s)
+// 			#warning move in off
+                        if( bfs::exists( dFile ) )
+                        {
+                                TUTTLE_CERR("Could not copy: " << dFile.string() );
+                        }
+                        else
+                        {
+                                bfs::copy_file( sFile, dFile );
+                        }
+                        #else // move file(s)
+// 			#warning move in on
+                        if( bfs::exists( dFile ) )
+                        {
+                                TUTTLE_CERR("Could not move: " << dFile.string() );
+                        }
+                        else
+                        {
+                                bfs::rename( sFile, dFile );
+                        }
+                        #endif
+                }
+        }
+    }
+
 }
 
-void copy_sequence( const ttl::Sequence s, const bfs::path d )
+void copy_sequence( const ttl::Sequence s, const bfs::path d, int offset = 0 )
 {
-	for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+    if(offset>0)
+    {
+        for( ttl::Sequence::Time t = s.getLastTime(); t >= s.getFirstTime(); t -= s.getStep() )
 	{
 		bfs::path sFile = s.getFilenameAt(t);
+                bfs::path dFile = s.getFilenameAt(t+offset);
 		if( bfs::exists( s.getDirectory()/sFile ) )
 		{
 			#ifndef MOVEFILE // copy file(s)
-			if( bfs::exists( d / sFile ) )
+                        if( bfs::exists( d / dFile ) )
 			{
 				TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
 			}
 			else
 			{
-				bfs::copy_file( s.getDirectory() / sFile, d / sFile );;
+                                bfs::copy_file( s.getDirectory() / sFile, d / dFile );;
 			}
 			#else // move file(s)
-			if( bfs::exists( d / sFile ) )
+                        if( bfs::exists( d / dFile ) )
 			{
 				TUTTLE_CERR("Could not move: " << (d / sFile).string() );
 			}
@@ -74,7 +113,7 @@ void copy_sequence( const ttl::Sequence s, const bfs::path d )
 			{
 // 				try
 // 				{
-					bfs::rename( s.getDirectory() / sFile, d / sFile );;
+                                        bfs::rename( s.getDirectory() / sFile, d / dFile );;
 // 				}
 // 				catch()
 // 				{
@@ -84,21 +123,61 @@ void copy_sequence( const ttl::Sequence s, const bfs::path d )
 			#endif
 		}
 	}
+    }
+    else
+    {
+        for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+        {
+                bfs::path sFile = s.getFilenameAt(t);
+                bfs::path dFile = s.getFilenameAt(t+offset);
+                if( bfs::exists( s.getDirectory()/sFile ) )
+                {
+                        #ifndef MOVEFILE // copy file(s)
+                        if( bfs::exists( d / dFile ) )
+                        {
+                                TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
+                        }
+                        else
+                        {
+                                bfs::copy_file( s.getDirectory() / sFile, d / dFile );;
+                        }
+                        #else // move file(s)
+                        if( bfs::exists( d / dFile ) )
+                        {
+                                TUTTLE_CERR("Could not move: " << (d / sFile).string() );
+                        }
+                        else
+                        {
+// 				try
+// 				{
+                                        bfs::rename( s.getDirectory() / sFile, d / dFile );;
+// 				}
+// 				catch()
+// 				{
+                                        TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+// 				}
+                        }
+                        #endif
+                }
+        }
+    }
 }
 
 int main( int argc, char** argv )
 {
-	ttl::MaskOptions			descriptionMask	= ttl::eNone;		// by default show nothing
+        ttl::MaskOptions			descriptionMask     = ttl::eNone;	// by default show nothing
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
 	std::vector<std::string>		filters;
 	std::string				outputPattern;
-	bool					verbose = false;
+        bool					verbose             = false;
+        int                                     offset              = 0;
 	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
 		("help,h"		, "show this help")
+                ("offset,o"             , bpo::value<int>(), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"")
 		("verbose,v"		, "explain what is being done")
 	;
 	
@@ -123,14 +202,21 @@ int main( int argc, char** argv )
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
         // get environnement options and parse them
-        std::vector<std::string> envOptions;
         #ifndef MOVEFILE // copy file(s)
-            envOptions.push_back(std::getenv("SAM_CP_OPTIONS"));
+            if( std::getenv("SAM_CP_OPTIONS") != NULL)
         #else
-            envOptions.push_back(std::getenv("SAM_MV_OPTIONS"));
+            if( std::getenv("SAM_MV_OPTIONS") != NULL)
         #endif
-        bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
-
+        {
+            std::vector<std::string> envOptions;
+            #ifndef MOVEFILE // copy file(s)
+                std::string env = std::getenv("SAM_CP_OPTIONS");
+            #else
+                std::string env = std::getenv("SAM_MV_OPTIONS");
+            #endif
+            envOptions.push_back( env );
+            bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+        }
 	bpo::notify(vm);    
 
 	if (vm.count("help"))
@@ -169,6 +255,11 @@ int main( int argc, char** argv )
 	    TUTTLE_COUT("not sequence and/or directory are specified");
 	    return 1;
 	}
+
+        if (vm.count("offset"))
+        {
+            offset  = vm["offset"].as<int >();
+        }
 
 	if (vm.count("verbose"))
 	{
@@ -238,12 +329,12 @@ int main( int argc, char** argv )
                                         {
                                                 if(verbose)
                                                   TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ") " );
-                                                copy_sequence( srcSeq, dstSeq );
+                                                copy_sequence( srcSeq, dstSeq, offset );
                                         }
                                         else{
                                                 if(verbose)
                                                   TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
-                                                copy_sequence( srcSeq, dstPath );
+                                                copy_sequence( srcSeq, dstPath, offset );
                                         }
                                 }
                         }
