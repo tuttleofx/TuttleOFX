@@ -48,7 +48,8 @@ enum MaskOptions
 	eNone		= 0,			// 0
 	eProperties	= 1,			// show type of FileObject
 	ePath		= eProperties*2,	// show path of FileObject
-	eDotFile	= ePath*2,		// show files which start with a dot (hidden files)
+        eAbsolutePath	= eProperties*2,	// show absolute path of FileObject
+        eDotFile	= eAbsolutePath*2,	// show files which start with a dot (hidden files)
 	eColor		= eDotFile*2		// output with color
 };
 

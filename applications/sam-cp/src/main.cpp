@@ -122,6 +122,15 @@ int main( int argc, char** argv )
 	bpo::variables_map vm;
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
+        // get environnement options and parse them
+        std::vector<std::string> envOptions;
+        #ifndef MOVEFILE // copy file(s)
+            envOptions.push_back(std::getenv("SAM_CP_OPTIONS"));
+        #else
+            envOptions.push_back(std::getenv("SAM_MV_OPTIONS"));
+        #endif
+        bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+
 	bpo::notify(vm);    
 
 	if (vm.count("help"))
@@ -129,10 +138,10 @@ int main( int argc, char** argv )
 	    TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
 	    #ifndef MOVEFILES
 	    TUTTLE_COUT( "NAME\n\tsam-cp - copy sequence(s) in a directory\n" );
-	    TUTTLE_COUT( "SYNOPSIS\n\tsam-cp [options] sequence[s] outputDirectory\n" );
+            TUTTLE_COUT( "SYNOPSIS\n\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]\n" );
 	    #else
 	    TUTTLE_COUT( "NAME\n\tsam-mv - move sequence(s) in a directory\n" );
-	    TUTTLE_COUT( "SYNOPSIS\n\tsam-mv [options] sequence[s] outputDirectory\n" );
+            TUTTLE_COUT( "SYNOPSIS\n\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]\n" );
 	    #endif
 	    TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
 	    return 1;
@@ -168,62 +177,77 @@ int main( int argc, char** argv )
 
 	bfs::path dstPath = paths.back();
 	paths.pop_back();
+        std::string sequencePattern;
 	
 	try
 	{
-		if(bfs::is_directory(dstPath.branch_path()))
-		{
-			if( !bfs::is_directory(dstPath) &&  paths.size()>1 )
-			{
-			    TUTTLE_CERR( "To copy multiple sequences, your destination must be a directory" );
-			    return -1;
-			}
-			ttl::Sequence dstSeq(dstPath.branch_path(), descriptionMask);
+                if( !bfs::is_directory(dstPath) )
+                {
+                    if( bfs::is_directory(dstPath.branch_path() ) )
+                    {
+                        sequencePattern = dstPath.leaf().string();
+                        dstPath         = dstPath.branch_path();
+                    }
+                    else
+                    {
+                        TUTTLE_CERR( "Your destination must contain a directory" );
+                        return -1;
+                    }
+                }
+                else
+                {
+                    if( paths.size()>1 )
+                    {
+                        TUTTLE_CERR( "To copy multiple sequences, your destination must be a directory" );
+                        return -1;
+                    }
+                }
 
-			bool dstIsSeq;
-			if( dstPath.leaf().string().find("#") || dstPath.leaf().string().find("@") )
-			{
-	// 			TUTTLE_COUT("Init with pattern: " << dstPath.leaf());
-				dstIsSeq = dstSeq.init( dstPath.string(), 0, 0, 1, ttl::Sequence::ePatternAll );
-			}
-			else
-			{
-	// 			TUTTLE_COUT("Init without pattern");
-				dstIsSeq = dstSeq.init( 0, 0, 1, ttl::Sequence::ePatternAll );
-			}
-			
-			
-			BOOST_FOREACH( bfs::path srcPath, paths)
-			{
-				ttl::Sequence srcSeq(srcPath.branch_path(), descriptionMask );
-				bool srcIsSeq = srcSeq.initFromDetection( srcPath.string(), ttl::Sequence::ePatternDefault );
-				if( !srcIsSeq )
-				{
-					TUTTLE_CERR( "Input is not a sequence. (" << srcPath << ")" );
-				}
-				else
-				{
-					if( srcSeq.getNbFiles() == 0 )
-					{
-						TUTTLE_CERR( "No existing file for the input sequence. (" << srcPath << ")" );
-					}
-					else
-					{
-						if( dstIsSeq )
-						{
-							if(verbose)
-							  TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ") " << dstSeq.getStandardPattern() );
-							copy_sequence( srcSeq, dstSeq );
-						}
-						else{
-							if(verbose)
-							  TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath.branch_path() / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
-							copy_sequence( srcSeq, dstPath.branch_path() );
-						}
-					}
-				}
-			}
-		}
+                ttl::Sequence dstSeq(dstPath, descriptionMask);
+
+                bool dstIsSeq;
+                if( sequencePattern.find("#") || sequencePattern.find("@") )
+                {
+        // 		TUTTLE_COUT("Init with pattern: " << dstPath.leaf());
+                        dstIsSeq = dstSeq.init( (dstPath.string()+"/"+sequencePattern ), 0, 0, 1, ttl::Sequence::ePatternAll );
+                }
+                else
+                {
+        // 		TUTTLE_COUT("Init without pattern");
+                        dstIsSeq = dstSeq.init( 0, 0, 1, ttl::Sequence::ePatternAll );
+                }
+
+
+                BOOST_FOREACH( bfs::path srcPath, paths)
+                {
+                        ttl::Sequence srcSeq(srcPath.branch_path(), descriptionMask );
+                        bool srcIsSeq = srcSeq.initFromDetection( srcPath.string(), ttl::Sequence::ePatternDefault );
+                        if( !srcIsSeq )
+                        {
+                                TUTTLE_CERR( "Input is not a sequence. (" << srcPath << ")" );
+                        }
+                        else
+                        {
+                                if( srcSeq.getNbFiles() == 0 )
+                                {
+                                        TUTTLE_CERR( "No existing file for the input sequence. (" << srcPath << ")" );
+                                }
+                                else
+                                {
+                                        if( dstIsSeq )
+                                        {
+                                                if(verbose)
+                                                  TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ") " );
+                                                copy_sequence( srcSeq, dstSeq );
+                                        }
+                                        else{
+                                                if(verbose)
+                                                  TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
+                                                copy_sequence( srcSeq, dstPath );
+                                        }
+                                }
+                        }
+                }
 	}
 	catch (bfs::filesystem_error &ex)
 	{

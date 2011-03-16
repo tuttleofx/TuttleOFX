@@ -29,7 +29,7 @@ int main( int argc, char** argv )
 	using namespace tuttle::common;
 
 	MaskType				researchMask		= eSequence;	// by default show sequences
-	MaskOptions				descriptionMask		= eColor;	// by default show nothing
+        MaskOptions				descriptionMask		= eNone;	// by default show nothing
 	bool					recursiveListing	= false;
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
@@ -47,7 +47,8 @@ int main( int argc, char** argv )
 		("mask,m"		, "mask sequences in path(s)")
 		("path-root,p"		, "show the root path for each objects")
 		("recursive,R"		, "list subdirectories recursively")
-		("no-color"		, "no color on the output")
+                ("absolute-path"        , "show the absolute path, not relative like path-root")
+                ("color"		, "color the output")
 		("full-display"		, "show directories, files and sequences")
 	;
 	
@@ -62,14 +63,19 @@ int main( int argc, char** argv )
 	pod.add("input-dir", -1);
 	
 	bpo::options_description cmdline_options;
-	cmdline_options.add(mainOptions).add(hidden);
+        cmdline_options.add(mainOptions).add(hidden);
 
 	bpo::positional_options_description pd;
 	pd.add("", -1);
-	
+
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
-	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+        bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+
+        // get environnement options and parse them
+        std::vector<std::string> envOptions;
+        envOptions.push_back(std::getenv("SAM_LS_OPTIONS"));
+        bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 
 	bpo::notify(vm);    
 
@@ -124,6 +130,16 @@ int main( int argc, char** argv )
 	{
 	    descriptionMask |= ePath;
 	}
+
+        if(vm.count("absolute-path"))
+        {
+            descriptionMask |= eAbsolutePath;
+        }
+
+        if (vm.count("color"))
+        {
+            descriptionMask |= eColor;
+        }
 	
 	// defines paths, but if no directory specify in command line, we add the current path
 	if (vm.count("input-dir"))
@@ -139,11 +155,7 @@ int main( int argc, char** argv )
 	{
 	    recursiveListing = true;
 	}
-	
-	if (vm.count("no-color"))
-	{
-	    remove( descriptionMask, eColor );
-	}
+
 
 // 	for(uint i=0; i<filters.size(); i++)
 // 	  TUTTLE_COUT("filters = " << filters.at(i));
@@ -175,18 +187,17 @@ int main( int argc, char** argv )
 				}
 			    }
 			}
-			else
-			{
-			    std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
-			    BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
-			    {
-				TUTTLE_COUT( *s );
-			    }
-			}
+
+                        std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+                        BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
+                        {
+                            TUTTLE_COUT( *s );
+                        }
+
 		    }
 		    else
 		    {
-// 			TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
+//                        TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 			filters.push_back( path.leaf().string() );
 			std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
 			BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
@@ -197,12 +208,12 @@ int main( int argc, char** argv )
 		}
 		else
 		{
-// 		    TUTTLE_COUT( "not exist ...." );
+                    //TUTTLE_COUT( "not exist ...." );
 		    try
 		    {
-			Sequence s( path, descriptionMask );
-			s.initFromDetection();
-			if( s.getNbFiles() )
+                        Sequence s(path.branch_path(), descriptionMask );
+                        s.initFromDetection( path.string(), Sequence::ePatternDefault );
+                        if( s.getNbFiles() )
 			{
 			    TUTTLE_COUT( s );
 			}

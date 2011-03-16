@@ -25,7 +25,7 @@ namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 
-bool colorOutput = true;
+bool colorOutput = false;
 bool verbose     = false;
 
 // A helper function to simplify the main part.
@@ -162,7 +162,7 @@ int main( int argc, char** argv )
 		("path-root,p"		, "show the root path for each objects")
 		("recursive,R"		, "remove subdirectories recursively")
 		("verbose,v"		, "explain what is being done")
-		("no-color"		, "no color on the outup")
+                ("color"		, "color the outup")
 		("full-rm"		, "remove directories, files and sequences")
 	;
 	
@@ -185,6 +185,11 @@ int main( int argc, char** argv )
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+
+        // get environnement options and parse them
+        std::vector<std::string> envOptions;
+        envOptions.push_back(std::getenv("SAM_RM_OPTIONS"));
+        bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 
 	bpo::notify(vm);    
 
@@ -222,12 +227,6 @@ int main( int argc, char** argv )
 	    verbose = true;
 	}
 	
-	if (vm.count("no-color"))
-	{
-	    colorOutput = false;
-	    remove( descriptionMask, eColor );
-	}
-	
 	if (vm.count("full-rm"))
 	{
 	    researchMask |= eDirectory;
@@ -245,6 +244,12 @@ int main( int argc, char** argv )
 	{
 	    descriptionMask |= ePath;
 	}
+
+        if (vm.count("color"))
+        {
+            colorOutput = true;
+            descriptionMask |=  eColor;
+        }
 	
 	// defines paths, but if no directory specify in command line, we add the current path
 	if (vm.count("input-dir"))

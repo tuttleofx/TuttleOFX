@@ -29,7 +29,7 @@ namespace tuttle {
 namespace common {
 
 using namespace boost::lambda;
-namespace fs = boost::filesystem;
+namespace bfs = boost::filesystem;
 
 namespace {
 
@@ -562,12 +562,12 @@ bool Sequence::initFromDetection( const std::string& pattern, const EPattern acc
 	std::list<std::string> allTimesStr;
 	std::list<Time> allTimes;
 
-	fs::directory_iterator itEnd;
-	for( fs::directory_iterator iter( _directory ); iter != itEnd; ++iter )
+        bfs::directory_iterator itEnd;
+        for( bfs::directory_iterator iter( _directory ); iter != itEnd; ++iter )
 	{
 		// we don't make this check, which can take long time on big sequences (>1000 files)
 		// depending on your filesystem, we may need to do a stat() for each file
-		//		if( fs::is_directory( iter->status() ) )
+                //		if( bfs::is_directory( iter->status() ) )
 		//			continue; // skip directories
 
 		Time time;
@@ -756,7 +756,9 @@ bool isNotFilter( std::string filename, std::vector<std::string>& filters)
 	{
 		std::string filter(filters.at(i));
 		filter = boost::regex_replace( filter, boost::regex( "\\*" ), "(.*)"  );
+                filter = boost::regex_replace( filter, boost::regex( "\\@" ), "(.*)"  );
 		filter = boost::regex_replace( filter, boost::regex( "\\?" ), "(.)"  );
+                filter = boost::regex_replace( filter, boost::regex( "\\#" ), "(.)"  );
 
 // 		TUTTLE_COUT(filename << " | " << filter <<" | " << regex_match(filename, boost::regex(filter)));
 		if (regex_match(filename, boost::regex(filter)))
@@ -765,13 +767,13 @@ bool isNotFilter( std::string filename, std::vector<std::string>& filters)
 	return false;
 }
 
-std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc )
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& directory, int mask, const MaskOptions& desc )
 {
 	std::vector<std::string> filters;
 	return fileObjectsInDir( directory, mask, desc, filters );
 }
 
-std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters )
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters )
 {
 	std::list<boost::shared_ptr<FileObject> > output;
 	
@@ -789,8 +791,8 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesys
 	FileNumbers	nums; // the list of numbers inside one filename
 	
 	// for all files in the directory
-	fs::directory_iterator itEnd;
-	for( fs::directory_iterator iter( directory ); iter != itEnd; ++iter )
+        bfs::directory_iterator itEnd;
+        for( bfs::directory_iterator iter( directory ); iter != itEnd; ++iter )
 	{
 		// clear previous infos
 		id.clear();
@@ -803,7 +805,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesys
 // 			TUTTLE_COUT("hidden file " << iter->filename());
 
 			// detect if is a folder
-			if( fs::is_directory( iter->status() ) )
+                        if( bfs::is_directory( iter->status() ) )
 			{
 //				TUTTLE_COUT("d\t"<< iter->filename());
 				boost::shared_ptr<Folder> d( new Folder( directory, iter->path().filename().string(), desc ) );
@@ -850,7 +852,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesys
 		BOOST_FOREACH( const std::list<Sequence>::value_type & s, ss )
 		{
 			// don't detect sequence of directories
-			if( !fs::is_directory( s.getAbsoluteFirstFilename() ) )
+                        if( !bfs::is_directory( s.getAbsoluteFirstFilename() ) )
 			{
 				if(s.getNbFiles()==1) // if it's a sequence of 1 file, it isn't a sequence but only a file
 				{
@@ -899,6 +901,7 @@ std::ostream& operator<<( std::ostream& os, const FileObject& fo )
 
 std::ostream& Folder::getCout( std::ostream& os ) const
 {
+        bfs::path dir;
 	os << std::left;
 	if( showProperties() )
 	{
@@ -906,7 +909,17 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	}
 	if( showPath() )
 	{
-		std::string path = (_directory / _folderName).string();
+
+                if(_options & eAbsolutePath)
+                {
+                    dir = bfs::system_complete(_directory);
+                }
+                else
+                {
+                    dir = _directory;
+                }
+
+                std::string path = (dir / _folderName).string();
 		if(_options & eColor)
 		{
 		  os << std::setw(NAME_WIDTH_WITH_DIR) << FOLDER_COLOR + path + STD_COLOR;
@@ -918,13 +931,18 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	}
 	else
 	{
+                if(_options & eAbsolutePath)
+                {
+                    dir = bfs::system_complete(_directory);
+                }
+
 		if(_options & eColor)
 		{
-		  os << std::setw(NAME_WIDTH) << FOLDER_COLOR + _folderName + STD_COLOR ;
+                  os << std::setw(NAME_WIDTH) << FOLDER_COLOR + dir.string() + _folderName + STD_COLOR ;
 		}
 		else
 		{
-		  os << std::setw(NAME_WIDTH) << _folderName ;
+                  os << std::setw(NAME_WIDTH) << dir.string() + _folderName ;
 		}
 	}
 	return os;
@@ -939,14 +957,24 @@ std::vector<boost::filesystem::path>	Folder::getFiles() const
 
 std::ostream& File::getCout( std::ostream& os ) const
 {
+      bfs::path dir;
       os << std::left;
+
       if( showProperties() )
       {
 	      os <<std::setw(PROPERTIES_WIDTH) << "f ";// + boost::filesystem::file_size( _directory/_filename );
       }
       if( showPath() )
       {
-	      std::string path = (_directory / _filename).string();
+              if(_options & eAbsolutePath)
+              {
+                      dir = bfs::system_complete(_directory);
+              }
+              else
+              {
+                      dir = _directory;
+              }
+              std::string path = ( dir / _filename).string();
 	      if(_options & eColor)
 	      {
 		os << std::setw(NAME_WIDTH_WITH_DIR) << FILE_COLOR + path  + STD_COLOR;
@@ -959,13 +987,17 @@ std::ostream& File::getCout( std::ostream& os ) const
       }
       else
       {
+              if(_options & eAbsolutePath)
+              {
+                      dir = bfs::system_complete(_directory);
+              }
 	      if(_options & eColor)
 	      {
-		os << std::setw(NAME_WIDTH) << FILE_COLOR + _filename + STD_COLOR ;
+                os << std::setw(NAME_WIDTH) << FILE_COLOR + dir.string() + _filename + STD_COLOR ;
 	      }
 	      else
 	      {
-		os << std::setw(NAME_WIDTH) << _filename ;
+                os << std::setw(NAME_WIDTH) << dir.string() + _filename ;
 	      }
       }
       return os;
@@ -980,33 +1012,42 @@ std::vector<boost::filesystem::path>	File::getFiles() const
 
 std::ostream& Sequence::getCout( std::ostream& os ) const
 {
+        bfs::path dir;
 	os << std::left;
 	if( showProperties() )
 	{
-		os <<std::setw(PROPERTIES_WIDTH) << "s";
+                  os <<std::setw(PROPERTIES_WIDTH) << "s";
 	}
 	if( showPath() )
 	{
-		std::string path = (_directory / getStandardPattern()).string();
-		if(_options & eColor)
-		{
-		  os << std::setw(NAME_WIDTH_WITH_DIR) << SEQUENCE_COLOR + path + STD_COLOR ;
-		}
-		else
-		{
-		  os << std::setw(NAME_WIDTH_WITH_DIR) << path ;
-		}
+                  if(_options & eAbsolutePath)
+                  {
+                          dir = bfs::system_complete(_directory);
+                  }
+                  else
+                  {
+                          dir = _directory;
+                  }
+                  std::string path = ( dir / getStandardPattern()).string();
+                  if(_options & eColor)
+                  {
+                          os << std::setw(NAME_WIDTH_WITH_DIR) << SEQUENCE_COLOR + path + STD_COLOR ;
+                  }
+                  else
+                  {
+                          os << std::setw(NAME_WIDTH_WITH_DIR) << path ;
+                  }
 	}
 	else
 	{
-		if(_options & eColor)
-		{
-		  os << std::setw(NAME_WIDTH) << SEQUENCE_COLOR + getStandardPattern() + STD_COLOR ;
-		}
-		else
-		{
-		  os << std::setw(NAME_WIDTH) << getStandardPattern() ;
-		}
+                  if(_options & eColor)
+                  {
+                          os << std::setw(NAME_WIDTH) << SEQUENCE_COLOR + dir.string() + getStandardPattern() + STD_COLOR ;
+                  }
+                  else
+                  {
+                          os << std::setw(NAME_WIDTH) << dir.string() + getStandardPattern() ;
+                  }
 	}
 	os << " [" << getFirstTime() << ":" << getLastTime();
 	if( getStep() != 1 )
