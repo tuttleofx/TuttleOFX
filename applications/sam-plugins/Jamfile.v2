@@ -12,6 +12,7 @@ project
 		<linkflags>-lpng
 	: usage-requirements
 		<include>src
+		<linkflags>-lpng
 	: build-dir $(DIST)/sam-plugins/obj
 	;
 
@@ -24,6 +25,8 @@ exe sam-plugins :
 	/tuttlehost/<link>static
 	/boost/system
 	/boost/program_options
+	/boost/serialization
+	/boost/filesystem
 	:
 		<os>LINUX:<find-shared-library>dl
 	;
@@ -39,4 +42,4 @@ install dist_src
 		/boost/program_options
 	: <variant>debug:<location>$(DIST)/sam-plugins/bin/debug
 	  <variant>release:<location>$(DIST)/sam-plugins/bin/release
-    ;
+	;
