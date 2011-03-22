@@ -18,11 +18,11 @@
 #define NAME_WIDTH 50
 #define NAME_WIDTH_WITH_DIR 80
 
-static const std::string kColorStd      ( "\E[0;0m"  );
-static const std::string kColorFolder   ( "\E[1;34m" );
-static const std::string kColorFile     ( "\E[0;32m" );
-static const std::string kColorSequence ( "\E[0;32m" );
-static const std::string kColorError    ( "\E[0;31m" );
+static const std::string kColorStd	( "\E[0;0m"  );
+static const std::string kColorFolder	( "\E[1;34m" );
+static const std::string kColorFile	( "\E[0;32m" );
+static const std::string kColorSequence	( "\E[0;32m" );
+static const std::string kColorError	( "\E[0;31m" );
 
 
 namespace tuttle {
@@ -194,24 +194,24 @@ public:
 	 */
 	enum EPattern
 	{
-		ePatternNone     = 0,
-		ePatternStandard = 1,
-		ePatternCStyle   = ePatternStandard * 2,
-		ePatternFrame    = ePatternCStyle   * 2,
+		ePatternNone		= 0,
+		ePatternStandard	= 1,
+		ePatternCStyle		= ePatternStandard * 2,
+		ePatternFrame		= ePatternCStyle   * 2,
 
-		ePatternDefault  = ePatternCStyle + ePatternStandard,
-		ePatternAll      = ePatternFrame  + ePatternCStyle + ePatternStandard
+		ePatternDefault		= ePatternCStyle + ePatternStandard,
+		ePatternAll		= ePatternFrame  + ePatternCStyle + ePatternStandard
 	};
 	
 	Sequence() : FileObject()
 	{
 		_prefix.clear();
 		_suffix.clear();
-		_padding        = 0;
-		_step           = 1;
-		_firstTime      = 0;
-		_lastTime       = 0;
-		_nbFiles        = 0;
+		_padding	= 0;
+		_step		= 1;
+		_firstTime	= 0;
+		_lastTime	= 0;
+		_nbFiles	= 0;
 	}
 
 	// constructors and desctructors
@@ -340,23 +340,23 @@ protected:
 	{
 		_prefix.clear();
 		_suffix.clear();
-		_padding        = 0;
-		_step           = 1;
-		_firstTime      = 0;
-		_lastTime       = 0;
-		_nbFiles        = 0;
+		_padding	= 0;
+		_step		= 1;
+		_firstTime	= 0;
+		_lastTime	= 0;
+		_nbFiles	= 0;
 	}
 	
 	
-	std::string _prefix;         ///< filename prefix
-	std::string _suffix;         ///< filename suffix
+	std::string _prefix;			///< filename prefix
+	std::string _suffix;			///< filename suffix
 
-	bool        _strictPadding;  ///<
-	std::size_t _padding;        ///< padding, no padding if 0, fixed padding otherwise
-	std::size_t _step;           ///< step
-	Time        _firstTime;      ///< begin time
-	Time        _lastTime;       ///< end time
-	std::size_t _nbFiles;        ///< number of frames
+	bool		_strictPadding;		///<
+	std::size_t	_padding;		///< padding, no padding if 0, fixed padding otherwise
+	std::size_t	_step;			///< step
+	Time		_firstTime;		///< begin time
+	Time		_lastTime;		///< end time
+	std::size_t	_nbFiles;		///< number of frames
 
 	static const char _fillCar = '0'; ///< Filling character
 };

@@ -7,31 +7,31 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-    : usage-requirements
-        <include>src
-    : build-dir $(DIST)/sam-rm/obj
-    ;
+	: requirements
+		<include>src
+	: usage-requirements
+		<include>src
+	: build-dir $(DIST)/sam-rm/obj
+	;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
 exe sam-rm : 
-    [ glob src/*.cpp ]
-    /tuttlecommon/<link>static
-    /boost/system
-    /boost/filesystem
-    /boost/serialization
-    /boost/program_options
-    :
-	<os>LINUX:<find-shared-library>dl
-    ;
+	[ glob src/*.cpp ]
+	/tuttlecommon/<link>static
+	/boost/system
+	/boost/filesystem
+	/boost/serialization
+	/boost/program_options
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-install dist_src	
+install dist_src
 	: sam-rm
 		/boost/system
 		/boost/filesystem
@@ -39,4 +39,4 @@ install dist_src
 		/boost/program_options
 	: <variant>debug:<location>$(DIST)/sam-rm/bin/debug
 	  <variant>release:<location>$(DIST)/sam-rm/bin/release
-    ;
+	;

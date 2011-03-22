@@ -7,31 +7,31 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-    : usage-requirements
-        <include>src
-    : build-dir $(DIST)/sam-ls/obj
-    ;
+	: requirements
+		<include>src
+	: usage-requirements
+		<include>src
+	: build-dir $(DIST)/sam-ls/obj
+	;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
-exe sam-ls : 
-    [ glob src/*.cpp ]
-    /tuttlecommon/<link>static
-    /boost/system
-    /boost/filesystem
-    /boost/serialization
-    /boost/program_options
-    :
-	<os>LINUX:<find-shared-library>dl
-    ;
+exe sam-ls :
+	[ glob src/*.cpp ]
+	/tuttlecommon/<link>static
+	/boost/system
+	/boost/filesystem
+	/boost/serialization
+	/boost/program_options
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-install dist_src	
+install dist_src
 	: sam-ls
 		/boost/system
 		/boost/filesystem
@@ -39,4 +39,4 @@ install dist_src
 		/boost/program_options
 	: <variant>debug:<location>$(DIST)/sam-ls/bin/debug
 	  <variant>release:<location>$(DIST)/sam-ls/bin/release
-    ;
+	;

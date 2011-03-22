@@ -7,14 +7,14 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<define>MOVEFILES # it's for using the sam-cp file but just move and not copy files
-	<include>src
-    : usage-requirements
-	<define>MOVEFILES
-	<include>src
-    : build-dir $(DIST)/sam-mv/obj
-    ;
+	: requirements
+		<define>MOVEFILES # it's for using the sam-cp file but just move and not copy files
+		<include>src
+	: usage-requirements
+		<define>MOVEFILES
+		<include>src
+	: build-dir $(DIST)/sam-mv/obj
+	;
 
 ###############################################################################
 # tuttle library
@@ -28,17 +28,17 @@ exe sam-mv :
 	/boost/program_options
 	:
 	<os>LINUX:<find-shared-library>dl
-    ;
+	;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
 install dist_src	
-    : sam-mv
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
-    : <variant>debug:<location>$(DIST)/sam-mv/bin/debug
-      <variant>release:<location>$(DIST)/sam-mv/bin/release
-    ;
+	: sam-mv
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+	: <variant>debug:<location>$(DIST)/sam-mv/bin/debug
+	  <variant>release:<location>$(DIST)/sam-mv/bin/release
+	;

@@ -31,105 +31,103 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
 void removeSequence( const ttl::Sequence& s )
 {
-        for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
-        {
-                bfs::path sFile = s.getAbsoluteFilenameAt(t);
-                if( !bfs::exists( sFile ) )
-                {
-                        if(colorOutput)
-                        {
-                          TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd );
-                        }
-                        else
-                        {
-                          TUTTLE_CERR("Could not remove: " << sFile.string() );
-                        }
-                }
-                else
-                {
-                        if(verbose)
-                        {
-                          if(colorOutput)
-                          {
-                            TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd );
-                          }
-                          else
-                          {
-                            TUTTLE_COUT("remove: " << sFile.string() );
-                          }
-                        }
-                        bfs::remove( sFile );
-                }
-        }
+	for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+	{
+		bfs::path sFile = s.getAbsoluteFilenameAt(t);
+		if( !bfs::exists( sFile ) )
+		{
+			if(colorOutput)
+			{
+				TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd );
+			}
+			else
+			{
+				TUTTLE_CERR("Could not remove: " << sFile.string() );
+			}
+		}
+		else
+		{
+			if(verbose)
+			{
+				if(colorOutput)
+				{
+					TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd );
+				}
+				else
+				{
+					TUTTLE_COUT("remove: " << sFile.string() );
+				}
+			}
+			bfs::remove( sFile );
+		}
+	}
 }
 
 void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, std::vector<boost::filesystem::path> &notRemoved )
 {
-        BOOST_FOREACH( const std::list< boost::shared_ptr<ttl::FileObject> >::value_type & s, listing )
-        {
-                if( !(s->getMaskType () == ttl::eDirectory))
-                {
-                        if(verbose)
-                          TUTTLE_COUT( "remove " << *s );
-                        std::vector<bfs::path> paths = s->getFiles();
-                        for(uint i=0; i<paths.size(); i++)
-                                bfs::remove(paths.at(i));
-                }
-                else // is a directory
-                {
-                        std::vector<boost::filesystem::path> paths = s->getFiles();
-                        for(uint i=0; i<paths.size(); i++)
-                        {
-                                if(bfs::is_empty(paths.at(i)))
-                                {
-                                        if(verbose)
-                                          TUTTLE_COUT( "remove " << *s );
-                                        bfs::remove(paths.at(i));
-                                }
-                                else
-                                {
-                                        notRemoved.push_back( paths.at(i) );
-                                }
-                        }
-
-                }
-        }
+	BOOST_FOREACH( const std::list< boost::shared_ptr<ttl::FileObject> >::value_type & s, listing )
+	{
+		if( !(s->getMaskType () == ttl::eDirectory))
+		{
+			if(verbose)
+				TUTTLE_COUT( "remove " << *s );
+			std::vector<bfs::path> paths = s->getFiles();
+			for(uint i=0; i<paths.size(); i++)
+				bfs::remove(paths.at(i));
+		}
+		else // is a directory
+		{
+			std::vector<boost::filesystem::path> paths = s->getFiles();
+			for(uint i=0; i<paths.size(); i++)
+			{
+				if(bfs::is_empty(paths.at(i)))
+				{
+					if(verbose)
+						TUTTLE_COUT( "remove " << *s );
+					bfs::remove(paths.at(i));
+				}
+				else
+				{
+					notRemoved.push_back( paths.at(i) );
+				}
+			}
+		}
+	}
 }
 
 void removeFileObject( std::vector<boost::filesystem::path> &listing )
 {
-        std::sort(listing.begin(), listing.end());
-        std::reverse(listing.begin(), listing.end());
-        BOOST_FOREACH( const boost::filesystem::path paths, listing )
-        {
-                if(bfs::is_empty(paths))
-                {
-                        if(verbose)
-                        {
-                          if(colorOutput)
-                          {
-                            TUTTLE_COUT( "remove " << kColorFolder << paths << kColorStd );
-                          }
-                          else
-                          {
-                            TUTTLE_COUT( "remove " << paths );
-                          }
-                        }
-                        bfs::remove(paths);
-                }
-                else
-                {
-                        if(colorOutput)
-                        {
-                          TUTTLE_CERR( "could not remove " << kColorError << paths << kColorStd );
-                        }
-                        else
-                        {
-                          TUTTLE_CERR( "could not remove " << paths );
-                        }
-
-                }
-        }
+	std::sort(listing.begin(), listing.end());
+	std::reverse(listing.begin(), listing.end());
+	BOOST_FOREACH( const boost::filesystem::path paths, listing )
+	{
+		if(bfs::is_empty(paths))
+		{
+			if(verbose)
+			{
+				if(colorOutput)
+				{
+					TUTTLE_COUT( "remove " << kColorFolder << paths << kColorStd );
+				}
+				else
+				{
+				TUTTLE_COUT( "remove " << paths );
+				}
+			}
+			bfs::remove(paths);
+		}
+		else
+		{
+			if(colorOutput)
+			{
+				TUTTLE_CERR( "could not remove " << kColorError << paths << kColorStd );
+			}
+			else
+			{
+				TUTTLE_CERR( "could not remove " << paths );
+			}
+		}
+	}
 }
 
 
@@ -219,51 +217,51 @@ int main( int argc, char** argv )
 	
 	if (vm.count("mask"))
 	{
-	    researchMask &= ~eSequence;
+		researchMask &= ~eSequence;
 	}
 	
 	if (vm.count("verbose"))
 	{
-	    verbose = true;
+		verbose = true;
 	}
 	
 	if (vm.count("full-rm"))
 	{
-	    researchMask |= eDirectory;
-	    researchMask |= eFile;
-	    researchMask |= eSequence;
+		researchMask |= eDirectory;
+		researchMask |= eFile;
+		researchMask |= eSequence;
 	}
 	
 	if (vm.count("all"))
 	{
-	    // add .* files
-	    descriptionMask |= eDotFile;
+		// add .* files
+		descriptionMask |= eDotFile;
 	}
 	
 	if (vm.count("path-root"))
 	{
-	    descriptionMask |= ePath;
+		 descriptionMask |= ePath;
 	}
 
-        if (vm.count("color") )
-        {
-            colorOutput = true;
-            descriptionMask |=  eColor;
+	if (vm.count("color") )
+	{
+		colorOutput = true;
+		descriptionMask |=  eColor;
         }
 	
 	// defines paths, but if no directory specify in command line, we add the current path
 	if (vm.count("input-dir"))
 	{
-	    paths = vm["input-dir"].as< std::vector<std::string> >();
+		paths = vm["input-dir"].as< std::vector<std::string> >();
 	}
 	else
 	{
-	    paths.push_back( "./" );
+		paths.push_back( "./" );
 	}
 	
 	if (vm.count("recursive"))
 	{
-	    recursiveListing = true;
+		recursiveListing = true;
 	}
 // 	for(uint i=0; i<filters.size(); i++)
 // 	  TUTTLE_COUT("filters = " << filters.at(i));
@@ -272,60 +270,59 @@ int main( int argc, char** argv )
 
 	try
 	{
-	    std::vector<boost::filesystem::path> pathsNoRemoved;
-	    BOOST_FOREACH( bfs::path path, paths )
-	    {
-// 		TUTTLE_COUT( "path: "<< path );
-		if( bfs::exists( path ) )
+		std::vector<boost::filesystem::path> pathsNoRemoved;
+		BOOST_FOREACH( bfs::path path, paths )
 		{
-		    if( bfs::is_directory( path ) )
-		    {
-// 			TUTTLE_COUT( "is a directory" );
-			if(recursiveListing)
+//			TUTTLE_COUT( "path: "<< path );
+			if( bfs::exists( path ) )
 			{
-			    for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
-			    {
-				if( bfs::is_directory( *dir ) )
+				if( bfs::is_directory( path ) )
 				{
-// 				    TUTTLE_COUT( *dir );
-				    std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
-				    removeFileObject( listing, pathsNoRemoved );
+//					TUTTLE_COUT( "is a directory" );
+					if(recursiveListing)
+					{
+						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
+						{
+							if( bfs::is_directory( *dir ) )
+							{
+//								TUTTLE_COUT( *dir );
+								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
+								removeFileObject( listing, pathsNoRemoved );
+							}
+						}
+					}
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+					removeFileObject( listing, pathsNoRemoved );
 				}
-			    }
+				else
+				{
+//					TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
+					filters.push_back( path.leaf().string() );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
+					removeFileObject( listing, pathsNoRemoved );
+				}
 			}
-
-                        std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
-                        removeFileObject( listing, pathsNoRemoved );
-		    }
-		    else
-		    {
-// 			TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
-			filters.push_back( path.leaf().string() );
-			std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
-			removeFileObject( listing, pathsNoRemoved );
-		    }
-		}
-		else
-		{
-//                    TUTTLE_COUT( "not exist ...." );
-		    try
-		    {
-                        Sequence s(path.branch_path(), descriptionMask );
-                        s.initFromDetection( path.string(), Sequence::ePatternDefault );
-			if( s.getNbFiles() )
+			else
 			{
-			    TUTTLE_COUT(s);
-			    removeSequence( s );
+//				TUTTLE_COUT( "not exist ...." );
+				try
+				{
+					Sequence s(path.branch_path(), descriptionMask );
+					s.initFromDetection( path.string(), Sequence::ePatternDefault );
+					if( s.getNbFiles() )
+					{
+						TUTTLE_COUT(s);
+						removeSequence( s );
+					}
+				}
+				catch(... )
+				{
+					TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
+				}
 			}
-		    }
-		    catch(... )
-		    {
-			TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
-		    }
 		}
-	    }
-	    // delete not empty folder the first time
-	    removeFileObject( pathsNoRemoved );
+		// delete not empty folder the first time
+		removeFileObject( pathsNoRemoved );
 	}
 	catch (bfs::filesystem_error &ex)
 	{
