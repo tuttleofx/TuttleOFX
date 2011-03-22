@@ -18,11 +18,12 @@
 #define NAME_WIDTH 50
 #define NAME_WIDTH_WITH_DIR 80
 
-#define STD_COLOR  "\E[0m"
-#define FOLDER_COLOR "\E[1;34m"
-#define FILE_COLOR "\E[0;32m"
-#define SEQUENCE_COLOR "\E[0;32m"
-#define MISSING_FILE_IN_SEQUENCE_COLOR "\E[31m"
+static const std::string kColorStd      ( "\E[0;0m"  );
+static const std::string kColorFolder   ( "\E[1;34m" );
+static const std::string kColorFile     ( "\E[0;32m" );
+static const std::string kColorSequence ( "\E[0;32m" );
+static const std::string kColorError    ( "\E[0;31m" );
+
 
 namespace tuttle {
 namespace common {

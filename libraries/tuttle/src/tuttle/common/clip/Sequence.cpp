@@ -845,7 +845,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 	}
 	
 	
-	// add sequences in the output list
+        // add sequences in the output list
 	BOOST_FOREACH( SeqIdMap::value_type & p, sequences )
 	{
 		const std::list<Sequence> ss = buildSequence( directory, p.first, p.second, desc );
@@ -866,7 +866,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 				}
 			}
 		}
-	}
+        }
 
 	if(mask & eDirectory)
 	{
@@ -922,7 +922,7 @@ std::ostream& Folder::getCout( std::ostream& os ) const
                 std::string path = (dir / _folderName).string();
 		if(_options & eColor)
 		{
-		  os << std::setw(NAME_WIDTH_WITH_DIR) << FOLDER_COLOR + path + STD_COLOR;
+                  os << std::setw(NAME_WIDTH_WITH_DIR) << kColorFolder+ path + kColorStd;
 		}
 		else
 		{
@@ -938,7 +938,7 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 
 		if(_options & eColor)
 		{
-                  os << std::setw(NAME_WIDTH) << FOLDER_COLOR + dir.string() + _folderName + STD_COLOR ;
+                  os << std::setw(NAME_WIDTH) << kColorFolder + dir.string() + _folderName + kColorStd ;
 		}
 		else
 		{
@@ -977,7 +977,7 @@ std::ostream& File::getCout( std::ostream& os ) const
               std::string path = ( dir / _filename).string();
 	      if(_options & eColor)
 	      {
-		os << std::setw(NAME_WIDTH_WITH_DIR) << FILE_COLOR + path  + STD_COLOR;
+                os << std::setw(NAME_WIDTH_WITH_DIR) << kColorFile + path  + kColorStd;
 	      }
 	      else
 	      {
@@ -993,7 +993,7 @@ std::ostream& File::getCout( std::ostream& os ) const
               }
 	      if(_options & eColor)
 	      {
-                os << std::setw(NAME_WIDTH) << FILE_COLOR + dir.string() + _filename + STD_COLOR ;
+                os << std::setw(NAME_WIDTH) << kColorFile + dir.string() + _filename + kColorStd ;
 	      }
 	      else
 	      {
@@ -1031,7 +1031,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
                   std::string path = ( dir / getStandardPattern()).string();
                   if(_options & eColor)
                   {
-                          os << std::setw(NAME_WIDTH_WITH_DIR) << SEQUENCE_COLOR + path + STD_COLOR ;
+                          os << std::setw(NAME_WIDTH_WITH_DIR) << kColorSequence + path + kColorStd ;
                   }
                   else
                   {
@@ -1042,7 +1042,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	{
                   if(_options & eColor)
                   {
-                          os << std::setw(NAME_WIDTH) << SEQUENCE_COLOR + dir.string() + getStandardPattern() + STD_COLOR ;
+                          os << std::setw(NAME_WIDTH) << kColorSequence + dir.string() + getStandardPattern() + kColorStd ;
                   }
                   else
                   {
@@ -1057,7 +1057,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	{
 		if(_options & eColor)
 		{
-		  os << ", "  << MISSING_FILE_IN_SEQUENCE_COLOR<< getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << STD_COLOR;
+                  os << ", "  << kColorError << getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << kColorStd;
 		}
 		else
 		{

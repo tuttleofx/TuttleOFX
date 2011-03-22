@@ -86,7 +86,8 @@ int main( int argc, char** argv )
 	if (vm.count("help"))
 	{
 	    TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
-	    TUTTLE_COUT( "NAME\n\tsam-ls - list directory contents\n" );
+            TUTTLE_COUT( "NAME");
+            TUTTLE_COUT( "\tsam-ls - list directory contents\n" );
 	    TUTTLE_COUT( "SYNOPSIS\n\tsam-ls [options] [directories]\n" );
 	    TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
 	    return 1;

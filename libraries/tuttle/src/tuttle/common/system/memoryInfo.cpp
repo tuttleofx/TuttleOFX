@@ -53,11 +53,9 @@ MemoryInfo getMemoryInfo()
 
 std::ostream& operator<<( std::ostream& os, const MemoryInfo& infos )
 {
-	#ifdef DEBUG
 	os << "total ram:" << infos._totalRam << std::endl
 	   << "free ram:" << infos._freeRam << std::endl
 	   << "total swap:" << infos._totalSwap << std::endl
 	   << "free swap:" << infos._freeSwap << std::endl;
-	#endif
 	return os;
 }
