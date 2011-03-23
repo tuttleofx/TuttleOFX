@@ -361,38 +361,47 @@ int main( int argc, char** argv )
 	bfs::path dstPath = paths.back();
 	paths.pop_back();
 	std::string sequencePattern;
-	
-	try
+
+	if( !bfs::is_directory(dstPath) )
 	{
-		if( !bfs::is_directory(dstPath) )
+		if( bfs::is_directory(dstPath.branch_path() ) )
 		{
-			if( bfs::is_directory(dstPath.branch_path() ) )
-			{
-				sequencePattern	= dstPath.leaf().string();
-				dstPath		= dstPath.branch_path();
-			}
-			else
-			{
-				TUTTLE_CERR( "Your destination must contain a valid directory" );
-				return -1;
-			}
+			sequencePattern	= dstPath.leaf().string();
+			dstPath		= dstPath.branch_path();
 		}
 		else
 		{
-			if( paths.size()>1 )
-			{
-				TUTTLE_CERR( "To copy multiple sequences, your destination must be a directory" );
-				return -1;
-			}
-			sequencePattern = "";
+			TUTTLE_CERR( "Your destination must be a valid directory." );
+			return -1;
 		}
+	}
+	else
+	{
+		if( paths.size()>1 )
+		{
+			TUTTLE_CERR( "To copy multiple sequences, your destination must be a directory." );
+			return -1;
+		}
+		sequencePattern = "";
+	}
 
-		ttl::Sequence dstSeq(dstPath, descriptionMask);
-		if( sequencePattern.size() > 0 && ( sequencePattern.find("#") || sequencePattern.find("@") ) )
+	ttl::Sequence dstSeq(dstPath, descriptionMask);
+
+	if( sequencePattern.size() > 0 )
+	{
+		if( ( sequencePattern.find("#") != std::string::npos ) | ( sequencePattern.find("@") != std::string::npos ) )
 		{
 			dstIsSeq = dstSeq.init( (dstPath.string() + "/" + sequencePattern ), 0, 0, 1, ttl::Sequence::ePatternAll );
 		}
+		else
+		{
+			TUTTLE_CERR( "Your destination must be a directory or a valid pattern." );
+			return -1;
+		}
+	}
 
+	try
+	{
 		BOOST_FOREACH( bfs::path srcPath, paths)
 		{
 			ttl::Sequence srcSeq(srcPath.branch_path(), descriptionMask );
