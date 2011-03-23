@@ -18,72 +18,116 @@ namespace ttl = tuttle::common;
 
 void copy_sequence( const ttl::Sequence s, const ttl::Sequence d, int offset = 0, int firstImage = 0, int lastImage = 0 )
 {
+	if( ( offset <0 ) & ( s.getFirstTime()+offset <0 ) )
+	{
+		TUTTLE_COUT("ERROR: index could not be negative.");
+		return ;
+	}
+	/*TUTTLE_COUT( firstImage << " | " << lastImage );
 	if(s.getLastTime()-lastImage <= s.getFirstTime()+firstImage )
 	{
 		TUTTLE_COUT("error in index of first-image and/or last image");
 		return;
-	}
+	}*/
 	if(offset>0)
 	{
-		for( ttl::Sequence::Time t = s.getLastTime()-lastImage; t >= s.getFirstTime()+firstImage; t -= s.getStep() )
+		for( ttl::Sequence::Time t = s.getLastTime(); t >= s.getFirstTime(); t -= s.getStep() )
 		{
-			bfs::path sFile = s.getAbsoluteFilenameAt(t);
-			if( bfs::exists( sFile ) )
+			if( ( (firstImage == 0) | ( t >= firstImage ) ) & ( (lastImage == 0) | ( t <= lastImage ) ) )
 			{
-				bfs::path dFile = d.getAbsoluteFilenameAt(t+offset);
-				#ifndef MOVEFILES // copy file(s)
-//				#warning move in off
-				if( bfs::exists( dFile ) )
+				bfs::path sFile = s.getAbsoluteFilenameAt(t);
+				if( bfs::exists( sFile ) )
 				{
-					TUTTLE_CERR("Could not copy: " << dFile.string() );
+					bfs::path dFile = d.getAbsoluteFilenameAt(t+offset);
+					#ifndef MOVEFILES // copy file(s)
+	//				#warning move in off
+					if( bfs::exists( dFile ) )
+					{
+						TUTTLE_CERR("Could not copy: " << dFile.string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "copy " << sFile << " -> " << dFile );
+							bfs::copy_file( sFile, dFile );
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#else // move file(s)
+	//				#warning move in on
+					if( bfs::exists( dFile ) )
+					{
+						TUTTLE_CERR("Could not move: " << dFile.string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "move " << sFile << " -> " << dFile );
+							bfs::rename( sFile, dFile );
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#endif
 				}
-				else
-				{
-					bfs::copy_file( sFile, dFile );
-				}
-				#else // move file(s)
-//				#warning move in on
-				if( bfs::exists( dFile ) )
-				{
-					TUTTLE_CERR("Could not move: " << dFile.string() );
-				}
-				else
-				{
-					bfs::rename( sFile, dFile );
-				}
-				#endif
 			}
 		}
 	}
 	else
 	{
-		for( ttl::Sequence::Time t = s.getFirstTime()+firstImage; t <= s.getLastTime()-lastImage; t += s.getStep() )
+		for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
 		{
-			bfs::path sFile = s.getAbsoluteFilenameAt(t);
-			if( bfs::exists( sFile ) )
+			if( ( (firstImage == 0) | ( t >= firstImage ) ) & ( (lastImage == 0) | ( t <= lastImage ) ) )
 			{
-				bfs::path dFile = d.getAbsoluteFilenameAt(t+offset);
-				#ifndef MOVEFILES // copy file(s)
-//				#warning move in off
-				if( bfs::exists( dFile ) )
+				bfs::path sFile = s.getAbsoluteFilenameAt(t);
+				if( bfs::exists( sFile ) )
 				{
-					TUTTLE_CERR("Could not copy: " << dFile.string() );
+					bfs::path dFile = d.getAbsoluteFilenameAt(t+offset);
+					#ifndef MOVEFILES // copy file(s)
+	//				#warning move in off
+					if( bfs::exists( dFile ) )
+					{
+						TUTTLE_CERR("Could not copy: " << dFile.string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "copy " << sFile << " -> " << dFile );
+							bfs::copy_file( sFile, dFile );
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#else // move file(s)
+	//				#warning move in on
+					if( bfs::exists( dFile ) )
+					{
+						TUTTLE_CERR("Could not move: " << dFile.string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "move " << sFile << " -> " << dFile );
+							bfs::rename( sFile, dFile );
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#endif
 				}
-				else
-				{
-					bfs::copy_file( sFile, dFile );
-				}
-				#else // move file(s)
-//				#warning move in on
-				if( bfs::exists( dFile ) )
-				{
-					TUTTLE_CERR("Could not move: " << dFile.string() );
-				}
-				else
-				{
-					bfs::rename( sFile, dFile );
-				}
-				#endif
 			}
 		}
 	}
@@ -91,82 +135,106 @@ void copy_sequence( const ttl::Sequence s, const ttl::Sequence d, int offset = 0
 
 void copy_sequence( const ttl::Sequence s, const bfs::path d, int offset = 0, int firstImage = 0, int lastImage = 0 )
 {
-	if(s.getLastTime()-lastImage <= s.getFirstTime()+firstImage )
+	if( ( offset <0 ) & ( s.getFirstTime()+offset <0 ) )
 	{
-		TUTTLE_COUT("error in index of first-image and/or last image");
-		return;
+		TUTTLE_COUT("ERROR: index could not be negative.");
+		return ;
 	}
 	if(offset>0)
 	{
-		for( ttl::Sequence::Time t = s.getLastTime()-lastImage; t >= s.getFirstTime()+firstImage; t -= s.getStep() )
+		for( ttl::Sequence::Time t = s.getLastTime(); t >= s.getFirstTime(); t -= s.getStep() )
 		{
-			bfs::path sFile = s.getFilenameAt(t);
-			bfs::path dFile = s.getFilenameAt(t+offset);
-			if( bfs::exists( s.getDirectory()/sFile ) )
+			if( ( (firstImage == 0) | ( t >= firstImage ) ) & ( (lastImage == 0) | ( t <= lastImage ) ) )
 			{
-				#ifndef MOVEFILE // copy file(s)
-				if( bfs::exists( d / dFile ) )
+				bfs::path sFile = s.getFilenameAt(t);
+				bfs::path dFile = s.getFilenameAt(t+offset);
+				if( bfs::exists( s.getDirectory()/sFile ) )
 				{
-					TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
+					#ifndef MOVEFILES // copy file(s)
+					if( bfs::exists( d / dFile ) )
+					{
+						TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "copy " << s.getDirectory() / sFile << " -> " << d / dFile );
+							bfs::copy_file( s.getDirectory() / sFile, d / dFile );
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#else // move file(s)
+					if( bfs::exists( d / dFile ) )
+					{
+						TUTTLE_CERR("Could not move: " << (d / sFile).string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "move " << s.getDirectory() / sFile << " -> " << d / dFile );
+							bfs::rename( s.getDirectory() / sFile, d / dFile );
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#endif
 				}
-				else
-				{
-					bfs::copy_file( s.getDirectory() / sFile, d / dFile );;
-				}
-				#else // move file(s)
-				if( bfs::exists( d / dFile ) )
-				{
-					TUTTLE_CERR("Could not move: " << (d / sFile).string() );
-				}
-				else
-				{
-//					try
-//					{
-						bfs::rename( s.getDirectory() / sFile, d / dFile );;
-//					}
-//					catch()
-//					{
-						TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
-//					}
-				}
-				#endif
 			}
 		}
 	}
 	else
 	{
-		for( ttl::Sequence::Time t = s.getFirstTime()+firstImage; t <= s.getLastTime()-lastImage; t += s.getStep() )
+		for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
 		{
-			bfs::path sFile = s.getFilenameAt(t);
-			bfs::path dFile = s.getFilenameAt(t+offset);
-			if( bfs::exists( s.getDirectory()/sFile ) )
+			if( ( (firstImage == 0) | ( t >= firstImage ) ) & ( (lastImage == 0) | ( t <= lastImage ) ) )
 			{
-				#ifndef MOVEFILE // copy file(s)
-				if( bfs::exists( d / dFile ) )
+				bfs::path sFile = s.getFilenameAt(t);
+				bfs::path dFile = s.getFilenameAt(t+offset);
+				if( bfs::exists( s.getDirectory()/sFile ) )
 				{
-					TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
+					#ifndef MOVEFILES // copy file(s)
+					if( bfs::exists( d / dFile ) )
+					{
+						TUTTLE_CERR("Could not copy: " << (d / sFile).string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "copy " << s.getDirectory() / sFile << " -> " << d / dFile );
+							bfs::copy_file( s.getDirectory() / sFile, d / dFile );
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#else // move file(s)
+					if( bfs::exists( d / dFile ) )
+					{
+						TUTTLE_CERR("Could not move: " << (d / sFile).string() );
+					}
+					else
+					{
+						try
+						{
+							//TUTTLE_COUT( "move " << s.getDirectory() / sFile << " -> " << d / dFile );
+							bfs::rename( s.getDirectory() / sFile, d / dFile );;
+						}
+						catch(... )
+						{
+							TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+						}
+					}
+					#endif
 				}
-				else
-				{
-					bfs::copy_file( s.getDirectory() / sFile, d / dFile );;
-				}
-				#else // move file(s)
-				if( bfs::exists( d / dFile ) )
-				{
-					TUTTLE_CERR("Could not move: " << (d / sFile).string() );
-				}
-				else
-				{
-//					try
-//					{
-						bfs::rename( s.getDirectory() / sFile, d / dFile );;
-//					}
-//					catch()
-//					{
-						TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
-//					}
-				}
-				#endif
 			}
 		}
 	}
@@ -180,6 +248,7 @@ int main( int argc, char** argv )
 	std::vector<std::string>		filters;
 	std::string				outputPattern;
 	bool					verbose			= false;
+	bool					dstIsSeq		= false;
 	int					offset			= 0;
 	int					firstImage		= 0;
 	int					lastImage		= 0;
@@ -189,8 +258,8 @@ int main( int argc, char** argv )
 	mainOptions.add_options()
 		("help,h"		, "show this help")
 		("offset,o"		, bpo::value<int>(), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"")
-		("first-image,f"	, bpo::value<unsigned int>(), "specify the first image")
-		("last-image,l"		, bpo::value<unsigned int>(), "specify the last image")
+		("first-image"		, bpo::value<unsigned int>(), "specify the first image")
+		("last-image"		, bpo::value<unsigned int>(), "specify the last image")
 		("verbose,v"		, "explain what is being done")
 	;
 	
@@ -299,12 +368,12 @@ int main( int argc, char** argv )
 		{
 			if( bfs::is_directory(dstPath.branch_path() ) )
 			{
-				sequencePattern = dstPath.leaf().string();
-				dstPath         = dstPath.branch_path();
+				sequencePattern	= dstPath.leaf().string();
+				dstPath		= dstPath.branch_path();
 			}
 			else
 			{
-				TUTTLE_CERR( "Your destination must contain a directory" );
+				TUTTLE_CERR( "Your destination must contain a valid directory" );
 				return -1;
 			}
 		}
@@ -315,22 +384,14 @@ int main( int argc, char** argv )
 				TUTTLE_CERR( "To copy multiple sequences, your destination must be a directory" );
 				return -1;
 			}
+			sequencePattern = "";
 		}
 
 		ttl::Sequence dstSeq(dstPath, descriptionMask);
-
-		bool dstIsSeq;
-		if( sequencePattern.find("#") || sequencePattern.find("@") )
+		if( sequencePattern.size() > 0 && ( sequencePattern.find("#") || sequencePattern.find("@") ) )
 		{
-//			TUTTLE_COUT("Init with pattern: " << dstPath.leaf());
-			dstIsSeq = dstSeq.init( (dstPath.string()+"/"+sequencePattern ), 0, 0, 1, ttl::Sequence::ePatternAll );
+			dstIsSeq = dstSeq.init( (dstPath.string() + "/" + sequencePattern ), 0, 0, 1, ttl::Sequence::ePatternAll );
 		}
-		else
-		{
-//			TUTTLE_COUT("Init without pattern");
-			dstIsSeq = dstSeq.init( 0, 0, 1, ttl::Sequence::ePatternAll );
-		}
-
 
 		BOOST_FOREACH( bfs::path srcPath, paths)
 		{
@@ -353,12 +414,12 @@ int main( int argc, char** argv )
 						if(verbose)
 							TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstSeq.getAbsoluteStandardPattern() << " (" << srcSeq.getNbFiles() << ") " );
 
-						copy_sequence( srcSeq, dstSeq, offset, firstImage-srcSeq.getFirstTime(), srcSeq.getLastTime()-lastImage );
+						copy_sequence( srcSeq, dstSeq, offset, firstImage, lastImage );
 					}
 					else{
 						if(verbose)
 							TUTTLE_COUT( srcSeq.getAbsoluteStandardPattern() << " -> " << dstPath / srcSeq.getStandardPattern() << " (" << srcSeq.getNbFiles() << ")"  );
-						copy_sequence( srcSeq, dstPath, offset, firstImage-srcSeq.getFirstTime(), srcSeq.getLastTime()-lastImage );
+						copy_sequence( srcSeq, dstPath, offset, firstImage, lastImage );
 					}
 				}
 			}
