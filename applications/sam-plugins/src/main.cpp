@@ -54,7 +54,7 @@ void printProperties( const tth::ofx::property::OfxhSet properties, std::string 
 	if(context.size() == 0)
 		TUTTLE_COUT( "Number of properties : " << properties.getSize() );
 	else
-		TUTTLE_COUT( "Number of properties in context " << context << ": " << properties.getSize() );
+		TUTTLE_COUT( "Number of properties for \"" << context << "\": " << properties.getSize() );
 
 	TUTTLE_COUT( "RW ModifiedBy\tType\tSize\t"<<std::setw (50)  << std::left << "Property Name" << "\tDefault Values");
 	tth::ofx::property::PropertyMap propMap = properties.getMap();
@@ -103,24 +103,23 @@ void getPluginProperties( const std::string& plugName )
 	TUTTLE_COUT("Major version:\t\t" 	<< plug->getVersionMajor() );
 	TUTTLE_COUT("API version:\t\t"		<< plug->getApiVersion() );
 
+	// list contexts of plugin
+	color ? TUTTLE_COUT(kColorGreen <<"Contexts:") : TUTTLE_COUT("Contexts:");
+	tth::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet contexts = plug->getContexts();
+	tth::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet::iterator itContext;
+	std::string strContexts;
+	for (itContext = contexts.begin(); itContext != contexts.end(); itContext++)
+	{
+		strContexts += *itContext + ", ";
+	}
+	strContexts.erase(strContexts.size()-2, 2);
+	TUTTLE_COUT( "[ " << strContexts << " ]");
+	itContext = contexts.begin();
+
 	// list properties of plugin for the first context
 	if(properties)
 	{
 		color ? TUTTLE_COUT( "\n"<< kColorRed << "Properties" << kColorStd) : TUTTLE_COUT( "\nProperties") ;
-
-		// list contexts of plugin
-		color ? TUTTLE_COUT(kColorGreen <<"Contexts:") : TUTTLE_COUT("Contexts:");
-		tth::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet contexts = plug->getContexts();
-		tth::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet::iterator itContext;
-
-		std::string strContexts;
-		for (itContext = contexts.begin(); itContext != contexts.end(); itContext++)
-		{
-			strContexts += *itContext + ", ";
-		}
-		strContexts.erase(strContexts.size()-2, 2);
-		TUTTLE_COUT( "[ " << strContexts << " ]");
-		itContext = contexts.begin();
 
 		const tth::ofx::property::OfxhSet properties = plug->getDescriptorInContext( *itContext ).getProperties();
 		printProperties( properties );
@@ -156,7 +155,7 @@ void getPluginProperties( const std::string& plugName )
 	}
 	if(clips)
 	{
-		color ? TUTTLE_COUT( "\n"<< kColorRed << "Clip") : TUTTLE_COUT( "\nClip") ;
+		color ? TUTTLE_COUT( "\n"<< kColorRed << "Clips") : TUTTLE_COUT( "\nClips") ;
 		typedef std::map<std::string, tth::ofx::attribute::OfxhClipImageDescriptor*> ContextMap;
 
 		// get contexts
@@ -165,8 +164,7 @@ void getPluginProperties( const std::string& plugName )
 		for ( ; it != plugInst->getDescriptor( ).getClips().end(); it++ )
 			strClipContexts += (*it).first + ", " ;
 		strClipContexts.erase( strClipContexts.size()-2, 2 );
-		color ? TUTTLE_COUT(kColorGreen <<"Contexts:") : TUTTLE_COUT("Contexts:");
-		color ? TUTTLE_COUT( "[ " << strClipContexts << " ]" << kColorStd ): TUTTLE_COUT( "[ " << strClipContexts << " ]" );
+		color ? TUTTLE_COUT( kColorGreen << "[ " << strClipContexts << " ]" << kColorStd ): TUTTLE_COUT( "[ " << strClipContexts << " ]" );
 
 		// get propeties in each context
 		ContextMap::const_iterator it2 = plugInst->getDescriptor( ).getClips().begin();
@@ -184,8 +182,7 @@ void getPluginProperties( const std::string& plugName )
 		for ( ; it != plugInst->getDescriptor( ).getParams().end(); it++ )
 			strParamsContexts += (*it).first + ", " ;
 		strParamsContexts.erase( strParamsContexts.size()-2, 2 );
-		color ? TUTTLE_COUT(kColorGreen <<"Contexts:") : TUTTLE_COUT("Contexts:");
-		color ? TUTTLE_COUT( "[ " << strParamsContexts << " ]" << kColorStd) : TUTTLE_COUT( "[ " << strParamsContexts << " ]" );
+		color ? TUTTLE_COUT( kColorGreen << "[ " << strParamsContexts << " ]" << kColorStd) : TUTTLE_COUT( "[ " << strParamsContexts << " ]" );
 
 		// get propeties in each context
 		ParamDescriptorMap::const_iterator it2 = plugInst->getDescriptor( ).getParams().begin();
