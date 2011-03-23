@@ -18,47 +18,47 @@ namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 
-bool colorOutput = false;
-bool verbose     = false;
+bool	colorOutput	= false;
+bool	verbose		= false;
+
+int	firstImage	= 0;
+int	lastImage	= 0;
 
 // A helper function to simplify the main part.
 template<class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 {
-    copy(v.begin(), v.end(), std::ostream_iterator<T>(std::cout, " "));
-    return os;
+	copy(v.begin(), v.end(), std::ostream_iterator<T>(std::cout, " "));
+	return os;
 }
 
 void removeSequence( const ttl::Sequence& s )
 {
 	for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
 	{
-		bfs::path sFile = s.getAbsoluteFilenameAt(t);
-		if( !bfs::exists( sFile ) )
+		if( ( (firstImage == 0) | ( t >= firstImage ) ) & ( (lastImage == 0) | ( t <= lastImage ) ) )
 		{
-			if(colorOutput)
+			bfs::path sFile = s.getAbsoluteFilenameAt(t);
+			if( !bfs::exists( sFile ) )
 			{
-				TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd );
+				colorOutput ?
+					TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd )
+				:
+					TUTTLE_CERR("Could not remove: " << sFile.string() )
+				;
 			}
 			else
 			{
-				TUTTLE_CERR("Could not remove: " << sFile.string() );
-			}
-		}
-		else
-		{
-			if(verbose)
-			{
-				if(colorOutput)
+				if(verbose)
 				{
-					TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd );
+					colorOutput ?
+						TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd )
+					:
+						TUTTLE_COUT("remove: " << sFile.string() )
+					;
 				}
-				else
-				{
-					TUTTLE_COUT("remove: " << sFile.string() );
-				}
+				bfs::remove( sFile );
 			}
-			bfs::remove( sFile );
 		}
 	}
 }
@@ -71,20 +71,25 @@ void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, 
 		{
 			if(verbose)
 				TUTTLE_COUT( "remove " << *s );
-			std::vector<bfs::path> paths = s->getFiles();
-			for(uint i=0; i<paths.size(); i++)
-				bfs::remove(paths.at(i));
+			if( s->getMaskType () == ttl::eSequence )
+				removeSequence( (ttl::Sequence&) *s );
+			else
+			{
+				std::vector<bfs::path> paths = s->getFiles();
+				for(uint i=0; i<paths.size(); i++)
+					bfs::remove( paths.at(i) );
+			}
 		}
 		else // is a directory
 		{
 			std::vector<boost::filesystem::path> paths = s->getFiles();
 			for(uint i=0; i<paths.size(); i++)
 			{
-				if(bfs::is_empty(paths.at(i)))
+				if( bfs::is_empty( paths.at(i) ) )
 				{
 					if(verbose)
 						TUTTLE_COUT( "remove " << *s );
-					bfs::remove(paths.at(i));
+					bfs::remove( paths.at(i) );
 				}
 				else
 				{
@@ -154,7 +159,9 @@ int main( int argc, char** argv )
 		("path-root,p"		, "show the root path for each objects")
 		("recursive,R"		, "remove subdirectories recursively")
 		("verbose,v"		, "explain what is being done")
-                ("color"		, "color the outup")
+		("color"		, "color the outup")
+		("first-image"		, bpo::value<unsigned int>(), "specify the first image")
+		("last-image"		, bpo::value<unsigned int>(), "specify the last image")
 		("full-rm"		, "remove directories, files and sequences")
 	;
 	
@@ -224,7 +231,17 @@ int main( int argc, char** argv )
 	{
 		verbose = true;
 	}
-	
+
+	if (vm.count("first-image"))
+	{
+		firstImage  = vm["first-image"].as< unsigned int >();
+	}
+
+	if (vm.count("last-image"))
+	{
+		lastImage  = vm["last-image"].as< unsigned int >();
+	}
+
 	if (vm.count("full-rm"))
 	{
 		researchMask |= eDirectory;
