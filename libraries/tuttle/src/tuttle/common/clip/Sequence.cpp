@@ -918,7 +918,9 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 		{
 			dir = _directory;
 		}
-
+		
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
+		
 		std::string path = (dir / _folderName).string();
 		if(_options & eColor)
 		{
@@ -974,6 +976,7 @@ std::ostream& File::getCout( std::ostream& os ) const
 		{
 			dir = _directory;
 		}
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
 		std::string path = ( dir / _filename).string();
 		if(_options & eColor)
 		{
@@ -1027,6 +1030,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 		{
 			dir = _directory;
 		}
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
 		std::string path = ( dir / getStandardPattern()).string();
 		if(_options & eColor)
 		{
