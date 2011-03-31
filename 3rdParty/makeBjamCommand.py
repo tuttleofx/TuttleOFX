@@ -48,8 +48,7 @@ if linux :
       f.write("--toolset=gcc ")
     if is_64bits :
       f.write("cxxflags=-fPIC address-model=64 ")
-    f.write("-j")
-    f.write("%s" % detectCPUs())
+    f.write("-j%s $* " % detectCPUs())
     f.close()
     os.chmod(fileExec,stat.S_IXUSR+stat.S_IRUSR+stat.S_IWUSR)
 
