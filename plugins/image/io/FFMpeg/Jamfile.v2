@@ -9,6 +9,7 @@ import os ;
 project
     : requirements
 	<include>src
+	<include>/usr/include/ffmpeg
     : build-dir $(DIST)/FFMpeg/obj
     ;
 
