@@ -51,7 +51,7 @@ if linux :
     f.write("-j")
     f.write("%s" % detectCPUs())
     f.close()
-    os.chmod(fileExec, stat.S_IXUSR)
+    os.chmod(fileExec,stat.S_IXUSR+stat.S_IRUSR+stat.S_IWUSR)
 
 
 print "linux\t\t%s" % (linux)
