@@ -44,7 +44,7 @@ protected:
 	void EmitScriptExecuted();
 	void EmitScriptPathChanged( const char* path );
 
-signals:
+Q_SIGNALS:
 	void scriptExecuted();
 	void scriptPathChanged( const char* );
 	void scriptCommandManager();

@@ -22,7 +22,7 @@ public:
 	QString     wordUnderCursor() const;
 	std::string wordUnderCursor_std() const;
 
-signals:
+Q_SIGNALS:
 	void executeScript();
 
 private:
