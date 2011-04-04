@@ -3,6 +3,7 @@
 
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
+#include <tuttle/plugin/numeric/sampler.hpp>
 
 namespace tuttle {
 namespace plugin {
