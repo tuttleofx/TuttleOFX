@@ -93,11 +93,24 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int wi
 	p0.x+3 < windowWidth ?			ptF = loc.x()[ 3]	: ptF = nullPt;
 }
 
-template< typename F >
-float getSincWeight(F weight)
+template < typename xy_locator, typename SrcP >
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE, SrcP& ptF, SrcP& ptG )
 {
-	float filterSize = 3.0;
-	float pix = weight*PI;
+	SrcP nullPt(0);
+	p0.x+3 > 0 && p0.x-3 < windowWidth ?	ptA = loc.x()[-3]	: ptA = nullPt;
+	p0.x+2 > 0 && p0.x-2 < windowWidth ?	ptB = loc.x()[-2]	: ptB = nullPt;
+	p0.x+1 > 0 && p0.x-1 < windowWidth ?	ptC = loc.x()[-1]	: ptC = nullPt;
+	p0.x   < windowWidth ?			ptD = *loc		: ptD = nullPt;
+	p0.x+1 < windowWidth ?			ptE = loc.x()[ 1]	: ptE = nullPt;
+	p0.x+2 < windowWidth ?			ptF = loc.x()[ 2]	: ptF = nullPt;
+	p0.x+3 < windowWidth ?			ptG = loc.x()[ 3]	: ptG = nullPt;
+}
+
+template< typename F >
+F getSincWeight(F weight)
+{
+	F filterSize = 2.0;
+	F pix = weight*PI;
 	if(weight==0)
 		return 1;
 	return filterSize/(pix*pix)*sin(pix)*sin(pix/filterSize);
@@ -106,16 +119,16 @@ float getSincWeight(F weight)
 template <typename SrcP, typename F, typename DstP>
 struct lanczos1D {
 
-	void operator()(const SrcP& srcA, const SrcP& srcB, const SrcP& srcC, const SrcP& srcD, const SrcP& srcE, const SrcP& srcF , F weight, DstP& dst) const
+	void operator()(const SrcP& srcA, const SrcP& srcB, const SrcP& srcC, const SrcP& srcD, const SrcP& srcE, const SrcP& srcF, const SrcP& srcG , F weight, DstP& dst) const
 	{
-		DstP mp(0), mp3(0), mp2(0), mp1(0);
-
-		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA, getSincWeight(weight-2) , mp );
-		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB, getSincWeight(weight-1) , mp );
-		detail::add_dst_mul_src<SrcP, float, DstP >()(srcC, getSincWeight(weight  ) , mp );
-		detail::add_dst_mul_src<SrcP, float, DstP >()(srcD, getSincWeight(weight+1) , mp );
-		detail::add_dst_mul_src<SrcP, float, DstP >()(srcE, getSincWeight(weight+2) , mp );
-		detail::add_dst_mul_src<SrcP, float, DstP >()(srcF, getSincWeight(weight+3) , mp );
+		DstP mp(0);
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA, getSincWeight(weight+3) , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB, getSincWeight(weight+2) , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcC, getSincWeight(weight+1) , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcD, getSincWeight(weight  ) , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcE, getSincWeight(weight-1) , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcF, getSincWeight(weight-2) , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcG, getSincWeight(weight-3) , mp );
 		dst = mp;
 	}
 };
@@ -198,50 +211,56 @@ bool sample( lanczos_sampler, const SrcView& src, const point2<F>& p, DstP& resu
 	xy_locator loc = src.xy_at( p0.x, p0.y );
 	point2<F> frac(p.x-p0.x, p.y-p0.y);
 
-	SrcC  a0(0), a1(0), a2(0), a3(0), a4(0), a5(0);
+	SrcC  a0(0), a1(0), a2(0), a3(0), a4(0), a5(0), a6(0);
 
-	SrcP ptA(0), ptB(0), ptC(0), ptD(0), ptE(0), ptF(0);
+	SrcP ptA(0), ptB(0), ptC(0), ptD(0), ptE(0), ptF(0), ptG(0);
 
 
-	loc.y() -= 2;
+	loc.y() -= 3;
+	if( p0.y+3 > 0 && p0.y-3 < src.height() )
+	{
+		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a0 );
+	}
+	++loc.y();
 	if( p0.y+2 > 0 && p0.y-2 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF );
-		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, frac.x, a0 );
+		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a1 );
 	}
 	++loc.y();
 	if( p0.y+1 > 0 && p0.y-1 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF );
-		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, frac.x, a1 );
+		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a2 );
 	}
 	++loc.y();
 	if ( p0.y   < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF );
-		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, frac.x, a2 );
+		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a3 );
 	}
 	++loc.y();
 	if ( p0.y+1 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF );
-		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, frac.x, a3 );
+		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a4 );
 	}
 	++loc.y();
 	if ( p0.y+2 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF );
-		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, frac.x, a4 );
+		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a5 );
 	}
 	++loc.y();
 	if ( p0.y+3 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF );
-		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, frac.x, a5 );
+		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		lanczos1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a6 );
 	}
 
 	// vertical process
-	lanczos1D< SrcC, F, SrcC >()( a0, a1, a2, a3, a4, a5, frac.y, mp );
+	lanczos1D< SrcC, F, SrcC >()( a0, a1, a2, a3, a4, a5, a6, frac.y, mp );
 
 
 	// Convert from floating point average value to the source type
