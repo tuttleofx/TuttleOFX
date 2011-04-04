@@ -18,7 +18,7 @@ static const bool kSupportTiles = false;
 void ResizePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttleResize", "Resize",
-		            "Resize" );
+			"Resize" );
 	desc.setPluginGrouping( "tuttle/image/process/geometry" );
 
 	// add the supported contexts, only filter at the moment
@@ -56,9 +56,38 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::Double2DParamDescriptor* size = desc.defineDouble2DParam( kParamSize );
-	size->setDefault( 720, 576 );
-	size->setLabel( "Size" );
+	OFX::BooleanParamDescriptor* split = desc.defineBooleanParam( kParamSplit );
+	split->setLabel( "Initial aspect ratio" );
+	split->setDefault( true );
+	split->setHint( "Keep initial aspect ratio." );
+
+	OFX::ChoiceParamDescriptor* type = desc.defineChoiceParam( kParamType );
+	type->setLabel( "Type" );
+	type->appendOption( kParamOutputFormat );
+	type->appendOption( kParamScale );
+
+	OFX::Double2DParamDescriptor* toBox = desc.defineDouble2DParam( kParamOutputFormat );
+	toBox->setDefault( 200, 200 );
+	toBox->setLabel( "Width / Height" );
+	toBox->setHint( "Set the output RoD." );
+
+	OFX::DoubleParamDescriptor* scaleRod = desc.defineDoubleParam( kParamScale );
+	scaleRod->setLabel( "Scale" );
+	scaleRod->setDefault( 1.0 );
+	scaleRod->setRange( 0.1, std::numeric_limits<double>::max() );
+	scaleRod->setDisplayRange( 0.1, 2.5 );
+	scaleRod->setEnabled( false );
+	scaleRod->setHint( "Adjust the output RoD." );
+
+	// filters parameters //
+	OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
+	filter->setLabel( "Filter" );
+	filter->appendOption( kParamFilterNearest );
+	filter->appendOption( kParamFilterBilinear );
+	filter->appendOption( kParamFilterBicubic );
+	filter->appendOption( kParamFilterLanczos );
+	filter->setHint( "Select the filtering method." );
+	filter->setDefault( eParamFilterBilinear );
 //
 //	OFX::Double2DParamDescriptor* scale = desc.defineDouble2DParam( kParamScale );
 //	scale->setDefault( 1.0, 1.0 );

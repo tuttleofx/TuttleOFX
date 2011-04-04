@@ -18,16 +18,18 @@ public:
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::channel_type<View>::type Channel;
 	typedef float Scalar;
+
+	EParamFilter _filter;
 protected:
-    ResizePlugin&    _plugin;            ///< Rendering plugin
-	ResizeProcessParams<Scalar> _params; ///< parameters
+	ResizePlugin&			_plugin;	///< Rendering plugin
+	ResizeProcessParams<Scalar>	_params;	///< parameters
 
 public:
-    ResizeProcess( ResizePlugin& effect );
+	ResizeProcess( ResizePlugin& effect );
 
 	void setup( const OFX::RenderArguments& args );
 
-    void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 
 }

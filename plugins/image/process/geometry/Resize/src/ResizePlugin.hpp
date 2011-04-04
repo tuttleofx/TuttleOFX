@@ -22,24 +22,30 @@ class ResizePlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef float Scalar;
+	typedef boost::gil::point2<double> Point2;
+
 public:
-    ResizePlugin( OfxImageEffectHandle handle );
+	ResizePlugin( OfxImageEffectHandle handle );
 
 public:
 	ResizeProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
-    void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
 //	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-    void render( const OFX::RenderArguments &args );
+	void render( const OFX::RenderArguments &args );
 	
+	const EParamFilter getFilter() const { return static_cast<EParamFilter>( _paramFilter->getValue() ); }
 public:
-//    OFX::Clip* _clipSrcMatte; ///< Matte source image clip
+//	OFX::Clip* _clipSrcMatte; ///< Matte source image clip
 
-	OFX::Double2DParam* _paramSize;
+	OFX::ChoiceParam*	_paramType;
+	OFX::Double2DParam*	_paramOutputFormat;
+	OFX::ChoiceParam*	_paramFilter;
+	OFX::DoubleParam*	_paramScale;
 };
 
 }
