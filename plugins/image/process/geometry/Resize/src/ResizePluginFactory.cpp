@@ -61,6 +61,12 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	split->setDefault( true );
 	split->setHint( "Keep initial aspect ratio." );
 
+	OFX::ChoiceParamDescriptor* direction = desc.defineChoiceParam( kParamDirection );
+	direction->setLabel( "Direction" );
+	direction->appendOption( kParamSizeX );
+	direction->appendOption( kParamSizeY );
+	direction->setDefault( eParamSizeX );
+
 	OFX::ChoiceParamDescriptor* type = desc.defineChoiceParam( kParamType );
 	type->setLabel( "Type" );
 	type->appendOption( kParamOutputFormat );
@@ -85,6 +91,7 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	filter->appendOption( kParamFilterNearest );
 	filter->appendOption( kParamFilterBilinear );
 	filter->appendOption( kParamFilterBicubic );
+	filter->appendOption( kParamFilterKeys );
 	filter->appendOption( kParamFilterLanczos );
 	filter->setHint( "Select the filtering method." );
 	filter->setDefault( eParamFilterBilinear );

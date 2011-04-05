@@ -43,6 +43,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRo
 		case eParamFilterNearest	: resize_view( this->_srcView, this->_dstView, nearest_neighbor_sampler()	); break;
 		case eParamFilterBilinear	: resize_view( this->_srcView, this->_dstView, bilinear_sampler()		); break;
 		case eParamFilterBicubic	: resize_view( this->_srcView, this->_dstView, bicubic_sampler()		); break;
+		case eParamFilterKeys		: resize_view( this->_srcView, this->_dstView, keys_sampler()			); break;
 		case eParamFilterLanczos	: resize_view( this->_srcView, this->_dstView, lanczos_sampler()		); break;
 	}
 }

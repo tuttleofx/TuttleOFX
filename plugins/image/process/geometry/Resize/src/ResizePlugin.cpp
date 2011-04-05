@@ -71,11 +71,17 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 	switch( static_cast<EParamType>( _paramType->getValue() ) )
 	{
 		case eParamFilterToFormat:
-		{
+		{			float scaleX = params._size.x/srcRodSize.x;
+			float scaleY = params._size.y/srcRodSize.y;
 			rod.x1   = 0;
 			rod.y1   = 0;
 			rod.x2   = params._size.x;
 			rod.y2   = params._size.y;
+			/*
+			rod.x1   = scaleX * 0.5;
+			rod.y1   = scaleY * 0.5;
+			rod.x2   = params._size.x-rod.x1;
+			rod.y2   = params._size.y-rod.y1;*/
 			modified = true;
 			return true;
 		}
@@ -104,10 +110,59 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 	return modified;
 }
 
-/*void ResizePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+void ResizePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
+	/*ResizeProcessParams<Scalar> params = getProcessParams();
+	rois.x1   = 0;
+	rois.y1   = 0;
+	rois.x2   = params._size.x;
+	rois.y2   = params._size.y;*/
 
-}*/
+	/*ResizeProcessParams<Scalar> params = getProcessParams();
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+//
+	OfxRectD srcRoi;
+	srcRoi.x1 = srcRod.x1 - 1;
+	srcRoi.y1 = srcRod.y1 - 1;
+	srcRoi.x2 = srcRod.x2 + 1;
+	srcRoi.y2 = srcRod.y2 + 1;
+	rois.setRegionOfInterest( *_clipSrc, srcRoi );*/
+	/*
+	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	OfxRectD dstRod = _clipDst->getCanonicalRod( args.time );
+
+	ResizeProcessParams<Scalar> params = getProcessParams();
+
+	OfxRectD outputRoi = args.regionOfInterest;
+	outputRoi.x1 -= dstRod.x1; // to dest rod coordinates
+	outputRoi.y1 -= dstRod.y1;
+	outputRoi.x2 -= dstRod.x1;
+	outputRoi.y2 -= dstRod.y1;
+	OfxRectD srcRoi = ;
+	srcRoi.x1    += srcRod.x1; // to RoW coordinates
+	srcRoi.y1    += srcRod.y1;
+	srcRoi.x2    += srcRod.x1;
+	srcRoi.y2    += srcRod.y1;
+	outputRoi.x1 += dstRod.x1; // to RoW coordinates
+	outputRoi.y1 += dstRod.y1;
+	outputRoi.x2 += dstRod.x1;
+	outputRoi.y2 += dstRod.y1;
+	//    srcRoi.x1 += 2; // if we remove 2 pixels to the needed RoI the plugin crash, because it tries to access to this pixels
+	//    srcRoi.y1 += 2; // so the calcul of the RoI has a precision of one pixel
+	//    srcRoi.x2 -= 2;
+	//    srcRoi.y2 -= 2;
+	OfxRectD srcRealRoi = rectanglesIntersection( srcRoi, srcRod );
+	srcRealRoi = srcRod;*/
+
+	//rois.setRegionOfInterest( *_clipSrc, outputRoi );
+/*
+	if( _debugDisplayRoi->getValue() )
+	{
+		_srcRealRoi = srcRealRoi;
+		_srcRoi     = srcRoi;
+		_dstRoi     = outputRoi;
+	}*/
+}
 
 bool ResizePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
