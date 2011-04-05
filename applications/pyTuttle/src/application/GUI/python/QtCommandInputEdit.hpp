@@ -47,7 +47,7 @@ protected:
 	void removeTab();
 	void removeLine();
 
-private slots:
+private Q_SLOTS:
 	void insertCompletion( const QString& completion );
 
 private:

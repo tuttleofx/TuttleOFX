@@ -83,14 +83,11 @@ std::list<std::string> EmbeddedPython::getAutocompletion( const std::string in_c
 		result = m_pythonRedirect.getSimpleCommandResult();
 		boost::algorithm::trim( result );
 
-		if( result.size() && result != "None" )
-		{
-			autocompletion_list.push_back( result );
-		}
-		else
+		if( result.size() == 0 || result == "None" )
 		{
 			break;
 		}
+		autocompletion_list.push_back( result );
 	}
 	while( ++n < 100 );
 	m_pythonRedirect.enableSimpleCommand( false );

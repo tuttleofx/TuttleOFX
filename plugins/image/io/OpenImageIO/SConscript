@@ -1,12 +1,12 @@
 Import( 'project' )
 Import( 'libs' )
 
-project.createOfxPlugin( dirs = ['src'],
-                         libs = [
-								  libs.tuttlePlugin,
-								  libs.boost_gil,
-								  libs.openimageio,
-                                  libs.boost_filesystem,
-								  libs.boost_regex,
-                                 ] )
+#project.createOfxPlugin( dirs = ['src'],
+#                         libs = [
+#								  libs.tuttlePlugin,
+#								  libs.boost_gil,
+#								  libs.openimageio,
+#                                  libs.boost_filesystem,
+#								  libs.boost_regex,
+#                                 ] )
 

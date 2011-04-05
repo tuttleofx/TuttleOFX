@@ -94,15 +94,20 @@ void copy_and_convert_alpha_blended_pixels( const GlyphView& glyphView, const ty
 			    get_color( *it_glyph, gray_color_t() ),
 			    pColor
 			);
+			pixel_multiplies_scalar_assign_t<float, Pixel>()
+			(
+			    channel_invert( get_color( *it_glyph, gray_color_t() ) ),
+			    *it_img
+			);
 			pixel_plus_assign_t<Pixel, Pixel>()
 			(
 			    pColor,
 			    *it_img
 			);
-			//			TUTTLE_COUT_VAR( get_color( *it_glyph, gray_color_t() ) );
-			//			TUTTLE_COUT_VAR( (*it_img)[0] );
-			//			TUTTLE_COUT_VAR( (int)(color[0]) );
-			//			TUTTLE_COUT_VAR( (int)(pColor[0]) );
+//			TUTTLE_COUT_VAR( get_color( *it_glyph, gray_color_t() ) );
+//			TUTTLE_COUT_VAR( (*it_img)[0] );
+//			TUTTLE_COUT_VAR( (int)(color[0]) );
+//			TUTTLE_COUT_VAR( (int)(pColor[0]) );
 		}
 	}
 }

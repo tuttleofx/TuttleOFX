@@ -5,17 +5,13 @@
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <boost/gil/extension/typedefs.hpp>
 
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/packed_pixel.hpp>
+#include <boost/gil/extension/typedefs.hpp>
 
 #include <boost/integer.hpp>  // for boost::uint_t
 #include <boost/cstdint.hpp>
@@ -166,8 +162,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				}
 				default:
 				{
-					OFX::Exception::Suite( kOfxStatFailed, std::string( "Error: unsupported dpx file format (RGBA10 byte packed). " ) );
-					break;
+					BOOST_THROW_EXCEPTION( exception::Failed()
+						<< exception::dev() + "Unsupported dpx file format (RGBA10 byte packed). " );
 				}
 			}
 			break;
@@ -190,8 +186,8 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 				case 1:
 				case 2:
 				{
-					OFX::Exception::Suite( kOfxStatFailed, std::string( "Error: unsupported dpx file format (ABGR10 byte packed). " ) );
-					break;
+					BOOST_THROW_EXCEPTION( exception::Failed()
+						<< exception::dev() + "Unsupported dpx file format (ABGR10 byte packed). " );
 				}
 			}
 			break;
@@ -296,10 +292,15 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 		}
 		case tuttle::io::DpxImage::eCompTypeR16G16B16:
 		{
+			/// @todo: bug here.
+			TUTTLE_COUT_INFOS;
+			TUTTLE_COUT_VAR( _dpxImage.width() );
+			TUTTLE_COUT_VAR( _dpxImage.height() );
+			TUTTLE_COUT_VAR( sizeof( rgb16_pixel_t ) );
 			// Tests passed: fill, non fill, big endian, little endian
 			rgb16c_view_t src = interleaved_view( _dpxImage.width(), _dpxImage.height(),
 			                                      (const rgb16_pixel_t*)( _dpxImage.data() ),
-			                                      _dpxImage.width() * 6 );
+			                                      _dpxImage.width() * sizeof( rgb16_pixel_t ) );
 			copy_and_convert_pixels( src, dst );
 			break;
 		}
@@ -323,8 +324,14 @@ View& DPXReaderProcess<View>::readImage( View& dst )
 			copy_and_convert_pixels( src, dst );
 			break;
 		}
-		default:
+		case tuttle::io::DpxImage::eCompTypeUnknown:
+		{
+			BOOST_THROW_EXCEPTION( exception::Failed()
+				<< exception::dev() + "Unrecognized image type, bit depth is " + _dpxImage.getHeader().bitSize() + ", component type is: " + _dpxImage.getHeader().descriptor() + ".\n"
+				                    + "DPX HEADER:\n"
+				                    + _dpxImage.getHeader() );
 			break;
+		}
 	}
 
 	return dst;

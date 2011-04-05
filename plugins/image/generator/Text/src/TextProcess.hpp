@@ -61,6 +61,7 @@ protected:
 	boost::gil::point2<int> _textSize;
 	Pixel _foregroundColor;
 	TextProcessParams _params;
+	std::string _text;
 
 public:
 	TextProcess( TextPlugin& instance );

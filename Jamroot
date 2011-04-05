@@ -104,6 +104,6 @@ explicit			/tuttle
 				/sam-tools
 #				/samtests
 				/plugins
-#				/pyTuttle
+			/pyTuttle
 				/tests
 				;
