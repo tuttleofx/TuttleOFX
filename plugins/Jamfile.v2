@@ -22,8 +22,8 @@ if ! [ type.registered PLUGIN ]
 project
 	: requirements
 		<include>$(3RD_PARTY)/boostHack
-    ;        
-        
+	;
+
 ###############################################################################
 # Automatic Install for plugins
 ###############################################################################
@@ -50,7 +50,7 @@ use-project	/tuttlelib	: ../libraries/tuttle ;
 ###############################################################################
 # Build all plugins
 ###############################################################################
-for local l in [ glob * : _* param private ]
+for local l in [ glob * : _* private ]
 {
-   build-project $(l) ;
+	build-project $(l) ;
 }
