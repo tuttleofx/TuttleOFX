@@ -46,7 +46,7 @@ void QtCommandInputEdit::keyPressEvent( QKeyEvent* e )
 
 	if( ( e->key() == Qt::Key_Enter ) || ( e->key() == Qt::Key_Return && e->modifiers() == Qt::ControlModifier ) )
 	{
-		emit executeScript();
+		Q_EMIT executeScript();
 		scriptExecuted();
 		return;
 	}

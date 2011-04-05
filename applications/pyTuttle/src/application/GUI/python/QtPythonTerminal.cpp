@@ -119,13 +119,13 @@ void QtPythonTerminal::clearLog()
 
 void QtPythonTerminal::EmitScriptExecuted()
 {
-	emit scriptExecuted();
+	Q_EMIT scriptExecuted();
 }
 
 void QtPythonTerminal::EmitScriptPathChanged( const char* path )
 {
 	//	setScriptPath( path );
-	emit scriptPathChanged( path );
+	Q_EMIT scriptPathChanged( path );
 }
 
 /*
