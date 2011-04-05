@@ -7,19 +7,23 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-        <include>src
-    : build-dir $(DIST)/Math/obj
-    ;
+	: requirements
+		<include>src
+	: build-dir $(DIST)/Math/obj
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Math : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
-    ;
+#plugin Math :
+#	[ glob src/*.cpp ]
+#	/tuttleplugin/<link>static
+#	;
+
+alias Math;
+
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Math : $(DIST) ;
+#auto_install Math : $(DIST) ;
+

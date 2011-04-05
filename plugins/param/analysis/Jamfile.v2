@@ -1,9 +1,9 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/param ;
+path-constant DIST : $(DIST)/analisys ;
 
-for local l in [ glob * : Math ]
+for local l in [ glob * ]
 {
 	build-project $(l) ;
 }
