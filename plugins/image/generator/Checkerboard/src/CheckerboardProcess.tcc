@@ -45,12 +45,7 @@ template<class View>
 void CheckerboardProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-
-	// destination view
-	boost::scoped_ptr<OFX::Image> dst( _plugin._clipDst->fetchImage( args.time ) );
-	if( !dst.get() )
-		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	this->_dstView = this->getView( dst.get(), _plugin._clipDst->getPixelRod( args.time ) );
+	ImageGilProcessor<View>::setup( args );
 
 	boost::function_requires<PixelLocatorConcept<Locator> >();
 	gil_function_requires < StepIteratorConcept<typename Locator::x_iterator> >();
