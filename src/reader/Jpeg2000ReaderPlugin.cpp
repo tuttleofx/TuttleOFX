@@ -59,7 +59,7 @@ void Jpeg2000ReaderPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 
 bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
+//	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
 	FileInfo fileInfo = retrieveFileInfo( args.time );
 	if ( fileInfo._failed )
 	{
@@ -77,10 +77,10 @@ bool Jpeg2000ReaderPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionA
 
 void Jpeg2000ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
-	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
-	TUTTLE_COUT_VAR( getAbsoluteFirstFilename() );
-	TUTTLE_COUT_VAR( getFirstTime() );
-	TUTTLE_COUT_VAR( getAbsoluteFilenameAt(getFirstTime()) );
+//	TUTTLE_COUT_VAR( _paramFilepath->getValue() );
+//	TUTTLE_COUT_VAR( getAbsoluteFirstFilename() );
+//	TUTTLE_COUT_VAR( getFirstTime() );
+//	TUTTLE_COUT_VAR( getAbsoluteFilenameAt(getFirstTime()) );
 
 	ReaderPlugin::getClipPreferences( clipPreferences );
 	
@@ -161,11 +161,15 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 			case OFX::eBitDepthNone:
+			{
 				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
+			}
 			case OFX::eBitDepthCustom:
+			{
 				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
+			}
 		}
 	}
 	else if( dstComponents == OFX::ePixelComponentAlpha )
@@ -191,11 +195,15 @@ void Jpeg2000ReaderPlugin::render( const OFX::RenderArguments &args )
 				break;
 			}
 			case OFX::eBitDepthNone:
+			{
 				TUTTLE_COUT_FATALERROR( "BitDepthNone not recognize." );
 				return;
+			}
 			case OFX::eBitDepthCustom:
+			{
 				TUTTLE_COUT_FATALERROR( "BitDepthCustom not recognize." );
 				return;
+			}
 		}
 	}
 	else

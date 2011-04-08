@@ -50,8 +50,8 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 		srcView = flipped_up_down_view( srcView );
 	}
 
-	TUTTLE_COUT_VAR( this->_srcView.dimensions() );
-	TUTTLE_COUT_VAR( srcView.dimensions() );
+//	TUTTLE_COUT_VAR( this->_srcView.dimensions() );
+//	TUTTLE_COUT_VAR( srcView.dimensions() );
 
 	switch(_params._bitDepth)
 	{
@@ -76,7 +76,7 @@ void Jpeg2000WriterProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 			rgb16_image_t img( srcView.dimensions() );
 			rgb16_view_t vw( view(img) );
 
-			TUTTLE_COUT_VAR( vw.dimensions() );
+//			TUTTLE_COUT_VAR( vw.dimensions() );
 
 			copy_and_convert_pixels( clamp_view(srcView), vw );
 
