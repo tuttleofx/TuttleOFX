@@ -4,5 +4,4 @@ TuttleOFX project is published under multi-licensing, so you can choose between:
 * GNU General Public License, version 3 (GPL), see LICENCE.GPL file.
 
 This multi-licensing scheme applies to the whole project: applications, libraries and plug-ins.
-But some plug-ins can specify another licence due to some dependencies. In this particular case, the plug-in will include a custom COPYING licence file that completely defines the rules for this plug-in independently from this file.
 
