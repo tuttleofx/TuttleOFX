@@ -31,10 +31,6 @@ BasicKeyerPlugin::BasicKeyerPlugin( OfxImageEffectHandle handle )
 		_paramColors.push_back( fetchRGBAParam( getColorParamName( i ) ) );
 	}
 
-	_instanceChangedArgs.time          = 0;
-	_instanceChangedArgs.renderScale.x = 1;
-	_instanceChangedArgs.renderScale.y = 1;
-	_instanceChangedArgs.reason        = OFX::eChangePluginEdit;
 	changedParam( _instanceChangedArgs, kParamNbPoints ); // init IsSecret property for each point/color param
 }
 
