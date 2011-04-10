@@ -4,19 +4,22 @@ Import( 'libs' )
 import os.path
 
 incdirs = ['src/common', 'src/application']
-sources_common = project.scanFiles( ['src/common'], accept=['*.cpp','*.c'] )
-sources_application = project.scanFiles( ['src/application'], accept=['*.cpp','*.c'] )
-sources_ui = project.scanFiles( ['src/application'], accept=['*.ui'] )
-sources_swig = project.scanFiles( ['src/common'], accept=['*.i'] )
+src_common = project.scanFiles( ['src/common'], accept=['*.cpp','*.c'] )
+src_application = project.scanFiles( ['src/application'], accept=['*.cpp','*.c'] )
+src_ui = project.scanFiles( ['src/application'], accept=['*.ui'] )
+src_swig = project.scanFiles( ['src/common'], accept=['*.i'] )
+
+#print 'src_ui:', src_ui
 
 libraries = [libs.boost, libs.m, libs.pthread, libs.python, libs.tiff, libs.jpeg, libs.png]
-librariesGui = [libs.qt4(modules=['QtCore', 'QtGui', 'QtOpenGL'], uiFiles=sources_ui)]
+librariesGui = [libs.qt4(modules=['QtCore', 'QtGui', 'QtOpenGL'] #)]
+                         , uiFiles=src_ui)]
 
 name = project.getName()
 
 env_appli = project.createEnv( libraries+librariesGui )
 env_appli.Append( CPPPATH=incdirs )
-appli = env_appli.Program( target=name, source=sources_common+sources_application )
+appli = env_appli.Program( target=name, source=src_common+src_application ) #+src_ui )
 appliInstall = env_appli.Install( project.inOutputBin(), appli )
 
 pythonOutputDir = os.path.join( project.inOutputDir(), 'python' )
@@ -28,7 +31,7 @@ envSwig.Append( SWIGPATH=envSwig['CPPPATH'] )
 envSwig.Append( SWIGOUTDIR=pythonOutputDir )
 envSwig.Replace( SHLIBPREFIX = '' )
 envSwig.Replace( LIBPREFIX = '' )
-swigWrap = envSwig.SharedLibrary( target='_'+name, source=sources_swig + sources_common )
+swigWrap = envSwig.SharedLibrary( target='_'+name, source=src_swig + src_common )
 swigWrapInstall = envSwig.Install( pythonOutputDir, swigWrap )
 
 
