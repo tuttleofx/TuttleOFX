@@ -6,67 +6,67 @@ import sys
 import urllib
 import subprocess
 
-osname            = os.name.lower()
-sysplatform       = sys.platform.lower()
-windows           = osname == "nt" and sysplatform.startswith("win")
-macos             = sysplatform.startswith("darwin")
-linux             = not windows and not macos
-unix              = not windows
+osname		= os.name.lower()
+sysplatform	= sys.platform.lower()
+windows		= osname == "nt" and sysplatform.startswith("win")
+macos		= sysplatform.startswith("darwin")
+linux		= not windows and not macos
+unix		= not windows
 
 global current_file # global variable used in dlProgress function
 current_file = ''
 
 def copytree(src, dst, symlinks=False, ignore=None):
-    import os
-    from shutil import copy2, copystat, Error
-    names = os.listdir(src)
-    if ignore is not None:
-        ignored_names = ignore(src, names)
-    else:
-        ignored_names = set()
+	import os
+	from shutil import copy2, copystat, Error
+	names = os.listdir(src)
+	if ignore is not None:
+		ignored_names = ignore(src, names)
+	else:
+		ignored_names = set()
 
-    if not os.path.exists(dst):
-      try:
-	  os.makedirs(dst)
-      except OSError, exc:
-	  # XXX - this is pretty ugly
-	  if "file already exists" in exc[1]:  # Windows
-	      pass
-	  elif "File exists" in exc[1]:        # Linux
-	      pass
-	  else:
-	      raise
+	if not os.path.exists(dst):
+		try:
+			os.makedirs(dst)
+		except OSError, exc:
+			# XXX - this is pretty ugly
+			if "file already exists" in exc[1]:  # Windows
+				pass
+			elif "File exists" in exc[1]:        # Linux
+				pass
+			else:
+				raise
 
-    errors = []
-    for name in names:
-        if name in ignored_names:
-            continue
-        srcname = os.path.join(src, name)
-        dstname = os.path.join(dst, name)
-        try:
-            if symlinks and os.path.islink(srcname):
-                linkto = os.readlink(srcname)
-                os.symlink(linkto, dstname)
-            elif os.path.isdir(srcname):
-                copytree(srcname, dstname, symlinks, ignore)
-            else:
-                copy2(srcname, dstname)
-            # XXX What about devices, sockets etc.?
-        except (IOError, os.error), why:
-            errors.append((srcname, dstname, str(why)))
-        # catch the Error from the recursive copytree so that we can
-        # continue with other files
-        except Error, err:
-            errors.extend(err.args[0])
-    try:
-        copystat(src, dst)
-    except WindowsError:
-        # can't copy file access times on Windows
-        pass
-    except OSError, why:
-        errors.extend((src, dst, str(why)))
-    if errors:
-        raise Error, errors 
+	errors = []
+	for name in names:
+		if name in ignored_names:
+			continue
+		srcname = os.path.join(src, name)
+		dstname = os.path.join(dst, name)
+		try:
+			if symlinks and os.path.islink(srcname):
+				linkto = os.readlink(srcname)
+				os.symlink(linkto, dstname)
+			elif os.path.isdir(srcname):
+				copytree(srcname, dstname, symlinks, ignore)
+			else:
+				copy2(srcname, dstname)
+				# XXX What about devices, sockets etc.?
+		except (IOError, os.error), why:
+			errors.append((srcname, dstname, str(why)))
+			# catch the Error from the recursive copytree so that we can
+			# continue with other files
+		except Error, err:
+			errors.extend(err.args[0])
+		try:
+			copystat(src, dst)
+		except WindowsError:
+			# can't copy file access times on Windows
+			pass
+		except OSError, why:
+			errors.extend((src, dst, str(why)))
+		if errors:
+			raise Error, errors
 
 def dlProgress(count, blockSize, totalSize):
 	pcent = int( count * blockSize * 100/totalSize )
@@ -74,12 +74,12 @@ def dlProgress(count, blockSize, totalSize):
 	sys.stdout.flush()
 
 global knowExtensions
-knowExtensions = { 'tar': 'tar xf',
-                   'tar.gz': 'tar xfz',
-                   'tgz': 'tar xfz',
-                   'tar.bz2': 'tar xfj',
-                   'zip': 'unzip',
-                   'exe': '' }
+knowExtensions = {	'tar':		'tar xf',
+			'tar.gz':	'tar xfz',
+			'tgz':		'tar xfz',
+			'tar.bz2':	'tar xfj',
+			'zip':		'unzip',
+			'exe':		'' }
 
 def getKnowExtensions( filename ):
 	global knowExtensions
@@ -87,9 +87,9 @@ def getKnowExtensions( filename ):
 
 def uncompress(filename, ext, inNewDirectory, libname):
 	global knowExtensions
-	binOptions = { 'tar' : {'directory':'--directory',},
-	               'unzip' : {'directory':'-d',},
-	             } 
+	binOptions = {	'tar'	: {'directory':'--directory',},
+			'unzip'	: {'directory':'-d',},
+			}
 	cmdFromExtension = knowExtensions[ext]
 	if not cmdFromExtension:
 		return
@@ -144,7 +144,8 @@ allLibs = [
 		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', False),
 		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_46_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_46_setup.exe', False),
 		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
-		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False)
+		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False),
+		('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.9.tar.gz', False)
 	]
 
 if len( sys.argv ) == 1:

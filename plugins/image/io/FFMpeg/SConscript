@@ -1,12 +1,20 @@
 Import( 'project' )
 Import( 'libs' )
 
+ffmpeg_base = libs.ffmpeg
+ffmpeg_base.libs = [ 'avutil',
+                     'avformat',
+		     'avcodec',
+		     'swscale',
+		    ]
+
+
 project.createOfxPlugin( dirs = ['src'],
                          libs = [
                                   libs.tuttlePlugin,
                                   libs.boost_gil,
                                   libs.boost_filesystem,
-								  libs.boost_regex,
+                                  libs.boost_regex,
                                   libs.ffmpeg,
                                  ] )
 

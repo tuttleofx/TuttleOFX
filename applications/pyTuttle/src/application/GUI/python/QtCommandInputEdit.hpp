@@ -22,7 +22,7 @@ public:
 	QString     wordUnderCursor() const;
 	std::string wordUnderCursor_std() const;
 
-signals:
+Q_SIGNALS:
 	void executeScript();
 
 private:
@@ -47,7 +47,7 @@ protected:
 	void removeTab();
 	void removeLine();
 
-private slots:
+private Q_SLOTS:
 	void insertCompletion( const QString& completion );
 
 private:

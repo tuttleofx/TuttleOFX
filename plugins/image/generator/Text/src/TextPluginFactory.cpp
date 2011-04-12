@@ -21,8 +21,8 @@ void TextPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
 	// add the supported contexts
-	desc.addSupportedContext( OFX::eContextGeneral );
 	desc.addSupportedContext( OFX::eContextFilter );
+	desc.addSupportedContext( OFX::eContextGeneral );
 
 	// add supported pixel depths
 	desc.addSupportedBitDepth( OFX::eBitDepthUByte );
@@ -48,6 +48,7 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	srcClip->setSupportsTiles( kSupportTiles );
+	srcClip->setOptional(true);
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
@@ -56,41 +57,65 @@ void TextPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::StringParamDescriptor* text = desc.defineStringParam( kText );
+	OFX::StringParamDescriptor* text = desc.defineStringParam( kParamText );
 	text->setLabel( "Text" );
 	text->setStringType( OFX::eStringTypeMultiLine );
 
-	OFX::StringParamDescriptor* font = desc.defineStringParam( kFont );
+	OFX::BooleanParamDescriptor* isExpression = desc.defineBooleanParam( kParamIsExpression );
+	isExpression->setLabel( "Expression" );
+	isExpression->setHint( "If you check this parameter the text must be a python code.\n"
+	                       "The final result must be in a variable with the name of the parameter.\n"
+	                       "Example:\n"
+	                       "from math import *\n"
+	                       //+ kParamText +
+	                       "text = 'At frame '+str(time)+', value is ' + str( sin(time) )\n" );
+	isExpression->setDefault( false );
+
+	OFX::StringParamDescriptor* font = desc.defineStringParam( kParamFont );
 	font->setLabel( "Font file" );
 	font->setStringType( OFX::eStringTypeFilePath );
 	font->setDefault( "/usr/share/fonts/truetype/msttcorefonts/arial.ttf" );
 
-	OFX::IntParamDescriptor* size = desc.defineIntParam( kSize );
+	OFX::IntParamDescriptor* size = desc.defineIntParam( kParamSize );
 	size->setLabel( "Size" );
 	size->setDefault( 18 );
 	size->setRange( 0, std::numeric_limits<int>::max() );
 	size->setDisplayRange( 0, 60 );
 
-	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kRatio );
+	OFX::DoubleParamDescriptor* ratio = desc.defineDoubleParam( kParamRatio );
 	ratio->setLabel( "Ratio" );
 	ratio->setRange( 0.0, std::numeric_limits<double>::max() );
 	ratio->setDisplayRange( 0.0, 2.0 );
 	ratio->setDefault( 1.0 );
 
-	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kColor );
+	OFX::RGBAParamDescriptor* color = desc.defineRGBAParam( kParamColor );
 	color->setLabel( "Color" );
 	color->setDefault( 1.0, 1.0, 1.0, 1.0 );
 
-	OFX::Double2DParamDescriptor* position = desc.defineDouble2DParam( kPosition );
+	OFX::Double2DParamDescriptor* position = desc.defineDouble2DParam( kParamPosition );
 	position->setLabel( "Position" );
 	position->setDefault( 0.0, 0.0 );
 
-	OFX::DoubleParamDescriptor* letterSpacing = desc.defineDoubleParam( kLetterSpacing );
+	OFX::DoubleParamDescriptor* letterSpacing = desc.defineDoubleParam( kParamLetterSpacing );
 	letterSpacing->setLabel( "Letter spacing" );
 	letterSpacing->setDisplayRange( -10.0, 10.0 );
 	letterSpacing->setDefault( 0.0 );
 
-	OFX::BooleanParamDescriptor* verticalFlip = desc.defineBooleanParam( kVerticalFlip );
+	OFX::ChoiceParamDescriptor* vAlign = desc.defineChoiceParam( kParamVAlign );
+	vAlign->setLabel( "Vertically align" );
+	vAlign->appendOption( kParamVAlignTop );
+	vAlign->appendOption( kParamVAlignCenter );
+	vAlign->appendOption( kParamVAlignBottom );
+	vAlign->setDefault( eParamVAlignCenter );
+
+	OFX::ChoiceParamDescriptor* hAlign = desc.defineChoiceParam( kParamHAlign );
+	hAlign->setLabel( "Horizontally align" );
+	hAlign->appendOption( kParamHAlignLeft );
+	hAlign->appendOption( kParamHAlignCenter );
+	hAlign->appendOption( kParamHAlignRight );
+	hAlign->setDefault( eParamHAlignCenter );
+
+	OFX::BooleanParamDescriptor* verticalFlip = desc.defineBooleanParam( kParamVerticalFlip );
 	verticalFlip->setLabel( "Vertical flip" );
 	verticalFlip->setDefault( false );
 	verticalFlip->setAnimates( false );

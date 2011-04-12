@@ -1,11 +1,16 @@
 #include "TextPlugin.hpp"
 #include "TextProcess.hpp"
+#include "TextDefinitions.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/ptr_container/ptr_inserter.hpp>
+#include <boost/python.hpp>
+
+#include <sstream>
+
 
 namespace tuttle {
 namespace plugin {
@@ -16,7 +21,11 @@ TextProcess<View>::TextProcess( TextPlugin& instance )
 	: ImageGilFilterProcessor<View>( instance )
 	, _plugin( instance )
 {
+//	TUTTLE_TCOUT_INFOS;
+//	Py_Initialize();
+	TUTTLE_TCOUT_INFOS;
 	this->setNoMultiThreading();
+	TUTTLE_TCOUT_INFOS;
 }
 
 template<class View>
@@ -30,6 +39,64 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	if( !boost::filesystem::exists( _params._font ) )
 	{
 		return;
+	}
+
+	
+	if( ! _params._isExpression )
+	{
+		_text = _params._text;
+	}
+	else
+	{
+		try
+		{
+			TUTTLE_TCOUT_INFOS;
+			Py_Initialize();
+			
+			TUTTLE_TCOUT_INFOS;
+			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("__main__")))));
+//			boost::python::object main_module((boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("toto")))));
+			//boost::python::object main_module = boost::python::import( "__main__" );
+			TUTTLE_TCOUT_INFOS;
+			boost::python::object main_namespace = main_module.attr( "__dict__" );
+			TUTTLE_TCOUT_INFOS;
+			
+			std::ostringstream context;
+			context << "time = " << args.time << std::endl;
+			context << "renderScale = [" << args.renderScale.x << "," << args.renderScale.y << "]" << std::endl;
+			context << "renderWindow = [" << args.renderWindow.x1 << "," << args.renderWindow.y1 << ","
+					                      << args.renderWindow.x2 << "," << args.renderWindow.y2 << "]" << std::endl;
+			OfxRectD srcCanonicalRod = this->_clipSrc->getCanonicalRod( args.time );
+			context << "srcCanonicalRod = [" << srcCanonicalRod.x1 << "," << srcCanonicalRod.y1 << ","
+					                         << srcCanonicalRod.x2 << "," << srcCanonicalRod.y2 << "]" << std::endl;
+			OfxRectI srcPixelRod = this->_clipSrc->getPixelRod( args.time );
+			context << "srcPixelRod = [" << srcPixelRod.x1 << "," << srcPixelRod.y1 << ","
+					                     << srcPixelRod.x2 << "," << srcPixelRod.y2 << "]" << std::endl;
+
+			OfxRectD dstCanonicalRod = this->_clipDst->getCanonicalRod( args.time );
+			context << "dstCanonicalRod = [" << dstCanonicalRod.x1 << "," << dstCanonicalRod.y1 << ","
+					                         << dstCanonicalRod.x2 << "," << dstCanonicalRod.y2 << "]" << std::endl;
+			OfxRectI dstPixelRod = this->_clipDst->getPixelRod( args.time );
+			context << "dstPixelRod = [" << dstPixelRod.x1 << "," << dstPixelRod.y1 << ","
+					                     << dstPixelRod.x2 << "," << dstPixelRod.y2 << "]" << std::endl;
+			/*object ignored = */
+			boost::python::exec( context.str().c_str(), main_namespace );
+			boost::python::exec( _params._text.c_str(), main_namespace );
+
+			_text = boost::python::extract<std::string>( main_namespace[kParamText.c_str()] );
+			
+//			object result = eval("5/0");
+			// execution will never get here:
+//			int five_divided_by_zero = extract<int>(result);
+			TUTTLE_TCOUT_INFOS;
+		}
+		catch( boost::python::error_already_set const & )
+		{
+			// if we can't evaluate the expression
+			// use the text without interpretation
+			_text = _params._text;
+		}
+//		Py_Finalize();
 	}
 
 	//Step 1. Create boost::gil image
@@ -66,7 +133,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	                                         _params._fontColor.b,
 	                                         _params._fontColor.a );
 	color_convert( rgba32f_foregroundColor, _foregroundColor );
-	std::transform( _params._text.begin(), _params._text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
+	std::transform( _text.begin(), _text.end(), boost::ptr_container::ptr_back_inserter( _glyphs ), make_glyph( face ) );
 
 	//Step 4. Make Metrics Array --------------------
 	std::transform( _glyphs.begin(), _glyphs.end(), std::back_inserter( _metrics ), boost::gil::make_metric() );
@@ -77,8 +144,46 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 	//Step 6. Get Coordinates (x,y) ----------------
 	_textSize.x   = std::for_each( _metrics.begin(), _metrics.end(), _kerning.begin(), boost::gil::make_width() );
 	_textSize.y   = std::for_each( _metrics.begin(), _metrics.end(), boost::gil::make_height() );
-	_textCorner.x = ( this->_dstView.width() - _textSize.x ) * 0.5;
-	_textCorner.y = ( this->_dstView.height() - _textSize.y ) * 0.5;
+	
+	if( _metrics.size() > 1 )
+		_textSize.x   += _params._letterSpacing * (_metrics.size() - 1);
+
+	switch( _params._vAlign )
+	{
+		case eParamVAlignTop:
+		{
+			_textCorner.y = 0;
+			break;
+		}
+		case eParamVAlignCenter:
+		{
+			_textCorner.y = ( this->_dstView.height() - _textSize.y ) * 0.5;
+			break;
+		}
+		case eParamVAlignBottom:
+		{
+			_textCorner.y = this->_dstView.height() - _textSize.y - 1;
+			break;
+		}
+	}
+	switch( _params._hAlign )
+	{
+		case eParamHAlignLeft:
+		{
+			_textCorner.x = 0;
+			break;
+		}
+		case eParamHAlignCenter:
+		{
+			_textCorner.x = ( this->_dstView.width() - _textSize.x ) * 0.5;
+			break;
+		}
+		case eParamHAlignRight:
+		{
+			_textCorner.x = this->_dstView.width() - _textSize.x;
+			break;
+		}
+	}
 
 	if( _params._verticalFlip )
 	{
@@ -91,6 +196,7 @@ void TextProcess<View>::setup( const OFX::RenderArguments& args )
 		_textCorner.y    += _params._position.y;
 	}
 	_textCorner.x += _params._position.x;
+	
 }
 
 /**
@@ -127,12 +233,16 @@ void TextProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 			return;
 	}
 
+	TUTTLE_TCOUT_INFOS;
 	//Step 7. Render Glyphs ------------------------
+	// if outside dstRod
+	// ...
+	// else
 	View tmpDstViewForGlyphs = subimage_view( _dstViewForGlyphs, _textCorner.x, _textCorner.y, _textSize.x, _textSize.y );
 	std::for_each( _glyphs.begin(), _glyphs.end(), _kerning.begin(),
 	               render_glyph<View>( tmpDstViewForGlyphs, _foregroundColor, _params._letterSpacing )
 	               );
-
+	TUTTLE_TCOUT_INFOS;
 }
 
 }

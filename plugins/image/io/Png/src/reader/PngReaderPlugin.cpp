@@ -65,7 +65,7 @@ void PngReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 		case eParamReaderExplicitConversionAuto:
 		{
 			OFX::EBitDepth bd = OFX::eBitDepthNone;
-			int bitDepth      = png_read_precision( filename );
+			const int bitDepth      = png_read_precision( filename );
 			switch( bitDepth )
 			{
 				case 8:

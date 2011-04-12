@@ -5,6 +5,7 @@
 #include <boost/gil/extension/io/png_io.hpp>
 #include <boost/gil/image_view_factory.hpp>
 #include <boost/preprocessor/stringize.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <boost/timer.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -43,7 +44,7 @@ int main( int argc, char** argv )
 //		boost::gil::rgba8_image_t imgRead;
 		boost::gil::gray8_image_t imgRead;
 		boost::gil::png_read_and_convert_image( argv[1], //"data/input.png",
-											    imgRead );
+												imgRead );
 //		boost::gil::rgba32f_view_t imgView( view( imgRead ) );
 //		boost::gil::rgba8_view_t imgView( view( imgRead ) );
 		boost::gil::gray8_view_t imgView( view( imgRead ) );
@@ -57,8 +58,10 @@ int main( int argc, char** argv )
 		InputBufferNode& inputBuffer1 = g.createInputBuffer();
 		Graph::Node& bitdepth1    = g.createNode( "fr.tuttle.bitdepth" );
 		Graph::Node& bitdepth2    = g.createNode( "fr.tuttle.bitdepth" );
+		Graph::Node& blur         = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& blur1        = g.createNode( "fr.tuttle.blur" );
 		Graph::Node& blur2        = g.createNode( "fr.tuttle.blur" );
+		Graph::Node& sobel        = g.createNode( "fr.tuttle.duranduboi.sobel" );
 		Graph::Node& sobel1       = g.createNode( "fr.tuttle.duranduboi.sobel" );
 		Graph::Node& sobel2       = g.createNode( "fr.tuttle.duranduboi.sobel" );
 		Graph::Node& localMaxima  = g.createNode( "fr.tuttle.duranduboi.localmaxima" );
@@ -88,25 +91,41 @@ int main( int argc, char** argv )
 		read1.getParam( "filename" ).set( "data/input.png" );
 		bitdepth.getParam( "outputBitDepth" ).set( 3 );
 		*/
+		static const double kernelEpsilon = boost::lexical_cast<double>( argv[2] );
+
+		TUTTLE_COUT_VAR( kernelEpsilon );
 
 		bitdepth1.getParam( "outputBitDepth" ).set( "float" );
 		bitdepth2.getParam( "outputBitDepth" ).set( "byte" );
 
+		blur.getParam( "border" ).set( "Padded" );
+		blur.getParam( "size" ).set( 1.0, 1.0 );
+		blur.getParam( "normalizedKernel" ).set( false );
+		blur.getParam( "kernelEpsilon" ).set( kernelEpsilon );
+
 		blur1.getParam( "border" ).set( "Padded" );
 		blur1.getParam( "size" ).set( 1.0, 0.0 );
 		blur1.getParam( "normalizedKernel" ).set( false );
-		blur1.getParam( "kernelEpsilon" ).set( 0.1 );
-		
+		blur1.getParam( "kernelEpsilon" ).set( kernelEpsilon );
+
 		blur2.getParam( "border" ).set( "Padded" );
 		blur2.getParam( "size" ).set( 0.0, 1.0 );
 		blur2.getParam( "normalizedKernel" ).set( false );
-		blur2.getParam( "kernelEpsilon" ).set( 0.1 );
+		blur2.getParam( "kernelEpsilon" ).set( kernelEpsilon );
+
+		sobel.getParam( "border" ).set( "Padded" );
+		sobel.getParam( "size" ).set( 1.0, 1.0 );
+		sobel.getParam( "normalizedKernel" ).set( false );
+		sobel.getParam( "computeGradientDirection" ).set( false );
+		sobel.getParam( "kernelEpsilon" ).set( kernelEpsilon );
+//		sobel.getParam( "unidimensional" ).set( true );
+		sobel.getParam( "outputComponent" ).set( "RGB" );
 
 		sobel1.getParam( "border" ).set( "Padded" );
 		sobel1.getParam( "size" ).set( 1.0, 1.0 );
 		sobel1.getParam( "normalizedKernel" ).set( false );
 		sobel1.getParam( "computeGradientDirection" ).set( false );
-		sobel1.getParam( "kernelEpsilon" ).set( 0.1 );
+		sobel1.getParam( "kernelEpsilon" ).set( kernelEpsilon );
 		sobel1.getParam( "pass" ).set( 1 );
 		sobel1.getParam( "outputComponent" ).set( "RGB" );
 
@@ -114,7 +133,7 @@ int main( int argc, char** argv )
 		sobel2.getParam( "size" ).set( 1.0, 1.0 );
 		sobel2.getParam( "normalizedKernel" ).set( false );
 		sobel2.getParam( "computeGradientDirection" ).set( false );
-		sobel2.getParam( "kernelEpsilon" ).set( 0.1 );
+		sobel2.getParam( "kernelEpsilon" ).set( kernelEpsilon );
 		sobel2.getParam( "pass" ).set( 2 );
 		sobel2.getParam( "outputComponent" ).set( "RGB" );
 
@@ -144,16 +163,19 @@ int main( int argc, char** argv )
 		write2.getParam( "filename" ).set( "data/canny/2_localMaxima.png" );
 		write3.getParam( "filename" ).set( "data/canny/3_floodfill.png" );
 		write4.getParam( "filename" ).set( "data/canny/4_thinning.png" );
-		
+
 		TUTTLE_TCOUT( "__________________________________________________4" );
 //		g.connect( read1, bitdepth );
 //		g.connect( bitdepth, sobel1 );
+
 		g.connect( inputBuffer1, bitdepth1 );
 		g.connect( bitdepth1, blur1 );
 		g.connect( blur1, blur2 );
 		g.connect( blur2, sobel1 );
 		g.connect( sobel1, sobel2 );
 		g.connect( sobel2, localMaxima );
+//		g.connect( blur, sobel );
+//		g.connect( sobel, localMaxima );
 		g.connect( localMaxima, floodfill );
 		g.connect( floodfill, thinning );
 		g.connect( thinning, bitdepth2 );
@@ -169,26 +191,21 @@ int main( int argc, char** argv )
 		TUTTLE_TCOUT( "__________________________________________________5" );
 		std::list<std::string> outputs;
 		outputs.push_back( write00.getName() );
-		outputs.push_back( write0.getName() );
+//		outputs.push_back( write0.getName() );
 		outputs.push_back( write1a.getName() );
-		outputs.push_back( write1b.getName() );
+//		outputs.push_back( write1b.getName() );
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write2.getName() );
 		outputs.push_back( write3.getName() );
 		outputs.push_back( write4.getName() );
 		outputs.push_back( bitdepth2.getName() );
 
-		boost::posix_time::ptime t1a(boost::posix_time::microsec_clock::local_time());
-		memory::MemoryCache res0 = g.compute( bitdepth2, 0 );
-//		memory::MemoryCache res0 = g.compute( outputs, 0 );
-		boost::posix_time::ptime t2a(boost::posix_time::microsec_clock::local_time());
+		boost::posix_time::ptime t1(boost::posix_time::microsec_clock::local_time());
+//		memory::MemoryCache res0 = g.compute( bitdepth2, 0 );
+		memory::MemoryCache res0 = g.compute( outputs, 0 );
+		boost::posix_time::ptime t2(boost::posix_time::microsec_clock::local_time());
 
-//		boost::posix_time::ptime t1b(boost::posix_time::microsec_clock::local_time());
-//		memory::MemoryCache res1 = g.compute( thinning, 0, 9 );
-//		boost::posix_time::ptime t2b(boost::posix_time::microsec_clock::local_time());
-
-		TUTTLE_COUT( "Process 0 took: " << t2a - t1a );
-//		TUTTLE_COUT( "Process 1 took: " << (t2b - t1b)/10.0 );
+		TUTTLE_COUT( "Process took: " << t2 - t1 );
 
 		std::cout << res0 << std::endl;
 		memory::CACHE_ELEMENT imgRes = res0.get( bitdepth2.getName(), 0 );
