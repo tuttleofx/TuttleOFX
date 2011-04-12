@@ -1,0 +1,31 @@
+###############################################################################
+## Main BJam makefile for libcaca library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements	
+		<include>src
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>src
+	: build-dir $(DIST)/3rdParty/libcaca/obj
+    ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	libcaca		:
+			  [ glob src/*.c ]
+			;
+
+install	dist_src	: libcaca
+			: <variant>debug:<location>$(DIST)/3rdParty/libcaca/bin/debug
+			  <variant>release:<location>$(DIST)/3rdParty/libcaca/bin/release
+			;
