@@ -8,6 +8,7 @@
 project
 	: requirements	
 		<include>src
+		<include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
