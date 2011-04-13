@@ -71,8 +71,9 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 	switch( static_cast<EParamType>( _paramType->getValue() ) )
 	{
 		case eParamFilterToFormat:
-		{			float scaleX = params._size.x/srcRodSize.x;
-			float scaleY = params._size.y/srcRodSize.y;
+		{
+			//float scaleX = params._size.x/srcRodSize.x;
+			//float scaleY = params._size.y/srcRodSize.y;
 			rod.x1   = 0;
 			rod.y1   = 0;
 			rod.x2   = params._size.x;
@@ -112,11 +113,13 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 
 void ResizePlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	/*ResizeProcessParams<Scalar> params = getProcessParams();
-	rois.x1   = 0;
-	rois.y1   = 0;
-	rois.x2   = params._size.x;
-	rois.y2   = params._size.y;*/
+	OfxRectD srcRoi;
+	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+	srcRoi.x1 = srcRod.x1 - 1;
+	srcRoi.y1 = srcRod.y1 - 1;
+	srcRoi.x2 = srcRod.x2 + 1;
+	srcRoi.y2 = srcRod.y2 + 1;
+	rois.setRegionOfInterest( *_clipSrc, srcRoi );
 
 	/*ResizeProcessParams<Scalar> params = getProcessParams();
 	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );

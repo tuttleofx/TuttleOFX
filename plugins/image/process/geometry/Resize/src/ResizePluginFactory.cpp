@@ -85,6 +85,22 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	scaleRod->setEnabled( false );
 	scaleRod->setHint( "Adjust the output RoD." );
 
+	OFX::DoubleParamDescriptor* scaleRodX = desc.defineDoubleParam( kParamScaleX );
+	scaleRodX->setLabel( "Scale width" );
+	scaleRodX->setDefault( 1.0 );
+	scaleRodX->setRange( 0.1, std::numeric_limits<double>::max() );
+	scaleRodX->setDisplayRange( 0.1, 2.5 );
+	scaleRodX->setEnabled( false );
+	scaleRodX->setHint( "Adjust width of the output RoD." );
+
+	OFX::DoubleParamDescriptor* scaleRodY = desc.defineDoubleParam( kParamScaleY );
+	scaleRodY->setLabel( "Scale height" );
+	scaleRodY->setDefault( 1.0 );
+	scaleRodY->setRange( 0.1, std::numeric_limits<double>::max() );
+	scaleRodY->setDisplayRange( 0.1, 2.5 );
+	scaleRodY->setEnabled( false );
+	scaleRodY->setHint( "Adjust height of the output RoD." );
+
 	// filters parameters //
 	OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
 	filter->setLabel( "Filter" );
@@ -92,6 +108,8 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	filter->appendOption( kParamFilterBilinear );
 	filter->appendOption( kParamFilterBicubic );
 	filter->appendOption( kParamFilterKeys );
+	filter->appendOption( kParamFilterSimon );
+	filter->appendOption( kParamFilterRifman );
 	filter->appendOption( kParamFilterLanczos );
 	filter->setHint( "Select the filtering method." );
 	filter->setDefault( eParamFilterBilinear );

@@ -14,6 +14,187 @@
 using namespace boost::gil;
 
 
+struct ttl_nearest_neighbor_sampler {};
+
+template <typename DstP, typename SrcView, typename F>
+bool sample(ttl_nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result) {
+	point2<std::ptrdiff_t> center(iround(p));
+	if( center.x < 0 )
+		center.x = 0;
+	if( center.y < 0 )
+		center.y = 0;
+	if( center.x > src.width()-1 )
+		center.x = src.width()-1;
+	if( center.y > src.height()-1 )
+		center.y = src.height()-1;
+
+	result=src(center.x,center.y);
+	return true;
+}
+
+template <typename Weight>
+struct add_dst_mul_src_channel {
+    Weight _w;
+    add_dst_mul_src_channel(Weight w) : _w(w) {}
+
+    template <typename SrcChannel, typename DstChannel>
+    void operator()(const SrcChannel& src, DstChannel& dst) const {
+	dst += DstChannel(src*_w);
+    }
+};
+
+template <typename SrcP,typename Weight,typename DstP>
+struct add_dst_mul_src {
+	void operator()(const SrcP& src, Weight weight, DstP& dst) const {
+		static_for_each(src,dst, add_dst_mul_src_channel<Weight>(weight));
+	}
+};
+
+/// \brief A sampler that sets the destination pixel as the bilinear interpolation of the four closest pixels from the source.
+/// If outside the bounds, it doesn't change the destination
+/// \ingroup ImageAlgorithms
+struct ttl_bilinear_sampler {};
+
+template <typename DstP, typename SrcView, typename F>
+bool sample(ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP& result) {
+	typedef typename SrcView::value_type SrcP;
+
+	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
+
+	point2<F> frac(p.x-p0.x, p.y-p0.y);
+	//if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
+
+	pixel<F,devicen_layout_t<num_channels<SrcView>::value> > mp(0);                     // suboptimal
+	typename SrcView::xy_locator loc=src.xy_at(p0.x,p0.y);
+
+	if ( p0.x > 0 )
+	{
+		if ( p0.x+1<src.width() )
+		{
+			if ( p0.y>0 )
+			{
+				if (p0.y+1<src.height())
+				{
+					// most common case - inside the image, not on the last row or column
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	(1.0-frac.x)*(1.0-frac.y)	,mp);
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],	frac.x *(1.0-frac.y)		,mp);
+					++loc.y();
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	(1.0-frac.x)*   frac.y		,mp);
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],	frac.x *   frac.y		,mp);
+				}
+				else
+				{
+					// on the last row, but not the bottom-right corner pixel
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	(1.0-frac.x)			,mp);
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],	frac.x				,mp);
+				}
+			}
+			else
+			{
+				if (p0.y+1<src.height())
+				{
+					// most common case - inside the image, not on the last row or column
+					//add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,      (1.0-frac.x)*(1.0-frac.y),mp);
+					//add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],   frac.x *(1.0-frac.y),mp);
+					++loc.y();
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	(1.0-frac.x)			,mp);
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],	frac.x				,mp);
+				}
+				else
+				{
+					++loc.y();
+					mp = *loc;
+				}
+			}
+
+		}
+		else
+		{
+			if ( p0.y>0 )
+			{
+				if (p0.y+1<src.height())
+				{
+					// on the last column, but not the bottom-right corner pixel
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	(1.0-frac.y)	,mp);
+					++loc.y();
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	frac.y		,mp);
+				}
+				else
+				{
+					// the bottom-right corner pixel
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	1		,mp);
+				}
+			}
+			else
+			{
+				if (p0.y+1<src.height())
+				{
+					mp = loc.y()[1];
+				}
+			}
+		}
+	}
+	else
+	{
+		if (p0.x+1<src.width())
+		{
+			if ( p0.y>0 )
+			{
+				if (p0.y+1<src.height())
+				{
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],	(1.0-frac.y)	,mp);
+					++loc.y();
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],	frac.y		,mp);
+				}
+				else
+				{
+					++loc.y();
+					mp = loc.x()[1];
+				}
+			}
+			else
+			{
+				if (p0.y+1<src.height())
+				{
+					++loc.y();
+					mp = loc.x()[1];
+				}
+			}
+		}
+		else
+		{
+			if ( p0.y>0 )
+			{
+				if (p0.y+1<src.height())
+				{
+					// on the last column, but not the bottom-right corner pixel
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	(1.0-frac.y)	,mp);
+					++loc.y();
+					add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,	frac.y		,mp);
+				}
+				else
+				{
+					mp = loc.x()[1];
+				}
+			}
+			else
+			{
+				if (p0.y+1<src.height())
+				{
+					mp = loc.y()[1];
+				}
+			}
+		}
+	}
+
+	// Convert from floating point average value to the source type
+	SrcP src_result;
+	cast_pixel(mp,src_result);
+
+	color_convert(src_result, result);
+	return true;
+}
+
 template <typename SrcP, typename F, typename DstP>
 struct bicubic1D {
 
@@ -74,30 +255,61 @@ struct keys1D {
 };
 
 
-template < typename xy_locator, typename SrcP >
-void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD )
+template <typename SrcP, typename F, typename DstP>
+struct simon1D {
+
+	void operator()(const SrcP& srcA, const SrcP& srcB, const SrcP& srcC, const SrcP& srcD , F weight, DstP& dst) const {
+		DstP mp(0), mp3(0), mp2(0), mp1(0);
+
+		// second methos to minimize image merory access
+		float valueX	= weight * 0.25;	// x/4
+		float valueXX	= weight * valueX;	// (x^2)/4
+		float valueXXX	= weight -1;		// x-1
+
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA, -3*valueX*valueXXX*valueXXX,	mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB, 1+valueXX*(5*weight-9),		mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcC, valueX*( (-5*weight+6)*weight+3),	mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcD, 3*valueXX*valueXXX,			mp );
+
+		dst = mp;
+	}
+};
+
+
+template <typename SrcP, typename F, typename DstP>
+struct rifman1D {
+
+	void operator()(const SrcP& srcA, const SrcP& srcB, const SrcP& srcC, const SrcP& srcD , F weight, DstP& dst) const {
+		DstP mp(0), mp3(0), mp2(0), mp1(0);
+
+		// second methos to minimize image merory access
+		float valueXX	= weight * weight;	// (x^2)
+		float valueXXX	= weight -1;		// x-1
+
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA, -weight*valueXXX*valueXXX,		mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB, 1+valueXX*(weight-2),		mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcC, weight*( -valueXXX*weight+1),	mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcD, valueXX*valueXXX,			mp );
+
+		dst = mp;
+	}
+};
+
+
+template < typename xy_locator, typename SrcP, typename diff >
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const diff p, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD )
 {
 	SrcP nullPt(0);
-	/*if(p0.x<0)
+
+	p0.x   > 1 && p0.x-1 < windowWidth ?	ptA = loc.x()[-1]	: ptA = *loc;
+	p0.x   < windowWidth ?			ptB = *loc		: ptB = *loc;
+	p0.x+1 < windowWidth ?			ptC = loc.x()[1]	: ptC = *loc;
+	p0.x+2 < windowWidth ?			ptD = loc.x()[2]	: ptD = *loc;
+
+	if ( p0.x < 0.5 )
 	{
-		p0.x > 1.5 && p0.x-1 < windowWidth ?	ptA = loc.x()[-2]	: ptA = nullPt;
-		p0.x > 0.5 && p0.x   < windowWidth ?	ptB = loc.x()[-1]	: ptB = nullPt;
-		p0.x+1 < windowWidth ?			ptC = *loc		: ptC = nullPt;
-		p0.x+2 < windowWidth ?			ptD = loc.x()[1]	: ptD = nullPt;
-	}*/
-	if((p0.x -(int)p0.x) < 0.5)
-	{
-		p0.x > 1.5 && p0.x-1 < windowWidth ?	ptA = loc.x()[-2]	: ptA = nullPt;
-		p0.x > 0.5 && p0.x   < windowWidth ?	ptB = loc.x()[-1]	: ptB = nullPt;
-		p0.x+1 < windowWidth ?			ptC = *loc		: ptC = nullPt;
-		p0.x+2 < windowWidth ?			ptD = loc.x()[1]	: ptD = nullPt;
-	}
-	else
-	{
-		p0.x > 1.5 && p0.x-1 < windowWidth ?	ptA = loc.x()[-1]	: ptA = nullPt;
-		p0.x > 0.5 && p0.x   < windowWidth ?	ptB = *loc		: ptB = nullPt;
-		p0.x+1 < windowWidth ?			ptC = loc.x()[1]	: ptC = nullPt;
-		p0.x+2 < windowWidth ?			ptD = loc.x()[2]	: ptD = nullPt;
+		ptA = ptC;
+		ptB = ptC;
 	}
 
 }
@@ -106,11 +318,11 @@ template < typename xy_locator, typename SrcP >
 void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE )
 {
 	SrcP nullPt(0);
-	p0.x+2 > 0 && p0.x-2 < windowWidth ?	ptA = loc.x()[-2]	: ptA = nullPt;
-	p0.x+1 > 0 && p0.x-1 < windowWidth ?	ptB = loc.x()[-1]	: ptB = nullPt;
-	p0.x   < windowWidth ?			ptC = *loc		: ptC = nullPt;
-	p0.x+1 < windowWidth ?			ptD = loc.x()[1]	: ptD = nullPt;
-	p0.x+2 < windowWidth ?			ptE = loc.x()[2]	: ptE = nullPt;
+	p0.x+2 > 0 && p0.x-2 < windowWidth ?	ptA = loc.x()[-2]	: ptA = *loc;
+	p0.x+1 > 0 && p0.x-1 < windowWidth ?	ptB = loc.x()[-1]	: ptB = *loc;
+	p0.x   < windowWidth ?			ptC = *loc		: ptC = *loc;
+	p0.x+1 < windowWidth ?			ptD = loc.x()[1]	: ptD = *loc;
+	p0.x+2 < windowWidth ?			ptE = loc.x()[2]	: ptE = *loc;
 }
 
 template < typename xy_locator, typename SrcP >
@@ -166,14 +378,15 @@ struct lanczos1D {
 	}
 };
 
-struct bicubic_sampler {};
+struct ttl_bicubic_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F,devicen_layout_t<num_channels<SrcView>::value> > SrcC;
+
 	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
 
 	if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
@@ -192,26 +405,34 @@ bool sample( bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& resu
 	if( p0.y != 0 && p0.y-1 < src.height() )
 	{
 		--loc.y();
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a0 );
 		++loc.y();
 	}
 	if ( p0.y   < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a1 );
 	}
 	++loc.y();
 	if ( p0.y+1 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a2 );
+	}
+	else
+	{
+		a2 = a1;
 	}
 	++loc.y();
 	if ( p0.y+2 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a3 );
+	}
+	else
+	{
+		a3 = a1;
 	}
 
 	// vertical process
@@ -226,10 +447,155 @@ bool sample( bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& resu
 	return true;
 }
 
-struct keys_sampler {};
+struct ttl_keys_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( keys_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+{
+	typedef typename SrcView::value_type SrcP;
+	typedef pixel<F,devicen_layout_t<num_channels<SrcView>::value> > SrcC;
+
+	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
+
+	//if (p0.x < -1 || p0.y < -1 || p0.x>=src.width() || p0.y>=src.height()) return false;
+
+	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp(0);
+	typedef typename SrcView::xy_locator xy_locator;
+	xy_locator loc = src.xy_at( p0.x, p0.y );
+	point2<F> frac(p.x-p0.x, p.y-p0.y);
+
+	SrcC  a0(0), a1(0), a2(0), a3(0);
+
+	SrcP ptA(0), ptB(0), ptC(0), ptD(0);
+
+	if ( p0.y   < src.height() )
+	{
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a1 );
+	}
+	if( p0.y > 0.5 && p0.y-1 < src.height() )
+	{
+		--loc.y();
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a0 );
+		++loc.y();
+	}
+	else
+	{
+		a0 = a1;
+	}
+	++loc.y();
+	if ( p0.y+1 < src.height() )
+	{
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a2 );
+	}
+	else
+	{
+		a2 = a1;
+	}
+	++loc.y();
+	if ( p0.y+2 < src.height() )
+	{
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a3 );
+	}
+	else
+	{
+		a3 = a1;
+	}
+	if ( p0.y < 0.5 )
+	{
+		a1 = a2;
+		a0 = a2;
+	}
+
+	// vertical process
+	keys1D< SrcC, F, SrcC >()( a0, a1, a2, a3, frac.y, mp );
+
+
+	// Convert from floating point average value to the source type
+	SrcP src_result;
+	cast_pixel( mp, src_result );
+
+	color_convert( src_result, result );
+	return true;
+}
+
+
+struct ttl_simon_sampler {};
+
+template <typename DstP, typename SrcView, typename F>
+bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+{
+
+	typedef typename SrcView::value_type SrcP;
+	typedef pixel<F,devicen_layout_t<num_channels<SrcView>::value> > SrcC;
+	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
+
+	if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
+
+	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp(0);
+	typedef typename SrcView::xy_locator xy_locator;
+	//xy_locator loc = src.xy_at( (src.width()+1)/src.width()*p0.x-0.5, (src.height()+1)/src.height()*p0.y-0.5 );
+	xy_locator loc = src.xy_at( p0.x, p0.y );
+	point2<F> frac(p.x-p0.x, p.y-p0.y);
+
+	SrcC  a0(0), a1(0), a2(0), a3(0);
+
+	SrcP ptA(0), ptB(0), ptC(0), ptD(0);
+
+
+	if( p0.y != 0 && p0.y-1 < src.height() )
+	{
+		--loc.y();
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		simon1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a0 );
+		++loc.y();
+	}
+	if ( p0.y   < src.height() )
+	{
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		simon1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a1 );
+	}
+	++loc.y();
+	if ( p0.y+1 < src.height() )
+	{
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		simon1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a2 );
+	}
+	else
+	{
+		a2 = a1;
+	}
+	++loc.y();
+	if ( p0.y+2 < src.height() )
+	{
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		simon1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a3 );
+	}
+	else
+	{
+		a3 = a1;
+	}
+
+	// vertical process
+	simon1D< SrcC, F, SrcC >()( a0, a1, a2, a3, frac.y, mp );
+
+
+	// Convert from floating point average value to the source type
+	SrcP src_result;
+	cast_pixel( mp, src_result );
+
+	color_convert( src_result, result );
+	return true;
+}
+
+
+struct ttl_rifman_sampler {};
+
+template <typename DstP, typename SrcView, typename F>
+bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 
 	typedef typename SrcView::value_type SrcP;
@@ -247,53 +613,47 @@ bool sample( keys_sampler, const SrcView& src, const point2<F>& p, DstP& result 
 
 	SrcP ptA(0), ptB(0), ptC(0), ptD(0);
 
-	if(frac.x < 0.5)
-		frac.x +=0.5;
-	if(frac.x > 0.5)
-		frac.x += 0;
-
 	if( p0.y != 0 && p0.y-1 < src.height() )
 	{
 		--loc.y();
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
-		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a0 );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		rifman1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a0 );
 		++loc.y();
 	}
 	if ( p0.y   < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
-		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a1 );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		rifman1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a1 );
 	}
 	++loc.y();
 	if ( p0.y+1 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
-		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a2 );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		rifman1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a2 );
 	}
 	++loc.y();
 	if ( p0.y+2 < src.height() )
 	{
-		setXPixels<xy_locator, SrcP>( loc, p0, src.width(), ptA, ptB, ptC, ptD );
-		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a3 );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
+		rifman1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a3 );
 	}
 
 	// vertical process
-	keys1D< SrcC, F, SrcC >()( a0, a1, a2, a3, frac.y, mp );
+	rifman1D< SrcC, F, SrcC >()( a0, a1, a2, a3, frac.y, mp );
 
 
 	// Convert from floating point average value to the source type
 	SrcP src_result;
-	cast_pixel( a1, src_result );
+	cast_pixel( mp, src_result );
 
 	color_convert( src_result, result );
 	return true;
 }
 
-
-struct lanczos_sampler {};
+struct ttl_lanczos_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( lanczos_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 
 	typedef typename SrcView::value_type SrcP;
