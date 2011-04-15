@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX FftTransform Plugin
+## Main BJam makefile for TuttleOFX CTL Plugin
 ###############################################################################
 import os ;
  
@@ -7,36 +7,22 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>.
-    : build-dir $(DIST)/FftTransform/obj
+    : requirements
+	<include>src
+    : build-dir $(DIST)/CTL/obj
     ;
- 
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
+
  
 ###############################################################################
 # Product 
 ###############################################################################
-#plugin FftTransform :
-#    [ glob src/*.cpp ]
-#    /tuttleplugin/<link>static
-#    /libfftw/<link>static
-#    opengl
-#;
-
-alias FftTransform ;
-
+plugin CTL : 
+    [ glob-tree *.cpp ]
+    /tuttleplugin/<link>static
+    ;
  
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install FftTransform : $(DIST) ;
+auto_install CTL : $(DIST) ;
  

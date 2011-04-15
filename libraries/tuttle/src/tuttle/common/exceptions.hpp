@@ -30,11 +30,12 @@
     ::std::endl << TUTTLE_INFOS << \
     ::std::endl << "\t" << ::boost::current_exception_diagnostic_information() )
 
+#ifndef SWIG
 namespace OFX {
-struct tag_ofxStatus;
-typedef ::boost::error_info<OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
+typedef ::boost::error_info<struct tag_ofxStatus, ::OfxStatus> ofxStatus;
 inline std::string to_string( const ofxStatus& e ) { return ::tuttle::ofx::mapStatusToString( e.value() ); }
 }
+#endif
 
 namespace tuttle {
 
