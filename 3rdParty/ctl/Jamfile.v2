@@ -1,0 +1,46 @@
+###############################################################################
+## Main BJam makefile for ctl library
+###############################################################################
+
+use-project /base : ../ilmbase ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements	
+		<include>IlmCtl
+		<include>IlmCtlMath
+                <include>IlmCtlSimd
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>IlmCtl
+		<include>IlmCtlMath
+                <include>IlmCtlSimd
+                #<include>$(3RD_PARTY)/ilmbase/config
+                #<include>$(3RD_PARTY)/ilmbase/Half
+                #<include>$(3RD_PARTY)/ilmbase/Iex
+                #<include>$(3RD_PARTY)/ilmbase/Imath
+                #<include>$(3RD_PARTY)/ilmbase/IlmThread
+	: build-dir $(DIST)/3rdParty/ctl/obj
+    ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	ctl		:
+                          [ glob ilmCtl/*.cpp ilmCtlMath/*.cpp ilmCtlSimd/*.cpp ]
+                          /base//Iex
+                          /base//Half
+                          /base//IlmThread
+                          /base//Imath
+			;
+
+install	dist_src	: ctl
+                        : <variant>debug:<location>$(DIST)/3rdParty/ctl/bin/debug
+                          <variant>release:<location>$(DIST)/3rdParty/ctl/bin/release
+			;
