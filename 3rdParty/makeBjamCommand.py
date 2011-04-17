@@ -45,7 +45,7 @@ if linux :
     f = open(fileExec, "w")
     f.write("bjam ")
     if haveGcc :
-      f.write("--toolset=gcc ")
+      f.write("--toolset=gcc --disable-icu ")
     if is_64bits :
       f.write("cxxflags=-fPIC address-model=64 ")
     f.write("-j%s $* " % detectCPUs())

@@ -9,7 +9,11 @@ import os ;
 project
     : requirements
 	<include>src
-	<include>/usr/include/ffmpeg
+        <target-os>linux:<include>/usr/include/ffmpeg
+        <linkflags>-lavcodec
+        <linkflags>-lavutil
+        <linkflags>-lavformat
+        <linkflags>-lswscale
     : build-dir $(DIST)/FFMpeg/obj
     ;
 

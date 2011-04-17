@@ -9,9 +9,12 @@ import os ;
 project
     : requirements
 	<include>src
+        <include>$(3RD_PARTY)/ilmbase/Iex
+        <include>$(3RD_PARTY)/ilmbase/Half
     : build-dir $(DIST)/CTL/obj
     ;
 
+use-project	/ctl	: $(3RD_PARTY)/ctl ;
  
 ###############################################################################
 # Product 
@@ -19,6 +22,7 @@ project
 plugin CTL : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
+    /ctl/<link>static
     ;
  
 ###############################################################################

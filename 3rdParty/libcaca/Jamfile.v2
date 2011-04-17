@@ -7,12 +7,22 @@
 ###############################################################################
 project
 	: requirements	
+                <include>.
 		<include>src
-		<include>.
-		# disabling warning as error as we are not responsible for this code
+                <include>caca
+                <include>caca/codec
+                <define>__LIBCACA__
+                <define>depmode=gcc3
+                <linkflags>-lslang
+                <linkflags>-lncursesw
+                <linkflags>-lX11
+                <linkflags>-lGL
+                <linkflags>-lGLU
+                <linkflags>-lglut
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
+                <include>.
 		<include>src
 	: build-dir $(DIST)/3rdParty/libcaca/obj
     ;
@@ -23,7 +33,7 @@ project
 alias	headers		: [ glob-tree *.h ] ;
 
 lib	libcaca		:
-			  [ glob src/*.c ]
+                          [ glob caca/*.c caca/codec/*.c caca/driver/*.c ]
 			;
 
 install	dist_src	: libcaca

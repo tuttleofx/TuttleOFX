@@ -146,7 +146,7 @@ allLibs = [
 		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_46_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_46_setup.exe', False),
 		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
 		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False),
-		('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.9.tar.gz', False)
+                ('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz', False)
 	]
 
 if len( sys.argv ) == 1:
