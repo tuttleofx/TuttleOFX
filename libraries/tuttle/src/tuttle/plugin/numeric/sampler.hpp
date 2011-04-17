@@ -62,11 +62,48 @@ bool sample(ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP& 
 	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
 
 	point2<F> frac(p.x-p0.x, p.y-p0.y);
+        if( p0.x == -1 )
+        {
+            p0.x = 0 ;
+            frac.x = 0;
+        }
+        if( p0.y == -1 )
+        {
+            p0.y = 0 ;
+            frac.y = 0;
+        }
 	//if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
 
 	pixel<F,devicen_layout_t<num_channels<SrcView>::value> > mp(0);                     // suboptimal
 	typename SrcView::xy_locator loc=src.xy_at(p0.x,p0.y);
 
+        if (p0.x+1<src.width()) {
+            if (p0.y+1<src.height()) {
+                // most common case - inside the image, not on the last row or column
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,      (1.0-frac.x)*(1.0-frac.y),mp);
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],   frac.x *(1.0-frac.y),mp);
+                ++loc.y();
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,      (1.0-frac.x)*   frac.y ,mp);
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],   frac.x *   frac.y ,mp);
+            } else {
+                // on the last row, but not the bottom-right corner pixel
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,      (1.0-frac.x),mp);
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(loc.x()[1],   frac.x ,mp);
+            }
+        } else {
+            if (p0.y+1<src.height()) {
+                // on the last column, but not the bottom-right corner pixel
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,      (1.0-frac.y),mp);
+                ++loc.y();
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,         frac.y ,mp);
+            } else {
+                // the bottom-right corner pixel
+                detail::add_dst_mul_src<SrcP,F,pixel<F,devicen_layout_t<num_channels<SrcView>::value> > >()(*loc,1,mp);
+            }
+        }
+
+
+        /*
 	if ( p0.x > 0 )
 	{
 		if ( p0.x+1<src.width() )
@@ -174,7 +211,7 @@ bool sample(ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP& 
 				}
 				else
 				{
-					mp = loc.x()[1];
+                                        mp = loc.x()[1];
 				}
 			}
 			else
@@ -185,7 +222,7 @@ bool sample(ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP& 
 				}
 			}
 		}
-	}
+        }*/
 
 	// Convert from floating point average value to the source type
 	SrcP src_result;
@@ -301,17 +338,10 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const 
 {
 	SrcP nullPt(0);
 
-	p0.x   > 1 && p0.x-1 < windowWidth ?	ptA = loc.x()[-1]	: ptA = *loc;
+        p0.x   > 0 && p0.x-1 < windowWidth ?	ptA = loc.x()[-1]	: ptA = *loc;
 	p0.x   < windowWidth ?			ptB = *loc		: ptB = *loc;
 	p0.x+1 < windowWidth ?			ptC = loc.x()[1]	: ptC = *loc;
 	p0.x+2 < windowWidth ?			ptD = loc.x()[2]	: ptD = *loc;
-
-	if ( p0.x < 0.5 )
-	{
-		ptA = ptC;
-		ptB = ptC;
-	}
-
 }
 
 template < typename xy_locator, typename SrcP >
@@ -389,12 +419,22 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 
 	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
 
-	if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
+        //if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp(0);
 	typedef typename SrcView::xy_locator xy_locator;
 	xy_locator loc = src.xy_at( p0.x, p0.y );
 	point2<F> frac(p.x-p0.x, p.y-p0.y);
+        if( p0.x == -1 )
+        {
+            p0.x = 0 ;
+            frac.x = -frac.x;
+        }
+        if( p0.y == -1 )
+        {
+            p0.y = 0 ;
+            frac.y = -frac.y;
+        }
 
 	SrcC  a0(0), a1(0), a2(0), a3(0);
 
@@ -402,7 +442,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 
 
 
-	if( p0.y != 0 && p0.y-1 < src.height() )
+        if( p0.y > 0 && p0.y-1 < src.height() )
 	{
 		--loc.y();
 		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
@@ -463,7 +503,16 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	typedef typename SrcView::xy_locator xy_locator;
 	xy_locator loc = src.xy_at( p0.x, p0.y );
 	point2<F> frac(p.x-p0.x, p.y-p0.y);
-
+        if( p0.x == -1 )
+        {
+            p0.x = 0 ;
+            //frac.x = -frac.x;
+        }
+        if( p0.y == -1 )
+        {
+            p0.y = 0 ;
+            //frac.y = -frac.y;
+        }
 	SrcC  a0(0), a1(0), a2(0), a3(0);
 
 	SrcP ptA(0), ptB(0), ptC(0), ptD(0);
@@ -473,17 +522,18 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
 		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a1 );
 	}
-	if( p0.y > 0.5 && p0.y-1 < src.height() )
+        if( p0.y !=0 && p0.y-1 < src.height() )
 	{
 		--loc.y();
 		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width(), ptA, ptB, ptC, ptD );
 		keys1D< SrcP, F, SrcC >()( ptA, ptB, ptC, ptD, frac.x, a0 );
 		++loc.y();
 	}
-	else
-	{
-		a0 = a1;
-	}
+        else
+        {
+                a0 = a1;
+        }
+
 	++loc.y();
 	if ( p0.y+1 < src.height() )
 	{
@@ -503,11 +553,6 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	else
 	{
 		a3 = a1;
-	}
-	if ( p0.y < 0.5 )
-	{
-		a1 = a2;
-		a0 = a2;
 	}
 
 	// vertical process
@@ -533,7 +578,7 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 	typedef pixel<F,devicen_layout_t<num_channels<SrcView>::value> > SrcC;
 	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
 
-	if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
+        //if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp(0);
 	typedef typename SrcView::xy_locator xy_locator;
@@ -660,12 +705,23 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, DstP& 
 	typedef pixel<F,devicen_layout_t<num_channels<SrcView>::value> > SrcC;
 	point2<std::ptrdiff_t> p0(ifloor(p)); // the closest integer coordinate top left from p
 
-	if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
+        //if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp(0);
 	typedef typename SrcView::xy_locator xy_locator;
 	xy_locator loc = src.xy_at( p0.x, p0.y );
 	point2<F> frac(p.x-p0.x, p.y-p0.y);
+
+        if( p0.x == -1 )
+        {
+            p0.x = 0 ;
+            frac.x = 0;
+        }
+        if( p0.y == -1 )
+        {
+            p0.y = 0 ;
+            frac.y = 0;
+        }
 
 	SrcC  a0(0), a1(0), a2(0), a3(0), a4(0), a5(0), a6(0);
 
