@@ -115,7 +115,9 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 		return sample( ttl_nearest_neighbor_sampler(), src, p, result );
 	}
 
-	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 ); // suboptimal
+	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > PixelW;
+	PixelW mp( 0 ); // suboptimal
+
 	typename SrcView::xy_locator loc = src.xy_at( pTL.x, pTL.y );
 
 	if( pTL.x + 1 < src.width( ) )
@@ -123,18 +125,18 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 		if( pTL.y + 1 < src.height( ) )
 		{
 			// most common case - inside the image, not on the last row or column
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( *loc, ( 1.0 - frac.x )*( 1.0 - frac.y ), mp );
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( loc.x( )[1], frac.x * ( 1.0 - frac.y ), mp );
-			add_dst_mul_src<SrcP, float, DstP >()(loc.x()[1],      frac.x *(1.0-frac.y),		mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( *loc, ( 1.0 - frac.x )*( 1.0 - frac.y ), mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( loc.x()[1], frac.x * ( 1.0 - frac.y ), mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( loc.x()[1],  frac.x *(1.0-frac.y),		mp );
 			++loc.y( );
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( *loc, ( 1.0 - frac.x ) * frac.y, mp );
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( loc.x( )[1], frac.x * frac.y, mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( *loc, ( 1.0 - frac.x ) * frac.y, mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( loc.x()[1], frac.x * frac.y, mp );
 		}
 		else
 		{
 			// on the last row, but not the bottom-right corner pixel
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( *loc, ( 1.0 - frac.x ), mp );
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( loc.x( )[1], frac.x, mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( *loc, ( 1.0 - frac.x ), mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( loc.x()[1], frac.x, mp );
 		}
 	}
 	else
@@ -142,14 +144,14 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 		if( pTL.y + 1 < src.height( ) )
 		{
 			// on the last column, but not the bottom-right corner pixel
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( *loc, ( 1.0 - frac.y ), mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( *loc, ( 1.0 - frac.y ), mp );
 			++loc.y( );
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( *loc, frac.y, mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >()( *loc, frac.y, mp );
 		}
 		else
 		{
 			// the bottom-right corner pixel
-			ttl_detail::add_dst_mul_src<SrcP, F, pixel<F, devicen_layout_t<num_channels<SrcView>::value> > >( )( *loc, 1, mp );
+			ttl_detail::add_dst_mul_src<SrcP, F, PixelW >( )( *loc, 1, mp );
 		}
 	}
 
@@ -295,10 +297,10 @@ struct bicubic1D
 		DstP mp( 0 ), mp3( 0 ), mp2( 0 ), mp1( 0 );
 
 		// second methos to minimize image merory access
-		const float valueA = weight * ( weight - 1 ); // x (x-1)
-		const float valueB = weight * ( weight - 2 ); // x (x-2)
-		float valueXX	= weight * weight;	// x^2
-		float valueXXX	= weight * valueXX;	// x^3
+//		const float valueA = weight * ( weight - 1 ); // x (x-1)
+//		const float valueB = weight * ( weight - 2 ); // x (x-2)
+		const float valueXX	= weight * weight;	// x^2
+		const float valueXXX = weight * valueXX;	// x^3
 
 		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA, -valueXXX+2*valueXX-weight,		mp );
 		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB, valueXX*(weight-2)+1,	mp );
