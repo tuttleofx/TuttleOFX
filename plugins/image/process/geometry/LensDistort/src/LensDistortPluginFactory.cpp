@@ -175,6 +175,13 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	interpolation->setLabel( "Interpolation" );
 	interpolation->appendOption( kParamInterpolationNearest );
 	interpolation->appendOption( kParamInterpolationBilinear );
+//	#ifndef TUTTLE_PRODUCTION
+	interpolation->appendOption( kParamInterpolationBicubic );
+	interpolation->appendOption( kParamInterpolationKeys );
+	interpolation->appendOption( kParamInterpolationSimon );
+	interpolation->appendOption( kParamInterpolationRifman );
+	interpolation->appendOption( kParamInterpolationLanczos );
+//	#endif
 	interpolation->setDefault( 1 );
 	interpolation->setHint( "Interpolation method" );
 

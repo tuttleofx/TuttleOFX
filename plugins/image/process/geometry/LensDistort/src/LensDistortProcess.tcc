@@ -2,6 +2,7 @@
 #include "LensDistortProcess.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/numeric/sampler.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 
 namespace tuttle {
@@ -51,12 +52,37 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 	{
 		case eParamInterpolationNearest:
 		{
-			lensDistort<nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<ttl_nearest_neighbor_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 		case eParamInterpolationBilinear:
 		{
-			lensDistort<bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			lensDistort<ttl_bilinear_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamInterpolationBicubic:
+		{
+			lensDistort<ttl_bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamInterpolationKeys:
+		{
+			lensDistort<ttl_keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamInterpolationSimon:
+		{
+			lensDistort<ttl_simon_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamInterpolationRifman:
+		{
+			lensDistort<ttl_rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamInterpolationLanczos:
+		{
+			lensDistort<ttl_lanczos_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
 	}
