@@ -9,7 +9,7 @@ use-project /z : ../zlib ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
+	: requirements
 		<include>./IlmImf
 		<os>NT:<include>./config.windows
 		<os>LINUX:<include>./config 
@@ -19,13 +19,13 @@ project
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
-    : usage-requirements
+	: usage-requirements
 		<include>./IlmImf
 		<os>NT:<include>./config.windows
 		<os>LINUX:<include>./config 
 		<os>MACOSX:<include>./config
-    : build-dir $(DIST)/3rdParty/openexr/obj
-    ;
+	: build-dir $(DIST)/3rdParty/openexr/obj
+	;
 
 
 ###############################################################################
@@ -33,11 +33,12 @@ project
 ###############################################################################
 lib IlmImf : 
         [ glob IlmImf/*.cpp ]
-        /z//zlib
+	/z//zlib
         /base//Iex
         /base//Half
         /base//IlmThread
         /base//Imath
+	 #: <use>/z//zlib
         ;
 
 install dist_src 

@@ -3,7 +3,7 @@
 ###############################################################################
 path-constant DIST : $(DIST)/color ;
 
-for local l in [ glob * ]
+for local l in [ glob * : Print ]
 {
    build-project $(l) ;
 }

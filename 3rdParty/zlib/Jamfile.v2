@@ -21,7 +21,7 @@ project
 # z library
 ###############################################################################
 lib zlib : 
-    [ glob *.c : adler32.c crc32.c deflate.c example.c inflate.c inftrees.c minigzip.c trees.c ]
+    [ glob *.c :  example.c minigzip.c ]
     ;
 
 install dist_src	

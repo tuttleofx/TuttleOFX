@@ -4,6 +4,18 @@
 
 use-project /base : ../ilmbase ;
 
+# declaring halfExpLogTable one programs compiled from halfExpLogTable.cpp
+exe halfExpLogTable : IlmCtlSimd/halfExpLogTable.cpp ../openexr//IlmImf ;
+
+# as we want to execute them easily, we want them to be copied into this directory
+install installExe : halfExpLogTable : <location>IlmCtlSimd/ ;
+
+make halfExpLogTable.h : installExe : @generateHalfExpLogTable ;
+actions generateHalfExpLogTable
+{
+	IlmCtlSimd/halfExpLogTable IlmCtlSimd/halfExpLogTable.h IlmCtlSimd/halfExpLog.h
+}
+
 ###############################################################################
 # Global project requirements
 ###############################################################################
@@ -11,36 +23,30 @@ project
 	: requirements	
 		<include>IlmCtl
 		<include>IlmCtlMath
-                <include>IlmCtlSimd
+		<include>IlmCtlSimd
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
 		<include>IlmCtl
 		<include>IlmCtlMath
-                <include>IlmCtlSimd
-                #<include>$(3RD_PARTY)/ilmbase/config
-                #<include>$(3RD_PARTY)/ilmbase/Half
-                #<include>$(3RD_PARTY)/ilmbase/Iex
-                #<include>$(3RD_PARTY)/ilmbase/Imath
-                #<include>$(3RD_PARTY)/ilmbase/IlmThread
+		<include>IlmCtlSimd
 	: build-dir $(DIST)/3rdParty/ctl/obj
     ;
 
 ###############################################################################
-# libraw library
+# libctl library
 ###############################################################################
 alias	headers		: [ glob-tree *.h ] ;
 
 lib	ctl		:
-                          [ glob ilmCtl/*.cpp ilmCtlMath/*.cpp ilmCtlSimd/*.cpp ]
-                          /base//Iex
-                          /base//Half
-                          /base//IlmThread
-                          /base//Imath
+				[ glob IlmCtl/*.cpp IlmCtlMath/*.cpp IlmCtlSimd/*.cpp : IlmCtlSimd/halfExpLogTable.cpp ]
+				../openexr
+			:
+				<implicit-dependency>halfExpLogTable.h
 			;
 
-install	dist_src	: ctl
-                        : <variant>debug:<location>$(DIST)/3rdParty/ctl/bin/debug
-                          <variant>release:<location>$(DIST)/3rdParty/ctl/bin/release
+install	dist_src	:	ctl
+			:	<variant>debug:<location>$(DIST)/3rdParty/ctl/bin/debug
+				<variant>release:<location>$(DIST)/3rdParty/ctl/bin/release
 			;
