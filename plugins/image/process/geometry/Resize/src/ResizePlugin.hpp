@@ -30,6 +30,8 @@ public:
 public:
 	ResizeProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
+	void updateVisibleTools();
+
 	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
 	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
@@ -40,12 +42,24 @@ public:
 	
 	const EParamFilter getFilter() const { return static_cast<EParamFilter>( _paramFilter->getValue() ); }
 public:
-//	OFX::Clip* _clipSrcMatte; ///< Matte source image clip
+	OFX::ChoiceParam*	_paramOptions;
 
-	OFX::ChoiceParam*	_paramType;
-	OFX::Double2DParam*	_paramOutputFormat;
-	OFX::ChoiceParam*	_paramFilter;
+	OFX::ChoiceParam*	_paramFormat;
+
+	OFX::BooleanParam*	_paramSplit;
+
+	OFX::ChoiceParam*	_paramDirection;
 	OFX::DoubleParam*	_paramScale;
+	OFX::DoubleParam*	_paramSize;
+
+	OFX::Double2DParam*	_paramOutputFormat;
+	OFX::DoubleParam*	_paramScaleX;
+	OFX::DoubleParam*	_paramScaleY;
+
+	OFX::ChoiceParam*	_paramFilter;
+
+	OFX::BooleanParam*	_paramCenter;
+	OFX::Double2DParam*	_paramCenterPoint;
 };
 
 }

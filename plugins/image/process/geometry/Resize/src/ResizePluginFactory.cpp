@@ -44,80 +44,111 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                   OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
+	srcClip->addSupportedComponent	( OFX::ePixelComponentRGBA );
+	srcClip->addSupportedComponent	( OFX::ePixelComponentRGB );
+	srcClip->addSupportedComponent	( OFX::ePixelComponentAlpha );
+	srcClip->setSupportsTiles	( kSupportTiles );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+	dstClip->addSupportedComponent	( OFX::ePixelComponentRGBA );
+	dstClip->addSupportedComponent	( OFX::ePixelComponentRGB );
+	dstClip->addSupportedComponent	( OFX::ePixelComponentAlpha );
+	dstClip->setSupportsTiles	( kSupportTiles );
+
+	OFX::ChoiceParamDescriptor* options = desc.defineChoiceParam( kParamOptions );
+	options->setLabel	( "type" );
+	options->appendOption	( kParamFormat );
+	options->appendOption	( kParamBox );
+	options->appendOption	( kParamScale );
+	options->setDefault	( eParamFormat );
+
+	OFX::ChoiceParamDescriptor* format = desc.defineChoiceParam( kParamFormat );
+	format->setLabel	( "output format" );
+	format->appendOption	( kParamPCVideo );
+	format->appendOption	( kParamNTSC );
+	format->appendOption	( kParamPAL );
+	format->appendOption	( kParamHD );
+	format->appendOption	( kParamNTSC169 );
+	format->appendOption	( kParamPAL169 );
+	format->appendOption	( kParam1kSuper35 );
+	format->appendOption	( kParam1kCinemascope );
+	format->appendOption	( kParam2kSuper35 );
+	format->appendOption	( kParam2kCinemascope );
+	format->appendOption	( kParam4kSuper35 );
+	format->appendOption	( kParam4kCinemascope );
+	format->appendOption	( kParamSquare256 );
+	format->appendOption	( kParamSquare512 );
+	format->appendOption	( kParamSquare1k );
+	format->appendOption	( kParamSquare2k );
+	format->setDefault	( eParam2kCinemascope );
 
 	OFX::BooleanParamDescriptor* split = desc.defineBooleanParam( kParamSplit );
-	split->setLabel( "Initial aspect ratio" );
-	split->setDefault( true );
-	split->setHint( "Keep initial aspect ratio." );
+	split->setLabel			( "Initial aspect ratio" );
+	split->setDefault		( true );
+	split->setHint			( "Keep initial aspect ratio." );
 
 	OFX::ChoiceParamDescriptor* direction = desc.defineChoiceParam( kParamDirection );
-	direction->setLabel( "Direction" );
-	direction->appendOption( kParamSizeX );
-	direction->appendOption( kParamSizeY );
-	direction->setDefault( eParamSizeX );
-
-	OFX::ChoiceParamDescriptor* type = desc.defineChoiceParam( kParamType );
-	type->setLabel( "Type" );
-	type->appendOption( kParamOutputFormat );
-	type->appendOption( kParamScale );
-
-	OFX::Double2DParamDescriptor* toBox = desc.defineDouble2DParam( kParamOutputFormat );
-	toBox->setDefault( 200, 200 );
-	toBox->setLabel( "Width / Height" );
-	toBox->setHint( "Set the output RoD." );
+	direction->setLabel		( "Direction" );
+	direction->appendOption		( kParamSizeX );
+	direction->appendOption		( kParamSizeY );
+	direction->setDefault		( eParamSizeX );
 
 	OFX::DoubleParamDescriptor* scaleRod = desc.defineDoubleParam( kParamScale );
-	scaleRod->setLabel( "Scale" );
-	scaleRod->setDefault( 1.0 );
-	scaleRod->setRange( 0.1, std::numeric_limits<double>::max() );
-	scaleRod->setDisplayRange( 0.1, 2.5 );
-	scaleRod->setEnabled( false );
-	scaleRod->setHint( "Adjust the output RoD." );
+	scaleRod->setLabel		( "Scale" );
+	scaleRod->setDefault		( 1.0 );
+	scaleRod->setRange		( 0.1, std::numeric_limits<double>::max() );
+	scaleRod->setDisplayRange	( 0.1, 2.5 );
+	scaleRod->setHint		( "Adjust the output RoD." );
+
+	OFX::DoubleParamDescriptor* toBoxDim = desc.defineDoubleParam( kParamOutputDimension );
+	toBoxDim->setDefault		( 200 );
+	toBoxDim->setRange		( 0, std::numeric_limits<double>::max() );
+	toBoxDim->setDisplayRange	( 0, 3000 );
+	toBoxDim->setLabel		( "Size" );
+	toBoxDim->setHint		( "Set the output size (pixels)." );
+
+	OFX::Double2DParamDescriptor* toBox = desc.defineDouble2DParam( kParamOutputFormat );
+	toBox->setDefault		( 200, 200 );
+	toBox->setLabel			( "Width / Height" );
+	toBox->setHint			( "Set the output RoD." );
 
 	OFX::DoubleParamDescriptor* scaleRodX = desc.defineDoubleParam( kParamScaleX );
-	scaleRodX->setLabel( "Scale width" );
-	scaleRodX->setDefault( 1.0 );
-	scaleRodX->setRange( 0.1, std::numeric_limits<double>::max() );
-	scaleRodX->setDisplayRange( 0.1, 2.5 );
-	scaleRodX->setEnabled( false );
-	scaleRodX->setHint( "Adjust width of the output RoD." );
+	scaleRodX->setLabel		( "Width scale" );
+	scaleRodX->setDefault		( 1.0 );
+	scaleRodX->setRange		( 0.1, std::numeric_limits<double>::max() );
+	scaleRodX->setDisplayRange	( 0.1, 2.5 );
+	scaleRodX->setHint		( "Adjust width of the output RoD." );
 
 	OFX::DoubleParamDescriptor* scaleRodY = desc.defineDoubleParam( kParamScaleY );
-	scaleRodY->setLabel( "Scale height" );
-	scaleRodY->setDefault( 1.0 );
-	scaleRodY->setRange( 0.1, std::numeric_limits<double>::max() );
-	scaleRodY->setDisplayRange( 0.1, 2.5 );
-	scaleRodY->setEnabled( false );
-	scaleRodY->setHint( "Adjust height of the output RoD." );
+	scaleRodY->setLabel		( "Height scale" );
+	scaleRodY->setDefault		( 1.0 );
+	scaleRodY->setRange		( 0.1, std::numeric_limits<double>::max() );
+	scaleRodY->setDisplayRange	( 0.1, 2.5 );
+	scaleRodY->setHint		( "Adjust height of the output RoD." );
+
+	OFX::BooleanParamDescriptor* center = desc.defineBooleanParam( kParamCenter );
+	center->setLabel		( "Center resizing" );
+	center->setDefault		( true );
+	center->setHint			( "Set the resize to the center point." );
+
+	OFX::Double2DParamDescriptor* centerPoint = desc.defineDouble2DParam( kParamCenterPoint );
+	centerPoint ->setDefault	( 100, 100 );
+	centerPoint ->setLabel		( "Center point at" );
+	centerPoint ->setHint		( "Position of the center point." );
 
 	// filters parameters //
 	OFX::ChoiceParamDescriptor* filter = desc.defineChoiceParam( kParamFilter );
 	filter->setLabel( "Filter" );
 	filter->appendOption( kParamFilterNearest );
 	filter->appendOption( kParamFilterBilinear );
-	filter->appendOption( kParamFilterBicubic );
+	//filter->appendOption( kParamFilterBicubic );
 	filter->appendOption( kParamFilterKeys );
 	filter->appendOption( kParamFilterSimon );
 	filter->appendOption( kParamFilterRifman );
 	filter->appendOption( kParamFilterLanczos );
 	filter->setHint( "Select the filtering method." );
 	filter->setDefault( eParamFilterBilinear );
-//
-//	OFX::Double2DParamDescriptor* scale = desc.defineDouble2DParam( kParamScale );
-//	scale->setDefault( 1.0, 1.0 );
-//	scale->setLabel( "Scale" );
-
 }
 
 /**
