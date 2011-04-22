@@ -13,6 +13,7 @@
 #include <boost/gil/image.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/typedefs.hpp>
+#include <boost/assert.hpp>
 
 #include <cmath>
 
@@ -23,8 +24,8 @@ namespace lens {
 template <typename F, typename F2>
 inline boost::gil::point2<F> transform( const NormalLensDistortParams<F>& params, const boost::gil::point2<F2>& src )
 {
-	assert( params._distort );
-	assert( params._coef1 >= 0 );
+	BOOST_ASSERT( params._distort );
+	BOOST_ASSERT( params._coef1 >= 0 );
 	boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) ); // centered normalized space
 	pc *= params._postScale;
 
@@ -40,17 +41,18 @@ inline boost::gil::point2<F> transform( const NormalLensDistortParams<F>& params
 template <typename F, typename F2>
 inline boost::gil::point2<F> transform( const NormalLensUndistortParams<F>& params, const boost::gil::point2<F2>& src )
 {
-	assert( !params._distort );
-	assert( params._coef1 >= 0 );
+	BOOST_ASSERT( !params._distort );
+	BOOST_ASSERT( params._coef1 >= 0 );
 	boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+
 	pc *= params._postScale;
 
 	F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
+
 	// necessary values to calculate
 	if( r == 0 || params._coef1 == 0 )
 	{
-		boost::gil::point2<F> tmp( src.x, src.y );
-		return tmp;
+		return params.lensCenterNormalizedToPixel( pc );
 	}
 
 	// calculate the determinant delta = Q^3 + R^2
@@ -65,19 +67,20 @@ inline boost::gil::point2<F> transform( const NormalLensUndistortParams<F>& para
 	{
 		coef = std::abs( cR ) + std::sqrt( delta );
 		coef = -std::pow( coef, 1.0 / 3.0 );
-		assert( coef != 0 );
+		BOOST_ASSERT( coef != 0 );
 		coef += cQ / coef;
 	}
 	else if( delta < 0 )
 	{
-		assert( cQ >= 0 );
-		assert( cR / ( sqrt( cQ * cQ * cQ ) ) <= 1 && cR / ( sqrt( cQ * cQ * cQ ) ) >= -1 );
+		BOOST_ASSERT( cQ >= 0 );
+		BOOST_ASSERT( cR / ( sqrt( cQ * cQ * cQ ) ) <= 1 && cR / ( sqrt( cQ * cQ * cQ ) ) >= -1 );
 		t    = std::acos( cR / ( sqrt( cQ * cQ * cQ ) ) );
 		coef = -2 * std::sqrt( cQ ) * std::cos( ( t - M_PI_2 ) / 3.0 );
 	}
 	else
 	{
-		assert( 0 ); // Untreated case..
+		BOOST_ASSERT( 0 ); // Untreated case..
+		return params.lensCenterNormalizedToPixel( pc );
 	}
 
 	// get coordinates into distorded image from distorded center
