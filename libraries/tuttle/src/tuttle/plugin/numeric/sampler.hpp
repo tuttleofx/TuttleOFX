@@ -24,17 +24,13 @@ template <typename DstP, typename SrcView, typename F>
 bool sample( ttl_nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	point2<std::ptrdiff_t> center( iround( p ) );
-
-	if( center.x < -0.5 || center.y < -0.5 || center.x >= src.width( ) || center.y >= src.height( ) ) return false;
-
-	if( center.x < 0 )
-		center.x = 0;
-	if( center.y < 0 )
-		center.y = 0;
-	if( center.x > src.width( ) - 1 )
-		center.x = src.width( ) - 1;
-	if( center.y > src.height( ) - 1 )
-		center.y = src.height( ) - 1;
+	if( center.x < 0 ||
+	    center.y < 0 ||
+	    center.x > src.width() - 1 ||
+	    center.y > src.height() - 1 )
+	{
+		return false;
+	}
 
 	result = src( center.x, center.y );
 	return true;
@@ -95,16 +91,16 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 
 	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
-	if( pTL.x == -1 )
-	{
-		pTL.x = 0;
-		frac.x = 0;
-	}
-	if( pTL.y == -1 )
-	{
-		pTL.y = 0;
-		frac.y = 0;
-	}
+//	if( pTL.x == -1 )
+//	{
+//		pTL.x = 0;
+//		frac.x = 0;
+//	}
+//	if( pTL.y == -1 )
+//	{
+//		pTL.y = 0;
+//		frac.y = 0;
+//	}
 
 	// if we are outside the image
 	if( pTL.x < 0 ||
@@ -128,7 +124,6 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 		{
 			// most common case - inside the image, not on the last row or column
 			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x )*( 1.0 - frac.y ), mp );
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x * ( 1.0 - frac.y ), mp );
 			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x * ( 1.0 - frac.y ), mp );
 			++loc.y( );
 			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x ) * frac.y, mp );
