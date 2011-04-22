@@ -271,7 +271,6 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	//    srcRoi.x2 -= 2;
 	//    srcRoi.y2 -= 2;
 	OfxRectD srcRealRoi = rectanglesIntersection( srcRoi, srcRod );
-	srcRealRoi = srcRod;
 
 	rois.setRegionOfInterest( *_clipSrc, srcRealRoi );
 
