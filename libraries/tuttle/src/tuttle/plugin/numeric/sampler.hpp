@@ -91,28 +91,26 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 
 	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
-//	if( pTL.x == -1 )
-//	{
-//		pTL.x = 0;
-//		frac.x = 0;
-//	}
-//	if( pTL.y == -1 )
-//	{
-//		pTL.y = 0;
-//		frac.y = 0;
-//	}
-
 	// if we are outside the image
-	if( pTL.x < 0 ||
-	 pTL.y < 0 ||
-	 pTL.x > src.width( ) - 2 ||
-	 pTL.y > src.height( ) - 2 )
+	if( pTL.x < -1 ||
+	    pTL.y < -1 ||
+	    pTL.x > src.width( )-1 ||
+	    pTL.y > src.height( )-1 )
 	{
-		// to keep the border pixel
-		// if we are inside [-0.5,0] or [(width-1), (width-1)+0.5]
-		return sample( ttl_nearest_neighbor_sampler( ), src, p, result );
+
+		return false;
 	}
 
+	if( pTL.x == -1 )
+	{
+		pTL.x = 0;
+		frac.x = 0;
+	}
+	if( pTL.y == -1 )
+	{
+		pTL.y = 0;
+		frac.y = 0;
+	}
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > PixelW;
 	PixelW mp( 0 ); // suboptimal
 
