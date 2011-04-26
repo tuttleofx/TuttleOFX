@@ -82,6 +82,17 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	code->setLabel( "CTL code" );
 	code->setHint( "Your CTL code." );
 	code->setStringType( OFX::eStringTypeMultiLine );
+	code->setDefault(
+		"void apply( float iR, float iG, float iB, float iA,\n"
+		"            output float oR, output float oG, output float oB, output float oA )\n"
+		"{\n"
+		"    oR = iR;\n"
+		"    oG = iG;\n"
+		"    oB = iB;\n"
+		"    oA = iA;\n"
+		"}\n"
+		"\n"
+	);
 
 	OFX::StringParamDescriptor* file = desc.defineStringParam( kParamCTLFile );
 	file->setLabel( "CTL file" );

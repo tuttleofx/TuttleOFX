@@ -1,10 +1,10 @@
 #include "CTLAlgorithm.hpp"
 #include "CTLProcess.hpp"
 
-#include <half.h>
-#include <Iex.h>
-#include <CtlMessage.h>
-#include <CtlSimdInterpreter.h>
+#include <OpenEXR/half.h>
+#include <OpenEXR/Iex.h>
+#include <IlmCtl/CtlMessage.h>
+#include <IlmCtlSimd/CtlSimdInterpreter.h>
 
 
 namespace tuttle {
