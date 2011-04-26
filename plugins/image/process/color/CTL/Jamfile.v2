@@ -11,6 +11,7 @@ project
 		<include>src
 		<include>$(3RD_PARTY)/ilmbase/Iex
 		<include>$(3RD_PARTY)/ilmbase/Half
+		<include>$(3RD_PARTY)/ctl
 	: build-dir $(DIST)/CTL/obj
 	;
 
