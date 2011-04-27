@@ -6,7 +6,6 @@
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/math/constants/constants.hpp>
 
-
 #include <boost/math/constants/constants.hpp>
 
 #include <cmath>
@@ -97,7 +96,6 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 	    pTL.x > src.width( )-1 ||
 	    pTL.y > src.height( )-1 )
 	{
-
 		return false;
 	}
 
@@ -390,8 +388,23 @@ struct rifman1D
 	}
 };
 
-template < typename xy_locator, typename SrcP, typename diff >
-void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const diff p, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD )
+/**
+ * @brief Get pixels around a particular position.
+ * @param[in] loc locator which points to a pixel
+ * @param[in] pt0 x,y position of loc
+ * @param[in] windowWidth the region inside which we search our pixels
+ * @param[out] ptA pixel value to retrieve
+ * @param[out] ptB pixel value to retrieve
+ * @param[out] ptC pixel value to retrieve
+ * @param[out] ptD pixel value to retrieve
+ *
+ * -----------------
+ * | A |-B-| C | D |
+ * -----------------
+ *       ^..... loc is pointing to B point
+ */
+template < typename xy_locator, typename SrcP >
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD )
 {
 	static const SrcP nullPt( 0 );
 
@@ -412,7 +425,7 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const 
 }
 
 template < typename xy_locator, typename SrcP >
-void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE )
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE )
 {
 	static const SrcP nullPt( 0 );
 	ptA = p0.x + 2 > 0 && p0.x - 2 < windowWidth ? loc.x( )[-2] : *loc;
@@ -423,7 +436,7 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int wi
 }
 
 template < typename xy_locator, typename SrcP >
-void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE, SrcP& ptF )
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE, SrcP& ptF )
 {
 	static const SrcP nullPt( 0 );
 	ptA = p0.x + 2 > 0 && p0.x - 2 < windowWidth ? loc.x( )[-2] : nullPt;
@@ -435,7 +448,7 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int wi
 }
 
 template < typename xy_locator, typename SrcP >
-void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE, SrcP& ptF, SrcP& ptG )
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE, SrcP& ptF, SrcP& ptG )
 {
 	static const SrcP nullPt( 0 );
 	ptA = p0.x + 3 > 0 && p0.x - 3 < windowWidth ? loc.x( )[-3] : nullPt;
@@ -499,7 +512,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 	if( p0.y < 0 )
 	{
 		--loc.y( );
-		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
@@ -508,7 +521,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -520,13 +533,13 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 	{
 		if( p0.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
 		if( p0.y != 0 && p0.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -538,7 +551,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 		++loc.y( );
 		if( p0.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -548,7 +561,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -590,7 +603,7 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	if( p0.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 		keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
@@ -599,7 +612,7 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -611,13 +624,13 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	{
 		if( p0.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
 		if( p0.y != 0 && p0.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -629,7 +642,7 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 		++loc.y( );
 		if( p0.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -639,7 +652,7 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -682,7 +695,7 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 	if( p0.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 		simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
@@ -691,7 +704,7 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -703,13 +716,13 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 	{
 		if( p0.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
 		if( p0.y != 0 && p0.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -721,7 +734,7 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 		++loc.y( );
 		if( p0.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -731,7 +744,7 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -774,7 +787,7 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 	if( p0.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 		rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
@@ -783,7 +796,7 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -795,13 +808,13 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 	{
 		if( p0.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
 		if( p0.y != 0 && p0.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -813,7 +826,7 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 		++loc.y( );
 		if( p0.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -823,7 +836,7 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, frac, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -834,7 +847,6 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 
 	// vertical process
 	rifman1D< SrcC, F, SrcC > ( )( a0, a1, a2, a3, frac.y, mp );
-
 
 	// Convert from floating point average value to the source type
 	SrcP src_result;
@@ -860,6 +872,10 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, DstP& 
 	xy_locator loc = src.xy_at( p0.x, p0.y );
 	point2<F> frac( p.x - p0.x, p.y - p0.y );
 
+	// If we are on a border, we cheat with the position,
+	// so we move to have the 4 corners inside the image
+	// and adjust the "frac" coefficient to only use 1 or 2 pixels
+	// to do the interpolation (other values are multiplied by 0)
 	if( p0.x == -1 )
 	{
 		p0.x = 0;
