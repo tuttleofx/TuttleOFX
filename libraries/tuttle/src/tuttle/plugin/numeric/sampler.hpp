@@ -459,7 +459,7 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const 
 }
 
 template < typename xy_locator, typename SrcP >
-void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE, SrcP& ptF, SrcP& ptG )
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, SrcP& ptA, SrcP& ptB, SrcP& ptC, SrcP& ptD, SrcP& ptE, SrcP& ptF, SrcP& ptG )
 {
 	static const SrcP nullPt( 0 );
 
