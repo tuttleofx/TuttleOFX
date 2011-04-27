@@ -21,8 +21,10 @@ template <typename Sampler, // Models SamplerConcept
 // Models MappingFunctionConcept
 void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view, const MapFn& dst_to_src, const OfxRectI& procWindow, tuttle::plugin::IProgress* p, Sampler sampler = Sampler() )
 {
-	typename DstView::point_t dst_p;
-	typename DstView::value_type black;
+	typedef typename DstView::point_t Point2;
+	typedef typename DstView::value_type Pixel;
+	Point2 dst_p;
+	Pixel black;
 	color_convert( boost::gil::rgba32f_pixel_t( 0.0, 0.0, 0.0, 0.0 ), black );
 	for( dst_p.y = procWindow.y1; dst_p.y < procWindow.y2; ++dst_p.y )
 	{

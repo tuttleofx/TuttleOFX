@@ -293,10 +293,10 @@ struct bicubic1D
 		const float valueXX = weight * weight; // x^2
 		const float valueXXX = weight * valueXX; // x^3
 
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -valueXXX + 2 * valueXX - weight, mp );
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, valueXX * ( weight - 2 ) + 1, mp );
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, -valueXXX + valueXX + weight, mp );
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, valueXX * ( weight - 1 ), mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -valueXXX + 2 * valueXX - weight, mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, valueXX * ( weight - 2 ) + 1, mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, -valueXXX + valueXX + weight, mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, valueXX * ( weight - 1 ), mp );
 
 		dst = mp;
 	}
@@ -512,7 +512,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 	if( p0.y < 0 )
 	{
 		--loc.y( );
-		setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
@@ -521,7 +521,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -533,13 +533,13 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 	{
 		if( p0.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
 		if( p0.y != 0 && p0.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -551,7 +551,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 		++loc.y( );
 		if( p0.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -561,7 +561,7 @@ bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& 
 		++loc.y( );
 		if( p0.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP, point2<F> >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else

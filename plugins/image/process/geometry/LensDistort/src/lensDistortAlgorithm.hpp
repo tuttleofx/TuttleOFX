@@ -6,9 +6,9 @@
 #include <tuttle/common/math/rectOp.hpp>
 #include <tuttle/plugin/IProgress.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/resample.hpp>
+#include <tuttle/plugin/image/gil/globals.hpp>
 
-#include <ofxCore.h>
+#include <ofxsCore.h>
 
 #include <boost/gil/image.hpp>
 #include <boost/gil/utilities.hpp>
@@ -17,16 +17,15 @@
 
 #include <cmath>
 
-namespace tuttle {
-namespace plugin {
-namespace lens {
+namespace boost {
+namespace gil {
 
 template <typename F, typename F2>
-inline boost::gil::point2<F> transform( const NormalLensDistortParams<F>& params, const boost::gil::point2<F2>& src )
+inline point2<F> transform( const ::tuttle::plugin::lens::NormalLensDistortParams<F>& params, const point2<F2>& src )
 {
 	BOOST_ASSERT( params._distort );
 	BOOST_ASSERT( params._coef1 >= 0 );
-	boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) ); // centered normalized space
+	point2<F> pc( params.pixelToLensCenterNormalized( src ) ); // centered normalized space
 	pc *= params._postScale;
 
 	const F r2   = pc.x * pc.x + pc.y * pc.y; // distance to center squared
@@ -39,11 +38,11 @@ inline boost::gil::point2<F> transform( const NormalLensDistortParams<F>& params
 }
 
 template <typename F, typename F2>
-inline boost::gil::point2<F> transform( const NormalLensUndistortParams<F>& params, const boost::gil::point2<F2>& src )
+inline point2<F> transform( const ::tuttle::plugin::lens::NormalLensUndistortParams<F>& params, const point2<F2>& src )
 {
 	BOOST_ASSERT( !params._distort );
 	BOOST_ASSERT( params._coef1 >= 0 );
-	boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+	point2<F> pc( params.pixelToLensCenterNormalized( src ) );
 
 	pc *= params._postScale;
 
@@ -96,9 +95,9 @@ inline boost::gil::point2<F> transform( const NormalLensUndistortParams<F>& para
  * @todo support for fisheye...
  */
 template <typename F, typename F2>
-inline boost::gil::point2<F> transform( const FisheyeLensDistortParams<F>& params, const boost::gil::point2<F2>& src )
+inline point2<F> transform( const ::tuttle::plugin::lens::FisheyeLensDistortParams<F>& params, const point2<F2>& src )
 {
-	boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+	point2<F> pc( params.pixelToLensCenterNormalized( src ) );
 	pc *= params._postScale;
 
 	// F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center
@@ -108,7 +107,7 @@ inline boost::gil::point2<F> transform( const FisheyeLensDistortParams<F>& param
 	F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
 	if( r == 0 )
 	{
-		boost::gil::point2<F> tmp( src.x, src.y );
+		point2<F> tmp( src.x, src.y );
 		return tmp;
 	}
 	F coef = 0.5 * std::tan( r * params._coef1 ) / ( std::tan( 0.5 * params._coef1 ) * r );
@@ -122,15 +121,15 @@ inline boost::gil::point2<F> transform( const FisheyeLensDistortParams<F>& param
  * @todo support for fisheye...
  */
 template <typename F, typename F2>
-inline boost::gil::point2<F> transform( const FisheyeLensUndistortParams<F>& params, const boost::gil::point2<F2>& src )
+inline point2<F> transform( const ::tuttle::plugin::lens::FisheyeLensUndistortParams<F>& params, const point2<F2>& src )
 {
-	boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+	point2<F> pc( params.pixelToLensCenterNormalized( src ) );
 	pc *= params._postScale;
 
 	F r = std::sqrt( pc.x * pc.x + pc.y * pc.y ); // distance to center
 	if( r == 0 || params._coef1 == 0 )
 	{
-		boost::gil::point2<F> tmp( src.x, src.y );
+		point2<F> tmp( src.x, src.y );
 		return tmp;
 	}
 	F coef = std::atan( 2.0 * r * std::tan( 0.5 * params._coef1 ) ) / params._coef1;
@@ -146,9 +145,9 @@ inline boost::gil::point2<F> transform( const FisheyeLensUndistortParams<F>& par
  * @todo support for advanced lens...
  */
 template <typename F, typename F2>
-inline boost::gil::point2<F> transform( const AdvancedLensDistortParams<F>& params, const boost::gil::point2<F2>& src )
+inline point2<F> transform( const ::tuttle::plugin::lens::AdvancedLensDistortParams<F>& params, const point2<F2>& src )
 {
-	boost::gil::point2<F> pc( params.pixelToLensCenterNormalized( src ) );
+	point2<F> pc( params.pixelToLensCenterNormalized( src ) );
 	pc *= params._postScale;
 
 	F r2 = pc.x * pc.x + pc.y * pc.y; // distance to center
@@ -160,10 +159,17 @@ inline boost::gil::point2<F> transform( const AdvancedLensDistortParams<F>& para
 	return params.lensCenterNormalizedToPixel( pc ); // to the original space
 }
 
+}
+}
+
+namespace tuttle {
+namespace plugin {
+namespace lens {
+
 template<class Params>
 typename Params::Point2 transformValues( const Params& params, const typename Params::Point2& p )
 {
-	return transform( params, p );
+	return boost::gil::transform( params, p );
 }
 
 /**
@@ -178,13 +184,13 @@ OfxRectD transformValues( const Params& params, const OfxRectD& rec )
 	// center in rec ?
 	if( params._lensCenterDst.x > rec.x1 && params._lensCenterDst.x < rec.x2 )
 	{
-		points.push_back( transform( params, Point2( params._lensCenterDst.x, rec.y1 ) ) );
-		points.push_back( transform( params, Point2( params._lensCenterDst.x, rec.y2 ) ) );
+		points.push_back( boost::gil::transform( params, Point2( params._lensCenterDst.x, rec.y1 ) ) );
+		points.push_back( boost::gil::transform( params, Point2( params._lensCenterDst.x, rec.y2 ) ) );
 	}
 	if( params._lensCenterDst.y > rec.y1 && params._lensCenterDst.y < rec.y2 )
 	{
-		points.push_back( transform( params, Point2( rec.x1, params._lensCenterDst.y ) ) );
-		points.push_back( transform( params, Point2( rec.x2, params._lensCenterDst.y ) ) );
+		points.push_back( boost::gil::transform( params, Point2( rec.x1, params._lensCenterDst.y ) ) );
+		points.push_back( boost::gil::transform( params, Point2( rec.x2, params._lensCenterDst.y ) ) );
 	}
 
 	// A B
@@ -193,10 +199,10 @@ OfxRectD transformValues( const Params& params, const OfxRectD& rec )
 	Point2 outB( rec.x2, rec.y1 );
 	Point2 outC( rec.x1, rec.y2 );
 	Point2 outD( rec.x2, rec.y2 );
-	points.push_back( transform( params, outA ) );
-	points.push_back( transform( params, outB ) );
-	points.push_back( transform( params, outC ) );
-	points.push_back( transform( params, outD ) );
+	points.push_back( boost::gil::transform( params, outA ) );
+	points.push_back( boost::gil::transform( params, outB ) );
+	points.push_back( boost::gil::transform( params, outC ) );
+	points.push_back( boost::gil::transform( params, outD ) );
 
 	return pointsBoundingBox( points );
 }
@@ -252,7 +258,7 @@ inline void transformValuesApply( const Params& params, std::vector<boost::gil::
 	     it != itEnd;
 	     ++it )
 	{
-		*it = transform( params, *it );
+		*it = boost::gil::transform( params, *it );
 	}
 }
 
