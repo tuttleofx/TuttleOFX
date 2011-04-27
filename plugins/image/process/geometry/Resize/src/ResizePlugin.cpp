@@ -175,11 +175,12 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 	bool modified = false;
 
 	ResizeProcessParams<Scalar> params = getProcessParams();
-	uint sizex, sizey;
+	uint sizex = 0;
+	uint sizey = 0;
 	switch(_paramOptions->getValue())
 	{
 		case eParamFormat :
-
+		{
 			switch(_paramFormat->getValue())
 			{
 				case eParamPCVideo:		sizex =  640; sizey =  480; break;
@@ -216,8 +217,9 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 			}
 			modified = true;
 			return true;
+		}
 		case eParamBox :
-
+		{
 			if(_paramSplit->getValue() == false )
 			{
 				sizex = params._size.x;
@@ -254,28 +256,30 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 			}
 			modified = true;
 			return true;
+		}
 		case eParamScale :
+		{
+			const point2<double> pMin( srcRodInDstFrame.x1, srcRodInDstFrame.y1 ); // top left corner
+			const point2<double> pMax( srcRodInDstFrame.x2, srcRodInDstFrame.y2 ); // down right corner
+			const point2<double> center( srcRodSize * 0.5 );
 
-			point2<double> pMin( srcRodInDstFrame.x1, srcRodInDstFrame.y1 ); // top left corner
-			point2<double> pMax( srcRodInDstFrame.x2, srcRodInDstFrame.y2 ); // down right corner
-			point2<double> center( srcRodSize * 0.5 );
-
-			uint scalex, scaley;
+			uint scalex = 0;
+			uint scaley = 0;
 			if(_paramSplit->getValue() == false )
 			{
-				double scaleX = _paramScaleX->getValue();
-				double scaleY = _paramScaleY->getValue();
-				if( scaleX == 0.0 && scaleY == 0.0 )
+				const double pScaleX = _paramScaleX->getValue();
+				const double pScaleY = _paramScaleY->getValue();
+				if( pScaleX == 0.0 && pScaleY == 0.0 )
 					return false;
 
-				scalex = scaleX;
-				scaley = scaleY;
+				scalex = pScaleX;
+				scaley = pScaleY;
 			}
 			else
 			{
-				double scale = _paramScale->getValue();
+				const double scale = _paramScale->getValue();
 				if( scale == 0.0 )
-				return false;
+					return false;
 
 				scalex = scale;
 				scaley = scale;
@@ -297,10 +301,8 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 			}
 			modified = true;
 			return true;
+		}
 	}
-
-
-
 
 	rod.x1 += srcRodCorner.x;
 	rod.y1 += srcRodCorner.y;
