@@ -213,7 +213,7 @@ void CTLProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 				a
 			);
 
-		copy_and_convert_pixels( dstWorkLineV, dstLineV );
+		copy_pixels( dstWorkLineV, dstLineV );
 
 		if( this->progressForward() )
 			return;
