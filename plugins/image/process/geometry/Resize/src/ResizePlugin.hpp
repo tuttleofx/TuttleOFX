@@ -60,6 +60,9 @@ public:
 
 	OFX::BooleanParam*	_paramCenter;
 	OFX::Double2DParam*	_paramCenterPoint;
+
+        OFX::DoubleParam*	_paramB;
+        OFX::DoubleParam*	_paramC;
 };
 
 }

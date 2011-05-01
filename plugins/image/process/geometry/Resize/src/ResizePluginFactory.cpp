@@ -142,11 +142,14 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	filter->setLabel( "Filter" );
 	filter->appendOption( kParamFilterNearest );
 	filter->appendOption( kParamFilterBilinear );
+        filter->appendOption( kParamFilterBC );
 	filter->appendOption( kParamFilterBicubic );
-	filter->appendOption( kParamFilterCatmul );
+        filter->appendOption( kParamFilterCatmul ); // idem as the Keys resampling
 	filter->appendOption( kParamFilterKeys );
 	filter->appendOption( kParamFilterSimon );
 	filter->appendOption( kParamFilterRifman );
+        filter->appendOption( kParamFilterMitchell );
+        filter->appendOption( kParamFilterParzen );
 	filter->appendOption( kParamFilterLanczos3 );
 	filter->appendOption( kParamFilterLanczos4 );
 	filter->appendOption( kParamFilterLanczos6 );
@@ -154,6 +157,20 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	filter->appendOption( kParamFilterGaussian );
 	filter->setHint( "Select the filtering method." );
 	filter->setDefault( eParamFilterBilinear );
+
+        OFX::DoubleParamDescriptor* B = desc.defineDoubleParam( kParamFilterB );
+        B->setLabel		( "B value" );
+        B->setDefault		( 1.0 );
+        B->setRange		( 0.0, 1.0 );
+        B->setDisplayRange	( 0.0, 1.0 );
+        B->setHint		( "Adjust the B valuye of the cubic filter." );
+
+        OFX::DoubleParamDescriptor* C = desc.defineDoubleParam( kParamFilterC );
+        C->setLabel		( "C value" );
+        C->setDefault		( 0.0 );
+        C->setRange		( 0.0, 1.0 );
+        C->setDisplayRange	( 0.0, 1.0 );
+        C->setHint		( "Adjust the C valuye of the cubic filter." );
 }
 
 /**

@@ -85,25 +85,35 @@ static const std::string kParamFilter		= "Filter";
 
 static const std::string kParamFilterNearest	= "Nearest neighbor";
 static const std::string kParamFilterBilinear	= "Bilinear";
+static const std::string kParamFilterBC 	= "B-C filter";
 static const std::string kParamFilterBicubic	= "Bicubic";
 static const std::string kParamFilterCatmul	= "Catmul-Rom";
 static const std::string kParamFilterKeys	= "Keys";
 static const std::string kParamFilterSimon	= "Simon";
 static const std::string kParamFilterRifman	= "Rifman";
+static const std::string kParamFilterMitchell	= "Mitchell";
+static const std::string kParamFilterParzen	= "Parzen";
 static const std::string kParamFilterLanczos3	= "Lanczos 3";
 static const std::string kParamFilterLanczos4	= "Lanczos 4";
 static const std::string kParamFilterLanczos6	= "Lanczos 6";
 static const std::string kParamFilterLanczos12	= "Lanczos 12";
 static const std::string kParamFilterGaussian	= "Gaussian";
+
+static const std::string kParamFilterB	= "B";
+static const std::string kParamFilterC	= "C";
+
 enum EParamFilter
 {
 	eParamFilterNearest = 0,
 	eParamFilterBilinear,
+        eParamFilterBC,
 	eParamFilterBicubic,
 	eParamFilterCatmul,
 	eParamFilterKeys,
 	eParamFilterSimon,
 	eParamFilterRifman,
+        eParamFilterMitchell,
+        eParamFilterParzen,
 	eParamFilterLanczos3,
 	eParamFilterLanczos4,
 	eParamFilterLanczos6,
