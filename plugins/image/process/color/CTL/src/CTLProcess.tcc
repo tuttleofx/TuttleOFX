@@ -1,10 +1,10 @@
 #include "CTLAlgorithm.hpp"
 #include "CTLProcess.hpp"
+#include "CTLPlugin.hpp"
 
 #include <OpenEXR/half.h>
 #include <OpenEXR/Iex.h>
 #include <IlmCtl/CtlMessage.h>
-#include <IlmCtlSimd/CtlSimdInterpreter.h>
 
 
 namespace tuttle {
@@ -22,7 +22,8 @@ void ctlMessageOutput( const std::string& message )
 	}
 }
 
-void fillInputArg( Ctl::FunctionArgPtr& arg, const std::string& argStr, const half& v, const std::size_t n )
+template<class Type>
+void fillInputArg( Ctl::FunctionArgPtr& arg, const std::string& argStr, const Type& v, const std::size_t n )
 {
 	if( !arg ||
 //		!arg->type().cast<half>() ||
@@ -33,11 +34,11 @@ void fillInputArg( Ctl::FunctionArgPtr& arg, const std::string& argStr, const ha
 		BOOST_THROW_EXCEPTION( Iex::ArgExc( std::string("Cannot set value of argument ")+argStr ) );
 	}
 
-	///@todo copy buffer !
-	//memcpy( arg->data(), r, n * sizeof(half) );
+	memcpy( arg->data(), &v, n*sizeof(Type) );
 }
 
-void retrieveOutputArg( const Ctl::FunctionArgPtr& arg, const std::string& argStr, half& v, const std::size_t n )
+template<class Type>
+void retrieveOutputArg( const Ctl::FunctionArgPtr& arg, const std::string& argStr, Type& v, const std::size_t n )
 {
 	if( !arg ||
 //		!arg->type( ).cast<half>() ||
@@ -48,31 +49,31 @@ void retrieveOutputArg( const Ctl::FunctionArgPtr& arg, const std::string& argSt
 		BOOST_THROW_EXCEPTION( Iex::ArgExc( std::string("Cannot set value of argument ")+argStr ) );
 	}
 
-	///@todo copy buffer !
-//	memcpy( v, arg->data(), n*sizeof(half) );
+	memcpy( &v, arg->data(), n*sizeof(Type) );
 }
 
+template<class Type>
 void callCtlChunk(
 	Ctl::FunctionCallPtr call,
 	const std::size_t n,
-	half& rOut,
-	half& gOut,
-	half& bOut,
-	half& aOut,
-	const half& r,
-	const half& g,
-	const half& b,
-	const half& a )
+	Type& rOut,
+	Type& gOut,
+	Type& bOut,
+	Type& aOut,
+	const Type& r,
+	const Type& g,
+	const Type& b,
+	const Type& a )
 {
 	// First set the input arguments for the function call:
-	Ctl::FunctionArgPtr rArg = call->findInputArg( "r" );
-	fillInputArg( rArg, "r", r, n );
-	Ctl::FunctionArgPtr gArg = call->findInputArg( "g" );
-	fillInputArg( gArg, "g", g, n );
-	Ctl::FunctionArgPtr bArg = call->findInputArg( "b" );
-	fillInputArg( bArg, "b", b, n );
-	Ctl::FunctionArgPtr aArg = call->findInputArg( "a" );
-	fillInputArg( aArg, "a", a, n );
+	Ctl::FunctionArgPtr rArg = call->findInputArg( "rIn" );
+	fillInputArg( rArg, "rIn", r, n );
+	Ctl::FunctionArgPtr gArg = call->findInputArg( "gIn" );
+	fillInputArg( gArg, "gIn", g, n );
+	Ctl::FunctionArgPtr bArg = call->findInputArg( "bIn" );
+	fillInputArg( bArg, "bIn", b, n );
+	Ctl::FunctionArgPtr aArg = call->findInputArg( "aIn" );
+	fillInputArg( aArg, "aIn", a, n );
 
 	// Now we can call the CTL function for
 	// pixels 0, through n-1
@@ -89,18 +90,19 @@ void callCtlChunk(
 	retrieveOutputArg( aOutArg, "aOut", aOut, n );
 }
 
+template<class Type>
 void callCtl(
 	Ctl::Interpreter &interp,
 	Ctl::FunctionCallPtr call,
 	const std::size_t size,
-	half* rOut,
-	half* gOut,
-	half* bOut,
-	half* aOut,
-	const half* r,
-	const half* g,
-	const half* b,
-	const half* a )
+	Type* rOut,
+	Type* gOut,
+	Type* bOut,
+	Type* aOut,
+	const Type* r,
+	const Type* g,
+	const Type* b,
+	const Type* a )
 {
 	std::size_t n = size;
 	while( n > 0 )
@@ -120,7 +122,6 @@ void callCtl(
 	}
 }
 
-
 }
 
 template<class View>
@@ -128,16 +129,30 @@ CTLProcess<View>::CTLProcess( CTLPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
+	ctlPlugin = &_plugin;
 	this->setNoMultiThreading();
 }
 
 template<class View>
 void CTLProcess<View>::setup( const OFX::RenderArguments& args )
 {
+	ctlPlugin = &_plugin;
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 
-	ctlPlugin = &_plugin;
+	switch( _params._inputType )
+	{
+		case eParamChooseInputCode:
+		{
+			TUTTLE_COUT_ERROR( "NotImplemented. Can't load text value." );
+		}
+		case eParamChooseInputFile:
+		{
+			_interpreter.setModulePaths( _params._paths );
+			TUTTLE_COUT( "CTL -- Load module: " << _params._module );
+			_interpreter.loadModule( _params._module );
+		}
+	}
 	Ctl::setMessageOutputFunction( ctlMessageOutput );
 }
 
@@ -149,36 +164,60 @@ template<class View>
 void CTLProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	Ctl::SimdInterpreter interpreter;
-	Ctl::FunctionCallPtr func = interpreter.newFunctionCall( "process" );
+	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+	
+	Ctl::FunctionCallPtr call = _interpreter.newFunctionCall( "main" );
+
+	const OfxPointI procWindowSize = {
+		procWindowRoW.x2 - procWindowRoW.x1,
+		procWindowRoW.y2 - procWindowRoW.y1 };
+
+	const std::size_t alignment = 2;
+	rgba32f_planar_image_t srcWorkLine( procWindowSize.x, 1, alignment );
+	rgba32f_planar_view_t srcWorkLineV = view( srcWorkLine );
+	rgba32f_planar_image_t dstWorkLine( procWindowSize.x, 1, alignment );
+	rgba32f_planar_view_t dstWorkLineV = view( dstWorkLine );
 
 	for( int y = procWindowOutput.y1;
 			 y < procWindowOutput.y2;
 			 ++y )
 	{
-		typename View::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
-		for( int x = procWindowOutput.x1;
-			 x < procWindowOutput.x2;
-			 ++x, ++src_it, ++dst_it )
-		{
-			(*dst_it) = (*src_it);
-		}
+		View srcLineV = subimage_view( this->_srcView, procWindowSrc.x1, y-procWindowSrc.y1,
+												  procWindowSize.x, 1 );
+		View dstLineV = subimage_view( this->_dstView, procWindowOutput.x1, y-procWindowOutput.y1,
+												  procWindowSize.x, 1 );
+
+		copy_pixels( srcLineV, srcWorkLineV );
+
+		float* rOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[0] );
+		float* gOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[1] );
+		float* bOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[2] );
+		float* aOut = reinterpret_cast<float*>( &dstWorkLineV(0,0)[3] );
+		const float* r = reinterpret_cast<float*>( &srcWorkLineV(0,0)[0] );
+		const float* g = reinterpret_cast<float*>( &srcWorkLineV(0,0)[1] );
+		const float* b = reinterpret_cast<float*>( &srcWorkLineV(0,0)[2] );
+		const float* a = reinterpret_cast<float*>( &srcWorkLineV(0,0)[3] );
+
+		callCtl<float>(
+				_interpreter,
+				call,
+				procWindowSize.x,
+				rOut,
+				gOut,
+				bOut,
+				aOut,
+				r,
+				g,
+				b,
+				a
+			);
+
+		copy_and_convert_pixels( dstWorkLineV, dstLineV );
+
 		if( this->progressForward() )
 			return;
 	}
-	/*
-	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
-	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-							     procWindowRoW.y2 - procWindowRoW.y1 };
-	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
-							                  procWindowSize.x, procWindowSize.y );
-	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-							                  procWindowSize.x, procWindowSize.y );
-	copy_pixels( src, dst );
-	*/
-
 }
 
 }

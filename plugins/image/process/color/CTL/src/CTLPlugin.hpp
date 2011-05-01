@@ -12,6 +12,9 @@ namespace ctl {
 template<typename Scalar>
 struct CTLProcessParams
 {
+	EParamChooseInput _inputType;
+	std::vector<std::string> _paths;
+	std::string _module;
 	std::string _code;
 };
 

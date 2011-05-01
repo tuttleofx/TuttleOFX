@@ -3,6 +3,8 @@
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
+#include <IlmCtlSimd/CtlSimdInterpreter.h>
+
 namespace tuttle {
 namespace plugin {
 namespace ctl {
@@ -21,6 +23,8 @@ public:
 protected:
     CTLPlugin&    _plugin;            ///< Rendering plugin
 	CTLProcessParams<Scalar> _params; ///< parameters
+
+	Ctl::SimdInterpreter _interpreter;
 
 public:
     CTLProcess( CTLPlugin& effect );
