@@ -169,28 +169,28 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 template < typename F >
 bool getBCWeight(const F B, const F C, const F distance, F &weight )
 {
-    if(distance<1)
-    {
-        F P = 2.0 - 1.5 * B - C;
-        F Q = - 3.0 + 2.0 * B + C;
-        F S = 1.0 - B/3.0;
-        // note: R is null
-        weight = ( P * distance + Q ) *  distance * distance + S;
-        return true;
-    }
-    else
-    {
-        if(distance<2)
-        {
-            F T = - 1.0/6.0 * B - C;
-            F U = B + 5.0 * C;
-            F V = -2.0 * B - 8.0 * C;
-            F W = 4.0 / 3.0 * B + 4 * C;
-            weight = ( ( T * distance + U ) *  distance + V ) * distance + W;
-            return true;
-        }
-        return false;
-    }
+	if(distance<1)
+	{
+		F P = 2.0 - 1.5 * B - C;
+		F Q = - 3.0 + 2.0 * B + C;
+		F S = 1.0 - B/3.0;
+		// note: R is null
+		weight = ( P * distance + Q ) *  distance * distance + S;
+		return true;
+	}
+	else
+	{
+		if(distance<2)
+		{
+		F T = - 1.0/6.0 * B - C;
+		F U = B + 5.0 * C;
+		F V = -2.0 * B - 8.0 * C;
+		F W = 4.0 / 3.0 * B + 4 * C;
+		weight = ( ( T * distance + U ) *  distance + V ) * distance + W;
+		return true;
+		}
+		return false;
+	}
 }
 
 template <typename SrcP, typename F, typename DstP>
@@ -201,10 +201,10 @@ struct bicubic1D
 	{
 		DstP mp( 0 );
 
-                detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, weight[0] , mp );
-                detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, weight[1] , mp );
-                detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, weight[2] , mp );
-                detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, weight[3] , mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, weight[0] , mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, weight[1] , mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, weight[2] , mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, weight[3] , mp );
 		dst = mp;
 	}
 };
@@ -222,10 +222,10 @@ struct catmul1D
 		const float X3 = weight * X2; // x^3
 
 
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, 0.5*( -  X3 +2*X2 -X1 ), mp );
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 0.5*( 3*X3 -5*X2 +2   ), mp );
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, 0.5*(-3*X3 +4*X2 +X1  ), mp );
-		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, 0.5*(   X3 -  X2      ), mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, 0.5*( -  X3 +2*X2 -X1 ), mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 0.5*( 3*X3 -5*X2 +2   ), mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, 0.5*(-3*X3 +4*X2 +X1  ), mp );
+		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, 0.5*(   X3 -  X2      ), mp );
 
 		dst = mp;
 	}
@@ -398,26 +398,26 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const 
 }
 
 template < typename xy_locator, typename SrcP >
-        void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const unsigned int windowWidth, std::vector< SrcP > src )
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const unsigned int windowWidth, std::vector< SrcP > src )
 {
-        static const SrcP nullPt( 0 );
+	static const SrcP nullPt( 0 );
 
-        if( p0.x < 0 )
-        {
-                for( unsigned int i = 0; i < windowWidth+2; i++)
-                    src.at(i) = loc.x( )[1];
+	if( p0.x < 0 )
+	{
+		for( unsigned int i = 0; i < windowWidth+2; i++)
+			src.at(i) = loc.x( )[1];
 
-                unsigned int position = 2;
-                for( unsigned int i = windowWidth+2; i < windowWidth*2+1; i++)
-                {
-                    src.at(i) = ( p0.x + position < windowWidth ) ? loc.x( )[position] : src.at( i - 1 );
-                    position++;
-                }
-                return;
-        }
+		unsigned int position = 2;
+		for( unsigned int i = windowWidth+2; i < windowWidth*2+1; i++)
+		{
+			src.at(i) = ( p0.x + position < windowWidth ) ? loc.x( )[position] : src.at( i - 1 );
+			position++;
+		}
+		return;
+	}
 
-        // center pixel is the current locator
-        src.at(windowWidth) = *loc;
+	// center pixel is the current locator
+	src.at(windowWidth) = *loc;
         unsigned int position = 1;
         for( unsigned int i = 0; i < windowWidth; i++)
         {
