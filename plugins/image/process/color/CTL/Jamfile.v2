@@ -23,6 +23,7 @@ use-project	/ctl	: $(3RD_PARTY)/ctl ;
 plugin CTL : 
 	[ glob-tree *.cpp ]
 	/tuttleplugin/<link>static
+	/boost/filesystem
 	/ctl
 	;
  
