@@ -19,8 +19,10 @@ use-project	/raw	: $(3RD_PARTY)/libraw ;
 plugin	Raw : 
 		[ glob-tree *.cpp ]
 		/tuttleplugin/<link>static
+		/tuttlecommon/<link>static
 		/boost/filesystem
 		/boost/system
+		/boost/regex
 		/raw
 		;
 explicit Raw ;

@@ -21,6 +21,7 @@ plugin		Dpx :
 		/tuttleplugin/<link>static
 		/boost/filesystem
 		/boost/system
+		/boost/regex
 		;
 
 ###############################################################################
