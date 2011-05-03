@@ -56,14 +56,13 @@ struct add_dst_mul_src_channel
 template <typename SrcP, typename Weight, typename DstP>
 struct add_dst_mul_src
 {
-
 	void operator( )( const SrcP& src, const Weight weight, DstP & dst ) const
 	{
 		static_for_each( src, dst, add_dst_mul_src_channel<Weight > ( weight ) );
 	}
 };
 
-template <typename SrcP, typename Weight, typename DstP>
+template <typename SrcP, typename F, typename DstP>
 struct process1Dresampling
 {
 	void operator( )( const std::vector<SrcP> src, const std::vector<F> weight, DstP & dst ) const
