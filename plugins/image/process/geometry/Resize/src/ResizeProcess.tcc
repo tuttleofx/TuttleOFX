@@ -23,9 +23,12 @@ template<class View>
 void ResizeProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
-	_params = _plugin.getProcessParams( args.renderScale );
+	_params	= _plugin.getProcessParams( args.renderScale );
 
-	_filter = _plugin.getFilter();
+	_filter	= _plugin.getFilter();
+
+	_valB	= _plugin.getParamB();
+	_valC	= _plugin.getParamC();
 }
 
 /**
@@ -51,15 +54,22 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	{
 		case eParamFilterNearest	: resample_pixels_progress< ttl_nearest_neighbor_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterBilinear	: resample_pixels_progress< ttl_bilinear_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-                case eParamFilterBC     	: resample_pixels_progress< ttl_bc_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+
+		case eParamFilterBC		:
+							ttl_bc_sampler BCsampler;
+							BCsampler.valB = _valB;
+							BCsampler.valC = _valC;
+							resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, BCsampler );
+							break;
+
 		case eParamFilterBicubic	: resample_pixels_progress< ttl_bicubic_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-                case eParamFilterCatmul         : resample_pixels_progress< ttl_catmul_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		case eParamFilterCatmul		: resample_pixels_progress< ttl_catmul_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterKeys		: resample_pixels_progress< ttl_keys_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterSimon		: resample_pixels_progress< ttl_simon_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterRifman		: resample_pixels_progress< ttl_rifman_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-                case eParamFilterMitchell	: resample_pixels_progress< ttl_mitchell_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-                case eParamFilterParzen 	: resample_pixels_progress< ttl_parzen_sampler  		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-                case eParamFilterLanczos3	: resample_pixels_progress< ttl_lanczos3_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		case eParamFilterMitchell	: resample_pixels_progress< ttl_mitchell_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		case eParamFilterParzen 	: resample_pixels_progress< ttl_parzen_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		case eParamFilterLanczos3	: resample_pixels_progress< ttl_lanczos3_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterLanczos4	: resample_pixels_progress< ttl_lanczos4_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterLanczos6	: resample_pixels_progress< ttl_lanczos6_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterLanczos12	: resample_pixels_progress< ttl_lanczos12_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;

@@ -41,6 +41,9 @@ public:
 	void render( const OFX::RenderArguments &args );
 	
 	const EParamFilter getFilter() const { return static_cast<EParamFilter>( _paramFilter->getValue() ); }
+
+	const double getParamB() const { return _paramB->getValue(); }
+	const double getParamC() const { return _paramC->getValue(); }
 public:
 	OFX::ChoiceParam*	_paramOptions;
 

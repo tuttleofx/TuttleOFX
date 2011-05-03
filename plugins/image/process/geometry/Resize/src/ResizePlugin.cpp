@@ -4,9 +4,6 @@
 
 #include <boost/gil/gil_all.hpp>
 
-extern double valB;
-extern double valC;
-
 namespace tuttle {
 namespace plugin {
 namespace resize {
@@ -97,16 +94,16 @@ void ResizePlugin::updateVisibleTools()
 			}
 			break;
 	}
-        if( _paramFilter->getValue() == eParamFilterBC )
-        {
-            _paramB -> setIsSecret ( false );
-            _paramC -> setIsSecret ( false );
-        }
-        else
-        {
-            _paramB -> setIsSecret ( true );
-            _paramC -> setIsSecret ( true );
-        }
+	if( _paramFilter->getValue() == eParamFilterBC )
+	{
+		_paramB -> setIsSecret ( false );
+		_paramC -> setIsSecret ( false );
+	}
+	else
+	{
+		_paramB -> setIsSecret ( true );
+		_paramC -> setIsSecret ( true );
+	}
 }
 
 
@@ -123,27 +120,19 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 
 void ResizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-        if( paramName == kParamFilterB )
-        {
-                valB = _paramB->getValue();
-        }
-        if( paramName == kParamFilterC )
-        {
-                valC = _paramC->getValue();
-        }
-        if( paramName == kParamFilter )
-        {
-            if( _paramFilter->getValue() == eParamFilterBC )
-            {
-                _paramB -> setIsSecret ( false );
-                _paramC -> setIsSecret ( false );
-            }
-            else
-            {
-                _paramB -> setIsSecret ( true );
-                _paramC -> setIsSecret ( true );
-            }
-        }
+	if( paramName == kParamFilter )
+	{
+		if( _paramFilter->getValue() == eParamFilterBC )
+		{
+			_paramB -> setIsSecret ( false );
+			_paramC -> setIsSecret ( false );
+		}
+		else
+		{
+			_paramB -> setIsSecret ( true );
+			_paramC -> setIsSecret ( true );
+		}
+	}
 	if( paramName == kParamOptions )
 	{
 		updateVisibleTools();
