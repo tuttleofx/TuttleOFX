@@ -29,11 +29,15 @@ public:
 	void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 
 private:
+	template<class IN, class OUT>
+	GIL_FORCEINLINE
+	void processSwitchAlpha( const bool processAlpha, const View& src, const View& dst );
+
 	template <class IN>
 	GIL_FORCEINLINE
-	void processSwitchOut( const EParamDistribution out, const View& src, const View& dst );
+	void processSwitchOut( const EParamDistribution out, const bool processAlpha, const View& src, const View& dst );
 
-	void processSwitchInOut( const EParamDistribution in, const EParamDistribution out, const View& src, const View& dst );
+	void processSwitchInOut( const EParamDistribution in, const EParamDistribution out, const bool processAlpha, const View& src, const View& dst );
 };
 
 }

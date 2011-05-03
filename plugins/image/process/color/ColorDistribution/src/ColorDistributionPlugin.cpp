@@ -13,6 +13,7 @@ ColorDistributionPlugin::ColorDistributionPlugin( OfxImageEffectHandle handle )
 {
 	_paramIn  = fetchChoiceParam( kParamIn );
 	_paramOut = fetchChoiceParam( kParamOut );
+	_paramProcessAlpha = fetchBooleanParam( kParamProcessAlpha );
 }
 
 ColorDistributionProcessParams<ColorDistributionPlugin::Scalar> ColorDistributionPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -20,6 +21,7 @@ ColorDistributionProcessParams<ColorDistributionPlugin::Scalar> ColorDistributio
 	ColorDistributionProcessParams<Scalar> params;
 	params._in  = static_cast<EParamDistribution>( _paramIn->getValue() );
 	params._out = static_cast<EParamDistribution>( _paramOut->getValue() );
+	params._processAlpha = _paramProcessAlpha->getValue();
 	return params;
 }
 

@@ -76,6 +76,11 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
 	//	out->appendOption( kParamDistribution_rec601 );
 	out->setDefault( 0 );
 
+	OFX::BooleanParamDescriptor* alpha = desc.defineBooleanParam( kParamProcessAlpha );
+	alpha->setLabel( "Process alpha" );
+	alpha->setHint( "Apply the conversion on alpha channel." );
+	alpha->setDefault( false );
+
 	OFX::PushButtonParamDescriptor* invert = desc.definePushButtonParam( kParamInvert );
 	invert->setLabel( "Invert" );
 }

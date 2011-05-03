@@ -77,19 +77,20 @@ void CTLPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	OFX::ChoiceParamDescriptor* chooseInput = desc.defineChoiceParam( kParamChooseInput );
 	chooseInput->appendOption( kParamChooseInputCode );
 	chooseInput->appendOption( kParamChooseInputFile );
+	chooseInput->setDefault( eParamChooseInputFile );
 
 	OFX::StringParamDescriptor* code = desc.defineStringParam( kParamCTLCode );
 	code->setLabel( "CTL code" );
 	code->setHint( "Your CTL code." );
 	code->setStringType( OFX::eStringTypeMultiLine );
 	code->setDefault(
-		"void apply( float iR, float iG, float iB, float iA,\n"
-		"            output float oR, output float oG, output float oB, output float oA )\n"
+		"void main( float rIn, float gIn, float bIn, float aIn,\n"
+		"           output float rOut, output float gOut, output float bOut, output float aOut )\n"
 		"{\n"
-		"    oR = iR;\n"
-		"    oG = iG;\n"
-		"    oB = iB;\n"
-		"    oA = iA;\n"
+		"    rOut = rIn;\n"
+		"    gOut = gIn;\n"
+		"    bOut = bIn;\n"
+		"    aOut = aIn;\n"
 		"}\n"
 		"\n"
 	);
