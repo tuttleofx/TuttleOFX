@@ -201,8 +201,8 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 	bool modified = false;
 
 	ResizeProcessParams<Scalar> params = getProcessParams();
-	uint sizex = 0;
-	uint sizey = 0;
+	unsigned int sizex = 0;
+	unsigned int sizey = 0;
 	switch(_paramOptions->getValue())
 	{
 		case eParamFormat :
@@ -289,8 +289,8 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 			const point2<double> pMax( srcRodInDstFrame.x2, srcRodInDstFrame.y2 ); // down right corner
 			const point2<double> center( srcRodSize * 0.5 );
 
-			uint scalex = 0;
-			uint scaley = 0;
+			unsigned int scalex = 0;
+			unsigned int scaley = 0;
 			if(_paramSplit->getValue() == false )
 			{
 				const double pScaleX = _paramScaleX->getValue();

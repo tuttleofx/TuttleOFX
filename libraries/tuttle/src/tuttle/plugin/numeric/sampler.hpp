@@ -76,6 +76,84 @@ struct process1Dresampling
 
 }
 
+/**
+ * @brief Get weight for a specific distance, for nearest neightbor resampling ).
+ *
+ *  >--<  distance between current point and the nearest point
+ *
+ *  x  o
+ *  ^  ^-- the current point which be resampling
+ *  |
+ *  | the nearest point on top left
+ *
+ * more explaination can be found here [http://avisynth.org/mediawiki/Resampling]
+ *
+ * @param[position] distance between the pixels and the current pixel
+ * @param[weight] weight return value to weight the pixel in filtering
+**/
+template< typename F >
+bool getNearestWeight( const F position, F weight )
+{
+	if( position <0.5 && position >-0.5 )
+	{
+		weight = 1;
+		return true;
+	}
+	weight = 0;
+	return false;
+}
+
+/**
+ * @brief Get weight for a specific distance, for all BC-cubic resampling (bicubic, catmul-rom, ...).
+ *
+ * For compute cubic BC resampler weights, we use these functions
+ * [ Reconstruction Filters in Computer Graphics,
+ *   Don P. Mitchell, Arun N. Netravali,
+ *   Computer Graphics - volume 22 number 4 - August 1988
+ *   <a href="http://www.cs.utexas.edu/users/fussell/courses/cs384g/lectures/mitchell/Mitchell.pdf">online paper</a>
+ * ]:
+ *
+ * \f[ W(x) =
+ * \begin{cases}
+ * (a+2)|x|^3-(a+3)|x|^2+1 & \text{for } |x| \leq 1 \\
+ * a|x|^3-5a|x|^2+8a|x|-4a & \text{for } 1 < |x| < 2 \\
+ * 0                       & \text{otherwise}
+ * \end{cases}
+ * \f]
+ * @param[in] B value of B in BC-cubic resampling function
+ * @param[in] C value of C in BC-cubic resampling function
+ * @param[in] distance between the pixels and the current pixel
+ * @param[out] weight return value to weight the pixel in filtering
+**/
+template < typename F >
+bool getBCWeight(const F B, const F C, const F distance, F &weight )
+{
+	if(distance<1)
+	{
+		F P = 2.0 - 1.5 * B - C;
+		F Q = - 3.0 + 2.0 * B + C;
+		F S = 1.0 - B/3.0;
+		// note: R is null
+		weight = ( P * distance + Q ) *  distance * distance + S;
+		return true;
+	}
+	else
+	{
+		if(distance<2)
+		{
+			F T = - 1.0/6.0 * B - C;
+			F U = B + 5.0 * C;
+			F V = -2.0 * B - 8.0 * C;
+			F W = 4.0 / 3.0 * B + 4 * C;
+			weight = ( ( T * distance + U ) *  distance + V ) * distance + W;
+			return true;
+		}
+		return false;
+	}
+}
+
+
+
 /// \brief A sampler that sets the destination pixel as the bilinear interpolation of the four closest pixels from the source.
 /// If outside the bounds, it doesn't change the destination
 /// \ingroup ImageAlgorithms
@@ -171,47 +249,6 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 	return true;
 }
 
-/**
- * @brief Get weight for a specific distance, for all BC-cubic resampling (bicubic, catmul-rom, ...).
- *
- * @f[W(x) =
- * \begin{cases}
- * (a+2)|x|^3-(a+3)|x|^2+1 & \text{for } |x| \leq 1 \\
- * a|x|^3-5a|x|^2+8a|x|-4a & \text{for } 1 < |x| < 2 \\
- * 0                       & \text{otherwise}
- * \end{cases}
- * @f]
- * @param[in] B value of B in BC-cubic resampling function
- * @param[in] C value of C in BC-cubic resampling function
- * @param[in] distance between the pixels and the current pixel
- * @param[out] weight return value to weight the pixel in filtering
-**/
-template < typename F >
-bool getBCWeight(const F B, const F C, const F distance, F &weight )
-{
-	if(distance<1)
-	{
-		F P = 2.0 - 1.5 * B - C;
-		F Q = - 3.0 + 2.0 * B + C;
-		F S = 1.0 - B/3.0;
-		// note: R is null
-		weight = ( P * distance + Q ) *  distance * distance + S;
-		return true;
-	}
-	else
-	{
-		if(distance<2)
-		{
-			F T = - 1.0/6.0 * B - C;
-			F U = B + 5.0 * C;
-			F V = -2.0 * B - 8.0 * C;
-			F W = 4.0 / 3.0 * B + 4 * C;
-			weight = ( ( T * distance + U ) *  distance + V ) * distance + W;
-			return true;
-		}
-		return false;
-	}
-}
 
 template <typename SrcP, typename F, typename DstP>
 struct bicubic1D
@@ -454,18 +491,6 @@ static F clean(F t)
 	return t;
 }
 
-
-template< typename F >
-bool getNearestWeight( const F position, F weight, F supportSize )
-{
-	if( position <0.5 && position >-0.5 )
-	{
-		weight = 1;
-		return true;
-	}
-	weight = 0;
-	return false;
-}
 
 template< typename F >
 static F sinc(F x)
