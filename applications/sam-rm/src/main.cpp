@@ -76,14 +76,14 @@ void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, 
 			else
 			{
 				std::vector<bfs::path> paths = s->getFiles();
-				for(uint i=0; i<paths.size(); i++)
+				for(unsigned int i=0; i<paths.size(); i++)
 					bfs::remove( paths.at(i) );
 			}
 		}
 		else // is a directory
 		{
 			std::vector<boost::filesystem::path> paths = s->getFiles();
-			for(uint i=0; i<paths.size(); i++)
+			for(unsigned int i=0; i<paths.size(); i++)
 			{
 				if( bfs::is_empty( paths.at(i) ) )
 				{
@@ -207,7 +207,7 @@ int main( int argc, char** argv )
 	    return 1;
 	}
 
-	if (vm.count("extension"))
+	if (vm.count("expression"))
 	{
 	    bal::split( filters, vm["extension"].as<std::string>(), bal::is_any_of(","));
 	}
@@ -280,7 +280,7 @@ int main( int argc, char** argv )
 	{
 		recursiveListing = true;
 	}
-// 	for(uint i=0; i<filters.size(); i++)
+// 	for(unsigned int i=0; i<filters.size(); i++)
 // 	  TUTTLE_COUT("filters = " << filters.at(i));
 // 	TUTTLE_COUT("research mask = " << researchMask);
 // 	TUTTLE_COUT("options  mask = " << descriptionMask);

@@ -71,6 +71,7 @@ use-project	/sam-check	: applications/sam-check ;
 use-project	/sam-mv		: applications/sam-mv ;
 use-project	/sam-plugins	: applications/sam-plugins ;
 use-project	/sam-rm		: applications/sam-rm ;
+use-project	/sam-info	: applications/sam-info ;
 #use-project	/pyTuttle	: applications/pyTuttle ;
 #use-project	/samtests	: applications/sam-ls/tests ;
 
@@ -79,6 +80,7 @@ alias /sam-tools		: /sam-ls
 				  /sam-mv
 				  /sam-rm
 				  /sam-plugins
+				  /sam-info
 				;
 
 
@@ -101,6 +103,7 @@ explicit			/tuttle
 				/sam-mv
 				/sam-plugins
 				/sam-rm
+				/sam-info
 				/sam-tools
 #				/samtests
 				/plugins

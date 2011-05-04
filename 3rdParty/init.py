@@ -138,15 +138,20 @@ def getAndUncompress( libraries ):
 			print 'uncompress error (', str(e), ')'
 
 allLibs = [
-		('zlib','http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz', False) if not windows else ('zlib','http://prdownloads.sourceforge.net/gnuwin32/zlib-1.2.3.exe', False),
-		('libpng', 'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz', False) if not windows else ('png','http://prdownloads.sourceforge.net/gnuwin32/libpng-1.2.37-setup.exe', False),
+		('zlib','http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz', False) if not windows else ('zlib','http://downloads.sourceforge.net/project/libpng/zlib/1.2.3/zlib123.zip', False),
+		('libpng', 'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz', False) if not windows else ('libpng','http://downloads.sourceforge.net/project/libpng/libpng12/older-releases/1.2.41/lpng1241.zip', False),
 		('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', False),
 		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', False),
 		('ctl', 'http://sourceforge.net/projects/ampasctl/files/ctl/ctl-1.4.1/ctl-1.4.1.tar.gz/download', False),
 		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_46_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_46_setup.exe', False),
 		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
 		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False),
-                ('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz', False)
+		('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz', False),
+		('ImageMagick','ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-6.6.9-7.tar.gz', False) if not windows else ('ImageMagick','ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-6.6.9-7.zip',False),
+		('lcms','http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.tar.gz', False) if not windows else ('lcms', 'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.zip',False),
+		('bzlib','http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz',False),
+		('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz', False) if not windows else ('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.zip', False),
+		('libtool','ftp://ftp.gnu.org/gnu/libtool/libtool-2.4.tar.gz',False)
 	]
 
 if len( sys.argv ) == 1:

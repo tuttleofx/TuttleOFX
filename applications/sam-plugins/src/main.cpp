@@ -202,7 +202,7 @@ bool isNotFiltered( std::string plugName, std::vector<std::string>& filters)
 	if(filters.size()==0)
 		return true;
 	
-	for(uint i=0; i<filters.size(); i++)
+	for(unsigned int i=0; i<filters.size(); i++)
 	{
 		std::string filter(filters.at(i));
 		filter = boost::regex_replace( filter, boost::regex( "\\*" ), "(.*)"  );
@@ -290,7 +290,7 @@ int main( int argc, char** argv )
 		tth::Core::instance().preload();
 		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
 		
-		for(uint i=0; i<plugs.size(); i++)
+		for(unsigned int i=0; i<plugs.size(); i++)
 		{
 			std::string plugName = plugs.at(i)->getRawIdentifier();
 			if(isNotFiltered( plugName, filters))
@@ -323,7 +323,7 @@ int main( int argc, char** argv )
 	{
 		parameters = true;
 	}
-//	for(uint i=0; i< plugins.size(); i++)
+//	for(unsigned int i=0; i< plugins.size(); i++)
 //		TUTTLE_COUT( plugins.at(i) );
 	
 	try
@@ -332,16 +332,16 @@ int main( int argc, char** argv )
 		// get the plugins names for research partials names (rawreader need to make reference to the plug fr.tuttle.reader)
 		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
 
-		uint founded;
+		unsigned int founded;
 		BOOST_FOREACH( std::string plugin, plugins )
 		{
 			std::vector< std::string > termsPlugin;
 			bal::split( termsPlugin, plugin, bal::is_any_of("."));
 
-			for( uint i=0; i<plugs.size(); i++ )
+			for( unsigned int i=0; i<plugs.size(); i++ )
 			{
 				founded = 0;
-				for( uint t=0; t<termsPlugin.size(); t++ )
+				for( unsigned int t=0; t<termsPlugin.size(); t++ )
 				{
 					size_t found1 = plugs.at(i)->getRawIdentifier().find( "."+termsPlugin.at(t) );
 					size_t found2 = plugs.at(i)->getRawIdentifier().find( termsPlugin.at(t)+"." );

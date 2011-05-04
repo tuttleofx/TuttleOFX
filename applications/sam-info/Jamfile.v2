@@ -1,0 +1,49 @@
+###############################################################################
+## Main BJam makefile for Sam command line tool
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements
+		<include>src
+	: usage-requirements
+		<include>src
+		#<include>$(3RD_PARTY)/ImageMagick/Magick++/lib/
+	: build-dir $(DIST)/sam-info/obj
+	;
+
+# $(3RD_PARTY)/ImageMagick//Magick++
+
+
+###############################################################################
+# tuttle library
+###############################################################################
+exe sam-info :
+	[ glob src/*.cpp ]
+
+	$(3RD_PARTY)/ImageMagick//Magick++
+	#/tuttlecommon/<link>static
+	#/tuttlehost/<link>static
+	#/boost/system
+	#/boost/program_options
+	#/boost/serialization
+	#/boost/filesystem
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
+
+###############################################################################
+# Automatic install
+###############################################################################
+install dist_src	
+	: sam-info
+		#/boost/system
+		#/boost/filesystem
+		#/boost/serialization
+		#/boost/program_options
+	: <variant>debug:<location>$(DIST)/sam-info/bin/debug
+	  <variant>release:<location>$(DIST)/sam-info/bin/release
+	;

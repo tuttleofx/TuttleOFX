@@ -1,0 +1,52 @@
+###############################################################################
+## Main BJam makefile for Magick++ library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements	
+		<include>Magick++/lib/
+		<include>ltdl
+		<include>wand
+		<include>.
+		<include>/usr/include
+		<cxxflags>-fPIC
+		<linkflags>-lfontconfig
+		<linkflags>-lXext
+		<linkflags>-lltdl
+		<define>MAGICKCORE_BUILD_MODULES
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>Magick++/lib/
+		<include>ltdl
+		<include>wand
+		<include>.
+	: build-dir $(DIST)/3rdParty/Magick++/obj
+    ;
+
+use-project /lcms	: $(3RD_PARTY)/lcms ;
+use-project /freetype	: $(3RD_PARTY)/freetype ;
+use-project /bzlib	: $(3RD_PARTY)/bzlib ;
+use-project /libtiff	: $(3RD_PARTY)/libtiff ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	Magick++	:
+			  [ glob magick/*.c Magick++/lib/*.cpp wand/*.c : wand/wandtest.c wand/drawtest.c ]
+			  /lcms
+			  /freetype
+			  /bzlib
+			  /libtiff
+			;
+
+install	dist_src	: Magick++
+			: <variant>debug:<location>$(DIST)/3rdParty/Magick++/bin/debug
+			  <variant>release:<location>$(DIST)/3rdParty/Magick++/bin/release
+			;

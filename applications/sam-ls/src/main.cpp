@@ -93,7 +93,7 @@ int main( int argc, char** argv )
 		return 1;
 	}
 
-	if (vm.count("extension"))
+	if (vm.count("expression"))
 	{
 		bal::split( filters, vm["extension"].as<std::string>(), bal::is_any_of(","));
 	}
