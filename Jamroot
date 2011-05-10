@@ -28,7 +28,7 @@ project
   		<threading>multi
   		<os>NT:<define>_WINDOWS
 		<variant>release:<warnings-as-errors>on
-		<cxxflags>-fPIC
+		<os>LINUX:<cxxflags>-fPIC
 		# icu library off
 		#<define>BOOST_HAS_ICU=0
   		#

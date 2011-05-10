@@ -15,7 +15,21 @@ project
 		<cxxflags>-fPIC
 		<linkflags>-lfontconfig
 		<linkflags>-lXext
+		<linkflags>-lX11
+		<linkflags>-lXt
 		<linkflags>-lltdl
+		<linkflags>-lSM
+		<linkflags>-lICE
+		<linkflags>-lOpenCL
+		<linkflags>-lz
+		<linkflags>-lm
+		<linkflags>-lgomp
+
+
+		# -lMagickCore -llcms -lfreetype -ljpeg -lpng -lm -lpthread
+
+
+		 # -lMagickCore -llcms -lfreetype -ljpeg -lpng -lfontconfig -lXext -lXt -lSM -lICE -lX11 -lz -lm -lgomp -lOpenCL -lm -lpthread -lltdl
 		<define>MAGICKCORE_BUILD_MODULES
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
@@ -25,6 +39,17 @@ project
 		<include>ltdl
 		<include>wand
 		<include>.
+		<linkflags>-lfontconfig
+		<linkflags>-lXext
+		<linkflags>-lX11
+		<linkflags>-lXt
+		<linkflags>-lltdl
+		<linkflags>-lSM
+		<linkflags>-lICE
+		<linkflags>-lOpenCL
+		<linkflags>-lz
+		<linkflags>-lm
+		<linkflags>-lgomp
 	: build-dir $(DIST)/3rdParty/Magick++/obj
     ;
 
@@ -32,6 +57,10 @@ use-project /lcms	: $(3RD_PARTY)/lcms ;
 use-project /freetype	: $(3RD_PARTY)/freetype ;
 use-project /bzlib	: $(3RD_PARTY)/bzlib ;
 use-project /libtiff	: $(3RD_PARTY)/libtiff ;
+use-project /libxml	: $(3RD_PARTY)/libxml ;
+use-project /jasper	: $(3RD_PARTY)/jasper ;
+use-project /gvc	: $(3RD_PARTY)/gvc ;
+use-project /png	: $(3RD_PARTY)/libpng ;
 
 ###############################################################################
 # libraw library
@@ -39,11 +68,24 @@ use-project /libtiff	: $(3RD_PARTY)/libtiff ;
 alias	headers		: [ glob-tree *.h ] ;
 
 lib	Magick++	:
-			  [ glob magick/*.c Magick++/lib/*.cpp wand/*.c : wand/wandtest.c wand/drawtest.c ]
-			  /lcms
-			  /freetype
-			  /bzlib
-			  /libtiff
+			  [ glob	magick/*.c
+					Magick++/lib/*.cpp
+					wand/*.c
+					coders/*.c
+					:
+					wand/wandtest.c
+					wand/drawtest.c
+					coders/miff.c # not supported yet
+					coders/dot.c # not supported yet
+			  ]
+				/lcms
+				/freetype
+				/bzlib
+				/libtiff
+				/libxml
+				/jasper
+				#/gvc
+				/png
 			;
 
 install	dist_src	: Magick++

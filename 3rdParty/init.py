@@ -151,7 +151,11 @@ allLibs = [
 		('lcms','http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.tar.gz', False) if not windows else ('lcms', 'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.zip',False),
 		('bzlib','http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz',False),
 		('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz', False) if not windows else ('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.zip', False),
-		('libtool','ftp://ftp.gnu.org/gnu/libtool/libtool-2.4.tar.gz',False)
+		('libtool','ftp://ftp.gnu.org/gnu/libtool/libtool-2.4.tar.gz',False),
+		('libxml','ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz',False) if not windows else ('libxml','ftp://xmlsoft.org/libxml2/win32/libxml2-2.7.7.win32.zip',False),
+		('jasper','http://www.ece.uvic.ca/~mdadams/jasper/software/jasper-1.900.1.zip',False),
+		('xz','http://tukaani.org/xz/xz-5.0.2.tar.gz', False),
+		('gvc','http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.26.3.tar.gz',False)
 	]
 
 if len( sys.argv ) == 1:

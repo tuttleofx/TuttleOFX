@@ -116,7 +116,7 @@ void removeFileObject( std::vector<boost::filesystem::path> &listing )
 				}
 				else
 				{
-				TUTTLE_COUT( "remove " << paths );
+					TUTTLE_COUT( "remove " << paths );
 				}
 			}
 			bfs::remove(paths);
@@ -150,26 +150,26 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("all,a"		, "do not ignore entries starting with .")
-		("directories,d"	, "remove directories in path(s)")
-		("expression,e"		, bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
-		("files,f"		, "remove files in path(s)")
-		("help,h"		, "show this help")
-		("mask,m"		, "not remove sequences in path(s)")
-		("path-root,p"		, "show the root path for each objects")
-		("recursive,R"		, "remove subdirectories recursively")
-		("verbose,v"		, "explain what is being done")
-		("color"		, "color the outup")
-		("first-image"		, bpo::value<unsigned int>(), "specify the first image")
-		("last-image"		, bpo::value<unsigned int>(), "specify the last image")
-		("full-rm"		, "remove directories, files and sequences")
-	;
+			("all,a"		, "do not ignore entries starting with .")
+			("directories,d"	, "remove directories in path(s)")
+			("expression,e"		, bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
+			("files,f"		, "remove files in path(s)")
+			("help,h"		, "show this help")
+			("mask,m"		, "not remove sequences in path(s)")
+			("path-root,p"		, "show the root path for each objects")
+			("recursive,R"		, "remove subdirectories recursively")
+			("verbose,v"		, "explain what is being done")
+			("color"		, "color the outup")
+			("first-image"		, bpo::value<unsigned int>(), "specify the first image")
+			("last-image"		, bpo::value<unsigned int>(), "specify the last image")
+			("full-rm"		, "remove directories, files and sequences")
+			;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
-	;
+			("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
+			;
 	
 	// define default options 
 	bpo::positional_options_description pod;
@@ -185,41 +185,41 @@ int main( int argc, char** argv )
 	bpo::variables_map vm;
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-        // get environnement options and parse them
-        if( std::getenv("SAM_RM_OPTIONS") != NULL)
-        {
-            std::vector<std::string> envOptions;
-            std::string env = std::getenv("SAM_RM_OPTIONS");
-            envOptions.push_back( env );
-            bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
-        }
+	// get environnement options and parse them
+	if( std::getenv("SAM_RM_OPTIONS") != NULL)
+	{
+		std::vector<std::string> envOptions;
+		std::string env = std::getenv("SAM_RM_OPTIONS");
+		envOptions.push_back( env );
+		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+	}
 
 	bpo::notify(vm);    
 
 	if (vm.count("help"))
 	{
-	    TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
-            TUTTLE_COUT( "NAME");
-            TUTTLE_COUT( "\tsam-rm - remove directory contents\n" );
-            TUTTLE_COUT( "SYNOPSIS" );
-            TUTTLE_COUT( "\tsam-rm [options] [directories]\n" );
-	    TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
-	    return 1;
+		TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
+		TUTTLE_COUT( "NAME");
+		TUTTLE_COUT( "\tsam-rm - remove directory contents\n" );
+		TUTTLE_COUT( "SYNOPSIS" );
+		TUTTLE_COUT( "\tsam-rm [options] [directories]\n" );
+		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
+		return 1;
 	}
 
 	if (vm.count("expression"))
 	{
-	    bal::split( filters, vm["extension"].as<std::string>(), bal::is_any_of(","));
+		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
 	if (vm.count("directories"))
 	{
-	    researchMask |= eDirectory;
+		researchMask |= eDirectory;
 	}
 	
 	if (vm.count("files"))
 	{
-	    researchMask |= eFile;
+		researchMask |= eFile;
 	}
 	
 	if (vm.count("mask"))
@@ -257,14 +257,14 @@ int main( int argc, char** argv )
 	
 	if (vm.count("path-root"))
 	{
-		 descriptionMask |= ePath;
+		descriptionMask |= ePath;
 	}
 
 	if (vm.count("color") )
 	{
 		colorOutput = true;
 		descriptionMask |=  eColor;
-        }
+	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
 	if (vm.count("input-dir"))
@@ -280,29 +280,29 @@ int main( int argc, char** argv )
 	{
 		recursiveListing = true;
 	}
-// 	for(unsigned int i=0; i<filters.size(); i++)
-// 	  TUTTLE_COUT("filters = " << filters.at(i));
-// 	TUTTLE_COUT("research mask = " << researchMask);
-// 	TUTTLE_COUT("options  mask = " << descriptionMask);
+	// 	for(unsigned int i=0; i<filters.size(); i++)
+	// 	TUTTLE_COUT("filters = " << filters.at(i));
+	// 	TUTTLE_COUT("research mask = " << researchMask);
+	// 	TUTTLE_COUT("options  mask = " << descriptionMask);
 
 	try
 	{
 		std::vector<boost::filesystem::path> pathsNoRemoved;
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-//			TUTTLE_COUT( "path: "<< path );
+			//TUTTLE_COUT( "path: "<< path );
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )
 				{
-//					TUTTLE_COUT( "is a directory" );
+					//TUTTLE_COUT( "is a directory" );
 					if(recursiveListing)
 					{
 						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
 						{
 							if( bfs::is_directory( *dir ) )
 							{
-//								TUTTLE_COUT( *dir );
+								//								TUTTLE_COUT( *dir );
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
 								removeFileObject( listing, pathsNoRemoved );
 							}
@@ -313,7 +313,7 @@ int main( int argc, char** argv )
 				}
 				else
 				{
-//					TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
+					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
 					removeFileObject( listing, pathsNoRemoved );
@@ -321,7 +321,7 @@ int main( int argc, char** argv )
 			}
 			else
 			{
-//				TUTTLE_COUT( "not exist ...." );
+				//TUTTLE_COUT( "not exist ...." );
 				try
 				{
 					Sequence s(path.branch_path(), descriptionMask );

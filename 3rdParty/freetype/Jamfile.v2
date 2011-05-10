@@ -11,11 +11,10 @@ project
 		<include>include/freetype
 		<include>builds/unix
 		<define>FT2_BUILD_LIBRARY
-		#<define>_STANDALONE_
-		<cxxflags>-fPIC
+		<os>LINUX:<cxxflags>-fPIC
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
-		<warnings>on
+		<warnings>off
 	: usage-requirements
 		<include>include
 	: build-dir $(DIST)/3rdParty/Magick++/obj

@@ -9,9 +9,30 @@ import os ;
 project
 	: requirements
 		<include>src
-	: usage-requirements
-		<include>src
-		#<include>$(3RD_PARTY)/ImageMagick/Magick++/lib/
+		<include>/usr/include/ImageMagick
+		#-fmessage-length=0 -O2 -Wall -D_FORTIFY_SOURCE=2 -fstack-protector -funwind-tables -fasynchronous-unwind-tables -g -fstack-protector-all -Wall -W -pthread
+		#-L/usr/lib64 -L/usr/lib64
+		<linkflags>-lfreetype
+		<linkflags>-lz
+		<linkflags>-lMagick++
+		<linkflags>-lMagickWand
+		<linkflags>-lMagickCore
+		<linkflags>-llcms
+		<linkflags>-ltiff
+		<linkflags>-lfreetype
+		<linkflags>-ljpeg
+		<linkflags>-lfontconfig
+		<linkflags>-lXext
+		<linkflags>-lSM
+		<linkflags>-lICE
+		<linkflags>-lX11
+		<linkflags>-lXt
+		<linkflags>-lbz2
+		<linkflags>-lz
+		<linkflags>-lm
+		<linkflags>-lgomp
+		<linkflags>-lpthread
+		<linkflags>-lltdl
 	: build-dir $(DIST)/sam-info/obj
 	;
 
@@ -23,14 +44,12 @@ project
 ###############################################################################
 exe sam-info :
 	[ glob src/*.cpp ]
-
-	$(3RD_PARTY)/ImageMagick//Magick++
-	#/tuttlecommon/<link>static
-	#/tuttlehost/<link>static
-	#/boost/system
-	#/boost/program_options
-	#/boost/serialization
-	#/boost/filesystem
+	/tuttlecommon/<link>static
+	/boost/system
+	/boost/filesystem
+	/boost/serialization
+	/boost/program_options
+	# $(3RD_PARTY)/ImageMagick//Magick++/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 	;
@@ -40,10 +59,10 @@ exe sam-info :
 ###############################################################################
 install dist_src	
 	: sam-info
-		#/boost/system
-		#/boost/filesystem
-		#/boost/serialization
-		#/boost/program_options
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
 	: <variant>debug:<location>$(DIST)/sam-info/bin/debug
 	  <variant>release:<location>$(DIST)/sam-info/bin/release
 	;

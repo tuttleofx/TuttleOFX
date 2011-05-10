@@ -95,7 +95,7 @@ int main( int argc, char** argv )
 
 	if (vm.count("expression"))
 	{
-		bal::split( filters, vm["extension"].as<std::string>(), bal::is_any_of(","));
+		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
 	if (vm.count("directories"))

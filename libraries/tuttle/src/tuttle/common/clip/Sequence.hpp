@@ -177,6 +177,7 @@ public:
 	
 	std::ostream&				getCout( std::ostream& os ) const ;
 	std::vector<boost::filesystem::path>	getFiles() const;
+	inline std::string			getAbsoluteFilename	()			const { return ( _directory / _filename ).string(); }
 private:
 	std::string		_filename;
 };

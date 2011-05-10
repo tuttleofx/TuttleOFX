@@ -299,7 +299,7 @@ int main( int argc, char** argv )
 		envOptions.push_back( env );
 		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
-	bpo::notify(vm);    
+	bpo::notify(vm);
 
 	if (vm.count("help"))
 	{
@@ -315,9 +315,9 @@ int main( int argc, char** argv )
 		return 1;
 	}
 
-	if (vm.count("extension"))
+	if (vm.count("expression"))
 	{
-		bal::split( filters, vm["extension"].as<std::string>(), bal::is_any_of(","));
+		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 	
 	if (vm.count("all"))
