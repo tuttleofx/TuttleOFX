@@ -24,8 +24,8 @@ static const std::string kColorFolder	( "\E[1;34m" );
 static const std::string kColorFile	( "\E[0;32m" );
 static const std::string kColorSequence	( "\E[0;32m" );
 static const std::string kColorError	( "\E[0;31m" );
-#elseif
-static const std::string kColorStd	( ""  );
+#else
+static const std::string kColorStd	( "" );
 static const std::string kColorFolder	( "" );
 static const std::string kColorFile	( "" );
 static const std::string kColorSequence	( "" );
