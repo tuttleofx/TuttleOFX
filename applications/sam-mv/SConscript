@@ -8,7 +8,6 @@ libraries = [ libs.openfxHack,
               libs.boost_regex,
 			 ]
 
-## need to define MOVEFILES for move file and not copy them
 
 name = project.getName()
 sourcesDir = '../sam-cp/src'
@@ -16,6 +15,8 @@ sources = project.scanFiles( [sourcesDir] )
 
 env = project.createEnv( libraries )
 env.Append( CPPPATH=sourcesDir )
+# defines MOVEFILES for move file and not copy them
+env.Append( CPPDEFINES=['MOVEFILES'] )
 sam = env.Program( target=name, source=sources )
 
 install = env.Install( project.inOutputBin(), sam )
