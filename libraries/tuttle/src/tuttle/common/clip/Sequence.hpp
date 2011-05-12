@@ -374,7 +374,16 @@ inline std::string Sequence::getFilenameAt( const Time time ) const
 {
 	std::ostringstream o;
 
-	o << _prefix << std::setw( _padding ) << std::setfill( _fillCar ) << time << _suffix;
+	if( time >= 0 )
+	{
+		// "prefix.0001.jpg"
+		o << _prefix << std::setw( _padding ) << std::setfill( _fillCar ) << time << _suffix;
+	}
+	else
+	{
+		// "prefix.-0001.jpg" (and not "prefix.000-1.jpg")
+		o << _prefix << "-" << std::setw( _padding ) << std::setfill( _fillCar ) << std::abs(time) << _suffix;
+	}
 	return o.str();
 }
 

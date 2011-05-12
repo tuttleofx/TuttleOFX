@@ -285,6 +285,21 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings
 	return nums.size();
 }
 
+std::size_t getPaddingFromStringNumber( const std::string& timeStr )
+{
+	if( timeStr.size() > 1 )
+	{
+		// if the number is signed, this charater does not count as padding.
+		if( timeStr[0] == '-' ||
+		    timeStr[0] == '+'
+		    )
+		{
+			return timeStr.size() - 1;
+		}
+	}
+	return timeStr.size();
+}
+
 /**
  * @brief extract the padding from a list of frame numbers
  * @param[in] timesStr list of frame numbers in string format
@@ -292,10 +307,10 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings
 std::size_t extractPadding( const std::list<std::string>& timesStr )
 {
 	BOOST_ASSERT( timesStr.size() > 0 );
-	const std::size_t padding = timesStr.front().size();
+	const std::size_t padding = getPaddingFromStringNumber( timesStr.front() );
 	BOOST_FOREACH( const std::string& s, timesStr )
 	{
-		if( padding != s.size() )
+		if( padding != getPaddingFromStringNumber( s ) )
 			return 0;
 	}
 	return padding;
