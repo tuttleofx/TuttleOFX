@@ -194,6 +194,15 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 			"Interpolation methods\n"
 			"\n"
 			/// @todo: documentation...
+			"Nearest: \n"
+			"Bilinear: \n"
+			"Bicubic: Cubic filter(0.0, 0.0)\n"
+			"Catmul: Cubic filter(0.0, 0.5)\n"
+			"Mitchell: Cubic filter(1/3, 1/3)\n"
+			"Parsen: Cubic filter(1.0, 0.0)\n"
+			"Keys: \n"
+			"Simon: \n"
+			"Rifman: \n"
 		);
 
 	OFX::ChoiceParamDescriptor* resizeRod = desc.defineChoiceParam( kParamResizeRod );

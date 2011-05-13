@@ -184,10 +184,11 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
 	// if we are outside the image
+	// not symetric, because we manipulate the TopLeft corner of the interpolation region
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width() ||
-	    pTL.y > src.height() )
+	    pTL.x > src.width() - 1 ||
+	    pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
@@ -588,8 +589,8 @@ bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, Dst
 	// if we are outside the image
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width() ||
-	    pTL.y > src.height() )
+	    pTL.x > src.width() - 1 ||
+	    pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
@@ -751,8 +752,8 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	// if we are outside the image
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width() ||
-	    pTL.y > src.height() )
+	    pTL.x > src.width() - 1 ||
+	    pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
@@ -850,8 +851,8 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 	// if we are outside the image
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width() ||
-	    pTL.y > src.height() )
+	    pTL.x > src.width() - 1 ||
+	    pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
@@ -951,8 +952,8 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 	// if we are outside the image
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width() ||
-	    pTL.y > src.height() )
+	    pTL.x > src.width() - 1 ||
+	    pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
@@ -1050,8 +1051,8 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 	// if we are outside the image
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width() ||
-	    pTL.y > src.height() )
+	    pTL.x > src.width() - 1 ||
+	    pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
@@ -1254,8 +1255,8 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 	// if we are outside the image
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width() ||
-	    pTL.y > src.height() )
+	    pTL.x > src.width() - 1 ||
+	    pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
