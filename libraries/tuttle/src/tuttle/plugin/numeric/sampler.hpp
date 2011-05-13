@@ -25,6 +25,8 @@ template <typename DstP, typename SrcView, typename F>
 bool sample( ttl_nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	point2<std::ptrdiff_t> center( iround( p ) );
+
+	// if we are outside the image
 	if( center.x < 0 ||
 	    center.y < 0 ||
 	    center.x > src.width() - 1 ||
@@ -184,8 +186,8 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 	// if we are outside the image
 	if( pTL.x < -1 ||
 	    pTL.y < -1 ||
-	    pTL.x > src.width( )-1 ||
-	    pTL.y > src.height( )-1 )
+	    pTL.x > src.width() ||
+	    pTL.y > src.height() )
 	{
 		return false;
 	}
@@ -336,7 +338,7 @@ struct simon1D
 	{
 		DstP mp( 0 );
 
-		// second methos to minimize image merory access
+		// second methods to minimize image merory access
 		const float valueX = weight * 0.25; // x/4
 		const float valueXX = weight * valueX; // (x^2)/4
 		const float valueXXX = weight - 1; // x-1
@@ -353,7 +355,6 @@ struct simon1D
 template <typename SrcP, typename F, typename DstP>
 struct rifman1D
 {
-
 	void operator( )( const SrcP& srcA, const SrcP& srcB, const SrcP& srcC, const SrcP& srcD, F weight, DstP & dst ) const
 	{
 		DstP mp( 0 );
@@ -486,7 +487,7 @@ template < typename F >
 static F clean(F t)
 {
 	const F EPSILON = .0000125f;
-	if (fabs(t) < EPSILON)
+	if( std::abs(t) < EPSILON )
 		return 0.0f;
 	return t;
 }
@@ -495,7 +496,7 @@ static F clean(F t)
 template< typename F >
 static F sinc(F x)
 {
-	x = (x * boost::math::constants::pi<F > ( ));
+	x = x * boost::math::constants::pi<F>();
 
 	if ((x < 0.01f) && (x > -0.01f))
 		return 1.0f + x*x*(-1.0f/6.0f + x*x*1.0f/120.0f);
@@ -545,8 +546,10 @@ struct lanczos1D
 	void operator( )( const std::vector<SrcP> src, const std::vector<F> weight, DstP& dst ) const
 	{
 		DstP mp( 0 );
-		for( unsigned int i = 0; i < src.size(); i++ )
+		for( std::size_t i = 0; i < src.size(); ++i )
+		{
 			ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i), mp );
+		}
 		dst = mp;
 	}
 };
@@ -554,7 +557,6 @@ struct lanczos1D
 template <typename SrcP, typename F, typename DstP>
 struct gaussian1D
 {
-
 	void operator( )( const SrcP& srcA, const SrcP& srcB, const SrcP& srcC, const SrcP& srcD, const SrcP& srcE, const SrcP& srcF, const SrcP& srcG, F weight, DstP & dst ) const
 	{
 		DstP mp( 0 );
@@ -581,12 +583,21 @@ bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, Dst
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
 
-	point2<std::ptrdiff_t> p0( ifloor( p ) ); // the closest integer coordinate top left from p
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
+
+	// if we are outside the image
+	if( pTL.x < -1 ||
+	    pTL.y < -1 ||
+	    pTL.x > src.width() ||
+	    pTL.y > src.height() )
+	{
+		return false;
+	}
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 );
 	typedef typename SrcView::xy_locator xy_locator;
-	xy_locator loc = src.xy_at( p0.x, p0.y );
-	point2<F> frac( p.x - p0.x, p.y - p0.y );
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
 	// values of horizontal filtering, used for vertical process
 	SrcC a0( 0 ), a1( 0 ), a2( 0 ), a3( 0 );
@@ -606,19 +617,19 @@ bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, Dst
 	getBCWeight( valB, valC, 1-frac.x, weight[2] );
 	getBCWeight( valB, valC, 2-frac.x, weight[3] );
 
-	if( p0.y < 0 )
+	if( pTL.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a0 );
 
 		a1 = a0;
 		a2 = a0;
 
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a3 );
 		}
 		else
@@ -628,15 +639,15 @@ bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, Dst
 	}
 	else
 	{
-		if( p0.y < src.height( ) )
+		if( pTL.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a1 );
 		}
-		if( p0.y != 0 && p0.y - 1 < src.height( ) )
+		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a0 );
 			++loc.y( );
 		}
@@ -646,9 +657,9 @@ bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, Dst
 		}
 
 		++loc.y( );
-		if( p0.y + 1 < src.height( ) )
+		if( pTL.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a2 );
 		}
 		else
@@ -656,9 +667,9 @@ bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, Dst
 			a2 = a1;
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a3 );
 		}
 		else
@@ -735,30 +746,39 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
 
-	point2<std::ptrdiff_t> p0( ifloor( p ) ); // the closest integer coordinate top left from p
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
+
+	// if we are outside the image
+	if( pTL.x < -1 ||
+	    pTL.y < -1 ||
+	    pTL.x > src.width() ||
+	    pTL.y > src.height() )
+	{
+		return false;
+	}
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 );
 	typedef typename SrcView::xy_locator xy_locator;
-	xy_locator loc = src.xy_at( p0.x, p0.y );
-	point2<F> frac( p.x - p0.x, p.y - p0.y );
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
 	SrcC a0( 0 ), a1( 0 ), a2( 0 ), a3( 0 );
 
 	SrcP ptA( 0 ), ptB( 0 ), ptC( 0 ), ptD( 0 );
 
-	if( p0.y < 0 )
+	if( pTL.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 		keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
 		a2 = a0;
 
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -768,15 +788,15 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	}
 	else
 	{
-		if( p0.y < src.height( ) )
+		if( pTL.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
-		if( p0.y != 0 && p0.y - 1 < src.height( ) )
+		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -786,9 +806,9 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 		}
 
 		++loc.y( );
-		if( p0.y + 1 < src.height( ) )
+		if( pTL.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -796,9 +816,9 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 			a2 = a1;
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			keys1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -825,32 +845,39 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
-	point2<std::ptrdiff_t> p0( ifloor( p ) ); // the closest integer coordinate top left from p
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
 
-	//if (p0.x < 0 || p0.y < 0 || p0.x>=src.width() || p0.y>=src.height()) return false;
+	// if we are outside the image
+	if( pTL.x < -1 ||
+	    pTL.y < -1 ||
+	    pTL.x > src.width() ||
+	    pTL.y > src.height() )
+	{
+		return false;
+	}
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 );
 	typedef typename SrcView::xy_locator xy_locator;
-	xy_locator loc = src.xy_at( p0.x, p0.y );
-	point2<F> frac( p.x - p0.x, p.y - p0.y );
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
 	SrcC a0( 0 ), a1( 0 ), a2( 0 ), a3( 0 );
 
 	SrcP ptA( 0 ), ptB( 0 ), ptC( 0 ), ptD( 0 );
 
-	if( p0.y < 0 )
+	if( pTL.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 		simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
 		a2 = a0;
 
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -860,15 +887,15 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 	}
 	else
 	{
-		if( p0.y < src.height( ) )
+		if( pTL.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
-		if( p0.y != 0 && p0.y - 1 < src.height( ) )
+		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -878,9 +905,9 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 		}
 
 		++loc.y( );
-		if( p0.y + 1 < src.height( ) )
+		if( pTL.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -888,9 +915,9 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 			a2 = a1;
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			simon1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -919,30 +946,39 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
 
-	point2<std::ptrdiff_t> p0( ifloor( p ) ); // the closest integer coordinate top left from p
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
+
+	// if we are outside the image
+	if( pTL.x < -1 ||
+	    pTL.y < -1 ||
+	    pTL.x > src.width() ||
+	    pTL.y > src.height() )
+	{
+		return false;
+	}
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 );
 	typedef typename SrcView::xy_locator xy_locator;
-	xy_locator loc = src.xy_at( p0.x, p0.y );
-	point2<F> frac( p.x - p0.x, p.y - p0.y );
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
 	SrcC a0( 0 ), a1( 0 ), a2( 0 ), a3( 0 );
 
 	SrcP ptA( 0 ), ptB( 0 ), ptC( 0 ), ptD( 0 );
 
-	if( p0.y < 0 )
+	if( pTL.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+		setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 		rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 
 		a1 = a0;
 		a2 = a0;
 
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -952,15 +988,15 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 	}
 	else
 	{
-		if( p0.y < src.height( ) )
+		if( pTL.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a1 );
 		}
-		if( p0.y != 0 && p0.y - 1 < src.height( ) )
+		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a0 );
 			++loc.y( );
 		}
@@ -970,9 +1006,9 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 		}
 
 		++loc.y( );
-		if( p0.y + 1 < src.height( ) )
+		if( pTL.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a2 );
 		}
 		else
@@ -980,9 +1016,9 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 			a2 = a1;
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, p0, src.width( ), ptA, ptB, ptC, ptD );
+			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 			rifman1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, frac.x, a3 );
 		}
 		else
@@ -1009,14 +1045,21 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
-	point2<std::ptrdiff_t> p0( ifloor( p ) ); // the closest integer coordinate top left from p
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
 
-	if (p0.x < -1 || p0.y < -1 || p0.x > src.width() || p0.y > src.height()) return false;
+	// if we are outside the image
+	if( pTL.x < -1 ||
+	    pTL.y < -1 ||
+	    pTL.x > src.width() ||
+	    pTL.y > src.height() )
+	{
+		return false;
+	}
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 );
 	typedef typename SrcView::xy_locator xy_locator;
-	xy_locator loc = src.xy_at( p0.x, p0.y );
-	point2<F> frac( p.x - p0.x, p.y - p0.y );
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
 	// If we are on a border, we cheat with the position,
 	// so we move to have the 4 corners inside the image
@@ -1040,10 +1083,10 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 		getNearestWeight( frac.x+supportWindow-i, weight.at(i), supportWindow );
 	}
 
-	if( p0.y < 0 )
+	if( pTL.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+		setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 		lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at( supportWindow + 2 ) );
 
 		for( unsigned int i = 0; i < supportWindow+1; i++)
@@ -1054,9 +1097,9 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 		for( unsigned int i = supportWindow+2; i < windowSize; i++)
 		{
 			++loc.y( );
-			if( p0.y + position < src.height( ) )
+			if( pTL.y + position < src.height( ) )
 			{
-				setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+				setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 				lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(i) );
 			}
 			else
@@ -1073,7 +1116,7 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 		//setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
 		setXPixels<xy_locator, SrcP >(
 				loc,
-				p0,
+				pTL,
 				src.width(),
 				ptr.at(0),
 				ptr.at(1),
@@ -1086,9 +1129,9 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 		lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(supportWindow) );
 
 		--loc.y( );
-		if( p0.y != 0 && p0.y - 1 < src.height( ) )
+		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 			lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(2) );
 		}
 		else
@@ -1097,9 +1140,9 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 		}
 
 		--loc.y( );
-		if( p0.y + 2 != 0 && p0.y - 2 < src.height( ) )
+		if( pTL.y + 2 != 0 && pTL.y - 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 			lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(1) );
 		}
 		else
@@ -1108,9 +1151,9 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 		}
 
 		--loc.y( );
-		if( p0.y + 3 != 0 && p0.y - 3 < src.height( ) )
+		if( pTL.y + 3 != 0 && pTL.y - 3 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 			lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(0) );
 		}
 		else
@@ -1120,9 +1163,9 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 
 		loc.y( ) += 4;
 
-		if( p0.y + 1 < src.height( ) )
+		if( pTL.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 			lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(4) );
 		}
 		else
@@ -1130,9 +1173,9 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 			xProcessed.at(4) = xProcessed.at(3);
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 			lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(5) );
 		}
 		else
@@ -1140,9 +1183,9 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 			xProcessed.at(5) = xProcessed.at(4);
 		}
 		++loc.y( );
-		if( p0.y + 3 < src.height( ) )
+		if( pTL.y + 3 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), supportWindow, ptr );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), supportWindow, ptr );
 			lanczos1D< SrcP, F, SrcC > ( )( ptr, weight, xProcessed.at(6) );
 		}
 		else
@@ -1154,7 +1197,7 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 	for( unsigned int i = 0; i < windowSize; i++)
 	{
 		//getSincWeight( frac.y+supportWindow-i, weight.at(i), supportWindow );
-		getNearestWeight( frac.x+supportWindow-i, weight.at(i), supportWindow );
+//		getNearestWeight( frac.x+supportWindow-i, weight.at(i), supportWindow );
 	}
 	// vertical process
 	lanczos1D< SrcC, F, SrcC > ( )( xProcessed, weight, mp );
@@ -1206,31 +1249,38 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
-	point2<std::ptrdiff_t> p0( ifloor( p ) ); // the closest integer coordinate top left from p
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
 
-	if (p0.x < -1 || p0.y < -1 || p0.x>=src.width() || p0.y>=src.height()) return false;
+	// if we are outside the image
+	if( pTL.x < -1 ||
+	    pTL.y < -1 ||
+	    pTL.x > src.width() ||
+	    pTL.y > src.height() )
+	{
+		return false;
+	}
 
 	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 );
 	typedef typename SrcView::xy_locator xy_locator;
-	xy_locator loc = src.xy_at( p0.x, p0.y );
-	point2<F> frac( p.x - p0.x, p.y - p0.y );
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
 	SrcC a0( 0 ), a1( 0 ), a2( 0 ), a3( 0 ), a4( 0 ), a5( 0 ), a6( 0 );
 
 	SrcP ptA( 0 ), ptB( 0 ), ptC( 0 ), ptD( 0 ), ptE( 0 ), ptF( 0 ), ptG( 0 );
 
-	if( p0.y < 0 )
+	if( pTL.y < 0 )
 	{
 		++loc.y( );
-		setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+		setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 		gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a4 );
 
 		a0 = a2 = a3 = a4;
 
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a5 );
 		}
 		else
@@ -1238,9 +1288,9 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 			a5 = a4;
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a6 );
 		}
 		else
@@ -1250,15 +1300,15 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 	}
 	else
 	{
-		if( p0.y < src.height( ) )
+		if( pTL.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a3 );
 		}
 		--loc.y( );
-		if( p0.y != 0 && p0.y - 1 < src.height( ) )
+		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a2 );
 		}
 		else
@@ -1267,9 +1317,9 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 		}
 
 		--loc.y( );
-		if( p0.y + 2 != 0 && p0.y - 2 < src.height( ) )
+		if( pTL.y + 2 != 0 && pTL.y - 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a1 );
 		}
 		else
@@ -1278,9 +1328,9 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 		}
 
 		--loc.y( );
-		if( p0.y + 3 != 0 && p0.y - 3 < src.height( ) )
+		if( pTL.y + 3 != 0 && pTL.y - 3 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a0 );
 		}
 		else
@@ -1290,9 +1340,9 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 
 		loc.y( ) += 4;
 
-		if( p0.y + 1 < src.height( ) )
+		if( pTL.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a4 );
 		}
 		else
@@ -1300,9 +1350,9 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 			a4 = a3;
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a5 );
 		}
 		else
@@ -1310,9 +1360,9 @@ bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP&
 			a5 = a4;
 		}
 		++loc.y( );
-		if( p0.y + 2 < src.height( ) )
+		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP > ( loc, p0, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
+			setXPixels<xy_locator, SrcP > ( loc, pTL, src.width( ), ptA, ptB, ptC, ptD, ptE, ptF, ptG );
 			gaussian1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, ptE, ptF, ptG, frac.x, a6 );
 		}
 		else
