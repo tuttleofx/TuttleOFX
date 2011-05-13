@@ -97,9 +97,29 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 		}
 
 
-//		case eParamInterpolationLanczos:
+//		case eParamInterpolationLanczos3:
 //		{
 //			lensDistort<ttl_lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationLanczos4:
+//		{
+//			lensDistort<ttl_lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationLanczos6:
+//		{
+//			lensDistort<ttl_lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationLanczos12:
+//		{
+//			lensDistort<ttl_lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationGaussian:
+//		{
+//			lensDistort<ttl_gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 //			return;
 //		}
 	}

@@ -183,10 +183,18 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	interpolation->appendOption( kParamInterpolationKeys );
 	interpolation->appendOption( kParamInterpolationSimon );
 	interpolation->appendOption( kParamInterpolationRifman );
-//	interpolation->appendOption( kParamInterpolationLanczos );
+//	interpolation->appendOption( kParamInterpolationLanczos3 );
+//	interpolation->appendOption( kParamInterpolationLanczos4 );
+//	interpolation->appendOption( kParamInterpolationLanczos6 );
+//	interpolation->appendOption( kParamInterpolationLanczos12 );
+//	interpolation->appendOption( kParamInterpolationGaussian );
 //	#endif
 	interpolation->setDefault( 1 );
-	interpolation->setHint( "Interpolation method" );
+	interpolation->setHint(
+			"Interpolation methods\n"
+			"\n"
+			/// @todo: documentation...
+		);
 
 	OFX::ChoiceParamDescriptor* resizeRod = desc.defineChoiceParam( kParamResizeRod );
 	resizeRod->setLabel( "Resize RoD" );
