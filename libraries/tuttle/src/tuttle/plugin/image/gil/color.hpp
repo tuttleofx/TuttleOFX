@@ -27,8 +27,8 @@ void colorspace_pixels_progress( tuttle::plugin::color::ColorSpaceAPI* colorSpac
 
 		for( int x = 0; x < src_view.width(); ++x, ++src_it, ++dst_it )
 		{
-			*dst_it = *src_it;
-			//colorSpaceAPI->colorspace_convert( colorSpaceIn, colorSpaceOut, *src_it , *dst_it  );
+			//*dst_it = *src_it;
+			colorSpaceAPI->colorspace_convert( colorSpaceIn, colorSpaceOut, *src_it , *dst_it  );
 		}
 		if( p->progressForward() )
 			return;

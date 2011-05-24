@@ -14,14 +14,27 @@ namespace colorspace {
  */
 class ColorSpacePlugin : public ImageEffectGilPlugin
 {
+	void updateInParams();
+	void updateOutParams();
+
 public:
 	ColorSpacePlugin( OfxImageEffectHandle handle );
 
-public:
 	void render( const OFX::RenderArguments& args );
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
-	const tuttle::plugin::color::EParamGradationLaw getGradationLawIn() const { return static_cast<tuttle::plugin::color::EParamGradationLaw>( _paramInGradationLaw->getValue() );}
+	const tuttle::plugin::color::EParamGradationLaw	getGradationLawIn()		const { return static_cast<tuttle::plugin::color::EParamGradationLaw>	( _paramInGradationLaw	->getValue()	);}
+	const double					getGammaValueIn()		const { return static_cast<double>					( _paramInGamma		->getValue()	);}
+	const double					getBlackPointValueIn()		const { return static_cast<double>					( _paramInBlackPoint	->getValue()	);}
+	const double					getWhitePointValueIn()		const { return static_cast<double>					( _paramInWhitePoint	->getValue()	);}
+	const double					getGammaSensitoValueIn()	const { return static_cast<double>					( _paramInGammaSensito	->getValue()	);}
+
+	const tuttle::plugin::color::EParamLayout	getLayoutIn()			const { return static_cast<tuttle::plugin::color::EParamLayout>		( _paramInLayout	->getValue()	);}
+	const tuttle::plugin::color::EParamLayout	getLayoutOut()			const { return static_cast<tuttle::plugin::color::EParamLayout>		( _paramOutLayout	->getValue()	);}
+
+	const tuttle::plugin::color::EParamTemp		getTempColorIn()		const { return static_cast<tuttle::plugin::color::EParamTemp>		( _paramInColorTemp	->getValue()	);}
+	const tuttle::plugin::color::EParamTemp		getTempColorOut()		const { return static_cast<tuttle::plugin::color::EParamTemp>		( _paramOutColorTemp	->getValue()	);}
+
 private:
 	OFX::ChoiceParam*	_paramInGradationLaw;
 	OFX::ChoiceParam*	_paramOutGradationLaw;
@@ -34,6 +47,10 @@ private:
 	OFX::DoubleParam*	_paramInGammaSensito;
 	OFX::DoubleParam*	_paramOutGammaSensito;
 
+	OFX::ChoiceParam*	_paramInLayout;
+	OFX::ChoiceParam*	_paramOutLayout;
+	OFX::ChoiceParam*	_paramInColorTemp;
+	OFX::ChoiceParam*	_paramOutColorTemp;
 };
 
 }

@@ -1,16 +1,19 @@
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+#include <tuttle/plugin/image/gil/color.hpp>
+
+#include <boost/gil/gil_all.hpp>
 
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
 #include <vector>
 #include <iostream>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
-#include <boost/gil/gil_all.hpp>
-#include <tuttle/plugin/image/gil/color.hpp>
+
 
 namespace ttlc = tuttle::plugin::color;
 
@@ -30,7 +33,19 @@ ColorSpaceProcess<View>::ColorSpaceProcess( ColorSpacePlugin& instance )
 template<class View>
 void ColorSpaceProcess<View>::setup( const OFX::RenderArguments& args )
 {
-	//_gradationIn = _plugin.getGradationLawIn();
+	ImageGilFilterProcessor<View>::setup( args );
+	_gradationIn	= _plugin.getGradationLawIn();
+
+	_GammaValueIn	= _plugin.getGammaValueIn();
+	_BlackPointIn	= _plugin.getBlackPointValueIn();
+	_WhitePointIn	= _plugin.getWhitePointValueIn();
+	_GammaSensitoIn	= _plugin.getGammaSensitoValueIn();
+
+	_layoutIn	= _plugin.getLayoutIn();
+	_layoutOut	= _plugin.getLayoutOut();
+
+	_tempColorIn	= _plugin.getTempColorIn();
+	_tempColorOut	= _plugin.getTempColorOut();
 }
 
 
@@ -38,66 +53,6 @@ void ColorSpaceProcess<View>::setup( const OFX::RenderArguments& args )
  * @brief Function called by rendering thread each time a process must be done.
  * @param[in] procWindowRoW  Processing window in RoW
  */
-template<class View>
-void ColorSpaceProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
-{
-	using namespace boost::gil;
-	OfxRectI procWindowOutput                      = this->translateRoWToOutputClipCoordinates( procWindowRoW );
-	rgba32f_pixel_t wpix;
-
-	for( int y = procWindowOutput.y1;
-	     y < procWindowOutput.y2;
-	     ++y )
-	{
-		typename View::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
-		for( int x = procWindowOutput.x1;
-		     x < procWindowOutput.x2;
-		     ++x, ++src_it, ++dst_it )
-		{
-			//x^a = e^aln(x)
-			color_convert( *src_it, wpix );
-			if( wpix[ 0 ] > 0.0 )
-			{
-				wpix[ 0 ] = exp( log( wpix[ 0 ] ) * 1.5 );
-			}
-
-			if( wpix[ 1 ] > 0.0 )
-			{
-				wpix[ 1 ] = exp( log( wpix[ 1 ] ) * 1.5 );
-			}
-
-			if( wpix[ 2 ] > 0.0 )
-			{
-				wpix[ 2 ] = exp( log( wpix[ 2 ] ) * 1.5 );
-			}
-
-			if( wpix[ 3 ] > 0.0 )
-			{
-				wpix[ 3 ] = exp( log( wpix[ 3 ] ) * 1.5 );
-			}
-			color_convert( wpix, *dst_it );
-		}
-		if( this->progressForward() )
-			return;
-	}
-	/*
-	   const OfxRectI procWindowSrc = this->translateRegion( procWindowRoW, this->_srcPixelRod );
-	   OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-				     procWindowRoW.y2 - procWindowRoW.y1 };
-	   View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
-				  procWindowSize.x,
-				  procWindowSize.y );
-	   View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-				  procWindowSize.x,
-				  procWindowSize.y );
-	   copy_pixels( src, dst );
-	 */
-
-}
-
-
-/*
 template<class View>
 void ColorSpaceProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
@@ -113,60 +68,80 @@ void ColorSpaceProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	View dst = subimage_view(	this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 					procWindowSize.x,
 					procWindowSize.y );
-	std::cout << "proc " << procWindowOutput.x1 << "+"<< procWindowOutput.x2 << " x " << procWindowOutput.y1 <<"+"<<procWindowOutput.y2 << std::endl;
 
-	//colorspace_pixels_progress< ttlc::GradationLaw::linear, ttlc::Layout::RGB, ttlc::Primaries::TODO, ttlc::Premultiplication::Off, ttlc::GradationLaw::linear, ttlc::Layout::RGB, ttlc::Primaries::TODO, ttlc::Premultiplication::Off >( csAPI, this->_srcView, this->_dstView, procWindowRoW, this );
+
+	//const ttlc::GradationLaw::gamma _gradationGammaIn = { _plugin.getGammaValueIn() };
+
+
+	#define CALL_PROCESS_FOR( eParamTempColorIn, structTempColorIn, structLayoutIn, structGradIn ) \
+	case eParamTempColorIn : \
+	{ \
+		colorspace_pixels_progress< \
+				ttlc::ttlc_colorspace< structGradIn, structLayoutIn >, \
+				ttlc::ttlc_colorspace< ttlc::GradationLaw::linear, ttlc::Layout::RGB > \
+		>( &csAPI, src, dst, this );\
+	}
+
+	// premacro
+	#define LAYOUT_IN_FOR( eParamLayoutIn, structLayoutIn, structGradIn ) \
+	case eParamLayoutIn : \
+	{ \
+		switch ( _tempColorIn ) \
+		{ \
+			CALL_PROCESS_FOR( ttlc::eParamTempA,		ColourTemp::A,		structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempB,		ColourTemp::B,		structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempC,		ColourTemp::C,		structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempD50,		ColourTemp::D50,	structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempD55,		ColourTemp::D55,	structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempD58,		ColourTemp::D58,	structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempD65,		ColourTemp::D65,	structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempD75,		ColourTemp::D75,	structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTemp9300,		ColourTemp::Temp9300,	structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempF2,		ColourTemp::F2,		structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempF7,		ColourTemp::F7,		structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempF11,		ColourTemp::F11,	structLayoutIn, structGradIn )\
+			CALL_PROCESS_FOR( ttlc::eParamTempDCIP3,	ColourTemp::DCIP3,	structLayoutIn, structGradIn )\
+		} \
+		break; \
+	}
+
+	#define GRADATION_IN_FOR( eParamGradationLawIn, structGradIn ) \
+	case eParamGradationLawIn : \
+	{ \
+		switch ( _layoutIn ) \
+		{ \
+			LAYOUT_IN_FOR( ttlc::eParamLayoutRGB,		ttlc::Layout::RGB,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutYUV,		ttlc::Layout::YUV,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutYPbPr,		ttlc::Layout::YPbPr,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutHSV,		ttlc::Layout::HSV,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutHSL,		ttlc::Layout::HSL,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutLab,		ttlc::Layout::Lab,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutLuv,		ttlc::Layout::Luv,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutXYZ,		ttlc::Layout::XYZ,	structGradIn )\
+			LAYOUT_IN_FOR( ttlc::eParamLayoutYxy,		ttlc::Layout::Yxy,	structGradIn )\
+		} \
+		break; \
+	}
 
 	switch( _gradationIn )
 	{
-		case ttlc::eParamLinear:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamsRGB:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::sRGB >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamCineon:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::cineon >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamGamma:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::gamma >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamPanalog:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::panalog >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamREDLog:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::redLog >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamViperLog:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::viperLog >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamREDSpace:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::redSpace >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
-		case ttlc::eParamAlexaLogC:
-				colorspace_pixels_progress<	ttlc::ttlc_colorspace< ttlc::GradationLaw::alexaLogC >,
-								ttlc::ttlc_colorspace< ttlc::GradationLaw::linear >
-								>( &csAPI, src, dst, this );
-				break;
+		GRADATION_IN_FOR( ttlc::eParamLinear,		ttlc::GradationLaw::linear	)
+		GRADATION_IN_FOR( ttlc::eParamsRGB,		ttlc::GradationLaw::sRGB	)
+		GRADATION_IN_FOR( ttlc::eParamCineon,		ttlc::GradationLaw::cineon	)
+		GRADATION_IN_FOR( ttlc::eParamGamma,		ttlc::GradationLaw::gamma	)
+		GRADATION_IN_FOR( ttlc::eParamPanalog,		ttlc::GradationLaw::panalog	)
+		GRADATION_IN_FOR( ttlc::eParamREDLog,		ttlc::GradationLaw::redLog	)
+		GRADATION_IN_FOR( ttlc::eParamViperLog,		ttlc::GradationLaw::viperLog	)
+		GRADATION_IN_FOR( ttlc::eParamREDSpace,		ttlc::GradationLaw::redSpace	)
+		GRADATION_IN_FOR( ttlc::eParamAlexaLogC,	ttlc::GradationLaw::alexaLogC	)
 	}
 
-}*/
+	#undef GRADATION_IN_FOR
+	#undef LAYOUT_IN_FOR
+	#undef CALL_PROCESS_FOR
+
+
+}
 
 }
 }

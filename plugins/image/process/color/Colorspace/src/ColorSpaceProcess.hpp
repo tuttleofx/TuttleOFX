@@ -25,13 +25,19 @@ namespace colorspace {
 template<class View>
 class ColorSpaceProcess : public ImageGilFilterProcessor<View>
 {
-private:
-	tuttle::plugin::color::ColorSpaceAPI csAPI;
-
-	void ColorSpace( View& src, View& dst );
-
-	tuttle::plugin::color::EParamGradationLaw _gradationIn;
 protected:
+	tuttle::plugin::color::ColorSpaceAPI csAPI;
+	tuttle::plugin::color::EParamGradationLaw	_gradationIn;
+	double						_GammaValueIn;
+	double						_BlackPointIn;
+	double						_WhitePointIn;
+	double						_GammaSensitoIn;
+
+	tuttle::plugin::color::EParamLayout		_layoutIn;
+	tuttle::plugin::color::EParamLayout		_layoutOut;
+	tuttle::plugin::color::EParamTemp		_tempColorIn;
+	tuttle::plugin::color::EParamTemp		_tempColorOut;
+
 	ColorSpacePlugin& _plugin; ///< Rendering plugin
 
 public:

@@ -8,12 +8,12 @@ namespace tuttle {
 namespace plugin {
 namespace colorspace {
 
-static const bool kSupportTiles              = false;
-static const bool kSupportTemporalClipAccess = false;
+static const bool kSupportTiles				= true;
+static const bool kSupportTemporalClipAccess		= true;
 
-const static std::string kColorSpaceHelpButton = "Help";
+const static std::string kColorSpaceHelpButton		= "Help";
 
-const static std::string kColorSpaceHelpString = "<b>Help me, help me ....<br />";
+const static std::string kColorSpaceHelpString		= "<b>Help me, help me ....<br />";
 
 const static std::string kColorSpaceIn			= "In";
 const static std::string kColorSpaceOut			= "Out";

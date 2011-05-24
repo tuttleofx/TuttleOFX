@@ -35,7 +35,7 @@ void ColorSpacePluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth		( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setSupportsTiles( kSupportTiles );
+	desc.setSupportsTiles			( kSupportTiles );
 	desc.setRenderThreadSafety		( OFX::eRenderFullySafe );
 }
 
@@ -198,6 +198,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outGammaValue->setDisplayRange		( 0.0, 5.0 );
 	outGammaValue->setHint			( "Adjust the Gamma." );
 	outGammaValue->setParent		( outCostum );
+	outGammaValue->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outBlackPoint = desc.defineDoubleParam( kColorSpaceOutBlackPoint );
 	outBlackPoint->setLabel			( "Black Point" );
@@ -206,6 +207,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outBlackPoint->setDisplayRange		( 0.0, 1.0 );
 	outBlackPoint->setHint			( "Adjust the Black Point." );
 	outBlackPoint->setParent		( outCostum );
+	outBlackPoint->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outWhitePoint = desc.defineDoubleParam( kColorSpaceOutWhitePoint );
 	outWhitePoint->setLabel			( "White Point" );
@@ -214,6 +216,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outWhitePoint->setDisplayRange		( 0.0, 1.0 );
 	outWhitePoint->setHint			( "Adjust the White Point." );
 	outWhitePoint->setParent		( outCostum );
+	outWhitePoint->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outGammaSensito = desc.defineDoubleParam( kColorSpaceOutGammaSensito );
 	outGammaSensito->setLabel		( "Gamma Sensito" );
@@ -222,6 +225,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outGammaSensito->setDisplayRange	( 0.0, 5.0 );
 	outGammaSensito->setHint		( "Adjust the Gamma Sensito." );
 	outGammaSensito->setParent		( outCostum );
+	outGammaSensito->setIsSecret		( true );
 
 	OFX::ChoiceParamDescriptor* outLayout = desc.defineChoiceParam( kColorSpaceLayoutOut );
 	outLayout->setLabel			( "Layout" );
