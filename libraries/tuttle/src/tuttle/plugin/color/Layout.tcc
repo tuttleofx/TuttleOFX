@@ -5,19 +5,12 @@
 #include <boost/gil/metafunctions.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
+
 using namespace boost::gil;
-/*-------------------------------- method to process pixels values ------------------------------------*/
+
+/*-------------------------------- method to process channels values ------------------------------------*/
 
 struct computeRGB
-{
-	template <typename SrcChannel, typename DstChannel>
-	void operator()( SrcChannel& src, DstChannel& dst ) const
-	{
-		dst = DstChannel( src );
-	}
-};
-
-struct computeYUV
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
@@ -98,53 +91,99 @@ bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::RGB > inColor
 	return true;
 }
 
-
-/*
-	B = 1.164(Y - 16)                   + 2.018(U - 128)
-	G = 1.164(Y - 16) - 0.813(V - 128) - 0.391(U - 128)
-	R = 1.164(Y - 16) + 1.596(V - 128)
-*/
-
 template < typename SrcP, typename DstP, typename GradationlawIn >
 bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const SrcP& src, DstP& dst )
 {
+	std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
-template < typename GradationlawIn >
-bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgb_t& src, rgb_t& dst )
+/*
+	R = 1.0 * Y + 0.000 * U + 1.140 * V
+	G = 1.0 * Y - 0.395 * U - 0.581 * V
+	B = 1.0 * Y + 2.032 * U + 0.000 * V
+
+	note: we have U and V value between [ 0 ... 1 ] and in the formula, U and V values needs to be in [ -0.5 ... 0.5 ]
+*/
+template < typename SrcP, typename DstP >
+void convertYuvToRgb( const SrcP& src, DstP& dst )
 {
-	// using:
-	// red channel for Y channel
-	// green channel for U channel
-	// blue channel for V channel
+	//std::cout << "convert YUV to RGB" << std::endl;
+	// using src with:
+	// green channel for Y channel
+	// blue  channel for U channel
+	// red   channel for V channel
+	get_color( dst, red_t() )	= get_color( src, red_t() )                                                + 1.140 * ( get_color( src, green_t() ) - 0.5 );
+	get_color( dst, green_t() )	= get_color( src, red_t() ) - 0.395 * ( get_color( src, blue_t() ) - 0.5 ) + 0.581 * ( get_color( src, green_t() ) - 0.5 );
+	get_color( dst, blue_t() )	= get_color( src, red_t() ) + 2.032 * ( get_color( src, blue_t() ) - 0.5 )                                                ;
 
-	//typedef typename color_element_type<rgb_t, red_t>::type red_channel_t;
-	//( *dst ) [0] = 0.5;
-	//get_color(dst, red_t()) = channel_traits<red_channel_t>::max_value();
-	//get_color( dst, red_t() )	= get_color( src, blue_t() );
-	//get_color( dst, red_t() )	= channel_convert<typename color_element_type<DstP, red_t  >::type>( 1.164 * ( get_color( src, red_t() ) - 16 ) + 1.596 * ( get_color( src, blue_t() ) - 128 )							);
-	//get_color( dst, green_t() )	= channel_convert<typename color_element_type<DstP, green_t>::type>( 1.164 * ( get_color( src, red_t() ) - 16 ) - 0.813 * ( get_color( src, blue_t() ) - 128 )	- 0.391 * ( get_color( src, green_t() ) - 128 )	);
-	//get_color( dst, blue_t() )	= channel_convert<typename color_element_type<DstP, blue_t >::type>( 1.164 * ( get_color( src, red_t() ) - 16 )							+ 2.018 * ( get_color( src, green_t() ) - 128 )	);
+}
 
+template < typename SrcP, typename DstP >
+void convertYuvaToRgba( const SrcP& src, DstP& dst )
+{
+	//std::cout << "alpha is present" << std::endl;
+	convertYuvToRgb( src, dst );
+	get_color( dst, alpha_t() )	= channel_convert<typename color_element_type<DstP, alpha_t  >::type>( get_color( src, alpha_t() ) );
+}
+
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+{
+	convertYuvToRgb( src, dst );
 	return true;
 }
 
-/*
-template < typename SrcP, typename GradationlawIn >
-bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const SrcP& src, rgba_t& dst )
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
-	// using:
-	// red channel for Y channel
-	// green channel for U channel
-	// blue channel for V channel
-	//get_color( dst, red_t() )	=  0.5 ;
-	//get_color( dst, red_t() )	= channel_convert<typename color_element_type<DstP, red_t  >::type>( 1.164 * ( get_color( src, red_t() ) - 16 ) + 1.596 * ( get_color( src, blue_t() ) - 128 )							);
-	//get_color( dst, green_t() )	= channel_convert<typename color_element_type<DstP, green_t>::type>( 1.164 * ( get_color( src, red_t() ) - 16 ) - 0.813 * ( get_color( src, blue_t() ) - 128 )	- 0.391 * ( get_color( src, green_t() ) - 128 )	);
-	//get_color( dst, blue_t() )	= channel_convert<typename color_element_type<DstP, blue_t >::type>( 1.164 * ( get_color( src, red_t() ) - 16 )							+ 2.018 * ( get_color( src, green_t() ) - 128 )	);
-
+	convertYuvaToRgba( src, dst );
 	return true;
-}*/
+}
+
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+{
+	convertYuvToRgb( src, dst );
+	return true;
+}
+
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+{
+	convertYuvaToRgba( src, dst );
+	return true;
+}
+
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+{
+	convertYuvToRgb( src, dst );
+	return true;
+}
+
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+{
+	convertYuvaToRgba( src, dst );
+	return true;
+}
+
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+{
+	//std::cout << "compute in 32 bits float" << std::endl;
+	convertYuvToRgb( src, dst );
+	return true;
+}
+
+template < typename GradationlawIn >
+bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YUV > inColorSpace, const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+{
+	//std::cout << "compute in 32 bits float" << std::endl;
+	convertYuvaToRgba( src, dst );
+	return true;
+}
 
 template < typename SrcP, typename DstP, typename GradationlawIn>
 bool convertLayout( const ttlc_colorspace< GradationlawIn, Layout::YPbPr > inColorSpace, const SrcP& src, DstP& dst )
