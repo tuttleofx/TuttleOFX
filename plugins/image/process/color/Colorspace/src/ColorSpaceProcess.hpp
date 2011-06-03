@@ -33,6 +33,12 @@ protected:
 	double						_WhitePointIn;
 	double						_GammaSensitoIn;
 
+	tuttle::plugin::color::EParamGradationLaw	_gradationOut;
+	double						_GammaValueOut;
+	double						_BlackPointOut;
+	double						_WhitePointOut;
+	double						_GammaSensitoOut;
+
 	tuttle::plugin::color::EParamLayout		_layoutIn;
 	tuttle::plugin::color::EParamLayout		_layoutOut;
 	tuttle::plugin::color::EParamTemp		_tempColorIn;

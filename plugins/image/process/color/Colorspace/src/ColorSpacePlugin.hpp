@@ -29,6 +29,12 @@ public:
 	const double					getWhitePointValueIn()		const { return static_cast<double>					( _paramInWhitePoint	->getValue()	);}
 	const double					getGammaSensitoValueIn()	const { return static_cast<double>					( _paramInGammaSensito	->getValue()	);}
 
+	const tuttle::plugin::color::EParamGradationLaw	getGradationLawOut()		const { return static_cast<tuttle::plugin::color::EParamGradationLaw>	( _paramOutGradationLaw	->getValue()	);}
+	const double					getGammaValueOut()		const { return static_cast<double>					( _paramOutGamma	->getValue()	);}
+	const double					getBlackPointValueOut()		const { return static_cast<double>					( _paramOutBlackPoint	->getValue()	);}
+	const double					getWhitePointValueOut()		const { return static_cast<double>					( _paramOutWhitePoint	->getValue()	);}
+	const double					getGammaSensitoValueOut()	const { return static_cast<double>					( _paramOutGammaSensito	->getValue()	);}
+
 	const tuttle::plugin::color::EParamLayout	getLayoutIn()			const { return static_cast<tuttle::plugin::color::EParamLayout>		( _paramInLayout	->getValue()	);}
 	const tuttle::plugin::color::EParamLayout	getLayoutOut()			const { return static_cast<tuttle::plugin::color::EParamLayout>		( _paramOutLayout	->getValue()	);}
 
