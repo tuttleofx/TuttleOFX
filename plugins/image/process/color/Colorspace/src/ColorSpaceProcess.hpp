@@ -26,7 +26,7 @@ template<class View>
 class ColorSpaceProcess : public ImageGilFilterProcessor<View>
 {
 protected:
-	tuttle::plugin::color::ColorSpaceAPI csAPI;
+	tuttle::plugin::color::ColorSpaceAPI		csAPI;
 	tuttle::plugin::color::EParamGradationLaw	_gradationIn;
 	double						_GammaValueIn;
 	double						_BlackPointIn;

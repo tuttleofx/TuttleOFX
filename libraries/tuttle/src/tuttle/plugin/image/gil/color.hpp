@@ -5,6 +5,8 @@
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <tuttle/plugin/color/colorSpaceAPI.hpp>
 
+namespace ttlc = tuttle::plugin::color;
+
 namespace tuttle {
 namespace plugin {
 
@@ -14,11 +16,19 @@ namespace plugin {
  *
  * The provided implementation works for 2D image views only
  */
-template <	typename ColorSpaceIn, // Models ColorSpaceConcept
-		typename ColorSpaceOut, // Models ColorSpaceConcept
+template <
 		typename SrcView, // Models RandomAccess2DImageViewConcept
 		typename DstView> // Models MutableRandomAccess2DImageViewConcept
-void colorspace_pixels_progress( tuttle::plugin::color::ColorSpaceAPI* colorSpaceAPI, const SrcView& src_view, const DstView& dst_view, tuttle::plugin::IProgress* p, ColorSpaceIn colorSpaceIn = ColorSpaceIn(), ColorSpaceOut colorSpaceOut = ColorSpaceOut() )
+void colorspace_pixels_progress( ttlc::ColorSpaceAPI*			colorSpaceAPI,
+				 const ttlc::EParamGradationLaw		eGradationLawIn,
+				 const ttlc::EParamLayout		eLayoutIn,
+				 const ttlc::EParamTemp			eTempIn,
+				 const ttlc::EParamGradationLaw		eGradationLawOut,
+				 const ttlc::EParamLayout		eLayoutOut,
+				 const ttlc::EParamTemp			eTempOut,
+				 const SrcView&				src_view,
+				 const DstView&				dst_view,
+				 tuttle::plugin::IProgress*		p )
 {
 	for( int y = 0; y < src_view.height(); ++y )
 	{
@@ -28,7 +38,7 @@ void colorspace_pixels_progress( tuttle::plugin::color::ColorSpaceAPI* colorSpac
 		for( int x = 0; x < src_view.width(); ++x, ++src_it, ++dst_it )
 		{
 			//*dst_it = *src_it;
-			colorSpaceAPI->colorspace_convert( colorSpaceIn, colorSpaceOut, *src_it , *dst_it  );
+			colorSpaceAPI->colorspace_convert( eGradationLawIn, eLayoutIn, eTempIn, eGradationLawOut, eLayoutOut, eTempOut , *src_it , *dst_it  );
 		}
 		if( p->progressForward() )
 			return;

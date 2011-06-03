@@ -160,16 +160,45 @@ public:
 	ColorSpaceAPI();
 	~ColorSpaceAPI();
 
-	template < typename GradationLawIn, typename GradationLawOut, typename LayoutIn, typename LayoutOut, typename SrcP, typename DstP >
+	template < typename SrcP, typename DstP >
 	bool colorspace_convert(
-			const ttlc_colorspace< GradationLawIn,  LayoutIn  > inColorSpace,
-			const ttlc_colorspace< GradationLawOut, LayoutOut > outColorSpace,
-			const SrcP& src,
-			      DstP& dst
+			const EParamGradationLaw	eGradationLawIn,
+			const EParamLayout		eLayoutIn,
+			const EParamTemp		eTempIn,
+			const EParamGradationLaw	eGradationLawOut,
+			const EParamLayout		eLayoutOut,
+			const EParamTemp		eTempOut,
+			const SrcP&			src,
+			      DstP&			dst
 			)
 	{
-		convertGradationLaw	( inColorSpace, src, dst );
-		convertLayout		( inColorSpace, src, dst );
+		DstP p0;
+		switch ( eGradationLawIn )
+		{
+			case eParamLinear :	break; // do nothing
+			case eParamsRGB :	static_for_each( src, p0, computeSRGB() ); break;
+			case eParamCineon :	/*static_for_each( src, dst, computeCineon() );*/ break;
+			case eParamGamma :	/*static_for_each( src, dst, computeGamma() );*/ break;
+			case eParamPanalog :	static_for_each( src, p0, computePanalog() ); break;
+			case eParamREDLog :	static_for_each( src, p0, computeRedLog() ); break;
+			case eParamViperLog :	static_for_each( src, p0, computeViperLog() ); break;
+			case eParamREDSpace :	static_for_each( src, p0, computeRedSpace() ); break;
+			case eParamAlexaLogC :	static_for_each( src, p0, computeAlexaLogC() ); break;
+			break;
+		}
+		switch ( eGradationLawIn )
+		{
+			case eParamLinear :	break; // do nothing
+			case eParamsRGB :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamCineon :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamGamma :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamPanalog :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamREDLog :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamViperLog :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamREDSpace :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamAlexaLogC :	static_for_each( p0, dst, computeRGB() ); break;
+			break;
+		}
 		return true;
 	}
 
