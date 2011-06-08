@@ -9,127 +9,11 @@
 #include <string>
 #include <iostream>
 
+#include "colorDefinitions.hpp"
+
 namespace tuttle {
 namespace plugin {
 namespace color{
-
-enum EParamReferenceSpace
-{
-	eParamSRGBREC709 = 0,
-	eParamREC709,
-	eParamREC601,
-	eParamDCI,
-	eParamACES,
-	eParamProPhoto,
-	eParamAdobe98
-};
-
-enum EParamGradationLaw
-{
-	eParamLinear = 0,
-	eParamsRGB,
-	eParamCineon,
-	eParamGamma,
-	eParamPanalog,
-	eParamREDLog,
-	eParamViperLog,
-	eParamREDSpace,
-	eParamAlexaLogC
-};
-const size_t numberOfGradationsModes = eParamAlexaLogC;
-
-enum EParamLayout
-{
-	eParamLayoutRGB = 0,
-	eParamLayoutYUV,
-	eParamLayoutYPbPr,
-	eParamLayoutHSV,
-	eParamLayoutHSL,
-	eParamLayoutLab,
-	eParamLayoutLuv,
-	eParamLayoutXYZ,
-	eParamLayoutYxy
-};
-
-enum EParamTemp
-{
-	eParamTempA = 0,
-	eParamTempB,
-	eParamTempC,
-	eParamTempD50,
-	eParamTempD55,
-	eParamTempD58,
-	eParamTempD65,
-	eParamTempD75,
-	eParamTemp9300,
-	eParamTempF2,
-	eParamTempF7,
-	eParamTempF11,
-	eParamTempDCIP3
-};
-
-typedef std::map  < size_t, std::string > ColorSpaceMap;
-typedef std::pair < size_t, std::string > ColorSpacePair;
-
-namespace GradationLaw
-{
-	struct linear{};
-	struct sRGB{};
-	struct cineon{
-		double blackPoint;
-		double whitePoint;
-		double gammaSensito;
-	};
-	struct gamma{
-		double value;
-	};
-	struct panalog{};
-	struct redLog{};
-	struct viperLog{};
-	struct redSpace{};
-	struct alexaLogC{};
-}
-
-namespace Layout
-{
-	struct RGB{};
-	struct YUV{};
-	struct YPbPr{};
-	struct HSV{};
-	struct HSL{};
-	struct Lab{};
-	struct Luv{};
-	struct XYZ{};
-	struct Yxy{};
-}
-
-namespace ColourTemp
-{
-	struct A{};
-	struct B{};
-	struct C{};
-	struct D50{};
-	struct D55{};
-	struct D58{};
-	struct D65{};
-	struct D75{};
-	struct Temp9300{};
-	struct F2{};
-	struct F7{};
-	struct F11{};
-	struct DCIP3{};
-}
-
-namespace Primaries
-{
-	struct TODO{};
-}
-
-namespace Premultiplication
-{
-	struct On{};
-	struct Off{};
-}
 
 /*
 template < typename GradationLaw, typename Layout, typename Primaries, typename Premultiplication >
@@ -146,19 +30,44 @@ struct ttlc_colorspace {
 #include "Layout.tcc"
 
 
-
-
 class ColorSpaceAPI{
-	ColorSpaceMap map_ReferenceSpace;
-	ColorSpaceMap map_GradationLaw;
-	ColorSpaceMap map_Layout;
-	ColorSpaceMap map_ColourTemp;
 
-	std::vector< std::vector< std::string > > colourSpaceGradationParameters;
+	GradationLaw::gamma	sGammaIn;
+	GradationLaw::gamma	sGammaOut;
+	GradationLaw::cineon	sCineonIn;
+	GradationLaw::cineon	sCineonOut;
 
 public:
-	ColorSpaceAPI();
-	~ColorSpaceAPI();
+	ColorSpaceAPI()
+	{
+		sGammaIn .value = 1.0;
+		sGammaOut.value = 1.0;
+		sCineonIn .blackPoint = 95.0;
+		sCineonOut.blackPoint = 95.0;
+		sCineonIn .whitePoint = 685.0;
+		sCineonOut.whitePoint = 685.0;
+		sCineonIn .gammaSensito = 300.0;
+		sCineonOut.gammaSensito = 300.0;
+	}
+	~ColorSpaceAPI(){}
+
+	void setGammaInProperties ( GradationLaw::gamma gamma )
+	{
+		sGammaIn = gamma;
+	}
+	void setGammaOutProperties ( GradationLaw::gamma gamma )
+	{
+		sGammaOut = gamma;
+	}
+
+	void setCineonInProperties ( GradationLaw::cineon cineon )
+	{
+		sCineonIn = cineon;
+	}
+	void setCineonOutProperties ( GradationLaw::cineon cineon )
+	{
+		sCineonOut = cineon;
+	}
 
 	template < typename SrcP, typename DstP >
 	bool colorspace_convert(
@@ -172,47 +81,62 @@ public:
 			      DstP&			dst
 			)
 	{
-		DstP p0;
+		DstP p0, p1, p2, p3, p4;
 		switch ( eGradationLawIn )
 		{
-			case eParamLinear :	break; // do nothing
-			case eParamsRGB :	static_for_each( src, p0, computeSRGB() ); break;
-			case eParamCineon :	/*static_for_each( src, dst, computeCineon() );*/ break;
-			case eParamGamma :	/*static_for_each( src, dst, computeGamma() );*/ break;
-			case eParamPanalog :	static_for_each( src, p0, computePanalog() ); break;
-			case eParamREDLog :	static_for_each( src, p0, computeRedLog() ); break;
-			case eParamViperLog :	static_for_each( src, p0, computeViperLog() ); break;
-			case eParamREDSpace :	static_for_each( src, p0, computeRedSpace() ); break;
-			case eParamAlexaLogC :	static_for_each( src, p0, computeAlexaLogC() ); break;
+			case eParamLinear :	static_for_each( src, p0, computeFromLinear() );			break;
+			case eParamsRGB :	static_for_each( src, p0, computeFromSRGB() );			break;
+			case eParamCineon :	static_for_each( src, p0, computeFromCineon( sCineonIn.blackPoint, sCineonIn.whitePoint, sCineonIn.gammaSensito ) );	break;
+			case eParamGamma :	static_for_each( src, p0, computeFromGamma( sGammaIn.value ) );	break;
+			case eParamPanalog :	static_for_each( src, p0, computeFromPanalog() );			break;
+			case eParamREDLog :	static_for_each( src, p0, computeFromRedLog() );			break;
+			case eParamViperLog :	static_for_each( src, p0, computeFromViperLog() );			break;
+			case eParamREDSpace :	static_for_each( src, p0, computeFromRedSpace() );			break;
+			case eParamAlexaLogC :	static_for_each( src, p0, computeFromAlexaLogC() );			break;
 			break;
 		}
-		switch ( eGradationLawIn )
+		switch ( eLayoutIn )
 		{
-			case eParamLinear :	break; // do nothing
-			case eParamsRGB :	static_for_each( p0, dst, computeRGB() ); break;
-			case eParamCineon :	static_for_each( p0, dst, computeRGB() ); break;
-			case eParamGamma :	static_for_each( p0, dst, computeRGB() ); break;
-			case eParamPanalog :	static_for_each( p0, dst, computeRGB() ); break;
-			case eParamREDLog :	static_for_each( p0, dst, computeRGB() ); break;
-			case eParamViperLog :	static_for_each( p0, dst, computeRGB() ); break;
-			case eParamREDSpace :	static_for_each( p0, dst, computeRGB() ); break;
-			case eParamAlexaLogC :	static_for_each( p0, dst, computeRGB() ); break;
+			case eParamLayoutRGB :		convertFromRgbLayout	( p0, p1 ); break;
+			case eParamLayoutYUV :		convertFromYuvLayout	( p0, p1 ); break;
+			case eParamLayoutYPbPr :	convertFromYPbPrLayout	( p0, p1 ); break;
+			case eParamLayoutHSV :		convertFromHsvLayout	( p0, p1 ); break;
+			case eParamLayoutHSL :		convertFromHslLayout	( p0, p1 ); break;
+			case eParamLayoutLab :		break;
+			case eParamLayoutLuv :		break;
+			case eParamLayoutXYZ :		break;
+			case eParamLayoutYxy :		break;
+			break;
+		}
+		switch ( eLayoutOut )
+		{
+			case eParamLayoutRGB :		convertToRgbLayout	( p1, p2 ); break;
+			case eParamLayoutYUV :		convertToYuvLayout	( p1, p2 ); break;
+			case eParamLayoutYPbPr :	convertToYPbPrLayout	( p1, p2 ); break;
+			case eParamLayoutHSV :		convertToHsvLayout	( p1, p2 ); break;
+			case eParamLayoutHSL :		convertToHslLayout	( p1, p2 ); break;
+			case eParamLayoutLab :		break;
+			case eParamLayoutLuv :		break;
+			case eParamLayoutXYZ :		break;
+			case eParamLayoutYxy :		break;
+			break;
+		}
+		switch ( eGradationLawOut )
+		{
+			case eParamLinear :	static_for_each( p2, dst, computeToLinear() );			break;
+			case eParamsRGB :	static_for_each( p2, dst, computeToSRGB() );			break;
+			case eParamCineon :	static_for_each( p2, dst, computeToCineon( sCineonOut.blackPoint, sCineonOut.whitePoint, sCineonOut.gammaSensito ) );	break;
+			case eParamGamma :	static_for_each( p2, dst, computeToGamma( sGammaOut.value ) );	break;
+			case eParamPanalog :	static_for_each( p2, dst, computeToPanalog() );			break;
+			case eParamREDLog :	static_for_each( p2, dst, computeToRedLog() );			break;
+			case eParamViperLog :	static_for_each( p2, dst, computeToViperLog() );			break;
+			case eParamREDSpace :	static_for_each( p2, dst, computeToRedSpace() );			break;
+			case eParamAlexaLogC :	static_for_each( p2, dst, computeToAlexaLogC() );			break;
 			break;
 		}
 		return true;
 	}
 
-	size_t			sizeOfReferenceSpaces()						{ return map_ReferenceSpace.size(); }
-	size_t			sizeOfGradationLaw()						{ return map_GradationLaw.size(); }
-	size_t			sizeOfLayout()							{ return map_Layout.size(); }
-	size_t			sizeOfColourTemp()						{ return map_ColourTemp.size(); }
-
-	const ColorSpaceMap&	getMapReferenceSpaces()						{ return map_ReferenceSpace; }
-	const ColorSpaceMap&	getMapGradationLaw()						{ return map_GradationLaw; }
-	const ColorSpaceMap&	getMapLayout()							{ return map_Layout; }
-	const ColorSpaceMap&	getMapColourTemp()						{ return map_ColourTemp; }
-
-	size_t			sizeOfGradationParametersFor( EParamGradationLaw eGradLaw )	{ return colourSpaceGradationParameters.at( eGradLaw ).size(); }
 };
 
 }

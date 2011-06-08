@@ -29,56 +29,58 @@ ColorSpacePlugin::ColorSpacePlugin( OfxImageEffectHandle handle )
 	_paramInColorTemp	= fetchChoiceParam	( kColorSpaceTempColorIn );
 	_paramOutColorTemp	= fetchChoiceParam	( kColorSpaceTempColorOut );
 
+	_paramInGamma		-> setIsSecret ( true );
+	_paramInBlackPoint	-> setIsSecret ( true );
+	_paramInWhitePoint	-> setIsSecret ( true );
+	_paramInGammaSensito	-> setIsSecret ( true );
+	_paramOutGamma		-> setIsSecret ( true );
+	_paramOutBlackPoint	-> setIsSecret ( true );
+	_paramOutWhitePoint	-> setIsSecret ( true );
+	_paramOutGammaSensito	-> setIsSecret ( true );
+
 	updateInParams();
 	updateOutParams();
 }
 
 void ColorSpacePlugin::updateInParams()
 {
+	_paramInGamma		-> setIsSecret ( true );
+	_paramInBlackPoint	-> setIsSecret ( true );
+	_paramInWhitePoint	-> setIsSecret ( true );
+	_paramInGammaSensito	-> setIsSecret ( true );
+
 	switch( _paramInGradationLaw->getValue() )
 	{
 		case ttlc::eParamGamma :
 			_paramInGamma		-> setIsSecret ( false );
-			_paramInBlackPoint	-> setIsSecret ( true );
-			_paramInWhitePoint	-> setIsSecret ( true );
-			_paramInGammaSensito	-> setIsSecret ( true );
 			break;
 		case ttlc::eParamCineon :
-			_paramInGamma		-> setIsSecret ( true );
 			_paramInBlackPoint	-> setIsSecret ( false );
 			_paramInWhitePoint	-> setIsSecret ( false );
 			_paramInGammaSensito	-> setIsSecret ( false );
 			break;
 		default :
-			_paramInGamma		-> setIsSecret ( true );
-			_paramInBlackPoint	-> setIsSecret ( true );
-			_paramInWhitePoint	-> setIsSecret ( true );
-			_paramInGammaSensito	-> setIsSecret ( true );
 			break;
 	}
 }
 
 void ColorSpacePlugin::updateOutParams()
 {
+	_paramOutGamma		-> setIsSecret ( true );
+	_paramOutBlackPoint	-> setIsSecret ( true );
+	_paramOutWhitePoint	-> setIsSecret ( true );
+	_paramOutGammaSensito	-> setIsSecret ( true );
 	switch( _paramOutGradationLaw->getValue() )
 	{
 		case ttlc::eParamGamma :
 			_paramOutGamma		-> setIsSecret ( false );
-			_paramOutBlackPoint	-> setIsSecret ( true );
-			_paramOutWhitePoint	-> setIsSecret ( true );
-			_paramOutGammaSensito	-> setIsSecret ( true );
 			break;
 		case ttlc::eParamCineon :
-			_paramOutGamma		-> setIsSecret ( true );
 			_paramOutBlackPoint	-> setIsSecret ( false );
 			_paramOutWhitePoint	-> setIsSecret ( false );
 			_paramOutGammaSensito	-> setIsSecret ( false );
 			break;
 		default :
-			_paramOutGamma		-> setIsSecret ( true );
-			_paramOutBlackPoint	-> setIsSecret ( true );
-			_paramOutWhitePoint	-> setIsSecret ( true );
-			_paramOutGammaSensito	-> setIsSecret ( true );
 			break;
 	}
 }

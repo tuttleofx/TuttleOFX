@@ -36,17 +36,39 @@ void ColorSpaceProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 	_gradationIn		= _plugin.getGradationLawIn();
 
-	_GammaValueIn		= _plugin.getGammaValueIn();
-	_BlackPointIn		= _plugin.getBlackPointValueIn();
-	_WhitePointIn		= _plugin.getWhitePointValueIn();
-	_GammaSensitoIn		= _plugin.getGammaSensitoValueIn();
+	if( _gradationIn == ttlc::eParamGamma )
+	{
+		ttlc::GradationLaw::gamma gammaIn;
+		gammaIn.value = _plugin.getGammaValueIn();
+		csAPI.setGammaInProperties( gammaIn );
+	}
+
+	if( _gradationIn == ttlc::eParamCineon )
+	{
+		ttlc::GradationLaw::cineon cineonIn;
+		cineonIn.blackPoint   = _plugin.getBlackPointValueIn();
+		cineonIn.whitePoint   = _plugin.getWhitePointValueIn();
+		cineonIn.gammaSensito = _plugin.getGammaSensitoValueIn();
+		csAPI.setCineonInProperties( cineonIn );
+	}
 
 	_gradationOut		= _plugin.getGradationLawOut();
 
-	_GammaValueOut		= _plugin.getGammaValueOut();
-	_BlackPointOut		= _plugin.getBlackPointValueOut();
-	_WhitePointOut		= _plugin.getWhitePointValueOut();
-	_GammaSensitoOut	= _plugin.getGammaSensitoValueOut();
+	if( _gradationOut == ttlc::eParamGamma )
+	{
+		ttlc::GradationLaw::gamma gammaOut;
+		gammaOut.value = _plugin.getGammaValueOut();
+		csAPI.setGammaOutProperties( gammaOut );
+	}
+
+	if( _gradationOut == ttlc::eParamCineon )
+	{
+		ttlc::GradationLaw::cineon cineonOut;
+		cineonOut.blackPoint   = _plugin.getBlackPointValueOut();
+		cineonOut.whitePoint   = _plugin.getWhitePointValueOut();
+		cineonOut.gammaSensito = _plugin.getGammaSensitoValueOut();
+		csAPI.setCineonOutProperties( cineonOut );
+	}
 
 	_layoutIn		= _plugin.getLayoutIn();
 	_layoutOut		= _plugin.getLayoutOut();
@@ -76,41 +98,7 @@ void ColorSpaceProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 					procWindowSize.x,
 					procWindowSize.y );
 
-
-
 	colorspace_pixels_progress( &csAPI, _gradationIn, _layoutIn, _tempColorIn, _gradationOut, _layoutOut, _tempColorOut, src, dst, this );
-
-/*
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempA,		ColourTemp::A,		structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempB,		ColourTemp::B,		structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempC,		ColourTemp::C,		structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempD50,		ColourTemp::D50,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempD55,		ColourTemp::D55,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempD58,		ColourTemp::D58,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempD65,		ColourTemp::D65,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempD75,		ColourTemp::D75,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTemp9300,	ColourTemp::Temp9300,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempF2,		ColourTemp::F2,		structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempF7,		ColourTemp::F7,		structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempF11,		ColourTemp::F11,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-			TEMP_COLOR_IN_FOR( ttlc::eParamTempDCIP3,	ColourTemp::DCIP3,	structLayoutOut, structLayoutIn, structGradOut, structGradIn )\
-
-		switch ( _layoutOut ) \
-		{ \
-
-		switch ( _layoutIn ) \
-		{ \
-			LAYOUT_IN_FOR( ttlc::eParamLayoutRGB,		ttlc::Layout::RGB,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutYUV,		ttlc::Layout::YUV,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutYPbPr,		ttlc::Layout::YPbPr,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutHSV,		ttlc::Layout::HSV,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutHSL,		ttlc::Layout::HSL,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutLab,		ttlc::Layout::Lab,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutLuv,		ttlc::Layout::Luv,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutXYZ,		ttlc::Layout::XYZ,	structGradOut, structGradIn )\
-			LAYOUT_IN_FOR( ttlc::eParamLayoutYxy,		ttlc::Layout::Yxy,	structGradOut, structGradIn )\
-
-*/
 
 }
 

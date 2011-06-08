@@ -18,6 +18,8 @@
 #include <vector>
 #include <iostream>
 
+namespace ttlc = tuttle::plugin::color;
+
 namespace tuttle {
 namespace plugin {
 namespace colorspace {
@@ -26,23 +28,23 @@ template<class View>
 class ColorSpaceProcess : public ImageGilFilterProcessor<View>
 {
 protected:
-	tuttle::plugin::color::ColorSpaceAPI		csAPI;
-	tuttle::plugin::color::EParamGradationLaw	_gradationIn;
-	double						_GammaValueIn;
-	double						_BlackPointIn;
-	double						_WhitePointIn;
-	double						_GammaSensitoIn;
+	ttlc::ColorSpaceAPI		csAPI;
+	ttlc::EParamGradationLaw	_gradationIn;
+	double				_GammaValueIn;
+	double				_BlackPointIn;
+	double				_WhitePointIn;
+	double				_GammaSensitoIn;
 
-	tuttle::plugin::color::EParamGradationLaw	_gradationOut;
-	double						_GammaValueOut;
-	double						_BlackPointOut;
-	double						_WhitePointOut;
-	double						_GammaSensitoOut;
+	ttlc::EParamGradationLaw	_gradationOut;
+	double				_GammaValueOut;
+	double				_BlackPointOut;
+	double				_WhitePointOut;
+	double				_GammaSensitoOut;
 
-	tuttle::plugin::color::EParamLayout		_layoutIn;
-	tuttle::plugin::color::EParamLayout		_layoutOut;
-	tuttle::plugin::color::EParamTemp		_tempColorIn;
-	tuttle::plugin::color::EParamTemp		_tempColorOut;
+	ttlc::EParamLayout		_layoutIn;
+	ttlc::EParamLayout		_layoutOut;
+	ttlc::EParamTemp		_tempColorIn;
+	ttlc::EParamTemp		_tempColorOut;
 
 	ColorSpacePlugin& _plugin; ///< Rendering plugin
 

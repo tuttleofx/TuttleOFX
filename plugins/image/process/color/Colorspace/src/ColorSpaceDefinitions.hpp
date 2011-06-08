@@ -2,7 +2,7 @@
 #define _TUTTLE_COLORSPACE_DEFINITIONS_HPP
 
 #include <tuttle/plugin/global.hpp>
-#include <tuttle/plugin/color/colorSpaceAPI.hpp>
+#include <tuttle/plugin/color/colorDefinitions.hpp>
 
 namespace tuttle {
 namespace plugin {

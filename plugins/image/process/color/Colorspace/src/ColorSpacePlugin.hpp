@@ -2,7 +2,7 @@
 #define _TUTTLE_PLUGIN_COLORSPACE_PLUGIN_HPP_
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <tuttle/plugin/color/colorSpaceAPI.hpp>
+#include <tuttle/plugin/color/colorDefinitions.hpp>
 
 namespace tuttle {
 namespace plugin {

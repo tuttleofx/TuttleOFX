@@ -1,7 +1,7 @@
 
 /*-------------------------------- method to process pixels values ------------------------------------*/
 
-struct computeLinear
+struct computeFromLinear
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
@@ -10,7 +10,16 @@ struct computeLinear
 	}
 };
 
-struct computeSRGB
+struct computeToLinear
+{
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		dst = DstChannel( src );
+	}
+};
+
+struct computeFromSRGB
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
@@ -26,13 +35,29 @@ struct computeSRGB
 	}
 };
 
-struct computeCineon
+struct computeToSRGB
+{
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		if( src > 0.0031308 )
+		{
+			dst = DstChannel( 1.055 * pow( src , 1.0 / 2.4 ) - 0.055 );
+		}
+		else
+		{
+			dst = DstChannel( 12.92 * src );
+		}
+	}
+};
+
+struct computeFromCineon
 {
 	const double _blackPoint;
 	const double _whitePoint;
 	const double _gammaSensito;
 
-	computeCineon( const double blackPoint, const double whitePoint, const double gammaSensito ) : _blackPoint( blackPoint ), _whitePoint( whitePoint ), _gammaSensito( gammaSensito ) { }
+	computeFromCineon( const double blackPoint, const double whitePoint, const double gammaSensito ) : _blackPoint( blackPoint ), _whitePoint( whitePoint ), _gammaSensito( gammaSensito ) { }
 
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
@@ -40,15 +65,33 @@ struct computeCineon
 		//double tmpValue = pow( 10 , ( _blackPoint - _whitepoint ) / 300 );
 		//dst = ( pow( 10 , ( src*1024 - _whitePoint ) / 300 ) - tmpValue ) / tmpValue;
 
-		dst = 1.010915615730753 * ( pow( 10 ,(1023*src-685)/300 ) - 0.010797751623277);
+		dst = 1.010915615730753 * ( pow( 10 ,( 1023 * src - 685 ) / 300 ) - 0.010797751623277 );
 	}
 };
 
-struct computeGamma
+struct computeToCineon
+{
+	const double _blackPoint;
+	const double _whitePoint;
+	const double _gammaSensito;
+
+	computeToCineon( const double blackPoint, const double whitePoint, const double gammaSensito ) : _blackPoint( blackPoint ), _whitePoint( whitePoint ), _gammaSensito( gammaSensito ) { }
+
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		//double tmpValue = pow( 10 , ( _blackPoint - _whitepoint ) / 300 );
+		//dst = ( pow( 10 , ( src*1024 - _whitePoint ) / 300 ) - tmpValue ) / tmpValue;
+
+		dst = 0.00042453028534042214 * ( 300 * log( 0.98920224837672 * src + 0.010797751623277 ) + 1577.270788700921 );
+	}
+};
+
+struct computeFromGamma
 {
 	const double _value;
 
-	computeGamma( const double value ) : _value( value ) { }
+	computeFromGamma( const double value ) : _value( value ) { }
 
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
@@ -58,7 +101,32 @@ struct computeGamma
 		if( src > 0.0 )
 		{
 			// compute gamma value
-			dst = DstChannel( pow( 10 , _value * log10( src ) ) );
+			//dst = DstChannel( pow( 10 , _value * log10( src ) ) );
+			dst = DstChannel( pow( src , _value ) );
+		}
+		else
+		{
+			// for negative values, we return a linear conversion
+			dst = DstChannel( src );
+		}
+	}
+};
+
+struct computeToGamma
+{
+	const double _value;
+
+	computeToGamma( const double value ) : _value( value ) { }
+
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		if( src == 0 )
+			dst = DstChannel( 0.0 );
+		if( src > 0.0 )
+		{
+			// compute gamma value
+			dst = DstChannel( pow( src , 1.0 / _value ) );
 		}
 		else
 		{
@@ -69,34 +137,61 @@ struct computeGamma
 };
 
 // equation are axctracted from Nuke, in Project Settings
-struct computePanalog
+struct computeFromPanalog
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
 	{
-		dst = ( pow ( 10, ( 1023 * src - 681 ) / 444 ) - 0.0408 ) / ( 1 - 0.0408 );
+		dst = ( pow ( 10, ( 1023.0 * src - 681.0 ) / 444.0 ) - 0.0408 ) / ( 1.0 - 0.0408 );
 	}
 };
 
-struct computeRedLog
+struct computeToPanalog
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
 	{
-		dst = ( pow ( 10, ( 1023 * src - 1023 ) / 511 ) - 0.01 ) / ( 1 - 0.01 );
+		dst = ( 444.0 * log10( 0.0408 + ( 1 - 0.0408 ) * src ) + 681.0 ) / 1023.0;
 	}
 };
 
-struct computeViperLog
+struct computeFromRedLog
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
 	{
-		dst = pow ( 10, ( 1023 * src - 1023 ) / 500 );
+		dst = ( pow ( 10, ( 1023.0 * src - 1023.0 ) / 511.0 ) - 0.01 ) / ( 1.0 - 0.01 );
 	}
 };
 
-struct computeRedSpace
+struct computeToRedLog
+{
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		dst = ( 511.0 * log10( 0.01 + ( 1 - 0.01 ) * src ) + 1023.0 ) / 1023.0;
+	}
+};
+
+struct computeFromViperLog
+{
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		dst = pow ( 10, ( 1023.0 * src - 1023.0 ) / 500.0 );
+	}
+};
+
+struct computeToViperLog
+{
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		dst = ( 500.0 * log10( src ) + 1023.0 ) / 1023.0;
+	}
+};
+
+struct computeFromRedSpace
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
@@ -105,7 +200,7 @@ struct computeRedSpace
 	}
 };
 
-struct computeAlexaLogC
+struct computeToRedSpace
 {
 	template <typename SrcChannel, typename DstChannel>
 	void operator()( SrcChannel& src, DstChannel& dst ) const
@@ -114,67 +209,21 @@ struct computeAlexaLogC
 	}
 };
 
-/*------------------------- methods to convert input to lin --------------------------------*/
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::linear, LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
+struct computeFromAlexaLogC
 {
-	static_for_each( src, dst, computeLinear() );
-	return true;
-}
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		dst = DstChannel( src ); // the equation wasn't found actually
+	}
+};
 
-
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::sRGB , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
+struct computeToAlexaLogC
 {
-	static_for_each( src, dst, computeSRGB() );
-	return true;
-}
+	template <typename SrcChannel, typename DstChannel>
+	void operator()( SrcChannel& src, DstChannel& dst ) const
+	{
+		dst = DstChannel( src ); // the equation wasn't found actually
+	}
+};
 
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::cineon , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
-{
-	static_for_each( src, dst, computeCineon( inColorSpace.law.blackPoint, inColorSpace.law.whitePoint, inColorSpace.law.gammaSensito ) );
-	return true;
-}
-
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::gamma , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
-{
-	static_for_each( src, dst, computeGamma( inColorSpace.law.value ) );
-	return true;
-}
-
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::panalog , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
-{
-	static_for_each( src, dst, computePanalog() );
-	return true;
-}
-
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::redLog , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
-{
-	static_for_each( src, dst, computeRedLog() );
-	return true;
-}
-
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::viperLog , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
-{
-	static_for_each( src, dst, computeViperLog() );
-	return true;
-}
-
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::redSpace , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
-{
-	static_for_each( src, dst, computeRedSpace() );
-	return true;
-}
-
-template < typename SrcP, typename DstP, typename LayoutIn >
-bool convertGradationLaw( const ttlc_colorspace< GradationLaw::alexaLogC , LayoutIn > inColorSpace, const SrcP& src, DstP& dst )
-{
-	static_for_each( src, dst, computeAlexaLogC() );
-	return true;
-}

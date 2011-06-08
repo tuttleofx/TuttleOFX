@@ -1,14 +1,13 @@
 
-#include "colorSpaceAPI.hpp"
-#include <cmath>
+#include "colorDefinitions.hpp"
 
-#include <boost/gil/pixel.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace color{
 
-ColorSpaceAPI::ColorSpaceAPI()
+
+ColorSpaceMaps::ColorSpaceMaps()
 {
 	map_ReferenceSpace.insert( std::pair< size_t, std::string >( eParamSRGBREC709,	"sRGB - Rec 709") );
 	map_ReferenceSpace.insert( std::pair< size_t, std::string >( eParamREC709,	"Rec 709" ) );
@@ -65,108 +64,8 @@ ColorSpaceAPI::ColorSpaceAPI()
 	colourSpaceGradationParameters.at( eParamCineon ) .push_back( "Gamma Sensito");
 }
 
-ColorSpaceAPI::~ColorSpaceAPI()
-{
-}
-
-/*
-template < typename GradationLawIn, typename SrcP, typename DstP >
-bool convert ( const ttlc_colorspace< GradationLawIn > inColorSpace, const SrcP& src, DstP& result )
-{
-	return false;
-}*/
-/*
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::linear > inColorSpace, const SrcP& src, DstP& result )
-{
-	result = src;
-	return true;
-}
-
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::sRGB     > inColorSpace, const SrcP& src, DstP& result )
-{
-
-	if( p > 0.04045 )
-	{
-
-		result = pow( (p+0.055)/1.055 , 2.4 );
-		*p += sizeof(F);
-		*result += sizeof(DstP);
-		result = pow( (p+0.055)/1.055 , 2.4 );
-	}
-	else
-		result = (double) p / 12.92;
-	return true;
-}
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::cineon   > inColorSpace, const SrcP& src, DstP& result )
-{
-	return true;
-}
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::gamma    > inColorSpace, const SrcP& src, DstP& result )
-{
-	return true;
-}
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::panalog  > inColorSpace, const SrcP& src, DstP& result )
-{
-	return true;
-}
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::redLog   > inColorSpace, const SrcP& src, DstP& result )
-{
-	return true;
-}
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::viperLog > inColorSpace, const SrcP& src, DstP& result )
-{
-	return true;
-}
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::redSpace > inColorSpace, const SrcP& src, DstP& result )
-{
-	return true;
-}
-
-template < typename SrcP, typename DstP >
-bool convert( const ttlc_colorspace< GradationLaw::alexaLogC> inColorSpace, const SrcP& src, DstP& result )
-{
-	return true;
-}
-
-
-
-
-#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
-#include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-
-template < typename GradationLawIn, typename GradationLawOut, typename ScrP, typename DstP >
-bool colorspace_convert(
-			const ttlc_colorspace< GradationLawIn > inColorSpace,
-			const ttlc_colorspace< GradationLawOut > outColorSpace,
-			const ScrP& src,
-			DstP& dst
-			)
-{
-	//std::cout << "convert input colorspace to lin / RGB / D65" << std::endl;
-	convert( inColorSpace,  src, dst );
-	//std::cout << "convert lin / RGB / D65 to output colorspace" << std::endl;
-	return true;
-}
-template <typename SrcView, typename DstView>
-convert( ttlc_colorspace< GradationLaw::linear >, pixel_type<SrcView>::type, pixel_type<DstView>::type );
-*/
-
 
 }
 }
 }
+
