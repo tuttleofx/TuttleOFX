@@ -67,11 +67,11 @@ void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, 
 {
 	BOOST_FOREACH( const std::list< boost::shared_ptr<ttl::FileObject> >::value_type & s, listing )
 	{
-		if( !(s->getMaskType () == ttl::eDirectory))
+		if( !(s->getMaskType () == ttl::eMaskTypeDirectory))
 		{
 			if(verbose)
 				TUTTLE_COUT( "remove " << *s );
-			if( s->getMaskType () == ttl::eSequence )
+			if( s->getMaskType () == ttl::eMaskTypeSequence )
 				removeSequence( (ttl::Sequence&) *s );
 			else
 			{
@@ -140,8 +140,8 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	int					researchMask		= eSequence;	// by default show sequences
-	MaskOptions				descriptionMask		= eColor;	// by default show nothing
+	EMaskType					researchMask		= eMaskTypeSequence;	// by default show sequences
+	EMaskOptions				descriptionMask		= eMaskOptionsColor;	// by default show nothing
 	bool					recursiveListing	= false;
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
@@ -185,7 +185,7 @@ int main( int argc, char** argv )
 	bpo::variables_map vm;
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-	// get environnement options and parse them
+	// get environment options and parse them
 	if( std::getenv("SAM_RM_OPTIONS") != NULL)
 	{
 		std::vector<std::string> envOptions;
@@ -214,17 +214,17 @@ int main( int argc, char** argv )
 
 	if (vm.count("directories"))
 	{
-		researchMask |= eDirectory;
+		researchMask |= eMaskTypeDirectory;
 	}
 	
 	if (vm.count("files"))
 	{
-		researchMask |= eFile;
+		researchMask |= eMaskTypeFile;
 	}
 	
 	if (vm.count("mask"))
 	{
-		researchMask &= ~eSequence;
+		researchMask &= ~eMaskTypeSequence;
 	}
 	
 	if (vm.count("verbose"))
@@ -244,26 +244,26 @@ int main( int argc, char** argv )
 
 	if (vm.count("full-rm"))
 	{
-		researchMask |= eDirectory;
-		researchMask |= eFile;
-		researchMask |= eSequence;
+		researchMask |= eMaskTypeDirectory;
+		researchMask |= eMaskTypeFile;
+		researchMask |= eMaskTypeSequence;
 	}
 	
 	if (vm.count("all"))
 	{
 		// add .* files
-		descriptionMask |= eDotFile;
+		descriptionMask |= eMaskOptionsDotFile;
 	}
 	
 	if (vm.count("path-root"))
 	{
-		descriptionMask |= ePath;
+		descriptionMask |= eMaskOptionsPath;
 	}
 
 	if (vm.count("color") )
 	{
 		colorOutput = true;
-		descriptionMask |=  eColor;
+		descriptionMask |=  eMaskOptionsColor;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -303,19 +303,19 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 								//								TUTTLE_COUT( *dir );
-								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
+								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
 								removeFileObject( listing, pathsNoRemoved );
 							}
 						}
 					}
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 				else
 				{
 					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 			}

@@ -182,10 +182,27 @@ int main( int argc, char** argv )
 			{
 				if( fs::is_directory( path ) )
 				{
-					std::vector<Sequence> sequences = sequencesInDir( path );
-					BOOST_FOREACH( const Sequence& s, sequences )
+					std::list<boost::shared_ptr<FileObject> > fObjects;
+					fObjects = fileObjectsInDir( path );
+					BOOST_FOREACH( const boost::shared_ptr<FileObject> fObj, fObjects )
 					{
-						checkSequence( read, stat, graph, s );
+						switch( fObj->getMaskType() )
+						{
+							case eMaskTypeSequence:
+							{
+								checkSequence( read, stat, graph, dynamic_cast<const Sequence&>( *fObj ) );
+								break;
+							}
+							case eMaskTypeFile:
+							{
+								const File fFile = dynamic_cast<const File&>( *fObj );
+								checkFile( read, stat, graph, fFile.getAbsoluteFilename() );
+								break;
+							}
+							case eMaskTypeDirectory:
+							case eMaskTypeUndefined:
+								break;
+						}
 					}
 				}
 				else

@@ -121,7 +121,7 @@ void copy_sequence( const ttl::Sequence& s,
 
 int main( int argc, char** argv )
 {
-	ttl::MaskOptions descriptionMask = ttl::eNone; // by default show nothing
+	ttl::EMaskOptions descriptionMask = ttl::eMaskOptionsNone; // by default show nothing
 	std::string availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
@@ -216,7 +216,7 @@ int main( int argc, char** argv )
 	if( vm.count( "all" ) )
 	{
 		// add .* files
-		descriptionMask |= ttl::eDotFile;
+		descriptionMask |= ttl::eMaskOptionsDotFile;
 	}
 
 	// defines paths

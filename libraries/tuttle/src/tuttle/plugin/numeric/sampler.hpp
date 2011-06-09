@@ -1081,7 +1081,7 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 	for( unsigned int i = 0; i < windowSize; i++ )
 	{
 		//getSincWeight( frac.x+supportWindow-i, weight.at(i), supportWindow );
-		getNearestWeight( frac.x+supportWindow-i, weight.at(i), supportWindow );
+		getNearestWeight( frac.x+supportWindow-i, weight.at(i) /*, supportWindow*/ );
 	}
 
 	if( pTL.y < 0 )

@@ -28,8 +28,8 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	MaskType				researchMask		= eSequence;	// by default show sequences
-	MaskOptions				descriptionMask		= eNone;	// by default show nothing
+	EMaskType				researchMask		= eMaskTypeSequence;	// by default show sequences
+	EMaskOptions				descriptionMask		= eMaskOptionsNone;	// by default show nothing
 	bool					recursiveListing	= false;
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
@@ -100,50 +100,50 @@ int main( int argc, char** argv )
 
 	if (vm.count("directories"))
 	{
-		researchMask |= eDirectory;
+		researchMask |= eMaskTypeDirectory;
 	}
 	
 	if (vm.count("files"))
 	{
-		researchMask |= eFile;
+		researchMask |= eMaskTypeFile;
 	}
 	
 	if (vm.count("mask"))
 	{
-		researchMask &= ~eSequence;
+		researchMask &= ~eMaskTypeSequence;
 	}
 	
 	if (vm.count("full-display"))
 	{
-		researchMask |= eDirectory;
-		researchMask |= eFile;
-		researchMask |= eSequence;
+		researchMask |= eMaskTypeDirectory;
+		researchMask |= eMaskTypeFile;
+		researchMask |= eMaskTypeSequence;
 	}
 	
 	if (vm.count("all"))
 	{
 		// add .* files
-		descriptionMask |= eDotFile;
+		descriptionMask |= eMaskOptionsDotFile;
 	}
 	
 	if (vm.count("long-listing"))
 	{
-		descriptionMask |= eProperties;
+		descriptionMask |= eMaskOptionsProperties;
 	}
 	
 	if (vm.count("path-root"))
 	{
-		descriptionMask |= ePath;
+		descriptionMask |= eMaskOptionsPath;
 	}
 
 	if(vm.count("absolute-path"))
 	{
-		descriptionMask |= eAbsolutePath;
+		descriptionMask |= eMaskOptionsAbsolutePath;
 	}
 
 	if (vm.count("color"))
 	{
-		descriptionMask |= eColor;
+		descriptionMask |= eMaskOptionsColor;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -184,7 +184,7 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 //								TUTTLE_COUT( *dir );
-								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
+								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
 								BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 								{
 									TUTTLE_COUT( *s );
@@ -193,7 +193,7 @@ int main( int argc, char** argv )
 						}
 					}
 
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 					{
 					    TUTTLE_COUT( *s );
@@ -204,7 +204,7 @@ int main( int argc, char** argv )
 				{
 //					TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 					{
 						TUTTLE_COUT( *s );
