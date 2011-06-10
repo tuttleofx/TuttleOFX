@@ -917,7 +917,7 @@ std::ostream& operator<<( std::ostream& os, const FileObject& fo )
 
 std::ostream& Folder::getCout( std::ostream& os ) const
 {
-        bfs::path dir;
+	bfs::path dir;
 	os << std::left;
 	if( showProperties() )
 	{

@@ -125,8 +125,18 @@ public:
 	
 	friend  std::ostream&				operator<<( std::ostream& os, const FileObject& fo );
 	virtual std::ostream&				getCout   ( std::ostream& os ) const = 0;
-	
+
+	/**
+	 * @todo: can we remove this?
+	 */
 	virtual std::vector<boost::filesystem::path>	getFiles() const =0;
+	
+	/// @todo 
+	// virtual std::string getName() const = 0;
+//	boost::filesystem::path getAbsoluteName() const
+//	{
+//		return getDirectory() / getName();
+//	}
 	
 	inline boost::filesystem::path			getDirectory	() const				{ return _directory; }
 	inline void					setDirectory	( const boost::filesystem::path& p )	{ _directory = p; }
