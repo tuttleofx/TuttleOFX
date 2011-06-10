@@ -20,9 +20,8 @@ namespace ttl = tuttle::common;
 
 bool	colorOutput	= false;
 bool	verbose		= false;
-
-int	firstImage	= 0;
-int	lastImage	= 0;
+std::ssize_t firstImage	= 0;
+std::ssize_t lastImage	= 0;
 
 // A helper function to simplify the main part.
 template<class T>
@@ -34,31 +33,31 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
 void removeSequence( const ttl::Sequence& s )
 {
-	for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+	const std::ssize_t first = std::max( s.getFirstTime(), firstImage );
+	const std::ssize_t last	= std::min( s.getLastTime(), lastImage );
+	
+	for( ttl::Sequence::Time t = first; t <= last; t += s.getStep() )
 	{
-		if( ( (firstImage == 0) | ( t >= firstImage ) ) & ( (lastImage == 0) | ( t <= lastImage ) ) )
+		bfs::path sFile = s.getAbsoluteFilenameAt(t);
+		if( !bfs::exists( sFile ) )
 		{
-			bfs::path sFile = s.getAbsoluteFilenameAt(t);
-			if( !bfs::exists( sFile ) )
+			colorOutput ?
+				TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd )
+			:
+				TUTTLE_CERR("Could not remove: " << sFile.string() )
+			;
+		}
+		else
+		{
+			if(verbose)
 			{
 				colorOutput ?
-					TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd )
+					TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd )
 				:
-					TUTTLE_CERR("Could not remove: " << sFile.string() )
+					TUTTLE_COUT("remove: " << sFile.string() )
 				;
 			}
-			else
-			{
-				if(verbose)
-				{
-					colorOutput ?
-						TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd )
-					:
-						TUTTLE_COUT("remove: " << sFile.string() )
-					;
-				}
-				bfs::remove( sFile );
-			}
+			bfs::remove( sFile );
 		}
 	}
 }
@@ -100,11 +99,11 @@ void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, 
 	}
 }
 
-void removeFileObject( std::vector<boost::filesystem::path> &listing )
+void removeFiles( std::vector<boost::filesystem::path> &listing )
 {
 	std::sort(listing.begin(), listing.end());
 	std::reverse(listing.begin(), listing.end());
-	BOOST_FOREACH( const boost::filesystem::path paths, listing )
+	BOOST_FOREACH( const boost::filesystem::path& paths, listing )
 	{
 		if(bfs::is_empty(paths))
 		{
@@ -234,12 +233,12 @@ int main( int argc, char** argv )
 
 	if (vm.count("first-image"))
 	{
-		firstImage  = vm["first-image"].as< unsigned int >();
+		firstImage  = vm["first-image"].as< std::ssize_t >();
 	}
 
 	if (vm.count("last-image"))
 	{
-		lastImage  = vm["last-image"].as< unsigned int >();
+		lastImage  = vm["last-image"].as< std::ssize_t >();
 	}
 
 	if (vm.count("full-rm"))
@@ -339,7 +338,7 @@ int main( int argc, char** argv )
 			}
 		}
 		// delete not empty folder the first time
-		removeFileObject( pathsNoRemoved );
+		removeFiles( pathsNoRemoved );
 	}
 	catch (bfs::filesystem_error &ex)
 	{
