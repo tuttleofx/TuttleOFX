@@ -151,10 +151,10 @@ void getImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject>
 
 		switch( sequence->getMaskType () )
 		{
-			case ttl::eSequence	: getImageProperties( (ttl::Sequence&) *sequence ); break;
-			case ttl::eFile		: getImageProperties( (ttl::File&) *sequence ); break;
-			case ttl::eDirectory	: break;
-			case ttl::eUndefined	: break;
+			case ttl::eMaskTypeSequence	: getImageProperties( (ttl::Sequence&) *sequence ); break;
+			case ttl::eMaskTypeFile		: getImageProperties( (ttl::File&) *sequence ); break;
+			case ttl::eMaskTypeDirectory	: break;
+			case ttl::eMaskTypeUndefined	: break;
 		}
 	}
 	listing.clear();
@@ -165,8 +165,8 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	int					researchMask		= eSequence;	// by default show sequences
-	MaskOptions				descriptionMask		= eColor;	// by default show nothing
+	int					researchMask		= eMaskTypeSequence;	// by default show sequences
+	EMaskOptions				descriptionMask		= eMaskOptionsColor;	// by default show nothing
 	bool					recursiveListing	= false;
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
@@ -236,17 +236,17 @@ int main( int argc, char** argv )
 
 	if (vm.count("directories"))
 	{
-	    researchMask |= eDirectory;
+	    researchMask |= eMaskTypeDirectory;
 	}
 
 	if (vm.count("files"))
 	{
-	    researchMask |= eFile;
+	    researchMask |= eMaskTypeFile;
 	}
 
 	if (vm.count("mask"))
 	{
-		researchMask &= ~eSequence;
+		researchMask &= ~eMaskTypeSequence;
 	}
 
 	if (vm.count("verbose"))
@@ -266,26 +266,26 @@ int main( int argc, char** argv )
 
 	if (vm.count("full-rm"))
 	{
-		researchMask |= eDirectory;
-		researchMask |= eFile;
-		researchMask |= eSequence;
+		researchMask |= eMaskTypeDirectory;
+		researchMask |= eMaskTypeFile;
+		researchMask |= eMaskTypeSequence;
 	}
 
 	if (vm.count("all"))
 	{
 		// add .* files
-		descriptionMask |= eDotFile;
+		descriptionMask |= eMaskOptionsDotFile;
 	}
 
 	if (vm.count("path-root"))
 	{
-		 descriptionMask |= ePath;
+		 descriptionMask |= eMaskOptionsPath;
 	}
 
 	if (vm.count("color") )
 	{
 		colorOutput = true;
-		descriptionMask |=  eColor;
+		descriptionMask |=  eMaskOptionsColor;
 	}
 
 	// defines paths, but if no directory specify in command line, we add the current path

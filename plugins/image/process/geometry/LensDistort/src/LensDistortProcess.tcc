@@ -65,6 +65,21 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 			lensDistort<ttl_bicubic_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
+		case eParamInterpolationCatmul:
+		{
+			lensDistort<ttl_catmul_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamInterpolationMitchell:
+		{
+			lensDistort<ttl_mitchell_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
+		case eParamInterpolationParzen:
+		{
+			lensDistort<ttl_parzen_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+			return;
+		}
 		case eParamInterpolationKeys:
 		{
 			lensDistort<ttl_keys_sampler>( this->_srcView, this->_dstView, procWindowOutput );
@@ -80,11 +95,33 @@ void LensDistortProcess<View>::multiThreadProcessImages( const OfxRectI& procWin
 			lensDistort<ttl_rifman_sampler>( this->_srcView, this->_dstView, procWindowOutput );
 			return;
 		}
-		case eParamInterpolationLanczos:
-		{
-			lensDistort<ttl_lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
-			return;
-		}
+
+
+//		case eParamInterpolationLanczos3:
+//		{
+//			lensDistort<ttl_lanczos3_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationLanczos4:
+//		{
+//			lensDistort<ttl_lanczos4_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationLanczos6:
+//		{
+//			lensDistort<ttl_lanczos6_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationLanczos12:
+//		{
+//			lensDistort<ttl_lanczos12_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
+//		case eParamInterpolationGaussian:
+//		{
+//			lensDistort<ttl_gaussian_sampler>( this->_srcView, this->_dstView, procWindowOutput );
+//			return;
+//		}
 	}
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::user( "Interpolation method not recognize." ) );

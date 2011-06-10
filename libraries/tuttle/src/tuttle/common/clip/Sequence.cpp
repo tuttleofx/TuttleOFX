@@ -285,6 +285,21 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings
 	return nums.size();
 }
 
+std::size_t getPaddingFromStringNumber( const std::string& timeStr )
+{
+	if( timeStr.size() > 1 )
+	{
+		// if the number is signed, this charater does not count as padding.
+		if( timeStr[0] == '-' ||
+		    timeStr[0] == '+'
+		    )
+		{
+			return timeStr.size() - 1;
+		}
+	}
+	return timeStr.size();
+}
+
 /**
  * @brief extract the padding from a list of frame numbers
  * @param[in] timesStr list of frame numbers in string format
@@ -292,10 +307,10 @@ TUTTLE_FORCEINLINE std::size_t seqConstruct( const std::string& str, FileStrings
 std::size_t extractPadding( const std::list<std::string>& timesStr )
 {
 	BOOST_ASSERT( timesStr.size() > 0 );
-	const std::size_t padding = timesStr.front().size();
+	const std::size_t padding = getPaddingFromStringNumber( timesStr.front() );
 	BOOST_FOREACH( const std::string& s, timesStr )
 	{
-		if( padding != s.size() )
+		if( padding != getPaddingFromStringNumber( s ) )
 			return 0;
 	}
 	return padding;
@@ -416,7 +431,8 @@ std::size_t extractStep( const std::list<FileNumbers>& times, const std::size_t 
 
 }
 
-Sequence::Sequence( const boost::filesystem::path& directory, const MaskOptions options, const EPattern accept ) : FileObject( directory, eSequence, options )
+Sequence::Sequence( const boost::filesystem::path& directory, const EMaskOptions options, const EPattern accept )
+	: FileObject( directory, eMaskTypeSequence, options )
 {
 	clear();
 	initFromDetection( accept );
@@ -610,7 +626,7 @@ bool Sequence::initFromDetection( const std::string& pattern, const EPattern acc
  *          so there is no reason to create a copy.
  * @return a sequence object with all informations
  */
-std::list<Sequence> buildSequence( const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const MaskOptions& desc )
+std::list<Sequence> buildSequence( const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const EMaskOptions& desc )
 {
 	typedef Sequence::Time Time;
 	nums.sort();
@@ -767,13 +783,13 @@ bool isNotFilter( std::string filename, std::vector<std::string>& filters)
 	return false;
 }
 
-std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& directory, int mask, const MaskOptions& desc )
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& directory, const EMaskType mask, const EMaskOptions desc )
 {
 	std::vector<std::string> filters;
-	return fileObjectsInDir( directory, mask, desc, filters );
+	return fileObjectsInDir( directory, filters, mask, desc );
 }
 
-std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters )
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& directory, std::vector<std::string>& filters, const EMaskType mask, const EMaskOptions desc )
 {
 	std::list<boost::shared_ptr<FileObject> > output;
 	
@@ -800,7 +816,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 		
 // 		TUTTLE_COUT("dir " << iter->filename());
 		
-		if( !(iter->path().filename().string()[0]==0x2E) || (desc & eDotFile)  ) //0x2e == . for the test if we ask to show hidden files and if it is hidden
+		if( !(iter->path().filename().string()[0]==0x2E) || (desc & eMaskOptionsDotFile)  ) //0x2e == . for the test if we ask to show hidden files and if it is hidden
 		{
 // 			TUTTLE_COUT("hidden file " << iter->filename());
 
@@ -868,17 +884,17 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 		}
         }
 
-	if(mask & eDirectory)
+	if(mask & eMaskTypeDirectory)
 	{
 		output.merge( outputDirectories );
 	}
 	// add files in the output list
-	if(mask & eFile)
+	if(mask & eMaskTypeFile)
 	{
 		output.merge( outputFiles );
 	}
 	// add sequences in the output list
-	if(mask & eSequence)
+	if(mask & eMaskTypeSequence)
 	{
 		output.merge( outputSequences );
 	}
@@ -910,7 +926,7 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	if( showPath() )
 	{
 
-		if(_options & eAbsolutePath)
+		if(_options & eMaskOptionsAbsolutePath)
 		{
 			dir = bfs::system_complete(_directory);
 		}
@@ -922,7 +938,7 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
 		
 		std::string path = (dir / _folderName).string();
-		if(_options & eColor)
+		if(_options & eMaskOptionsColor)
 		{
 			os << std::setw(NAME_WIDTH_WITH_DIR) << kColorFolder+ path + kColorStd;
 		}
@@ -933,12 +949,12 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	}
 	else
 	{
-		if(_options & eAbsolutePath)
+		if(_options & eMaskOptionsAbsolutePath)
 		{
 			dir = bfs::system_complete(_directory);
 		}
 
-		if(_options & eColor)
+		if(_options & eMaskOptionsColor)
 		{
 			os << std::setw(NAME_WIDTH) << kColorFolder + dir.string() + _folderName + kColorStd ;
 		}
@@ -968,7 +984,7 @@ std::ostream& File::getCout( std::ostream& os ) const
 	}
 	if( showPath() )
 	{
-		if(_options & eAbsolutePath)
+		if(_options & eMaskOptionsAbsolutePath)
 		{
 			dir = bfs::system_complete(_directory);
 		}
@@ -978,7 +994,7 @@ std::ostream& File::getCout( std::ostream& os ) const
 		}
 		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
 		std::string path = ( dir / _filename).string();
-		if(_options & eColor)
+		if(_options & eMaskOptionsColor)
 		{
 			os << std::setw(NAME_WIDTH_WITH_DIR) << kColorFile + path  + kColorStd;
 		}
@@ -989,11 +1005,11 @@ std::ostream& File::getCout( std::ostream& os ) const
 	}
 	else
 	{
-		if(_options & eAbsolutePath)
+		if(_options & eMaskOptionsAbsolutePath)
 		{
 			dir = bfs::system_complete(_directory);
 		}
-		if(_options & eColor)
+		if(_options & eMaskOptionsColor)
 		{
 			os << std::setw(NAME_WIDTH) << kColorFile + dir.string() + _filename + kColorStd ;
 		}
@@ -1022,7 +1038,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	}
 	if( showPath() )
 	{
-		if(_options & eAbsolutePath)
+		if(_options & eMaskOptionsAbsolutePath)
 		{
 			dir = bfs::system_complete(_directory);
 		}
@@ -1032,7 +1048,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 		}
 		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
 		std::string path = ( dir / getStandardPattern()).string();
-		if(_options & eColor)
+		if(_options & eMaskOptionsColor)
 		{
 			os << std::setw(NAME_WIDTH_WITH_DIR) << kColorSequence + path + kColorStd ;
 		}
@@ -1043,7 +1059,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	}
 	else
 	{
-		if(_options & eColor)
+		if(_options & eMaskOptionsColor)
 		{
 			os << std::setw(NAME_WIDTH) << kColorSequence + dir.string() + getStandardPattern() + kColorStd ;
 		}
@@ -1058,7 +1074,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	os << "] " << getNbFiles() << " file" << ( ( getNbFiles() > 1 ) ? "s" : "" );
 	if( hasMissingFile() )
 	{
-		if(_options & eColor)
+		if(_options & eMaskOptionsColor)
 		{
 			os << ", "  << kColorError << getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << kColorStd;
 		}
