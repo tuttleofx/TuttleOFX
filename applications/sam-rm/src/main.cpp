@@ -142,7 +142,6 @@ int main( int argc, char** argv )
 	EMaskType					researchMask		= eMaskTypeSequence;	// by default show sequences
 	EMaskOptions				descriptionMask		= eMaskOptionsColor;	// by default show nothing
 	bool					recursiveListing	= false;
-	std::string				availableExtensions;
 	std::vector<std::string>		paths;
 	std::vector<std::string>		filters;
 
@@ -158,9 +157,9 @@ int main( int argc, char** argv )
 			("path-root,p"		, "show the root path for each objects")
 			("recursive,R"		, "remove subdirectories recursively")
 			("verbose,v"		, "explain what is being done")
-			("color"		, "color the outup")
-			("first-image"		, bpo::value<unsigned int>(), "specify the first image")
-			("last-image"		, bpo::value<unsigned int>(), "specify the last image")
+			("color"		, "display with colors")
+			("first-image"		, bpo::value<std::ssize_t>(), "specify the first image")
+			("last-image"		, bpo::value<std::ssize_t>(), "specify the last image")
 			("full-rm"		, "remove directories, files and sequences")
 			;
 	
@@ -185,12 +184,14 @@ int main( int argc, char** argv )
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
 	// get environment options and parse them
-	if( std::getenv("SAM_RM_OPTIONS") != NULL)
 	{
-		std::vector<std::string> envOptions;
-		std::string env = std::getenv("SAM_RM_OPTIONS");
-		envOptions.push_back( env );
-		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		const std::string env_rm_options = std::getenv("SAM_RM_OPTIONS");
+		if( env_rm_options.size() )
+		{
+			std::vector<std::string> envOptions;
+			envOptions.push_back( env_rm_options );
+			bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
 	}
 
 	bpo::notify(vm);    
@@ -203,7 +204,7 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( "SYNOPSIS" );
 		TUTTLE_COUT( "\tsam-rm [options] [directories]\n" );
 		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
-		return 1;
+		return 0;
 	}
 
 	if (vm.count("expression"))

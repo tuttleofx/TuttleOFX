@@ -45,7 +45,7 @@ int main( int argc, char** argv )
 		("help,h"		, "show this help")
 		("long-listing,l"	, "use a long listing format")
 		("mask,m"		, "mask sequences in path(s)")
-		("path-root,p"		, "show the root path for each objects")
+		("relative-path,p"		, "show the root path for each objects")
 		("recursive,R"		, "list subdirectories recursively")
 		("absolute-path"        , "show the absolute path, not relative like path-root")
 		("color"		, "color the output")
@@ -67,19 +67,20 @@ int main( int argc, char** argv )
 
 	bpo::positional_options_description pd;
 	pd.add("", -1);
-
-	//parse the command line, and put the result in vm
+	
 	bpo::variables_map vm;
+	//parse the command line, and put the result in vm
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-	// get environnement options and parse them
-	if( std::getenv("SAM_LS_OPTIONS") != NULL)
+	// get environment options and parse them
+	const char* env_ls_options = std::getenv("SAM_LS_OPTIONS");
+	if( env_ls_options != NULL )
 	{
-		std::vector<std::string> envOptions;
-		std::string env = std::getenv("SAM_LS_OPTIONS");
-		envOptions.push_back( env );
-		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		std::vector<std::string> vecOptions;
+		bal::split( vecOptions, env_ls_options, bal::is_any_of(" "));
+		bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
+
 
 	bpo::notify(vm);    
 
@@ -90,11 +91,12 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( "\tsam-ls - list directory contents\n" );
 		TUTTLE_COUT( "SYNOPSIS\n\tsam-ls [options] [directories]\n" );
 		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
-		return 1;
+		return 0;
 	}
 
 	if (vm.count("expression"))
 	{
+		TUTTLE_COUT( "Expression: " << vm["expression"].as<std::string>() );
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
@@ -131,7 +133,7 @@ int main( int argc, char** argv )
 		descriptionMask |= eMaskOptionsProperties;
 	}
 	
-	if (vm.count("path-root"))
+	if (vm.count("relative-path"))
 	{
 		descriptionMask |= eMaskOptionsPath;
 	}

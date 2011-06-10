@@ -226,7 +226,7 @@ int main( int argc, char** argv )
 	    TUTTLE_COUT( "SYNOPSIS" );
 	    TUTTLE_COUT( "\tsam-info [options] [sequences]\n" );
 	    TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
-	    return 1;
+	    return 0;
 	}
 
 	if (vm.count("expression"))
