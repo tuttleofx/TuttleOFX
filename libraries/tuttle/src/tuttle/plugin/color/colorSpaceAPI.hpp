@@ -20,7 +20,8 @@ template < typename GradationLaw, typename Layout, typename Primaries, typename 
 struct ttlc_colorspace {};
 */
 template < typename GradationLaw, typename Layout >
-struct ttlc_colorspace {
+struct ttlc_colorspace
+{
 	GradationLaw	law;
 	Layout		layout;
 };
@@ -30,8 +31,8 @@ struct ttlc_colorspace {
 #include "Layout.tcc"
 
 
-class ColorSpaceAPI{
-
+class ColorSpaceAPI
+{
 	GradationLaw::gamma	sGammaIn;
 	GradationLaw::gamma	sGammaOut;
 	GradationLaw::cineon	sCineonIn;
@@ -93,7 +94,6 @@ public:
 			case eParamViperLog :	static_for_each( src, p0, computeFromViperLog() );			break;
 			case eParamREDSpace :	static_for_each( src, p0, computeFromRedSpace() );			break;
 			case eParamAlexaLogC :	static_for_each( src, p0, computeFromAlexaLogC() );			break;
-			break;
 		}
 		switch ( eLayoutIn )
 		{
@@ -106,7 +106,6 @@ public:
 			case eParamLayoutLuv :		break;
 			case eParamLayoutXYZ :		break;
 			case eParamLayoutYxy :		break;
-			break;
 		}
 		switch ( eLayoutOut )
 		{
@@ -119,7 +118,6 @@ public:
 			case eParamLayoutLuv :		break;
 			case eParamLayoutXYZ :		break;
 			case eParamLayoutYxy :		break;
-			break;
 		}
 		switch ( eGradationLawOut )
 		{
@@ -132,7 +130,6 @@ public:
 			case eParamViperLog :	static_for_each( p2, dst, computeToViperLog() );			break;
 			case eParamREDSpace :	static_for_each( p2, dst, computeToRedSpace() );			break;
 			case eParamAlexaLogC :	static_for_each( p2, dst, computeToAlexaLogC() );			break;
-			break;
 		}
 		return true;
 	}

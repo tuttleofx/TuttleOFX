@@ -4,9 +4,35 @@
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <tuttle/plugin/color/colorDefinitions.hpp>
 
+#include <tuttle/plugin/color/colorSpaceAPI.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace colorspace {
+
+namespace ttlc = tuttle::plugin::color;
+
+struct ColorSpaceProcessParams
+{
+	ttlc::ColorSpaceAPI		csAPI;
+	
+	ttlc::EParamGradationLaw	_gradationIn;
+	double				_GammaValueIn;
+	double				_BlackPointIn;
+	double				_WhitePointIn;
+	double				_GammaSensitoIn;
+
+	ttlc::EParamGradationLaw	_gradationOut;
+	double				_GammaValueOut;
+	double				_BlackPointOut;
+	double				_WhitePointOut;
+	double				_GammaSensitoOut;
+	
+	ttlc::EParamLayout		_layoutIn;
+	ttlc::EParamLayout		_layoutOut;
+	ttlc::EParamTemp		_tempColorIn;
+	ttlc::EParamTemp		_tempColorOut;
+};
 
 /**
  * @brief
@@ -14,33 +40,20 @@ namespace colorspace {
  */
 class ColorSpacePlugin : public ImageEffectGilPlugin
 {
-	void updateInParams();
-	void updateOutParams();
-
 public:
 	ColorSpacePlugin( OfxImageEffectHandle handle );
 
-	void render( const OFX::RenderArguments& args );
+	ColorSpaceProcessParams getProcessParams() const;
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
-	const tuttle::plugin::color::EParamGradationLaw	getGradationLawIn()		const { return static_cast<tuttle::plugin::color::EParamGradationLaw>	( _paramInGradationLaw	->getValue()	);}
-	const double					getGammaValueIn()		const { return static_cast<double>					( _paramInGamma		->getValue()	);}
-	const double					getBlackPointValueIn()		const { return static_cast<double>					( _paramInBlackPoint	->getValue()	);}
-	const double					getWhitePointValueIn()		const { return static_cast<double>					( _paramInWhitePoint	->getValue()	);}
-	const double					getGammaSensitoValueIn()	const { return static_cast<double>					( _paramInGammaSensito	->getValue()	);}
+	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-	const tuttle::plugin::color::EParamGradationLaw	getGradationLawOut()		const { return static_cast<tuttle::plugin::color::EParamGradationLaw>	( _paramOutGradationLaw	->getValue()	);}
-	const double					getGammaValueOut()		const { return static_cast<double>					( _paramOutGamma	->getValue()	);}
-	const double					getBlackPointValueOut()		const { return static_cast<double>					( _paramOutBlackPoint	->getValue()	);}
-	const double					getWhitePointValueOut()		const { return static_cast<double>					( _paramOutWhitePoint	->getValue()	);}
-	const double					getGammaSensitoValueOut()	const { return static_cast<double>					( _paramOutGammaSensito	->getValue()	);}
+	void render( const OFX::RenderArguments& args );
 
-	const tuttle::plugin::color::EParamLayout	getLayoutIn()			const { return static_cast<tuttle::plugin::color::EParamLayout>		( _paramInLayout	->getValue()	);}
-	const tuttle::plugin::color::EParamLayout	getLayoutOut()			const { return static_cast<tuttle::plugin::color::EParamLayout>		( _paramOutLayout	->getValue()	);}
-
-	const tuttle::plugin::color::EParamTemp		getTempColorIn()		const { return static_cast<tuttle::plugin::color::EParamTemp>		( _paramInColorTemp	->getValue()	);}
-	const tuttle::plugin::color::EParamTemp		getTempColorOut()		const { return static_cast<tuttle::plugin::color::EParamTemp>		( _paramOutColorTemp	->getValue()	);}
-
+private:
+	void updateInParams();
+	void updateOutParams();
+	
 private:
 	OFX::ChoiceParam*	_paramInGradationLaw;
 	OFX::ChoiceParam*	_paramOutGradationLaw;
