@@ -76,6 +76,16 @@ struct process1Dresampling
 	}
 };
 
+/// @todo specialization for SIMD
+//template <typename F>
+//struct process1Dresampling
+//{
+//	void operator()( const std::vector<rgba32f_t> src, const std::vector<F> weight, rgba32f_t & dst ) const
+//	{
+//		//...
+//	}
+//};
+
 }
 
 /**
@@ -1041,6 +1051,9 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 
 struct ttl_lanczos_sampler {};
 
+/**
+ * @todo
+ */
 template <typename DstP, typename SrcView, typename F>
 bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const F supportWindow, DstP& result )
 {
@@ -1245,6 +1258,9 @@ bool sample( ttl_lanczos12_sampler, const SrcView& src, const point2<F>& p, DstP
 
 struct ttl_gaussian_sampler {};
 
+/**
+ * @todo
+ */
 template <typename DstP, typename SrcView, typename F>
 bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
