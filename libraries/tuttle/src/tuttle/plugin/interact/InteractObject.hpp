@@ -5,6 +5,8 @@
 #include <ofxsInteract.h>
 #include <boost/gil/utilities.hpp>
 
+#include <boost/math/special_functions/pow.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace interact {
@@ -38,6 +40,25 @@ public:
 	virtual void setPosition( const Point2& ) {}
 	virtual void setPositionX( const Scalar x ) {}
 	virtual void setPositionY( const Scalar y ) {}
+
+	virtual void translate( const Point2& previous, const Point2& vec )
+	{
+		setPosition( previous + vec );
+	}
+	virtual void rotate( const Point2& previous, const Point2& center, const Point2& from, const Point2& vec )
+	{
+		using namespace boost::math;
+		// a^2 = b^2 + c^2 - 2bc * cos(alpha)
+		// alpha = -arccos( (a^2 - b^2 - c^2) / 2bc )
+//		const double a = std::sqrt( pow<2>(penPosition.x - _beginPenPosition.x) + pow<2>(penPosition.y - _beginPenPosition.y) );
+//		const double b = std::sqrt( pow<2>(_beginPenPosition.x - _manipulator->getPosition().x) + pow<2>(_beginPenPosition.y - _manipulator->getPosition().y) );
+//		const double c = std::sqrt( pow<2>(penPosition.x - _manipulator->getPosition().x) + pow<2>(penPosition.y - _manipulator->getPosition().y) );
+
+		//rotate( center, -std::acos( (pow<2>(a) - pow<2>(b) - pow<2>(c)) / (2*abs(b)*abs(c)) ) );
+	}
+	virtual void scale( const Point2& previous, const Point2& center, const Point2& factor )
+	{
+	}
 	
 	virtual void beginMove( const Point2& penPosition ) {}
 	virtual void endMove( const Point2& penPosition ) {}
