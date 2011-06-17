@@ -112,10 +112,11 @@ void convertRgbaToYPbPra( const SrcP& src, DstP& dst )
 template < typename SrcP, typename DstP >
 void convertHsvToRgb( const SrcP& src, DstP& dst )
 {
-	bits32f red, green, blue;
+	bits32f red =0, green=0, blue=0;
+	//bits32 i;
 
 	//If saturation is 0, the color is a shade of gray
-	if( abs( get_color( src, green_t() )) < 0.0001f  )
+	if( get_color( src, green_t() ) == 0.0f  )
 	{
 		// If saturation is 0, the color is a shade of gray
 		red   = get_color( src, blue_t() );
@@ -125,25 +126,41 @@ void convertHsvToRgb( const SrcP& src, DstP& dst )
 	else
 	{
 		bits32f frac, p, q, t, h;
-		bits32 i;
+
 
 		//to bring hue to a number between 0 and 6, better for the calculations
-		h = get_color( src, red_t() );
-		h *= 6.f;
+		// remark: hue is in [ 0; 6 [
 
-		i = (int) floor( h );
+		/*h = 6.f * get_color( src, red_t() );
+		if( h >= 1.f ) h -= 1.f;
 
-		frac = h - i;
+		i = (char) ;
 
-		p = get_color( src, blue_t() ) * ( 1.f -   get_color( src, green_t() ));
-		q = get_color( src, blue_t() ) * ( 1.f - ( get_color( src, green_t() ) * frac ));
-		t = get_color( src, blue_t() ) * ( 1.f - ( get_color( src, green_t() ) * ( 1.f - frac )));
+		frac = h - i;*/
 
-		switch( i )
+
+		h = ( 1.f * get_color( src, red_t() ) - (float) std::floor( (float) get_color( src, red_t() ) ) ) * 6.0f;
+		frac = h - (float) std::floor(h);
+
+
+		p = 1.f * get_color( src, blue_t() ) * ( 1.f -   get_color( src, green_t() ) );
+
+		q = 1.f * get_color( src, blue_t() ) * ( 1.f - ( get_color( src, green_t() ) * frac ) );
+		t = 1.f * get_color( src, blue_t() ) * ( 1.f - ( get_color( src, green_t() ) * ( 1.f - frac ) ) );
+
+		switch( (int) h )
 		{
 			case 0:
 			{
-				//red	= get_color( src, blue_t() );
+				red	= get_color( src, blue_t() );
+				green	= t;
+				blue	= p;
+				break;
+			}
+
+			case 6:
+			{
+				red	= get_color( src, blue_t() );
 				green	= t;
 				blue	= p;
 				break;
@@ -188,9 +205,12 @@ void convertHsvToRgb( const SrcP& src, DstP& dst )
 				blue	= q;
 				break;
 			}
-
 		}
 	}
+
+	/*bits32f a = get_color( src, red_t() );
+	bits32f b = 0.1 * (get_color( src, red_t() ) * 6.0);
+	bits32f c = 0.1*(std::floor( get_color( src, red_t() ) * 6.02 ));*/
 
 	get_color(dst,red_t())		= channel_convert<typename color_element_type< DstP, red_t	>::type>( red	);
 	get_color(dst,green_t())	= channel_convert<typename color_element_type< DstP, green_t	>::type>( green	);
@@ -200,7 +220,9 @@ void convertHsvToRgb( const SrcP& src, DstP& dst )
 template < typename SrcP, typename DstP >
 void convertRgbToHsv( const SrcP& src, DstP& dst )
 {
-	bits32f hue, saturation, value;
+	bits32f hue = 0.0;
+	bits32f saturation = 0.0;
+	bits32f value = 0.0;
 
 	bits32f temp_red	= channel_convert<bits32f>( get_color( src, red_t()	));
 	bits32f temp_green	= channel_convert<bits32f>( get_color( src, green_t()	));
@@ -213,34 +235,33 @@ void convertRgbToHsv( const SrcP& src, DstP& dst )
 
 	bits32f diff = max_color - min_color;
 
-	if( max_color < 0.0001f )
+	if( max_color == 0.0f )
 	{
-		saturation = 0.f;
+		saturation = 0.0f;
 	}
 	else
 	{
 		saturation = diff / max_color;
 	}
 
-
-	if( saturation < 0.0001f )
+	if( saturation == 0.0f )
 	{
-		//it doesn't matter what value it has
-		hue = 0.f;
+		// it's a gray colorh
+		hue		= 0.0f;
 	}
 	else
 	{
-		if( (std::abs)( temp_red - max_color ) < 0.0001f )
+		if( max_color == temp_red )
 		{
-			hue =       ( temp_green - temp_blue ) / diff;
+			hue =		1.f * ( temp_green - temp_blue ) / diff;
 		}
-		else if( temp_green == max_color )
+		else if( max_color == temp_green )
 		{
-			hue = 2.f + ( temp_blue  - temp_red  ) / diff;
+			hue = 2.f +	1.f * ( temp_blue  - temp_red  ) / diff;
 		}
 		else
 		{
-			hue = 4.f + ( temp_red  - temp_green ) / diff;
+			hue = 4.f +	1.f * ( temp_red  - temp_green ) / diff;
 		}
 
 		//to bring it to a number between 0 and 1
@@ -291,9 +312,76 @@ void convertHslToRgb( const SrcP& src, DstP& dst )
 template < typename SrcP, typename DstP >
 void convertRgbToHsl( const SrcP& src, DstP& dst )
 {
-	get_color( dst, red_t() )	=  0.299    * get_color( src, red_t() ) + 0.587    * get_color( src, green_t() ) + 0.114    * get_color( src, blue_t() );
-	get_color( dst, green_t() )	= -0.168736 * get_color( src, red_t() ) - 0.331264 * get_color( src, green_t() ) + 0.5      * get_color( src, blue_t() );
-	get_color( dst, blue_t() )	=  0.5      * get_color( src, red_t() ) - 0.418688 * get_color( src, green_t() ) - 0.081312 * get_color( src, blue_t() );
+	// only bits32f for hsl is supported
+	bits32f temp_red   = channel_convert<bits32f>( get_color( src, red_t()   ));
+	bits32f temp_green = channel_convert<bits32f>( get_color( src, green_t() ));
+	bits32f temp_blue  = channel_convert<bits32f>( get_color( src, blue_t()  ));
+
+	bits32f hue, saturation, lightness;
+
+	bits32f min_color = (std::min)( temp_red, (std::min)( temp_green, temp_blue ));
+	bits32f max_color = (std::max)( temp_red, (std::max)( temp_green, temp_blue ));
+
+
+	bits32f diff = max_color - min_color;
+
+	if( diff == 0.0 )
+	{
+		// rgb color is gray
+
+		hue		= 0.f;
+		saturation	= 0.f;
+
+		// doesn't matter which rgb channel we use.
+		lightness	= temp_red;
+	}
+	else
+	{
+		// lightness calculation
+
+		lightness = ( min_color + max_color ) * 0.5f;
+
+		// saturation calculation
+
+		if( lightness < 0.5f )
+		{
+			saturation = diff / ( min_color + max_color );
+		}
+		else
+		{
+			saturation = ( max_color - min_color ) / ( 2.f - diff );
+		}
+
+		// hue calculation
+		if( max_color == temp_red )
+		{
+			// max_color is red
+			hue = (double)( temp_green - temp_blue ) / diff;
+
+		}
+		else if( max_color == temp_green )
+		{
+			// max_color is green
+			// 2.0 + (b - r) / (maxColor - minColor);
+			hue = 2.f + (double)( temp_blue - temp_red ) / diff;
+		}
+		else
+		{
+			// max_color is blue
+			hue = 4.f + (double)( temp_red - temp_green ) / diff;
+		}
+
+		if( hue < 0.f )
+		{
+			hue += 6.f;
+		}
+
+		hue /= 6.f;
+	}
+
+	get_color( dst, red_t() )	= hue;
+	get_color( dst, green_t() )	= saturation;
+	get_color( dst, blue_t() )	= lightness;
 }
 
 template < typename SrcP, typename DstP >

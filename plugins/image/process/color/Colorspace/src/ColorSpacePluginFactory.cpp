@@ -69,14 +69,14 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	inReferenceSpace->setLabel		( "Reference Space" );
 	inReferenceSpace->setParent		( inGroup );
 
-	OFX::GroupParamDescriptor* inCostum = desc.defineGroupParam( kColorSpaceCostumizedIn );
-	inCostum->setLabel			( "Costum" );
-	inCostum->setOpen			( false );
-	inCostum->setParent			( inGroup );
+	OFX::GroupParamDescriptor* inCustom = desc.defineGroupParam( kColorSpaceCustomizedIn );
+	inCustom->setLabel			( "Custom" );
+	inCustom->setOpen			( false );
+	inCustom->setParent			( inGroup );
 
 	OFX::ChoiceParamDescriptor* inGradationLaw = desc.defineChoiceParam( kColorSpaceGradationLawIn );
 	inGradationLaw->setLabel		( "Gradation Law" );
-	inGradationLaw->setParent		( inCostum );
+	inGradationLaw->setParent		( inCustom );
 
 	OFX::DoubleParamDescriptor* inGammaValue = desc.defineDoubleParam( kColorSpaceInGammaValue );
 	inGammaValue->setLabel			( "Gamma" );
@@ -84,8 +84,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	inGammaValue->setRange			( 0.0, std::numeric_limits<double>::max() );
 	inGammaValue->setDisplayRange		( 0.0, 5.0 );
 	inGammaValue->setHint			( "Adjust the Gamma." );
-	inGammaValue->setParent			( inCostum );
-	inGammaValue->setParent			( inCostum );
+	inGammaValue->setParent			( inCustom );
 
 	OFX::DoubleParamDescriptor* inBlackPoint = desc.defineDoubleParam( kColorSpaceInBlackPoint );
 	inBlackPoint->setLabel			( "Black Point" );
@@ -93,7 +92,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	inBlackPoint->setRange			( 0.0, 1.0 );
 	inBlackPoint->setDisplayRange		( 0.0, 1.0 );
 	inBlackPoint->setHint			( "Adjust the Black Point." );
-	inBlackPoint->setParent			( inCostum );
+	inBlackPoint->setParent			( inCustom );
 
 	OFX::DoubleParamDescriptor* inWhitePoint = desc.defineDoubleParam( kColorSpaceInWhitePoint );
 	inWhitePoint->setLabel			( "White Point" );
@@ -101,7 +100,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	inWhitePoint->setRange			( 0.0, 1.0 );
 	inWhitePoint->setDisplayRange		( 0.0, 1.0 );
 	inWhitePoint->setHint			( "Adjust the White Point." );
-	inWhitePoint->setParent			( inCostum );
+	inWhitePoint->setParent			( inCustom );
 
 	OFX::DoubleParamDescriptor* inGammaSensito = desc.defineDoubleParam( kColorSpaceInGammaSensito );
 	inGammaSensito->setLabel		( "Gamma Sensito" );
@@ -109,20 +108,20 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	inGammaSensito->setRange		( 0.0, std::numeric_limits<double>::max() );
 	inGammaSensito->setDisplayRange		( 0.0, 5.0 );
 	inGammaSensito->setHint			( "Adjust the Gamma Sensito." );
-	inGammaSensito->setParent		( inCostum );
+	inGammaSensito->setParent		( inCustom );
 
 	OFX::ChoiceParamDescriptor* inLayout = desc.defineChoiceParam( kColorSpaceLayoutIn );
 	inLayout->setLabel			( "Layout" );
-	inLayout->setParent			( inCostum );
+	inLayout->setParent			( inCustom );
 
 	OFX::ChoiceParamDescriptor* inTempColor = desc.defineChoiceParam( kColorSpaceTempColorIn );
 	inTempColor->setLabel			( "Color Temperature" );
 	inTempColor->setHint			( "Select the color temperature." );
-	inTempColor->setParent			( inCostum );
+	inTempColor->setParent			( inCustom );
 
 	OFX::GroupParamDescriptor* inPrimaries = desc.defineGroupParam( kColorSpacePrimariesIn );
 	inPrimaries->setLabel			( "Primaries color" );
-	inPrimaries->setParent			( inCostum );
+	inPrimaries->setParent			( inCustom );
 	inPrimaries->setOpen			( false );
 
 	OFX::DoubleParamDescriptor* inXr = desc.defineDoubleParam( kColorSpaceXrIn );
@@ -182,14 +181,14 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outReferenceSpace->setLabel		( "Reference Space" );
 	outReferenceSpace->setParent		( outGroup );
 
-	OFX::GroupParamDescriptor* outCostum = desc.defineGroupParam( kColorSpaceCostumizedOut );
-	outCostum->setLabel			( "Costum" );
-	outCostum->setOpen			( false );
-	outCostum->setParent			( outGroup );
+	OFX::GroupParamDescriptor* outCustom = desc.defineGroupParam( kColorSpaceCustomizedOut );
+	outCustom->setLabel			( "Custom" );
+	outCustom->setOpen			( false );
+	outCustom->setParent			( outGroup );
 
 	OFX::ChoiceParamDescriptor* outGradationLaw = desc.defineChoiceParam( kColorSpaceGradationLawOut );
 	outGradationLaw->setLabel		( "Gradation Law" );
-	outGradationLaw->setParent		( outCostum );
+	outGradationLaw->setParent		( outCustom );
 
 	OFX::DoubleParamDescriptor* outGammaValue = desc.defineDoubleParam( kColorSpaceOutGammaValue );
 	outGammaValue->setLabel			( "Gamma" );
@@ -197,7 +196,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outGammaValue->setRange			( 0.0, std::numeric_limits<double>::max() );
 	outGammaValue->setDisplayRange		( 0.0, 5.0 );
 	outGammaValue->setHint			( "Adjust the Gamma." );
-	outGammaValue->setParent		( outCostum );
+	outGammaValue->setParent		( outCustom );
 	//outGammaValue->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outBlackPoint = desc.defineDoubleParam( kColorSpaceOutBlackPoint );
@@ -206,7 +205,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outBlackPoint->setRange			( 0.0, 1.0 );
 	outBlackPoint->setDisplayRange		( 0.0, 1.0 );
 	outBlackPoint->setHint			( "Adjust the Black Point." );
-	outBlackPoint->setParent		( outCostum );
+	outBlackPoint->setParent		( outCustom );
 	//outBlackPoint->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outWhitePoint = desc.defineDoubleParam( kColorSpaceOutWhitePoint );
@@ -215,7 +214,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outWhitePoint->setRange			( 0.0, 1.0 );
 	outWhitePoint->setDisplayRange		( 0.0, 1.0 );
 	outWhitePoint->setHint			( "Adjust the White Point." );
-	outWhitePoint->setParent		( outCostum );
+	outWhitePoint->setParent		( outCustom );
 	//outWhitePoint->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outGammaSensito = desc.defineDoubleParam( kColorSpaceOutGammaSensito );
@@ -224,21 +223,21 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outGammaSensito->setRange		( 0.0, std::numeric_limits<double>::max() );
 	outGammaSensito->setDisplayRange	( 0.0, 5.0 );
 	outGammaSensito->setHint		( "Adjust the Gamma Sensito." );
-	outGammaSensito->setParent		( outCostum );
+	outGammaSensito->setParent		( outCustom );
 	//outGammaSensito->setIsSecret		( true );
 
 	OFX::ChoiceParamDescriptor* outLayout = desc.defineChoiceParam( kColorSpaceLayoutOut );
 	outLayout->setLabel			( "Layout" );
-	outLayout->setParent			( outCostum );
+	outLayout->setParent			( outCustom );
 
 	OFX::ChoiceParamDescriptor* outTempColor = desc.defineChoiceParam( kColorSpaceTempColorOut );
 	outTempColor->setLabel			( "Color Temperature" );
 	outTempColor->setHint			( "Select the color temperature." );
-	outTempColor->setParent			( outCostum );
+	outTempColor->setParent			( outCustom );
 
 	OFX::GroupParamDescriptor* outPrimaries = desc.defineGroupParam( kColorSpacePrimariesOut );
 	outPrimaries->setLabel			( "Primaries color" );
-	outPrimaries->setParent			( outCostum );
+	outPrimaries->setParent			( outCustom );
 	outPrimaries->setOpen			( false );
 
 	OFX::DoubleParamDescriptor* outXr = desc.defineDoubleParam( kColorSpaceXrOut );
