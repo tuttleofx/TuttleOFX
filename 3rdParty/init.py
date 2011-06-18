@@ -73,24 +73,24 @@ def dlProgress(count, blockSize, totalSize):
 	sys.stdout.write( '\r' + current_file + '%d%% '% pcent)
 	sys.stdout.flush()
 
-global knowExtensions
-knowExtensions = { 'tar': 'tar xf',
+global knownExtensions
+knownExtensions = { 'tar': 'tar xf',
                    'tar.gz': 'tar xfz',
                    'tgz': 'tar xfz',
                    'tar.bz2': 'tar xfj',
                    'zip': 'unzip',
                    'exe': '' }
 
-def getKnowExtensions( filename ):
-	global knowExtensions
-	return [f for f in knowExtensions.keys() if filename.endswith(f)]
+def getKnownExtensions( filename ):
+	global knownExtensions
+	return [f for f in knownExtensions.keys() if filename.endswith(f)]
 
 def uncompress(filename, ext, inNewDirectory, libname):
-	global knowExtensions
+	global knownExtensions
 	binOptions = { 'tar' : {'directory':'--directory',},
 	               'unzip' : {'directory':'-d',},
 	             } 
-	cmdFromExtension = knowExtensions[ext]
+	cmdFromExtension = knownExtensions[ext]
 	if not cmdFromExtension:
 		return
 	cmd = cmdFromExtension.split()
@@ -113,7 +113,7 @@ def getAndUncompress( libraries ):
 		print '_'*80
 		print '--', libname
 		parts = url.split('/')
-		filename = [p for p in parts if len(getKnowExtensions(p))]
+		filename = [p for p in parts if len(getKnownExtensions(p))]
 		#if len(filename) == 0:
 		#	print '-'*40
 		#	print 'No filename with a regognize extension in "'+libname+'" url="'+url+'"'
@@ -121,7 +121,7 @@ def getAndUncompress( libraries ):
 		#	continue
 		filename = filename[0]
 		print url, ' -> ', filename
-		ext = getKnowExtensions(filename)[0]
+		ext = getKnownExtensions(filename)[0]
 		current_file = filename
 		try:
 			if os.path.isfile(filename): # if not already downloaded
@@ -148,15 +148,15 @@ allLibs = [
 		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False)
 	]
 
-if len( sys.argv ) == 1:
-	getAndUncompress( allLibs )
-else:
-	libDic = {}
-	for lib in allLibs:
-		libDic[lib[0]] = lib
-	
-	for libname in sys.argv[1:]:
-		getAndUncompress( [libDic[libname]] )
+if __name__ == "__main__":
+	if len( sys.argv ) == 1:
+		getAndUncompress( allLibs )
+	else:
+		libDic = {}
+		for lib in allLibs:
+			libDic[lib[0]] = lib
+		for libnsame in sys.argv[1:]:
+			getAndUncompress( [libDic[libname]] )
 
 #subprocess.Popen( ['patch', 'boost/libs/test/build/Jamfile.v2', 'boost_unit_testing_framework.patch'] )
 
