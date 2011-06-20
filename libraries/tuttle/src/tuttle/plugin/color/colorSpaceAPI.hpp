@@ -1,19 +1,22 @@
+#ifndef _TUTTLE_PLUGIN_COLORSPACE_API_HPP_
+#define _TUTTLE_PLUGIN_COLORSPACE_API_HPP_
 
-#ifndef _TUTTLE_COLORSPACE_API_HPP
-#define _TUTTLE_COLORSPACE_API_HPP
+#include "colorDefinitions.hpp"
+#include "GradationProcess.tcc"
+#include "Layout.tcc"
+
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+
 #include <map>
 #include <vector>
 #include <string>
 #include <iostream>
 
-#include "colorDefinitions.hpp"
-
 namespace tuttle {
 namespace plugin {
-namespace color{
+namespace color {
 
 /*
 template < typename GradationLaw, typename Layout, typename Primaries, typename Premultiplication >
@@ -25,10 +28,6 @@ struct ttlc_colorspace
 	GradationLaw	law;
 	Layout		layout;
 };
-
-
-#include "GradationProcess.tcc"
-#include "Layout.tcc"
 
 
 class ColorSpaceAPI

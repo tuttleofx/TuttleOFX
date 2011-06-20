@@ -7,6 +7,11 @@
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
 
+
+namespace tuttle {
+namespace plugin {
+namespace color {
+
 using namespace boost::gil;
 
 /*-------------------------------- RGB -> RGB  and RGB -> RGB Process ------------------------------------*/
@@ -275,7 +280,7 @@ void convertRgbaToHsva( const SrcP& src, DstP& dst )
 
 /*-------------------------------- RGB -> HSL  and HSL -> RGB Process ------------------------------------*/
 
-// using poitn rgb with:
+// using rgb point with:
 // red   channel for H channel
 // green channel for S channel
 // blue  channel for L channel
@@ -318,7 +323,7 @@ void convertRgbaToHsla( const SrcP& src, DstP& dst )
 /* ---------------------------------------- RGB -> RGB -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertFromRgbLayout ( const SrcP& src, DstP& dst )
+inline bool convertFromRgbLayout ( const SrcP& src, DstP& dst )
 {
 	static_for_each( src, dst, computeRGB() );
 	return true;
@@ -327,7 +332,7 @@ bool convertFromRgbLayout ( const SrcP& src, DstP& dst )
 /* ---------------------------------------- RGB -> RGB -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertToRgbLayout ( const SrcP& src, DstP& dst )
+inline bool convertToRgbLayout ( const SrcP& src, DstP& dst )
 {
 	static_for_each( src, dst, computeRGB() );
 	return true;
@@ -336,63 +341,63 @@ bool convertToRgbLayout ( const SrcP& src, DstP& dst )
 /* ---------------------------------------- Yuv -> RGB -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertFromYuvLayout( const SrcP& src, DstP& dst )
+inline bool convertFromYuvLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertFromYuvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertYuvToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYuvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertYuvaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYuvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertYuvToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYuvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertYuvaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYuvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertYuvToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYuvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertYuvaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYuvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	convertYuvToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYuvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertFromYuvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	convertYuvaToRgba( src, dst );
 	return true;
@@ -401,63 +406,63 @@ bool convertFromYuvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 /* ---------------------------------------- RGB -> Yuv -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertToYuvLayout( const SrcP& src, DstP& dst )
+inline bool convertToYuvLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertToYuvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertToYuvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertRgbToYuv( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYuvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertToYuvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertRgbaToYuva( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYuvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertToYuvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertRgbToYuv( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYuvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertToYuvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertRgbaToYuva( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYuvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertToYuvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertRgbToYuv( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYuvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertToYuvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertRgbaToYuva( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYuvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertToYuvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	convertRgbToYuv ( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYuvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertToYuvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	convertRgbaToYuva( src, dst );
 	return true;
@@ -466,56 +471,56 @@ bool convertToYuvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 /* ---------------------------------------- YPbPr -> RGB -----------------------------------------*/
 
 template < typename SrcP, typename DstP>
-bool convertFromYPbPrLayout( const SrcP& src, DstP& dst )
+inline bool convertFromYPbPrLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertYPbPrToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertYPbPraToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertYPbPrToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertYPbPraToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertYPbPrToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertYPbPraToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertYPbPrToRgb( src, dst );
@@ -523,7 +528,7 @@ bool convertFromYPbPrLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 }
 
 template < >
-bool convertFromYPbPrLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertFromYPbPrLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertYPbPraToRgba( src, dst );
@@ -533,56 +538,56 @@ bool convertFromYPbPrLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 /* ---------------------------------------- RGB -> YPbPr -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertToYPbPrLayout( const SrcP& src, DstP& dst )
+inline bool convertToYPbPrLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertToYPbPrLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertRgbToYPbPr( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYPbPrLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertRgbaToYPbPra( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYPbPrLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertRgbToYPbPr( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYPbPrLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertRgbaToYPbPra( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYPbPrLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertRgbToYPbPr( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYPbPrLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertRgbaToYPbPra( src, dst );
 	return true;
 }
 
 template < >
-bool convertToYPbPrLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertRgbToYPbPr( src, dst );
@@ -590,7 +595,7 @@ bool convertToYPbPrLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 }
 
 template < >
-bool convertToYPbPrLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertToYPbPrLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertRgbaToYPbPra( src, dst );
@@ -600,56 +605,56 @@ bool convertToYPbPrLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 /* ---------------------------------------- HSV -> RGB -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertFromHsvLayout( const SrcP& src, DstP& dst )
+inline bool convertFromHsvLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertFromHsvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertHsvToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHsvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertHsvaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHsvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertHsvToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHsvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertHsvaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHsvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertHsvToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHsvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertHsvaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHsvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertHsvToRgb( src, dst );
@@ -657,7 +662,7 @@ bool convertFromHsvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 }
 
 template < >
-bool convertFromHsvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertFromHsvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertHsvaToRgba( src, dst );
@@ -667,63 +672,63 @@ bool convertFromHsvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 /* ---------------------------------------- RGB -> HSV -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertToHsvLayout( const SrcP& src, DstP& dst )
+inline bool convertToHsvLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertToHsvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertToHsvLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertRgbToHsv( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHsvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertToHsvLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertRgbaToHsva( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHsvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertToHsvLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertRgbToHsv( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHsvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertToHsvLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertRgbaToHsva( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHsvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertToHsvLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertRgbToHsv( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHsvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertToHsvLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertRgbaToHsva( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHsvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertToHsvLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	convertRgbToHsv( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHsvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertToHsvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertRgbaToHsva( src, dst );
@@ -734,56 +739,56 @@ bool convertToHsvLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 /* ---------------------------------------- HSL -> RGB -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertFromHslLayout( const SrcP& src, DstP& dst )
+inline bool convertFromHslLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertFromHslLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertFromHslLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertHslToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHslLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertFromHslLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertHslaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHslLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertFromHslLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertHslToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHslLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertFromHslLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertHslaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHslLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertFromHslLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertHslToRgb( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHslLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertFromHslLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertHslaToRgba( src, dst );
 	return true;
 }
 
 template < >
-bool convertFromHslLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertFromHslLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertHslToRgb( src, dst );
@@ -791,7 +796,7 @@ bool convertFromHslLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 }
 
 template < >
-bool convertFromHslLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertFromHslLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertHslaToRgba( src, dst );
@@ -801,65 +806,69 @@ bool convertFromHslLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 /* ---------------------------------------- RGB -> HSL -----------------------------------------*/
 
 template < typename SrcP, typename DstP >
-bool convertToHslLayout( const SrcP& src, DstP& dst )
+inline bool convertToHslLayout( const SrcP& src, DstP& dst )
 {
 	//std::cout << "Generique conversion"<< std::endl;
 	return false;
 }
 
 template < >
-bool convertToHslLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
+inline bool convertToHslLayout( const rgb8_pixel_t& src, rgb8_pixel_t& dst )
 {
 	convertRgbToHsl( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHslLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
+inline bool convertToHslLayout( const rgba8_pixel_t& src, rgba8_pixel_t& dst )
 {
 	convertRgbaToHsla( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHslLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
+inline bool convertToHslLayout( const rgb16_pixel_t& src, rgb16_pixel_t& dst )
 {
 	convertRgbToHsl( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHslLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
+inline bool convertToHslLayout( const rgba16_pixel_t& src, rgba16_pixel_t& dst )
 {
 	convertRgbaToHsla( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHslLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
+inline bool convertToHslLayout( const rgb32_pixel_t& src, rgb32_pixel_t& dst )
 {
 	convertRgbToHsl( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHslLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
+inline bool convertToHslLayout( const rgba32_pixel_t& src, rgba32_pixel_t& dst )
 {
 	convertRgbaToHsla( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHslLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
+inline bool convertToHslLayout( const rgb32f_pixel_t& src, rgb32f_pixel_t& dst )
 {
 	convertRgbToHsl( src, dst );
 	return true;
 }
 
 template < >
-bool convertToHslLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
+inline bool convertToHslLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst )
 {
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertRgbaToHsla( src, dst );
 	return true;
+}
+
+}
+}
 }
