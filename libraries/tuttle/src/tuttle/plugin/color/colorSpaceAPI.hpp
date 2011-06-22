@@ -1,37 +1,37 @@
+#ifndef _TUTTLE_PLUGIN_COLORSPACE_API_HPP_
+#define _TUTTLE_PLUGIN_COLORSPACE_API_HPP_
 
-#ifndef _TUTTLE_COLORSPACE_API_HPP
-#define _TUTTLE_COLORSPACE_API_HPP
+#include "colorDefinitions.hpp"
+#include "GradationProcess.tcc"
+#include "Layout.tcc"
+
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
+
 #include <map>
 #include <vector>
 #include <string>
 #include <iostream>
 
-#include "colorDefinitions.hpp"
-
 namespace tuttle {
 namespace plugin {
-namespace color{
+namespace color {
 
 /*
 template < typename GradationLaw, typename Layout, typename Primaries, typename Premultiplication >
 struct ttlc_colorspace {};
 */
 template < typename GradationLaw, typename Layout >
-struct ttlc_colorspace {
+struct ttlc_colorspace
+{
 	GradationLaw	law;
 	Layout		layout;
 };
 
 
-#include "GradationProcess.tcc"
-#include "Layout.tcc"
-
-
-class ColorSpaceAPI{
-
+class ColorSpaceAPI
+{
 	GradationLaw::gamma	sGammaIn;
 	GradationLaw::gamma	sGammaOut;
 	GradationLaw::cineon	sCineonIn;
@@ -93,7 +93,6 @@ public:
 			case eParamViperLog :	static_for_each( src, p0, computeFromViperLog() );			break;
 			case eParamREDSpace :	static_for_each( src, p0, computeFromRedSpace() );			break;
 			case eParamAlexaLogC :	static_for_each( src, p0, computeFromAlexaLogC() );			break;
-			break;
 		}
 		switch ( eLayoutIn )
 		{
@@ -106,7 +105,6 @@ public:
 			case eParamLayoutLuv :		break;
 			case eParamLayoutXYZ :		break;
 			case eParamLayoutYxy :		break;
-			break;
 		}
 		switch ( eLayoutOut )
 		{
@@ -119,7 +117,6 @@ public:
 			case eParamLayoutLuv :		break;
 			case eParamLayoutXYZ :		break;
 			case eParamLayoutYxy :		break;
-			break;
 		}
 		switch ( eGradationLawOut )
 		{
@@ -132,7 +129,6 @@ public:
 			case eParamViperLog :	static_for_each( p2, dst, computeToViperLog() );			break;
 			case eParamREDSpace :	static_for_each( p2, dst, computeToRedSpace() );			break;
 			case eParamAlexaLogC :	static_for_each( p2, dst, computeToAlexaLogC() );			break;
-			break;
 		}
 		return true;
 	}

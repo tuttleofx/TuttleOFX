@@ -8,12 +8,11 @@
 #include <ofxsMultiThread.h>
 
 
-namespace ttlc = tuttle::plugin::color;
-
-
 namespace tuttle {
 namespace plugin {
 namespace colorspace {
+
+namespace ttlc = tuttle::plugin::color;
 
 /**
  * @brief Function called to describe the plugin main features.
@@ -84,6 +83,7 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	inGammaValue->setRange			( 0.0, std::numeric_limits<double>::max() );
 	inGammaValue->setDisplayRange		( 0.0, 5.0 );
 	inGammaValue->setHint			( "Adjust the Gamma." );
+	inGammaValue->setParent			( inCustom );
 	inGammaValue->setParent			( inCustom );
 
 	OFX::DoubleParamDescriptor* inBlackPoint = desc.defineDoubleParam( kColorSpaceInBlackPoint );

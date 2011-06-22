@@ -1,4 +1,8 @@
 
+namespace tuttle {
+namespace plugin {
+namespace color {
+
 /*-------------------------------- method to process pixels values ------------------------------------*/
 
 struct computeFromLinear
@@ -227,3 +231,6 @@ struct computeToAlexaLogC
 	}
 };
 
+}
+}
+}

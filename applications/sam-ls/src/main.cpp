@@ -28,8 +28,8 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	MaskType				researchMask		= eSequence;	// by default show sequences
-	MaskOptions				descriptionMask		= eNone;	// by default show nothing
+	EMaskType				researchMask		= eMaskTypeSequence;	// by default show sequences
+	EMaskOptions				descriptionMask		= eMaskOptionsNone;	// by default show nothing
 	bool					recursiveListing	= false;
 	std::string				availableExtensions;
 	std::vector<std::string>		paths;
@@ -45,7 +45,7 @@ int main( int argc, char** argv )
 		("help,h"		, "show this help")
 		("long-listing,l"	, "use a long listing format")
 		("mask,m"		, "mask sequences in path(s)")
-		("path-root,p"		, "show the root path for each objects")
+		("relative-path,p"		, "show the root path for each objects")
 		("recursive,R"		, "list subdirectories recursively")
 		("absolute-path"        , "show the absolute path, not relative like path-root")
 		("color"		, "color the output")
@@ -67,19 +67,20 @@ int main( int argc, char** argv )
 
 	bpo::positional_options_description pd;
 	pd.add("", -1);
-
-	//parse the command line, and put the result in vm
+	
 	bpo::variables_map vm;
+	//parse the command line, and put the result in vm
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-	// get environnement options and parse them
-	if( std::getenv("SAM_LS_OPTIONS") != NULL)
+	// get environment options and parse them
+	const char* env_ls_options = std::getenv("SAM_LS_OPTIONS");
+	if( env_ls_options != NULL )
 	{
-		std::vector<std::string> envOptions;
-		std::string env = std::getenv("SAM_LS_OPTIONS");
-		envOptions.push_back( env );
-		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		std::vector<std::string> vecOptions;
+		bal::split( vecOptions, env_ls_options, bal::is_any_of(" "));
+		bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
+
 
 	bpo::notify(vm);    
 
@@ -90,60 +91,61 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( "\tsam-ls - list directory contents\n" );
 		TUTTLE_COUT( "SYNOPSIS\n\tsam-ls [options] [directories]\n" );
 		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
-		return 1;
+		return 0;
 	}
 
 	if (vm.count("expression"))
 	{
+		TUTTLE_COUT( "Expression: " << vm["expression"].as<std::string>() );
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
 	if (vm.count("directories"))
 	{
-		researchMask |= eDirectory;
+		researchMask |= eMaskTypeDirectory;
 	}
 	
 	if (vm.count("files"))
 	{
-		researchMask |= eFile;
+		researchMask |= eMaskTypeFile;
 	}
 	
 	if (vm.count("mask"))
 	{
-		researchMask &= ~eSequence;
+		researchMask &= ~eMaskTypeSequence;
 	}
 	
 	if (vm.count("full-display"))
 	{
-		researchMask |= eDirectory;
-		researchMask |= eFile;
-		researchMask |= eSequence;
+		researchMask |= eMaskTypeDirectory;
+		researchMask |= eMaskTypeFile;
+		researchMask |= eMaskTypeSequence;
 	}
 	
 	if (vm.count("all"))
 	{
 		// add .* files
-		descriptionMask |= eDotFile;
+		descriptionMask |= eMaskOptionsDotFile;
 	}
 	
 	if (vm.count("long-listing"))
 	{
-		descriptionMask |= eProperties;
+		descriptionMask |= eMaskOptionsProperties;
 	}
 	
-	if (vm.count("path-root"))
+	if (vm.count("relative-path"))
 	{
-		descriptionMask |= ePath;
+		descriptionMask |= eMaskOptionsPath;
 	}
 
 	if(vm.count("absolute-path"))
 	{
-		descriptionMask |= eAbsolutePath;
+		descriptionMask |= eMaskOptionsAbsolutePath;
 	}
 
 	if (vm.count("color"))
 	{
-		descriptionMask |= eColor;
+		descriptionMask |= eMaskOptionsColor;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -184,7 +186,7 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 //								TUTTLE_COUT( *dir );
-								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
+								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
 								BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 								{
 									TUTTLE_COUT( *s );
@@ -193,7 +195,7 @@ int main( int argc, char** argv )
 						}
 					}
 
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 					{
 					    TUTTLE_COUT( *s );
@@ -204,7 +206,7 @@ int main( int argc, char** argv )
 				{
 //					TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 					{
 						TUTTLE_COUT( *s );

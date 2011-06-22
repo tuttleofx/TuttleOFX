@@ -5,8 +5,6 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
 
-#include <tuttle/plugin/color/colorSpaceAPI.hpp>
-
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 
@@ -18,7 +16,6 @@
 #include <vector>
 #include <iostream>
 
-namespace ttlc = tuttle::plugin::color;
 
 namespace tuttle {
 namespace plugin {
@@ -28,23 +25,7 @@ template<class View>
 class ColorSpaceProcess : public ImageGilFilterProcessor<View>
 {
 protected:
-	ttlc::ColorSpaceAPI		csAPI;
-	ttlc::EParamGradationLaw	_gradationIn;
-	double				_GammaValueIn;
-	double				_BlackPointIn;
-	double				_WhitePointIn;
-	double				_GammaSensitoIn;
-
-	ttlc::EParamGradationLaw	_gradationOut;
-	double				_GammaValueOut;
-	double				_BlackPointOut;
-	double				_WhitePointOut;
-	double				_GammaSensitoOut;
-
-	ttlc::EParamLayout		_layoutIn;
-	ttlc::EParamLayout		_layoutOut;
-	ttlc::EParamTemp		_tempColorIn;
-	ttlc::EParamTemp		_tempColorOut;
+	ColorSpaceProcessParams _params;
 
 	ColorSpacePlugin& _plugin; ///< Rendering plugin
 

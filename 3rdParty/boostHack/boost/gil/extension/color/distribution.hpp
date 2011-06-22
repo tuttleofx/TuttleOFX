@@ -6,11 +6,15 @@
 namespace boost { namespace gil {
 
 namespace colorDistribution{
-struct linear{};
+struct Linear{};
 struct sRGB{};
-struct cineon{};
-struct rec709{};
-struct rec601{};
+struct Cineon{};
+struct Gamma{};
+struct Panalog{};
+struct REDLog{};
+struct ViperLog{};
+struct REDSpace{};
+struct AlexaLogC{};
 }
 
 /// @brief change the color distribution
@@ -40,7 +44,7 @@ struct channel_color_distribution_t : public std::binary_function<Channel, Chann
  * Formula taken from Computational technology by Kang.
  */
 template< typename Channel >
-struct channel_color_distribution_t<Channel, colorDistribution::linear, colorDistribution::sRGB> : public std::binary_function<Channel, Channel, Channel>
+struct channel_color_distribution_t<Channel, colorDistribution::Linear, colorDistribution::sRGB> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
 
@@ -69,7 +73,7 @@ struct channel_color_distribution_t<Channel, colorDistribution::linear, colorDis
  * Formula taken from Computational technology by Kang.
  */
 template< typename Channel >
-struct channel_color_distribution_t<Channel, colorDistribution::sRGB, colorDistribution::linear> : public std::binary_function<Channel, Channel, Channel>
+struct channel_color_distribution_t<Channel, colorDistribution::sRGB, colorDistribution::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
 
@@ -103,17 +107,21 @@ struct channel_color_distribution_t<Channel, colorDistribution::sRGB, OUT> : pub
 	typename channel_traits<Channel>::reference operator()( typename channel_traits<Channel>::const_reference ch1,
 	                                                        typename channel_traits<Channel>::reference ch2 ) const
 	{
-		channel_color_distribution_t<Channel, IN, colorDistribution::linear>( ch1, ch2 );
-		channel_color_distribution_t<Channel, colorDistribution::linear, OUT>( ch2, ch2 );
+		channel_color_distribution_t<Channel, IN, colorDistribution::Linear>( ch1, ch2 );
+		channel_color_distribution_t<Channel, colorDistribution::Linear, OUT>( ch2, ch2 );
 		return ch2;
 	}
 };
 
-GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::linear );
+GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Linear );
 GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::sRGB );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::cineon );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::rec709 );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::rec601 );
+//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Cineon );
+//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Gamma ); // may have a gamma with a different value
+//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Panalog );
+//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::REDLog );
+//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::ViperLog );
+//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::REDSpace );
+//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::AlexaLogC );
 
 template< typename Pixel,
           class IN,
@@ -143,6 +151,9 @@ struct transform_pixel_color_distribution_t
 		return p2;
 	}
 };
+
+/// @todo add distribution as parameters
+// transform_pixel_color_distribution( sRGB(), Gamma(5.0), View v );
 
 }
 }

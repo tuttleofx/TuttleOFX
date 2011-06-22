@@ -271,7 +271,7 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( "NAME\n\tsam-plugins - show informations about OpenFX plugins\n" );
 		TUTTLE_COUT( "SYNOPSIS\n\tsam-plugins [options] [specific_OpenFX_plugin]\n" );
 		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
-		return 1;
+		return 0;
 	}
 	
 	// defines plugins

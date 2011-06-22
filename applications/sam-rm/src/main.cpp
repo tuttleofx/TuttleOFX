@@ -20,9 +20,8 @@ namespace ttl = tuttle::common;
 
 bool	colorOutput	= false;
 bool	verbose		= false;
-
-int	firstImage	= 0;
-int	lastImage	= 0;
+std::ssize_t firstImage	= 0;
+std::ssize_t lastImage	= 0;
 
 // A helper function to simplify the main part.
 template<class T>
@@ -34,31 +33,31 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 
 void removeSequence( const ttl::Sequence& s )
 {
-	for( ttl::Sequence::Time t = s.getFirstTime(); t <= s.getLastTime(); t += s.getStep() )
+	const std::ssize_t first = std::max( s.getFirstTime(), firstImage );
+	const std::ssize_t last	= std::min( s.getLastTime(), lastImage );
+	
+	for( ttl::Sequence::Time t = first; t <= last; t += s.getStep() )
 	{
-		if( ( (firstImage == 0) | ( t >= firstImage ) ) & ( (lastImage == 0) | ( t <= lastImage ) ) )
+		bfs::path sFile = s.getAbsoluteFilenameAt(t);
+		if( !bfs::exists( sFile ) )
 		{
-			bfs::path sFile = s.getAbsoluteFilenameAt(t);
-			if( !bfs::exists( sFile ) )
+			colorOutput ?
+				TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd )
+			:
+				TUTTLE_CERR("Could not remove: " << sFile.string() )
+			;
+		}
+		else
+		{
+			if(verbose)
 			{
 				colorOutput ?
-					TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd )
+					TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd )
 				:
-					TUTTLE_CERR("Could not remove: " << sFile.string() )
+					TUTTLE_COUT("remove: " << sFile.string() )
 				;
 			}
-			else
-			{
-				if(verbose)
-				{
-					colorOutput ?
-						TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd )
-					:
-						TUTTLE_COUT("remove: " << sFile.string() )
-					;
-				}
-				bfs::remove( sFile );
-			}
+			bfs::remove( sFile );
 		}
 	}
 }
@@ -67,11 +66,11 @@ void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, 
 {
 	BOOST_FOREACH( const std::list< boost::shared_ptr<ttl::FileObject> >::value_type & s, listing )
 	{
-		if( !(s->getMaskType () == ttl::eDirectory))
+		if( !(s->getMaskType () == ttl::eMaskTypeDirectory))
 		{
 			if(verbose)
 				TUTTLE_COUT( "remove " << *s );
-			if( s->getMaskType () == ttl::eSequence )
+			if( s->getMaskType () == ttl::eMaskTypeSequence )
 				removeSequence( (ttl::Sequence&) *s );
 			else
 			{
@@ -100,11 +99,11 @@ void removeFileObject( std::list<boost::shared_ptr<ttl::FileObject> > &listing, 
 	}
 }
 
-void removeFileObject( std::vector<boost::filesystem::path> &listing )
+void removeFiles( std::vector<boost::filesystem::path> &listing )
 {
 	std::sort(listing.begin(), listing.end());
 	std::reverse(listing.begin(), listing.end());
-	BOOST_FOREACH( const boost::filesystem::path paths, listing )
+	BOOST_FOREACH( const boost::filesystem::path& paths, listing )
 	{
 		if(bfs::is_empty(paths))
 		{
@@ -140,10 +139,9 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	int					researchMask		= eSequence;	// by default show sequences
-	MaskOptions				descriptionMask		= eColor;	// by default show nothing
+	EMaskType					researchMask		= eMaskTypeSequence;	// by default show sequences
+	EMaskOptions				descriptionMask		= eMaskOptionsColor;	// by default show nothing
 	bool					recursiveListing	= false;
-	std::string				availableExtensions;
 	std::vector<std::string>		paths;
 	std::vector<std::string>		filters;
 
@@ -159,9 +157,9 @@ int main( int argc, char** argv )
 			("path-root,p"		, "show the root path for each objects")
 			("recursive,R"		, "remove subdirectories recursively")
 			("verbose,v"		, "explain what is being done")
-			("color"		, "color the outup")
-			("first-image"		, bpo::value<unsigned int>(), "specify the first image")
-			("last-image"		, bpo::value<unsigned int>(), "specify the last image")
+			("color"		, "display with colors")
+			("first-image"		, bpo::value<std::ssize_t>(), "specify the first image")
+			("last-image"		, bpo::value<std::ssize_t>(), "specify the last image")
 			("full-rm"		, "remove directories, files and sequences")
 			;
 	
@@ -185,13 +183,15 @@ int main( int argc, char** argv )
 	bpo::variables_map vm;
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-	// get environnement options and parse them
-	if( std::getenv("SAM_RM_OPTIONS") != NULL)
+	// get environment options and parse them
 	{
-		std::vector<std::string> envOptions;
-		std::string env = std::getenv("SAM_RM_OPTIONS");
-		envOptions.push_back( env );
-		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		const std::string env_rm_options = std::getenv("SAM_RM_OPTIONS");
+		if( env_rm_options.size() )
+		{
+			std::vector<std::string> envOptions;
+			envOptions.push_back( env_rm_options );
+			bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
 	}
 
 	bpo::notify(vm);    
@@ -204,7 +204,7 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( "SYNOPSIS" );
 		TUTTLE_COUT( "\tsam-rm [options] [directories]\n" );
 		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
-		return 1;
+		return 0;
 	}
 
 	if (vm.count("expression"))
@@ -214,17 +214,17 @@ int main( int argc, char** argv )
 
 	if (vm.count("directories"))
 	{
-		researchMask |= eDirectory;
+		researchMask |= eMaskTypeDirectory;
 	}
 	
 	if (vm.count("files"))
 	{
-		researchMask |= eFile;
+		researchMask |= eMaskTypeFile;
 	}
 	
 	if (vm.count("mask"))
 	{
-		researchMask &= ~eSequence;
+		researchMask &= ~eMaskTypeSequence;
 	}
 	
 	if (vm.count("verbose"))
@@ -234,36 +234,36 @@ int main( int argc, char** argv )
 
 	if (vm.count("first-image"))
 	{
-		firstImage  = vm["first-image"].as< unsigned int >();
+		firstImage  = vm["first-image"].as< std::ssize_t >();
 	}
 
 	if (vm.count("last-image"))
 	{
-		lastImage  = vm["last-image"].as< unsigned int >();
+		lastImage  = vm["last-image"].as< std::ssize_t >();
 	}
 
 	if (vm.count("full-rm"))
 	{
-		researchMask |= eDirectory;
-		researchMask |= eFile;
-		researchMask |= eSequence;
+		researchMask |= eMaskTypeDirectory;
+		researchMask |= eMaskTypeFile;
+		researchMask |= eMaskTypeSequence;
 	}
 	
 	if (vm.count("all"))
 	{
 		// add .* files
-		descriptionMask |= eDotFile;
+		descriptionMask |= eMaskOptionsDotFile;
 	}
 	
 	if (vm.count("path-root"))
 	{
-		descriptionMask |= ePath;
+		descriptionMask |= eMaskOptionsPath;
 	}
 
 	if (vm.count("color") )
 	{
 		colorOutput = true;
-		descriptionMask |=  eColor;
+		descriptionMask |=  eMaskOptionsColor;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -303,19 +303,19 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 								//								TUTTLE_COUT( *dir );
-								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
+								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
 								removeFileObject( listing, pathsNoRemoved );
 							}
 						}
 					}
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 				else
 				{
 					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
 					removeFileObject( listing, pathsNoRemoved );
 				}
 			}
@@ -339,7 +339,7 @@ int main( int argc, char** argv )
 			}
 		}
 		// delete not empty folder the first time
-		removeFileObject( pathsNoRemoved );
+		removeFiles( pathsNoRemoved );
 	}
 	catch (bfs::filesystem_error &ex)
 	{
