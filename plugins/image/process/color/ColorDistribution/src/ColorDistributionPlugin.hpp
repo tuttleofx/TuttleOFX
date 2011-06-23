@@ -13,6 +13,7 @@ struct ColorDistributionProcessParams
 {
 	EParamDistribution _in;
 	EParamDistribution _out;
+	bool _processAlpha;
 };
 
 /**
@@ -36,9 +37,9 @@ public:
 	void render( const OFX::RenderArguments& args );
 
 public:
-	OFX::BooleanParam* _paramInvert;
 	OFX::ChoiceParam* _paramIn;
 	OFX::ChoiceParam* _paramOut;
+	OFX::BooleanParam* _paramProcessAlpha;
 };
 
 }

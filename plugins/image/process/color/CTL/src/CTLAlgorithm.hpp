@@ -7,7 +7,6 @@ namespace tuttle {
 namespace plugin {
 namespace ctl {
 
-namespace bgil = boost::gil;
 
 
 

@@ -25,6 +25,7 @@ enum EParamDistribution
 	//	eParamDistribution_rec601
 };
 
+const std::string kParamProcessAlpha = "processAlpha";
 const std::string kParamInvert = "invert";
 
 }

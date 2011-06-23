@@ -1,11 +1,13 @@
 #include "ColorDistributionDefinitions.hpp"
+#include "ColorDistributionProcess.hpp"
+#include "ColorDistributionPlugin.hpp"
 
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <tuttle/plugin/image/gil/copy.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 #include <boost/gil/extension/color/distribution.hpp>
 #include <boost/gil/extension/typedefs.hpp>
-
-#include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/static_assert.hpp>
@@ -32,33 +34,53 @@ void ColorDistributionProcess<View>::setup( const OFX::RenderArguments& args )
 }
 
 template<class View>
+template<class IN, class OUT>
+GIL_FORCEINLINE
+void ColorDistributionProcess<View>::processSwitchAlpha( const bool processAlpha, const View& src, const View& dst )
+{
+	using namespace boost::gil;
+	if( processAlpha )
+	{
+		transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, OUT>(), *this );
+	}
+	else
+	{
+		/// @todo do not apply process on alpha directly inside transform, with a "channel_for_each_if_channel"
+		transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, OUT>(), *this );
+
+		// temporary solution copy alpha channel
+		copy_channel_if_exist<alpha_t>( src, dst );
+	}
+}
+
+template<class View>
 template<class IN>
 GIL_FORCEINLINE
-void ColorDistributionProcess<View>::processSwitchOut( const EParamDistribution out, const View& src, const View& dst )
+void ColorDistributionProcess<View>::processSwitchOut( const EParamDistribution out, const bool processAlpha, const View& src, const View& dst )
 {
 	using namespace boost::gil;
 	switch( out )
 	{
 		case eParamDistribution_linear:
-			transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, boost::gil::colorDistribution::linear>(), *this );
+			processSwitchAlpha<IN, boost::gil::colorDistribution::linear>( processAlpha, src, dst );
 			break;
 		case eParamDistribution_sRGB:
-			transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, boost::gil::colorDistribution::sRGB>(), *this );
+			processSwitchAlpha<IN, boost::gil::colorDistribution::sRGB>( processAlpha, src, dst );
 			break;
 	}
 }
 
 template<class View>
-void ColorDistributionProcess<View>::processSwitchInOut( const EParamDistribution in, const EParamDistribution out, const View& src, const View& dst )
+void ColorDistributionProcess<View>::processSwitchInOut( const EParamDistribution in, const EParamDistribution out, const bool processAlpha, const View& src, const View& dst )
 {
 	using namespace boost::gil;
 	switch( in )
 	{
 		case eParamDistribution_linear:
-			processSwitchOut<boost::gil::colorDistribution::linear>( out, src, dst );
+			processSwitchOut<boost::gil::colorDistribution::linear>( out, processAlpha, src, dst );
 			break;
 		case eParamDistribution_sRGB:
-			processSwitchOut<boost::gil::colorDistribution::sRGB>( out, src, dst );
+			processSwitchOut<boost::gil::colorDistribution::sRGB>( out, processAlpha, src, dst );
 			break;
 	}
 }
@@ -84,7 +106,7 @@ void ColorDistributionProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	                          procWindowSize.x,
 	                          procWindowSize.y );
 
-	processSwitchInOut( _params._in, _params._out, src, dst );
+	processSwitchInOut( _params._in, _params._out, _params._processAlpha, src, dst );
 }
 
 }

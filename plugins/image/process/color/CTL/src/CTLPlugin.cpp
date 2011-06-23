@@ -3,8 +3,10 @@
 #include "CTLDefinitions.hpp"
 
 #include <boost/gil/gil_all.hpp>
+#include <boost/algorithm/string/split.hpp>
 
 #include <fstream>
+#include <boost/filesystem/path.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -23,9 +25,10 @@ CTLPlugin::CTLPlugin( OfxImageEffectHandle handle )
 
 CTLProcessParams<CTLPlugin::Scalar> CTLPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
+	using namespace boost::filesystem;
 	CTLProcessParams<Scalar> params;
-	EParamChooseInput input = static_cast<EParamChooseInput>( _paramInput->getValue() );
-	switch( input )
+	params._inputType = static_cast<EParamChooseInput>( _paramInput->getValue() );
+	switch( params._inputType )
 	{
 		case eParamChooseInputCode:
 		{
@@ -34,8 +37,12 @@ CTLProcessParams<CTLPlugin::Scalar> CTLPlugin::getProcessParams( const OfxPointD
 		}
 		case eParamChooseInputFile:
 		{
-			std::ifstream f( _paramFile->getValue().c_str(), std::ios::in );
-			std::getline( f, params._code, '\0' );
+//			std::ifstream f( _paramFile->getValue().c_str(), std::ios::in );
+//			std::getline( f, params._code, '\0' );
+//			split( params._paths, paths, is_any_of(":;"), token_compress_on );
+			const path filename = path( _paramFile->getValue() );
+			params._module = filename.stem().string();
+			params._paths.push_back( filename.parent_path().string() );
 			break;
 		}
 	}
@@ -123,7 +130,27 @@ bool CTLPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identi
  */
 void CTLPlugin::render( const OFX::RenderArguments &args )
 {
-	doGilRender<CTLProcess>( *this, args );
+	// instantiate the render code based on the pixel depth of the dst clip
+	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
+	OFX::EPixelComponent components = _clipDst->getPixelComponents();
+
+	switch( components )
+	{
+		case OFX::ePixelComponentRGBA:
+		{
+			doGilRender<CTLProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			return;
+		}
+		case OFX::ePixelComponentRGB:
+		case OFX::ePixelComponentAlpha:
+		case OFX::ePixelComponentCustom:
+		case OFX::ePixelComponentNone:
+		{
+			BOOST_THROW_EXCEPTION( exception::Unsupported()
+				<< exception::user() + "Pixel components (" + mapPixelComponentEnumToString(components) + ") not supported by the plugin." );
+		}
+	}
+	BOOST_THROW_EXCEPTION( exception::Unknown() );
 }
 
 
