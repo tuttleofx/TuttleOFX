@@ -21,8 +21,8 @@ const static std::string kColorSpaceOut			= "Out";
 const static std::string kColorSpaceReferenceSpaceIn	= "Input Reference Space";
 const static std::string kColorSpaceReferenceSpaceOut	= "Output Reference Space";
 
-const static std::string kColorSpaceCustomizedIn	= "Input Customized";
-const static std::string kColorSpaceCustomizedOut	= "Output Customized";
+const static std::string kColorSpaceCostumizedIn	= "Input Costumized";
+const static std::string kColorSpaceCostumizedOut	= "Output Costumized";
 
 const static std::string kColorSpaceGradationLawIn	= "In Gradation Law";
 const static std::string kColorSpaceGradationLawOut	= "Out Gradation Law";
