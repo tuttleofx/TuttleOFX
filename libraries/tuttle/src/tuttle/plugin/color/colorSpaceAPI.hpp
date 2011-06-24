@@ -4,6 +4,7 @@
 #include "colorDefinitions.hpp"
 #include "GradationProcess.tcc"
 #include "Layout.tcc"
+#include "TemperatureColor.tcc"
 
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
@@ -101,10 +102,10 @@ public:
 			case eParamLayoutYPbPr :	convertFromYPbPrLayout	( p0, p1 ); break;
 			case eParamLayoutHSV :		convertFromHsvLayout	( p0, p1 ); break;
 			case eParamLayoutHSL :		convertFromHslLayout	( p0, p1 ); break;
-			case eParamLayoutLab :		break;
-			case eParamLayoutLuv :		break;
-			case eParamLayoutXYZ :		break;
-			case eParamLayoutYxy :		break;
+			case eParamLayoutLab :		convertFromLabLayout	( p0, p1 ); break;
+			case eParamLayoutLuv :		convertFromLuvLayout	( p0, p1 ); break;
+			case eParamLayoutXYZ :		convertFromXYZLayout	( p0, p1 ); break;
+			case eParamLayoutYxy :		convertFromYxyLayout	( p0, p1 ); break;
 		}
 		switch ( eLayoutOut )
 		{
@@ -113,10 +114,10 @@ public:
 			case eParamLayoutYPbPr :	convertToYPbPrLayout	( p1, p2 ); break;
 			case eParamLayoutHSV :		convertToHsvLayout	( p1, p2 ); break;
 			case eParamLayoutHSL :		convertToHslLayout	( p1, p2 ); break;
-			case eParamLayoutLab :		break;
-			case eParamLayoutLuv :		break;
-			case eParamLayoutXYZ :		break;
-			case eParamLayoutYxy :		break;
+			case eParamLayoutLab :		convertToLabLayout	( p1, p2 ); break;
+			case eParamLayoutLuv :		convertToLuvLayout	( p1, p2 ); break;
+			case eParamLayoutXYZ :		convertToXYZLayout	( p1, p2 ); break;
+			case eParamLayoutYxy :		convertToYxyLayout	( p1, p2 ); break;
 		}
 		switch ( eGradationLawOut )
 		{

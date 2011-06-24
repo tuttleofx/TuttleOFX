@@ -222,7 +222,7 @@ int main( int argc, char** argv )
 	{
 	    TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
 	    TUTTLE_COUT( "NAME");
-	    TUTTLE_COUT( "\tsam-info - remove directory contents\n" );
+	    TUTTLE_COUT( "\tsam-info - get informations about a sequence\n" );
 	    TUTTLE_COUT( "SYNOPSIS" );
 	    TUTTLE_COUT( "\tsam-info [options] [sequences]\n" );
 	    TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
