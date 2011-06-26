@@ -153,6 +153,24 @@ struct pixel_pow_t {
 };
 
 /// \ingroup PixelNumericOperations
+/// \brief construct to compute pow of a scalar by the pixel value
+template <typename PixelRef, // models pixel concept
+          typename Scalar,   // models a scalar type
+          typename PixelR=PixelRef>   // models pixel value concept
+struct pixel_scalar_pow_t {
+	GIL_FORCEINLINE
+    PixelR operator () (const PixelRef& p,
+                        const Scalar& s) const {
+        PixelR result;
+        static_transform(p,result,
+                           std::bind2nd(channel_scalar_pow_t<typename channel_type<PixelRef>::type,
+                                                                 Scalar,
+                                                                 typename channel_type<PixelR>::type>(),s));
+        return result;
+    }
+};
+
+/// \ingroup PixelNumericOperations
 /// \brief construct for dividing a pixel by 2
 template <typename PixelRef> // models pixel concept
 struct pixel_halves_t {
@@ -196,6 +214,32 @@ Pixel pixel_zeros()
 	return pixel_zeros_t<Pixel>()(p);
 }
 
+
+/// \ingroup PixelNumericOperations
+/// \brief construct for setting a pixel to zero (for whatever zero means)
+template <typename PixelRef> // models pixel concept
+struct pixel_ones_t {
+	GIL_FORCEINLINE
+    PixelRef& operator () (PixelRef& p) const {
+        static_for_each(p,channel_ones_t<typename channel_type<PixelRef>::type>());
+        return p;
+    }
+};
+
+template <typename Pixel>
+GIL_FORCEINLINE
+Pixel& pixel_ones(Pixel& p)
+{
+    return pixel_ones_t<Pixel>()(p);
+}
+
+template <typename Pixel>
+GIL_FORCEINLINE
+Pixel pixel_ones()
+{
+	Pixel p;
+	return pixel_ones_t<Pixel>()(p);
+}
 
 /// \ingroup PixelNumericOperations
 ///definition and a generic implementation for casting and assigning a pixel to another

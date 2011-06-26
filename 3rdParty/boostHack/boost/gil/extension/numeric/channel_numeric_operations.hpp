@@ -138,6 +138,18 @@ struct channel_pow_t : public std::unary_function<Channel,ChannelR> {
 };
 
 /// \ingroup ChannelNumericOperations
+/// structure to compute pow of a scalar by the pixel value
+/// this is a generic implementation; user should specialize it for better performance
+template <typename Channel,typename Scalar,typename ChannelR>
+struct channel_scalar_pow_t : public std::binary_function<Channel,Scalar,ChannelR> {
+	GIL_FORCEINLINE
+    ChannelR operator()(typename channel_traits<Channel>::const_reference ch,
+                        const Scalar& s) const {
+        return std::pow(ChannelR(s), ChannelR(ch));
+    }
+};
+
+/// \ingroup ChannelNumericOperations
 /// structure for halving a channel
 /// this is a generic implementation; user should specialize it for better performance
 template <typename Channel>
@@ -158,6 +170,18 @@ struct channel_zeros_t : public std::unary_function<Channel,Channel> {
     typename channel_traits<Channel>::reference
     operator()(typename channel_traits<Channel>::reference ch) const {
         return ch=Channel(0);
+    }
+};
+
+/// \ingroup ChannelNumericOperations
+/// structure for setting a channel to one
+/// this is a generic implementation; user should specialize it for better performance
+template <typename Channel>
+struct channel_ones_t : public std::unary_function<Channel,Channel> {
+	GIL_FORCEINLINE
+    typename channel_traits<Channel>::reference
+    operator()(typename channel_traits<Channel>::reference ch) const {
+        return ch=Channel(1);
     }
 };
 
