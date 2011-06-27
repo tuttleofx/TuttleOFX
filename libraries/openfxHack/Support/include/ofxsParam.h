@@ -1615,9 +1615,6 @@ protected:
 
 	// so it can make one
 	friend class ParamSet;
-
-public:
-	void setOpen( const bool open = true );
 };
 
 ////////////////////////////////////////////////////////////////////////////////

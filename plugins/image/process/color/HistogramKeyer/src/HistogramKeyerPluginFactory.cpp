@@ -18,6 +18,8 @@ static const bool kSupportTiles = true;
  */
 void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
+    
+        // describe the plugin
 	desc.setLabels( "TuttleHistogramKeyer", "HistogramKeyer",
 		            "HistogramKeyer" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
@@ -25,9 +27,7 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setDescription(
 		"HistogramKeyer\n"
 		"Test parametric parameters.\n"
-		"Full description of the plugin....\n"
-		"\n"
-		"bla bla\n"
+		"Full description of the plugin.... \n"
 		"\n"
 	);
 
@@ -46,10 +46,10 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<HistogramKeyerOverlayDescriptor>() );
 
-//	if( ! OFX::getImageEffectHostDescription()->supportsParametricParameter )
-//	{
-//		BOOST_THROW_EXCEPTION( exception::MissingHostFeature( "Parametric parameter" ) );
-//	}
+	if( ! OFX::getImageEffectHostDescription()->supportsParametricParameter )
+	{
+		BOOST_THROW_EXCEPTION( exception::MissingHostFeature( "Parametric parameter" ) );
+	}
 }
 
 /**
@@ -57,8 +57,7 @@ void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
-                                                  OFX::EContext context )
+void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -72,32 +71,124 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
+        
+    // if parametric parameters are supported
 	if( OFX::getImageEffectHostDescription()->supportsParametricParameter )
 	{
-//		TUTTLE_COUT_INFOS;
-		OFX::ParametricParamDescriptor* curves = desc.defineParametricParam( kParamColorSelection );
-//		TUTTLE_COUT_VAR( curves );
-//		TUTTLE_COUT_INFOS;
-		curves->setRange( 0.0, 1.0 );
-		curves->setDimension( nbCurves );
-		curves->setIdentity();
-		curves->setDimensionLabel( kParamColorSelectionRed, 0 );
-		curves->setDimensionLabel( kParamColorSelectionGreen, 1 );
-		curves->setDimensionLabel( kParamColorSelectionBlue, 2 );
-		curves->setDimensionLabel( kParamColorSelectionHue, 3 );
-		curves->setDimensionLabel( kParamColorSelectionSaturation, 4 );
-		curves->setDimensionLabel( kParamColorSelectionLightness, 5 );
-		curves->setHint( "Color selection" );
-		curves->setUIColour( 0, {1,0,0} );
-		curves->setUIColour( 1, {0,1,0} );
-		curves->setUIColour( 2, {0,0,1} );
-		curves->setUIColour( 3, {1,1,1} );
-		curves->setUIColour( 4, {1,1,1} );
-		curves->setUIColour( 5, {1,1,1} );
-		curves->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HistogramKeyerParamOverlayDescriptor>() );
-	}
+		OFX::ParametricParamDescriptor* curvesRGB = desc.defineParametricParam( kParamRGBColorSelection );
+		OFX::ParametricParamDescriptor* curvesHSL = desc.defineParametricParam( kParamHSLColorSelection );
+		
+		//Group Param (RGB & HSL)
+		OFX::GroupParamDescriptor *groupRGB = desc.defineGroupParam(kGroupRGB);
+		groupRGB->setLabel(kGroupRGBLabel);
+		OFX::GroupParamDescriptor *groupHSL = desc.defineGroupParam(kGroupHSL);
+		groupHSL->setLabel(kGroupHSLLabel);
 
-//	TUTTLE_COUT_INFOS;
+		//define the graphic aspect
+		curvesRGB->setRange( -1.0, 2.0 );
+		curvesHSL->setRange( 0.0, 1.0 );
+		curvesRGB->setDimension(nbCurvesRGB);
+		curvesHSL->setDimension(nbCurvesHSL);
+
+		//Add curves RGB
+		curvesRGB->setDimensionLabel( kParamColorSelectionRed, 0 );
+		curvesRGB->setDimensionLabel( kParamColorSelectionGreen, 1 );
+		curvesRGB->setDimensionLabel( kParamColorSelectionBlue, 2 );
+		//Add curves HSL
+		curvesHSL->setDimensionLabel( kParamColorSelectionHue, 0 );
+		curvesHSL->setDimensionLabel( kParamColorSelectionSaturation, 1 );
+		curvesHSL->setDimensionLabel( kParamColorSelectionLightness, 2 );
+		//define curves color RGB 
+		curvesRGB->setHint( "Color selection" );
+		curvesRGB->setUIColour( 0, {1,0,0} );
+		curvesRGB->setUIColour( 1, {0,1,0} );
+		curvesRGB->setUIColour( 2, {0,0,1} );
+		//define curves color HSL 
+		curvesHSL->setHint( "Color selection" );
+		curvesHSL->setUIColour( 0, {1,1,1} );
+		curvesHSL->setUIColour( 1, {1,1,1} );
+		curvesHSL->setUIColour( 2, {1,1,1} );
+
+		curvesRGB->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HistogramKeyerParamOverlayDescriptor>() );
+		curvesHSL->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HistogramKeyerParamOverlayDescriptor>() );
+		//add curves to their groups
+		curvesRGB->setParent(groupRGB);
+		curvesHSL->setParent(groupHSL);
+		
+		//Set each curves to initial value
+		curvesRGB->setIdentity();
+		curvesHSL->setIdentity();
+		//add 2 control points (0,1) and (1,1) for each dimension
+		for(unsigned int i=0; i< nbCurvesRGB; ++i)
+		{
+			curvesRGB->addControlPoint( i, 0.0, 0.0, 1.0, false );
+			curvesRGB->addControlPoint( i, 0.0, 1.0, 1.0, false );
+		}
+		for(unsigned int i=0; i< nbCurvesHSL; ++i)
+		{
+			curvesHSL->addControlPoint( i, 0.0, 0.0, 1.0, false );
+			curvesHSL->addControlPoint( i, 0.0, 1.0, 1.0, false );
+		}
+		
+		//Channels checkboxes (RGB)
+		OFX::BooleanParamDescriptor* boolR = desc.defineBooleanParam(kBoolRed);
+		boolR->setDefault(true);
+		boolR->setParent(groupRGB);
+		OFX::BooleanParamDescriptor* boolG = desc.defineBooleanParam(kBoolGreen);
+		boolG->setDefault(true);
+		boolG->setParent(groupRGB);
+		OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
+		boolB->setDefault(true);
+		boolB->setParent(groupRGB);
+		
+		//Channels check box (HSL)
+		OFX::BooleanParamDescriptor* boolH = desc.defineBooleanParam(kBoolHue);
+		boolH->setDefault(true);
+		boolH->setParent(groupHSL);
+		OFX::BooleanParamDescriptor* boolS = desc.defineBooleanParam(kBoolSaturation);
+		boolS->setDefault(true);
+		boolS->setParent(groupHSL);
+		OFX::BooleanParamDescriptor* boolL = desc.defineBooleanParam(kBoolLightness);
+		boolL->setDefault(true);
+		boolL->setParent(groupHSL);
+		
+		//Clean Button (RGB / HSL)
+		OFX::PushButtonParamDescriptor* cleanButtonRGB = desc.definePushButtonParam(kButtonCleanRGB);
+		cleanButtonRGB->setLabel(kButtonCleanRGBLabel);
+		cleanButtonRGB->setParent(groupRGB);
+		
+		OFX::PushButtonParamDescriptor* cleanButtonHSL = desc.definePushButtonParam(kButtonCleanHSL);
+		cleanButtonHSL->setLabel(kButtonCleanHSLLabel);
+		cleanButtonHSL->setParent(groupHSL);
+		
+		//Close groups (closed by default on screen)
+		groupRGB->setOpen(false);
+		groupHSL->setOpen(false);
+	}
+	//Advanced group
+	OFX::GroupParamDescriptor *groupAdvanced = desc.defineGroupParam(kGroupAdvanced);
+	groupAdvanced->setLabel(kGroupAdvancedLabel);
+	groupAdvanced->setOpen(false);
+	//nbOfstep (advanced group)
+	OFX::IntParamDescriptor* nbStepRange = desc.defineIntParam(knbStepRange);
+	nbStepRange->setLabel(knbStepRangeLabel);
+	nbStepRange->setRange(1, 1500);
+	nbStepRange->setDisplayRange(1, 600.0 );
+	nbStepRange->setDefault(255);
+	nbStepRange->setParent(groupAdvanced);
+	
+	//Histogram display settings
+	OFX::ChoiceParamDescriptor* gammaType = desc.defineChoiceParam(kHistoDisplayListParamLabel);
+	gammaType->setLabel(kHistoDisplayListParamLabel);
+	gammaType->setHint( "Histogram display list");
+	gammaType->appendOption(kHistoDisplayListParamOpt1);
+	gammaType->appendOption(kHistoDisplayListParamOpt2);
+	//Refresh histograms overlay Button
+	OFX::PushButtonParamDescriptor* refreshOverlayButton = desc.definePushButtonParam(kButtonRefreshOverlay);
+	refreshOverlayButton->setLabel(kButtonRefreshOverlayLabel);
+	//Clean all Button
+	OFX::PushButtonParamDescriptor* cleanButtonAll = desc.definePushButtonParam(kButtonCleanAll);
+	cleanButtonAll->setLabel(kButtonCleanAllLabel);
 }
 
 /**
