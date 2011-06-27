@@ -1,3 +1,6 @@
+
+//#include <tuttle/plugin/color/colorSpaceAPI.hpp>
+
 #include "ColorSpacePlugin.hpp"
 #include "ColorSpaceProcess.hpp"
 #include "ColorSpaceDefinitions.hpp"
@@ -13,51 +16,51 @@ using namespace boost::gil;
 ColorSpacePlugin::ColorSpacePlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
-	_paramInGradationLaw = fetchChoiceParam( kColorSpaceGradationLawIn );
-	_paramOutGradationLaw = fetchChoiceParam( kColorSpaceGradationLawOut );
-	_paramInGamma = fetchDoubleParam( kColorSpaceInGammaValue );
-	_paramOutGamma = fetchDoubleParam( kColorSpaceOutGammaValue );
-	_paramInBlackPoint = fetchDoubleParam( kColorSpaceInBlackPoint );
-	_paramOutBlackPoint = fetchDoubleParam( kColorSpaceOutBlackPoint );
-	_paramInWhitePoint = fetchDoubleParam( kColorSpaceInWhitePoint );
-	_paramOutWhitePoint = fetchDoubleParam( kColorSpaceOutWhitePoint );
-	_paramInGammaSensito = fetchDoubleParam( kColorSpaceInGammaSensito );
-	_paramOutGammaSensito = fetchDoubleParam( kColorSpaceOutGammaSensito );
+	_paramInGradationLaw	= fetchChoiceParam( kColorSpaceGradationLawIn );
+	_paramOutGradationLaw	= fetchChoiceParam( kColorSpaceGradationLawOut );
+	_paramInGamma		= fetchDoubleParam( kColorSpaceInGammaValue );
+	_paramOutGamma		= fetchDoubleParam( kColorSpaceOutGammaValue );
+	_paramInBlackPoint	= fetchDoubleParam( kColorSpaceInBlackPoint );
+	_paramOutBlackPoint	= fetchDoubleParam( kColorSpaceOutBlackPoint );
+	_paramInWhitePoint	= fetchDoubleParam( kColorSpaceInWhitePoint );
+	_paramOutWhitePoint	= fetchDoubleParam( kColorSpaceOutWhitePoint );
+	_paramInGammaSensito	= fetchDoubleParam( kColorSpaceInGammaSensito );
+	_paramOutGammaSensito	= fetchDoubleParam( kColorSpaceOutGammaSensito );
 
-	_paramInLayout = fetchChoiceParam( kColorSpaceLayoutIn );
-	_paramOutLayout = fetchChoiceParam( kColorSpaceLayoutOut );
-	_paramInColorTemp = fetchChoiceParam( kColorSpaceTempColorIn );
-	_paramOutColorTemp = fetchChoiceParam( kColorSpaceTempColorOut );
+	_paramInLayout		= fetchChoiceParam( kColorSpaceLayoutIn );
+	_paramOutLayout		= fetchChoiceParam( kColorSpaceLayoutOut );
+	_paramInColorTemp	= fetchChoiceParam( kColorSpaceTempColorIn );
+	_paramOutColorTemp	= fetchChoiceParam( kColorSpaceTempColorOut );
 
-	_paramInGamma -> setIsSecret( true );
-	_paramInBlackPoint -> setIsSecret( true );
-	_paramInWhitePoint -> setIsSecret( true );
-	_paramInGammaSensito -> setIsSecret( true );
-	_paramOutGamma -> setIsSecret( true );
-	_paramOutBlackPoint -> setIsSecret( true );
-	_paramOutWhitePoint -> setIsSecret( true );
-	_paramOutGammaSensito -> setIsSecret( true );
+	_paramInGamma		-> setIsSecret( true );
+	_paramInBlackPoint	-> setIsSecret( true );
+	_paramInWhitePoint	-> setIsSecret( true );
+	_paramInGammaSensito	-> setIsSecret( true );
+	_paramOutGamma		-> setIsSecret( true );
+	_paramOutBlackPoint	-> setIsSecret( true );
+	_paramOutWhitePoint	-> setIsSecret( true );
+	_paramOutGammaSensito	-> setIsSecret( true );
 
-	updateInParams( );
-	updateOutParams( );
+	updateInParams	();
+	updateOutParams	();
 }
 
 void ColorSpacePlugin::updateInParams( )
 {
-	_paramInGamma -> setIsSecret( true );
-	_paramInBlackPoint -> setIsSecret( true );
-	_paramInWhitePoint -> setIsSecret( true );
-	_paramInGammaSensito -> setIsSecret( true );
+	_paramInGamma		-> setIsSecret( true );
+	_paramInBlackPoint	-> setIsSecret( true );
+	_paramInWhitePoint	-> setIsSecret( true );
+	_paramInGammaSensito	-> setIsSecret( true );
 
 	switch( _paramInGradationLaw->getValue( ) )
 	{
 		case ttlc::eParamGamma:
-			_paramInGamma -> setIsSecret( false );
+			_paramInGamma		-> setIsSecret( false );
 			break;
 		case ttlc::eParamCineon:
-			_paramInBlackPoint -> setIsSecret( false );
-			_paramInWhitePoint -> setIsSecret( false );
-			_paramInGammaSensito -> setIsSecret( false );
+			_paramInBlackPoint	-> setIsSecret( false );
+			_paramInWhitePoint	-> setIsSecret( false );
+			_paramInGammaSensito	-> setIsSecret( false );
 			break;
 		default:
 			break;
@@ -71,15 +74,15 @@ void ColorSpacePlugin::updateOutParams( )
 	_paramOutWhitePoint->setIsSecret( true );
 	_paramOutGammaSensito->setIsSecret( true );
 	
-	switch( _paramOutGradationLaw->getValue( ) )
+	switch( _paramOutGradationLaw		-> getValue( ) )
 	{
 		case ttlc::eParamGamma:
-			_paramOutGamma->setIsSecret( false );
+			_paramOutGamma		-> setIsSecret( false );
 			break;
 		case ttlc::eParamCineon:
-			_paramOutBlackPoint->setIsSecret( false );
-			_paramOutWhitePoint->setIsSecret( false );
-			_paramOutGammaSensito->setIsSecret( false );
+			_paramOutBlackPoint	-> setIsSecret( false );
+			_paramOutWhitePoint	-> setIsSecret( false );
+			_paramOutGammaSensito	-> setIsSecret( false );
 			break;
 		default:
 			break;
@@ -95,43 +98,35 @@ ColorSpaceProcessParams ColorSpacePlugin::getProcessParams( ) const
 
 	if( params._gradationIn == ttlc::eParamGamma )
 	{
-		ttlc::GradationLaw::gamma gammaIn;
-		gammaIn.value = static_cast < double > ( _paramInGamma->getValue( ) );
-		params.csAPI.setGammaInProperties( gammaIn );
+		params._sGammaIn.value		= _paramInGamma		-> getValue( );
 	}
 
 	if( params._gradationIn == ttlc::eParamCineon )
 	{
-		ttlc::GradationLaw::cineon cineonIn;
-		cineonIn.blackPoint = _paramInBlackPoint->getValue( );
-		cineonIn.whitePoint = _paramInWhitePoint->getValue( );
-		cineonIn.gammaSensito = _paramInGammaSensito->getValue( );
-		params.csAPI.setCineonInProperties( cineonIn );
+		params._sCineonIn.blackPoint	= _paramInBlackPoint	-> getValue( );
+		params._sCineonIn.whitePoint	= _paramInWhitePoint	-> getValue( );
+		params._sCineonIn.gammaSensito	= _paramInGammaSensito	-> getValue( );
 	}
 
 	params._gradationOut = static_cast < EParamGradationLaw > ( _paramOutGradationLaw->getValue( ) );
 
 	if( params._gradationOut == ttlc::eParamGamma )
 	{
-		ttlc::GradationLaw::gamma gammaOut;
-		gammaOut.value = _paramOutGamma->getValue( );
-		params.csAPI.setGammaOutProperties( gammaOut );
+		params._sGammaOut.value		= _paramOutGamma	-> getValue( );
 	}
 
 	if( params._gradationOut == ttlc::eParamCineon )
 	{
-		ttlc::GradationLaw::cineon cineonOut;
-		cineonOut.blackPoint = _paramOutBlackPoint->getValue( );
-		cineonOut.whitePoint = _paramOutWhitePoint->getValue( );
-		cineonOut.gammaSensito = _paramOutGammaSensito->getValue( );
-		params.csAPI.setCineonOutProperties( cineonOut );
+		params._sCineonOut.blackPoint	= _paramOutBlackPoint	-> getValue( );
+		params._sCineonOut.whitePoint	= _paramOutWhitePoint	-> getValue( );
+		params._sCineonOut.gammaSensito	= _paramOutGammaSensito	-> getValue( );
 	}
 
-	params._layoutIn = static_cast<EParamLayout>( _paramInLayout->getValue( ) );
-	params._layoutOut = static_cast<EParamLayout>( _paramOutLayout->getValue( ) );
+	params._layoutIn	= static_cast<EParamLayout>( _paramInLayout->getValue( ) );
+	params._layoutOut	= static_cast<EParamLayout>( _paramOutLayout->getValue( ) );
 
-	params._tempColorIn = static_cast<EParamTemp>( _paramInColorTemp->getValue( ) );
-	params._tempColorOut = static_cast<EParamTemp>( _paramOutColorTemp->getValue( ) );
+	params._tempColorIn	= static_cast<EParamTemp>( _paramInColorTemp->getValue( ) );
+	params._tempColorOut	= static_cast<EParamTemp>( _paramOutColorTemp->getValue( ) );
 
 	return params;
 }
@@ -139,20 +134,21 @@ ColorSpaceProcessParams ColorSpacePlugin::getProcessParams( ) const
 bool ColorSpacePlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
 	ColorSpaceProcessParams params = getProcessParams();
-	
-	if( params._BlackPointIn == params._BlackPointOut &&
-	    params._GammaSensitoIn == params._GammaSensitoOut &&
-	    params._GammaValueIn == params._GammaValueOut &&
-	    params._WhitePointIn == params._WhitePointOut &&
-	    params._gradationIn == params._gradationOut &&
-	    params._layoutIn == params._layoutOut &&
-	    params._tempColorIn == params._tempColorOut
+	/*
+	if(
+		params._BlackPointIn	== params._BlackPointOut &&
+		params._GammaSensitoIn	== params._GammaSensitoOut &&
+		params._GammaValueIn	== params._GammaValueOut &&
+		params._WhitePointIn	== params._WhitePointOut &&
+		params._gradationIn	== params._gradationOut &&
+		params._layoutIn	== params._layoutOut &&
+		params._tempColorIn	== params._tempColorOut
 	 )
 	{
 		identityClip = _clipSrc;
 		identityTime = args.time;
 		return true;
-	}
+	}*/
 	return false;
 }
 

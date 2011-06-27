@@ -86,9 +86,9 @@ public:
 		switch ( eGradationLawIn )
 		{
 			case eParamLinear :	static_for_each( src, p0, computeFromLinear() );			break;
-			case eParamsRGB :	static_for_each( src, p0, computeFromSRGB() );			break;
+			case eParamsRGB :	static_for_each( src, p0, computeFromSRGB() );				break;
 			case eParamCineon :	static_for_each( src, p0, computeFromCineon( sCineonIn.blackPoint, sCineonIn.whitePoint, sCineonIn.gammaSensito ) );	break;
-			case eParamGamma :	static_for_each( src, p0, computeFromGamma( sGammaIn.value ) );	break;
+			case eParamGamma :	static_for_each( src, p0, computeFromGamma( sGammaIn.value ) );		break;
 			case eParamPanalog :	static_for_each( src, p0, computeFromPanalog() );			break;
 			case eParamREDLog :	static_for_each( src, p0, computeFromRedLog() );			break;
 			case eParamViperLog :	static_for_each( src, p0, computeFromViperLog() );			break;
@@ -107,6 +107,38 @@ public:
 			case eParamLayoutXYZ :		convertFromXYZLayout	( p0, p1 ); break;
 			case eParamLayoutYxy :		convertFromYxyLayout	( p0, p1 ); break;
 		}
+		switch ( eTempIn )
+		{
+			case eParamTempA :		convertFromTempA	( p0, p1 ); break;
+			case eParamTempB :		convertFromTempB	( p0, p1 ); break;
+			case eParamTempC :		convertFromTempC	( p0, p1 ); break;
+			case eParamTempD50 :		convertFromTempD50	( p0, p1 ); break;
+			case eParamTempD55 :		convertFromTempD55	( p0, p1 ); break;
+			case eParamTempD58 :		convertFromTempD58	( p0, p1 ); break;
+			case eParamTempD65 :		convertFromTempD65	( p0, p1 ); break;
+			case eParamTempD75 :		convertFromTempD75	( p0, p1 ); break;
+			case eParamTemp9300 :		convertFromTemp9300	( p0, p1 ); break;
+			case eParamTempF2 :		convertFromTempF2	( p0, p1 ); break;
+			case eParamTempF7 :		convertFromTempF7	( p0, p1 ); break;
+			case eParamTempF11 :		convertFromTempF11	( p0, p1 ); break;
+			case eParamTempDCIP3 :		convertFromTempDCIP3	( p0, p1 ); break;
+		}
+		switch ( eTempOut )
+		{
+			case eParamTempA :		convertToTempA		( p0, p1 ); break;
+			case eParamTempB :		convertToTempB		( p0, p1 ); break;
+			case eParamTempC :		convertToTempC		( p0, p1 ); break;
+			case eParamTempD50 :		convertToTempD50	( p0, p1 ); break;
+			case eParamTempD55 :		convertToTempD55	( p0, p1 ); break;
+			case eParamTempD58 :		convertToTempD58	( p0, p1 ); break;
+			case eParamTempD65 :		convertToTempD65	( p0, p1 ); break;
+			case eParamTempD75 :		convertToTempD75	( p0, p1 ); break;
+			case eParamTemp9300 :		convertToTemp9300	( p0, p1 ); break;
+			case eParamTempF2 :		convertToTempF2		( p0, p1 ); break;
+			case eParamTempF7 :		convertToTempF7		( p0, p1 ); break;
+			case eParamTempF11 :		convertToTempF11	( p0, p1 ); break;
+			case eParamTempDCIP3 :		convertToTempDCIP3	( p0, p1 ); break;
+		}
 		switch ( eLayoutOut )
 		{
 			case eParamLayoutRGB :		convertToRgbLayout	( p1, p2 ); break;
@@ -121,12 +153,12 @@ public:
 		}
 		switch ( eGradationLawOut )
 		{
-			case eParamLinear :	static_for_each( p2, dst, computeToLinear() );			break;
-			case eParamsRGB :	static_for_each( p2, dst, computeToSRGB() );			break;
+			case eParamLinear :	static_for_each( p2, dst, computeToLinear() );				break;
+			case eParamsRGB :	static_for_each( p2, dst, computeToSRGB() );				break;
 			case eParamCineon :	static_for_each( p2, dst, computeToCineon( sCineonOut.blackPoint, sCineonOut.whitePoint, sCineonOut.gammaSensito ) );	break;
-			case eParamGamma :	static_for_each( p2, dst, computeToGamma( sGammaOut.value ) );	break;
-			case eParamPanalog :	static_for_each( p2, dst, computeToPanalog() );			break;
-			case eParamREDLog :	static_for_each( p2, dst, computeToRedLog() );			break;
+			case eParamGamma :	static_for_each( p2, dst, computeToGamma( sGammaOut.value ) );		break;
+			case eParamPanalog :	static_for_each( p2, dst, computeToPanalog() );				break;
+			case eParamREDLog :	static_for_each( p2, dst, computeToRedLog() );				break;
 			case eParamViperLog :	static_for_each( p2, dst, computeToViperLog() );			break;
 			case eParamREDSpace :	static_for_each( p2, dst, computeToRedSpace() );			break;
 			case eParamAlexaLogC :	static_for_each( p2, dst, computeToAlexaLogC() );			break;

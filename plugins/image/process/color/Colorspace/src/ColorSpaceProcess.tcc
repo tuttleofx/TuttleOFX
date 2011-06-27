@@ -55,7 +55,13 @@ void ColorSpaceProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 					procWindowSize.x, procWindowSize.y );
 
-	colorspace_pixels_progress( &_params.csAPI, _params._gradationIn, _params._layoutIn, _params._tempColorIn, _params._gradationOut, _params._layoutOut, _params._tempColorOut, src, dst, this );
+	ttlc::ColorSpaceAPI		csAPI;
+	csAPI.setGammaInProperties	( _params._sGammaIn );
+	csAPI.setCineonInProperties	( _params._sCineonIn );
+	csAPI.setGammaOutProperties	( _params._sGammaOut );
+	csAPI.setCineonOutProperties	( _params._sCineonOut );
+
+	colorspace_pixels_progress( &csAPI, _params._gradationIn, _params._layoutIn, _params._tempColorIn, _params._gradationOut, _params._layoutOut, _params._tempColorOut, src, dst, this );
 
 }
 

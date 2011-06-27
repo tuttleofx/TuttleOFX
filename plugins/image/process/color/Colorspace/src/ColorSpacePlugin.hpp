@@ -2,9 +2,8 @@
 #define _TUTTLE_PLUGIN_COLORSPACE_PLUGIN_HPP_
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-#include <tuttle/plugin/color/colorDefinitions.hpp>
 
-#include <tuttle/plugin/color/colorSpaceAPI.hpp>
+#include "ColorSpaceDefinitions.hpp"
 
 namespace tuttle {
 namespace plugin {
@@ -12,10 +11,9 @@ namespace colorspace {
 
 namespace ttlc = tuttle::plugin::color;
 
+
 struct ColorSpaceProcessParams
 {
-	ttlc::ColorSpaceAPI		csAPI;
-	
 	ttlc::EParamGradationLaw	_gradationIn;
 	double				_GammaValueIn;
 	double				_BlackPointIn;
@@ -32,6 +30,11 @@ struct ColorSpaceProcessParams
 	ttlc::EParamLayout		_layoutOut;
 	ttlc::EParamTemp		_tempColorIn;
 	ttlc::EParamTemp		_tempColorOut;
+
+	ttlc::GradationLaw::gamma	_sGammaIn;
+	ttlc::GradationLaw::gamma	_sGammaOut;
+	ttlc::GradationLaw::cineon	_sCineonIn;
+	ttlc::GradationLaw::cineon	_sCineonOut;
 };
 
 /**
@@ -44,15 +47,15 @@ public:
 	ColorSpacePlugin( OfxImageEffectHandle handle );
 
 	ColorSpaceProcessParams getProcessParams() const;
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	void			changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
+	bool			isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-	void render( const OFX::RenderArguments& args );
+	void			render( const OFX::RenderArguments& args );
 
 private:
-	void updateInParams();
-	void updateOutParams();
+	void			updateInParams();
+	void			updateOutParams();
 	
 private:
 	OFX::ChoiceParam*	_paramInGradationLaw;
