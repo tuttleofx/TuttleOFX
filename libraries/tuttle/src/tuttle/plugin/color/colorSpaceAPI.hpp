@@ -118,6 +118,7 @@ public:
 			case eParamTempD65 :		convertFromTempD65	( p0, p1 ); break;
 			case eParamTempD75 :		convertFromTempD75	( p0, p1 ); break;
 			case eParamTemp9300 :		convertFromTemp9300	( p0, p1 ); break;
+			case eParamTempE :		convertFromTempE	( p0, p1 ); break;
 			case eParamTempF2 :		convertFromTempF2	( p0, p1 ); break;
 			case eParamTempF7 :		convertFromTempF7	( p0, p1 ); break;
 			case eParamTempF11 :		convertFromTempF11	( p0, p1 ); break;
@@ -134,6 +135,7 @@ public:
 			case eParamTempD65 :		convertToTempD65	( p0, p1 ); break;
 			case eParamTempD75 :		convertToTempD75	( p0, p1 ); break;
 			case eParamTemp9300 :		convertToTemp9300	( p0, p1 ); break;
+			case eParamTempE:		convertToTempE		( p0, p1 ); break;
 			case eParamTempF2 :		convertToTempF2		( p0, p1 ); break;
 			case eParamTempF7 :		convertToTempF7		( p0, p1 ); break;
 			case eParamTempF11 :		convertToTempF11	( p0, p1 ); break;

@@ -47,6 +47,7 @@ ColorSpaceMaps::ColorSpaceMaps()
 	map_ColourTemp.insert( std::pair< size_t, std::string >( eParamTempD65,		"D65 - 6504°K" ) );
 	map_ColourTemp.insert( std::pair< size_t, std::string >( eParamTempD75,		"D75 - 7504°K" ) );
 	map_ColourTemp.insert( std::pair< size_t, std::string >( eParamTemp9300,	"9300°K" ) );
+	map_ColourTemp.insert( std::pair< size_t, std::string >( eParamTempE,		"E - 5454°K" ) );
 	map_ColourTemp.insert( std::pair< size_t, std::string >( eParamTempF2,		"F2 - 4230°K" ) );
 	map_ColourTemp.insert( std::pair< size_t, std::string >( eParamTempF7,		"F7 - 6500°K" ) );
 	map_ColourTemp.insert( std::pair< size_t, std::string >( eParamTempF11,		"F11 - 4000°K" ) );

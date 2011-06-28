@@ -60,6 +60,7 @@ enum EParamTemp
 	eParamTempD65,
 	eParamTempD75,
 	eParamTemp9300,
+	eParamTempE,
 	eParamTempF2,
 	eParamTempF7,
 	eParamTempF11,

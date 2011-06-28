@@ -788,14 +788,11 @@ void convertYxyToRgb( const SrcP& src, DstP& dst )
 	}
 	else
 	{
-		get_color( XYZPoint, red_t() )		= 1.f * get_color( src, red_t() ) * get_color( src, blue_t() ) / get_color( src, green_t() );
-		get_color( XYZPoint, green_t() )	= get_color( src, blue_t() );
-		get_color( XYZPoint, blue_t() )		=(  1.f - get_color( src, red_t() ) - get_color( src, green_t() ) ) * get_color( src, blue_t() ) / get_color( src, green_t() );
+		get_color( XYZPoint, red_t() )		= 1.f * get_color( src, green_t() ) * get_color( src, red_t() ) / get_color( src, blue_t() );
+		get_color( XYZPoint, green_t() )	= get_color( src, red_t() );
+		get_color( XYZPoint, blue_t() )		= (  1.f - get_color( src, green_t() ) - get_color( src, blue_t() ) ) * get_color( src, red_t() ) / get_color( src, blue_t() );
 	}
-
-	get_color( dst, red_t() )	= get_color( XYZPoint, red_t() );
-	get_color( dst, green_t() )	= get_color( XYZPoint, green_t() );
-	get_color( dst, blue_t() )	= get_color( XYZPoint, blue_t() );
+	convertXYZToRgb( XYZPoint, dst );
 }
 
 template < typename SrcP, typename DstP >
@@ -808,7 +805,7 @@ void convertRgbToYxy( const SrcP& src, DstP& dst )
 	{
 		get_color( dst, red_t() )	= get_color( XYZPoint, green_t() );
 		get_color( dst, green_t() )	= get_color( XYZPoint, red_t() ) / som;
-		get_color( dst, blue_t() )	= get_color( XYZPoint, green_t() ) / somrr;
+		get_color( dst, blue_t() )	= get_color( XYZPoint, green_t() ) / som;
 	}
 	else
 	{
