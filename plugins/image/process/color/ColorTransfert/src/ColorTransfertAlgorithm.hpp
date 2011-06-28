@@ -173,6 +173,8 @@ struct matrices_rgb_to_lab_t
 	Matrix33 _LMS_2_LAB;
 
 	matrices_rgb_to_lab_t()
+	: _RGB_2_LMS(3,3)
+	, _LMS_2_LAB(3,3)
 	{
 		_RGB_2_LMS(0, 0) =  0.3811;
 		_RGB_2_LMS(0, 1) =  0.5783;
@@ -214,6 +216,8 @@ struct matrices_lab_to_rgb_t
 	Matrix33 _LMS_2_RGB;
 
 	matrices_lab_to_rgb_t()
+	: _LAB_2_LMS(3,3)
+	, _LMS_2_RGB(3,3)
 	{
 		// LAB -> LMS
 		// [L]   [ 1  1  1 ] [ sqrt(3)/3     0         0     ] [L]

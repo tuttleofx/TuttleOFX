@@ -31,7 +31,7 @@ public:
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
-//	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
+	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
 
 	void render( const OFX::RenderArguments &args );
 	
@@ -42,11 +42,11 @@ public:
         OFX::DoubleParam* _paramAverageCoef;
         OFX::DoubleParam* _paramDynamicCoef;
 
-        OFX::Double2DParam* _paramRegionA;
-        OFX::Double2DParam* _paramRegionB;
-        OFX::BooleanParam* _paramSameRegion;
-        OFX::Double2DParam* _paramInputRegionA;
-        OFX::Double2DParam* _paramInputRegionB;
+//        OFX::Double2DParam* _paramRegionA;
+//        OFX::Double2DParam* _paramRegionB;
+//        OFX::BooleanParam* _paramSameRegion;
+//        OFX::Double2DParam* _paramInputRegionA;
+//        OFX::Double2DParam* _paramInputRegionB;
 
 };
 

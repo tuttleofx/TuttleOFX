@@ -20,14 +20,13 @@ ColorTransfertPlugin::ColorTransfertPlugin( OfxImageEffectHandle handle )
 	_paramAverageCoef = this->fetchDoubleParam( kParamAverageCoef );
 	_paramDynamicCoef = this->fetchDoubleParam( kParamDynamicCoef );
 
-	_paramRegionA = this->fetchDouble2DParam( kParamRegionA );
-	_paramRegionB = this->fetchDouble2DParam( kParamRegionB );
-	_paramSameRegion = this->fetchBooleanParam( kParamSameRegion );
-	_paramInputRegionA = this->fetchDouble2DParam( kParamInputRegionA );
-	_paramInputRegionB = this->fetchDouble2DParam( kParamInputRegionB );
-
-	const OFX::InstanceChangedArgs args;
-	changedParam( args, kParamSameRegion );
+//	_paramRegionA = this->fetchDouble2DParam( kParamRegionA );
+//	_paramRegionB = this->fetchDouble2DParam( kParamRegionB );
+//	_paramSameRegion = this->fetchBooleanParam( kParamSameRegion );
+//	_paramInputRegionA = this->fetchDouble2DParam( kParamInputRegionA );
+//	_paramInputRegionB = this->fetchDouble2DParam( kParamInputRegionB );
+//	const OFX::InstanceChangedArgs args( this->timeLineGetTime() );
+//	changedParam( args, kParamSameRegion );
 }
 
 ColorTransfertProcessParams<ColorTransfertPlugin::Scalar> ColorTransfertPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -40,26 +39,35 @@ ColorTransfertProcessParams<ColorTransfertPlugin::Scalar> ColorTransfertPlugin::
 
 void ColorTransfertPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-	if( paramName == kParamSameRegion )
-	{
-		const bool status = _paramSameRegion->getValue();
-		_paramInputRegionA->setIsSecretAndDisabled( status );
-		_paramInputRegionB->setIsSecretAndDisabled( status );
-	}
+//	if( paramName == kParamSameRegion )
+//	{
+//		const bool status = _paramSameRegion->getValue();
+//		_paramInputRegionA->setIsSecretAndDisabled( status );
+//		_paramInputRegionB->setIsSecretAndDisabled( status );
+//	}
 }
 
-//void ColorTransfertPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-//{
-//	ColorTransfertProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	OfxRectD srcRoi;
-//	srcRoi.x1 = srcRod.x1 - 1;
-//	srcRoi.y1 = srcRod.y1 - 1;
-//	srcRoi.x2 = srcRod.x2 + 1;
-//	srcRoi.y2 = srcRod.y2 + 1;
-//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-//}
+void ColorTransfertPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+{
+	ColorTransfertProcessParams<Scalar> params = getProcessParams();
+	
+	if( _clipSrcRef->isConnected() )
+	{
+		OfxRectD srcRod = args.regionOfInterest;
+		rois.setRegionOfInterest( *this->_clipSrc, srcRod );
+	}
+	else
+	{
+		OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
+		rois.setRegionOfInterest( *this->_clipSrc, srcRod );
+	}
+	
+	OfxRectD srcRefRod = _clipSrcRef->getCanonicalRod( args.time );
+	rois.setRegionOfInterest( *_clipSrcRef, srcRefRod );
+	
+	OfxRectD dstRefRod = _clipDstRef->getCanonicalRod( args.time );
+	rois.setRegionOfInterest( *_clipDstRef, dstRefRod );
+}
 
 /**
  * @brief The overridden render function
@@ -82,7 +90,7 @@ void ColorTransfertPlugin::render( const OFX::RenderArguments &args )
 		}
 		case OFX::ePixelComponentRGB:
 		{
-			doGilRender<ColorTransfertProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			doGilRender<ColorTransfertProcess, false, boost::gil::rgb_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentAlpha:

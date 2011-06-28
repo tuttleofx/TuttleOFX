@@ -9,8 +9,6 @@ namespace tuttle {
 namespace plugin {
 namespace colorTransfert {
 
-static const bool kSupportTiles = false;
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -50,7 +48,7 @@ void ColorTransfertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setSupportsTiles( kSupportTiles );
+	desc.setSupportsTiles( true );
 	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 }
 
@@ -66,27 +64,27 @@ void ColorTransfertPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	// srcClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcClip->setSupportsTiles( kSupportTiles );
+	srcClip->setSupportsTiles( true );
 
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	// dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstClip->setSupportsTiles( kSupportTiles );
+	dstClip->setSupportsTiles( true );
 
 	OFX::ClipDescriptor* srcRefClip = desc.defineClip( kClipSrcRef );
 	srcRefClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcRefClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	// srcRefClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	srcRefClip->setSupportsTiles( kSupportTiles );
+	srcRefClip->setSupportsTiles( false );
 	srcRefClip->setOptional( true );
 
 	OFX::ClipDescriptor* dstRefClip = desc.defineClip( kClipDstRef );
 	dstRefClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstRefClip->addSupportedComponent( OFX::ePixelComponentRGB );
 //	dstRefClip->addSupportedComponent( OFX::ePixelComponentAlpha );
-	dstRefClip->setSupportsTiles( kSupportTiles );
+	dstRefClip->setSupportsTiles( false );
 
 	OFX::DoubleParamDescriptor* averageCoef = desc.defineDoubleParam( kParamAverageCoef );
 	averageCoef->setLabel( "Average color coef" );
@@ -107,30 +105,30 @@ void ColorTransfertPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 			"Percentage of correction of the standard deviation."
 		);
 
-	// output region
-	OFX::Double2DParamDescriptor* regionA = desc.defineDouble2DParam( kParamRegionA );
-	regionA->setLabel( "Region" );
-	regionA->setDefault( -0.5, -0.5 );
-	regionA->setIsSecret( true ); ///< @todo
-	OFX::Double2DParamDescriptor* regionB = desc.defineDouble2DParam( kParamRegionB );
-	regionB->setLabel( "" );
-	regionB->setDefault( 0.5, 0.5 );
-	regionB->setIsSecret( true ); ///< @todo
-
-	// same region
-	OFX::BooleanParamDescriptor* sameRegion = desc.defineBooleanParam( kParamSameRegion );
-	sameRegion->setDefault( true );
-	sameRegion->setIsSecret( true ); ///< @todo
-
-	// input region
-	OFX::Double2DParamDescriptor* inputRegionA = desc.defineDouble2DParam( kParamInputRegionA );
-	inputRegionA->setLabel( "Input region" );
-	inputRegionA->setDefault( -0.5, -0.5 );
-	inputRegionA->setIsSecret( true ); ///< @todo
-	OFX::Double2DParamDescriptor* inputRegionB = desc.defineDouble2DParam( kParamInputRegionB );
-	inputRegionB->setLabel( "" );
-	inputRegionB->setDefault( 0.5, 0.5 );
-	inputRegionB->setIsSecret( true ); ///< @todo
+//	// output region
+//	OFX::Double2DParamDescriptor* regionA = desc.defineDouble2DParam( kParamRegionA );
+//	regionA->setLabel( "Region" );
+//	regionA->setDefault( -0.5, -0.5 );
+//	regionA->setIsSecret( true ); ///< @todo
+//	OFX::Double2DParamDescriptor* regionB = desc.defineDouble2DParam( kParamRegionB );
+//	regionB->setLabel( "" );
+//	regionB->setDefault( 0.5, 0.5 );
+//	regionB->setIsSecret( true ); ///< @todo
+//
+//	// same region
+//	OFX::BooleanParamDescriptor* sameRegion = desc.defineBooleanParam( kParamSameRegion );
+//	sameRegion->setDefault( true );
+//	sameRegion->setIsSecret( true ); ///< @todo
+//
+//	// input region
+//	OFX::Double2DParamDescriptor* inputRegionA = desc.defineDouble2DParam( kParamInputRegionA );
+//	inputRegionA->setLabel( "Input region" );
+//	inputRegionA->setDefault( -0.5, -0.5 );
+//	inputRegionA->setIsSecret( true ); ///< @todo
+//	OFX::Double2DParamDescriptor* inputRegionB = desc.defineDouble2DParam( kParamInputRegionB );
+//	inputRegionB->setLabel( "" );
+//	inputRegionB->setDefault( 0.5, 0.5 );
+//	inputRegionB->setIsSecret( true ); ///< @todo
 }
 
 /**
