@@ -154,7 +154,9 @@ struct pixel_matrix33_multiply_t
 	GIL_FORCEINLINE
 	PixelR operator ( ) ( const PixelRef & p ) const
 	{
-		PixelR result = p;
+		PixelR result;
+		pixel_assigns_t<PixelRef, PixelR>()( p, result );
+		//color_convert( p, result );
 		result[0] = _matrix( 0, 0 ) * p[0] + _matrix( 0, 1 ) * p[1] + _matrix( 0, 2 ) * p[2];
 		result[1] = _matrix( 1, 0 ) * p[0] + _matrix( 1, 1 ) * p[1] + _matrix( 1, 2 ) * p[2];
 		result[2] = _matrix( 2, 0 ) * p[0] + _matrix( 2, 1 ) * p[1] + _matrix( 2, 2 ) * p[2];
@@ -313,3 +315,5 @@ const typename pixel_lab_to_rgb_t<PixelRef, PixelR>::MatrixContants pixel_lab_to
 }
 
 #endif
+
+
