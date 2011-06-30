@@ -24,6 +24,11 @@ struct HistogramKeyerProcessParams
     OFX::ParametricParam* _paramColorRGB;
     OFX::ParametricParam* _paramColorHSL;
     OfxTime _time;
+	OFX::ChoiceParam* _paramOutputSetting;
+	OFX::BooleanParam* _boolReverseMask;
+	OFX::BooleanParam** _boolRGB; //checkboxes RGB selection
+	OFX::BooleanParam** _boolHSL; //checkboxes HSL selection 
+	
 };
 
 /*
@@ -107,6 +112,7 @@ struct Pixel_increment_histogramData
     }
 };
 
+
 /**
  * @brief HistogramKeyer plugin
  */
@@ -115,13 +121,20 @@ class HistogramKeyerPlugin : public ImageEffectGilPlugin
 	
 public:
     typedef float Scalar;
-	HistogramBufferData _data;
+	HistogramBufferData _data; // histogram data
+	HistogramBufferData _selectionData; //selection histogram data
+
+	bool _isCleaned;      // 
+	bool _isNbStepChanged;// do we have to recompute selection histograms
+	boost::gil::rgba32f_view_t _srcView;
+	
 public:
     HistogramKeyerPlugin( OfxImageEffectHandle handle );
 
 public:
 	HistogramKeyerProcessParams<Scalar> getProcessParams( const OfxTime time, const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
+	void beginChanged( OFX::InstanceChangeReason reason );
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
     void changedClip( const OFX::InstanceChangedArgs& args, const std::string& clipName );
 
@@ -131,19 +144,20 @@ public:
     void render( const OFX::RenderArguments &args );
 	
 public:
-//  OFX::Clip* _clipSrcMatte; ///< Matte source image clip
 	//curves
 	OFX::ParametricParam* _paramColorHSLSelection;
     OFX::ParametricParam* _paramColorRGBSelection;
 	//list
     OFX::ChoiceParam* _paramDisplayTypeSelection;
 	//checkboxes
-	OFX::BooleanParam* _paramOverlayRSelection;
-	OFX::BooleanParam* _paramOverlayGSelection;
-	OFX::BooleanParam* _paramOverlayBSelection;
-	OFX::BooleanParam* _paramOverlayHSelection;
-	OFX::BooleanParam* _paramOverlaySSelection;
-	OFX::BooleanParam* _paramOverlayLSelection;
+	OFX::BooleanParam* _paramOverlayRSelection;		//R
+	OFX::BooleanParam* _paramOverlayGSelection;		//G
+	OFX::BooleanParam* _paramOverlayBSelection;		//B
+	OFX::BooleanParam* _paramOverlayHSelection;		//H
+	OFX::BooleanParam* _paramOverlaySSelection;		//S
+	OFX::BooleanParam* _paramOverlayLSelection;		//L
+	OFX::BooleanParam* _paramDisplaySelection;		// display selection on clip source
+	OFX::BooleanParam* _paramReverseMaskSelection;	// reverse mask
 	//groups
 	OFX::GroupParam* _groupRGBSelection;
 	OFX::GroupParam* _groupHSLSelection;
@@ -154,8 +168,11 @@ public:
 	OFX::PushButtonParam* _refreshOverlaySelection;
 	//int range
 	OFX::IntParam* _nbStepSelection;
+	//double range
+	OFX::DoubleParam* _selectionMultiplierSelection;
+	//Output
+	OFX::ChoiceParam* _paramOutputSettingSelection;
 	
-private:
 	void resetVectortoZero( std::vector<long>& v, const unsigned int size ) const;
 	void resetHistogramBufferData( HistogramBufferData& toReset ) const;
 	void correctHistogramBufferData(HistogramBufferData& toCorrect) const;

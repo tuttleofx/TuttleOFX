@@ -37,9 +37,11 @@ void HistogramKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& proc
 							                  procWindowSize.x, procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							                  procWindowSize.x, procWindowSize.y );
+	
     //Create and initialize functor 
 	Compute_alpha_pixel funct;
     funct._params = _params;
+	funct._isOutputBW = (_params._paramOutputSetting->getValue() == 1); // is output black and white (or alpha channel)
 	//this function is chose because of functor reference and not copy
     transform_pixels_progress(src,dst,funct,*this);
 }

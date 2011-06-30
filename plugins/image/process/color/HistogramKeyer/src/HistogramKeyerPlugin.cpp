@@ -19,12 +19,14 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	//Overlay height option
 	_paramDisplayTypeSelection = fetchChoiceParam( kHistoDisplayListParamLabel );
 	//Bool
-	_paramOverlayRSelection = fetchBooleanParam( kBoolRed );
-	_paramOverlayGSelection = fetchBooleanParam( kBoolGreen );
-	_paramOverlayBSelection = fetchBooleanParam( kBoolBlue );
-	_paramOverlayHSelection = fetchBooleanParam( kBoolHue );
-	_paramOverlaySSelection = fetchBooleanParam( kBoolSaturation );
-	_paramOverlayLSelection = fetchBooleanParam( kBoolLightness);
+	_paramOverlayRSelection = fetchBooleanParam( kBoolRed );			//R
+	_paramOverlayGSelection = fetchBooleanParam( kBoolGreen );			//G
+	_paramOverlayBSelection = fetchBooleanParam( kBoolBlue );			//B
+	_paramOverlayHSelection = fetchBooleanParam( kBoolHue );			//H
+	_paramOverlaySSelection = fetchBooleanParam( kBoolSaturation );		//S
+	_paramOverlayLSelection = fetchBooleanParam( kBoolLightness);		//L
+	_paramDisplaySelection = fetchBooleanParam( kBoolSelection);		// display selection on source clip
+	_paramReverseMaskSelection = fetchBooleanParam( kBoolReverseMask);	// reverse mask
 	//Groups
 	_groupRGBSelection = fetchGroupParam(kGroupRGB);
 	_groupHSLSelection = fetchGroupParam(kGroupHSL);
@@ -35,30 +37,46 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	_refreshOverlaySelection = fetchPushButtonParam(kButtonRefreshOverlay);
 	//int range
 	_nbStepSelection = fetchIntParam(knbStepRange);
+	//double range
+	_selectionMultiplierSelection = fetchDoubleParam(kselectionMultiplier);
+	//output setting
+	_paramOutputSettingSelection = fetchChoiceParam( kOutputListParamLabel );
 
 	//Reset buffers
 	this->_data._step = nbStep;
 	this->resetHistogramBufferData(this->_data);
-	OFX::InstanceChangedArgs changed;
+	this->_selectionData._step = nbStep;
+	this->resetHistogramBufferData(this->_selectionData);
+	_isCleaned = false;
+	_isNbStepChanged = false;
+	
+	OFX::InstanceChangedArgs changed( this->timeLineGetTime() );
 	changedClip( changed, kOfxImageEffectSimpleSourceClipName );
+	changedParam(changed,kButtonCleanAll); /// @todo: HACK to display curves on (0,1) 
 }
 
 HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
 {
 	HistogramKeyerProcessParams<Scalar> params;
+	//params curves (HSL & RGB)
 	params._paramColorRGB = _paramColorRGBSelection;
 	params._paramColorHSL = _paramColorHSLSelection;
-        
-//	for( int curveId = 0; curveId < nbCurves; ++curveId )
-//	{
-//		int n = _paramColorSelection->getNControlPoints( curveId, time );
-//		Curve& c = params._curves[curveId];
-//		for( int i = 0; i < n; ++i )
-//		{
-//			std::pair<double, double> v = _paramColorSelection->getNthControlPoints( curveId, time, i );
-//			c[v.first] = v.second;
-//		}
-//	}
+	//Output selection (alpha channel or BW)
+	params._paramOutputSetting = _paramOutputSettingSelection;
+	//Check boxes selection (RGB & HSL)
+	params._boolRGB = new OFX::BooleanParam * [3];
+	params._boolHSL = new OFX::BooleanParam * [3];
+	//check boxes affectation (RGB)
+	params._boolRGB[0] = _paramOverlayRSelection; //R
+	params._boolRGB[1] = _paramOverlayGSelection; //G
+	params._boolRGB[2] = _paramOverlayBSelection; //B
+	//check boxes affectation (HSL)
+	params._boolHSL[0] = _paramOverlayHSelection; //H
+	params._boolHSL[1] = _paramOverlaySSelection; //S
+	params._boolHSL[2] = _paramOverlayLSelection; //L
+	//reverse mask check box
+	params._boolReverseMask = _paramReverseMaskSelection;
+	//return
 	return params;
 }
 
@@ -81,9 +99,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			for(unsigned int channel=0; channel<nbCurvesRGB; ++channel)
 			{
 				for(unsigned int i=0; i<nbControlPointsRGB[channel]; ++i)
-				{
 					_paramColorRGBSelection->deleteControlPoint(i);
-				}
 			}
 			for(int i=0; i<nbCurvesRGB; ++i)
 				_paramColorRGBSelection->addControlPoint(i,args.time,1.0,1.0,false);
@@ -99,28 +115,43 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			for(int i=0; i<nbCurvesHSL; ++i)
 				_paramColorHSLSelection->addControlPoint(i,args.time,1.0,1.0,false);
 		}
+		//_isCleaned = true; // reset user's selection in overlay
 	}
 	//refresh histogram overlay
 	if(paramName == kButtonRefreshOverlay)
 	{
 		//Draw forced
-		OFX::InstanceChangedArgs changed;
+		OFX::InstanceChangedArgs changed( args.time, args.renderScale );
 		this->changedClip(changed,this->_clipSrc->name());
 	}
 	//nbStepRande
 	if(paramName == knbStepRange)
 	{
 		nbStep = _nbStepSelection->getValue();
-		OFX::InstanceChangedArgs changed;
+		OFX::InstanceChangedArgs changed( args.time, args.renderScale );
 		this->changedClip(changed,this->_clipSrc->name());
+		this->_isNbStepChanged = true;
 	}
+	//clear selection
+	if(paramName == kButtonClearSelection)
+	{
+		_isCleaned = true; // clear selection display
+		this->resetHistogramBufferData(_selectionData);
+	}
+
+}
+
+void HistogramKeyerPlugin::beginChanged( OFX::InstanceChangeReason reason )
+{
+	//TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TCOUT_VAR( reason );
 }
 
 void HistogramKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, const std::string& clipName )
 {
 	if( clipName == kOfxImageEffectSimpleSourceClipName )
 	{
-		/// @todo robin: recompute histogram datas
+		// recompute histogram datas
 		boost::scoped_ptr<OFX::Image> src( this->_clipSrc->fetchImage( args.time ) );
 		if( !src.get() )
 		{
@@ -141,6 +172,7 @@ void HistogramKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, co
 		}
 		typedef boost::gil::rgba32f_view_t SView;
 		SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );
+		_srcView = srcView; //used in Overlay and selective points computing
 		this->_data._step = nbStep;
 		this->resetHistogramBufferData(this->_data);
 		//create HistogramData with a functor
@@ -155,21 +187,28 @@ void HistogramKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, co
 	}
 }
 
+
 //void HistogramKeyerPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 //{
-//	HistogramKeyerProcessParams<Scalar> params = getProcessParams();
 //	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	OfxRectD srcRoi;
-//	srcRoi.x1 = srcRod.x1 - 1;
-//	srcRoi.y1 = srcRod.y1 - 1;
-//	srcRoi.x2 = srcRod.x2 + 1;
-//	srcRoi.y2 = srcRod.y2 + 1;
-//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
+//	
+//	if( this->isInteractive() )
+//	{
+//		TUTTLE_TCOUT_INFOS;
+//		rois.setRegionOfInterest( *_clipSrc, srcRod );
+//	}
+//	else
+//	{
+//		rois.setRegionOfInterest( *_clipSrc, args.regionOfInterest );
+//	}
 //}
 
 bool HistogramKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime )
 {
+	
+	/// @todo HACK: nuke doesn't call changedClip when the time is modified.
+	OFX::InstanceChangedArgs changed( args.time, args.renderScale );
+	this->changedClip(changed,this->_clipSrc->name());
 //	HistogramKeyerProcessParams<Scalar> params = getProcessParams();
 //	if( params._in == params._out )
 //	{
@@ -246,6 +285,9 @@ void HistogramKeyerPlugin::correctVector(std::vector<Number>& v) const
 			v.at(i) = (Number)((v.at(i-1)+v.at(i+1))/2.0);
 	}
 }
+
+
+
 }
 }
 }

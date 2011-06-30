@@ -71,7 +71,6 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-        
     // if parametric parameters are supported
 	if( OFX::getImageEffectHostDescription()->supportsParametricParameter )
 	{
@@ -85,7 +84,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		groupHSL->setLabel(kGroupHSLLabel);
 
 		//define the graphic aspect
-		curvesRGB->setRange( -1.0, 2.0 );
+		curvesRGB->setRange( 0.0, 1.0 );
 		curvesHSL->setRange( 0.0, 1.0 );
 		curvesRGB->setDimension(nbCurvesRGB);
 		curvesHSL->setDimension(nbCurvesHSL);
@@ -118,15 +117,15 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		//Set each curves to initial value
 		curvesRGB->setIdentity();
 		curvesHSL->setIdentity();
-		//add 2 control points (0,1) and (1,1) for each dimension
+		//add 2 control points (0,1) and (1,1) for each channel
 		for(unsigned int i=0; i< nbCurvesRGB; ++i)
 		{
-			curvesRGB->addControlPoint( i, 0.0, 0.0, 1.0, false );
+			//curvesRGB->addControlPoint( i, 0.0, 0.0, 1.0, false );
 			curvesRGB->addControlPoint( i, 0.0, 1.0, 1.0, false );
 		}
 		for(unsigned int i=0; i< nbCurvesHSL; ++i)
 		{
-			curvesHSL->addControlPoint( i, 0.0, 0.0, 1.0, false );
+			//curvesHSL->addControlPoint( i, 0.0, 0.0, 1.0, false );
 			curvesHSL->addControlPoint( i, 0.0, 1.0, 1.0, false );
 		}
 		
@@ -165,30 +164,68 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		groupRGB->setOpen(false);
 		groupHSL->setOpen(false);
 	}
-	//Advanced group
+	///Advanced group
 	OFX::GroupParamDescriptor *groupAdvanced = desc.defineGroupParam(kGroupAdvanced);
 	groupAdvanced->setLabel(kGroupAdvancedLabel);
 	groupAdvanced->setOpen(false);
 	//nbOfstep (advanced group)
 	OFX::IntParamDescriptor* nbStepRange = desc.defineIntParam(knbStepRange);
 	nbStepRange->setLabel(knbStepRangeLabel);
-	nbStepRange->setRange(1, 1500);
+	nbStepRange->setRange(1, 1000);
 	nbStepRange->setDisplayRange(1, 600.0 );
 	nbStepRange->setDefault(255);
+	nbStepRange->setEvaluateOnChange(false); // don't need to recompute on change
 	nbStepRange->setParent(groupAdvanced);
+	//selection multiplier (advanced group)
+	OFX::DoubleParamDescriptor* selectionMultiplier = desc.defineDoubleParam(kselectionMultiplier);
+	selectionMultiplier->setLabel(kselectionMultiplierLabel);
+	selectionMultiplier->setRange(0.001,1000.0);
+	selectionMultiplier->setDisplayRange(0.0, 100.0 );
+	selectionMultiplier->setDefault(2.0);
+	selectionMultiplier->setEvaluateOnChange(false); // don't need to recompute on change
+	selectionMultiplier->setParent(groupAdvanced);
+	
+	
+	//Selection group
+	OFX::GroupParamDescriptor *groupSelection = desc.defineGroupParam(kGroupSelection);
+	groupSelection->setLabel(kGroupSelectionLabel);
+	groupSelection->setOpen(false);
+	//display selection
+	OFX::BooleanParamDescriptor* boolDisplaySelection = desc.defineBooleanParam(kBoolSelection);
+	boolDisplaySelection->setDefault(true);
+	boolDisplaySelection->setEvaluateOnChange(false);// don't need to recompute on change
+	boolDisplaySelection->setParent(groupSelection);
+	//clear selection
+	OFX::PushButtonParamDescriptor* clearSelectionButton = desc.definePushButtonParam(kButtonClearSelection);
+	clearSelectionButton->setLabel(kButtonClearSelectionLabel);
+	clearSelectionButton->setParent(groupSelection);
 	
 	//Histogram display settings
 	OFX::ChoiceParamDescriptor* gammaType = desc.defineChoiceParam(kHistoDisplayListParamLabel);
 	gammaType->setLabel(kHistoDisplayListParamLabel);
+	gammaType->setEvaluateOnChange(false); // don't need to recompute on change
 	gammaType->setHint( "Histogram display list");
-	gammaType->appendOption(kHistoDisplayListParamOpt1);
 	gammaType->appendOption(kHistoDisplayListParamOpt2);
+	gammaType->appendOption(kHistoDisplayListParamOpt1);
+	
 	//Refresh histograms overlay Button
 	OFX::PushButtonParamDescriptor* refreshOverlayButton = desc.definePushButtonParam(kButtonRefreshOverlay);
 	refreshOverlayButton->setLabel(kButtonRefreshOverlayLabel);
 	//Clean all Button
 	OFX::PushButtonParamDescriptor* cleanButtonAll = desc.definePushButtonParam(kButtonCleanAll);
 	cleanButtonAll->setLabel(kButtonCleanAllLabel);
+	
+	//Output settings
+	OFX::ChoiceParamDescriptor* outputType = desc.defineChoiceParam(kOutputListParamLabel);
+	outputType->setLabel(kOutputListParamLabel);
+	outputType->setHint( "Output settings list");
+	outputType->appendOption(kOutputListParamOpt1);
+	outputType->appendOption(kOutputListParamOpt2);
+	
+	//Reverse mask
+	OFX::BooleanParamDescriptor* boolReverseMask = desc.defineBooleanParam(kBoolReverseMask);
+	boolReverseMask->setDefault(false);
+
 }
 
 /**
