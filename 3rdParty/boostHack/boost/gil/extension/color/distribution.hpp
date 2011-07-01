@@ -9,7 +9,14 @@ namespace colorDistribution{
 struct Linear{};
 struct sRGB{};
 struct Cineon{};
-struct Gamma{};
+struct Gamma
+{
+	Gamma(){} ///< @todo to remove
+	Gamma( const double gamma )
+	: _gamma(gamma)
+	{}
+	double _gamma;
+};
 struct Panalog{};
 struct REDLog{};
 struct ViperLog{};
@@ -99,6 +106,25 @@ struct channel_color_distribution_t<Channel, colorDistribution::sRGB, colorDistr
 /**
  * @brief sRGB to custom, using intermediate linear conversion
  */
+
+/*
+ * @todo
+template< typename Channel,
+          class IN,
+          class OUT >
+struct channel_color_distribution_t : public std::binary_function<Channel, Channel, Channel>
+{
+	typename channel_traits<Channel>::reference operator()( typename channel_traits<Channel>::const_reference ch1,
+	                                                        typename channel_traits<Channel>::reference ch2,
+															const IN& inDistribution = In(),
+															const OUT& outDistribution = OUT() ) const
+	{
+		channel_color_distribution_t<Channel, IN, colorDistribution::Linear>( ch1, ch2 );
+		channel_color_distribution_t<Channel, colorDistribution::Linear, OUT>( ch2, ch2 );
+		return ch2;
+	}
+};
+*/
 template< typename Channel,
           class OUT >
 struct channel_color_distribution_t<Channel, colorDistribution::sRGB, OUT> : public std::binary_function<Channel, Channel, Channel>

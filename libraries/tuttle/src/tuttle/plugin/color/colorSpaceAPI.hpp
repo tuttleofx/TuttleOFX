@@ -30,6 +30,29 @@ struct ttlc_colorspace
 	Layout		layout;
 };
 
+/*
+class GradationParams
+{
+	double _gamma;
+	EGradation _type;
+};
+
+class PrimariesParams
+{
+	pixel_rgb32f_t _X;
+	pixel_rgb32f_t _Y;
+	EPrimaries _type;
+};
+
+class ColorspaceParams
+{
+	GradationParams _gradation;
+	ELayout _layout;
+	ETemperature _temparature;
+	PrimariesParams _primaries;
+};
+*/
+
 
 class ColorSpaceAPI
 {
@@ -52,24 +75,27 @@ public:
 	}
 	~ColorSpaceAPI(){}
 
-	void setGammaInProperties ( GradationLaw::gamma gamma )
+	void setGammaInProperties ( const GradationLaw::gamma& gamma )
 	{
 		sGammaIn = gamma;
 	}
-	void setGammaOutProperties ( GradationLaw::gamma gamma )
+	void setGammaOutProperties ( const GradationLaw::gamma& gamma )
 	{
 		sGammaOut = gamma;
 	}
 
-	void setCineonInProperties ( GradationLaw::cineon cineon )
+	void setCineonInProperties ( const GradationLaw::cineon& cineon )
 	{
 		sCineonIn = cineon;
 	}
-	void setCineonOutProperties ( GradationLaw::cineon cineon )
+	void setCineonOutProperties ( const GradationLaw::cineon& cineon )
 	{
 		sCineonOut = cineon;
 	}
 
+	// gradation_convert( GradationParams(....), GradationParams(....) );
+	// colorspace_convert( ColorspaceParams(...., GradationParams(...) ), ColorspaceParams(...., GradationParams(...)) );
+	
 	template < typename SrcP, typename DstP >
 	bool colorspace_convert(
 			const EParamGradationLaw	eGradationLawIn,
@@ -85,9 +111,12 @@ public:
 		DstP p0, p1, p2, p3, p4;
 		switch ( eGradationLawIn )
 		{
+			// p0 = src; break;
 			case eParamLinear :	static_for_each( src, p0, computeFromLinear() );			break;
+			// convert_gradation<sRGB, Linear>( src, p0 );
 			case eParamsRGB :	static_for_each( src, p0, computeFromSRGB() );				break;
 			case eParamCineon :	static_for_each( src, p0, computeFromCineon( sCineonIn.blackPoint, sCineonIn.whitePoint, sCineonIn.gammaSensito ) );	break;
+			// convert_gradation<Gamma, Linear>( src, p0, Gamma( sGammaIn.value ), Linear() );
 			case eParamGamma :	static_for_each( src, p0, computeFromGamma( sGammaIn.value ) );		break;
 			case eParamPanalog :	static_for_each( src, p0, computeFromPanalog() );			break;
 			case eParamREDLog :	static_for_each( src, p0, computeFromRedLog() );			break;
@@ -155,7 +184,9 @@ public:
 		}
 		switch ( eGradationLawOut )
 		{
+			// dst = p2;
 			case eParamLinear :	static_for_each( p2, dst, computeToLinear() );				break;
+			// convert_gradation<Linear, sRGB>(p2, dst);
 			case eParamsRGB :	static_for_each( p2, dst, computeToSRGB() );				break;
 			case eParamCineon :	static_for_each( p2, dst, computeToCineon( sCineonOut.blackPoint, sCineonOut.whitePoint, sCineonOut.gammaSensito ) );	break;
 			case eParamGamma :	static_for_each( p2, dst, computeToGamma( sGammaOut.value ) );		break;

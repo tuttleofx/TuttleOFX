@@ -16,7 +16,6 @@ using namespace boost::gil;
 ColorSpacePlugin::ColorSpacePlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
-<<<<<<< HEAD
 	_paramInGradationLaw = fetchChoiceParam( kColorSpaceGradationLawIn );
 	_paramOutGradationLaw = fetchChoiceParam( kColorSpaceGradationLawOut );
 	_paramInGamma = fetchDoubleParam( kColorSpaceInGammaValue );
