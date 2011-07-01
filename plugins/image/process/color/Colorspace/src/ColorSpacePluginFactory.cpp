@@ -84,7 +84,6 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	inGammaValue->setDisplayRange		( 0.0, 5.0 );
 	inGammaValue->setHint			( "Adjust the Gamma." );
 	inGammaValue->setParent			( inCustom );
-	inGammaValue->setParent			( inCustom );
 
 	OFX::DoubleParamDescriptor* inBlackPoint = desc.defineDoubleParam( kColorSpaceInBlackPoint );
 	inBlackPoint->setLabel			( "Black Point" );
@@ -121,8 +120,8 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 
 	OFX::GroupParamDescriptor* inPrimaries = desc.defineGroupParam( kColorSpacePrimariesIn );
 	inPrimaries->setLabel			( "Primaries color" );
-	inPrimaries->setParent			( inCustom );
 	inPrimaries->setOpen			( false );
+	inPrimaries->setParent			( inCustom );
 
 	OFX::DoubleParamDescriptor* inXr = desc.defineDoubleParam( kColorSpaceXrIn );
 	inXr->setLabel				( "X red" );
@@ -197,7 +196,6 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outGammaValue->setDisplayRange		( 0.0, 5.0 );
 	outGammaValue->setHint			( "Adjust the Gamma." );
 	outGammaValue->setParent		( outCustom );
-	//outGammaValue->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outBlackPoint = desc.defineDoubleParam( kColorSpaceOutBlackPoint );
 	outBlackPoint->setLabel			( "Black Point" );
@@ -206,7 +204,6 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outBlackPoint->setDisplayRange		( 0.0, 1.0 );
 	outBlackPoint->setHint			( "Adjust the Black Point." );
 	outBlackPoint->setParent		( outCustom );
-	//outBlackPoint->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outWhitePoint = desc.defineDoubleParam( kColorSpaceOutWhitePoint );
 	outWhitePoint->setLabel			( "White Point" );
@@ -215,7 +212,6 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outWhitePoint->setDisplayRange		( 0.0, 1.0 );
 	outWhitePoint->setHint			( "Adjust the White Point." );
 	outWhitePoint->setParent		( outCustom );
-	//outWhitePoint->setIsSecret		( true );
 
 	OFX::DoubleParamDescriptor* outGammaSensito = desc.defineDoubleParam( kColorSpaceOutGammaSensito );
 	outGammaSensito->setLabel		( "Gamma Sensito" );
@@ -224,7 +220,6 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outGammaSensito->setDisplayRange	( 0.0, 5.0 );
 	outGammaSensito->setHint		( "Adjust the Gamma Sensito." );
 	outGammaSensito->setParent		( outCustom );
-	//outGammaSensito->setIsSecret		( true );
 
 	OFX::ChoiceParamDescriptor* outLayout = desc.defineChoiceParam( kColorSpaceLayoutOut );
 	outLayout->setLabel			( "Layout" );
@@ -237,8 +232,8 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 
 	OFX::GroupParamDescriptor* outPrimaries = desc.defineGroupParam( kColorSpacePrimariesOut );
 	outPrimaries->setLabel			( "Primaries color" );
-	outPrimaries->setParent			( outCustom );
 	outPrimaries->setOpen			( false );
+	outPrimaries->setParent			( outCustom );
 
 	OFX::DoubleParamDescriptor* outXr = desc.defineDoubleParam( kColorSpaceXrOut );
 	outXr->setLabel				( "X red" );
@@ -287,11 +282,6 @@ void ColorSpacePluginFactory::describeInContext( OFX::ImageEffectDescriptor& des
 	outYb->setDisplayRange			( 0.0, 1.0 );
 	outYb->setHint				( "Adjust the Y blue primary color." );
 	outYb->setParent			( outPrimaries );
-
-	/* -------------- HELP BUTTON ------------------*/
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kColorSpaceHelpButton );
-	helpButton->setScriptName		( "&Help" );
 
 	/* -------------- ENUMS FILLING ----------------*/
 

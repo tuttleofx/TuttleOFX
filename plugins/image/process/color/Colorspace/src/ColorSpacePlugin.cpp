@@ -29,57 +29,48 @@ ColorSpacePlugin::ColorSpacePlugin( OfxImageEffectHandle handle )
 	_paramInColorTemp = fetchChoiceParam( kColorSpaceTempColorIn );
 	_paramOutColorTemp = fetchChoiceParam( kColorSpaceTempColorOut );
 
-	_paramInGamma -> setIsSecret( true );
-	_paramInBlackPoint -> setIsSecret( true );
-	_paramInWhitePoint -> setIsSecret( true );
-	_paramInGammaSensito -> setIsSecret( true );
-	_paramOutGamma -> setIsSecret( true );
-	_paramOutBlackPoint -> setIsSecret( true );
-	_paramOutWhitePoint -> setIsSecret( true );
-	_paramOutGammaSensito -> setIsSecret( true );
-
 	updateInParams( );
 	updateOutParams( );
 }
 
 void ColorSpacePlugin::updateInParams( )
 {
-	_paramInGamma -> setIsSecret( true );
-	_paramInBlackPoint -> setIsSecret( true );
-	_paramInWhitePoint -> setIsSecret( true );
-	_paramInGammaSensito -> setIsSecret( true );
+	_paramInGamma -> setIsSecretAndDisabled( true );
+	_paramInBlackPoint -> setIsSecretAndDisabled( true );
+	_paramInWhitePoint -> setIsSecretAndDisabled( true );
+	_paramInGammaSensito -> setIsSecretAndDisabled( true );
 
-	switch( _paramInGradationLaw->getValue( ) )
-	{
-		case ttlc::eParamGamma:
-			_paramInGamma -> setIsSecret( false );
-			break;
-		case ttlc::eParamCineon:
-			_paramInBlackPoint -> setIsSecret( false );
-			_paramInWhitePoint -> setIsSecret( false );
-			_paramInGammaSensito -> setIsSecret( false );
-			break;
-		default:
-			break;
-	}
+    switch( _paramInGradationLaw->getValue( ) )
+    {
+        case ttlc::eParamGamma:
+            _paramInGamma -> setIsSecretAndDisabled( false );
+            break;
+        case ttlc::eParamCineon:
+            _paramInBlackPoint -> setIsSecretAndDisabled( false );
+            _paramInWhitePoint -> setIsSecretAndDisabled( false );
+            _paramInGammaSensito -> setIsSecretAndDisabled( false );
+            break;
+        default:
+            break;
+    }
 }
 
 void ColorSpacePlugin::updateOutParams( )
 {
-	_paramOutGamma->setIsSecret( true );
-	_paramOutBlackPoint->setIsSecret( true );
-	_paramOutWhitePoint->setIsSecret( true );
-	_paramOutGammaSensito->setIsSecret( true );
+	_paramOutGamma->setIsSecretAndDisabled( true );
+	_paramOutBlackPoint->setIsSecretAndDisabled( true );
+	_paramOutWhitePoint->setIsSecretAndDisabled( true );
+	_paramOutGammaSensito->setIsSecretAndDisabled( true );
 	
 	switch( _paramOutGradationLaw->getValue( ) )
 	{
 		case ttlc::eParamGamma:
-			_paramOutGamma->setIsSecret( false );
+			_paramOutGamma->setIsSecretAndDisabled( false );
 			break;
 		case ttlc::eParamCineon:
-			_paramOutBlackPoint->setIsSecret( false );
-			_paramOutWhitePoint->setIsSecret( false );
-			_paramOutGammaSensito->setIsSecret( false );
+			_paramOutBlackPoint->setIsSecretAndDisabled( false );
+			_paramOutWhitePoint->setIsSecretAndDisabled( false );
+			_paramOutGammaSensito->setIsSecretAndDisabled( false );
 			break;
 		default:
 			break;
@@ -167,17 +158,11 @@ void ColorSpacePlugin::render( const OFX::RenderArguments& args )
 
 void ColorSpacePlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kColorSpaceHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-					 "", // No XML resources
-					 kColorSpaceHelpString );
-	}
 	if( paramName == kColorSpaceGradationLawIn )
 	{
 		updateInParams( );
 	}
-	if( paramName == kColorSpaceGradationLawOut )
+	else if( paramName == kColorSpaceGradationLawOut )
 	{
 		updateOutParams( );
 	}
