@@ -6,8 +6,7 @@ namespace tuttle {
 namespace plugin {
 namespace colorspace {
 
-mDeclarePluginFactory( ColorSpacePluginFactory, {}, {}
-                       );
+mDeclarePluginFactory( ColorSpacePluginFactory, {}, {} );
 
 }
 }

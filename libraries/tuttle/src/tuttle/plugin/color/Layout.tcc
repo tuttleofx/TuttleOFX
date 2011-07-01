@@ -1,4 +1,7 @@
 
+#ifndef _TUTTLE_PLUGIN_LAYOUT_TCC_
+#define _TUTTLE_PLUGIN_LAYOUT_TCC_
+
 #include <boost/gil/rgb.hpp>
 #include <boost/gil/rgba.hpp>
 #include <boost/gil/pixel.hpp>
@@ -741,9 +744,9 @@ void convertRgbToXYZ( const SrcP& src, DstP& dst )
 	bits32f temp_blue  = channel_convert<bits32f>( get_color( src, blue_t()  ));
 
 	bits32f x, y, z;
-	x = temp_red * 0.4124f + temp_green * 0.3576f + temp_blue * 0.1805f;
-	y = temp_red * 0.2126f + temp_green * 0.7152f + temp_blue * 0.0722f;
-	z = temp_red * 0.0193f + temp_green * 0.1192f + temp_blue * 0.9505f;
+	x = temp_red * 0.4124240f + temp_green * 0.3575790f + temp_blue * 0.1804640f;
+	y = temp_red * 0.2126560f + temp_green * 0.7151580f + temp_blue * 0.0721856f;
+	z = temp_red * 0.0193324f + temp_green * 0.1191930f + temp_blue * 0.9504440f;
 
 	get_color( dst, red_t() )	= x;
 	get_color( dst, green_t() )	= y;
@@ -785,14 +788,11 @@ void convertYxyToRgb( const SrcP& src, DstP& dst )
 	}
 	else
 	{
-		get_color( XYZPoint, red_t() )		= get_color( src, red_t() ) * get_color( src, blue_t() ) / get_color( src, green_t() );
-		get_color( XYZPoint, green_t() )	= get_color( src, blue_t() );
-		get_color( XYZPoint, blue_t() )		=(  1.f - get_color( src, red_t() ) - get_color( src, green_t() ) ) * get_color( src, blue_t() ) / get_color( src, green_t() );
+		get_color( XYZPoint, red_t() )		= 1.f * get_color( src, green_t() ) * get_color( src, red_t() ) / get_color( src, blue_t() );
+		get_color( XYZPoint, green_t() )	= get_color( src, red_t() );
+		get_color( XYZPoint, blue_t() )		= (  1.f - get_color( src, green_t() ) - get_color( src, blue_t() ) ) * get_color( src, red_t() ) / get_color( src, blue_t() );
 	}
-
-	get_color( dst, red_t() )	= get_color( src, red_t() );
-	get_color( dst, green_t() )	= get_color( src, green_t() );
-	get_color( dst, blue_t() )	= get_color( src, blue_t() );
+	convertXYZToRgb( XYZPoint, dst );
 }
 
 template < typename SrcP, typename DstP >
@@ -803,9 +803,9 @@ void convertRgbToYxy( const SrcP& src, DstP& dst )
 	bits32f som = get_color( XYZPoint, red_t() ) + get_color( XYZPoint, green_t() ) + get_color( XYZPoint, blue_t() );
 	if( som != 0.f )
 	{
-		get_color( dst, red_t() )	= get_color( XYZPoint, red_t() ) / som ;
-		get_color( dst, green_t() )	= get_color( XYZPoint, green_t() ) / som;
-		get_color( dst, blue_t() )	= get_color( XYZPoint, green_t() );
+		get_color( dst, red_t() )	= get_color( XYZPoint, green_t() );
+		get_color( dst, green_t() )	= get_color( XYZPoint, red_t() ) / som;
+		get_color( dst, blue_t() )	= get_color( XYZPoint, green_t() ) / som;
 	}
 	else
 	{
@@ -1915,5 +1915,5 @@ inline bool convertToYxyLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst
 	return true;
 }
 
-
+#endif
 
