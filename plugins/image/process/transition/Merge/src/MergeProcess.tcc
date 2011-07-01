@@ -153,7 +153,7 @@ void MergeProcess<View, Functor>::multiThreadProcessImages( const OfxRectI& proc
 	                              procIntersectSize.x,
 	                              procIntersectSize.y );
 
-	merge_pixels( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
+        merge_pixels( srcViewA_inter, srcViewB_inter, dstView_inter, Functor() );
 
 
 }
