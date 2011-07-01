@@ -1,33 +1,33 @@
-#ifndef _TUTTLE_PLUGIN_COLORTRANSFERT_PLUGIN_HPP_
-#define _TUTTLE_PLUGIN_COLORTRANSFERT_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_COLORTRANSFER_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_COLORTRANSFER_PLUGIN_HPP_
 
-#include "ColorTransfertDefinitions.hpp"
+#include "ColorTransferDefinitions.hpp"
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace colorTransfert {
+namespace colorTransfer {
 
 template<typename Scalar>
-struct ColorTransfertProcessParams
+struct ColorTransferProcessParams
 {
 	Scalar _averageCoef;
 	Scalar _dynamicCoef;
 };
 
 /**
- * @brief ColorTransfert plugin
+ * @brief ColorTransfer plugin
  */
-class ColorTransfertPlugin : public ImageEffectGilPlugin
+class ColorTransferPlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef double Scalar;
 public:
-    ColorTransfertPlugin( OfxImageEffectHandle handle );
+    ColorTransferPlugin( OfxImageEffectHandle handle );
 
 public:
-	ColorTransfertProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+	ColorTransferProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
     void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 

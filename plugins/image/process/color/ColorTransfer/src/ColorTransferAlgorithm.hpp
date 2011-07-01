@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_COLORTRANSFERT_ALGORITHM_HPP_
-#define _TUTTLE_PLUGIN_COLORTRANSFERT_ALGORITHM_HPP_
+#ifndef _TUTTLE_PLUGIN_COLORTRANSFER_ALGORITHM_HPP_
+#define _TUTTLE_PLUGIN_COLORTRANSFER_ALGORITHM_HPP_
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations_assign.hpp>
@@ -13,7 +13,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace colorTransfert {
+namespace colorTransfer {
 
 using namespace boost::gil;
 

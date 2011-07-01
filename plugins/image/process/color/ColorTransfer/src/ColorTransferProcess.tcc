@@ -1,6 +1,6 @@
-#include "ColorTransfertAlgorithm.hpp"
-#include "ColorTransfertProcess.hpp"
-#include "ColorTransfertPlugin.hpp"
+#include "ColorTransferAlgorithm.hpp"
+#include "ColorTransferProcess.hpp"
+#include "ColorTransferPlugin.hpp"
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
@@ -19,7 +19,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace colorTransfert {
+namespace colorTransfer {
 
 using namespace boost::gil;
 
@@ -57,14 +57,14 @@ struct ColorParams
 
 
 template<class View>
-ColorTransfertProcess<View>::ColorTransfertProcess( ColorTransfertPlugin &effect )
+ColorTransferProcess<View>::ColorTransferProcess( ColorTransferPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
 }
 
 template<class View>
-void ColorTransfertProcess<View>::computeAverage( const View& image, Pixel& average, Pixel& deviation )
+void ColorTransferProcess<View>::computeAverage( const View& image, Pixel& average, Pixel& deviation )
 {
 	typedef typename color_space_type<View>::type Colorspace;
 	typedef pixel<boost::gil::bits64f, layout<Colorspace> > CPixel;
@@ -120,7 +120,7 @@ void ColorTransfertProcess<View>::computeAverage( const View& image, Pixel& aver
 }
 
 template<class View>
-void ColorTransfertProcess<View>::setup( const OFX::RenderArguments& args )
+void ColorTransferProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args ); // Call parent class setup
 	_params = _plugin.getProcessParams( args.renderScale ); // Retrieve plugin parameters
@@ -200,7 +200,7 @@ void ColorTransfertProcess<View>::setup( const OFX::RenderArguments& args )
  * @param[in] procWindowRoW  Processing window
  */
 template<class View>
-void ColorTransfertProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+void ColorTransferProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 	const OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );

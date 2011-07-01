@@ -1,6 +1,6 @@
-#include "ColorTransfertPlugin.hpp"
-#include "ColorTransfertProcess.hpp"
-#include "ColorTransfertDefinitions.hpp"
+#include "ColorTransferPlugin.hpp"
+#include "ColorTransferProcess.hpp"
+#include "ColorTransferDefinitions.hpp"
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
@@ -8,10 +8,10 @@
 
 namespace tuttle {
 namespace plugin {
-namespace colorTransfert {
+namespace colorTransfer {
 
 
-ColorTransfertPlugin::ColorTransfertPlugin( OfxImageEffectHandle handle )
+ColorTransferPlugin::ColorTransferPlugin( OfxImageEffectHandle handle )
 : ImageEffectGilPlugin( handle )
 {
 	_clipSrcRef = this->fetchClip( kClipSrcRef );
@@ -29,15 +29,15 @@ ColorTransfertPlugin::ColorTransfertPlugin( OfxImageEffectHandle handle )
 //	changedParam( args, kParamSameRegion );
 }
 
-ColorTransfertProcessParams<ColorTransfertPlugin::Scalar> ColorTransfertPlugin::getProcessParams( const OfxPointD& renderScale ) const
+ColorTransferProcessParams<ColorTransferPlugin::Scalar> ColorTransferPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
-	ColorTransfertProcessParams<Scalar> params;
+	ColorTransferProcessParams<Scalar> params;
 	params._averageCoef = _paramAverageCoef->getValue();
 	params._dynamicCoef = _paramDynamicCoef->getValue();
 	return params;
 }
 
-void ColorTransfertPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
+void ColorTransferPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
 //	if( paramName == kParamSameRegion )
 //	{
@@ -47,9 +47,9 @@ void ColorTransfertPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 //	}
 }
 
-void ColorTransfertPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
+void ColorTransferPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
 {
-	ColorTransfertProcessParams<Scalar> params = getProcessParams();
+	ColorTransferProcessParams<Scalar> params = getProcessParams();
 	
 	if( _clipSrcRef->isConnected() )
 	{
@@ -73,9 +73,9 @@ void ColorTransfertPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArg
  * @brief The overridden render function
  * @param[in]   args     Rendering parameters
  */
-void ColorTransfertPlugin::render( const OFX::RenderArguments &args )
+void ColorTransferPlugin::render( const OFX::RenderArguments &args )
 {
-//	doGilRender<ColorTransfertProcess>( *this, args );
+//	doGilRender<ColorTransferProcess>( *this, args );
 
 	// instantiate the render code based on the pixel depth of the dst clip
 	OFX::EBitDepth bitDepth         = _clipDst->getPixelDepth();
@@ -85,12 +85,12 @@ void ColorTransfertPlugin::render( const OFX::RenderArguments &args )
 	{
 		case OFX::ePixelComponentRGBA:
 		{
-			doGilRender<ColorTransfertProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
+			doGilRender<ColorTransferProcess, false, boost::gil::rgba_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentRGB:
 		{
-			doGilRender<ColorTransfertProcess, false, boost::gil::rgb_layout_t>( *this, args, bitDepth );
+			doGilRender<ColorTransferProcess, false, boost::gil::rgb_layout_t>( *this, args, bitDepth );
 			return;
 		}
 		case OFX::ePixelComponentAlpha:

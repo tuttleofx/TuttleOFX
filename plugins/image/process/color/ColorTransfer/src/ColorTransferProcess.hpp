@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_COLORTRANSFERT_PROCESS_HPP_
-#define _TUTTLE_PLUGIN_COLORTRANSFERT_PROCESS_HPP_
+#ifndef _TUTTLE_PLUGIN_COLORTRANSFER_PROCESS_HPP_
+#define _TUTTLE_PLUGIN_COLORTRANSFER_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
@@ -21,21 +21,21 @@
 
 namespace tuttle {
 namespace plugin {
-namespace colorTransfert {
+namespace colorTransfer {
 
 /**
- * @brief ColorTransfert process
+ * @brief ColorTransfer process
  *
  */
 using namespace boost::numeric::ublas;
 
 template<class View>
-class ColorTransfertProcess : public ImageGilFilterProcessor<View>
+class ColorTransferProcess : public ImageGilFilterProcessor<View>
 {
 public:
 	typedef typename View::value_type Pixel;
 	typedef typename boost::gil::channel_type<View>::type Channel;
-	typedef ColorTransfertPlugin::Scalar Scalar;
+	typedef ColorTransferPlugin::Scalar Scalar;
 
 	// Source ref image clip
 	boost::scoped_ptr<OFX::Image> _srcRef;
@@ -48,14 +48,14 @@ public:
 	View _dstRefView;
 
 protected:
-	ColorTransfertPlugin& _plugin; ///< Rendering plugin
-	ColorTransfertProcessParams<Scalar> _params; ///< parameters
+	ColorTransferPlugin& _plugin; ///< Rendering plugin
+	ColorTransferProcessParams<Scalar> _params; ///< parameters
 
 	Pixel _srcRefAverage, _dstRefAverage, _deviationRatio;
 
 
 public:
-	ColorTransfertProcess( ColorTransfertPlugin& effect );
+	ColorTransferProcess( ColorTransferPlugin& effect );
 
 	void setup( const OFX::RenderArguments& args );
 
@@ -70,6 +70,6 @@ private:
 }
 }
 
-#include "ColorTransfertProcess.tcc"
+#include "ColorTransferProcess.tcc"
 
 #endif

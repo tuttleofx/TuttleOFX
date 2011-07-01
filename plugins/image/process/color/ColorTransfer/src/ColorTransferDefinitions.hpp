@@ -1,11 +1,11 @@
-#ifndef _TUTTLE_PLUGIN_COLORTRANSFERT_DEFINITIONS_HPP_
-#define _TUTTLE_PLUGIN_COLORTRANSFERT_DEFINITIONS_HPP_
+#ifndef _TUTTLE_PLUGIN_COLORTRANSFER_DEFINITIONS_HPP_
+#define _TUTTLE_PLUGIN_COLORTRANSFER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace colorTransfert {
+namespace colorTransfer {
 
 static const std::string kClipSrcRef( "srcRef" );
 static const std::string kClipDstRef( "dstRef" );

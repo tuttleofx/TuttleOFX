@@ -1,28 +1,28 @@
-#include "ColorTransfertPluginFactory.hpp"
-#include "ColorTransfertPlugin.hpp"
-#include "ColorTransfertDefinitions.hpp"
+#include "ColorTransferPluginFactory.hpp"
+#include "ColorTransferPlugin.hpp"
+#include "ColorTransferDefinitions.hpp"
 #include "ofxsImageEffect.h"
 
 #include <limits>
 
 namespace tuttle {
 namespace plugin {
-namespace colorTransfert {
+namespace colorTransfer {
 
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void ColorTransfertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void ColorTransferPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels(
-		"TuttleColorTransfert",
-		"ColorTransfert",
-		"ColorTransfert" );
+		"TuttleColorTransfer",
+		"ColorTransfer",
+		"ColorTransfer" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription(
-			"ColorTransfert\n"
+			"ColorTransfer\n"
 			"\n"
 			"The standard usage of this node is to impose one image's color characteristics to another.\n"
 			"If srcRef input clip is not the same as the source clip, "
@@ -57,7 +57,7 @@ void ColorTransfertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ColorTransfertPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void ColorTransferPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 													 OFX::EContext context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -137,10 +137,10 @@ void ColorTransfertPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* ColorTransfertPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* ColorTransferPluginFactory::createInstance( OfxImageEffectHandle handle,
 															   OFX::EContext context )
 {
-	return new ColorTransfertPlugin( handle );
+	return new ColorTransferPlugin( handle );
 }
 
 }

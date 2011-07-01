@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX ColorTransfert Plugin
+## Main BJam makefile for TuttleOFX ColorTransfer Plugin
 ###############################################################################
 import os ;
  
@@ -9,14 +9,14 @@ import os ;
 project
     : requirements
 	<include>src
-    : build-dir $(DIST)/ColorTransfert/obj
+    : build-dir $(DIST)/ColorTransfer/obj
     ;
 
  
 ###############################################################################
 # Product 
 ###############################################################################
-plugin ColorTransfert : 
+plugin ColorTransfer : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
     ;
@@ -24,5 +24,5 @@ plugin ColorTransfert :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install ColorTransfert : $(DIST) ;
+auto_install ColorTransfer : $(DIST) ;
  
