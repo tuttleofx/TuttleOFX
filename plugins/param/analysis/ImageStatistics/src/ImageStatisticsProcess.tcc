@@ -1,5 +1,4 @@
 #include "ImageStatisticsPlugin.hpp"
-#include "ImageStatisticsProcess.hpp"
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
