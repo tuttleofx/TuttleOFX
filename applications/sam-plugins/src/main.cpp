@@ -50,11 +50,22 @@ std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)
 
 void printProperties( const tth::ofx::property::OfxhSet properties, std::string context="" )
 {
-	color ? TUTTLE_COUT( kColorRed ) : TUTTLE_COUT( " " );
-	if(context.size() == 0)
-		TUTTLE_COUT( "Number of properties : " << properties.getSize() );
+	if( color )
+	{
+		TUTTLE_COUT( kColorRed );
+	}
 	else
+	{
+		TUTTLE_COUT( " " );
+	}
+	if(context.size() == 0)
+	{
+		TUTTLE_COUT( "Number of properties : " << properties.getSize() );
+	}
+	else
+	{
 		TUTTLE_COUT( "Number of properties for \"" << context << "\": " << properties.getSize() );
+	}
 
 	TUTTLE_COUT( "RW ModifiedBy\tType\tSize\t"<<std::setw (50)  << std::left << "Property Name" << "\tDefault Values");
 	tth::ofx::property::PropertyMap propMap = properties.getMap();
@@ -247,9 +258,6 @@ int main( int argc, char** argv )
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
 
-	bpo::positional_options_description pd;
-	pd.add("", -1);
-	
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
