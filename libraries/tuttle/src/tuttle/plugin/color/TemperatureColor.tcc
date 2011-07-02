@@ -1,4 +1,7 @@
 
+
+#ifdef TUTTLE_SSE
+
 #include <xmmintrin.h>
 /*
 inline __m128 _mm_madd_ps( const __m128& a, const __m128& b, const __m128& c)
@@ -24,7 +27,7 @@ void processConversion( rgba32f_pixel_t& src, rgba32f_pixel_t& dst, __m128& red,
 	//__m128 rgrg = _mm_shuffle_ps ( in, in, _MM_SHUFFLE( 3, 2, 3, 2 ) );
 	//__m128 values = _mm_shuffle_ps ( red, green, _MM_SHUFFLE( 3, 2, 3, 2 ) );
 }
-
+#endif
 
 template < typename SrcP, typename DstP >
 void convertFromTempA	( const SrcP& src, DstP& dst )
