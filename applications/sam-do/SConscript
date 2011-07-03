@@ -1,0 +1,23 @@
+Import( 'project' )
+Import( 'libs' )
+
+libraries = [ libs.openfxHack,
+			  libs.tuttleCommon,
+              libs.boost_filesystem,
+              libs.boost_program_options,
+              libs.boost_regex,
+			 ]
+
+name = project.getName()
+sourcesDir = 'src'
+sources = project.scanFiles( [sourcesDir] )
+
+env = project.createEnv( libraries )
+env.Append( CPPPATH=sourcesDir )
+sam = env.Program( target=name, source=sources )
+
+install = env.Install( project.inOutputBin(), sam )
+env.Alias(name, install )
+env.Alias('all', install )
+
+
