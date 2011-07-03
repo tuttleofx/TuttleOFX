@@ -7,8 +7,10 @@
 
 #include <algorithm>
 #include <iostream>
+#include <bits/stl_vector.h>
 
 #include "tuttle/common/exceptions.hpp"
+#include "tuttle/host/Graph.hpp"
 
 #ifndef SAMDO_PIPE_STR
 #define SAMDO_PIPE_STR "//"
@@ -31,9 +33,6 @@ struct NodeCommand
 
 int main( int argc, char** argv )
 {
-	using namespace tuttle::common;
-	namespace fs = boost::filesystem;
-
 	try
 	{
 		if( argc <= 1 ) // no argument
@@ -98,6 +97,13 @@ int main( int argc, char** argv )
 			}
 		}
 
+		namespace ttl = tuttle::host;
+
+		ttl::Core::instance().preload();
+
+		// create the graph
+		ttl::Graph graph;
+		std::list<ttl::Graph::Node*> nodes;
 		// Analyse each part of the command line
 		{
 			namespace bpo = boost::program_options;
@@ -213,6 +219,10 @@ int main( int argc, char** argv )
 
 						bpo::notify( node_vm );
 
+						// Check priority flags:
+						// If one flag to display informations is used in command line,
+						// it replaces all the process.
+						// --help,h --version,v --verbose,V --params --clips --props
 						if( node_vm.count("help") )
 						{
 							TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]" );
@@ -280,7 +290,10 @@ int main( int argc, char** argv )
 
 						TUTTLE_COUT( "[" << nodeName << "]" );
 
-						//
+						ttl::Graph::Node& currentNode = graph.createNode( "fr.tuttle." + nodeName );
+						nodes.push_back( &currentNode );
+
+						// Analyse parameters
 						static const boost::regex re_param( "(?:([a-zA-Z_][a-zA-Z0-9_]*)=)?(.*)" );
 						if( node_vm.count("param-values") )
 						{
@@ -315,8 +328,15 @@ int main( int argc, char** argv )
 //								TUTTLE_COUT( "* " << p );
 //								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
 
-								/// @todo setup the node with paramter value in tuttle.
-
+								/// @todo setup the node with parameter value in tuttle.
+								if( paramName.size() )
+								{
+									currentNode.getParam( paramName ).set( paramValue );
+								}
+								else
+								{
+									//currentNode.getParamSet().getParamList()[paramIdx].set( paramValue );
+								}
 								++paramIdx;
 							}
 						}
@@ -344,10 +364,10 @@ int main( int argc, char** argv )
 		}
 
 		// display nodes
-		BOOST_FOREACH( const std::string& option, cl_options )
-		{
-			TUTTLE_COUT( "| " << option );
-		}
+//		BOOST_FOREACH( const std::string& option, cl_options )
+//		{
+//			TUTTLE_COUT( "| " << option );
+//		}
 //		BOOST_FOREACH( const std::vector<std::string>& node, cl_commands )
 //		{
 //			TUTTLE_COUT( "[" << node[0] << "]" );
@@ -365,15 +385,17 @@ int main( int argc, char** argv )
 //			}
 //		}
 
-		// Check priority flags:
-		// If one flag to display informations is used in command line,
-		// it replaces all the process.
-		// example: --help,h --version,v --verbose,V --params --clips --props
-		// todo
-
-		// Create the graph
+		// Connect all nodes linearly
+		graph.connect( nodes );
 
 		// Execute the graph
+		graph.compute( *nodes.back(), 0 );
+	}
+	catch( const tuttle::exception::Common& e )
+	{
+		TUTTLE_CERR( "sam-do" );
+		TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+		exit( -2 );
 	}
 	catch( const boost::program_options::error& e )
 	{
