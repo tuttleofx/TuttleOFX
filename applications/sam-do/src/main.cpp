@@ -1,16 +1,11 @@
-#include <tuttle/common/clip/Sequence.hpp>
+#include <tuttle/common/exceptions.hpp>
+#include <tuttle/host/Graph.hpp>
 
-#include <boost/regex.hpp>
 #include <boost/program_options.hpp>
-#include <boost/exception/diagnostic_information.hpp>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 
-#include <algorithm>
-#include <iostream>
-#include <bits/stl_vector.h>
-
-#include "tuttle/common/exceptions.hpp"
-#include "tuttle/host/Graph.hpp"
 
 #ifndef SAMDO_PIPE_STR
 #define SAMDO_PIPE_STR "//"
@@ -100,6 +95,7 @@ int main( int argc, char** argv )
 		namespace ttl = tuttle::host;
 
 		ttl::Core::instance().preload();
+		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 
 		// create the graph
 		ttl::Graph graph;
@@ -111,15 +107,16 @@ int main( int argc, char** argv )
 			try
 			{
 				// Declare the supported options.
-				bpo::options_description infoOptions( "\tDisplay options" );
+				bpo::options_description infoOptions( "\tDisplay options (replace the process)" );
 				infoOptions.add_options()
 					("help,h"       , "show node help")
 					("version,v"    , "display node version")
-					("verbose,V"    , "explain what is being done")
 					("nodes,n"      , "show list of all available nodes")
 				;
 				bpo::options_description confOptions( "\tConfigure process" );
 				confOptions.add_options()
+					("verbose,V"    , "explain what is being done")
+					("quiet,Q"      , "don't print commands")
 					("nb-cores"     , bpo::value<std::string>(), "set a fix number of CPUs")
 				;
 
@@ -149,12 +146,35 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( "SYNOPSIS" );
 					TUTTLE_COUT( "\tsam-do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" );
 					TUTTLE_COUT( "" );
-					TUTTLE_COUT( "EXAMPLE" );
-					TUTTLE_COUT( "\tsam-do --verbose read toto.dpx // blur 3 // resize scale=50% // write toto.jpg" );
+					TUTTLE_COUT( "EXAMPLES" );
+					TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
+					TUTTLE_COUT( "\tsam-do --nodes" );
+					TUTTLE_COUT( "\tsam-do blur -h" );
+					TUTTLE_COUT( "\tsam-do --verbose read foo.####.dpx // blur 3 // resize scale=50% // write foo.####.jpg range=[10,20]" );
+					TUTTLE_COUT( "\tsam-do r foo.dpx // sobel // print // -Q" );
 					TUTTLE_COUT( "" );
 					TUTTLE_COUT( "DESCRIPTION" );
 					TUTTLE_COUT( infoOptions );
 					TUTTLE_COUT( confOptions );
+					exit( 0 );
+				}
+				if( samdo_vm.count("version") )
+				{
+					TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR );
+					exit( 0 );
+				}
+				if( samdo_vm.count("nodes") )
+				{
+					TUTTLE_COUT( "NODES" );
+					for( std::size_t i = 0; i < allNodes.size(); ++i )
+					{
+						const std::string plugName = allNodes.at(i)->getRawIdentifier();
+
+						std::vector< std::string > termsPlugin;
+						boost::algorithm::split( termsPlugin, plugName, boost::algorithm::is_any_of("."));
+
+						TUTTLE_COUT( "\t" << termsPlugin.back() );
+					}
 					exit( 0 );
 				}
 			}
@@ -176,7 +196,7 @@ int main( int argc, char** argv )
 			// Analyse options for each node
 			{
 				// Declare the supported options.
-				bpo::options_description infoOptions( "\tDisplay options" );
+				bpo::options_description infoOptions( "\tDisplay options (replace the process)" );
 				infoOptions.add_options()
 					("help,h"       , "show node help")
 					("version,v"    , "display node version")
@@ -204,10 +224,12 @@ int main( int argc, char** argv )
 
 				bpo::options_description all_options;
 				all_options.add(infoOptions).add(confOptions).add(hiddenOptions);
-
+				
 				BOOST_FOREACH( const std::vector<std::string>& command, cl_commands )
 				{
-					const std::string& nodeName = command[0];
+					std::string userNodeName = command[0];
+					std::string nodeFullName = command[0];
+					boost::algorithm::to_lower( userNodeName );
 					std::vector<std::string> nodeArgs;
 					std::copy( command.begin()+1, command.end(), std::back_inserter(nodeArgs) );
 					
@@ -219,19 +241,78 @@ int main( int argc, char** argv )
 
 						bpo::notify( node_vm );
 
+						std::vector< std::string > detectedPlugins;
+						for( std::size_t i = 0; i < allNodes.size(); ++i )
+						{
+							const std::string plugName = allNodes.at(i)->getRawIdentifier();
+							if( plugName == userNodeName )
+							{
+								detectedPlugins.clear();
+								detectedPlugins.push_back( plugName );
+								break;
+							}
+							if( boost::algorithm::find_first(plugName, userNodeName ) )
+							{
+								detectedPlugins.push_back( plugName );
+							}
+						}
+						if( detectedPlugins.size() != 1 )
+						{
+							if( detectedPlugins.size() < 1 )
+							{
+								BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+									<< tuttle::exception::user() + "Unrecognized node name \"" + userNodeName + "\"." );
+							}
+							else
+							{
+								tuttle::exception::user userMsg;
+								userMsg + "Ambiguous node name \"" + userNodeName + "\".\n";
+								userMsg + "Possible nodes:\n";
+								BOOST_FOREACH( const std::string& p, detectedPlugins )
+								{
+									userMsg + " - \"" + p + "\"\n";
+								}
+								BOOST_THROW_EXCEPTION( tuttle::exception::Value()
+									<< userMsg );
+							}
+						}
+						nodeFullName = detectedPlugins.front();
+
+						TUTTLE_COUT( "[" << nodeFullName << "]" );
+
+						ttl::Graph::Node& currentNode = graph.createNode( nodeFullName );
+						nodes.push_back( &currentNode );
+						
 						// Check priority flags:
 						// If one flag to display informations is used in command line,
 						// it replaces all the process.
 						// --help,h --version,v --verbose,V --params --clips --props
+						
 						if( node_vm.count("help") )
 						{
 							TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]" );
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( "NODE" );
-							TUTTLE_COUT( "\tsam-do " << nodeName << " - OpenFX node." );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName << " - OpenFX node." );
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( "DESCRIPTION" );
-							TUTTLE_COUT( "\tnode help !" ); ///< @todo node help !
+							TUTTLE_COUT( "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) );
+							TUTTLE_COUT( "" );
+							// internal node help
+							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription ) )
+							{
+								TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
+							}
+							else if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect &&
+							         currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxPropPluginDescription ) )
+							{
+								TUTTLE_COUT( "\tDescriptor:" );
+								TUTTLE_COUT( currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
+							}
+							else
+							{
+								TUTTLE_COUT( "\tNo description." );
+							}
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( infoOptions );
 							TUTTLE_COUT( confOptions );
@@ -239,12 +320,13 @@ int main( int argc, char** argv )
 						}
 						if( node_vm.count("version") )
 						{
-							TUTTLE_COUT( "version " << "0.0" /* fetch node version */ );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT( "Version " << currentNode.getVersionStr() );
 							exit(0);
 						}
 						if( node_vm.count("attributes") )
 						{
-							TUTTLE_COUT( "\tsam-do " << nodeName );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "ATTRIBUTES" );
 							TUTTLE_COUT( "\tCLIPS" );
 							/// @todo
@@ -254,44 +336,39 @@ int main( int argc, char** argv )
 						}
 						if( node_vm.count("properties") )
 						{
-							TUTTLE_COUT( "\tsam-do " << nodeName );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "PROPERTIES" );
 							/// @todo
 							exit(0);
 						}
 						if( node_vm.count("clips") )
 						{
-							TUTTLE_COUT( "\tsam-do " << nodeName );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "CLIPS" );
 							/// @todo
 							exit(0);
 						}
 						if( node_vm.count("clip") )
 						{
-							TUTTLE_COUT( "\tsam-do " << nodeName );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "CLIP: " << node_vm["clip"].as<std::string>() );
 							/// @todo
 							exit(0);
 						}
 						if( node_vm.count("parameters") )
 						{
-							TUTTLE_COUT( "\tsam-do " << nodeName );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "PARAMETERS" );
 							/// @todo
 							exit(0);
 						}
 						if( node_vm.count("param") )
 						{
-							TUTTLE_COUT( "\tsam-do " << nodeName );
+							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "PARAM: " << node_vm["clip"].as<std::string>() );
 							/// @todo
 							exit(0);
 						}
-
-						TUTTLE_COUT( "[" << nodeName << "]" );
-
-						ttl::Graph::Node& currentNode = graph.createNode( "fr.tuttle." + nodeName );
-						nodes.push_back( &currentNode );
 
 						// Analyse parameters
 						static const boost::regex re_param( "(?:([a-zA-Z_][a-zA-Z0-9_]*)=)?(.*)" );
@@ -343,19 +420,19 @@ int main( int argc, char** argv )
 					}
 					catch( const tuttle::exception::Common& e )
 					{
-						TUTTLE_CERR( "sam-do " << nodeName );
+						TUTTLE_CERR( "sam-do " << nodeFullName );
 						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
 						exit( -2 );
 					}
 					catch( const boost::program_options::error& e )
 					{
-						TUTTLE_CERR( "sam-do " << nodeName );
+						TUTTLE_CERR( "sam-do " << nodeFullName );
 						TUTTLE_CERR( "Error: " << e.what() );
 						exit( -2 );
 					}
 					catch( ... )
 					{
-						TUTTLE_CERR( "sam-do " << nodeName );
+						TUTTLE_CERR( "sam-do " << nodeFullName );
 						TUTTLE_CERR( "Error: " << boost::current_exception_diagnostic_information() );
 						exit( -2 );
 					}
