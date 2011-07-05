@@ -54,6 +54,7 @@
 #include "ofxsUtilities.h"
 
 #include <extensions/nuke/camera.h>
+#include <extensions/nuke/fnPublicOfxExtensions.h>
 
 #include <boost/throw_exception.hpp>
 #include <boost/assert.hpp>
@@ -176,6 +177,13 @@ enum DoubleTypeEnum
 	eDoubleTypeNormalisedXYAbsolute
 };
 
+enum ELayoutHint
+{
+	eLayoutHintNormal = kOfxParamPropLayoutHintNormal,
+	eLayoutHintDivider = kOfxParamPropLayoutHintDivider,
+	eLayoutHintNoNewLine = kOfxParamPropLayoutHintNoNewLine
+};
+
 /** @brief turns a ParamTypeEnum into the char * that raw OFX uses */
 const char* mapParamTypeEnumToString( ParamTypeEnum v );
 
@@ -232,6 +240,8 @@ public:
 
 	/** @brief whether the param is enabled, defaults to true */
 	void setEnabled( bool v );
+	
+	void setLayoutHint( const ELayoutHint layoutHint );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
