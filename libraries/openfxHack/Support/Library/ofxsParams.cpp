@@ -690,6 +690,11 @@ void GroupParamDescriptor::setOpen( const bool open )
 	getProps().propSetInt( kOfxParamPropGroupOpen, open );
 }
 
+void GroupParamDescriptor::setAsTab()
+{
+	getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // page param descriptor
 
