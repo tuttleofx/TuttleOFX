@@ -135,7 +135,7 @@
     - Type - int X 1
     - Property Set - plugin parameter descriptor (read/write) and instance (read only)
     - Default - 0
-    - Valid Values - ASCII string
+    - Valid Values - 0 or 1
  */
 #define kFnOfxParamPropGroupIsTab "FnOfxParamPropGroupIsTab"
 
