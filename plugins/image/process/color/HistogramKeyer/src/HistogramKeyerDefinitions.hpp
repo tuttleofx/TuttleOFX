@@ -23,7 +23,7 @@ const static std::string kParamColorSelectionHue = "hue";
 const static std::string kParamColorSelectionSaturation = "saturation";
 const static std::string kParamColorSelectionLightness = "lightness";
 
-//Cuvres groups
+//Groups
 const static std::string kGroupRGB = "RGB channels";
 const static std::string kGroupRGBLabel = "Red Green Blue";
 const static std::string kGroupHSL = "HSL channels";
@@ -32,11 +32,13 @@ const static std::string kGroupAdvanced = "Adv";
 const static std::string kGroupAdvancedLabel = "Advanced";
 const static std::string kGroupSelection = "Selec";
 const static std::string kGroupSelectionLabel = "Selection settings";
+const static std::string kGroupHistogramOverlay = "HOverlay";
+const static std::string kGroupHistogramOverlayLabel = "Histogram overlay";
 
 //Histogram display settings
-const static std::string kHistoDisplayListParamLabel = "Histogram display settings ";
-const static std::string kHistoDisplayListParamOpt1 = "adapt to the current channel";
-const static std::string kHistoDisplayListParamOpt2 = "adapt with others channels";
+const static std::string kHistoDisplayListParamLabel = "Vertical adjustment ";
+const static std::string kHistoDisplayListParamOpt1 = "by channel";
+const static std::string kHistoDisplayListParamOpt2 = "global";
 
 //Histogram check box
 const static std::string kBoolRed = "Red";
@@ -61,9 +63,9 @@ const static std::string kButtonCleanRGB = "CleanRGB";
 const static std::string kButtonCleanHSL = "CleanHSL";
 const static std::string kButtonCleanAll = "CleanAll";
 
-const static std::string kButtonCleanRGBLabel = "Clean";
-const static std::string kButtonCleanHSLLabel = "Clean";
-const static std::string kButtonCleanAllLabel = "Clean all";
+const static std::string kButtonCleanRGBLabel = "Reset RGB curves";
+const static std::string kButtonCleanHSLLabel = "Reset HSL curves";
+const static std::string kButtonCleanAllLabel = "Reset all curves";
 
 //Refresh overlay button
 const static std::string kButtonRefreshOverlay = "RefreshOverlay";

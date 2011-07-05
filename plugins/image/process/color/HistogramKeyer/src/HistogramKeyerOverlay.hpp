@@ -108,6 +108,7 @@ HistogramKeyerPlugin* _plugin;
 interact::InteractInfos _infos;
 HistogramKeyerHistogramDisplay _histogramDisplay;
 bool _penDown;
+bool _keyDown;
 OfxPointI _size;
 OfxPointI _origin;
 OfxPointI _end;
@@ -122,10 +123,14 @@ public:
 	bool penUp( const OFX::PenArgs& args );
 	bool penMotion( const OFX::PenArgs& args );
 	
-//	void gainFocus( const FocusArgs& args );
-//	void loseFocus( const FocusArgs& args );
+	//key up
+	bool keyDown( const OFX::KeyArgs& args );
+	bool keyUp( const OFX::KeyArgs& args );
+	//test
+	void gainFocus( const OFX::FocusArgs& args );
+	void loseFocus( const OFX::FocusArgs& args );
 	
-	void displaySelectedAreas();
+	void displaySelectedAreas(OfxPointD pixelScale);
 	void displaySelectionZone();
 	void computeSelectionHistograms(const OfxTime time, const OfxPointD renderScale);
 };

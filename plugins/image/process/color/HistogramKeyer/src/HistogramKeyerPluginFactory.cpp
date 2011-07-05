@@ -18,16 +18,16 @@ static const bool kSupportTiles = true;
  */
 void HistogramKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-    
-        // describe the plugin
+	// describe the plugin
 	desc.setLabels( "TuttleHistogramKeyer", "HistogramKeyer",
 		            "HistogramKeyer" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription(
 		"HistogramKeyer\n"
-		"Test parametric parameters.\n"
-		"Full description of the plugin.... \n"
+		"This histogram keyer plugin allows user to create an alpha mask using HSL & RGB curves. Output can be in gray scale or directly in alpha channel (RGBA)."
+		"There are some selection parameters which could help you to refine your maniplulation (control points unders histograms and quantity)."
+		"A reverse output mask is also implemented.\n"
 		"\n"
 	);
 
@@ -131,24 +131,24 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		
 		//Channels checkboxes (RGB)
 		OFX::BooleanParamDescriptor* boolR = desc.defineBooleanParam(kBoolRed);
-		boolR->setDefault(true);
+		boolR->setDefault(false);
 		boolR->setParent(groupRGB);
 		OFX::BooleanParamDescriptor* boolG = desc.defineBooleanParam(kBoolGreen);
-		boolG->setDefault(true);
+		boolG->setDefault(false);
 		boolG->setParent(groupRGB);
 		OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
-		boolB->setDefault(true);
+		boolB->setDefault(false);
 		boolB->setParent(groupRGB);
 		
 		//Channels check box (HSL)
 		OFX::BooleanParamDescriptor* boolH = desc.defineBooleanParam(kBoolHue);
-		boolH->setDefault(true);
+		boolH->setDefault(false);
 		boolH->setParent(groupHSL);
 		OFX::BooleanParamDescriptor* boolS = desc.defineBooleanParam(kBoolSaturation);
-		boolS->setDefault(true);
+		boolS->setDefault(false);
 		boolS->setParent(groupHSL);
 		OFX::BooleanParamDescriptor* boolL = desc.defineBooleanParam(kBoolLightness);
-		boolL->setDefault(true);
+		boolL->setDefault(false);
 		boolL->setParent(groupHSL);
 		
 		//Clean Button (RGB / HSL)
@@ -162,7 +162,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		
 		//Close groups (closed by default on screen)
 		groupRGB->setOpen(false);
-		groupHSL->setOpen(false);
+		groupHSL->setOpen(true);
 	}
 	///Advanced group
 	OFX::GroupParamDescriptor *groupAdvanced = desc.defineGroupParam(kGroupAdvanced);
@@ -200,6 +200,13 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	clearSelectionButton->setLabel(kButtonClearSelectionLabel);
 	clearSelectionButton->setParent(groupSelection);
 	
+	
+	//Histogram overlay group
+	OFX::GroupParamDescriptor *groupHistogramOverlay = desc.defineGroupParam(kGroupHistogramOverlay);
+	groupHistogramOverlay->setLabel(kGroupHistogramOverlayLabel);
+	groupHistogramOverlay->setOpen(false);
+	
+	
 	//Histogram display settings
 	OFX::ChoiceParamDescriptor* gammaType = desc.defineChoiceParam(kHistoDisplayListParamLabel);
 	gammaType->setLabel(kHistoDisplayListParamLabel);
@@ -207,13 +214,17 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	gammaType->setHint( "Histogram display list");
 	gammaType->appendOption(kHistoDisplayListParamOpt2);
 	gammaType->appendOption(kHistoDisplayListParamOpt1);
+	gammaType->setParent(groupHistogramOverlay);	
 	
 	//Refresh histograms overlay Button
 	OFX::PushButtonParamDescriptor* refreshOverlayButton = desc.definePushButtonParam(kButtonRefreshOverlay);
 	refreshOverlayButton->setLabel(kButtonRefreshOverlayLabel);
+	refreshOverlayButton->setParent(groupAdvanced);
+	
 	//Clean all Button
 	OFX::PushButtonParamDescriptor* cleanButtonAll = desc.definePushButtonParam(kButtonCleanAll);
 	cleanButtonAll->setLabel(kButtonCleanAllLabel);
+	cleanButtonAll->setParent(groupHistogramOverlay);
 	
 	//Output settings
 	OFX::ChoiceParamDescriptor* outputType = desc.defineChoiceParam(kOutputListParamLabel);
@@ -221,6 +232,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	outputType->setHint( "Output settings list");
 	outputType->appendOption(kOutputListParamOpt1);
 	outputType->appendOption(kOutputListParamOpt2);
+	outputType->setLayoutHint( OFX::eLayoutHintNoNewLine );
 	
 	//Reverse mask
 	OFX::BooleanParamDescriptor* boolReverseMask = desc.defineBooleanParam(kBoolReverseMask);

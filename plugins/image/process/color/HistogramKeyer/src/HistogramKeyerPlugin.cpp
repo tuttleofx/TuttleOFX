@@ -58,7 +58,8 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::getProcessParams( const OfxTime time, const OfxPointD& renderScale ) const
 {
 	HistogramKeyerProcessParams<Scalar> params;
-	//params curves (HSL & RGB)
+	
+	///params curves (HSL & RGB)
 	params._paramColorRGB = _paramColorRGBSelection;
 	params._paramColorHSL = _paramColorHSLSelection;
 	//Output selection (alpha channel or BW)
@@ -77,6 +78,7 @@ HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::
 	//reverse mask check box
 	params._boolReverseMask = _paramReverseMaskSelection;
 	//return
+	
 	return params;
 }
 
@@ -102,7 +104,12 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 					_paramColorRGBSelection->deleteControlPoint(i);
 			}
 			for(int i=0; i<nbCurvesRGB; ++i)
-				_paramColorRGBSelection->addControlPoint(i,args.time,1.0,1.0,false);
+			{	
+				_paramColorRGBSelection->addControlPoint(i,args.time,0.0,0.0,false);
+				_paramColorRGBSelection->addControlPoint(i,args.time,0.2,1.0,false);
+				_paramColorRGBSelection->addControlPoint(i,args.time,0.6,1.0,false);
+				_paramColorRGBSelection->addControlPoint(i,args.time,1.0,0.0,false);
+			}
 		}
 		//reset HSL curves
 		if(paramName == kButtonCleanHSL || paramName == kButtonCleanAll)
@@ -113,9 +120,17 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 					_paramColorHSLSelection->deleteControlPoint(i);
 			}
 			for(int i=0; i<nbCurvesHSL; ++i)
-				_paramColorHSLSelection->addControlPoint(i,args.time,1.0,1.0,false);
+			{	
+				_paramColorHSLSelection->addControlPoint(i,args.time,0.0,0.0,false);
+				_paramColorHSLSelection->addControlPoint(i,args.time,0.2,1.0,false);
+				_paramColorHSLSelection->addControlPoint(i,args.time,0.6,1.0,false);
+				_paramColorHSLSelection->addControlPoint(i,args.time,1.0,0.0,false);
+			}
 		}
 		//_isCleaned = true; // reset user's selection in overlay
+		
+		/// @todo How to request a redraw on ParametricParameters?
+//		_paramColorHSLSelection->getProps().propGetPointer( kOfxParamPropParametricInteractBackground );
 	}
 	//refresh histogram overlay
 	if(paramName == kButtonRefreshOverlay)
@@ -207,8 +222,8 @@ bool HistogramKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Cl
 {
 	
 	/// @todo HACK: nuke doesn't call changedClip when the time is modified.
-	OFX::InstanceChangedArgs changed( args.time, args.renderScale );
-	this->changedClip(changed,this->_clipSrc->name());
+	//OFX::InstanceChangedArgs changed( args.time, args.renderScale );
+	//this->changedClip(changed,this->_clipSrc->name());
 //	HistogramKeyerProcessParams<Scalar> params = getProcessParams();
 //	if( params._in == params._out )
 //	{
