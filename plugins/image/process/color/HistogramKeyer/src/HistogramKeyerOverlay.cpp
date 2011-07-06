@@ -36,12 +36,17 @@ HistogramKeyerOverlay::HistogramKeyerOverlay( OfxInteractHandle handle, OFX::Ima
 	for(unsigned int i=0; i<_size.y; ++i)
 	{
 		for(unsigned int j=0; j<_size.x; ++j)
-			_imgBool[i][j] = false;
+			_imgBool[i][j] = 0;
 	}
 }
 
 bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 {
+	//gloabl display option
+	if(_plugin->_paramGlobalDisplaySelection->getValue() == false)
+		return false;
+	
+	//draw something on screen
 	typedef boost::gil::point2<Scalar> Point2;
 	bool displaySomething = false;
 
@@ -55,8 +60,15 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		for(unsigned int i=0; i<_size.y; ++i) // remove user selection
 		{
 			for(unsigned int j=0; j<_size.x; ++j)
-				_imgBool[i][j] = false;
+				_imgBool[i][j] = 0;
 		}
+		//reset average
+		_plugin->_averageData._averageRed = 0;			//R
+		_plugin->_averageData._averageGreen = 0;		//G
+		_plugin->_averageData._averageBlue = 0;			//B
+		_plugin->_averageData._averageHue = 0;			//H
+		_plugin->_averageData._averageSaturation = 0;	//S
+		_plugin->_averageData._averageLightness = 0;	//L
 		_plugin->_isCleaned = false;
 	}
 	
@@ -79,10 +91,10 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
         
 		//DisplaySelection
 		if(_plugin->_paramDisplaySelection->getValue())
-			this->displaySelectedAreas(args.pixelScale);
+			this->displaySelectedAreas();
 		
 		///@todo : remove next line when Nuke curves overlay works
-		this->_histogramDisplay._translateHSL = false;		
+		this->_histogramDisplay._translateHSL = false;	
 		this->_histogramDisplay.displayHistogramOnScreenRGB(_plugin->_data,_plugin->_selectionData,args.time);
 		
 		///@todo : remove next line when Nuke curves overlay works
@@ -104,9 +116,9 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 		_end.y = args.penPosition.y;
 		return true;
 	}
-	if(_keyDown)
+	if(_penDown && _keyDown)
 	{
-		_imgBool[args.penPosition.y][args.penPosition.x] = true;
+		_imgBool[args.penPosition.y][args.penPosition.x] = 255;
 		return true;
 	}
 	return false;
@@ -148,45 +160,27 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 
 bool HistogramKeyerOverlay::keyDown( const OFX::KeyArgs& args )
 {
-	/*TUTTLE_TCOUT_INFOS;
-	TUTTLE_TCOUT_VAR( args.keyString );
-	TUTTLE_TCOUT_VAR( args.keySymbol );
 	if( args.keySymbol == kOfxKey_Control_L || args.keySymbol == kOfxKey_Control_R )
-	{
-		_keyDown = true;
-		return true;
-	}*/
-	if( args.keyString == "")
 	{
 		_keyDown = true;
 		return true;
 	}
 	return false;
 }
+
 bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
 {
-	/*TUTTLE_TCOUT_INFOS;
-	TUTTLE_TCOUT_VAR( args.keyString );
-	TUTTLE_TCOUT_VAR( args.keySymbol );
-	if((args.keySymbol == kOfxKey_Control_L || args.keySymbol == kOfxKey_Control_R) && _keyDown)
+	if( (args.keySymbol == kOfxKey_Control_L || args.keySymbol == kOfxKey_Control_R) && _keyDown)
 	{
 		_keyDown = false;
 		this->computeSelectionHistograms(args.time,args.renderScale);
 		_plugin->correctHistogramBufferData(_plugin->_selectionData);
 		return true;
 
-	}*/
-	if(args.keyString=="" && _keyDown)
-	{
-		_keyDown = false;
-		this->computeSelectionHistograms(args.time,args.renderScale);
-		_plugin->correctHistogramBufferData(_plugin->_selectionData);
-		return true;
 	}
 	return false;
 }
-	
-	
+
 bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 {
 	//clamp selection
@@ -194,7 +188,7 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 	_end.y = args.penPosition.y;
 	if(_end.x == _origin.x && _end.y == _origin.y)
 	{
-		//simple clic
+		// simple click
 		_penDown = false;
 		return false;
 	}
@@ -217,7 +211,6 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 	}
 	if(_penDown && !_keyDown)
 	{
-		//pixel traitement
 		int startX,endX,startY,endY;
 		if(_origin.x > _end.x)
 		{
@@ -246,66 +239,43 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 		{
 			for(unsigned int val_x=0; val_x<step_x; ++val_x )
 			{
-				_imgBool[endY+val_y][endX+val_x] = true;
+				_imgBool[endY+val_y][endX+val_x] = 255;
 			}
 		}
 		_penDown = false;
 		//update selection histograms buffer datas
 		this->computeSelectionHistograms(args.time,args.renderScale);
 		_plugin->correctHistogramBufferData(_plugin->_selectionData);
+		//update average data
+		this->computeAverage();
 	}
 	_penDown = false;
 	return true;
 }
 
 /**
- *Display the selected areas on the clip (color : gray)
+ * Display the selected areas on the clip (color : gray)
  */
-void HistogramKeyerOverlay::displaySelectedAreas(OfxPointD pixelScale)
-{	
-	//Create the texture
-	int textureSize = _size.x * _size.y * 4; // width*height*RGBA
-	GLubyte texture[textureSize];
-	int valX,valY;
-	valX = valY= 0;
-	
-	for(unsigned int i=0; i<textureSize; i+=4)
-	{
-		if(_imgBool[valY][valX])
-		{
-			texture[i] = texture[i+1] = texture[i+2] = 255; //RGB
-			texture[i+3] = 100; //alpha
-		}
-		else
-		{
-			texture[i] = texture[i+1] = texture[i+2] = 0; //RGB
-			texture[i+3] = 0; //alpha
-		}
-		++valX;
-		if(valX == _size.x)
-		{
-			valX = 0;
-			++valY;
-		}
-	}
+void HistogramKeyerOverlay::displaySelectedAreas()
+{
 	glEnable(GL_TEXTURE_2D);					//Active le texturing
 	GLuint Name;								//Texture name
 	glGenTextures(1,&Name);						//Génère un n° de texture
 	glBindTexture(GL_TEXTURE_2D,Name);
-	glTexImage2D (
+	glTexImage2D(
 		GL_TEXTURE_2D, 	//Type : texture 2D
 		0,				//Mipmap : aucun
-		4,				//Colors : 4
+		GL_ALPHA8,		//Colors : 4
 		_size.x,		//width
 		_size.y,		//height
 		0,				//border size
-		GL_RGBA,		//Format : RGBA
+		GL_ALPHA,		//Format : RGBA
 		GL_UNSIGNED_BYTE, 	//color kind
-		texture			// data buffer
+		_imgBool.data()		// data buffer
 	); 	
+	glColor4f(1.0f,1.0f,1.0f,0.1f);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	
 	//Draw Texture on screen	
 	glBegin(GL_QUADS);
     glTexCoord2d(0,1);  glVertex2d(0,_size.y);		//Top Left
@@ -343,13 +313,9 @@ void HistogramKeyerOverlay::displaySelectionZone()
  */
 void HistogramKeyerOverlay::computeSelectionHistograms(const OfxTime time, const OfxPointD renderScale )
 {
-	//reload view 
-	boost::scoped_ptr<OFX::Image> src( _plugin->_clipSrc->fetchImage(time ) );
-	typedef boost::gil::rgba32f_view_t SView;
-	OfxRectI srcPixelRod = _plugin->_clipSrc->getPixelRod( time,renderScale );
-	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );
-	//view isn't accessible
-	if( !src.get() )
+	// reload view
+	boost::scoped_ptr<OFX::Image> src( _plugin->_clipSrc->fetchImage(time) );
+	if( !src.get() ) // view isn't accessible
 	{
 		return;
 	}
@@ -357,6 +323,9 @@ void HistogramKeyerOverlay::computeSelectionHistograms(const OfxTime time, const
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 	}
+	typedef boost::gil::rgba32f_view_t SView;
+	OfxRectI srcPixelRod = _plugin->_clipSrc->getPixelRod( time,renderScale );
+	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );
 	//reset selection data
 	_plugin->resetHistogramBufferData(_plugin->_selectionData);
 	
@@ -381,15 +350,33 @@ void HistogramKeyerOverlay::computeSelectionHistograms(const OfxTime time, const
 }
 
 
-//test
-void HistogramKeyerOverlay::gainFocus( const OFX::FocusArgs& args )
+int computeAnAverage(std::vector<Number> selection_v)
 {
-	std::cout << "gain focus" << std::endl;
+	int av = 0;
+	int size = 0;
+	for(unsigned int i=0; i<selection_v.size(); ++i)
+	{
+		if(selection_v.at(i)!=0)
+		{
+			av+=selection_v.at(i)*i;
+			size+=selection_v.at(i);
+		}
+	}
+	return av/size;
 }
-
-void HistogramKeyerOverlay::loseFocus( const OFX::FocusArgs& args )
+/**
+ * Compute average bars for display
+ */
+void HistogramKeyerOverlay::computeAverage()
 {
-	std::cout << "lose focus" << std::endl;
+	//RGB
+	_plugin->_averageData._averageRed = computeAnAverage(_plugin->_selectionData._bufferRed);
+	_plugin->_averageData._averageBlue = computeAnAverage(_plugin->_selectionData._bufferBlue);
+	_plugin->_averageData._averageGreen = computeAnAverage(_plugin->_selectionData._bufferGreen);
+	//HSL
+	_plugin->_averageData._averageHue = computeAnAverage(_plugin->_selectionData._bufferHue);
+	_plugin->_averageData._averageSaturation = computeAnAverage(_plugin->_selectionData._bufferSaturation);
+	_plugin->_averageData._averageLightness = computeAnAverage(_plugin->_selectionData._bufferLightness);
 }
 
 }

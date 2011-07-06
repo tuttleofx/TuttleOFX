@@ -58,6 +58,7 @@ void HistogramKeyerHistogramDisplay::displayHistogramOnScreenRGB( const Histogra
 		if(getOnlyChannelSelectedRGB()=="R")
 		{
 			displaySelectionPoints(histogramSelectionBuffer._bufferRed,step,size.x,redHisto);
+			displayAverageBar(_plugin->_averageData._averageRed,averageHisto,size.x,size.y,step);
 			displayRedIndicator(size);
 		}
 	}
@@ -67,6 +68,7 @@ void HistogramKeyerHistogramDisplay::displayHistogramOnScreenRGB( const Histogra
 		if(getOnlyChannelSelectedRGB()=="G")
 		{
 			displaySelectionPoints(histogramSelectionBuffer._bufferGreen,step,size.x,greenHisto);
+			displayAverageBar(_plugin->_averageData._averageGreen,averageHisto,size.x,size.y,step);
 			displayGreenIndicator(size);
 		}
 	}
@@ -76,6 +78,7 @@ void HistogramKeyerHistogramDisplay::displayHistogramOnScreenRGB( const Histogra
 		if(getOnlyChannelSelectedRGB()=="B")
 		{
 			displaySelectionPoints(histogramSelectionBuffer._bufferBlue,step,size.x,blueHisto);
+			displayAverageBar(_plugin->_averageData._averageBlue,averageHisto,size.x,size.y,step);
 			displayBlueIndicator(size);
 		}
 	}
@@ -136,6 +139,7 @@ void HistogramKeyerHistogramDisplay::displayHistogramOnScreenHSL( const Histogra
 		if(getOnlyChannelSelectedHSL()=="H")
 		{
 			displaySelectionPoints(histogramSelectionBuffer._bufferHue,step,size.x,redHisto);
+			displayAverageBar(_plugin->_averageData._averageHue,averageHisto,size.x,size.y,step);
 			displayHueIndicator(size);
 		}
 	}
@@ -145,6 +149,7 @@ void HistogramKeyerHistogramDisplay::displayHistogramOnScreenHSL( const Histogra
 		if(getOnlyChannelSelectedHSL()=="S")
 		{
 			displaySelectionPoints(histogramSelectionBuffer._bufferSaturation,step,size.x,greenHisto);
+			displayAverageBar(_plugin->_averageData._averageSaturation,averageHisto,size.x,size.y,step);
 			displaySaturationIndicator(size);
 		}
 	}
@@ -154,6 +159,7 @@ void HistogramKeyerHistogramDisplay::displayHistogramOnScreenHSL( const Histogra
 		if(getOnlyChannelSelectedHSL()=="L")
 		{
 			displaySelectionPoints(histogramSelectionBuffer._bufferLightness,step,size.x,blueHisto);
+			displayAverageBar(_plugin->_averageData._averageLightness,averageHisto,size.x,size.y,step);
 			displayLightnessIndicator(size);
 		}
 	}
@@ -205,8 +211,9 @@ void HistogramKeyerHistogramDisplay::displayASpecificHistogram(const std::vector
 			}
 			else
 			{
-				glVertex2f((float)base_step,(float)(value));
-				glVertex2f((float)base_step,(float)(selection_value));
+				float translationRGB = (float)(width+kTranslationRGB);
+				glVertex2f((float)base_step-translationRGB,(float)(value));
+				glVertex2f((float)base_step-translationRGB,(float)(selection_value));
 			}
 			base_step += step;
 		}
@@ -244,7 +251,8 @@ void HistogramKeyerHistogramDisplay::displayASpecificHistogramBorder(const std::
 		}
 		else
 		{
-			glVertex2f( (float)base_step, float(value));
+			float translationRGB = (float)(width+kTranslationRGB);
+			glVertex2f((float)(base_step-translationRGB), float(value));
 		}
 		base_step += step;
 	}
@@ -274,7 +282,10 @@ void HistogramKeyerHistogramDisplay::displaySelectionPoints(const std::vector<Nu
 				glVertex2f((float)(base_step+translationHSL), -10.0f);
 			}
 			else
-				glVertex2f( (float)base_step, -10.0f);
+			{
+				float translationRGB = (float)(width+kTranslationRGB);
+				glVertex2f( (float)(base_step-translationRGB), -10.0f);
+			}
 		}	
 		base_step += step;
 	}
@@ -291,7 +302,16 @@ void HistogramKeyerHistogramDisplay::displayRedIndicator(const OfxPointI size) c
 	double width = size.x;
 	
 	glPushMatrix();
-	glTranslated(0.0f,-20.0f,0.0f);
+	///@todo : remove condition when Nuke curves overlay works
+	if(!_translateHSL)
+	{
+		float translationRGB = (float)(size.x+kTranslationRGB);
+		glTranslated(-translationRGB,-20.0f,0.0f);
+	}
+	else
+	{
+		glTranslated(0.0f,-20.0f,0.0f);
+	}
 	glBegin( GL_QUADS);
 	
 	glColor3f(0.0f, 0.0f, 0.0f);	
@@ -320,7 +340,16 @@ void HistogramKeyerHistogramDisplay::displayGreenIndicator(const OfxPointI size)
 	double width = size.x;
 	
 	glPushMatrix();
-	glTranslated(0.0f,-20.0f,0.0f);
+	///@todo : remove condition when Nuke curves overlay works
+	if(!_translateHSL)
+	{
+		float translationRGB = (float)(size.x+kTranslationRGB);
+		glTranslated(-translationRGB,-20.0f,0.0f);
+	}
+	else
+	{
+		glTranslated(0.0f,-20.0f,0.0f);
+	}
 	glBegin( GL_QUADS);
 	
 	glColor3f(0.0f, 0.0f, 0.0f);	
@@ -349,7 +378,16 @@ void HistogramKeyerHistogramDisplay::displayBlueIndicator(const OfxPointI size) 
 	double width = size.x;
 	
 	glPushMatrix();
-	glTranslated(0.0f,-20.0f,0.0f);
+		///@todo : remove condition when Nuke curves overlay works
+	if(!_translateHSL)
+	{
+		float translationRGB = (float)(size.x+kTranslationRGB);
+		glTranslated(-translationRGB,-20.0f,0.0f);
+	}
+	else
+	{
+		glTranslated(0.0f,-20.0f,0.0f);
+	}
 	glBegin( GL_QUADS);
 	
 	glColor3f(0.0f, 0.0f, 0.0f);	
@@ -484,6 +522,37 @@ void HistogramKeyerHistogramDisplay::displayHueIndicator(const OfxPointI size) c
 	}
 	glEnd();
 	glPopMatrix();
+}
+
+/**
+ * Display an average bar on screen
+ * @param average average of the current channel
+ * @param color color chosed to display
+ * @param width width of the image (1 into Nuke overlay)
+ * @param height height of the image
+ * @param step (image width/nbstep in histograms buffers)
+ */
+void HistogramKeyerHistogramDisplay::displayAverageBar(const int average, HistogramColor color, const int width, const int height,const double step)const
+{
+	if(average ==0)
+		return;
+	float _average = average*step;
+	glColor3f(color._colorBorder.r, color._colorBorder.g, color._colorBorder.b);
+	glBegin(GL_LINES);
+	///@todo: remove constraint when Nuke overlay works
+	if(_translateHSL)
+	{
+		float translateHSL = width + kTranslationHSL;
+		glVertex2i((float)(_average+translateHSL),0.0f);
+		glVertex2i((float)(_average+translateHSL),(float)height);
+	}
+	else
+	{
+		float translateRGB = width + kTranslationRGB;
+		glVertex2i((float)(_average-translateRGB),0.0f);
+		glVertex2i((float)(_average-translateRGB),(float)height);
+	}
+	glEnd();
 }
 
 /**

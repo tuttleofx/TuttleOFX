@@ -87,9 +87,14 @@ const static std::string kOutputListParamLabel = "Output settings ";
 const static std::string kOutputListParamOpt1 = "alpha channel";
 const static std::string kOutputListParamOpt2 = "black & white";
 
+//Global display check box
+const static std::string kGlobalDisplay = "global display";
+
 ///@todo: remove when Nuke overlay option works 
 //Translation (separate HSL from RGB)
 const static float kTranslationHSL = 200.0f;
+//Translation (separate HSL from RGB)
+const static float kTranslationRGB = 200.0f;
 
 }
 }
