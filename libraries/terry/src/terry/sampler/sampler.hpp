@@ -1,6 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_SAMPLER_HPP_
-#define _TUTTLE_PLUGIN_SAMPLER_HPP_
-
+#ifndef _TERRY_SAMPLER_HPP_
+#define _TERRY_SAMPLER_HPP_
 
 #include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
@@ -12,17 +11,19 @@
 #include <vector>
 
 
-namespace boost {
-namespace gil {
+namespace terry {
+namespace sampler {
+
+using namespace boost::gil;
 
 
 /// \brief A sampler that sets the destination pixel without interpolation from the closest pixels from the source.
 // http://www.paulinternet.nl/?page=bicubic
 
-struct ttl_nearest_neighbor_sampler {};
+struct nearest_neighbor_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( nearest_neighbor_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	point2<std::ptrdiff_t> center( iround( p ) );
 
@@ -39,7 +40,7 @@ bool sample( ttl_nearest_neighbor_sampler, const SrcView& src, const point2<F>& 
 	return true;
 }
 
-namespace ttl_detail {
+namespace detail {
 
 template <typename Weight>
 struct add_dst_mul_src_channel
@@ -71,7 +72,7 @@ struct process1Dresampling
 	{
 		DstP mp( 0 );
 		for( size_t i = 0; i < src.size(); i++ )
-			ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i) , mp );
+			detail::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i) , mp );
 		dst = mp;
 	}
 };
@@ -170,10 +171,10 @@ bool getBCWeight(const F B, const F C, const F distance, F &weight )
 /// If outside the bounds, it doesn't change the destination
 /// \ingroup ImageAlgorithms
 
-struct ttl_bilinear_sampler {};
+struct bilinear_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( bilinear_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 
@@ -225,17 +226,17 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 		if( pTL.y + 1 < src.height( ) )
 		{
 			// most common case - inside the image, not on the last row or column
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x )*( 1.0 - frac.y ), mp );
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x * ( 1.0 - frac.y ), mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x )*( 1.0 - frac.y ), mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x * ( 1.0 - frac.y ), mp );
 			++loc.y( );
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x ) * frac.y, mp );
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x * frac.y, mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x ) * frac.y, mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x * frac.y, mp );
 		}
 		else
 		{
 			// on the last row, but not the bottom-right corner pixel
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x ), mp );
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x, mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.x ), mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( loc.x( )[1], frac.x, mp );
 		}
 	}
 	else
@@ -243,14 +244,14 @@ bool sample( ttl_bilinear_sampler, const SrcView& src, const point2<F>& p, DstP&
 		if( pTL.y + 1 < src.height( ) )
 		{
 			// on the last column, but not the bottom-right corner pixel
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.y ), mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, ( 1.0 - frac.y ), mp );
 			++loc.y( );
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, frac.y, mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, frac.y, mp );
 		}
 		else
 		{
 			// the bottom-right corner pixel
-			ttl_detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, 1, mp );
+			detail::add_dst_mul_src<SrcP, F, PixelW > ( )( *loc, 1, mp );
 		}
 	}
 
@@ -270,10 +271,10 @@ struct bicubic1D
 	{
 		DstP mp( 0 );
 
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, weight[0] , mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, weight[1] , mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, weight[2] , mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, weight[3] , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, weight[0] , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, weight[1] , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, weight[2] , mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, weight[3] , mp );
 		dst = mp;
 	}
 };
@@ -289,10 +290,10 @@ struct catmul1D
 		const float X2 = weight * weight; // x^2
 		const float X3 = weight * X2; // x^3
 
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, 0.5*( -  X3 +2*X2 -X1 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 0.5*( 3*X3 -5*X2 +2   ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, 0.5*(-3*X3 +4*X2 +X1  ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, 0.5*(   X3 -  X2      ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, 0.5*( -  X3 +2*X2 -X1 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 0.5*( 3*X3 -5*X2 +2   ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, 0.5*(-3*X3 +4*X2 +X1  ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, 0.5*(   X3 -  X2      ), mp );
 
 		dst = mp;
 	}
@@ -308,23 +309,23 @@ struct keys1D
 
 		// fisrt method, but with a lot of access to image memory
 		/*
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcA	,-1, mp3 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcB	, 3, mp3 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcC	,-3, mp3 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcD	, 1, mp3 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA	,-1, mp3 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB	, 3, mp3 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcC	,-3, mp3 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcD	, 1, mp3 );
 
-		ttl_detail::add_dst_mul_src<DstP, float, DstP >()(mp3	, weight*0.5,	mp2 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcA	, 1,		mp2 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcB	, -2.5,		mp2 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcC	, 2,		mp2 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcD	, -0.5,		mp2 );
+		detail::add_dst_mul_src<DstP, float, DstP >()(mp3	, weight*0.5,	mp2 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA	, 1,		mp2 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB	, -2.5,		mp2 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcC	, 2,		mp2 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcD	, -0.5,		mp2 );
 
-		ttl_detail::add_dst_mul_src<DstP, float, DstP >()(mp2	, weight,	mp1 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcA	, -0.5,		mp1 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcC	, 0.5,		mp1 );
+		detail::add_dst_mul_src<DstP, float, DstP >()(mp2	, weight,	mp1 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcA	, -0.5,		mp1 );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcC	, 0.5,		mp1 );
 
-		ttl_detail::add_dst_mul_src<DstP, float, DstP >()(mp1	, weight,	mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP >()(srcB	, 1,		mp );
+		detail::add_dst_mul_src<DstP, float, DstP >()(mp1	, weight,	mp );
+		detail::add_dst_mul_src<SrcP, float, DstP >()(srcB	, 1,		mp );
 		 */
 
 		// second methos to minimize image merory access
@@ -332,10 +333,10 @@ struct keys1D
 		const float valueXX = weight * valueX; // (x^2)/2
 		const float valueXXX = weight - 1; // x-1
 
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -valueX * valueXXX*valueXXX, mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 1 + valueXX * ( 3 * weight - 5 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, valueX * ( ( -3 * weight + 4 ) * weight + 1 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, valueXX*valueXXX, mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -valueX * valueXXX*valueXXX, mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 1 + valueXX * ( 3 * weight - 5 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, valueX * ( ( -3 * weight + 4 ) * weight + 1 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, valueXX*valueXXX, mp );
 
 		dst = mp;
 	}
@@ -354,10 +355,10 @@ struct simon1D
 		const float valueXX = weight * valueX; // (x^2)/4
 		const float valueXXX = weight - 1; // x-1
 
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -3 * valueX * valueXXX*valueXXX, mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 1 + valueXX * ( 5 * weight - 9 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, valueX * ( ( -5 * weight + 6 ) * weight + 3 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, 3 * valueXX*valueXXX, mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -3 * valueX * valueXXX*valueXXX, mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 1 + valueXX * ( 5 * weight - 9 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, valueX * ( ( -5 * weight + 6 ) * weight + 3 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, 3 * valueXX*valueXXX, mp );
 
 		dst = mp;
 	}
@@ -374,10 +375,10 @@ struct rifman1D
 		const float valueXX = weight * weight; // (x^2)
 		const float valueXXX = weight - 1; // x-1
 
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -weight * valueXXX*valueXXX, mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 1 + valueXX * ( weight - 2 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, weight * ( -valueXXX * weight + 1 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, valueXX*valueXXX, mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, -weight * valueXXX*valueXXX, mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, 1 + valueXX * ( weight - 2 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, weight * ( -valueXXX * weight + 1 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, valueXX*valueXXX, mp );
 
 		dst = mp;
 	}
@@ -559,7 +560,7 @@ struct lanczos1D
 		DstP mp( 0 );
 		for( std::size_t i = 0; i < src.size(); ++i )
 		{
-			ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i), mp );
+			detail::add_dst_mul_src<SrcP, float, DstP > ( )( src.at(i), weight.at(i), mp );
 		}
 		dst = mp;
 	}
@@ -571,25 +572,25 @@ struct gaussian1D
 	void operator( )( const SrcP& srcA, const SrcP& srcB, const SrcP& srcC, const SrcP& srcD, const SrcP& srcE, const SrcP& srcF, const SrcP& srcG, F weight, DstP & dst ) const
 	{
 		DstP mp( 0 );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, getGaussianWeight( weight + 3 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, getGaussianWeight( weight + 2 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, getGaussianWeight( weight + 1 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, getGaussianWeight( weight     ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcE, getGaussianWeight( weight - 1 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcF, getGaussianWeight( weight - 2 ), mp );
-		ttl_detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcG, getGaussianWeight( weight - 3 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcA, getGaussianWeight( weight + 3 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcB, getGaussianWeight( weight + 2 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcC, getGaussianWeight( weight + 1 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcD, getGaussianWeight( weight     ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcE, getGaussianWeight( weight - 1 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcF, getGaussianWeight( weight - 2 ), mp );
+		detail::add_dst_mul_src<SrcP, float, DstP > ( )( srcG, getGaussianWeight( weight - 3 ), mp );
 
 		dst = mp;
 	}
 };
 
-struct ttl_bc_sampler {
+struct bc_sampler {
 	double valB;
 	double valC;
 };
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
@@ -705,54 +706,54 @@ bool sample( ttl_bc_sampler sampler, const SrcView& src, const point2<F>& p, Dst
 }
 
 
-struct ttl_bicubic_sampler {};
+struct bicubic_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( bicubic_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	ttl_bc_sampler BCsampler;
+	bc_sampler BCsampler;
 	BCsampler.valB= 0.0;
 	BCsampler.valC= 0.0;
 	return sample< DstP, SrcView, F>( BCsampler, src, p, result );
 }
 
-struct ttl_catmul_sampler {};
+struct catmul_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_catmul_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( catmul_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	ttl_bc_sampler BCsampler;
+	bc_sampler BCsampler;
 	BCsampler.valB= 0.0;
 	BCsampler.valC= 0.5;
 	return sample< DstP, SrcView, F>( BCsampler, src, p, result );
 }
 
-struct ttl_mitchell_sampler {};
+struct mitchell_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_mitchell_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( mitchell_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	ttl_bc_sampler BCsampler;
+	bc_sampler BCsampler;
 	BCsampler.valB= 1.0/3.0;
 	BCsampler.valC= 1.0/3.0;
 	return sample< DstP, SrcView, F>( BCsampler, src, p, result );
 }
 
-struct ttl_parzen_sampler {};
+struct parzen_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_parzen_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( parzen_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	ttl_bc_sampler BCsampler;
+	bc_sampler BCsampler;
 	BCsampler.valB= 1.0;
 	BCsampler.valC= 0.0;
 	return sample< DstP, SrcView, F>( BCsampler, src, p, result );
 }
 
-struct ttl_keys_sampler {};
+struct keys_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( keys_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
@@ -849,10 +850,10 @@ bool sample( ttl_keys_sampler, const SrcView& src, const point2<F>& p, DstP& res
 	return true;
 }
 
-struct ttl_simon_sampler {};
+struct simon_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( simon_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
@@ -949,10 +950,10 @@ bool sample( ttl_simon_sampler, const SrcView& src, const point2<F>& p, DstP& re
 	return true;
 }
 
-struct ttl_rifman_sampler {};
+struct rifman_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( rifman_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
@@ -1049,13 +1050,13 @@ bool sample( ttl_rifman_sampler, const SrcView& src, const point2<F>& p, DstP& r
 	return true;
 }
 
-struct ttl_lanczos_sampler {};
+struct lanczos_sampler {};
 
 /**
  * @todo
  */
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const F supportWindow, DstP& result )
+bool sample( lanczos_sampler, const SrcView& src, const point2<F>& p, const F supportWindow, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
@@ -1224,45 +1225,45 @@ bool sample( ttl_lanczos_sampler, const SrcView& src, const point2<F>& p, const 
 	return true;
 }
 
-struct ttl_lanczos3_sampler {};
+struct lanczos3_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_lanczos3_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos3_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	return sample< DstP, SrcView, F>( ttl_lanczos_sampler(), src, p, 3.0, result );
+	return sample< DstP, SrcView, F>( lanczos_sampler(), src, p, 3.0, result );
 }
 
-struct ttl_lanczos4_sampler {};
+struct lanczos4_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_lanczos4_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos4_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	return sample< DstP, SrcView, F>( ttl_lanczos_sampler(), src, p, 4.0, result );
+	return sample< DstP, SrcView, F>( lanczos_sampler(), src, p, 4.0, result );
 }
 
-struct ttl_lanczos6_sampler {};
+struct lanczos6_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_lanczos6_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos6_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	return sample< DstP, SrcView, F>( ttl_lanczos_sampler(), src, p, 6.0, result );
+	return sample< DstP, SrcView, F>( lanczos_sampler(), src, p, 6.0, result );
 }
 
-struct ttl_lanczos12_sampler {};
+struct lanczos12_sampler {};
 
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_lanczos12_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( lanczos12_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
-	return sample< DstP, SrcView, F>( ttl_lanczos_sampler(), src, p, 12.0, result );
+	return sample< DstP, SrcView, F>( lanczos_sampler(), src, p, 12.0, result );
 }
 
-struct ttl_gaussian_sampler {};
+struct gaussian_sampler {};
 
 /**
  * @todo
  */
 template <typename DstP, typename SrcView, typename F>
-bool sample( ttl_gaussian_sampler, const SrcView& src, const point2<F>& p, DstP& result )
+bool sample( gaussian_sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
 	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;

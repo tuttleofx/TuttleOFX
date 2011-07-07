@@ -1,4 +1,3 @@
-
 #ifndef _TUTTLE_PLUGIN_LAYOUT_TCC_
 #define _TUTTLE_PLUGIN_LAYOUT_TCC_
 
@@ -9,6 +8,10 @@
 #include <boost/gil/metafunctions.hpp>
 #include <boost/gil/utilities.hpp>
 #include <boost/gil/color_base_algorithm.hpp>
+
+namespace tuttle {
+namespace plugin {
+namespace color {
 
 using namespace boost::gil;
 
@@ -1913,6 +1916,10 @@ inline bool convertToYxyLayout( const rgba32f_pixel_t& src, rgba32f_pixel_t& dst
 	//std::cout << "compute in 32 bits float" << std::endl;
 	convertRgbaToYxya( src, dst );
 	return true;
+}
+
+}
+}
 }
 
 #endif

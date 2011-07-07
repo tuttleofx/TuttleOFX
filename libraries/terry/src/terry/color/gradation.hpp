@@ -1,17 +1,39 @@
-#ifndef _BOOST_GIL_COLOR_DISTRIBUTION_HPP_
-#define _BOOST_GIL_COLOR_DISTRIBUTION_HPP_
+#ifndef _BOOST_GIL_COLOR_GRADATION_HPP_
+#define _BOOST_GIL_COLOR_GRADATION_HPP_
 
 #include <boost/gil/extension/typedefs.hpp>
 
-namespace boost { namespace gil {
+namespace terry {
+namespace color {
 
-namespace colorDistribution{
+/**
+ * @todo
+ * gradation_convert()
+ */
+namespace gradation{
 struct Linear{};
 struct sRGB{};
-struct Cineon{};
+struct Cineon
+{
+	Cineon()
+		: _blackPoint( 95.0 )
+		, _whitePoint( 685.0 )
+		, _gammaSensito( 300.0 )
+	{}
+	Cineon( const double blackPoint, const double whitePoint, const double gammaSensito )
+		: _blackPoint( blackPoint )
+		, _whitePoint( whitePoint )
+		, _gammaSensito( gammaSensito )
+	{}
+	double _blackPoint;
+	double _whitePoint;
+	double _gammaSensito;
+};
 struct Gamma
 {
-	Gamma(){} ///< @todo to remove
+	Gamma()
+	: _gamma( 1.0 )
+	{}
 	Gamma( const double gamma )
 	: _gamma(gamma)
 	{}
@@ -33,9 +55,9 @@ struct channel_color_distribution_t : public std::binary_function<Channel, Chann
 	BOOST_STATIC_ASSERT( sizeof( Channel ) >= 0 ) ; // Error: there is no specialization for this color distribution conversion.
 };
 
-#define GIL_DEFINE_SAME_COLOR_DISTRIBUTION( COLORDISTRIBUTION ) \
+#define GIL_DEFINE_SAME_COLOR_GRADATION( COLORGRADATION ) \
     template < typename Channel > \
-    struct channel_color_distribution_t< Channel, COLORDISTRIBUTION, COLORDISTRIBUTION > \
+    struct channel_color_distribution_t< Channel, COLORGRADATION, COLORGRADATION > \
 		: public std::binary_function< Channel, Channel, Channel > \
 	{ \
 		typename channel_traits<Channel>::reference operator()( typename channel_traits<Channel>::const_reference ch1, \
@@ -51,7 +73,7 @@ struct channel_color_distribution_t : public std::binary_function<Channel, Chann
  * Formula taken from Computational technology by Kang.
  */
 template< typename Channel >
-struct channel_color_distribution_t<Channel, colorDistribution::Linear, colorDistribution::sRGB> : public std::binary_function<Channel, Channel, Channel>
+struct channel_color_distribution_t<Channel, gradation::Linear, gradation::sRGB> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
 
@@ -80,7 +102,7 @@ struct channel_color_distribution_t<Channel, colorDistribution::Linear, colorDis
  * Formula taken from Computational technology by Kang.
  */
 template< typename Channel >
-struct channel_color_distribution_t<Channel, colorDistribution::sRGB, colorDistribution::Linear> : public std::binary_function<Channel, Channel, Channel>
+struct channel_color_distribution_t<Channel, gradation::sRGB, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
 
@@ -116,38 +138,38 @@ struct channel_color_distribution_t : public std::binary_function<Channel, Chann
 {
 	typename channel_traits<Channel>::reference operator()( typename channel_traits<Channel>::const_reference ch1,
 	                                                        typename channel_traits<Channel>::reference ch2,
-															const IN& inDistribution = In(),
-															const OUT& outDistribution = OUT() ) const
+															const IN& inGradation = In(),
+															const OUT& outGradation = OUT() ) const
 	{
-		channel_color_distribution_t<Channel, IN, colorDistribution::Linear>( ch1, ch2 );
-		channel_color_distribution_t<Channel, colorDistribution::Linear, OUT>( ch2, ch2 );
+		channel_color_distribution_t<Channel, IN, gradation::Linear>( ch1, ch2 );
+		channel_color_distribution_t<Channel, gradation::Linear, OUT>( ch2, ch2 );
 		return ch2;
 	}
 };
 */
 template< typename Channel,
           class OUT >
-struct channel_color_distribution_t<Channel, colorDistribution::sRGB, OUT> : public std::binary_function<Channel, Channel, Channel>
+struct channel_color_distribution_t<Channel, gradation::sRGB, OUT> : public std::binary_function<Channel, Channel, Channel>
 {
-	typedef colorDistribution::sRGB IN;
+	typedef gradation::sRGB IN;
 	typename channel_traits<Channel>::reference operator()( typename channel_traits<Channel>::const_reference ch1,
 	                                                        typename channel_traits<Channel>::reference ch2 ) const
 	{
-		channel_color_distribution_t<Channel, IN, colorDistribution::Linear>( ch1, ch2 );
-		channel_color_distribution_t<Channel, colorDistribution::Linear, OUT>( ch2, ch2 );
+		channel_color_distribution_t<Channel, IN, gradation::Linear>( ch1, ch2 );
+		channel_color_distribution_t<Channel, gradation::Linear, OUT>( ch2, ch2 );
 		return ch2;
 	}
 };
 
-GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Linear );
-GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::sRGB );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Cineon );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Gamma ); // may have a gamma with a different value
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::Panalog );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::REDLog );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::ViperLog );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::REDSpace );
-//GIL_DEFINE_SAME_COLOR_DISTRIBUTION( colorDistribution::AlexaLogC );
+GIL_DEFINE_SAME_COLOR_GRADATION( gradation::Linear );
+GIL_DEFINE_SAME_COLOR_GRADATION( gradation::sRGB );
+//GIL_DEFINE_SAME_COLOR_GRADATION( gradation::Cineon );
+//GIL_DEFINE_SAME_COLOR_GRADATION( gradation::Gamma ); // may have a gamma with a different value
+//GIL_DEFINE_SAME_COLOR_GRADATION( gradation::Panalog );
+//GIL_DEFINE_SAME_COLOR_GRADATION( gradation::REDLog );
+//GIL_DEFINE_SAME_COLOR_GRADATION( gradation::ViperLog );
+//GIL_DEFINE_SAME_COLOR_GRADATION( gradation::REDSpace );
+//GIL_DEFINE_SAME_COLOR_GRADATION( gradation::AlexaLogC );
 
 template< typename Pixel,
           class IN,

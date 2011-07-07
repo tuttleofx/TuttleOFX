@@ -22,10 +22,10 @@ template <
 void colorspace_pixels_progress( ttlc::ColorSpaceAPI*			colorSpaceAPI,
 				 const ttlc::EParamGradationLaw		eGradationLawIn,
 				 const ttlc::EParamLayout		eLayoutIn,
-				 const ttlc::EParamTemp			eTempIn,
+				 const ttlc::EColorTemperature			eTempIn,
 				 const ttlc::EParamGradationLaw		eGradationLawOut,
 				 const ttlc::EParamLayout		eLayoutOut,
-				 const ttlc::EParamTemp			eTempOut,
+				 const ttlc::EColorTemperature			eTempOut,
 				 const SrcView&				src_view,
 				 const DstView&				dst_view,
 				 tuttle::plugin::IProgress*		p )

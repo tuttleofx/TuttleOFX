@@ -9,7 +9,7 @@
 
 namespace tuttle {
 namespace plugin {
-namespace color{
+namespace color {
 
 enum EParamReferenceSpace
 {
@@ -49,22 +49,22 @@ enum EParamLayout
 	eParamLayoutYxy
 };
 
-enum EParamTemp
+enum EColorTemperature
 {
-	eParamTempA = 0,
-	eParamTempB,
-	eParamTempC,
-	eParamTempD50,
-	eParamTempD55,
-	eParamTempD58,
-	eParamTempD65,
-	eParamTempD75,
-	eParamTemp9300,
-	eParamTempE,
-	eParamTempF2,
-	eParamTempF7,
-	eParamTempF11,
-	eParamTempDCIP3
+	eColorTemperatureA = 0,
+	eColorTemperatureB,
+	eColorTemperatureC,
+	eColorTemperatureD50,
+	eColorTemperatureD55,
+	eColorTemperatureD58,
+	eColorTemperatureD65,
+	eColorTemperatureD75,
+	eColorTemperature9300,
+	eColorTemperatureE,
+	eColorTemperatureF2,
+	eColorTemperatureF7,
+	eColorTemperatureF11,
+	eColorTemperatureDCIP3
 };
 
 typedef std::map  < size_t, std::string > ColorSpaceMap;
