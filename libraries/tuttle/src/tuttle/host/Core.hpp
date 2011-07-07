@@ -8,6 +8,16 @@
 
 #include <tuttle/common/patterns/Singleton.hpp>
 
+#include <boost/preprocessor/stringize.hpp>
+
+
+#define TUTTLE_HOST_VERSION_MAJOR 0
+#define TUTTLE_HOST_VERSION_MINOR 0
+#define TUTTLE_HOST_VERSION_MICRO 0
+
+#define TUTTLE_HOST_VERSION_STR BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MAJOR) "." BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MINOR) "." BOOST_PP_STRINGIZE(TUTTLE_HOST_VERSION_MICRO)
+
+
 namespace tuttle {
 namespace host {
 

@@ -1,5 +1,4 @@
 #include "FFMpegReaderPlugin.hpp"
-#include "FFMpegReaderProcess.hpp"
 
 #include <boost/numeric/conversion/cast.hpp>
 

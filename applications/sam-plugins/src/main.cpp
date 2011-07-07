@@ -50,19 +50,32 @@ std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)
 
 void printProperties( const tth::ofx::property::OfxhSet properties, std::string context="" )
 {
-	color ? TUTTLE_COUT( kColorRed ) : TUTTLE_COUT( " " );
-	if(context.size() == 0)
-		TUTTLE_COUT( "Number of properties : " << properties.getSize() );
+	if( color )
+	{
+		TUTTLE_COUT( kColorRed );
+	}
 	else
+	{
+		TUTTLE_COUT( " " );
+	}
+	if(context.size() == 0)
+	{
+		TUTTLE_COUT( "Number of properties : " << properties.getSize() );
+	}
+	else
+	{
 		TUTTLE_COUT( "Number of properties for \"" << context << "\": " << properties.getSize() );
+	}
 
 	TUTTLE_COUT( "RW ModifiedBy\tType\tSize\t"<<std::setw (50)  << std::left << "Property Name" << "\tDefault Values");
 	tth::ofx::property::PropertyMap propMap = properties.getMap();
 	for( tth::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
 	{
 		const tth::ofx::property::OfxhProperty& prop = *( itProperty->second );
-		color ?
-		TUTTLE_COUT(	kColorGreen <<
+		if( color )
+		{
+			TUTTLE_COUT(
+				kColorGreen <<
 				( prop.getPluginReadOnly() ? "r- " : "rw " ) <<
 				( prop.getModifiedBy() == tth::ofx::property::eModifiedByHost ? "host  \t" : "plugin\t" ) <<
 				( tth::ofx::property::mapTypeEnumToString( prop.getType() ) ) << "\t[" <<
@@ -71,17 +84,20 @@ void printProperties( const tth::ofx::property::OfxhSet properties, std::string 
 				std::setw (50)  << std::left <<
 				itProperty->first << kColorGreen << "\t{ " <<
 				getDefaultValues(prop) << " }"
-		)
-		:
-		TUTTLE_COUT(	( prop.getPluginReadOnly() ? "r- " : "rw " ) <<
+			);
+		}
+		else
+		{
+			TUTTLE_COUT(
+				( prop.getPluginReadOnly() ? "r- " : "rw " ) <<
 				( prop.getModifiedBy() == tth::ofx::property::eModifiedByHost ? "host  \t" : "plugin\t" ) <<
 				( tth::ofx::property::mapTypeEnumToString( prop.getType() ) ) << "\t[" <<
 				prop.getDimension() << "]\t" <<
 				std::setw (50)  << std::left <<
 				itProperty->first << "\t{ " <<
 				getDefaultValues(prop) << " }"
-		)
-		;
+			);
+		}
 	}
 }
 
@@ -104,28 +120,42 @@ void getPluginProperties( const std::string& plugName )
 	TUTTLE_COUT("API version:\t\t"		<< plug->getApiVersion() );
 
 	// list contexts of plugin
-	color ? TUTTLE_COUT(kColorGreen <<"Contexts:") : TUTTLE_COUT("Contexts:");
+	if( color )
+	{
+		TUTTLE_COUT( kColorGreen << "Contexts:" );
+	}
+	else
+	{
+		TUTTLE_COUT("Contexts:");
+	}
 	tth::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet contexts = plug->getContexts();
 	tth::ofx::imageEffect::OfxhImageEffectPlugin::ContextSet::iterator itContext;
 	std::string strContexts;
-	for (itContext = contexts.begin(); itContext != contexts.end(); itContext++)
+	for( itContext = contexts.begin(); itContext != contexts.end(); ++itContext )
 	{
 		strContexts += *itContext + ", ";
 	}
 	strContexts.erase(strContexts.size()-2, 2);
-	TUTTLE_COUT( "[ " << strContexts << " ]");
+	TUTTLE_COUT( "[ " << strContexts << " ]" );
 	itContext = contexts.begin();
 
 	// list properties of plugin for the first context
-	if(properties)
+	if( properties )
 	{
-		color ? TUTTLE_COUT( "\n"<< kColorRed << "Properties" << kColorStd) : TUTTLE_COUT( "\nProperties") ;
+		if( color )
+		{
+			TUTTLE_COUT( "\n"<< kColorRed << "Properties" << kColorStd);
+		}
+		else
+		{
+			TUTTLE_COUT( "\nProperties");
+		}
 
 		const tth::ofx::property::OfxhSet properties = plug->getDescriptorInContext( *itContext ).getProperties();
 		printProperties( properties );
 	}
 	tth::ofx::imageEffect::OfxhImageEffectNode* plugInst = NULL;
-	if(clips | parameters)
+	if( clips | parameters )
 	{
 		if( plug->supportsContext( kOfxImageEffectContextReader ) )
 		{
@@ -153,62 +183,97 @@ void getPluginProperties( const std::string& plugName )
 			return;
 		}
 	}
-	if(clips)
+	if( clips )
 	{
-		color ? TUTTLE_COUT( "\n"<< kColorRed << "Clips") : TUTTLE_COUT( "\nClips") ;
+		if( color )
+		{
+			TUTTLE_COUT( "\n"<< kColorRed << "Clips");
+		}
+		else
+		{
+			TUTTLE_COUT( "\nClips");
+		}
 		typedef std::map<std::string, tth::ofx::attribute::OfxhClipImageDescriptor*> ContextMap;
 
 		// get contexts
 		ContextMap::const_iterator it = plugInst->getDescriptor( ).getClips().begin();
 		std::string strClipContexts;
-		for ( ; it != plugInst->getDescriptor( ).getClips().end(); it++ )
+		for( ; it != plugInst->getDescriptor( ).getClips().end(); ++it )
+		{
 			strClipContexts += (*it).first + ", " ;
+		}
 		strClipContexts.erase( strClipContexts.size()-2, 2 );
-		color ? TUTTLE_COUT( kColorGreen << "[ " << strClipContexts << " ]" << kColorStd ): TUTTLE_COUT( "[ " << strClipContexts << " ]" );
+		if( color )
+		{
+			TUTTLE_COUT( kColorGreen << "[ " << strClipContexts << " ]" << kColorStd );
+		}
+		else
+		{
+			TUTTLE_COUT( "[ " << strClipContexts << " ]" );
+		}
 
 		// get propeties in each context
 		ContextMap::const_iterator it2 = plugInst->getDescriptor( ).getClips().begin();
-		for ( ; it2 != plugInst->getDescriptor().getClips().end(); it2++ )
+		for( ; it2 != plugInst->getDescriptor().getClips().end(); ++it2 )
+		{
 			printProperties( (*it2).second->getProperties(), (*it2).first );
+		}
 	}
-	if(parameters)
+	
+	if( parameters )
 	{
-		color ? TUTTLE_COUT( "\n"<< kColorRed << "Parameters") : TUTTLE_COUT( "\nParameters") ;
+		if( color )
+		{
+			TUTTLE_COUT( "\n"<< kColorRed << "Parameters" );
+		}
+		else
+		{
+			TUTTLE_COUT( "\nParameters" );
+		}
 		typedef std::map<std::string, tth::ofx::attribute::OfxhParamDescriptor*> ParamDescriptorMap;
 
 		// get contexts
 		ParamDescriptorMap::const_iterator it = plugInst->getDescriptor( ).getParams().begin();
 		std::string strParamsContexts;
-		for ( ; it != plugInst->getDescriptor( ).getParams().end(); it++ )
-			strParamsContexts += (*it).first + ", " ;
+		for( ; it != plugInst->getDescriptor( ).getParams().end(); ++it )
+		{
+			strParamsContexts += (*it).first + ", ";
+		}
 		strParamsContexts.erase( strParamsContexts.size()-2, 2 );
-		color ? TUTTLE_COUT( kColorGreen << "[ " << strParamsContexts << " ]" << kColorStd) : TUTTLE_COUT( "[ " << strParamsContexts << " ]" );
+		if( color )
+		{
+			TUTTLE_COUT( kColorGreen << "[ " << strParamsContexts << " ]" << kColorStd );
+		}
+		else
+		{
+			TUTTLE_COUT( "[ " << strParamsContexts << " ]" );
+		}
 
 		// get propeties in each context
 		ParamDescriptorMap::const_iterator it2 = plugInst->getDescriptor( ).getParams().begin();
-		for ( ; it2 != plugInst->getDescriptor().getParams().end(); it2++ )
+		for( ; it2 != plugInst->getDescriptor().getParams().end(); it2++ )
+		{
 			printProperties( (*it2).second->getProperties(), (*it2).first );
-
-/*
-
-
+		}
+		/*
 		const tth::ofx::property::OfxhSet paramProperties = plugInst->getDescriptor( ).getParamList().front().getProperties();
-		printProperties( paramProperties, "" );*/
+		printProperties( paramProperties, "" );
+		*/
 	}
 }
 
 bool isNotFiltered( std::string plugName, std::vector<std::string>& filters)
 {
-	if(filters.size()==0)
+	if( filters.size() == 0 )
 		return true;
 	
-	for(unsigned int i=0; i<filters.size(); i++)
+	for( std::size_t i = 0; i < filters.size(); ++i )
 	{
 		std::string filter(filters.at(i));
 		filter = boost::regex_replace( filter, boost::regex( "\\*" ), "(.*)"  );
 		filter = boost::regex_replace( filter, boost::regex( "\\?" ), "(.)"  );
 
-		if (regex_match(plugName, boost::regex(filter)))
+		if( regex_match( plugName, boost::regex(filter) ) )
 			return true;
 	}
 	return false;
@@ -224,14 +289,14 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("help,h"		, "show this help")
-		("all,a"		, "show list of all plugins available")
-		("filter,f"		, bpo::value<std::string>(), "filtering the output for research a plugin. ex: -f \"*blur,*tuttle*\"")
-		("color"		, "color the output")
-		("verbose,v"		, "explain what is being done")
-		("properties"		, "list properties of the OpenFX plugin")
-		("clips"		, "list clips of the OpenFX plugin")
-		("parameters"		, "list parameters of the OpenFX plugin")
+		("help,h"     , "show this help")
+		("all,a"      , "show list of all plugins available")
+		("filter,f"   , bpo::value<std::string>(), "filtering the output for research a plugin. ex: -f \"*blur,*tuttle*\"")
+		("color"      , "color the output")
+		("verbose,v"  , "explain what is being done")
+		("properties" , "list properties of the OpenFX plugin")
+		("clips"      , "list clips of the OpenFX plugin")
+		("parameters" , "list parameters of the OpenFX plugin")
 	;
 	
 	// describe hidden options
@@ -247,25 +312,22 @@ int main( int argc, char** argv )
 	bpo::options_description cmdline_options;
 	cmdline_options.add(mainOptions).add(hidden);
 
-	bpo::positional_options_description pd;
-	pd.add("", -1);
-	
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
 	// get environnement options and parse them
-	if( std::getenv("SAM_PLUGINS_OPTIONS") != NULL)
+	if( const char* env_ptr = std::getenv("SAM_PLUGINS_OPTIONS") )
 	{
 		std::vector<std::string> envOptions;
-		std::string env = std::getenv("SAM_PLUGINS_OPTIONS");
+		std::string env( env_ptr );
 		envOptions.push_back( env );
 		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
 
 	bpo::notify(vm);
 
-	if (vm.count("help"))
+	if( vm.count("help") )
 	{
 		TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
 		TUTTLE_COUT( "NAME\n\tsam-plugins - show informations about OpenFX plugins\n" );
@@ -275,26 +337,28 @@ int main( int argc, char** argv )
 	}
 	
 	// defines plugins
-	if (vm.count("plugin"))
+	if( vm.count("plugin") )
 	{
 		plugins = vm["plugin"].as< std::vector<std::string> >();
 	}
 	
-	if (vm.count("filter"))
+	if( vm.count("filter") )
 	{
 		bal::split( filters, vm["filter"].as<std::string>(), bal::is_any_of(","));
 	}
 	
-	if (vm.count("all") | (plugins.size() == 0) )
+	if( vm.count("all") | (plugins.size() == 0) )
 	{
 		tth::Core::instance().preload();
 		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
 		
-		for(unsigned int i=0; i<plugs.size(); i++)
+		for( std::size_t i = 0; i < plugs.size(); ++i )
 		{
-			std::string plugName = plugs.at(i)->getRawIdentifier();
-			if(isNotFiltered( plugName, filters))
-				TUTTLE_COUT( plugs.at(i)->getRawIdentifier() );
+			const std::string plugName = plugs.at(i)->getRawIdentifier();
+			if( isNotFiltered( plugName, filters) )
+			{
+				TUTTLE_COUT( plugName );
+			}
 		}
 		return 0;
 	}
@@ -333,24 +397,23 @@ int main( int argc, char** argv )
 		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
 
 		unsigned int founded;
-		BOOST_FOREACH( std::string plugin, plugins )
+		BOOST_FOREACH( const std::string& plugin, plugins )
 		{
 			std::vector< std::string > termsPlugin;
 			bal::split( termsPlugin, plugin, bal::is_any_of("."));
 
-			for( unsigned int i=0; i<plugs.size(); i++ )
+			for( std::size_t i=0; i<plugs.size(); i++ )
 			{
 				founded = 0;
-				for( unsigned int t=0; t<termsPlugin.size(); t++ )
+				for( std::size_t t=0; t<termsPlugin.size(); t++ )
 				{
-					size_t found1 = plugs.at(i)->getRawIdentifier().find( "."+termsPlugin.at(t) );
-					size_t found2 = plugs.at(i)->getRawIdentifier().find( termsPlugin.at(t)+"." );
-					if ( ( found1 != std::string::npos ) | ( found2 != std::string::npos ) )
+					std::size_t found1 = plugs.at(i)->getRawIdentifier().find( "."+termsPlugin.at(t) );
+					std::size_t found2 = plugs.at(i)->getRawIdentifier().find( termsPlugin.at(t)+"." );
+					if( ( found1 == std::string::npos ) && ( found2 == std::string::npos ) )
 					{
-						founded++;
-					}
-					else
 						break;
+					}
+					++founded;
 					if( founded == termsPlugin.size() )
 					{
 						/*TUTTLE_COUT("plug is " << plugs.at(i)->getRawIdentifier() );*/
@@ -360,32 +423,47 @@ int main( int argc, char** argv )
 			}
 		}
 
-		color ?
-		TUTTLE_COUT( kColorRed << "################################################################################" << kColorStd )
-		:
-		TUTTLE_COUT( "################################################################################")
-		;
-
-		BOOST_FOREACH( std::string plugin, foundPlugins )
+		if( color )
 		{
-			color ?
-			TUTTLE_COUT( kColorBlue << "PLUGIN DESCRIPTION" )
-			:
-			TUTTLE_COUT( "PLUGIN DESCRIPTION" )
-			;
+			TUTTLE_COUT( kColorRed << "################################################################################" << kColorStd );
+		}
+		else
+		{
+			TUTTLE_COUT( "################################################################################");
+		}
+
+		BOOST_FOREACH( const std::string& plugin, foundPlugins )
+		{
+			if( color )
+			{
+				TUTTLE_COUT( kColorBlue << "PLUGIN DESCRIPTION" );
+			}
+			else
+			{
+				TUTTLE_COUT( "PLUGIN DESCRIPTION" );
+			}
 			getPluginProperties( plugin );
-			color ?
-			TUTTLE_COUT( kColorRed << "################################################################################" << kColorStd )
-			:
-			TUTTLE_COUT( "################################################################################")
-			;
+			if( color )
+			{
+				TUTTLE_COUT( kColorRed << "################################################################################" << kColorStd );
+			}
+			else
+			{
+				TUTTLE_COUT( "################################################################################");
+			}
 		}
 	}
-	catch(... )
+	catch( ... )
 	{
-		TUTTLE_COUT( kColorRed );
-		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
-		TUTTLE_COUT( kColorStd );
+		if( color )
+		{
+			TUTTLE_COUT( kColorRed );
+		}
+		TUTTLE_CERR( boost::current_exception_diagnostic_information() );
+		if( color )
+		{
+			TUTTLE_COUT( kColorStd );
+		}
 	}
 
 	return 0;

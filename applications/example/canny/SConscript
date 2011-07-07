@@ -1,6 +1,7 @@
-import os.path
 Import( 'project' )
 Import( 'libs' )
+
+import os.path
 
 libraries = [ libs.openfxHack,
 			  libs.tuttleHost,
@@ -10,18 +11,5 @@ libraries = [ libs.openfxHack,
 			  libs.png,
 			 ]
 
-name = project.getName()
-sourcesDir = 'src'
-samSources = project.scanFiles( [sourcesDir] )
-
-samEnv = project.createEnv( libraries )
-samEnv.Append( CPPPATH=sourcesDir )
-sam = samEnv.Program( target=name, source=samSources )
-
-outputDir = os.path.join(project.inOutputBin(),'example')
-samInstall = samEnv.Install( outputDir, sam )
-samEnv.Alias(name, samInstall )
-samEnv.Alias('all', samInstall )
-
-
+project.Program( project.getName(), dirs=['src'], libraries=libraries, installDir=os.path.join(project.inOutputBin(),'example') )
 
