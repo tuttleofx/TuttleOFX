@@ -6,7 +6,7 @@
 #include <tuttle/plugin/image/gil/algorithm.hpp>
 #include <tuttle/plugin/image/gil/copy.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <boost/gil/extension/color/distribution.hpp>
+#include <terry/color/gradation.hpp>
 #include <boost/gil/extension/typedefs.hpp>
 
 #include <boost/mpl/if.hpp>
@@ -41,12 +41,12 @@ void ColorDistributionProcess<View>::processSwitchAlpha( const bool processAlpha
 	using namespace boost::gil;
 	if( processAlpha )
 	{
-		transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, OUT>(), *this );
+		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(), *this );
 	}
 	else
 	{
 		/// @todo do not apply process on alpha directly inside transform, with a "channel_for_each_if_channel"
-		transform_pixels_progress( src, dst, transform_pixel_color_distribution_t<IN, OUT>(), *this );
+		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(), *this );
 
 		// temporary solution copy alpha channel
 		copy_channel_if_exist<alpha_t>( src, dst );
@@ -62,10 +62,31 @@ void ColorDistributionProcess<View>::processSwitchOut( const EParamDistribution 
 	switch( out )
 	{
 		case eParamDistribution_linear:
-			processSwitchAlpha<IN, boost::gil::colorDistribution::Linear>( processAlpha, src, dst );
+			processSwitchAlpha<IN, terry::color::gradation::Linear>( processAlpha, src, dst );
 			break;
 		case eParamDistribution_sRGB:
-			processSwitchAlpha<IN, boost::gil::colorDistribution::sRGB>( processAlpha, src, dst );
+			processSwitchAlpha<IN, terry::color::gradation::sRGB>( processAlpha, src, dst );
+			break;
+		case eParamDistribution_cineon:
+			processSwitchAlpha<IN, terry::color::gradation::Cineon>( processAlpha, src, dst );
+			break;
+		case eParamDistribution_gamma:
+			processSwitchAlpha<IN, terry::color::gradation::Gamma>( processAlpha, src, dst );
+			break;
+		case eParamDistribution_panalog:
+			processSwitchAlpha<IN, terry::color::gradation::Panalog>( processAlpha, src, dst );
+			break;
+		case eParamDistribution_REDLog:
+			processSwitchAlpha<IN, terry::color::gradation::REDLog>( processAlpha, src, dst );
+			break;
+		case eParamDistribution_ViperLog:
+			processSwitchAlpha<IN, terry::color::gradation::ViperLog>( processAlpha, src, dst );
+			break;
+		case eParamDistribution_REDSpace:
+			processSwitchAlpha<IN, terry::color::gradation::REDSpace>( processAlpha, src, dst );
+			break;
+		case eParamDistribution_AlexaLogC:
+			processSwitchAlpha<IN, terry::color::gradation::AlexaLogC>( processAlpha, src, dst );
 			break;
 	}
 }
@@ -77,10 +98,31 @@ void ColorDistributionProcess<View>::processSwitchInOut( const EParamDistributio
 	switch( in )
 	{
 		case eParamDistribution_linear:
-			processSwitchOut<boost::gil::colorDistribution::Linear>( out, processAlpha, src, dst );
+			processSwitchOut<terry::color::gradation::Linear>( out, processAlpha, src, dst );
 			break;
 		case eParamDistribution_sRGB:
-			processSwitchOut<boost::gil::colorDistribution::sRGB>( out, processAlpha, src, dst );
+			processSwitchOut<terry::color::gradation::sRGB>( out, processAlpha, src, dst );
+			break;
+		case eParamDistribution_cineon:
+			processSwitchOut<terry::color::gradation::Cineon>( out, processAlpha, src, dst );
+			break;
+		case eParamDistribution_gamma:
+			processSwitchOut<terry::color::gradation::Gamma>( out, processAlpha, src, dst );
+			break;
+		case eParamDistribution_panalog:
+			processSwitchOut<terry::color::gradation::Panalog>( out, processAlpha, src, dst );
+			break;
+		case eParamDistribution_REDLog:
+			processSwitchOut<terry::color::gradation::REDLog>( out, processAlpha, src, dst );
+			break;
+		case eParamDistribution_ViperLog:
+			processSwitchOut<terry::color::gradation::ViperLog>( out, processAlpha, src, dst );
+			break;
+		case eParamDistribution_REDSpace:
+			processSwitchOut<terry::color::gradation::REDSpace>( out, processAlpha, src, dst );
+			break;
+		case eParamDistribution_AlexaLogC:
+			processSwitchOut<terry::color::gradation::AlexaLogC>( out, processAlpha, src, dst );
 			break;
 	}
 }

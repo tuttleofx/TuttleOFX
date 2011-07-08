@@ -61,7 +61,14 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
 	in->setHint( "Input color distribution." );
 	in->appendOption( kParamDistribution_linear );
 	in->appendOption( kParamDistribution_sRGB );
-	//	in->appendOption( kParamDistribution_cineon );
+	in->appendOption( kParamDistribution_cineon );
+	in->appendOption( kParamDistribution_gamma );
+	in->appendOption( kParamDistribution_panalog );
+	in->appendOption( kParamDistribution_REDLog );
+	in->appendOption( kParamDistribution_ViperLog );
+	in->appendOption( kParamDistribution_REDSpace );
+	in->appendOption( kParamDistribution_AlexaLogC );
+
 	//	in->appendOption( kParamDistribution_rec709 );
 	//	in->appendOption( kParamDistribution_rec601 );
 	in->setDefault( 0 );
@@ -71,7 +78,14 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
 	out->setHint( "Output color distribution." );
 	out->appendOption( kParamDistribution_linear );
 	out->appendOption( kParamDistribution_sRGB );
-	//	out->appendOption( kParamDistribution_cineon );
+	out->appendOption( kParamDistribution_cineon );
+	out->appendOption( kParamDistribution_gamma );
+	out->appendOption( kParamDistribution_panalog );
+	out->appendOption( kParamDistribution_REDLog );
+	out->appendOption( kParamDistribution_ViperLog );
+	out->appendOption( kParamDistribution_REDSpace );
+	out->appendOption( kParamDistribution_AlexaLogC );
+
 	//	out->appendOption( kParamDistribution_rec709 );
 	//	out->appendOption( kParamDistribution_rec601 );
 	out->setDefault( 0 );
