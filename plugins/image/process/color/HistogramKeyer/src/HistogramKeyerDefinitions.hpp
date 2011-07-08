@@ -2,6 +2,22 @@
 #define _TUTTLE_PLUGIN_HISTOGRAMKEYER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
+#include "tuttle/plugin/ImageGilProcessor.hpp"
+
+#include <tuttle/plugin/opengl/gl.h>
+#include <tuttle/plugin/interact/interact.hpp>
+#include <tuttle/plugin/interact/overlay.hpp>
+#include <tuttle/plugin/image/ofxToGil.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+
+#include <ofxsImageEffect.h>
+#include <ofxsInteract.h>
+#include <boost/gil/gil_all.hpp>
+#include <boost/gil/extension/algorithm.hpp>
+#include <boost/scoped_ptr.hpp>
+#include <boost/gil/extension/color/hsl.hpp>
+
+#include <vector>
 
 namespace tuttle {
 namespace plugin {
@@ -11,7 +27,6 @@ typedef long Number;
 const static std::size_t nbCurves = 6;
 const static std::size_t nbCurvesRGB = 3;
 const static std::size_t nbCurvesHSL = 3;
-static std::size_t nbStep = 255;
 
 //Curves params
 const static std::string kParamRGBColorSelection = "colorRGBSelection";
@@ -90,11 +105,40 @@ const static std::string kOutputListParamOpt2 = "black & white";
 //Global display check box
 const static std::string kGlobalDisplay = "global display";
 
+typedef OfxRGBColourF Color;
+
+//Histograms color (struct)
+struct HistogramColor
+{
+	 OfxRGBColourF _colorBorder; // border color
+	 OfxRGBColourF _colorFill;   // filling color
+};
+
+//Histograms colors
+static const OfxRGBColourF redFilling={1.0f,0.2f,0.2f};
+static const OfxRGBColourF greenFilling={0.2f,1.0f,0.2f};
+static const OfxRGBColourF blueFilling={0.2f,0.2f,1.0f};
+
+static const OfxRGBColourF redBorder = {0.8f,0.0f,0.0f};
+static const OfxRGBColourF greenBorder = {0.0f,0.8f,0.0f};
+static const OfxRGBColourF blueBorder = {0.0f,0.0f,0.8f};
+
+static const HistogramColor redHisto = {redBorder,redFilling};
+static const HistogramColor greenHisto = {greenBorder,greenFilling};
+static const HistogramColor blueHisto = {blueBorder,blueFilling};
+
+//Average bar color
+static const OfxRGBColourF averageFilling={0.2f,0.2f,1.0f};
+static const OfxRGBColourF averageBorder={1.0f,0.84f,0.0f};
+static const HistogramColor averageHisto = {averageBorder,averageFilling};
+
+
 ///@todo: remove when Nuke overlay option works 
 //Translation (separate HSL from RGB)
 const static float kTranslationHSL = 200.0f;
 //Translation (separate HSL from RGB)
 const static float kTranslationRGB = 200.0f;
+
 
 }
 }

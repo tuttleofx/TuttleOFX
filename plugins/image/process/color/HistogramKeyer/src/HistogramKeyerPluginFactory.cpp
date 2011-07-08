@@ -113,8 +113,9 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		curvesHSL->setUIColour( 1, {0,1,0} );
 		curvesHSL->setUIColour( 2, {0,0,1} );
 
-		curvesRGB->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HistogramKeyerParamOverlayDescriptor>() );
-		curvesHSL->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HistogramKeyerParamOverlayDescriptor>() );
+		curvesRGB->setInteractDescriptor( new OFX::DefaultParamInteractWrap<RGBParamOverlayDescriptor>() );	//attach parametric curve to RGBOverlay
+		curvesHSL->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HSLParamOverlayDescriptor>() );	//attach parametric curve to HSLOverlay
+		
 		//add curves to their groups
 		curvesRGB->setParent(groupRGB);
 		curvesHSL->setParent(groupHSL);
@@ -257,8 +258,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* HistogramKeyerPluginFactory::createInstance( OfxImageEffectHandle handle,
-                                                            OFX::EContext context )
+OFX::ImageEffect* HistogramKeyerPluginFactory::createInstance( OfxImageEffectHandle handle,OFX::EContext context )
 {
 	return new HistogramKeyerPlugin( handle );
 }

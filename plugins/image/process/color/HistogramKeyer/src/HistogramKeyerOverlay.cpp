@@ -1,156 +1,123 @@
 #include "HistogramKeyerOverlay.hpp"
 #include "HistogramKeyerPlugin.hpp"
 #include "HistogramKeyerHistogramDisplay.hpp"
-#include "tuttle/plugin/ImageGilProcessor.hpp"
-
-#include <tuttle/plugin/opengl/gl.h>
-#include <tuttle/plugin/interact/interact.hpp>
-#include <tuttle/plugin/interact/overlay.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsInteract.h>
-#include <boost/gil/gil_all.hpp>
-#include <boost/gil/extension/algorithm.hpp>
-#include <boost/scoped_ptr.hpp>
-
-#include <vector>
 
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
 
-HistogramKeyerOverlay::HistogramKeyerOverlay( OfxInteractHandle handle, OFX::ImageEffect* effect )
-	: OFX::OverlayInteract( handle ), _infos( effect )
+HistogramKeyerOverlay::HistogramKeyerOverlay(OfxInteractHandle handle,OFX::ImageEffect* effect): OFX::OverlayInteract(handle), _infos(effect)
 {    
-	_plugin = static_cast<HistogramKeyerPlugin*>( _effect );
-	_histogramDisplay = HistogramKeyerHistogramDisplay(_plugin);
-	_penDown = false;
-	_keyDown = false;
+	_plugin = static_cast<HistogramKeyerPlugin*>(_effect);
+	_hslParam = HSLOverlay(_plugin);
+	_rgbParam = RGBOverlay(_plugin);
 	
-	_size = _plugin->_clipSrc->getPixelRodSize(NULL);
-	//allocate and initialize bool img tab 2D
-	bool_2d::extent_gen extents;
-	_imgBool.resize(extents[_size.y][_size.x]);
+	_size = _plugin->_clipSrc->getPixelRodSize(NULL);			//size of the current source clip
+	_penDown = false;											//Mouse is not clicked down by default
+	_keyDown = false;											//Ctrl key is not pressed by default 	
+	_plugin->addRefOverlayData();								//add reference to Overlay data
 	
-	for(unsigned int i=0; i<_size.y; ++i)
-	{
-		for(unsigned int j=0; j<_size.x; ++j)
-			_imgBool[i][j] = 0;
-	}
+	_isFirstTime = true; //temporary
+}	
+
+HistogramKeyerOverlay::~HistogramKeyerOverlay()
+{
+	_plugin->releaseOverlayData();	//release Overlay data
 }
 
 bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
-{
-	//gloabl display option
+{	
+	/*Gloabl display option*/
 	if(_plugin->_paramGlobalDisplaySelection->getValue() == false)
 		return false;
+	if(_isFirstTime)
+	{
+		getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
+		_isFirstTime = false;
+	}
 	
-	//draw something on screen
-	typedef boost::gil::point2<Scalar> Point2;
+	/*Draw component*/
 	bool displaySomething = false;
-
-	if(_plugin->_isCleaned) // clean button pressed
-	{
-		//Clear all the OpenGL scene
-		glClear(GL_COLOR_BUFFER_BIT);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glMatrixMode(GL_MODELVIEW);
-		
-		for(unsigned int i=0; i<_size.y; ++i) // remove user selection
-		{
-			for(unsigned int j=0; j<_size.x; ++j)
-				_imgBool[i][j] = 0;
-		}
-		//reset average
-		_plugin->_averageData._averageRed = 0;			//R
-		_plugin->_averageData._averageGreen = 0;		//G
-		_plugin->_averageData._averageBlue = 0;			//B
-		_plugin->_averageData._averageHue = 0;			//H
-		_plugin->_averageData._averageSaturation = 0;	//S
-		_plugin->_averageData._averageLightness = 0;	//L
-		_plugin->_isCleaned = false;
-	}
-	
-	if(_plugin->_isNbStepChanged) //nbSteps option modified
-	{
-		_plugin->_selectionData._step = _plugin->_data._step;
-		_plugin->resetHistogramBufferData(_plugin->_selectionData);
-		this->computeSelectionHistograms(args.time,args.renderScale);
-		_plugin->_isNbStepChanged = false;
-	}
-	
 	if(_plugin->_clipSrc->isConnected())
 	{
-		displaySomething = true;
-        //is the display adapted to each channel or global (IHM)        
-        if(this->_plugin->_paramDisplayTypeSelection->getValue() == 1)
-			this->_histogramDisplay._isAdaptedToHeight = true;
-        else
-            this->_histogramDisplay._isAdaptedToHeight = false;
-        
-		//DisplaySelection
-		if(_plugin->_paramDisplaySelection->getValue())
+		displaySomething = true;  
+		
+		if(_plugin->_paramDisplaySelection->getValue())	//DisplaySelection
 			this->displaySelectedAreas();
 		
-		///@todo : remove next line when Nuke curves overlay works
-		this->_histogramDisplay._translateHSL = false;	
-		this->_histogramDisplay.displayHistogramOnScreenRGB(_plugin->_data,_plugin->_selectionData,args.time);
+		///@todo : remove next lines when Nuke curves overlay works
+		glPushMatrix();
+		glTranslatef(-(_size.x+kTranslationRGB),0.0f,0.0f);
 		
-		///@todo : remove next line when Nuke curves overlay works
-		this->_histogramDisplay._translateHSL = true;		
-		this->_histogramDisplay.displayHistogramOnScreenHSL(_plugin->_data,_plugin->_selectionData,args.time);
+		_rgbParam.draw(args);  
+		glPopMatrix();
 		
-		//Display selection zone
-		if(_penDown && !_keyDown)
+		///@todo : remove next lines when Nuke curves overlay works
+		glPushMatrix();
+		glTranslatef((_size.x+kTranslationHSL),0.0f,0.0f);	
+		
+		_hslParam.draw(args);
+		glPopMatrix();
+		
+		if(_penDown && !_keyDown)//Display selection zone
 			this->displaySelectionZone();
 	}
 	return displaySomething;
 }
 
+/**
+ * When the pen/mouse is under motion
+ * @param args current arg
+ * @return event capted (y or n)
+ */
 bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 {	
-	if(_penDown && !_keyDown)
+	if(_penDown && !_keyDown)//the mouse is moving but there is not Ctrl key pressed
 	{
-		_end.x = args.penPosition.x;
-		_end.y = args.penPosition.y;
-		return true;
+		_end.x = args.penPosition.x;	//needed to draw the selection square
+		_end.y = args.penPosition.y;	//needed to draw the selection square
+		return true;					//event captured
 	}
-	if(_penDown && _keyDown)
+	if(_penDown && _keyDown)//the mouse is moving and there is Ctrl key pressed
 	{
-		_imgBool[args.penPosition.y][args.penPosition.x] = 255;
-		return true;
+		getData()._imgBool[args.penPosition.y][args.penPosition.x] = 255;	//current pixel is marked as selected
+		return true;														//event captured
 	}
-	return false;
+	return false; //event is not captured
 }
 
+/**
+ * When the pen/mouse is clicking down
+ * @param args current arg
+ * @return event capted (y or n)
+ */
 bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 {
-	if(!_penDown && !_keyDown)
+	if(!_penDown && !_keyDown)	//mouse is already used and there is not Ctrl key pressed
 	{
-		_penDown = true;
-		if(args.penPosition.y < _size.y && args.penPosition.y > 0)
+		_penDown = true;	
+		if(args.penPosition.y < _size.y && args.penPosition.y > 0)	//mouse Y is into the image
 			_origin.y = args.penPosition.y;
 		else
 		{
-			if(args.penPosition.y > _size.y)
-				_origin.y = _size.y;
+			if(args.penPosition.y > _size.y)	//clamp the selected Y pixel to the image borders
+				_origin.y = _size.y;			//click is on the top of the image
 			else
-				_origin.y = 0;				
+				_origin.y = 0;					//click is on the bottom of the image
 		}
-		if(args.penPosition.x < _size.x && args.penPosition.x > 0)
+		if(args.penPosition.x < _size.x && args.penPosition.x > 0) //mouse X is on the image
 			_origin.x = args.penPosition.x;
 		else
 		{
-			if(args.penPosition.x > _size.x)
-				_origin.x = _size.x;
+			if(args.penPosition.x > _size.x)	//clamp the selected X pixel to the image borders
+				_origin.x = _size.x;			//click is on the right of the image
 			else
-				_origin.x = 0;
+				_origin.x = 0;					//click is on the left of the image
 		}
-		_end.x = args.penPosition.x;
-		_end.y = args.penPosition.y;
+		_end.x = args.penPosition.x;	//set X end of the selection square at the origin (initialization)
+		_end.y = args.penPosition.y;	//set Y end of the selection square at the origin (initialization)
 	}
-	else
+	else	//there is Ctrl key pressed
 	{
 		if(!_penDown)
 			_penDown = true;
@@ -158,61 +125,42 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	return true;
 }
 
-bool HistogramKeyerOverlay::keyDown( const OFX::KeyArgs& args )
-{
-	if( args.keySymbol == kOfxKey_Control_L || args.keySymbol == kOfxKey_Control_R )
-	{
-		_keyDown = true;
-		return true;
-	}
-	return false;
-}
-
-bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
-{
-	if( (args.keySymbol == kOfxKey_Control_L || args.keySymbol == kOfxKey_Control_R) && _keyDown)
-	{
-		_keyDown = false;
-		this->computeSelectionHistograms(args.time,args.renderScale);
-		_plugin->correctHistogramBufferData(_plugin->_selectionData);
-		return true;
-
-	}
-	return false;
-}
-
+/**
+ * When the pen/mouse is clicking up
+ * @param args current arg
+ * @return event capted (y or n)
+ */
 bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 {
 	//clamp selection
-	_end.x = args.penPosition.x;
-	_end.y = args.penPosition.y;
-	if(_end.x == _origin.x && _end.y == _origin.y)
+	_end.x = args.penPosition.x;		//attach the end of the selection square to the current pixel X
+	_end.y = args.penPosition.y;		//attach the end of the selection square to the current pixel Y
+	if(_end.x == _origin.x && _end.y == _origin.y)	//it's just one click!
 	{
-		// simple click
-		_penDown = false;
-		return false;
+		_penDown = false;	//change penDown
+		return false;		//event is not capured
 	}
-	if(!(args.penPosition.x < _size.x && args.penPosition.x > 0 && args.penPosition.y < _size.y && args.penPosition.y > 0))
+	if(!(args.penPosition.x < _size.x && args.penPosition.x > 0 && args.penPosition.y < _size.y && args.penPosition.y > 0)) // if click is not on the image
 	{
-		if(args.penPosition.x < 0.0 || args.penPosition.x > _size.x)
+		if(args.penPosition.x < 0.0 || args.penPosition.x > _size.x) //problem with X axis
 		{
-			if(args.penPosition.x < 0.0)
-				_end.x = 0.0;
+			if(args.penPosition.x < 0.0)	//click is on the left of the image
+				_end.x = 0.0;				//clamp
 			else
-				_end.x = _size.x; 
+				_end.x = _size.x;			//click is on the right of the image
 		}
-		if(args.penPosition.y < 0.0 || args.penPosition.y > _size.y)
+		if(args.penPosition.y < 0.0 || args.penPosition.y > _size.y) //problem with Y axis
 		{
-			if(args.penPosition.y < 0.0)
-				_end.y = 0.0;
+			if(args.penPosition.y < 0.0)	//click is on the bottom of the image
+				_end.y = 0.0;				//clamp
 			else
-				_end.y = _size.y; 
+				_end.y = _size.y;			//click is on the top of the image
 		}
 	}
-	if(_penDown && !_keyDown)
+	if(_penDown && !_keyDown)	//if there is not Ctrl key pressed
 	{
-		int startX,endX,startY,endY;
-		if(_origin.x > _end.x)
+		int startX,endX,startY,endY; 
+		if(_origin.x > _end.x)  //transform selection zone to be OK (X axis)
 		{
 			startX = _origin.x;
 			endX = _end.x;
@@ -223,7 +171,7 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 			startX = _end.x;
 		}
 		
-		if(_origin.y > _end.y)
+		if(_origin.y > _end.y)	//transform selection zone to be OK (Y axis)
 		{
 			startY = _origin.y;
 			endY = _end.y;
@@ -233,24 +181,54 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 			endY= _origin.y;
 			startY = _end.y;
 		}
-		int step_x = startX-endX;
-		int step_y = startY-endY;
+		int step_x = startX-endX;	//determinate width of the selected zone
+		int step_y = startY-endY;	//determinate height of the selected zone
 		for(unsigned int val_y=0; val_y<step_y; ++val_y)
 		{
 			for(unsigned int val_x=0; val_x<step_x; ++val_x )
 			{
-				_imgBool[endY+val_y][endX+val_x] = 255;
+				getData()._imgBool[endY+val_y][endX+val_x] = 255;	//mark all of the selected pixel
 			}
 		}
-		_penDown = false;
-		//update selection histograms buffer datas
-		this->computeSelectionHistograms(args.time,args.renderScale);
-		_plugin->correctHistogramBufferData(_plugin->_selectionData);
-		//update average data
-		this->computeAverage();
+		getData().computeHistogramBufferData(getData()._selectionData,_plugin->_clipSrc,args.time,args.renderScale,true); //update selection histograms buffer datas
+		getData().correctHistogramBufferData(getData()._selectionData);		    //correct selection histograms buffer datas
+		getData().computeAverages();	//update average data
 	}
-	_penDown = false;
+	_penDown = false; //treatment is finished
 	return true;
+}
+
+/**
+ * Ctrl key is pressed down
+ * @param args current arg
+ * @return event capted (y or n)
+ */
+bool HistogramKeyerOverlay::keyDown( const OFX::KeyArgs& args )
+{
+	if(args.keySymbol==kOfxKey_Control_L||args.keySymbol==kOfxKey_Control_R) //if the pressed key is Ctrl key (left or right)
+	{
+		_keyDown = true;	//treatment begins
+		return true;		//event captured 
+	}
+	return false;			//event is not captured (other key)
+}
+
+/**
+ * Ctrl key is released
+ * @param args current arg
+ * @return event capted (y or n)
+ */
+bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
+{
+	if((args.keySymbol == kOfxKey_Control_L||args.keySymbol==kOfxKey_Control_R)&&_keyDown) //if the release key is Ctrl (and it has been pressed before)
+	{
+		_keyDown = false;	//treatment ends
+		getData().computeHistogramBufferData(getData()._selectionData,_plugin->_clipSrc,args.time,args.renderScale,true);	//update selection histogram
+		getData().correctHistogramBufferData(getData()._selectionData);								//correct selection histogram
+		return true;		//event captured
+
+	}
+	return false;			//event is not captured (wrong key)
 }
 
 /**
@@ -258,29 +236,29 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
  */
 void HistogramKeyerOverlay::displaySelectedAreas()
 {
-	glEnable(GL_TEXTURE_2D);					//Active le texturing
+	glEnable(GL_TEXTURE_2D);					//Activate texturing
 	GLuint Name;								//Texture name
-	glGenTextures(1,&Name);						//Génère un n° de texture
+	glGenTextures(1,&Name);						//generate a texture number
 	glBindTexture(GL_TEXTURE_2D,Name);
 	glTexImage2D(
-		GL_TEXTURE_2D, 	//Type : texture 2D
-		0,				//Mipmap : aucun
-		GL_ALPHA8,		//Colors : 4
-		_size.x,		//width
-		_size.y,		//height
-		0,				//border size
-		GL_ALPHA,		//Format : RGBA
+		GL_TEXTURE_2D,		//Type : texture 2D
+		0,					//Mipmap : none
+		GL_ALPHA8,			//Colors : 4
+		_size.x,			//width
+		_size.y,			//height
+		0,					//border size
+		GL_ALPHA,			//Format : RGBA
 		GL_UNSIGNED_BYTE, 	//color kind
-		_imgBool.data()		// data buffer
+		getData()._imgBool.data()		// data buffer
 	); 	
-	glColor4f(1.0f,1.0f,1.0f,0.1f);
+	glColor4f(1.0f,1.0f,1.0f,0.2f);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	//Draw Texture on screen	
 	glBegin(GL_QUADS);
-    glTexCoord2d(0,1);  glVertex2d(0,_size.y);		//Top Left
+    glTexCoord2d(0,1);  glVertex2d(0,_size.y);			//Top Left
 	glTexCoord2d(1,1);  glVertex2d(_size.x,_size.y);	//Top Right
-	glTexCoord2d(1,0);  glVertex2d(_size.x,0);		//Bottom Right
+	glTexCoord2d(1,0);  glVertex2d(_size.x,0);			//Bottom Right
 	glTexCoord2d(0,0);  glVertex2d(0,0);				//Bottom Left
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -294,10 +272,10 @@ void HistogramKeyerOverlay::displaySelectionZone()
 	glEnable(GL_BLEND);
 	glBlendFunc (GL_ONE, GL_ONE);
 	glEnable(GL_LINE_STIPPLE);
-	glLineStipple(1, (short) 0x0101);
+	glLineStipple(1, (short) 0x0101);	//to draw -------
 	glBegin( GL_LINE_LOOP );
-	glColor3f(.5f,0.5f,0.5f);
-	glVertex2f(_origin.x,_origin.y);
+	glColor3f(.5f,0.5f,0.5f);			//white
+	glVertex2f(_origin.x,_origin.y);	//draw selection square
 	glVertex2f(_origin.x,_end.y);
 	glVertex2f(_end.x,_end.y);
 	glVertex2f(_end.x,_origin.y);
@@ -308,77 +286,14 @@ void HistogramKeyerOverlay::displaySelectionZone()
 }
 
 /**
- * Update selection areas buffer to selection histograms overlay
- * @param args needed to have current time
+ * Get overlay data from plugin
+ * @return 
  */
-void HistogramKeyerOverlay::computeSelectionHistograms(const OfxTime time, const OfxPointD renderScale )
+OverlayData& HistogramKeyerOverlay::getData()
 {
-	// reload view
-	boost::scoped_ptr<OFX::Image> src( _plugin->_clipSrc->fetchImage(time) );
-	if( !src.get() ) // view isn't accessible
-	{
-		return;
-	}
-	if( src->getRowBytes() == 0 )
-	{
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	}
-	typedef boost::gil::rgba32f_view_t SView;
-	OfxRectI srcPixelRod = _plugin->_clipSrc->getPixelRod( time,renderScale );
-	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );
-	//reset selection data
-	_plugin->resetHistogramBufferData(_plugin->_selectionData);
+	return _plugin->getOverlayData();
+}
 	
-	//functor creation
-	Pixel_compute_selection_histograms funct;
-	funct._width = _size.x;
-	funct._height= _size.y;
-	bool_2d::extent_gen extents;
-	funct._imgBool.resize(extents[_size.y][_size.x]);
-	for(unsigned int i=0; i<_size.y; ++i)
-	{
-		for(unsigned int j=0; j<_size.x;++j)
-			funct._imgBool[i][j] = _imgBool[i][j];
-	}
-	funct._data = _plugin->_selectionData;
-	funct._y = 0;
-	funct._x = 0;
-	//treatment
-	boost::gil::transform_pixels(srcView, funct);
-	//keep infos
-	_plugin->_selectionData = funct._data;
-}
-
-
-int computeAnAverage(std::vector<Number> selection_v)
-{
-	int av = 0;
-	int size = 0;
-	for(unsigned int i=0; i<selection_v.size(); ++i)
-	{
-		if(selection_v.at(i)!=0)
-		{
-			av+=selection_v.at(i)*i;
-			size+=selection_v.at(i);
-		}
-	}
-	return av/size;
-}
-/**
- * Compute average bars for display
- */
-void HistogramKeyerOverlay::computeAverage()
-{
-	//RGB
-	_plugin->_averageData._averageRed = computeAnAverage(_plugin->_selectionData._bufferRed);
-	_plugin->_averageData._averageBlue = computeAnAverage(_plugin->_selectionData._bufferBlue);
-	_plugin->_averageData._averageGreen = computeAnAverage(_plugin->_selectionData._bufferGreen);
-	//HSL
-	_plugin->_averageData._averageHue = computeAnAverage(_plugin->_selectionData._bufferHue);
-	_plugin->_averageData._averageSaturation = computeAnAverage(_plugin->_selectionData._bufferSaturation);
-	_plugin->_averageData._averageLightness = computeAnAverage(_plugin->_selectionData._bufferLightness);
-}
-
 }
 }
 }
