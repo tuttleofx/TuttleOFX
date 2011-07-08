@@ -22,5 +22,13 @@ project.commonLibs.append( tuttle )
 
 
 
-SConscript( project.scanFiles( ['libraries/openfxHack', 'libraries/tuttle', 'plugins', 'applications'], accept=['SConscript'] ) )
+SConscript(
+	project.scanFiles( [
+			'libraries/boostHack',
+			'libraries/openfxHack',
+			'libraries/terry',
+			'libraries/tuttle',
+			'plugins',
+			'applications'
+		], accept=['SConscript'] ) )
 
