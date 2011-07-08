@@ -102,6 +102,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 		displayASpecificHistogramBorder(getData()._data._bufferSaturation,step,heightS,size.x,greenHisto);	//S
 	if(_plugin->_paramOverlayLSelection->getValue())
 		displayASpecificHistogramBorder(getData()._data._bufferLightness,step,heightL,size.x,blueHisto);	//L
+	return true;
 }
 
 /**

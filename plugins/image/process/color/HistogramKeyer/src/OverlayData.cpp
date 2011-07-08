@@ -36,11 +36,12 @@ OverlayData::OverlayData(OfxPointI size)
  */
 void OverlayData::computeHistogramBufferData(HistogramBufferData& data,OFX::Clip* clipSrc,const OfxTime time, const OfxPointD renderScale,bool isSelection)
 {
-	TUTTLE_COUT_INFOS;
+	//TUTTLE_COUT_INFOS;
+	//TUTTLE_COUT_VAR( "computeHistogramBufferData - fetchImage " << time );
 	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
-	TUTTLE_COUT_INFOS;
-	TUTTLE_COUT_VAR( clipSrc->getCanonicalRod(time) );
-	TUTTLE_COUT_VAR( src->getBounds() );
+	//TUTTLE_COUT_INFOS;
+	//TUTTLE_COUT_VAR( clipSrc->getCanonicalRod(time) );
+	//TUTTLE_COUT_VAR( src->getBounds() );
 	
 	/*Compatibility tests */
 	if( !src.get() ) // source isn't accessible
@@ -65,7 +66,7 @@ void OverlayData::computeHistogramBufferData(HistogramBufferData& data,OFX::Clip
 	data._step = vNbStep;					//prepare HistogramBuffer structure
 	this->resetHistogramBufferData(data);	//set HistogramBuffer structure to null	
 	
-	Pixel_compute_histograms funct;			//functor declaration
+	Pixel_compute_histograms funct( _imgBool );			//functor declaration
 	funct._width = _size.x;					//width
 	funct._height= _size.y;					//height
 	funct._y = 0;							//initialize current pixel x to 0
@@ -73,23 +74,15 @@ void OverlayData::computeHistogramBufferData(HistogramBufferData& data,OFX::Clip
 	funct._data = data;						//copy data
 	funct._isSelectionMode = isSelection;	//do we work on selection or normal histograms
 	
-	
-	bool_2d::extent_gen extents;
-	funct._imgBool.resize(extents[_size.y][_size.x]); //resize functor tab
-	for(unsigned int i=0; i<_size.y; ++i)
-	{
-		for(unsigned int j=0; j<_size.x;++j)
-			funct._imgBool[i][j] = _imgBool[i][j]; //copy current pixel tab into functor
-	}	
-	TUTTLE_COUT_INFOS;
+	//TUTTLE_COUT_INFOS;
 	
 	boost::gil::transform_pixels( srcView, funct );		 //(USED functor reference)
 	//boost::gil::for_each_pixel(srcView, funct);		(NOT USED)
 	
-	TUTTLE_COUT_INFOS;
+	//TUTTLE_COUT_INFOS;
 	data = funct._data ;								//translate functor ephemeral data to real data
 	this->correctHistogramBufferData(data);				//correct Histogram data to make up for discretization (average)
-	TUTTLE_COUT_INFOS;
+	//TUTTLE_COUT_INFOS;
 }
 
 /**

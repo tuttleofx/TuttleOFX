@@ -46,21 +46,27 @@ struct AverageBarData
  *functor to compute selection histograms
  */
 typedef boost::multi_array<unsigned char,2> bool_2d;
+
+
 struct Pixel_compute_histograms
 {
     HistogramBufferData _data;		//HistogramBufferData to fill up
-	int _width;						//width of src clip
-	int _height;					//height of src clip
-	int _x, _y;						//position of the current pixel (functor needs to know which pixel is it)
+	std::ssize_t _width;						//width of src clip
+	std::ssize_t _height;					//height of src clip
+	std::ssize_t _x, _y;						//position of the current pixel (functor needs to know which pixel is it)
 	bool _isSelectionMode;			//do we work on all of the pixels (normal histograms)	
-	bool_2d _imgBool;				//bool selection img (pixels)
+	const bool_2d& _imgBool;				//bool selection img (pixels)
+	
+	Pixel_compute_histograms( const bool_2d& selection )
+	: _imgBool( selection )
+	{}
 	
 	//basic round function
     double round(double x)
 	{
 		if(x>=0.5){return ceil(x);}else{return floor(x);}
-	} 
-    //operator ()
+	}
+	
 	template< typename Pixel>
     Pixel operator()( const Pixel& p )
     {
@@ -83,7 +89,7 @@ struct Pixel_compute_histograms
 
 			//RGBA
 			for( int v = 0; v < boost::gil::num_channels<Pixel>::type::value; ++v )
-			{   
+			{
 				val = p[v];          
 				if(val >= 0 && val <= 1)
 				{    
