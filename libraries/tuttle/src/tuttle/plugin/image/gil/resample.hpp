@@ -3,7 +3,8 @@
 
 #include <boost/gil/extension/numeric/sampler.hpp>
 #include <boost/gil/extension/numeric/resample.hpp>
-#include <tuttle/plugin/numeric/sampler.hpp>
+
+#include <terry/sampler/sampler.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -31,7 +32,7 @@ void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view,
 		typename DstView::x_iterator xit = dst_view.row_begin( dst_p.y );
 		for( dst_p.x = procWindow.x1; dst_p.x < procWindow.x2; ++dst_p.x )
 		{
-			if( ! ::boost::gil::sample( sampler, src_view, ::boost::gil::transform( dst_to_src, dst_p ), xit[dst_p.x] ) )
+			if( ! ::terry::sampler::sample( sampler, src_view, ::boost::gil::transform( dst_to_src, dst_p ), xit[dst_p.x] ) )
 			{
                                 xit[dst_p.x] = black; // if it is outside of the source image
 			}
