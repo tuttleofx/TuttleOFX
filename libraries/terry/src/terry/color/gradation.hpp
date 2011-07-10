@@ -2,11 +2,12 @@
 #define _BOOST_GIL_COLOR_GRADATION_HPP_
 
 #include <boost/gil/extension/typedefs.hpp>
+#include <boost/gil/extension/channel.hpp>
 
 namespace terry {
-namespace color {
-
 using namespace boost::gil;
+
+namespace color {
 
 /**
  * @todo
@@ -55,6 +56,7 @@ template< typename Channel,
 struct channel_color_gradation_t : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 
@@ -64,7 +66,7 @@ struct channel_color_gradation_t : public std::binary_function<Channel, Channel,
 	// * IN and OUT must be other gradation mode than Linear
 	//   For each gradation mode, you have to specialize: GradationMode -> Linear and Linear -> GradationMode
 	BOOST_STATIC_ASSERT(( ! boost::is_same<IN, gradation::Linear>::value )); // The conversion IN to Linear is not implemented !
-	BOOST_STATIC_ASSERT(( ! boost::is_same<OUT, gradation::Linear>::value )); // The conversion IN to Linear is not implemented !
+	BOOST_STATIC_ASSERT(( ! boost::is_same<OUT, gradation::Linear>::value )); // The conversion Linear to OUT is not implemented !
 
 	const IN& _in;
 	const OUT& _out;
@@ -82,8 +84,6 @@ struct channel_color_gradation_t : public std::binary_function<Channel, Channel,
 		// Linear -> OUT
 		return channel_color_gradation_t<Channel, gradation::Linear, OUT>( gradation::Linear(), _out )( inter, dst );
 	}
-	
-//	BOOST_STATIC_ASSERT( sizeof( Channel ) >= 0 ) ; // Error: there is no specialization for this color gradation conversion.
 };
 
 template< typename Channel,
@@ -91,6 +91,7 @@ template< typename Channel,
 struct channel_color_gradation_t<Channel, INOUT, INOUT> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 
@@ -113,12 +114,13 @@ struct channel_color_gradation_t<Channel, INOUT, INOUT> : public std::binary_fun
 
 /**
  * @brief sRGB to Lin
- * Formula taken from Computational color technology by Kang.
+ * 
  */
 template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::sRGB, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::sRGB IN;
@@ -134,40 +136,41 @@ struct channel_color_gradation_t<Channel, gradation::sRGB, gradation::Linear> : 
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		const T v1 = channel_convert<T>( src );
-		T v2;
+		const T fSrc = channel_convert<T>( src );
+		T fDst;
 
-		/*
 		if( src > 0.04045 )
 		{
-			dst = DstChannel( pow( ( 1.0*src + 0.055 ) / 1.055 , 2.4 ) );
+			fDst = std::pow( ( fSrc + 0.055 ) / 1.055 , 2.4 );
 		}
 		else
 		{
-			dst = DstChannel( src / 12.92 );
+			fDst = fSrc / 12.92;
+		}
+		/*
+		// Old sRGB standard, taken from Computational color technology by Kang.
+		if( fSrc > 0.03928 )
+		{
+			fDst = exp( log( ( fSrc + 0.055 ) / 1.055 ) * 2.4 );
+		}
+		else
+		{
+			fDst = fSrc / 12.92;
 		}
 		*/
-		if( v1 > 0.03928 )
-		{
-			v2 = exp( log( ( v1 + 0.055 ) / 1.055 ) * 2.4 );
-		}
-		else
-		{
-			v2 = v1 / 12.92;
-		}
-		return dst = channel_convert<Channel>( v2 );
+		return dst = channel_convert<Channel>( fDst );
 	}
 
 };
 
 /**
  * @brief Lin to sRGB
- * Formula taken from Computational color technology by Kang.
  */
 template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::sRGB> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -184,28 +187,29 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::sRGB> : 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
 		static const double inv_2_4 = 1.0 / 2.4;
-		const T v1                  = channel_convert<T>( src );
-		T v2;
+		const T fSrc = channel_convert<T>( src );
+		T fDst;
 
-		/*
 		if( src > 0.0031308 )
 		{
-			dst = DstChannel( 1.055 * pow( src , 1.0 / 2.4 ) - 0.055 );
+			fDst = 1.055 * pow( fSrc , 1.0 / 2.4 ) - 0.055;
 		}
 		else
 		{
-			dst = DstChannel( 12.92 * src );
+			fDst = 12.92 * fSrc;
+		}
+		/*
+		// Old sRGB standard, taken from Computational color technology by Kang.
+		if( fSrc > 0.00304 )
+		{
+			fDst = 1.055 * exp( log( fSrc ) * inv_2_4 ) - 0.055;
+		}
+		else
+		{
+			fDst = 12.92 * fSrc;
 		}
 		*/
-		if( v1 > 0.00304 )
-		{
-			v2 = 1.055 * exp( log( v1 ) * inv_2_4 ) - 0.055;
-		}
-		else
-		{
-			v2 = 12.92 * v1;
-		}
-		return dst = channel_convert<Channel>( v2 );
+		return dst = channel_convert<Channel>( fDst );
 	}
 
 };
@@ -221,6 +225,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Cineon, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Cineon IN;
@@ -236,10 +241,13 @@ struct channel_color_gradation_t<Channel, gradation::Cineon, gradation::Linear> 
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		//double tmpValue = pow( 10 , ( _in._blackPoint - _in._whitepoint ) / 300 );
-		//dst = ( pow( 10 , ( src*1024 - _in._whitePoint ) / 300 ) - tmpValue ) / tmpValue;
+		const T fSrc = channel_convert<T>( src );
 
-		return dst = 1.010915615730753 * ( pow( 10 ,( 1023 * src - 685 ) / 300 ) - 0.010797751623277 );
+		// double tmpValue = std::pow( 10 , ( _in._blackPoint - _in._whitepoint ) / 300 );
+		// fDst = ( std::pow( 10 , ( fSrc*1024 - _in._whitePoint ) / 300.0 ) - tmpValue ) / tmpValue;
+		T fDst = 1.010915615730753 * ( std::pow( 10.0 ,( 1023 * fSrc - 685 ) / 300.0 ) - 0.010797751623277 );
+
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -250,6 +258,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Cineon> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -265,10 +274,12 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Cineon> 
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		//const double tmpValue = pow( 10 , ( _out._blackPoint - _out._whitepoint ) / 300 );
-		//dst = ( pow( 10 , ( src*1024 - _out._whitePoint ) / 300 ) - tmpValue ) / tmpValue;
+		const T fSrc = channel_convert<T>( src );
+		// const double tmpValue = pow( 10.0, ( _out._blackPoint - _out._whitepoint ) / 300.0 );
+		// fDst = ( std::pow( 10.0, ( fSrc*1024 - _out._whitePoint ) / 300.0 ) - tmpValue ) / tmpValue;
+		T fDst = 0.00042453028534042214 * ( 300 * std::log( 0.98920224837672 * fSrc + 0.010797751623277 ) + 1577.270788700921 );
 
-		return dst = 0.00042453028534042214 * ( 300 * log( 0.98920224837672 * src + 0.010797751623277 ) + 1577.270788700921 );
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -282,6 +293,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Gamma, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Gamma IN;
@@ -297,21 +309,25 @@ struct channel_color_gradation_t<Channel, gradation::Gamma, gradation::Linear> :
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
+		const T fSrc = channel_convert<T>( src );
+		T fDst;
+
 		if( src == 0 )
 		{
-			return dst = Channel( 0.0 );
+			fDst = 0.0;
 		}
 		else if( src > 0.0 )
 		{
 			// compute gamma value
-			//dst = DstChannel( pow( 10 , _value * log10( src ) ) );
-			return dst = Channel( pow( src , _in._gamma ) );
+			// fDst = DstChannel( std::pow( 10.0, _value * std::log10( fSrc ) ) );
+			fDst = std::pow( static_cast<TBase>(fSrc), _in._gamma );
 		}
 		else
 		{
 			// for negative values, we return a linear conversion
-			return dst = Channel( src );
+			fDst = fSrc;
 		}
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -322,6 +338,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Gamma> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -337,20 +354,24 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Gamma> :
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
+		const T fSrc = channel_convert<T>( src );
+		T fDst;
+
 		if( src == 0 )
 		{
-			return dst = Channel( 0.0 );
+			fDst = 0.0;
 		}
 		else if( src > 0.0 )
 		{
 			// compute gamma value
-			return dst = Channel( pow( src , 1.0 / _out._gamma ) );
+			fDst = std::pow( static_cast<TBase>(fSrc) , 1.0 / _out._gamma );
 		}
 		else
 		{
 			// for negative values, we return a linear conversion
-			return dst = Channel( src );
+			fDst = fSrc;
 		}
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -365,6 +386,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Panalog, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Panalog IN;
@@ -380,7 +402,9 @@ struct channel_color_gradation_t<Channel, gradation::Panalog, gradation::Linear>
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		return dst = ( pow ( 10, ( 1023.0 * src - 681.0 ) / 444.0 ) - 0.0408 ) / ( 1.0 - 0.0408 );
+		const T fSrc = channel_convert<T>( src );
+		T fDst = ( std::pow ( 10.0, ( 1023.0 * fSrc - 681.0 ) / 444.0 ) - 0.0408 ) / ( 1.0 - 0.0408 );
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -391,6 +415,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Panalog> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -406,7 +431,9 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::Panalog>
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		return dst = ( 444.0 * log10( 0.0408 + ( 1 - 0.0408 ) * src ) + 681.0 ) / 1023.0;
+		const T fSrc = channel_convert<T>( src );
+		T fDst = ( 444.0 * std::log10( 0.0408 + ( 1.0 - 0.0408 ) * fSrc ) + 681.0 ) / 1023.0;
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -421,6 +448,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::REDLog, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::REDLog IN;
@@ -436,7 +464,9 @@ struct channel_color_gradation_t<Channel, gradation::REDLog, gradation::Linear> 
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		return dst = ( pow ( 10, ( 1023.0 * src - 1023.0 ) / 511.0 ) - 0.01 ) / ( 1.0 - 0.01 );
+		const T fSrc = channel_convert<T>( src );
+		T fDst = ( std::pow ( 10.0, ( 1023.0 * fSrc - 1023.0 ) / 511.0 ) - 0.01 ) / ( 1.0 - 0.01 );
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -447,6 +477,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::REDLog> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -462,7 +493,9 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::REDLog> 
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		return dst = ( 511.0 * log10( 0.01 + ( 1 - 0.01 ) * src ) + 1023.0 ) / 1023.0;
+		const T fSrc = channel_convert<T>( src );
+		T fDst = ( 511.0 * std::log10( 0.01 + ( 1.0 - 0.01 ) * fSrc ) + 1023.0 ) / 1023.0;
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -477,6 +510,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::ViperLog, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::ViperLog IN;
@@ -492,7 +526,9 @@ struct channel_color_gradation_t<Channel, gradation::ViperLog, gradation::Linear
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		return dst = pow ( 10, ( 1023.0 * src - 1023.0 ) / 500.0 );
+		const T fSrc = channel_convert<T>( src );
+		T fDst = std::pow( 10.0, ( 1023.0 * fSrc - 1023.0 ) / 500.0 );
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -503,6 +539,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::ViperLog> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -518,7 +555,9 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::ViperLog
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		return dst = ( 500.0 * log10( src ) + 1023.0 ) / 1023.0;
+		const T fSrc = channel_convert<T>( src );
+		T fDst = ( 500.0 * std::log10( fSrc ) + 1023.0 ) / 1023.0;
+		return dst = channel_convert<Channel>( fDst );
 	}
 };
 
@@ -533,6 +572,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::REDSpace, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::REDSpace IN;
@@ -559,6 +599,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::REDSpace> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -589,6 +630,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::AlexaLogC, gradation::Linear> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::AlexaLogC IN;
@@ -615,6 +657,7 @@ template< typename Channel >
 struct channel_color_gradation_t<Channel, gradation::Linear, gradation::AlexaLogC> : public std::binary_function<Channel, Channel, Channel>
 {
 	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_base_type<Channel>::type TBase;
 	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
 	typedef typename channel_traits<Channel>::reference ChannelRef;
 	typedef typename gradation::Linear IN;
@@ -638,30 +681,6 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::AlexaLog
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-
-/**
- * @brief sRGB to custom, using intermediate linear conversion
- */
-
-/*
- * @todo
-template< typename Channel,
-          class IN,
-          class OUT >
-struct channel_color_gradation_t : public std::binary_function<Channel, Channel, Channel>
-{
-	typename channel_traits<Channel>::reference operator()( typename channel_traits<Channel>::const_reference ch1,
-	                                                        typename channel_traits<Channel>::reference ch2,
-															const IN& inGradation = In(),
-															const OUT& outGradation = OUT() ) const
-	{
-		channel_color_gradation_t<Channel, IN, gradation::Linear>( ch1, ch2 );
-		channel_color_gradation_t<Channel, gradation::Linear, OUT>( ch2, ch2 );
-		return ch2;
-	}
-};
-*/
 
 template< typename Pixel,
           class IN,
