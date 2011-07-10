@@ -54,7 +54,36 @@ template< typename Channel,
           class OUT >
 struct channel_color_gradation_t : public std::binary_function<Channel, Channel, Channel>
 {
-	BOOST_STATIC_ASSERT( sizeof( Channel ) >= 0 ) ; // Error: there is no specialization for this color gradation conversion.
+	typedef typename floating_channel_type_t<Channel>::type T;
+	typedef typename channel_traits<Channel>::const_reference ChannelConstRef;
+	typedef typename channel_traits<Channel>::reference ChannelRef;
+
+	// This class implementation must be used only:
+	// * with IN != OUT
+	BOOST_STATIC_ASSERT(( ! boost::is_same<IN, OUT>::value )); // Must use channel_color_gradation_t<Channel, INOUT> !
+	// * IN and OUT must be other gradation mode than Linear
+	//   For each gradation mode, you have to specialize: GradationMode -> Linear and Linear -> GradationMode
+	BOOST_STATIC_ASSERT(( ! boost::is_same<IN, gradation::Linear>::value )); // The conversion IN to Linear is not implemented !
+	BOOST_STATIC_ASSERT(( ! boost::is_same<OUT, gradation::Linear>::value )); // The conversion IN to Linear is not implemented !
+
+	const IN& _in;
+	const OUT& _out;
+
+	channel_color_gradation_t( const IN& in, const OUT& out )
+	: _in(in)
+	, _out(out)
+	{}
+
+	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
+	{
+		Channel inter;
+		// IN -> Linear
+		channel_color_gradation_t<Channel, IN, gradation::Linear>( _in, gradation::Linear() )( src, inter );
+		// Linear -> OUT
+		return channel_color_gradation_t<Channel, gradation::Linear, OUT>( gradation::Linear(), _out )( inter, dst );
+	}
+	
+//	BOOST_STATIC_ASSERT( sizeof( Channel ) >= 0 ) ; // Error: there is no specialization for this color gradation conversion.
 };
 
 template< typename Channel,

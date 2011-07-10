@@ -1,5 +1,9 @@
 Import( 'project', 'libs' )
 
-project.ObjectLibrary( 'terry', includes=[project.getRealAbsoluteCwd('src')] )
+project.ObjectLibrary(
+		'terry',
+		includes=[project.getRealAbsoluteCwd('src')],
+		libraries=[libs.boost_gil]
+	)
 
 
