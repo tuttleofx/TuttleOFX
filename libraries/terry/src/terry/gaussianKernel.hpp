@@ -1,7 +1,8 @@
-#ifndef _TUTTLE_PLUGIN_GAUSSIANKERNEL_HPP_
-#define _TUTTLE_PLUGIN_GAUSSIANKERNEL_HPP_
+#ifndef _TERRY_GAUSSIANKERNEL_HPP_
+#define _TERRY_GAUSSIANKERNEL_HPP_
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
+
 #include <boost/gil/extension/numeric/convolve.hpp>
 
 #include <boost/math/constants/constants.hpp>
@@ -14,8 +15,7 @@
 #include <vector>
 #include <algorithm>
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
 
 static const double kConvolutionEpsilon = 0.1; ///< arbitrary value...
 
@@ -164,7 +164,6 @@ boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size
 	return boost::gil::kernel_1d<Scalar>( &( kernel[0] ), kernel.size(), rightKernel.size() );
 }
 
-}
 }
 
 #endif

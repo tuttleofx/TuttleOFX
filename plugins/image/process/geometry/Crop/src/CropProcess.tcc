@@ -1,8 +1,8 @@
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/plugin/image/gil/fill.hpp>
-#include <tuttle/plugin/image/gil/basic_colors.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/image/fill.hpp>
+#include <terry/basic_colors.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/global.hpp>
 
 #include <boost/gil/gil_all.hpp>

@@ -7,7 +7,7 @@
 #include "Color.hpp"
 #include "SelectionManipulator.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 
 #include <ofxsParam.h>
 

@@ -1,7 +1,6 @@
 #ifndef _TUTTLE_PLUGIN_GIL_COLOR_HPP_
 #define	_TUTTLE_PLUGIN_GIL_COLOR_HPP_
 
-#include <boost/gil/extension/dynamic_image/dynamic_image_all.hpp>
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
 #include <tuttle/plugin/color/colorSpaceAPI.hpp>
 

@@ -1,8 +1,8 @@
 #include "SobelPlugin.hpp"
 #include "SobelAlgorithm.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <terry/globals.hpp>
+#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/extension/numeric/kernel.hpp>

@@ -1,9 +1,7 @@
-#ifndef _TUTTLE_PLUGIN_IMAGE_GIL_CLAMP_HPP_
-#define _TUTTLE_PLUGIN_IMAGE_GIL_CLAMP_HPP_
+#ifndef _TERRY_CLAMP_HPP_
+#define _TERRY_CLAMP_HPP_
 
-
-namespace tuttle {
-namespace plugin {
+namespace terry {
 
 template <typename SChannel, typename DChannel>
 struct channel_clamp
@@ -64,7 +62,6 @@ typename boost::gil::color_converted_view_type<View, typename View::value_type, 
 	return color_converted_view<Pixel>( sView, pixel_clamp<Pixel>() );
 }
 
-}
 }
 
 #endif

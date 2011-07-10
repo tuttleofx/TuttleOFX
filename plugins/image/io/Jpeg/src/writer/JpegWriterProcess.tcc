@@ -1,8 +1,8 @@
 #include "JpegWriterDefinitions.hpp"
 #include "JpegWriterPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/clamp.hpp>
+#include <terry/globals.hpp>
+#include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <ofxsImageEffect.h>
@@ -83,6 +83,7 @@ template<class Bits>
 void JpegWriterProcess<View>::writeImage( View& src )
 {
 	using namespace boost::gil;
+	using namespace terry;
 
 	JpegWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
 

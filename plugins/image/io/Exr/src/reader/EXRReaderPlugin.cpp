@@ -2,7 +2,6 @@
 #include "EXRReaderPlugin.hpp"
 #include "EXRReaderProcess.hpp"
 
-#include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/plugin/context/ReaderPlugin.hpp>
 #include <tuttle/plugin/context/WriterDefinition.hpp>
 

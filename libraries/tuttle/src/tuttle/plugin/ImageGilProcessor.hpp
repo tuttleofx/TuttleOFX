@@ -4,7 +4,7 @@
 #include "exceptions.hpp"
 #include "OfxProgress.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/common/math/rectOp.hpp>
 

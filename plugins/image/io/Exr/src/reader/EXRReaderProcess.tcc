@@ -1,8 +1,8 @@
 #include "EXRReaderDefinitions.hpp"
 #include "EXRReaderPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/basic_colors.hpp>
+#include <terry/globals.hpp>
+#include <terry/basic_colors.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 #include "../half/gilHalf.hpp"
@@ -61,6 +61,7 @@ template<class View>
 void EXRReaderProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
+	using namespace terry;
 	BOOST_ASSERT( procWindowRoW == this->_dstPixelRod );
 	try
 	{

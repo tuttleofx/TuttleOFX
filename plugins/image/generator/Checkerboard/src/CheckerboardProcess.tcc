@@ -1,6 +1,6 @@
 #include "CheckerboardProcess.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/image/ofxToGil.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>

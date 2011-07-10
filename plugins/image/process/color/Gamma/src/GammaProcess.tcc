@@ -1,4 +1,4 @@
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include "GammaPlugin.hpp"

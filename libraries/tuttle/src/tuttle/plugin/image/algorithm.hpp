@@ -10,14 +10,6 @@
 #include <boost/gil/image_view_factory.hpp>
 #include <boost/gil/bit_aligned_pixel_iterator.hpp>
 
-#include <cassert>
-#include <cstddef>
-#include <cstring>
-#include <algorithm>
-#include <iterator>
-#include <memory>
-#include <typeinfo>
-
 namespace tuttle {
 namespace plugin {
 

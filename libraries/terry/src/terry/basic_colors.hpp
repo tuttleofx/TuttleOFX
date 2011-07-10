@@ -1,8 +1,7 @@
-#ifndef _TUTTLE_PLUGIN_IMAGE_GIL_BASICCOLORS_HPP_
-#define	_TUTTLE_PLUGIN_IMAGE_GIL_BASICCOLORS_HPP_
+#ifndef _TERRY_BASICCOLORS_HPP_
+#define	_TERRY_BASICCOLORS_HPP_
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
 
 /**
  * @todo tuttle: to rewrite !!!
@@ -96,7 +95,6 @@ void fill_black( View& v )
 }
 
 
-}
 }
 
 #endif

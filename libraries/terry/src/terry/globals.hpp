@@ -3,7 +3,7 @@
 
 #include <tuttle/common/math/minmax.hpp>
 
-#include <ofxCore.h>
+//#include <ofxCore.h>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/type_traits.hpp>
@@ -13,6 +13,7 @@
 namespace tuttle {
 namespace plugin {
 
+/*
 template<class View>
 View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
 {
@@ -28,6 +29,7 @@ View getFullView( View tileView, const OfxRectI& bounds, const OfxRectI& rod )
 	// view the tile as a full image
 	return subimage_view( tileView, rod.x1 - bounds.x1, rod.y1 - bounds.y1, rod.x2 - rod.x1, rod.y2 - rod.y1 );
 }
+*/
 
 template <class View>
 struct image_from_view

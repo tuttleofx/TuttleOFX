@@ -1,10 +1,9 @@
-#ifndef _TUTTLE_PLUGIN_GIL_MATH_HPP_
-#define	_TUTTLE_PLUGIN_GIL_MATH_HPP_
+#ifndef _TERRY_MATH_HPP_
+#define	_TERRY_MATH_HPP_
 
 #include "basic_colors.hpp"
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
 
 /**
  * @brief Compute min & max value from a view
@@ -121,7 +120,6 @@ D_VIEW& multiply( const S_VIEW& src, D_VIEW& dst, const T factor )
 	return dst;
 }
 
-}
 }
 
 #endif

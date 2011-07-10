@@ -1,9 +1,10 @@
 #include "BitDepthPlugin.hpp"
 #include "BitDepthDefinitions.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/clamp.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
+#include <terry/clamp.hpp>
 
 #include <boost/gil/gil_all.hpp>
 
@@ -60,7 +61,7 @@ void BitDepthProcess<SView, DView>::multiThreadProcessImages( const OfxRectI& pr
 	                           procWindowSize.x,
 	                           procWindowSize.y );
 
-	copy_and_convert_pixels( clamp_view(src), dst );
+	copy_and_convert_pixels( terry::clamp_view(src), dst );
 }
 
 }

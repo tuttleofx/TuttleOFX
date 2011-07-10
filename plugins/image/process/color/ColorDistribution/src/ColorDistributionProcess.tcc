@@ -2,12 +2,13 @@
 #include "ColorDistributionProcess.hpp"
 #include "ColorDistributionPlugin.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
-#include <tuttle/plugin/image/gil/copy.hpp>
+#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <terry/color/gradation.hpp>
 #include <boost/gil/extension/typedefs.hpp>
+
+#include <terry/globals.hpp>
+#include <terry/copy.hpp>
+#include <terry/color/gradation.hpp>
 
 #include <boost/mpl/if.hpp>
 #include <boost/static_assert.hpp>
@@ -49,7 +50,7 @@ void ColorDistributionProcess<View>::processSwitchAlpha( const bool processAlpha
 		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(), *this );
 
 		// temporary solution copy alpha channel
-		copy_channel_if_exist<alpha_t>( src, dst );
+		terry::copy_channel_if_exist<alpha_t>( src, dst );
 	}
 }
 

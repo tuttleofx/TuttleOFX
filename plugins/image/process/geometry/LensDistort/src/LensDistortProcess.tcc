@@ -1,8 +1,8 @@
 #include "LensDistortPlugin.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
-#include <tuttle/plugin/image/gil/resample.hpp>
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/image/resample.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 
 #include <terry/sampler/sampler.hpp>
 

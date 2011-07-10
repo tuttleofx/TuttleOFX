@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_PLUGIN_IMAGESTATISTICS_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_IMAGESTATISTICS_PROCESS_HPP_
 
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 

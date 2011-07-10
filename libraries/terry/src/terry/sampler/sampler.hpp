@@ -12,9 +12,9 @@
 
 
 namespace terry {
-namespace sampler {
-
 using namespace boost::gil;
+
+namespace sampler {
 
 
 /// \brief A sampler that sets the destination pixel without interpolation from the closest pixels from the source.

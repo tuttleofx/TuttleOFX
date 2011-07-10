@@ -1,9 +1,9 @@
 #include "ThinningAlgorithm.hpp"
 
-#include <tuttle/plugin/image/gil/globals.hpp>
-#include <tuttle/plugin/image/gil/algorithm.hpp>
+#include <terry/globals.hpp>
+#include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 
 #include <boost/mpl/if.hpp>
 

@@ -1,7 +1,7 @@
 #include "InteractScene.hpp"
 #include "overlay.hpp"
 #include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 namespace tuttle {
 namespace plugin {

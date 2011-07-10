@@ -1,5 +1,6 @@
-#ifndef _TUTTLE_COMMON_MATH_HPP_
-#define _TUTTLE_COMMON_MATH_HPP_
+#ifndef _TUTTLE_COMMON_MATH_MINMAX_HPP_
+#define _TUTTLE_COMMON_MATH_MINMAX_HPP_
+
 #include <cmath>
 #include <algorithm>
 

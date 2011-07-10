@@ -3,7 +3,7 @@
 #include "MergeDefinitions.hpp"
 #include "MergeProcess.hpp"
 #include <boost/gil/extension/color/hsl.hpp>
-#include <tuttle/common/math/rectOp.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 

@@ -3,10 +3,11 @@
 
 #include "FloodFillDefinitions.hpp"
 
-#include <tuttle/common/math/rectOp.hpp>
-#include <tuttle/plugin/image/gil/fill.hpp>
-#include <tuttle/plugin/image/gil/basic_colors.hpp>
-#include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/numeric/rectOp.hpp>
+#include <tuttle/plugin/image/fill.hpp>
+
+#include <terry/globals.hpp>
+#include <terry/basic_colors.hpp>
 
 #include <boost/gil/extension/channel.hpp>
 
@@ -123,6 +124,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 				 const OfxRectI& procWindow,
 				 const StrongTest& strongTest, const SoftTest& softTest )
 {
+	using namespace terry;
 	typedef typename SView::xy_locator SLocator;
 	typedef typename DView::xy_locator DLocator;
 	typedef typename SView::value_type SPixel;
