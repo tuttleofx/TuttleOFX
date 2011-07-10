@@ -1,5 +1,5 @@
-#ifndef _TUTTLE_PLUGIN_GIL_GLOBALS_HPP_
-#define _TUTTLE_PLUGIN_GIL_GLOBALS_HPP_
+#ifndef _TERRY_GLOBALS_HPP_
+#define _TERRY_GLOBALS_HPP_
 
 #include <tuttle/common/math/minmax.hpp>
 
@@ -10,8 +10,7 @@
 
 #include <ostream>
 
-namespace tuttle {
-namespace plugin {
+namespace terry {
 
 /*
 template<class View>
@@ -54,7 +53,6 @@ inline float domain_max_value()
 	return channel_traits< typename channel_type< View >::type >::max_value() + 1.0f;
 }
 
-}
 }
 
 

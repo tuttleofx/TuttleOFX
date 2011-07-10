@@ -29,7 +29,7 @@ class ImageStatisticsProcess : public ImageGilFilterProcessor<View>
 public:
 	typedef boost::gil::point2<double> Point2;
 	typedef typename View::value_type Pixel;
-	typedef typename image_from_view<View>::type Image;
+	typedef typename terry::image_from_view<View>::type Image;
 
 private:
 	ImageStatisticsPlugin&    _plugin;        ///< Rendering plugin

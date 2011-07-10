@@ -1,13 +1,12 @@
-#ifndef _TUTTLE_PLUGIN_GIL_COLOR_HPP_
-#define	_TUTTLE_PLUGIN_GIL_COLOR_HPP_
+#ifndef _TERRY_COLOR_HPP_
+#define	_TERRY_COLOR_HPP_
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <tuttle/plugin/color/colorSpaceAPI.hpp>
+#include <terry/color/colorSpaceAPI.hpp>
 
-namespace ttlc = tuttle::plugin::color;
+namespace terry {
 
-namespace tuttle {
-namespace plugin {
+namespace ttlc = terry::color;
 
 /**
  * @brief Set each pixel in the destination view as the result of a color transformation over the source view
@@ -44,7 +43,6 @@ void colorspace_pixels_progress( ttlc::ColorSpaceAPI*			colorSpaceAPI,
 	}
 }
 
-}
 }
 
 #endif

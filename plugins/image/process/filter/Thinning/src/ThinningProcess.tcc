@@ -34,6 +34,7 @@ void ThinningProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow
 {
 	using namespace boost;
 	using namespace boost::gil;
+	using namespace terry;
     typedef typename View::point_t Point;
     typedef typename View::coord_t Coord;
 
