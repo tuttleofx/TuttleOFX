@@ -10,8 +10,13 @@ namespace histogramKeyer {
  * Create a new empty data structure from scratch (data is null)
  * @param size : size of the current source clip (width*height) 
  */
-OverlayData::OverlayData(OfxPointI size) 
+OverlayData::OverlayData( const OfxPointI& size )
 {
+	static const OfxPointI empty = {0, 0};
+	_size= empty;
+	
+	//updateIfNeeded(size);
+	
 	_size =  size;
 	//allocate and initialize bool img tab 2D
 	bool_2d::extent_gen extents;
@@ -21,6 +26,7 @@ OverlayData::OverlayData(OfxPointI size)
 		for(unsigned int j=0; j<_size.x; ++j)
 			_imgBool[i][j] = 0;
 	}
+	
 	vNbStep = 255;
 	//Reset Histogram buffers
 	this->_data._step = vNbStep;
@@ -205,15 +211,13 @@ void OverlayData::computeFullData(OFX::Clip* clipSrc,const OfxTime time, const O
 	this->correctHistogramBufferData(_selectionData);
 	//Compute averages
 	this->computeAverages();
-	
-	Number maxR = *(std::max_element(_data._bufferRed.begin(),_data._bufferRed.end()));
 }
 
 /**
  * Reset the data (all values to 0)
  * @param size size of the current source clip
  */
-void OverlayData::resetData(OfxPointI size)
+void OverlayData::resetData( const OfxPointI& size )
 {
 	//change size
 	_size =  size;
@@ -238,7 +242,7 @@ void OverlayData::resetData(OfxPointI size)
  * Reset the data (all values to 0)
  * @param size size of the current source clip
  */
-void OverlayData::resetSelectionData(OfxPointI size)
+void OverlayData::resetSelectionData( const OfxPointI& size )
 {
 	//change size
 	_size =  size;

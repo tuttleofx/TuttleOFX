@@ -7,10 +7,10 @@ namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
 
-template<typename Scalar>
 /*
  * params needed by the process to compute final image (curves & time)
  */
+template<typename Scalar>
 struct HistogramKeyerProcessParams
 {
     OFX::ParametricParam* _paramColorRGB;		//curve RGB

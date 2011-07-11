@@ -9,7 +9,7 @@ namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
 
-static const bool kSupportTiles = true;
+static const bool kSupportTiles = false;
 
 
 /**

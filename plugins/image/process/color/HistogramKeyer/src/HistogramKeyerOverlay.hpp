@@ -24,7 +24,6 @@ class HistogramKeyerOverlay : public OFX::OverlayInteract
 public:	
 	/*Class arguments*/
 	HistogramKeyerPlugin* _plugin;			//plugin reference
-	OfxPointI _size;						//source clip size
 	interact::InteractInfos _infos;				
 	
 	bool _penDown;							//is mouse under selection
@@ -54,7 +53,7 @@ public:
 	bool keyUp( const OFX::KeyArgs& args );		//Ctrl key is releasing 
 	
 	/*Selection help (display)*/
-	void displaySelectedAreas();	//display the selected areas (texture)
+	void displaySelectedAreas( const OfxPointI imgSize );	//display the selected areas (texture)
 	void displaySelectionZone();	//display the current selection zone (white square)
 	
 	/*Get overlay data*/

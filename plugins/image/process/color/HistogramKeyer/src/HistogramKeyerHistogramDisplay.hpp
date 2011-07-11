@@ -25,4 +25,5 @@ void displayAverageBar(const int average, HistogramColor color, const int width,
 }
 }
 }
-#endif	/* HISTOGRAMKEYERHISTOGRAMDISPLAY_HPP */
+
+#endif

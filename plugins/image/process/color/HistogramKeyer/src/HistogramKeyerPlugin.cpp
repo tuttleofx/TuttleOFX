@@ -155,7 +155,7 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 	{
 		if(this->hasOverlayData())//if there is overlay value
 		{
-			this->getOverlayData().resetSelectionData(_clipSrc->getPixelRodSize(NULL));//clear selection
+			this->getOverlayData().resetSelectionData(_clipSrc->getPixelRodSize(args.time));//clear selection
 			this->getOverlayData().resetAverages();//clear averages
 		}
 	}

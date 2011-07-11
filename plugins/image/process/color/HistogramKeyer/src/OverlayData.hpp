@@ -145,11 +145,11 @@ public:
 	std::size_t vNbStep;					//nbStep for buffers
 	
 	/*Creators*/
-	OverlayData(OfxPointI size);
+	OverlayData(const OfxPointI& size);
 	
 	/*Reset data*/
-	void resetData(OfxPointI size);				//reset data (if size change for example)
-	void resetSelectionData(OfxPointI size);	//reset selection data (button clear selection)
+	void resetData( const OfxPointI& size );				//reset data (if size change for example)
+	void resetSelectionData( const OfxPointI& size );	//reset selection data (button clear selection)
 	
 	/*Histogram computing*/
 	void computeFullData(OFX::Clip* clipSrc,const OfxTime time, const OfxPointD renderScale);			//compute full data (average/selection/histograms)
@@ -173,5 +173,5 @@ private:
 }
 }
 
-#endif	/* OVERLAYDATA_HPP */
+#endif
 
