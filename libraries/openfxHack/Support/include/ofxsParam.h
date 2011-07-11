@@ -688,11 +688,11 @@ public:
 
 	void setRange( const double min, const double max );
 
-	void setLabel( const std::string label );
+	void setLabel( const std::string& label );
 
-	void setDimensionLabel( const std::string label, const int id );
+	void setDimensionLabel( const std::string& label, const int id );
 
-	void setUIColour( const int id, const OfxRGBColourD color );
+	void setUIColour( const int id, const OfxRGBColourD& color );
 
 	void addControlPoint( const int id, const OfxTime time, const double x, const double y, const bool addKey );
 
