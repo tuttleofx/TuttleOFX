@@ -20,7 +20,11 @@ OverlayData::OverlayData( const OfxPointI& size )
 	_size =  size;
 	//allocate and initialize bool img tab 2D
 	bool_2d::extent_gen extents;
-	_imgBool.resize(extents[_size.y][_size.x]);	
+	_imgBool.resize( extents[_size.y][_size.x] );
+	
+	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
+	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
+	
 	for(unsigned int i=0; i<_size.y; ++i)
 	{
 		for(unsigned int j=0; j<_size.x; ++j)
@@ -70,8 +74,11 @@ void OverlayData::computeHistogramBufferData(HistogramBufferData& data,OFX::Clip
 	SView srcView = tuttle::plugin::getView<SView>(src.get(),srcPixelRod);	//get current view from source clip
 	
 	data._step = vNbStep;					//prepare HistogramBuffer structure
-	this->resetHistogramBufferData(data);	//set HistogramBuffer structure to null	
+	//this->resetHistogramBufferData(data);	//set HistogramBuffer structure to null	
 	
+	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
+	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
+			
 	Pixel_compute_histograms funct( _imgBool );			//functor declaration
 	funct._width = _size.x;					//width
 	funct._height= _size.y;					//height
@@ -88,7 +95,6 @@ void OverlayData::computeHistogramBufferData(HistogramBufferData& data,OFX::Clip
 	//TUTTLE_COUT_INFOS;
 	data = funct._data ;								//translate functor ephemeral data to real data
 	this->correctHistogramBufferData(data);				//correct Histogram data to make up for discretization (average)
-	//TUTTLE_COUT_INFOS;
 }
 
 /**
@@ -224,6 +230,8 @@ void OverlayData::resetData( const OfxPointI& size )
 	//allocate and initialize bool img tab 2D
 	bool_2d::extent_gen extents;
 	_imgBool.resize(extents[_size.y][_size.x]);	
+	//BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
+	//BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
 	for(unsigned int i=0; i<_size.y; ++i)
 	{
 		for(unsigned int j=0; j<_size.x; ++j)
@@ -248,7 +256,9 @@ void OverlayData::resetSelectionData( const OfxPointI& size )
 	_size =  size;
 	//allocate and initialize bool img tab 2D
 	bool_2d::extent_gen extents;
-	_imgBool.resize(extents[_size.y][_size.x]);	
+	_imgBool.resize(extents[_size.y][_size.x]);
+	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
+	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
 	for(unsigned int i=0; i<_size.y; ++i)
 	{
 		for(unsigned int j=0; j<_size.x; ++j)
@@ -271,6 +281,21 @@ void OverlayData::resetAverages()
 	this->_averageData._averageHue = 0;			//H
 	this->_averageData._averageSaturation = 0;	//S
 	this->_averageData._averageLightness = 0;	//L
+}
+
+/**
+ * Check size (verify that imgBool always has the good size
+ */
+bool OverlayData::checkSize( const OfxPointI& size )
+{
+	if(_size.x != size.x || _size.y != size.y)
+	{
+		_size.x = size.x;
+		_size.y = size.y;
+		resetData(_size);
+		return false;
+	}
+	return true;
 }
 
 }

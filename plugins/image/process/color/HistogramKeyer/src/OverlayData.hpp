@@ -72,6 +72,12 @@ struct Pixel_compute_histograms
     {
         using namespace boost::gil;
 		bool ok = false;
+		
+		BOOST_ASSERT( _y >= 0 );
+		BOOST_ASSERT( _x >= 0 );
+		BOOST_ASSERT( _imgBool.shape()[0] >= _y );
+		BOOST_ASSERT( _imgBool.shape()[1] >= _x );
+		
 		if(_isSelectionMode == false)
 			ok = true;
 		else if(_imgBool[_y][_x] && _isSelectionMode)
@@ -122,10 +128,6 @@ struct Pixel_compute_histograms
 				}
 			}
 		}
-		else
-		{
-			//std::cout << "passe pas !!" << std::endl;
-		}
 		//Check pixel position
 		++_x;
 		if(_x == _width){_y++;_x = 0;}
@@ -162,6 +164,9 @@ public:
 	/*Average management*/
 	void computeAverages();		//compute average of each channel
 	void resetAverages();		//rest all of the averages	
+	
+	/*Size checker*/
+	bool checkSize( const OfxPointI& size );
 	
 private:
 	void correctVector(std::vector<Number>& v) const;								//correct a specific channel

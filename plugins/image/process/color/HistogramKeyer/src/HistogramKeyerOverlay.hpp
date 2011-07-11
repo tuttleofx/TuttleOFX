@@ -30,6 +30,8 @@ public:
 	bool _keyDown;							//is key under selection
 	OfxPointI _origin;						//begin of the current selection
 	OfxPointI _end;							//end of the current selection
+	OfxPointI _squareBegin;					//begin of square selection
+	OfxPointI _squareEnd;					//end of square selection			
 	
 	bool _isFirstTime; //temporary
 	

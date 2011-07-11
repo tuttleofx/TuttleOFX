@@ -39,6 +39,10 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		_isFirstTime = false;
 	}
 	
+	///@ HACK changeClip method doesn't work when source clip is changed so we have to check size of imgBool all of the time
+	if(!getData().checkSize(imgSize))
+		getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
+	
 	// Draw component
 	bool displaySomething = false;
 	if(_plugin->_clipSrc->isConnected())
@@ -77,12 +81,19 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 {	
 	if(_penDown && !_keyDown)//the mouse is moving but there is not Ctrl key pressed
 	{
-		_end.x = args.penPosition.x;	//needed to draw the selection square
-		_end.y = args.penPosition.y;	//needed to draw the selection square
+		_squareEnd.x = args.penPosition.x;	//needed to draw the selection square
+		_squareEnd.y = args.penPosition.y;	//needed to draw the selection square
 		return true;					//event captured
 	}
 	if(_penDown && _keyDown)//the mouse is moving and there is Ctrl key pressed
 	{
+		if( args.penPosition.y > getData()._imgBool.shape()[0] ||
+		    args.penPosition.y < 0 ||
+		    args.penPosition.x > getData()._imgBool.shape()[1] ||
+		    args.penPosition.x < 0 )
+		{
+			return false;
+		}
 		getData()._imgBool[args.penPosition.y][args.penPosition.x] = 255;	//current pixel is marked as selected
 		return true;														//event captured
 	}
@@ -121,6 +132,9 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 		}
 		_end.x = args.penPosition.x;	//set X end of the selection square at the origin (initialization)
 		_end.y = args.penPosition.y;	//set Y end of the selection square at the origin (initialization)
+		
+		_squareBegin.x = _squareEnd.x = args.penPosition.x; //copy x value to square position
+		_squareBegin.y = _squareEnd.y = args.penPosition.y; //copy v value to square position
 	}
 	else	//there is Ctrl key pressed
 	{
@@ -189,6 +203,11 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 		}
 		int step_x = startX-endX;	//determinate width of the selected zone
 		int step_y = startY-endY;	//determinate height of the selected zone
+		
+		BOOST_ASSERT( endY >= 0 );
+		BOOST_ASSERT( endX >= 0 );
+		BOOST_ASSERT( getData()._imgBool.shape()[0] >= endY+step_y );
+		BOOST_ASSERT( getData()._imgBool.shape()[1] >= endX+step_x );
 		for(unsigned int val_y=0; val_y<step_y; ++val_y)
 		{
 			for(unsigned int val_x=0; val_x<step_x; ++val_x )
@@ -246,6 +265,8 @@ void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI imgSize )
 	GLuint Name;								//Texture name
 	glGenTextures(1,&Name);						//generate a texture number
 	glBindTexture(GL_TEXTURE_2D,Name);
+	BOOST_ASSERT( getData()._imgBool.shape()[0] == imgSize.y );
+	BOOST_ASSERT( getData()._imgBool.shape()[1] == imgSize.x );
 	glTexImage2D(
 		GL_TEXTURE_2D,		//Type : texture 2D
 		0,					//Mipmap : none
@@ -281,10 +302,10 @@ void HistogramKeyerOverlay::displaySelectionZone()
 	glLineStipple(1, (short) 0x0101);	//to draw -------
 	glBegin( GL_LINE_LOOP );
 	glColor3f(.5f,0.5f,0.5f);			//white
-	glVertex2f(_origin.x,_origin.y);	//draw selection square
-	glVertex2f(_origin.x,_end.y);
-	glVertex2f(_end.x,_end.y);
-	glVertex2f(_end.x,_origin.y);
+	glVertex2f(_squareBegin.x,_squareBegin.y);	//draw selection square
+	glVertex2f(_squareBegin.x,_squareEnd.y);
+	glVertex2f(_squareEnd.x,_squareEnd.y);
+	glVertex2f(_squareEnd.x,_squareBegin.y);
 	glEnd();
 	glDisable(GL_LINE_STIPPLE);
 	glDisable(GL_BLEND);

@@ -783,12 +783,12 @@ Image::Image( OfxPropertySetHandle props )
 	_renderScale.x = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	_renderScale.y = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
 	
-	std::cout << "IMAGE + " << _uniqueID << std::endl;
+	//std::cout << "IMAGE + " << _uniqueID << std::endl;
 }
 
 Image::~Image()
 {
-	std::cout << "IMAGE - " << _uniqueID << std::endl;
+	//std::cout << "IMAGE - " << _uniqueID << std::endl;
 	OFX::Private::gEffectSuite->clipReleaseImage( _imageProps.propSetHandle() );
 }
 
