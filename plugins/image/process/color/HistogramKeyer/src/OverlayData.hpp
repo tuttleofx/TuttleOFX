@@ -51,13 +51,13 @@ typedef boost::multi_array<unsigned char,2> bool_2d;
 struct Pixel_compute_histograms
 {
     HistogramBufferData _data;		//HistogramBufferData to fill up
-	std::ssize_t _width;						//width of src clip
-	std::ssize_t _height;					//height of src clip
-	std::ssize_t _x, _y;						//position of the current pixel (functor needs to know which pixel is it)
+	std::ssize_t _width;			//width of src clip
+	std::ssize_t _height;			//height of src clip
+	std::ssize_t _x, _y;			//position of the current pixel (functor needs to know which pixel is it)
 	bool _isSelectionMode;			//do we work on all of the pixels (normal histograms)	
-	const bool_2d& _imgBool;				//bool selection img (pixels)
+	bool_2d& _imgBool;				//bool selection img (pixels)
 	
-	Pixel_compute_histograms( const bool_2d& selection )
+	Pixel_compute_histograms( bool_2d& selection )
 	: _imgBool( selection )
 	{}
 	
@@ -77,6 +77,9 @@ struct Pixel_compute_histograms
 		BOOST_ASSERT( _x >= 0 );
 		BOOST_ASSERT( _imgBool.shape()[0] >= _y );
 		BOOST_ASSERT( _imgBool.shape()[1] >= _x );
+		
+		
+		//int revert_y = (_height-1)-_y;
 		
 		if(_isSelectionMode == false)
 			ok = true;
@@ -130,7 +133,7 @@ struct Pixel_compute_histograms
 		}
 		//Check pixel position
 		++_x;
-		if(_x == _width){_y++;_x = 0;}
+		if(_x == _width){++_y;_x=0;}
         return p;
     }
 };

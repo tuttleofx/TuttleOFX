@@ -33,15 +33,16 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 	// Global display option
 	if(_plugin->_paramGlobalDisplaySelection->getValue() == false)
 		return false;
+	
+	///@ HACK changeClip method doesn't work when source clip is changed so we have to check size of imgBool all of the time
+	if(!getData().checkSize(imgSize))
+		getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
+	
 	if(_isFirstTime)
 	{
 		getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
 		_isFirstTime = false;
 	}
-	
-	///@ HACK changeClip method doesn't work when source clip is changed so we have to check size of imgBool all of the time
-	if(!getData().checkSize(imgSize))
-		getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
 	
 	// Draw component
 	bool displaySomething = false;
