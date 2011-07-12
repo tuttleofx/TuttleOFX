@@ -1,12 +1,12 @@
-#include "ColorDistributionPluginFactory.hpp"
-#include "ColorDistributionPlugin.hpp"
-#include "ColorDistributionDefinitions.hpp"
+#include "ColorGradationPluginFactory.hpp"
+#include "ColorGradationPlugin.hpp"
+#include "ColorGradationDefinitions.hpp"
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace colorDistribution {
+namespace colorGradation {
 
 static const bool kSupportTiles = true;
 
@@ -14,10 +14,10 @@ static const bool kSupportTiles = true;
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
  */
-void ColorDistributionPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
+void ColorGradationPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "TuttleColorDistribution", "ColorDistribution",
-	                "ColorDistribution" );
+	desc.setLabels( "TuttleColorGradation", "ColorGradation",
+	                "ColorGradation" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	// add the supported contexts, only filter at the moment
@@ -39,7 +39,7 @@ void ColorDistributionPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
  * @param[in, out]   desc       Effect descriptor
  * @param[in]        context    Application context
  */
-void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
+void ColorGradationPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
                                                         OFX::EContext               context )
 {
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
@@ -58,36 +58,36 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
 
 	OFX::ChoiceParamDescriptor* in = desc.defineChoiceParam( kParamIn );
 	in->setLabel( "In" );
-	in->setHint( "Input color distribution." );
-	in->appendOption( kParamDistribution_linear );
-	in->appendOption( kParamDistribution_sRGB );
-	in->appendOption( kParamDistribution_cineon );
-	in->appendOption( kParamDistribution_gamma );
-	in->appendOption( kParamDistribution_panalog );
-	in->appendOption( kParamDistribution_REDLog );
-	in->appendOption( kParamDistribution_ViperLog );
-	in->appendOption( kParamDistribution_REDSpace );
-	in->appendOption( kParamDistribution_AlexaLogC );
+	in->setHint( "Input color gradation." );
+	in->appendOption( kParamGradation_linear );
+	in->appendOption( kParamGradation_sRGB );
+	in->appendOption( kParamGradation_cineon );
+	in->appendOption( kParamGradation_gamma );
+	in->appendOption( kParamGradation_panalog );
+	in->appendOption( kParamGradation_REDLog );
+	in->appendOption( kParamGradation_ViperLog );
+	in->appendOption( kParamGradation_REDSpace );
+	in->appendOption( kParamGradation_AlexaLogC );
 
-	//	in->appendOption( kParamDistribution_rec709 );
-	//	in->appendOption( kParamDistribution_rec601 );
+	//	in->appendOption( kParamGradation_rec709 );
+	//	in->appendOption( kParamGradation_rec601 );
 	in->setDefault( 0 );
 
 	OFX::ChoiceParamDescriptor* out = desc.defineChoiceParam( kParamOut );
 	out->setLabel( "Out" );
-	out->setHint( "Output color distribution." );
-	out->appendOption( kParamDistribution_linear );
-	out->appendOption( kParamDistribution_sRGB );
-	out->appendOption( kParamDistribution_cineon );
-	out->appendOption( kParamDistribution_gamma );
-	out->appendOption( kParamDistribution_panalog );
-	out->appendOption( kParamDistribution_REDLog );
-	out->appendOption( kParamDistribution_ViperLog );
-	out->appendOption( kParamDistribution_REDSpace );
-	out->appendOption( kParamDistribution_AlexaLogC );
+	out->setHint( "Output color gradation." );
+	out->appendOption( kParamGradation_linear );
+	out->appendOption( kParamGradation_sRGB );
+	out->appendOption( kParamGradation_cineon );
+	out->appendOption( kParamGradation_gamma );
+	out->appendOption( kParamGradation_panalog );
+	out->appendOption( kParamGradation_REDLog );
+	out->appendOption( kParamGradation_ViperLog );
+	out->appendOption( kParamGradation_REDSpace );
+	out->appendOption( kParamGradation_AlexaLogC );
 
-	//	out->appendOption( kParamDistribution_rec709 );
-	//	out->appendOption( kParamDistribution_rec601 );
+	//	out->appendOption( kParamGradation_rec709 );
+	//	out->appendOption( kParamGradation_rec601 );
 	out->setDefault( 0 );
 
 	OFX::BooleanParamDescriptor* alpha = desc.defineBooleanParam( kParamProcessAlpha );
@@ -105,10 +105,10 @@ void ColorDistributionPluginFactory::describeInContext( OFX::ImageEffectDescript
  * @param[in] context Application context
  * @return  plugin instance
  */
-OFX::ImageEffect* ColorDistributionPluginFactory::createInstance( OfxImageEffectHandle handle,
+OFX::ImageEffect* ColorGradationPluginFactory::createInstance( OfxImageEffectHandle handle,
                                                                   OFX::EContext        context )
 {
-	return new ColorDistributionPlugin( handle );
+	return new ColorGradationPlugin( handle );
 }
 
 }

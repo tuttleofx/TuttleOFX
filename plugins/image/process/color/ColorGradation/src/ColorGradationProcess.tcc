@@ -1,6 +1,6 @@
-#include "ColorDistributionDefinitions.hpp"
-#include "ColorDistributionProcess.hpp"
-#include "ColorDistributionPlugin.hpp"
+#include "ColorGradationDefinitions.hpp"
+#include "ColorGradationProcess.hpp"
+#include "ColorGradationPlugin.hpp"
 
 #include <tuttle/plugin/image/algorithm.hpp>
 #include <tuttle/plugin/exceptions.hpp>
@@ -15,18 +15,18 @@
 
 namespace tuttle {
 namespace plugin {
-namespace colorDistribution {
+namespace colorGradation {
 
 using namespace boost::gil;
 
 template<class View>
-ColorDistributionProcess<View>::ColorDistributionProcess( ColorDistributionPlugin& effect )
+ColorGradationProcess<View>::ColorGradationProcess( ColorGradationPlugin& effect )
 	: ImageGilFilterProcessor<View>( effect )
 	, _plugin( effect )
 {}
 
 template<class View>
-void ColorDistributionProcess<View>::setup( const OFX::RenderArguments& args )
+void ColorGradationProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
 
@@ -37,7 +37,7 @@ void ColorDistributionProcess<View>::setup( const OFX::RenderArguments& args )
 template<class View>
 template<class IN, class OUT>
 GIL_FORCEINLINE
-void ColorDistributionProcess<View>::processSwitchAlpha( const bool processAlpha, const View& src, const View& dst )
+void ColorGradationProcess<View>::processSwitchAlpha( const bool processAlpha, const View& src, const View& dst )
 {
 	using namespace boost::gil;
 	if( processAlpha )
@@ -57,72 +57,72 @@ void ColorDistributionProcess<View>::processSwitchAlpha( const bool processAlpha
 template<class View>
 template<class IN>
 GIL_FORCEINLINE
-void ColorDistributionProcess<View>::processSwitchOut( const EParamDistribution out, const bool processAlpha, const View& src, const View& dst )
+void ColorGradationProcess<View>::processSwitchOut( const EParamGradation out, const bool processAlpha, const View& src, const View& dst )
 {
 	using namespace boost::gil;
 	switch( out )
 	{
-		case eParamDistribution_linear:
+		case eParamGradation_linear:
 			processSwitchAlpha<IN, terry::color::gradation::Linear>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_sRGB:
+		case eParamGradation_sRGB:
 			processSwitchAlpha<IN, terry::color::gradation::sRGB>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_cineon:
+		case eParamGradation_cineon:
 			processSwitchAlpha<IN, terry::color::gradation::Cineon>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_gamma:
+		case eParamGradation_gamma:
 			processSwitchAlpha<IN, terry::color::gradation::Gamma>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_panalog:
+		case eParamGradation_panalog:
 			processSwitchAlpha<IN, terry::color::gradation::Panalog>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_REDLog:
+		case eParamGradation_REDLog:
 			processSwitchAlpha<IN, terry::color::gradation::REDLog>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_ViperLog:
+		case eParamGradation_ViperLog:
 			processSwitchAlpha<IN, terry::color::gradation::ViperLog>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_REDSpace:
+		case eParamGradation_REDSpace:
 			processSwitchAlpha<IN, terry::color::gradation::REDSpace>( processAlpha, src, dst );
 			break;
-		case eParamDistribution_AlexaLogC:
+		case eParamGradation_AlexaLogC:
 			processSwitchAlpha<IN, terry::color::gradation::AlexaLogC>( processAlpha, src, dst );
 			break;
 	}
 }
 
 template<class View>
-void ColorDistributionProcess<View>::processSwitchInOut( const EParamDistribution in, const EParamDistribution out, const bool processAlpha, const View& src, const View& dst )
+void ColorGradationProcess<View>::processSwitchInOut( const EParamGradation in, const EParamGradation out, const bool processAlpha, const View& src, const View& dst )
 {
 	using namespace boost::gil;
 	switch( in )
 	{
-		case eParamDistribution_linear:
+		case eParamGradation_linear:
 			processSwitchOut<terry::color::gradation::Linear>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_sRGB:
+		case eParamGradation_sRGB:
 			processSwitchOut<terry::color::gradation::sRGB>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_cineon:
+		case eParamGradation_cineon:
 			processSwitchOut<terry::color::gradation::Cineon>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_gamma:
+		case eParamGradation_gamma:
 			processSwitchOut<terry::color::gradation::Gamma>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_panalog:
+		case eParamGradation_panalog:
 			processSwitchOut<terry::color::gradation::Panalog>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_REDLog:
+		case eParamGradation_REDLog:
 			processSwitchOut<terry::color::gradation::REDLog>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_ViperLog:
+		case eParamGradation_ViperLog:
 			processSwitchOut<terry::color::gradation::ViperLog>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_REDSpace:
+		case eParamGradation_REDSpace:
 			processSwitchOut<terry::color::gradation::REDSpace>( out, processAlpha, src, dst );
 			break;
-		case eParamDistribution_AlexaLogC:
+		case eParamGradation_AlexaLogC:
 			processSwitchOut<terry::color::gradation::AlexaLogC>( out, processAlpha, src, dst );
 			break;
 	}
@@ -133,7 +133,7 @@ void ColorDistributionProcess<View>::processSwitchInOut( const EParamDistributio
  * @param[in] procWindowRoW  Processing window
  */
 template<class View>
-void ColorDistributionProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
+void ColorGradationProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );

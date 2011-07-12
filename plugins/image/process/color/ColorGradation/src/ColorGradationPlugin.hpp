@@ -1,34 +1,34 @@
-#ifndef _TUTTLE_PLUGIN_COLORDISTRIBUTION_PLUGIN_HPP_
-#define _TUTTLE_PLUGIN_COLORDISTRIBUTION_PLUGIN_HPP_
+#ifndef _TUTTLE_PLUGIN_COLORGRADATION_PLUGIN_HPP_
+#define _TUTTLE_PLUGIN_COLORGRADATION_PLUGIN_HPP_
 
-#include "ColorDistributionDefinitions.hpp"
+#include "ColorGradationDefinitions.hpp"
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 namespace tuttle {
 namespace plugin {
-namespace colorDistribution {
+namespace colorGradation {
 
 template<typename Scalar>
-struct ColorDistributionProcessParams
+struct ColorGradationProcessParams
 {
-	EParamDistribution _in;
-	EParamDistribution _out;
+	EParamGradation _in;
+	EParamGradation _out;
 	bool _processAlpha;
 };
 
 /**
- * @brief ColorDistribution plugin
+ * @brief ColorGradation plugin
  */
-class ColorDistributionPlugin : public ImageEffectGilPlugin
+class ColorGradationPlugin : public ImageEffectGilPlugin
 {
 public:
 	typedef float Scalar;
 
 public:
-	ColorDistributionPlugin( OfxImageEffectHandle handle );
+	ColorGradationPlugin( OfxImageEffectHandle handle );
 
 public:
-	ColorDistributionProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
+	ColorGradationProcessParams<Scalar> getProcessParams( const OfxPointD& renderScale = OFX::kNoRenderScale ) const;
 
 	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
 
