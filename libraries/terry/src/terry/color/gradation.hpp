@@ -1,6 +1,7 @@
 #ifndef _BOOST_GIL_COLOR_GRADATION_HPP_
 #define _BOOST_GIL_COLOR_GRADATION_HPP_
 
+#include <boost/gil/algorithm.hpp>
 #include <boost/gil/extension/typedefs.hpp>
 #include <boost/gil/extension/channel.hpp>
 
@@ -10,8 +11,7 @@ using namespace boost::gil;
 namespace color {
 
 /**
- * @todo
- * gradation_convert()
+ * @brief All supported gradations
  */
 namespace gradation{
 struct Linear{};
@@ -186,7 +186,6 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::sRGB> : 
 
 	ChannelRef operator()( ChannelConstRef src, ChannelRef dst ) const
 	{
-		static const double inv_2_4 = 1.0 / 2.4;
 		const T fSrc = channel_convert<T>( src );
 		T fDst;
 
@@ -200,6 +199,7 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::sRGB> : 
 		}
 		/*
 		// Old sRGB standard, taken from Computational color technology by Kang.
+		static const double inv_2_4 = 1.0 / 2.4;
 		if( fSrc > 0.00304 )
 		{
 			fDst = 1.055 * exp( log( fSrc ) * inv_2_4 ) - 0.055;
@@ -680,6 +680,7 @@ struct channel_color_gradation_t<Channel, gradation::Linear, gradation::AlexaLog
 
 
 ////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 
 template< typename Pixel,
@@ -711,10 +712,10 @@ template< class IN,
           class OUT >
 struct transform_pixel_color_gradation_t
 {
-	const IN  _in;
-	const OUT _out;
+	const IN&  _in;
+	const OUT& _out;
 
-	transform_pixel_color_gradation_t( const IN& in = IN(), const OUT& out = OUT() )
+	transform_pixel_color_gradation_t( const IN& in, const OUT& out )
 	: _in(in)
 	, _out(out)
 	{}
@@ -728,8 +729,24 @@ struct transform_pixel_color_gradation_t
 	}
 };
 
-/// @todo add gradation as parameters
-// transform_pixel_color_gradation( sRGB(), Gamma(5.0), View v );
+/**
+ * @example gradation_convert_view( srcView, dstView, gradation::sRGB(), gradation::Gamma(5.0) );
+ */
+template<class GradationIN, class GradationOUT, class View>
+void gradation_convert_view( const View& src, View& dst, const GradationIN& gradationIn = GradationIN(), const GradationOUT& gradationOut = GradationOUT() )
+{
+	boost::gil::transform_pixels( src, dst, transform_pixel_color_gradation_t<GradationIN, GradationOUT>( gradationIn, gradationOut ) );
+}
+
+/**
+ * @example gradation_convert_pixel( srcPix, dstPix, gradation::sRGB(), gradation::Gamma(5.0) );
+ */
+template<class GradationIN, class GradationOUT, class Pixel>
+void gradation_convert_pixel( const Pixel& src, Pixel& dst, const GradationIN& gradationIn = GradationIN(), const GradationOUT& gradationOut = GradationOUT() )
+{
+	pixel_color_gradation_t<Pixel, GradationIN, GradationOUT>( gradationIn, gradationOut )( src, dst );
+}
+
 
 }
 }

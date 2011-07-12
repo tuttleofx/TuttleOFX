@@ -42,12 +42,12 @@ void ColorDistributionProcess<View>::processSwitchAlpha( const bool processAlpha
 	using namespace boost::gil;
 	if( processAlpha )
 	{
-		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(), *this );
+		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(IN(), OUT()), *this );
 	}
 	else
 	{
 		/// @todo do not apply process on alpha directly inside transform, with a "channel_for_each_if_channel"
-		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(), *this );
+		transform_pixels_progress( src, dst, terry::color::transform_pixel_color_gradation_t<IN, OUT>(IN(), OUT()), *this );
 
 		// temporary solution copy alpha channel
 		terry::copy_channel_if_exist<alpha_t>( src, dst );

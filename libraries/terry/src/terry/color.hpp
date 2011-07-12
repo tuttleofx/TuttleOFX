@@ -2,11 +2,9 @@
 #define	_TERRY_COLOR_HPP_
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-#include <terry/color/colorSpaceAPI.hpp>
+#include <terry/color/colorspace.hpp>
 
 namespace terry {
-
-namespace ttlc = terry::color;
 
 /**
  * @brief Set each pixel in the destination view as the result of a color transformation over the source view

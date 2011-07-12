@@ -7,8 +7,7 @@ namespace terry {
 namespace color {
 
 /**
- * @todo
- * temperature_convert()
+ * @bief All supported temperatures
  */
 namespace temperature {
 struct T_A {};
@@ -44,7 +43,7 @@ struct channel_color_temperature_t : public std::binary_function<Channel, Channe
 	// * with IN != OUT
 	BOOST_STATIC_ASSERT(( ! boost::is_same<IN, OUT>::value )); // Must use channel_color_temperature_t<Channel, INOUT> !
 	// * IN and OUT must be other temperature mode than T_INTER
-	//   For each temperature mode, you have to specialize: GradationMode -> T_INTER and T_INTER -> GradationMode
+	//   For each temperature mode, you have to specialize: TemperatureMode -> T_INTER and T_INTER -> TemperatureMode
 	BOOST_STATIC_ASSERT(( ! boost::is_same<IN, temperature::T_INTER>::value )); // The conversion IN to T_INTER is not implemented !
 	BOOST_STATIC_ASSERT(( ! boost::is_same<OUT, temperature::T_INTER>::value )); // The conversion T_INTER to OUT is not implemented !
 
@@ -715,7 +714,74 @@ struct channel_color_temperature_t<Channel, temperature::T_INTER, temperature::T
 };
 
 
-//void temperature_convert();
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+template< typename Pixel,
+          class IN,
+          class OUT >
+struct pixel_color_temperature_t
+{
+	typedef typename channel_type<Pixel>::type Channel;
+	const IN&  _in;
+	const OUT& _out;
+
+	pixel_color_temperature_t( const IN& in, const OUT& out )
+	: _in(in)
+	, _out(out)
+	{}
+
+	Pixel& operator()( const Pixel& p1,
+	                   Pixel& p2 ) const
+	{
+		static_for_each(
+				p1, p2,
+				channel_color_temperature_t< Channel, IN, OUT >( _in, _out )
+			);
+		return p2;
+	}
+};
+
+template< class IN,
+          class OUT >
+struct transform_pixel_color_temperature_t
+{
+	const IN&  _in;
+	const OUT& _out;
+
+	transform_pixel_color_temperature_t( const IN& in, const OUT& out )
+	: _in(in)
+	, _out(out)
+	{}
+
+	template< typename Pixel>
+	Pixel operator()( const Pixel& p1 ) const
+	{
+		Pixel p2;
+		pixel_color_temperature_t<Pixel, IN, OUT>( _in, _out )( p1, p2 );
+		return p2;
+	}
+};
+
+/**
+ * @example temperature_convert_view( srcView, dstView, temperature::sRGB(), temperature::Gamma(5.0) );
+ */
+template<class TemperatureIN, class TemperatureOUT, class View>
+void temperature_convert_view( const View& src, View& dst, const TemperatureIN& temperatureIn = TemperatureIN(), const TemperatureOUT& temperatureOut = TemperatureOUT() )
+{
+	boost::gil::transform_pixels( src, dst, transform_pixel_color_temperature_t<TemperatureIN, TemperatureOUT>( temperatureIn, temperatureOut ), *this );
+}
+
+/**
+ * @example temperature_convert_pixel( srcPix, dstPix, temperature::sRGB(), temperature::Gamma(5.0) );
+ */
+template<class TemperatureIN, class TemperatureOUT, class Pixel>
+void temperature_convert_pixel( const Pixel& src, Pixel& dst, const TemperatureIN& temperatureIn = TemperatureIN(), const TemperatureOUT& temperatureOut = TemperatureOUT() )
+{
+	pixel_color_temperature_t<TemperatureIN, TemperatureOUT>( temperatureIn, temperatureOut )( src, dst );
+}
 
 }
 }
