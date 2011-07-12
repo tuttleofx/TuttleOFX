@@ -50,19 +50,26 @@ typedef boost::multi_array<unsigned char,2> bool_2d;
 
 struct Pixel_compute_histograms
 {
-    HistogramBufferData _data;		//HistogramBufferData to fill up
-	std::ssize_t _width;			//width of src clip
-	std::ssize_t _height;			//height of src clip
-	std::ssize_t _x, _y;			//position of the current pixel (functor needs to know which pixel is it)
-	bool _isSelectionMode;			//do we work on all of the pixels (normal histograms)	
+    HistogramBufferData& _data;		//HistogramBufferData to fill up
 	bool_2d& _imgBool;				//bool selection img (pixels)
+	std::ssize_t _height;			//height of src clip
+	std::ssize_t _width;			//width of src clip
+	std::ssize_t _y, _x;			//position of the current pixel (functor needs to know which pixel is it)
+	bool _isSelectionMode;			//do we work on all of the pixels (normal histograms) or only on selection
 	
-	Pixel_compute_histograms( bool_2d& selection )
-	: _imgBool( selection )
-	{}
+	Pixel_compute_histograms( bool_2d& selection, HistogramBufferData& data, const bool isSelectionMode )
+	: _data( data )
+	, _imgBool( selection )
+	, _height( _imgBool.shape()[0] )
+	, _width( _imgBool.shape()[1] )
+	, _y(0)
+	, _x(0)
+	, _isSelectionMode(isSelectionMode)
+	{
+	}
 	
 	//basic round function
-    double round(double x)
+    double round( const double x ) const
 	{
 		if(x>=0.5){return ceil(x);}else{return floor(x);}
 	}
@@ -75,8 +82,8 @@ struct Pixel_compute_histograms
 		
 		BOOST_ASSERT( _y >= 0 );
 		BOOST_ASSERT( _x >= 0 );
-		BOOST_ASSERT( _imgBool.shape()[0] >= _y );
-		BOOST_ASSERT( _imgBool.shape()[1] >= _x );
+		BOOST_ASSERT( _imgBool.shape()[0] > _y );
+		BOOST_ASSERT( _imgBool.shape()[1] > _x );
 		
 		
 		//int revert_y = (_height-1)-_y;
@@ -141,40 +148,74 @@ struct Pixel_compute_histograms
 class OverlayData 
 {
 public:
-	/*Class arguments*/
-	HistogramBufferData _data;				//histogram data
-	HistogramBufferData _selectionData;		//selection histogram data
-	AverageBarData _averageData;			//average bar data used to display average bars
-	OfxPointI _size;						//source clip size
-	bool_2d _imgBool;						//unsigned char 2D (use for display texture on screen)
-	std::size_t vNbStep;					//nbStep for buffers
+	typedef boost::gil::rgba32f_view_t SView; // declare current view type
+
+public:
+	OverlayData( const OfxPointI& size, const int nbSteps );
 	
-	/*Creators*/
-	OverlayData(const OfxPointI& size);
+	/** 
+	 * reset selection data (button clear selection)
+	 */
+	void clearSelection()
+	{
+		resetHistogramSelectionData();
+		removeSelection();
+		resetAverages();
+	}
+	void clearAll( const OfxPointI& size )
+	{
+		_size = size;
+		resetHistogramData();
+		
+		resetHistogramSelectionData();
+		removeSelection( size );
+		resetAverages();
+	}
 	
-	/*Reset data*/
-	void resetData( const OfxPointI& size );				//reset data (if size change for example)
-	void resetSelectionData( const OfxPointI& size );	//reset selection data (button clear selection)
+	/**
+	 * Image size checker
+	 * @warning HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all the time
+	 */
+	bool isImageSizeModified( const OfxPointI& size ) const;
 	
-	/*Histogram computing*/
-	void computeFullData(OFX::Clip* clipSrc,const OfxTime time, const OfxPointD renderScale);			//compute full data (average/selection/histograms)
-	void computeHistogramBufferData(HistogramBufferData& data,OFX::Clip* clipSrc,const OfxTime time, const OfxPointD renderScale,bool isSelection=false);	//compute a HisogramBufferData
+	/**
+	 * Histogram computing
+	 */
+	void computeFullData( OFX::Clip* clipSrc,const OfxTime time, const OfxPointD& renderScale );			//compute full data (average/selection/histograms)
 	
+	void setNbStep( const std::size_t nbStep ) { _vNbStep = nbStep; }
+	
+private:
 	/*Histogram management*/
+	void computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const OfxPointD& renderScale, const bool isSelection=false );	//compute a HisogramBufferData
+	void correctHistogramBufferData( HistogramBufferData& toCorrect ) const;		//correct a complete HistogramBufferData
 	void resetHistogramBufferData( HistogramBufferData& toReset ) const;		//reset a complete HistogramBufferData
-	void correctHistogramBufferData(HistogramBufferData& toCorrect) const;		//correct a complete HistogramBufferData
 	
 	/*Average management*/
 	void computeAverages();		//compute average of each channel
-	void resetAverages();		//rest all of the averages	
 	
-	/*Size checker*/
-	bool checkSize( const OfxPointI& size );
+	/*Reset data*/
+	void resetHistogramData(); //reset data (if size change for example)
+	void resetHistogramSelectionData();	//reset selection data
+	void resetAverages();		//rest all of the averages
+	void removeSelection();
+	void removeSelection( const OfxPointI& size );
 	
-private:
 	void correctVector(std::vector<Number>& v) const;								//correct a specific channel
 	void resetVectortoZero(std::vector<long>& v, const unsigned int size) const;	//reset a specific channel buffer
 	int computeAnAverage(std::vector<Number> selection_v)const;						//compute average of a specific channel
+	
+public:
+	///@todo accessors
+	HistogramBufferData _data;				//histogram data
+	HistogramBufferData _selectionData;		//selection histogram data
+	AverageBarData _averageData;			//average bar data used to display average bars
+	bool_2d _imgBool;						//unsigned char 2D (use for display texture on screen)
+	
+private:
+	OfxPointI _size;						//source clip size
+	std::size_t _vNbStep;					//nbStep for buffers
+	
 };
 
 }

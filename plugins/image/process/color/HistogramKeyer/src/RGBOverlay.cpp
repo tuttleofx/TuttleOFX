@@ -18,8 +18,12 @@ RGBOverlay::RGBOverlay(HistogramKeyerPlugin* plugin)
 	_plugin = plugin;
 	_plugin->addRefOverlayData();
 }
+
 //temporary
-RGBOverlay::RGBOverlay(){_plugin = NULL;};
+RGBOverlay::RGBOverlay()
+{
+	_plugin = NULL;
+}
 
 /*Destructor*/
 RGBOverlay::~RGBOverlay()
@@ -34,12 +38,13 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
 {	
 	//height of the window (image for test)
 	//width of the window (image for test)
-	OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
-    const double step = size.x / (double)(getData()._data._step -1);
-	double heightR, heightG,heightB;
-    heightR = heightG = heightB = size.y;
-    if(!(_plugin->_paramDisplayTypeSelection->getValue() == 1))
-    {
+	const OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
+	const double step = size.x / (double)(getData()._data._step -1);
+	double heightR, heightG, heightB;
+	heightR = heightG = heightB = size.y;
+	
+	if(!(_plugin->_paramDisplayTypeSelection->getValue() == 1))
+	{
 		//get max of the three channels
 		Number maxR = *(std::max_element(getData()._data._bufferRed.begin(),getData()._data._bufferRed.end()));
         Number maxG = *(std::max_element(getData()._data._bufferGreen.begin(),getData()._data._bufferGreen.end()));
@@ -61,7 +66,7 @@ bool RGBOverlay::draw(const OFX::DrawArgs& args)
             heightG = maxG*heightB/maxB;
         }
     }
-	float selectionMultiplier = (float)_plugin->_selectionMultiplierSelection->getValue(); //get selection multiplier from plugin
+	float selectionMultiplier = (float)_plugin->_paramSelectionMultiplierSelection->getValue(); //get selection multiplier from plugin
 	//display on screen if specified (RGB)
 	
 	if(_plugin->_paramOverlayRSelection->getValue())		//RED CHANNEL

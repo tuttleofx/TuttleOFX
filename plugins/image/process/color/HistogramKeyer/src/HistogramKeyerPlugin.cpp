@@ -30,13 +30,13 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	_clearHSL = fetchPushButtonParam(kButtonCleanHSL);							//clean HSL button
 	
 	_paramDisplayTypeSelection = fetchChoiceParam(kHistoDisplayListParamLabel);	//histogram display list (Histogram overlay group)
-	_clearAll = fetchPushButtonParam(kButtonCleanAll);							//clean all button (Histogram overlay group)
+	_paramClearAll = fetchPushButtonParam(kButtonCleanAll);							//clean all button (Histogram overlay group)
 
 	_paramDisplaySelection = fetchBooleanParam( kBoolSelection);				//display selection on source clip (Selection group)
 	
-	_nbStepSelection = fetchIntParam(knbStepRange);								//nb step range (Advanced group)
-	_selectionMultiplierSelection = fetchDoubleParam(kselectionMultiplier);		//selection multiplier (Advanced group)
-	_refreshOverlaySelection = fetchPushButtonParam(kButtonRefreshOverlay);		//refresh overlay (Advanced group)
+	_paramNbStepSelection = fetchIntParam(knbStepRange);								//nb step range (Advanced group)
+	_paramSelectionMultiplierSelection = fetchDoubleParam(kselectionMultiplier);		//selection multiplier (Advanced group)
+	_paramRefreshOverlaySelection = fetchPushButtonParam(kButtonRefreshOverlay);		//refresh overlay (Advanced group)
 	
 	_paramOutputSettingSelection = fetchChoiceParam( kOutputListParamLabel );	//output type (BW/alpha)
 	_paramReverseMaskSelection = fetchBooleanParam( kBoolReverseMask);			//reverse mask
@@ -86,7 +86,7 @@ HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::
 void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
 	/*Clean buttons*/
-	if(paramName == kButtonCleanRGB || paramName == kButtonCleanHSL || paramName == kButtonCleanAll) //HSL or RGB or both
+	if( paramName == kButtonCleanRGB || paramName == kButtonCleanHSL || paramName == kButtonCleanAll ) //HSL or RGB or both
 	{
 		//get nb points for each curve (RGB)
 		std::vector<int> nbControlPointsRGB;					//initialize vector
@@ -137,26 +137,27 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 	}
 	
 	/*refresh histogram overlay*/
-	if(paramName == kButtonRefreshOverlay)
+	else if( paramName == kButtonRefreshOverlay )
 	{
 		//Draw forced
 		OFX::InstanceChangedArgs changed( args.time, args.renderScale );
 		this->changedClip(changed,this->_clipSrc->name());
 	}
 	/*nbStep changed*/
-	if(paramName == knbStepRange)
+	else if( paramName == knbStepRange )
 	{
-		getOverlayData().vNbStep = _nbStepSelection->getValue(); //change nbStep value
-		if(this->hasOverlayData())//if there is overlay value
-			this->getOverlayData().computeFullData(this->_clipSrc,args.time,args.renderScale); //reset buffer and compute them
+		if( this->hasOverlayData() ) //if there is overlay value
+		{
+			getOverlayData().setNbStep( _paramNbStepSelection->getValue() ); //change nbStep value
+			getOverlayData().computeFullData( this->_clipSrc, args.time, args.renderScale ); //reset buffer and compute them
+		}
 	}
 	/*Clear user selection*/
-	if(paramName == kButtonClearSelection)
+	else if( paramName == kButtonClearSelection )
 	{
 		if(this->hasOverlayData())//if there is overlay value
 		{
-			this->getOverlayData().resetSelectionData(_clipSrc->getPixelRodSize(args.time));//clear selection
-			this->getOverlayData().resetAverages();//clear averages
+			this->getOverlayData().clearSelection();//clear selection
 		}
 	}
 }
@@ -168,8 +169,12 @@ void HistogramKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, co
 {
 	if( clipName == kOfxImageEffectSimpleSourceClipName )
 	{
-		if(this->hasOverlayData())
-			this->getOverlayData().computeFullData(this->_clipSrc,args.time,args.renderScale);
+		if( this->hasOverlayData() )
+		{
+			//TUTTLE_TCOUT( "-- Source clip modified --" );
+			this->getOverlayData().clearAll( this->_clipSrc->getPixelRodSize( args.time, args.renderScale ) );
+			this->getOverlayData().computeFullData( this->_clipSrc, args.time, args.renderScale );
+		}
 	}
 }
 
@@ -201,8 +206,8 @@ void HistogramKeyerPlugin::addRefOverlayData()
 {
 	if( _overlayDataCount == 0 )
 	{
-		OfxPointI size = this->_clipSrc->getPixelRodSize(NULL);
-		_overlayData.reset(new OverlayData(size));
+		const OfxPointI imgSize = this->_clipSrc->getPixelRodSize(0); ///@todo set the correct time !
+		_overlayData.reset( new OverlayData( imgSize, this->_paramNbStepSelection->getValue() ) );
 	}
 	++_overlayDataCount;
 }

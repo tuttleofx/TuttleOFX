@@ -10,96 +10,32 @@ namespace histogramKeyer {
  * Create a new empty data structure from scratch (data is null)
  * @param size : size of the current source clip (width*height) 
  */
-OverlayData::OverlayData( const OfxPointI& size )
+OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
 {
-	static const OfxPointI empty = {0, 0};
-	_size= empty;
-	
-	//updateIfNeeded(size);
-	
-	_size =  size;
-	//allocate and initialize bool img tab 2D
-	bool_2d::extent_gen extents;
-	_imgBool.resize( extents[_size.y][_size.x] );
-	
-	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
-	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
-	
-	for(unsigned int i=0; i<_size.y; ++i)
-	{
-		for(unsigned int j=0; j<_size.x; ++j)
-			_imgBool[i][j] = 0;
-	}
-	
-	vNbStep = 255;
-	//Reset Histogram buffers
-	this->_data._step = vNbStep;
-	this->resetHistogramBufferData(this->_data);
-	//Reset Histogram selection buffers
-	this->_selectionData._step = vNbStep;
-	this->resetHistogramBufferData(this->_selectionData);
+	_size = size;
+	_vNbStep = nbSteps;
+
+	clearAll( size );
 }
 
 /**
  * Update selection areas buffer to selection histograms overlay
  * @param args needed to have current time
  */
-void OverlayData::computeHistogramBufferData(HistogramBufferData& data,OFX::Clip* clipSrc,const OfxTime time, const OfxPointD renderScale,bool isSelection)
+void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const OfxPointD& renderScale, const bool isSelection )
 {
-	//TUTTLE_COUT_INFOS;
-	//TUTTLE_COUT_VAR( "computeHistogramBufferData - fetchImage " << time );
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
-	//TUTTLE_COUT_INFOS;
-	//TUTTLE_COUT_VAR( clipSrc->getCanonicalRod(time) );
-	//TUTTLE_COUT_VAR( src->getBounds() );
-	
-	/*Compatibility tests */
-	if( !src.get() ) // source isn't accessible
-	{
-		return;
-	}
-	if( src->getRowBytes() == 0 )//if source is wrong
-	{
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	}
-	OfxRectI srcPixelRod = clipSrc->getPixelRod( time,renderScale ); //get current RoD
-	if((clipSrc->getPixelDepth() != OFX::eBitDepthFloat)||(!clipSrc->getPixelComponents())) 
-	{
-		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
-        return;
-	}
-	
-	/*Compute if source is OK*/
-	typedef boost::gil::rgba32f_view_t SView;								//declare current view type
-	SView srcView = tuttle::plugin::getView<SView>(src.get(),srcPixelRod);	//get current view from source clip
-	
-	data._step = vNbStep;					//prepare HistogramBuffer structure
+	data._step = _vNbStep;					//prepare HistogramBuffer structure
 	
 	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
 	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
+	BOOST_ASSERT( srcView.width() == _size.x );
+	BOOST_ASSERT( srcView.height() == _size.y );
 	
-	
-	Pixel_compute_histograms funct( _imgBool );			//functor declaration
-	funct._width = _size.x;					//width
-	funct._height= _size.y;					//height
-	funct._y = 0;							//initialize current pixel x to 0
-	funct._x = 0;							//initialize current pixel y to 0
-	funct._data = data;						//copy data
-	funct._isSelectionMode = isSelection;	//do we work on selection or normal histograms
-	
-	for(unsigned int i=0; i<_size.y; ++i)	//imgbool recopy into the functor
-	{
-		for(unsigned int j=0; j<_size.x; ++j)
-			funct._imgBool[i][j] = _imgBool[i][j];
-	}
-	
-	//TUTTLE_COUT_INFOS;
+	Pixel_compute_histograms funct( _imgBool, data, isSelection );			//functor declaration
 	
 	boost::gil::transform_pixels( srcView, funct );		 //(USED functor reference)
 	//boost::gil::for_each_pixel(srcView, funct);		(NOT USED)
 	
-	//TUTTLE_COUT_INFOS;
-	data = funct._data ;								//translate functor ephemeral data to real data
 	this->correctHistogramBufferData(data);				//correct Histogram data to make up for discretization (average)
 }
 
@@ -204,23 +140,70 @@ int OverlayData::computeAnAverage(std::vector<Number> selection_v) const
  * @param time	current time
  * @param renderScale	current renderScale
  */
-void OverlayData::computeFullData(OFX::Clip* clipSrc,const OfxTime time, const OfxPointD renderScale)
+void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale )
 {
-	//Reset Histogram buffers
-	this->_data._step = vNbStep;
-	this->resetHistogramBufferData(this->_data);
-	//Reset Histogram selection buffers
-	this->_selectionData._step = vNbStep;
-	this->resetHistogramBufferData(this->_selectionData);
+	resetHistogramData();
+	resetHistogramSelectionData();
 	
+	if( ! clipSrc->isConnected() )
+	{
+		return;
+	}
+	
+	//TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TCOUT_VAR( "computeHistogramBufferData - fetchImage " << time );
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time, renderScale)) );	//scoped pointer of current source clip
+	//TUTTLE_TCOUT_INFOS;
+	
+//	TUTTLE_TCOUT_VAR( clipSrc->getPixelRod(time, renderScale) );
+//	TUTTLE_TCOUT_VAR( clipSrc->getCanonicalRod(time, renderScale) );
+//	
+//	TUTTLE_TCOUT_VAR( src->getBounds() );
+//	TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
+	
+	// Compatibility tests
+	if( !src.get() ) // source isn't accessible
+	{
+		return;
+	}
+	if( src->getRowBytes() == 0 )//if source is wrong
+	{
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+	}
+	OfxRectI srcPixelRod = clipSrc->getPixelRod( time, renderScale ); //get current RoD
+	if( (clipSrc->getPixelDepth() != OFX::eBitDepthFloat) ||
+		(!clipSrc->getPixelComponents()) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
+        return;
+	}
+	
+	BOOST_ASSERT( srcPixelRod == src->getBounds() );
+//	BOOST_ASSERT( srcPixelRod.x1 == src->getBounds().x1 );
+//	BOOST_ASSERT( srcPixelRod.y1 == src->getBounds().y1 );
+//	BOOST_ASSERT( srcPixelRod.x2 == src->getBounds().x2 );
+//	BOOST_ASSERT( srcPixelRod.y2 == src->getBounds().y2 );
+	
+	// Compute if source is OK
+	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	
+	OfxPointI imgSize;
+	imgSize.x = srcView.width();
+	imgSize.y = srcView.height();
+	
+	if( isImageSizeModified( imgSize ) )
+	{
+		TUTTLE_TCOUT_INFOS;
+		
+		clearAll( imgSize );
+	}
 	
 	//Compute histogram buffer
-	this->computeHistogramBufferData(_data,clipSrc,time,renderScale);
-	this->correctHistogramBufferData(_data);
+	this->computeHistogramBufferData( _data, srcView, time, renderScale );
 	
 	//Compute selection histogram buffer
-	this->computeHistogramBufferData(_selectionData,clipSrc,time,renderScale,true);
-	this->correctHistogramBufferData(_selectionData);
+	this->computeHistogramBufferData( _selectionData, srcView, time, renderScale, true );
+	
 	//Compute averages
 	this->computeAverages();
 }
@@ -229,55 +212,42 @@ void OverlayData::computeFullData(OFX::Clip* clipSrc,const OfxTime time, const O
  * Reset the data (all values to 0)
  * @param size size of the current source clip
  */
-void OverlayData::resetData( const OfxPointI& size )
+void OverlayData::resetHistogramData()
 {
-	//change size
-	_size =  size;
-	//allocate and initialize bool img tab 2D
-	bool_2d::extent_gen extents;
-	_imgBool.resize(extents[_size.y][_size.x]);	
-	
-	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
-	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
-	
-	for(unsigned int i=0; i<_size.y; ++i)
-	{
-		for(unsigned int j=0; j<_size.x; ++j)
-			_imgBool[i][j] = 0;
-	}
-	
-	//Reset Histogram buffers
-	this->_data._step = vNbStep;
+	// Reset Histogram buffers
+	this->_data._step = _vNbStep;
 	this->resetHistogramBufferData(this->_data);
-	//Reset Histogram selection buffers
-	this->_selectionData._step = vNbStep;
-	this->resetHistogramBufferData(this->_selectionData);
 }
 
 /**
  * Reset the data (all values to 0)
  * @param size size of the current source clip
  */
-void OverlayData::resetSelectionData( const OfxPointI& size )
+void OverlayData::resetHistogramSelectionData()
 {
-	//change size
-	_size.x =  size.x;
-	_size.y =  size.y;
+	//Reset Histogram selection buffers
+	this->_selectionData._step = _vNbStep;
+	this->resetHistogramBufferData(this->_selectionData);
+}
 
+void OverlayData::removeSelection()
+{
+	for( unsigned int i=0; i < _imgBool.shape()[0]; ++i )
+	{
+		for( unsigned int j=0; j < _imgBool.shape()[1]; ++j )
+		{
+			_imgBool[i][j] = 0;
+		}
+	}
+}
+
+void OverlayData::removeSelection( const OfxPointI& size )
+{
 	//allocate and initialize bool img tab 2D
 	bool_2d::extent_gen extents;
 	_imgBool.resize(extents[_size.y][_size.x]);
 	
-	BOOST_ASSERT( _imgBool.shape()[0] == _size.y );
-	BOOST_ASSERT( _imgBool.shape()[1] == _size.x );
-	for(unsigned int i=0; i<_size.y; ++i)
-	{
-		for(unsigned int j=0; j<_size.x; ++j)
-			_imgBool[i][j] = 0;
-	}
-	//Reset Histogram selection buffers
-	this->_selectionData._step = vNbStep;
-	this->resetHistogramBufferData(this->_selectionData);
+	clearSelection();
 }
 
 /**
@@ -297,16 +267,10 @@ void OverlayData::resetAverages()
 /**
  * Check size (verify that imgBool always has the good size
  */
-bool OverlayData::checkSize( const OfxPointI& size )
+bool OverlayData::isImageSizeModified( const OfxPointI& imgSize ) const
 {	
-	if(_size.x != size.x || _size.y != size.y)
-	{
-		_size.x = size.x;
-		_size.y = size.y;
-		resetData(_size);
-		return false;
-	}
-	return true;
+	return( _size.x != imgSize.x ||
+		_size.y != imgSize.y );
 }
 
 }

@@ -51,13 +51,13 @@ public:
 	OFX::PushButtonParam* _clearHSL;				//clean HSL button
 	
     OFX::ChoiceParam* _paramDisplayTypeSelection;	//display option list global/adapted to channel (Histogram overlay group)
-	OFX::PushButtonParam* _clearAll;				//clear all button (Histogram overlay group)
+	OFX::PushButtonParam* _paramClearAll;				//clear all button (Histogram overlay group)
 	
 	OFX::BooleanParam* _paramDisplaySelection;		//display selection on clip source (Selection group)
 	
-	OFX::IntParam* _nbStepSelection;				//step selection (Advanced group)
-	OFX::DoubleParam* _selectionMultiplierSelection;//selection multiplier (Advanced group)
-	OFX::PushButtonParam* _refreshOverlaySelection; //refresh overlay button (Advanced group)
+	OFX::IntParam* _paramNbStepSelection;				//step selection (Advanced group)
+	OFX::DoubleParam* _paramSelectionMultiplierSelection;//selection multiplier (Advanced group)
+	OFX::PushButtonParam* _paramRefreshOverlaySelection; //refresh overlay button (Advanced group)
 	
 	OFX::ChoiceParam* _paramOutputSettingSelection;	//output display list (BW/Alpha)
 	OFX::BooleanParam* _paramReverseMaskSelection;	//revert mask check box

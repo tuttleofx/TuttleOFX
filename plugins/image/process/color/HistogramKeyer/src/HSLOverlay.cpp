@@ -63,7 +63,7 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
             heightS = maxS*heightL/maxL;
         }
     }
-	float selectionMultiplier = (float)_plugin->_selectionMultiplierSelection->getValue();
+	float selectionMultiplier = (float)_plugin->_paramSelectionMultiplierSelection->getValue();
 	//Display on screen if specified (HSL)
 	if(_plugin->_paramOverlayHSelection->getValue())			//HUE CHANNEL
 	{

@@ -34,14 +34,13 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 	if(_plugin->_paramGlobalDisplaySelection->getValue() == false)
 		return false;
 	
-	///@ HACK changeClip method doesn't work when source clip is changed so we have to check size of imgBool all of the time
-	if(!getData().checkSize(imgSize))
-		getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
-	
-	if(_isFirstTime)
+
+	///@ HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all of the time
+	if( getData().isImageSizeModified(imgSize) ||
+		_isFirstTime )
 	{
-		getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
-		_isFirstTime = false;
+		getData().clearAll( imgSize );
+		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 	}
 	
 	// Draw component
@@ -69,6 +68,11 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		
 		if(_penDown && !_keyDown)//Display selection zone
 			this->displaySelectionZone();
+	}
+	
+	if( _isFirstTime )
+	{
+		_isFirstTime = false;
 	}
 	return displaySomething;
 }
@@ -216,9 +220,7 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 				getData()._imgBool[endY+val_y][endX+val_x] = 255;	//mark all of the selected pixel
 			}
 		}
-		getData().computeHistogramBufferData(getData()._selectionData,_plugin->_clipSrc,args.time,args.renderScale,true); //update selection histograms buffer datas
-		getData().correctHistogramBufferData(getData()._selectionData);		    //correct selection histograms buffer datas
-		getData().computeAverages();	//update average data
+		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 	}
 	_penDown = false; //treatment is finished
 	return true;
@@ -246,13 +248,12 @@ bool HistogramKeyerOverlay::keyDown( const OFX::KeyArgs& args )
  */
 bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
 {
-	if((args.keySymbol == kOfxKey_Control_L||args.keySymbol==kOfxKey_Control_R)&&_keyDown) //if the release key is Ctrl (and it has been pressed before)
+	if( (args.keySymbol == kOfxKey_Control_L || args.keySymbol==kOfxKey_Control_R) &&
+		_keyDown ) //if the release key is Ctrl (and it has been pressed before)
 	{
 		_keyDown = false;	//treatment ends
-		getData().computeHistogramBufferData(getData()._selectionData,_plugin->_clipSrc,args.time,args.renderScale,true);	//update selection histogram
-		getData().correctHistogramBufferData(getData()._selectionData);								//correct selection histogram
-		return true;		//event captured
-
+		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
+		return true; //event captured
 	}
 	return false;			//event is not captured (wrong key)
 }
