@@ -104,14 +104,17 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		curvesHSL->setDimensionLabel( kParamColorSelectionLightness, 2 );
 		//define curves color RGB 
 		curvesRGB->setHint( "Color selection" );
-		curvesRGB->setUIColour( 0, {1,0,0} );
-		curvesRGB->setUIColour( 1, {0,1,0} );
-		curvesRGB->setUIColour( 2, {0,0,1} );
+		static const OfxRGBColourD red   = {1,0,0};
+		static const OfxRGBColourD green = {0,1,0};
+		static const OfxRGBColourD blue  = {0,0,1};
+		curvesRGB->setUIColour( 0, red );
+		curvesRGB->setUIColour( 1, green );
+		curvesRGB->setUIColour( 2, blue );
 		//define curves color HSL 
 		curvesHSL->setHint( "Color selection" );
-		curvesHSL->setUIColour( 0, {1,0,0} );
-		curvesHSL->setUIColour( 1, {0,1,0} );
-		curvesHSL->setUIColour( 2, {0,0,1} );
+		curvesHSL->setUIColour( 0, red );
+		curvesHSL->setUIColour( 1, green );
+		curvesHSL->setUIColour( 2, blue );
 
 		curvesRGB->setInteractDescriptor( new OFX::DefaultParamInteractWrap<RGBParamOverlayDescriptor>() );	//attach parametric curve to RGBOverlay
 		curvesHSL->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HSLParamOverlayDescriptor>() );	//attach parametric curve to HSLOverlay

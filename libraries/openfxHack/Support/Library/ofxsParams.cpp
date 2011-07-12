@@ -2349,7 +2349,7 @@ double ParametricParam::getValue( const int curveIndex,
 int ParametricParam::getNControlPoints( const int curveIndex,
                                        const OfxTime time )
 {
-	int returnValue = 0.0;
+	int returnValue = 0;
 	OfxStatus stat = OFX::Private::gParametricParameterSuite->parametricParamGetNControlPoints( getOfxHandle(),
                                        curveIndex,
                                        time,
