@@ -5,7 +5,7 @@
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
-	
+
 /**
  * Create a new empty data structure from scratch (data is null)
  * @param size : size of the current source clip (width*height) 

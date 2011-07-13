@@ -28,7 +28,8 @@ HistogramKeyerOverlay::~HistogramKeyerOverlay()
 
 bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 {	
-	const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time);
+	const OfxPointI fullImgSize = _plugin->_clipSrc->getPixelRodSize(args.time);
+	const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale);
 	
 	// Global display option
 	if(_plugin->_paramGlobalDisplaySelection->getValue() == false)
@@ -50,18 +51,18 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		displaySomething = true;  
 		
 		if(_plugin->_paramDisplaySelection->getValue())	//DisplaySelection
-			this->displaySelectedAreas( imgSize );
+			this->displaySelectedAreas( fullImgSize );
 		
 		///@todo : remove next lines when Nuke curves overlay works
 		glPushMatrix();
-		glTranslatef(-(imgSize.x+kTranslationRGB),0.0f,0.0f);
+		glTranslatef(-(fullImgSize.x+kTranslationRGB),0.0f,0.0f);
 		
 		_rgbParam.draw(args);  
 		glPopMatrix();
 		
 		///@todo : remove next lines when Nuke curves overlay works
 		glPushMatrix();
-		glTranslatef((imgSize.x+kTranslationHSL),0.0f,0.0f);	
+		glTranslatef((fullImgSize.x+kTranslationHSL),0.0f,0.0f);	
 		
 		_hslParam.draw(args);
 		glPopMatrix();
