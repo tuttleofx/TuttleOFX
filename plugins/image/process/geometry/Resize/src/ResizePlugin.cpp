@@ -192,7 +192,7 @@ void ResizePlugin::changedParam( const OFX::InstanceChangedArgs &args, const std
 
 bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
 {
-	using namespace bgil;
+	using namespace boost::gil;
 	const OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
 	const Point2 srcRodCorner( srcRod.x1, srcRod.y1 );
 	const Point2 srcRodSize( srcRod.x2 - srcRod.x1, srcRod.y2 - srcRod.y1 );

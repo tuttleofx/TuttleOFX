@@ -8,18 +8,18 @@ namespace plugin {
 namespace merge {
 
 // Descriptors name
-const static std::string kParamSourceA       = "A";
-const static std::string kParamSourceB       = "B";
-const static std::string kParamFunction      = "mergingFunction";
-const static std::string kParamFunctionLabel = "Merging function";
+static const std::string kParamSourceA       = "A";
+static const std::string kParamSourceB       = "B";
+static const std::string kParamFunction      = "mergingFunction";
+static const std::string kParamFunctionLabel = "Merging function";
 
-const static std::string kParamOffsetA       = "offsetA";
-const static std::string kParamOffsetB       = "offsetB";
-const static std::string kParamRod           = "rod";
-const static std::string kParamRodIntersect  = "intersection";
-const static std::string kParamRodUnion      = "union";
-const static std::string kParamRodA          = "A";
-const static std::string kParamRodB          = "B";
+static const std::string kParamOffsetA       = "offsetA";
+static const std::string kParamOffsetB       = "offsetB";
+static const std::string kParamRod           = "rod";
+static const std::string kParamRodIntersect  = "intersection";
+static const std::string kParamRodUnion      = "union";
+static const std::string kParamRodA          = "A";
+static const std::string kParamRodB          = "B";
 
 enum EParamRod
 {

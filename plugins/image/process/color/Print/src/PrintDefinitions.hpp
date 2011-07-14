@@ -8,10 +8,10 @@ namespace tuttle {
 namespace plugin {
 namespace print {
 
-const static std::string kParamMode = "mode";
-const static std::string kParamModeImage = "image";
-const static std::string kParamModeRegion = "region";
-const static std::string kParamModePixel = "pixel";
+static const std::string kParamMode = "mode";
+static const std::string kParamModeImage = "image";
+static const std::string kParamModeRegion = "region";
+static const std::string kParamModePixel = "pixel";
 enum EParamMode
 {
 	eParamModeImage = 0,
@@ -19,19 +19,19 @@ enum EParamMode
 	eParamModePixel
 };
 
-const static std::string kParamPixel = "pixel";
-const static std::string kParamRegionMin = "regionMin";
-const static std::string kParamRegionMax = "regionMax";
+static const std::string kParamPixel = "pixel";
+static const std::string kParamRegionMin = "regionMin";
+static const std::string kParamRegionMax = "regionMax";
 
-const static std::string kParamOutput = "output";
-const static std::string kParamOutputNumeric = "numeric";
-const static std::string kParamOutputAscii = "ascii";
+static const std::string kParamOutput = "output";
+static const std::string kParamOutputNumeric = "numeric";
+static const std::string kParamOutputAscii = "ascii";
 enum EParamOutput
 {
 	eParamOutputNumeric = 0,
 	eParamOutputAscii
 };
-const static std::string kParamFlip = "flip";
+static const std::string kParamFlip = "flip";
 
 
 }

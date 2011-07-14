@@ -34,7 +34,7 @@ void resample_pixels_progress( const SrcView& src_view, const DstView& dst_view,
 		{
 			if( ! ::terry::sampler::sample( sampler, src_view, ::boost::gil::transform( dst_to_src, dst_p ), xit[dst_p.x] ) )
 			{
-                                xit[dst_p.x] = black; // if it is outside of the source image
+				xit[dst_p.x] = black; // if it is outside of the source image
 			}
 		}
 		if( p->progressForward() )

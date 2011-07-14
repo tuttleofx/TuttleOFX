@@ -7,11 +7,11 @@ namespace tuttle {
 namespace plugin {
 namespace invert {
 
-const static std::string kParamProcessGroup = "processGroup";
-const static std::string kParamProcessR = "processR";
-const static std::string kParamProcessG = "processG";
-const static std::string kParamProcessB = "processB";
-const static std::string kParamProcessA = "processA";
+static const std::string kParamProcessGroup = "processGroup";
+static const std::string kParamProcessR = "processR";
+static const std::string kParamProcessG = "processG";
+static const std::string kParamProcessB = "processB";
+static const std::string kParamProcessA = "processA";
 
 }
 }

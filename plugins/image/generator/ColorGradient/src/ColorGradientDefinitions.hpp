@@ -9,14 +9,14 @@ namespace tuttle {
 namespace plugin {
 namespace colorGradient {
 
-const static unsigned int kMaxNbPoints = 50;
-const static std::string kPoint        = "point";
-const static std::string kColor        = "color";
+static const unsigned int kMaxNbPoints = 50;
+static const std::string kPoint        = "point";
+static const std::string kColor        = "color";
 
-const static std::string kGradientType         = "type";
-const static std::string kGradientType1DLinear = "1D linear";
-const static std::string kGradientType1DRadial = "1D radial";
-const static std::string kGradientType2D       = "2D";
+static const std::string kGradientType         = "type";
+static const std::string kGradientType1DLinear = "1D linear";
+static const std::string kGradientType1DRadial = "1D radial";
+static const std::string kGradientType2D       = "2D";
 
 enum EGradientType
 {
@@ -25,7 +25,7 @@ enum EGradientType
 	eGradientType2D
 };
 
-const static std::string kNbPoints = "nbPoints";
+static const std::string kNbPoints = "nbPoints";
 
 inline std::string getPointParamName( const unsigned int i )
 {

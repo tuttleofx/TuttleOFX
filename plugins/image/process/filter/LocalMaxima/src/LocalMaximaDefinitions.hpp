@@ -8,9 +8,9 @@ namespace tuttle {
 namespace plugin {
 namespace localmaxima {
 
-const static std::string kParamBorder = "border";
-const static std::string kParamBorderBlack = "Black";
-const static std::string kParamBorderPadded = "Padded";
+static const std::string kParamBorder = "border";
+static const std::string kParamBorderBlack = "Black";
+static const std::string kParamBorderPadded = "Padded";
 
 enum EParamBorder
 {
@@ -18,10 +18,10 @@ enum EParamBorder
 	eParamBorderPadded
 };
 
-const static std::string kParamOutputComponent = "outputComponent";
-const static std::string kParamOutputComponentRGBA = "RGBA";
-const static std::string kParamOutputComponentRGB = "RGB";
-const static std::string kParamOutputComponentAlpha = "Alpha";
+static const std::string kParamOutputComponent = "outputComponent";
+static const std::string kParamOutputComponentRGBA = "RGBA";
+static const std::string kParamOutputComponentRGB = "RGB";
+static const std::string kParamOutputComponentAlpha = "Alpha";
 
 enum EParamOutputComponent
 {
@@ -30,7 +30,7 @@ enum EParamOutputComponent
 	eParamOutputComponentAlpha
 };
 
-//const static std::string kParamFillAllChannels = "fillAllChannels";
+//static const std::string kParamFillAllChannels = "fillAllChannels";
 
 }
 }

@@ -10,14 +10,14 @@ namespace tuttle {
 namespace plugin {
 namespace floodFill {
 
-const static std::string kParamUpperThres = "upperThres";
-const static std::string kParamLowerThres = "lowerThres";
-const static std::string kParamMinMaxRelative = "minMaxRelative";
+static const std::string kParamUpperThres = "upperThres";
+static const std::string kParamLowerThres = "lowerThres";
+static const std::string kParamMinMaxRelative = "minMaxRelative";
 
-const static std::string kParamMethod = "method";
-const static std::string kParamMethod4Connections = "4 connections";
-const static std::string kParamMethod8Connections = "8 connections";
-const static std::string kParamMethodBruteForce = "bruteForce";
+static const std::string kParamMethod = "method";
+static const std::string kParamMethod4Connections = "4 connections";
+static const std::string kParamMethod8Connections = "8 connections";
+static const std::string kParamMethodBruteForce = "bruteForce";
 
 enum EParamMethod
 {

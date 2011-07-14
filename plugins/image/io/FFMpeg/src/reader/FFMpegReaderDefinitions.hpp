@@ -8,11 +8,11 @@ namespace plugin {
 namespace ffmpeg {
 namespace reader {
 
-const static std::string kFFMpegHelpButton = "Help";
+static const std::string kFFMpegHelpButton = "Help";
 
 static const std::string kFilename = "filename";
 
-const static std::string kFFMpegHelpString = "<b>ffmpeg video io</b> plugin is used to read video files.  <br />";
+static const std::string kFFMpegHelpString = "<b>ffmpeg video io</b> plugin is used to read video files.  <br />";
 
 }
 }

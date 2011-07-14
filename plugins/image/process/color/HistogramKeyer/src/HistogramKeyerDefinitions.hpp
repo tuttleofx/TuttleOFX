@@ -8,15 +8,15 @@ namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
 
-const static unsigned int nbCurves = 6;
+static const unsigned int nbCurves = 6;
 
-const static std::string kParamColorSelection = "colorSelection";
-const static std::string kParamColorSelectionRed = "red";
-const static std::string kParamColorSelectionGreen = "green";
-const static std::string kParamColorSelectionBlue = "blue";
-const static std::string kParamColorSelectionHue = "hue";
-const static std::string kParamColorSelectionSaturation = "saturation";
-const static std::string kParamColorSelectionLightness = "lightness";
+static const std::string kParamColorSelection = "colorSelection";
+static const std::string kParamColorSelectionRed = "red";
+static const std::string kParamColorSelectionGreen = "green";
+static const std::string kParamColorSelectionBlue = "blue";
+static const std::string kParamColorSelectionHue = "hue";
+static const std::string kParamColorSelectionSaturation = "saturation";
+static const std::string kParamColorSelectionLightness = "lightness";
 
 
 }

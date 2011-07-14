@@ -13,7 +13,7 @@ namespace plugin {
 namespace lut {
 
 using namespace boost::gil;
-const static std::string kLutHelpString = "<b>Image Luter</b> is used to lut components of an image.  <br />";
+static const std::string kLutHelpString = "<b>Image Luter</b> is used to lut components of an image.  <br />";
 
 LutPlugin::LutPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )

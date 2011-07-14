@@ -6,16 +6,16 @@
 namespace tuttle {
 namespace plugin {
 namespace gamma {
-const static std::string kMasterValue = "master";
-const static std::string kRedValue    = "red";
-const static std::string kGreenValue  = "green";
-const static std::string kBlueValue   = "blue";
-const static std::string kAlphaValue  = "alpha";
-const static std::string kGammaType   = "gammaType";
-const static std::string kInvert      = "invert";
+static const std::string kMasterValue = "master";
+static const std::string kRedValue    = "red";
+static const std::string kGreenValue  = "green";
+static const std::string kBlueValue   = "blue";
+static const std::string kAlphaValue  = "alpha";
+static const std::string kGammaType   = "gammaType";
+static const std::string kInvert      = "invert";
 
-const static std::string kGammaGlobal   = "Global";
-const static std::string kGammaChannels = "RGBA";
+static const std::string kGammaGlobal   = "Global";
+static const std::string kGammaChannels = "RGBA";
 enum EGammaType
 {
 	eGammaTypeGlobal   = 0,

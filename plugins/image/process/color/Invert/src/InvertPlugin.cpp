@@ -8,7 +8,7 @@ namespace plugin {
 namespace invert {
 
 using namespace boost::gil;
-const static std::string kInvertHelpString = "<b>Image inverter</b> is used to invert components of an image.  <br />";
+static const std::string kInvertHelpString = "<b>Image inverter</b> is used to invert components of an image.  <br />";
 
 InvertPlugin::InvertPlugin( OfxImageEffectHandle handle )
 	: ImageEffectGilPlugin( handle )
