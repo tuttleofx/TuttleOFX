@@ -143,7 +143,7 @@ allLibs = [
 		('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', False),
 		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', False),
 		('ctl', 'http://sourceforge.net/projects/ampasctl/files/ctl/ctl-1.4.1/ctl-1.4.1.tar.gz/download', False),
-		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_46_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_46_setup.exe', False),
+		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_47_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_47_setup.exe', False),
 		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
 		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False)
 	]
