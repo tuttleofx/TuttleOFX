@@ -7,7 +7,7 @@ namespace terry {
 namespace color {
 
 /**
- * @bief All supported layout
+ * @bief All supported layouts
  */
 namespace layout {
 

@@ -70,6 +70,25 @@ typedef boost::mpl::vector3< yuv::y_t
 ////////////////////////////////////////////////////////////////////////////////
 // YPbPr //
 
+/// \addtogroup ColorNameModel
+/// \{
+namespace YPbPr
+{
+/// \brief Luminance
+struct Y_t {};
+/// \brief Pb
+struct Pb_t {};
+/// \brief Pr
+struct Pr_t {};
+}
+/// \}
+
+/// \ingroup ColorSpaceModel
+typedef boost::mpl::vector3< YPbPr::Y_t
+                    , YPbPr::Pb_t
+                    , YPbPr::Pr_t
+                    > YPbPr_t;
+
 ////////////////////////////////////////////////////////////////////////////////
 // HSV //
 
