@@ -628,10 +628,10 @@ bool ImageEffectNode::isIdentity( const graph::ProcessVertexAtTimeData& vData, s
 {
 	time = vData._time;
 	OfxRectI roi;
-	roi.x1 = vData._apiImageEffect._renderRoI.x1;
-	roi.x2 = vData._apiImageEffect._renderRoI.x2;
-	roi.y1 = vData._apiImageEffect._renderRoI.y1;
-	roi.y2 = vData._apiImageEffect._renderRoI.y2;
+	roi.x1 = std::floor( vData._apiImageEffect._renderRoI.x1 );
+	roi.x2 = std::ceil( vData._apiImageEffect._renderRoI.x2 );
+	roi.y1 = std::floor( vData._apiImageEffect._renderRoI.y1 );
+	roi.y2 = std::ceil( vData._apiImageEffect._renderRoI.y2 );
 	return isIdentityAction( time, vData._apiImageEffect._field, roi, vData._nodeData->_renderScale, clip );
 }
 
@@ -642,7 +642,7 @@ void ImageEffectNode::preProcess_infos( const OfxTime time, graph::ProcessVertex
 	const OfxRectD rod             = getRegionOfDefinition( time );
 	const std::size_t bitDepth     = this->getOutputClip().getBitDepth(); // value in bytes
 	const std::size_t nbComponents = getOutputClip().getNbComponents();
-	nodeInfos._memory = ( rod.x2 - rod.x1 ) * ( rod.y2 - rod.y1 ) * nbComponents * bitDepth;
+	nodeInfos._memory = std::ceil( ( rod.x2 - rod.x1 ) * ( rod.y2 - rod.y1 ) * nbComponents * bitDepth );
 }
 
 
