@@ -44,6 +44,8 @@ void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& a
 	ImageGilProcessor<DView>::setup( args );
 
 	// source view
+//	TUTTLE_COUT_INFOS;
+//	TUTTLE_COUT_VAR( "src - fetchImage " << time );
 	this->_src.reset( _clipSrc->fetchImage( args.time ) );
 	if( !this->_src.get() )
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );

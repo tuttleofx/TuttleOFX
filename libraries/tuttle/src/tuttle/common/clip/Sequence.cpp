@@ -561,6 +561,7 @@ bool Sequence::init( const Time first, const Time last, const Time step, const E
 
 	if( dir.empty() ) // relative path
 		dir = boost::filesystem::current_path();
+
 	_directory = dir;
 	return this->init( _directory.filename().string(), first, last, step, accept );
 }
@@ -816,7 +817,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 		
 // 		TUTTLE_COUT("dir " << iter->filename());
 		
-		if( !(iter->path().filename().string()[0]==0x2E) || (desc & eMaskOptionsDotFile)  ) //0x2e == . for the test if we ask to show hidden files and if it is hidden
+		if( !(iter->path().filename().string()[0]=='.') || (desc & eDotFile)  ) // if we ask to show hidden files and if it is hidden
 		{
 // 			TUTTLE_COUT("hidden file " << iter->filename());
 
@@ -925,7 +926,6 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	}
 	if( showPath() )
 	{
-
 		if(_options & eMaskOptionsAbsolutePath)
 		{
 			dir = bfs::system_complete(_directory);
