@@ -817,7 +817,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 		
 // 		TUTTLE_COUT("dir " << iter->filename());
 		
-		if( !(iter->path().filename().string()[0]=='.') || (desc & eDotFile)  ) // if we ask to show hidden files and if it is hidden
+		if( !(iter->path().filename().string()[0]=='.') || (desc & eMaskOptionsDotFile)  ) // if we ask to show hidden files and if it is hidden
 		{
 // 			TUTTLE_COUT("hidden file " << iter->filename());
 
