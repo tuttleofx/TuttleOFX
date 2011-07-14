@@ -6,6 +6,7 @@ project : requirements
 
 lib tuttlecommon :
 		[ glob-tree *.cpp ]
-		/ofxPluginSupport/<link>static
+#		/openfxHackProject/<link>static
+		/ofxPluginSupport/<link>static # ???? but it work ...
 		/boost/regex
 		;

@@ -3,7 +3,7 @@
 ###############################################################################
 import type ;
 
-path-constant DIST : $(DIST)/plugins ;
+path-constant	DIST		: $(DIST)/plugins ;
 
 ###############################################################################
 # Registering plugin files as shared library
@@ -20,8 +20,8 @@ if ! [ type.registered PLUGIN ]
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>$(3RD_PARTY)/boostHack
+	: requirements
+		<include>$(3RD_PARTY)/boostHack
     ;        
         
 ###############################################################################
@@ -29,20 +29,23 @@ project
 ###############################################################################
 rule auto_install ( target : path )
 {
-    install install_plugin_$(target) : $(target) :
-    	<target-os>windows:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Win32
-		<target-os>linux:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Linux-x86
+	install install_plugin_$(target) : $(target) :
+		<target-os>windows:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Win32
+		<target-os>linux,<address-model>32:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Linux-x86
 		<target-os>linux,<address-model>64:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Linux-x86-64
 		<target-os>darwin:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/MacOS
 		<install-dependencies>on
 		<install-type>PLUGIN
+	;
+	install install_plugin_resources_$(target) : [ glob Resources/* ../Resources/* ] : #Resources/fr.tuttle.$(target).png  Resources/fr.tuttle.$(target).svg :
+		<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Resources
 	;
 }
 
 ###############################################################################
 # Common dependencies
 ###############################################################################
-use-project /tuttlelib : ../libraries/tuttle ;
+use-project	/tuttlelib	: ../libraries/tuttle ;
 
 ###############################################################################
 # Build all plugins

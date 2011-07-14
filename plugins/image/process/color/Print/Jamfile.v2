@@ -11,7 +11,6 @@ project
 	<include>src
     : build-dir $(DIST)/Print/obj
     ;
-
  
 ###############################################################################
 # Product 
@@ -25,4 +24,3 @@ plugin Print :
 # Automatic install
 ###############################################################################
 auto_install Print : $(DIST) ;
- 
