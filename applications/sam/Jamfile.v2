@@ -11,29 +11,53 @@ project
         <include>src
     : usage-requirements
         <include>src
-    : build-dir $(DIST)/sam-plugins/obj
+    : build-dir $(DIST)/sam/obj
     ;
 
 ###############################################################################
-# tuttle library
+# ls
 ###############################################################################
-exe sam-plugins : 
-    [ glob src/*.cpp ]
+exe sam-ls : 
+    [ glob src/sam/ls/*.cpp ]
     /tuttlecommon/<link>static
     /boost/system
+    /boost/filesystem
+    /boost/serialization
     :
 	<os>LINUX:<find-shared-library>dl
     ;
 
-###############################################################################
 # Automatic install
-###############################################################################
 install dist_src	
-	: sam-plugins
+	: sam-ls
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/tuttlecommon
-	: <variant>debug:<location>$(DIST)/sam-plugins/bin/debug
-	  <variant>release:<location>$(DIST)/sam-plugins/bin/release
+	: <variant>debug:<location>$(DIST)/sam-ls/bin/debug
+	  <variant>release:<location>$(DIST)/sam-ls/bin/release
+    ;
+
+###############################################################################
+# cp
+###############################################################################
+exe sam-cp : 
+    [ glob src/sam/cp/*.cpp ]
+    /tuttlecommon/<link>static
+    /boost/system
+    /boost/filesystem
+    /boost/serialization
+    :
+	<os>LINUX:<find-shared-library>dl
+    ;
+
+# Automatic install
+install dist_src	
+	: sam-cp
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/tuttlecommon
+	: <variant>debug:<location>$(DIST)/sam-cp/bin/debug
+	  <variant>release:<location>$(DIST)/sam-cp/bin/release
     ;
