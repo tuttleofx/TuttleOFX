@@ -9,7 +9,6 @@ import os ;
 project
 	: requirements
 		<include>src
-		<linkflags>-lGL
 	: build-dir $(DIST)/Average/obj
 	;
 
@@ -18,7 +17,9 @@ project
 ###############################################################################
 plugin Average : 
 	[ glob src/*.cpp ]
-	/tuttleplugin/<link>static
+        /tuttleplugin/<link>static
+        /boost//system
+        /boost//regex
 	;
 
 ###############################################################################

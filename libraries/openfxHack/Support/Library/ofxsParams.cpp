@@ -745,17 +745,17 @@ void ParametricParamDescriptor::setDimension( const int dimension )
 	getProps().propSetInt( kOfxParamPropParametricDimension, dimension );
 }
 
-void ParametricParamDescriptor::setLabel( const std::string label )
+void ParametricParamDescriptor::setLabel( const std::string& label )
 {
 	getProps().propSetString( kOfxPropLabel, label );
 }
 
-void ParametricParamDescriptor::setDimensionLabel( const std::string label, const int id )
+void ParametricParamDescriptor::setDimensionLabel( const std::string& label, const int id )
 {
 	getProps().propSetString( kOfxParamPropDimensionLabel, label, id );
 }
 
-void ParametricParamDescriptor::setUIColour( const int id, const OfxRGBColourD color )
+void ParametricParamDescriptor::setUIColour( const int id, const OfxRGBColourD& color )
 {
 	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.r, id*3 + 0 );
 	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.g, id*3 + 1 );
