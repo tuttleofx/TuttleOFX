@@ -165,12 +165,12 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	int					researchMask		= eMaskTypeSequence;	// by default show sequences
-	EMaskOptions				descriptionMask		= eMaskOptionsColor;	// by default show nothing
-	bool					recursiveListing	= false;
-	std::string				availableExtensions;
-	std::vector<std::string>		paths;
-	std::vector<std::string>		filters;
+	EMaskType researchMask = eMaskTypeSequence;	// by default show sequences
+	EMaskOptions descriptionMask = eMaskOptionsColor;	// by default show nothing
+	bool recursiveListing	= false;
+	std::string availableExtensions;
+	std::vector<std::string> paths;
+	std::vector<std::string> filters;
 
 	// Declare the supported options.
 	bpo::options_description mainOptions;
@@ -325,12 +325,12 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 //								TUTTLE_COUT( *dir );
-								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, researchMask, descriptionMask, filters );
+								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
 								getImageProperties( listing );
 							}
 						}
 					}
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
 					getImageProperties( listing );
 				}
 				else
@@ -339,7 +339,7 @@ int main( int argc, char** argv )
 						path = "."/path.leaf();
 					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), researchMask, descriptionMask, filters );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
 					getImageProperties( listing );
 					filters.pop_back( );
 				}
