@@ -1,4 +1,4 @@
-#include <ofxsParamEffect.h>
+#include <ofxsImageEffect.h>
 
 namespace tuttle {
 

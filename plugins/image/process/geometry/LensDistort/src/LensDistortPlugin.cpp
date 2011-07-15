@@ -242,6 +242,7 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	OfxRectD dstRod = _clipDst->getCanonicalRod( args.time );
 
 	LensDistortProcessParams<Scalar> params;
+	EParamInterpolation interpolation = getInterpolation();
 	if( _srcRefClip->isConnected() )
 	{
 		OfxRectD srcRefRod = _srcRefClip->getCanonicalRod( args.time );
@@ -266,12 +267,39 @@ void LensDistortPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArgume
 	outputRoi.y1 += dstRod.y1;
 	outputRoi.x2 += dstRod.x1;
 	outputRoi.y2 += dstRod.y1;
+
+	// add margin around depending on interpolation region sizes
+	double margin = 0.0;
+	switch( interpolation )
+	{
+		case eParamInterpolationNearest:
+		case eParamInterpolationBilinear:
+		{
+			margin = 1.0; // one pixel margin
+			break;
+		}
+		case eParamInterpolationBicubic:
+		case eParamInterpolationCatmul:
+		case eParamInterpolationMitchell:
+		case eParamInterpolationParzen:
+		case eParamInterpolationKeys:
+		case eParamInterpolationSimon:
+		case eParamInterpolationRifman:
+		{
+			margin = 2.0; // two pixels margin
+			break;
+		}
+	}
+	srcRoi.x1 -= margin;
+	srcRoi.y1 -= margin;
+	srcRoi.x2 += margin;
+	srcRoi.y2 += margin;
+
 	//    srcRoi.x1 += 2; // if we remove 2 pixels to the needed RoI the plugin crash, because it tries to access to this pixels
 	//    srcRoi.y1 += 2; // so the calcul of the RoI has a precision of one pixel
 	//    srcRoi.x2 -= 2;
 	//    srcRoi.y2 -= 2;
 	OfxRectD srcRealRoi = rectanglesIntersection( srcRoi, srcRod );
-	srcRealRoi = srcRod;
 
 	rois.setRegionOfInterest( *_clipSrc, srcRealRoi );
 

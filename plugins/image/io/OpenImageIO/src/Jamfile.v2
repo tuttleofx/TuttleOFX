@@ -17,12 +17,12 @@ project
 # Product 
 ###############################################################################
 #plugin OpenImageIO : 
-#        [ glob-tree *.cpp ]
-#        /tuttleplugin/<link>static
-#        /boost/filesystem
-#		/boost/system
-#        /openImageIO/<link>static
-#        ;
+#	[ glob-tree *.cpp ]
+#	/tuttleplugin/<link>static
+#	/boost/filesystem
+#	/boost/system
+#	/openImageIO/<link>static
+#	;
 #explicit OpenImageIO ;
 
 alias OpenImageIO ;

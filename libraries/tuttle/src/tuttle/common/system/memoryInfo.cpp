@@ -44,9 +44,9 @@ MemoryInfo getMemoryInfo()
 	        infos._totalSwap    =
 	            infos._freeSwap = std::numeric_limits<std::size_t>::max();
 	#endif
-	TUTTLE_TCOUT_X( 40, "-=" );
-	TUTTLE_TCOUT( "Memory infos" );
-	TUTTLE_TCOUT( infos );
+	TUTTLE_COUT_X_DEBUG( 40, "-=" );
+	TUTTLE_COUT_DEBUG( "Memory infos" );
+	TUTTLE_COUT_DEBUG( infos );
 
 	return infos;
 }

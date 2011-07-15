@@ -3,7 +3,7 @@
 ###############################################################################
 path-constant DIST : $(DIST)/param ;
 
-for local l in [ glob * ]
+for local l in [ glob * : Math ]
 {
-   build-project $(l) ;
+	build-project $(l) ;
 }

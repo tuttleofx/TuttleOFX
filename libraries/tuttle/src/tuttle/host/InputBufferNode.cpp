@@ -1,6 +1,6 @@
 #include "InputBufferNode.hpp"
 #include "Core.hpp"
-#include "exceptionsHost.hpp"
+#include "exceptions.hpp"
 #include "memory/LinkData.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhClipImageDescriptor.hpp>
@@ -24,6 +24,15 @@ InputBufferNode::InputBufferNode( const InputBufferNode& other )
 { }
 
 InputBufferNode::~InputBufferNode( ) { }
+
+std::vector<int> InputBufferNode::getVersion() const
+{
+	std::vector<int> version;
+	version.push_back( TUTTLE_HOST_VERSION_MAJOR );
+	version.push_back( TUTTLE_HOST_VERSION_MINOR );
+	version.push_back( TUTTLE_HOST_VERSION_MICRO );
+	return version;
+}
 
 attribute::Attribute& InputBufferNode::getAttribute( const std::string& name )
 {

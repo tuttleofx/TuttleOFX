@@ -62,7 +62,7 @@ void ColorDistributionProcess<View>::processSwitchOut( const EParamDistribution 
 	switch( out )
 	{
 		case eParamDistribution_linear:
-			processSwitchAlpha<IN, boost::gil::colorDistribution::linear>( processAlpha, src, dst );
+			processSwitchAlpha<IN, boost::gil::colorDistribution::Linear>( processAlpha, src, dst );
 			break;
 		case eParamDistribution_sRGB:
 			processSwitchAlpha<IN, boost::gil::colorDistribution::sRGB>( processAlpha, src, dst );
@@ -77,7 +77,7 @@ void ColorDistributionProcess<View>::processSwitchInOut( const EParamDistributio
 	switch( in )
 	{
 		case eParamDistribution_linear:
-			processSwitchOut<boost::gil::colorDistribution::linear>( out, processAlpha, src, dst );
+			processSwitchOut<boost::gil::colorDistribution::Linear>( out, processAlpha, src, dst );
 			break;
 		case eParamDistribution_sRGB:
 			processSwitchOut<boost::gil::colorDistribution::sRGB>( out, processAlpha, src, dst );

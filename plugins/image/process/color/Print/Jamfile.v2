@@ -7,22 +7,23 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-    : build-dir $(DIST)/Print/obj
-    ;
+	: requirements
+		<include>src
+	: build-dir $(DIST)/Print/obj
+	;
 
- 
+use-project	/libcaca	: $(3RD_PARTY)/libcaca ;
+
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Print : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    ;
- 
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	/libcaca
+	;
+
 ###############################################################################
 # Automatic install
 ###############################################################################
 auto_install Print : $(DIST) ;
- 

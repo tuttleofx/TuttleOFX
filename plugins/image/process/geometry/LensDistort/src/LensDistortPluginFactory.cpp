@@ -175,8 +175,35 @@ void LensDistortPluginFactory::describeInContext( OFX::ImageEffectDescriptor& de
 	interpolation->setLabel( "Interpolation" );
 	interpolation->appendOption( kParamInterpolationNearest );
 	interpolation->appendOption( kParamInterpolationBilinear );
+//	#ifndef TUTTLE_PRODUCTION
+	interpolation->appendOption( kParamInterpolationBicubic );
+	interpolation->appendOption( kParamInterpolationCatmul );
+	interpolation->appendOption( kParamInterpolationMitchell );
+	interpolation->appendOption( kParamInterpolationParzen );
+	interpolation->appendOption( kParamInterpolationKeys );
+	interpolation->appendOption( kParamInterpolationSimon );
+	interpolation->appendOption( kParamInterpolationRifman );
+//	interpolation->appendOption( kParamInterpolationLanczos3 );
+//	interpolation->appendOption( kParamInterpolationLanczos4 );
+//	interpolation->appendOption( kParamInterpolationLanczos6 );
+//	interpolation->appendOption( kParamInterpolationLanczos12 );
+//	interpolation->appendOption( kParamInterpolationGaussian );
+//	#endif
 	interpolation->setDefault( 1 );
-	interpolation->setHint( "Interpolation method" );
+	interpolation->setHint(
+			"Interpolation methods\n"
+			"\n"
+			/// @todo: documentation...
+			"Nearest: \n"
+			"Bilinear: \n"
+			"Bicubic: Cubic filter(0.0, 0.0)\n"
+			"Catmul: Cubic filter(0.0, 0.5)\n"
+			"Mitchell: Cubic filter(1/3, 1/3)\n"
+			"Parsen: Cubic filter(1.0, 0.0)\n"
+			"Keys: \n"
+			"Simon: \n"
+			"Rifman: \n"
+		);
 
 	OFX::ChoiceParamDescriptor* resizeRod = desc.defineChoiceParam( kParamResizeRod );
 	resizeRod->setLabel( "Resize RoD" );

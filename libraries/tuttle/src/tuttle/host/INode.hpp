@@ -1,7 +1,7 @@
 #ifndef _TUTTLE_HOST_INODE_HPP_
 #define _TUTTLE_HOST_INODE_HPP_
 
-#include <tuttle/host/exceptionsHost.hpp>
+#include <tuttle/host/exceptions.hpp>
 
 #include <ofxCore.h>
 #include <ofxAttribute.h>
@@ -19,6 +19,9 @@ namespace ofx {
 namespace attribute {
 class OfxhParam;
 class OfxhParamSet;
+}
+namespace property{
+class OfxhSet;
 }
 }
 namespace attribute {
@@ -65,6 +68,12 @@ public:
 
 	InputBufferNode& asInputBufferNode();
 	const InputBufferNode& asInputBufferNode() const;
+
+	virtual std::vector<int> getVersion() const = 0;
+	std::string getVersionStr() const;
+
+	virtual const ofx::property::OfxhSet& getProperties() const = 0;
+	virtual ofx::property::OfxhSet&       getEditableProperties() = 0;
 
 	virtual attribute::Attribute& getAttribute( const std::string& name ) = 0;
 	//	const attribute::Attribute& getAttribute( const std::string& name ) const { return const_cast<ProcessNode*>(this)->getAttribute( name ); }

@@ -7,22 +7,32 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
+	: requirements
+		<include>src
+		<include>$(3RD_PARTY)/ilmbase/Iex
+		<include>$(3RD_PARTY)/ilmbase/Half
+		<include>$(3RD_PARTY)/ctl
+	: build-dir $(DIST)/CTL/obj
+	;
+
+use-project	/ctl	: $(3RD_PARTY)/ctl ;
     : requirements
 	<include>src
     : build-dir $(DIST)/CTL/obj
     ;
-
  
 ###############################################################################
 # Product 
 ###############################################################################
 plugin CTL : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	/boost/filesystem
+	/ctl
+	;
  
 ###############################################################################
 # Automatic install
 ###############################################################################
 auto_install CTL : $(DIST) ;
- 
+

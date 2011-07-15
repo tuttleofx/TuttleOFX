@@ -7,7 +7,7 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
+    : requirements
         <include>src
         <threading>multi
     : build-dir $(DIST)/Crop/obj
