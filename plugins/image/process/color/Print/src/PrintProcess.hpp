@@ -3,9 +3,18 @@
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
+#include <caca.h>
+
 namespace tuttle {
 namespace plugin {
 namespace print {
+
+struct CacaViewer
+{
+        caca_display_t *dp;
+        caca_event_t    ev;
+        caca_canvas_t  *cv;
+};
 
 /**
  * @brief Print process
@@ -24,10 +33,14 @@ protected:
 
 public:
     PrintProcess( PrintPlugin& effect );
-
+    ~PrintProcess();
 	void setup( const OFX::RenderArguments& args );
 
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
+
+
+private:
+    CacaViewer viewerOpenGL;
 };
 
 }

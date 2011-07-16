@@ -29,19 +29,19 @@ public:
 	}
 
 	// Deriving implementatation needs to overide these
-	virtual void get( double& ) const OFX_EXCEPTION_SPEC                                                 = 0;
-	virtual void getAtTime( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC                       = 0;
-	virtual void set( const double&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
-	virtual void setAtTime( const OfxTime time, const double&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+	virtual void getValue( double& ) const OFX_EXCEPTION_SPEC                                                 = 0;
+	virtual void getValueAtTime( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC                       = 0;
+	virtual void setValue( const double&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
+	virtual void setValueAtTime( const OfxTime time, const double&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
 
-	virtual void set( const int& v, const EChange change ) OFX_EXCEPTION_SPEC
+	virtual void setValue( const int& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		this->set( (const double)( v ), change );
+		this->setValue( (const double)( v ), change );
 	}
 
-	virtual void setAtTime( const OfxTime time, const int& v, const EChange change ) OFX_EXCEPTION_SPEC
+	virtual void setValueAtTime( const OfxTime time, const int& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		this->setAtTime( time, (const double)( v ), change );
+		this->setValueAtTime( time, (const double)( v ), change );
 	}
 
 	virtual void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC                          = 0;
@@ -67,7 +67,7 @@ public:
 
 	std::ostream& displayValues( std::ostream& os ) const
 	{
-		os << getDouble();
+		os << getDoubleValue();
 		return os;
 	}
 };

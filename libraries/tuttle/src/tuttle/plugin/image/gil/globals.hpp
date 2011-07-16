@@ -52,6 +52,9 @@ inline float domain_max_value()
 	return channel_traits< typename channel_type< View >::type >::max_value() + 1.0f;
 }
 
+}
+}
+
 
 /// \ingroup PointModel
 template <typename T>
@@ -92,8 +95,5 @@ std::ostream& operator<<( std::ostream& out, const boost::gil::point2<T>& p )
 	return out << "x:" << p.x << " y:" << p.y;
 }
 
-
-}
-}
 
 #endif

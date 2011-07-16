@@ -27,33 +27,33 @@ OfxRGBColourD ParamRGB::getDefault() const
 	return rgb;
 }
 
-void ParamRGB::get( double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
+void ParamRGB::getValue( double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().get( r );
-	_controls.at<1>().get( g );
-	_controls.at<2>().get( b );
+	_controls.at<0>().getValue( r );
+	_controls.at<1>().getValue( g );
+	_controls.at<2>().getValue( b );
 }
 
-void ParamRGB::getAtTime( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
+void ParamRGB::getValueAtTime( const OfxTime time, double& r, double& g, double& b ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().getAtTime( time, r );
-	_controls.at<1>().getAtTime( time, g );
-	_controls.at<2>().getAtTime( time, b );
+	_controls.at<0>().getValueAtTime( time, r );
+	_controls.at<1>().getValueAtTime( time, g );
+	_controls.at<2>().getValueAtTime( time, b );
 }
 
-void ParamRGB::set( const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamRGB::setValue( const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().set( r, change );
-	_controls.at<1>().set( g, change );
-	_controls.at<2>().set( b, change );
+	_controls.at<0>().setValue( r, change );
+	_controls.at<1>().setValue( g, change );
+	_controls.at<2>().setValue( b, change );
 	this->paramChanged( change );
 }
 
-void ParamRGB::setAtTime( const OfxTime time, const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamRGB::setValueAtTime( const OfxTime time, const double& r, const double& g, const double& b, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().setAtTime( time, r, change );
-	_controls.at<1>().setAtTime( time, g, change );
-	_controls.at<2>().setAtTime( time, b, change );
+	_controls.at<0>().setValueAtTime( time, r, change );
+	_controls.at<1>().setValueAtTime( time, g, change );
+	_controls.at<2>().setValueAtTime( time, b, change );
 	this->paramChanged( change );
 }
 

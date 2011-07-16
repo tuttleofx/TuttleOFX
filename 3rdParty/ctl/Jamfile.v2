@@ -1,0 +1,52 @@
+###############################################################################
+## Main BJam makefile for ctl library
+###############################################################################
+
+use-project /base : ../ilmbase ;
+
+# declaring halfExpLogTable one programs compiled from halfExpLogTable.cpp
+exe halfExpLogTable : IlmCtlSimd/halfExpLogTable.cpp ../openexr//IlmImf ;
+
+# as we want to execute them easily, we want them to be copied into this directory
+install installExe : halfExpLogTable : <location>IlmCtlSimd/ ;
+
+make halfExpLogTable.h : installExe : @generateHalfExpLogTable ;
+actions generateHalfExpLogTable
+{
+	IlmCtlSimd/halfExpLogTable IlmCtlSimd/halfExpLogTable.h IlmCtlSimd/halfExpLog.h
+}
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements	
+		<include>IlmCtl
+		<include>IlmCtlMath
+		<include>IlmCtlSimd
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>IlmCtl
+		<include>IlmCtlMath
+		<include>IlmCtlSimd
+	: build-dir $(DIST)/3rdParty/ctl/obj
+    ;
+
+###############################################################################
+# libctl library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	ctl		:
+				[ glob IlmCtl/*.cpp IlmCtlMath/*.cpp IlmCtlSimd/*.cpp : IlmCtlSimd/halfExpLogTable.cpp ]
+				../openexr
+			:
+				<implicit-dependency>halfExpLogTable.h
+			;
+
+install	dist_src	:	ctl
+			:	<variant>debug:<location>$(DIST)/3rdParty/ctl/bin/debug
+				<variant>release:<location>$(DIST)/3rdParty/ctl/bin/release
+			;

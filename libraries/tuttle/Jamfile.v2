@@ -7,30 +7,26 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-		<include>src
-    : usage-requirements
-		<include>src
-    : build-dir $(DIST)/tuttle/obj
-    ;
+		: requirements
+			<include>src
+			<include>$(3RD_PARTY)/boostHack
+		: usage-requirements
+			<include>src
+		: build-dir $(DIST)/tuttle/obj
+		;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
-use-project /tuttlehost   : src/tuttle/host ;
-use-project /tuttleplugin : src/tuttle/plugin ;
-use-project /tuttlecommon : src/tuttle/common ;
+use-project	/tuttlehost	: src/tuttle/host ;
+use-project	/tuttleplugin	: src/tuttle/plugin ;
+use-project	/tuttlecommon	: src/tuttle/common ;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-install dist_src
-    : /tuttlehost /tuttleplugin /tuttlecommon
-    : <variant>debug:<location>$(DIST)/tuttle/bin/debug
-      <variant>release:<location>$(DIST)/tuttle/bin/release
-    ;
-
-install dist_include
-	: [ glob-tree *.h* ]
-	: <location>$(DIST)/tuttle/include
-	;
+install		dist_src
+		: /tuttlehost /tuttleplugin /tuttlecommon
+		: <variant>debug:<location>$(DIST)/tuttle/bin/debug
+		  <variant>release:<location>$(DIST)/tuttle/bin/release
+		;

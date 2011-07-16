@@ -333,6 +333,7 @@ KeyArgs::KeyArgs( const PropertySet& props )
 	time        = props.propGetDouble( kOfxPropTime );
 	renderScale = getRenderScale( props );
 	keyString   = props.propGetString( kOfxPropKeyString );
+	keySymbol   = props.propGetInt( kOfxPropKeySym );
 }
 
 /** @brief ctor */

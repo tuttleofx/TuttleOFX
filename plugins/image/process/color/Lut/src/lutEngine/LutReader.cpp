@@ -2,7 +2,6 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/tokenizer.hpp>
-#include <boost/regex.h>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/classic.hpp>
 #include <boost/spirit/include/classic_assign_actor.hpp>

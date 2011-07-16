@@ -1,0 +1,40 @@
+###############################################################################
+## Main BJam makefile for libxml library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements	
+		<include>.
+		<include>include
+		# disabling warning as error as we are not responsible for this code
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>include
+	: build-dir $(DIST)/3rdParty/libxml/obj
+    ;
+
+###############################################################################
+# libraw library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	libxml		:
+			  [ glob SAX.c entities.c encoding.c error.c
+	parserInternals.c parser.c tree.c hash.c list.c xmlIO.c
+	xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c
+	debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c
+	DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c
+	xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c
+	xmlreader.c relaxng.c dict.c SAX2.c xmlwriter.c legacy.c
+	chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c
+	trio.c trionan.c triostr.c ]
+			;
+
+install	dist_src	: libxml
+			: <variant>debug:<location>$(DIST)/3rdParty/libxml/bin/debug
+			  <variant>release:<location>$(DIST)/3rdParty/libxml/bin/release
+			;

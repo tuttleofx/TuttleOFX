@@ -26,19 +26,19 @@ public:
 	{}
 
 	// Deriving implementatation needs to overide these
-	virtual void get( bool& ) const OFX_EXCEPTION_SPEC                                                 = 0;
-	virtual void getAtTime( const OfxTime time, bool& ) const OFX_EXCEPTION_SPEC                       = 0;
-	virtual void set( const bool&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
-	virtual void setAtTime( const OfxTime time, const bool&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+	virtual void getValue( bool& ) const OFX_EXCEPTION_SPEC                                                 = 0;
+	virtual void getValueAtTime( const OfxTime time, bool& ) const OFX_EXCEPTION_SPEC                       = 0;
+	virtual void setValue( const bool&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
+	virtual void setValueAtTime( const OfxTime time, const bool&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
 
-	virtual void set( const int& v, const EChange change ) OFX_EXCEPTION_SPEC
+	virtual void setValue( const int& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		set( bool(v), change );
+		setValue( bool(v), change );
 	}
 
-	virtual void setAtTime( const OfxTime time, const int& v, const EChange change ) OFX_EXCEPTION_SPEC
+	virtual void setValueAtTime( const OfxTime time, const int& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		setAtTime( time, bool(v), change );
+		setValueAtTime( time, bool(v), change );
 	}
 
 	/// implementation of var args function
