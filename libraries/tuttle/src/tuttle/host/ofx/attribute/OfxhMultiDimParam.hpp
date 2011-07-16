@@ -6,7 +6,10 @@
 #include "OfxhParamDescriptor.hpp"
 #include "OfxhParamSet.hpp"
 
+#include <boost/program_options/parsers.hpp>
+
 #include <boost/ptr_container/ptr_array.hpp>
+
 #include <string>
 #include <vector>
 
@@ -38,17 +41,45 @@ public:
 		return _controls.size();
 	}
 
+	void setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+	{
+		std::vector<std::string> allExp = boost::program_options::split_unix( value, "," );
+
+		if( allExp.size() == 1 )
+		{
+			for( std::size_t i = 0; i < getSize(); ++i )
+			{
+				_controls[i].setValueFromExpression( value, change );
+			}
+		}
+		else
+		{
+			if( getSize() != allExp.size() )
+			{
+				BOOST_THROW_EXCEPTION( exception::Value()
+					<< exception::user() + "Set " + allExp.size() + " values for a double2d parameter."
+					);
+			}
+			for( std::size_t i = 0; i < getSize(); ++i )
+			{
+				_controls[i].setValueFromExpression( allExp[i], change );
+			}
+		}
+		this->paramChanged( change );
+	}
+
+
 protected:
 	// Deriving implementatation needs to overide these
 	inline virtual void getValueAtIndex( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
+		BOOST_ASSERT( _controls.size() > index );
 		_controls[index].getValue( dst );
 	}
 
 	inline virtual void getValueAtTimeAndIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
+		BOOST_ASSERT( _controls.size() > index );
 		_controls[index].getValueAtTime( time, dst );
 	}
 
@@ -68,14 +99,14 @@ public:
 		copy( param );
 	}
 
-	inline virtual void setAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setValueAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index].setValue( value, eChangeNone );
 		this->paramChanged( change );
 	}
 
-	inline virtual void setAtTimeAndIndex( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setValueAtTimeAndIndex( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
 		_controls[index].setValueAtTime( time, value, eChangeNone );

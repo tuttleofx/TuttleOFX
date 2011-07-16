@@ -1,4 +1,5 @@
 #include "ParamDouble.hpp"
+#include "expression.hpp"
 
 #include <tuttle/host/INode.hpp>
 
@@ -40,6 +41,12 @@ void ParamDouble::setValue( const double& v, const ofx::attribute::EChange chang
 void ParamDouble::setValueAtTime( const OfxTime time, const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
+	this->paramChanged( change );
+}
+
+void ParamDouble::setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+{
+	_value = extractValueFromExpression<double>( value );
 	this->paramChanged( change );
 }
 

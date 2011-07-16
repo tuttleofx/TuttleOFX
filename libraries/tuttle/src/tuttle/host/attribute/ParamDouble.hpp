@@ -26,6 +26,8 @@ public:
 	void setValue( const double&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void setValueAtTime( const OfxTime time, const double&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 
+	void setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	
 	void derive( const OfxTime time, double& ) const OFX_EXCEPTION_SPEC;
 	void integrate( const OfxTime time1, const OfxTime time2, double& ) const OFX_EXCEPTION_SPEC;
 

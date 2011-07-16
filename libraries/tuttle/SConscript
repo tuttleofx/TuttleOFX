@@ -7,9 +7,10 @@ project.StaticLibrary(
 		'tuttleCommon',
 		sources   = project.scanFiles( ['src/tuttle/common'] ),
 		includes  = ['src'],
-		libraries = [ libs.openfxHack,
-					 libs.boost,
-					],
+		libraries = [
+				libs.openfxHack,
+				libs.boost,
+			],
 		shared = True
 	)
 
@@ -17,11 +18,11 @@ project.StaticLibrary(
 		'tuttlePlugin',
 		sources   = project.scanFiles( ['src/tuttle/plugin'] ),
 		includes  = ['src','src/tuttle/host/core'],
-		libraries = [ libs.tuttleCommon,
-					 libs.openfxPluginSupportHack,
-					 libs.boost,
-					 libs.boost_gil,
-					],
+		libraries = [
+				libs.tuttleCommon,
+				libs.openfxPluginSupportHack,
+				libs.boost_gil,
+			],
 		shared = True
 	)
 
@@ -33,6 +34,8 @@ tuttleHostLibs = [
 		libs.boost_serialization,
 		libs.boost_thread,
 		libs.boost_gil,
+		libs.boost_python,
+		libs.boost_program_options,
 	]
 
 if project.env['mode'] != 'production':

@@ -204,7 +204,7 @@ public:
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Bool, bool );
 
 	virtual void setValueFromExpression( const std::string& value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature, "\"" + this->getName() + "Can't set value from expression on parameter \"" + this->getName() + "\", it's not supported for " + this->getParamType() + " parameters (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); }
-	inline void setValueFromExpression( const std::string& value ) OFX_EXCEPTION_SPEC { setValue( value, eChangeUserEdited ); }
+	inline void setValueFromExpression( const std::string& value ) OFX_EXCEPTION_SPEC { setValueFromExpression( value, eChangeUserEdited ); }
 
 	inline void setValue( const char* value, const EChange change ) OFX_EXCEPTION_SPEC                                      { setValue( std::string( value ), change ); }
 	inline void setValue( const char* value ) OFX_EXCEPTION_SPEC                                                            { setValue( value, eChangeUserEdited ); }

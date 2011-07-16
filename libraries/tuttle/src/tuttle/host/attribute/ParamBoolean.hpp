@@ -26,6 +26,8 @@ public:
 	void setValue( const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 	void setValueAtTime( const OfxTime time, const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 
+	void setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+
 	void copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;
 };

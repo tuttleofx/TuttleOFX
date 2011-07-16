@@ -20,6 +20,10 @@ public:
 	int                getIndexFor( const std::string& key ) const;
 	const std::string& getValueForId( const int id ) const;
 
+	const std::vector<std::string>& getChoiceKeys() const
+	{
+		return this->getProperties().fetchStringProperty( kOfxParamPropChoiceOption ).getValues();
+	}
 	// Deriving implementatation needs to overide these
 	virtual void getValue( int& ) const OFX_EXCEPTION_SPEC                                                 = 0;
 	virtual void getValueAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC                       = 0;

@@ -1,4 +1,5 @@
 #include "ParamBoolean.hpp"
+#include "expression.hpp"
 
 #include <tuttle/host/INode.hpp>
 
@@ -41,6 +42,12 @@ void ParamBoolean::setValueAtTime( const OfxTime time, const bool& v, const ofx:
 {
 	_value = v; ///< @todo: in time !
 	paramChanged( change );
+}
+
+void ParamBoolean::setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+{
+	_value = extractValueFromExpression<bool>( value );
+	this->paramChanged( change );
 }
 
 void ParamBoolean::copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC

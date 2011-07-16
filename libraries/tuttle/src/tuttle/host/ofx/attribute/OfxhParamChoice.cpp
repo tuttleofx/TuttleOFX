@@ -10,7 +10,7 @@ namespace attribute {
 int OfxhParamChoice::getIndexFor( const std::string& key ) const
 {
 	typedef std::vector<std::string> StringVector;
-	const StringVector& values           = this->getProperties().fetchStringProperty( kOfxParamPropChoiceOption ).getValues();
+	const StringVector& values           = getChoiceKeys();
 	StringVector::const_iterator itValue = values.end();
 //	= std::find( values.begin(), values.end(), key );
 	for( StringVector::const_iterator it = values.begin(), itEnd = values.end();

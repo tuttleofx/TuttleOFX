@@ -1,4 +1,5 @@
 #include "ParamString.hpp"
+#include "expression.hpp"
 
 #include <tuttle/host/INode.hpp>
 
@@ -39,6 +40,12 @@ void ParamString::setValue( const std::string& v, const ofx::attribute::EChange 
 void ParamString::setValueAtTime( const OfxTime time, const std::string& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
+	this->paramChanged( change );
+}
+
+void ParamString::setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+{
+	_value = extractValueFromExpression<std::string>( value );
 	this->paramChanged( change );
 }
 
