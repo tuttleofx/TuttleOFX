@@ -21,35 +21,35 @@ public:
 	const std::string& getValueForId( const int id ) const;
 
 	// Deriving implementatation needs to overide these
-	virtual void get( int& ) const OFX_EXCEPTION_SPEC                                                 = 0;
-	virtual void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC                       = 0;
-	virtual void set( const int&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
-	virtual void setAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+	virtual void getValue( int& ) const OFX_EXCEPTION_SPEC                                                 = 0;
+	virtual void getValueAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC                       = 0;
+	virtual void setValue( const int&, const EChange change ) OFX_EXCEPTION_SPEC                           = 0;
+	virtual void setValueAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
 
-	void get( std::string& key ) const OFX_EXCEPTION_SPEC
+	void getValue( std::string& key ) const OFX_EXCEPTION_SPEC
 	{
 		int id = 0;
 
-		get( id );
+		getValue( id );
 		key = getValueForId( id );
 	}
 
-	void getAtTime( const OfxTime time, std::string& key ) const OFX_EXCEPTION_SPEC
+	void getValueAtTime( const OfxTime time, std::string& key ) const OFX_EXCEPTION_SPEC
 	{
 		int id = 0;
 
-		getAtTime( time, id );
+		getValueAtTime( time, id );
 		key = getValueForId( id );
 	}
 
-	void set( const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
+	void setValue( const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		set( getIndexFor( key ), change );
+		setValue( getIndexFor( key ), change );
 	}
 
-	void setAtTime( const OfxTime time, const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
+	void setValueAtTime( const OfxTime time, const std::string& key, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		setAtTime( time, getIndexFor( key ), change );
+		setValueAtTime( time, getIndexFor( key ), change );
 	}
 
 	/// implementation of var args function

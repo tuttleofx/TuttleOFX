@@ -21,10 +21,10 @@ public:
 
 	bool getDefault() const;
 
-	void get( bool& ) const OFX_EXCEPTION_SPEC;
-	void getAtTime( const OfxTime time, bool& ) const OFX_EXCEPTION_SPEC;
-	void set( const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void setAtTime( const OfxTime time, const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void getValue( bool& ) const OFX_EXCEPTION_SPEC;
+	void getValueAtTime( const OfxTime time, bool& ) const OFX_EXCEPTION_SPEC;
+	void setValue( const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void setValueAtTime( const OfxTime time, const bool&, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 
 	void copy( const ParamBoolean& p ) OFX_EXCEPTION_SPEC;
 	void copy( const OfxhParam& p ) OFX_EXCEPTION_SPEC;

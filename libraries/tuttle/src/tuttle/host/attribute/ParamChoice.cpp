@@ -20,23 +20,23 @@ int ParamChoice::getDefault() const
 	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
-void ParamChoice::get( int& v ) const OFX_EXCEPTION_SPEC
+void ParamChoice::getValue( int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamChoice::getAtTime( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
+void ParamChoice::getValueAtTime( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamChoice::set( const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamChoice::setValue( const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 	paramChanged( change );
 }
 
-void ParamChoice::setAtTime( const OfxTime time, const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamChoice::setValueAtTime( const OfxTime time, const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 	paramChanged( change );

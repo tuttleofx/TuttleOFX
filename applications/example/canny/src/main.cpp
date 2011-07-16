@@ -91,82 +91,82 @@ int main( int argc, char** argv )
 
 		// Setup parameters
 		/*
-		read1.getParam( "filename" ).set( "data/input1.avi" );
-		read1.getParam( "filename" ).set( "data/input.png" );
-		bitdepth.getParam( "outputBitDepth" ).set( 3 );
+		read1.getParam( "filename" ).setValue( "data/input1.avi" );
+		read1.getParam( "filename" ).setValue( "data/input.png" );
+		bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
 		*/
 		static const double kernelEpsilon = boost::lexical_cast<double>( argv[2] );
 
 		TUTTLE_COUT_VAR( kernelEpsilon );
 
-		bitdepth1.getParam( "outputBitDepth" ).set( "float" );
-		bitdepth2.getParam( "outputBitDepth" ).set( "byte" );
+		bitdepth1.getParam( "outputBitDepth" ).setValue( "float" );
+		bitdepth2.getParam( "outputBitDepth" ).setValue( "byte" );
 
-		blur.getParam( "border" ).set( "Padded" );
-		blur.getParam( "size" ).set( 1.0, 1.0 );
-		blur.getParam( "normalizedKernel" ).set( false );
-		blur.getParam( "kernelEpsilon" ).set( kernelEpsilon );
+		blur.getParam( "border" ).setValue( "Padded" );
+		blur.getParam( "size" ).setValue( 1.0, 1.0 );
+		blur.getParam( "normalizedKernel" ).setValue( false );
+		blur.getParam( "kernelEpsilon" ).setValue( kernelEpsilon );
 
-		blur1.getParam( "border" ).set( "Padded" );
-		blur1.getParam( "size" ).set( 1.0, 0.0 );
-		blur1.getParam( "normalizedKernel" ).set( false );
-		blur1.getParam( "kernelEpsilon" ).set( kernelEpsilon );
+		blur1.getParam( "border" ).setValue( "Padded" );
+		blur1.getParam( "size" ).setValue( 1.0, 0.0 );
+		blur1.getParam( "normalizedKernel" ).setValue( false );
+		blur1.getParam( "kernelEpsilon" ).setValue( kernelEpsilon );
 
-		blur2.getParam( "border" ).set( "Padded" );
-		blur2.getParam( "size" ).set( 0.0, 1.0 );
-		blur2.getParam( "normalizedKernel" ).set( false );
-		blur2.getParam( "kernelEpsilon" ).set( kernelEpsilon );
+		blur2.getParam( "border" ).setValue( "Padded" );
+		blur2.getParam( "size" ).setValue( 0.0, 1.0 );
+		blur2.getParam( "normalizedKernel" ).setValue( false );
+		blur2.getParam( "kernelEpsilon" ).setValue( kernelEpsilon );
 
-		sobel.getParam( "border" ).set( "Padded" );
-		sobel.getParam( "size" ).set( 1.0, 1.0 );
-		sobel.getParam( "normalizedKernel" ).set( false );
-		sobel.getParam( "computeGradientDirection" ).set( false );
-		sobel.getParam( "kernelEpsilon" ).set( kernelEpsilon );
-//		sobel.getParam( "unidimensional" ).set( true );
-		sobel.getParam( "outputComponent" ).set( "RGB" );
+		sobel.getParam( "border" ).setValue( "Padded" );
+		sobel.getParam( "size" ).setValue( 1.0, 1.0 );
+		sobel.getParam( "normalizedKernel" ).setValue( false );
+		sobel.getParam( "computeGradientDirection" ).setValue( false );
+		sobel.getParam( "kernelEpsilon" ).setValue( kernelEpsilon );
+//		sobel.getParam( "unidimensional" ).setValue( true );
+		sobel.getParam( "outputComponent" ).setValue( "RGB" );
 
-		sobel1.getParam( "border" ).set( "Padded" );
-		sobel1.getParam( "size" ).set( 1.0, 1.0 );
-		sobel1.getParam( "normalizedKernel" ).set( false );
-		sobel1.getParam( "computeGradientDirection" ).set( false );
-		sobel1.getParam( "kernelEpsilon" ).set( kernelEpsilon );
-		sobel1.getParam( "pass" ).set( 1 );
-		sobel1.getParam( "outputComponent" ).set( "RGB" );
+		sobel1.getParam( "border" ).setValue( "Padded" );
+		sobel1.getParam( "size" ).setValue( 1.0, 1.0 );
+		sobel1.getParam( "normalizedKernel" ).setValue( false );
+		sobel1.getParam( "computeGradientDirection" ).setValue( false );
+		sobel1.getParam( "kernelEpsilon" ).setValue( kernelEpsilon );
+		sobel1.getParam( "pass" ).setValue( 1 );
+		sobel1.getParam( "outputComponent" ).setValue( "RGB" );
 
-		sobel2.getParam( "border" ).set( "Padded" );
-		sobel2.getParam( "size" ).set( 1.0, 1.0 );
-		sobel2.getParam( "normalizedKernel" ).set( false );
-		sobel2.getParam( "computeGradientDirection" ).set( false );
-		sobel2.getParam( "kernelEpsilon" ).set( kernelEpsilon );
-		sobel2.getParam( "pass" ).set( 2 );
-		sobel2.getParam( "outputComponent" ).set( "RGB" );
+		sobel2.getParam( "border" ).setValue( "Padded" );
+		sobel2.getParam( "size" ).setValue( 1.0, 1.0 );
+		sobel2.getParam( "normalizedKernel" ).setValue( false );
+		sobel2.getParam( "computeGradientDirection" ).setValue( false );
+		sobel2.getParam( "kernelEpsilon" ).setValue( kernelEpsilon );
+		sobel2.getParam( "pass" ).setValue( 2 );
+		sobel2.getParam( "outputComponent" ).setValue( "RGB" );
 
-		localMaxima.getParam( "outputComponent" ).set( "Alpha" );
+		localMaxima.getParam( "outputComponent" ).setValue( "Alpha" );
 
-//		normalize.getParam( "mode" ).set( 0 ); //"analyse" );
-//		normalize.getParam( "analyseMode" ).set( 0 ); //"perChannel" );
-//		normalize.getParam( "processR" ).set( false );
-//		normalize.getParam( "processG" ).set( false );
-//		normalize.getParam( "processB" ).set( true  );
-//		normalize.getParam( "processA" ).set( false );
-		floodfill.getParam( "upperThres" ).set( 0.1 );
-		floodfill.getParam( "lowerThres" ).set( 0.025 );
+//		normalize.getParam( "mode" ).setValue( 0 ); //"analyse" );
+//		normalize.getParam( "analyseMode" ).setValue( 0 ); //"perChannel" );
+//		normalize.getParam( "processR" ).setValue( false );
+//		normalize.getParam( "processG" ).setValue( false );
+//		normalize.getParam( "processB" ).setValue( true  );
+//		normalize.getParam( "processA" ).setValue( false );
+		floodfill.getParam( "upperThres" ).setValue( 0.1 );
+		floodfill.getParam( "lowerThres" ).setValue( 0.025 );
 
-		write00.getParam( "components" ).set( "rgba" );
-		write0.getParam( "components" ).set( "rgba" );
-		write1a.getParam( "components" ).set( "rgba" );
-		write1b.getParam( "components" ).set( "rgba" );
-		write2.getParam( "components" ).set( "rgba" );
-		write2.getParam( "components" ).set( "rgba" );
-		write3.getParam( "components" ).set( "rgba" );
+		write00.getParam( "components" ).setValue( "rgba" );
+		write0.getParam( "components" ).setValue( "rgba" );
+		write1a.getParam( "components" ).setValue( "rgba" );
+		write1b.getParam( "components" ).setValue( "rgba" );
+		write2.getParam( "components" ).setValue( "rgba" );
+		write2.getParam( "components" ).setValue( "rgba" );
+		write3.getParam( "components" ).setValue( "rgba" );
 
-		write00.getParam( "filename" ).set( "data/canny/0_input.png" );
-		write0.getParam( "filename" ).set( "data/canny/0_blur.png" );
-		write1a.getParam( "filename" ).set( "data/canny/1a_sobel.png" );
-		write1b.getParam( "filename" ).set( "data/canny/1b_sobel.png" );
-		write2.getParam( "filename" ).set( "data/canny/2_localMaxima.png" );
-		write3.getParam( "filename" ).set( "data/canny/3_floodfill.png" );
-		write4.getParam( "filename" ).set( "data/canny/4_thinning.png" );
+		write00.getParam( "filename" ).setValue( "data/canny/0_input.png" );
+		write0.getParam( "filename" ).setValue( "data/canny/0_blur.png" );
+		write1a.getParam( "filename" ).setValue( "data/canny/1a_sobel.png" );
+		write1b.getParam( "filename" ).setValue( "data/canny/1b_sobel.png" );
+		write2.getParam( "filename" ).setValue( "data/canny/2_localMaxima.png" );
+		write3.getParam( "filename" ).setValue( "data/canny/3_floodfill.png" );
+		write4.getParam( "filename" ).setValue( "data/canny/4_thinning.png" );
 
 		TUTTLE_TCOUT( "__________________________________________________4" );
 //		g.connect( read1, bitdepth );

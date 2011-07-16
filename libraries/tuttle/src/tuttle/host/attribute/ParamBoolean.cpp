@@ -21,23 +21,23 @@ bool ParamBoolean::getDefault() const
 	return static_cast<bool>( getProperties().getIntProperty( kOfxParamPropDefault ) != 0 );
 }
 
-void ParamBoolean::get( bool& v ) const OFX_EXCEPTION_SPEC
+void ParamBoolean::getValue( bool& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamBoolean::getAtTime( const OfxTime time, bool& v ) const OFX_EXCEPTION_SPEC
+void ParamBoolean::getValueAtTime( const OfxTime time, bool& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamBoolean::set( const bool& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamBoolean::setValue( const bool& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 	paramChanged( change );
 }
 
-void ParamBoolean::setAtTime( const OfxTime time, const bool& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamBoolean::setValueAtTime( const OfxTime time, const bool& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
 	paramChanged( change );

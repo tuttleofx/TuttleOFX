@@ -47,14 +47,14 @@ EImageStatus checkImageStatus( Graph::Node& read, Graph::Node& stat, Graph& grap
 	try
 	{
 		// Setup parameters
-		read.getParam( "filename" ).set( filename.string() );
+		read.getParam( "filename" ).setValue( filename.string() );
 		graph.compute( stat, 0 );
 		std::cout.rdbuf(_stdCout); // restore cout's original streambuf
 		for( unsigned int i = 0; i<4; ++i )
 		{
-			if( stat.getParam( "outputChannelMax" ).getDoubleAtIndex(i) != 0 )
+			if( stat.getParam( "outputChannelMax" ).getDoubleValueAtIndex(i) != 0 )
 				return eImageStatusOK;
-			if( stat.getParam( "outputChannelMin" ).getDoubleAtIndex(i) != 0 )
+			if( stat.getParam( "outputChannelMin" ).getDoubleValueAtIndex(i) != 0 )
 				return eImageStatusOK;
 		}
 		std::cout << "stat:" << stat << std::endl;
@@ -173,7 +173,7 @@ int main( int argc, char** argv )
 		Graph graph;
 		Graph::Node& read = graph.createNode( readerId );
 		Graph::Node& stat = graph.createNode( "fr.tuttle.imagestatistics" );
-		read.getParam("explicitConversion").set(3); // force reader to use float image buffer
+		read.getParam("explicitConversion").setValue(3); // force reader to use float image buffer
 		graph.connect( read, stat );
 
 		BOOST_FOREACH( const fs::path path, inputs )

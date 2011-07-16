@@ -29,37 +29,37 @@ OfxRGBAColourD ParamRGBA::getDefault() const
 	return rgb;
 }
 
-void ParamRGBA::get( double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
+void ParamRGBA::getValue( double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().get( r );
-	_controls.at<1>().get( g );
-	_controls.at<2>().get( b );
-	_controls.at<3>().get( a );
+	_controls.at<0>().getValue( r );
+	_controls.at<1>().getValue( g );
+	_controls.at<2>().getValue( b );
+	_controls.at<3>().getValue( a );
 }
 
-void ParamRGBA::getAtTime( const OfxTime time, double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
+void ParamRGBA::getValueAtTime( const OfxTime time, double& r, double& g, double& b, double& a ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().getAtTime( time, r );
-	_controls.at<1>().getAtTime( time, g );
-	_controls.at<2>().getAtTime( time, b );
-	_controls.at<3>().getAtTime( time, a );
+	_controls.at<0>().getValueAtTime( time, r );
+	_controls.at<1>().getValueAtTime( time, g );
+	_controls.at<2>().getValueAtTime( time, b );
+	_controls.at<3>().getValueAtTime( time, a );
 }
 
-void ParamRGBA::set( const double& r, const double& g, const double& b, const double& a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamRGBA::setValue( const double& r, const double& g, const double& b, const double& a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().set( r, change );
-	_controls.at<1>().set( g, change );
-	_controls.at<2>().set( b, change );
-	_controls.at<3>().set( a, change );
+	_controls.at<0>().setValue( r, change );
+	_controls.at<1>().setValue( g, change );
+	_controls.at<2>().setValue( b, change );
+	_controls.at<3>().setValue( a, change );
 	this->paramChanged( change );
 }
 
-void ParamRGBA::setAtTime( const OfxTime time, const double& r, const double& g, const double& b, const double& a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamRGBA::setValueAtTime( const OfxTime time, const double& r, const double& g, const double& b, const double& a, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().setAtTime( time, r, change );
-	_controls.at<1>().setAtTime( time, g, change );
-	_controls.at<2>().setAtTime( time, b, change );
-	_controls.at<3>().setAtTime( time, a, change );
+	_controls.at<0>().setValueAtTime( time, r, change );
+	_controls.at<1>().setValueAtTime( time, g, change );
+	_controls.at<2>().setValueAtTime( time, b, change );
+	_controls.at<3>().setValueAtTime( time, a, change );
 	this->paramChanged( change );
 }
 

@@ -25,29 +25,29 @@ OfxPointI ParamInteger2D::getDefault() const
 	return point;
 }
 
-void ParamInteger2D::get( int& x, int& y ) const OFX_EXCEPTION_SPEC
+void ParamInteger2D::getValue( int& x, int& y ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().get( x );
-	_controls.at<1>().get( y );
+	_controls.at<0>().getValue( x );
+	_controls.at<1>().getValue( y );
 }
 
-void ParamInteger2D::getAtTime( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC
+void ParamInteger2D::getValueAtTime( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().getAtTime( time, x );
-	_controls.at<1>().getAtTime( time, y );
+	_controls.at<0>().getValueAtTime( time, x );
+	_controls.at<1>().getValueAtTime( time, y );
 }
 
-void ParamInteger2D::set( const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::setValue( const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().set( x, change );
-	_controls.at<1>().set( y, change );
+	_controls.at<0>().setValue( x, change );
+	_controls.at<1>().setValue( y, change );
 	this->paramChanged( change );
 }
 
-void ParamInteger2D::setAtTime( const OfxTime time, const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamInteger2D::setValueAtTime( const OfxTime time, const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().setAtTime( time, x, change );
-	_controls.at<1>().setAtTime( time, y, change );
+	_controls.at<0>().setValueAtTime( time, x, change );
+	_controls.at<1>().setValueAtTime( time, y, change );
 	this->paramChanged( change );
 }
 
