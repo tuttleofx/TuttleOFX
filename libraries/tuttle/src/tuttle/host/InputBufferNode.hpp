@@ -141,8 +141,10 @@ public:
 	attribute::Attribute& getAttribute( const std::string& name );
 	attribute::Attribute&       getSingleInputAttribute();
 	const attribute::Attribute& getSingleInputAttribute() const;
-	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const;
 	ofx::attribute::OfxhParam&       getParam( const std::string& name );
+	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const;
+	ofx::attribute::OfxhParam&       getParam( const std::size_t index );
+	const ofx::attribute::OfxhParam& getParam( const std::size_t index ) const;
 
 	attribute::ClipImage&       getClip( const std::string& name );
 	const attribute::ClipImage& getClip( const std::string& name ) const;

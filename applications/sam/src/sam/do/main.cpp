@@ -412,7 +412,7 @@ int main( int argc, char** argv )
 								}
 								else
 								{
-									//currentNode.getParamSet().getParamList()[paramIdx].setValueFromExpression( paramValue );
+									currentNode.getParam( paramIdx ).setValueFromExpression( paramValue );
 								}
 								++paramIdx;
 							}
