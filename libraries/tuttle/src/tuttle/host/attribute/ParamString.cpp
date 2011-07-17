@@ -1,4 +1,5 @@
 #include "ParamString.hpp"
+#include "expression.hpp"
 
 #include <tuttle/host/INode.hpp>
 
@@ -20,25 +21,31 @@ const std::string& ParamString::getDefault() const
 	return getProperties().getStringProperty( kOfxParamPropDefault );
 }
 
-void ParamString::get( std::string& v ) const OFX_EXCEPTION_SPEC
+void ParamString::getValue( std::string& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamString::getAtTime( const OfxTime time, std::string& v ) const OFX_EXCEPTION_SPEC
+void ParamString::getValueAtTime( const OfxTime time, std::string& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamString::set( const std::string& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamString::setValue( const std::string& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 	this->paramChanged( change );
 }
 
-void ParamString::setAtTime( const OfxTime time, const std::string& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamString::setValueAtTime( const OfxTime time, const std::string& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
+	this->paramChanged( change );
+}
+
+void ParamString::setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+{
+	_value = extractValueFromExpression<std::string>( value );
 	this->paramChanged( change );
 }
 

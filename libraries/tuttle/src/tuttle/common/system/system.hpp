@@ -11,9 +11,6 @@
   #define __LINUX__
  #endif
 
- #ifndef __UNIX__
-  #define __UNIX__
- #endif
 
 #elif defined( macintosh ) \
     || defined( Macintosh ) \
@@ -27,9 +24,6 @@
   #define __MACOS__
  #endif
 
- #ifndef __UNIX__
-  #define __UNIX__
- #endif
 
 #elif defined( WIN32 ) \
     || defined( _WIN32 ) \

@@ -49,15 +49,15 @@ int main( int argc, char** argv )
 		
 		TUTTLE_COUT( "__________________________________________________2" );
 		// Setup parameters
-		//		read1.getParam( "filename" ).set( "data/input1.avi" );
-		read1.getParam( "filename" ).set( "data/input.png" );
-		read2.getParam( "filename" ).set( "data/input.dpx" );
-		read3.getParam( "filename" ).set( "data/input.exr" );
-		bitdepth.getParam( "outputBitDepth" ).set( 3 );
-		TUTTLE_COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getString() );
-		blur1.getParam( "size" ).set( 6.5, 15.0 );
+		//		read1.getParam( "filename" ).setValue( "data/input1.avi" );
+		read1.getParam( "filename" ).setValue( "data/input.png" );
+		read2.getParam( "filename" ).setValue( "data/input.dpx" );
+		read3.getParam( "filename" ).setValue( "data/input.exr" );
+		bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
+		TUTTLE_COUT_VAR( bitdepth.getParam( "outputBitDepth" ).getStringValue() );
+		blur1.getParam( "size" ).setValue( 6.5, 15.0 );
 		//		blur1.getParam( "size" ).setAtIndex( 65.43, 1 );
-		//	crop1.getParam( "Down" ).set( 400 );
+		//	crop1.getParam( "Down" ).setValue( 400 );
 
 		TUTTLE_COUT( "__________________________________________________3" );
 		g.connect( read1, bitdepth );

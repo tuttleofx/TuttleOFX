@@ -105,7 +105,7 @@ struct process1Dresampling
  * @param[weight] weight return value to weight the pixel in filtering
 **/
 template< typename F >
-bool getNearestWeight( const F position, F weight )
+bool getNearestWeight( const F position, F& weight )
 {
 	if( position <0.5 && position >-0.5 )
 	{
@@ -139,7 +139,7 @@ bool getNearestWeight( const F position, F weight )
  * @param[out] weight return value to weight the pixel in filtering
 **/
 template < typename F >
-bool getBCWeight(const F B, const F C, const F distance, F &weight )
+bool getBCWeight(const F B, const F C, const F distance, F& weight )
 {
 	if(distance<1)
 	{
@@ -465,34 +465,75 @@ void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const 
 }
 
 template < typename xy_locator, typename SrcP >
-void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, const unsigned  int supportWidth, std::vector< SrcP > src )
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, std::vector< SrcP > src )
 {
+        int maxPosition = floor(src.size()*0.5);
+        int minPosition = maxPosition - src.size() + 1;
+        int position    = minPosition;
+
+
 	if( p0.x < 0 )
 	{
-		for( unsigned int i = 0; i < supportWidth+2; i++)
+                //for( unsigned int i = 0; i < )
+                for( int i = 0; i < -minPosition + 1; i++)
 			src.at(i) = loc.x( )[1];
 
 		unsigned int position = 2;
-		for( unsigned int i = supportWidth+2; i < supportWidth*2+1; i++)
-		{
-			src.at(i) = ( p0.x + position < windowWidth ) ? loc.x( )[position] : src.at( i - 1 );
-			position++;
-		}
+
+                for( int i = 1; i < maxPosition + 1; i++)
+                {
+                        src.at( i ) = ( p0.x + position < windowWidth ) ? loc.x( )[ position ] : src.at( i - 1 );
+                        position++;
+                }
 		return;
 	}
 
-	// center pixel is the current locator
-	src.at(supportWidth) = *loc;
-	int position = 1;
-	for( unsigned int i = 0; i < supportWidth; i++)
-	{
-		// for negative index
-		src.at( supportWidth - 1 - i ) = ( p0.x - position < windowWidth ) ? loc.x( )[ -position ] : src.at( supportWidth - i );
+        std::cout << "minPosition = " << position << std::endl;
 
-		// for positive index
-		src.at( supportWidth + 1 + i ) = ( p0.x + position < windowWidth ) ? loc.x( )[  position ] : src.at( supportWidth + i );
+        src.at( -minPosition ) = *loc;
+
+        for( int i = -minPosition; i > 0; i++)
+        {
+                src.at( i ) = ( p0.x + position < 0 ) ?  src.at( i + 1 ) : loc.x( )[ position ];
+                position++;
+        }
+
+        for( int i = 1; i < maxPosition + 1; i++)
+	{
+                src.at( i ) = ( p0.x + position < windowWidth ) ? loc.x( )[ position ] : src.at( i - 1 );
 		position++;
 	}
+}
+
+template < typename xy_locator, typename SrcP >
+void setXPixels( const xy_locator& loc, const point2<std::ptrdiff_t>& p0, const int windowWidth, const unsigned  int supportWidth, std::vector< SrcP > src )
+{
+        if( p0.x < 0 )
+        {
+                for( unsigned int i = 0; i < supportWidth+2; i++)
+                        src.at(i) = loc.x( )[1];
+
+                unsigned int position = 2;
+                for( unsigned int i = supportWidth+2; i < supportWidth*2+1; i++)
+                {
+                        src.at(i) = ( p0.x + position < windowWidth ) ? loc.x( )[position] : src.at( i - 1 );
+                        position++;
+                }
+                return;
+        }
+
+        // center pixel is the current locator
+        src.at(supportWidth) = *loc;
+        int position = 1;
+        for( unsigned int i = 0; i < supportWidth; i++)
+        {
+                // for negative index
+                src.at( supportWidth - 1 - i ) = ( p0.x - position < windowWidth ) ? loc.x( )[ -position ] : src.at( supportWidth - i );
+
+                // for positive index
+                src.at( supportWidth + 1 + i ) = ( p0.x + position < windowWidth ) ? loc.x( )[  position ] : src.at( supportWidth + i );
+                position++;
+        }
 }
 
 template < typename F >
@@ -621,17 +662,30 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	// get weight for each pixels on 1D for horizontal filtering
 	F weight[4];
 
-	double valB = sampler.valB;
-	double valC = sampler.valC;
+        std::vector< SrcP > ptr;
+        std::vector< SrcC > xProcessed;
+        std::vector < F > weights;
+        unsigned int windowSize = 4;             // 4 pixels:    A B C D
 
-	getBCWeight( valB, valC, frac.x+1, weight[0] );
-	getBCWeight( valB, valC, frac.x  , weight[1] );
-	getBCWeight( valB, valC, 1-frac.x, weight[2] );
-	getBCWeight( valB, valC, 2-frac.x, weight[3] );
+        xProcessed.assign( windowSize, SrcC(0) );
+        ptr.assign( windowSize, SrcP(0) );
+        weights.assign( windowSize, 0 );
+
+        // get horizontal weight for each pixels
+        for( unsigned int i = 0; i < windowSize; i++ )
+        {
+                getBCWeight( sampler.valB, sampler.valC, frac.x+2-i, weights.at(i) );
+        }
+
+        getBCWeight( sampler.valB, sampler.valC, frac.x+1, weight[0] );
+        getBCWeight( sampler.valB, sampler.valC, frac.x  , weight[1] );
+        getBCWeight( sampler.valB, sampler.valC, 1-frac.x, weight[2] );
+        getBCWeight( sampler.valB, sampler.valC, 2-frac.x, weight[3] );
 
 	if( pTL.y < 0 )
 	{
 		++loc.y( );
+                setXPixels( loc, pTL, src.width(), ptr );
 		setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
 		bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a0 );
 
@@ -691,10 +745,10 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	}
 
 	// vertical process
-	getBCWeight( valB, valC, frac.y+1, weight[0] );
-	getBCWeight( valB, valC, frac.y  , weight[1] );
-	getBCWeight( valB, valC, 1-frac.y, weight[2] );
-	getBCWeight( valB, valC, 2-frac.y, weight[3] );
+        getBCWeight( sampler.valB, sampler.valC, frac.y+1, weight[0] );
+        getBCWeight( sampler.valB, sampler.valC, frac.y  , weight[1] );
+        getBCWeight( sampler.valB, sampler.valC, 1-frac.y, weight[2] );
+        getBCWeight( sampler.valB, sampler.valC, 2-frac.y, weight[3] );
 	bicubic1D< SrcC, F, SrcC > ( )( a0, a1, a2, a3, weight, mp );
 
 	// Convert from floating point average value to the source type

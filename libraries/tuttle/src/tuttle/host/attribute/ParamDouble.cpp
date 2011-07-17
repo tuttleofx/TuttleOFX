@@ -1,4 +1,5 @@
 #include "ParamDouble.hpp"
+#include "expression.hpp"
 
 #include <tuttle/host/INode.hpp>
 
@@ -21,25 +22,31 @@ double ParamDouble::getDefault() const
 	return getProperties().getDoubleProperty( kOfxParamPropDefault, _index );
 }
 
-void ParamDouble::get( double& v ) const OFX_EXCEPTION_SPEC
+void ParamDouble::getValue( double& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamDouble::getAtTime( const OfxTime time, double& v ) const OFX_EXCEPTION_SPEC
+void ParamDouble::getValueAtTime( const OfxTime time, double& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamDouble::set( const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamDouble::setValue( const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v;
 	this->paramChanged( change );
 }
 
-void ParamDouble::setAtTime( const OfxTime time, const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamDouble::setValueAtTime( const OfxTime time, const double& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	_value = v; ///< @todo: in time !
+	this->paramChanged( change );
+}
+
+void ParamDouble::setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+{
+	_value = extractValueFromExpression<double>( value );
 	this->paramChanged( change );
 }
 

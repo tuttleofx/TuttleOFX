@@ -170,6 +170,12 @@ void ParamDescriptor::setEnabled( bool v )
 	getProps().propSetInt( kOfxParamPropEnabled, v );
 }
 
+void ParamDescriptor::setLayoutHint( const ELayoutHint layoutHint )
+{
+	getProps().propSetInt( kOfxParamPropLayoutHint, static_cast<int>(layoutHint) );
+}
+
+
 /** @brief set the group param that is the parent of this one, default is to be ungrouped at the root level */
 void ParamDescriptor::setParent( const GroupParamDescriptor& v )
 {
@@ -684,6 +690,11 @@ void GroupParamDescriptor::setOpen( const bool open )
 	getProps().propSetInt( kOfxParamPropGroupOpen, open );
 }
 
+void GroupParamDescriptor::setAsTab()
+{
+	getProps().propSetInt( kFnOfxParamPropGroupIsTab, 1 );
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // page param descriptor
 
@@ -734,17 +745,17 @@ void ParametricParamDescriptor::setDimension( const int dimension )
 	getProps().propSetInt( kOfxParamPropParametricDimension, dimension );
 }
 
-void ParametricParamDescriptor::setLabel( const std::string label )
+void ParametricParamDescriptor::setLabel( const std::string& label )
 {
 	getProps().propSetString( kOfxPropLabel, label );
 }
 
-void ParametricParamDescriptor::setDimensionLabel( const std::string label, const int id )
+void ParametricParamDescriptor::setDimensionLabel( const std::string& label, const int id )
 {
 	getProps().propSetString( kOfxParamPropDimensionLabel, label, id );
 }
 
-void ParametricParamDescriptor::setUIColour( const int id, const OfxRGBColourD color )
+void ParametricParamDescriptor::setUIColour( const int id, const OfxRGBColourD& color )
 {
 	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.r, id*3 + 0 );
 	getProps().propSetDouble( kOfxParamPropParametricUIColour, color.g, id*3 + 1 );
@@ -2281,10 +2292,6 @@ GroupParam::GroupParam( const ParamSet* paramSet, const std::string& name, OfxPa
 	: Param( paramSet, name, eGroupParam, handle )
 {}
 
-void GroupParam::setOpen( const bool open )
-{
-	getProps().propSetInt( kOfxParamPropGroupOpen, open );
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Wraps up a page param
@@ -2342,7 +2349,7 @@ double ParametricParam::getValue( const int curveIndex,
 int ParametricParam::getNControlPoints( const int curveIndex,
                                        const OfxTime time )
 {
-	int returnValue = 0.0;
+	int returnValue = 0;
 	OfxStatus stat = OFX::Private::gParametricParameterSuite->parametricParamGetNControlPoints( getOfxHandle(),
                                        curveIndex,
                                        time,

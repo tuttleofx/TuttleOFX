@@ -31,7 +31,7 @@ public:
 		if( _isSequence )
 		{
 			//			TUTTLE_COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
-			return _filePattern.getAbsoluteFilenameAt( time );
+			return _filePattern.getAbsoluteFilenameAt( static_cast<std::ssize_t>(time) );
 		}
 		else
 		{

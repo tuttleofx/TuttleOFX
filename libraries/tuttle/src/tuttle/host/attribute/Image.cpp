@@ -9,6 +9,7 @@
 #include <boost/gil/typedefs.hpp>
 
 #ifndef TUTTLE_PRODUCTION
+#define int_p_NULL (int *)NULL
  #include <boost/gil/extension/io/png_io.hpp>
 #endif
 

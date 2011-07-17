@@ -54,6 +54,7 @@
 #include "ofxsUtilities.h"
 
 #include <extensions/nuke/camera.h>
+#include <extensions/nuke/fnPublicOfxExtensions.h>
 
 #include <boost/throw_exception.hpp>
 #include <boost/assert.hpp>
@@ -176,6 +177,13 @@ enum DoubleTypeEnum
 	eDoubleTypeNormalisedXYAbsolute
 };
 
+enum ELayoutHint
+{
+	eLayoutHintNormal = kOfxParamPropLayoutHintNormal,
+	eLayoutHintDivider = kOfxParamPropLayoutHintDivider,
+	eLayoutHintNoNewLine = kOfxParamPropLayoutHintNoNewLine
+};
+
 /** @brief turns a ParamTypeEnum into the char * that raw OFX uses */
 const char* mapParamTypeEnumToString( ParamTypeEnum v );
 
@@ -232,6 +240,8 @@ public:
 
 	/** @brief whether the param is enabled, defaults to true */
 	void setEnabled( bool v );
+	
+	void setLayoutHint( const ELayoutHint layoutHint );
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -617,6 +627,8 @@ protected:
 
 public:
 	void setOpen( const bool open = true );
+	
+	void setAsTab();
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -688,11 +700,11 @@ public:
 
 	void setRange( const double min, const double max );
 
-	void setLabel( const std::string label );
+	void setLabel( const std::string& label );
 
-	void setDimensionLabel( const std::string label, const int id );
+	void setDimensionLabel( const std::string& label, const int id );
 
-	void setUIColour( const int id, const OfxRGBColourD color );
+	void setUIColour( const int id, const OfxRGBColourD& color );
 
 	void addControlPoint( const int id, const OfxTime time, const double x, const double y, const bool addKey );
 
@@ -1615,9 +1627,6 @@ protected:
 
 	// so it can make one
 	friend class ParamSet;
-
-public:
-	void setOpen( const bool open = true );
 };
 
 ////////////////////////////////////////////////////////////////////////////////

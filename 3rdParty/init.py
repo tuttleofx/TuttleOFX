@@ -73,24 +73,24 @@ def dlProgress(count, blockSize, totalSize):
 	sys.stdout.write( '\r' + current_file + '%d%% '% pcent)
 	sys.stdout.flush()
 
-global knowExtensions
-knowExtensions = {	'tar':		'tar xf',
-			'tar.gz':	'tar xfz',
-			'tgz':		'tar xfz',
-			'tar.bz2':	'tar xfj',
-			'zip':		'unzip',
-			'exe':		'' }
+global knownExtensions
+knownExtensions = { 'tar': 'tar xf',
+                   'tar.gz': 'tar xfz',
+                   'tgz': 'tar xfz',
+                   'tar.bz2': 'tar xfj',
+                   'zip': 'unzip',
+                   'exe': '' }
 
-def getKnowExtensions( filename ):
-	global knowExtensions
-	return [f for f in knowExtensions.keys() if filename.endswith(f)]
+def getKnownExtensions( filename ):
+	global knownExtensions
+	return [f for f in knownExtensions.keys() if filename.endswith(f)]
 
 def uncompress(filename, ext, inNewDirectory, libname):
-	global knowExtensions
-	binOptions = {	'tar'	: {'directory':'--directory',},
-			'unzip'	: {'directory':'-d',},
-			}
-	cmdFromExtension = knowExtensions[ext]
+	global knownExtensions
+	binOptions = { 'tar' : {'directory':'--directory',},
+	               'unzip' : {'directory':'-d',},
+	             } 
+	cmdFromExtension = knownExtensions[ext]
 	if not cmdFromExtension:
 		return
 	cmd = cmdFromExtension.split()
@@ -108,12 +108,12 @@ def uncompress(filename, ext, inNewDirectory, libname):
 	print 'end of uncompress\n'
 
 def getAndUncompress( libraries ):
-	
+
 	for libname, url, inNewDirectory in libraries:
 		print '_'*80
 		print '--', libname
 		parts = url.split('/')
-		filename = [p for p in parts if len(getKnowExtensions(p))]
+		filename = [p for p in parts if len(getKnownExtensions(p))]
 		#if len(filename) == 0:
 		#	print '-'*40
 		#	print 'No filename with a regognize extension in "'+libname+'" url="'+url+'"'
@@ -121,7 +121,7 @@ def getAndUncompress( libraries ):
 		#	continue
 		filename = filename[0]
 		print url, ' -> ', filename
-		ext = getKnowExtensions(filename)[0]
+		ext = getKnownExtensions(filename)[0]
 		current_file = filename
 		try:
 			if os.path.isfile(filename): # if not already downloaded
@@ -143,7 +143,7 @@ allLibs = [
 		('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', False),
 		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', False),
 		('ctl', 'http://sourceforge.net/projects/ampasctl/files/ctl/ctl-1.4.1/ctl-1.4.1.tar.gz/download', False),
-		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_46_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_46_setup.exe', False),
+		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_47_0.tar.bz2', False) if not windows else ('boost', 'http://www.boostpro.com/download/boost_1_47_setup.exe', False),
 		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.bz2', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/gnuwin32/freetype-2.3.5-1-setup.exe', False),
 		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False),
 		('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz', False),
@@ -158,12 +158,12 @@ allLibs = [
 		('gvc','http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.26.3.tar.gz',False)
 	]
 
-if len( sys.argv ) == 1:
-	getAndUncompress( allLibs )
-else:
-	libDic = {}
-	for lib in allLibs:
-		libDic[lib[0]] = lib
-	
-	for libname in sys.argv[1:]:
-		getAndUncompress( [libDic[libname]] )
+if __name__ == "__main__":
+	if len( sys.argv ) == 1:
+		getAndUncompress( allLibs )
+	else:
+		libDic = {}
+		for lib in allLibs:
+			libDic[lib[0]] = lib
+		for libname in sys.argv[1:]:
+			getAndUncompress( [libDic[libname]] )

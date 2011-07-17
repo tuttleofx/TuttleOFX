@@ -1,6 +1,9 @@
 #ifndef _TUTTLE_PLUGIN_PNG_READER_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_PNG_READER_PROCESS_HPP_
 
+#define png_infopp_NULL (png_infopp)NULL
+#define int_p_NULL (int*)NULL
+
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
 #include <boost/scoped_ptr.hpp>

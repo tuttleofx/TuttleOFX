@@ -57,7 +57,7 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 		{
 			bfs::path dFile = d.getAbsoluteFilenameAt( t + offset );
 			//TUTTLE_TCOUT( "do " << sFile << " -> " << dFile );
-#ifndef MOVEFILES // copy file(s)
+#ifndef SAM_SAM_MOVEFILESS // copy file(s)
 			if( bfs::exists( dFile ) )
 			{
 				TUTTLE_CERR( "Could not copy: " << dFile.string( ) );
@@ -119,7 +119,7 @@ void copy_sequence( const ttl::Sequence& s,
 				   d, offset );
 }
 
-int main( int argc, char** argv )
+int sammvcp( int argc, char** argv )
 {
 	ttl::EMaskOptions descriptionMask = ttl::eMaskOptionsNone; // by default show nothing
 	std::string availableExtensions;
@@ -177,14 +177,14 @@ int main( int argc, char** argv )
 	bpo::store( bpo::command_line_parser( argc, argv ).options( cmdline_options ).positional( pod ).run( ), vm );
 
 	// get environnement options and parse them
-#ifndef MOVEFILE // copy file(s)
+#ifndef SAM_MOVEFILES // copy file(s)
 	if( std::getenv( "SAM_CP_OPTIONS" ) != NULL )
 #else
 	if( std::getenv( "SAM_MV_OPTIONS" ) != NULL )
 #endif
 	{
 		std::vector<std::string> envOptions;
-#ifndef MOVEFILE // copy file(s)
+#ifndef SAM_MOVEFILES // copy file(s)
 		std::string env = std::getenv( "SAM_CP_OPTIONS" );
 #else
 		std::string env = std::getenv( "SAM_MV_OPTIONS" );
@@ -197,7 +197,7 @@ int main( int argc, char** argv )
 	if( vm.count( "help" ) )
 	{
 		TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
-#ifndef MOVEFILES
+#ifndef SAM_SAM_MOVEFILESS
 		TUTTLE_COUT( "NAME\n\tsam-cp - copy sequence(s) in a directory\n" );
 		TUTTLE_COUT( "SYNOPSIS\n\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]\n" );
 #else

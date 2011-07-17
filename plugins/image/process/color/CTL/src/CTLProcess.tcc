@@ -4,7 +4,7 @@
 
 #include <half.h>
 #include <Iex.h>
-#include <IlmCtl/CtlMessage.h>
+#include <CtlMessage.h>
 
 
 namespace tuttle {
