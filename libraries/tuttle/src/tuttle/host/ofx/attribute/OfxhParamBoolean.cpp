@@ -12,7 +12,7 @@ void OfxhParamBoolean::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	bool v;
 
-	get( v );
+	getValue( v );
 
 	int* value = va_arg( arg, int* );
 	*value = v;
@@ -25,7 +25,7 @@ void OfxhParamBoolean::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTI
 {
 	bool v;
 
-	getAtTime( time, v );
+	getValueAtTime( time, v );
 
 	int* value = va_arg( arg, int* );
 	*value = v;
@@ -38,7 +38,7 @@ void OfxhParamBoolean::setV( va_list arg, const EChange change ) OFX_EXCEPTION_S
 {
 	bool value = va_arg( arg, int ) != 0;
 
-	set( value, change );
+	setValue( value, change );
 }
 
 /**
@@ -48,7 +48,7 @@ void OfxhParamBoolean::setV( const OfxTime time, va_list arg, const EChange chan
 {
 	bool value = va_arg( arg, int ) != 0;
 
-	setAtTime( time, value, change );
+	setValueAtTime( time, value, change );
 }
 
 }

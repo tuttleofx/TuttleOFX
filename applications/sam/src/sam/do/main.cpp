@@ -408,11 +408,11 @@ int main( int argc, char** argv )
 								/// @todo setup the node with parameter value in tuttle.
 								if( paramName.size() )
 								{
-									currentNode.getParam( paramName ).set( paramValue );
+									currentNode.getParam( paramName ).setValueFromExpression( paramValue );
 								}
 								else
 								{
-									//currentNode.getParamSet().getParamList()[paramIdx].set( paramValue );
+									//currentNode.getParamSet().getParamList()[paramIdx].setValueFromExpression( paramValue );
 								}
 								++paramIdx;
 							}

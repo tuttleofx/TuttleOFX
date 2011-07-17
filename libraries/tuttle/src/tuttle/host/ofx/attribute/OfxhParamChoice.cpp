@@ -10,7 +10,7 @@ namespace attribute {
 int OfxhParamChoice::getIndexFor( const std::string& key ) const
 {
 	typedef std::vector<std::string> StringVector;
-	const StringVector& values           = this->getProperties().fetchStringProperty( kOfxParamPropChoiceOption ).getValues();
+	const StringVector& values           = getChoiceKeys();
 	StringVector::const_iterator itValue = values.end();
 //	= std::find( values.begin(), values.end(), key );
 	for( StringVector::const_iterator it = values.begin(), itEnd = values.end();
@@ -63,7 +63,7 @@ void OfxhParamChoice::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
-	return get( *value );
+	return getValue( *value );
 }
 
 /**
@@ -73,7 +73,7 @@ void OfxhParamChoice::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTIO
 {
 	int* value = va_arg( arg, int* );
 
-	return getAtTime( time, *value );
+	return getValueAtTime( time, *value );
 }
 
 /**
@@ -83,7 +83,7 @@ void OfxhParamChoice::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SP
 {
 	int value = va_arg( arg, int );
 
-	return set( value, change );
+	return setValue( value, change );
 }
 
 /**
@@ -93,7 +93,7 @@ void OfxhParamChoice::setV( const OfxTime time, va_list arg, const EChange chang
 {
 	int value = va_arg( arg, int );
 
-	return setAtTime( time, value, change );
+	return setValueAtTime( time, value, change );
 }
 
 }

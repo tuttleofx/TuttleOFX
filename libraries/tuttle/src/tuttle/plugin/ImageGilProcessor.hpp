@@ -67,6 +67,8 @@ public:
 	virtual void setup( const OFX::RenderArguments& args )
 	{
 		// destination view
+//		TUTTLE_COUT_INFOS;
+//		TUTTLE_COUT_VAR( "dst - fetchImage " << time );
 		_dst.reset( _clipDst->fetchImage( args.time ) );
 		if( !_dst.get() )
 			BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
@@ -217,9 +219,9 @@ View getView( OFX::Image* img, const OfxRectI& rod )
 
 	//	OfxRectI imgrod = img->getRegionOfDefinition(); // bug in nuke returns bounds... not the clip rod with renderscale...
 	OfxRectI bounds = img->getBounds();
-	//	TUTTLE_COUT_VAR( bounds );
-	//	TUTTLE_COUT_VAR( imgrod );
-	//	TUTTLE_COUT_VAR( rod );
+//	TUTTLE_COUT_VAR( bounds );
+//	TUTTLE_COUT_VAR( imgrod );
+//	TUTTLE_COUT_VAR( rod );
 	point2<int> tileSize = point2<int>( bounds.x2 - bounds.x1,
 	                                    bounds.y2 - bounds.y1 );
 

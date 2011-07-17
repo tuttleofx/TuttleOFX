@@ -3,7 +3,7 @@
 
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 
-#include <IlmCtlSimd/CtlSimdInterpreter.h>
+#include <CtlSimdInterpreter.h>
 
 namespace tuttle {
 namespace plugin {

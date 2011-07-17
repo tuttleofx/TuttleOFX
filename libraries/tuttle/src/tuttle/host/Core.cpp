@@ -14,6 +14,8 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
+#include <boost/python.hpp>
+
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -33,6 +35,8 @@ Core::Core()
 	, _memoryPool( pool )
 	, _memoryCache( cache )
 {
+	Py_Initialize( );
+	
 	_pluginCache.setCacheVersion( "tuttleV1" );
 
 	// register the image effect cache with the global plugin cache

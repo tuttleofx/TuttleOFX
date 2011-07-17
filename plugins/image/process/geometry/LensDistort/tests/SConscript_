@@ -1,11 +1,17 @@
-Import( 'project' )
+Import( 'project', 'libs' )
 
 sources_libraries = project.inBuildDir( *project.scanFiles(['../../../libraries']) )
 
 sources = project.scanFiles( ['src'] ) + sources_libraries
 
 target = project.getName()
-libs = [project.libs.openfx, project.libs.boost_gil, project.libs.jpeg, project.libs.png, project.libs.tiff]
+libs = [
+	libs.openfx,
+	libs.boost_gil,
+	libs.jpeg,
+	libs.png,
+	libs.tiff,
+]
 
 env_local = project.createEnv( libs )
 env_local.AppendUnique( CPPPATH='../src' )

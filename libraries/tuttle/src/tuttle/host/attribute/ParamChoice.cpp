@@ -1,4 +1,5 @@
 #include "ParamChoice.hpp"
+#include "expression.hpp"
 
 #include <tuttle/host/INode.hpp>
 
@@ -20,26 +21,65 @@ int ParamChoice::getDefault() const
 	return getProperties().getIntProperty( kOfxParamPropDefault );
 }
 
-void ParamChoice::get( int& v ) const OFX_EXCEPTION_SPEC
+void ParamChoice::getValue( int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value;
 }
 
-void ParamChoice::getAtTime( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
+void ParamChoice::getValueAtTime( const OfxTime time, int& v ) const OFX_EXCEPTION_SPEC
 {
 	v = _value; ///< @todo: in time !
 }
 
-void ParamChoice::set( const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamChoice::setValue( const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
+	const std::size_t nbKeys = this->getChoiceKeys().size();
+	if( v < 0 ||
+	    static_cast<std::size_t>(v) > nbKeys )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Choice index is out of range. Index is "+v+" for " + nbKeys + " values."
+			);
+	}
 	_value = v;
 	paramChanged( change );
 }
 
-void ParamChoice::setAtTime( const OfxTime time, const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamChoice::setValueAtTime( const OfxTime time, const int& v, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
+	const std::size_t nbKeys = this->getChoiceKeys().size();
+	if( v < 0 ||
+	    static_cast<std::size_t>(v) > nbKeys )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Choice index is out of range. Index is "+v+" for " + nbKeys + " values."
+			);
+	}
 	_value = v; ///< @todo: in time !
 	paramChanged( change );
+}
+
+void ParamChoice::setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+{
+	try
+	{
+		const std::string key = extractValueFromExpression<std::string>( value );
+		OfxhParamChoice::setValue( key, change );
+		return;
+	}
+	catch(...)
+	{}
+	try
+	{
+		const int id = extractValueFromExpression<int>( value );
+		this->setValue( id, change );
+		return;
+	}
+	catch(...)
+	{}
+	BOOST_THROW_EXCEPTION( exception::Value()
+			<< exception::user() + "Choice expression is not recognized: \"" + value + "\"."
+		);
 }
 
 void ParamChoice::copy( const ParamChoice& p ) OFX_EXCEPTION_SPEC

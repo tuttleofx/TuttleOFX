@@ -16,6 +16,10 @@ project
 	;
 
 use-project	/ctl	: $(3RD_PARTY)/ctl ;
+    : requirements
+	<include>src
+    : build-dir $(DIST)/CTL/obj
+    ;
  
 ###############################################################################
 # Product 
@@ -31,4 +35,4 @@ plugin CTL :
 # Automatic install
 ###############################################################################
 auto_install CTL : $(DIST) ;
- 
+

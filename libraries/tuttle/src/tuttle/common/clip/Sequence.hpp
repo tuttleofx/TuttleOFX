@@ -305,7 +305,6 @@ public:
 	inline std::string		getAbsoluteFirstFilename	()			const { return ( _directory / getFilenameAt( getFirstTime() ) ).string(); }
 	inline std::string		getAbsoluteLastFilename		()			const { return ( _directory / getFilenameAt( getLastTime()  ) ).string(); }
 
-
 	/// @return pattern character in standard style
 	inline char			getPatternCharacter		()			const { return getPadding() ? '#' : '@'; }
 	/// @return a string pattern using standard style
@@ -319,6 +318,7 @@ public:
 		else
 			return getPrefix() + "%d" + getSuffix();
 	}
+
 	inline std::string		getAbsoluteCStylePattern	()			const { return (getDirectory() / getCStylePattern()).string(); }
 
 	inline std::pair<Time, Time>	getRange			()			const { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }

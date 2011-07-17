@@ -18,10 +18,10 @@ public:
 	ParamDouble2D* clone() const { return new ParamDouble2D( *this ); }
 
 	OfxPointD getDefault() const;
-	void      get( double& x, double& y ) const OFX_EXCEPTION_SPEC;
-	void      getAtTime( const OfxTime time, double& x, double& y ) const OFX_EXCEPTION_SPEC;
-	void      set( const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void      setAtTime( const OfxTime time, const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void      getValue( double& x, double& y ) const OFX_EXCEPTION_SPEC;
+	void      getValueAtTime( const OfxTime time, double& x, double& y ) const OFX_EXCEPTION_SPEC;
+	void      setValue( const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void      setValueAtTime( const OfxTime time, const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 };
 
 }

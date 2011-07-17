@@ -416,12 +416,12 @@ bool SobelPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& iden
  */
 void SobelPlugin::render( const OFX::RenderArguments &args )
 {
-	TUTTLE_COUT_X( 20, "-" );
-	TUTTLE_COUT_VAR( mapPixelComponentEnumToString( _clipSrc->getPixelComponents() ) );
-	TUTTLE_COUT_VAR( mapBitDepthEnumToString( _clipSrc->getPixelDepth() ) );
+	// TUTTLE_TCOUT_X( 20, "-" );
+	// TUTTLE_TCOUT_VAR( mapPixelComponentEnumToString( _clipSrc->getPixelComponents() ) );
+	// TUTTLE_TCOUT_VAR( mapBitDepthEnumToString( _clipSrc->getPixelDepth() ) );
 
-	TUTTLE_COUT_VAR( mapPixelComponentEnumToString( _clipDst->getPixelComponents() ) );
-	TUTTLE_COUT_VAR( mapBitDepthEnumToString( _clipDst->getPixelDepth() ) );
+	// TUTTLE_TCOUT_VAR( mapPixelComponentEnumToString( _clipDst->getPixelComponents() ) );
+	// TUTTLE_TCOUT_VAR( mapBitDepthEnumToString( _clipDst->getPixelDepth() ) );
 
 	::sobel::localDoGilRender2<SobelProcess>( *this, args, *_clipSrc, *_clipDst );
 }
@@ -430,3 +430,5 @@ void SobelPlugin::render( const OFX::RenderArguments &args )
 }
 }
 }
+
+
