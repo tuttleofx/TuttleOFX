@@ -27,33 +27,33 @@ Ofx3DPointI ParamInteger3D::getDefault() const
 	return point;
 }
 
-void ParamInteger3D::get( int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
+void ParamInteger3D::getValue( int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().get( x );
-	_controls.at<1>().get( y );
-	_controls.at<2>().get( z );
+	_controls.at<0>().getValue( x );
+	_controls.at<1>().getValue( y );
+	_controls.at<2>().getValue( z );
 }
 
-void ParamInteger3D::getAtTime( const OfxTime time, int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
+void ParamInteger3D::getValueAtTime( const OfxTime time, int& x, int& y, int& z ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().getAtTime( time, x );
-	_controls.at<1>().getAtTime( time, y );
-	_controls.at<2>().getAtTime( time, z );
+	_controls.at<0>().getValueAtTime( time, x );
+	_controls.at<1>().getValueAtTime( time, y );
+	_controls.at<2>().getValueAtTime( time, z );
 }
 
-void ParamInteger3D::set( const int& x, const int& y, const int& z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::setValue( const int& x, const int& y, const int& z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().set( x, change );
-	_controls.at<1>().set( y, change );
-	_controls.at<2>().set( z, change );
+	_controls.at<0>().setValue( x, change );
+	_controls.at<1>().setValue( y, change );
+	_controls.at<2>().setValue( z, change );
 	this->paramChanged( change );
 }
 
-void ParamInteger3D::setAtTime( const OfxTime time, const int& x, const int& y, const int& z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamInteger3D::setValueAtTime( const OfxTime time, const int& x, const int& y, const int& z, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().setAtTime( time, x, change );
-	_controls.at<1>().setAtTime( time, y, change );
-	_controls.at<2>().setAtTime( time, z, change );
+	_controls.at<0>().setValueAtTime( time, x, change );
+	_controls.at<1>().setValueAtTime( time, y, change );
+	_controls.at<2>().setValueAtTime( time, z, change );
 	this->paramChanged( change );
 }
 

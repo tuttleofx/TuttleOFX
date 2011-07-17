@@ -65,13 +65,7 @@ use-project	/tuttletests	: libraries/tuttle/tests ;
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-use-project	/sam-ls		: applications/sam-ls ;
-use-project	/sam-cp		: applications/sam-cp ;
-use-project	/sam-check	: applications/sam-check ;
-use-project	/sam-mv		: applications/sam-mv ;
-use-project	/sam-plugins	: applications/sam-plugins ;
-use-project	/sam-rm		: applications/sam-rm ;
-use-project	/sam-info	: applications/sam-info ;
+use-project	/sam		: applications/sam ;
 #use-project	/pyTuttle	: applications/pyTuttle ;
 #use-project	/samtests	: applications/sam-ls/tests ;
 
@@ -82,7 +76,6 @@ alias /sam-tools		: /sam-ls
 				  /sam-plugins
 				  /sam-info
 				;
-
 
 #
 # TUTTLEOFX PLUGINS

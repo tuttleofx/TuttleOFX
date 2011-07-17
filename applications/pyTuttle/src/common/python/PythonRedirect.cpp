@@ -1,6 +1,7 @@
 #include "PythonRedirect.hpp"
 
 #include <string>
+#include <sstream>
 
 //#ifdef BUILD_PYTHON
 
@@ -34,35 +35,37 @@ bool PythonRedirect::init()
 
 	Py_InitModule( (char*) packageName(), &m_embMethods[0] );
 
-	std::string importCmd;
+	std::ostringstream importCmd;
 
-	importCmd  = "import sys\n";
-	importCmd += "import os\n"
-	             "pwd = os.getcwd()\n";
-	importCmd += "try:\n";
-	importCmd += "    import tuttle\n";
-	importCmd += "except Exception, e:\n";
-	importCmd += "    print str(e)\n";
+	importCmd <<
+		"import sys\n"
+		"import os\n"
+		"\n"
+		"pwd = os.getcwd()\n"
+		"try:\n"
+		"    import tuttle\n"
+		"except Exception, e:\n"
+		"    print str(e)\n"
+		"\n"
+		"import " << packageName() << "\n"
+		"\n"
+		// redirection des messages de python
+		"class Redirect:\n"
+		"	def write(self, str):\n"
+		"		" << packageName() << ".writeLog(str)\n"
+		"	def isatty(self):\n"
+		"		pass\n"
+		"\n"
+		"class Redirect_err:\n"
+		"	def write(self, str):\n"
+		"		" << packageName() << ".writeErr(str)\n"
+		"	def isatty(self):\n"
+		"		pass\n"
+		"\n"
+		"sys.stdout = Redirect()\n"
+		"sys.stderr = Redirect_err()\n";
 
-	importCmd += "import ";
-	importCmd += packageName();
-	importCmd += "\n";
-
-	// redirection des messages de python
-	importCmd += "class Redirect:\n",
-	importCmd += "	def write(self, str):\n",
-	importCmd += std::string( "		") + std::string( packageName() ) + std::string( ".writeLog(str)\n\n" );
-	importCmd += "	def isatty(self):\n",
-	importCmd += "		pass\n",
-	importCmd += "class Redirect_err:\n",
-	importCmd += "	def write(self, str):\n",
-	importCmd += std::string( "		") + std::string( packageName() ) + std::string( ".writeErr(str)\n\n" );
-	importCmd += "	def isatty(self):\n",
-	importCmd += "		pass\n",
-	importCmd += "sys.stdout = Redirect()\n";
-	importCmd += "sys.stderr = Redirect_err()\n";
-
-	int retVal = PyRun_SimpleString( importCmd.c_str() );
+	const int retVal = PyRun_SimpleString( importCmd.str().c_str() );
 
 	return retVal;
 }

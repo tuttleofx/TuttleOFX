@@ -104,7 +104,7 @@ protected:
 	std::string _name;                         ///< name of this property
 	TypeEnum _type;                            ///< type of this property
 	size_t _dimension;                         ///< the fixed dimension of this property
-	bool _pluginReadOnly;                      ///< set is forbidden through suite: value may still change between get() calls
+	bool _pluginReadOnly;                      ///< set is forbidden through suite: value may still change between getValue() calls
 	EModifiedBy _modifiedBy;                   ///< who set this property most recently
 	std::vector<OfxhNotifyHook*> _notifyHooks; ///< hooks to call whenever the property is set
 	OfxhGetHook* _getHook;                     ///< if we are not storing props locally, they are stored via fetching from here

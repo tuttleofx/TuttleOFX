@@ -1,5 +1,4 @@
-Import( 'project' )
-Import( 'libs' )
+Import( 'project', 'libs' )
 
 ffmpeg_base = libs.ffmpeg
 ffmpeg_base.libs = [ 'avutil',

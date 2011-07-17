@@ -12,7 +12,7 @@ void OfxhParamDouble::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	double* value = va_arg( arg, double* );
 
-	get( *value );
+	getValue( *value );
 }
 
 /**
@@ -22,7 +22,7 @@ void OfxhParamDouble::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTIO
 {
 	double* value = va_arg( arg, double* );
 
-	getAtTime( time, *value );
+	getValueAtTime( time, *value );
 }
 
 /**
@@ -32,7 +32,7 @@ void OfxhParamDouble::setV( va_list arg, const EChange change ) OFX_EXCEPTION_SP
 {
 	double value = va_arg( arg, double );
 
-	set( value, change );
+	setValue( value, change );
 }
 
 /**
@@ -42,7 +42,7 @@ void OfxhParamDouble::setV( const OfxTime time, va_list arg, const EChange chang
 {
 	double value = va_arg( arg, double );
 
-	setAtTime( time, value, change );
+	setValueAtTime( time, value, change );
 }
 
 /**

@@ -43,51 +43,55 @@ class FileNumbers;
 /**
   * List all recognized pattern types.
   */
-enum MaskType
+enum EMaskType
 {
-	eUndefined	= 0,			// 0
-	eDirectory	= 1,			// 1<<0
-	eFile		= eDirectory*2,		// 1<<1
-	eSequence	= eFile*2		// 1<<2
+	eMaskTypeUndefined	= 0,			// 0
+	eMaskTypeDirectory	= 1,			// 1<<0
+	eMaskTypeFile		= eMaskTypeDirectory*2,		// 1<<1
+	eMaskTypeSequence	= eMaskTypeFile*2,		// 1<<2
+	
+	eMaskTypeDefault = eMaskTypeSequence
 };
 
-enum MaskOptions
+enum EMaskOptions
 {
-	eNone		= 0,			// 0
-	eProperties	= 1,			// show type of FileObject
-	ePath		= eProperties*2,	// show path of FileObject
-        eAbsolutePath	= eProperties*2,	// show absolute path of FileObject
-        eDotFile	= eAbsolutePath*2,	// show files which start with a dot (hidden files)
-	eColor		= eDotFile*2		// output with color
+	eMaskOptionsNone		= 0,			// 0
+	eMaskOptionsProperties	= 1,			// show type of FileObject
+	eMaskOptionsPath		= eMaskOptionsProperties*2,	// show path of FileObject
+	eMaskOptionsAbsolutePath	= eMaskOptionsPath*2,	// show absolute path of FileObject
+	eMaskOptionsDotFile	= eMaskOptionsAbsolutePath*2,	// show files which start with a dot (hidden files)
+	eMaskOptionsColor		= eMaskOptionsDotFile*2,		// output with color
+	
+	eMaskOptionsDefault = ( eMaskOptionsPath | eMaskOptionsColor )
 };
 
-inline MaskType operator~(const MaskType& a)
+inline EMaskType operator~(const EMaskType& a)
 {
-  MaskType b = (MaskType) ( ~ int(a));
+  EMaskType b = (EMaskType) ( ~ int(a));
   return b;
 }
 
-inline MaskType operator&=(MaskType& a, const MaskType& b)
+inline EMaskType operator&=(EMaskType& a, const EMaskType& b)
 {
-  a = (MaskType) (int(b) & int(a));
+  a = (EMaskType) (int(b) & int(a));
   return a;
 }
 
-inline MaskType operator|=(MaskType& a, const MaskType& b)
+inline EMaskType operator|=(EMaskType& a, const EMaskType& b)
 {
-  a = (MaskType) (int(b) | int(a));
+  a = (EMaskType) (int(b) | int(a));
   return a;
 }
 
-inline MaskOptions operator|=(MaskOptions& a, const MaskOptions& b)
+inline EMaskOptions operator|=(EMaskOptions& a, const EMaskOptions& b)
 {
-  a = (MaskOptions) (int(b) | int(a));
+  a = (EMaskOptions) (int(b) | int(a));
   return a;
 }
 
-inline MaskOptions remove(MaskOptions& a, const MaskOptions& b)
+inline EMaskOptions remove(EMaskOptions& a, const EMaskOptions& b)
 {
-  a = (MaskOptions) (int(~b) & int(a));
+  a = (EMaskOptions) (int(~b) & int(a));
   return a;
 }
 
@@ -101,19 +105,19 @@ public:
 	FileObject( )
 	{
 	  	_directory.clear();
-		_type		= eUndefined;
-		_options	= eNone;
+		_type		= eMaskTypeUndefined;
+		_options	= eMaskOptionsNone;
 	}
-	FileObject( const MaskOptions options )
+	FileObject( const EMaskOptions options )
 	{
 		_directory.clear();
-		_type		= eUndefined;
+		_type		= eMaskTypeUndefined;
 		_options	= options;
 	}
 	/**
 	 * @brief Construct a FileObject with given informations.
 	 */
-	FileObject( const boost::filesystem::path& directory, const MaskType& type, const MaskOptions& options )
+	FileObject( const boost::filesystem::path& directory, const EMaskType& type, const EMaskOptions& options )
 	{
 		init( directory, type, options );
 	}
@@ -121,17 +125,27 @@ public:
 	
 	friend  std::ostream&				operator<<( std::ostream& os, const FileObject& fo );
 	virtual std::ostream&				getCout   ( std::ostream& os ) const = 0;
-	
+
+	/**
+	 * @todo: can we remove this?
+	 */
 	virtual std::vector<boost::filesystem::path>	getFiles() const =0;
+	
+	/// @todo 
+	// virtual std::string getName() const = 0;
+//	boost::filesystem::path getAbsoluteName() const
+//	{
+//		return getDirectory() / getName();
+//	}
 	
 	inline boost::filesystem::path			getDirectory	() const				{ return _directory; }
 	inline void					setDirectory	( const boost::filesystem::path& p )	{ _directory = p; }
 	
-	MaskOptions					getMaskOptions	() const				{ return _options; }
-	MaskType					getMaskType	() const				{ return _type; }
+	EMaskOptions					getMaskOptions	() const				{ return _options; }
+	EMaskType					getMaskType	() const				{ return _type; }
 
 private:
-	void init( const boost::filesystem::path& directory, const MaskType& type, const MaskOptions& options )
+	void init( const boost::filesystem::path& directory, const EMaskType& type, const EMaskOptions& options )
 	{
 		_directory	= directory;
 		_type		= type;
@@ -140,24 +154,25 @@ private:
 	
 protected:
 	
-	inline bool showProperties()	const	{ return _options & eProperties; }
-	inline bool showPath()		const	{ return _options & ePath; }
+	inline bool showProperties()	const	{ return _options & eMaskOptionsProperties; }
+	inline bool showPath()		const	{ return _options & eMaskOptionsPath; }
 	
 	
 	boost::filesystem::path	_directory;		///< directory
 
-	MaskType		_type;			///< specify type of object
-	MaskOptions		_options;		///< specify output options of object, common for each objects
+	EMaskType		_type;			///< specify type of object
+	EMaskOptions		_options;		///< specify output options of object, common for each objects
 };
 
-std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc );
-std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, int mask, const MaskOptions& desc, std::vector<std::string>& filters );
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, const EMaskType mask = eMaskTypeDefault, const EMaskOptions desc = eMaskOptionsDefault );
+std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, std::vector<std::string>& filters, const EMaskType mask = eMaskTypeDefault, const EMaskOptions desc = eMaskOptionsDefault );
 
 
 class Folder : public FileObject
 {
 public:
-	Folder( const boost::filesystem::path& directory, const std::string folderName, const MaskOptions& options) : FileObject( directory, eDirectory, options)
+	Folder( const boost::filesystem::path& directory, const std::string folderName, const EMaskOptions& options)
+		: FileObject( directory, eMaskTypeDirectory, options)
 	{
 		_folderName = folderName;
 	};
@@ -176,7 +191,8 @@ class File : public FileObject
 {
 public:
 	
-	File( const boost::filesystem::path& directory, const std::string& filename, const MaskOptions& options) : FileObject( directory, eFile, options )
+	File( const boost::filesystem::path& directory, const std::string& filename, const EMaskOptions& options)
+		: FileObject( directory, eMaskTypeFile, options )
 	{
 		_filename = filename;
 	};
@@ -190,7 +206,7 @@ private:
 };
 
 /**
- * @brief A sequence of numeroted files.
+ * @brief A sequence of numbered files.
  */
 class Sequence : public FileObject
 {
@@ -222,28 +238,37 @@ public:
 		_nbFiles	= 0;
 	}
 
-	// constructors and desctructors
-	Sequence( const boost::filesystem::path& directory, const std::string& prefix, const std::size_t padding, const std::string& suffix, const MaskOptions options, const Time firstTime, const Time lastTime, const Time step = 1, const bool strictPadding = false ) : FileObject( directory, eSequence, options )
+	Sequence( const boost::filesystem::path& directory, const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const EMaskOptions options = eMaskOptionsDefault, const bool strictPadding = false )
+		: FileObject( directory, eMaskTypeSequence, options )
 	{
 		init( prefix, padding, suffix, firstTime, lastTime, step, strictPadding );
 	}
 	
-	Sequence( const boost::filesystem::path& directory, const std::string& pattern, const MaskOptions options, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault ) : FileObject( directory, eSequence, options )
+	Sequence( const boost::filesystem::path& directory, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EMaskOptions options = eMaskOptionsDefault, const EPattern accept = ePatternDefault )
+		: FileObject( directory, eMaskTypeSequence, options )
 	{
 		init( pattern, firstTime, lastTime, step, accept );
 	}
 	
-	Sequence( const boost::filesystem::path& directory, const MaskOptions options, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault ) : FileObject( directory, eSequence, options )
+	Sequence( const boost::filesystem::path& directory, const Time firstTime, const Time lastTime, const Time step, const EMaskOptions options = eMaskOptionsDefault, const EPattern accept = ePatternDefault )
+		: FileObject( directory, eMaskTypeSequence, options )
 	{
 		init( firstTime, lastTime, step, accept );
 	}
 
-	Sequence( const boost::filesystem::path& directory, const MaskOptions options, const EPattern accept = ePatternDefault );
+	/**
+	 * @todo check if we put a pattern with full path: /home/foo/images/foo.####.jpg
+	 */
+	Sequence( const boost::filesystem::path& directory, const EMaskOptions options = eMaskOptionsDefault, const EPattern accept = ePatternDefault );
 	
-	Sequence( const Sequence& v ):FileObject( v._options ) { operator=( v ); }
-
+	Sequence( const Sequence& v )
+		: FileObject( v._options )
+	{
+		operator=( v );
+	}
 	
-	virtual ~Sequence(){};
+	virtual ~Sequence()
+        {}
 	
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
@@ -280,7 +305,6 @@ public:
 	inline std::string		getAbsoluteFirstFilename	()			const { return ( _directory / getFilenameAt( getFirstTime() ) ).string(); }
 	inline std::string		getAbsoluteLastFilename		()			const { return ( _directory / getFilenameAt( getLastTime()  ) ).string(); }
 
-
 	/// @return pattern character in standard style
 	inline char			getPatternCharacter		()			const { return getPadding() ? '#' : '@'; }
 	/// @return a string pattern using standard style
@@ -294,6 +318,7 @@ public:
 		else
 			return getPrefix() + "%d" + getSuffix();
 	}
+
 	inline std::string		getAbsoluteCStylePattern	()			const { return (getDirectory() / getCStylePattern()).string(); }
 
 	inline std::pair<Time, Time>	getRange			()			const { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }
@@ -339,7 +364,7 @@ protected:
 	bool initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding );
 
 private:
-	friend std::list<Sequence> buildSequence(  const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const MaskOptions& desc );
+	friend std::list<Sequence> buildSequence(  const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const EMaskOptions& desc );
 	
 	std::ostream&				getCout( std::ostream& os ) const ;
 	std::vector<boost::filesystem::path>	getFiles() const;
