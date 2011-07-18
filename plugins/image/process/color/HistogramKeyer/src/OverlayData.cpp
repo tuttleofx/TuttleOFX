@@ -14,7 +14,9 @@ OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
 {
 	_size = size;
 	_vNbStep = nbSteps;
-
+	
+	_isComputing = false;
+	
 	clearAll( size );
 }
 
@@ -22,7 +24,7 @@ OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
  * Update selection areas buffer to selection histograms overlay
  * @param args needed to have current time
  */
-void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const OfxPointD& renderScale, const bool isSelection )
+void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const bool isSelection )
 {
 	data._step = _vNbStep;					//prepare HistogramBuffer structure
 	
@@ -140,32 +142,37 @@ int OverlayData::computeAnAverage(std::vector<Number> selection_v) const
  * @param time	current time
  * @param renderScale	current renderScale
  */
-void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale )
+void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly )
 {
+	_isComputing = true;
 	resetHistogramData();
 	resetHistogramSelectionData();
 	
 	if( ! clipSrc->isConnected() )
-	{
+	{	
+		_isComputing = false;
 		return;
 	}
 	
 	//TUTTLE_TCOUT_INFOS;
 	//TUTTLE_TCOUT_VAR( "computeHistogramBufferData - fetchImage " << time );
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time, renderScale)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
 	//TUTTLE_TCOUT_INFOS;
 	
-//	TUTTLE_TCOUT_VAR( clipSrc->getPixelRod(time, renderScale) );
-//	TUTTLE_TCOUT_VAR( clipSrc->getCanonicalRod(time, renderScale) );
-//	
-//	TUTTLE_TCOUT_VAR( src->getBounds() );
-//	TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
+	//TUTTLE_TCOUT_VAR( clipSrc->getPixelRod(time, renderScale) );
+	//TUTTLE_TCOUT_VAR( clipSrc->getCanonicalRod(time, renderScale) );
 	
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
 	{
+		_isComputing = false;
+		std::cout << "src is not accessible" << std::endl;
 		return;
 	}
+	
+//	TUTTLE_TCOUT_VAR( src->getBounds() );
+//	TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
+
 	if( src->getRowBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
@@ -178,7 +185,15 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
         return;
 	}
 	
-	BOOST_ASSERT( srcPixelRod == src->getBounds() );
+//	TUTTLE_TCOUT_INFOS;
+//	BOOST_ASSERT( srcPixelRod == src->getBounds() );
+	if( srcPixelRod != src->getBounds() )
+	{
+		// the host does bad things !
+		// remove overlay... but do not crash.
+		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		return;
+	}
 //	BOOST_ASSERT( srcPixelRod.x1 == src->getBounds().x1 );
 //	BOOST_ASSERT( srcPixelRod.y1 == src->getBounds().y1 );
 //	BOOST_ASSERT( srcPixelRod.x2 == src->getBounds().x2 );
@@ -191,21 +206,27 @@ void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const
 	imgSize.x = srcView.width();
 	imgSize.y = srcView.height();
 	
+//	TUTTLE_TCOUT_INFOS;
 	if( isImageSizeModified( imgSize ) )
 	{
-		TUTTLE_TCOUT_INFOS;
-		
+		//TUTTLE_TCOUT_INFOS;
 		clearAll( imgSize );
 	}
 	
+	//TUTTLE_TCOUT_INFOS;
 	//Compute histogram buffer
-	this->computeHistogramBufferData( _data, srcView, time, renderScale );
+	this->computeHistogramBufferData( _data, srcView, time);
 	
+	//TUTTLE_TCOUT_INFOS;
 	//Compute selection histogram buffer
-	this->computeHistogramBufferData( _selectionData, srcView, time, renderScale, true );
+	this->computeHistogramBufferData( _selectionData, srcView, time, true );
 	
+	//TUTTLE_TCOUT_INFOS;
 	//Compute averages
 	this->computeAverages();
+	_isComputing = false;
+	
+	//TUTTLE_TCOUT_INFOS;
 }
 
 /**
@@ -232,6 +253,10 @@ void OverlayData::resetHistogramSelectionData()
 
 void OverlayData::removeSelection()
 {
+	//allocate and initialize bool img tab 2D
+	bool_2d::extent_gen extents;
+	_imgBool.resize(extents[_size.y][_size.x]);
+
 	for( unsigned int i=0; i < _imgBool.shape()[0]; ++i )
 	{
 		for( unsigned int j=0; j < _imgBool.shape()[1]; ++j )
@@ -239,15 +264,6 @@ void OverlayData::removeSelection()
 			_imgBool[i][j] = 0;
 		}
 	}
-}
-
-void OverlayData::removeSelection( const OfxPointI& size )
-{
-	//allocate and initialize bool img tab 2D
-	bool_2d::extent_gen extents;
-	_imgBool.resize(extents[_size.y][_size.x]);
-	
-	clearSelection();
 }
 
 /**
