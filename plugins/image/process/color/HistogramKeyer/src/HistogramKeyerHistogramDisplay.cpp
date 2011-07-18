@@ -15,7 +15,7 @@ namespace histogramKeyer {
  * @param width maximal width
  * @param color color used to display
  */
-void displayASpecificHistogram(const std::vector<Number>& v,const std::vector<Number>& selection_v, const double step, const double height, const double width, const HistogramColor color,float selectionMultiplier)
+void displayASpecificHistogram(const HistogramVector& v,const HistogramVector& selection_v, const double step, const double height, const double width, const HistogramColor color,float selectionMultiplier)
 {
 	if(v.size())
 	{
@@ -54,7 +54,7 @@ void displayASpecificHistogram(const std::vector<Number>& v,const std::vector<Nu
  * @param width maximal width
  * @param color color used to display
  */
-void displayASpecificHistogramBorder(const std::vector<Number>& v, const double step, const double height, const double width, const HistogramColor color)
+void displayASpecificHistogramBorder(const HistogramVector& v, const double step, const double height, const double width, const HistogramColor color)
 {
 	//Draw the border line
 	glBegin( GL_LINE_STRIP );
@@ -79,7 +79,7 @@ void displayASpecificHistogramBorder(const std::vector<Number>& v, const double 
  * @param width width of the source clip
  * @param color color using for display
  */
-void displaySelectionPoints(const std::vector<Number>& selection_v, const double step, const double width, const HistogramColor color)
+void displaySelectionPoints(const HistogramVector& selection_v, const double step, const double width, const HistogramColor color)
 {
 	glBegin( GL_POINTS );
 	double base_step = 0.0;

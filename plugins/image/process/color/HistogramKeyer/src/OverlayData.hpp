@@ -1,13 +1,21 @@
 #ifndef OVERLAYDATA_HPP
 #define	OVERLAYDATA_HPP
+
 #include "HistogramKeyerDefinitions.hpp"
-#include "boost/multi_array.hpp"
+
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+
+
+#include <boost/multi_array.hpp>
 #include <boost/array.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
-	
+
+typedef long Number;
+typedef std::vector<Number, OfxAllocator<Number> > HistogramVector;
+
 /*
  * structure of 7 buffers (contains histogram data)
  */
@@ -16,15 +24,15 @@ struct HistogramBufferData
 	//step
 	int _step;								//nbStep (for computing and display)
 	//RGB
-	std::vector<Number> _bufferRed;			//R
-	std::vector<Number> _bufferGreen;		//G
-	std::vector<Number> _bufferBlue;		//B
+	HistogramVector _bufferRed;			//R
+	HistogramVector _bufferGreen;		//G
+	HistogramVector _bufferBlue;		//B
 	///HLS
-	std::vector<Number> _bufferHue;			//H
-	std::vector<Number> _bufferLightness;	//S
-	std::vector<Number> _bufferSaturation;	//L
+	HistogramVector _bufferHue;			//H
+	HistogramVector _bufferLightness;	//S
+	HistogramVector _bufferSaturation;	//L
 	//Alpha
-	std::vector<Number> _bufferAlpha;		//alpha
+	HistogramVector _bufferAlpha;		//alpha
 };
 
 /*
@@ -45,7 +53,7 @@ struct AverageBarData
 /*
  *functor to compute selection histograms
  */
-typedef boost::multi_array<unsigned char,2> bool_2d;
+typedef boost::multi_array<unsigned char,2, OfxAllocator<unsigned char> > bool_2d;
 
 
 struct Pixel_compute_histograms
@@ -202,9 +210,9 @@ private:
 	void resetAverages();		//rest all of the averages
 	void removeSelection();
 	
-	void correctVector(std::vector<Number>& v) const;								//correct a specific channel
-	void resetVectortoZero(std::vector<long>& v, const unsigned int size) const;	//reset a specific channel buffer
-	int computeAnAverage(std::vector<Number> selection_v)const;						//compute average of a specific channel
+	void correctVector( HistogramVector& v ) const;								//correct a specific channel
+	void resetVectortoZero( HistogramVector& v, const std::size_t size ) const;	//reset a specific channel buffer
+	int computeAnAverage( const HistogramVector& selection_v ) const;						//compute average of a specific channel
 	
 public:
 	///@todo accessors

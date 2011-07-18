@@ -1,6 +1,7 @@
 #include "OverlayData.hpp"
 
 #include <tuttle/plugin/global.hpp>
+#include <tuttle/plugin/ImageGilProcessor.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -46,7 +47,7 @@ void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& 
  * @param v vector to reset
  * @param numberOfStep number of step (size of the vector)
  */
-void OverlayData::resetVectortoZero( std::vector<Number>& v, const unsigned int numberOfStep ) const
+void OverlayData::resetVectortoZero( HistogramVector& v, const std::size_t numberOfStep ) const
 {
 	v.assign(numberOfStep,0);
 }
@@ -90,7 +91,7 @@ void OverlayData::correctHistogramBufferData(HistogramBufferData& toCorrect) con
  * Replace vector null values by average (better for histogram display) 
  * @param v vector to modify
  */
-void OverlayData::correctVector(std::vector<Number>& v) const
+void OverlayData::correctVector( HistogramVector& v ) const
 {
 	for(unsigned int i=1; i<v.size()-1;++i)
 	{
@@ -119,11 +120,11 @@ void OverlayData::computeAverages()
  * @param selection_v vector which contain the selection histogram
  * @return 
  */
-int OverlayData::computeAnAverage(std::vector<Number> selection_v) const
+int OverlayData::computeAnAverage( const HistogramVector& selection_v ) const
 {
 	int av = 0;
 	int size = 0;
-	for(unsigned int i=0; i<selection_v.size(); ++i)
+	for( std::size_t i=0; i < selection_v.size(); ++i)
 	{
 		if(selection_v.at(i)!=0)
 		{
