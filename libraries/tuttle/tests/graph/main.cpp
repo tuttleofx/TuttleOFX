@@ -86,15 +86,15 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 
 		TUTTLE_TCOUT( "__________________________________________________2" );
 		// Setup parameters
-		read1.getParam( "filename" ).set( "data/input.png" );
-		//		read2.getParam( "filename" ).set( "data/input.dpx" );
-		read3.getParam( "filename" ).set( "data/input.exr" );
-		//bitdepth.getParam( "outputBitDepth" ).set( 3 );
-		//	crop1.getParam( "Down" ).set( 400 );
-		write1.getParam( "filename" ).set( "data/output1.png" );
-		write2.getParam( "filename" ).set( "data/output2.dpx" );
-		write3.getParam( "filename" ).set( "data/output3.exr" );
-		write4.getParam( "filename" ).set( "data/output4.png" );
+		read1.getParam( "filename" ).setValue( "data/input.png" );
+		//		read2.getParam( "filename" ).setValue( "data/input.dpx" );
+		read3.getParam( "filename" ).setValue( "data/input.exr" );
+		//bitdepth.getParam( "outputBitDepth" ).setValue( 3 );
+		//	crop1.getParam( "Down" ).setValue( 400 );
+		write1.getParam( "filename" ).setValue( "data/output1.png" );
+		write2.getParam( "filename" ).setValue( "data/output2.dpx" );
+		write3.getParam( "filename" ).setValue( "data/output3.exr" );
+		write4.getParam( "filename" ).setValue( "data/output4.png" );
 
 		TUTTLE_TCOUT( "__________________________________________________3" );
 		TUTTLE_TCOUT( "connect" );

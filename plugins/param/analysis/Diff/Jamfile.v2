@@ -7,21 +7,20 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-    : build-dir $(DIST)/Diff/obj
-    ;
+	: requirements
+		<include>src
+	: build-dir $(DIST)/Diff/obj
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Diff : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
-    ;
- 
+	[ glob src/*.cpp ]
+	/tuttleplugin/<link>static
+	;
+
 ###############################################################################
 # Automatic install
 ###############################################################################
 auto_install Diff : $(DIST) ;
- 

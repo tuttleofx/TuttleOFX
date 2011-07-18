@@ -18,12 +18,13 @@ use-project /libexr : $(3RD_PARTY)/openexr ;
 # Product 
 ###############################################################################
 plugin Exr : 
-        [ glob-tree *.cpp ]
-        /tuttleplugin/<link>static
-        /boost/filesystem
-		/boost/system
-        /libexr
-        ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	/boost/filesystem
+	/boost/system
+	/boost/regex
+	/libexr
+	;
 
 ###############################################################################
 # Automatic install

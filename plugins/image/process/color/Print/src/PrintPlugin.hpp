@@ -14,9 +14,12 @@ struct PrintProcessParams
 {
 	EParamMode _mode;
 	EParamOutput _output;
+        EParamColor _colorMode;
 	boost::gil::point2<std::ptrdiff_t> _pixel;
 	OfxRectI _region;
 	bool _flip;
+        bool _openGlViewer;
+        int _cols;
 };
 
 /**
@@ -41,12 +44,15 @@ public:
     void render( const OFX::RenderArguments &args );
 	
 public:
-	OFX::ChoiceParam* _paramMode;
-	OFX::ChoiceParam* _paramOutput;
-	OFX::Int2DParam* _paramPixel;
-	OFX::Int2DParam* _paramRegionMin;
-	OFX::Int2DParam* _paramRegionMax;
+        OFX::ChoiceParam*  _paramMode;
+        OFX::ChoiceParam*  _paramOutput;
+        OFX::ChoiceParam*  _paramColor;
+        OFX::Int2DParam*   _paramPixel;
+        OFX::Int2DParam*   _paramRegionMin;
+        OFX::Int2DParam*   _paramRegionMax;
+        OFX::IntParam*     _paramOutputColumns;
 	OFX::BooleanParam* _paramFlip;
+        OFX::BooleanParam* _paramOpenGlWindow;
 };
 
 }

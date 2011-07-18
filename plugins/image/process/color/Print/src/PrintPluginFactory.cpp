@@ -20,7 +20,7 @@ void PrintPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
 	desc.setLabels( "TuttlePrint", "TuttlePrint",
 		            "TuttlePrint" );
-	desc.setPluginGrouping( "tuttle" );
+        desc.setPluginGrouping( "tuttle/image/process/color" );
 
 	desc.setDescription( "TuttlePrint\n"
 	                     "Allows to print a part of the image." );
@@ -36,7 +36,7 @@ void PrintPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+        desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 }
 
 /**
@@ -78,6 +78,21 @@ void PrintPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	regionMax->setLabel( "Region max" );
 	regionMax->setDisplayRange( 0, 0, 2000, 2000 );
 
+        OFX::IntParamDescriptor* outputColumns = desc.defineIntParam( kParamColumns );
+        outputColumns->setDefault(10);
+        outputColumns->setDisplayRange(1,500);
+
+
+        OFX::ChoiceParamDescriptor* colorType = desc.defineChoiceParam( kParamColor );
+        colorType->appendOption( kParamColorMono );
+        colorType->appendOption( kParamColorGray );
+        colorType->appendOption( kParamColor8 );
+        colorType->appendOption( kParamColor16 );
+        colorType->appendOption( kParamColorFullGray );
+        colorType->appendOption( kParamColorFull8 );
+        colorType->appendOption( kParamColorFull16 );
+        colorType->setLabel( "Color type for the output." );
+
 	OFX::ChoiceParamDescriptor* output = desc.defineChoiceParam( kParamOutput );
 	output->setLabel( "Output" );
 	output->appendOption( kParamOutputNumeric );
@@ -85,6 +100,10 @@ void PrintPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::BooleanParamDescriptor* flip = desc.defineBooleanParam( kParamFlip );
 	flip->setLabel( "Flip" );
+
+        OFX::BooleanParamDescriptor* openGlWindow = desc.defineBooleanParam( kParamOutputOpenGL );
+        openGlWindow->setLabel( "Show in OpenGL Window." );
+
 }
 
 /**

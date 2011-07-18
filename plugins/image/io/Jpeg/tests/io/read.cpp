@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( process_reader )
 
 	TUTTLE_TCOUT( "__________________________________________________3" );
 
-	read.getParam( "filename" ).set( "data/input.jpg" );
+	read.getParam( "filename" ).setValue( "data/input.jpg" );
 
 	TUTTLE_TCOUT( "__________________________________________________4" );
 //	g.connect( read, write );
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( process_nofile )
 	Graph::Node& read = g.createNode( "fr.tuttle.jpegreader" );
 
 	TUTTLE_TCOUT( "__________________________________________________3" );
-	read.getParam( "filename" ).set( "data/no-such-file.jpg" );
+	read.getParam( "filename" ).setValue( "data/no-such-file.jpg" );
 
 	TUTTLE_TCOUT( "__________________________________________________4" );
 //	g.connect( read, write );

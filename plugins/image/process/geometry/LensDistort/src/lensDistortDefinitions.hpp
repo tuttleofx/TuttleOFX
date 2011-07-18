@@ -32,6 +32,19 @@ const std::string kParamPostScale( "postScale" );
 const std::string kParamInterpolation( "interpolation" );
 const std::string kParamInterpolationNearest( "nearest neighbor" );
 const std::string kParamInterpolationBilinear( "bilinear" );
+const std::string kParamInterpolationBicubic( "bicubic" );
+const std::string kParamInterpolationCatmul( "catmul" );
+const std::string kParamInterpolationMitchell( "mitchell" );
+const std::string kParamInterpolationParzen( "parzen" );
+const std::string kParamInterpolationKeys( "keys" );
+const std::string kParamInterpolationSimon( "simon" );
+const std::string kParamInterpolationRifman( "rifman" );
+//const std::string kParamInterpolationLanczos( "lanczos3" );
+//const std::string kParamInterpolationLanczos( "lanczos4" );
+//const std::string kParamInterpolationLanczos( "lanczos6" );
+//const std::string kParamInterpolationLanczos( "lanczos12" );
+//const std::string kParamInterpolationLanczos( "gaussian" );
+
 const std::string kParamResizeRod( "resizeRod" );
 const std::string kParamResizeRodNo( "no" );
 const std::string kParamResizeRodSourceRef( "sourceRef" );
@@ -67,6 +80,18 @@ enum EParamInterpolation
 {
 	eParamInterpolationNearest = 0,
 	eParamInterpolationBilinear,
+	eParamInterpolationBicubic,
+	eParamInterpolationCatmul,
+	eParamInterpolationMitchell,
+	eParamInterpolationParzen,
+	eParamInterpolationKeys,
+	eParamInterpolationSimon,
+	eParamInterpolationRifman,
+//	eParamInterpolationLanczos3,
+//	eParamInterpolationLanczos4,
+//	eParamInterpolationLanczos6,
+//	eParamInterpolationLanczos12,
+//	eParamInterpolationGaussian,
 };
 enum EParamCenterType
 {

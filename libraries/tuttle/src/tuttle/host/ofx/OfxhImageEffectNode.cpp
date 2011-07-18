@@ -164,6 +164,8 @@ void OfxhImageEffectNode::populateParams( const imageEffect::OfxhImageEffectNode
 
 	std::map<std::string, attribute::OfxhParam*> parameters;
 
+	this->reserveParameters( paramDescriptors.size() );
+	
 	// Create parameters on their own groups
 	for( attribute::OfxhParamSetDescriptor::ParamDescriptorList::const_iterator it = paramDescriptors.begin(), itEnd = paramDescriptors.end();
 	     it != itEnd;

@@ -18,9 +18,8 @@ struct HistogramKeyerProcessParams
     OfxTime _time;								//current time
 	OFX::ChoiceParam* _paramOutputSetting;		//ouput display (BW/alpha)
 	OFX::BooleanParam* _boolReverseMask;		//is mask revert
-	std::vector<OFX::BooleanParam*> _boolRGB;	//check boxes RGB selection
-	std::vector<OFX::BooleanParam*> _boolHSL;	//check boxes HSL selection
-	
+	boost::array<OFX::BooleanParam*, 3> _boolRGB;	//check boxes RGB selection
+	boost::array<OFX::BooleanParam*, 3> _boolHSL;	//check boxes HSL selection
 };
 
 /**

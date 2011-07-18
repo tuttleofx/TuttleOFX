@@ -3,7 +3,7 @@
 
 #include "Core.hpp"
 #include "INode.hpp"
-#include "exceptionsHost.hpp"
+#include "exceptions.hpp"
 #include <tuttle/host/graph/InternalGraph.hpp>
 #include <tuttle/host/graph/UVertex.hpp>
 #include <tuttle/host/graph/UEdge.hpp>

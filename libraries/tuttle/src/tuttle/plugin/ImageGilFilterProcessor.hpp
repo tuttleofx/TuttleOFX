@@ -48,13 +48,9 @@ void ImageGilFilterProcessor<SView, DView>::setup( const OFX::RenderArguments& a
 //	TUTTLE_COUT_VAR( "src - fetchImage " << time );
 	this->_src.reset( _clipSrc->fetchImage( args.time ) );
 	if( !this->_src.get() )
-	{
 		BOOST_THROW_EXCEPTION( exception::ImageNotReady() );
-	}
 	if( this->_src->getRowBytes() == 0 )
-	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-	}
 	//	_srcPixelRod = _src->getRegionOfDefinition(); // bug in nuke, returns bounds
 	_srcPixelRod   = _clipSrc->getPixelRod( args.time, args.renderScale );
 	this->_srcView = tuttle::plugin::getView<SView>( this->_src.get(), _srcPixelRod );

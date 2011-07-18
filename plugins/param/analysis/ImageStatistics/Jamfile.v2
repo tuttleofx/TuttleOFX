@@ -7,18 +7,20 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-    : build-dir $(DIST)/Average/obj
-    ;
+	: requirements
+		<include>src
+	: build-dir $(DIST)/Average/obj
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Average : 
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
-    ;
+	[ glob src/*.cpp ]
+        /tuttleplugin/<link>static
+        /boost//system
+        /boost//regex
+	;
 
 ###############################################################################
 # Automatic install

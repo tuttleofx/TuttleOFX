@@ -19,10 +19,10 @@ public:
 
 	OfxPointI getDefault() const;
 
-	void get( int& x, int& y ) const OFX_EXCEPTION_SPEC;
-	void getAtTime( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC;
-	void set( const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
-	void setAtTime( const OfxTime time, const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void getValue( int& x, int& y ) const OFX_EXCEPTION_SPEC;
+	void getValueAtTime( const OfxTime time, int& x, int& y ) const OFX_EXCEPTION_SPEC;
+	void setValue( const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
+	void setValueAtTime( const OfxTime time, const int& x, const int& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC;
 };
 
 }

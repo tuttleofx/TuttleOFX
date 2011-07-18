@@ -4,6 +4,12 @@
 
 #include <boost/cstdint.hpp>
 
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT( 52, 40, 0 )
+// compatibility with previous versions of libavformat
+#define av_guess_format guess_format
+#endif
+
+
 VideoFFmpegWriter::VideoFFmpegWriter()
 	: _avformatOptions( 0 )
 	, _sws_context( NULL )
@@ -73,10 +79,10 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	_error = IGNORE_FINISH;
 
 	AVOutputFormat* fmt = 0;
-	fmt = guess_format( _format.c_str(), NULL, NULL );
+	fmt = av_guess_format( _format.c_str(), NULL, NULL );
 	if( !fmt )
 	{
-		fmt = guess_format( NULL, filename().c_str(), NULL );
+		fmt = av_guess_format( NULL, filename().c_str(), NULL );
 		if( !fmt )
 		{
 			std::cerr << "ffmpegWriter: could not deduce output format from file extension." << std::endl;

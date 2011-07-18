@@ -755,7 +755,7 @@ std::ostream& ImageEffectNode::print( std::ostream& os ) const
 		os << "  * " << it->second->getName() << std::endl;
 	}
 	os << "Params:" << std::endl;
-	for( ImageEffectNode::ParamList::const_iterator it = v._paramList.begin(), itEnd = v._paramList.end();
+	for( ImageEffectNode::ParamVector::const_iterator it = v._paramVector.begin(), itEnd = v._paramVector.end();
 	     it != itEnd;
 	     ++it )
 	{

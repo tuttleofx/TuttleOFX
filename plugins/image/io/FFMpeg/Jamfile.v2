@@ -7,21 +7,30 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-	<include>src
-    : build-dir $(DIST)/FFMpeg/obj
-    ;
+	: requirements
+		<include>src
+		<target-os>linux:<include>/usr/include/ffmpeg
+		<linkflags>-L/usr/lib64
+		<linkflags>-lavcodec
+		<linkflags>-lavutil
+		<linkflags>-lavformat
+		<linkflags>-lswscale
+	: build-dir $(DIST)/FFMpeg/obj
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin FFMpeg : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	/boost/filesystem
+	/boost/system
+	/boost/regex
+	;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install FFMpeg : $(DIST) ;
+auto_install FFMpeg : $(DIST)/FFMpeg ;
 

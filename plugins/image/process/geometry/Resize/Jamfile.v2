@@ -28,10 +28,10 @@ else if [ os.name ] = MACOSX
 # Product 
 ###############################################################################
 plugin Resize : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    opengl
-    ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	opengl
+	;
  
 ###############################################################################
 # Automatic install

@@ -21,6 +21,7 @@ plugin Png :
 	/tuttleplugin/<link>static
 	/boost/filesystem
 	/boost/system
+	/boost/regex
 	/png
 	;
 explicit Png ;

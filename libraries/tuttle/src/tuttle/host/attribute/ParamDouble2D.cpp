@@ -25,30 +25,30 @@ OfxPointD ParamDouble2D::getDefault() const
 	return point;
 }
 
-void ParamDouble2D::get( double& x, double& y ) const OFX_EXCEPTION_SPEC
+void ParamDouble2D::getValue( double& x, double& y ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().get( x );
-	_controls.at<1>().get( y );
+	_controls.at<0>().getValue( x );
+	_controls.at<1>().getValue( y );
 }
 
-void ParamDouble2D::getAtTime( const OfxTime time, double& x, double& y ) const OFX_EXCEPTION_SPEC
+void ParamDouble2D::getValueAtTime( const OfxTime time, double& x, double& y ) const OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().getAtTime( time, x );
-	_controls.at<1>().getAtTime( time, y );
+	_controls.at<0>().getValueAtTime( time, x );
+	_controls.at<1>().getValueAtTime( time, y );
 }
 
-void ParamDouble2D::set( const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamDouble2D::setValue( const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
 	TUTTLE_TCOUT( "ParamDouble2D::set x:" << x << " y:" << y );
-	_controls.at<0>().set( x, change );
-	_controls.at<1>().set( y, change );
+	_controls.at<0>().setValue( x, change );
+	_controls.at<1>().setValue( y, change );
 	this->paramChanged( change );
 }
 
-void ParamDouble2D::setAtTime( const OfxTime time, const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
+void ParamDouble2D::setValueAtTime( const OfxTime time, const double& x, const double& y, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 {
-	_controls.at<0>().setAtTime( time, x, change );
-	_controls.at<1>().setAtTime( time, y, change );
+	_controls.at<0>().setValueAtTime( time, x, change );
+	_controls.at<1>().setValueAtTime( time, y, change );
 	this->paramChanged( change );
 }
 

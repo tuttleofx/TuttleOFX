@@ -22,7 +22,7 @@ void OfxhParamInteger::getV( va_list arg ) const OFX_EXCEPTION_SPEC
 {
 	int* value = va_arg( arg, int* );
 
-	this->get( *value );
+	this->getValue( *value );
 }
 
 /**
@@ -32,7 +32,7 @@ void OfxhParamInteger::getV( const OfxTime time, va_list arg ) const OFX_EXCEPTI
 {
 	int* value = va_arg( arg, int* );
 
-	this->getAtTime( time, *value );
+	this->getValueAtTime( time, *value );
 }
 
 /**
@@ -42,7 +42,7 @@ void OfxhParamInteger::setV( va_list arg, const EChange change ) OFX_EXCEPTION_S
 {
 	int value = va_arg( arg, int );
 
-	this->set( value, change );
+	this->setValue( value, change );
 }
 
 /**
@@ -52,7 +52,7 @@ void OfxhParamInteger::setV( const OfxTime time, va_list arg, const EChange chan
 {
 	int value = va_arg( arg, int );
 
-	this->setAtTime( time, value, change );
+	this->setValueAtTime( time, value, change );
 }
 
 /**

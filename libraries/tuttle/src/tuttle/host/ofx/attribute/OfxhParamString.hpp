@@ -21,10 +21,10 @@ public:
 	typedef std::string BaseType;
 	OfxhParamString( const OfxhParamDescriptor& descriptor, const std::string& name, OfxhParamSet& setInstance ) : OfxhParam( descriptor, name, setInstance ) {}
 
-	virtual void get( std::string& ) const OFX_EXCEPTION_SPEC                                                  = 0;
-	virtual void getAtTime( const OfxTime time, std::string& ) const OFX_EXCEPTION_SPEC                        = 0;
-	virtual void set( const std::string&, const EChange change )                OFX_EXCEPTION_SPEC             = 0;
-	virtual void setAtTime( const OfxTime time, const std::string&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
+	virtual void getValue( std::string& ) const OFX_EXCEPTION_SPEC                                                  = 0;
+	virtual void getValueAtTime( const OfxTime time, std::string& ) const OFX_EXCEPTION_SPEC                        = 0;
+	virtual void setValue( const std::string&, const EChange change )                OFX_EXCEPTION_SPEC             = 0;
+	virtual void setValueAtTime( const OfxTime time, const std::string&, const EChange change )  OFX_EXCEPTION_SPEC = 0;
 
 	/// implementation of var args function
 	virtual void getV( va_list arg ) const OFX_EXCEPTION_SPEC;
@@ -40,7 +40,7 @@ public:
 
 	std::ostream& displayValues( std::ostream& os ) const
 	{
-		os << getString();
+		os << getStringValue();
 		return os;
 	}
 };

@@ -35,7 +35,7 @@ void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& 
 	
 	Pixel_compute_histograms funct( _imgBool, data, isSelection );			//functor declaration
 	
-	boost::gil::transform_pixels( srcView, funct );		 //(USED functor reference)
+	boost::gil::transform_pixels( srcView, funct );		//(USED functor reference)
 	//boost::gil::for_each_pixel(srcView, funct);		(NOT USED)
 	
 	this->correctHistogramBufferData(data);				//correct Histogram data to make up for discretization (average)
