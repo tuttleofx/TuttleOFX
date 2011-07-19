@@ -4,14 +4,16 @@
 
 lib tuttlehost :
 	[ glob-tree *.cpp ]
-#	/openfxHackProject/<link>static
-	/ofxPluginSupport/<link>static # ???? but it work ...
+	/ofxPluginSupport/<link>static
 	/boost/system
 	/boost/filesystem
 	/boost/thread
 	/boost/date_time
 	/boost/serialization
+	/boost/python
 	:
 	<os>NT:<find-shared-library>shell32
 	<os>LINUX:<find-shared-library>dl
+	<linkflags>-lpython2.6
+	#<link>static
 	;

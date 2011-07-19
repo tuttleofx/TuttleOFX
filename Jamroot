@@ -22,21 +22,26 @@ path-constant	DIST		: ./dist ;
 # Global project requirements
 ###############################################################################
 project
-    :
+	:
 	requirements
-   		# multithreading on
-  		<threading>multi
-  		<os>NT:<define>_WINDOWS
+		# multithreading on
+		<threading>multi
+
 		<variant>release:<warnings-as-errors>on
+		<variant>release:<define>TUTTLE_PRODUCTION
+
+		<os>NT:<define>_WINDOWS
 		<os>LINUX:<cxxflags>-fPIC
+
 		# icu library off
 		#<define>BOOST_HAS_ICU=0
-  		#
-  		# GCC specific flags
-  		#
-  		# removes deprecated header used by boost
-  		<toolset>gcc:<cxxflags>-Wno-deprecated
-    ;
+
+		#
+		# GCC specific flags
+		#
+		# removes deprecated header used by boost
+		<toolset>gcc:<cxxflags>-Wno-deprecated
+	;
 
 # TODO detect one time the opengl for the project,
 #      and use it after if necessary
@@ -65,17 +70,21 @@ use-project	/tuttletests	: libraries/tuttle/tests ;
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-use-project	/sam		: applications/sam ;
+use-project	/sam-tools	: applications/sam/ ;
+
+use-project	/sam-ls		: applications/sam/ ;
+use-project	/sam-cp		: applications/sam/ ;
+use-project	/sam-mv		: applications/sam/ ;
+use-project	/sam-rm		: applications/sam/ ;
+use-project	/sam-do		: applications/sam/ ;
+
+use-project	/sam-info	: applications/sam/src/sam/info ;
+use-project	/sam-plugins	: applications/sam/ ;
+use-project	/sam-check	: applications/sam/ ;
+
 #use-project	/pyTuttle	: applications/pyTuttle ;
 #use-project	/samtests	: applications/sam-ls/tests ;
 
-alias /sam-tools		: /sam-ls
-				  /sam-cp
-				  /sam-mv
-				  /sam-rm
-				  /sam-plugins
-				  /sam-info
-				;
 
 #
 # TUTTLEOFX PLUGINS
@@ -90,16 +99,19 @@ alias		/tests		: /plugins
 # all targets have to be marked as explicit
 explicit			/tuttle
 				/tuttletests
+
 				/sam-ls
 				/sam-cp
-				/sam-check
 				/sam-mv
-				/sam-plugins
 				/sam-rm
+				/sam-do
 				/sam-info
+				/sam-plugins
+				/sam-check
 				/sam-tools
+
 #				/samtests
 				/plugins
-			/pyTuttle
+				/pyTuttle
 				/tests
 				;

@@ -9,8 +9,10 @@
 #include <boost/gil/typedefs.hpp>
 
 #ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
 #define int_p_NULL (int *)NULL
  #include <boost/gil/extension/io/png_io.hpp>
+#endif
 #endif
 
 namespace tuttle {
@@ -129,6 +131,7 @@ void Image::copy( D_VIEW& dst, S_VIEW& src, const OfxPointI& dstCorner,
 }
 
 #ifndef TUTTLE_PRODUCTION
+#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
 void Image::debugSaveAsPng( const std::string& filename )
 {
 	using namespace boost::gil;
@@ -188,7 +191,7 @@ void Image::debugSaveAsPng( const std::string& filename )
 			break;
 	}
 }
-
+#endif
 #endif
 
 /// Copy from gil image view to Image

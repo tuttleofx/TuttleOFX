@@ -1,0 +1,64 @@
+ 
+###############################################################################
+## Main BJam makefile for Sam-info command line tool
+###############################################################################
+import os ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements
+		<include>src
+		<include>/usr/include/ImageMagick
+		<linkflags>-lfreetype
+		<linkflags>-lz
+		<linkflags>-lMagick++
+		<linkflags>-lMagickWand
+		<linkflags>-lMagickCore
+		<linkflags>-llcms
+		<linkflags>-ltiff
+		<linkflags>-lfreetype
+		<linkflags>-ljpeg
+		<linkflags>-lfontconfig
+		<linkflags>-lXext
+		<linkflags>-lSM
+		<linkflags>-lICE
+		<linkflags>-lX11
+		<linkflags>-lXt
+		<linkflags>-lbz2
+		<linkflags>-lz
+		<linkflags>-lm
+		<linkflags>-lgomp
+		<linkflags>-lpthread
+		<linkflags>-lltdl
+	: usage-requirements
+		<include>src
+		<include>/usr/include/ImageMagick
+	: build-dir $(DIST)/sam/obj
+	;
+
+
+
+exe sam-info :
+	[ glob *.cpp ]
+	/tuttlecommon/<link>static
+	/boost/system
+	/boost/filesystem
+	/boost/serialization
+	/boost/program_options
+	:
+	<os>LINUX:<find-shared-library>dl
+	<threading>multi
+	;
+
+# Automatic install
+install dist_src
+	: sam-info
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+	: <variant>debug:<location>$(DIST)/sam-info/bin/debug
+	  <variant>release:<location>$(DIST)/sam-info/bin/release
+	;
