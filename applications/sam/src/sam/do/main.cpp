@@ -229,7 +229,7 @@ int main( int argc, char** argv )
 				{
 					std::string userNodeName = command[0];
 					std::string nodeFullName = command[0];
-					boost::algorithm::to_lower( userNodeName );
+//					boost::algorithm::to_lower( userNodeName );
 					std::vector<std::string> nodeArgs;
 					std::copy( command.begin()+1, command.end(), std::back_inserter(nodeArgs) );
 					
@@ -420,20 +420,26 @@ int main( int argc, char** argv )
 					}
 					catch( const tuttle::exception::Common& e )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
 						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+						TUTTLE_CERR( "\n" );
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
 						exit( -2 );
 					}
 					catch( const boost::program_options::error& e )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
 						TUTTLE_CERR( "Error: " << e.what() );
+						TUTTLE_CERR( "\n" );
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
 						exit( -2 );
 					}
 					catch( ... )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
-						TUTTLE_CERR( "Error: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+						TUTTLE_CERR( "Unknown error." );
+						TUTTLE_CERR( "\n" );
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
 						exit( -2 );
 					}
 				}
