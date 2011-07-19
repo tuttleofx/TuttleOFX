@@ -1,4 +1,5 @@
 #include "HistogramKeyerAlgorithm.hpp"
+
 #include <tuttle/plugin/image/gil/algorithm.hpp>
 
 namespace tuttle {

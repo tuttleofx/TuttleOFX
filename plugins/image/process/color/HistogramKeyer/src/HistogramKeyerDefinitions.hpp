@@ -5,20 +5,8 @@
 
 #include <ofxPixels.h>
 
-
-#include <tuttle/plugin/opengl/gl.h>
-#include <tuttle/plugin/interact/interact.hpp>
-#include <tuttle/plugin/interact/overlay.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsInteract.h>
-
-#include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/algorithm.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/gil/extension/color/hsl.hpp>
 
 namespace tuttle {
 namespace plugin {
