@@ -8,6 +8,7 @@
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/InteractInfos.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
