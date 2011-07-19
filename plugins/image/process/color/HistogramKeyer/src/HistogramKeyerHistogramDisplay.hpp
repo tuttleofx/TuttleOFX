@@ -2,15 +2,16 @@
 #define	HISTOGRAMKEYERHISTOGRAMDISPLAY_HPP
 
 #include "HistogramKeyerDefinitions.hpp"
+#include "OverlayData.hpp"
 
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
 
-void displayASpecificHistogram( const std::vector<Number>& v, const std::vector<Number>& selection_v, const double step, const double height, const double width, const HistogramColor color,float selectionMultiplier);
-void displayASpecificHistogramBorder(const std::vector<Number>& v, const double step, const double height, const double width, const HistogramColor color);
+void displayASpecificHistogram( const HistogramVector& v, const HistogramVector& selection_v, const double step, const double height, const double width, const HistogramColor color,float selectionMultiplier);
+void displayASpecificHistogramBorder(const HistogramVector& v, const double step, const double height, const double width, const HistogramColor color);
 
-void displaySelectionPoints(const std::vector<Number>& selection_v, const double step, const double width, const HistogramColor color);
+void displaySelectionPoints(const HistogramVector& selection_v, const double step, const double width, const HistogramColor color);
 
 void displayRedIndicator(const OfxPointI size);				//display red indicator (center)
 void displayGreenIndicator(const OfxPointI size);			//display green indicator (center)

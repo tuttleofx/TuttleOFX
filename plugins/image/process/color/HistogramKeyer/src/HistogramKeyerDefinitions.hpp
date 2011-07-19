@@ -2,28 +2,16 @@
 #define _TUTTLE_PLUGIN_HISTOGRAMKEYER_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
-#include "tuttle/plugin/ImageGilProcessor.hpp"
 
-#include <tuttle/plugin/opengl/gl.h>
-#include <tuttle/plugin/interact/interact.hpp>
-#include <tuttle/plugin/interact/overlay.hpp>
-#include <tuttle/plugin/image/ofxToGil.hpp>
-#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+#include <ofxPixels.h>
 
-#include <ofxsImageEffect.h>
-#include <ofxsInteract.h>
-#include <boost/gil/gil_all.hpp>
 #include <boost/gil/extension/algorithm.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/gil/extension/color/hsl.hpp>
-
-#include <vector>
 
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
 
-typedef long Number;
 const static std::size_t nbCurves = 6;
 const static std::size_t nbCurvesRGB = 3;
 const static std::size_t nbCurvesHSL = 3;

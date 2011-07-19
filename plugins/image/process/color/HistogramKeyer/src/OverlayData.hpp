@@ -1,13 +1,23 @@
 #ifndef OVERLAYDATA_HPP
 #define	OVERLAYDATA_HPP
+
 #include "HistogramKeyerDefinitions.hpp"
-#include "boost/multi_array.hpp"
+
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+
+#include <boost/gil/extension/algorithm.hpp>
+#include <boost/gil/extension/color/hsl.hpp>
+#include <boost/multi_array.hpp>
 #include <boost/array.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
-	
+
+typedef long Number;
+typedef std::vector<Number, OfxAllocator<Number> > HistogramVector;
+
 /*
  * structure of 7 buffers (contains histogram data)
  */
@@ -16,15 +26,15 @@ struct HistogramBufferData
 	//step
 	int _step;								//nbStep (for computing and display)
 	//RGB
-	std::vector<Number> _bufferRed;			//R
-	std::vector<Number> _bufferGreen;		//G
-	std::vector<Number> _bufferBlue;		//B
+	HistogramVector _bufferRed;			//R
+	HistogramVector _bufferGreen;		//G
+	HistogramVector _bufferBlue;		//B
 	///HLS
-	std::vector<Number> _bufferHue;			//H
-	std::vector<Number> _bufferLightness;	//S
-	std::vector<Number> _bufferSaturation;	//L
+	HistogramVector _bufferHue;			//H
+	HistogramVector _bufferLightness;	//S
+	HistogramVector _bufferSaturation;	//L
 	//Alpha
-	std::vector<Number> _bufferAlpha;		//alpha
+	HistogramVector _bufferAlpha;		//alpha
 };
 
 /*
@@ -45,7 +55,7 @@ struct AverageBarData
 /*
  *functor to compute selection histograms
  */
-typedef boost::multi_array<unsigned char,2> bool_2d;
+typedef boost::multi_array<unsigned char,2, OfxAllocator<unsigned char> > bool_2d;
 
 
 struct Pixel_compute_histograms
@@ -66,6 +76,7 @@ struct Pixel_compute_histograms
 	, _x(0)
 	, _isSelectionMode(isSelectionMode)
 	{
+
 	}
 	
 	//basic round function
@@ -92,7 +103,7 @@ struct Pixel_compute_histograms
 			ok = true;
 		else if(_imgBool[_y][_x] && _isSelectionMode)
 			ok = true;
-		
+
 		if(ok) //if current pixel is selected
 		{
 			int indice;
@@ -102,7 +113,7 @@ struct Pixel_compute_histograms
 			
 			color_convert( p, pix );		//convert input to RGBA
 			color_convert( pix, hsl_pix );	//convert RGBA tp HSL
-
+		
 			//RGBA
 			for( int v = 0; v < boost::gil::num_channels<Pixel>::type::value; ++v )
 			{
@@ -121,6 +132,7 @@ struct Pixel_compute_histograms
 						_data._bufferAlpha.at(indice) += 1;			//increments alpha buffer 
 				}
 			}
+			
 			//HLS
 			for(int v = 0; v < boost::gil::num_channels<hsl32f_pixel_t>::type::value; ++v )
 			{
@@ -138,6 +150,7 @@ struct Pixel_compute_histograms
 				}
 			}
 		}
+		
 		//Check pixel position
 		++_x;
 		if(_x == _width){++_y;_x=0;}
@@ -149,7 +162,7 @@ class OverlayData
 {
 public:
 	typedef boost::gil::rgba32f_view_t SView; // declare current view type
-
+	
 public:
 	OverlayData( const OfxPointI& size, const int nbSteps );
 	
@@ -166,28 +179,27 @@ public:
 	{
 		_size = size;
 		resetHistogramData();
-		
 		resetHistogramSelectionData();
-		removeSelection( size );
+		removeSelection();
 		resetAverages();
 	}
 	
 	/**
 	 * Image size checker
-	 * @warning HACK changeClip method doesn't work in nuke when source clip is changed so we have to check size of imgBool all the time
+	 * @warning HACK changeClip method doesn't work in nuke when time of source clip is changed so we have to check size of imgBool all the time
 	 */
 	bool isImageSizeModified( const OfxPointI& size ) const;
 	
 	/**
 	 * Histogram computing
 	 */
-	void computeFullData( OFX::Clip* clipSrc,const OfxTime time, const OfxPointD& renderScale );			//compute full data (average/selection/histograms)
+	void computeFullData( OFX::Clip* clipSrc,const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly = false );			//compute full data (average/selection/histograms)
 	
 	void setNbStep( const std::size_t nbStep ) { _vNbStep = nbStep; }
 	
 private:
 	/*Histogram management*/
-	void computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const OfxPointD& renderScale, const bool isSelection=false );	//compute a HisogramBufferData
+	void computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const bool isSelection=false );	//compute a HisogramBufferData
 	void correctHistogramBufferData( HistogramBufferData& toCorrect ) const;		//correct a complete HistogramBufferData
 	void resetHistogramBufferData( HistogramBufferData& toReset ) const;		//reset a complete HistogramBufferData
 	
@@ -199,11 +211,10 @@ private:
 	void resetHistogramSelectionData();	//reset selection data
 	void resetAverages();		//rest all of the averages
 	void removeSelection();
-	void removeSelection( const OfxPointI& size );
 	
-	void correctVector(std::vector<Number>& v) const;								//correct a specific channel
-	void resetVectortoZero(std::vector<long>& v, const unsigned int size) const;	//reset a specific channel buffer
-	int computeAnAverage(std::vector<Number> selection_v)const;						//compute average of a specific channel
+	void correctVector( HistogramVector& v ) const;								//correct a specific channel
+	void resetVectortoZero( HistogramVector& v, const std::size_t size ) const;	//reset a specific channel buffer
+	int computeAnAverage( const HistogramVector& selection_v ) const;						//compute average of a specific channel
 	
 public:
 	///@todo accessors
@@ -211,6 +222,8 @@ public:
 	HistogramBufferData _selectionData;		//selection histogram data
 	AverageBarData _averageData;			//average bar data used to display average bars
 	bool_2d _imgBool;						//unsigned char 2D (use for display texture on screen)
+	
+	bool _isComputing;
 	
 private:
 	OfxPointI _size;						//source clip size

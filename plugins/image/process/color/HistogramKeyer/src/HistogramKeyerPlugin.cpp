@@ -175,9 +175,8 @@ void HistogramKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, co
 	{
 		if( this->hasOverlayData( ) )
 		{
-			//TUTTLE_TCOUT( "-- Source clip modified --" );
-			this->getOverlayData( ).clearAll( this->_clipSrc->getPixelRodSize( args.time, args.renderScale ) );
-			this->getOverlayData( ).computeFullData( this->_clipSrc, args.time, args.renderScale );
+			this->getOverlayData().clearAll( this->_clipSrc->getPixelRodSize( args.time, args.renderScale ) );
+			this->getOverlayData().computeFullData( this->_clipSrc, args.time, args.renderScale );
 		}
 	}
 }
