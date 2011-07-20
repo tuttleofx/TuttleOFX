@@ -66,9 +66,16 @@ const static std::string kButtonCleanRGB = "CleanRGB";
 const static std::string kButtonCleanHSL = "CleanHSL";
 const static std::string kButtonCleanAll = "CleanAll";
 
-const static std::string kButtonCleanRGBLabel = "Reset RGB curves";
-const static std::string kButtonCleanHSLLabel = "Reset HSL curves";
+const static std::string kButtonCleanRGBLabel = "Reset";
+const static std::string kButtonCleanHSLLabel = "Reset";
 const static std::string kButtonCleanAllLabel = "Reset all curves";
+
+//Selection to curves buttons
+const static std::string kButtonSelectionToCurveRGB = "SelectionToCurveRGB";
+const static std::string kButtonSelectionToCurveHSL = "SelectionToCurveHSL";
+
+const static std::string kButtonSelectionToCurveRGBLabel = "From selection";
+const static std::string kButtonSelectionToCurveHSLLabel = "From selection";
 
 //Refresh overlay button
 const static std::string kButtonRefreshOverlay = "RefreshOverlay";

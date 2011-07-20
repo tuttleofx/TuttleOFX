@@ -105,17 +105,26 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		{
 			for( std::size_t channel = 0; channel < nbCurvesRGB; ++channel )
 			{
-				for( std::size_t i = 0; i < nbControlPointsRGB[channel]; ++i )
+				if(		paramName == kButtonCleanAll ||									// if button is clean all curves
+						(channel == 0 && _paramOverlayRSelection->getValue()) ||		// else if button is clean RGB and Red is selected
+						(channel == 1 && _paramOverlayGSelection->getValue()) ||		// else if button is clean RGB and Green is selected
+						(channel ==	2 && _paramOverlayBSelection->getValue()) )			// else if button is clean RGB and Blue is selected
 				{
-					_paramColorRGBSelection->deleteControlPoint( i );
+					_paramColorRGBSelection->deleteControlPoint( channel );
 				}
 			}
 			for( std::size_t i = 0; i < nbCurvesRGB; ++i )//replace default points
 			{
-				_paramColorRGBSelection->addControlPoint( i, args.time, 0.0, 0.0, false );
-				_paramColorRGBSelection->addControlPoint( i, args.time, 0.2, 1.0, false );
-				_paramColorRGBSelection->addControlPoint( i, args.time, 0.6, 1.0, false );
-				_paramColorRGBSelection->addControlPoint( i, args.time, 1.0, 0.0, false );
+				if(		paramName == kButtonCleanAll ||									// if button is clean all curves
+						(i == 0 && _paramOverlayRSelection->getValue()) ||		// else if button is clean RGB and Red is selected
+						(i == 1 && _paramOverlayGSelection->getValue()) ||		// else if button is clean RGB and Green is selected
+						(i == 2 && _paramOverlayBSelection->getValue()) )			// else if button is clean RGB and Blue is selected
+				{
+					_paramColorRGBSelection->addControlPoint( i, args.time, 0.0, 0.0, false );
+					_paramColorRGBSelection->addControlPoint( i, args.time, 0.2, 1.0, false );
+					_paramColorRGBSelection->addControlPoint( i, args.time, 0.6, 1.0, false );
+					_paramColorRGBSelection->addControlPoint( i, args.time, 1.0, 0.0, false );
+				}
 			}
 		}
 		//reset HSL curves
@@ -123,9 +132,12 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 		{
 			for( std::size_t channel = 0; channel < nbCurvesHSL; ++channel )
 			{
-				for( std::size_t i = 0; i < nbControlPointsHSL[channel]; ++i )
+				if(		paramName == kButtonCleanAll ||									// if button is clean all curves
+						(channel == 0 && _paramOverlayHSelection->getValue()) ||		// else if button is clean HSL and Hue is selected
+						(channel == 1 && _paramOverlaySSelection->getValue()) ||		// else if button is clean HSL and Saturation is selected
+						(channel ==	2 && _paramOverlayLSelection->getValue()) )			// else if button is clean HSL and Lightness is selected
 				{
-					_paramColorHSLSelection->deleteControlPoint( i );
+					_paramColorHSLSelection->deleteControlPoint( channel );
 				}
 			}
 			for( std::size_t i = 0; i < nbCurvesHSL; ++i )//replace default points
@@ -156,12 +168,138 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 			getOverlayData( ).computeFullData( this->_clipSrc, args.time, args.renderScale ); //reset buffer and compute them
 		}
 	}
-		/*Clear user selection*/
+	/*Clear user selection*/
 	else if( paramName == kButtonClearSelection )
 	{
 		if( this->hasOverlayData( ) )//if there is overlay value
 		{
 			this->getOverlayData( ).clearSelection( ); //clear selection
+		}
+	}
+	/*Selection to curve */
+	else if(paramName == kButtonSelectionToCurveHSL || paramName == kButtonSelectionToCurveRGB)
+	{
+		//RGB
+		if(paramName == kButtonSelectionToCurveRGB)
+		{
+			//get nb points for each curve (RGB)
+			std::vector<std::size_t> nbControlPointsRGB( nbCurvesRGB ); //initialize vector
+			for( std::size_t i = 0; i < nbCurvesRGB; ++i ) //fill up vector
+			{
+				nbControlPointsRGB[i] = _paramColorRGBSelection->getNControlPoints( i, args.time );
+			}
+			
+			//Delete all points on selected RGB curves
+			for( std::size_t channel = 0; channel < nbCurvesRGB; ++channel )
+			{
+				if(		paramName == kButtonCleanAll ||									// if button is clean all curves
+						(channel == 0 && _paramOverlayRSelection->getValue()) ||		// else if button is clean RGB and Red is selected
+						(channel == 1 && _paramOverlayGSelection->getValue()) ||		// else if button is clean RGB and Green is selected
+						(channel ==	2 && _paramOverlayBSelection->getValue()) )			// else if button is clean RGB and Blue is selected
+				{
+					_paramColorRGBSelection->deleteControlPoint( channel );
+				}
+			}
+			//For all selected channel create new curves from selection
+			for( std::size_t i = 0; i < nbCurvesRGB; ++i )
+			{
+				if(		paramName == kButtonCleanAll ||							// if button is clean all curves
+						(i == 0 && _paramOverlayRSelection->getValue()) ||		// else if button is clean RGB and Red is selected
+						(i == 1 && _paramOverlayGSelection->getValue()) ||		// else if button is clean RGB and Green is selected
+						(i == 2 && _paramOverlayBSelection->getValue()) )		// else if button is clean RGB and Blue is selected
+				{
+					//getMax of current selection buffer
+					double maxChannel; //will contain max of the current channel (RGB)
+					if(i == 0)	//working on Red channel
+						maxChannel = *(std::max_element(getOverlayData()._selectionData._bufferRed.begin(),getOverlayData()._selectionData._bufferRed.end()));
+					else if(i == 1)//working on Green channel
+						maxChannel = *(std::max_element(getOverlayData()._selectionData._bufferGreen.begin(),getOverlayData()._selectionData._bufferGreen.end()));
+					else //working on Blue channel
+						maxChannel = *(std::max_element(getOverlayData()._selectionData._bufferBlue.begin(),getOverlayData()._selectionData._bufferBlue.end()));
+					
+					//Add points to current channel
+					double xPosition = 0.0;
+					double yPosition = 0.0;
+					double step =  (double)(1/(double)(getOverlayData()._vNbStep-1));	//compute step for curve display
+					
+					//for each point
+					for(unsigned int x=0; x<getOverlayData()._vNbStep; ++x)
+					{
+						if(i == 0)	//working on Red channel
+							yPosition = (double)((double)(getOverlayData()._selectionData._bufferRed[x]));		//get current Y if Red selection buffer
+						else if(i == 1)	//working on Green channel
+							yPosition = (double)((double)(getOverlayData()._selectionData._bufferGreen[x]));		//get current Y if Green selection buffer
+						else	//working on Blue channel
+							yPosition = (double)((double)(getOverlayData()._selectionData._bufferBlue[x]));		//get current Y if Blue selection buffer
+						
+						yPosition/=maxChannel; //yPosition between 0 and 1
+						_paramColorRGBSelection->addControlPoint( i, args.time,xPosition, yPosition, false );	//place the current point
+						xPosition += step; //add step to Xposition
+					}
+					
+				}
+			}
+		}
+		//HSL
+		if(paramName == kButtonSelectionToCurveHSL)
+		{
+			//get nb points for each curve (RGB)
+			std::vector<std::size_t> nbControlPointsHSL( nbCurvesHSL ); //initialize vector
+			for( std::size_t i = 0; i < nbCurvesHSL; ++i ) //fill up vector
+			{
+				nbControlPointsHSL[i] = _paramColorHSLSelection->getNControlPoints( i, args.time );
+			}
+			
+			//Delete all points on selected RGB curves
+			for( std::size_t channel = 0; channel < nbCurvesHSL; ++channel )
+			{
+				if(		paramName == kButtonCleanAll ||									// if button is clean all curves
+						(channel == 0 && _paramOverlayHSelection->getValue()) ||		// else if button is clean HSL and Hue is selected
+						(channel == 1 && _paramOverlaySSelection->getValue()) ||		// else if button is clean HSL and Saturation is selected
+						(channel ==	2 && _paramOverlayLSelection->getValue()) )			// else if button is clean HSL and Lightness is selected
+				{
+					_paramColorHSLSelection->deleteControlPoint( channel );
+				}
+			}
+			//For all selected channel create new curves from selection
+			for( std::size_t i = 0; i < nbCurvesHSL; ++i )
+			{
+				if(		paramName == kButtonCleanAll ||							// if button is clean all curves
+						(i == 0 && _paramOverlayHSelection->getValue()) ||		// else if button is clean HSL and Hue is selected
+						(i == 1 && _paramOverlaySSelection->getValue()) ||		// else if button is clean HSL and Saturation is selected
+						(i == 2 && _paramOverlayLSelection->getValue()) )		// else if button is clean HSL and Lightness is selected
+				{
+					//getMax of current selection buffer
+					double maxChannel; //will contain max of the current channel (RGB)
+					if(i == 0)	//working on Red channel
+						maxChannel = *(std::max_element(getOverlayData()._selectionData._bufferHue.begin(),getOverlayData()._selectionData._bufferHue.end()));
+					else if(i == 1)//working on Green channel
+						maxChannel = *(std::max_element(getOverlayData()._selectionData._bufferSaturation.begin(),getOverlayData()._selectionData._bufferSaturation.end()));
+					else //working on Blue channel
+						maxChannel = *(std::max_element(getOverlayData()._selectionData._bufferLightness.begin(),getOverlayData()._selectionData._bufferLightness.end()));
+					
+					//Add points to current channel
+					double xPosition = 0.0;
+					double yPosition = 0.0;
+					double step =  (double)(1/(double)(getOverlayData()._vNbStep-1));	//compute step for curve display
+					
+					//for each point
+					for(unsigned int x=0; x<getOverlayData()._vNbStep; ++x)
+					{
+						if(i == 0)	//working on Red channel
+							yPosition = (double)((double)(getOverlayData()._selectionData._bufferHue[x]));		//get current Y if Hue selection buffer
+						else if(i == 1)	//working on Green channel
+							yPosition = (double)((double)(getOverlayData()._selectionData._bufferSaturation[x]));		//get current Y if Saturation selection buffer
+						else	//working on Blue channel
+							yPosition = (double)((double)(getOverlayData()._selectionData._bufferLightness[x]));		//get current Y if Lightness selection buffer
+						
+						yPosition/=maxChannel; //yPosition between 0 and 1
+						_paramColorHSLSelection->addControlPoint( i, args.time,xPosition, yPosition, false );	//place the current point
+						xPosition += step; //add step to Xposition
+					}
+					
+				}
+			}
 		}
 	}
 }
@@ -199,6 +337,14 @@ bool HistogramKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Cl
  */
 void HistogramKeyerPlugin::render( const OFX::RenderArguments &args )
 {
+	if(OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke")	/// @todo: HACK Nuke doesn't call changeClip function when time is changed
+	{
+		if(getOverlayData().isCurrentTimeModified(args.time)) //if time is changed
+		{
+			getOverlayData()._currentTime = args.time;
+			getOverlayData().computeFullData(this->_clipSrc,args.time,args.renderScale);
+		}
+	}
 	doGilRender<HistogramKeyerProcess > ( *this, args );
 }
 

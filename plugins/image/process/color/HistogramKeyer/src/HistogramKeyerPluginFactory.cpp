@@ -160,16 +160,29 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		boolL->setDefault(false);
 		boolL->setParent(groupHSL);
 		
-		//Clean Button (RGB / HSL)
+		//Clean Button (RGB)
 		OFX::PushButtonParamDescriptor* cleanButtonRGB = desc.definePushButtonParam(kButtonCleanRGB);
 		cleanButtonRGB->setLabel(kButtonCleanRGBLabel);
+		cleanButtonRGB->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		cleanButtonRGB->setParent(groupRGB);
 		
+		//Selection To Curves Button (RGB)
+		OFX::PushButtonParamDescriptor* selectionToCurveButtonRGB = desc.definePushButtonParam(kButtonSelectionToCurveRGB);
+		selectionToCurveButtonRGB->setLabel(kButtonSelectionToCurveRGBLabel);
+		selectionToCurveButtonRGB->setParent(groupRGB);
+		
+		//Clean Button (HSL)
 		OFX::PushButtonParamDescriptor* cleanButtonHSL = desc.definePushButtonParam(kButtonCleanHSL);
 		cleanButtonHSL->setLabel(kButtonCleanHSLLabel);
+		cleanButtonHSL->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		cleanButtonHSL->setParent(groupHSL);
 		
-		//Close groups (closed by default on screen)
+		//Selection To Curves Button (HSL)
+		OFX::PushButtonParamDescriptor* selectionToCurveButtonHSL = desc.definePushButtonParam(kButtonSelectionToCurveHSL);
+		selectionToCurveButtonHSL->setLabel(kButtonSelectionToCurveHSLLabel);
+		selectionToCurveButtonHSL->setParent(groupHSL);
+		
+		//Close RGB group (group states by default on screen)
 		groupRGB->setOpen(false);
 		groupHSL->setOpen(true);
 	}
@@ -248,7 +261,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	outputType->setHint( "Output settings list");
 	outputType->appendOption(kOutputListParamOpt1);
 	outputType->appendOption(kOutputListParamOpt2);
-	outputType->setLayoutHint( OFX::eLayoutHintNoNewLine );
+	outputType->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 
 	//Reverse mask
 	OFX::BooleanParamDescriptor* boolReverseMask = desc.defineBooleanParam(kBoolReverseMask);
