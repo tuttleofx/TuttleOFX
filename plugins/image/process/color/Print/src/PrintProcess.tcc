@@ -224,7 +224,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
                                                 {
                                                         cols = lines * cacaImg.w * font_height / cacaImg.h / font_width;
                                                 }
-                                                TUTTLE_COUT ( "output : " << cols << " x " << lines );
+                                                //TUTTLE_COUT ( "output : " << cols << " x " << lines );
                                                 caca_set_canvas_size( cv, cols, lines );
 
                                                 caca_clear_canvas( cv );
