@@ -12,16 +12,16 @@ project
 	: usage-requirements
 		<include>include
 	: build-dir $(DIST)/openFX/Support/obj
-    ;
+	;
 
 
 ###############################################################################
 # tuttle library
 ###############################################################################
 lib Support :
-    [ glob-tree *.cpp ]
-    /boost/system
-    ;
+	[ glob-tree *.cpp ]
+	/boost/system
+	;
 
 ###############################################################################
 # Automatic install

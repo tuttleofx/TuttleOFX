@@ -19,9 +19,11 @@ project
 plugin		Dpx : 
 		[ glob-tree *.cpp ]
 		/tuttleplugin/<link>static
-		/boost/filesystem
-		/boost/system
-		/boost/regex
+		/boost/system/<link>static
+		/boost/regex/<link>static
+		/boost/filesystem/<link>static
+		:
+		 <os>LINUX:<find-shared-library>dl
 		;
 
 ###############################################################################
