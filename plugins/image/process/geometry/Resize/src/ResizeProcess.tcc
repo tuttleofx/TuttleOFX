@@ -46,7 +46,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	switch( _filter )
 	{
 		case eParamFilterNearest	: resample_pixels_progress< terry::sampler::nearest_neighbor_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterBilinear	: resample_pixels_progress< terry::sampler::bilinear_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+                //case eParamFilterBilinear	: resample_pixels_progress< terry::sampler::bilinear_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 
 		case eParamFilterBC		:
 							terry::sampler::bc_sampler BCsampler;
@@ -54,7 +54,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 							BCsampler.valC = _valC;
 							resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, BCsampler );
 							break;
-
+/*
 		case eParamFilterBicubic	: resample_pixels_progress< terry::sampler::bicubic_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterCatmul		: resample_pixels_progress< terry::sampler::catmul_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterKeys		: resample_pixels_progress< terry::sampler::keys_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
@@ -67,6 +67,8 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 		case eParamFilterLanczos6	: resample_pixels_progress< terry::sampler::lanczos6_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterLanczos12	: resample_pixels_progress< terry::sampler::lanczos12_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterGaussian	: resample_pixels_progress< terry::sampler::gaussian_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+                */
+                default: break;
 	}
 }
 

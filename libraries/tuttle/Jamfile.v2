@@ -9,9 +9,12 @@ import os ;
 project
 		: requirements
 			<include>src
-			<include>$(3RD_PARTY)/boostHack
+                        <include>$(LIBRARIES)/boostHack
+                        <include>$(LIBRARIES)/terry/src
 		: usage-requirements
 			<include>src
+                        <include>$(LIBRARIES)/boostHack
+                        <include>$(LIBRARIES)/terry/src
 		: build-dir $(DIST)/tuttle/obj
 		;
 
