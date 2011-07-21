@@ -87,6 +87,16 @@ struct process1Dresampling
 //	}
 //};
 
+template <typename SrcP, typename F, typename DstP>
+struct process2Dresampling
+{
+        void operator( )( const std::vector<SrcP> src, const std::vector<F> weight, DstP & dst ) const
+        {
+
+        }
+};
+
+
 }
 
 /**
