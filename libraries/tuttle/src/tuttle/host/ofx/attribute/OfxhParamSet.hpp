@@ -77,7 +77,7 @@ public:
 	// get the param
 	OfxhParam& getParam( const std::size_t index )
 	{
-		if( index < _paramVector.size() )
+		if( index > _paramVector.size() )
 			BOOST_THROW_EXCEPTION( exception::BadIndex()
 					<< exception::user() + "Param not found, index out of range. (index=" + index + ", nb params=" + _paramVector.size() + ")"
 				);

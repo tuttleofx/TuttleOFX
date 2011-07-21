@@ -173,11 +173,8 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 
                                         try
                                         {
-                                                //void *output = NULL;
-                                                size_t len=0;
                                                 struct CacaImage cacaImg;
                                                 unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
-                                                //char *format = (char*)"ansi";
                                                 char *dither = NULL;
                                                 float gamma = -1, brightness = -1, contrast = -1;
 
@@ -250,41 +247,90 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
                                                 caca_free_dither( cacaImg.dither );
 
 
-                                                // show result in a new window
-
                                                 if( _params._openGlViewer == true )
                                                 {
+                                                        // show result in a new window
                                                         caca_display_t *dp; caca_event_t ev;
                                                         dp = caca_create_display (cv);
-                                                        //if(!dp) return;
+
                                                         caca_set_display_title(dp, "Rendering image in ASCII Art");
-                                                        //caca_set_color_ansi(cv, CACA_BLACK, CACA_WHITE);
-                                                        //caca_put_str(cv, 0, 0, "This is a message");
+
                                                         caca_refresh_display(dp);
                                                         caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
                                                         caca_free_display(dp);
-
-
-                                                        //output = caca_export_canvas_to_memory( cv, format, &len );
-                                                        //TUTTLE_COUT(len << " | " << cols << " | " << lines);
-                                                        //output = this->caca_export_canvas_to_memory( cv, "ansi", &len );
-                                                        /*
-                                                        if( !output )
-                                                        {
-                                                                BOOST_THROW_EXCEPTION( exception::Unknown()
-                                                                                << exception::dev() + "Can't export to format " + format );
-                                                        }*/
-
-                                                        //fwrite( output, len, 1, stdout );
-                                                        //free( output );
 
                                                         caca_free_canvas( cv );
                                                 }
                                                 else
                                                 {
-                                                        // problem, the function don't exist, in caca.h, it's defined like an extern function ...
-                                                        //caca_export_canvas_to_memory( cv, format, &len );
-                                                        TUTTLE_COUT("print ascii caca " << len);
+                                                        //clear the sreen
+                                                        std::cout << std::string( 100, '\n' );
+
+                                                        std::cout << "\E[0;30;47m" << std::string( (cols+2), ' ' ) << "\E[0;0;0m" << " \n" ;
+
+                                                        // get and print each caracter
+                                                        for( unsigned int y = 0; y < lines; y++)
+                                                        {
+                                                            std::cout << "\E[0;0;47m" << " " << "\E[0;0;0m" ;
+                                                            for( unsigned int x = 0; x < cols; x++)
+                                                            {
+                                                                char caracter = caca_get_char ( cv, x, y );
+                                                                int  color    = caca_get_attr	( cv, x, y );
+                                                                int  fgColor  = caca_attr_to_ansi_fg ( color );
+                                                                int  bgColor  = caca_attr_to_ansi_bg ( color );
+                                                                int  effect   = 0;
+                                                                int  fg       = 0;
+                                                                int  bg       = 0;
+
+                                                                switch ( fgColor )
+                                                                {
+                                                                    case CACA_BLACK         : fg = 30; break;
+                                                                    case CACA_BLUE          : fg = 34; break;
+                                                                    case CACA_GREEN         : fg = 32; break;
+                                                                    case CACA_CYAN          : fg = 36; break;
+                                                                    case CACA_RED           : fg = 31; break;
+                                                                    case CACA_MAGENTA       : fg = 35; break;
+                                                                    case CACA_BROWN         : fg = 30; break;
+                                                                    case CACA_LIGHTGRAY     : fg = 30; effect = 1; break;
+                                                                    case CACA_DARKGRAY      : fg = 30; effect = 1; break;
+                                                                    case CACA_LIGHTBLUE     : fg = 34; effect = 1; break;
+                                                                    case CACA_LIGHTGREEN    : fg = 32; effect = 1; break;
+                                                                    case CACA_LIGHTCYAN     : fg = 36; effect = 1; break;
+                                                                    case CACA_LIGHTRED      : fg = 31; effect = 1; break;
+                                                                    case CACA_LIGHTMAGENTA  : fg = 35; effect = 1; break;
+                                                                    case CACA_YELLOW        : fg = 33; break;
+                                                                    case CACA_WHITE         : fg = 37; break;
+                                                                    case CACA_DEFAULT       : fg = 30; break;
+                                                                    case CACA_TRANSPARENT   : fg = 30; break;
+                                                                }
+                                                                switch ( bgColor )
+                                                                {
+                                                                    case CACA_BLACK         : bg = 40; break;
+                                                                    case CACA_BLUE          : bg = 44; break;
+                                                                    case CACA_GREEN         : bg = 42; break;
+                                                                    case CACA_CYAN          : bg = 46; break;
+                                                                    case CACA_RED           : bg = 41; break;
+                                                                    case CACA_MAGENTA       : bg = 45; break;
+                                                                    case CACA_BROWN         : bg = 40; break;
+                                                                    case CACA_LIGHTGRAY     : bg = 40; effect = 1; break;
+                                                                    case CACA_DARKGRAY      : bg = 40; effect = 1; break;
+                                                                    case CACA_LIGHTBLUE     : bg = 44; effect = 1; break;
+                                                                    case CACA_LIGHTGREEN    : bg = 42; effect = 1; break;
+                                                                    case CACA_LIGHTCYAN     : bg = 46; effect = 1; break;
+                                                                    case CACA_LIGHTRED      : bg = 41; effect = 1; break;
+                                                                    case CACA_LIGHTMAGENTA  : bg = 45; effect = 1; break;
+                                                                    case CACA_YELLOW        : bg = 43; break;
+                                                                    case CACA_WHITE         : bg = 47; break;
+                                                                    case CACA_DEFAULT       : bg = 40; break;
+                                                                    case CACA_TRANSPARENT   : bg = 40; break;
+                                                                }
+                                                                //std::cout << "\E[0;31;43m" << textColor << ";" << ( color & 0x00007fff )<< "\E[0;31m" << caracter;
+                                                                std::cout << "\E[" << effect << ";" << fg << ";" << bg << "m" << caracter;
+                                                            }
+                                                            std::cout << "\E[0;0;47m" << " "  << "\E[0;0;0m" << std::endl;
+                                                        }
+                                                        std::cout << "\E[0;30;47m" << std::string( (cols+2), ' ' ) << "\E[0;0;0m" << " \n" ;
+                                                        caca_free_canvas( cv );
                                                 }
                                         }
                                         catch(...)

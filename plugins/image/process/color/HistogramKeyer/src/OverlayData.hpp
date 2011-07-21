@@ -197,6 +197,11 @@ public:
 	
 	void setNbStep( const std::size_t nbStep ) { _vNbStep = nbStep; }
 	
+	/**
+	 * Current time checker
+     */
+	bool isCurrentTimeModified(const OfxTime time) const;
+	
 private:
 	/*Histogram management*/
 	void computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const bool isSelection=false );	//compute a HisogramBufferData
@@ -222,12 +227,13 @@ public:
 	HistogramBufferData _selectionData;		//selection histogram data
 	AverageBarData _averageData;			//average bar data used to display average bars
 	bool_2d _imgBool;						//unsigned char 2D (use for display texture on screen)
+	OfxTime _currentTime;					//time of the current frame
+	std::size_t _vNbStep;					//nbStep for buffers
 	
 	bool _isComputing;
 	
 private:
 	OfxPointI _size;						//source clip size
-	std::size_t _vNbStep;					//nbStep for buffers
 	
 };
 
