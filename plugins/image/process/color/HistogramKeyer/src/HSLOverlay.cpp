@@ -32,6 +32,8 @@ HSLOverlay::~HSLOverlay()
  */
 bool HSLOverlay::draw(const OFX::DrawArgs& args)
 {	
+	bool hasGridBeenDisplayed = false;	//grid has not been displayed yet
+	
 	//height of the window (image for test)
 	//width of the window (image for test)
 	OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
@@ -67,6 +69,11 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 	//Display on screen if specified (HSL)
 	if(_plugin->_paramOverlayHSelection->getValue())			//HUE CHANNEL
 	{
+		if(!hasGridBeenDisplayed)	//if grid has not been displayed yet
+		{
+			displayGrid(size.y, size.x); //display grid on screen
+			hasGridBeenDisplayed = true; //set grid has already been displayed to true
+		}
 		displayASpecificHistogram(getData()._data._bufferHue,getData()._selectionData._bufferHue,step,heightH,size.x,redHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedHSL()==eSelectedChannelH)
 		{
@@ -77,6 +84,12 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 	}
 	if(_plugin->_paramOverlaySSelection->getValue())			//SATURATION CHANNEL
 	{
+		if(!hasGridBeenDisplayed)	//if grid has not been displayed yet
+		{
+			displayGrid(size.y, size.x); //display grid on screen
+			hasGridBeenDisplayed = true; //set grid has already been displayed to true
+		}
+		
 		displayASpecificHistogram(getData()._data._bufferSaturation,getData()._selectionData._bufferSaturation,step,heightS,size.x,greenHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedHSL()==eSelectedChannelS)
 		{
@@ -87,6 +100,12 @@ bool HSLOverlay::draw(const OFX::DrawArgs& args)
 	}
 	if(_plugin->_paramOverlayLSelection->getValue())			//LIGHTNESS CHANNEL
 	{
+		if(!hasGridBeenDisplayed)	//if grid has not been displayed yet
+		{
+			displayGrid(size.y, size.x); //display grid on screen
+			hasGridBeenDisplayed = true; //set grid has already been displayed to true
+		}
+				
 		displayASpecificHistogram(getData()._data._bufferLightness,getData()._selectionData._bufferLightness,step,heightL,size.x,blueHisto,selectionMultiplier);
 		if(getOnlyChannelSelectedHSL()==eSelectedChannelL)
 		{
@@ -137,6 +156,52 @@ OverlayData& HSLOverlay::getData()
 {
 	return _plugin->getOverlayData();
 }
+
+/**
+ * Display grid on screen
+ */
+void HSLOverlay::displayGrid(float height, float width)
+{
+	glBegin(GL_LINES);
+	//draw standard reference
+	glColor3f(.9f,.9f,.9f);								//white color
+	glVertex2f(-0.1f,0); glVertex2f(-0.1f,height);		//Y axis
+	glVertex2f(0,-0.1f); glVertex2f(width,-0.1f);		//X axis
+	
+	//compute step X and Y
+	float stepY = (float)(height/10.0f);
+	float stepX = (float)(width/10.0f);
+	float stepYm = (float)(height/20.0f);
+	float stepXm = (float)(width/20.0f);
+	
+	//drawing minor grid
+	glColor3f(.2f,.2f,.2f);		//gray color
+	float baseY = 0;			//initialize y to O
+	float baseX = 0;			//initialize x to 0
+	for(unsigned int i=0; i< 20; ++i)
+	{
+		baseY += stepYm;	//update Y position
+		baseX += stepXm; //update X position
+		glVertex2f(-0.1f,baseY);	glVertex2f(width,baseY); //draw Y axis
+		glVertex2f(baseX, -0.1f);	glVertex2f(baseX,height);//draw X axis
+	}
+	
+	//drawing major grid
+	glColor3f(.5f,.5f,.5f);		//gray color
+	baseY = 0;			//initialize y to O
+	baseX = 0;			//initialize x to 0
+	for(unsigned int i=0; i< 10; ++i)
+	{
+		baseY += stepY;	//update Y position
+		baseX += stepX; //update X position
+		glVertex2f(-0.1f,baseY);	glVertex2f(width,baseY); //draw Y axis
+		glVertex2f(baseX, -0.1f);	glVertex2f(baseX,height);//draw X axis
+	}
+
+	//draw grid
+	glEnd();
+}
+
 
 }
 }

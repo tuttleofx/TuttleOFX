@@ -108,8 +108,12 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 		}
 		y-=pixelRegionOfDefinition.y1; //repere change (reformat)
 		x-= pixelRegionOfDefinition.x1; //repere change (reformat)
-		getData()._imgBool[y][x] = 255;	//current pixel is marked as selected
-		return true;														//event captured
+		
+		if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive mode
+			getData()._imgBool[y][x] = 0;	//current pixel is no more marked as selected
+		else
+			getData()._imgBool[y][x] = 255;	//current pixel is marked as selected
+		return true;	//event captured
 	}
 	return false; //event is not captured
 }
@@ -155,6 +159,10 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	{
 		if(!_penDown)
 			_penDown = true;
+	}
+	if(_plugin->_paramSelectionMode->getValue() == 0)	//Selection mode is unique
+	{
+		getData().clearSelection();//reset past selection
 	}
 	return true;
 }
@@ -232,7 +240,11 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 			{
 				int _y = endY+val_y -(pixelRegionOfDefinition.y1);	//_y in img bool size (reformat)
 				int _x = endX+val_x -(pixelRegionOfDefinition.x1);  //_x in img bool size (reformat)
-				getData()._imgBool[_y][_x] = 255;	//mark all of the selected pixel
+				
+				if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive
+					getData()._imgBool[_y][_x] = 0;	//remove all of the selected pixel
+				else
+					getData()._imgBool[_y][_x] = 255;	//mark all of the selected pixel
 			}
 		}
 		// recompute histogram of selection
