@@ -100,10 +100,13 @@ int main( int argc, char** argv )
 		// create the graph
 		ttl::Graph graph;
 		std::list<ttl::Graph::Node*> nodes;
-		// Analyse each part of the command line
+		std::vector<std::ssize_t> range;
+		std::size_t step;
+		
+		// Analyze each part of the command line
 		{
 			namespace bpo = boost::program_options;
-			// Analyse sam-do flags
+			// Analyze sam-do flags
 			try
 			{
 				// Declare the supported options.
@@ -115,6 +118,7 @@ int main( int argc, char** argv )
 				;
 				bpo::options_description confOptions( "\tConfigure process" );
 				confOptions.add_options()
+					("range,r"      , bpo::value< std::vector<std::ssize_t> >(), "frame range to render" )
 					("verbose,V"    , "explain what is being done")
 					("quiet,Q"      , "don't print commands")
 					("nb-cores"     , bpo::value<std::string>(), "set a fix number of CPUs")
@@ -176,6 +180,26 @@ int main( int argc, char** argv )
 						TUTTLE_COUT( "\t" << termsPlugin.back() );
 					}
 					exit( 0 );
+				}
+				{
+					std::vector<std::ssize_t> vmrange;
+					if( samdo_vm.count("range") )
+						vmrange = samdo_vm["range"].as<std::vector<std::ssize_t> >();
+					
+					if( vmrange.size() >= 1 )
+						range.push_back( vmrange[0] );
+					else
+						range.push_back( 0 );
+					
+					if( vmrange.size() >= 2 )
+						range.push_back( vmrange[1] );
+					else
+						range.push_back( range[0] );
+					
+					if( vmrange.size() >= 3 )
+						step = vmrange[2];
+					else
+						step = 1;
 				}
 			}
 			catch( const boost::program_options::error& e )
@@ -472,7 +496,7 @@ int main( int argc, char** argv )
 		graph.connect( nodes );
 
 		// Execute the graph
-		graph.compute( *nodes.back(), 0 );
+		graph.compute( *nodes.back(), range[0], range[1] );
 	}
 	catch( const tuttle::exception::Common& e )
 	{
