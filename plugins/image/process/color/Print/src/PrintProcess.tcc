@@ -12,9 +12,9 @@ namespace print {
 
 struct CacaImage
 {
-    char *pixels;
-    unsigned int w, h;
-    caca_dither_t *dither;
+	char *pixels;
+	unsigned int w, h;
+	caca_dither_t *dither;
 };
 
 template<class SView>
@@ -40,8 +40,7 @@ CacaImage load_cacaimage_from_view( const SView sView )
 									 rmask, gmask, bmask, amask);
 	if( ! im.dither )
 	{
-		BOOST_THROW_EXCEPTION( exception::Unknown()
-				<< exception::dev( "Unable to load buffer." ) );
+		BOOST_THROW_EXCEPTION( exception::Unknown() << exception::dev( "Unable to load buffer." ) );
 	}
 	return im;
 }
@@ -51,9 +50,9 @@ struct channel_cout_t : public std::unary_function<Channel,Channel> {
 	GIL_FORCEINLINE
     Channel operator()(typename boost::gil::channel_traits<Channel>::const_reference ch) const
 	{
-                std::cout << ch << " ";
-        return ch;
-    }
+		std::cout << ch << " ";
+		return ch;
+	}
 };
 
 template<template<class> class Func>
@@ -63,10 +62,7 @@ struct call_pixel_by_channel_t
 	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& v ) const
 	{
-		static_for_each(
-			v,
-			Func<typename boost::gil::channel_type<Pixel>::type>()
-			);
+		static_for_each( v, Func<typename boost::gil::channel_type<Pixel>::type>() );
 		return v;
 	}
 };
@@ -76,16 +72,16 @@ PrintProcess<View>::PrintProcess( PrintPlugin &effect )
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
-        this->setNoMultiThreading();
+	this->setNoMultiThreading();
 
-        /*viewerOpenGL.cv = caca_create_canvas(0, 0);
-        viewerOpenGL.dp = caca_create_display (viewerOpenGL.cv);*/
+	/*viewerOpenGL.cv = caca_create_canvas(0, 0);
+	viewerOpenGL.dp = caca_create_display (viewerOpenGL.cv);*/
 }
 
 template<class View>
 PrintProcess<View>::~PrintProcess()
 {
-       // caca_free_canvas( viewerOpenGL.cv );
+	// caca_free_canvas( viewerOpenGL.cv );
 }
 
 template<class View>
@@ -120,7 +116,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 		case eParamModePixel:
 		{
 			call_pixel_by_channel_t<channel_cout_t>()( src( _params._pixel ) );
-                        //std::cout << std::endl;
+			//std::cout << std::endl;
 			break;
 		}
 		case eParamModeRegion:
@@ -137,21 +133,21 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 			{
 				case eParamOutputNumeric:
 				{
-                                        std::cout << std::fixed;
-                                        std::cout << std::setprecision( 2 );
+					std::cout << std::fixed;
+					std::cout << std::setprecision( 2 );
 					call_pixel_by_channel_t<channel_cout_t> proc;
-                                        for( int y = region.y1; y < region.y2; ++y )
+					for( int y = region.y1; y < region.y2; ++y )
 					{
-                                                std::cout << "| ";
+						std::cout << "| ";
 						typename View::x_iterator src_it = this->_srcView.x_at( region.x1, y );
 						for( int x = region.x1;
 							 x < region.x2;
 							 ++x, ++src_it )
 						{
 							proc( *src_it );
-                                                        std::cout << " | ";
+							std::cout << " | ";
 						}
-                                                std::cout << "\n";
+						std::cout << "\n";
 						if( this->progressForward() )
 							return;
 					}
@@ -159,142 +155,131 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				}
 				case eParamOutputAscii:
 				{
-                                        // temporary gray buffer to compute the char values.
-                                        gray8_image_t gImg( src.dimensions() );
-                                        gray8_view_t gView( view(gImg) );
-                                        if( _params._flip )
-                                        {
-                                                src = flipped_up_down_view( src );
-                                        }
-                                        copy_and_convert_pixels( src, gView );
+					// temporary gray buffer to compute the char values.
+					gray8_image_t gImg( src.dimensions() );
+					gray8_view_t gView( view(gImg) );
+					if( _params._flip )
+					{
+						src = flipped_up_down_view( src );
+					}
+					copy_and_convert_pixels( src, gView );
 
-                                        // libcaca context
-                                        caca_canvas_t *cv = NULL;
+					// libcaca context
+					caca_canvas_t *cv = NULL;
 
-                                        try
-                                        {
-                                                //void *output = NULL;
-                                                size_t len=0;
-                                                struct CacaImage cacaImg;
-                                                unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
-                                                //char *format = (char*)"ansi";
-                                                char *dither = NULL;
-                                                float gamma = -1, brightness = -1, contrast = -1;
+					try
+					{
+						struct CacaImage cacaImg;
+						unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
+						char *dither = NULL;
+						float gamma = -1, brightness = -1, contrast = -1;
 
-                                                cv = caca_create_canvas(0, 0);
-                                                if( !cv )
-                                                {
-                                                        TUTTLE_CERR( "Unable to initialise libcaca." );
-                                                        return;
-                                                }
+						cv = caca_create_canvas(0, 0);
+						if( !cv )
+						{
+							TUTTLE_CERR( "Unable to initialise libcaca." );
+							return;
+							}
 
-                                                cacaImg = load_cacaimage_from_view( gView );
-                                                /*
-                                                 *  - \c "mono": use light gray on a black background.
-                                                 *  - \c "gray": use white and two shades of gray on a black background.
-                                                 *  - \c "8": use the 8 ANSI colours on a black background.
-                                                 *  - \c "16": use the 16 ANSI colours on a black background.
-                                                 *  - \c "fullgray": use black, white and two shades of gray for both the
-                                                 *    characters and the background.
-                                                 *  - \c "full8": use the 8 ANSI colours for both the characters and the
-                                                 *    background.
-                                                 *  - \c "full16" or \c "default": use the 16 ANSI colours for both the
-                                                 *    characters and the background. This is the default value.
-                                                 */
-                                                char* colorMode;
-                                                switch(_params._colorMode)
-                                                {
-                                                      case eParamColorMono :     colorMode = (char*) "mono";     break;
-                                                      case eParamColorGray :     colorMode = (char*) "gray";     break;
-                                                      case eParamColor8 :        colorMode = (char*) "8";        break;
-                                                      case eParamColor16 :       colorMode = (char*) "16";       break;
-                                                      case eParamColorfullgray : colorMode = (char*) "fullgray"; break;
-                                                      case eParamColorfull8 :    colorMode = (char*) "full8";    break;
-                                                      case eParamColorfull16 :   colorMode = (char*) "full16";   break;
-                                                }
-                                                caca_set_dither_color( cacaImg.dither, colorMode );
+						cacaImg = load_cacaimage_from_view( gView );
+						/*
+						 *  - \c "mono": use light gray on a black background.
+						 *  - \c "gray": use white and two shades of gray on a black background.
+						 *  - \c "8": use the 8 ANSI colours on a black background.
+						 *  - \c "16": use the 16 ANSI colours on a black background.
+						 *  - \c "fullgray": use black, white and two shades of gray for both the
+						 *    characters and the background.
+						 *  - \c "full8": use the 8 ANSI colours for both the characters and the
+						 *    background.
+						 *  - \c "full16" or \c "default": use the 16 ANSI colours for both the
+						 *    characters and the background. This is the default value.
+						 */
+						std::string colorMode;
+						switch(_params._colorMode)
+						{
+							case eParamColorMono :		colorMode = "mono";	break;
+							case eParamColorGray :		colorMode = "gray";	break;
+							case eParamColor8 :		colorMode = "8";	break;
+							case eParamColor16 :		colorMode = "16";	break;
+							case eParamColorfullgray :	colorMode = "fullgray";	break;
+							case eParamColorfull8 :		colorMode = "full8";	break;
+							case eParamColorfull16 :	colorMode = "full16";	break;
+						}
+						caca_set_dither_color( cacaImg.dither, colorMode.c_str() );
 
-                                                if( !cols && !lines )
-                                                {
-                                                        cols = _params._cols + 1;
-                                                        lines = cols * cacaImg.h * font_width / cacaImg.w / font_height;
-                                                }
-                                                else if( cols && !lines )
-                                                {
-                                                        lines = cols * cacaImg.h * font_width / cacaImg.w / font_height;
-                                                }
-                                                else if( !cols && lines )
-                                                {
-                                                        cols = lines * cacaImg.w * font_height / cacaImg.h / font_width;
-                                                }
-                                                //TUTTLE_COUT ( "output : " << cols << " x " << lines );
-                                                caca_set_canvas_size( cv, cols, lines );
+						if( !cols && !lines )
+						{
+							cols = _params._cols + 1;
+							lines = cols * cacaImg.h * font_width / cacaImg.w / font_height;
+						}
+						else if( cols && !lines )
+						{
+							lines = cols * cacaImg.h * font_width / cacaImg.w / font_height;
+						}
+						else if( !cols && lines )
+						{
+							cols = lines * cacaImg.w * font_height / cacaImg.h / font_width;
+						}
+						//TUTTLE_COUT ( "output : " << cols << " x " << lines );
+						caca_set_canvas_size( cv, cols, lines );
 
-                                                caca_clear_canvas( cv );
+						caca_clear_canvas( cv );
 
-                                                if( caca_set_dither_algorithm( cacaImg.dither, dither?dither:"fstein" ) )
-                                                {
-                                                        BOOST_THROW_EXCEPTION( exception::Unknown()
-                                                                        << exception::dev() + "Can't dither image with algorithm " + dither );
-                                                }
+						if( caca_set_dither_algorithm( cacaImg.dither, dither?dither:"fstein" ) )
+						{
+							BOOST_THROW_EXCEPTION( exception::Unknown()
+							<< exception::dev() + "Can't dither image with algorithm " + dither );
+						}
 
-                                                if( brightness != -1 )
-                                                        caca_set_dither_brightness( cacaImg.dither, brightness );
-                                                if( contrast != -1 )
-                                                        caca_set_dither_contrast( cacaImg.dither, contrast );
-                                                if( gamma != -1 )
-                                                        caca_set_dither_gamma( cacaImg.dither, gamma );
+						if( brightness != -1 )
+						caca_set_dither_brightness( cacaImg.dither, brightness );
+						if( contrast != -1 )
+						caca_set_dither_contrast( cacaImg.dither, contrast );
+						if( gamma != -1 )
+						caca_set_dither_gamma( cacaImg.dither, gamma );
 
-                                                caca_dither_bitmap( cv, 0, 0, cols, lines, cacaImg.dither, cacaImg.pixels );
+						caca_dither_bitmap( cv, 0, 0, cols, lines, cacaImg.dither, cacaImg.pixels );
 
-                                                caca_free_dither( cacaImg.dither );
+						caca_free_dither( cacaImg.dither );
 
 
-                                                // show result in a new window
+						if( _params._openGlViewer == true )
+						{
+							// show result in a new window
+							caca_display_t *dp; caca_event_t ev;
+							dp = caca_create_display (cv);
 
-                                                if( _params._openGlViewer == true )
-                                                {
-                                                        caca_display_t *dp; caca_event_t ev;
-                                                        dp = caca_create_display (cv);
-                                                        //if(!dp) return;
-                                                        caca_set_display_title(dp, "Rendering image in ASCII Art");
-                                                        //caca_set_color_ansi(cv, CACA_BLACK, CACA_WHITE);
-                                                        //caca_put_str(cv, 0, 0, "This is a message");
-                                                        caca_refresh_display(dp);
-                                                        caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
-                                                        caca_free_display(dp);
+							caca_set_display_title(dp, "Rendering image in ASCII Art");
 
+							caca_refresh_display(dp);
+							caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+							caca_free_display(dp);
 
-                                                        //output = caca_export_canvas_to_memory( cv, format, &len );
-                                                        //TUTTLE_COUT(len << " | " << cols << " | " << lines);
-                                                        //output = this->caca_export_canvas_to_memory( cv, "ansi", &len );
-                                                        /*
-                                                        if( !output )
-                                                        {
-                                                                BOOST_THROW_EXCEPTION( exception::Unknown()
-                                                                                << exception::dev() + "Can't export to format " + format );
-                                                        }*/
+							caca_free_canvas( cv );
+						}
+						else
+						{
+							//clear the sreen
+							std::cout << std::string( 100, '\n' );
 
-                                                        //fwrite( output, len, 1, stdout );
-                                                        //free( output );
+							size_t len;
+							void *output;
 
-                                                        caca_free_canvas( cv );
-                                                }
-                                                else
-                                                {
-                                                        // problem, the function don't exist, in caca.h, it's defined like an extern function ...
-                                                        //caca_export_canvas_to_memory( cv, format, &len );
-                                                        TUTTLE_COUT("print ascii caca " << len);
-                                                }
-                                        }
-                                        catch(...)
-                                        {
-                                                TUTTLE_COUT_CURRENT_EXCEPTION;
-                                                if(cv != NULL )
-                                                    caca_free_canvas( cv );
-                                        }
-                                        break;
-                                }
+							output = caca_export_canvas_to_memory( cv, "ansi", &len );
+							fwrite( output, len, 1, stdout );
+							free( output );
+
+							caca_free_canvas( cv );
+						}
+					}
+					catch(...)
+					{
+						TUTTLE_COUT_CURRENT_EXCEPTION;
+						if(cv != NULL )
+						caca_free_canvas( cv );
+					}
+					break;
+				}
 			}
 			break;
 		}

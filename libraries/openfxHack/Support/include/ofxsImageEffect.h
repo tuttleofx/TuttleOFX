@@ -262,6 +262,7 @@ struct ImageEffectHostDescription
 {
 public:
 	std::string hostName;
+	std::string hostLabel;
 	bool hostIsBackground;
 	bool supportsOverlays;
 	bool supportsMultiResolution;
