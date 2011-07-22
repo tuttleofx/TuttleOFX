@@ -7,9 +7,6 @@ namespace terry {
 namespace color {
 namespace layout {
 
-////////////////////////////////////////////////////////////////////////////////
-// HSL //
-
 /// \addtogroup ColorNameModel
 /// \{
 namespace hsl
@@ -21,13 +18,13 @@ struct saturation_t {};
 /// \brief Lightness
 struct lightness_t {};
 }
-/// \}
 
 /// \ingroup ColorSpaceModel
 typedef boost::mpl::vector3< hsl::hue_t
                     , hsl::saturation_t
                     , hsl::lightness_t
                     > hsl_t;
+/// \}
 
 }
 }

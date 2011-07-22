@@ -10,6 +10,16 @@ namespace color {
 namespace layout {
 
 ////////////////////////////////////////////////////////////////////////////////
+/**
+ * 
+ */
+template< class SrcLayout, class DslLayout, typename SrcP, typename DstP >
+void layout_convert( const SrcP& src, DstP& dst );
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
 // RGB //
 	
 /// \addtogroup ColorNameModel
@@ -23,14 +33,15 @@ using boost::gil::green_t;
 /// \brief Blue
 using boost::gil::blue_t;
 }
-
 /// \}
 /// \addtogroup ColorNameModel
 using boost::gil::rgb_t;
 
 /// \ingroup LayoutModel
+/// \{
 using boost::gil::rgb_layout_t;
 using boost::gil::bgr_layout_t;
+/// \}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,47 +50,14 @@ using boost::gil::bgr_layout_t;
 using boost::gil::rgba_t;
 
 /// \ingroup LayoutModel
+/// \{
 using boost::gil::rgba_layout_t;
 using boost::gil::bgra_layout_t;
 using boost::gil::argb_layout_t;
 using boost::gil::abgr_layout_t;
-
-/*
-////////////////////////////////////////////////////////////////////////////////
-// RGB //
-
-/// \addtogroup ColorNameModel
-/// \{
-namespace rgb
-{
-/// \brief Hue
-struct red_t {};
-/// \brief Saturation
-struct green_t {};
-/// \brief Value
-struct blue_t {};
-}
 /// \}
 
-/// \ingroup ColorSpaceModel
-typedef boost::mpl::vector3< rgb::red_t
-                    , rgb::green_t
-                    , rgb::blue_t
-                    > rgb_t;
 
-////////////////////////////////////////////////////////////////////////////////
-// RGBA //
-
-/// \brief Alpha
-struct alpha_t {};
-
-/// \ingroup ColorSpaceModel
-typedef boost::mpl::vector4< rgb::red_t
-                    , rgb::green_t
-                    , rgb::blue_t
-                    , alpha_t
-                    > rgba_t;
-*/
 
 }
 }
