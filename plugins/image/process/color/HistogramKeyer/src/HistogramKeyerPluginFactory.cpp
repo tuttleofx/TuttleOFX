@@ -9,7 +9,7 @@ namespace tuttle {
 namespace plugin {
 namespace histogramKeyer {
 
-static const bool kSupportTiles = false;
+static const bool kSupportTiles = true;
 
 
 /**
@@ -90,39 +90,39 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		groupHSL->setLabel(kGroupHSLLabel);
 
 		//define the graphic aspect
-		curvesRGB->setRange( 0.0, 1.0 );
-		curvesHSL->setRange( 0.0, 1.0 );
-		curvesRGB->setDimension(nbCurvesRGB);
-		curvesHSL->setDimension(nbCurvesHSL);
+		curvesRGB->setRange( 0.0, 1.0 );		//set range on RGB curve
+		curvesHSL->setRange( 0.0, 1.0 );		//set range on HSL curve
+		curvesRGB->setDimension(nbCurvesRGB);	//3 curves on RGB
+		curvesHSL->setDimension(nbCurvesHSL);	//3 curves on HSL
 
 		//Add curves RGB
-		curvesRGB->setDimensionLabel( kParamColorSelectionRed, 0 );
-		curvesRGB->setDimensionLabel( kParamColorSelectionGreen, 1 );
-		curvesRGB->setDimensionLabel( kParamColorSelectionBlue, 2 );
+		curvesRGB->setDimensionLabel( kParamColorSelectionRed, 0 );			// 0 on RGB is red
+		curvesRGB->setDimensionLabel( kParamColorSelectionGreen, 1 );		// 1 on RGB is green
+		curvesRGB->setDimensionLabel( kParamColorSelectionBlue, 2 );		// 2 on RGB is blue
 		//Add curves HSL
-		curvesHSL->setDimensionLabel( kParamColorSelectionHue, 0 );
-		curvesHSL->setDimensionLabel( kParamColorSelectionSaturation, 1 );
-		curvesHSL->setDimensionLabel( kParamColorSelectionLightness, 2 );
+		curvesHSL->setDimensionLabel( kParamColorSelectionHue, 0 );			// 0 on HSL is hue
+		curvesHSL->setDimensionLabel( kParamColorSelectionSaturation, 1 );	// 1 on HSL is saturation
+		curvesHSL->setDimensionLabel( kParamColorSelectionLightness, 2 );	// 2 on HSK is lightness
 		//define curves color RGB 
-		curvesRGB->setHint( "Color selection" );
-		static const OfxRGBColourD red   = {1,0,0};
-		static const OfxRGBColourD green = {0,1,0};
-		static const OfxRGBColourD blue  = {0,0,1};
+		curvesRGB->setHint( "Color selection" );		
+		static const OfxRGBColourD red   = {1,0,0};		//set red color to red curve
+		static const OfxRGBColourD green = {0,1,0};		//set green color to green curve
+		static const OfxRGBColourD blue  = {0,0,1};		//set blue color to blue curve
 		curvesRGB->setUIColour( 0, red );
 		curvesRGB->setUIColour( 1, green );
 		curvesRGB->setUIColour( 2, blue );
 		//define curves color HSL 
 		curvesHSL->setHint( "Color selection" );
-		curvesHSL->setUIColour( 0, red );
-		curvesHSL->setUIColour( 1, green );
-		curvesHSL->setUIColour( 2, blue );
-
+		curvesHSL->setUIColour( 0, red );		//set red color on hue curve
+		curvesHSL->setUIColour( 1, green );		//set green color on saturation curve
+		curvesHSL->setUIColour( 2, blue );		//set lightness color on saturation curve
+		
 		curvesRGB->setInteractDescriptor( new OFX::DefaultParamInteractWrap<RGBParamOverlayDescriptor>() );	//attach parametric curve to RGBOverlay
 		curvesHSL->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HSLParamOverlayDescriptor>() );	//attach parametric curve to HSLOverlay
 		
 		//add curves to their groups
-		curvesRGB->setParent(groupRGB);
-		curvesHSL->setParent(groupHSL);
+		curvesRGB->setParent(groupRGB);	//add RGB curves to RGB group
+		curvesHSL->setParent(groupHSL); //add HSL curves to HSL group 
 		
 		//Set each curves to initial value
 		curvesRGB->setIdentity();
@@ -141,7 +141,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		
 		//Channels checkboxes (RGB)
 		OFX::BooleanParamDescriptor* boolR = desc.defineBooleanParam(kBoolRed);
-		boolR->setDefault(false);
+		boolR->setDefault(false);							//red channel is not selected by default
 		boolR->setHint("Activate Red channel");
 		boolR->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolR->setParent(groupRGB);
@@ -156,7 +156,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		
 		
 		OFX::BooleanParamDescriptor* boolG = desc.defineBooleanParam(kBoolGreen);
-		boolG->setDefault(false);
+		boolG->setDefault(false);						//green channel is not selected by default
 		boolG->setHint("Activate Green channel");
 		boolG->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolG->setParent(groupRGB);
@@ -173,7 +173,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
 		boolB->setHint("Activate Blue channel");
 		boolB->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-		boolB->setDefault(false);
+		boolB->setDefault(false);						   //blue channel is not selected by default
 		boolB->setParent(groupRGB);
 		//blue multiplier
 		OFX::DoubleParamDescriptor* blueMultiplier = desc.defineDoubleParam(kMultiplierBlue);
