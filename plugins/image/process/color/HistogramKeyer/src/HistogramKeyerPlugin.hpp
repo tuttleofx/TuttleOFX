@@ -30,7 +30,7 @@ class HistogramKeyerPlugin : public ImageEffectGilPlugin
 public:	
 	/*Class arguments*/
     typedef float Scalar;
-	bool _isCleaned;								//ask overlay to clean scene
+	bool _isCleaned;								//ask overlay to Reset scene
 	bool _isNbStepChanged;							//do we have to recompute selection histograms (nbStep has changed)
 	bool _isHistogramRefresh;						//do we have to recompute selection histograms (other reason)
 	
@@ -42,17 +42,19 @@ public:
 	OFX::BooleanParam* _paramOverlayRSelection;		//R
 	OFX::BooleanParam* _paramOverlayGSelection;		//G
 	OFX::BooleanParam* _paramOverlayBSelection;		//B
-	OFX::PushButtonParam* _clearRGB;				//clean RGB button
+	OFX::PushButtonParam* _resetRGB;				//Reset RGB button
 	
 	OFX::BooleanParam* _paramOverlayHSelection;		//H
 	OFX::BooleanParam* _paramOverlaySSelection;		//S
 	OFX::BooleanParam* _paramOverlayLSelection;		//L
-	OFX::PushButtonParam* _clearHSL;				//clean HSL button
+	OFX::PushButtonParam* _resetHSL;				//Reset HSL button
 	
     OFX::ChoiceParam* _paramDisplayTypeSelection;	//display option list global/adapted to channel (Histogram overlay group)
-	OFX::PushButtonParam* _paramClearAll;				//clear all button (Histogram overlay group)
+	OFX::PushButtonParam* _paramResetAll;			//clear all button (Histogram overlay group)
 	
 	OFX::BooleanParam* _paramDisplaySelection;		//display selection on clip source (Selection group)
+	OFX::IntParam* _paramSelectionFromCurve;		//precision of selection to curve (Selection group)
+	OFX::ChoiceParam* _paramSelectionMode;			//selection mode unique/additive/subtractive (Selection group)
 	
 	OFX::IntParam* _paramNbStepSelection;				//step selection (Advanced group)
 	OFX::DoubleParam* _paramSelectionMultiplierSelection;//selection multiplier (Advanced group)

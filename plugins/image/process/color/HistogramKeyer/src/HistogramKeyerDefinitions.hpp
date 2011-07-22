@@ -15,6 +15,7 @@ namespace histogramKeyer {
 const static std::size_t nbCurves = 6;
 const static std::size_t nbCurvesRGB = 3;
 const static std::size_t nbCurvesHSL = 3;
+const static std::size_t curveFromSelection = 40;
 
 //Curves params
 const static std::string kParamRGBColorSelection = "colorRGBSelection";
@@ -39,7 +40,7 @@ const static std::string kGroupHistogramOverlay = "HOverlay";
 const static std::string kGroupHistogramOverlayLabel = "Histogram overlay";
 
 //Histogram display settings
-const static std::string kHistoDisplayListParamLabel = "Vertical adjustment ";
+const static std::string kHistoDisplayListParamLabel = "Histogram adjustment ";
 const static std::string kHistoDisplayListParamOpt1 = "by channel";
 const static std::string kHistoDisplayListParamOpt2 = "global";
 
@@ -58,17 +59,17 @@ const static std::string kBoolSelection = "Display selection";
 const static std::string kBoolReverseMask = "Reverse mask";
 
 //Refresh overlay button
-const static std::string kButtonClearSelection = "ClearSelection";
-const static std::string kButtonClearSelectionLabel = "Clear selection";
+const static std::string kButtonResetSelection = "Reset Selection";
+const static std::string kButtonResetSelectionLabel = "Reset selection";
 
 //Clear buttons
-const static std::string kButtonCleanRGB = "CleanRGB";
-const static std::string kButtonCleanHSL = "CleanHSL";
-const static std::string kButtonCleanAll = "CleanAll";
+const static std::string kButtonResetRGB = "Reset RGB";
+const static std::string kButtonResetHSL = "Reset HSL";
+const static std::string kButtonResetAll = "Reset All";
 
-const static std::string kButtonCleanRGBLabel = "Reset";
-const static std::string kButtonCleanHSLLabel = "Reset";
-const static std::string kButtonCleanAllLabel = "Reset all curves";
+const static std::string kButtonResetRGBLabel = "Reset";
+const static std::string kButtonResetHSLLabel = "Reset";
+const static std::string kButtonResetAllLabel = "Reset all curves";
 
 //Selection to curves buttons
 const static std::string kButtonSelectionToCurveRGB = "SelectionToCurveRGB";
@@ -85,6 +86,9 @@ const static std::string kButtonRefreshOverlayLabel = "Refresh overlay";
 const static std::string knbStepRange = "numberOfStep";
 const static std::string knbStepRangeLabel = "Number of steps ";
 
+//Curve from selection precision
+const static std::string kprecisionCurveFromSelection = "PrecisionCurvesFromSelection";
+const static std::string kprecisionCurveFromSelectionLabel = "Curves from selection precision";
 //selection multiplier
 const static std::string kselectionMultiplier = "SelectionMultiplier";
 const static std::string kselectionMultiplierLabel = "Selection multiplier ";
@@ -96,6 +100,12 @@ const static int kPrecisionHueIndicator = 360;
 const static std::string kOutputListParamLabel = "Output settings ";
 const static std::string kOutputListParamOpt1 = "alpha channel";
 const static std::string kOutputListParamOpt2 = "black & white";
+
+//Selection mode
+const static std::string kSelectionModeListParamLabel = "Selection mode";
+const static std::string kSelectionModeListParamOpt1 = "unique";
+const static std::string kSelectionModeListParamOpt2 = "additive";
+const static std::string kSelectionModeListParamOpt3 = "subtractive";
 
 //Global display check box
 const static std::string kGlobalDisplay = "global display";

@@ -74,6 +74,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 
 	//global display
 	OFX::BooleanParamDescriptor* boolGLOBAL = desc.defineBooleanParam(kGlobalDisplay);
+	boolGLOBAL->setHint("Display global overlay on screen.");
 	boolGLOBAL->setDefault(true);
 		
     // if parametric parameters are supported
@@ -141,50 +142,96 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		//Channels checkboxes (RGB)
 		OFX::BooleanParamDescriptor* boolR = desc.defineBooleanParam(kBoolRed);
 		boolR->setDefault(false);
+		boolR->setHint("Activate Red channel");
 		boolR->setParent(groupRGB);
 		OFX::BooleanParamDescriptor* boolG = desc.defineBooleanParam(kBoolGreen);
 		boolG->setDefault(false);
+		boolG->setHint("Activate Green channel");
 		boolG->setParent(groupRGB);
 		OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
+		boolB->setHint("Activate Blue channel");
 		boolB->setDefault(false);
 		boolB->setParent(groupRGB);
 		
 		//Channels check box (HSL)
 		OFX::BooleanParamDescriptor* boolH = desc.defineBooleanParam(kBoolHue);
 		boolH->setDefault(false);
+		boolH->setHint("Activate Hue channel");
 		boolH->setParent(groupHSL);
 		OFX::BooleanParamDescriptor* boolS = desc.defineBooleanParam(kBoolSaturation);
 		boolS->setDefault(false);
+		boolS->setHint("Activate Saturation channel");
 		boolS->setParent(groupHSL);
 		OFX::BooleanParamDescriptor* boolL = desc.defineBooleanParam(kBoolLightness);
+		boolL->setHint("Activate Lightness channel");
 		boolL->setDefault(false);
 		boolL->setParent(groupHSL);
 		
 		//Clean Button (RGB)
-		OFX::PushButtonParamDescriptor* cleanButtonRGB = desc.definePushButtonParam(kButtonCleanRGB);
-		cleanButtonRGB->setLabel(kButtonCleanRGBLabel);
-		cleanButtonRGB->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-		cleanButtonRGB->setParent(groupRGB);
+		OFX::PushButtonParamDescriptor* resetButtonRGB = desc.definePushButtonParam(kButtonResetRGB);
+		resetButtonRGB->setLabel(kButtonResetRGBLabel);
+		resetButtonRGB->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
+		resetButtonRGB->setHint("Reset the selected RGB curves. \n Warning : the curves may not be refreshed click on overlay to refresh.");
+		resetButtonRGB->setParent(groupRGB);
 		
 		//Selection To Curves Button (RGB)
 		OFX::PushButtonParamDescriptor* selectionToCurveButtonRGB = desc.definePushButtonParam(kButtonSelectionToCurveRGB);
 		selectionToCurveButtonRGB->setLabel(kButtonSelectionToCurveRGBLabel);
+		selectionToCurveButtonRGB->setHint("Load selected RGB curves with selection data. \n Warning : the curves may not be refreshed click on overlay to refresh.");
 		selectionToCurveButtonRGB->setParent(groupRGB);
 		
 		//Clean Button (HSL)
-		OFX::PushButtonParamDescriptor* cleanButtonHSL = desc.definePushButtonParam(kButtonCleanHSL);
-		cleanButtonHSL->setLabel(kButtonCleanHSLLabel);
-		cleanButtonHSL->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
-		cleanButtonHSL->setParent(groupHSL);
+		OFX::PushButtonParamDescriptor* resetButtonHSL = desc.definePushButtonParam(kButtonResetHSL);
+		resetButtonHSL->setLabel(kButtonResetHSLLabel);
+		resetButtonHSL->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
+		resetButtonHSL->setHint("Reset the selected HSL curves \n Warning : the curves may not be refreshed click on overlay to refresh.");
+		resetButtonHSL->setParent(groupHSL);
 		
 		//Selection To Curves Button (HSL)
 		OFX::PushButtonParamDescriptor* selectionToCurveButtonHSL = desc.definePushButtonParam(kButtonSelectionToCurveHSL);
 		selectionToCurveButtonHSL->setLabel(kButtonSelectionToCurveHSLLabel);
+		selectionToCurveButtonHSL->setHint("Load selected RGB curves with selection data. \n Warning : the curves may not be refreshed click on overlay to refresh.");
 		selectionToCurveButtonHSL->setParent(groupHSL);
 		
 		//Close RGB group (group states by default on screen)
 		groupRGB->setOpen(false);
 		groupHSL->setOpen(true);
+	}
+	
+	//Selection group
+	{
+		OFX::GroupParamDescriptor *groupSelection = desc.defineGroupParam(kGroupSelection);
+		groupSelection->setLabel(kGroupSelectionLabel);
+		groupSelection->setOpen(false);
+		groupSelection->setAsTab();
+		//display selection
+		OFX::BooleanParamDescriptor* boolDisplaySelection = desc.defineBooleanParam(kBoolSelection);
+		boolDisplaySelection->setDefault(true);
+		boolDisplaySelection->setEvaluateOnChange(false);// don't need to recompute on change
+		boolDisplaySelection->setHint("Display the selected zone on screen.");
+		boolDisplaySelection->setParent(groupSelection);
+		//clear selection
+		OFX::PushButtonParamDescriptor* resetSelectionButton = desc.definePushButtonParam(kButtonResetSelection);
+		resetSelectionButton->setLabel(kButtonResetSelectionLabel);
+		resetSelectionButton->setHint("Reset user's selection.");
+		resetSelectionButton->setParent(groupSelection);
+		//selection mode
+		OFX::ChoiceParamDescriptor* selectionMode = desc.defineChoiceParam(kSelectionModeListParamLabel);
+		selectionMode->setLabel(kSelectionModeListParamLabel);
+		selectionMode->setHint( "Selection mode \n - unique : reset past selection before selection \n - additive : add pixels to current selection \n -subtractive : remote pixel from current selection");
+		selectionMode->appendOption(kSelectionModeListParamOpt1);
+		selectionMode->appendOption(kSelectionModeListParamOpt2);
+		selectionMode->appendOption(kSelectionModeListParamOpt3);
+		selectionMode->setParent(groupSelection);
+		//Precision of selection to curve
+		OFX::IntParamDescriptor* precisionSelectionToCurve = desc.defineIntParam(kprecisionCurveFromSelection);
+		precisionSelectionToCurve->setLabel(kprecisionCurveFromSelectionLabel);
+		precisionSelectionToCurve->setHint("Determinate curve from selection precision.");
+		precisionSelectionToCurve->setRange(1, 1000);
+		precisionSelectionToCurve->setDisplayRange(1, 300.0 );
+		precisionSelectionToCurve->setDefault(curveFromSelection);
+		precisionSelectionToCurve->setEvaluateOnChange(false); // don't need to recompute on change
+		precisionSelectionToCurve->setParent(groupSelection);
 	}
 	
 	//Histogram overlay group
@@ -198,32 +245,16 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		OFX::ChoiceParamDescriptor* gammaType = desc.defineChoiceParam(kHistoDisplayListParamLabel);
 		gammaType->setLabel(kHistoDisplayListParamLabel);
 		gammaType->setEvaluateOnChange(false); // don't need to recompute on change
-		gammaType->setHint( "Histogram display list");
+		gammaType->setHint("Histogram display \n -global : normalize all of channels \n -by channel : keep proportions between channels");
 		gammaType->appendOption(kHistoDisplayListParamOpt2);
 		gammaType->appendOption(kHistoDisplayListParamOpt1);
 		gammaType->setParent(groupHistogramOverlay);	
 
 		//Clean all Button
-		OFX::PushButtonParamDescriptor* cleanButtonAll = desc.definePushButtonParam(kButtonCleanAll);
-		cleanButtonAll->setLabel(kButtonCleanAllLabel);
-		cleanButtonAll->setParent(groupHistogramOverlay);
-	}
-	
-	//Selection group
-	{
-		OFX::GroupParamDescriptor *groupSelection = desc.defineGroupParam(kGroupSelection);
-		groupSelection->setLabel(kGroupSelectionLabel);
-		groupSelection->setOpen(false);
-		groupSelection->setAsTab();
-		//display selection
-		OFX::BooleanParamDescriptor* boolDisplaySelection = desc.defineBooleanParam(kBoolSelection);
-		boolDisplaySelection->setDefault(true);
-		boolDisplaySelection->setEvaluateOnChange(false);// don't need to recompute on change
-		boolDisplaySelection->setParent(groupSelection);
-		//clear selection
-		OFX::PushButtonParamDescriptor* clearSelectionButton = desc.definePushButtonParam(kButtonClearSelection);
-		clearSelectionButton->setLabel(kButtonClearSelectionLabel);
-		clearSelectionButton->setParent(groupSelection);
+		OFX::PushButtonParamDescriptor* resetButtonAll = desc.definePushButtonParam(kButtonResetAll);
+		resetButtonAll->setLabel(kButtonResetAllLabel);
+		resetButtonAll->setHint("Reset all curves. \n Waring : the curves may not be refreshed click on overlay to refresh.");
+		resetButtonAll->setParent(groupHistogramOverlay);
 	}
 	
 	///Advanced group
@@ -236,6 +267,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		//nbOfstep (advanced group)
 		OFX::IntParamDescriptor* nbStepRange = desc.defineIntParam(knbStepRange);
 		nbStepRange->setLabel(knbStepRangeLabel);
+		nbStepRange->setHint("Determinate histogram overlay precision.");
 		nbStepRange->setRange(1, 1000);
 		nbStepRange->setDisplayRange(1, 600.0 );
 		nbStepRange->setDefault(255);
@@ -244,6 +276,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		//selection multiplier (advanced group)
 		OFX::DoubleParamDescriptor* selectionMultiplier = desc.defineDoubleParam(kselectionMultiplier);
 		selectionMultiplier->setLabel(kselectionMultiplierLabel);
+		selectionMultiplier->setHint("With high values, small selection are more visible.");
 		selectionMultiplier->setRange(0.001,1000.0);
 		selectionMultiplier->setDisplayRange(0.0, 100.0 );
 		selectionMultiplier->setDefault(2.0);
@@ -253,12 +286,13 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		//Refresh histograms overlay Button
 		OFX::PushButtonParamDescriptor* refreshOverlayButton = desc.definePushButtonParam(kButtonRefreshOverlay);
 		refreshOverlayButton->setLabel(kButtonRefreshOverlayLabel);
+		refreshOverlayButton->setHint("Refresh histogram overlay.");
 		refreshOverlayButton->setParent(groupAdvanced);
 	}
 	//Output settings
 	OFX::ChoiceParamDescriptor* outputType = desc.defineChoiceParam(kOutputListParamLabel);
 	outputType->setLabel(kOutputListParamLabel);
-	outputType->setHint( "Output settings list");
+	outputType->setHint( "Output type \n Alpha channel or Black and White");
 	outputType->appendOption(kOutputListParamOpt1);
 	outputType->appendOption(kOutputListParamOpt2);
 	outputType->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
@@ -266,6 +300,7 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 	//Reverse mask
 	OFX::BooleanParamDescriptor* boolReverseMask = desc.defineBooleanParam(kBoolReverseMask);
 	boolReverseMask->setDefault(false);
+	boolReverseMask->setHint("Revert alpha mask");
 }
 
 /**
