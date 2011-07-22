@@ -55,6 +55,9 @@ const static std::string kBoolLightness = "Lightness";
 //Display selection check box
 const static std::string kBoolSelection = "Display selection";
 
+//Curve clamp value check box
+const static std::string kBoolClampValues = "Clamp curves values";
+
 //Reverse mask check box
 const static std::string kBoolReverseMask = "Reverse mask";
 
@@ -136,6 +139,18 @@ static const HistogramColor blueHisto = {blueBorder,blueFilling};
 static const OfxRGBColourF averageFilling={0.2f,0.2f,1.0f};
 static const OfxRGBColourF averageBorder={1.0f,0.84f,0.0f};
 static const HistogramColor averageHisto = {averageBorder,averageFilling};
+
+
+
+static const std::string kMultiplierLabel = "Multiplier";
+//Channel multiplier (RGB)
+static const std::string kMultiplierRed = "Red multiplier";
+static const std::string kMultiplierGreen = "Green multiplier";
+static const std::string kMultiplierBlue = "Blue multiplier";
+//Channel mutiliplier(HSL)
+static const std::string kMultiplierHue = "Hue multiplier";
+static const std::string kMultiplierSaturation = "Saturation multiplier";
+static const std::string kMultiplierLightness = "Lightness multiplier";
 
 
 ///@todo: remove when Nuke overlay option works 

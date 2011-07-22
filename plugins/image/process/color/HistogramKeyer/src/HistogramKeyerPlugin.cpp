@@ -19,14 +19,26 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 
 	_paramColorRGBSelection = fetchParametricParam( kParamRGBColorSelection ); //curve RGB
 	_paramOverlayRSelection = fetchBooleanParam( kBoolRed ); //R (is channel selected?)
+	_paramMutliplierR = fetchDoubleParam(kMultiplierRed); //R multiplier
+	
 	_paramOverlayGSelection = fetchBooleanParam( kBoolGreen ); //G (is channel selected?)
+	_paramMutliplierG = fetchDoubleParam(kMultiplierGreen); //G multiplier
+	
 	_paramOverlayBSelection = fetchBooleanParam( kBoolBlue ); //B (is channel selected?)
+	_paramMutliplierB = fetchDoubleParam(kMultiplierBlue); //B multiplier
+	
 	_resetRGB = fetchPushButtonParam( kButtonResetRGB ); //reset RGB button
 
 	_paramColorHSLSelection = fetchParametricParam( kParamHSLColorSelection ); //curve HSL
 	_paramOverlayHSelection = fetchBooleanParam( kBoolHue ); //H (is channel selected?)
+	_paramMutliplierH = fetchDoubleParam(kMultiplierHue); //H multiplier
+	
 	_paramOverlaySSelection = fetchBooleanParam( kBoolSaturation ); //S (is channel selected?)
+	_paramMutliplierS = fetchDoubleParam(kMultiplierSaturation); //S multiplier
+	
 	_paramOverlayLSelection = fetchBooleanParam( kBoolLightness ); //L (is channel selected?)
+	_paramMutliplierL = fetchDoubleParam(kMultiplierLightness); //L multiplier
+	
 	_resetHSL = fetchPushButtonParam( kButtonResetHSL ); //Reset HSL button
 
 	_paramDisplayTypeSelection = fetchChoiceParam( kHistoDisplayListParamLabel ); //histogram display list (Histogram overlay group)
@@ -34,13 +46,13 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 
 	_paramDisplaySelection = fetchBooleanParam( kBoolSelection ); //display selection on source clip (Selection group)
 	_paramSelectionMode = fetchChoiceParam( kSelectionModeListParamLabel ); //selection mode (Selection group)
-
-	_paramNbStepSelection = fetchIntParam( knbStepRange ); //nb step range (Advanced group)
-	
 	_paramSelectionFromCurve = fetchIntParam( kprecisionCurveFromSelection ); //precision of selection to curve (selection group)
 	
 	_paramSelectionMultiplierSelection = fetchDoubleParam( kselectionMultiplier ); //selection multiplier (Advanced group)
 	_paramRefreshOverlaySelection = fetchPushButtonParam( kButtonRefreshOverlay ); //refresh overlay (Advanced group)
+	_paramNbStepSelection = fetchIntParam( knbStepRange ); //nb step range (Advanced group)
+	_paramClampCurveValues = fetchBooleanParam(kBoolClampValues); //clamp curve values (Advanced group)
+		
 
 	_paramOutputSettingSelection = fetchChoiceParam( kOutputListParamLabel ); //output type (BW/alpha)
 	_paramReverseMaskSelection = fetchBooleanParam( kBoolReverseMask ); //reverse mask
@@ -75,9 +87,18 @@ HistogramKeyerProcessParams<HistogramKeyerPlugin::Scalar> HistogramKeyerPlugin::
 	params._boolHSL[0] = _paramOverlayHSelection; //H (is channel selected?)
 	params._boolHSL[1] = _paramOverlaySSelection; //S (is channel selected?)
 	params._boolHSL[2] = _paramOverlayLSelection; //L (is channel selected?)
-
+	
+	params._multiplierRGB[0] = _paramMutliplierR; //R multiplier
+	params._multiplierRGB[1] = _paramMutliplierG; //G multiplier
+	params._multiplierRGB[2] = _paramMutliplierB; //B multiplier
+	
+	params._multiplierHSL[0] = _paramMutliplierH; //H multiplier
+	params._multiplierHSL[1] = _paramMutliplierS; //S multiplier
+	params._multiplierHSL[2] = _paramMutliplierL; //L multiplier
+	
 	params._paramOutputSetting = _paramOutputSettingSelection; //output selection (alpha channel or BW)
 	params._boolReverseMask = _paramReverseMaskSelection; //reverse mask check box
+	params._boolClampCurveValues =  _paramClampCurveValues;		//clamp curve values (Advanced group)
 
 	return params;
 }

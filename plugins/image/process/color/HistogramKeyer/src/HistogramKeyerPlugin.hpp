@@ -20,6 +20,9 @@ struct HistogramKeyerProcessParams
 	OFX::BooleanParam* _boolReverseMask;		//is mask revert
 	boost::array<OFX::BooleanParam*, 3> _boolRGB;	//check boxes RGB selection
 	boost::array<OFX::BooleanParam*, 3> _boolHSL;	//check boxes HSL selection
+	boost::array<OFX::DoubleParam*, 3> _multiplierRGB;	//multiplier RGB channels
+	boost::array<OFX::DoubleParam*, 3> _multiplierHSL;	//multiplier HSL channels
+	OFX::BooleanParam* _boolClampCurveValues;			//clamp curve values (Advanced group)
 };
 
 /**
@@ -40,13 +43,25 @@ public:
     OFX::ParametricParam* _paramColorRGBSelection;	//curve	RGB
 	
 	OFX::BooleanParam* _paramOverlayRSelection;		//R
+	OFX::DoubleParam* _paramMutliplierR;			//multiplier R
+	
 	OFX::BooleanParam* _paramOverlayGSelection;		//G
+	OFX::DoubleParam* _paramMutliplierG;			//multiplier G
+	
 	OFX::BooleanParam* _paramOverlayBSelection;		//B
+	OFX::DoubleParam* _paramMutliplierB;			//multiplier B
+	
 	OFX::PushButtonParam* _resetRGB;				//Reset RGB button
 	
 	OFX::BooleanParam* _paramOverlayHSelection;		//H
+	OFX::DoubleParam* _paramMutliplierH;			//multiplier H
+	
 	OFX::BooleanParam* _paramOverlaySSelection;		//S
+	OFX::DoubleParam* _paramMutliplierS;			//multiplier S
+	
 	OFX::BooleanParam* _paramOverlayLSelection;		//L
+	OFX::DoubleParam* _paramMutliplierL;			//multiplier L
+	
 	OFX::PushButtonParam* _resetHSL;				//Reset HSL button
 	
     OFX::ChoiceParam* _paramDisplayTypeSelection;	//display option list global/adapted to channel (Histogram overlay group)
@@ -59,6 +74,7 @@ public:
 	OFX::IntParam* _paramNbStepSelection;				//step selection (Advanced group)
 	OFX::DoubleParam* _paramSelectionMultiplierSelection;//selection multiplier (Advanced group)
 	OFX::PushButtonParam* _paramRefreshOverlaySelection; //refresh overlay button (Advanced group)
+	OFX::BooleanParam* _paramClampCurveValues;			//clamp curve values (Advanced group)
 	
 	OFX::ChoiceParam* _paramOutputSettingSelection;	//output display list (BW/Alpha)
 	OFX::BooleanParam* _paramReverseMaskSelection;	//revert mask check box

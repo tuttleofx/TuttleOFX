@@ -143,29 +143,92 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		OFX::BooleanParamDescriptor* boolR = desc.defineBooleanParam(kBoolRed);
 		boolR->setDefault(false);
 		boolR->setHint("Activate Red channel");
+		boolR->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolR->setParent(groupRGB);
+		//red multiplier
+		OFX::DoubleParamDescriptor* redMultiplier = desc.defineDoubleParam(kMultiplierRed);
+		redMultiplier->setLabel(kMultiplierLabel);
+		redMultiplier->setHint("Determinate curve from selection precision.");
+		redMultiplier->setRange(1, 1000);
+		redMultiplier->setDisplayRange(0,5);
+		redMultiplier->setDefault(1);
+		redMultiplier->setParent(groupRGB);
+		
+		
 		OFX::BooleanParamDescriptor* boolG = desc.defineBooleanParam(kBoolGreen);
 		boolG->setDefault(false);
 		boolG->setHint("Activate Green channel");
+		boolG->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolG->setParent(groupRGB);
+		//green multiplier
+		OFX::DoubleParamDescriptor* greenMultiplier = desc.defineDoubleParam(kMultiplierGreen);
+		greenMultiplier->setLabel(kMultiplierLabel);
+		greenMultiplier->setHint("Determinate curve from selection precision.");
+		greenMultiplier->setRange(1, 1000);
+		greenMultiplier->setDisplayRange(0,5);
+		greenMultiplier->setDefault(1);
+		greenMultiplier->setParent(groupRGB);
+		
+		
 		OFX::BooleanParamDescriptor* boolB = desc.defineBooleanParam(kBoolBlue);
 		boolB->setHint("Activate Blue channel");
+		boolB->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolB->setDefault(false);
 		boolB->setParent(groupRGB);
+		//blue multiplier
+		OFX::DoubleParamDescriptor* blueMultiplier = desc.defineDoubleParam(kMultiplierBlue);
+		blueMultiplier->setLabel(kMultiplierLabel);
+		blueMultiplier->setHint("Determinate curve from selection precision.");
+		blueMultiplier->setRange(1, 1000);
+		blueMultiplier->setDisplayRange(0,5);
+		blueMultiplier->setDefault(1);
+		blueMultiplier->setParent(groupRGB);
+		
+		
 		
 		//Channels check box (HSL)
 		OFX::BooleanParamDescriptor* boolH = desc.defineBooleanParam(kBoolHue);
 		boolH->setDefault(false);
 		boolH->setHint("Activate Hue channel");
+		boolH->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolH->setParent(groupHSL);
+		//Hue multiplier
+		OFX::DoubleParamDescriptor* hueMultiplier = desc.defineDoubleParam(kMultiplierHue);
+		hueMultiplier->setLabel(kMultiplierLabel);
+		hueMultiplier->setHint("Determinate curve from selection precision.");
+		hueMultiplier->setRange(1, 1000);
+		hueMultiplier->setDisplayRange(0,5);
+		hueMultiplier->setDefault(1);
+		hueMultiplier->setParent(groupHSL);
+		
+		
 		OFX::BooleanParamDescriptor* boolS = desc.defineBooleanParam(kBoolSaturation);
 		boolS->setDefault(false);
 		boolS->setHint("Activate Saturation channel");
+		boolS->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolS->setParent(groupHSL);
+		//Saturation multiplier
+		OFX::DoubleParamDescriptor* saturationMultiplier = desc.defineDoubleParam(kMultiplierSaturation);
+		saturationMultiplier->setLabel(kMultiplierLabel);
+		saturationMultiplier->setHint("Determinate curve from selection precision.");
+		saturationMultiplier->setRange(1, 1000);
+		saturationMultiplier->setDisplayRange(0,5);
+		saturationMultiplier->setDefault(1);
+		saturationMultiplier->setParent(groupHSL);
+		
 		OFX::BooleanParamDescriptor* boolL = desc.defineBooleanParam(kBoolLightness);
 		boolL->setHint("Activate Lightness channel");
+		boolL->setLayoutHint( OFX::eLayoutHintNoNewLine ); //line is not finished
 		boolL->setDefault(false);
 		boolL->setParent(groupHSL);
+		//Lightness multiplier
+		OFX::DoubleParamDescriptor* lightnessMultiplier = desc.defineDoubleParam(kMultiplierLightness);
+		lightnessMultiplier->setLabel(kMultiplierLabel);
+		lightnessMultiplier->setHint("Determinate curve from selection precision.");
+		lightnessMultiplier->setRange(1, 1000);
+		lightnessMultiplier->setDisplayRange(0,5);
+		lightnessMultiplier->setDefault(1);
+		lightnessMultiplier->setParent(groupHSL);
 		
 		//Clean Button (RGB)
 		OFX::PushButtonParamDescriptor* resetButtonRGB = desc.definePushButtonParam(kButtonResetRGB);
@@ -288,6 +351,12 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		refreshOverlayButton->setLabel(kButtonRefreshOverlayLabel);
 		refreshOverlayButton->setHint("Refresh histogram overlay.");
 		refreshOverlayButton->setParent(groupAdvanced);
+		
+		//clamp values to 0 and 1
+		OFX::BooleanParamDescriptor* clampCurveValues = desc.defineBooleanParam(kBoolClampValues);
+		clampCurveValues->setHint("Clamp curve value : values superior to 1 or inferior to 0 will be clamp in process.");
+		clampCurveValues->setDefault(true);
+		clampCurveValues->setParent(groupAdvanced);
 	}
 	//Output settings
 	OFX::ChoiceParamDescriptor* outputType = desc.defineChoiceParam(kOutputListParamLabel);
