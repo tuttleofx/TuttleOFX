@@ -151,7 +151,7 @@ public:
 	}
 
 private:
-	AVCodecContext* _avctxOptions[CODEC_TYPE_NB];
+	AVCodecContext* _avctxOptions[AVMEDIA_TYPE_NB];
 	AVFormatContext* _avformatOptions;
 	struct SwsContext* _sws_context;  ///< contexte de transformation swscale
 	AVStream* _stream;

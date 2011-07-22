@@ -19,21 +19,32 @@ const std::string FFmpeg::ffmpegError_toString( int error )
 {
 	switch( error )
 	{
-		case AVERROR_IO:
-			return "I/O error";
-		case AVERROR_NUMEXPECTED:
-			return "number syntax expected in filename";
+		case AVERROR_BSF_NOT_FOUND:
+			return "Bitstream filter not found";
+		case AVERROR_DECODER_NOT_FOUND:
+			return "Decoder not found";
+		case AVERROR_DEMUXER_NOT_FOUND:
+			return "Demuxer not found";
+		case AVERROR_ENCODER_NOT_FOUND:
+			return "Encoder not found";
+		case AVERROR_EOF:
+			return "End of file";
+		case AVERROR_EXIT:
+			return "Immediate exit was requested; the called function should not be restarted";
+		case AVERROR_FILTER_NOT_FOUND:
+			return "Filter not found";
 		case AVERROR_INVALIDDATA:
-			return "invalid data found";
-		case AVERROR_NOMEM:
-			return "not enough memory";
-		case AVERROR_NOFMT:
-			return "unknown format";
-		case AVERROR_NOTSUPP:
-			return "operation not supported";
-		case AVERROR_NOENT:
-			return "no such file or directory";
+			return "Invalid data found when processing input";
+		case AVERROR_MUXER_NOT_FOUND:
+			return "Muxer not found";
+		case AVERROR_OPTION_NOT_FOUND:
+			return "Option not found";
 		case AVERROR_PATCHWELCOME:
+			return "Not yet implemented in FFmpeg, patches welcome";
+		case AVERROR_PROTOCOL_NOT_FOUND:
+			return "Protocol not found";
+		case AVERROR_STREAM_NOT_FOUND:
+			return "Stream not found";
 		default:
 			return "unknown error";
 	}
@@ -106,7 +117,7 @@ const std::string FFmpeg::codecID_toString( const CodecID codec_id )
 		CASE_RETURN_STRING( CODEC_ID_QDRAW );
 		CASE_RETURN_STRING( CODEC_ID_VIXL );
 		CASE_RETURN_STRING( CODEC_ID_QPEG );
-		CASE_RETURN_STRING( CODEC_ID_XVID );
+//		CASE_RETURN_STRING( CODEC_ID_XVID ); // removed from ffmpeg
 		CASE_RETURN_STRING( CODEC_ID_PNG );
 		CASE_RETURN_STRING( CODEC_ID_PPM );
 		CASE_RETURN_STRING( CODEC_ID_PBM );
@@ -334,28 +345,38 @@ const std::string FFmpeg::codecID_toString( const CodecID codec_id )
 		CASE_RETURN_STRING( CODEC_ID_FFMETADATA );
 	#endif
 #endif
+#if LIBAVCODEC_VERSION_MAJOR >= 53
+	CASE_RETURN_STRING( CODEC_ID_PRORES );
+	CASE_RETURN_STRING( CODEC_ID_JV );
+	CASE_RETURN_STRING( CODEC_ID_DFA );
+	CASE_RETURN_STRING( CODEC_ID_8SVX_RAW );
+	CASE_RETURN_STRING( CODEC_ID_S302M );
+	CASE_RETURN_STRING( CODEC_ID_QDMC );
+	CASE_RETURN_STRING( CODEC_ID_CELT );
+	CASE_RETURN_STRING( CODEC_ID_MICRODVD );
+#endif
 	}
 	return "CODEC_ID not handle.";
 }
 
-const std::string FFmpeg::codecType_toString( const CodecType codec_type )
+const std::string FFmpeg::codecType_toString( const AVMediaType codec_type )
 {
 	switch( codec_type )
 	{
-		case CODEC_TYPE_VIDEO:
-			return "CODEC_TYPE_VIDEO";
-		case CODEC_TYPE_AUDIO:
-			return "CODEC_TYPE_AUDIO";
-		case CODEC_TYPE_UNKNOWN:
-			return "CODEC_TYPE_UNKNOWN";
-		case CODEC_TYPE_DATA:
-			return "CODEC_TYPE_DATA";
-		case CODEC_TYPE_SUBTITLE:
-			return "CODEC_TYPE_SUBTITLE";
-		case CODEC_TYPE_ATTACHMENT:
-			return "CODEC_TYPE_ATTACHMENT";
-		case CODEC_TYPE_NB:
-			return "CODEC_TYPE_NB";
+		case AVMEDIA_TYPE_VIDEO:
+			return "AVMEDIA_TYPE_VIDEO";
+		case AVMEDIA_TYPE_AUDIO:
+			return "AVMEDIA_TYPE_AUDIO";
+		case AVMEDIA_TYPE_UNKNOWN:
+			return "AVMEDIA_TYPE_UNKNOWN";
+		case AVMEDIA_TYPE_DATA:
+			return "AVMEDIA_TYPE_DATA";
+		case AVMEDIA_TYPE_SUBTITLE:
+			return "AVMEDIA_TYPE_SUBTITLE";
+		case AVMEDIA_TYPE_ATTACHMENT:
+			return "AVMEDIA_TYPE_ATTACHMENT";
+		case AVMEDIA_TYPE_NB:
+			return "AVMEDIA_TYPE_NB";
 	}
 	return "CODEC_TYPE not handle.";
 }

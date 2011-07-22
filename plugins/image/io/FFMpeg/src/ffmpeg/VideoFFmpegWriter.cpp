@@ -32,7 +32,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	av_log_set_level( AV_LOG_WARNING );
 	av_register_all();
 
-	for( int i = 0; i < CODEC_TYPE_NB; ++i )
+	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
 		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
 
 	_formatsLongNames.push_back( std::string( "default" ) );
@@ -56,7 +56,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	AVCodec* c = av_codec_next( NULL );
 	while( c )
 	{
-		if( c->type == CODEC_TYPE_VIDEO && c->encode )
+		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode )
 		{
 			if( c->long_name )
 			{
@@ -70,7 +70,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 
 VideoFFmpegWriter::~VideoFFmpegWriter()
 {
-	for( int i = 0; i < CODEC_TYPE_NB; ++i )
+	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
 		av_free( _avctxOptions[i] );
 }
 
@@ -111,7 +111,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			codecId = userCodec->id;
 
 		_stream->codec->codec_id           = codecId;
-		_stream->codec->codec_type         = CODEC_TYPE_VIDEO;
+		_stream->codec->codec_type         = AVMEDIA_TYPE_VIDEO;
 		_stream->codec->bit_rate           = _bitRate;
 		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = width();
@@ -200,7 +200,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	{
 		AVPacket pkt;
 		av_init_packet( &pkt );
-		pkt.flags       |= PKT_FLAG_KEY;
+		pkt.flags       |= AV_PKT_FLAG_KEY;
 		pkt.stream_index = _stream->index;
 		pkt.data         = (boost::uint8_t*) out_frame;
 		pkt.size         = sizeof( AVPicture );
@@ -221,7 +221,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 				pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
 
 			if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
-				pkt.flags |= PKT_FLAG_KEY;
+				pkt.flags |= AV_PKT_FLAG_KEY;
 
 			pkt.stream_index = _stream->index;
 			pkt.data         = out_buffer;

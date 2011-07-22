@@ -24,7 +24,7 @@ protected:
 public:
 	static const std::string ffmpegError_toString( int error );
 	static const std::string codecID_toString( const CodecID codec_id );
-	static const std::string codecType_toString( const CodecType codec_type );
+	static const std::string codecType_toString( const AVMediaType codec_type );
 	static const std::string pixelFormat_toString( const PixelFormat p );
 
 private:

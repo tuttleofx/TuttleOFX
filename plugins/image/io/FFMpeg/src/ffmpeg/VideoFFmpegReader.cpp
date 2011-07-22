@@ -28,9 +28,9 @@ VideoFFmpegReader::VideoFFmpegReader()
 	, _lastDecodedPos( -1 )
 	, _isOpen( false )
 {
-	for( int i = 0; i < CODEC_TYPE_NB; ++i )
+	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
 	{
-		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
+		_avctxOptions[i] = avcodec_alloc_context3( avcodec_find_encoder( i ) );
 	}
 	_avformatOptions = avformat_alloc_context();
 	_avFrame         = avcodec_alloc_frame();
@@ -42,7 +42,7 @@ VideoFFmpegReader::~VideoFFmpegReader()
 	close();
 
 	av_free( _avFrame );
-	for( int i = 0; i < CODEC_TYPE_NB; ++i )
+	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
 	{
 		av_free( _avctxOptions[i] );
 	}
@@ -64,7 +64,8 @@ bool VideoFFmpegReader::open( const std::string& filename )
 		std::cerr << "ffmpegReader: the file doesn't exist (\"" << filename << "\")" << std::endl;
 		return false;
 	}
-	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, _params );
+//	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, _params );
+	int error = avformat_open_input( &_context, filename.c_str(), NULL, NULL );
 	if( error < 0 )
 	{
 		std::cerr << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;
@@ -197,7 +198,7 @@ bool VideoFFmpegReader::setupStreamInfo()
 
 		switch( codecContext->codec_type )
 		{
-			case CODEC_TYPE_VIDEO:
+			case AVMEDIA_TYPE_VIDEO:
 			{
 				_videoIdx.push_back( i );
 				if( _currVideoIdx < 0 )
@@ -209,11 +210,11 @@ bool VideoFFmpegReader::setupStreamInfo()
 				break;
 			}
 			// ignore all audio streams
-			case CODEC_TYPE_AUDIO:
-			case CODEC_TYPE_UNKNOWN:
-			case CODEC_TYPE_DATA:
-			case CODEC_TYPE_SUBTITLE:
-			case CODEC_TYPE_ATTACHMENT:
+			case AVMEDIA_TYPE_AUDIO:
+			case AVMEDIA_TYPE_UNKNOWN:
+			case AVMEDIA_TYPE_DATA:
+			case AVMEDIA_TYPE_SUBTITLE:
+			case AVMEDIA_TYPE_ATTACHMENT:
 			default:
 				break;
 		}
