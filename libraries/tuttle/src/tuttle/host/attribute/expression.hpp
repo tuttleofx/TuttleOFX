@@ -63,7 +63,7 @@ inline Type extractValueFromExpression( const std::string& expression )
 	catch( ... )
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
-				<< exception::user() + "Syntaxe error"
+				<< exception::user() + "Syntaxe error for expression: \"" + expression + "\""
 				<< exception::dev() + boost::current_exception_diagnostic_information()
 			);
 	}
