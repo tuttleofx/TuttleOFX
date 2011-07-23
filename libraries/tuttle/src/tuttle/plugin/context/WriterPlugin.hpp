@@ -54,12 +54,13 @@ public:
 	{
 		namespace bfs = boost::filesystem;
 		if( _isSequence )
-			return _filePattern.getDirectory().string();
+		{
+			return _filePattern.getAbsoluteDirectory().string();
+		}
 		else
 		{
 			bfs::path filepath( _paramFilepath->getValue() );
-//			return bfs::absolute(filepath).parent_path().string();
-			return filepath.parent_path().string();
+			return bfs::absolute(filepath).parent_path().string();
 		}
 	}
 
