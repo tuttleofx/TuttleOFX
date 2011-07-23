@@ -488,7 +488,7 @@ Sequence::EPattern Sequence::checkPattern( const std::string& pattern )
  * @param[out] padding
  * @param[out] strictPadding
  */
-bool Sequence::initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding )
+bool Sequence::initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const
 {
 	boost::cmatch matches;
 
@@ -521,7 +521,10 @@ bool Sequence::initFromPattern( const std::string& pattern, const EPattern& acce
 	}
 
 	prefix = std::string( matches[1].first, matches[1].second );
-	prefix = prefix.erase ( 0, _directory.string().size()+1 );
+	if( _directory.string().size() )
+	{
+		prefix = prefix.erase ( 0, _directory.string().size()+1 ); ///@todo how can we remove the +1?
+	}
 	suffix = std::string( matches[3].first, matches[3].second );
 	
 // 	TUTTLE_COUT( "initFromPattern "<< _directory <<" prefix=" << prefix << " suffix=" << suffix);
@@ -869,7 +872,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 		BOOST_FOREACH( const std::list<Sequence>::value_type & s, ss )
 		{
 			// don't detect sequence of directories
-                        if( !bfs::is_directory( s.getAbsoluteFirstFilename() ) )
+			if( !bfs::is_directory( s.getAbsoluteFirstFilename() ) )
 			{
 				if(s.getNbFiles()==1) // if it's a sequence of 1 file, it isn't a sequence but only a file
 				{
