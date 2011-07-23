@@ -28,10 +28,10 @@ VideoFFmpegReader::VideoFFmpegReader()
 	, _lastDecodedPos( -1 )
 	, _isOpen( false )
 {
-	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
-	{
-		_avctxOptions[i] = avcodec_alloc_context3( avcodec_find_encoder( i ) );
-	}
+//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
+//	{
+//		_avctxOptions[i] = avcodec_alloc_context3( avcodec_find_encoder( i ) );
+//	}
 	_avformatOptions = avformat_alloc_context();
 	_avFrame         = avcodec_alloc_frame();
 
@@ -42,10 +42,10 @@ VideoFFmpegReader::~VideoFFmpegReader()
 	close();
 
 	av_free( _avFrame );
-	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
-	{
-		av_free( _avctxOptions[i] );
-	}
+//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
+//	{
+//		av_free( _avctxOptions[i] );
+//	}
 	av_free( _avformatOptions );
 
 }

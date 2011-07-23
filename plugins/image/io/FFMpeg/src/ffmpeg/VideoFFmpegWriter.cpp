@@ -32,8 +32,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	av_log_set_level( AV_LOG_WARNING );
 	av_register_all();
 
-	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
-		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
+//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
+//		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
 
 	_formatsLongNames.push_back( std::string( "default" ) );
 	_formatsShortNames.push_back( std::string(  "default" ) );
@@ -70,8 +70,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 
 VideoFFmpegWriter::~VideoFFmpegWriter()
 {
-	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
-		av_free( _avctxOptions[i] );
+//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
+//		av_free( _avctxOptions[i] );
 }
 
 int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_height, PixelFormat in_pixelFormat )

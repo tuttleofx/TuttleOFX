@@ -133,17 +133,17 @@ public:
 		return codecType_toString( _videoCodec->type );
 	}
 
-	PixelFormat pixelFormat( ) const
-	{
-		if( !_videoCodec || !_avctxOptions ||_videoCodec->type <= 0 || !_avctxOptions[_videoCodec->type] )
-			return PIX_FMT_NONE;
-		return _avctxOptions[_videoCodec->type]->pix_fmt;
-	}
+//	PixelFormat pixelFormat( ) const
+//	{
+//		if( !_videoCodec || !_avctxOptions ||_videoCodec->type <= 0 || !_avctxOptions[_videoCodec->type] )
+//			return PIX_FMT_NONE;
+//		return _avctxOptions[_videoCodec->type]->pix_fmt;
+//	}
 
-	std::string pixelFormatString( ) const
-	{
-		return pixelFormat_toString( pixelFormat() );
-	}
+//	std::string pixelFormatString( ) const
+//	{
+//		return pixelFormat_toString( pixelFormat() );
+//	}
 
 public: // private:
 	AVFormatContext* _context;
@@ -152,7 +152,7 @@ public: // private:
 	AVFrame* _avFrame;
 	AVCodec* _videoCodec;
 	AVPacket _pkt;
-	AVCodecContext* _avctxOptions[AVMEDIA_TYPE_NB];
+//	AVCodecContext* _avctxOptions[AVMEDIA_TYPE_NB];
 	AVFormatContext* _avformatOptions;
 	struct SwsContext* _sws_context;  ///< contexte de transformation swscale
 	std::vector<int> _videoIdx;
