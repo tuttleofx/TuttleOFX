@@ -90,7 +90,17 @@ inline std::string extractValueFromExpression<std::string>( const std::string& e
 template< typename Type >
 inline Type extractValueFromExpression( const std::string& expression )
 {
-	return boost::lexical_cast<Type>( expression );
+	try
+	{
+		return boost::lexical_cast<Type>( expression );
+	}
+	catch( ... )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Syntaxe error for expression: \"" + expression + "\""
+				<< exception::dev() + boost::current_exception_diagnostic_information()
+			);
+	}
 }
 
 #endif

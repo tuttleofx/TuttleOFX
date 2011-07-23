@@ -78,7 +78,7 @@ void ParamChoice::setValueFromExpression( const std::string& value, const ofx::a
 	catch(...)
 	{}
 	BOOST_THROW_EXCEPTION( exception::Value()
-			<< exception::user() + "Choice expression is not recognized: \"" + value + "\"."
+			<< exception::user() + "Choice expression is not recognized: " + quotes(value) + " (Param: " + quotes(this->getName()) + ")."
 		);
 }
 
