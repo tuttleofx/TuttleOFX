@@ -445,17 +445,21 @@ int main( int argc, char** argv )
 					catch( const tuttle::exception::Common& e )
 					{
 						TUTTLE_CERR( "sam-do - " << nodeFullName );
+#ifdef TUTTLE_PRODUCTION
 						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
-						TUTTLE_CERR( "\n" );
+#else
 						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+#endif
 						exit( -2 );
 					}
 					catch( const boost::program_options::error& e )
 					{
 						TUTTLE_CERR( "sam-do - " << nodeFullName );
+#ifdef TUTTLE_PRODUCTION
 						TUTTLE_CERR( "Error: " << e.what() );
-						TUTTLE_CERR( "\n" );
+#else
 						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+#endif
 						exit( -2 );
 					}
 					catch( ... )

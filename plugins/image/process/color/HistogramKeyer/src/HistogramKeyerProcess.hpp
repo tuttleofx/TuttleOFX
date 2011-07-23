@@ -36,13 +36,38 @@ struct Compute_alpha_pixel
         for( int v = 0; v < boost::gil::num_channels<Pixel>::type::value -1; ++v ) // RGB but not alpha (doesn't needed)
         {
 			if(_params._boolRGB[v]->getValue()) //if current channel check-box is active
-				alpha *=  _params._paramColorRGB->getValue( v, _params._time,p[v] );
+			{
+				double value =  _params._paramColorRGB->getValue( v, _params._time,p[v] );
+
+				//clamp mode 
+				if(_params._boolClampCurveValues->getValue())
+				{
+					if(value > 1.0)			//clamp values superior to 1
+						value = 1.0;
+					else if(value < 0.0)	//clamp values inferior to 0
+						value = 0.0;
+				}
+				value *= (double) _params._multiplierRGB[v]->getValue(); //multiplier RGB channels
+				alpha *= value;
+			}
         }
         //HSL
         for( int v = 0; v < boost::gil::num_channels<hsl32f_pixel_t>::type::value; ++v )
         {
 			if(_params._boolHSL[v]->getValue()) //if current channel check-box is active
-				alpha *=  _params._paramColorHSL->getValue( v, _params._time,hsl_pix[v] );
+			{
+				double value = _params._paramColorHSL->getValue( v, _params._time,hsl_pix[v] );
+				//clamp mode 
+				if(_params._boolClampCurveValues->getValue())
+				{
+					if(value > 1.0)			//clamp values superior to 1
+						value = 1.0;
+					else if(value < 0.0)	//clamp values inferior to 0
+						value = 0.0;
+				}
+				value *= (double) _params._multiplierHSL[v]->getValue(); //multiplier HSL channels
+				alpha *=  value;
+			}
         }
 		Pixel ret;
 		if(_params._boolReverseMask->getValue()) //revert mask

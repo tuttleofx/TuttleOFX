@@ -164,7 +164,7 @@ public:
 	typedef boost::gil::rgba32f_view_t SView; // declare current view type
 	
 public:
-	OverlayData( const OfxPointI& size, const int nbSteps );
+	OverlayData( const OfxPointI& size, const int nbSteps, const int nbStepsCurvesFromSelection);
 	
 	/** 
 	 * reset selection data (button clear selection)
@@ -193,8 +193,8 @@ public:
 	/**
 	 * Histogram computing
 	 */
-	void computeFullData( OFX::Clip* clipSrc,const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly = false );			//compute full data (average/selection/histograms)
-	
+	void computeFullData( OFX::Clip* clipSrc,const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly = false);			//compute full data (average/selection/histograms)
+	void computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale);					//compute only selection to curve data
 	void setNbStep( const std::size_t nbStep ) { _vNbStep = nbStep; }
 	
 	/**
@@ -202,9 +202,14 @@ public:
      */
 	bool isCurrentTimeModified(const OfxTime time) const;
 	
+	/**
+	 * HistoramData management
+	 */
+	void resetCurvesFromSelectionData(); //reset curves from selection data
+	
 private:
 	/*Histogram management*/
-	void computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const bool isSelection=false );	//compute a HisogramBufferData
+	void computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const bool isSelection=false);	//compute a HisogramBufferData
 	void correctHistogramBufferData( HistogramBufferData& toCorrect ) const;		//correct a complete HistogramBufferData
 	void resetHistogramBufferData( HistogramBufferData& toReset ) const;		//reset a complete HistogramBufferData
 	
@@ -213,23 +218,26 @@ private:
 	
 	/*Reset data*/
 	void resetHistogramData(); //reset data (if size change for example)
+	
 	void resetHistogramSelectionData();	//reset selection data
 	void resetAverages();		//rest all of the averages
 	void removeSelection();
 	
 	void correctVector( HistogramVector& v ) const;								//correct a specific channel
 	void resetVectortoZero( HistogramVector& v, const std::size_t size ) const;	//reset a specific channel buffer
-	int computeAnAverage( const HistogramVector& selection_v ) const;						//compute average of a specific channel
+	int computeAnAverage( const HistogramVector& selection_v ) const;			//compute average of a specific channel
 	
 public:
 	///@todo accessors
 	HistogramBufferData _data;				//histogram data
 	HistogramBufferData _selectionData;		//selection histogram data
+	HistogramBufferData _curveFromSelection;	//curve from selection histogram data
+	
 	AverageBarData _averageData;			//average bar data used to display average bars
 	bool_2d _imgBool;						//unsigned char 2D (use for display texture on screen)
 	OfxTime _currentTime;					//time of the current frame
 	std::size_t _vNbStep;					//nbStep for buffers
-	
+	std::size_t _vNbStepCurveFromSelection; //nbStep for curve to selection buffers
 	bool _isComputing;
 	
 private:
