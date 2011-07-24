@@ -28,9 +28,11 @@ FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 {
 	FFMpegProcessParams params;
 
-	_paramFormat->getValue( params._format );
-	_paramCodec->getValue( params._codec );
-	_paramBitRate->getValue( params._bitrate );
+	params._filepath = _paramFilepath->getValue();
+	params._format   = _paramFormat->getValue();
+	params._codec    = _paramCodec->getValue();
+	params._bitrate  = _paramBitRate->getValue();
+
 	return params;
 }
 
