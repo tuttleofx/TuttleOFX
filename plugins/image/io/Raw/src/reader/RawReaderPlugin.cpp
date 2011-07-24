@@ -175,44 +175,25 @@ void RawReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefer
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 //	const std::string filename( getAbsoluteFirstFilename() );
-	switch( getExplicitConversion() )
+	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
-		case eParamReaderExplicitConversionAuto:
+		OFX::EBitDepth bd = OFX::eBitDepthNone;
+		int bitDepth      = 32;    //raw_read_precision( filename );
+		switch( bitDepth )
 		{
-			OFX::EBitDepth bd = OFX::eBitDepthNone;
-			int bitDepth      = 32;    //raw_read_precision( filename );
-			switch( bitDepth )
-			{
-				case 8:
-					bd = OFX::eBitDepthUByte;
-					break;
-				case 16:
-					bd = OFX::eBitDepthUShort;
-					break;
-				case 32:
-					bd = OFX::eBitDepthFloat;
-					break;
-				default:
-					BOOST_THROW_EXCEPTION( exception::ImageFormat() );
-			}
-			clipPreferences.setClipBitDepth( *this->_clipDst, bd );
-			break;
+			case 8:
+				bd = OFX::eBitDepthUByte;
+				break;
+			case 16:
+				bd = OFX::eBitDepthUShort;
+				break;
+			case 32:
+				bd = OFX::eBitDepthFloat;
+				break;
+			default:
+				BOOST_THROW_EXCEPTION( exception::ImageFormat() );
 		}
-		case eParamReaderExplicitConversionByte:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-			break;
-		}
-		case eParamReaderExplicitConversionShort:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-			break;
-		}
-		case eParamReaderExplicitConversionFloat:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-			break;
-		}
+		clipPreferences.setClipBitDepth( *this->_clipDst, bd );
 	}
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );

@@ -16,14 +16,16 @@ using namespace boost::gil;
 namespace fs = boost::filesystem;
 
 FFMpegReaderPlugin::FFMpegReaderPlugin( OfxImageEffectHandle handle )
-	: ImageEffect( handle )
+	: ReaderPlugin( handle )
 	, _errorInFile( false )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_clipDst       = fetchClip( kOfxImageEffectOutputClipName );
-	_paramFilepath = fetchStringParam( kFilename );
+	_clipDst           = fetchClip( kOfxImageEffectOutputClipName );
+	_paramFilepath     = fetchStringParam( kParamReaderFilename );
+	_paramExplicitConv = fetchChoiceParam( kParamReaderExplicitConversion );
+	_paramFlip = fetchBooleanParam( kParamReaderFlip );
 }
 
 FFMpegReaderParams FFMpegReaderPlugin::getProcessParams() const
@@ -54,13 +56,8 @@ bool FFMpegReaderPlugin::ensureVideoIsOpen()
 
 void FFMpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kFFMpegHelpButton )
-	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kFFMpegHelpString );
-	}
-	else if( paramName == kFilename )
+	ReaderPlugin::changedParam( args, paramName );
+	if( paramName == kParamReaderFilename )
 	{
 		_errorInFile = false;
 	}
@@ -68,9 +65,13 @@ void FFMpegReaderPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 
 void FFMpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
+	ReaderPlugin::getClipPreferences( clipPreferences );
 	clipPreferences.setOutputFrameVarying( true );
 	clipPreferences.setClipComponents( *_clipDst, OFX::ePixelComponentRGBA );
-	clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte ); /// @todo tuttle: some video format may need other bit depth (how we can detect this ?)
+	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
+	{
+		clipPreferences.setClipBitDepth( *_clipDst, OFX::eBitDepthUByte ); /// @todo tuttle: some video format may need other bit depth (how we can detect this ?)
+	}
 
 	if( !ensureVideoIsOpen() )
 		return;

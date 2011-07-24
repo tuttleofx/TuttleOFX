@@ -86,7 +86,7 @@ public:
 	}
 
 protected:
-	inline bool varyOnTime() const { return _isSequence; }
+	virtual inline bool varyOnTime() const { return _isSequence; }
 
 public:
 	OFX::Clip*           _clipDst;           ///< Destination image clip

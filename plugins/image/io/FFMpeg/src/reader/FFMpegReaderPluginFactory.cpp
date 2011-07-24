@@ -2,7 +2,7 @@
 #include "FFMpegReaderPlugin.hpp"
 #include "FFMpegReaderDefinitions.hpp"
 
-#include <tuttle/plugin/ImageGilProcessor.hpp>
+#include <tuttle/plugin/context/ReaderPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -18,6 +18,8 @@ void FFMpegReaderPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.setLabels( "TuttleFfmpegReader", "FfmpegReader",
 	                "Ffmpeg video reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
+
+	desc.setDescription( "Video reader based on FFMpeg library" );
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );
@@ -46,19 +48,12 @@ void FFMpegReaderPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 {
 	// Create the mandated output clip
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
-
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGB );
 	dstClip->addSupportedComponent( OFX::ePixelComponentAlpha );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kFilename );
-	filename->setLabel( "filename" );
-	filename->setStringType( OFX::eStringTypeFilePath );
-	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kFFMpegHelpButton );
-	helpButton->setScriptName( "help" );
+	describeReaderParamsInContext( desc, context );
 }
 
 /**

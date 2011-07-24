@@ -35,6 +35,28 @@ void ReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferenc
 	}
 	// If pattern detected (frame varying on time)
 	clipPreferences.setOutputFrameVarying( varyOnTime() );
+
+	switch( getExplicitConversion() )
+	{
+		case eParamReaderExplicitConversionByte:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
+			break;
+		}
+		case eParamReaderExplicitConversionShort:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+			break;
+		}
+		case eParamReaderExplicitConversionAuto:
+		case eParamReaderExplicitConversionFloat:
+		{
+			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
+			break;
+		}
+	}
+	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
+	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );
 }
 
 bool ReaderPlugin::getTimeDomain( OfxRangeD& range )
