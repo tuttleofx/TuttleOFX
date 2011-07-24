@@ -3,6 +3,7 @@
 #include "FFMpegWriterDefinitions.hpp"
 
 #include <ffmpeg/VideoFFmpegWriter.hpp>
+#include <tuttle/plugin/context/WriterPluginFactory.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -61,13 +62,13 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	dstClip->setSupportsTiles( kSupportTiles );
 
 	// Controls
-	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamFilename );
-	filename->setLabel( "filename" );
+	OFX::StringParamDescriptor* filename = desc.defineStringParam( kParamWriterFilename );
+	filename->setLabel( "Filename" );
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
 	OFX::ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kParamFormatLong );
-	formatLong->setLabel( "format" );
+	formatLong->setLabel( "Format" );
 	for( std::vector<std::string>::const_iterator it = writer.getFormatsLong().begin(), itEnd = writer.getFormatsLong().end();
 	     it != itEnd;
 	     ++it )
@@ -86,7 +87,7 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	format->setDefault( 25 );
 
 	OFX::ChoiceParamDescriptor* codecLong = desc.defineChoiceParam( kParamCodecLong );
-	codecLong->setLabel( "codec" );
+	codecLong->setLabel( "Codec" );
 	for( std::vector<std::string>::const_iterator it = writer.getCodecsLong().begin(), itEnd = writer.getCodecsLong().end();
 	     it != itEnd;
 	     ++it )
@@ -105,17 +106,11 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	codec->setDefault( 18 );
 
 	OFX::IntParamDescriptor* bitrate = desc.defineIntParam( kParamBitrate );
-	bitrate->setLabel( "bitrate" );
+	bitrate->setLabel( "Bitrate" );
 	bitrate->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 	bitrate->setDefault( 400000 );
 
-	OFX::BooleanParamDescriptor* renderAlways = desc.defineBooleanParam( kParamRenderAlways );
-	renderAlways->setLabel( "Render always" );
-	renderAlways->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
-	renderAlways->setDefault( false );
-
-	OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamFFMpegHelpButton );
-	helpButton->setScriptName( "help" );
+	describeWriterParamsInContext( desc, context );
 }
 
 /**

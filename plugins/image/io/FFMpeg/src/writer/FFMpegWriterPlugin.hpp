@@ -1,9 +1,12 @@
 #ifndef _TUTTLE_PLUGIN_FFMPEG_WRITER_PLUGIN_HPP_
 #define _TUTTLE_PLUGIN_FFMPEG_WRITER_PLUGIN_HPP_
 
-#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <ffmpeg/VideoFFmpegWriter.hpp>
+
+#include <tuttle/plugin/context/WriterPlugin.hpp>
+
 #include <boost/scoped_ptr.hpp>
+
 #include <string>
 
 namespace tuttle {
@@ -22,7 +25,7 @@ struct FFMpegProcessParams
 /**
  * @brief FFMpeg plugin
  */
-class FFMpegWriterPlugin : public ImageEffectGilPlugin
+class FFMpegWriterPlugin : public WriterPlugin
 {
 public:
 	FFMpegWriterPlugin( OfxImageEffectHandle handle );
@@ -38,13 +41,12 @@ public:
 	void endSequenceRender( const OFX::EndSequenceRenderArguments& args );
 
 public:
-	OFX::StringParam*   _filepath;      ///< Ffmpeg filepath
-	OFX::ChoiceParam*   _format;
-	OFX::ChoiceParam*   _formatLong;
-	OFX::ChoiceParam*   _codec;
-	OFX::ChoiceParam*   _codecLong;
-	OFX::IntParam*      _bitRate;
-	OFX::BooleanParam*  _paramRenderAlways;     ///< Render always
+	OFX::ChoiceParam*   _paramFormat;
+	OFX::ChoiceParam*   _paramFormatLong;
+	OFX::ChoiceParam*   _paramCodec;
+	OFX::ChoiceParam*   _paramCodecLong;
+	OFX::IntParam*      _paramBitRate;
+	
 	VideoFFmpegWriter _writer;
 };
 
