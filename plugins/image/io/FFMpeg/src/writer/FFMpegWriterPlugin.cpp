@@ -56,6 +56,12 @@ void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, con
 	}
 }
 
+void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	// If pattern detected (frame varying on time)
+	clipPreferences.setOutputFrameVarying( true );
+}
+
 bool FFMpegWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, OfxTime& identityTime )
 {
 	return WriterPlugin::isIdentity( args, identityClip, identityTime );
@@ -80,6 +86,8 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
  */
 void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
+	WriterPlugin::render( args );
+
 	doGilRender<FFMpegWriterProcess>( *this, args );
 	
 //	// instantiate the render code based on the pixel depth of the dst clip

@@ -24,9 +24,9 @@ public:
 	virtual ~WriterPlugin() = 0;
 
 public:
-	void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
-	void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
+	virtual void changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName );
+	virtual void getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences );
+	virtual bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
 	virtual void beginSequenceRender( const OFX::BeginSequenceRenderArguments& args );
 	virtual void render( const OFX::RenderArguments& args );

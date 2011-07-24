@@ -91,7 +91,9 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	}
 
 	if( !_avformatOptions )
+	{
 		_avformatOptions = avformat_alloc_context();
+	}
 
 	_avformatOptions->oformat = fmt;
 	snprintf( _avformatOptions->filename, sizeof( _avformatOptions->filename ), "%s", filename().c_str() );

@@ -67,6 +67,12 @@ void FFMpegWriterPluginFactory::describeInContext( OFX::ImageEffectDescriptor& d
 	filename->setStringType( OFX::eStringTypeFilePath );
 	filename->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
 
+	OFX::ChoiceParamDescriptor* bitDepth = desc.defineChoiceParam( kParamWriterBitDepth );
+	bitDepth->setLabel( "Bit depth" );
+	bitDepth->appendOption( kTuttlePluginBitDepth8 );
+	bitDepth->setCacheInvalidation( OFX::eCacheInvalidateValueAll );
+	bitDepth->setDefault( 0 );
+
 	OFX::ChoiceParamDescriptor* formatLong = desc.defineChoiceParam( kParamFormatLong );
 	formatLong->setLabel( "Format" );
 	for( std::vector<std::string>::const_iterator it = writer.getFormatsLong().begin(), itEnd = writer.getFormatsLong().end();
