@@ -75,7 +75,7 @@ int main( int argc, char** argv )
 	// get environment options and parse them
 	if( const char* env_ls_options = std::getenv("SAM_LS_OPTIONS") )
 	{
-		std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
+		const std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
 		bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
 
