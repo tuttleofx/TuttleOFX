@@ -486,7 +486,7 @@ GIL_FORCEINLINE
 void correlate_cols_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
                     const convolve_boundary_option option = convolve_option_extend_zero )
 {
-	correlate_1d_imp<false,autoEnabled,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+	correlate_1d_imp<autoEnabled,false,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
 }
 
 /// \ingroup ImageAlgorithms
