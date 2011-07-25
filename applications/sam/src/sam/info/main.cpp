@@ -208,10 +208,10 @@ int main( int argc, char** argv )
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
 	// get environnement options and parse them
-	if( std::getenv("SAM_INFO_OPTIONS") != NULL)
+	if( const char* env_info_options = std::getenv("SAM_INFO_OPTIONS") )
 	{
 	    std::vector<std::string> envOptions;
-	    std::string env = std::getenv("SAM_INFO_OPTIONS");
+	    const std::string env( env_info_options );
 	    envOptions.push_back( env );
 	    bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 	}

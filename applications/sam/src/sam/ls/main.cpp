@@ -73,11 +73,9 @@ int main( int argc, char** argv )
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
 	// get environment options and parse them
-	const char* env_ls_options = std::getenv("SAM_LS_OPTIONS");
-	if( env_ls_options != NULL )
+	if( const char* env_ls_options = std::getenv("SAM_LS_OPTIONS") )
 	{
-		std::vector<std::string> vecOptions;
-		bal::split( vecOptions, env_ls_options, bal::is_any_of(" "));
+		std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
 		bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
 

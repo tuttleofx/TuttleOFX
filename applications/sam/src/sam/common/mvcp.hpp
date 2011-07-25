@@ -177,18 +177,16 @@ int sammvcp( int argc, char** argv )
 	bpo::store( bpo::command_line_parser( argc, argv ).options( cmdline_options ).positional( pod ).run( ), vm );
 
 	// get environnement options and parse them
-#ifndef SAM_MOVEFILES // copy file(s)
-	if( std::getenv( "SAM_CP_OPTIONS" ) != NULL )
+	if( const char* env_otions = std::getenv(
+#ifndef SAM_MOVEFILES
+		"SAM_CP_OPTIONS"
 #else
-	if( std::getenv( "SAM_MV_OPTIONS" ) != NULL )
+		"SAM_MV_OPTIONS"
 #endif
+		) )
 	{
 		std::vector<std::string> envOptions;
-#ifndef SAM_MOVEFILES // copy file(s)
-		std::string env = std::getenv( "SAM_CP_OPTIONS" );
-#else
-		std::string env = std::getenv( "SAM_MV_OPTIONS" );
-#endif
+		const std::string env( env_otions );
 		envOptions.push_back( env );
 		bpo::store( bpo::command_line_parser( envOptions ).options( cmdline_options ).positional( pod ).run( ), vm );
 	}
