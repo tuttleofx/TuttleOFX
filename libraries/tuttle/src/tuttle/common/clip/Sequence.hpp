@@ -305,6 +305,7 @@ private:
 	 * @warning the directory must be set
 	 */
 	bool init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
+
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
@@ -313,6 +314,13 @@ private:
 	bool init( const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
 	
 public:
+	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
+	 */
+	bool initFromPattern( const boost::filesystem::path& dir, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EMaskOptions options = eMaskOptionsDefault, const EPattern accept = ePatternDefault );
+
 	/**
 	 * @brief Init from directory and pattern.
 	 * @warning search on your filesystem, to detect the range.
@@ -387,7 +395,7 @@ protected:
 	 * @brief Partial initialization, using only pattern informations.
 	 * @warning You don't have all informations like range, directory, etc.
 	 */
-	bool initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const;
+	bool retrieveInfosFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const;
 
 private:
 	friend std::list<Sequence> buildSequence(  const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const EMaskOptions& desc );

@@ -498,7 +498,7 @@ Sequence::EPattern Sequence::checkPattern( const std::string& pattern )
  * @param[out] padding
  * @param[out] strictPadding
  */
-bool Sequence::initFromPattern( const std::string& filePattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const
+bool Sequence::retrieveInfosFromPattern( const std::string& filePattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const
 {
 	boost::cmatch matches;
 
@@ -533,7 +533,7 @@ bool Sequence::initFromPattern( const std::string& filePattern, const EPattern& 
 	prefix = std::string( matches[1].first, matches[1].second );
 	suffix = std::string( matches[3].first, matches[3].second );
 	
-// 	TUTTLE_COUT( "initFromPattern "<< _directory <<" prefix=" << prefix << " suffix=" << suffix);
+// 	TUTTLE_COUT( "retrieveInfosFromPattern "<< _directory <<" prefix=" << prefix << " suffix=" << suffix);
 	return true;
 }
 
@@ -551,8 +551,7 @@ void Sequence::init( const std::string& prefix, const std::size_t padding, const
 
 bool Sequence::init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept )
 {
-
-	if( !initFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
+	if( !retrieveInfosFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not regognize as a pattern, maybe a still file
 
 	_firstTime	= firstTime;
@@ -567,13 +566,25 @@ bool Sequence::init( const Time first, const Time last, const Time step, const E
 	return this->init( _directory.filename().string(), first, last, step, accept );
 }
 
+bool Sequence::initFromPattern( const boost::filesystem::path& dir, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EMaskOptions options, const EPattern accept )
+{
+	if( !retrieveInfosFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
+		return false; // not regognize as a pattern, maybe a still file
+
+	_firstTime	= firstTime;
+	_lastTime	 = lastTime;
+	_step		= step;
+	_nbFiles	= 0;
+	return true;
+}
+
 bool Sequence::initFromDetection( const std::string& pattern, const EPattern accept )
 {
 	clear();
 
 	setDirectoryFromPath( pattern );
 	
-	if( !initFromPattern( boost::filesystem::path(pattern).filename().string(), accept, _prefix, _suffix, _padding, _strictPadding ) )
+	if( !retrieveInfosFromPattern( boost::filesystem::path(pattern).filename().string(), accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not recognized as a pattern, maybe a still file
 
 	if( !boost::filesystem::exists( _directory ) )

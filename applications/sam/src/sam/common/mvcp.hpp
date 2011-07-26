@@ -298,12 +298,12 @@ int sammvcp( int argc, char** argv )
 		}
 		sequencePattern = "";
 	}
-
+	
 	ttl::Sequence dstSeq( dstPath, descriptionMask );
 
 	if( sequencePattern.size( ) > 0 )
 	{
-		dstIsSeq = dstSeq.init( (dstPath / sequencePattern).string(), 0, 0, 1, ttl::Sequence::ePatternAll );
+		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, ttl::Sequence::ePatternAll );
 		if( ! dstIsSeq ) // there is a pattern, but it's not valid.
 		{
 			TUTTLE_CERR( "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." );
