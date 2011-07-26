@@ -15,7 +15,7 @@ OfxhParamSet::OfxhParamSet( const OfxhParamSet& other )
 
 void OfxhParamSet::initMapFromList()
 {
-	for( ParamList::iterator it = _paramList.begin(), itEnd = _paramList.end();
+	for( ParamVector::iterator it = _paramVector.begin(), itEnd = _paramVector.end();
 	     it != itEnd;
 	     ++it )
 	{
@@ -28,20 +28,20 @@ OfxhParamSet::~OfxhParamSet()
 
 void OfxhParamSet::operator=( const OfxhParamSet& other )
 {
-	_paramList = other._paramList.clone();
+	_paramVector = other._paramVector.clone();
 	initMapFromList();
 }
 
 void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 {
-	if( _paramList.size() != other._paramList.size() )
+	if( _paramVector.size() != other._paramVector.size() )
 	{
 		BOOST_THROW_EXCEPTION( exception::Bug()
 		    << exception::dev( "You try to copy parameters values, but the two lists are not identical." ) );
 	}
 
-	ParamList::const_iterator oit = other._paramList.begin(), oitEnd = other._paramList.end();
-	for( ParamList::iterator it = _paramList.begin(), itEnd = _paramList.end();
+	ParamVector::const_iterator oit = other._paramVector.begin(), oitEnd = other._paramVector.end();
+	for( ParamVector::iterator it = _paramVector.begin(), itEnd = _paramVector.end();
 	     it != itEnd && oit != oitEnd;
 	     ++it, ++oit )
 	{
@@ -57,14 +57,14 @@ void OfxhParamSet::copyParamsValues( const OfxhParamSet& other )
 	initMapFromList();
 }
 
-void OfxhParamSet::referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
-{
+//void OfxhParamSet::referenceParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
+//{
 	//	if( _allParams.find( name ) != _allParams.end() )
 	//	{
 	//		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to reference a new parameter which already exists." ) );
 	//	}
 	//	_allParams[name] = instance;
-}
+//}
 
 void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_EXCEPTION_SPEC
 {
@@ -72,7 +72,7 @@ void OfxhParamSet::addParam( const std::string& name, OfxhParam* instance ) OFX_
 	{
 		BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrExists, "Trying to add a new parameter which already exists." ) );
 	}
-	_paramList.push_back( instance );
+	_paramVector.push_back( instance );
 	_params[name] = instance;
 	//	referenceParam( name, instance );
 }

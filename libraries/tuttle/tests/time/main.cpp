@@ -32,9 +32,9 @@ BOOST_AUTO_TEST_CASE( time_shift )
 
 		TUTTLE_TCOUT( "__________________________________________________2" );
 		// Setup parameters
-		read1.getParam( "filename" ).set( "data/input-###.png" );
-		timeshift1.getParam("offset").set( 0 );
-		write1.getParam( "filename" ).set( "data/output_####.png" );
+		read1.getParam( "filename" ).setValue( "data/input-###.png" );
+		timeshift1.getParam("offset").setValue( 0 );
+		write1.getParam( "filename" ).setValue( "data/output_####.png" );
 
 		TUTTLE_TCOUT( "__________________________________________________3" );
 		g.connect( read1, invert1 );

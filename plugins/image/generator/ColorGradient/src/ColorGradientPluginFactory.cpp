@@ -4,9 +4,12 @@
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 
+
 namespace tuttle {
 namespace plugin {
 namespace colorGradient {
+
+static const bool kSupportTiles = true;
 
 /**
  * @brief Function called to describe the plugin main features.

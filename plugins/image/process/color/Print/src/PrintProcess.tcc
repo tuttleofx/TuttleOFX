@@ -3,7 +3,6 @@
 
 #include <boost/gil/extension/numeric/pixel_by_channel.hpp>
 
-#include <caca.h>
 
 #include <cstdio>
 
@@ -13,9 +12,9 @@ namespace print {
 
 struct CacaImage
 {
-    char *pixels;
-    unsigned int w, h;
-    caca_dither_t *dither;
+	char *pixels;
+	unsigned int w, h;
+	caca_dither_t *dither;
 };
 
 template<class SView>
@@ -41,8 +40,7 @@ CacaImage load_cacaimage_from_view( const SView sView )
 									 rmask, gmask, bmask, amask);
 	if( ! im.dither )
 	{
-		BOOST_THROW_EXCEPTION( exception::Unknown()
-				<< exception::dev( "Unable to load buffer." ) );
+		BOOST_THROW_EXCEPTION( exception::Unknown() << exception::dev( "Unable to load buffer." ) );
 	}
 	return im;
 }
@@ -53,8 +51,8 @@ struct channel_cout_t : public std::unary_function<Channel,Channel> {
     Channel operator()(typename boost::gil::channel_traits<Channel>::const_reference ch) const
 	{
 		std::cout << ch << " ";
-        return ch;
-    }
+		return ch;
+	}
 };
 
 template<template<class> class Func>
@@ -64,10 +62,7 @@ struct call_pixel_by_channel_t
 	GIL_FORCEINLINE
 	Pixel operator()( const Pixel& v ) const
 	{
-		static_for_each(
-			v,
-			Func<typename boost::gil::channel_type<Pixel>::type>()
-			);
+		static_for_each( v, Func<typename boost::gil::channel_type<Pixel>::type>() );
 		return v;
 	}
 };
@@ -78,6 +73,15 @@ PrintProcess<View>::PrintProcess( PrintPlugin &effect )
 , _plugin( effect )
 {
 	this->setNoMultiThreading();
+
+	/*viewerOpenGL.cv = caca_create_canvas(0, 0);
+	viewerOpenGL.dp = caca_create_display (viewerOpenGL.cv);*/
+}
+
+template<class View>
+PrintProcess<View>::~PrintProcess()
+{
+	// caca_free_canvas( viewerOpenGL.cv );
 }
 
 template<class View>
@@ -99,12 +103,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
-//	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
-//								 procWindowRoW.y2 - procWindowRoW.y1 };
-//	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
-//											  procWindowSize.x, procWindowSize.y );
-//	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
-//											  procWindowSize.x, procWindowSize.y );
+
 	View src = this->_srcView;
 	View dst = this->_dstView;
 
@@ -117,7 +116,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 		case eParamModePixel:
 		{
 			call_pixel_by_channel_t<channel_cout_t>()( src( _params._pixel ) );
-			std::cout << std::endl;
+			//std::cout << std::endl;
 			break;
 		}
 		case eParamModeRegion:
@@ -137,9 +136,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 					std::cout << std::fixed;
 					std::cout << std::setprecision( 2 );
 					call_pixel_by_channel_t<channel_cout_t> proc;
-					for( int y = region.y1;
-							 y < region.y2;
-							 ++y )
+					for( int y = region.y1; y < region.y2; ++y )
 					{
 						std::cout << "| ";
 						typename View::x_iterator src_it = this->_srcView.x_at( region.x1, y );
@@ -172,11 +169,8 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 
 					try
 					{
-						void *output;
-						size_t len;
 						struct CacaImage cacaImg;
 						unsigned int cols = 0, lines = 0, font_width = 6, font_height = 10;
-						char *format = NULL;
 						char *dither = NULL;
 						float gamma = -1, brightness = -1, contrast = -1;
 
@@ -185,7 +179,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						{
 							TUTTLE_CERR( "Unable to initialise libcaca." );
 							return;
-						}
+							}
 
 						cacaImg = load_cacaimage_from_view( gView );
 						/*
@@ -200,12 +194,22 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						 *  - \c "full16" or \c "default": use the 16 ANSI colours for both the
 						 *    characters and the background. This is the default value.
 						 */
-						caca_set_dither_color( cacaImg.dither, "8" );
-						//    i = load_image(argv[argc-1]);
+						std::string colorMode;
+						switch(_params._colorMode)
+						{
+							case eParamColorMono :		colorMode = "mono";	break;
+							case eParamColorGray :		colorMode = "gray";	break;
+							case eParamColor8 :		colorMode = "8";	break;
+							case eParamColor16 :		colorMode = "16";	break;
+							case eParamColorfullgray :	colorMode = "fullgray";	break;
+							case eParamColorfull8 :		colorMode = "full8";	break;
+							case eParamColorfull16 :	colorMode = "full16";	break;
+						}
+						caca_set_dither_color( cacaImg.dither, colorMode.c_str() );
 
 						if( !cols && !lines )
 						{
-							cols = 60;
+							cols = _params._cols + 1;
 							lines = cols * cacaImg.h * font_width / cacaImg.w / font_height;
 						}
 						else if( cols && !lines )
@@ -216,44 +220,62 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						{
 							cols = lines * cacaImg.w * font_height / cacaImg.h / font_width;
 						}
-
+						//TUTTLE_COUT ( "output : " << cols << " x " << lines );
 						caca_set_canvas_size( cv, cols, lines );
-				//	    caca_set_color_ansi( cv, CACA_DEFAULT, CACA_TRANSPARENT );
-				//		caca_set_color_ansi( cv, CACA_WHITE, CACA_BLACK );
+
 						caca_clear_canvas( cv );
+
 						if( caca_set_dither_algorithm( cacaImg.dither, dither?dither:"fstein" ) )
 						{
 							BOOST_THROW_EXCEPTION( exception::Unknown()
-									<< exception::dev() + "Can't dither image with algorithm " + dither );
+							<< exception::dev() + "Can't dither image with algorithm " + dither );
 						}
 
 						if( brightness != -1 )
-							caca_set_dither_brightness( cacaImg.dither, brightness );
+						caca_set_dither_brightness( cacaImg.dither, brightness );
 						if( contrast != -1 )
-							caca_set_dither_contrast( cacaImg.dither, contrast );
+						caca_set_dither_contrast( cacaImg.dither, contrast );
 						if( gamma != -1 )
-							caca_set_dither_gamma( cacaImg.dither, gamma );
+						caca_set_dither_gamma( cacaImg.dither, gamma );
 
 						caca_dither_bitmap( cv, 0, 0, cols, lines, cacaImg.dither, cacaImg.pixels );
 
-					//	unload_image(i);
 						caca_free_dither( cacaImg.dither );
 
-						output = caca_export_canvas_to_memory( cv, format ? format:"ansi", &len );
-						if( !output )
+
+						if( _params._openGlViewer == true )
 						{
-							BOOST_THROW_EXCEPTION( exception::Unknown()
-									<< exception::dev() + "Can't export to format " + format );
+							// show result in a new window
+							caca_display_t *dp; caca_event_t ev;
+							dp = caca_create_display (cv);
+
+							caca_set_display_title(dp, "Rendering image in ASCII Art");
+
+							caca_refresh_display(dp);
+							caca_get_event(dp, CACA_EVENT_KEY_PRESS, &ev, -1);
+							caca_free_display(dp);
+
+							caca_free_canvas( cv );
 						}
+						else
+						{
+							//clear the sreen
+							std::cout << std::string( 100, '\n' );
 
-						fwrite( output, len, 1, stdout );
-						free( output );
+							size_t len;
+							void *output;
 
-						caca_free_canvas( cv );
+							output = caca_export_canvas_to_memory( cv, "ansi", &len );
+							fwrite( output, len, 1, stdout );
+							free( output );
+
+							caca_free_canvas( cv );
+						}
 					}
 					catch(...)
 					{
 						TUTTLE_COUT_CURRENT_EXCEPTION;
+						if(cv != NULL )
 						caca_free_canvas( cv );
 					}
 					break;

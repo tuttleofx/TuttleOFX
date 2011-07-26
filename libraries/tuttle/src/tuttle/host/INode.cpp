@@ -7,6 +7,8 @@
 #include <tuttle/host/graph/ProcessVertexAtTimeData.hpp>
 
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace tuttle {
 namespace host {
@@ -33,6 +35,16 @@ const InputBufferNode& INode::asInputBufferNode( ) const
 	return dynamic_cast<const InputBufferNode&> ( *this );
 }
 
+std::string INode::getVersionStr() const
+{
+	std::vector<int> vInt = getVersion();
+	std::vector<std::string> vStr;
+	BOOST_FOREACH( const int v, vInt )
+	{
+		vStr.push_back( boost::lexical_cast<std::string>(v) );
+	}
+	return boost::algorithm::join( vStr, "." );
+}
 
 void INode::setProcessData( Data* data )
 {

@@ -24,5 +24,4 @@ plugin Checkerboard :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Checkerboard : $(DIST) ;
-
+auto_install	Checkerboard : $(DIST) ;

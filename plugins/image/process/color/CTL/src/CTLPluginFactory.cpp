@@ -18,7 +18,7 @@ static const bool kSupportTiles = false;
  */
 void CTLPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	desc.setLabels( "CTL", "CTL",
+	desc.setLabels( "TuttleCTL", "CTL",
 		            "ColorTransformationLanguage" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 

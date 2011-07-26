@@ -1,13 +1,4 @@
-Import( 'project' )
-Import( 'libs' )
-
-ffmpeg_base = libs.ffmpeg
-ffmpeg_base.libs = [ 'avutil',
-                     'avformat',
-		     'avcodec',
-		     'swscale',
-		    ]
-
+Import( 'project', 'libs' )
 
 project.createOfxPlugin( dirs = ['src'],
                          libs = [

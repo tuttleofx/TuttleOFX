@@ -7,31 +7,20 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements	
-				<include>src
-  				<threading>multi 
-  				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/Resize/obj
-    ;
- 
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
- 
+	: requirements
+		<include>src
+		<os>NT:<define>_WINDOWS
+	: build-dir $(DIST)/Resize/obj
+	;
+
+
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Resize : 
-    [ glob-tree *.cpp ]
-    /tuttleplugin/<link>static
-    opengl
-    ;
+	[ glob-tree *.cpp ]
+	/tuttleplugin/<link>static
+	;
  
 ###############################################################################
 # Automatic install

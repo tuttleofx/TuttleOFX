@@ -1,0 +1,79 @@
+Import( 'project', 'libs' )
+
+libraries = [ libs.openfxHack,
+			  libs.tuttleCommon,
+              libs.boost_filesystem,
+              libs.boost_program_options,
+              libs.boost_regex,
+			 ]
+
+ls = project.Program(
+		target='sam-ls',
+		dirs=['src/sam/ls'],
+		includes=['src'],
+		libraries=libraries,
+	)
+
+cp = project.Program(
+		target='sam-cp',
+		dirs=['src/sam/cp'],
+		includes=['src'],
+		libraries=libraries,
+	)
+
+mv = project.Program(
+		target='sam-mv',
+		dirs=['src/sam/mv'],
+		includes=['src'],
+		libraries=libraries,
+	)
+
+rm = project.Program(
+		target='sam-rm',
+		dirs=['src/sam/rm'],
+		includes=['src'],
+		libraries=libraries,
+	)
+
+do = project.Program(
+		target='sam-do',
+		dirs=['src/sam/do'],
+		includes=['src'],
+		libraries=libraries+[libs.tuttleHost],
+	)
+
+info = project.Program(
+		target='sam-info',
+		dirs=['src/sam/info'],
+		includes=['src'],
+		libraries=libraries+[libs.tuttleHost, libs.imagemagickpp],
+	)
+
+plugins = project.Program(
+		target='sam-plugins',
+		dirs=['src/sam/plugins'],
+		includes=['src'],
+		libraries=libraries+[libs.tuttleHost],
+	)
+
+check = project.Program(
+		target='sam-check',
+		dirs=['src/sam/check'],
+		includes=['src'],
+		libraries=libraries+[libs.tuttleHost],
+	)
+
+Alias( 'sam',
+	[
+		ls,
+		cp,
+		mv,
+		rm,
+		do,
+		info,
+		plugins,
+		check,
+	]
+)
+
+

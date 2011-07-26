@@ -29,19 +29,19 @@ public:
 	}
 
 	// Deriving implementatation needs to overide these
-	virtual void get( int& ) const OFX_EXCEPTION_SPEC                                                 = 0;
-	virtual void getAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC                       = 0;
-	virtual void set( const int&, const EChange change )         OFX_EXCEPTION_SPEC                   = 0;
-	virtual void setAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
+	virtual void getValue( int& ) const OFX_EXCEPTION_SPEC                                                 = 0;
+	virtual void getValueAtTime( const OfxTime time, int& ) const OFX_EXCEPTION_SPEC                       = 0;
+	virtual void setValue( const int&, const EChange change )         OFX_EXCEPTION_SPEC                   = 0;
+	virtual void setValueAtTime( const OfxTime time, const int&, const EChange change ) OFX_EXCEPTION_SPEC = 0;
 
-	virtual void set( const bool& v, const EChange change )         OFX_EXCEPTION_SPEC
+	virtual void setValue( const bool& v, const EChange change )         OFX_EXCEPTION_SPEC
 	{
-		set( int(v), change );
+		setValue( int(v), change );
 	}
 
-	virtual void setAtTime( const OfxTime time, const bool& v, const EChange change ) OFX_EXCEPTION_SPEC
+	virtual void setValueAtTime( const OfxTime time, const bool& v, const EChange change ) OFX_EXCEPTION_SPEC
 	{
-		setAtTime( time, int(v), change );
+		setValueAtTime( time, int(v), change );
 	}
 
 	// probably derived class does not need to implement, default is an approximation
@@ -68,7 +68,7 @@ public:
 
 	std::ostream& displayValues( std::ostream& os ) const
 	{
-		os << getInt();
+		os << getIntValue();
 		return os;
 	}
 };

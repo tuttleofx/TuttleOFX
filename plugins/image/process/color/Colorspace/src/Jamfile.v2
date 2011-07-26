@@ -7,18 +7,18 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-    : build-dir $(DIST)/Colorspace/obj
-    ;
+	: requirements
+		<include>.
+	: build-dir $(DIST)/Colorspace/obj
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Colorspace : 
-        [ glob-tree *.cpp ]
-        /tuttleplugin/<link>static
-        ;
+plugin Colorspace :
+		[ glob *.cpp ]
+		/tuttleplugin/<link>static
+	;
 
 ###############################################################################
 # Automatic install

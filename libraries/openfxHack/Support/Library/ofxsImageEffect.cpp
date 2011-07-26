@@ -782,10 +782,13 @@ Image::Image( OfxPropertySetHandle props )
 
 	_renderScale.x = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 0 );
 	_renderScale.y = _imageProps.propGetDouble( kOfxImageEffectPropRenderScale, 1 );
+	
+	//std::cout << "IMAGE + " << _uniqueID << std::endl;
 }
 
 Image::~Image()
 {
+	//std::cout << "IMAGE - " << _uniqueID << std::endl;
 	OFX::Private::gEffectSuite->clipReleaseImage( _imageProps.propSetHandle() );
 }
 
@@ -1658,6 +1661,7 @@ void fetchHostDescription( OfxHost* host )
 
 		// and get some properties
 		gHostDescription.hostName                    = hostProps.propGetString( kOfxPropName );
+		gHostDescription.hostLabel                   = hostProps.propGetString( kOfxPropLabel );
 		gHostDescription.hostIsBackground            = hostProps.propGetInt( kOfxImageEffectHostPropIsBackground ) != 0;
 		gHostDescription.supportsOverlays            = hostProps.propGetInt( kOfxImageEffectPropSupportsOverlays ) != 0;
 		gHostDescription.supportsMultiResolution     = hostProps.propGetInt( kOfxImageEffectPropSupportsMultiResolution ) != 0;

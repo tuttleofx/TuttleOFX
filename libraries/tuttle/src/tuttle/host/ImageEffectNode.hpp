@@ -36,6 +36,22 @@ public:
 	ofx::attribute::OfxhParam&       getParam( const std::string& name )       { return ofx::attribute::OfxhParamSet::getParam( name ); }
 //	const attribute::Param& getParam( const std::string& name ) const { return dynamic_cast<const attribute::Param&>( ofx::attribute::OfxhParamSet::getParam( name ) ); }
 //	attribute::Param&       getParam( const std::string& name )       { return dynamic_cast<attribute::Param&>( ofx::attribute::OfxhParamSet::getParam( name ) ); }
+	const ofx::attribute::OfxhParam& getParam( const std::size_t  index ) const { return ofx::attribute::OfxhParamSet::getParam( index ); }
+	ofx::attribute::OfxhParam&       getParam( const std::size_t  index )       { return ofx::attribute::OfxhParamSet::getParam( index ); }
+
+	const ofx::property::OfxhSet& getProperties() const { return ofx::imageEffect::OfxhImageEffectNodeBase::getProperties(); }
+	ofx::property::OfxhSet&       getEditableProperties() { return ofx::imageEffect::OfxhImageEffectNodeBase::getEditableProperties(); }
+
+	std::vector<int> getVersion() const
+	{
+		// don't works on many plugins
+		//return getProperties().fetchIntProperty( kOfxPropVersion ).getValues();
+		// so get values from plugin
+		std::vector<int> v;
+		v.push_back( getDescriptor().getPlugin().getVersionMajor() );
+		v.push_back( getDescriptor().getPlugin().getVersionMinor() );
+		return v;
+	}
 
 	#ifndef SWIG
 	ImageEffectNode* clone() const

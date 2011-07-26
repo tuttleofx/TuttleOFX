@@ -20,7 +20,7 @@ public:
 
 	void deleteChildrens()
 	{
-		_paramList.clear();
+		_paramVector.clear();
 	}
 
 	void          setChildrens( const OfxhParamSet* childrens );
@@ -32,16 +32,17 @@ public:
 		return _paramSetInstance->getParamSetProps();
 	}
 
+	virtual OfxhParam* newParam( const OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
+	{
+		BOOST_THROW_EXCEPTION( exception::Bug() );
+//		return _paramSetInstance->newParam( descriptor );
+	}
+
 	/// The inheriting plugin instance needs to set this up to deal with
 	/// plug-ins changing their own values.
 	virtual void paramChanged( const attribute::OfxhParam& param, const EChange change )
 	{
 		_paramSetInstance->paramChanged( param, change );
-	}
-
-	virtual OfxhParam* newParam( const OfxhParamDescriptor& descriptor ) OFX_EXCEPTION_SPEC
-	{
-		return _paramSetInstance->newParam( descriptor );
 	}
 
 	/// Triggered when the plug-in calls OfxParameterSuiteV1::paramEditBegin

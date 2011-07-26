@@ -1,6 +1,6 @@
 #include "InputBufferNode.hpp"
 #include "Core.hpp"
-#include "exceptionsHost.hpp"
+#include "exceptions.hpp"
 #include "memory/LinkData.hpp"
 
 #include <tuttle/host/ofx/attribute/OfxhClipImageDescriptor.hpp>
@@ -25,6 +25,15 @@ InputBufferNode::InputBufferNode( const InputBufferNode& other )
 
 InputBufferNode::~InputBufferNode( ) { }
 
+std::vector<int> InputBufferNode::getVersion() const
+{
+	std::vector<int> version;
+	version.push_back( TUTTLE_HOST_VERSION_MAJOR );
+	version.push_back( TUTTLE_HOST_VERSION_MINOR );
+	version.push_back( TUTTLE_HOST_VERSION_MICRO );
+	return version;
+}
+
 attribute::Attribute& InputBufferNode::getAttribute( const std::string& name )
 {
 	BOOST_THROW_EXCEPTION( exception::Bug()
@@ -43,18 +52,29 @@ const attribute::Attribute& InputBufferNode::getSingleInputAttribute() const
 		<< exception::dev( "No attribute on InputBufferNode." ) );
 }
 
-const ofx::attribute::OfxhParam& InputBufferNode::getParam( const std::string& name ) const
-{
-	BOOST_THROW_EXCEPTION( exception::Bug()
-		<< exception::dev( "No param on InputBufferNode." ) );
-}
-
 ofx::attribute::OfxhParam&       InputBufferNode::getParam( const std::string& name )
 {
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::dev( "No param on InputBufferNode." ) );
 }
 
+const ofx::attribute::OfxhParam& InputBufferNode::getParam( const std::string& name ) const
+{
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "No param on InputBufferNode." ) );
+}
+
+ofx::attribute::OfxhParam&       InputBufferNode::getParam( const std::size_t index )
+{
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "No param on InputBufferNode." ) );
+}
+
+const ofx::attribute::OfxhParam& InputBufferNode::getParam( const std::size_t index ) const
+{
+	BOOST_THROW_EXCEPTION( exception::Bug()
+		<< exception::dev( "No param on InputBufferNode." ) );
+}
 
 attribute::ClipImage&       InputBufferNode::getClip( const std::string& name )
 {

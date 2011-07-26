@@ -71,7 +71,7 @@ bool WriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& ide
 void WriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
 	boost::filesystem::path dir( getAbsoluteDirectory() );
-	if( !exists( dir ) )
+	if( ! boost::filesystem::exists( dir ) )
 	{
 		BOOST_THROW_EXCEPTION( exception::NoDirectory( dir.string() ) );
 	}

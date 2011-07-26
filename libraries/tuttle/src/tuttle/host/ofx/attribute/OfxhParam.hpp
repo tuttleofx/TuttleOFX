@@ -14,64 +14,64 @@
 
 #include <string>
 
-#define TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Name, Type ) \
+#define TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( NAME, TYPE ) \
 	protected: \
-		inline virtual void get( Type & ) const OFX_EXCEPTION_SPEC \
+		inline virtual void getValue( TYPE& ) const OFX_EXCEPTION_SPEC \
 		{ \
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # Name " parameter (" + this->getParamType() + ")." ) ); \
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # NAME " parameter (" + this->getParamType() + ")." ) ); \
 		} \
-		inline virtual void getAtTime( const OfxTime, Type & ) const OFX_EXCEPTION_SPEC \
+		inline virtual void getValueAtTime( const OfxTime, TYPE& ) const OFX_EXCEPTION_SPEC \
 		{ \
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # Name " parameter (" + this->getParamType() + ")." ) ); \
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # NAME " parameter (" + this->getParamType() + ")." ) ); \
 		} \
-		inline virtual void getAtIndex( Type &, const std::size_t ) const OFX_EXCEPTION_SPEC \
+		inline virtual void getValueAtIndex( TYPE&, const std::size_t ) const OFX_EXCEPTION_SPEC \
 		{ \
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # Name " multidimentional parameter (" + this->getParamType() + ")." ) ); \
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # NAME " multidimentional parameter (" + this->getParamType() + ")." ) ); \
 		} \
-		inline virtual void getAtTimeAndIndex( const OfxTime, Type &, const std::size_t ) const OFX_EXCEPTION_SPEC \
+		inline virtual void getValueAtTimeAndIndex( const OfxTime, TYPE&, const std::size_t ) const OFX_EXCEPTION_SPEC \
 		{ \
-			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # Name " multidimentional parameter (" + this->getParamType() + ")." ) ); \
+			BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # NAME " multidimentional parameter (" + this->getParamType() + ")." ) ); \
 		} \
 	public: \
-		inline Type get ## Name ## AtIndex( const std::size_t index ) const OFX_EXCEPTION_SPEC \
+		inline TYPE get ## NAME ## ValueAtIndex( const std::size_t index ) const OFX_EXCEPTION_SPEC \
 		{ \
-			Type dst; \
-			getAtIndex( dst, index ); \
+			TYPE dst; \
+			getValueAtIndex( dst, index ); \
 			return dst; \
 		} \
-		inline Type get ## Name ## AtTimeAndIndex( const OfxTime time, const std::size_t index ) const OFX_EXCEPTION_SPEC \
+		inline TYPE get ## NAME ## ValueAtTimeAndIndex( const OfxTime time, const std::size_t index ) const OFX_EXCEPTION_SPEC \
 		{ \
-			Type dst; \
-			getAtTimeAndIndex( time, dst, index ); \
+			TYPE dst; \
+			getValueAtTimeAndIndex( time, dst, index ); \
 			return dst; \
 		} \
-		inline Type get ## Name() const OFX_EXCEPTION_SPEC \
+		inline TYPE get ## NAME ## Value() const OFX_EXCEPTION_SPEC \
 		{ \
-			Type dst; \
-			get( dst ); \
+			TYPE dst; \
+			getValue( dst ); \
 			return dst; \
 		} \
-		inline Type get ## Name ## AtTime( const OfxTime time ) const OFX_EXCEPTION_SPEC \
+		inline TYPE get ## NAME ## ValueAtTime( const OfxTime time ) const OFX_EXCEPTION_SPEC \
 		{ \
-			Type dst; \
-			getAtTime( time, dst ); \
+			TYPE dst; \
+			getValueAtTime( time, dst ); \
 			return dst; \
 		} \
-		inline virtual void set( const Type &value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # Name " parameter (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
-		inline virtual void set( const Type &value ) OFX_EXCEPTION_SPEC { set( value, eChangeUserEdited ); } \
-		inline virtual void setAtTime( const OfxTime time, const Type &value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # Name " parameter (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
-		inline virtual void setAtTime( const OfxTime time, const Type &value ) OFX_EXCEPTION_SPEC { setAtTime( time, value, eChangeUserEdited ); } \
-		inline virtual void setAtIndex( const Type &value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # Name " parameter (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
-		inline virtual void setAtIndex( const Type &value, const std::size_t index ) OFX_EXCEPTION_SPEC { setAtIndex( value, index, eChangeUserEdited ); } \
-		inline virtual void set( const Type &value1, const Type &value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # Name " parameter (2) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
-		inline virtual void set( const Type &value1, const Type &value2 ) OFX_EXCEPTION_SPEC { set( value1, value2, eChangeUserEdited ); } \
-		inline virtual void setAtTime( const OfxTime time, const Type &value1, const Type &value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( "\"" + this->getName() + "\"" + " is not a multi-" # Name " parameter (2) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
-		inline virtual void setAtTime( const OfxTime time, const Type &value1, const Type &value2 ) OFX_EXCEPTION_SPEC { setAtTime( time, value1, value2, eChangeUserEdited ); } \
-		inline virtual void set( const Type &value1, const Type &value2, const Type &value3, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # Name " parameter (3) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
-		inline virtual void set( const Type &value1, const Type &value2, const Type &value3 ) OFX_EXCEPTION_SPEC { set( value1, value2, value3, eChangeUserEdited ); } \
-		inline virtual void setAtTime( const OfxTime time, const Type &value1, const Type &value2, const Type &value3, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # Name " parameter (3) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
-		inline virtual void setAtTime( const OfxTime time, const Type &value1, const Type &value2, const Type &value3 ) OFX_EXCEPTION_SPEC { setAtTime( time, value1, value2, value3, eChangeUserEdited ); } \
-
+		inline virtual void setValue( const TYPE& value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # NAME " parameter (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
+		inline virtual void setValue( const TYPE& value ) OFX_EXCEPTION_SPEC { setValue( value, eChangeUserEdited ); } \
+		inline virtual void setValueAtTime( const OfxTime time, const TYPE& value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # NAME " parameter (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
+		inline virtual void setValueAtTime( const OfxTime time, const TYPE& value ) OFX_EXCEPTION_SPEC { setValueAtTime( time, value, eChangeUserEdited ); } \
+		inline virtual void setAtIndex( const TYPE& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # NAME " parameter (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
+		inline virtual void setAtIndex( const TYPE& value, const std::size_t index ) OFX_EXCEPTION_SPEC { setAtIndex( value, index, eChangeUserEdited ); } \
+		inline virtual void setValue( const TYPE& value1, const TYPE& value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # NAME " parameter (2) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
+		inline virtual void setValue( const TYPE& value1, const TYPE& value2 ) OFX_EXCEPTION_SPEC { setValue( value1, value2, eChangeUserEdited ); } \
+		inline virtual void setValueAtTime( const OfxTime time, const TYPE& value1, const TYPE& value2, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( "\"" + this->getName() + "\"" + " is not a multi-" # NAME " parameter (2) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
+		inline virtual void setValueAtTime( const OfxTime time, const TYPE& value1, const TYPE& value2 ) OFX_EXCEPTION_SPEC { setValueAtTime( time, value1, value2, eChangeUserEdited ); } \
+		inline virtual void setValue( const TYPE& value1, const TYPE& value2, const TYPE& value3, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a multi-" # NAME " parameter (3) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
+		inline virtual void setValue( const TYPE& value1, const TYPE& value2, const TYPE& value3 ) OFX_EXCEPTION_SPEC { setValue( value1, value2, value3, eChangeUserEdited ); } \
+		inline virtual void setValueAtTime( const OfxTime time, const TYPE& value1, const TYPE& value2, const TYPE& value3, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrBadHandle, "\"" + this->getName() + "\"" + " is not a " # NAME " parameter (3) (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); } \
+		inline virtual void setValueAtTime( const OfxTime time, const TYPE& value1, const TYPE& value2, const TYPE& value3 ) OFX_EXCEPTION_SPEC { setValueAtTime( time, value1, value2, value3, eChangeUserEdited ); } \
+//
 
 namespace tuttle {
 namespace host {
@@ -203,10 +203,13 @@ public:
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Double, double );
 	TUTTLE_DEFINE_OFXHPARAM_ACCESSORS( Bool, bool );
 
-	inline void set( const char* value, const EChange change ) OFX_EXCEPTION_SPEC                                      { set( std::string( value ), change ); }
-	inline void set( const char* value ) OFX_EXCEPTION_SPEC                                                            { set( value, eChangeUserEdited ); }
-	inline void setAtTime( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { setAtTime( time, std::string( value ), change ); }
-	inline void setAtTime( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC                                  { setAtTime( time, value, eChangeUserEdited ); }
+	virtual void setValueFromExpression( const std::string& value, const EChange change ) OFX_EXCEPTION_SPEC { BOOST_THROW_EXCEPTION( OfxhException( kOfxStatErrMissingHostFeature, "\"" + this->getName() + "Can't set value from expression on parameter \"" + this->getName() + "\", it's not supported for " + this->getParamType() + " parameters (" + this->getParamType() + ", " + mapChangeEnumToString( change ) + ")." ) ); }
+	inline void setValueFromExpression( const std::string& value ) OFX_EXCEPTION_SPEC { setValueFromExpression( value, eChangeUserEdited ); }
+
+	inline void setValue( const char* value, const EChange change ) OFX_EXCEPTION_SPEC                                      { setValue( std::string( value ), change ); }
+	inline void setValue( const char* value ) OFX_EXCEPTION_SPEC                                                            { setValue( value, eChangeUserEdited ); }
+	inline void setValueAtTime( const OfxTime time, const char* value, const attribute::EChange change ) OFX_EXCEPTION_SPEC { setValueAtTime( time, std::string( value ), change ); }
+	inline void setValueAtTime( const OfxTime time, const char* value ) OFX_EXCEPTION_SPEC                                  { setValueAtTime( time, value, eChangeUserEdited ); }
 
 	#ifndef SWIG
 	/// get a value, implemented by instances to deconstruct var args

@@ -62,10 +62,9 @@
     CLASS& operator=( const CLASS& ) { assert( false ); return *this; }    \
     CLASS( const CLASS & ) { assert( false ); }
 
-namespace OFX
-{
-namespace Private
-{
+namespace OFX {
+namespace Private {
+
 OfxStatus mainEntryStr( const char*          actionRaw,
                         const void*          handleRaw,
                         OfxPropertySetHandle inArgsRaw,
@@ -197,9 +196,10 @@ protected:
 		return ss.str();
 	}
 
-	FactoryMainEntryHelper( const std::string& id, unsigned int maj, unsigned int min ) : _id( id ),
-		_maj( maj ),
-		_min( min )
+	FactoryMainEntryHelper( const std::string& id, const unsigned int maj, const unsigned int min )
+	: _id( id )
+	, _maj( maj )
+	, _min( min )
 	{
 		_uid = id + toString( maj ) + toString( min );
 	}
@@ -215,6 +215,7 @@ protected:
 	unsigned int _maj;
 	unsigned int _min;
 };
+
 template<class T>
 std::string OFX::FactoryMainEntryHelper<T>::_uid;
 
@@ -261,6 +262,7 @@ struct ImageEffectHostDescription
 {
 public:
 	std::string hostName;
+	std::string hostLabel;
 	bool hostIsBackground;
 	bool supportsOverlays;
 	bool supportsMultiResolution;
@@ -289,6 +291,7 @@ public:
 	BitDepthArray _supportedPixelDepths;
 	bool supportsProgressSuite;
 	bool supportsTimeLineSuite;
+
 public:
 	bool supportsPixelComponent( const OFX::EPixelComponent component ) const
 	{

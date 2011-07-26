@@ -1,0 +1,60 @@
+###############################################################################
+## Main BJam makefile for libcaca library
+###############################################################################
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+	: requirements	
+		<include>.
+		<include>src
+		<include>caca
+		<include>caca/codec
+		<define>__LIBCACA__
+		<define>LIBCACA
+		<define>depmode=gcc3
+		<linkflags>-lslang
+		<linkflags>-lncursesw
+		<linkflags>-lX11
+		<linkflags>-lGL
+		<linkflags>-lGLU
+		<linkflags>-lglut
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>.
+		<include>src
+		<include>caca
+		<include>caca/codec
+	: build-dir $(DIST)/3rdParty/libcaca/obj
+	;
+
+#use-project /libaa : ../libaa
+
+###############################################################################
+# libcaca library
+###############################################################################
+alias	headers		: [ glob-tree *.h ] ;
+
+lib	libcaca		:
+				[
+					glob caca/*.c
+					caca/codec/*.c
+					caca/driver/*.c
+					kernel/*.c
+					src/*.c
+				:
+					src/cacaview.c
+					src/cacadraw.c
+					src/cacademo.c
+					src/cacaserver.c
+					src/cacaplay.c
+					src/aafire.c
+				]
+			;
+
+install	dist_src	: libcaca
+			: <variant>debug:<location>$(DIST)/3rdParty/libcaca/bin/debug
+			  <variant>release:<location>$(DIST)/3rdParty/libcaca/bin/release
+			;

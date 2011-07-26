@@ -2,9 +2,9 @@
 #include "CTLProcess.hpp"
 #include "CTLPlugin.hpp"
 
-#include <OpenEXR/half.h>
-#include <OpenEXR/Iex.h>
-#include <IlmCtl/CtlMessage.h>
+#include <half.h>
+#include <Iex.h>
+#include <CtlMessage.h>
 
 
 namespace tuttle {

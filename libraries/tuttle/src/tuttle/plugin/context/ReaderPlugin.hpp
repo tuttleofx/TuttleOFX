@@ -5,7 +5,7 @@
 
 #include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include <tuttle/common/clip/Sequence.hpp>
-#include <tuttle/plugin/exceptionsPlugin.hpp>
+#include <tuttle/plugin/exceptions.hpp>
 
 namespace tuttle {
 namespace plugin {
@@ -31,7 +31,7 @@ public:
 		if( _isSequence )
 		{
 			//			TUTTLE_COUT_VAR( _filePattern.getAbsoluteFilenameAt( time ) );
-			return _filePattern.getAbsoluteFilenameAt( time );
+			return _filePattern.getAbsoluteFilenameAt( static_cast<std::ssize_t>(time) );
 		}
 		else
 		{
@@ -86,7 +86,7 @@ public:
 	}
 
 protected:
-	inline bool varyOnTime() const { return _isSequence; }
+	virtual inline bool varyOnTime() const { return _isSequence; }
 
 public:
 	OFX::Clip*           _clipDst;           ///< Destination image clip

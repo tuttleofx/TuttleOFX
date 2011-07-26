@@ -125,17 +125,26 @@ public:
 	EPixelComponent _pixelComponent;
 	EBitDepth _bitDepth;
 	char* _rawBuffer;
+
+	ofx::property::OfxhSet _emptyProps;
 	
 	const std::string& getLabel() const     { return _label; }
 	const std::string& getName() const     { return _name; }
 	void setName( const std::string& name ) { _name = name; }
 	const ENodeType    getNodeType() const { return eNodeTypeBuffer; }
 
+	std::vector<int> getVersion() const;
+
+	const ofx::property::OfxhSet& getProperties() const { return _emptyProps; }
+	ofx::property::OfxhSet&       getEditableProperties() { return _emptyProps; }
+
 	attribute::Attribute& getAttribute( const std::string& name );
 	attribute::Attribute&       getSingleInputAttribute();
 	const attribute::Attribute& getSingleInputAttribute() const;
-	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const;
 	ofx::attribute::OfxhParam&       getParam( const std::string& name );
+	const ofx::attribute::OfxhParam& getParam( const std::string& name ) const;
+	ofx::attribute::OfxhParam&       getParam( const std::size_t index );
+	const ofx::attribute::OfxhParam& getParam( const std::size_t index ) const;
 
 	attribute::ClipImage&       getClip( const std::string& name );
 	const attribute::ClipImage& getClip( const std::string& name ) const;

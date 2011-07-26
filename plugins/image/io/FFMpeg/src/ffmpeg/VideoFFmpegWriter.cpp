@@ -4,6 +4,12 @@
 
 #include <boost/cstdint.hpp>
 
+#if LIBAVFORMAT_VERSION_INT < AV_VERSION_INT( 52, 40, 0 )
+// compatibility with previous versions of libavformat
+#define av_guess_format guess_format
+#endif
+
+
 VideoFFmpegWriter::VideoFFmpegWriter()
 	: _avformatOptions( 0 )
 	, _sws_context( NULL )
@@ -26,8 +32,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	av_log_set_level( AV_LOG_WARNING );
 	av_register_all();
 
-	for( int i = 0; i < CODEC_TYPE_NB; ++i )
-		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
+//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
+//		_avctxOptions[i] = avcodec_alloc_context2( CodecType( i ) );
 
 	_formatsLongNames.push_back( std::string( "default" ) );
 	_formatsShortNames.push_back( std::string(  "default" ) );
@@ -50,7 +56,7 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 	AVCodec* c = av_codec_next( NULL );
 	while( c )
 	{
-		if( c->type == CODEC_TYPE_VIDEO && c->encode )
+		if( c->type == AVMEDIA_TYPE_VIDEO && c->encode )
 		{
 			if( c->long_name )
 			{
@@ -64,8 +70,8 @@ VideoFFmpegWriter::VideoFFmpegWriter()
 
 VideoFFmpegWriter::~VideoFFmpegWriter()
 {
-	for( int i = 0; i < CODEC_TYPE_NB; ++i )
-		av_free( _avctxOptions[i] );
+//	for( int i = 0; i < AVMEDIA_TYPE_NB; ++i )
+//		av_free( _avctxOptions[i] );
 }
 
 int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_height, PixelFormat in_pixelFormat )
@@ -73,10 +79,10 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	_error = IGNORE_FINISH;
 
 	AVOutputFormat* fmt = 0;
-	fmt = guess_format( _format.c_str(), NULL, NULL );
+	fmt = av_guess_format( _format.c_str(), NULL, NULL );
 	if( !fmt )
 	{
-		fmt = guess_format( NULL, filename().c_str(), NULL );
+		fmt = av_guess_format( NULL, filename().c_str(), NULL );
 		if( !fmt )
 		{
 			std::cerr << "ffmpegWriter: could not deduce output format from file extension." << std::endl;
@@ -85,7 +91,9 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	}
 
 	if( !_avformatOptions )
+	{
 		_avformatOptions = avformat_alloc_context();
+	}
 
 	_avformatOptions->oformat = fmt;
 	snprintf( _avformatOptions->filename, sizeof( _avformatOptions->filename ), "%s", filename().c_str() );
@@ -105,7 +113,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 			codecId = userCodec->id;
 
 		_stream->codec->codec_id           = codecId;
-		_stream->codec->codec_type         = CODEC_TYPE_VIDEO;
+		_stream->codec->codec_type         = AVMEDIA_TYPE_VIDEO;
 		_stream->codec->bit_rate           = _bitRate;
 		_stream->codec->bit_rate_tolerance = _bitRateTolerance;
 		_stream->codec->width              = width();
@@ -194,7 +202,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 	{
 		AVPacket pkt;
 		av_init_packet( &pkt );
-		pkt.flags       |= PKT_FLAG_KEY;
+		pkt.flags       |= AV_PKT_FLAG_KEY;
 		pkt.stream_index = _stream->index;
 		pkt.data         = (boost::uint8_t*) out_frame;
 		pkt.size         = sizeof( AVPicture );
@@ -215,7 +223,7 @@ int VideoFFmpegWriter::execute( boost::uint8_t* in_buffer, int in_width, int in_
 				pkt.pts = av_rescale_q( _stream->codec->coded_frame->pts, _stream->codec->time_base, _stream->time_base );
 
 			if( _stream->codec->coded_frame && _stream->codec->coded_frame->key_frame )
-				pkt.flags |= PKT_FLAG_KEY;
+				pkt.flags |= AV_PKT_FLAG_KEY;
 
 			pkt.stream_index = _stream->index;
 			pkt.data         = out_buffer;

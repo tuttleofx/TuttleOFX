@@ -6,7 +6,10 @@
 #include "OfxhParamDescriptor.hpp"
 #include "OfxhParamSet.hpp"
 
+#include <boost/program_options/parsers.hpp>
+
 #include <boost/ptr_container/ptr_array.hpp>
+
 #include <string>
 #include <vector>
 
@@ -38,18 +41,46 @@ public:
 		return _controls.size();
 	}
 
-protected:
-	// Deriving implementatation needs to overide these
-	inline virtual void getAtIndex( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	void setValueFromExpression( const std::string& value, const ofx::attribute::EChange change ) OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
-		_controls[index].get( dst );
+		std::vector<std::string> allExp = boost::program_options::split_unix( value, "," );
+
+		if( allExp.size() == 1 )
+		{
+			for( std::size_t i = 0; i < getSize(); ++i )
+			{
+				_controls[i].setValueFromExpression( value, change );
+			}
+		}
+		else
+		{
+			if( getSize() != allExp.size() )
+			{
+				BOOST_THROW_EXCEPTION( exception::Value()
+					<< exception::user() + "Set " + allExp.size() + " values for a double2d parameter."
+					);
+			}
+			for( std::size_t i = 0; i < getSize(); ++i )
+			{
+				_controls[i].setValueFromExpression( allExp[i], change );
+			}
+		}
+		this->paramChanged( change );
 	}
 
-	inline virtual void getAtTimeAndIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+
+protected:
+	// Deriving implementatation needs to overide these
+	inline virtual void getValueAtIndex( BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
 	{
-		assert( _controls.size() > index );
-		_controls[index].getAtTime( time, dst );
+		BOOST_ASSERT( _controls.size() > index );
+		_controls[index].getValue( dst );
+	}
+
+	inline virtual void getValueAtTimeAndIndex( const OfxTime time, BaseType& dst, const std::size_t index ) const OFX_EXCEPTION_SPEC
+	{
+		BOOST_ASSERT( _controls.size() > index );
+		_controls[index].getValueAtTime( time, dst );
 	}
 
 public:
@@ -68,17 +99,17 @@ public:
 		copy( param );
 	}
 
-	inline virtual void setAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setValueAtIndex( const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index].set( value, eChangeNone );
+		_controls[index].setValue( value, eChangeNone );
 		this->paramChanged( change );
 	}
 
-	inline virtual void setAtTimeAndIndex( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
+	inline virtual void setValueAtTimeAndIndex( const OfxTime time, const BaseType& value, const std::size_t index, const EChange change ) OFX_EXCEPTION_SPEC
 	{
 		assert( _controls.size() > index );
-		_controls[index].setAtTime( time, value, eChangeNone );
+		_controls[index].setValueAtTime( time, value, eChangeNone );
 		this->paramChanged( change );
 	}
 
@@ -102,7 +133,7 @@ public:
 		{
 			BaseType* v = va_arg( arg, BaseType* );
 			assert( v );
-			_controls[index].get( *v );
+			_controls[index].getValue( *v );
 		}
 	}
 
@@ -112,7 +143,7 @@ public:
 		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType* v = va_arg( arg, BaseType* );
-			_controls[index].getAtTime( time, *v );
+			_controls[index].getValueAtTime( time, *v );
 		}
 	}
 
@@ -122,7 +153,7 @@ public:
 		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[index].set( v, eChangeNone );
+			_controls[index].setValue( v, eChangeNone );
 		}
 		this->paramChanged( change );
 	}
@@ -133,7 +164,7 @@ public:
 		for( std::size_t index = 0; index < DIM; ++index )
 		{
 			BaseType v = va_arg( arg, BaseType );
-			_controls[index].setAtTime( time, v, eChangeNone );
+			_controls[index].setValueAtTime( time, v, eChangeNone );
 		}
 		this->paramChanged( change );
 	}

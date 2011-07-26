@@ -130,10 +130,12 @@ struct pixel_locator_gradientLocalMaxima_t
 			g2 = src[CB][norm] * invd + src[RB][norm] * d;
 		}
 		// D
-		else if( ((*src)[vecY] < 0 && (*src)[vecX] <= (*src)[vecY]) ||
-		         ((*src)[vecY] > 0 && (*src)[vecX] >= (*src)[vecY]) )
-//		else
+//		else if( ((*src)[vecY] < 0 && (*src)[vecX] <= (*src)[vecY]) ||
+//		         ((*src)[vecY] > 0 && (*src)[vecX] >= (*src)[vecY]) )
+		else
 		{
+			BOOST_ASSERT( ((*src)[vecY] < 0 && (*src)[vecX] <= (*src)[vecY]) ||
+			              ((*src)[vecY] > 0 && (*src)[vecX] >= (*src)[vecY]) );
 			SType d = 0.0;
 			if( (*src)[vecX] )
 			{

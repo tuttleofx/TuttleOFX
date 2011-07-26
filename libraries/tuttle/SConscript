@@ -1,45 +1,52 @@
-Import( 'project' )
-Import( 'libs' )
+Import( 'project', 'libs' )
 
 import os.path
 
-project.StaticLibrary( 'tuttleCommon',
-                       sources   = project.scanFiles( ['src/tuttle/common'] ),
-                       includes  = ['src'],
-                       libraries = [ libs.openfxHack,
-                                     libs.boost,
-                                    ],
-                       shared = True
-                      )
+project.StaticLibrary(
+		'tuttleCommon',
+		sources   = project.scanFiles( ['src/tuttle/common'] ),
+		includes  = ['src'],
+		libraries = [
+				libs.openfxHack,
+				libs.boost,
+			],
+		shared = True
+	)
 
-project.StaticLibrary( 'tuttlePlugin',
-                       sources   = project.scanFiles( ['src/tuttle/plugin'] ),
-                       includes  = ['src','src/tuttle/host/core'],
-                       libraries = [ libs.tuttleCommon,
-                                     libs.openfxPluginSupportHack,
-                                     libs.boost,
-                                     libs.boost_gil,
-                                    ],
-                       shared = True
-                      )
+project.StaticLibrary(
+		'tuttlePlugin',
+		sources   = project.scanFiles( ['src/tuttle/plugin'] ),
+		includes  = ['src','src/tuttle/host/core'],
+		libraries = [
+				libs.tuttleCommon,
+				libs.openfxPluginSupportHack,
+				libs.boost_gil,
+			],
+		shared = True
+	)
 
-tuttleHostLibs = [ libs.tuttleCommon,
-                   libs.openfxHack,
-                   libs.dl,
-                   libs.boost_filesystem,
-                   libs.boost_serialization,
-                   libs.boost_thread,
-                   libs.boost_gil ]
+tuttleHostLibs = [
+		libs.tuttleCommon,
+		libs.openfxHack,
+		libs.dl,
+		libs.boost_filesystem,
+		libs.boost_serialization,
+		libs.boost_thread,
+		libs.boost_gil,
+		libs.boost_python,
+		libs.boost_program_options,
+	]
 
 if project.env['mode'] != 'production':
 	tuttleHostLibs += [libs.png]
 
-project.StaticLibrary( 'tuttleHost',
-                       sources   = project.scanFiles( ['src/tuttle/host'] ),
-                       includes  = ['src'],
-                       libraries = tuttleHostLibs,
-                       shared = True
-                      )
+project.StaticLibrary(
+		'tuttleHost',
+		sources   = project.scanFiles( ['src/tuttle/host'] ),
+		includes  = ['src'],
+		libraries = tuttleHostLibs,
+		shared = True
+	)
 
 pythonOutputDir = os.path.join(project.inOutputDir(),'python')
 
@@ -51,11 +58,12 @@ envSwig.Replace( SHLIBPREFIX = '_' )
 if project.macos:
 	envSwig.Replace( SHLIBSUFFIX = '.so' ) # .dyLib not recognized
 
-tuttlePython = project.SharedLibrary( target='tuttle',
-                                      sources=['src/tuttle/host/tuttle.i'],
-                                      env=envSwig,
-                                      install=False,
-                                     )
+tuttlePython = project.SharedLibrary(
+		target='tuttle',
+		sources=['src/tuttle/host/tuttle.i'],
+		env=envSwig,
+		install=False,
+	)
 
 initFile = envSwig.Command( os.path.join( pythonOutputDir, '__init__.py' ), '',
                             [ Mkdir('${TARGET.dir}'),

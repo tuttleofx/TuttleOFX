@@ -14,6 +14,10 @@
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
+#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+	#include <boost/python.hpp>
+#endif
+
 #include <stdexcept>
 #include <iostream>
 #include <fstream>
@@ -33,6 +37,9 @@ Core::Core()
 	, _memoryPool( pool )
 	, _memoryCache( cache )
 {
+#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+	Py_Initialize( );
+#endif
 	_pluginCache.setCacheVersion( "tuttleV1" );
 
 	// register the image effect cache with the global plugin cache

@@ -22,6 +22,12 @@ inline std::string to_string( const error_info_sstream& x )
 	return x._v.str();
 }
 
+inline std::ostream& operator<<( std::ostream& os, const error_info_sstream& x )
+{
+	os << x._v.str();
+	return os;
+}
+
 template<class Tag>
 class error_info<Tag, error_info_sstream>: public exception_detail::error_info_base
 {

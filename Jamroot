@@ -14,29 +14,37 @@
 ###############################################################################
 # Environment variables
 ###############################################################################
-path-constant 3RD_PARTY  	 : 3rdParty ;
-path-constant BOOST_LIBS  	 : 3rdParty/boost ;
-path-constant DIST 		 	 : ./dist ;
+path-constant	3RD_PARTY	: 3rdParty ;
+path-constant	BOOST_LIBS	: 3rdParty/boost ;
+path-constant	DIST		: ./dist ;
 
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
-    :
+	:
 	requirements
-   		# multithreading on
-  		<threading>multi
-  		<os>NT:<define>_WINDOWS
+		# multithreading on
+		<threading>multi
+
 		<variant>release:<warnings-as-errors>on
-		<cxxflags>-fPIC
+		<variant>release:<define>TUTTLE_PRODUCTION
+
+		<os>NT:<define>_WINDOWS
+		<os>LINUX:<cxxflags>-fPIC
+
 		# icu library off
 		#<define>BOOST_HAS_ICU=0
-  		#
-  		# GCC specific flags
-  		#
-  		# removes deprecated header used by boost
-  		<toolset>gcc:<cxxflags>-Wno-deprecated
-    ;
+
+		#
+		# GCC specific flags
+		#
+		# removes deprecated header used by boost
+		<toolset>gcc:<cxxflags>-Wno-deprecated
+	;
+
+# TODO detect one time the opengl for the project,
+#      and use it after if necessary
 
 #if [ os.name ] = NT	
 #	{	lib opengl32 ; 	alias opengl : opengl32 ; }
@@ -48,7 +56,7 @@ project
 ###############################################################################
 # 3rd party libraries
 ###############################################################################
-use-project /boost : $(BOOST_LIBS) ;
+use-project	/boost		: $(BOOST_LIBS) ;
 
 ###############################################################################
 # Main targets
@@ -56,38 +64,54 @@ use-project /boost : $(BOOST_LIBS) ;
 #
 # TUTTLE LIBRARY & TESTS
 #
-use-project /tuttle 		: libraries/tuttle ;
-use-project /tuttletests 	: libraries/tuttle/tests ;
+use-project	/tuttle		: libraries/tuttle ;
+use-project	/tuttletests	: libraries/tuttle/tests ;
 
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-use-project /sam-ls		: applications/sam-ls ;
-use-project /sam-cp		: applications/sam-cp ;
-use-project /sam-check		: applications/sam-check ;
-use-project /sam-plugins	: applications/sam-plugins ;
-#use-project /pyTuttle           : applications/pyTuttle ;
-#use-project /samtests 		: applications/sam-ls/tests ;
+use-project	/sam-tools	: applications/sam/ ;
+
+use-project	/sam-ls		: applications/sam/ ;
+use-project	/sam-cp		: applications/sam/ ;
+use-project	/sam-mv		: applications/sam/ ;
+use-project	/sam-rm		: applications/sam/ ;
+use-project	/sam-do		: applications/sam/ ;
+
+use-project	/sam-info	: applications/sam/src/sam/info ;
+use-project	/sam-plugins	: applications/sam/ ;
+use-project	/sam-check	: applications/sam/ ;
+
+#use-project	/pyTuttle	: applications/pyTuttle ;
+#use-project	/samtests	: applications/sam-ls/tests ;
+
 
 #
 # TUTTLEOFX PLUGINS
 #
-use-project /plugins		: plugins ;
+use-project	/plugins	: plugins ;
 
-alias /tests :	
-			/plugins
-			/tuttletests
-			/samtests
-			;
+alias		/tests		: /plugins
+				  /tuttletests
+				  /samtests
+				;
 
 # all targets have to be marked as explicit
-explicit		/tuttle
-			/tuttletests
-			/sam-ls
-			/sam-cp
-			/sam-check
-			/sam-plugins
-#			/samtests
-			/plugins
-#			/pyTuttle
-			/tests	;
+explicit			/tuttle
+				/tuttletests
+
+				/sam-ls
+				/sam-cp
+				/sam-mv
+				/sam-rm
+				/sam-do
+				/sam-info
+				/sam-plugins
+				/sam-check
+				/sam-tools
+
+#				/samtests
+				/plugins
+				/pyTuttle
+				/tests
+				;

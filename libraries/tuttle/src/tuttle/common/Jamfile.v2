@@ -7,5 +7,6 @@ project : requirements
 lib tuttlecommon :
 		[ glob-tree *.cpp ]
 		/ofxPluginSupport/<link>static
+		/boost/system
 		/boost/regex
 		;
