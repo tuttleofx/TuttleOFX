@@ -141,6 +141,7 @@ public:
 	inline boost::filesystem::path getDirectory() const				{ return _directory; }
 	inline boost::filesystem::path getAbsoluteDirectory() const				{ return boost::filesystem::absolute(_directory); }
 	inline void					setDirectory( const boost::filesystem::path& p )	{ _directory = p; }
+	void					setDirectoryFromPath( const boost::filesystem::path& p );
 	
 	EMaskOptions					getMaskOptions	() const				{ return _options; }
 	EMaskType					getMaskType	() const				{ return _type; }
@@ -290,23 +291,28 @@ public:
 	~Sequence()
 	{}
 	
+private:
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	void init( const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const bool strictPadding = false );
 
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	bool init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	bool init( const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
 	
+public:
 	/**
 	 * @brief Init from directory and pattern.
 	 * @warning search on your filesystem, to detect the range.
