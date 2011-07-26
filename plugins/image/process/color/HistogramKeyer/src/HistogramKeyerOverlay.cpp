@@ -30,9 +30,11 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 	bool displaySomething = false;
 
 	glColor3f( 0.0f, 1.0f, 1.0f );
-	overlay::displayRect( OfxRectD{0, 0, 200, 600} );
+	OfxRectD r1 = { 0.0, 0.0, 200.0, 600.0 };
+	overlay::displayRect( r1 );
 	glColor3f( 1.0f, 0.0f, 0.0f );
-	overlay::displayRect( OfxRectD{0.01, 0.05, 0.5, 0.6} );
+	OfxRectD r2 = { 0.01, 0.05, 0.5, 0.6 };
+	overlay::displayRect( r2 );
 
 	if( /*_plugin->_paramOverlay->getValue() &&*/
 		_plugin->_clipSrc->isConnected() )

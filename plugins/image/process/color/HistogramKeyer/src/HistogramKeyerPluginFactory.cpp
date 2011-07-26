@@ -88,12 +88,16 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		curves->setDimensionLabel( kParamColorSelectionSaturation, 4 );
 		curves->setDimensionLabel( kParamColorSelectionLightness, 5 );
 		curves->setHint( "Color selection" );
-		curves->setUIColour( 0, {1,0,0} );
-		curves->setUIColour( 1, {0,1,0} );
-		curves->setUIColour( 2, {0,0,1} );
-		curves->setUIColour( 3, {1,1,1} );
-		curves->setUIColour( 4, {1,1,1} );
-		curves->setUIColour( 5, {1,1,1} );
+		OfxRGBColourD c1 = {1,0,0};
+		curves->setUIColour( 0, c1 );
+		OfxRGBColourD c2 = {0,1,0};
+		curves->setUIColour( 1, c2 );
+		OfxRGBColourD c3 = {0,0,1};
+		curves->setUIColour( 2, c3 );
+		OfxRGBColourD c4 = {1,1,1};
+		curves->setUIColour( 3, c4 );
+		curves->setUIColour( 4, c4 );
+		curves->setUIColour( 5, c4 );
 		curves->setInteractDescriptor( new OFX::DefaultParamInteractWrap<HistogramKeyerParamOverlayDescriptor>() );
 	}
 
