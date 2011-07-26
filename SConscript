@@ -1,0 +1,10 @@
+Import( 'project', 'libs' )
+
+project.createOfxPlugin(
+		dirs = ['src'],
+		libs = [
+				libs.tuttlePlugin,
+				libs.glew,
+			]
+	)
+
