@@ -47,7 +47,7 @@ info = project.Program(
 		target='sam-info',
 		dirs=['src/sam/info'],
 		includes=['src'],
-		libraries=libraries+[libs.tuttleHost, libs.imagemagickpp],
+		libraries=libraries+[libs.tuttleHost, libs.imagemagick],
 	)
 
 plugins = project.Program(
