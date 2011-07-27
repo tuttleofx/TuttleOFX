@@ -1,11 +1,12 @@
 Import( 'project', 'libs' )
 
-libraries = [ libs.openfxHack,
-			  libs.tuttleCommon,
-              libs.boost_filesystem,
-              libs.boost_program_options,
-              libs.boost_regex,
-			 ]
+libraries = [
+		libs.openfxHack,
+		libs.tuttleCommon,
+		libs.boost_filesystem,
+		libs.boost_program_options,
+		libs.boost_regex,
+	]
 
 project.Program(
 		target='sam-ls',
