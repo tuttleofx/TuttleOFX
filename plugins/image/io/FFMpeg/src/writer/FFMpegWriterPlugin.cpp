@@ -12,79 +12,68 @@ namespace ffmpeg {
 namespace writer {
 
 FFMpegWriterPlugin::FFMpegWriterPlugin( OfxImageEffectHandle handle )
-	: ImageEffectGilPlugin( handle )
+	: WriterPlugin( handle )
 {
 	// We want to render a sequence
 	setSequentialRender( true );
 
-	_filepath          = fetchStringParam( kParamFilename );
-	_format            = fetchChoiceParam( kParamFormat );
-	_formatLong        = fetchChoiceParam( kParamFormatLong );
-	_codec             = fetchChoiceParam( kParamCodec );
-	_codecLong         = fetchChoiceParam( kParamCodecLong );
-	_bitRate           = fetchIntParam( kParamBitrate );
-	_paramRenderAlways = fetchBooleanParam( kParamRenderAlways );
+	_paramFormat            = fetchChoiceParam( kParamFormat );
+	_paramFormatLong        = fetchChoiceParam( kParamFormatLong );
+	_paramCodec             = fetchChoiceParam( kParamCodec );
+	_paramCodecLong         = fetchChoiceParam( kParamCodecLong );
+	_paramBitRate           = fetchIntParam( kParamBitrate );
 }
 
 FFMpegProcessParams FFMpegWriterPlugin::getProcessParams() const
 {
 	FFMpegProcessParams params;
 
-	_filepath->getValue( params._filepath );
-	_format->getValue( params._format );
-	_codec->getValue( params._codec );
-	_bitRate->getValue( params._bitrate );
+	params._filepath = _paramFilepath->getValue();
+	params._format   = _paramFormat->getValue();
+	params._codec    = _paramCodec->getValue();
+	params._bitrate  = _paramBitRate->getValue();
+
 	return params;
 }
 
 void FFMpegWriterPlugin::changedParam( const OFX::InstanceChangedArgs& args, const std::string& paramName )
 {
-	if( paramName == kParamFFMpegHelpButton )
+	WriterPlugin::changedParam( args, paramName );
+
+	if( paramName == kParamFormatLong && args.reason == OFX::eChangeUserEdit  )
 	{
-		sendMessage( OFX::Message::eMessageMessage,
-		             "", // No XML resources
-		             kFFMpegHelpString );
-	}
-	else if( paramName == kParamFormatLong && args.reason == OFX::eChangeUserEdit  )
-	{
-		_format->setValue( _formatLong->getValue() );
+		_paramFormat->setValue( _paramFormatLong->getValue() );
 	}
 	else if( paramName == kParamFormat && args.reason == OFX::eChangeUserEdit )
 	{
-		_formatLong->setValue( _format->getValue() );
+		_paramFormatLong->setValue( _paramFormat->getValue() );
 	}
 	else if( paramName == kParamCodecLong && args.reason == OFX::eChangeUserEdit )
 	{
-		_codec->setValue( _codecLong->getValue() );
+		_paramCodec->setValue( _paramCodecLong->getValue() );
 	}
 	else if( paramName == kParamCodec && args.reason == OFX::eChangeUserEdit )
 	{
-		_codecLong->setValue( _codec->getValue() );
+		_paramCodecLong->setValue( _paramCodec->getValue() );
 	}
+}
+
+void FFMpegWriterPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
+{
+	// If pattern detected (frame varying on time)
+	clipPreferences.setOutputFrameVarying( true );
 }
 
 bool FFMpegWriterPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, OfxTime& identityTime )
 {
-	if( OFX::getImageEffectHostDescription()->hostIsBackground )
-		return false;
-
-	if( _paramRenderAlways->getValue() )
-		return false;
-
-	identityClip = _clipSrc;
-	identityTime = args.time;
-	return true;
+	return WriterPlugin::isIdentity( args, identityClip, identityTime );
 }
 
 void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArguments& args )
 {
-	FFMpegProcessParams params = getProcessParams();
+	WriterPlugin::beginSequenceRender( args );
 
-	boost::filesystem::path filepath(params._filepath);
-	if( !exists( filepath.parent_path() ) )
-	{
-		BOOST_THROW_EXCEPTION( exception::NoDirectory( filepath.parent_path().string() ) );
-	}
+	FFMpegProcessParams params = getProcessParams();
 
 	_writer.filename( params._filepath );
 	_writer.setFormat( params._format );
@@ -99,6 +88,8 @@ void FFMpegWriterPlugin::beginSequenceRender( const OFX::BeginSequenceRenderArgu
  */
 void FFMpegWriterPlugin::render( const OFX::RenderArguments& args )
 {
+	WriterPlugin::render( args );
+
 	doGilRender<FFMpegWriterProcess>( *this, args );
 	
 //	// instantiate the render code based on the pixel depth of the dst clip

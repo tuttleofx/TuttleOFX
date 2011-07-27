@@ -2,7 +2,9 @@
 #define _FFMPEG_HPP
 
 extern "C" {
+#ifndef __STDC_CONSTANT_MACROS
 	#define __STDC_CONSTANT_MACROS
+#endif
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
 	#include <libavutil/avutil.h>
@@ -24,7 +26,7 @@ protected:
 public:
 	static const std::string ffmpegError_toString( int error );
 	static const std::string codecID_toString( const CodecID codec_id );
-	static const std::string codecType_toString( const CodecType codec_type );
+	static const std::string codecType_toString( const AVMediaType codec_type );
 	static const std::string pixelFormat_toString( const PixelFormat p );
 
 private:

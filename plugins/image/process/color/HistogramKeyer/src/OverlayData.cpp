@@ -11,10 +11,11 @@ namespace histogramKeyer {
  * Create a new empty data structure from scratch (data is null)
  * @param size : size of the current source clip (width*height) 
  */
-OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
+OverlayData::OverlayData( const OfxPointI& size, const int nbSteps, const int nbStepsCurvesFromSelection)
 {
 	_size = size;
 	_vNbStep = nbSteps;
+	_vNbStepCurveFromSelection = nbStepsCurvesFromSelection;
 	
 	_isComputing = false;
 	_currentTime = 0;
@@ -25,7 +26,7 @@ OverlayData::OverlayData( const OfxPointI& size, const int nbSteps )
  * Update selection areas buffer to selection histograms overlay
  * @param args needed to have current time
  */
-void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const bool isSelection )
+void OverlayData::computeHistogramBufferData( HistogramBufferData& data, SView& srcView, const OfxTime time, const bool isSelection)
 {
 	data._step = _vNbStep;					//prepare HistogramBuffer structure
 	
@@ -143,7 +144,7 @@ int OverlayData::computeAnAverage( const HistogramVector& selection_v ) const
  * @param time	current time
  * @param renderScale	current renderScale
  */
-void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly )
+void OverlayData::computeFullData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale, const bool selectionOnly)
 {
 	_isComputing = true;
 	resetHistogramData();
@@ -245,6 +246,17 @@ void OverlayData::resetHistogramData()
  * Reset the data (all values to 0)
  * @param size size of the current source clip
  */
+void OverlayData::resetCurvesFromSelectionData()
+{
+	// Reset Histogram buffers
+	this->_curveFromSelection._step = _vNbStepCurveFromSelection;
+	this->resetHistogramBufferData(this->_curveFromSelection);
+}
+
+/**
+ * Reset the data (all values to 0)
+ * @param size size of the current source clip
+ */
 void OverlayData::resetHistogramSelectionData()
 {
 	//Reset Histogram selection buffers
@@ -298,6 +310,70 @@ bool OverlayData::isCurrentTimeModified(const OfxTime time) const
 		return( _currentTime != time );
 }	
 
+/**
+ * Compute only curve from selection data (averages,histograms buffer and selection buffer)
+ * @param clipSrc	source of the plugin
+ * @param time	current time
+ * @param renderScale	current renderScale
+ */
+void OverlayData::computeCurveFromSelectionData( OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale)
+{
+	_isComputing = true;
+
+	resetCurvesFromSelectionData();
+	
+	if( ! clipSrc->isConnected() )
+	{	
+		_isComputing = false;
+		return;
+	}
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_currentTime, clipSrc->getCanonicalRod(_currentTime)) );	//scoped pointer of current source clip
+
+	// Compatibility tests
+	if( !src.get() ) // source isn't accessible
+	{
+		_isComputing = false;
+		std::cout << "src is not accessible" << std::endl;
+		return;
+	}
+
+	if( src->getRowBytes() == 0 )//if source is wrong
+	{
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+	}
+	OfxRectI srcPixelRod = clipSrc->getPixelRod( _currentTime, renderScale ); //get current RoD
+	if( (clipSrc->getPixelDepth() != OFX::eBitDepthFloat) ||
+		(!clipSrc->getPixelComponents()) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
+        return;
+	}
+
+	if( srcPixelRod != src->getBounds() )
+	{
+		// the host does bad things !
+		// remove overlay... but do not crash.
+		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		return;
+	}
+	
+	// Compute if source is OK
+	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	
+	OfxPointI imgSize;
+	imgSize.x = srcView.width();
+	imgSize.y = srcView.height();
+	
+	if( isImageSizeModified( imgSize ) )
+	{
+		clearAll( imgSize );
+	}
+	//Compute histogram buffer
+	Pixel_compute_histograms funct( _imgBool,_curveFromSelection, true);			//functor declaration
+	boost::gil::transform_pixels( srcView, funct );		//(USED functor reference)
+	
+	this->correctHistogramBufferData(_curveFromSelection);				//correct Histogram data to make up for discretization (average)
+}
 
 }
 }

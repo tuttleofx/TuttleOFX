@@ -194,18 +194,18 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						 *  - \c "full16" or \c "default": use the 16 ANSI colours for both the
 						 *    characters and the background. This is the default value.
 						 */
-						char* colorMode;
+						std::string colorMode;
 						switch(_params._colorMode)
 						{
-							case eParamColorMono :		colorMode = (char*) "mono";	break;
-							case eParamColorGray :		colorMode = (char*) "gray";	break;
-							case eParamColor8 :		colorMode = (char*) "8";	break;
-							case eParamColor16 :		colorMode = (char*) "16";	break;
-							case eParamColorfullgray :	colorMode = (char*) "fullgray";	break;
-							case eParamColorfull8 :		colorMode = (char*) "full8";	break;
-							case eParamColorfull16 :	colorMode = (char*) "full16";	break;
+							case eParamColorMono :		colorMode = "mono";	break;
+							case eParamColorGray :		colorMode = "gray";	break;
+							case eParamColor8 :		colorMode = "8";	break;
+							case eParamColor16 :		colorMode = "16";	break;
+							case eParamColorfullgray :	colorMode = "fullgray";	break;
+							case eParamColorfull8 :		colorMode = "full8";	break;
+							case eParamColorfull16 :	colorMode = "full16";	break;
 						}
-						caca_set_dither_color( cacaImg.dither, colorMode );
+						caca_set_dither_color( cacaImg.dither, colorMode.c_str() );
 
 						if( !cols && !lines )
 						{

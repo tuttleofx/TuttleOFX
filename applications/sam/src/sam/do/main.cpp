@@ -1,4 +1,6 @@
 #include <tuttle/common/exceptions.hpp>
+
+#include <tuttle/host/attribute/expression.hpp>
 #include <tuttle/host/Graph.hpp>
 
 #include <boost/program_options.hpp>
@@ -100,10 +102,13 @@ int main( int argc, char** argv )
 		// create the graph
 		ttl::Graph graph;
 		std::list<ttl::Graph::Node*> nodes;
-		// Analyse each part of the command line
+		std::vector<std::ssize_t> range;
+		std::size_t step;
+		
+		// Analyze each part of the command line
 		{
 			namespace bpo = boost::program_options;
-			// Analyse sam-do flags
+			// Analyze sam-do flags
 			try
 			{
 				// Declare the supported options.
@@ -115,9 +120,10 @@ int main( int argc, char** argv )
 				;
 				bpo::options_description confOptions( "\tConfigure process" );
 				confOptions.add_options()
+					("range,r"      , bpo::value<std::string>(), "frame range to render" )
 					("verbose,V"    , "explain what is being done")
 					("quiet,Q"      , "don't print commands")
-					("nb-cores"     , bpo::value<std::string>(), "set a fix number of CPUs")
+					("nb-cores"     , bpo::value<std::size_t>(), "set a fix number of CPUs")
 				;
 
 				bpo::options_description all_options;
@@ -147,11 +153,12 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( "\tsam-do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" );
 					TUTTLE_COUT( "" );
 					TUTTLE_COUT( "EXAMPLES" );
-					TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
+					//TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
 					TUTTLE_COUT( "\tsam-do --nodes" );
 					TUTTLE_COUT( "\tsam-do blur -h" );
-					TUTTLE_COUT( "\tsam-do --verbose read foo.####.dpx // blur 3 // resize scale=50% // write foo.####.jpg range=[10,20]" );
-					TUTTLE_COUT( "\tsam-do r foo.dpx // sobel // print // -Q" );
+					/// @todo version with read / write (without format specification)
+					TUTTLE_COUT( "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" );
+					TUTTLE_COUT( "\tsam-do dpxreader foo.dpx // sobel // print // -Q" );
 					TUTTLE_COUT( "" );
 					TUTTLE_COUT( "DESCRIPTION" );
 					TUTTLE_COUT( infoOptions );
@@ -177,6 +184,31 @@ int main( int argc, char** argv )
 					}
 					exit( 0 );
 				}
+				{
+					if( samdo_vm.count("range") )
+					{
+						const std::string rangeStr = samdo_vm["range"].as<std::string>();
+						std::vector< std::string > rangeVStr = boost::program_options::split_unix( rangeStr, " ," );
+						range.reserve( rangeVStr.size() );
+						BOOST_FOREACH( const std::string& rStr, rangeVStr )
+						{
+							range.push_back( tuttle::host::attribute::extractValueFromExpression<std::ssize_t>(rStr) );
+						}
+					}
+					/// @todo remove this and use the full time range of nodes to render
+					/// @{
+					if( range.size() < 1 )
+						range.push_back( 0 );
+					/// @}
+
+					if( range.size() < 2 )
+						range.push_back( range[0] );
+					
+					if( range.size() >= 3 )
+						step = range[2];
+					else
+						step = 1;
+				}
 			}
 			catch( const boost::program_options::error& e )
 			{
@@ -201,16 +233,16 @@ int main( int argc, char** argv )
 					("help,h"       , "show node help")
 					("version,v"    , "display node version")
 					("attributes,a" , "show all attributes: parameters+clips")
-					("properties,p" , "list properties of the node")
+					("properties"   , "list properties of the node")
 					("clips,c"      , "list clips of the node")
-					("clip"         , bpo::value<std::string>(), "display clip informations")
-					("parameters,P" , "list parameters of the node")
-					("param"        , bpo::value<std::string>(), "display parameter informations")
+					("clip,C"       , bpo::value<std::string>(), "display clip informations")
+					("parameters,p" , "list parameters of the node")
+					("param,P"      , bpo::value<std::string>(), "display parameter informations")
 				;
 				bpo::options_description confOptions( "\tConfigure process" );
 				confOptions.add_options()
 					("verbose,V"    , "explain what is being done")
-					("nb-cores"     , bpo::value<std::string>(), "set a fix number of CPUs")
+					("nb-cores"     , bpo::value<std::size_t>(), "set a fix number of CPUs")
 				;
 				// describe hidden options
 				bpo::options_description hiddenOptions;
@@ -229,7 +261,7 @@ int main( int argc, char** argv )
 				{
 					std::string userNodeName = command[0];
 					std::string nodeFullName = command[0];
-					boost::algorithm::to_lower( userNodeName );
+//					boost::algorithm::to_lower( userNodeName );
 					std::vector<std::string> nodeArgs;
 					std::copy( command.begin()+1, command.end(), std::back_inserter(nodeArgs) );
 					
@@ -420,20 +452,30 @@ int main( int argc, char** argv )
 					}
 					catch( const tuttle::exception::Common& e )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+#ifdef TUTTLE_PRODUCTION
 						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+#else
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+#endif
 						exit( -2 );
 					}
 					catch( const boost::program_options::error& e )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+#ifdef TUTTLE_PRODUCTION
 						TUTTLE_CERR( "Error: " << e.what() );
+#else
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+#endif
 						exit( -2 );
 					}
 					catch( ... )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
-						TUTTLE_CERR( "Error: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+						TUTTLE_CERR( "Unknown error." );
+						TUTTLE_CERR( "\n" );
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
 						exit( -2 );
 					}
 				}
@@ -466,7 +508,7 @@ int main( int argc, char** argv )
 		graph.connect( nodes );
 
 		// Execute the graph
-		graph.compute( *nodes.back(), 0 );
+		graph.compute( *nodes.back(), range[0], range[1] );
 	}
 	catch( const tuttle::exception::Common& e )
 	{

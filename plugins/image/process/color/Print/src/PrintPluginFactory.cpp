@@ -79,7 +79,7 @@ void PrintPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	regionMax->setDisplayRange( 0, 0, 2000, 2000 );
 
         OFX::IntParamDescriptor* outputColumns = desc.defineIntParam( kParamColumns );
-        outputColumns->setDefault(10);
+        outputColumns->setDefault(80);
         outputColumns->setDisplayRange(1,500);
 
 

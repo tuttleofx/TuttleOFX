@@ -431,6 +431,16 @@ std::size_t extractStep( const std::list<FileNumbers>& times, const std::size_t 
 
 }
 
+void FileObject::setDirectoryFromPath( const boost::filesystem::path& p )
+{
+	// if it's not a directory, use the parent directory of the file
+	_directory = p.parent_path();
+	if( _directory.empty() ) // relative path
+	{
+		_directory = boost::filesystem::current_path();
+	}
+}
+
 Sequence::Sequence( const boost::filesystem::path& directory, const EMaskOptions options, const EPattern accept )
 	: FileObject( directory, eMaskTypeSequence, options )
 {
@@ -488,26 +498,26 @@ Sequence::EPattern Sequence::checkPattern( const std::string& pattern )
  * @param[out] padding
  * @param[out] strictPadding
  */
-bool Sequence::initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding )
+bool Sequence::retrieveInfosFromPattern( const std::string& filePattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const
 {
 	boost::cmatch matches;
 
 	if( ( accept & ePatternStandard ) &&
-	    regex_match( pattern.c_str(), matches, regexPatternStandard ) )
+	    regex_match( filePattern.c_str(), matches, regexPatternStandard ) )
 	{
 		std::string paddingStr( matches[2].first, matches[2].second );
 		padding       = paddingStr.size();
 		strictPadding = ( paddingStr[0] == '#' );
 	}
 	else if( ( accept & ePatternCStyle ) &&
-	         regex_match( pattern.c_str(), matches, regexPatternCStyle ) )
+	         regex_match( filePattern.c_str(), matches, regexPatternCStyle ) )
 	{
 		std::string paddingStr( matches[2].first, matches[2].second );
 		padding       = paddingStr.size() == 0 ? 0 : boost::lexical_cast<std::size_t>( paddingStr ); // if no padding value: %d -> padding = 0
 		strictPadding = false;
 	}
 	else if( ( accept & ePatternFrame ) &&
-	         regex_match( pattern.c_str(), matches, regexPatternFrame ) )
+	         regex_match( filePattern.c_str(), matches, regexPatternFrame ) )
 	{
 		std::string frame( matches[2].first, matches[2].second );
 		//		Time t = boost::lexical_cast<Time>( frame );
@@ -521,16 +531,14 @@ bool Sequence::initFromPattern( const std::string& pattern, const EPattern& acce
 	}
 
 	prefix = std::string( matches[1].first, matches[1].second );
-	prefix = prefix.erase ( 0, _directory.string().size()+1 );
 	suffix = std::string( matches[3].first, matches[3].second );
 	
-// 	TUTTLE_COUT( "initFromPattern "<< _directory <<" prefix=" << prefix << " suffix=" << suffix);
+// 	TUTTLE_COUT( "retrieveInfosFromPattern "<< _directory <<" prefix=" << prefix << " suffix=" << suffix);
 	return true;
 }
 
 void Sequence::init( const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step, const bool strictPadding )
 {
-	clear();
 	_prefix		= prefix;
 	_padding	= padding;
 	_suffix		= suffix;
@@ -543,9 +551,7 @@ void Sequence::init( const std::string& prefix, const std::size_t padding, const
 
 bool Sequence::init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept )
 {
-	clear();
-
-	if( !initFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
+	if( !retrieveInfosFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
 		return false; // not regognize as a pattern, maybe a still file
 
 	_firstTime	= firstTime;
@@ -557,23 +563,31 @@ bool Sequence::init( const std::string& pattern, const Time firstTime, const Tim
 
 bool Sequence::init( const Time first, const Time last, const Time step, const EPattern accept )
 {
-	boost::filesystem::path dir = _directory.parent_path();
-
-	if( dir.empty() ) // relative path
-		dir = boost::filesystem::current_path();
-
-	_directory = dir;
 	return this->init( _directory.filename().string(), first, last, step, accept );
+}
+
+bool Sequence::initFromPattern( const boost::filesystem::path& dir, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EMaskOptions options, const EPattern accept )
+{
+	if( !retrieveInfosFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
+		return false; // not regognize as a pattern, maybe a still file
+
+	_firstTime	= firstTime;
+	_lastTime	 = lastTime;
+	_step		= step;
+	_nbFiles	= 0;
+	return true;
 }
 
 bool Sequence::initFromDetection( const std::string& pattern, const EPattern accept )
 {
 	clear();
 
-	if( !initFromPattern( pattern, accept, _prefix, _suffix, _padding, _strictPadding ) )
-		return false; // not regognize as a pattern, maybe a still file
+	setDirectoryFromPath( pattern );
+	
+	if( !retrieveInfosFromPattern( boost::filesystem::path(pattern).filename().string(), accept, _prefix, _suffix, _padding, _strictPadding ) )
+		return false; // not recognized as a pattern, maybe a still file
 
-	if( !exists( _directory ) )
+	if( !boost::filesystem::exists( _directory ) )
 		return true; // an empty sequence
 
 	std::list<std::string> allTimesStr;
@@ -869,7 +883,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 		BOOST_FOREACH( const std::list<Sequence>::value_type & s, ss )
 		{
 			// don't detect sequence of directories
-                        if( !bfs::is_directory( s.getAbsoluteFirstFilename() ) )
+			if( !bfs::is_directory( s.getAbsoluteFirstFilename() ) )
 			{
 				if(s.getNbFiles()==1) // if it's a sequence of 1 file, it isn't a sequence but only a file
 				{

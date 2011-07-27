@@ -124,7 +124,7 @@ const TCHAR* getStdOFXPluginPath( const std::string& hostId = "Plugins" )
 std::string OFXGetEnv( const char* e )
 {
 	#if !defined( __GNUC__ ) && defined( WINDOWS )
-	size_t requiredSize;
+	std::size_t requiredSize;
 	getenv_s( &requiredSize, 0, 0, e );
 	std::vector<char> buffer( requiredSize );
 	if( requiredSize > 0 )
@@ -134,10 +134,11 @@ std::string OFXGetEnv( const char* e )
 	}
 	return "";
 	#else
-	if( getenv( e ) )
-		return getenv( e );
+	const char* env_value = getenv( e );
+	if( env_value == NULL )
+		return "";
+	return env_value;
 	#endif
-	return "";
 }
 
 OfxhPluginCache::OfxhPluginCache()

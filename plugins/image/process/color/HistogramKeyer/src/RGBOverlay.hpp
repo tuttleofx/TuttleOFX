@@ -34,6 +34,7 @@ public:
 	/*Class arguments*/
 	HistogramKeyerPlugin* _plugin;	//plugin reference
 	// interact::InteractInfos _infos; (when Nuke overlay works)
+	bool _isGriddisplay;		//has grid been displayed yet
 		
 	/*Creator*/
 	//RGBOverlay(OfxInteractHandle handle, OFX::ImageEffect* effect); (when Nuke overlay works)
@@ -48,6 +49,9 @@ public:
 	
 	/*get selected channels*/
 	ESelectedChannelRGB getOnlyChannelSelectedRGB()const;
+	
+	/*Display grid on screen*/
+	void displayGrid(float height, float width);
 	
 	/*get overlay data*/
 	OverlayData& getData();

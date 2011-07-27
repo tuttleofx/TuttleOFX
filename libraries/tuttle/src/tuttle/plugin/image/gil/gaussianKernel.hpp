@@ -52,6 +52,7 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bo
 	{
 		return boost::gil::kernel_1d<Scalar>();
 	}
+	const double rEpsilon = size > 1 ? epsilon / static_cast<double>(size) : epsilon;
 	std::vector<Scalar> rightKernel;
 	rightKernel.reserve( 10 );
 	int x      = 1;
@@ -62,8 +63,9 @@ boost::gil::kernel_1d<Scalar> buildGaussian1DKernel( const Scalar size, const bo
 		rightKernel.push_back( v );
 		sum += v;
 		++x;
+		v = gaussianValueAt<Scalar>( x, size );
 	}
-	while( std::abs( v = gaussianValueAt<Scalar>( x, size ) ) > epsilon );
+	while( std::abs(v) > rEpsilon );
 
 	std::vector<Scalar> kernel( rightKernel.size() * 2 + 1 );
 	Scalar kernelCenter = gaussianValueAt<Scalar>( 0, size );
@@ -121,6 +123,7 @@ boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size
 	{
 		return boost::gil::kernel_1d<Scalar>();
 	}
+	const double rEpsilon = size > 1 ? epsilon / static_cast<double>(size) : epsilon;
 	std::vector<Scalar> rightKernel;
 	rightKernel.reserve( 10 );
 	int x = 1;
@@ -131,8 +134,9 @@ boost::gil::kernel_1d<Scalar> buildGaussianDerivative1DKernel( const Scalar size
 		rightKernel.push_back( v );
 		sum += v;
 		++x;
+		v = gaussianDerivativeValueAt<Scalar>( x, size );
 	}
-	while( std::abs( v = gaussianDerivativeValueAt<Scalar>( x, size ) ) > epsilon );
+	while( std::abs(v) > rEpsilon );
 
 	if( rightKernel.size() == 0 || sum == 0 )
 		return boost::gil::kernel_1d<Scalar>();

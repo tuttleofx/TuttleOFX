@@ -49,6 +49,7 @@ void DebugImageEffectApiPlugin::changedParam( const OFX::InstanceChangedArgs& ar
 		OFX::ImageEffectHostDescription* desc = OFX::getImageEffectHostDescription();
 		std::ostringstream description;
 		description << "hostName: " << desc->hostName << std::endl;
+		description << "hostLabel: " << desc->hostLabel << std::endl;
 		description << "hostIsBackground: " << desc->hostIsBackground << std::endl;
 		description << "supportsOverlays: " << desc->supportsOverlays << std::endl;
 		description << "supportsMultiResolution: " << desc->supportsMultiResolution << std::endl;

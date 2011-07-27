@@ -46,28 +46,9 @@ void JpegReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPrefe
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
 
-	switch( getExplicitConversion() )
+	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
-		case eParamReaderExplicitConversionAuto:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-			break;
-		}
-		case eParamReaderExplicitConversionByte:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-			break;
-		}
-		case eParamReaderExplicitConversionShort:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-			break;
-		}
-		case eParamReaderExplicitConversionFloat:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-			break;
-		}
+		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 	}
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA ); /// RGB
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 );

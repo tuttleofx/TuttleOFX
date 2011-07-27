@@ -184,14 +184,12 @@ int main( int argc, char** argv )
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
 	// get environment options and parse them
+	if( const char* env_rm_options = std::getenv("SAM_RM_OPTIONS") )
 	{
-		const std::string env_rm_options = std::getenv("SAM_RM_OPTIONS");
-		if( env_rm_options.size() )
-		{
-			std::vector<std::string> envOptions;
-			envOptions.push_back( env_rm_options );
-			bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
-		}
+		const std::string env( env_rm_options );
+		std::vector<std::string> envOptions;
+		envOptions.push_back( env );
+		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
 
 	bpo::notify(vm);    

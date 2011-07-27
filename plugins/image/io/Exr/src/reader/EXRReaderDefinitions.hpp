@@ -16,7 +16,6 @@ static const std::string kParamOutputRedIs        = "redIs";
 static const std::string kParamOutputGreenIs      = "greenIs";
 static const std::string kParamOutputBlueIs       = "blueIs";
 static const std::string kParamOutputAlphaIs      = "alphaIs";
-static const std::string kParamExplicitConversion = "explicitConversion";
 
 }
 }

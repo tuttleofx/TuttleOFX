@@ -86,6 +86,7 @@ void SobelPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	kernelEpsilon->setLabel( "Kernel espilon value" );
 	kernelEpsilon->setHint( "Threshold at which we no longer consider the values of the function." );
 	kernelEpsilon->setDefault( 0.01 );
+	kernelEpsilon->setRange( std::numeric_limits<double>::epsilon(), 1 );
 	kernelEpsilon->setDisplayRange( 0, 0.01 );
 	kernelEpsilon->setParent( advanced );
 
