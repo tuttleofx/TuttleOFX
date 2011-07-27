@@ -11,7 +11,38 @@ project
 		<include>src
 	: usage-requirements
 		<include>src
-	: build-dir $(DIST)/sam/obj
+	: build-dir $(DIST)
+	;
+
+project sam-info
+	: requirements
+		<include>src
+		<include>/usr/include/ImageMagick
+		<linkflags>-lfreetype
+		<linkflags>-lz
+		<linkflags>-lMagick++
+		<linkflags>-lMagickWand
+		<linkflags>-lMagickCore
+		<linkflags>-llcms
+		<linkflags>-ltiff
+		<linkflags>-lfreetype
+		<linkflags>-ljpeg
+		<linkflags>-lfontconfig
+		<linkflags>-lXext
+		<linkflags>-lSM
+		<linkflags>-lICE
+		<linkflags>-lX11
+		<linkflags>-lXt
+		<linkflags>-lbz2
+		<linkflags>-lz
+		<linkflags>-lm
+		<linkflags>-lgomp
+		<linkflags>-lpthread
+		<linkflags>-lltdl
+	: usage-requirements
+		<include>src
+		<include>/usr/include/ImageMagick
+	: build-dir $(DIST)
 	;
 
 ###############################################################################
@@ -30,13 +61,13 @@ exe sam-ls :
 
 # Automatic install
 install dist_src	
-	: sam-ls
+	:   sam-ls
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
-	: <variant>debug:<location>$(DIST)/sam-ls/bin/debug
-	  <variant>release:<location>$(DIST)/sam-ls/bin/release
+	: <variant>debug:<location>$(DIST)/debug/bin/sam-ls/
+	  <variant>release:<location>$(DIST)/release/bin/sam-ls/
 	;
 
 ###############################################################################
@@ -51,17 +82,18 @@ exe sam-cp :
 	/boost/program_options
 	:
 	<os>LINUX:<find-shared-library>dl
+	<threading>multi
 	;
 
 # Automatic install
 install dist_src	
-	: sam-cp
+	:   sam-cp
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
-	: <variant>debug:<location>$(DIST)/sam-cp/bin/debug
-	  <variant>release:<location>$(DIST)/sam-cp/bin/release
+	: <variant>debug:<location>$(DIST)/debug/bin/sam-cp
+	  <variant>release:<location>$(DIST)/release/bin/sam-cp
 	;
 
 ###############################################################################
@@ -80,7 +112,7 @@ exe sam-mv :
 
 # Automatic install
 install dist_src
-	: sam-mv
+	:   sam-mv
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
@@ -105,7 +137,7 @@ exe sam-rm :
 
 # Automatic install
 install dist_src
-	: sam-rm
+	:   sam-rm
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
@@ -131,7 +163,7 @@ exe sam-do :
 
 # Automatic install
 install dist_src
-	: sam-do
+	:   sam-do
 		/tuttlehost
 		/boost/system
 		/boost/filesystem
@@ -144,30 +176,30 @@ install dist_src
 ###############################################################################
 # info
 ###############################################################################
-#exe sam-info :
-#	[ glob src/sam/info/*.cpp ]
-#	/tuttlecommon/<link>static
-#	/boost/system
-#	/boost/filesystem
-#	/boost/serialization
-#	/boost/program_options
-#	:
-#	<os>LINUX:<find-shared-library>dl
-#	<threading>multi
-#	;
+exe sam-info :
+	[ glob src/sam/info/*.cpp ]
+	/tuttlecommon/<link>static
+	/boost/system
+	/boost/filesystem
+	/boost/serialization
+	/boost/program_options
+	:
+	<os>LINUX:<find-shared-library>dl
+	<threading>multi
+	;
 
 # Automatic install
-#install dist_src
-#	: sam-info
-#		/boost/system
-#		/boost/filesystem
-#		/boost/serialization
-#		/boost/program_options
-#	: <variant>debug:<location>$(DIST)/sam-info/bin/debug
-#	  <variant>release:<location>$(DIST)/sam-info/bin/release
-#	;
+install dist_src
+	:   sam-info
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+	: <variant>debug:<location>$(DIST)/sam-info/bin/debug
+	  <variant>release:<location>$(DIST)/sam-info/bin/release
+	;
 
-alias	sam-info : ./src/sam/info ;
+#alias	sam-info : ./src/sam/info ;
 
 ###############################################################################
 # plugins
@@ -187,7 +219,7 @@ exe sam-plugins :
 
 # Automatic install
 install dist_src
-	: sam-plugins
+	:   sam-plugins
 		/tuttlehost
 		/boost/system
 		/boost/filesystem
@@ -195,8 +227,8 @@ install dist_src
 		/boost/program_options
 		/boost/python
 
-	: <variant>debug:<location>$(DIST)/sam-plugins/bin/debug
-	  <variant>release:<location>$(DIST)/sam-plugins/bin/release
+	: <variant>debug:<location>$(DIST)/bin/debug/sam-plugins
+	  <variant>release:<location>$(DIST)/bin/release/sam-plugins
 	;
 
 ###############################################################################
@@ -217,26 +249,27 @@ exe sam-check :
 
 # Automatic install
 install dist_src
-	: sam-check
+	:   sam-check
 		/tuttlehost
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
 		/boost/python
-	: <variant>debug:<location>$(DIST)/sam-check/bin/debug
-	  <variant>release:<location>$(DIST)/sam-check/bin/release
+	: <variant>debug:<location>$(DIST)/bin/debug/sam-check
+	  <variant>release:<location>$(DIST)/bin/release/sam-check
 	;
 
 ###############################################################################
 # all tools
 ###############################################################################
-alias /sam-tools		: sam-ls
-				  sam-cp
-				  sam-mv
-				  sam-rm
-				  sam-do
-				  sam-info
-				  sam-plugins
-				  sam-check
+alias /sam-tools : 
+					sam-ls
+					sam-cp
+					sam-mv
+					sam-rm
+					sam-do
+					sam-info
+					sam-plugins
+					sam-check
 				;
