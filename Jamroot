@@ -12,10 +12,19 @@
 ###############################################################################
 
 ###############################################################################
+# Constant version variables
+###############################################################################
+constant PYTHON_VERSION : 26 ; # 26 or 27
+
+
+
+
+###############################################################################
 # Environment variables
 ###############################################################################
 path-constant	3RD_PARTY	: 3rdParty ;
 path-constant	BOOST_LIBS	: 3rdParty/boost ;
+path-constant	BOOST_HACK	: 3rdParty/boostHack ;
 path-constant	DIST		: ./dist ;
 
 ###############################################################################
@@ -27,8 +36,15 @@ project
 		# multithreading on
 		<threading>multi
 
-		<variant>release:<warnings-as-errors>on
+		#<variant>release:<warnings-as-errors>on
 		<variant>release:<define>TUTTLE_PRODUCTION
+		<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
+		# or
+		#<variant>release:<toolset>gcc,<optimization>full
+		
+
+		<os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
+		<os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
 
 		<os>NT:<define>_WINDOWS
 		<os>LINUX:<cxxflags>-fPIC
@@ -56,7 +72,7 @@ project
 ###############################################################################
 # 3rd party libraries
 ###############################################################################
-use-project	/boost		: $(BOOST_LIBS) ;
+use-project		/boost		: $(BOOST_LIBS) ;
 
 ###############################################################################
 # Main targets
@@ -64,26 +80,26 @@ use-project	/boost		: $(BOOST_LIBS) ;
 #
 # TUTTLE LIBRARY & TESTS
 #
-use-project	/tuttle		: libraries/tuttle ;
-use-project	/tuttletests	: libraries/tuttle/tests ;
+use-project		/tuttle			: libraries/tuttle ;
+use-project		/tuttletests	: libraries/tuttle/tests ;
 
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-use-project	/sam-tools	: applications/sam/ ;
+use-project		/sam-tools		: applications/sam/ ;
 
-use-project	/sam-ls		: applications/sam/ ;
-use-project	/sam-cp		: applications/sam/ ;
-use-project	/sam-mv		: applications/sam/ ;
-use-project	/sam-rm		: applications/sam/ ;
-use-project	/sam-do		: applications/sam/ ;
+use-project		/sam-ls			: applications/sam/ ;
+use-project		/sam-cp			: applications/sam/ ;
+use-project		/sam-mv			: applications/sam/ ;
+use-project		/sam-rm			: applications/sam/ ;
+use-project		/sam-do			: applications/sam/ ;
 
-use-project	/sam-info	: applications/sam/src/sam/info ;
-use-project	/sam-plugins	: applications/sam/ ;
-use-project	/sam-check	: applications/sam/ ;
+use-project		/sam-info		: applications/sam/ ;
+use-project		/sam-plugins	: applications/sam/ ;
+use-project		/sam-check		: applications/sam/ ;
 
-#use-project	/pyTuttle	: applications/pyTuttle ;
-#use-project	/samtests	: applications/sam-ls/tests ;
+#use-project	/pyTuttle		: applications/pyTuttle ;
+#use-project	/samtests		: applications/sam-ls/tests ;
 
 
 #
@@ -92,9 +108,9 @@ use-project	/sam-check	: applications/sam/ ;
 use-project	/plugins	: plugins ;
 
 alias		/tests		: /plugins
-				  /tuttletests
-				  /samtests
-				;
+				          /tuttletests
+				          /samtests
+				        ;
 
 # all targets have to be marked as explicit
 explicit			/tuttle
