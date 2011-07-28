@@ -1,5 +1,4 @@
-Import( 'project' )
-Import( 'libs' )
+Import( 'project', 'libs' )
 
 libraries = [libs.tuttleHost,
              libs.boost_unittestframework]
