@@ -3,60 +3,30 @@
 ###############################################################################
 import os ;
 
+
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
 	: requirements
 		<include>src
-	: usage-requirements
-		<include>src
 	: build-dir $(DIST)
 	;
-
-project sam-info
-	: requirements
-		<include>src
-		<include>/usr/include/ImageMagick
-		<linkflags>-lfreetype
-		<linkflags>-lz
-		<linkflags>-lMagick++
-		<linkflags>-lMagickWand
-		<linkflags>-lMagickCore
-		<linkflags>-llcms
-		<linkflags>-ltiff
-		<linkflags>-lfreetype
-		<linkflags>-ljpeg
-		<linkflags>-lfontconfig
-		<linkflags>-lXext
-		<linkflags>-lSM
-		<linkflags>-lICE
-		<linkflags>-lX11
-		<linkflags>-lXt
-		<linkflags>-lbz2
-		<linkflags>-lz
-		<linkflags>-lm
-		<linkflags>-lgomp
-		<linkflags>-lpthread
-		<linkflags>-lltdl
-	: usage-requirements
-		<include>src
-		<include>/usr/include/ImageMagick
-	: build-dir $(DIST)
-	;
+	
 
 ###############################################################################
 # ls
 ###############################################################################
 exe sam-ls :
-	[ glob src/sam/ls/*.cpp ]
-	/tuttlecommon/<link>static
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
+		[ glob src/sam/ls/*.cpp ]
+		/tuttlecommon/<link>static
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
 	:
-	<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
 	;
 
 # Automatic install
@@ -74,15 +44,15 @@ install dist_src
 # cp
 ###############################################################################
 exe sam-cp :
-	[ glob src/sam/cp/*.cpp ]
-	/tuttlecommon
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
+		[ glob src/sam/cp/*.cpp ]
+		/tuttlecommon
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
 	:
-	<os>LINUX:<find-shared-library>dl
-	<threading>multi
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
 	;
 
 # Automatic install
@@ -100,14 +70,15 @@ install dist_src
 # mv
 ###############################################################################
 exe sam-mv :
-	[ glob src/sam/mv/*.cpp ]
-	/tuttlecommon/<link>static
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
+		[ glob src/sam/mv/*.cpp ]
+		/tuttlecommon/<link>static
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
 	:
-	<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
 	;
 
 # Automatic install
@@ -125,14 +96,15 @@ install dist_src
 # rm
 ###############################################################################
 exe sam-rm :
-	[ glob src/sam/rm/*.cpp ]
-	/tuttlecommon/<link>static
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
+		[ glob src/sam/rm/*.cpp ]
+		/tuttlecommon/<link>static
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
 	:
-	<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
 	;
 
 # Automatic install
@@ -150,15 +122,16 @@ install dist_src
 # do
 ###############################################################################
 exe sam-do :
-	[ glob src/sam/do/*.cpp ]
-	/tuttlecommon/<link>static
-	/tuttlehost
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
+		[ glob src/sam/do/*.cpp ]
+		/tuttlecommon/<link>static
+		/tuttlehost
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
 	:
-	<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
 	;
 
 # Automatic install
@@ -176,17 +149,21 @@ install dist_src
 ###############################################################################
 # info
 ###############################################################################
+
 exe sam-info :
-	[ glob src/sam/info/*.cpp ]
-	/tuttlecommon/<link>static
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
+		[ glob src/sam/info/*.cpp ]
+		/tuttlecommon/<link>static
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+		
 	:
-	<os>LINUX:<find-shared-library>dl
-	<threading>multi
-	;
+		<include>$(MAGICK_INCLUDE)
+		<linkflags>$(MAGICK_LIBS)
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
+		;
 
 # Automatic install
 install dist_src
@@ -205,16 +182,17 @@ install dist_src
 # plugins
 ###############################################################################
 exe sam-plugins :
-	[ glob src/sam/plugins/*.cpp ]
-	/tuttlecommon/<link>static
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
-	/boost/python
-	/tuttlehost
+		[ glob src/sam/plugins/*.cpp ]
+		/tuttlecommon/<link>static
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+		/boost/python
+		/tuttlehost
 	:
-	<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
 	;
 
 # Automatic install
@@ -235,16 +213,17 @@ install dist_src
 # check
 ###############################################################################
 exe sam-check :
-	[ glob src/sam/check/*.cpp ]
-	/tuttlecommon/<link>static
-	/tuttlehost
-	/boost/system
-	/boost/filesystem
-	/boost/serialization
-	/boost/program_options
-	/boost/python
+		[ glob src/sam/check/*.cpp ]
+		/tuttlecommon/<link>static
+		/tuttlehost
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+		/boost/python
 	:
-	<os>LINUX:<find-shared-library>dl
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
 	;
 
 # Automatic install
@@ -260,16 +239,3 @@ install dist_src
 	  <variant>release:<location>$(DIST)/bin/release/sam-check
 	;
 
-###############################################################################
-# all tools
-###############################################################################
-alias /sam-tools : 
-					sam-ls
-					sam-cp
-					sam-mv
-					sam-rm
-					sam-do
-					sam-info
-					sam-plugins
-					sam-check
-				;
