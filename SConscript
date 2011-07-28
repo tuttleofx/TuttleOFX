@@ -9,11 +9,11 @@ tuttleFlags = { 'LIBPATH': [project.inOutputLib()],
 
 if project.env['mode'] == 'production' :
 	tuttleFlags['CPPDEFINES'].append( 'TUTTLE_PRODUCTION' )
+	if 'visibilityhidden' in project.CC:
+		tuttleFlags['SHCCFLAGS'] = [project.CC['visibilityhidden']]
 
 if 'sharedNoUndefined' in project.CC:
 	tuttleFlags['SHLINKFLAGS'] = [project.CC['sharedNoUndefined']]
-if 'visibilityhidden' in project.CC:
-	tuttleFlags['SHCCFLAGS'] = [project.CC['visibilityhidden']]
 
 tuttle = project.ObjectLibrary( 'tuttle',
 								envFlags=tuttleFlags )
