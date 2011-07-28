@@ -1,0 +1,37 @@
+#####################
+# QT configuration. #
+#####################
+
+# Configure assuming QTDIR gives the installation prefix.
+# using qt ;
+
+# Configure with an explicit installation prefix.
+# using qt : /usr/opt/qt ;
+
+#########################
+# Python configuration. #
+#########################
+
+# Configure specific Python version.
+# using python : 3.1 : /usr/bin/python3 : /usr/include/python3.1 : /usr/lib ;
+# using python : 2.6 : /usr/bin/python2.6 : /usr/include/python2.6 : /usr/lib64 ;
+# using python : 2.7 : /usr/bin/python2.7 : /usr/include/python2.7 : /usr/lib64 ;
+
+using python : 2.6 : /usr/bin/python2.6 : /usr/include/python2.6 : /usr/lib64 ;
+
+##############################
+# ImageMagick configuration. #
+##############################
+
+
+constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
+# can be found with command: MagickCore-config --libs
+constant	MAGICK_LIBS     : " -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lX11 -lXt -lbz2 -lz -lm -lgomp -lpthread -lltdl" ;
+
+
+lib ImageMagick :
+	:
+		usage-requirement
+		<include>$(MAGICK_INCLUDE)
+		<linkflags>$(MAGICK_LIBS)
+	;

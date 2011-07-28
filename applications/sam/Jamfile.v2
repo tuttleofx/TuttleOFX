@@ -157,7 +157,6 @@ exe sam-info :
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
-		
 	:
 		<include>$(MAGICK_INCLUDE)
 		<linkflags>$(MAGICK_LIBS)

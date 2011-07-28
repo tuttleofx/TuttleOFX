@@ -17,25 +17,16 @@ import os ;
 # Python
 ###############################################################################
 
-constant 	PYTHON_INCLUDE  : [ SHELL " echo \"`python-config --includes `\" " ] ;
-constant	PYTHON_CFLAGS   : [ SHELL " echo \"`python-config --cflags   `\" " ] ;
-constant	PYTHON_LIBS     : [ SHELL " echo \"`python-config --libs     `\" " ] ;
+# see the user-config.jam file
 
 ###############################################################################
 # Image Magick
 ###############################################################################
 
 constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
-constant	MAGICK_CXXFLAGS : [ SHELL " echo \"`MagickCore-config --cppflags`\" " ] ;
-constant	MAGICK_CFLAGS   : [ SHELL " echo \"`MagickCore-config --cflags  `\" " ] ;
-constant	MAGICK_LIBS     : [ SHELL " echo \"`MagickCore-config --libs    `\" " ] ;
 
-alias imageMagick
-    : # no sources
-    : # no build requirements
-    : # no default build
-    : <include>$(MAGICK_INCLUDE)
-    ;
+# can be found with command: MagickCore-config --libs
+constant	MAGICK_LIBS     : " -L/usr/lib64 -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lX11 -lXt -lbz2 -lz -lm -lgomp -lpthread -lltdl" ;
 
 
 ###############################################################################
