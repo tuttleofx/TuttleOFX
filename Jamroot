@@ -11,11 +11,34 @@
 ## 
 ###############################################################################
 
-###############################################################################
-# Constant version variables
-###############################################################################
-constant PYTHON_VERSION : 26 ; # 26 or 27
+import os ;
 
+###############################################################################
+# Python
+###############################################################################
+
+# see the user-config.jam file
+
+###############################################################################
+# Image Magick
+###############################################################################
+
+constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
+
+# can be found with command: MagickCore-config --libs
+constant	MAGICK_LIBS     : " -L/usr/lib64 -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lX11 -lXt -lbz2 -lz -lm -lgomp -lpthread -lltdl" ;
+
+
+###############################################################################
+# OpenGL
+###############################################################################
+
+if [ os.name ] = NT	
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX 
+	{	alias opengl : ; }
+else if [ os.name ] = MACOSX
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 
 
@@ -59,15 +82,6 @@ project
 		<toolset>gcc:<cxxflags>-Wno-deprecated
 	;
 
-# TODO detect one time the opengl for the project,
-#      and use it after if necessary
-
-#if [ os.name ] = NT	
-#	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-#else if [ os.name ] = LINUX 
-#	{	alias opengl : ; }
-#else if [ os.name ] = MACOSX 
-#	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # 3rd party libraries
@@ -88,16 +102,6 @@ use-project		/tuttletests	: libraries/tuttle/tests ;
 #
 use-project		/sam-tools		: applications/sam/ ;
 
-use-project		/sam-ls			: applications/sam/ ;
-use-project		/sam-cp			: applications/sam/ ;
-use-project		/sam-mv			: applications/sam/ ;
-use-project		/sam-rm			: applications/sam/ ;
-use-project		/sam-do			: applications/sam/ ;
-
-use-project		/sam-info		: applications/sam/ ;
-use-project		/sam-plugins	: applications/sam/ ;
-use-project		/sam-check		: applications/sam/ ;
-
 #use-project	/pyTuttle		: applications/pyTuttle ;
 #use-project	/samtests		: applications/sam-ls/tests ;
 
@@ -105,25 +109,17 @@ use-project		/sam-check		: applications/sam/ ;
 #
 # TUTTLEOFX PLUGINS
 #
-use-project	/plugins	: plugins ;
+use-project		/plugins		: plugins ;
 
-alias		/tests		: /plugins
-				          /tuttletests
-				          /samtests
-				        ;
+alias			/tests			: /plugins
+				          		  /tuttletests
+				          		  /samtests
+				        		;
 
 # all targets have to be marked as explicit
-explicit			/tuttle
+explicit		/tuttle
 				/tuttletests
 
-				/sam-ls
-				/sam-cp
-				/sam-mv
-				/sam-rm
-				/sam-do
-				/sam-info
-				/sam-plugins
-				/sam-check
 				/sam-tools
 
 #				/samtests
