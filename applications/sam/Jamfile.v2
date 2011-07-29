@@ -1,8 +1,8 @@
 ###############################################################################
 ## Main BJam makefile for Sam command line tool
 ###############################################################################
-import os ;
 
+import os ;
 
 ###############################################################################
 # Global project requirements
@@ -10,34 +10,24 @@ import os ;
 project
 	: requirements
 		<include>src
-	: build-dir $(DIST)
+	: 
+		build-dir $(BUILD)
 	;
-	
 
 ###############################################################################
 # ls
 ###############################################################################
 exe sam-ls :
 		[ glob src/sam/ls/*.cpp ]
-		/tuttlecommon/<link>static
+		
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
+		
+		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
-		<threading>multi
-	;
-
-# Automatic install
-install dist_src	
-	:   sam-ls
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-	: <variant>debug:<location>$(DIST)/debug/bin/sam-ls/
-	  <variant>release:<location>$(DIST)/release/bin/sam-ls/
 	;
 
 ###############################################################################
@@ -45,25 +35,15 @@ install dist_src
 ###############################################################################
 exe sam-cp :
 		[ glob src/sam/cp/*.cpp ]
-		/tuttlecommon
+		
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
+		
+		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
-		<threading>multi
-	;
-
-# Automatic install
-install dist_src	
-	:   sam-cp
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-	: <variant>debug:<location>$(DIST)/debug/bin/sam-cp
-	  <variant>release:<location>$(DIST)/release/bin/sam-cp
 	;
 
 ###############################################################################
@@ -71,25 +51,15 @@ install dist_src
 ###############################################################################
 exe sam-mv :
 		[ glob src/sam/mv/*.cpp ]
-		/tuttlecommon/<link>static
+		
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
+		
+		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
-		<threading>multi
-	;
-
-# Automatic install
-install dist_src
-	:   sam-mv
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-	: <variant>debug:<location>$(DIST)/sam-mv/bin/debug
-	  <variant>release:<location>$(DIST)/sam-mv/bin/release
 	;
 
 ###############################################################################
@@ -97,25 +67,16 @@ install dist_src
 ###############################################################################
 exe sam-rm :
 		[ glob src/sam/rm/*.cpp ]
-		/tuttlecommon/<link>static
+
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
+		
+		/tuttlecommon/<link>static
 	:
 		<os>LINUX:<find-shared-library>dl
 		<threading>multi
-	;
-
-# Automatic install
-install dist_src
-	:   sam-rm
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-	: <variant>debug:<location>$(DIST)/sam-rm/bin/debug
-	  <variant>release:<location>$(DIST)/sam-rm/bin/release
 	;
 
 ###############################################################################
@@ -123,89 +84,55 @@ install dist_src
 ###############################################################################
 exe sam-do :
 		[ glob src/sam/do/*.cpp ]
+		
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+		/boost/python
+		/python
+		
 		/tuttlecommon/<link>static
 		/tuttlehost
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
 	:
 		<os>LINUX:<find-shared-library>dl
-		<threading>multi
-	;
-
-# Automatic install
-install dist_src
-	:   sam-do
-		/tuttlehost
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-	: <variant>debug:<location>$(DIST)/sam-do/bin/debug
-	  <variant>release:<location>$(DIST)/sam-do/bin/release
 	;
 
 ###############################################################################
 # info
 ###############################################################################
-
 exe sam-info :
 		[ glob src/sam/info/*.cpp ]
-		/tuttlecommon/<link>static
+		
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
+		
+		/tuttlecommon/<link>static
 	:
 		<include>$(MAGICK_INCLUDE)
 		<linkflags>$(MAGICK_LIBS)
 		<os>LINUX:<find-shared-library>dl
-		<threading>multi
-		;
-
-# Automatic install
-install dist_src
-	:   sam-info
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-	: <variant>debug:<location>$(DIST)/sam-info/bin/debug
-	  <variant>release:<location>$(DIST)/sam-info/bin/release
 	;
-
-#alias	sam-info : ./src/sam/info ;
 
 ###############################################################################
 # plugins
 ###############################################################################
 exe sam-plugins :
 		[ glob src/sam/plugins/*.cpp ]
-		/tuttlecommon/<link>static
+		
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
 		/boost/python
+		/python
+		
+		/tuttlecommon/<link>static
 		/tuttlehost
 	:
 		<os>LINUX:<find-shared-library>dl
-		<threading>multi
-	;
-
-# Automatic install
-install dist_src
-	:   sam-plugins
-		/tuttlehost
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-		/boost/python
-
-	: <variant>debug:<location>$(DIST)/bin/debug/sam-plugins
-	  <variant>release:<location>$(DIST)/bin/release/sam-plugins
 	;
 
 ###############################################################################
@@ -213,28 +140,54 @@ install dist_src
 ###############################################################################
 exe sam-check :
 		[ glob src/sam/check/*.cpp ]
+
+		/boost/system
+		/boost/filesystem
+		/boost/serialization
+		/boost/program_options
+		/boost/python
+		/python
+		
 		/tuttlecommon/<link>static
 		/tuttlehost
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
-		/boost/program_options
-		/boost/python
 	:
 		<os>LINUX:<find-shared-library>dl
-		<threading>multi
+	;
+	
+	
+###############################################################################
+# install
+###############################################################################
+alias sam-install : sam-install-libs sam-install-bins ;
+
+install sam-install-bins
+	:   
+		sam-cp
+		sam-mv
+		sam-rm
+		sam-ls
+		sam-do
+		sam-info
+		sam-check
+		sam-plugins
+	:
+		<variant>debug:<location>$(DIST)/bin
+	  	<variant>release:<location>$(DIST)/bin
 	;
 
-# Automatic install
-install dist_src
-	:   sam-check
-		/tuttlehost
+install sam-install-libs
+	:
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
 		/boost/program_options
 		/boost/python
-	: <variant>debug:<location>$(DIST)/bin/debug/sam-check
-	  <variant>release:<location>$(DIST)/bin/release/sam-check
+		/boost/regex			# from tuttlecommon
+		/boost/thread			# from tuttlehost
+		/boost/date_time		# from tuttlehost
+		
+		#/tuttlehost
+	:
+		<variant>debug:<location>$(DIST)/lib
+	  	<variant>release:<location>$(DIST)/lib
 	;
-

@@ -12,13 +12,14 @@ project
 			<include>$(3RD_PARTY)/boostHack
 		: usage-requirements
 			<include>src
-		: build-dir $(DIST)/tuttle/obj
+			<include>$(3RD_PARTY)/boostHack
+		: build-dir $(BUILD)/tuttle
 		;
 
 ###############################################################################
 # tuttle library
 ###############################################################################
-use-project	/tuttlehost	: src/tuttle/host ;
+use-project	/tuttlehost		: src/tuttle/host ;
 use-project	/tuttleplugin	: src/tuttle/plugin ;
 use-project	/tuttlecommon	: src/tuttle/common ;
 
@@ -27,6 +28,6 @@ use-project	/tuttlecommon	: src/tuttle/common ;
 ###############################################################################
 install		dist_src
 		: /tuttlehost /tuttleplugin /tuttlecommon
-		: <variant>debug:<location>$(DIST)/tuttle/bin/debug
-		  <variant>release:<location>$(DIST)/tuttle/bin/release
+		: <variant>debug:<location>$(DIST)/lib
+		  <variant>release:<location>$(DIST)/lib
 		;

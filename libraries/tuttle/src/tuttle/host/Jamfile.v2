@@ -3,17 +3,18 @@
 ###############################################################################
 
 lib tuttlehost :
-	[ glob-tree *.cpp ]
-	/ofxPluginSupport/<link>static
-	/boost/system
-	/boost/filesystem
-	/boost/thread
-	/boost/date_time
-	/boost/serialization
-	/boost/python
+		[ glob-tree *.cpp ]
+
+		/python
+		/boost/system
+		/boost/python
+		/boost/filesystem
+		/boost/thread
+		/boost/date_time
+		/boost/serialization
+		
+		/ofxPluginSupport/<link>static
 	:
-	<os>NT:<find-shared-library>shell32
-	<os>LINUX:<find-shared-library>dl
-	<linkflags>-lpython2.6
-	#<link>static
+		<os>NT:<find-shared-library>shell32
+		<os>LINUX:<find-shared-library>dl
 	;

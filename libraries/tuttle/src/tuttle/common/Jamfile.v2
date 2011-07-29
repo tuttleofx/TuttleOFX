@@ -1,12 +1,15 @@
 project : requirements
 			<include>.
+			<include>BOOST_HACK
 		: usage-requirements
 			<include>.
 		;
 
 lib tuttlecommon :
-		[ glob-tree *.cpp ]
-		/ofxPluginSupport/<link>static
-		/boost/system
-		/boost/regex
+			[ glob-tree *.cpp ]
+			/ofxPluginSupport/<link>static
+			/boost/system
+			/boost/regex
+		:
+			<os>LINUX:<find-shared-library>dl
 		;
