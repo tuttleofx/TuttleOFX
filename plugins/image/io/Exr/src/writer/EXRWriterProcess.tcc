@@ -38,7 +38,7 @@ template<class View>
 void EXRWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-	ImageGilProcessor<View>::setup( args );
+	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.time );
 }
 

@@ -47,6 +47,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/diagnostic_information.hpp>
+#include <tuttle/common/utils/backtrace.hpp>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
@@ -2519,7 +2520,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	{
 		typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
 
-		std::cerr << "----------" << std::endl;
+		std::cerr << "__________" << std::endl;
 		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
 		if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
 		{
@@ -2531,7 +2532,12 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		}
 		std::cerr << boost::diagnostic_information(e);
 //		std::cerr << "* inArgs: " << inArgs << std::endl;
+#ifndef TUTTLE_PRODUCTION
 		std::cerr << "----------" << std::endl;
+		std::cerr << "* Backtrace" << std::endl;
+		std::cerr << boost::trace(e);
+#endif
+		std::cerr << "__________" << std::endl;
 	}
 	
 	// catch suite exceptions
