@@ -10,7 +10,7 @@ project
         <include>.
         <include>$(MAGICK_INCLUDE)
 		<linkflags>$(MAGICK_LIBS)
-    : build-dir $(DIST)/ImageMagick/obj
+    : build-dir $(BUILD)/ImageMagick
     ;
 
 

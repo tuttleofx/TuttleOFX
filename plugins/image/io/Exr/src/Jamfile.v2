@@ -9,7 +9,7 @@ import os ;
 project
     : requirements
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/Exr/obj
+    : build-dir $(BUILD)/Exr
     ;
 
 use-project /libexr : $(3RD_PARTY)/openexr ;

@@ -9,7 +9,7 @@ import os ;
 project
 	: requirements
 		<include>.
-	: build-dir $(DIST)/Colorspace/obj
+	: build-dir $(BUILD)/Colorspace
 	;
 
 ###############################################################################

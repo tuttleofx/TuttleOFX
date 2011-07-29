@@ -9,7 +9,7 @@ import os ;
 project
     : requirements	
 				<include>src
-    : build-dir $(DIST)/Invert/obj
+    : build-dir $(BUILD)/Invert
     ;
 
 ###############################################################################
@@ -18,9 +18,6 @@ project
 plugin Invert : 
     [ glob src/*.cpp ]
     /tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
     ;
 
 ###############################################################################

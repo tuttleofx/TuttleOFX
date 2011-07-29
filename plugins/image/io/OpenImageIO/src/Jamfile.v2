@@ -8,7 +8,7 @@
 project
     : requirements
         <include>.
-    : build-dir $(DIST)/OpenImageIO/obj
+    : build-dir $(BUILD)/OpenImageIO
     ;
 
 #use-project /openImageIO 	: $(3RD_PARTY)/libopenImageIO ;

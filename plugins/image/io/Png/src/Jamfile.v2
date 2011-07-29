@@ -8,7 +8,7 @@
 project
     : requirements
         <include>.
-    : build-dir $(DIST)/Png/obj
+    : build-dir $(BUILD)/Png
     ;
 
 use-project /png 	: $(3RD_PARTY)/libpng ;

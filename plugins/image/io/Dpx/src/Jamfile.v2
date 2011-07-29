@@ -10,7 +10,7 @@ project
 	: requirements
 		<include>.
 		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-	: build-dir $(DIST)/obj/Dpx
+	: build-dir $(BUILD)/Dpx
 	;
 
 ###############################################################################
