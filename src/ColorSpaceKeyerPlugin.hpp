@@ -31,6 +31,7 @@ public:
 	OFX::IntParam* _paramIntDiscretization;				//discretization step - Int param
 	
 	//Overlay data parameters
+	bool _updateVBO;									//VBO data has been changed so update VBO
 	boost::scoped_ptr<CloudPointData> _cloudPointData;	//scoped pointer points the overlay data (or NULL)
 	std::size_t _cloudPointDataCount;					//count (class calling scoped pointer)
 	

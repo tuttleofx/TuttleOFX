@@ -21,12 +21,21 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 		//Associate intern params pointers to GUI components
 		_paramBoolDiscretizationActive = fetchBooleanParam(kBoolDiscretizationDisplay);	//is discretization active on point cloud - check box
 		_paramIntDiscretization = fetchIntParam(kIntDiscretizationDisplay);				//discretization step - Int param
+		
+		//verify display Discrete enable value
+		if(_paramBoolPointCloudDisplay->getValue())	//called default value
+		{
+			_paramBoolDiscretizationActive->setEnabled(true);	//Enable discretization check box
+			_paramIntDiscretization->setEnabled(true);			//Enable discretization int param
+		}
+		
+		 _updateVBO = false;	//does display need to update VBO
 }
 
 ColorSpaceKeyerProcessParams<ColorSpaceKeyerPlugin::Scalar> ColorSpaceKeyerPlugin::getProcessParams( const OfxPointD& renderScale ) const
 {
-	ColorSpaceKeyerProcessParams<Scalar> params;
-	return params;
+	ColorSpaceKeyerProcessParams<Scalar> params;	// create parameters container object
+	return params;									// pass parameters to process
 }
 
 /**
@@ -55,67 +64,69 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 		{
 			if(_paramBoolDiscretizationActive->getValue()) //discretization is active now
 			{
-				getCloudPointData().generateVBO(_clipSrc,args.time,args.renderScale,true,_paramIntDiscretization->getValue()); //create a VBO with discretization
+					getCloudPointData().generateVBOData(	//create a VBO data using discretization
+					_clipSrc,
+					args.renderScale,
+					true,
+					_paramIntDiscretization->getValue() ); 
+				 _updateVBO = true;	//update VBO on overlay
 			}
 			else	//discretization is no more active
 			{
-				getCloudPointData().generateVBO(_clipSrc,args.time,args.renderScale,false,0);	//create a normal VBO
+					getCloudPointData().generateVBOData(	//create a VBO data without discretization
+					_clipSrc,
+					args.renderScale,
+					false,
+					_paramIntDiscretization->getValue() ); 
+				  _updateVBO = true;	// update VBO on overlay
 			}
 		}
 	}
-	if( paramName == kIntDiscretizationDisplay) //discretization int range value has changed
+	if( paramName == kIntDiscretizationDisplay) //discretization value has changed (int range)
 	{
-		if(_paramBoolDiscretizationActive->getValue() && hasCloudPointData()) //discretization is actived
-			getCloudPointData().generateVBO(_clipSrc,args.time,args.renderScale,true,_paramIntDiscretization->getValue()); //create a VBO with discretization
+		if(hasCloudPointData()) //it is not batch mode
+		{
+			if(_paramBoolDiscretizationActive->getValue()) //discretization is actived
+			{
+					getCloudPointData().generateVBOData(	//create a VBO data with discretization (and the new discretization step)
+					_clipSrc,
+					args.renderScale,
+					true,
+					_paramIntDiscretization->getValue() ); 
+					
+					_updateVBO = true; //update VBO on overlay
+			}
+		}
 	}
 }
-
-//bool ColorSpaceKeyerPlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod )
-//{
-//	ColorSpaceKeyerProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	switch( params._border )
-//	{
-//		case eParamBorderPadded:
-//			rod.x1 = srcRod.x1 + 1;
-//			rod.y1 = srcRod.y1 + 1;
-//			rod.x2 = srcRod.x2 - 1;
-//			rod.y2 = srcRod.y2 - 1;
-//			return true;
-//		default:
-//			break;
-//	}
-//	return false;
-//}
-//
-//void ColorSpaceKeyerPlugin::getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois )
-//{
-//	ColorSpaceKeyerProcessParams<Scalar> params = getProcessParams();
-//	OfxRectD srcRod = _clipSrc->getCanonicalRod( args.time );
-//
-//	OfxRectD srcRoi;
-//	srcRoi.x1 = srcRod.x1 - 1;
-//	srcRoi.y1 = srcRod.y1 - 1;
-//	srcRoi.x2 = srcRod.x2 + 1;
-//	srcRoi.y2 = srcRod.y2 + 1;
-//	rois.setRegionOfInterest( *_clipSrc, srcRoi );
-//}
-
-/*
- * the source clip has been changed
- */
 
 /*
  * If clip has changed
  */
 void ColorSpaceKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, const std::string& clipName )
 {
-	if( clipName == kOfxImageEffectSimpleSourceClipName )
+	if( clipName == kOfxImageEffectSimpleSourceClipName ) // if source clip has changed
 	{
-		if( this->hasCloudPointData() )
+		if( this->hasCloudPointData() ) //it is not batch mode
 		{
-			this->getCloudPointData().generateVBO( this->_clipSrc, args.time, args.renderScale,_paramBoolDiscretizationActive->getValue(), _paramIntDiscretization->getValue());
+			getCloudPointData().generateVBOData(	//create a VBO data with discretization (and the new discretization step)
+			_clipSrc,
+			args.renderScale,
+			_paramBoolDiscretizationActive->getValue(),
+			_paramIntDiscretization->getValue() ); 
+			
+			 _updateVBO = true;		//update VBO on overlay
+			this->redrawOverlays();		//redraw scene
+		}
+	}
+	
+	if( clipName == kClipColorSelection) // if color clip has changed
+	{
+		if( this->hasCloudPointData() ) //it is not batch mode
+		{
+			getCloudPointData().generateAverageColorSelection(_clipColor,args.renderScale);	//update average
+			 _updateVBO = true;			//update VBO on overlay
+			this->redrawOverlays();		//redraw scene
 		}
 	}
 }
@@ -138,6 +149,25 @@ bool ColorSpaceKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::C
  */
 void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 {
+	if(hasCloudPointData()) // if there is overlay data
+	{
+		if(args.time != getCloudPointData()._time) // different time between overlay and process
+		{
+			getCloudPointData()._time = args.time; // change computing time in cloud point data
+			
+			getCloudPointData().generateVBOData(	//create a VBO data (with discretization or not)
+			_clipSrc,
+			args.renderScale,
+			_paramBoolDiscretizationActive->getValue(),
+			_paramIntDiscretization->getValue() );
+			
+			getCloudPointData().generateAverageColorSelection( //update average data
+					_clipColor,
+					args.renderScale);
+			
+			_updateVBO = true; //VBO need to be updated in overlay
+		}
+	}
 	doGilRender<ColorSpaceKeyerProcess>( *this, args );
 }
 
@@ -150,7 +180,7 @@ void ColorSpaceKeyerPlugin::addRefCloudPointData()
 	if( _cloudPointDataCount == 0 )	//no reference has been added yet
 	{
 		const OfxPointI imgSize = this->_clipSrc->getPixelRodSize( 0 ); ///@todo set the correct time !
-		_cloudPointData.reset(new CloudPointData(imgSize));				//Create data
+		_cloudPointData.reset(new CloudPointData(imgSize,0));				//Create data
 	}
 	++_cloudPointDataCount;//increments number of reference
 }

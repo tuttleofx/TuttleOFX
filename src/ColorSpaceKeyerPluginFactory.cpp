@@ -19,7 +19,6 @@ static const bool kSupportTiles = false;
  */
 void ColorSpaceKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 {
-	
 	//describe the plugin
 	desc.setLabels( "TuttleColorSpaceKeyer", "ColorSpaceKeyer",
 		            "ColorSpaceKeyer" );
@@ -39,7 +38,8 @@ void ColorSpaceKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( kSupportTiles );
-	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+//	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
+	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	
 	//Overlay class
 	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<ColorSpaceKeyerOverlayDescriptor>() );
@@ -59,16 +59,14 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	srcClip->setSupportsTiles( kSupportTiles );
 
 	OFX::ClipDescriptor* strongSelectionClip = desc.defineClip( kClipColorSelection );
-	strongSelection->addSupportedComponent( OFX::ePixelComponentRGBA );
-	strongSelection->setSupportsTiles( kSupportTiles );
-
+	strongSelectionClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	strongSelectionClip->setOptional( true );
+	strongSelectionClip->setSupportsTiles( kSupportTiles );
+	
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
 
-	//OFX::PushButtonParamDescriptor* helpButton = desc.definePushButtonParam( kParamHelpButton );    help button
-	//helpButton->setLabel( "Help" );
-	
 	//Check-box display
 	OFX::BooleanParamDescriptor* pointCloudDisplay = desc.defineBooleanParam( kPointCloudDisplay );
 	pointCloudDisplay->setLabel( kPointCloudDisplayLabel );		//label

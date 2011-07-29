@@ -3,22 +3,29 @@
 #include "CloudPointData.hpp"
 #include <tuttle/plugin/opengl/gl.h>
 
+#include <boost/gil/extension/io/png_io.hpp>
+
+
 namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
 	
-CloudPointData::CloudPointData(const OfxPointI& size)
+CloudPointData::CloudPointData(const OfxPointI& size, OfxTime time)
 {
 	_size = size;	//define first size (current clip number of pixels)
+	_time = time;	//get current time
+	
+	int imgSize = size.x*size.y; // number of pixel in the image
+	_imgCopy.reserve( imgSize * 0.5 );	//reserve memory for buffer
+	_selectionColorAverage[0] = _selectionColorAverage[1] = _selectionColorAverage[2] = 0; //initialize average
 }
 
 /**
  * Open src clip return if opening has been done (y or n)
  * @param clipSrc	source of the plugin
- * @param time	current time
  * @param renderScale	current renderScale
  */
-bool CloudPointData::generateVBO(OFX::Clip* clipSrc, const OfxTime time, const OfxPointD& renderScale, bool vboWithDiscretization, int discretizationStep)
+bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& renderScale, const bool vboWithDiscretization, const int discretizationStep )
 {	
 	// connection test
 	if( ! clipSrc->isConnected() )
@@ -26,7 +33,10 @@ bool CloudPointData::generateVBO(OFX::Clip* clipSrc, const OfxTime time, const O
 		return false;
 	}
 	
-	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(time, clipSrc->getCanonicalRod(time)) );	//scoped pointer of current source clip
+	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_time, clipSrc->getCanonicalRod(_time)) );	//scoped pointer of current source clip
+	
+	//TUTTLE_TCOUT_VAR( clipSrc->getPixelRod(_time,renderScale)); 
+	//TUTTLE_TCOUT_VAR(clipSrc->getCanonicalRod(_time, renderScale));
 	
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
@@ -34,19 +44,22 @@ bool CloudPointData::generateVBO(OFX::Clip* clipSrc, const OfxTime time, const O
 		std::cout << "src is not accessible" << std::endl;
 		return false;
 	}
-
+	//TUTTLE_TCOUT_VAR( src->getRowBytes());
 	if( src->getRowBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
 		return false;
 	}
-	OfxRectI srcPixelRod = clipSrc->getPixelRod( time, renderScale ); //get current RoD
+	const OfxRectI srcPixelRod = clipSrc->getPixelRod( _time, renderScale ); //get current RoD
 	if( (clipSrc->getPixelDepth() != OFX::eBitDepthFloat) ||
-		(!clipSrc->getPixelComponents()) )
+		(clipSrc->getPixelComponents() == OFX::ePixelComponentNone) )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
         return false;
 	}
+	
+	//TUTTLE_TCOUT_VAR( src->getBounds());
+	//TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
 	
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
@@ -57,20 +70,41 @@ bool CloudPointData::generateVBO(OFX::Clip* clipSrc, const OfxTime time, const O
 	
 	// Compute if source is OK
 	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+	//TUTTLE_TCOUT_VAR(srcView.width());
+	//TUTTLE_TCOUT_VAR(srcView.height());
+	//TUTTLE_COUT_INFOS;
 	
-	int sizeVBO;	//vbo size
-	if(vboWithDiscretization)	//does user want to discretize the VBO
-		sizeVBO = generateDiscretizedVBOData(srcView,discretizationStep); //create data and return buffer size
+//	TUTTLE_TCOUT_VAR( boost::gil::get_color( average, boost::gil::red_t() ) );
+//	TUTTLE_TCOUT_VAR( boost::gil::get_color( average, boost::gil::green_t() ) );
+//	TUTTLE_TCOUT_VAR( boost::gil::get_color( average, boost::gil::blue_t() ) );
+	
+	_imgCopy.clear();		//clear buffer
+	//TUTTLE_COUT_INFOS;
+	if( vboWithDiscretization )	//does user want to discretize the VBO
+	{
+		//TUTTLE_COUT_INFOS;
+		generateDiscretizedVBOData( srcView, discretizationStep ); //create data and return buffer size
+	}
 	else
-		sizeVBO = generateAllPointsVBOData(srcView); // create data and return buffer size
+	{
+		//TUTTLE_COUT_INFOS;
+		generateAllPointsVBOData( srcView ); // create data and return buffer size
+	}	
 	
-	
-	_imgVBO.createVBO(&(_imgCopy.front()),sizeVBO); //generate VBO to draw
-	_imgVBO._color = true;	//activate color for VBO
-	
+	//TUTTLE_COUT_INFOS;
 	return true;
 }
 
+/**
+ * create the VBO from VBO data (draw function)
+ */
+void CloudPointData::updateVBO()
+{
+	//TUTTLE_TCOUT_INFOS;
+	_imgVBO.createVBO( &(_imgCopy.front()), _imgCopy.size() / 3 ); //generate VBO to draw
+	//TUTTLE_COUT_INFOS;
+	_imgVBO._color = true;	//activate color for VBO
+}
 
 /**
  * Copy rgb channels of the clip source into a buffer
@@ -80,12 +114,14 @@ int CloudPointData::generateAllPointsVBOData(SView srcView)
 	//compute buffer size
 	int size = (int)(srcView.height()*srcView.width());	//return size : full img here
 	
-	//clear data
-	_imgCopy.clear();		//clear buffer
-	_imgVBO.deleteVBO();	// delete previous VBO
+	TUTTLE_TCOUT_INFOS;
 	//copy full image into buffer
-	Pixel_copy funct(_imgCopy);	//functor declaration	
-	boost::gil::transform_pixels( srcView, funct);		//with functor reference
+	Pixel_copy funct( _imgCopy );	//functor declaration	
+	
+	TUTTLE_TCOUT_INFOS;
+	boost::gil::transform_pixels( srcView, funct );		//with functor reference
+	TUTTLE_TCOUT_INFOS;
+
 	return size;
 }
 
@@ -96,18 +132,105 @@ int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretization
 {
 	//compute buffer size
 	int size = (int)(srcView.height()*srcView.width());	//return size : full img here
-	
-	//clear data
-	_imgCopy.clear();		//clear buffer
-	_imgVBO.deleteVBO();	// delete previous VBO
 
-	//copy full image into buffer
-	Pixel_copy_discretization funct(_imgCopy,discretizationStep);	//functor declaration	
-	boost::gil::transform_pixels( srcView, funct);					//with functor reference
+	//Create and use functor to get discretize data  (functor with template)
+	Pixel_copy_discretization<SPixel> funct(_imgCopy,discretizationStep);	//functor declaration	
+	boost::gil::transform_pixels( srcView, funct);							//with functor reference
+	funct.convertSetDataToVectorData();								//deplace functor data to _imgCopy data
 	return size;
 }
 
+/*
+ *Generate average from color selection clip
+ */
+bool CloudPointData::generateAverageColorSelection(OFX::Clip* clipColor, const OfxPointD& renderScale)
+{
+	// connection test
+	if( ! clipColor->isConnected() )
+	{	
+		return false;
+	}
 
+	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current source clip
+	
+	//TUTTLE_TCOUT_VAR( clipColor->getPixelRod(_time,renderScale)); 
+	//TUTTLE_TCOUT_VAR( clipColor->getCanonicalRod(_time, renderScale));
+
+	// Compatibility tests
+	if( !src.get() ) // source isn't accessible
+	{
+		std::cout << "color src is not accessible" << std::endl;
+		return false;
+	}
+
+	if( src->getRowBytes() == 0 )//if source is wrong
+	{
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+		return false;
+	}
+
+	const OfxRectI srcPixelRod = clipColor->getPixelRod( _time, renderScale ); //get current RoD
+	if( (clipColor->getPixelDepth() != OFX::eBitDepthFloat) ||
+		(!clipColor->getPixelComponents()) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
+        return false;
+	}
+
+	//TUTTLE_TCOUT_VAR( src->getBounds());
+	//TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
+
+	if( srcPixelRod != src->getBounds() )// the host does bad things !
+	{
+		// remove overlay... but do not crash.
+		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		return false;
+	}
+
+	// Compute if source is OK
+	SView colorView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );		// get current view from color clip
+	ComputeAverage<SView>::CPixel average = ComputeAverage<SView>()( colorView );	// compute color clip average
+	
+	//copy computed average into average stock variable
+	_selectionColorAverage[0] = average[0]; //red channel value
+	_selectionColorAverage[1] = average[1]; //green channel value
+	_selectionColorAverage[2] = average[2]; //blue channel values
+	
+	return true; //average has been computed
+}
+
+/**
+ * Draw average on screen (cross)
+ */
+void CloudPointData::drawAverage()
+{
+	float kCrossSize = 0.05f;
+	//compute complementary color
+	float complementaryColor[3]; 
+	complementaryColor[0] = 1-_selectionColorAverage[0];	//complementary red
+	complementaryColor[1] = 1-_selectionColorAverage[1];	//complementary green
+	complementaryColor[2] = 1-_selectionColorAverage[2];	//complementary blue
+	
+	//compute values on X axis
+	float xBefore = _selectionColorAverage[0]-kCrossSize;
+	float xAfter = _selectionColorAverage[0] + kCrossSize;
+	
+	//compute values on Y axis
+	float yBefore = _selectionColorAverage[1]-kCrossSize;
+	float yAfter = _selectionColorAverage[1] + kCrossSize;
+	
+	//compute values on Z axis
+	float zBefore = _selectionColorAverage[2]-kCrossSize;
+	float zAfter = _selectionColorAverage[2]+kCrossSize;
+	
+	//drawing average mark
+	glBegin(GL_LINES);
+	glColor3f(complementaryColor[0],complementaryColor[1],complementaryColor[2]); //color : complementary to average
+	glVertex3f(xBefore,_selectionColorAverage[1],_selectionColorAverage[2]); glVertex3f(xAfter,_selectionColorAverage[1],_selectionColorAverage[2]); //X axis
+	glVertex3f(_selectionColorAverage[0],yBefore,_selectionColorAverage[2]); glVertex3f(_selectionColorAverage[0],yAfter,_selectionColorAverage[2]); //Y axis
+	glVertex3f(_selectionColorAverage[0],_selectionColorAverage[1],zBefore); glVertex3f(_selectionColorAverage[0],_selectionColorAverage[1],zAfter); //Z axis
+	glEnd();
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,8 +245,12 @@ int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretization
  */
 void CloudPointData::VBO::createVBO( const void* data, int size, GLenum usage )
 {
+	//TUTTLE_TCOUT( "id creation : " << _id <<"  size : "<< size <<"  usage : "<< usage );
 	_size = size;
+	//TUTTLE_TCOUT_INFOS;
 	genBuffer( _id, data, size, GL_ARRAY_BUFFER, usage );
+	//
+	//TUTTLE_TCOUT_INFOS;
 }
 
 /**
@@ -132,8 +259,12 @@ void CloudPointData::VBO::createVBO( const void* data, int size, GLenum usage )
  */
 void CloudPointData::VBO::deleteVBO( )
 {
-	glDeleteBuffers( 1, &_id );
-	_id = 0; // 0 is reserved, glGenBuffersARB() will return non-zero id if success
+	//std::cout << "id destruction : " << _id << std::endl;
+	if( _id != 0 )	//if VBO exists
+	{
+		glDeleteBuffers( 1, &_id );
+		_id = 0; // 0 is reserved, glGenBuffersARB() will return non-zero id if success
+	}
 }
 
 /**
@@ -150,23 +281,30 @@ void CloudPointData::VBO::deleteVBO( )
  */
 void CloudPointData::VBO::genBuffer( unsigned int& id, const void* data, int size, GLenum target, GLenum usage )
 {
+	//TUTTLE_TCOUT_INFOS;
 	if( id != 0 )
 		deleteVBO( );
 
-	int dataSize = size * 3 * sizeof(float);
+	const int dataSize = size * 3 * sizeof(float);
 
+	//TUTTLE_TCOUT_INFOS;
 	glGenBuffers( 1, &(_id) );		// create a vbo
+	//TUTTLE_TCOUT_INFOS;
 	glBindBuffer( target, _id );	// activate vbo id to use
+	//TUTTLE_TCOUT_INFOS;
 	glBufferData( target, dataSize, data, usage ); // upload data to video card
+	//TUTTLE_TCOUT_INFOS;
 	
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	int bufferSize = 0;
 	glGetBufferParameteriv( target, GL_BUFFER_SIZE, &bufferSize );
+	//TUTTLE_TCOUT_INFOS;
 	if( dataSize != bufferSize )
 	{
 		deleteVBO( );
 		std::cout << "[createVBO()] Mismatch between Data size and input array" << std::endl;
 	}
+	//TUTTLE_TCOUT_INFOS;
 }
 
 /**

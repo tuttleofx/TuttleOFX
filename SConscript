@@ -5,6 +5,7 @@ project.createOfxPlugin(
 		libs = [
 				libs.tuttlePlugin,
 				libs.glew,
+				libs.png,
 			]
 	)
 

@@ -39,7 +39,9 @@ ColorSpaceKeyerOverlay::~ColorSpaceKeyerOverlay()
 void ColorSpaceKeyerOverlay::prepareOpenGLScene(const OFX::DrawArgs& args)
 {
 	//reset OpenGL scene (remove previous img)
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );	
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	//change background color to gray
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	
 	//define openGL scene frustrum
 	glMatrixMode( GL_MODELVIEW );	//load standard mode
@@ -57,13 +59,19 @@ void ColorSpaceKeyerOverlay::prepareOpenGLScene(const OFX::DrawArgs& args)
 	if( _isFirst )
 	{
 		//construct VBO
-		const bool useVBODiscretization = _plugin->_paramBoolDiscretizationActive->getValue();	//Should it discretize the VBO
-		const int discretizationStep = _plugin->_paramIntDiscretization->getValue();				//discretization step (if discretize)
-		const bool errcode = getData().generateVBO(_plugin->_clipSrc,args.time,args.renderScale, useVBODiscretization,discretizationStep);	//generate VBO
-		if( !errcode )
-		{
-			TUTTLE_COUT_WARNING( "Error building VBO" );
-		}
+//		const bool useVBODiscretization = _plugin->_paramBoolDiscretizationActive->getValue();		//Should it discretize the VBO
+//		const int discretizationStep = _plugin->_paramIntDiscretization->getValue();				//discretization step (if discretize)
+//		const bool errcodeVBO = getData().generateVBO(_plugin->_clipSrc,args.renderScale, useVBODiscretization,discretizationStep);	//generate VBO
+//		if( !errcodeVBO )
+//		{
+//			TUTTLE_COUT_WARNING( "Error building VBO" );
+//		}
+//		std::cout<< "AVERAGE" << std::endl;
+//		const bool errcodeAVG = getData().generateAverageColorSelection(_plugin->_clipColor,args.renderScale);
+//		if( !errcodeAVG )
+//		{
+//			TUTTLE_COUT_WARNING("Error computing selection average");
+//		}
 		_isFirst = false;	//it is not the first draw anymore
 	}
 }
@@ -137,11 +145,17 @@ void ColorSpaceKeyerOverlay::drawAxes()
 bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 {
 	bool displaySomethings = false;
-	if( _plugin->_paramBoolPointCloudDisplay->getValue() ) //Is CloudPointData displayed ? (IHM)
+	if( _plugin->_paramBoolPointCloudDisplay->getValue() ) //Is CloudPointData displayed ? (GUI)
 	{
+		if(_plugin->_updateVBO )
+		{
+			//update VBO
+			getData().updateVBO(); //update VBO from VBO data (already computed)
+			_plugin->_updateVBO = false; //VBO has been recomputed
+		}
+		
 		glPushMatrix();
-
-		prepareOpenGLScene(args); //prepare frustrum and projection settings
+		prepareOpenGLScene(args); //prepare frustum and projection settings
 
 		//rotate management
 		glTranslatef(.5f,.5f,.5f);		//center rotation to the middle of cube
@@ -152,12 +166,10 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		//drawing
 		drawAxes();					//draw the X,Y and Z axes
 		getData()._imgVBO.draw();	//draw VBO
+		getData().drawAverage();	//draw the average on screen
 		glTranslatef(.5f,.5f,.5f);
 		
 		glPopMatrix();
-		//glFlush( );		//empty all of buffers
-		//glFinish( );	//end of the openGL scene
-
 		displaySomethings = true;	//something has been drown on screen
 	}
 	return displaySomethings;
