@@ -19,10 +19,10 @@ project
 ###############################################################################
 plugin Jpeg :
         [ glob-tree *.cpp ]
-        /tuttleplugin/<link>static
-        /boost/filesystem
-        /boost/system
-        /boost/regex
+		/boost/system
+		/boost/filesystem
+		/boost/regex
+		/tuttleplugin/<link>static
         ;
 
 ###############################################################################

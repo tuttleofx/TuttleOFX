@@ -1,5 +1,4 @@
 #include "EXRWriterDefinitions.hpp"
-#include "EXRWriterProcess.hpp"
 #include "EXRWriterPlugin.hpp"
 #include "../half/gilHalf.hpp"
 

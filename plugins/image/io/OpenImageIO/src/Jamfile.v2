@@ -18,9 +18,10 @@ project
 ###############################################################################
 #plugin OpenImageIO : 
 #	[ glob-tree *.cpp ]
-#	/tuttleplugin/<link>static
-#	/boost/filesystem
 #	/boost/system
+#	/boost/filesystem
+#	/boost/regex
+#	/tuttleplugin/<link>static
 #	/openImageIO/<link>static
 #	;
 #explicit OpenImageIO ;
