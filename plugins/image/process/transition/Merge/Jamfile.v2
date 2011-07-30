@@ -8,8 +8,8 @@ import os ;
 ###############################################################################
 project
 	: requirements
+		<include>$(BOOST_HACK)
 		<include>src
-		<include>BOOST_HACK
 	: build-dir $(BUILD)/Merge
 	;
 
@@ -19,9 +19,6 @@ project
 plugin Merge :
 		[ glob src/*.cpp ]
 		/tuttleplugin/<link>static
-	:
-		<os>NT:<find-shared-library>opengl32
-		<os>MACOSX:<linkflags>"-framework OpenGL"
 	;
 
 ###############################################################################

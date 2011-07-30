@@ -186,8 +186,9 @@ install sam-install-libs
 		/boost/thread			# from tuttlehost
 		/boost/date_time		# from tuttlehost
 		
-		#/tuttlehost
+		/tuttlehost
 	:
-		<variant>debug:<location>$(DIST)/lib
-	  	<variant>release:<location>$(DIST)/lib
+		<location>$(DIST)/lib
+	  	<install-dependencies>on
+		<install-type>LIB
 	;

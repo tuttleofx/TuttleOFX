@@ -101,9 +101,6 @@ project
 		#
 		# removes deprecated header used by boost
 		<toolset>gcc:<cxxflags>-Wno-deprecated
-		
-		
-		
 	;
 
 

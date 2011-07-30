@@ -2,4 +2,15 @@ project Iex
 	: usage-requirements <include>.
 	;
 
-lib Iex : [ glob *.cpp ] ;
+lib Iex
+	:
+		[ glob *.cpp ]
+	;
+
+install dist
+	:
+		Iex
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

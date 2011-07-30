@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Average Plugin
+## Main BJam makefile for TuttleOFX DebugImageEffectApi Plugin
 ###############################################################################
 import os ;
 
@@ -9,13 +9,13 @@ import os ;
 project
 	: requirements
 		<include>src
-	: build-dir $(DIST)/Average/obj
+	: build-dir $(BUILD)/DebugImageEffectApi
 	;
 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Average : 
+plugin DebugImageEffectApi : 
 	[ glob src/*.cpp ]
 	/tuttleplugin/<link>static
 	;
@@ -23,5 +23,5 @@ plugin Average :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Average : $(DIST) ;
+auto_install DebugImageEffectApi : $(DIST) ;
 

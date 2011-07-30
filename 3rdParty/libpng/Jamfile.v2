@@ -10,9 +10,10 @@ project
         <include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
+		<warnings>off
     : usage-requirements
         <include>.
-    : build-dir $(DIST)/3rdParty/png/obj
+    : build-dir $(BUILD)/3rdParty/png
     ;
 
 use-project /zlib 	: ../zlib ;
@@ -28,7 +29,8 @@ lib png :
         ;
 
 install dist_src	
-	:	png
-	:	<variant>debug:<location>$(DIST)/3rdParty/png/bin/debug
-		<variant>release:<location>$(DIST)/3rdParty/png/bin/release
+	:
+		png
+	:
+		<location>$(DIST)/lib
 	;

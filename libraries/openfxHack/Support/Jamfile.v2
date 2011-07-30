@@ -24,11 +24,3 @@ lib Support :
 	/boost/system
 	;
 
-###############################################################################
-# Automatic install
-###############################################################################
-install dist_src	
-	:	Support
-	:	<variant>debug:<location>$(DIST)/lib
-		<variant>release:<location>$(DIST)/lib
-	;

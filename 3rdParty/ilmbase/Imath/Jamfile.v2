@@ -8,3 +8,11 @@ lib Imath
 		../Iex//Iex
 		../Half//Half
 	;
+
+install dist
+	:
+		Imath
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

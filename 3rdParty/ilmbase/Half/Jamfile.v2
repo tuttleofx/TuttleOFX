@@ -12,7 +12,7 @@ exe toFloat : toFloat.cpp ;
 exe eLut : eLut.cpp ;
 
 # as we want to execute them easily, we want them to be copied into this directory
-install installExe : toFloat eLut : <location>$(HERE) ;
+install installExe : toFloat eLut : <location>$(HERE) <link>static ;
 
 # declaring the generators
 
@@ -44,4 +44,12 @@ lib Half
 	:  # needed to declare this target needs eLut.h and toFloat.h to be built
 	  <implicit-dependency>eLut.h
 	  <implicit-dependency>toFloat.h
+	;
+
+install dist
+	:
+		Half
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
 	;

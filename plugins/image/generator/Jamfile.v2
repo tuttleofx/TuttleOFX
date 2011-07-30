@@ -1,7 +1,7 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/generator ;
+path-constant BUILD : $(BUILD)/generator ;
 
 for local l in [ glob * : Text ]
 {

@@ -50,7 +50,7 @@ project
 		<linkflags>-lz
 		<linkflags>-lm
 		<linkflags>-lgomp
-	: build-dir $(DIST)/3rdParty/Magick++/obj
+	: build-dir $(BUILD)/3rdParty/Magick++
     ;
 
 use-project /lcms	: $(3RD_PARTY)/lcms ;
@@ -88,7 +88,9 @@ lib	Magick++	:
 				/png
 			;
 
-install	dist_src	: Magick++
-			: <variant>debug:<location>$(DIST)/3rdParty/Magick++/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/Magick++/bin/release
-			;
+install	dist_src
+	:
+		Magick++
+	:
+		<variant>debug:<location>$(DIST)/lib
+	;

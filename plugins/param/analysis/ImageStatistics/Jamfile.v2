@@ -9,8 +9,18 @@ import os ;
 project
 	: requirements
 		<include>src
-	: build-dir $(DIST)
+	: build-dir $(BUILD)/ImageStatistics
 	;
+ 
+###############################################################################
+# Dependencies
+###############################################################################
+if [ os.name ] = NT	
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX 
+	{	alias opengl : ; }
+else if [ os.name ] = MACOSX 
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
@@ -20,6 +30,7 @@ plugin Average :
         /tuttleplugin/<link>static
         /boost//system
         /boost//regex
+        opengl
 	;
 
 ###############################################################################

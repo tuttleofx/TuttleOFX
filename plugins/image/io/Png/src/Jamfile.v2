@@ -24,7 +24,6 @@ plugin Png :
 	/tuttleplugin/<link>static
 	/png
 	;
-explicit Png ;
 
 ###############################################################################
 # Automatic install

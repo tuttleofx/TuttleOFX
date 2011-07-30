@@ -11,13 +11,15 @@ project
 		<include>include/freetype
 		<include>builds/unix
 		<define>FT2_BUILD_LIBRARY
-		<os>LINUX:<cxxflags>-fPIC
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
+		<include>.
 		<include>include
-	: build-dir $(DIST)/3rdParty/Magick++/obj
+		<include>include/freetype
+		<include>builds/unix
+	: build-dir $(BUILD)/3rdParty/freetype
     ;
 
 ###############################################################################
@@ -62,8 +64,6 @@ lib	freetype		:
 			    src/cid/type1cid.c
 			    src/gxvalid/gxvalid.c
 			    src/gxvalid/gxvfgen.c
-			    #src/gzip/ftgzip.c
-			    #src/lzw/ftlzw.c
 			    src/lzw/ftzopen.c
 			    src/otvalid/otvalid.c
 			    src/pcf/pcf.c
@@ -75,16 +75,15 @@ lib	freetype		:
 			    src/sfnt/sfnt.c
 			    src/sfnt/ttsbit0.c
 			    src/smooth/smooth.c
-			    #src/tools/apinames.c
 			    src/truetype/truetype.c
 			    src/type1/type1.c
 			    src/type42/type42.c
 				]
-			:
-			<implicit-dependency>include/freetype/fttypes.h
 			;
 
-install	dist_src	: freetype
-			: <variant>debug:<location>$(DIST)/3rdParty/freetype/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/freetype/bin/release
-			;
+install	dist_src
+	:
+		freetype
+	: 
+		<location>$(DIST)/lib
+	;
