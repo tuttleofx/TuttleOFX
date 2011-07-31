@@ -310,7 +310,7 @@ int main( int argc, char** argv )
 						}
 						nodeFullName = detectedPlugins.front();
 
-						TUTTLE_COUT( "[" << nodeFullName << "]" );
+						//TUTTLE_COUT( "[" << nodeFullName << "]" );
 
 						ttl::Graph::Node& currentNode = graph.createNode( nodeFullName );
 						nodes.push_back( &currentNode );
@@ -428,12 +428,14 @@ int main( int argc, char** argv )
 									continue; // ignore secret parameters
 								TUTTLE_COUT(
 									"\t" <<
-									param.getScriptName() << ":\t" << param.getParamType() << " x" << param.getSize()
+									param.getScriptName() << ":\t" <<
+									param.getParamType() <<
+									(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "")
 									);
 								const std::string& hint = param.getHint();
 								if( hint.size() )
 								{
-									TUTTLE_COUT( "\t" << hint );
+									TUTTLE_COUT( hint );
 								}
 								TUTTLE_COUT("");
 							}
