@@ -26,6 +26,13 @@ void InvertPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Image inverter" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
+	desc.setDescription(
+	"Invert selected channels value."
+	"\n"
+	"\n"
+	"http://en.wikipedia.org/wiki/Negative_image"
+	);
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );

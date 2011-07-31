@@ -18,6 +18,8 @@ void BasicKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Basic keyer" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
+	desc.setDescription( "Plugin under early development." );
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );

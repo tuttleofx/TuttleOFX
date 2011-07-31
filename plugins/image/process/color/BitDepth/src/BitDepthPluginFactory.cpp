@@ -21,6 +21,20 @@ void BitDepthPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Bit depth convertor" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
 
+	desc.setDescription(
+"Convert channels bit depth."
+"\n"
+"\n"
+"In computer graphics, color depth or bit depth is the number of bits used to "
+"represent the color of a single pixel in a bitmapped image or video frame "
+"buffer. This concept is also known as bits per pixel (bpp), particularly when "
+"specified along with the number of bits used. Higher color depth gives a "
+"broader range of distinct colors."
+"\n"
+"\n"
+"http://en.wikipedia.org/wiki/Color_depth"
+);
+
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGeneral );
 
