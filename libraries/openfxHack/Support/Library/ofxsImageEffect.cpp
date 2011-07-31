@@ -522,6 +522,7 @@ void ImageEffectDescriptor::setLabels( const std::string& label, const std::stri
 
 void ImageEffectDescriptor::setDescription( const std::string& description )
 {
+	// added in openfx API 1.2, so do not throw if unknown by the host
 	_effectProps.propSetString( kOfxPropPluginDescription, description, false );
 }
 
