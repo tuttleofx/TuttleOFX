@@ -76,6 +76,7 @@ void PrintPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::Int2DParamDescriptor* regionMax = desc.defineInt2DParam( kParamRegionMax );
 	regionMax->setLabel( "Region max" );
+	regionMax->setDefault( 1,1 );
 	regionMax->setDisplayRange( 0, 0, 2000, 2000 );
 
         OFX::IntParamDescriptor* outputColumns = desc.defineIntParam( kParamColumns );
@@ -95,8 +96,8 @@ void PrintPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::ChoiceParamDescriptor* output = desc.defineChoiceParam( kParamOutput );
 	output->setLabel( "Output" );
-	output->appendOption( kParamOutputNumeric );
 	output->appendOption( kParamOutputAscii );
+	output->appendOption( kParamOutputNumeric );
 
 	OFX::BooleanParamDescriptor* flip = desc.defineBooleanParam( kParamFlip );
 	flip->setLabel( "Flip" );

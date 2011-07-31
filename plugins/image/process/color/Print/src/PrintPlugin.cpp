@@ -22,6 +22,24 @@ PrintPlugin::PrintPlugin( OfxImageEffectHandle handle )
         _paramOutputColumns = fetchIntParam    ( kParamColumns );
         _paramFlip          = fetchBooleanParam( kParamFlip );
         _paramOpenGlWindow  = fetchBooleanParam( kParamOutputOpenGL );
+
+        updateParams( );
+}
+
+void PrintPlugin::updateParams()
+{
+	_paramPixel     -> setIsSecretAndDisabled( true );
+	_paramRegionMin -> setIsSecretAndDisabled( true );
+	_paramRegionMax -> setIsSecretAndDisabled( true );
+	if( _paramMode->getValue() == eParamModeRegion )
+	{
+		_paramRegionMin -> setIsSecretAndDisabled( false );
+		_paramRegionMax -> setIsSecretAndDisabled( false );
+	}
+	if( _paramMode->getValue() == eParamModePixel )
+	{
+		_paramPixel     -> setIsSecretAndDisabled( false );
+	}
 }
 
 PrintProcessParams<PrintPlugin::Scalar> PrintPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -48,7 +66,7 @@ PrintProcessParams<PrintPlugin::Scalar> PrintPlugin::getProcessParams( const Ofx
 
 void PrintPlugin::changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName )
 {
-
+	updateParams();
 }
 
 
