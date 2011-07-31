@@ -329,76 +329,135 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( "DESCRIPTION" );
 							TUTTLE_COUT( "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) );
-							TUTTLE_COUT( "" );
 							// internal node help
-							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription ) )
+							if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect )
+							{
+								if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping, true ) )
+								{
+									TUTTLE_COUT( "\t" << currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxImageEffectPluginPropGrouping ).getValue() );
+								}
+							}
+							TUTTLE_COUT( "" );
+							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription, true ) )
 							{
 								TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
-							}
-							else if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect &&
-							         currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxPropPluginDescription ) )
-							{
-								TUTTLE_COUT( "\tDescriptor:" );
-								TUTTLE_COUT( currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
 							}
 							else
 							{
 								TUTTLE_COUT( "\tNo description." );
 							}
+							TUTTLE_COUT("");
+							TUTTLE_COUT( "PARAMETERS" );
+							TUTTLE_COUT("");
+							ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
+							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+							{
+								if( param.getSecret() )
+									continue; // ignore secret parameters
+								TUTTLE_COUT(
+									"\t" <<
+									param.getScriptName() << ":\t" << param.getParamType() << " x" << param.getSize()
+									);
+							}
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( "OPTIONS" );
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( infoOptions );
 							TUTTLE_COUT( confOptions );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("version") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "Version " << currentNode.getVersionStr() );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("attributes") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "ATTRIBUTES" );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tCLIPS" );
 							/// @todo
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tPARAMETERS" );
 							/// @todo
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("properties") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "PROPERTIES" );
 							/// @todo
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("clips") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "CLIPS" );
 							/// @todo
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("clip") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "CLIP: " << node_vm["clip"].as<std::string>() );
 							/// @todo
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("parameters") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "PARAMETERS" );
-							/// @todo
+							TUTTLE_COUT("");
+							ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
+							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+							{
+								if( param.getSecret() )
+									continue; // ignore secret parameters
+								TUTTLE_COUT(
+									"\t" <<
+									param.getScriptName() << ":\t" << param.getParamType() << " x" << param.getSize()
+									);
+								const std::string& hint = param.getHint();
+								if( hint.size() )
+								{
+									TUTTLE_COUT( "\t" << hint );
+								}
+								TUTTLE_COUT("");
+							}
 							exit(0);
 						}
 						if( node_vm.count("param") )
 						{
+							const std::string paramName = node_vm["param"].as<std::string>();
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
-							TUTTLE_COUT( "PARAM: " << node_vm["clip"].as<std::string>() );
-							/// @todo
+							TUTTLE_COUT( "PARAM: " << paramName );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							TUTTLE_COUT("");
+							TUTTLE_COUT(
+								"\t" <<
+								(param.getSecret() ? "SECRET -- " : "") <<
+								param.getScriptName() << ": " << param.getParamType() << " x" << param.getSize()
+								);
+							TUTTLE_COUT("");
+							const std::string& hint = param.getHint();
+							if( hint.size() )
+							{
+								TUTTLE_COUT( "\t" << hint );
+							}
+							TUTTLE_COUT("");
 							exit(0);
 						}
 
