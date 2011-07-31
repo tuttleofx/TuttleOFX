@@ -49,8 +49,8 @@ CacaImage load_cacaimage_from_view( const SView sView )
 template<>
 CacaImage load_cacaimage_from_view<boost::gil::gray8_view_t>( const boost::gil::gray8_view_t sView )
 {
-	typedef typename boost::gil::channel_mapping_type<boost::gil::gray8_view_t>::type Channel;
-	typedef typename boost::gil::channel_base_type<Channel>::type ChannelBaseType;
+	typedef boost::gil::channel_mapping_type<boost::gil::gray8_view_t>::type Channel;
+	typedef boost::gil::channel_base_type<Channel>::type ChannelBaseType;
 
 	CacaImage im;
 	unsigned int bpp, rmask, gmask, bmask, amask;
