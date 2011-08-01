@@ -46,14 +46,14 @@ namespace boost {
 
 namespace stack_trace {
 
-#if defined(BOOST_HAVE_EXECINFO)
+#if defined(BOOST_HAVE_EXECINFO) && !defined(TUTTLE_PRODUCTION)
 
 int trace(void **array,int n)
 {
 	return ::backtrace(array,n);
 }
 
-#elif defined(BOOST_MSVC)
+#elif defined(BOOST_MSVC) && !defined(TUTTLE_PRODUCTION)
 
 int trace(void **array,int n)
 {
@@ -71,7 +71,7 @@ int trace(void ** /*array*/,int /*n*/)
 
 #endif
 
-#if defined(BOOST_HAVE_DLADDR) && defined(BOOST_HAVE_ABI_CXA_DEMANGLE)
+#if defined(BOOST_HAVE_DLADDR) && defined(BOOST_HAVE_ABI_CXA_DEMANGLE) && !defined(TUTTLE_PRODUCTION)
 
 std::string get_symbol(void *ptr)
 {
@@ -196,7 +196,7 @@ void write_symbols( void *const *addresses, int size, std::ostream &out )
 	}
 }
 
-#elif defined(BOOST_MSVC)
+#elif defined(BOOST_MSVC) && !defined(TUTTLE_PRODUCTION)
 
 namespace {
 	HANDLE hProcess = 0;

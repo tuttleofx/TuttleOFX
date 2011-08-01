@@ -9,7 +9,12 @@ lib tuttlecommon :
 			[ glob-tree *.cpp ]
 			/ofxPluginSupport/<link>static
 			/boost/system
-			/boost/regex
+			/boost/filesystem
+			/boost/regex/<link>static
 		:
 			<os>LINUX:<find-shared-library>dl
+			<os>NT,<variant>debug:<library-path>"C:\\WINDOWS\\ServicePackFiles\\i386"
+			#<os>NT,<variant>debug:<library-path>"C:\\Program Files\\Microsoft Visual Studio 10.0\\Common7\\IDE"
+			<os>NT,<variant>debug:<linkflags>dbghelp.dll
+			
 		;
