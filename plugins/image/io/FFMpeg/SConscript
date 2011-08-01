@@ -1,11 +1,13 @@
 Import( 'project', 'libs' )
 
-project.createOfxPlugin( dirs = ['src'],
-                         libs = [
-                                  libs.tuttlePlugin,
-                                  libs.boost_gil,
-                                  libs.boost_filesystem,
-                                  libs.boost_regex,
-                                  libs.ffmpeg,
-                                 ] )
+project.createOfxPlugin(
+	dirs = ['src'],
+	libs = [
+		libs.tuttlePlugin,
+		libs.boost_gil,
+		libs.boost_filesystem,
+		libs.boost_regex,
+		libs.ffmpeg,
+		]
+	)
 

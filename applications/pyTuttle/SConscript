@@ -1,6 +1,4 @@
-Import( 'project' )
-Import( 'libs' )
-
+Import( 'project', 'libs' )
 import os.path
 
 incdirs = ['src/common', 'src/application']
