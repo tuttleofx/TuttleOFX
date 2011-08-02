@@ -7,6 +7,7 @@ import urllib
 import subprocess
 import tarfile
 import zipfile
+from shutil import move, copystat, Error, rmtree
 
 osname		= os.name.lower()
 sysplatform	= sys.platform.lower()
@@ -17,10 +18,10 @@ unix		= not windows
 
 global current_file # global variable used in dlProgress function
 current_file = ''
+download_dir = "archive"
 
-def copytree(src, dst, symlinks=False, ignore=None):
-	import os
-	from shutil import copy2, copystat, Error
+
+def movetree(src, dst, symlinks=False, ignore=None):
 	names = os.listdir(src)
 	if ignore is not None:
 		ignored_names = ignore(src, names)
@@ -50,13 +51,14 @@ def copytree(src, dst, symlinks=False, ignore=None):
 				linkto = os.readlink(srcname)
 				os.symlink(linkto, dstname)
 			elif os.path.isdir(srcname):
-				copytree(srcname, dstname, symlinks, ignore)
+				movetree(srcname, dstname, symlinks, ignore)
 			else:
-				copy2(srcname, dstname)
+				move(srcname, dstname)
+				#copy2(srcname, dstname)
 				# XXX What about devices, sockets etc.?
 		except (IOError, os.error), why:
 			errors.append((srcname, dstname, str(why)))
-			# catch the Error from the recursive copytree so that we can
+			# catch the Error from the recursive movetree so that we can
 			# continue with other files
 		except Error, err:
 			errors.extend(err.args[0])
@@ -91,30 +93,31 @@ def getKnownExtensions( filename ):
 def uncompress(filename, ext, inNewDirectory, libname):
 
 	if ext == 'tar.gz' :
-		tar = tarfile.open(filename, 'r:*')
+		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
 
 	if ext == 'tar.gz2' :
-		tar = tarfile.open(filename, 'r:*')
+		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
 
 	if ext == 'zip' :
-		zip = zipfile.ZipFile( filename, 'r' )
+		zip = zipfile.ZipFile( download_dir + "/" + filename, 'r' )
 		folder = './'
 		if inNewDirectory == True : folder += filename[:-len(ext)-1]
 		zip.extractall( folder )
 
 	if ext == 'exe' :
-		fileToRun = filename+'.exe'
+		fileToRun = download_dir + "/" + filename + ".exe"
 		os.startfile( fileToRun )
 
 	if not os.path.exists( os.path.join( os.getcwd(), libname)):
 		os.mkdir(os.path.join( os.getcwd() ,libname))
 	
 	print 'uncompress and  copy', filename[:-len(ext)-1], libname, '\n'
-	copytree(filename[:-len(ext)-1], libname)
+	movetree(filename[:-len(ext)-1], libname)
+	rmtree(filename[:-len(ext)-1])
 	print 'end of uncompress\n'
 
 def getAndUncompress( libraries ):
@@ -133,10 +136,12 @@ def getAndUncompress( libraries ):
 		ext = getKnownExtensions(filename)[0]
 		current_file = filename
 		try:
-			if os.path.isfile(filename): # if not already downloaded
+			if not os.path.exists( download_dir ):
+				os.makedirs( download_dir )
+			if os.path.isfile( download_dir + "/" + filename ): # if not already downloaded
 				print 'Already downloaded: ', filename
 			else:
-				urllib.urlretrieve(url, filename, dlProgress)
+				urllib.urlretrieve(url, download_dir + "/" + filename, dlProgress)
 			dirname = filename[:-len(ext)-1]
 			#if os.path.isdir(libname) or os.path.islink(libname): # if not already uncompressed
 			if os.path.isdir(filename[:-len(ext)-1]) :
