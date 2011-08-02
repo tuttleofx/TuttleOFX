@@ -19,10 +19,7 @@ project
 ###############################################################################
 exe sam-ls :
 		[ glob src/sam/ls/*.cpp ]
-		
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
+
 		/boost/program_options
 		
 		/tuttlecommon/<link>static
@@ -36,9 +33,6 @@ exe sam-ls :
 exe sam-cp :
 		[ glob src/sam/cp/*.cpp ]
 		
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
 		
 		/tuttlecommon/<link>static
@@ -52,9 +46,6 @@ exe sam-cp :
 exe sam-mv :
 		[ glob src/sam/mv/*.cpp ]
 		
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
 		
 		/tuttlecommon/<link>static
@@ -68,9 +59,6 @@ exe sam-mv :
 exe sam-rm :
 		[ glob src/sam/rm/*.cpp ]
 
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
 		
 		/tuttlecommon/<link>static
@@ -85,9 +73,6 @@ exe sam-rm :
 exe sam-do :
 		[ glob src/sam/do/*.cpp ]
 		
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
 		/boost/python
 		/python
@@ -104,9 +89,6 @@ exe sam-do :
 exe sam-info :
 		[ glob src/sam/info/*.cpp ]
 		
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
 		
 		/tuttlecommon/<link>static
@@ -122,9 +104,6 @@ exe sam-info :
 exe sam-plugins :
 		[ glob src/sam/plugins/*.cpp ]
 		
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
 		/boost/python
 		/python
@@ -141,9 +120,6 @@ exe sam-plugins :
 exe sam-check :
 		[ glob src/sam/check/*.cpp ]
 
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
 		/boost/python
 		/python

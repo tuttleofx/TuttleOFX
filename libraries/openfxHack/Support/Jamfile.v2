@@ -9,7 +9,6 @@ project
 	: requirements	
 		<include>include
 		<include>../../tuttle/src
-		<link>static
 	: usage-requirements
 		<include>include
 	: build-dir $(BUILD)/openFX/Support
