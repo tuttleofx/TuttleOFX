@@ -97,7 +97,7 @@ def uncompress(filename, ext, inNewDirectory, libname):
 		folder = './'
 		tar.extractall( folder )
 
-	if ext == 'tar.gz2' :
+	if ext == 'tar.bz2' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
@@ -115,7 +115,7 @@ def uncompress(filename, ext, inNewDirectory, libname):
 	if not os.path.exists( os.path.join( os.getcwd(), libname)):
 		os.mkdir(os.path.join( os.getcwd() ,libname))
 	
-	print 'uncompress and  copy', filename[:-len(ext)-1], libname, '\n'
+	print 'uncompress and  move', filename[:-len(ext)-1], libname, '\n'
 	movetree(filename[:-len(ext)-1], libname)
 	rmtree(filename[:-len(ext)-1])
 	print 'end of uncompress\n'
@@ -157,11 +157,10 @@ allLibs = [
 		('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', False),
 		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', False),
 		('ctl', 'http://sourceforge.net/projects/ampasctl/files/ctl/ctl-1.4.1/ctl-1.4.1.tar.gz/download', False),
-		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_46_0.tar.bz2', False) if not windows else ('boost', 'http://sourceforge.net/projects/boost/files/boost/1.46.1/boost_1_46_1.zip', False),
+		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_47_0.tar.bz2', False) if not windows else ('boost', 'http://sourceforge.net/projects/boost/files/boost/1.46.1/boost_1_46_1.zip', False),
 		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz', False),
 		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False) if not windows else ('libraw', 'http://www.libraw.org/data/LibRaw-0.13.5.zip', False),
 		('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz', False),
-		('ImageMagick','ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-6.6.9-7.tar.gz', False) if not windows else ('ImageMagick','ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-6.7.0-9.zip',False),
 		('lcms','http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.tar.gz', False) if not windows else ('lcms', 'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.zip',False),
 		('bzlib','http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz',False),
 		('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz', False) if not windows else ('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.zip', False),
