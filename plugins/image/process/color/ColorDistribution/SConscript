@@ -1,7 +1,9 @@
 Import( 'project', 'libs' )
 
-project.createOfxPlugin( dirs = ['src'],
-                         libs = [ 
-                                  libs.tuttlePlugin,
-                                 ] )
+project.createOfxPlugin(
+	dirs = ['src'],
+	libs = [ 
+		libs.tuttlePlugin,
+		]
+	)
 
