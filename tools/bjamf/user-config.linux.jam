@@ -18,7 +18,7 @@
 # using python : 2.7 : /usr/bin/python2.7 : /usr/include/python2.7 : /usr/lib64 ;
 
 using python
-     : # version
+     : 2.6 # version
      : /usr/bin/python2.6 # cmd-or-prefix
      : /usr/include/python2.6 # includes
      :  # libraries
