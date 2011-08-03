@@ -110,6 +110,11 @@ project
 		#
 		# removes deprecated header used by boost
 		<toolset>gcc:<cxxflags>-Wno-deprecated
+		<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+	
+		# default build
+		<variant>release
 		
 		#
 		# MSVC specific flags
