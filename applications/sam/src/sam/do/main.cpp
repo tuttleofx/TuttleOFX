@@ -575,7 +575,12 @@ int main( int argc, char** argv )
 	catch( const tuttle::exception::Common& e )
 	{
 		TUTTLE_CERR( "sam-do" );
+#ifdef TUTTLE_PRODUCTION
 		TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+#else
+		TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR( "Backtrace: " << boost::trace(e) );
+#endif
 		exit( -2 );
 	}
 	catch( const boost::program_options::error& e )
