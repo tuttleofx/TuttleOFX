@@ -5,7 +5,6 @@
 #include <tuttle/host/memory/MemoryPool.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 
-#include <boost/filesystem/operations.hpp>
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
@@ -16,6 +15,12 @@
 
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+
+#include <boost/filesystem/operations.hpp>
 
 #ifndef TUTTLE_HOST_WITHOUT_PYTHON
 	#include <boost/python.hpp>
@@ -87,18 +92,23 @@ void Core::preload()
 #ifndef WINDOWS
 	if( _pluginCache.isDirty() )
 	{
-		/// @todo generate unique name
-		const std::string tmpCacheFile( cacheFile + ".writing" );
-		/// flush out the current cache
-		TUTTLE_TCOUT( "Writing plugins cache." );
+		// generate unique name for writing
+		boost::uuids::random_generator gen;
+		boost::uuids::uuid u = gen();
+		const std::string tmpCacheFile( cacheFile + ".writing." + boost::uuids::to_string(u) + ".xml" );
+		
+		TUTTLE_TCOUT( "Write plugins cache " << tmpCacheFile );
+		// serialize into a temporary file
 		std::ofstream ofsb( tmpCacheFile.c_str() );
 		OArchive oArchive( ofsb );
 		oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
 		ofsb.close();
-		TUTTLE_TCOUT( "End writing." );
-		TUTTLE_TCOUT( "Rename file." );
+		//TUTTLE_TCOUT( "End write." );
+		//TUTTLE_TCOUT( "Rename file." );
+		
+		// replace the cache file
 		boost::filesystem::rename( tmpCacheFile, cacheFile );
-		TUTTLE_TCOUT( "End rename." );
+		//TUTTLE_TCOUT( "End rename." );
 	}
 #endif
 }
