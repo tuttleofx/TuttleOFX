@@ -30,7 +30,7 @@ project
 rule auto_install ( target : path )
 {
 	install install_plugin_$(target) : $(target) :
-		<target-os>windows,<address-model>32:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Win32
+		<target-os>windows:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Win32
 		<target-os>windows,<address-model>64:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Win64
 		<target-os>linux,<address-model>32:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Linux-x86
 		<target-os>linux,<address-model>64:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Linux-x86-64

@@ -115,6 +115,9 @@ project
 	
 		# default build
 		<variant>release
+	
+		# default build
+		<variant>release
 		
 		#
 		# MSVC specific flags
