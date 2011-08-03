@@ -44,7 +44,7 @@ if linux :
     haveGcc = True
   if os.path.exists(fileExec)==False :
     f = open(fileExec, "w")
-    f.write("bjam ")
+    f.write("./3rdParty/boost/bjam ")
     if haveGcc :
       f.write("--toolset=gcc --disable-icu ")
     if is_64bits :

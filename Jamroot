@@ -71,7 +71,15 @@ else if [ os.name ] = MACOSX
 # Environment variables
 ##############################################################################
 
-local HOSTNAME = [ modules.peek : HOSTNAME ] ;
+if [ os.name ] = NT	
+	local HOSTNAME = [ modules.peek : COMPUTERNAME ] ;
+else if [ os.name ] = LINUX 
+	local HOSTNAME = [ modules.peek : HOSTNAME ] ;
+else if [ os.name ] = MACOSX
+	local HOSTNAME = [ modules.peek : HOSTNAME ] ;
+
+
+
 
 path-constant	3RD_PARTY	: 3rdParty ;
 path-constant	BOOST_LIBS	: 3rdParty/boost ;
@@ -114,10 +122,7 @@ project
 		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
 	
 		# default build
-		<variant>release
-	
-		# default build
-		<variant>release
+		#<variant>release
 		
 		#
 		# MSVC specific flags
