@@ -99,11 +99,10 @@ protected:
 	size_t _size;
 	int _users;
 
-private:
-	void init( const std::string& binaryPath );
-
 public:
 	OfxhBinary();
+
+	void init( const std::string& binaryPath );
 
 	/// create object representing the binary.  will stat() it,
 	/// and this fails, will set binary to be invalid.

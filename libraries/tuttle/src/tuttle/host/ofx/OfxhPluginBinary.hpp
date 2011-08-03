@@ -56,10 +56,7 @@ public:
 		, _fileSize( size )
 		, _binaryChanged( false )
 	{
-		if( _fileModificationTime != _binary.getTime() || _fileSize != _binary.getSize() )
-		{
-			_binaryChanged = true;
-		}
+	    checkBinaryChanged();
 	}
 
 	/// constructor which will open a library file, call things inside it, and then
@@ -77,6 +74,16 @@ public:
 	/// dtor
 	virtual ~OfxhPluginBinary();
 
+private:
+	void checkBinaryChanged()
+	{
+		if( _fileModificationTime != _binary.getTime() || _fileSize != _binary.getSize() )
+		{
+			_binaryChanged = true;
+		}
+	}
+
+public:
 	#ifndef SWIG
 	bool operator==( const This& other ) const
 	{
@@ -165,16 +172,17 @@ private:
 	template<class Archive>
 	void serialize( Archive& ar, const unsigned int version )
 	{
-		ar& BOOST_SERIALIZATION_NVP( _binary );
 		ar& BOOST_SERIALIZATION_NVP( _filePath );
 		ar& BOOST_SERIALIZATION_NVP( _bundlePath );
 		ar& BOOST_SERIALIZATION_NVP( _plugins );
 		ar& BOOST_SERIALIZATION_NVP( _fileModificationTime );
 		ar& BOOST_SERIALIZATION_NVP( _fileSize );
-		ar& BOOST_SERIALIZATION_NVP( _binaryChanged );
 
 		if( typename Archive::is_loading() )
 		{
+			_binary.init( _filePath );
+			checkBinaryChanged();
+
 			for( PluginVector::iterator it = getPlugins().begin(), itEnd = getPlugins().end();
 			     it != itEnd;
 			     ++it )
