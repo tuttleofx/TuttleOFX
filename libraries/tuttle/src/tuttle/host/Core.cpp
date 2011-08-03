@@ -5,12 +5,15 @@
 #include <tuttle/host/memory/MemoryPool.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 
+#include <boost/filesystem/operations.hpp>
+
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
@@ -62,7 +65,7 @@ void Core::preload()
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
+	const std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
 
 	try
 	{
@@ -84,12 +87,18 @@ void Core::preload()
 #ifndef WINDOWS
 	if( _pluginCache.isDirty() )
 	{
+		/// @todo generate unique name
+		const std::string tmpCacheFile( cacheFile + ".writing" );
 		/// flush out the current cache
-		TUTTLE_COUT_DEBUG( "Write plugins cache." );
-		std::ofstream ofsb( cacheFile.c_str() );
+		TUTTLE_TCOUT( "Writing plugins cache." );
+		std::ofstream ofsb( tmpCacheFile.c_str() );
 		OArchive oArchive( ofsb );
 		oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
 		ofsb.close();
+		TUTTLE_TCOUT( "End writing." );
+		TUTTLE_TCOUT( "Rename file." );
+		boost::filesystem::rename( tmpCacheFile, cacheFile );
+		TUTTLE_TCOUT( "End rename." );
 	}
 #endif
 }
