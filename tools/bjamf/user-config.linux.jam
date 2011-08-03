@@ -21,8 +21,13 @@ using python
      : # version
      : /usr/bin/python2.6 # cmd-or-prefix
      : /usr/include/python2.6 # includes
-     : /usr/lib64  /usr/lib64/python2.6/config # libraries
-     : <os>LINUX,<address-model>64:<linkflags>"-L/usr/lib64 -L/usr/lib64/python2.6/config" # condition
+     :  # libraries
+     	/usr/lib 
+     	/usr/lib64
+     	/usr/lib/python2.6/config
+     	/usr/lib64/python2.6/config
+     : #condition
+        <os>LINUX,<address-model>32:<linkflags>"-L/usr/lib -L/usr/lib/python2.6/config" # condition
+     	<os>LINUX,<address-model>64:<linkflags>"-L/usr/lib64 -L/usr/lib64/python2.6/config"
+
      ;
-     
-using python : 2.6 : <include>/usr/include/python2.6 <library>/usr/lib64 <library>/usr/lib64/python2.6/config ; 
