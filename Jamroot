@@ -29,9 +29,14 @@
 ##      /pyTuttle                                                            #
 ##      /tests                                                               #
 ##                                                                           #
+##                                                                           #
+##      default build is in release, to build in debug type:                 #
+##      ./bjam variant=debug [target]                                        #
+##                                                                           #
 ##############################################################################
 
 import os ;
+import feature ;
 
 ##############################################################################
 # Python
@@ -65,11 +70,25 @@ else if [ os.name ] = MACOSX
 ##############################################################################
 # Environment variables
 ##############################################################################
+
+local HOSTNAME ;
+
+if [ os.name ] = NT	
+	{	HOSTNAME = "Windows" ; }
+else if [ os.name ] = LINUX 
+	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
+else if [ os.name ] = MACOSX
+	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
+
+
+
+
 path-constant	3RD_PARTY	: 3rdParty ;
 path-constant	BOOST_LIBS	: 3rdParty/boost ;
 path-constant	BOOST_HACK	: 3rdParty/boostHack ;
-path-constant	DIST		: ./dist ;
+path-constant	DIST		: ./dist/$(HOSTNAME) ;
 path-constant	BUILD		: ./.build ;
+
 
 ##############################################################################
 # Global project requirements
@@ -79,14 +98,14 @@ project
 	requirements
 		# multithreading on
 		<threading>multi
-
+		
 		#<variant>release:<warnings-as-errors>on
 		<variant>release:<define>TUTTLE_PRODUCTION
 		<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
 		# or
 		#<variant>release:<toolset>gcc,<optimization>full
 		
-
+		<define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
 		<os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
 		<os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
 
@@ -105,9 +124,15 @@ project
 		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
 	
 		# default build
-		<variant>release
+		#<variant>release
+		
+		#
+		# MSVC specific flags
+		#
+		<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+		
 	;
-
 
 ##############################################################################
 # 3rd party libraries

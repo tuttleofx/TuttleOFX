@@ -44,7 +44,7 @@ if linux :
     haveGcc = True
   if os.path.exists(fileExec)==False :
     f = open(fileExec, "w")
-    f.write("bjam ")
+    f.write("./3rdParty/boost/bjam --user-config=user-config.jam ")
     if haveGcc :
       f.write("--toolset=gcc --disable-icu ")
     if is_64bits :
@@ -62,7 +62,7 @@ if windows :
     f.write("set BOOST_PATH=%cd%\\3rdParty\\boost \n")
     f.write("set BOOST_ROOT=%cd%\\3rdParty\\boost\\boost \n")
     f.write("@echo on \n")
-    f.write("3rdParty\\boost\\bjam --toolset=msvc --disable-icu ")
+    f.write("3rdParty\\boost\\bjam --user-config=user-config.jam --toolset=msvc --disable-icu ")
     if is_64bits :
       f.write("address-model=64 ")
     f.write("-j%s " % detectCPUs())
