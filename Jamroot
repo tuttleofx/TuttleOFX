@@ -71,12 +71,14 @@ else if [ os.name ] = MACOSX
 # Environment variables
 ##############################################################################
 
+local HOSTNAME ;
+
 if [ os.name ] = NT	
-	local HOSTNAME = [ modules.peek : COMPUTERNAME ] ;
+	{	HOSTNAME = "Windows" ; }
 else if [ os.name ] = LINUX 
-	local HOSTNAME = [ modules.peek : HOSTNAME ] ;
+	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
 else if [ os.name ] = MACOSX
-	local HOSTNAME = [ modules.peek : HOSTNAME ] ;
+	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
 
 
 
