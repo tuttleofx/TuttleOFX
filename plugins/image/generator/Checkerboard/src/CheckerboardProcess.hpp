@@ -7,11 +7,6 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 

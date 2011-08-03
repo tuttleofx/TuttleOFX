@@ -4,6 +4,7 @@
 #include <ofxsInteract.h>
 #include <ofxsParam.h>
 #include <tuttle/plugin/opengl/gl.h>
+
 #include <cmath>
 
 namespace tuttle {

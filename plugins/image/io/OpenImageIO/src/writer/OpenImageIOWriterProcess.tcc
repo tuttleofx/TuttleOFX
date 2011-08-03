@@ -13,9 +13,6 @@
 #include <boost/mpl/integral_c.hpp>
 #include <boost/mpl/at.hpp>
 
-#include <cmath>
-#include <vector>
-
 namespace tuttle {
 namespace plugin {
 namespace openImageIO {

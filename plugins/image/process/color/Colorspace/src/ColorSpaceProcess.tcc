@@ -3,17 +3,6 @@
 #include <tuttle/plugin/exceptions.hpp>
 #include <tuttle/plugin/image/gil/color.hpp>
 
-#include <boost/gil/gil_all.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 namespace tuttle {
 namespace plugin {
 namespace colorspace {

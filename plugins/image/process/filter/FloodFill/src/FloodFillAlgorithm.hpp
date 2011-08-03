@@ -7,6 +7,7 @@
 #include <tuttle/plugin/image/gil/fill.hpp>
 #include <tuttle/plugin/image/gil/basic_colors.hpp>
 #include <tuttle/plugin/image/gil/globals.hpp>
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <boost/gil/extension/channel.hpp>
 
@@ -152,7 +153,7 @@ void flood_fill( const SView& srcView, const OfxRectI& srcRod,
 	const SLocator sloc_ref( srcView.xy_at(0,0) );
 	const SLocator dloc_ref( dstView.xy_at(0,0) );
 
-	std::vector<FloodElem> propagation;
+	std::vector<FloodElem, OfxAllocator<FloodElem> > propagation;
 	propagation.reserve( halfProcWidth );
 
 	SLocator src_loc = srcView.xy_at( procWindow.x1 - srcRod.x1, procWindow.y1 - srcRod.y1 );

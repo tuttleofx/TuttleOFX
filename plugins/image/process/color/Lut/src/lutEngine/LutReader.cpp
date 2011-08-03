@@ -36,7 +36,7 @@ bool LutReader::read( const fs::path& filename )
 	{
 		double max  = *( max_element( _data.begin(), _data.end() ) );
 		double norm = 1.0 / std::pow( 2.0, std::ceil( std::log( max ) / std::log( 2.0 ) ) );
-		for( std::vector<double>::iterator it = _data.begin(); it != _data.end(); ++it )
+		for( VectorDouble::iterator it = _data.begin(); it != _data.end(); ++it )
 		{
 			( *it ) *= norm;
 		}

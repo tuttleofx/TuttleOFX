@@ -1,6 +1,8 @@
 #ifndef _EXRWRITER_PROCESS_HPP_
 #define _EXRWRITER_PROCESS_HPP_
 
+#include "../half/gilHalf.hpp"
+
 #include <tuttle/plugin/image/gil/globals.hpp>
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
@@ -10,18 +12,8 @@
 #include <ImfChannelList.h>
 #include <ImfArray.h>
 #include <ImathVec.h>
-#include "../half/gilHalf.hpp"
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 
 #include <boost/scoped_ptr.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
 
 namespace tuttle {
 namespace plugin {

@@ -8,11 +8,7 @@
 #include <tuttle/plugin/interact/interact.hpp>
 #include <tuttle/plugin/interact/overlay.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsInteract.h>
 #include <boost/gil/gil_all.hpp>
-
-#include <vector>
 
 namespace tuttle {
 namespace plugin {
