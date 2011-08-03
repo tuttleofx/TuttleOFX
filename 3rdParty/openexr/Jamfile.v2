@@ -33,7 +33,7 @@ project
 ###############################################################################
 lib IlmImf : 
         [ glob IlmImf/*.cpp ]
-	/z
+        /z
         /base//Iex
         /base//Half
         /base//IlmThread
