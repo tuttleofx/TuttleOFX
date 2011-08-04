@@ -191,7 +191,7 @@ def insertInFile( filename, linesIndexes, textToAppend ):
 	os.remove(filename)
 	os.rename('tmp.txt', filename)
 
-def makeModificationIfNecessaryInFile( filename, headerToInsert ):
+def makeModificationIfNecessaryInFile( filename, headerToInsert, atLine ):
 	print filename
 	modification = 0
 	if(os.path.exists( filename )):
@@ -200,7 +200,7 @@ def makeModificationIfNecessaryInFile( filename, headerToInsert ):
 	   			modification = 1
 	   			break
 	   	if modification == 0 :
-	   		insertInFile(filename, (1, 63) , ("", headerToInsert ) )
+	   		insertInFile(filename, (1, atLine) , ("", headerToInsert ) )
 	   	else:
 	   		print "header is already include."
 	else:
@@ -221,11 +221,13 @@ print '-'*29 + ' Files modifications  ' + '-'*29
 
 filename = "ctl/IlmCtl/CtlLex.cpp" 
 headerToInsert = "#include <cstdlib>"
-makeModificationIfNecessaryInFile(filename, headerToInsert );
+atLine = 60
+makeModificationIfNecessaryInFile(filename, headerToInsert, atLine );
 
-filename = "ctl/IlmCtlSimd/CtlSimdReg.cpp" 
+filename = "ctl/IlmCtlSimd/CtlSimdReg.h" 
 headerToInsert = "#include <cstring>"
-makeModificationIfNecessaryInFile(filename, headerToInsert );
+atLine = 55
+makeModificationIfNecessaryInFile(filename, headerToInsert, atLine );
 
 print 'End of initialisation.'
 
