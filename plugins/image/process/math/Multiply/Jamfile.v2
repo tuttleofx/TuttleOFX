@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Add Plugin
+## Main BJam makefile for TuttleOFX Mutliply Plugin
 ###############################################################################
 import os ;
  
@@ -9,14 +9,14 @@ import os ;
 project
     : requirements
 		<include>src
-    : build-dir $(DIST)/Add/obj
+    : build-dir $(BUILD)/Multiply/obj
     ;
 
  
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Add : 
+plugin Multiply : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
     ;
@@ -24,5 +24,5 @@ plugin Add :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Add : $(DIST) ;
+auto_install Multiply : $(DIST) ;
  

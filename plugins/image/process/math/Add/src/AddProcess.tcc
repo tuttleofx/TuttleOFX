@@ -1,4 +1,5 @@
-#include "AddAlgorithm.hpp"
+
+#include "AddPlugin.hpp"
 
 namespace tuttle {
 namespace plugin {
