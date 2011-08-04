@@ -70,31 +70,31 @@ void MultiplyPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	masterValue->setLabel( "Master" );
 	masterValue->setDisplayRange( -1.0, 1.0 );
 	masterValue->setDoubleType( OFX::eDoubleTypePlain );
-	masterValue->setDefault( 0.0 );
+	masterValue->setDefault( 1.0 );
 
 	OFX::DoubleParamDescriptor* redValue = desc.defineDoubleParam( kRedValue );
 	redValue->setLabel( "Red" );
 	redValue->setDisplayRange( -1.0, 1.0 );
 	redValue->setDoubleType( OFX::eDoubleTypePlain );
-	redValue->setDefault( 0.0 );
+	redValue->setDefault( 1.0 );
 
 	OFX::DoubleParamDescriptor* greenValue = desc.defineDoubleParam( kGreenValue );
 	greenValue->setLabel( "Green" );
 	greenValue->setDisplayRange( -1.0, 1.0 );
 	greenValue->setDoubleType( OFX::eDoubleTypePlain );
-	greenValue->setDefault( 0.0 );
+	greenValue->setDefault( 1.0 );
 
 	OFX::DoubleParamDescriptor* blueValue = desc.defineDoubleParam( kBlueValue );
 	blueValue->setLabel( "Blue" );
 	blueValue->setDisplayRange( -1.0, 1.0 );
 	blueValue->setDoubleType( OFX::eDoubleTypePlain );
-	blueValue->setDefault( 0.0 );
+	blueValue->setDefault( 1.0 );
 
 	OFX::DoubleParamDescriptor* alphaValue = desc.defineDoubleParam( kAlphaValue );
 	alphaValue->setLabel( "Alpha" );
 	alphaValue->setDisplayRange( -1.0, 1.0 );
 	alphaValue->setDoubleType( OFX::eDoubleTypePlain );
-	alphaValue->setDefault( 0.0 );
+	alphaValue->setDefault( 1.0 );
 
 }
 
