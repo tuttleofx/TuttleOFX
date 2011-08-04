@@ -2,6 +2,7 @@
 #define	CLOUDPOINTDATA_HPP
 
 #include "ColorSpaceKeyerDefinitions.hpp"
+#include "GeodesicForm.hpp"
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
 
 #include <boost/gil/channel_algorithm.hpp>
@@ -97,7 +98,7 @@ struct Pixel_copy_discretization
 			
 			bool placedInVector = false;	//values is not in the vector yet
 			int iteration = 0;				//initialize index to 0
-			while(!placedInVector && iteration < _nbStep)			//place round value in the vector
+			while(!placedInVector)			//place round value in the vector
 			{
 				float previousValue = iteration*_step;
 				float nextValue = (iteration+1)*_step;
@@ -237,7 +238,10 @@ public:
 	OfxTime _time;				//current time in sequence
 	VBO _imgVBO;				//VBO to display on overlay
 	DataVector _imgCopy;//copy of the image needed to draw Vector
-	SPixel _selectionColorAverage; //Average of the selection color clip (selection)
+	//SPixel _selectionColorAverage; //Average of the selection color clip (selection)
+	Ofx3DPointD _averageColor;	   //Average of the selection color clip (selection)
+	
+	GeodesicForm _geodesicForm; //geodesic form
 
 public:
 	//Constructor

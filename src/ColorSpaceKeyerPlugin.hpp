@@ -29,6 +29,7 @@ public:
 	OFX::BooleanParam* _paramBoolPointCloudDisplay;		//display cloud point - check box
 	OFX::BooleanParam* _paramBoolDiscretizationActive;	//is discretization active on point cloud - check box
 	OFX::IntParam* _paramIntDiscretization;				//discretization step - Int param
+	OFX::IntParam* _paramIntNbOfDivisionsGF;			//number of divisions geodesic form - Int param
 	
 	//Overlay data parameters
 	bool _updateVBO;									//VBO data has been changed so update VBO

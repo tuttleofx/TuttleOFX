@@ -21,6 +21,7 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 		//Associate intern params pointers to GUI components
 		_paramBoolDiscretizationActive = fetchBooleanParam(kBoolDiscretizationDisplay);	//is discretization active on point cloud - check box
 		_paramIntDiscretization = fetchIntParam(kIntDiscretizationDisplay);				//discretization step - Int param
+		 _paramIntNbOfDivisionsGF = fetchIntParam(kIntNumberOfDivisonGeodesicForm);		//number of divisions geodesic form - Int param
 		
 		//verify display Discrete enable value
 		if(_paramBoolPointCloudDisplay->getValue())	//called default value
@@ -98,6 +99,13 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 			}
 		}
 	}
+	if( paramName == kIntNumberOfDivisonGeodesicForm) //number of divisions geodesic form has changed (int range)
+	{
+		if(hasCloudPointData()) ///@todo : to remove
+		{
+			getCloudPointData()._geodesicForm.subdiviseFaces(getCloudPointData()._averageColor,_paramIntNbOfDivisionsGF->getValue()); //change value of subdivision
+		}
+	}
 }
 
 /*
@@ -127,6 +135,9 @@ void ColorSpaceKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, c
 			getCloudPointData().generateAverageColorSelection(_clipColor,args.renderScale);	//update average
 			 _updateVBO = true;			//update VBO on overlay
 			this->redrawOverlays();		//redraw scene
+			
+			//recompute geodesic form
+			getCloudPointData()._geodesicForm.subdiviseFaces(getCloudPointData()._averageColor,_paramIntNbOfDivisionsGF->getValue()); //change value of subdivision
 		}
 	}
 }

@@ -167,6 +167,8 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		drawAxes();					//draw the X,Y and Z axes
 		getData()._imgVBO.draw();	//draw VBO
 		getData().drawAverage();	//draw the average on screen
+		getData()._geodesicForm.draw();	//draw geodesic form
+		
 		glTranslatef(.5f,.5f,.5f);
 		
 		glPopMatrix();

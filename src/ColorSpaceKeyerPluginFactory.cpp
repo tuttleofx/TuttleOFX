@@ -89,6 +89,15 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	discretizationDisplay->setEnabled(false);									//Disabled by default (display cloud point is not selected)
 	discretizationDisplay->setHint("Change discretization point cloud step.");	
 	
+	//Number of divison Geodesic form
+	OFX::IntParamDescriptor* nbDivisionsGeodesicForm = desc.defineIntParam(kIntNumberOfDivisonGeodesicForm);
+	nbDivisionsGeodesicForm->setLabel(kIntNumberOfDivisonGeodesicFormLabel);	//label
+	nbDivisionsGeodesicForm->setRange(2,50);									//value range
+	nbDivisionsGeodesicForm->setDisplayRange(2,15);								//display range values
+	nbDivisionsGeodesicForm->setDefault(numberOfDivisionInt);					//default value
+	nbDivisionsGeodesicForm->setHint("Change precision of treatment (can make process slower)"); //help
+	
+	
 }
 
 /**

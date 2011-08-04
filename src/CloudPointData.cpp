@@ -17,7 +17,11 @@ CloudPointData::CloudPointData(const OfxPointI& size, OfxTime time)
 	
 	int imgSize = size.x*size.y; // number of pixel in the image
 	_imgCopy.reserve( imgSize * 0.5 );	//reserve memory for buffer
-	_selectionColorAverage[0] = _selectionColorAverage[1] = _selectionColorAverage[2] = 0; //initialize average
+	_averageColor.x = _averageColor.y = _averageColor.z = 0; //initialize average
+	
+	//create geodesic form
+	Ofx3DPointD p = {0,0,0};
+	_geodesicForm.subdiviseFaces(p,4);
 }
 
 /**
@@ -114,13 +118,13 @@ int CloudPointData::generateAllPointsVBOData(SView srcView)
 	//compute buffer size
 	int size = (int)(srcView.height()*srcView.width());	//return size : full img here
 	
-	TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TCOUT_INFOS;
 	//copy full image into buffer
 	Pixel_copy funct( _imgCopy );	//functor declaration	
 	
-	TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TCOUT_INFOS;
 	boost::gil::transform_pixels( srcView, funct );		//with functor reference
-	TUTTLE_TCOUT_INFOS;
+	//TUTTLE_TCOUT_INFOS;
 
 	return size;
 }
@@ -192,9 +196,9 @@ bool CloudPointData::generateAverageColorSelection(OFX::Clip* clipColor, const O
 	ComputeAverage<SView>::CPixel average = ComputeAverage<SView>()( colorView );	// compute color clip average
 	
 	//copy computed average into average stock variable
-	_selectionColorAverage[0] = average[0]; //red channel value
-	_selectionColorAverage[1] = average[1]; //green channel value
-	_selectionColorAverage[2] = average[2]; //blue channel values
+	_averageColor.x = average[0]; //red channel value
+	_averageColor.y = average[1]; //green channel value
+	_averageColor.z = average[2]; //blue channel values
 	
 	return true; //average has been computed
 }
@@ -207,28 +211,28 @@ void CloudPointData::drawAverage()
 	float kCrossSize = 0.05f;
 	//compute complementary color
 	float complementaryColor[3]; 
-	complementaryColor[0] = 1-_selectionColorAverage[0];	//complementary red
-	complementaryColor[1] = 1-_selectionColorAverage[1];	//complementary green
-	complementaryColor[2] = 1-_selectionColorAverage[2];	//complementary blue
+	complementaryColor[0] = 1-_averageColor.x;	//complementary red
+	complementaryColor[1] = 1-_averageColor.y;	//complementary green
+	complementaryColor[2] = 1-_averageColor.z;	//complementary blue
 	
 	//compute values on X axis
-	float xBefore = _selectionColorAverage[0]-kCrossSize;
-	float xAfter = _selectionColorAverage[0] + kCrossSize;
+	float xBefore = _averageColor.x-kCrossSize;	//compute before value (X axis)
+	float xAfter = _averageColor.x + kCrossSize;	//compute after value (X axis)
 	
 	//compute values on Y axis
-	float yBefore = _selectionColorAverage[1]-kCrossSize;
-	float yAfter = _selectionColorAverage[1] + kCrossSize;
+	float yBefore = _averageColor.y-kCrossSize;	//compute before value (Y axis)
+	float yAfter = _averageColor.y + kCrossSize;	//compute after value (Y axis)
 	
 	//compute values on Z axis
-	float zBefore = _selectionColorAverage[2]-kCrossSize;
-	float zAfter = _selectionColorAverage[2]+kCrossSize;
+	float zBefore = _averageColor.z-kCrossSize;	//compute before value (Z axis)
+	float zAfter = _averageColor.z+kCrossSize;	//compute after value (Z axis)
 	
 	//drawing average mark
 	glBegin(GL_LINES);
 	glColor3f(complementaryColor[0],complementaryColor[1],complementaryColor[2]); //color : complementary to average
-	glVertex3f(xBefore,_selectionColorAverage[1],_selectionColorAverage[2]); glVertex3f(xAfter,_selectionColorAverage[1],_selectionColorAverage[2]); //X axis
-	glVertex3f(_selectionColorAverage[0],yBefore,_selectionColorAverage[2]); glVertex3f(_selectionColorAverage[0],yAfter,_selectionColorAverage[2]); //Y axis
-	glVertex3f(_selectionColorAverage[0],_selectionColorAverage[1],zBefore); glVertex3f(_selectionColorAverage[0],_selectionColorAverage[1],zAfter); //Z axis
+	glVertex3f(xBefore,_averageColor.y,_averageColor.z); glVertex3f(xAfter,_averageColor.y,_averageColor.z); //X axis
+	glVertex3f(_averageColor.x,yBefore,_averageColor.z); glVertex3f(_averageColor.x,yAfter,_averageColor.z); //Y axis
+	glVertex3f(_averageColor.x,_averageColor.y,zBefore); glVertex3f(_averageColor.x,_averageColor.y,zAfter); //Z axis
 	glEnd();
 }
 

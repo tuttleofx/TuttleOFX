@@ -43,7 +43,12 @@ const static std::string kBoolDiscretizationDisplayLabel = "Discretize point clo
 //Discretization display
 const static std::string kIntDiscretizationDisplay = "discretizationDisplay";
 const static std::string kIntDiscretizationDisplayLabel = "Discretization step";
-const std::size_t discretizationDisplayInt = 10;
+static std::size_t discretizationDisplayInt = 10;
+
+//Number of divison (geodesic form)
+const static std::string kIntNumberOfDivisonGeodesicForm = "numberOfDivisonGeodesicForm";
+const static std::string kIntNumberOfDivisonGeodesicFormLabel = "Precision";
+static std::size_t numberOfDivisionInt = 4;
 
 
 //Rotation constants
