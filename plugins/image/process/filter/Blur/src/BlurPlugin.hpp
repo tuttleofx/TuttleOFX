@@ -15,12 +15,13 @@ namespace blur {
 template<typename Scalar>
 struct BlurProcessParams
 {
+	typedef typename boost::gil::kernel_1d<Scalar> Kernel;
 	boost::gil::point2<double> _size;
 	EParamBorder _border;
 	boost::gil::convolve_boundary_option _boundary_option;
 
-	boost::gil::kernel_1d<Scalar> _gilKernelX;
-	boost::gil::kernel_1d<Scalar> _gilKernelY;
+	Kernel _gilKernelX;
+	Kernel _gilKernelY;
 };
 
 /**
@@ -29,6 +30,7 @@ struct BlurProcessParams
 class BlurPlugin : public ImageEffectGilPlugin
 {
 	typedef float Scalar;
+
 public:
 	BlurPlugin( OfxImageEffectHandle handle );
 
