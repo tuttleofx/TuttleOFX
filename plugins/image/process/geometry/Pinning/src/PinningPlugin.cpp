@@ -110,32 +110,32 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 {
 	using namespace boost::numeric::ublas;
 
-	bounded_vector<double, 2> pIn[4];
 	bounded_vector<double, 2> pOut[4];
+	bounded_vector<double, 2> pIn[4];
 
-	if(_paramInverse->getValue() != false)
+	if( _paramInverse->getValue() )
 	{
-		_paramPointIn0->getValue( pIn[0][0], pIn[0][1] );
-		_paramPointIn1->getValue( pIn[1][0], pIn[1][1] );
-		_paramPointIn2->getValue( pIn[2][0], pIn[2][1] );
-		_paramPointIn3->getValue( pIn[3][0], pIn[3][1] );
-
-		_paramPointOut0->getValue( pOut[0][0], pOut[0][1] );
-		_paramPointOut1->getValue( pOut[1][0], pOut[1][1] );
-		_paramPointOut2->getValue( pOut[2][0], pOut[2][1] );
-		_paramPointOut3->getValue( pOut[3][0], pOut[3][1] );
-	}
-	else
-	{
-		_paramPointOut0->getValue( pIn[0][0], pIn[0][1] );
-		_paramPointOut1->getValue( pIn[1][0], pIn[1][1] );
-		_paramPointOut2->getValue( pIn[2][0], pIn[2][1] );
-		_paramPointOut3->getValue( pIn[3][0], pIn[3][1] );
-
 		_paramPointIn0->getValue( pOut[0][0], pOut[0][1] );
 		_paramPointIn1->getValue( pOut[1][0], pOut[1][1] );
 		_paramPointIn2->getValue( pOut[2][0], pOut[2][1] );
 		_paramPointIn3->getValue( pOut[3][0], pOut[3][1] );
+
+		_paramPointOut0->getValue( pIn[0][0], pIn[0][1] );
+		_paramPointOut1->getValue( pIn[1][0], pIn[1][1] );
+		_paramPointOut2->getValue( pIn[2][0], pIn[2][1] );
+		_paramPointOut3->getValue( pIn[3][0], pIn[3][1] );
+	}
+	else
+	{
+		_paramPointOut0->getValue( pOut[0][0], pOut[0][1] );
+		_paramPointOut1->getValue( pOut[1][0], pOut[1][1] );
+		_paramPointOut2->getValue( pOut[2][0], pOut[2][1] );
+		_paramPointOut3->getValue( pOut[3][0], pOut[3][1] );
+
+		_paramPointIn0->getValue( pIn[0][0], pIn[0][1] );
+		_paramPointIn1->getValue( pIn[1][0], pIn[1][1] );
+		_paramPointIn2->getValue( pIn[2][0], pIn[2][1] );
+		_paramPointIn3->getValue( pIn[3][0], pIn[3][1] );
 	}
 
 	if(paramName == kParamSetToCornersIn)
@@ -237,10 +237,10 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 				// fill A and b... //
 				for( int i = 0; i < 3; ++i )
 				{
-					A( i, 0 ) = A( i + 3, 0 + 3 ) = pIn[i][0];
-					A( i, 1 ) = A( i + 3, 1 + 3 ) = pIn[i][1];
-					b( i )     = pOut[i][0];
-					b( i + 3 ) = pOut[i][1];
+					A( i, 0 ) = A( i + 3, 0 + 3 ) = pOut[i][0];
+					A( i, 1 ) = A( i + 3, 1 + 3 ) = pOut[i][1];
+					b( i )     = pIn[i][0];
+					b( i + 3 ) = pIn[i][1];
 				}
 				subrange( A, 3,6, 0,3 ) = subrange( A, 0,3, 3,6 ) = zero_matrix<double>(n);
 				subrange( A, 0,3, 2,3 ) = subrange( A, 3,6, 5,6 ) = scalar_matrix<double>(3,1, 1);
@@ -297,34 +297,22 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 				vector<double> x( n );
 				vector<double> b( n );
 
-				bounded_vector<double, 2> pIn[4];
-				_paramPointIn0->getValue( pIn[0][0], pIn[0][1] );
-				_paramPointIn1->getValue( pIn[1][0], pIn[1][1] );
-				_paramPointIn2->getValue( pIn[2][0], pIn[2][1] );
-				_paramPointIn3->getValue( pIn[3][0], pIn[3][1] );
-
-				bounded_vector<double, 2> pOut[4];
-				_paramPointOut0->getValue( pOut[0][0], pOut[0][1] );
-				_paramPointOut1->getValue( pOut[1][0], pOut[1][1] );
-				_paramPointOut2->getValue( pOut[2][0], pOut[2][1] );
-				_paramPointOut3->getValue( pOut[3][0], pOut[3][1] );
-
 				/////////////////////
 				// fill A and b... //
 				for( int i = 0; i < 4; ++i )
 				{
-					A(i,0) = A(i+4,3) = pIn[i][0];
-					A(i,1) = A(i+4,4) = pIn[i][1];
+					A(i,0) = A(i+4,3) = pOut[i][0];
+					A(i,1) = A(i+4,4) = pOut[i][1];
 					A(i,2) = A(i+4,5) = 1.0;
 					A(i,3) = A(i,4) = A(i,5) = A(i+4,0) = A(i+4,1) = A(i+4,2) = 0.0;
 
-					A(i,6) = -(pIn[i][0])*(pOut[i][0]);
-					A(i,7) = -(pIn[i][1])*(pOut[i][0]);
-					A(i+4,6) = -(pIn[i][0])*(pOut[i][1]);
-					A(i+4,7) = -(pIn[i][1])*(pOut[i][1]);
+					A(i,6) = -(pOut[i][0])*(pIn[i][0]);
+					A(i,7) = -(pOut[i][1])*(pIn[i][0]);
+					A(i+4,6) = -(pOut[i][0])*(pIn[i][1]);
+					A(i+4,7) = -(pOut[i][1])*(pIn[i][1]);
 
-					b(i) = pOut[i][0];
-					b(i+4) = pOut[i][1];
+					b(i) = pIn[i][0];
+					b(i+4) = pIn[i][1];
 				}
 				//TUTTLE_COUT_VAR( A );
 
@@ -374,16 +362,16 @@ void PinningPlugin::changedParam( const OFX::InstanceChangedArgs& args, const st
 
 				for( int i = 0; i < 4; ++i )
 				{
-					A( 2*i, 0 ) = A( 2*i + 1, 0 + 4 ) = pIn[i][0];
-					A( 2*i, 1 ) = A( 2*i + 1, 1 + 4 ) = pIn[i][1];
-					A( 2*i, 2 ) = A( 2*i + 1, 2 + 4 ) = pIn[i][0]*pIn[i][1];
+					A( 2*i, 0 ) = A( 2*i + 1, 0 + 4 ) = pOut[i][0];
+					A( 2*i, 1 ) = A( 2*i + 1, 1 + 4 ) = pOut[i][1];
+					A( 2*i, 2 ) = A( 2*i + 1, 2 + 4 ) = pOut[i][0]*pOut[i][1];
 					A( 2*i, 3 ) = A( 2*i + 1, 3 + 4 ) = 1;
 
 					A(2*i, 4) = A(2*i, 5) = A(2*i, 6) = A(2*i, 7) = 0;
 					A(2*i+1, 0) = A(2*i+1, 1) = A(2*i+1, 2) = A(2*i+1, 3) = 0;
 
-					b( i*2 )     = pOut[i][0];
-					b( i*2 + 1 ) = pOut[i][1];
+					b( i*2 )     = pIn[i][0];
+					b( i*2 + 1 ) = pIn[i][1];
 				}
 
 				lu_factorize( A, P );		
