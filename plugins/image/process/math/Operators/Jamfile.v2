@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Add Plugin
+## Main BJam makefile for TuttleOFX Operators Plugin
 ###############################################################################
 import os ;
  
@@ -9,14 +9,14 @@ import os ;
 project
     : requirements
 		<include>src
-    : build-dir $(DIST)/Add/obj
+    : build-dir $(BUILD)/Operators
     ;
 
  
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Add : 
+plugin Operators : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
     ;
@@ -24,5 +24,5 @@ plugin Add :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Add : $(DIST) ;
+auto_install Operators : $(DIST) ;
  
