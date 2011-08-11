@@ -1,4 +1,7 @@
 project Imath
+	: requirements
+		<warnings-as-errors>off
+		<warnings>off
 	: usage-requirements <include>.
 	;
 

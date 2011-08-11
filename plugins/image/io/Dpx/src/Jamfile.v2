@@ -20,7 +20,7 @@ plugin		Dpx :
 		[ glob-tree *.cpp ]
 
 		/boost/system
-		/boost/filesystem
+		#/boost/filesystem
 		/boost/regex
 		/tuttleplugin/<link>static
 		:

@@ -1,6 +1,9 @@
 project IlmThread
-	: 
-	usage-requirements <include>.
+	: requirements
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>.
 	;
 
 alias plateformFiles : [ glob *Posix*.cpp ] : <os>LINUX ;

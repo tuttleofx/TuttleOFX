@@ -9,7 +9,6 @@ project
 	: requirements	
 		<include>include
 		<include>include/freetype
-		<include>builds/unix
 		<define>FT2_BUILD_LIBRARY
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
@@ -18,7 +17,6 @@ project
 		<include>.
 		<include>include
 		<include>include/freetype
-		<include>builds/unix
 	: build-dir $(BUILD)/3rdParty/freetype
     ;
 
@@ -29,7 +27,8 @@ alias	headers		: [ glob-tree *.h ] ;
 
 lib	freetype		:
 			  [
-			    glob	src/autofit/*.c
+			    glob	
+			    	src/autofit/*.c
 					src/base/*.c
 					src/bdf/*.c
 					src/cache/*.c
@@ -86,4 +85,7 @@ install	dist_src
 		freetype
 	: 
 		<location>$(DIST)/lib
+		<os>LINUX:<include>builds/unix
+		<os>NT:<include>builds/win32
+		<os>NT:<link>static
 	;
