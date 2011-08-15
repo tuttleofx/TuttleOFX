@@ -15,6 +15,8 @@
 
 static const std::string kpipe = SAM_DO_PIPE_STR;
 
+namespace ttl = tuttle::host;
+
 /**
  * @brief Decomposes command line arguments into a list of options and a list of node command lines. Groups the arguments without insterpretation at this step.
  * 
@@ -79,6 +81,56 @@ void decomposeCommandLine( const int argc, char** const argv, std::vector<std::s
 	}
 }
 
+/**
+ * @todo
+ */
+void coutProperties( const ttl::Graph::Node& node )
+{
+	const ttl::ofx::property::OfxhSet& props = node.getProperties();
+	BOOST_FOREACH( ttl::ofx::property::PropertyMap::const_reference clip, props.getMap() )
+	{
+		TUTTLE_COUT(
+			"\t" <<
+			clip.first << " " <<
+			(clip.second->getDimension() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(clip.second->getDimension())) : "")
+			);
+	}
+}
+
+/**
+ * @todo
+ */
+void coutClips( const ttl::Graph::Node& node )
+{
+//	ttl::ofx::attribute::OfxhClipSet& clips = node.getClipSet();
+//	BOOST_FOREACH( ttl::ofx::attribute::OfxhClip& clip, clips.getClipVector() )
+//	{
+//		/// @todo
+//		TUTTLE_COUT("");
+//	}
+}
+
+void coutParameters( const ttl::Graph::Node& node )
+{
+	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+	{
+		if( param.getSecret() )
+			continue; // ignore secret parameters
+		TUTTLE_COUT(
+			"\t" <<
+			param.getScriptName() << ":\t" <<
+			param.getParamType() <<
+			(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "")
+			);
+		const std::string& hint = param.getHint();
+		if( hint.size() )
+		{
+			TUTTLE_COUT( hint );
+		}
+		TUTTLE_COUT("");
+	}
+}
 
 struct NodeCommand
 {
@@ -110,8 +162,6 @@ int main( int argc, char** argv )
 		std::vector< std::vector<std::string> > cl_commands;
 		
 		decomposeCommandLine( argc, argv, cl_options, cl_commands );
-
-		namespace ttl = tuttle::host;
 
 		ttl::Core::instance().preload();
 		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
@@ -336,7 +386,6 @@ int main( int argc, char** argv )
 							envVarName += "SAM_DO_";
 							envVarName += boost::algorithm::replace_all_copy( nodeFullName, ".", "_" );
 							envVarName += "_OPTIONS";
-							TUTTLE_TCOUT_VAR( envVarName );
 							if( const char* env_ptr = std::getenv(envVarName.c_str()) )
 							{
 								std::vector<std::string> envOptions;
@@ -418,10 +467,10 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "ATTRIBUTES" );
 							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tCLIPS" );
-							/// @todo
+							coutClips( currentNode );
 							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tPARAMETERS" );
-							/// @todo
+							coutParameters( currentNode );
 							TUTTLE_COUT("");
 							exit(0);
 						}
@@ -430,7 +479,7 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
 							TUTTLE_COUT( "PROPERTIES" );
-							/// @todo
+							coutProperties( currentNode );
 							TUTTLE_COUT("");
 							exit(0);
 						}
@@ -439,7 +488,7 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
 							TUTTLE_COUT( "CLIPS" );
-							/// @todo
+							coutClips( currentNode );
 							TUTTLE_COUT("");
 							exit(0);
 						}
@@ -447,8 +496,16 @@ int main( int argc, char** argv )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT("");
-							TUTTLE_COUT( "CLIP: " << node_vm["clip"].as<std::string>() );
-							/// @todo
+							const std::string clipName = node_vm["clip"].as<std::string>();
+							TUTTLE_COUT( "CLIP: " << clipName );
+							ttl::attribute::ClipImage& clip = currentNode.getClip( clipName );
+							TUTTLE_COUT(
+								clip.getBitDepthString()
+								<< ", " <<
+								clip.getPixelAspectRatio()
+								<< ", " <<
+								clip.getNbComponents()
+								);
 							TUTTLE_COUT("");
 							exit(0);
 						}
@@ -458,24 +515,7 @@ int main( int argc, char** argv )
 							TUTTLE_COUT("");
 							TUTTLE_COUT( "PARAMETERS" );
 							TUTTLE_COUT("");
-							ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
-							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
-							{
-								if( param.getSecret() )
-									continue; // ignore secret parameters
-								TUTTLE_COUT(
-									"\t" <<
-									param.getScriptName() << ":\t" <<
-									param.getParamType() <<
-									(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "")
-									);
-								const std::string& hint = param.getHint();
-								if( hint.size() )
-								{
-									TUTTLE_COUT( hint );
-								}
-								TUTTLE_COUT("");
-							}
+							coutParameters( currentNode );
 							exit(0);
 						}
 						if( node_vm.count("param") )
