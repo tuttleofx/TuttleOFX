@@ -9,11 +9,11 @@
 #include <boost/foreach.hpp>
 
 
-#ifndef SAMDO_PIPE_STR
-#define SAMDO_PIPE_STR "//"
+#ifndef SAM_DO_PIPE_STR
+#define SAM_DO_PIPE_STR "//"
 #endif
 
-static const std::string kpipe = SAMDO_PIPE_STR;
+static const std::string kpipe = SAM_DO_PIPE_STR;
 
 /**
  * @brief Decomposes command line arguments into a list of options and a list of node command lines. Groups the arguments without insterpretation at this step.
@@ -31,7 +31,7 @@ void decomposeCommandLine( const int argc, char** const argv, std::vector<std::s
 	// split the command line to identify the multiple parts
 	for( int i = 1; i < argc; ++i )
 	{
-		std::string s( argv[i] );
+		const std::string s( argv[i] );
 		if( s == kpipe )
 		{
 			cl_commands.resize( cl_commands.size()+1 );
