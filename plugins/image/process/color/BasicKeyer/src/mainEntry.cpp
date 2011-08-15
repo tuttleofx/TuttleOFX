@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::basicKeyer::BasicKeyerPluginFactory, "fr.tuttle.basickeyer" );
+	mAppendPluginFactory( ids, tuttle::plugin::basicKeyer::BasicKeyerPluginFactory, "tuttle.basickeyer" );
 }
 
 }

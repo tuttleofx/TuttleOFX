@@ -38,7 +38,7 @@ rule auto_install ( target : path )
 		<install-dependencies>on
 		<install-type>PLUGIN
 	;
-	install install_plugin_resources_$(target) : [ glob Resources/* ../Resources/* ] : #Resources/fr.tuttle.$(target).png  Resources/fr.tuttle.$(target).svg :
+	install install_plugin_resources_$(target) : [ glob Resources/* ../Resources/* ] : #Resources/tuttle.$(target).png  Resources/tuttle.$(target).svg :
 		<location>$(path)/plugin/$(target).ofx.bundle/Contents/Resources
 	;
 }

@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::debugImageEffectApi::DebugImageEffectApiPluginFactory, "fr.tuttle.debugimageeffectapi" );
+	mAppendPluginFactory( ids, tuttle::plugin::debugImageEffectApi::DebugImageEffectApiPluginFactory, "tuttle.debugimageeffectapi" );
 }
 
 }

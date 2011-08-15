@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::lut::LutPluginFactory, "fr.tuttle.lut" );
+	mAppendPluginFactory( ids, tuttle::plugin::lut::LutPluginFactory, "tuttle.lut" );
 }
 
 }

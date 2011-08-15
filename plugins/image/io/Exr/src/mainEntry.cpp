@@ -11,8 +11,8 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::exr::reader::EXRReaderPluginFactory, "fr.tuttle.exrreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::exr::writer::EXRWriterPluginFactory, "fr.tuttle.exrwriter" );
+	mAppendPluginFactory( ids, tuttle::plugin::exr::reader::EXRReaderPluginFactory, "tuttle.exrreader" );
+	mAppendPluginFactory( ids, tuttle::plugin::exr::writer::EXRWriterPluginFactory, "tuttle.exrwriter" );
 }
 
 }

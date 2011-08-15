@@ -393,7 +393,7 @@ int main( int argc, char** argv )
 	try
 	{
 		tth::Core::instance().preload();
-		// get the plugins names for research partials names (rawreader need to make reference to the plug fr.tuttle.reader)
+		// get the plugins names for research partials names (rawreader need to make reference to the plug tuttle.reader)
 		const std::vector<tth::ofx::imageEffect::OfxhImageEffectPlugin*> plugs = tth::Core::instance().getImageEffectPluginCache().getPlugins();
 
 		unsigned int founded;

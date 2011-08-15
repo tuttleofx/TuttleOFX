@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE( process_reader )
 	Graph g;
 
 	TUTTLE_TCOUT( "__________________________________________________1" );
-	Graph::Node& read = g.createNode( "fr.tuttle.dpxreader" );
+	Graph::Node& read = g.createNode( "tuttle.dpxreader" );
 
 	TUTTLE_TCOUT( "__________________________________________________3" );
 
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE( process_nofile )
 	Graph g;
 
 	TUTTLE_TCOUT( "__________________________________________________1" );
-	Graph::Node& read = g.createNode( "fr.tuttle.dpxreader" );
+	Graph::Node& read = g.createNode( "tuttle.dpxreader" );
 
 	TUTTLE_TCOUT( "__________________________________________________3" );
 	read.getParam( "filename" ).setValue( "data/no-such-file.dpx" );

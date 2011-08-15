@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::ctl::CTLPluginFactory, "fr.tuttle.ctl" );
+	mAppendPluginFactory( ids, tuttle::plugin::ctl::CTLPluginFactory, "tuttle.ctl" );
 }
 
 }

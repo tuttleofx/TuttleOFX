@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::invert::InvertPluginFactory, "fr.tuttle.invert" );
+	mAppendPluginFactory( ids, tuttle::plugin::invert::InvertPluginFactory, "tuttle.invert" );
 }
 
 }

@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::blur::BlurPluginFactory, "fr.tuttle.blur" );
+	mAppendPluginFactory( ids, tuttle::plugin::blur::BlurPluginFactory, "tuttle.blur" );
 }
 
 }
