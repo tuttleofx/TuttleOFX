@@ -344,7 +344,7 @@ void OfxhPluginCache::scanPluginFiles()
 		}
 		else
 		{
-			bool binChanged = i->hasBinaryChanged();
+			const bool binChanged = i->hasBinaryChanged();
 
 			// the binary was in the cache, but the binary has changed and thus we need to reload
 			if( binChanged )
