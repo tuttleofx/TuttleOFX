@@ -11,12 +11,6 @@
 #include <boost/gil/algorithm.hpp>
 #include <boost/gil/rgba.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
-#include <cmath>
-#include <vector>
-
 namespace tuttle {
 namespace plugin {
 namespace invert {

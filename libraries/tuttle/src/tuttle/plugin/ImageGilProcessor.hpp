@@ -99,7 +99,7 @@ public:
 		{
 			setup( args );
 		}
-		catch( exception::Common& e )
+		catch( exception::Common& )
 		{
 			progressEnd();
 

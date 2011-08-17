@@ -138,12 +138,20 @@ public:
 //		return getDirectory() / getName();
 //	}
 	
-	inline boost::filesystem::path			getDirectory	() const				{ return _directory; }
-	inline void					setDirectory	( const boost::filesystem::path& p )	{ _directory = p; }
+	inline boost::filesystem::path getDirectory() const				{ return _directory; }
+	inline boost::filesystem::path getAbsoluteDirectory() const				{ return boost::filesystem::absolute(_directory); }
+	inline void					setDirectory( const boost::filesystem::path& p )	{ _directory = p; }
+	void					setDirectoryFromPath( const boost::filesystem::path& p );
 	
 	EMaskOptions					getMaskOptions	() const				{ return _options; }
 	EMaskType					getMaskType	() const				{ return _type; }
 
+	virtual inline void clear()
+	{
+		_directory.clear();
+		_type = eMaskTypeDefault;
+		_options = eMaskOptionsDefault;
+	}
 private:
 	void init( const boost::filesystem::path& directory, const EMaskType& type, const EMaskOptions& options )
 	{
@@ -176,11 +184,17 @@ public:
 	{
 		_folderName = folderName;
 	};
-	virtual ~Folder(){};
+	~Folder(){};
 	
 	std::ostream&				getCout( std::ostream& os ) const;
 	
 	std::vector<boost::filesystem::path>	getFiles() const;
+
+	inline void clear()
+	{
+		FileObject::clear();
+		_folderName.clear();
+	}
 private:
 	std::ostream&		getProperties( std::ostream& os, const boost::filesystem::path& directory);
 	
@@ -196,11 +210,18 @@ public:
 	{
 		_filename = filename;
 	};
-	virtual ~File(){};
+	~File(){}
 	
 	std::ostream&				getCout( std::ostream& os ) const ;
 	std::vector<boost::filesystem::path>	getFiles() const;
-	inline std::string			getAbsoluteFilename	()			const { return ( _directory / _filename ).string(); }
+	inline std::string			getAbsoluteFilename	()			const { return ( getAbsoluteDirectory() / _filename ).string(); }
+
+	inline void clear()
+	{
+		FileObject::clear();
+		_filename.clear();
+	}
+
 private:
 	std::string		_filename;
 };
@@ -267,26 +288,39 @@ public:
 		operator=( v );
 	}
 	
-	virtual ~Sequence()
-        {}
+	~Sequence()
+	{}
 	
+private:
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	void init( const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const bool strictPadding = false );
 
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	bool init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
+
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	bool init( const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
 	
+public:
+	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
+	 */
+	bool initFromPattern( const boost::filesystem::path& dir, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EMaskOptions options = eMaskOptionsDefault, const EPattern accept = ePatternDefault );
+
 	/**
 	 * @brief Init from directory and pattern.
 	 * @warning search on your filesystem, to detect the range.
@@ -302,14 +336,14 @@ public:
 	inline std::string		getAbsoluteFilenameAt		( const Time time )	const;
 	inline std::string		getFilenameAt			( const Time time )	const;
 	inline std::string		getFirstFilename		()			const { return getFilenameAt( getFirstTime() ); }
-	inline std::string		getAbsoluteFirstFilename	()			const { return ( _directory / getFilenameAt( getFirstTime() ) ).string(); }
-	inline std::string		getAbsoluteLastFilename		()			const { return ( _directory / getFilenameAt( getLastTime()  ) ).string(); }
+	inline std::string		getAbsoluteFirstFilename	()			const { return ( getAbsoluteDirectory() / getFilenameAt( getFirstTime() ) ).string(); }
+	inline std::string		getAbsoluteLastFilename		()			const { return ( getAbsoluteDirectory() / getFilenameAt( getLastTime()  ) ).string(); }
 
 	/// @return pattern character in standard style
 	inline char			getPatternCharacter		()			const { return getPadding() ? '#' : '@'; }
 	/// @return a string pattern using standard style
 	inline std::string		getStandardPattern		()			const { return getPrefix() + std::string( getPadding() ? getPadding() : 1, getPatternCharacter() ) + getSuffix(); }
-	inline std::string		getAbsoluteStandardPattern	()			const { return (getDirectory() / getStandardPattern()).string(); }
+	inline std::string		getAbsoluteStandardPattern	()			const { return (getAbsoluteDirectory() / getStandardPattern()).string(); }
 	/// @return a string pattern using C Style
 	inline std::string		getCStylePattern		()			const
 	{
@@ -361,7 +395,7 @@ protected:
 	 * @brief Partial initialization, using only pattern informations.
 	 * @warning You don't have all informations like range, directory, etc.
 	 */
-	bool initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding );
+	bool retrieveInfosFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const;
 
 private:
 	friend std::list<Sequence> buildSequence(  const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const EMaskOptions& desc );
@@ -371,6 +405,7 @@ private:
 protected:
 	inline void clear()
 	{
+		FileObject::clear();
 		_prefix.clear();
 		_suffix.clear();
 		_padding	= 0;
@@ -414,17 +449,12 @@ inline std::string Sequence::getFilenameAt( const Time time ) const
 
 inline std::string Sequence::getAbsoluteFilenameAt( const Time time ) const
 {
-	return ( _directory / getFilenameAt( time ) ).string();
+	return ( getAbsoluteDirectory() / getFilenameAt( time ) ).string();
 }
 
 inline bool Sequence::initFromDetection( const EPattern& accept )
 {
-	boost::filesystem::path dir = _directory.parent_path();
-
-	if( dir.empty() ) // relative path
-		dir = boost::filesystem::current_path();
-
-	return this->initFromDetection( _directory.filename().string(), accept );
+	return this->initFromDetection( getDirectory().string(), accept );
 }
 
 

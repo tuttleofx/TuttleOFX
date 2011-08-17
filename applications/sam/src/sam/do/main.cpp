@@ -1,4 +1,6 @@
 #include <tuttle/common/exceptions.hpp>
+
+#include <tuttle/host/attribute/expression.hpp>
 #include <tuttle/host/Graph.hpp>
 
 #include <boost/program_options.hpp>
@@ -7,11 +9,128 @@
 #include <boost/foreach.hpp>
 
 
-#ifndef SAMDO_PIPE_STR
-#define SAMDO_PIPE_STR "//"
+#ifndef SAM_DO_PIPE_STR
+#define SAM_DO_PIPE_STR "//"
 #endif
 
-static const std::string kpipe = SAMDO_PIPE_STR;
+static const std::string kpipe = SAM_DO_PIPE_STR;
+
+namespace ttl = tuttle::host;
+
+/**
+ * @brief Decomposes command line arguments into a list of options and a list of node command lines. Groups the arguments without insterpretation at this step.
+ * 
+ * @param[in] argc number of arguments ont the command line
+ * @param[in] argv list of string arguments
+ * @param[out] cl_options list of options for sam-do
+ * @param[out] cl_commands list of node command lines (list of strings groups without insterpretation at this step)
+ */
+void decomposeCommandLine( const int argc, char** const argv, std::vector<std::string>& cl_options, std::vector< std::vector<std::string> >& cl_commands )
+{
+	cl_commands.reserve(10);
+	cl_commands.resize(1); // first node for options
+
+	// split the command line to identify the multiple parts
+	for( int i = 1; i < argc; ++i )
+	{
+		const std::string s( argv[i] );
+		if( s == kpipe )
+		{
+			cl_commands.resize( cl_commands.size()+1 );
+			cl_commands.back().reserve(10);
+		}
+		else
+		{
+			cl_commands.back().push_back( s );
+		}
+	}
+
+	// reoganize nodes
+	// first and last nodes may only be flags to sam-do itself
+	{
+		// First node
+		std::vector<std::string>& firstNode = cl_commands.front();
+		std::vector<std::string>::iterator fNodeIt = firstNode.begin();
+		std::vector<std::string>::iterator fNodeItEnd = firstNode.end();
+		while( fNodeIt != fNodeItEnd &&
+			   (*fNodeIt)[0] == '-' )
+		{
+			++fNodeIt;
+		}
+		// options in front of the first node are options for sam-do
+		if( firstNode.begin() != fNodeIt )
+		{
+			std::copy( firstNode.begin(), fNodeIt, std::back_inserter(cl_options) );
+			firstNode.erase( firstNode.begin(), fNodeIt );
+		}
+		if( firstNode.size() == 0 )
+		{
+			cl_commands.erase( cl_commands.begin() );
+		}
+	}
+	if( cl_commands.size() )
+	{
+		// Last node
+		// Is it a node or only flags?
+		const std::vector<std::string>& notNode = cl_commands.back();
+		if( notNode[0][0] == '-' )
+		{
+			std::copy( notNode.begin(), notNode.end(), std::back_inserter(cl_options) );
+			cl_commands.erase( cl_commands.end()-1 );
+		}
+	}
+}
+
+/**
+ * @todo
+ */
+void coutProperties( const ttl::Graph::Node& node )
+{
+	const ttl::ofx::property::OfxhSet& props = node.getProperties();
+	BOOST_FOREACH( ttl::ofx::property::PropertyMap::const_reference clip, props.getMap() )
+	{
+		TUTTLE_COUT(
+			"\t" <<
+			clip.first << " " <<
+			(clip.second->getDimension() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(clip.second->getDimension())) : "")
+			);
+	}
+}
+
+/**
+ * @todo
+ */
+void coutClips( const ttl::Graph::Node& node )
+{
+//	ttl::ofx::attribute::OfxhClipSet& clips = node.getClipSet();
+//	BOOST_FOREACH( ttl::ofx::attribute::OfxhClip& clip, clips.getClipVector() )
+//	{
+//		/// @todo
+//		TUTTLE_COUT("");
+//	}
+}
+
+void coutParameters( const ttl::Graph::Node& node )
+{
+	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
+	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+	{
+		if( param.getSecret() )
+			continue; // ignore secret parameters
+		TUTTLE_COUT(
+			"\t" <<
+			param.getScriptName() << ":\t" <<
+			param.getParamType() <<
+			(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "")
+			);
+		const std::string& hint = param.getHint();
+		if( hint.size() )
+		{
+			TUTTLE_COUT( hint );
+		}
+		TUTTLE_COUT("");
+	}
+}
 
 struct NodeCommand
 {
@@ -41,58 +160,8 @@ int main( int argc, char** argv )
 		
 		std::vector<std::string> cl_options;
 		std::vector< std::vector<std::string> > cl_commands;
-		cl_commands.reserve(10);
-		cl_commands.resize(1); // first node for options
-
-		// split the command line to identify the multiple parts
-		for( int i = 1; i < argc; ++i )
-		{
-			std::string s( argv[i] );
-			if( s == kpipe )
-			{
-				cl_commands.resize( cl_commands.size()+1 );
-				cl_commands.back().reserve(10);
-				continue;
-			}
-			cl_commands.back().push_back( s );
-		}
-
-		// reoganize nodes
-		// first and last nodes may only be flags to sam-do itself
-		{
-			// First node
-			std::vector<std::string>& firstNode = cl_commands.front();
-			std::vector<std::string>::iterator fNodeIt = firstNode.begin();
-			std::vector<std::string>::iterator fNodeItEnd = firstNode.end();
-			while( fNodeIt != fNodeItEnd &&
-				   (*fNodeIt)[0] == '-' )
-			{
-				++fNodeIt;
-			}
-			// options in front of the first node are options for sam-do
-			if( firstNode.begin() != fNodeIt )
-			{
-				std::copy( firstNode.begin(), fNodeIt, std::back_inserter(cl_options) );
-				firstNode.erase( firstNode.begin(), fNodeIt );
-			}
-			if( firstNode.size() == 0 )
-			{
-				cl_commands.erase( cl_commands.begin() );
-			}
-		}
-		if( cl_commands.size() )
-		{
-			// Last node
-			// Is it a node or only flags?
-			const std::vector<std::string>& notNode = cl_commands.back();
-			if( notNode[0][0] == '-' )
-			{
-				std::copy( notNode.begin(), notNode.end(), std::back_inserter(cl_options) );
-				cl_commands.erase( cl_commands.end()-1 );
-			}
-		}
-
-		namespace ttl = tuttle::host;
+		
+		decomposeCommandLine( argc, argv, cl_options, cl_commands );
 
 		ttl::Core::instance().preload();
 		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
@@ -100,10 +169,13 @@ int main( int argc, char** argv )
 		// create the graph
 		ttl::Graph graph;
 		std::list<ttl::Graph::Node*> nodes;
-		// Analyse each part of the command line
+		std::vector<std::ssize_t> range;
+		std::size_t step;
+		
+		// Analyze each part of the command line
 		{
 			namespace bpo = boost::program_options;
-			// Analyse sam-do flags
+			// Analyze sam-do flags
 			try
 			{
 				// Declare the supported options.
@@ -115,9 +187,10 @@ int main( int argc, char** argv )
 				;
 				bpo::options_description confOptions( "\tConfigure process" );
 				confOptions.add_options()
+					("range,r"      , bpo::value<std::string>(), "frame range to render" )
 					("verbose,V"    , "explain what is being done")
 					("quiet,Q"      , "don't print commands")
-					("nb-cores"     , bpo::value<std::string>(), "set a fix number of CPUs")
+					("nb-cores"     , bpo::value<std::size_t>(), "set a fix number of CPUs")
 				;
 
 				bpo::options_description all_options;
@@ -147,11 +220,12 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( "\tsam-do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" );
 					TUTTLE_COUT( "" );
 					TUTTLE_COUT( "EXAMPLES" );
-					TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
+					//TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
 					TUTTLE_COUT( "\tsam-do --nodes" );
 					TUTTLE_COUT( "\tsam-do blur -h" );
-					TUTTLE_COUT( "\tsam-do --verbose read foo.####.dpx // blur 3 // resize scale=50% // write foo.####.jpg range=[10,20]" );
-					TUTTLE_COUT( "\tsam-do r foo.dpx // sobel // print // -Q" );
+					/// @todo version with read / write (without format specification)
+					TUTTLE_COUT( "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" );
+					TUTTLE_COUT( "\tsam-do dpxreader foo.dpx // sobel // print // -Q" );
 					TUTTLE_COUT( "" );
 					TUTTLE_COUT( "DESCRIPTION" );
 					TUTTLE_COUT( infoOptions );
@@ -177,6 +251,31 @@ int main( int argc, char** argv )
 					}
 					exit( 0 );
 				}
+				{
+					if( samdo_vm.count("range") )
+					{
+						const std::string rangeStr = samdo_vm["range"].as<std::string>();
+						std::vector< std::string > rangeVStr = boost::program_options::split_unix( rangeStr, " ," );
+						range.reserve( rangeVStr.size() );
+						BOOST_FOREACH( const std::string& rStr, rangeVStr )
+						{
+							range.push_back( tuttle::host::attribute::extractValueFromExpression<std::ssize_t>(rStr) );
+						}
+					}
+					/// @todo remove this and use the full time range of nodes to render
+					/// @{
+					if( range.size() < 1 )
+						range.push_back( 0 );
+					/// @}
+
+					if( range.size() < 2 )
+						range.push_back( range[0] );
+					
+					if( range.size() >= 3 )
+						step = range[2];
+					else
+						step = 1;
+				}
 			}
 			catch( const boost::program_options::error& e )
 			{
@@ -201,16 +300,16 @@ int main( int argc, char** argv )
 					("help,h"       , "show node help")
 					("version,v"    , "display node version")
 					("attributes,a" , "show all attributes: parameters+clips")
-					("properties,p" , "list properties of the node")
+					("properties"   , "list properties of the node")
 					("clips,c"      , "list clips of the node")
-					("clip"         , bpo::value<std::string>(), "display clip informations")
-					("parameters,P" , "list parameters of the node")
-					("param"        , bpo::value<std::string>(), "display parameter informations")
+					("clip,C"       , bpo::value<std::string>(), "display clip informations")
+					("parameters,p" , "list parameters of the node")
+					("param,P"      , bpo::value<std::string>(), "display parameter informations")
 				;
 				bpo::options_description confOptions( "\tConfigure process" );
 				confOptions.add_options()
 					("verbose,V"    , "explain what is being done")
-					("nb-cores"     , bpo::value<std::string>(), "set a fix number of CPUs")
+					("nb-cores"     , bpo::value<std::size_t>(), "set a fix number of CPUs")
 				;
 				// describe hidden options
 				bpo::options_description hiddenOptions;
@@ -229,18 +328,12 @@ int main( int argc, char** argv )
 				{
 					std::string userNodeName = command[0];
 					std::string nodeFullName = command[0];
-					boost::algorithm::to_lower( userNodeName );
+//					boost::algorithm::to_lower( userNodeName );
 					std::vector<std::string> nodeArgs;
 					std::copy( command.begin()+1, command.end(), std::back_inserter(nodeArgs) );
 					
 					try
 					{
-						// parse the command line, and put the result in node_vm
-						bpo::variables_map node_vm;
-						bpo::store( bpo::command_line_parser(nodeArgs).options(all_options).positional(param_values).run(), node_vm );
-
-						bpo::notify( node_vm );
-
 						std::vector< std::string > detectedPlugins;
 						for( std::size_t i = 0; i < allNodes.size(); ++i )
 						{
@@ -278,7 +371,32 @@ int main( int argc, char** argv )
 						}
 						nodeFullName = detectedPlugins.front();
 
-						TUTTLE_COUT( "[" << nodeFullName << "]" );
+						// parse the command line, and put the result in node_vm
+						bpo::variables_map node_vm;
+						bpo::store( bpo::command_line_parser(nodeArgs).options(all_options).positional(param_values).run(), node_vm );
+						if( const char* env_ptr = std::getenv("SAM_DO_NODE_OPTIONS") )
+						{
+							std::vector<std::string> envOptions;
+							std::string env( env_ptr );
+							envOptions.push_back( env );
+							bpo::store( bpo::command_line_parser(envOptions).options(all_options).run(), node_vm );
+						}
+						{
+							std::string envVarName;
+							envVarName += "SAM_DO_";
+							envVarName += boost::algorithm::replace_all_copy( nodeFullName, ".", "_" );
+							envVarName += "_OPTIONS";
+							if( const char* env_ptr = std::getenv(envVarName.c_str()) )
+							{
+								std::vector<std::string> envOptions;
+								std::string env( env_ptr );
+								envOptions.push_back( env );
+								bpo::store( bpo::command_line_parser(envOptions).options(all_options).run(), node_vm );
+							}
+						}
+
+						bpo::notify( node_vm );
+						//TUTTLE_COUT( "[" << nodeFullName << "]" );
 
 						ttl::Graph::Node& currentNode = graph.createNode( nodeFullName );
 						nodes.push_back( &currentNode );
@@ -297,76 +415,128 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( "DESCRIPTION" );
 							TUTTLE_COUT( "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) );
-							TUTTLE_COUT( "" );
 							// internal node help
-							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription ) )
+							if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect )
+							{
+								if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping, true ) )
+								{
+									TUTTLE_COUT( "\t" << currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxImageEffectPluginPropGrouping ).getValue() );
+								}
+							}
+							TUTTLE_COUT( "" );
+							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription, true ) )
 							{
 								TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
-							}
-							else if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect &&
-							         currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxPropPluginDescription ) )
-							{
-								TUTTLE_COUT( "\tDescriptor:" );
-								TUTTLE_COUT( currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
 							}
 							else
 							{
 								TUTTLE_COUT( "\tNo description." );
 							}
+							TUTTLE_COUT("");
+							TUTTLE_COUT( "PARAMETERS" );
+							TUTTLE_COUT("");
+							ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
+							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+							{
+								if( param.getSecret() )
+									continue; // ignore secret parameters
+								TUTTLE_COUT(
+									"\t" <<
+									param.getScriptName() << ":\t" << param.getParamType() << " x" << param.getSize()
+									);
+							}
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( "OPTIONS" );
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( infoOptions );
 							TUTTLE_COUT( confOptions );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("version") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "Version " << currentNode.getVersionStr() );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("attributes") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "ATTRIBUTES" );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tCLIPS" );
-							/// @todo
+							coutClips( currentNode );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tPARAMETERS" );
-							/// @todo
+							coutParameters( currentNode );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("properties") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "PROPERTIES" );
-							/// @todo
+							coutProperties( currentNode );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("clips") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "CLIPS" );
-							/// @todo
+							coutClips( currentNode );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("clip") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
-							TUTTLE_COUT( "CLIP: " << node_vm["clip"].as<std::string>() );
-							/// @todo
+							TUTTLE_COUT("");
+							const std::string clipName = node_vm["clip"].as<std::string>();
+							TUTTLE_COUT( "CLIP: " << clipName );
+							ttl::attribute::ClipImage& clip = currentNode.getClip( clipName );
+							TUTTLE_COUT(
+								clip.getBitDepthString()
+								<< ", " <<
+								clip.getPixelAspectRatio()
+								<< ", " <<
+								clip.getNbComponents()
+								);
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("parameters") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "PARAMETERS" );
-							/// @todo
+							TUTTLE_COUT("");
+							coutParameters( currentNode );
 							exit(0);
 						}
 						if( node_vm.count("param") )
 						{
+							const std::string paramName = node_vm["param"].as<std::string>();
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
-							TUTTLE_COUT( "PARAM: " << node_vm["clip"].as<std::string>() );
-							/// @todo
+							TUTTLE_COUT( "PARAM: " << paramName );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							TUTTLE_COUT("");
+							TUTTLE_COUT(
+								"\t" <<
+								(param.getSecret() ? "SECRET -- " : "") <<
+								param.getScriptName() << ": " << param.getParamType() << " x" << param.getSize()
+								);
+							TUTTLE_COUT("");
+							const std::string& hint = param.getHint();
+							if( hint.size() )
+							{
+								TUTTLE_COUT( "\t" << hint );
+							}
+							TUTTLE_COUT("");
 							exit(0);
 						}
 
@@ -405,35 +575,46 @@ int main( int argc, char** argv )
 //								TUTTLE_COUT( "* " << p );
 //								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
 
-								/// @todo setup the node with parameter value in tuttle.
+								// setup the node with parameter value in tuttle.
 								if( paramName.size() )
 								{
 									currentNode.getParam( paramName ).setValueFromExpression( paramValue );
 								}
 								else
 								{
-									//currentNode.getParamSet().getParamList()[paramIdx].setValueFromExpression( paramValue );
+									currentNode.getParam( paramIdx ).setValueFromExpression( paramValue );
 								}
 								++paramIdx;
 							}
 						}
 					}
-					catch( const tuttle::exception::Common& e )
-					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
-						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
-						exit( -2 );
-					}
 					catch( const boost::program_options::error& e )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+#ifdef TUTTLE_PRODUCTION
 						TUTTLE_CERR( "Error: " << e.what() );
+#else
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+#endif
+						exit( -2 );
+					}
+					catch( const tuttle::exception::Common& e )
+					{
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+#ifdef TUTTLE_PRODUCTION
+						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+#else
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_CERR( "Backtrace: " << boost::trace(e) );
+#endif
 						exit( -2 );
 					}
 					catch( ... )
 					{
-						TUTTLE_CERR( "sam-do " << nodeFullName );
-						TUTTLE_CERR( "Error: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+						TUTTLE_CERR( "Unknown error." );
+						TUTTLE_CERR( "\n" );
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
 						exit( -2 );
 					}
 				}
@@ -466,12 +647,17 @@ int main( int argc, char** argv )
 		graph.connect( nodes );
 
 		// Execute the graph
-		graph.compute( *nodes.back(), 0 );
+		graph.compute( *nodes.back(), range[0], range[1] );
 	}
 	catch( const tuttle::exception::Common& e )
 	{
 		TUTTLE_CERR( "sam-do" );
+#ifdef TUTTLE_PRODUCTION
 		TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+#else
+		TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR( "Backtrace: " << boost::trace(e) );
+#endif
 		exit( -2 );
 	}
 	catch( const boost::program_options::error& e )

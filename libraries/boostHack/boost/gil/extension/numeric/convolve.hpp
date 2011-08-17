@@ -486,7 +486,7 @@ GIL_FORCEINLINE
 void correlate_cols_imp(const SrcView& src, const Kernel& ker, const DstView& dst, const typename SrcView::point_t& dst_tl,
                     const convolve_boundary_option option = convolve_option_extend_zero )
 {
-	correlate_1d_imp<false,autoEnabled,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
+	correlate_1d_imp<autoEnabled,false,PixelAccum,SrcView,Kernel,DstView>( src, ker, dst, dst_tl, option );
 }
 
 /// \ingroup ImageAlgorithms
@@ -511,7 +511,7 @@ void correlate_cols(const SrcView& src, const Kernel& ker, const DstView& dst, c
 
 /// \ingroup ImageAlgorithms
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
-template <bool autoEnabled, typename PixelAccum,typename SrcView,typename KernelX,typename KernelY,typename DstView>
+template <bool autoEnabled, typename PixelAccum, typename Alloc,typename SrcView,typename KernelX,typename KernelY,typename DstView >
 GIL_FORCEINLINE
 void correlate_rows_cols_imp( const SrcView& src,
                           const KernelX& kernelX,
@@ -526,7 +526,7 @@ void correlate_rows_cols_imp( const SrcView& src,
     typedef typename DstView::point_t Point;
     typedef typename DstView::coord_t Coord;
 	typedef typename view_type_from_pixel<PixelAccum, is_planar<DstView>::value >::type ViewAccum;
-	typedef image<PixelAccum, is_planar<DstView>::value> ImageAccum;
+	typedef image<PixelAccum, is_planar<DstView>::value, Alloc> ImageAccum;
 
 	if( kernelX.size() > 2 && kernelY.size() > 2 )
 	{
@@ -579,7 +579,7 @@ void correlate_rows_cols_imp( const SrcView& src,
 
 /// \ingroup ImageAlgorithms
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
-template <typename PixelAccum,typename SrcView,typename KernelX,typename KernelY,typename DstView>
+template <typename PixelAccum, typename Alloc, typename SrcView, typename KernelX, typename KernelY, typename DstView>
 GIL_FORCEINLINE
 void correlate_rows_cols_auto( const SrcView& src,
                           const KernelX& kernelX,
@@ -588,12 +588,12 @@ void correlate_rows_cols_auto( const SrcView& src,
 						  const typename SrcView::point_t& dst_tl,
 						  const convolve_boundary_option option = convolve_option_extend_zero )
 {
-	correlate_rows_cols_imp<true,PixelAccum,SrcView,KernelX, KernelY,DstView>( src, kernelX, kernelY, dst, dst_tl, option );
+	correlate_rows_cols_imp<true,PixelAccum,Alloc,SrcView,KernelX,KernelY,DstView>( src, kernelX, kernelY, dst, dst_tl, option );
 }
 
 /// \ingroup ImageAlgorithms
 /// correlate a 2D separable variable-size kernel (kernelX and kernelY)
-template <typename PixelAccum,typename SrcView,typename KernelX,typename KernelY,typename DstView>
+template <typename PixelAccum, typename Alloc, typename SrcView, typename KernelX, typename KernelY, typename DstView>
 GIL_FORCEINLINE
 void correlate_rows_cols( const SrcView& src,
                           const KernelX& kernelX,
@@ -602,7 +602,7 @@ void correlate_rows_cols( const SrcView& src,
 						  const typename SrcView::point_t& dst_tl,
 						  const convolve_boundary_option option = convolve_option_extend_zero )
 {
-	correlate_rows_cols_imp<false,PixelAccum,SrcView,KernelX,KernelY,DstView>( src, kernelX, kernelY, dst, dst_tl, option );
+	correlate_rows_cols_imp<false,PixelAccum,Alloc,SrcView,KernelX,KernelY,DstView>( src, kernelX, kernelY, dst, dst_tl, option );
 }
 
 } }  // namespace boost::gil

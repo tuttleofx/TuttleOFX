@@ -1,21 +1,14 @@
 #ifndef _TUTTLE_PLUGIN_FFMPEG_WRITER_PROCESS_HPP_
 #define _TUTTLE_PLUGIN_FFMPEG_WRITER_PROCESS_HPP_
 
-#include <terry/globals.hpp>
+#include <ffmpeg/VideoFFmpegWriter.hpp>
+
 #include <tuttle/plugin/ImageGilFilterProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
+#include <terry/globals.hpp>
 
 #include <boost/scoped_ptr.hpp>
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-
-#include <ffmpeg/VideoFFmpegWriter.hpp>
 
 namespace tuttle {
 namespace plugin {

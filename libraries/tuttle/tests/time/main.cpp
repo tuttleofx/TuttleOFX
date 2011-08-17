@@ -25,10 +25,10 @@ BOOST_AUTO_TEST_CASE( time_shift )
 		TUTTLE_TCOUT( "__________________________________________________1" );
 
 		Graph g;
-		Graph::Node& read1 = g.createNode( "fr.tuttle.pngreader" );
-		Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-		Graph::Node& timeshift1 = g.createNode( "fr.tuttle.timeshift" );
-		Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
+		Graph::Node& read1 = g.createNode( "tuttle.pngreader" );
+		Graph::Node& invert1 = g.createNode( "tuttle.invert" );
+		Graph::Node& timeshift1 = g.createNode( "tuttle.timeshift" );
+		Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
 
 		TUTTLE_TCOUT( "__________________________________________________2" );
 		// Setup parameters
@@ -67,13 +67,13 @@ BOOST_AUTO_TEST_CASE( time_shift )
 //	Core::instance().preload();
 //
 //	Graph g;
-//	Graph::Node& read1  = g.createNode( "fr.tuttle.pngreader" );
-////	Graph::Node& read2  = g.createNode( "fr.tuttle.pngreader" );
-//	Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-//	Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-////	Graph::Node& merge1 = g.createNode( "fr.tuttle.merge" );
+//	Graph::Node& read1  = g.createNode( "tuttle.pngreader" );
+////	Graph::Node& read2  = g.createNode( "tuttle.pngreader" );
+//	Graph::Node& invert1 = g.createNode( "tuttle.invert" );
+//	Graph::Node& invert2 = g.createNode( "tuttle.invert" );
+////	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
 //	Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
+//	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
 //
 //	g.connect( read1, invert1 );
 //	g.connect( invert1, invert2 );

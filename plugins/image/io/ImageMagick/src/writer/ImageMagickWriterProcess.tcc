@@ -5,15 +5,9 @@
 #include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/filesystem/fstream.hpp>
-
-#include <cmath>
-#include <vector>
 
 namespace tuttle {
 namespace plugin {
@@ -46,15 +40,14 @@ void ImageMagickWriterProcess<View>::multiThreadProcessImages( const OfxRectI& p
 	catch( exception::Common& e )
 	{
 		e << exception::filename( params._filepath );
-		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
-		//		throw;
+		throw;
 	}
 	catch(... )
 	{
-		//		BOOST_THROW_EXCEPTION( exception::Unknown()
-		//			<< exception::user( "Unable to write image")
-		//			<< exception::filename(params._filepath) );
-		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::user( "Unable to write image")
+			<< exception::dev( boost::current_exception_diagnostic_information() )
+			<< exception::filename(params._filepath) );
 	}
 	copy_pixels( this->_srcView, this->_dstView );
 }

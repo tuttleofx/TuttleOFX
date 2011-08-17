@@ -9,7 +9,7 @@
 #include <boost/program_options.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <Magick++.h>
+#include <magick/MagickCore.h>
 #include <algorithm>
 #include <iostream>
 #include <iterator>
@@ -32,102 +32,109 @@ void printImageProperties( std::string path )
 {
 	try
 	{
-		Magick::Image image;
+
+		Image         *image;
+		ImageInfo     *image_info;
+		
 		// Read a file into image object
-		image.read( path );
-		bool alphaChannel = false;
+		image_info = AcquireImageInfo();
+		GetImageInfo( image_info );
+
+		strcpy( image_info -> filename, path.c_str() ); 
+
+		ExceptionInfo* exceptionsInfo = AcquireExceptionInfo();
+		GetExceptionInfo( exceptionsInfo );
+		
+		image = ReadImage( image_info, exceptionsInfo );
+		
 		std::string imageType;
-		switch( image.type() )
+		switch( image->type )
 		{
-			case Magick::UndefinedType			: imageType = "Undefined type of image"; break;
-			case Magick::BilevelType			: imageType = "Bilevel image"; break;
-			case Magick::GrayscaleType			: imageType = "Grayscale image"; break;
-			case Magick::GrayscaleMatteType			: imageType = "Grayscale image with opacity"; alphaChannel=true; break;
-			case Magick::PaletteType			: imageType = "Indexed color image"; break;
-			case Magick::PaletteMatteType			: imageType = "Indexed color image with opacity"; alphaChannel=true; break;
-			case Magick::TrueColorType			: imageType = "Truecolor image"; break;
-			case Magick::TrueColorMatteType			: imageType = "Truecolor image with opacity"; alphaChannel=true; break;
-			case Magick::ColorSeparationType		: imageType = "Cyan/Yellow/Magenta/Black (CYMK) image"; break;
-			case Magick::ColorSeparationMatteType		: imageType = "Cyan/Yellow/Magenta/Black (CYMK) image with opacity"; alphaChannel=true; break;
-			case Magick::OptimizeType			: imageType = "Optimize image"; break;
-			case 11/*Magick::PaletteBilevelMatteType*/	: imageType = "Indexed bilevel image with opacity"; alphaChannel=true; break;
+			case UndefinedType				: imageType = "Undefined type of image"; break;
+			case BilevelType				: imageType = "Bilevel image"; break;
+			case GrayscaleType				: imageType = "Grayscale image"; break;
+			case GrayscaleMatteType			: imageType = "Grayscale image with opacity"; break;
+			case PaletteType				: imageType = "Indexed color image"; break;
+			case PaletteMatteType			: imageType = "Indexed color image with opacity"; break;
+			case TrueColorType				: imageType = "Truecolor image"; break;
+			case TrueColorMatteType			: imageType = "Truecolor image with opacity"; break;
+			case ColorSeparationType		: imageType = "Cyan/Yellow/Magenta/Black (CYMK) image"; break;
+			case ColorSeparationMatteType	: imageType = "Cyan/Yellow/Magenta/Black (CYMK) image with opacity"; break;
+			case OptimizeType				: imageType = "Optimize image"; break;
+			case 11							: imageType = "Indexed bilevel image with opacity"; break; // PaletteBilevelMatteType
 		}
 
 		std::string resolutionType;
-		switch( image.resolutionUnits() )
+		switch( image->units )
 		{
-			case Magick::UndefinedResolution		: resolutionType = " [unknown units]"; break;
-			case Magick::PixelsPerInchResolution		: resolutionType = " [dpi]"; break;
-			case Magick::PixelsPerCentimeterResolution	: resolutionType = " [pixels/cm}"; break;
+			case UndefinedResolution			: resolutionType = " [unknown units]"; break;
+			case PixelsPerInchResolution		: resolutionType = " [dpi]"; break;
+			case PixelsPerCentimeterResolution	: resolutionType = " [pixels/cm]"; break;
 		}
 
 		std::string colorSpaceType;
-		switch( image.colorSpace() )
+		switch( image->colorspace )
 		{
-			case Magick::UndefinedColorspace		: colorSpaceType = "unknown color space"; break;
-			case Magick::RGBColorspace			: colorSpaceType = "RGB"; break;
-			case Magick::GRAYColorspace			: colorSpaceType = "Gray"; break;
-			case Magick::TransparentColorspace		: colorSpaceType = "Transparent"; break;
-			case Magick::OHTAColorspace			: colorSpaceType = "OHTA"; break;
-			case Magick::XYZColorspace			: colorSpaceType = "XYZ"; break;
-			case Magick::YCbCrColorspace			: colorSpaceType = "Y Cb Cr"; break;
-			case Magick::YCCColorspace			: colorSpaceType = "YCC"; break;
-			case Magick::YIQColorspace			: colorSpaceType = "YIQ"; break;
-			case Magick::YPbPrColorspace			: colorSpaceType = "Y Pb Pr"; break;
-			case Magick::YUVColorspace			: colorSpaceType = "YUV"; break;
-			case Magick::CMYKColorspace			: colorSpaceType = "CMYK"; break;
-			case Magick::sRGBColorspace			: colorSpaceType = "sRGB"; break;
-			case Magick::LabColorspace			: colorSpaceType = "Lab"; break;
-			case 14/*Magick::HSBColorspace*/		: colorSpaceType = "HSB"; break;
-			case Magick::HSLColorspace			: colorSpaceType = "HSL"; break;
-			case Magick::HWBColorspace			: colorSpaceType = "HWB"; break;
-			case Magick::Rec601LumaColorspace		: colorSpaceType = "Rec601 Luma"; break;
-			case 18/*Magick::Rec601YCbCrColorspace*/	: colorSpaceType = "Rec601 Y Cb Cr"; break;
-			case Magick::Rec709LumaColorspace		: colorSpaceType = "Rec709 Luma"; break;
-			case 20/* Magick::Rec709YCbCrColorspace*/	: colorSpaceType = "Rec709 Y Cb Cr"; break;
-			case Magick::LogColorspace			: colorSpaceType = "Log"; break;
-			case 22/*Magick::CMYColorspace*/		: colorSpaceType = "CMY"; break;
+			case UndefinedColorspace	: colorSpaceType = "unknown color space"; break;
+			case RGBColorspace			: colorSpaceType = "RGB"; break;
+			case GRAYColorspace			: colorSpaceType = "Gray"; break;
+			case TransparentColorspace	: colorSpaceType = "Transparent"; break;
+			case OHTAColorspace			: colorSpaceType = "OHTA"; break;
+			case XYZColorspace			: colorSpaceType = "XYZ"; break;
+			case YCbCrColorspace		: colorSpaceType = "Y Cb Cr"; break;
+			case YCCColorspace			: colorSpaceType = "YCC"; break;
+			case YIQColorspace			: colorSpaceType = "YIQ"; break;
+			case YPbPrColorspace		: colorSpaceType = "Y Pb Pr"; break;
+			case YUVColorspace			: colorSpaceType = "YUV"; break;
+			case CMYKColorspace			: colorSpaceType = "CMYK"; break;
+			case sRGBColorspace			: colorSpaceType = "sRGB"; break;
+			case LabColorspace			: colorSpaceType = "Lab"; break;
+			case 14 					: colorSpaceType = "HSB"; break; // HSBColorspace
+			case HSLColorspace			: colorSpaceType = "HSL"; break;
+			case HWBColorspace			: colorSpaceType = "HWB"; break;
+			case Rec601LumaColorspace	: colorSpaceType = "Rec601 Luma"; break;
+			case 18 					: colorSpaceType = "Rec601 Y Cb Cr"; break; // Rec601YCbCrColorspace
+			case Rec709LumaColorspace	: colorSpaceType = "Rec709 Luma"; break;
+			case 20						: colorSpaceType = "Rec709 Y Cb Cr"; break; //  Rec709YCbCrColorspace
+			case LogColorspace			: colorSpaceType = "Log"; break;
+			case 22						: colorSpaceType = "CMY"; break; // CMYColorspace
 		}
 
 		std::string interlaceType;
-		switch( image.interlaceType() )
+		switch( image->interlace )
 		{
-			case Magick::UndefinedInterlace		: interlaceType = "undefined"; break;
-			case Magick::NoInterlace		: interlaceType = "no interlacing"; break;
-			case Magick::LineInterlace		: interlaceType = "line interlacing"; break;
-			case Magick::PlaneInterlace		: interlaceType = "plane interlacing"; break;
-			case Magick::PartitionInterlace		: interlaceType = "partition interlacing"; break;
-			case 5/*Magick::GIFInterlace*/		: interlaceType = "GIF interlacing"; break;
-			case 6/*Magick::JPEGInterlace*/		: interlaceType = "Jpeg interlacing"; break;
-			case 7/*Magick::PNGInterlace*/		: interlaceType = "PNG interlacing"; break;
+			case UndefinedInterlace		: interlaceType = "undefined"; break;
+			case NoInterlace			: interlaceType = "no interlacing"; break;
+			case LineInterlace			: interlaceType = "line interlacing"; break;
+			case PlaneInterlace			: interlaceType = "plane interlacing"; break;
+			case PartitionInterlace		: interlaceType = "partition interlacing"; break;
+			case 5						: interlaceType = "GIF interlacing"; break; // GIFInterlace
+			case 6						: interlaceType = "Jpeg interlacing"; break; // JPEGInterlace
+			case 7						: interlaceType = "PNG interlacing"; break; // PNGInterlace
 		}
 
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "width"			<< image.size().width()				);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "height"			<< image.size().height()			);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"		<< image.depth()	<< " bits"		);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"	<< image.quality()				);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "image type"		<< imageType					);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "width"				<< image->columns												);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "height"				<< image->rows													);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "bit-depth"			<< image->depth	<< " bits"										);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "compression quality"	<< image->quality												);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "image type"			<< imageType													);
 		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"		<< image.xResolution()	<< resolutionType	);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"		<< image.yResolution()	<< resolutionType	);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"		<< interlaceType				);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "x resolution"		<< image->x_resolution	<< resolutionType						);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "y resolution"		<< image->y_resolution	<< resolutionType						);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "interlacing"			<< interlaceType												);
 		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "" );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "format"			<< image.format()				);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "channels"		<< colorSpaceType << ( alphaChannel ? std::string("A") : "" ) );
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "color space"		<< colorSpaceType				);
-		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "gamma"			<< image.gamma()				);
+		//TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "format"			<< image->format()												);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "channels"			<< colorSpaceType << ( GetImageAlphaChannel(image)==MagickTrue ? std::string("A") : "" ) 	);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "color space"			<< colorSpaceType												);
+		TUTTLE_COUT( std::setw(FIRST_COLUMN_WIDTH) << "gamma"				<< image->gamma													);
 
 		TUTTLE_COUT( "" );
-	}
-	catch( Magick::Exception &error_ )
-	{
-		//TUTTLE_COUT( "Caught exception: " << error_.what() );
-		TUTTLE_COUT( kColorError << "Unrecognized file like an image" << kColorStd << "\n" );
 	}
 	catch( ... )
 	{
 		TUTTLE_COUT( "Caught exception" << "\n" );;
 	}
+	
 }
 
 void getImageProperties( const ttl::File& s )
@@ -208,10 +215,10 @@ int main( int argc, char** argv )
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
 	// get environnement options and parse them
-	if( std::getenv("SAM_INFO_OPTIONS") != NULL)
+	if( const char* env_info_options = std::getenv("SAM_INFO_OPTIONS") )
 	{
 	    std::vector<std::string> envOptions;
-	    std::string env = std::getenv("SAM_INFO_OPTIONS");
+	    const std::string env( env_info_options );
 	    envOptions.push_back( env );
 	    bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
 	}

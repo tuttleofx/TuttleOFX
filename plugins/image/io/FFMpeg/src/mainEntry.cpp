@@ -12,8 +12,8 @@ namespace Plugin
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::ffmpeg::reader::FFMpegReaderPluginFactory, "fr.tuttle.ffmpegreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::ffmpeg::writer::FFMpegWriterPluginFactory, "fr.tuttle.ffmpegwriter" );
+	mAppendPluginFactory( ids, tuttle::plugin::ffmpeg::reader::FFMpegReaderPluginFactory, "tuttle.ffmpegreader" );
+	mAppendPluginFactory( ids, tuttle::plugin::ffmpeg::writer::FFMpegWriterPluginFactory, "tuttle.ffmpegwriter" );
 }
 
 }

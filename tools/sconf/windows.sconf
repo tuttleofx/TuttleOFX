@@ -6,28 +6,22 @@ incdir_boost = dir_boost
 libdir_boost = join(dir_boost,'lib')
 
 
-boost_system = 'boost_system-vc90-mt-1_44'
-boost_filesystem = 'boost_filesystem-vc90-mt-1_44'
-boost_regex = 'boost_regex-vc90-mt-1_44'
-boost_program_options = 'boost_program_options-vc90-mt-1_44'
-boost_thread = 'boost_thread-vc90-mt-1_44'
-boost_serialization = 'boost_serialization-vc90-mt-1_44'
+lib_boost_system = 'boost_system-vc90-mt-1_44'
+lib_boost_filesystem = 'boost_filesystem-vc90-mt-1_44'
+lib_boost_regex = 'boost_regex-vc90-mt-1_44'
+lib_boost_program_options = 'boost_program_options-vc90-mt-1_44'
+lib_boost_thread = 'boost_thread-vc90-mt-1_44'
+lib_boost_serialization = 'boost_serialization-vc90-mt-1_44'
 
 gnuwin = '$PROGRAMFILES/GnuWin32'
 incdir_freetype = [ join(gnuwin, 'include'),
                     join(gnuwin, 'include/freetype2') ]
 libdir_freetype = join(gnuwin,'lib')
 
-png = 'libpng'
-incdir_png = join(gnuwin,'include')
-libdir_png = join(gnuwin,'lib')
+lib_png = 'libpng'
 
-incdir_jpeg = join(gnuwin,'include')
-libdir_jpeg = join(gnuwin,'lib')
-
-incdir_tiff = join(gnuwin,'include')
-libdir_tiff = join(gnuwin,'lib')
-
-
+dir_png  = gnuwin
+dir_jpeg = gnuwin
+dir_tiff = gnuwin
 
 

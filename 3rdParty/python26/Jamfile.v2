@@ -1,0 +1,32 @@
+ 
+
+
+project
+	: requirements
+		<include>.
+		<include>./Include
+		<include>./Python
+	: usage-requirements
+		<include>.
+		<include>./Include
+	;
+
+lib python26 :
+	[ glob Python/*.c
+	  :
+	  Python/dynload_os2.c
+	  Python/dynload_shlib.c
+	  Python/dynload_aix.c
+	  Python/dynload_atheos.c
+	  Python/dynload_beos.c
+	  Python/dynload_hpux.c
+	  Python/dynload_win.c
+	  Python/dynload_next.c
+	  Python/mactoolboxglue.c
+	]
+	;
+
+
+	 # dynload_dl.c
+	 # dynload_next.c
+	 # dynload_stub.c

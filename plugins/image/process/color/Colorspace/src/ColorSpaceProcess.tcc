@@ -4,17 +4,6 @@
 #include <terry/globals.hpp>
 #include <terry/color.hpp>
 
-#include <boost/gil/gil_all.hpp>
-
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-
 namespace tuttle {
 namespace plugin {
 namespace colorspace {

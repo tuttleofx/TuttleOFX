@@ -73,11 +73,9 @@ int main( int argc, char** argv )
 	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
 	// get environment options and parse them
-	const char* env_ls_options = std::getenv("SAM_LS_OPTIONS");
-	if( env_ls_options != NULL )
+	if( const char* env_ls_options = std::getenv("SAM_LS_OPTIONS") )
 	{
-		std::vector<std::string> vecOptions;
-		bal::split( vecOptions, env_ls_options, bal::is_any_of(" "));
+		const std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
 		bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
 	}
 
@@ -178,27 +176,31 @@ int main( int argc, char** argv )
 			{
 				if( bfs::is_directory( path ) )
 				{
-//					TUTTLE_COUT( "is a directory" );
+
+					if( paths.size() > 1 || recursiveListing )
+						TUTTLE_COUT( "\n" << path.string() << " :");
+
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
+					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
+					{
+					    TUTTLE_COUT( *s );
+					}
+					
 					if(recursiveListing)
 					{
 						for ( bfs::recursive_directory_iterator end, dir(path); dir != end; ++dir )
 						{
 							if( bfs::is_directory( *dir ) )
 							{
-//								TUTTLE_COUT( *dir );
-								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
+								bfs::path currentPath = (bfs::path)*dir;
+								TUTTLE_COUT( "\n" << currentPath.string() << " :" );
+								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( currentPath, filters, researchMask, descriptionMask );
 								BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 								{
 									TUTTLE_COUT( *s );
 								}
 							}
 						}
-					}
-
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
-					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
-					{
-					    TUTTLE_COUT( *s );
 					}
 
 				}

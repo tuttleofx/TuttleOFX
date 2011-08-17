@@ -29,6 +29,7 @@ void OfxhPluginBinary::loadPluginInfo( OfxhPluginCache* cache )
 	{
 		int pluginCount = ( *getNo )( );
 
+		_plugins.clear();
 		_plugins.reserve( pluginCount );
 
 		for( int i = 0; i < pluginCount; ++i )

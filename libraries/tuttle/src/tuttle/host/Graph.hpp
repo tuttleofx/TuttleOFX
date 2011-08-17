@@ -50,7 +50,7 @@ public:
 
 	/**
 	 * @brief Create a new node in the current graph.
-	 * @param id is the plugin unique string identification (e.g. "fr.tuttle.blur").
+	 * @param id is the plugin unique string identification (e.g. "tuttle.blur").
 	 */
 	Node& createNode( const std::string& id );
 	/**

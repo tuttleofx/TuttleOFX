@@ -11,18 +11,8 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/TimeShift/obj
+    : build-dir $(BUILD)/TimeShift
     ;
-
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
 
 ###############################################################################
 # Product 
@@ -30,7 +20,6 @@ else if [ os.name ] = MACOSX
 plugin TimeShift : 
     [ glob src/*.cpp ]
     /tuttleplugin/<link>static
-    opengl
     ;
 
 ###############################################################################

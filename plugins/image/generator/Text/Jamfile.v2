@@ -8,16 +8,24 @@ import os ;
 ###############################################################################
 project
     : requirements
-	<include>src
-    : build-dir $(DIST)/Text/obj
+		<include>$(3RD_PARTY)/freetype/include
+		<include>src
+		
+    : build-dir $(BUILD)/Text
     ;
+
+use-project /freetype : $(3RD_PARTY)/freetype ;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Text : 
-    [ glob src/*.cpp ]
-    /tuttleplugin/<link>static
+    	[ glob src/*.cpp ]
+    	/tuttleplugin/<link>static
+    	/boost//system
+    	/boost//filesystem
+    	/boost//python
+    	/freetype
     ;
 
 ###############################################################################

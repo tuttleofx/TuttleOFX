@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	TUTTLE_TCOUT( tuttle::host::Core::instance().getImageEffectPluginCache() );
 //
 //	Graph g;
-//	BOOST_CHECK_NO_THROW(EffectInstance* invert = g.createNode( "fr.tuttle.invert" ));
+//	BOOST_CHECK_NO_THROW(EffectInstance* invert = g.createNode( "tuttle.invert" ));
 //}
 
 //BOOST_AUTO_TEST_CASE( graph_copy )
@@ -35,11 +35,11 @@ BOOST_AUTO_TEST_SUITE( graph_tests_suite01 )
 //	Core::instance().preload();
 //
 //	Graph g;
-//	Graph::Node& read1  = g.createNode( "fr.tuttle.pngreader" );
-//	Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-//	Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
+//	Graph::Node& read1  = g.createNode( "tuttle.pngreader" );
+//	Graph::Node& invert1 = g.createNode( "tuttle.invert" );
+//	Graph::Node& invert2 = g.createNode( "tuttle.invert" );
 //	Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
+//	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
 //
 //	g.connect( read1, invert1 );
 //	g.connect( invert1, invert2 );
@@ -68,21 +68,21 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 		TUTTLE_TCOUT( "__________________________________________________1" );
 
 		Graph g;
-		Graph::Node& read1 = g.createNode( "fr.tuttle.pngreader" );
-		/*Graph::Node& read2   = */ g.createNode( "fr.tuttle.dpxreader" );
-		//		/*Graph::Node& read2   = */g.createNode( "fr.tuttle.dpxreader" );
-		Graph::Node& read3 = g.createNode( "fr.tuttle.exrreader" );
-		//		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
-		Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-		Graph::Node& invert3 = g.createNode( "fr.tuttle.invert" );
-		Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
-		/*Graph::Node& crop1   = */ g.createNode( "fr.tuttle.crop" );
-		Graph::Node& merge1 = g.createNode( "fr.tuttle.merge" );
-		Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write4 = g.createNode( "fr.tuttle.pngwriter" );
-		Graph::Node& write2 = g.createNode( "fr.tuttle.dpxwriter" );
-		Graph::Node& write3 = g.createNode( "fr.tuttle.exrwriter" );
+		Graph::Node& read1 = g.createNode( "tuttle.pngreader" );
+		/*Graph::Node& read2   = */ g.createNode( "tuttle.dpxreader" );
+		//		/*Graph::Node& read2   = */g.createNode( "tuttle.dpxreader" );
+		Graph::Node& read3 = g.createNode( "tuttle.exrreader" );
+		//		Graph::Node& bitdepth = g.createNode( "tuttle.bitdepth" );
+		Graph::Node& invert1 = g.createNode( "tuttle.invert" );
+		Graph::Node& invert2 = g.createNode( "tuttle.invert" );
+		Graph::Node& invert3 = g.createNode( "tuttle.invert" );
+		Graph::Node& invert4 = g.createNode( "tuttle.invert" );
+		/*Graph::Node& crop1   = */ g.createNode( "tuttle.crop" );
+		Graph::Node& merge1 = g.createNode( "tuttle.merge" );
+		Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
+		Graph::Node& write4 = g.createNode( "tuttle.pngwriter" );
+		Graph::Node& write2 = g.createNode( "tuttle.dpxwriter" );
+		Graph::Node& write3 = g.createNode( "tuttle.exrwriter" );
 
 		TUTTLE_TCOUT( "__________________________________________________2" );
 		// Setup parameters
@@ -151,13 +151,13 @@ BOOST_AUTO_TEST_CASE( create_processGraph )
 //	Core::instance().preload();
 //
 //	Graph g;
-//	Graph::Node& read1  = g.createNode( "fr.tuttle.pngreader" );
-////	Graph::Node& read2  = g.createNode( "fr.tuttle.pngreader" );
-//	Graph::Node& invert1 = g.createNode( "fr.tuttle.invert" );
-//	Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-////	Graph::Node& merge1 = g.createNode( "fr.tuttle.merge" );
+//	Graph::Node& read1  = g.createNode( "tuttle.pngreader" );
+////	Graph::Node& read2  = g.createNode( "tuttle.pngreader" );
+//	Graph::Node& invert1 = g.createNode( "tuttle.invert" );
+//	Graph::Node& invert2 = g.createNode( "tuttle.invert" );
+////	Graph::Node& merge1 = g.createNode( "tuttle.merge" );
 //	Graph::Node& basic1 = g.createNode( "net.sf.openfx:basicplugin" );
-//	Graph::Node& write1 = g.createNode( "fr.tuttle.pngwriter" );
+//	Graph::Node& write1 = g.createNode( "tuttle.pngwriter" );
 //
 //	g.connect( read1, invert1 );
 //	g.connect( invert1, invert2 );

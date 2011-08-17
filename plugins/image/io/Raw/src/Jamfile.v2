@@ -8,7 +8,7 @@
 project
 	: requirements
 		<include>reader
-	: build-dir $(DIST)/Raw/obj
+	: build-dir $(BUILD)/Raw
 	;
 
 use-project	/raw	: $(3RD_PARTY)/libraw ;
@@ -18,11 +18,10 @@ use-project	/raw	: $(3RD_PARTY)/libraw ;
 ###############################################################################
 plugin	Raw : 
 		[ glob-tree *.cpp ]
-		/tuttleplugin/<link>static
-		/tuttlecommon/<link>static
-		/boost/filesystem
 		/boost/system
+		/boost/filesystem
 		/boost/regex
+		/tuttleplugin/<link>static
 		/raw
 		;
 explicit Raw ;

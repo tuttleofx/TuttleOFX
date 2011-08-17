@@ -8,8 +8,8 @@ import os ;
 ###############################################################################
 project
     : requirements
-	  <include>src
-    : build-dir $(DIST)/Checkerboard/obj
+	  	<include>src
+    : build-dir $(BUILD)/Checkerboard
     ;
 
 

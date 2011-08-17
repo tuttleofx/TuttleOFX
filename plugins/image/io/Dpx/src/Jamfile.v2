@@ -10,7 +10,7 @@ project
 	: requirements
 		<include>.
 		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-	: build-dir $(DIST)/Dpx/obj
+	: build-dir $(BUILD)/Dpx
 	;
 
 ###############################################################################
@@ -18,10 +18,13 @@ project
 ###############################################################################
 plugin		Dpx : 
 		[ glob-tree *.cpp ]
-		/tuttleplugin/<link>static
-		/boost/filesystem
+
 		/boost/system
+		#/boost/filesystem
 		/boost/regex
+		/tuttleplugin/<link>static
+		:
+		 <os>LINUX:<find-shared-library>dl
 		;
 
 ###############################################################################

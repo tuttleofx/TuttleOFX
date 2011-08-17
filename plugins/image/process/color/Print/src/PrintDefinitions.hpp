@@ -51,8 +51,8 @@ const static std::string kParamOutputNumeric = "numeric";
 const static std::string kParamOutputAscii = "ascii";
 enum EParamOutput
 {
-	eParamOutputNumeric = 0,
-	eParamOutputAscii
+	eParamOutputAscii = 0,
+	eParamOutputNumeric
 };
 static const std::string kParamFlip = "flip";
 

@@ -1,6 +1,5 @@
 #include "DPXReaderPlugin.hpp"
 #include "DPXReaderDefinitions.hpp"
-#include "DPXReaderProcess.hpp"
 
 #include <terry/globals.hpp>
 #include <tuttle/plugin/ImageGilProcessor.hpp>

@@ -3,12 +3,17 @@
 
 #include <tuttle/host/exceptions.hpp>
 
+#ifndef TUTTLE_HOST_WITHOUT_PYTHON
 #include <boost/python.hpp>
+#else
+#include <boost/lexical_cast.hpp>
+#endif
 
 namespace tuttle {
 namespace host {
 namespace attribute {
 
+#ifndef TUTTLE_HOST_WITHOUT_PYTHON
 namespace expression_details {
 
 inline boost::python::object pythonObjectFromExpression( const std::string& expression )
@@ -46,7 +51,6 @@ inline Type extractValueFromPythonObject( const boost::python::object& result )
 
 } // end namespace
 
-
 template< typename Type >
 inline Type extractValueFromExpression( const std::string& expression )
 {
@@ -59,7 +63,7 @@ inline Type extractValueFromExpression( const std::string& expression )
 	catch( ... )
 	{
 		BOOST_THROW_EXCEPTION( exception::Value()
-				<< exception::user() + "Syntaxe error"
+				<< exception::user() + "Syntaxe error for expression: \"" + expression + "\""
 				<< exception::dev() + boost::current_exception_diagnostic_information()
 			);
 	}
@@ -80,6 +84,26 @@ inline std::string extractValueFromExpression<std::string>( const std::string& e
 		return expression;
 	}
 }
+
+#else
+
+template< typename Type >
+inline Type extractValueFromExpression( const std::string& expression )
+{
+	try
+	{
+		return boost::lexical_cast<Type>( expression );
+	}
+	catch( ... )
+	{
+		BOOST_THROW_EXCEPTION( exception::Value()
+				<< exception::user() + "Syntaxe error for expression: \"" + expression + "\""
+				<< exception::dev() + boost::current_exception_diagnostic_information()
+			);
+	}
+}
+
+#endif
 
 }
 }

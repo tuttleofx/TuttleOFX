@@ -1,16 +1,8 @@
-#ifndef _MERGE_PROCESS_HPP_
-#define _MERGE_PROCESS_HPP_
+#ifndef _TUTTLE_PLUGIN_MERGE_PROCESS_HPP_
+#define _TUTTLE_PLUGIN_MERGE_PROCESS_HPP_
 
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
 
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>

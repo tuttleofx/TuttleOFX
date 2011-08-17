@@ -2,7 +2,9 @@
 #include "SobelAlgorithm.hpp"
 
 #include <terry/globals.hpp>
+
 #include <tuttle/plugin/image/algorithm.hpp>
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
 #include <boost/gil/extension/numeric/kernel.hpp>
@@ -87,7 +89,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols_auto<DPixelGray>(
+					correlate_rows_cols_auto<DPixelGray,OfxAllocator<unsigned char> >(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._xKernelGaussianDerivative,
 						_params._xKernelGaussian,
@@ -143,7 +145,7 @@ void SobelProcess<SView,DView>::multiThreadProcessImages( const OfxRectI& procWi
 			{
 				case eParamPassFull:
 				{
-					correlate_rows_cols_auto<DPixelGray>(
+					correlate_rows_cols_auto<DPixelGray,OfxAllocator<unsigned char> >(
 						color_converted_view<DPixelGray>( this->_srcView ),
 						_params._yKernelGaussian,
 						_params._yKernelGaussianDerivative,

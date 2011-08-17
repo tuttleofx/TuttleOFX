@@ -51,8 +51,10 @@ public:
         OFX::Int2DParam*   _paramRegionMin;
         OFX::Int2DParam*   _paramRegionMax;
         OFX::IntParam*     _paramOutputColumns;
-	OFX::BooleanParam* _paramFlip;
+        OFX::BooleanParam* _paramFlip;
         OFX::BooleanParam* _paramOpenGlWindow;
+private:
+        void updateParams();
 };
 
 }

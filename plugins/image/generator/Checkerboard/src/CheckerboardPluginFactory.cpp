@@ -21,6 +21,17 @@ void CheckerboardPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Checkerboard" );
 	desc.setPluginGrouping( "tuttle/image/generator" );
 
+	desc.setDescription(
+"Checkerboard / square tiling / square grid / quadrille"
+"\n"
+"is a regular tiling of the Euclidean plane."
+"\n"
+"It is often used for its ability to be detected by a simple corner detect filter."
+"\n"
+"\n"
+"http://en.wikipedia.org/wiki/Square_tiling"
+);
+	
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextGenerator );
 	desc.addSupportedContext( OFX::eContextGeneral );

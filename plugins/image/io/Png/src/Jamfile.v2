@@ -8,7 +8,7 @@
 project
     : requirements
         <include>.
-    : build-dir $(DIST)/Png/obj
+    : build-dir $(BUILD)/Png
     ;
 
 use-project /png 	: $(3RD_PARTY)/libpng ;
@@ -18,13 +18,12 @@ use-project /png 	: $(3RD_PARTY)/libpng ;
 ###############################################################################
 plugin Png : 
 	[ glob-tree *.cpp ]
-	/tuttleplugin/<link>static
-	/boost/filesystem
 	/boost/system
+	/boost/filesystem
 	/boost/regex
+	/tuttleplugin/<link>static
 	/png
 	;
-explicit Png ;
 
 ###############################################################################
 # Automatic install

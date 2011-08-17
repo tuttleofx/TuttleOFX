@@ -1,5 +1,4 @@
-Import( 'project' )
-Import( 'libs' )
+Import( 'project', 'libs' )
 
 project.StaticLibrary( 'openfxPluginSupportHack',
                        dirs=['Library'],

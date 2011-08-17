@@ -31,20 +31,20 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( "__________________________________________________1" );
 
 		Graph g;
-		//		Graph::Node& read1   = g.createNode( "fr.tuttle.ffmpegreader" );
-		Graph::Node& read1    = g.createNode( "fr.tuttle.pngreader" );
-		Graph::Node& read2    = g.createNode( "fr.tuttle.dpxreader" );
-		Graph::Node& read3    = g.createNode( "fr.tuttle.exrreader" );
-		Graph::Node& bitdepth = g.createNode( "fr.tuttle.bitdepth" );
-		Graph::Node& invert1  = g.createNode( "fr.tuttle.invert" );
-		/*Graph::Node& invert2 = */ g.createNode( "fr.tuttle.invert" );
-		/*Graph::Node& invert2 = */ g.createNode( "fr.tuttle.invert" );
-		Graph::Node& invert2 = g.createNode( "fr.tuttle.invert" );
-		Graph::Node& blur1   = g.createNode( "fr.tuttle.blur" );
-		Graph::Node& invert4 = g.createNode( "fr.tuttle.invert" );
-		//	Graph::Node& crop1   = g.createNode( "fr.tuttle.crop" );
-		Graph::Node& merge1    = g.createNode( "fr.tuttle.merge" );
-		Graph::Node& bitdepth1 = g.createNode( "fr.tuttle.bitdepth" );
+		//		Graph::Node& read1   = g.createNode( "tuttle.ffmpegreader" );
+		Graph::Node& read1    = g.createNode( "tuttle.pngreader" );
+		Graph::Node& read2    = g.createNode( "tuttle.dpxreader" );
+		Graph::Node& read3    = g.createNode( "tuttle.exrreader" );
+		Graph::Node& bitdepth = g.createNode( "tuttle.bitdepth" );
+		Graph::Node& invert1  = g.createNode( "tuttle.invert" );
+		/*Graph::Node& invert2 = */ g.createNode( "tuttle.invert" );
+		/*Graph::Node& invert2 = */ g.createNode( "tuttle.invert" );
+		Graph::Node& invert2 = g.createNode( "tuttle.invert" );
+		Graph::Node& blur1   = g.createNode( "tuttle.blur" );
+		Graph::Node& invert4 = g.createNode( "tuttle.invert" );
+		//	Graph::Node& crop1   = g.createNode( "tuttle.crop" );
+		Graph::Node& merge1    = g.createNode( "tuttle.merge" );
+		Graph::Node& bitdepth1 = g.createNode( "tuttle.bitdepth" );
 
 		
 		TUTTLE_COUT( "__________________________________________________2" );

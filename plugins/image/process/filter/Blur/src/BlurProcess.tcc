@@ -1,5 +1,10 @@
 #include "BlurPlugin.hpp"
+
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+#include <tuttle/plugin/image/gil/gaussianKernel.hpp>
+
 #include <terry/gaussianKernel.hpp>
+
 #include <boost/gil/extension/numeric/convolve.hpp>
 
 //#include <boost/lambda/lambda.hpp>
@@ -51,13 +56,21 @@ void BlurProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW 
 	Point proc_tl( procWindowRoW.x1 - this->_srcPixelRod.x1, procWindowRoW.y1 - this->_srcPixelRod.y1 );
 
 	if( _params._size.x == 0 )
+	{
 		correlate_cols_auto<Pixel>( this->_srcView, _params._gilKernelY, dst, proc_tl, _params._boundary_option );
+	}
 	else if( _params._size.y == 0 )
+	{
 		correlate_rows_auto<Pixel>( this->_srcView, _params._gilKernelX, dst, proc_tl, _params._boundary_option );
+	}
 	else
-		correlate_rows_cols_auto<Pixel>( this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, _params._boundary_option );
+	{
+		correlate_rows_cols_auto<Pixel,OfxAllocator<unsigned char> >(
+			this->_srcView, _params._gilKernelX, _params._gilKernelY, dst, proc_tl, _params._boundary_option );
+	}
 }
 
 }
 }
 }
+

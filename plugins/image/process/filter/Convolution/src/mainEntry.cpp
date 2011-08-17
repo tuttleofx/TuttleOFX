@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::convolution::ConvolutionPluginFactory, "fr.tuttle.convolution" );
+	mAppendPluginFactory( ids, tuttle::plugin::convolution::ConvolutionPluginFactory, "tuttle.convolution" );
 }
 
 }

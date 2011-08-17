@@ -130,7 +130,7 @@ int main( int argc, char** argv )
 			"Check image files.\n"
 			"\n"
 			"Usage:\n"
-			"\tsam-check -n fr.tuttle.pngreader /path/to/my/dir/images.####.png -r 50 100\n"
+			"\tsam-check -n tuttle.pngreader /path/to/my/dir/images.####.png -r 50 100\n"
 			"\n"
 			"Return code:\n"
 			"\t* the number of corrupted images\n"
@@ -140,7 +140,7 @@ int main( int argc, char** argv )
 		
 		desc.add_options()
 		("help,h", "Display help")
-		("reader,n", po::value(&readerId)/*->required()*/, "Reader node identifier \"fr.tuttle.XXXreader\".")
+		("reader,n", po::value(&readerId)/*->required()*/, "Reader node identifier \"tuttle.XXXreader\".")
 		("input,i", po::value(&inputs)/*->required()*/, "Input pathname (directory, file or sequence pattern).")
 		("range,r", po::value(&range)->multitoken(), "Range (used only if input is a sequence pattern).")
 		;
@@ -172,7 +172,7 @@ int main( int argc, char** argv )
 		Core::instance().preload();
 		Graph graph;
 		Graph::Node& read = graph.createNode( readerId );
-		Graph::Node& stat = graph.createNode( "fr.tuttle.imagestatistics" );
+		Graph::Node& stat = graph.createNode( "tuttle.imagestatistics" );
 		read.getParam("explicitConversion").setValue(3); // force reader to use float image buffer
 		graph.connect( read, stat );
 

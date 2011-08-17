@@ -29,12 +29,12 @@ Host::Host()
 {
 	/// @todo tuttle set host properties correctly...
 	_properties.setStringProperty( kOfxPropName, "TuttleOfx" );
-	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx alpha" );
-	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, 1 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, 0 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsMultiResolution, 0 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, false /*true*/ ); ///< @todo tuttle: we hope to do this !
-	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, false /*true*/ ); ///< @todo tuttle: we hope to do this !
+	_properties.setStringProperty( kOfxPropLabel, "TuttleOfx Alpha" );
+	_properties.setIntProperty( kOfxImageEffectHostPropIsBackground, true );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsOverlays, false );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsMultiResolution, true );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsTiles, true ); ///< @todo tuttle: we hope to do this !
+	_properties.setIntProperty( kOfxImageEffectPropTemporalClipAccess, true ); ///< @todo tuttle: we hope to do this !
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGBA, 0 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentRGB, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedComponents,  kOfxImageComponentAlpha, 2 );
@@ -42,18 +42,21 @@ Host::Host()
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGenerator, 1 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextRetimer, 2 );
 	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextTransition, 3 );
-	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextReader, 4 );
-	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextWriter, 5 );
-	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGeneral, 6 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths, 1 );
-	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipPARs, 1 );
-	_properties.setIntProperty( kOfxImageEffectPropSetableFrameRate, 0 );
-	_properties.setIntProperty( kOfxImageEffectPropSetableFielding, 0 );
-	_properties.setIntProperty( kOfxParamHostPropSupportsCustomInteract, 0 );
-	_properties.setIntProperty( kOfxParamHostPropSupportsStringAnimation, 0 );
-	_properties.setIntProperty( kOfxParamHostPropSupportsChoiceAnimation, 0 );
-	_properties.setIntProperty( kOfxParamHostPropSupportsBooleanAnimation, 0 );
-	_properties.setIntProperty( kOfxParamHostPropSupportsCustomAnimation, 0 );
+	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextGeneral, 4 );
+//	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextReader, 5 );
+//	_properties.setStringProperty( kOfxImageEffectPropSupportedContexts, kOfxImageEffectContextWriter, 6 );
+	_properties.setStringProperty( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthFloat, 0 );
+	_properties.setStringProperty( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthShort, 1 );
+	_properties.setStringProperty( kOfxImageEffectPropSupportedPixelDepths, kOfxBitDepthByte, 2 );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipDepths, true );
+	_properties.setIntProperty( kOfxImageEffectPropSupportsMultipleClipPARs, true );
+	_properties.setIntProperty( kOfxImageEffectPropSetableFrameRate, false );
+	_properties.setIntProperty( kOfxImageEffectPropSetableFielding, false );
+	_properties.setIntProperty( kOfxParamHostPropSupportsStringAnimation, false );
+	_properties.setIntProperty( kOfxParamHostPropSupportsCustomInteract, true );
+	_properties.setIntProperty( kOfxParamHostPropSupportsChoiceAnimation, true );
+	_properties.setIntProperty( kOfxParamHostPropSupportsBooleanAnimation, true );
+	_properties.setIntProperty( kOfxParamHostPropSupportsCustomAnimation, false );
 	_properties.setIntProperty( kOfxParamHostPropMaxParameters, -1 );
 	_properties.setIntProperty( kOfxParamHostPropMaxPages, 0 );
 	_properties.setIntProperty( kOfxParamHostPropPageRowColumnCount, 0, 0 );

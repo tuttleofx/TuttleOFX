@@ -1,5 +1,4 @@
-Import( 'project' )
-Import( 'libs' )
+Import( 'project', 'libs' )
 
 import os.path
 
@@ -10,6 +9,7 @@ project.StaticLibrary(
 		libraries = [
 				libs.openfxHack,
 				libs.boost,
+				libs.dl,
 			],
 		shared = True
 	)

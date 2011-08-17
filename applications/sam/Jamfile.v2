@@ -1,65 +1,170 @@
 ###############################################################################
 ## Main BJam makefile for Sam command line tool
 ###############################################################################
+
 import os ;
 
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-    : usage-requirements
-        <include>src
-    : build-dir $(DIST)/sam/obj
-    ;
+	: requirements
+		<include>src
+	: 
+		build-dir $(BUILD)
+	;
 
 ###############################################################################
 # ls
 ###############################################################################
-exe sam-ls : 
-    [ glob src/sam/ls/*.cpp ]
-    /tuttlecommon/<link>static
-    /boost/system
-    /boost/filesystem
-    /boost/serialization
-	/boost/program_options
-    :
-	<os>LINUX:<find-shared-library>dl
-    ;
+exe sam-ls :
+		[ glob src/sam/ls/*.cpp ]
 
-# Automatic install
-install dist_src	
-	: sam-ls
-		/boost/system
-		/boost/filesystem
-		/boost/serialization
 		/boost/program_options
-		/tuttlecommon
-	: <variant>debug:<location>$(DIST)/sam-ls/bin/debug
-	  <variant>release:<location>$(DIST)/sam-ls/bin/release
-    ;
+		
+		/tuttlecommon/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
 
 ###############################################################################
 # cp
 ###############################################################################
-exe sam-cp : 
-    [ glob src/sam/cp/*.cpp ]
-    /tuttlecommon/<link>static
-    /boost/system
-    /boost/filesystem
-    /boost/serialization
-    :
-	<os>LINUX:<find-shared-library>dl
-    ;
+exe sam-cp :
+		[ glob src/sam/cp/*.cpp ]
+		
+		/boost/program_options
+		
+		/tuttlecommon/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
 
-# Automatic install
-install dist_src	
-	: sam-cp
+###############################################################################
+# mv
+###############################################################################
+exe sam-mv :
+		[ glob src/sam/mv/*.cpp ]
+		
+		/boost/program_options
+		
+		/tuttlecommon/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
+
+###############################################################################
+# rm
+###############################################################################
+exe sam-rm :
+		[ glob src/sam/rm/*.cpp ]
+
+		/boost/program_options
+		
+		/tuttlecommon/<link>static
+	:
+		<os>LINUX:<find-shared-library>dl
+		<threading>multi
+	;
+
+###############################################################################
+# do
+###############################################################################
+exe sam-do :
+		[ glob src/sam/do/*.cpp ]
+		
+		/boost/program_options
+		/boost/python
+		/python
+		
+		/tuttlecommon/<link>static
+		/tuttlehost
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
+
+###############################################################################
+# info
+###############################################################################
+exe sam-info :
+		[ glob src/sam/info/*.cpp ]
+		
+		/boost/program_options
+		
+		/tuttlecommon/<link>static
+	:
+		<include>$(MAGICK_INCLUDE)
+		<linkflags>$(MAGICK_LIBS)
+		<os>LINUX:<find-shared-library>dl
+	;
+
+###############################################################################
+# plugins
+###############################################################################
+exe sam-plugins :
+		[ glob src/sam/plugins/*.cpp ]
+		
+		/boost/program_options
+		/boost/python
+		/python
+		
+		/tuttlecommon/<link>static
+		/tuttlehost
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
+
+###############################################################################
+# check
+###############################################################################
+exe sam-check :
+		[ glob src/sam/check/*.cpp ]
+
+		/boost/program_options
+		/boost/python
+		/python
+		
+		/tuttlecommon/<link>static
+		/tuttlehost
+	:
+		<os>LINUX:<find-shared-library>dl
+	;
+	
+	
+###############################################################################
+# install
+###############################################################################
+alias sam-install : sam-install-libs sam-install-bins ;
+
+install sam-install-bins
+	:   
+		sam-cp
+		sam-mv
+		sam-rm
+		sam-ls
+		sam-do
+		sam-info
+		sam-check
+		sam-plugins
+	:
+		<variant>debug:<location>$(DIST)/bin
+	  	<variant>release:<location>$(DIST)/bin
+	;
+
+install sam-install-libs
+	:
 		/boost/system
 		/boost/filesystem
 		/boost/serialization
-		/tuttlecommon
-	: <variant>debug:<location>$(DIST)/sam-cp/bin/debug
-	  <variant>release:<location>$(DIST)/sam-cp/bin/release
-    ;
+		/boost/program_options
+		/boost/python
+		/boost/regex			# from tuttlecommon
+		/boost/thread			# from tuttlehost
+		/boost/date_time		# from tuttlehost
+		
+		/tuttlehost
+	:
+		<location>$(DIST)/lib
+	  	<install-dependencies>on
+		<install-type>LIB
+	;

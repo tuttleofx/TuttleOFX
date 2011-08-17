@@ -82,6 +82,8 @@ public:
 	
 	virtual const ofx::attribute::OfxhParam& getParam( const std::string& name ) const = 0;
 	virtual ofx::attribute::OfxhParam&       getParam( const std::string& name ) = 0;
+	virtual const ofx::attribute::OfxhParam& getParam( const std::size_t  index ) const = 0;
+	virtual ofx::attribute::OfxhParam&       getParam( const std::size_t  index ) = 0;
 
 	virtual attribute::ClipImage&       getClip( const std::string& name ) = 0;
 	virtual const attribute::ClipImage& getClip( const std::string& name ) const = 0;
@@ -201,15 +203,15 @@ inline std::string mapNodeTypeEnumToString( const INode::ENodeType e )
 	switch( e )
 	{
 		case INode::eNodeTypeUnknown:
-			return "NodeTypeUnknown";
+			return "Unknown";
 		case INode::eNodeTypeImageEffect:
-			return "NodeTypeImageEffect";
+			return "ImageEffect";
 		case INode::eNodeTypeParam:
-			return "NodeTypeParam";
+			return "Param";
 		case INode::eNodeTypeGraph:
-			return "NodeTypeGraph";
+			return "Graph";
 		case INode::eNodeTypeBuffer:
-			return "NodeTypeBuffer";
+			return "Buffer";
 	}
 	BOOST_THROW_EXCEPTION( exception::Bug()
 		<< exception::dev() + "Unrecognized ENodeType enum. (" + e + ")." );

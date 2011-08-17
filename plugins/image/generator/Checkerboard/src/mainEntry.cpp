@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::checkerboard::CheckerboardPluginFactory, "fr.tuttle.checkerboard" );
+	mAppendPluginFactory( ids, tuttle::plugin::checkerboard::CheckerboardPluginFactory, "tuttle.checkerboard" );
 }
 
 }

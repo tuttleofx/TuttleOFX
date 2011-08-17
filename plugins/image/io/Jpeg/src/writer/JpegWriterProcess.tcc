@@ -5,16 +5,10 @@
 #include <terry/clamp.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/gil/extension/io/jpeg_io.hpp>
 #include <boost/filesystem/fstream.hpp>
-
-#include <cmath>
-#include <vector>
 
 namespace tuttle {
 namespace plugin {
@@ -62,15 +56,14 @@ void JpegWriterProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	catch( exception::Common& e )
 	{
 		e << exception::filename( _params._filepath );
-		TUTTLE_COUT_ERROR( boost::diagnostic_information( e ) );
-		//		throw;
+		throw;
 	}
 	catch(... )
 	{
-		//		BOOST_THROW_EXCEPTION( exception::Unknown()
-		//			<< exception::user( "Unable to write image")
-		//			<< exception::filename(params._filepath) );
-		TUTTLE_COUT_ERROR( boost::current_exception_diagnostic_information() );
+		BOOST_THROW_EXCEPTION( exception::Unknown()
+			<< exception::user( "Unable to write image" )
+			<< exception::dev( boost::current_exception_diagnostic_information() )
+			<< exception::filename( _params._filepath ) );
 	}
 	copy_pixels( this->_srcView, this->_dstView );
 }
@@ -85,12 +78,10 @@ void JpegWriterProcess<View>::writeImage( View& src )
 	using namespace boost::gil;
 	using namespace terry;
 
-	JpegWriterProcessParams params = _plugin.getProcessParams( this->_renderArgs.time );
-
 	//	if( params._premult )
 	//	{
 	typedef pixel<Bits, rgb_layout_t> OutPixelType;
-	jpeg_write_view( params._filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ), params._quality );
+	jpeg_write_view( _params._filepath, flipped_up_down_view( color_converted_view<OutPixelType>( clamp_view( src ) ) ), _params._quality );
 	//	}
 	//	else
 	//	{

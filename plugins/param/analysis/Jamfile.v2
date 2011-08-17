@@ -1,7 +1,7 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/analisys ;
+path-constant BUILD : $(BUILD)/Analisys ;
 
 for local l in [ glob * ]
 {

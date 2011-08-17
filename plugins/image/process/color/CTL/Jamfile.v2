@@ -12,15 +12,11 @@ project
 		<include>$(3RD_PARTY)/ilmbase/Iex
 		<include>$(3RD_PARTY)/ilmbase/Half
 		<include>$(3RD_PARTY)/ctl
-	: build-dir $(DIST)/CTL/obj
+	: build-dir $(BUILD)/CTL
 	;
 
 use-project	/ctl	: $(3RD_PARTY)/ctl ;
-    : requirements
-	<include>src
-    : build-dir $(DIST)/CTL/obj
-    ;
- 
+
 ###############################################################################
 # Product 
 ###############################################################################

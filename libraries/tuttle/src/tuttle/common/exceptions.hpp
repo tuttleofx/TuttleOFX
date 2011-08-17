@@ -1,7 +1,8 @@
 #ifndef _TUTTLE_COMMON_EXCEPTION_HPP_
 #define _TUTTLE_COMMON_EXCEPTION_HPP_
 
-#include "boost_error_info_sstream.hpp"
+#include "utils/boost_error_info_sstream.hpp"
+#include "utils/backtrace.hpp"
 
 #include <tuttle/common/ofx/core.hpp>
 #include <tuttle/common/ofx/utilities.hpp>
@@ -125,7 +126,9 @@ typedef ::boost::errinfo_file_name filename;
 
 /** @brief Common exception for all tuttle plugin exceptions */
 struct Common : virtual public ::std::exception
-	, virtual public ::boost::exception {};
+	, virtual public ::boost::exception
+	, virtual public ::boost::backtrace
+{};
 
 /// @brief Ofx standard errors
 /// @{

@@ -118,7 +118,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 	OfxhPluginHandle plug( p, getHost() );
 
 	int rval = plug->mainEntry( kOfxActionLoad, 0, 0, 0 );
-
+	
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
@@ -140,7 +140,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 	const imageEffect::OfxhImageEffectNodeDescriptor& e = p.getDescriptor();
 	const property::OfxhSet& eProps                     = e.getProperties();
 
-	int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
+	const int size = eProps.getDimension( kOfxImageEffectPropSupportedContexts );
 
 	for( int j = 0; j < size; ++j )
 	{
@@ -153,7 +153,7 @@ void OfxhImageEffectPluginCache::loadFromPlugin( OfxhPlugin& op )
 	if( rval != kOfxStatOK && rval != kOfxStatReplyDefault )
 	{
 		BOOST_THROW_EXCEPTION( exception::OfxCustom( rval )
-		    << exception::user( "Unloading plugin failed at initialization.." )
+		    << exception::user( "Unloading plugin failed in initialization." )
 		    << exception::dev( "kOfxActionUnload failed." )
 		    << exception::pluginIdentifier( op.getIdentifier() ) );
 	}

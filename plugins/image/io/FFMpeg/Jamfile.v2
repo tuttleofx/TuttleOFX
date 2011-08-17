@@ -15,7 +15,7 @@ project
 		<linkflags>-lavutil
 		<linkflags>-lavformat
 		<linkflags>-lswscale
-	: build-dir $(DIST)/FFMpeg/obj
+	: build-dir $(BUILD)/FFMpeg
 	;
 
 ###############################################################################
@@ -23,14 +23,14 @@ project
 ###############################################################################
 plugin FFMpeg : 
 	[ glob-tree *.cpp ]
-	/tuttleplugin/<link>static
-	/boost/filesystem
 	/boost/system
+	/boost/filesystem
 	/boost/regex
+	/tuttleplugin/<link>static
 	;
 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install FFMpeg : $(DIST)/FFMpeg ;
+auto_install FFMpeg : $(DIST) ;
 

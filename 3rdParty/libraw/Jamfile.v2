@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for libpng library
+## Main BJam makefile for libraw library
 ###############################################################################
 
 ###############################################################################
@@ -13,7 +13,7 @@ project
 		<warnings>off
 	: usage-requirements
 		<include>.
-	: build-dir $(DIST)/3rdParty/raw/obj
+	: build-dir $(BUILD)/3rdParty/raw
     ;
 
 ###############################################################################
@@ -25,7 +25,10 @@ lib	raw		:
 			  [ glob src/*.cpp internal/*.cpp ]
 			;
 
-install	dist_src	: raw
-			: <variant>debug:<location>$(DIST)/3rdParty/raw/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/raw/bin/release
-			;
+install dist
+	:
+		raw
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

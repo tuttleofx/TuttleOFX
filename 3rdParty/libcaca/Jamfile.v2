@@ -7,36 +7,55 @@
 ###############################################################################
 project
 	: requirements	
-                <include>.
+		<include>.
 		<include>src
-                <include>caca
-                <include>caca/codec
-                <define>__LIBCACA__
-                <define>depmode=gcc3
-                <linkflags>-lslang
-                <linkflags>-lncursesw
-                <linkflags>-lX11
-                <linkflags>-lGL
-                <linkflags>-lGLU
-                <linkflags>-lglut
+		<include>caca
+		<include>caca/codec
+		<define>__LIBCACA__
+		<define>LIBCACA
+		<define>depmode=gcc3
+		<linkflags>-lslang
+		<linkflags>-lncursesw
+		<linkflags>-lX11
+		<linkflags>-lGL
+		<linkflags>-lGLU
+		<linkflags>-lglut
 		<warnings-as-errors>off
 		<warnings>off
 	: usage-requirements
-                <include>.
+		<include>.
 		<include>src
-	: build-dir $(DIST)/3rdParty/libcaca/obj
-    ;
+		<include>caca
+		<include>caca/codec
+	: build-dir $(BUILD)/3rdParty/libcaca
+	;
 
 ###############################################################################
-# libraw library
+# libcaca library
 ###############################################################################
 alias	headers		: [ glob-tree *.h ] ;
 
-lib	libcaca		:
-                          [ glob caca/*.c caca/codec/*.c caca/driver/*.c ]
-			;
+lib	libcaca	
+	:
+	[
+		glob caca/*.c
+		caca/codec/*.c
+		caca/driver/*.c
+		kernel/*.c
+		src/*.c
+		:
+		src/cacaview.c
+		src/cacadraw.c
+		src/cacademo.c
+		src/cacaserver.c
+		src/cacaplay.c
+		src/aafire.c
+	]
+	;
 
-install	dist_src	: libcaca
-			: <variant>debug:<location>$(DIST)/3rdParty/libcaca/bin/debug
-			  <variant>release:<location>$(DIST)/3rdParty/libcaca/bin/release
-			;
+install	dist_src
+	:
+		libcaca
+	:
+		<location>$(DIST)/lib
+	;

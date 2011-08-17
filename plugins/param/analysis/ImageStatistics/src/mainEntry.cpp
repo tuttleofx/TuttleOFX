@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::imageStatistics::ImageStatisticsPluginFactory, "fr.tuttle.imagestatistics" );
+	mAppendPluginFactory( ids, tuttle::plugin::imageStatistics::ImageStatisticsPluginFactory, "tuttle.imagestatistics" );
 }
 
 }

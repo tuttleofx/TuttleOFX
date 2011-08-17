@@ -1,7 +1,7 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/filter ;
+path-constant BUILD : $(BUILD)/filter ;
 
 for local l in [ glob * ]
 {

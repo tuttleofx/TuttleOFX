@@ -29,8 +29,9 @@ HistogramKeyerOverlay::~HistogramKeyerOverlay()
 bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 {	
 	const OfxPointI fullImgSize = _plugin->_clipSrc->getPixelRodSize(args.time);
-	const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale);
-	
+	const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale);	
+	const OfxRectI pixelRegionOfDefinition = _plugin->_clipSrc->getPixelRod(args.time);
+			
 	// Global display option
 	if(_plugin->_paramGlobalDisplaySelection->getValue() == false)
 		return false;
@@ -43,7 +44,6 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		getData().clearAll( imgSize );
 		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 	}
-	
 	// Draw component
 	bool displaySomething = false;
 	if(_plugin->_clipSrc->isConnected())
@@ -51,13 +51,13 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		displaySomething = true;  
 		
 		if(_plugin->_paramDisplaySelection->getValue())	//DisplaySelection
-			this->displaySelectedAreas( fullImgSize );
+			this->displaySelectedAreas( fullImgSize,imgSize,pixelRegionOfDefinition );
 		
 		///@todo : remove next lines when Nuke curves overlay works
 		glPushMatrix();
 		glTranslatef(-(fullImgSize.x+kTranslationRGB),0.0f,0.0f);
-		
-		_rgbParam.draw(args);  
+	
+		_rgbParam.draw(args); 
 		glPopMatrix();
 		
 		///@todo : remove next lines when Nuke curves overlay works
@@ -68,7 +68,9 @@ bool HistogramKeyerOverlay::draw( const OFX::DrawArgs& args )
 		glPopMatrix();
 		
 		if(_penDown && !_keyDown)//Display selection zone
+		{
 			this->displaySelectionZone();
+		}
 	}
 	
 	if( _isFirstTime )
@@ -93,15 +95,25 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
 	}
 	if(_penDown && _keyDown)//the mouse is moving and there is Ctrl key pressed
 	{
-		if( args.penPosition.y > getData()._imgBool.shape()[0] ||
-		    args.penPosition.y < 0 ||
-		    args.penPosition.x > getData()._imgBool.shape()[1] ||
-		    args.penPosition.x < 0 )
+		const OfxRectI pixelRegionOfDefinition = _plugin->_clipSrc->getPixelRod(args.time,args.renderScale); //pixel region of definition
+		int y = args.penPosition.y * args.renderScale.y;
+		int x = args.penPosition.x * args.renderScale.x;
+		
+		if( y > getData()._imgBool.shape()[0] ||
+		    y < 0 ||
+		    x > getData()._imgBool.shape()[1] ||
+		    x < 0 )
 		{
 			return false;
 		}
-		getData()._imgBool[args.penPosition.y][args.penPosition.x] = 255;	//current pixel is marked as selected
-		return true;														//event captured
+		y-=pixelRegionOfDefinition.y1; //repere change (reformat)
+		x-= pixelRegionOfDefinition.x1; //repere change (reformat)
+		
+		if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive mode
+			getData()._imgBool[y][x] = 0;	//current pixel is no more marked as selected
+		else
+			getData()._imgBool[y][x] = 255;	//current pixel is marked as selected
+		return true;	//event captured
 	}
 	return false; //event is not captured
 }
@@ -113,31 +125,32 @@ bool HistogramKeyerOverlay::penMotion( const OFX::PenArgs& args )
  */
 bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 {
-	const OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
+	const OfxPointI fullsize = _plugin->_clipSrc->getPixelRodSize(args.time);					//full size
+	const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale);	//size with renderscale
 	
 	if(!_penDown && !_keyDown)	//mouse is already used and there is not Ctrl key pressed
 	{
 		_penDown = true;	
-		if(args.penPosition.y < size.y && args.penPosition.y > 0)	//mouse Y is into the image
-			_origin.y = args.penPosition.y;
+		if(args.penPosition.y < fullsize.y && args.penPosition.y > 0)	//mouse Y is into the image
+			_origin.y = args.penPosition.y*args.renderScale.y;
 		else
 		{
-			if(args.penPosition.y > size.y)	//clamp the selected Y pixel to the image borders
-				_origin.y = size.y;			//click is on the top of the image
+			if(args.penPosition.y > fullsize.y)	//clamp the selected Y pixel to the image borders
+				_origin.y = imgSize.y;			//click is on the top of the image
 			else
 				_origin.y = 0;					//click is on the bottom of the image
 		}
-		if(args.penPosition.x < size.x && args.penPosition.x > 0) //mouse X is on the image
-			_origin.x = args.penPosition.x;
+		if(args.penPosition.x < fullsize.x && args.penPosition.x > 0) //mouse X is on the image
+			_origin.x = args.penPosition.x*args.renderScale.x;
 		else
 		{
-			if(args.penPosition.x > size.x)	//clamp the selected X pixel to the image borders
-				_origin.x = size.x;			//click is on the right of the image
+			if(args.penPosition.x > fullsize.x)	//clamp the selected X pixel to the image borders
+				_origin.x = imgSize.x;			//click is on the right of the image
 			else
 				_origin.x = 0;					//click is on the left of the image
 		}
-		_end.x = args.penPosition.x;	//set X end of the selection square at the origin (initialization)
-		_end.y = args.penPosition.y;	//set Y end of the selection square at the origin (initialization)
+		_end.x = args.penPosition.x*args.renderScale.x;	//set X end of the selection square at the origin (initialization)
+		_end.y = args.penPosition.y*args.renderScale.y;	//set Y end of the selection square at the origin (initialization)
 		
 		_squareBegin.x = _squareEnd.x = args.penPosition.x; //copy x value to square position
 		_squareBegin.y = _squareEnd.y = args.penPosition.y; //copy v value to square position
@@ -146,6 +159,10 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 	{
 		if(!_penDown)
 			_penDown = true;
+	}
+	if(_plugin->_paramSelectionMode->getValue() == 0)	//Selection mode is unique
+	{
+		getData().clearSelection();//reset past selection
 	}
 	return true;
 }
@@ -157,30 +174,33 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
  */
 bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 {
-	const OfxPointI size = _plugin->_clipSrc->getPixelRodSize(args.time);
+	const OfxPointI fullSize = _plugin->_clipSrc->getPixelRodSize(args.time);	//full image size
+	const OfxPointI imgSize = _plugin->_clipSrc->getPixelRodSize(args.time, args.renderScale);	//size with renderscale
+	const OfxRectI pixelRegionOfDefinition = _plugin->_clipSrc->getPixelRod(args.time,args.renderScale); //pixel region of definition
+
 	//clamp selection
-	_end.x = args.penPosition.x;		//attach the end of the selection square to the current pixel X
-	_end.y = args.penPosition.y;		//attach the end of the selection square to the current pixel Y
+	_end.x = args.penPosition.x*args.renderScale.x;		//attach the end of the selection square to the current pixel X
+	_end.y = args.penPosition.y*args.renderScale.y;	//attach the end of the selection square to the current pixel Y
 	if(_end.x == _origin.x && _end.y == _origin.y)	//it's just one click!
 	{
 		_penDown = false;	//change penDown
 		return false;		//event is not capured
 	}
-	if(!(args.penPosition.x < size.x && args.penPosition.x > 0 && args.penPosition.y < size.y && args.penPosition.y > 0)) // if click is not on the image
+	if(!(args.penPosition.x < fullSize.x && args.penPosition.x > 0 && args.penPosition.y < fullSize.y && args.penPosition.y > 0)) // if click is not on the image
 	{
-		if(args.penPosition.x < 0.0 || args.penPosition.x > size.x) //problem with X axis
+		if(args.penPosition.x < 0.0 || args.penPosition.x > fullSize.x) //problem with X axis
 		{
 			if(args.penPosition.x < 0.0)	//click is on the left of the image
 				_end.x = 0.0;				//clamp
 			else
-				_end.x = size.x;			//click is on the right of the image
+				_end.x = imgSize.x;			//click is on the right of the image
 		}
-		if(args.penPosition.y < 0.0 || args.penPosition.y > size.y) //problem with Y axis
+		if(args.penPosition.y < 0.0 || args.penPosition.y > fullSize.y) //problem with Y axis
 		{
 			if(args.penPosition.y < 0.0)	//click is on the bottom of the image
 				_end.y = 0.0;				//clamp
 			else
-				_end.y = size.y;			//click is on the top of the image
+				_end.y = imgSize.y;			//click is on the top of the image
 		}
 	}
 	if(_penDown && !_keyDown)	//if there is not Ctrl key pressed
@@ -218,10 +238,17 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 		{
 			for(unsigned int val_x=0; val_x<step_x; ++val_x )
 			{
-				getData()._imgBool[endY+val_y][endX+val_x] = 255;	//mark all of the selected pixel
+				int _y = endY+val_y -(pixelRegionOfDefinition.y1);	//_y in img bool size (reformat)
+				int _x = endX+val_x -(pixelRegionOfDefinition.x1);  //_x in img bool size (reformat)
+				
+				if(_plugin->_paramSelectionMode->getValue() == 2)	//selection mode is subtractive
+					getData()._imgBool[_y][_x] = 0;	//remove all of the selected pixel
+				else
+					getData()._imgBool[_y][_x] = 255;	//mark all of the selected pixel
 			}
 		}
-		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
+		// recompute histogram of selection
+		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale, /*selectionOnly=*/true );
 	}
 	_penDown = false; //treatment is finished
 	return true;
@@ -262,7 +289,7 @@ bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
 /**
  * Display the selected areas on the clip (color : gray)
  */
-void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI imgSize )
+void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI fullImgSize, const OfxPointI imgSize, const OfxRectI pixelRoD )
 {
 	glEnable(GL_TEXTURE_2D);					//Activate texturing
 	GLuint Name;								//Texture name
@@ -286,12 +313,13 @@ void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI imgSize )
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	//Draw Texture on screen	
 	glBegin(GL_QUADS);
-    glTexCoord2d(0,1);  glVertex2d(0,imgSize.y);			//Top Left
-	glTexCoord2d(1,1);  glVertex2d(imgSize.x,imgSize.y);	//Top Right
-	glTexCoord2d(1,0);  glVertex2d(imgSize.x,0);			//Bottom Right
-	glTexCoord2d(0,0);  glVertex2d(0,0);				//Bottom Left
+    glTexCoord2d(0,1);  glVertex2i(pixelRoD.x1,pixelRoD.y2); //glVertex2d(0,fullImgSize.y);			//Top Left
+	glTexCoord2d(1,1);  glVertex2i(pixelRoD.x2,pixelRoD.y2); //glVertex2d(fullImgSize.x,fullImgSize.y);	//Top Right
+	glTexCoord2d(1,0);  glVertex2i(pixelRoD.x2,pixelRoD.y1); //glVertex2d(fullImgSize.x,0);			//Bottom Right
+	glTexCoord2d(0,0);  glVertex2i(pixelRoD.x1,pixelRoD.y1); //glVertex2d(0,0);				//Bottom Left
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	glColor3f(1.0f,0.0f,0.0f);
 }
 
 /**

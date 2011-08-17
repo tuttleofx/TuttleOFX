@@ -1,5 +1,5 @@
-#ifndef _MERGE_DEFINITIONS_HPP_
-#define _MERGE_DEFINITIONS_HPP_
+#ifndef _TUTTLE_PLUGIN_MERGE_DEFINITIONS_HPP_
+#define _TUTTLE_PLUGIN_MERGE_DEFINITIONS_HPP_
 
 #include <tuttle/plugin/global.hpp>
 

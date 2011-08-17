@@ -61,7 +61,9 @@ public:
 
 public:
 	#ifndef TUTTLE_PRODUCTION
+	#ifdef TUTTLE_PNG_EXPORT_BETWEEN_NODES
 	void debugSaveAsPng( const std::string& filename );
+	#endif
 	#endif
 
 private:

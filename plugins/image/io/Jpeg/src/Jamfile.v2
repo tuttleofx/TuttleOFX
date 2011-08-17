@@ -10,7 +10,7 @@ project
         <include>.
         <target-os>linux:<include>/usr/include
         <linkflags>-ljpeg
-    : build-dir $(DIST)/Jpeg/obj
+    : build-dir $(BUILD)/Jpeg
     ;
 
 
@@ -19,12 +19,11 @@ project
 ###############################################################################
 plugin Jpeg :
         [ glob-tree *.cpp ]
-        /tuttleplugin/<link>static
-        /boost/filesystem
-        /boost/system
-        /boost/regex
+		/boost/system
+		/boost/filesystem
+		/boost/regex
+		/tuttleplugin/<link>static
         ;
-
 ###############################################################################
 # Automatic install
 ###############################################################################

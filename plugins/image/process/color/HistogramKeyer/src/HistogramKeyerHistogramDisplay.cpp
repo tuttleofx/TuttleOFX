@@ -15,7 +15,7 @@ namespace histogramKeyer {
  * @param width maximal width
  * @param color color used to display
  */
-void displayASpecificHistogram(const std::vector<Number>& v,const std::vector<Number>& selection_v, const double step, const double height, const double width, const HistogramColor color,float selectionMultiplier)
+void displayASpecificHistogram(const HistogramVector& v,const HistogramVector& selection_v, const double step, const double height, const double width, const HistogramColor color,float selectionMultiplier)
 {
 	if(v.size())
 	{
@@ -54,7 +54,7 @@ void displayASpecificHistogram(const std::vector<Number>& v,const std::vector<Nu
  * @param width maximal width
  * @param color color used to display
  */
-void displayASpecificHistogramBorder(const std::vector<Number>& v, const double step, const double height, const double width, const HistogramColor color)
+void displayASpecificHistogramBorder(const HistogramVector& v, const double step, const double height, const double width, const HistogramColor color)
 {
 	//Draw the border line
 	glBegin( GL_LINE_STRIP );
@@ -79,7 +79,7 @@ void displayASpecificHistogramBorder(const std::vector<Number>& v, const double 
  * @param width width of the source clip
  * @param color color using for display
  */
-void displaySelectionPoints(const std::vector<Number>& selection_v, const double step, const double width, const HistogramColor color)
+void displaySelectionPoints(const HistogramVector& selection_v, const double step, const double width, const HistogramColor color)
 {
 	glBegin( GL_POINTS );
 	double base_step = 0.0;
@@ -88,7 +88,6 @@ void displaySelectionPoints(const std::vector<Number>& selection_v, const double
 	{
 		if(selection_v.at(i) != 0)
 		{
-			float translationHSL = (float)(width);
 			glVertex2f((float)(base_step), -10.0f);
 		}	
 		base_step += step;
@@ -254,7 +253,7 @@ void displayHueIndicator(const OfxPointI size, int precisionHueIndicator)
 	glBegin( GL_QUAD_STRIP);
 	const float ratio = length / (float)(kPrecisionHueIndicator-1.0);
 	float hue = 0.0f;
-	for(unsigned int i=0; i< precisionHueIndicator; ++i)
+	for( std::ssize_t i = 0; i < precisionHueIndicator; ++i )
 	{
 		boost::gil::hsv32f_pixel_t hsl_pix;			//declare a HSL pixel
 		boost::gil::rgb32f_pixel_t pix;				//declare a RGB pixel (don't need alpha)

@@ -123,39 +123,20 @@ void ImageMagickReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& cl
 
 	Image* image = PingImage( imageInfo, exceptionsInfo );
 
-	switch( getExplicitConversion() )
+	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
-		case eParamReaderExplicitConversionAuto:
+		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); // by default
+		if( image )
 		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); // by default
-			if( image )
+			unsigned long bitDepth = GetImageDepth( image, exceptionsInfo ); // if image information use it
+			if( bitDepth <= 8 )
 			{
-				unsigned long bitDepth = GetImageDepth( image, exceptionsInfo ); // if image information use it
-				if( bitDepth <= 8 )
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-				}
-				else if( bitDepth <= 16 )
-				{
-					clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-				}
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
 			}
-			break;
-		}
-		case eParamReaderExplicitConversionByte:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-			break;
-		}
-		case eParamReaderExplicitConversionShort:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-			break;
-		}
-		case eParamReaderExplicitConversionFloat:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-			break;
+			else if( bitDepth <= 16 )
+			{
+				clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
+			}
 		}
 	}
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA ); /// @todo tuttle: retrieve info, gray / RGB / RGBA...

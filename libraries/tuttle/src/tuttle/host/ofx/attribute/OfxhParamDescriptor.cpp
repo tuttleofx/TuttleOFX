@@ -127,26 +127,6 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 
 	findType( type, propType, propDim );
 
-	static const property::OfxhPropSpec allString[] = {
-		{ kOfxParamPropStringMode, property::eString, 1, false, kOfxParamStringIsSingleLine },
-		{ kOfxParamPropStringFilePathExists, property::eInt, 1, false, "1" },
-		{ 0 }
-	};
-
-	static const property::OfxhPropSpec allChoice[] = {
-		{ kOfxParamPropChoiceOption, property::eString, 0, false, "" },
-		{ 0 }
-	};
-
-	static const property::OfxhPropSpec allCustom[] = {
-		{ kOfxParamPropCustomInterpCallbackV1, property::ePointer, 1, false, 0 },
-		{ 0 },
-	};
-
-	static const property::OfxhPropSpec allPage[] = {
-		{ kOfxParamPropPageChild, property::eString, 0, false, "" },
-		{ 0 }
-	};
 
 	if( propType != property::eNone )
 		initValueParamProps( type, propType, propDim );
@@ -155,6 +135,12 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 
 	if( type == kOfxParamTypeString )
 	{
+		static const property::OfxhPropSpec allString[] = {
+			{ kOfxParamPropStringMode, property::eString, 1, false, kOfxParamStringIsSingleLine },
+			{ kOfxParamPropStringFilePathExists, property::eInt, 1, false, "1" },
+			{ 0 }
+		};
+
 		getEditableProperties().addProperties( allString );
 	}
 
@@ -170,17 +156,38 @@ void OfxhParamDescriptor::initStandardParamProps( const std::string& type )
 
 	if( type == kOfxParamTypeChoice )
 	{
+		static const property::OfxhPropSpec allChoice[] = {
+			{ kOfxParamPropChoiceOption, property::eString, 0, false, "" },
+			{ 0 }
+		};
+
 		getEditableProperties().addProperties( allChoice );
 	}
-
-	if( type == kOfxParamTypeCustom )
+	else if( type == kOfxParamTypeCustom )
 	{
+		static const property::OfxhPropSpec allCustom[] = {
+			{ kOfxParamPropCustomInterpCallbackV1, property::ePointer, 1, false, 0 },
+			{ 0 },
+		};
+
 		getEditableProperties().addProperties( allCustom );
 	}
-
-	if( type == kOfxParamTypePage )
+	else if( type == kOfxParamTypePage )
 	{
+		static const property::OfxhPropSpec allPage[] = {
+			{ kOfxParamPropPageChild, property::eString, 0, false, "" },
+			{ 0 }
+		};
 		getEditableProperties().addProperties( allPage );
+	}
+	else if( type == kOfxParamTypeGroup )
+	{
+		static const property::OfxhPropSpec allGroup[] = {
+			{ kOfxParamPropGroupOpen, property::eInt, 1, false, "1" },
+			{ 0 }
+		};
+
+		getEditableProperties().addProperties( allGroup );
 	}
 }
 

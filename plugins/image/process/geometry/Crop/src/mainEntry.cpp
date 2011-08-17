@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::crop::CropPluginFactory, "fr.tuttle.crop" );
+	mAppendPluginFactory( ids, tuttle::plugin::crop::CropPluginFactory, "tuttle.crop" );
 }
 
 }

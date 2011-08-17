@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::normalize::NormalizePluginFactory, "fr.tuttle.duranduboi.normalize" );
+	mAppendPluginFactory( ids, tuttle::plugin::normalize::NormalizePluginFactory, "tuttle.normalize" );
 }
 
 }

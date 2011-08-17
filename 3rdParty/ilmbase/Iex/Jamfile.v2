@@ -1,5 +1,19 @@
 project Iex
+	: requirements
+		<warnings-as-errors>off
+		<warnings>off
 	: usage-requirements <include>.
 	;
 
-lib Iex : [ glob *.cpp ] ;
+lib Iex
+	:
+		[ glob *.cpp ]
+	;
+
+install dist
+	:
+		Iex
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

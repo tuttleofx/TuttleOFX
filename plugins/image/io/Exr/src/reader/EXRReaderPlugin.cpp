@@ -153,29 +153,11 @@ void EXRReaderPlugin::updateCombos()
 void EXRReaderPlugin::getClipPreferences( OFX::ClipPreferencesSetter& clipPreferences )
 {
 	ReaderPlugin::getClipPreferences( clipPreferences );
+
 	const std::string filename( getAbsoluteFirstFilename() );
-	switch( getExplicitConversion() )
+	if( getExplicitConversion() == eParamReaderExplicitConversionAuto )
 	{
-		case eParamReaderExplicitConversionAuto:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); /// @todo tuttle: retrieve info from exr, can be 8, 16, 32 as interger or floating point values
-			break;
-		}
-		case eParamReaderExplicitConversionByte:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUByte );
-			break;
-		}
-		case eParamReaderExplicitConversionShort:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthUShort );
-			break;
-		}
-		case eParamReaderExplicitConversionFloat:
-		{
-			clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat );
-			break;
-		}
+		clipPreferences.setClipBitDepth( *this->_clipDst, OFX::eBitDepthFloat ); /// @todo tuttle: retrieve info from exr, can be 8, 16, 32 as interger or floating point values
 	}
 	clipPreferences.setClipComponents( *this->_clipDst, OFX::ePixelComponentRGBA );
 	clipPreferences.setPixelAspectRatio( *this->_clipDst, 1.0 ); /// @todo tuttle: retrieve info from exr

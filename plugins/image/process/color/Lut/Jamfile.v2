@@ -9,8 +9,7 @@ import os ;
 project
     : requirements	
         <include>src
-        <threading>multi
-    : build-dir $(DIST)/Lut/obj
+    : build-dir $(BUILD)/Lut
     ;
 
 ###############################################################################
@@ -19,12 +18,9 @@ project
 plugin Lut :
 	[ glob src/*.cpp ]
 	[ glob src/lutEngine/*.cpp ]
-	/boost/filesystem/<link>static
-	/boost/system/<link>static
+	/boost/filesystem
+	/boost/system
 	/tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
     ;
 
 ###############################################################################

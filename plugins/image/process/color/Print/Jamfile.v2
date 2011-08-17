@@ -9,7 +9,7 @@ import os ;
 project
 	: requirements
 		<include>src
-	: build-dir $(DIST)/Print/obj
+	: build-dir $(BUILD)/Print
 	;
 
 use-project	/libcaca	: $(3RD_PARTY)/libcaca ;

@@ -20,7 +20,7 @@ void unusedString( const char* ) {}
 template<class PluginFactory>
 void appendPluginFactory( OFX::PluginFactoryArray& ids, const char* idString, const int versionMajor, const int versionMinor, const char* uniqueId )
 {
-	static const char* uniqueIdStr = uniqueId; //Make the uniqueId present in the final binary, even in release. OFXPLUGIN_fr.tuttle.myplug_1.0
+	static const char* uniqueIdStr = uniqueId; //Make the uniqueId present in the final binary, even in release. OFXPLUGIN_tuttle.myplug_1.0
 
 	unusedString( uniqueIdStr );
 	static PluginFactory p( idString, versionMajor, versionMinor );

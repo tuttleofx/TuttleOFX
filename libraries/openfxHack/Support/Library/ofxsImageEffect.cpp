@@ -47,6 +47,7 @@
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/exception/diagnostic_information.hpp>
+#include <tuttle/common/utils/backtrace.hpp>
 
 /** @brief The core 'OFX Support' namespace, used by plugin implementations. All code for these are defined in the common support libraries. */
 namespace OFX {
@@ -521,6 +522,7 @@ void ImageEffectDescriptor::setLabels( const std::string& label, const std::stri
 
 void ImageEffectDescriptor::setDescription( const std::string& description )
 {
+	// added in openfx API 1.2, so do not throw if unknown by the host
 	_effectProps.propSetString( kOfxPropPluginDescription, description, false );
 }
 
@@ -1661,6 +1663,7 @@ void fetchHostDescription( OfxHost* host )
 
 		// and get some properties
 		gHostDescription.hostName                    = hostProps.propGetString( kOfxPropName );
+		gHostDescription.hostLabel                   = hostProps.propGetString( kOfxPropLabel );
 		gHostDescription.hostIsBackground            = hostProps.propGetInt( kOfxImageEffectHostPropIsBackground ) != 0;
 		gHostDescription.supportsOverlays            = hostProps.propGetInt( kOfxImageEffectPropSupportsOverlays ) != 0;
 		gHostDescription.supportsMultiResolution     = hostProps.propGetInt( kOfxImageEffectPropSupportsMultiResolution ) != 0;
@@ -2518,7 +2521,7 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 	{
 		typedef ::boost::error_info< ::OFX::tag_ofxStatus, ::OfxStatus> ofxStatus;
 
-		std::cerr << "----------" << std::endl;
+		std::cerr << "__________" << std::endl;
 		std::cerr << "* Caught boost::exception on action " << actionRaw << std::endl;
 		if( const OfxStatus* const status = boost::get_error_info<ofxStatus>( e ) )
 		{
@@ -2530,7 +2533,12 @@ OfxStatus mainEntryStr( const char*          actionRaw,
 		}
 		std::cerr << boost::diagnostic_information(e);
 //		std::cerr << "* inArgs: " << inArgs << std::endl;
+#ifndef TUTTLE_PRODUCTION
 		std::cerr << "----------" << std::endl;
+		std::cerr << "* Backtrace" << std::endl;
+		std::cerr << boost::trace(e);
+#endif
+		std::cerr << "__________" << std::endl;
 	}
 	
 	// catch suite exceptions

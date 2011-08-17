@@ -177,18 +177,16 @@ int sammvcp( int argc, char** argv )
 	bpo::store( bpo::command_line_parser( argc, argv ).options( cmdline_options ).positional( pod ).run( ), vm );
 
 	// get environnement options and parse them
-#ifndef SAM_MOVEFILES // copy file(s)
-	if( std::getenv( "SAM_CP_OPTIONS" ) != NULL )
+	if( const char* env_otions = std::getenv(
+#ifndef SAM_MOVEFILES
+		"SAM_CP_OPTIONS"
 #else
-	if( std::getenv( "SAM_MV_OPTIONS" ) != NULL )
+		"SAM_MV_OPTIONS"
 #endif
+		) )
 	{
 		std::vector<std::string> envOptions;
-#ifndef SAM_MOVEFILES // copy file(s)
-		std::string env = std::getenv( "SAM_CP_OPTIONS" );
-#else
-		std::string env = std::getenv( "SAM_MV_OPTIONS" );
-#endif
+		const std::string env( env_otions );
 		envOptions.push_back( env );
 		bpo::store( bpo::command_line_parser( envOptions ).options( cmdline_options ).positional( pod ).run( ), vm );
 	}
@@ -300,12 +298,12 @@ int sammvcp( int argc, char** argv )
 		}
 		sequencePattern = "";
 	}
-
+	
 	ttl::Sequence dstSeq( dstPath, descriptionMask );
 
 	if( sequencePattern.size( ) > 0 )
 	{
-		dstIsSeq = dstSeq.init( (dstPath / sequencePattern).string(), 0, 0, 1, ttl::Sequence::ePatternAll );
+		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, ttl::Sequence::ePatternAll );
 		if( ! dstIsSeq ) // there is a pattern, but it's not valid.
 		{
 			TUTTLE_CERR( "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." );

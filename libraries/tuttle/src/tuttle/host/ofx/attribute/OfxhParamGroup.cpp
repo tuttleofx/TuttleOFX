@@ -13,18 +13,18 @@ void OfxhParamGroup::setChildrens( const OfxhParamSet* childrens )
 	deleteChildrens();
 
 	/// @todo tuttle: use clone ?
-	for( ParamList::const_iterator it = childrens->getParamList().begin(), itEnd = childrens->getParamList().end();
+	for( ParamVector::const_iterator it = childrens->getParamVector().begin(), itEnd = childrens->getParamVector().end();
 	     it != itEnd;
 	     ++it )
 	{
-		_paramList.push_back( it->clone() );
+		_paramVector.push_back( it->clone() );
 	}
 }
 
 void OfxhParamGroup::addChildren( OfxhParam* children )
 {
 	children->setParamSetInstance( this );
-	_paramList.push_back( children );
+	_paramVector.push_back( children );
 }
 
 OfxhParamSet* OfxhParamGroup::getChildrens() const

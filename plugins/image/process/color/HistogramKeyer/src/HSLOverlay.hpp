@@ -51,6 +51,9 @@ public:
 	
 	/*get overlay data*/
 	OverlayData& getData();
+	
+	/*Display grid*/
+	void displayGrid(float height, float width);
 };
 
 }

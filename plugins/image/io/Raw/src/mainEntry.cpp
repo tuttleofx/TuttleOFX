@@ -10,8 +10,8 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::raw::reader::RawReaderPluginFactory, "fr.tuttle.rawreader" );
-	//mAppendPluginFactory( ids, tuttle::plugin::png::writer::RAWWriterPluginFactory, "fr.tuttle.rawwriter" );
+	mAppendPluginFactory( ids, tuttle::plugin::raw::reader::RawReaderPluginFactory, "tuttle.rawreader" );
+	//mAppendPluginFactory( ids, tuttle::plugin::png::writer::RAWWriterPluginFactory, "tuttle.rawwriter" );
 }
 
 }

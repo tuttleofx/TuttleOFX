@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::localmaxima::LocalMaximaPluginFactory, "fr.tuttle.duranduboi.localmaxima" );
+	mAppendPluginFactory( ids, tuttle::plugin::localmaxima::LocalMaximaPluginFactory, "tuttle.localmaxima" );
 }
 
 }

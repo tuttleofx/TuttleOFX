@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids,  tuttle::plugin::timeShift::TimeShiftPluginFactory, "fr.tuttle.timeshift" );
+	mAppendPluginFactory( ids,  tuttle::plugin::timeShift::TimeShiftPluginFactory, "tuttle.timeshift" );
 }
 
 }

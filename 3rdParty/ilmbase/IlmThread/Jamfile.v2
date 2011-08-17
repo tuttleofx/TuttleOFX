@@ -1,17 +1,15 @@
 project IlmThread
-	: 
-	usage-requirements <include>.
+	: requirements
+		<warnings-as-errors>off
+		<warnings>off
+	: usage-requirements
+		<include>.
 	;
 
-lib platformDependentFile :
-	[ glob *Win32*.cpp ]
-	: <os>NT <include>../Iex
-	;
+alias plateformFiles : [ glob *Posix*.cpp ] : <os>LINUX ;
+alias plateformFiles : [ glob *Win32*.cpp ] : <os>NT ;
+alias plateformFiles : [ glob *Posix*.cpp ] : <os>MACOS ;
 
-lib platformDependentFile :
-	[ glob *Posix*.cpp ]
-	: <include>../Iex
-	;
 
 lib IlmThread
 	:
@@ -19,8 +17,14 @@ lib IlmThread
 		IlmThreadMutex.cpp
 		IlmThreadPool.cpp
 		IlmThreadSemaphore.cpp
-		platformDependentFile/<link>static
+		$(plateformFiles)
 		../Iex//Iex
 	;
 
-install dist : IlmThread : <install-dependencies>on <install-type>LIB ;
+install dist
+	:
+		IlmThread
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

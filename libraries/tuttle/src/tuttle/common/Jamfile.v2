@@ -1,13 +1,21 @@
 project : requirements
 			<include>.
+			<include>BOOST_HACK
 		: usage-requirements
 			<include>.
 		;
 
 lib tuttlecommon :
-		[ glob-tree *.cpp ]
-#		/openfxHackProject/<link>static
-		/ofxPluginSupport/<link>static # ???? but it work
-		/boost/system
-		/boost/regex
+			[ glob-tree *.cpp ]
+			/ofxPluginSupport/<link>static
+			/boost/system
+			/boost/filesystem
+			/boost/regex
+		:
+			<os>LINUX:<find-shared-library>dl
+			<os>NT:<find-shared-library>Shell32
+			<os>NT,<variant>debug:<library-path>"C:\\WINDOWS\\ServicePackFiles\\i386"
+			#<os>NT,<variant>debug:<library-path>"C:\\Program Files\\Microsoft Visual Studio 10.0\\Common7\\IDE"
+			<os>NT,<variant>debug:<linkflags>dbghelp.dll
+			#<os>NT:<link>static
 		;

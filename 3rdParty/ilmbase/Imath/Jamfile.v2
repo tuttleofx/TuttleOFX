@@ -1,4 +1,7 @@
 project Imath
+	: requirements
+		<warnings-as-errors>off
+		<warnings>off
 	: usage-requirements <include>.
 	;
 
@@ -7,4 +10,12 @@ lib Imath
 		[ glob *.cpp ]
 		../Iex//Iex
 		../Half//Half
+	;
+
+install dist
+	:
+		Imath
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
 	;
