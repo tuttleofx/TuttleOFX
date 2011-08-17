@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::sobel::SobelPluginFactory, "tuttle.duranduboi.sobel" );
+	mAppendPluginFactory( ids, tuttle::plugin::sobel::SobelPluginFactory, "tuttle.sobel" );
 }
 
 }

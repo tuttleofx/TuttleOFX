@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::thinning::ThinningPluginFactory, "tuttle.duranduboi.thinning" );
+	mAppendPluginFactory( ids, tuttle::plugin::thinning::ThinningPluginFactory, "tuttle.thinning" );
 }
 
 }

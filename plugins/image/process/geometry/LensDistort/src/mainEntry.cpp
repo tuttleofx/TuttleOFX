@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::lens::LensDistortPluginFactory, "tuttle.duranduboi.lensdistort" );
+	mAppendPluginFactory( ids, tuttle::plugin::lens::LensDistortPluginFactory, "tuttle.lensdistort" );
 }
 
 }
