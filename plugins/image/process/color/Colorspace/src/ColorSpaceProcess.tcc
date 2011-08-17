@@ -50,7 +50,7 @@ void ColorSpaceProcess<View>::multiThreadProcessImages( const OfxRectI& procWind
 	csAPI.setGammaOutProperties	( _params._sGammaOut );
 	csAPI.setCineonOutProperties	( _params._sCineonOut );
 
-	colorspace_pixels_progress( &csAPI, _params._gradationIn, _params._layoutIn, _params._tempColorIn, _params._gradationOut, _params._layoutOut, _params._tempColorOut, src, dst, this );
+	terry::colorspace_pixels_progress( &csAPI, _params._gradationIn, _params._layoutIn, _params._tempColorIn, _params._gradationOut, _params._layoutOut, _params._tempColorOut, src, dst, this );
 
 }
 
