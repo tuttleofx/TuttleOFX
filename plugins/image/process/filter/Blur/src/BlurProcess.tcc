@@ -1,7 +1,6 @@
 #include "BlurPlugin.hpp"
 
 #include <tuttle/plugin/memory/OfxAllocator.hpp>
-#include <tuttle/plugin/image/gil/gaussianKernel.hpp>
 
 #include <terry/gaussianKernel.hpp>
 
