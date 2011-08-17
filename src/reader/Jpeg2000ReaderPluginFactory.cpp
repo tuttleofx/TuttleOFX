@@ -16,12 +16,16 @@ namespace reader {
  */
 void Jpeg2000ReaderPluginFactory::describe( OFX::ImageEffectDescriptor &desc )
 {
-	desc.setLabels( "privateDuJpeg2000Reader", "Jpeg2000Reader",
-		            "Jpeg2000 image reader" );
+	desc.setLabels(
+		"Jpeg2000Reader",
+		"Jpeg2000Reader",
+		"Jpeg2000 image reader" );
 	desc.setPluginGrouping( "tuttle/image/io" );
 
-	desc.setDescription( "Jpeg200 io.\n"
-	                     "Plugin is used to read jpeg 2000 files." );
+	desc.setDescription(
+		"Jpeg200 io.\n"
+	    "Plugin is used to read jpeg 2000 files."
+		);
 
 	// add the supported contexts
 	desc.addSupportedContext( OFX::eContextReader );

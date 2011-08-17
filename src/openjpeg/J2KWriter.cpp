@@ -1,5 +1,6 @@
 #include "J2KWriter.hpp"
 #include "J2KCommon.hpp"
+
 #include <tuttle/plugin/exceptions.hpp>
 #include <boost/gil/extension/typedefs.hpp>
 
@@ -73,10 +74,10 @@ void J2KWriter::open(const std::string & filename, const size_t w, const size_t 
 		cinemaSetupParameters();
 	}
 
-    /* Create comment for codestream */
+    // Create comment for codestream
     if ( _openjpeg.parameters.cp_comment == NULL )
     {
-        const char comment[] = "DURAN-DUBOI (tuttle)";
+        const char comment[] = "TuttleOFX";
         const size_t clen = strlen(comment);
         const char *version = "";//opj_version();
 		_openjpeg.parameters.cp_comment = (char*)malloc( clen + strlen( version ) + 1 );
@@ -154,14 +155,14 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 		}
 	}
 
-	/* Get a J2K compressor handle */
+	// Get a J2K compressor handle
 	opj_cinfo_t* cinfo = opj_create_compress(fmt);
-	/* Catch events using our callbacks and give a local context */
+	// Catch events using our callbacks and give a local context
 	opj_set_event_mgr((opj_common_ptr)cinfo, &_openjpeg.event_mgr, stderr);
-	/* Setup the encoder parameters using the current image and user parameters */
+	// Setup the encoder parameters using the current image and user parameters
 	opj_setup_encoder(cinfo, &_openjpeg.parameters, _openjpeg.image);
-	/* Open a byte stream for writing */
-	/* Allocate memory for all tiles */
+	// Open a byte stream for writing
+	// Allocate memory for all tiles
 	_cio = opj_cio_open((opj_common_ptr)cinfo, NULL, 0);
 
 	int j = _width * _height;
@@ -296,7 +297,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 			<< exception::user( "Failed to encode image!" ) );
 	}
 
-	/* free remaining compression structures */
+	// free remaining compression structures
 	opj_destroy_compress(cinfo);
 }
 

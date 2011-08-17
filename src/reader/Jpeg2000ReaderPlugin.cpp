@@ -3,7 +3,7 @@
 #include "Jpeg2000ReaderDefinitions.hpp"
 
 #include <tuttle/plugin/context/WriterDefinition.hpp>
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
 
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>

@@ -4,8 +4,10 @@
 #include "J2KCommon.hpp"
 
 #include <openjpeg.h>
-#include <string>
+
 #include <boost/filesystem/fstream.hpp>
+
+#include <string>
 
 namespace tuttle {
 namespace io {

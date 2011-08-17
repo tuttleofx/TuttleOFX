@@ -1,12 +1,16 @@
 #include "J2KReader.hpp"
 #include "J2KCommon.hpp"
-#include <tuttle/common/utils/global.hpp>
+
+#include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/exceptions.hpp>
+
 #include "ofxsMemory.h"
 #include "ofxsCore.h"
+
 #include <openjpeg.h>
 
 #include <boost/filesystem.hpp>
+
 #include <cstdlib>
 #include <cstring>
 

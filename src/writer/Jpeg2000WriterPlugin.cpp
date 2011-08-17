@@ -4,10 +4,12 @@
 
 #include <openjpeg/J2KWriter.hpp>
 
-#include <tuttle/common/utils/global.hpp>
+#include <tuttle/plugin/global.hpp>
+
 #include <ofxsImageEffect.h>
 #include <ofxsMultiThread.h>
 #include <ofxsImageEffect.h>
+
 #include <boost/gil/gil_all.hpp>
 #include <boost/filesystem.hpp>
 
