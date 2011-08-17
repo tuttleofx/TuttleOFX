@@ -25,6 +25,7 @@ struct T_F7 {};
 struct T_F11 {};
 struct T_DCIP3 {};
 
+// we use D65 as the intermediate temperature color
 typedef T_D65 T_INTER;
 }
 
