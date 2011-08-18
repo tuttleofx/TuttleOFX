@@ -1,10 +1,6 @@
 #ifndef _TERRY_SAMPLER_HPP_
 #define _TERRY_SAMPLER_HPP_
 
-#include <map>
-
-#include "details.hpp"
-
 #include "nearestNeighbor.hpp"
 #include "bilinear.hpp"
 #include "bicubic.hpp"
@@ -13,6 +9,8 @@
 #include "lanczos.hpp"
 #include "details.hpp"
 
+#include <map>
+
 namespace terry {
 using namespace boost::gil;
 namespace sampler {
@@ -20,7 +18,8 @@ namespace sampler {
 
 void getMapOfFilters( std::map< size_t, std::string >& mapOfFilters )
 {
-/*		mapOfFilters.insert(  0, (std::string) "Nearest-Neighbor"	);
+/*
+		mapOfFilters.insert(  0, (std::string) "Nearest-Neighbor"	);
 		mapOfFilters.insert(  1, (std::string) "Bilinear"			);
 		mapOfFilters.insert(  2, (std::string) "Bicubic"			);
 		mapOfFilters.insert(  3, (std::string) "BC sampler"			);
@@ -44,4 +43,6 @@ void getMapOfFilters( std::map< size_t, std::string >& mapOfFilters )
 
 }
 }
+
 #endif
+

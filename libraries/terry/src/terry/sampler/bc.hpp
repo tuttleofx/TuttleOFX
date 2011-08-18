@@ -1,4 +1,3 @@
-
 #ifndef _TERRY_SAMPLER_BC_HPP_
 #define _TERRY_SAMPLER_BC_HPP_
 
