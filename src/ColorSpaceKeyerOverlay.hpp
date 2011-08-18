@@ -2,6 +2,8 @@
 #define	COLORSPACEKEYEROVERLAY_HPP
 
 #include "ColorSpaceKeyerPlugin.hpp"
+#include "SelectionAverage.hpp"
+#include "GeodesicForm.hpp"
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/interact/interact.hpp>
@@ -24,11 +26,18 @@ public:
 	OfxPointI _origin;				//origin (point of pen down)
 	OfxPointI _end;					//end (point of pen up)
 	
-	bool _isPenDown;			//mouse management (is mouse under)
+	bool _isPenDown;			//mouse management (is mouse clicked)
+	bool _isCtrlKeyDown;		//keyboard management (s Ctrl key pressed)
 	double _rotateX;			//rotation on X axis (mouse)
-	double _rotateY;			//rotation on Y axis (mouse)		
+	double _rotateY;			//rotation on Y axis (mouse)
+	Ofx3DPointD _coordAverageRotation; //Average coord with rotation
 
 	bool _isFirst;		//REMOVE (TEST)
+	
+	//Process arguments
+	SelectionAverage _averageColor;	//color clip selection average
+	GeodesicForm	_geodesicForm;  //geodesic form (overlay)
+	
 public:
 	/*Constructor/Destructor*/
 	ColorSpaceKeyerOverlay(OfxInteractHandle handle,OFX::ImageEffect* effect);
@@ -42,9 +51,9 @@ public:
 	bool penUp( const OFX::PenArgs& args );		//mouse/pen is releasing
 	bool penMotion( const OFX::PenArgs& args );	//mouse/pen is under motion
 	
-	/*Keyboard management
+	/*Keyboard management*/
 	bool keyDown( const OFX::KeyArgs& args );	//Ctrl key is pressing down
-	bool keyUp( const OFX::KeyArgs& args );	*/	//Ctrl key is releasing 
+	bool keyUp( const OFX::KeyArgs& args );		//Ctrl key is releasing 
 	
 	/*OpenGL scene*/
 	void prepareOpenGLScene(const OFX::DrawArgs& args);			//prepare the frustrum and projection settings and initialize first VBO
@@ -52,6 +61,8 @@ public:
 	
 	/*Get overlay data*/
 	CloudPointData& getData();
+private:
+	void updateCoorAverageWithRotation(); //update the average coord using rotationX and rotationY values
 };
 
 class ColorSpaceKeyerOverlayDescriptor : public OFX::EffectOverlayDescriptor

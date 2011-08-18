@@ -17,11 +17,6 @@ CloudPointData::CloudPointData(const OfxPointI& size, OfxTime time)
 	
 	int imgSize = size.x*size.y; // number of pixel in the image
 	_imgCopy.reserve( imgSize * 0.5 );	//reserve memory for buffer
-	_averageColor.x = _averageColor.y = _averageColor.z = 0; //initialize average
-	
-	//create geodesic form
-	Ofx3DPointD p = {0,0,0};
-	_geodesicForm.subdiviseFaces(p,4);
 }
 
 /**
@@ -29,8 +24,9 @@ CloudPointData::CloudPointData(const OfxPointI& size, OfxTime time)
  * @param clipSrc	source of the plugin
  * @param renderScale	current renderScale
  */
-bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& renderScale, const bool vboWithDiscretization, const int discretizationStep )
+bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& renderScale, const bool vboWithDiscretization, const int discretizationStep)
 {	
+	_isVBOBuilt = false; //VBO is not built anymore
 	// connection test
 	if( ! clipSrc->isConnected() )
 	{	
@@ -45,7 +41,7 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
 	{
-		std::cout << "src is not accessible" << std::endl;
+		std::cout << "src is not accessible (cloud point)" << std::endl;
 		return false;
 	}
 	//TUTTLE_TCOUT_VAR( src->getRowBytes());
@@ -87,14 +83,14 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 	if( vboWithDiscretization )	//does user want to discretize the VBO
 	{
 		//TUTTLE_COUT_INFOS;
-		generateDiscretizedVBOData( srcView, discretizationStep ); //create data and return buffer size
+		generateDiscretizedVBOData( srcView, discretizationStep); //create data and return buffer size
 	}
 	else
 	{
 		//TUTTLE_COUT_INFOS;
 		generateAllPointsVBOData( srcView ); // create data and return buffer size
 	}	
-	
+	_isVBOBuilt = true; //VBO has been built
 	//TUTTLE_COUT_INFOS;
 	return true;
 }
@@ -132,7 +128,7 @@ int CloudPointData::generateAllPointsVBOData(SView srcView)
 /**
  * Copy discretized rgb channels of the clip source into a buffer
  */
-int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretizationStep)
+int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretizationStep )
 {
 	//compute buffer size
 	int size = (int)(srcView.height()*srcView.width());	//return size : full img here
@@ -143,99 +139,6 @@ int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretization
 	funct.convertSetDataToVectorData();								//deplace functor data to _imgCopy data
 	return size;
 }
-
-/*
- *Generate average from color selection clip
- */
-bool CloudPointData::generateAverageColorSelection(OFX::Clip* clipColor, const OfxPointD& renderScale)
-{
-	// connection test
-	if( ! clipColor->isConnected() )
-	{	
-		return false;
-	}
-
-	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current source clip
-	
-	//TUTTLE_TCOUT_VAR( clipColor->getPixelRod(_time,renderScale)); 
-	//TUTTLE_TCOUT_VAR( clipColor->getCanonicalRod(_time, renderScale));
-
-	// Compatibility tests
-	if( !src.get() ) // source isn't accessible
-	{
-		std::cout << "color src is not accessible" << std::endl;
-		return false;
-	}
-
-	if( src->getRowBytes() == 0 )//if source is wrong
-	{
-		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
-		return false;
-	}
-
-	const OfxRectI srcPixelRod = clipColor->getPixelRod( _time, renderScale ); //get current RoD
-	if( (clipColor->getPixelDepth() != OFX::eBitDepthFloat) ||
-		(!clipColor->getPixelComponents()) )
-	{
-		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
-        return false;
-	}
-
-	//TUTTLE_TCOUT_VAR( src->getBounds());
-	//TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
-
-	if( srcPixelRod != src->getBounds() )// the host does bad things !
-	{
-		// remove overlay... but do not crash.
-		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
-		return false;
-	}
-
-	// Compute if source is OK
-	SView colorView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );		// get current view from color clip
-	ComputeAverage<SView>::CPixel average = ComputeAverage<SView>()( colorView );	// compute color clip average
-	
-	//copy computed average into average stock variable
-	_averageColor.x = average[0]; //red channel value
-	_averageColor.y = average[1]; //green channel value
-	_averageColor.z = average[2]; //blue channel values
-	
-	return true; //average has been computed
-}
-
-/**
- * Draw average on screen (cross)
- */
-void CloudPointData::drawAverage()
-{
-	float kCrossSize = 0.05f;
-	//compute complementary color
-	float complementaryColor[3]; 
-	complementaryColor[0] = 1-_averageColor.x;	//complementary red
-	complementaryColor[1] = 1-_averageColor.y;	//complementary green
-	complementaryColor[2] = 1-_averageColor.z;	//complementary blue
-	
-	//compute values on X axis
-	float xBefore = _averageColor.x-kCrossSize;	//compute before value (X axis)
-	float xAfter = _averageColor.x + kCrossSize;	//compute after value (X axis)
-	
-	//compute values on Y axis
-	float yBefore = _averageColor.y-kCrossSize;	//compute before value (Y axis)
-	float yAfter = _averageColor.y + kCrossSize;	//compute after value (Y axis)
-	
-	//compute values on Z axis
-	float zBefore = _averageColor.z-kCrossSize;	//compute before value (Z axis)
-	float zAfter = _averageColor.z+kCrossSize;	//compute after value (Z axis)
-	
-	//drawing average mark
-	glBegin(GL_LINES);
-	glColor3f(complementaryColor[0],complementaryColor[1],complementaryColor[2]); //color : complementary to average
-	glVertex3f(xBefore,_averageColor.y,_averageColor.z); glVertex3f(xAfter,_averageColor.y,_averageColor.z); //X axis
-	glVertex3f(_averageColor.x,yBefore,_averageColor.z); glVertex3f(_averageColor.x,yAfter,_averageColor.z); //Y axis
-	glVertex3f(_averageColor.x,_averageColor.y,zBefore); glVertex3f(_averageColor.x,_averageColor.y,zAfter); //Z axis
-	glEnd();
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //                           CloudPoint::VBO                                   //

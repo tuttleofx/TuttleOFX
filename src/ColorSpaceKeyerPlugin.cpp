@@ -21,7 +21,10 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 		//Associate intern params pointers to GUI components
 		_paramBoolDiscretizationActive = fetchBooleanParam(kBoolDiscretizationDisplay);	//is discretization active on point cloud - check box
 		_paramIntDiscretization = fetchIntParam(kIntDiscretizationDisplay);				//discretization step - Int param
-		 _paramIntNbOfDivisionsGF = fetchIntParam(kIntNumberOfDivisonGeodesicForm);		//number of divisions geodesic form - Int param
+		_paramIntNbOfDivisionsGF = fetchIntParam(kIntNumberOfDivisonGeodesicForm);		//number of divisions geodesic form - Int param
+		_paramBoolDisplayGeodesicForm = fetchBooleanParam(kBoolOnlySelection);			//display geodesic form - check box
+		_paramChoiceAverageMode = fetchChoiceParam(kColorAverageMode);					//average color mode - Choice param
+		_paramRGBAColorSelection = fetchRGBAParam(kColorAverageSelection);				//average color selection - RGBA param
 		
 		//verify display Discrete enable value
 		if(_paramBoolPointCloudDisplay->getValue())	//called default value
@@ -29,8 +32,17 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 			_paramBoolDiscretizationActive->setEnabled(true);	//Enable discretization check box
 			_paramIntDiscretization->setEnabled(true);			//Enable discretization int param
 		}
+		//verify choice average enable value
+		if(_paramChoiceAverageMode->getValue() == 1)
+		{
+			_paramRGBAColorSelection->setEnabled(true);			//Enable color average selection (RGBA param)
+		}
 		
-		 _updateVBO = false;	//does display need to update VBO
+		 _updateAverage = false;		//does display need to update average
+		 _updateGeodesicForm = false;	//does display need to update geodesic form
+		 _updateVBO = false;			//does display need to update VBO
+		 _updateGeodesicFormAverage = false;	//does Geodesic form need to be updated
+		 _resetViewParameters = false;	//do view parameters need to be reseted
 }
 
 ColorSpaceKeyerProcessParams<ColorSpaceKeyerPlugin::Scalar> ColorSpaceKeyerPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -103,8 +115,30 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 	{
 		if(hasCloudPointData()) ///@todo : to remove
 		{
-			getCloudPointData()._geodesicForm.subdiviseFaces(getCloudPointData()._averageColor,_paramIntNbOfDivisionsGF->getValue()); //change value of subdivision
+			_updateGeodesicForm = true;
+			if(_paramChoiceAverageMode->getValue() == 1)	//if average selection mode is manual
+				_updateGeodesicFormAverage = true; //Modify geodesic form (with manual average)
 		}
+	}
+	if( paramName == kPushButtonResetTransformationParameters) //Push button reset transformation has changed
+	{
+		 _resetViewParameters = true; //reset view parameters on overlay
+	}
+	if( paramName == kColorAverageMode)
+	{
+		if(_paramChoiceAverageMode->getValue() == 1)
+		{
+			_paramRGBAColorSelection->setEnabled(true); //activate color average selection
+			_updateGeodesicFormAverage = true; //update geodesic form with average
+		}
+		else
+			_paramRGBAColorSelection->setEnabled(false); //disable color average selection
+		_updateGeodesicForm = true; //update geodesic form
+	}
+	if( paramName == kColorAverageSelection)
+	{
+		_updateGeodesicForm = true;	//update Geodesic Form
+		_updateGeodesicFormAverage = true; //update Geodesic Form average
 	}
 }
 
@@ -117,28 +151,41 @@ void ColorSpaceKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, c
 	{
 		if( this->hasCloudPointData() ) //it is not batch mode
 		{
-			getCloudPointData().generateVBOData(	//create a VBO data with discretization (and the new discretization step)
-			_clipSrc,
-			args.renderScale,
-			_paramBoolDiscretizationActive->getValue(),
-			_paramIntDiscretization->getValue() ); 
+			OFX::Clip* test = fetchClip(clipName); //test clip
+			if(test->isConnected())
+			{
+				getCloudPointData().generateVBOData(	//create a VBO data with discretization (and the new discretization step)
+					_clipSrc,
+					args.renderScale,
+					_paramBoolDiscretizationActive->getValue(),
+					_paramIntDiscretization->getValue() ); 
 			
-			 _updateVBO = true;		//update VBO on overlay
-			this->redrawOverlays();		//redraw scene
+				_updateVBO = true;			//update VBO on overlay
+				this->redrawOverlays();		//redraw scene
+			}
+			else //source clip is no more connected
+			{
+				getCloudPointData()._imgVBO.deleteVBO(); //delete VBO
+			}
 		}
 	}
-	
-	if( clipName == kClipColorSelection) // if color clip has changed
+	else if( clipName == kClipColorSelection) // if color clip has changed
 	{
 		if( this->hasCloudPointData() ) //it is not batch mode
 		{
-			getCloudPointData().generateAverageColorSelection(_clipColor,args.renderScale);	//update average
-			 _updateVBO = true;			//update VBO on overlay
-			this->redrawOverlays();		//redraw scene
-			
-			//recompute geodesic form
-			getCloudPointData()._geodesicForm.subdiviseFaces(getCloudPointData()._averageColor,_paramIntNbOfDivisionsGF->getValue()); //change value of subdivision
+			OFX::Clip* test = fetchClip(clipName); //test clip
+			if(test->isConnected())
+			{
+				_updateAverage = true;		//update selection average
+				_updateVBO = true;			//update VBO on overlay
+				_updateGeodesicForm = true; //update Geodesic form
+				this->redrawOverlays();		//redraw scene
+			}
 		}
+	}
+	else
+	{
+		
 	}
 }
 
@@ -172,10 +219,7 @@ void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 			_paramBoolDiscretizationActive->getValue(),
 			_paramIntDiscretization->getValue() );
 			
-			getCloudPointData().generateAverageColorSelection( //update average data
-					_clipColor,
-					args.renderScale);
-			
+			_updateAverage = true; //color clip selection need to be updated in overlay
 			_updateVBO = true; //VBO need to be updated in overlay
 		}
 	}

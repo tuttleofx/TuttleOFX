@@ -67,10 +67,26 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	dstClip->setSupportsTiles( kSupportTiles );
 
+	//Group display
+	OFX::GroupParamDescriptor* groupDisplay = desc.defineGroupParam(kGroupDisplay);
+	groupDisplay->setLabel(kGroupDisplayLabel);
+	groupDisplay->setAsTab(); //current group is a tab
+	
+	//Group settings
+	OFX::GroupParamDescriptor* groupSettings = desc.defineGroupParam(kGroupSettings);
+	groupSettings->setLabel(kGroupSettingsLabel); //add label
+	groupSettings->setAsTab();//current group is a tab
+	
+	//Group process
+	OFX::GroupParamDescriptor* groupProcess = desc.defineGroupParam(kGroupProcess);
+	groupProcess->setLabel(kGroupProcessLabel); //add label
+	groupProcess->setAsTab();//current group is a tab
+	
 	//Check-box display
 	OFX::BooleanParamDescriptor* pointCloudDisplay = desc.defineBooleanParam( kPointCloudDisplay );
 	pointCloudDisplay->setLabel( kPointCloudDisplayLabel );		//label
 	pointCloudDisplay->setDefault(false);						//display overlay by default
+	pointCloudDisplay->setParent(groupDisplay);					//add component to group display
 	
 	//Check-box discretization cloud point display
 	OFX::BooleanParamDescriptor* pointCloudDiscretization = desc.defineBooleanParam( kBoolDiscretizationDisplay );
@@ -79,6 +95,7 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	pointCloudDiscretization->setLayoutHint( OFX::eLayoutHintNoNewLine );		//line is not finished
 	pointCloudDiscretization->setEnabled(false);								//Disabled by default (display cloud point is not selected)
 	pointCloudDiscretization->setHint("Activate discretization point cloud.");
+	pointCloudDiscretization->setParent(groupDisplay);							//add component to group Display
 	
 	//Discretization int range
 	OFX::IntParamDescriptor* discretizationDisplay = desc.defineIntParam(kIntDiscretizationDisplay);
@@ -88,6 +105,15 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	discretizationDisplay->setDefault(10);										//default value
 	discretizationDisplay->setEnabled(false);									//Disabled by default (display cloud point is not selected)
 	discretizationDisplay->setHint("Change discretization point cloud step.");	
+	discretizationDisplay->setParent(groupDisplay);								//add component to group display
+	
+	//Push button to reset transformation parameters
+	OFX::PushButtonParamDescriptor* resetTransformationParameters = desc.definePushButtonParam(kPushButtonResetTransformationParameters);
+	resetTransformationParameters->setLabel(kPushButtonResetTransformationParametersLabel); //label
+	resetTransformationParameters->setHint("Reset view parameters"); //help
+	resetTransformationParameters->setParent(groupDisplay);			 //add component to group display
+	
+	//
 	
 	//Number of divison Geodesic form
 	OFX::IntParamDescriptor* nbDivisionsGeodesicForm = desc.defineIntParam(kIntNumberOfDivisonGeodesicForm);
@@ -96,8 +122,30 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	nbDivisionsGeodesicForm->setDisplayRange(2,15);								//display range values
 	nbDivisionsGeodesicForm->setDefault(numberOfDivisionInt);					//default value
 	nbDivisionsGeodesicForm->setHint("Change precision of treatment (can make process slower)"); //help
+	nbDivisionsGeodesicForm->setParent(groupSettings);							//add component to settings group
 	
+	//Selection average mode
+	OFX::ChoiceParamDescriptor* averageMode = desc.defineChoiceParam(kColorAverageMode);
+	averageMode->setLabel(kColorAverageModeLabel);
+	averageMode->setHint("Average mode :\n -automatic : average of color selection \n -manual : choose average separately from selection");
+	averageMode->appendOption(kColorAverageMode1);
+	averageMode->appendOption(kColorAverageMode2);
+	averageMode->setParent(groupSettings);	
 	
+	//Selection average selection
+	OFX::RGBAParamDescriptor* colorAverage = desc.defineRGBAParam(kColorAverageSelection);
+	colorAverage->setLabel(kColorAverageSelectionLabel);	//label
+	colorAverage->setHint("Select the average of the selection"); //help
+	colorAverage->setEnabled(false);			//Disabled by default
+	colorAverage->setParent(groupSettings);		//add to settings group
+	
+	//Check-box only selection color
+	OFX::BooleanParamDescriptor* onlySelectionColor = desc.defineBooleanParam(kBoolOnlySelection);
+	onlySelectionColor->setLabel(kBoolOnlySelectionLabel);			//add label
+	onlySelectionColor->setDefault(true);							//check box is not checked by default
+	onlySelectionColor->setEvaluateOnChange(false);					// don't need to recompute on change
+	onlySelectionColor->setHint("Do not see process form");	//help
+	onlySelectionColor->setParent(groupProcess);
 }
 
 /**

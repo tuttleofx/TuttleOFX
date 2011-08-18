@@ -50,10 +50,36 @@ const static std::string kIntNumberOfDivisonGeodesicForm = "numberOfDivisonGeode
 const static std::string kIntNumberOfDivisonGeodesicFormLabel = "Precision";
 static std::size_t numberOfDivisionInt = 4;
 
+//Reset transformation button
+const static std::string kPushButtonResetTransformationParameters = "ResetTransformation";
+const static std::string kPushButtonResetTransformationParametersLabel = "Reset transformation";
+
+//See only selection
+const static std::string kBoolOnlySelection = "seeGeodesicForm";
+const static std::string kBoolOnlySelectionLabel = "see geodesic form";
+
+//Group names
+const static std::string kGroupDisplay = "groupDisplay";
+const static std::string kGroupDisplayLabel = "Display";
+const static std::string kGroupSettings = "groupSettings";
+const static std::string kGroupSettingsLabel = "Settings";
+const static std::string kGroupProcess = "groupProcess";
+const static std::string kGroupProcessLabel = "Process";
+
+//Color average selection
+const static std::string kColorAverageSelection = "colorAverageSelection";
+const static std::string kColorAverageSelectionLabel = "Average selection";
+
+//Color average mode
+const static std::string kColorAverageMode = "colorAverageMode";
+const static std::string kColorAverageModeLabel = "Average mode";
+const static std::string kColorAverageMode1 = "Automatic";
+const static std::string kColorAverageMode2 = "Manual";
 
 //Rotation constants
 const static int KMaxDegres = 360;		//360° max for a rotation
 const static int kRotationSpeed = 5;	//mouse rotation scale
+
 }
 }
 }

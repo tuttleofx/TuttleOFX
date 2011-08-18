@@ -133,69 +133,6 @@ struct Pixel_copy_discretization
 	}
 };
 
-//Functor used to compute average on color clip selection
-template<class View, typename CType = boost::gil::bits64f>
-struct ComputeAverage
-{
-	typedef typename View::value_type Pixel;
-	typedef typename boost::gil::color_space_type<View>::type Colorspace;
-	typedef boost::gil::pixel<CType, boost::gil::layout<Colorspace> > CPixel; // the pixel type use for computation (using input colorspace)
-
-	CPixel operator()( const View& image )
-	{
-		/*using namespace boost::gil;
-		const std::size_t nbPixels = image.width() * image.height();
-		CPixel sum;
-		pixel_zeros_t<CPixel>( )( sum );
-
-		for( int y = 0;
-		     y < image.height();
-		     ++y )
-		{
-			typename View::x_iterator src_it = image.x_at( 0, y );
-			for( int x = 0;
-			     x < image.width();
-			     ++x, ++src_it )
-			{
-				CPixel pix;
-				pixel_assigns_t<Pixel, CPixel>( )( * src_it, pix ); // pix = src_it;
-				pixel_plus_assign_t<CPixel, CPixel>( )( pix, sum ); // sum += pix;
-			}
-		}
-		return pixel_divides_scalar_t<CPixel, double>() ( sum, nbPixels );*/
-		
-		using namespace boost::gil;
-		std::size_t nbPixels = 0; 
-		CPixel sum; //sum of each pixel
-		pixel_zeros_t<CPixel>( )( sum ); //set sum to 0
-
-		for( int y = 0;					//for each lines
-		     y < image.height();
-		     ++y )
-		{
-			typename View::x_iterator src_it = image.x_at( 0, y );
-			for( int x = 0;
-			     x < image.width();
-			     ++x, ++src_it )		// for each pixels in a line
-			{
-				CPixel pix;	//initialize a container pixel
-				pixel_assigns_t<Pixel, CPixel>( )( * src_it, pix ); // pix = src_it;
-				
-				if(pix[3] == 1)	//if current pixel is selected (alpha channel == 1)
-				{
-					pixel_plus_assign_t<CPixel, CPixel>( )( pix, sum ); // sum += pix;
-					++nbPixels; //increments number of selected pixel
-				}
-			}
-		}
-		if(nbPixels != 0) // if any selected pixel has been added
-			sum = pixel_divides_scalar_t<CPixel, double>() ( sum, nbPixels ); //compute average average (sum/nbPixels)
-		return 	sum; //return average (or (0,0,0) pixel)
-	}
-
-};
-
-
 class CloudPointData {
 
 protected:
@@ -238,11 +175,8 @@ public:
 	OfxTime _time;				//current time in sequence
 	VBO _imgVBO;				//VBO to display on overlay
 	DataVector _imgCopy;//copy of the image needed to draw Vector
-	//SPixel _selectionColorAverage; //Average of the selection color clip (selection)
-	Ofx3DPointD _averageColor;	   //Average of the selection color clip (selection)
+	bool _isVBOBuilt;  //if VBO is not built don't draw it on overlay
 	
-	GeodesicForm _geodesicForm; //geodesic form
-
 public:
 	//Constructor
 	CloudPointData(const OfxPointI& size, OfxTime time);
@@ -251,17 +185,10 @@ public:
 	bool generateVBOData(OFX::Clip* clipSrc, const OfxPointD& renderScale, bool vboWithDiscretization, int discretizationStep);	//create new VBO data (fill up buffer)
 	void updateVBO();	//create the VBO from VBO data (draw function)
 	
-	//Average management
-	bool generateAverageColorSelection(OFX::Clip* clipColor, const OfxPointD& renderScale);	//compute selection color clip average
-	void drawAverage();																		//draw average on screen (cross)
-	
 private:
 	//VBO data management
 	int generateAllPointsVBOData(SView srcView);	//generate a VBO with all of the pixels
 	int generateDiscretizedVBOData(SView srcView, int discretizationStep); //generate a  VBO with discretization
-	
-	//Average data computing
-	void computeColorAverage(SView srcView);	//compute the average of the selection color clip
 };
 
 }

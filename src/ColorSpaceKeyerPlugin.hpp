@@ -2,8 +2,11 @@
 #define _TUTTLE_PLUGIN_COLORSPACEKEYER_PLUGIN_HPP_
 
 #include "ColorSpaceKeyerDefinitions.hpp"
-#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
 #include "CloudPointData.hpp"
+
+#include <tuttle/plugin/ImageEffectGilPlugin.hpp>
+
+
 
 namespace tuttle {
 namespace plugin {
@@ -23,16 +26,24 @@ public:
 	typedef float Scalar;
 
 	// clips
-	OFX::Clip* _clipColor;		//
+	OFX::Clip* _clipColor;		//clip color
 
 	//parameters
 	OFX::BooleanParam* _paramBoolPointCloudDisplay;		//display cloud point - check box
 	OFX::BooleanParam* _paramBoolDiscretizationActive;	//is discretization active on point cloud - check box
 	OFX::IntParam* _paramIntDiscretization;				//discretization step - Int param
 	OFX::IntParam* _paramIntNbOfDivisionsGF;			//number of divisions geodesic form - Int param
+	OFX::BooleanParam* _paramBoolDisplayGeodesicForm;	//see geodesic form on screen - check box
+	OFX::ChoiceParam* _paramChoiceAverageMode;			//choice average mode - Choice param
+	OFX::RGBAParam* _paramRGBAColorSelection;				//color average selection - RGBA param
 	
 	//Overlay data parameters
 	bool _updateVBO;									//VBO data has been changed so update VBO
+	bool _updateAverage;								//Color clip src has changed so update average
+	bool _updateGeodesicForm;							//Average of Geodesic parameters has changed so update
+	bool _updateGeodesicFormAverage;					//Change Geodesic average parameters
+	bool _resetViewParameters;							//Push button - reset transform parameters has changed
+	
 	boost::scoped_ptr<CloudPointData> _cloudPointData;	//scoped pointer points the overlay data (or NULL)
 	std::size_t _cloudPointDataCount;					//count (class calling scoped pointer)
 	
