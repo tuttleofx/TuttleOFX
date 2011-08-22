@@ -20,9 +20,9 @@ project
 exe sam-convert : 
     [ glob src/*.cpp ]
     /tuttlehost/<link>static
-    /boost/system
-    /boost/filesystem
-	/boost/serialization
+    /boost//system
+    /boost//filesystem
+	/boost//serialization
 	:
 	<os>LINUX:<find-shared-library>dl
     ;
@@ -32,9 +32,9 @@ exe sam-convert :
 ###############################################################################
 install dist_src	
     : sam-convert
-      /boost/system
-      /boost/filesystem
-	  /boost/serialization
+      /boost//system
+      /boost//filesystem
+	  /boost//serialization
     : <variant>debug:<location>$(DIST)/sam-convert/bin/debug
       <variant>release:<location>$(DIST)/sam-convert/bin/release
     ;
