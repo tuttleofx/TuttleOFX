@@ -1,5 +1,7 @@
 #include "ColorSpaceKeyerAlgorithm.hpp"
 
+#include <tuttle/plugin/image/gil/algorithm.hpp>
+
 namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
@@ -9,6 +11,7 @@ ColorSpaceKeyerProcess<View>::ColorSpaceKeyerProcess( ColorSpaceKeyerPlugin &eff
 : ImageGilFilterProcessor<View>( effect )
 , _plugin( effect )
 {
+	this->setNoMultiThreading();
 }
 
 template<class View>
@@ -27,34 +30,55 @@ template<class View>
 void ColorSpaceKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	
-	for( int y = procWindowOutput.y1;
-			 y < procWindowOutput.y2;
-			 ++y )
-	{
-		typename View::x_iterator src_it = this->_srcView.x_at( procWindowOutput.x1, y );
-		typename View::x_iterator dst_it = this->_dstView.x_at( procWindowOutput.x1, y );
-		for( int x = procWindowOutput.x1;
-			 x < procWindowOutput.x2;
-			 ++x, ++src_it, ++dst_it )
-		{
-			(*dst_it) = (*src_it);
-		}
-		if( this->progressForward() )
-			return;
-	}
-	/*
+	// this->_renderArgs.time
+    OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
+        
 	OfxPointI procWindowSize = { procWindowRoW.x2 - procWindowRoW.x1,
 							     procWindowRoW.y2 - procWindowRoW.y1 };
 	View src = subimage_view( this->_srcView, procWindowSrc.x1, procWindowSrc.y1,
 							                  procWindowSize.x, procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							                  procWindowSize.x, procWindowSize.y );
-	copy_pixels( src, dst );
-	*/
-
+	
+	std::cout << "debut render" << std::endl;
+	//Create geodesic form
+	GeodesicForm _geodesicForm;
+	SelectionAverage selectionAverage(_plugin._time); //create selection
+	if(_plugin._paramChoiceAverageMode->getValue() ==0) //average mode is automatic
+	{
+		std::cout << "compute average selection" << std::endl;
+		selectionAverage.computeAverageSelection(_plugin._clipColor,_plugin._renderScale); //compute average selection
+		std::cout << "Modify geodesic form" << std::endl;
+		_geodesicForm.subdiviseFaces(selectionAverage._averageValue, _plugin._paramIntDiscretization->getValue()); //create geodesic form
+	}
+	else
+	{
+		std::cout << "non disponible" << std::endl;
+		return;
+	}
+	/*else //average mode is manual
+	{
+		Ofx3DPointD selectedAverage; //initialize average
+		OfxRGBAColourD colorSelected =  _plugin._paramRGBAColorSelection->getValue(); //get selected color
+		selectedAverage.x = colorSelected.r; //x == red
+		selectedAverage.y = colorSelected.g; //y == green
+		selectedAverage.z = colorSelected.b; //z == blue
+		//compute geodesic form
+		_geodesicForm.subdiviseFaces(selectedAverage, _plugin._paramIntDiscretization->getValue()); //create geodesic form
+	}*/
+	
+	//Extend geodesic form
+	selectionAverage.extendGeodesicForm(_plugin._clipColor,_plugin._renderScale,_geodesicForm); //extends geodesic form
+	
+	std::cout << "create functor" << std::endl;
+    //Create and initialize functor 
+	Compute_alpha_pixel funct(false,_geodesicForm); //Output is alpha
+	std::cout << "compute alpha mask" << std::endl;
+	//this function is chose because of functor reference and not copy
+	transform_pixels_progress(src,dst,funct,*this);
+	std::cout << "fin render"<< std::endl;
 }
 
 }

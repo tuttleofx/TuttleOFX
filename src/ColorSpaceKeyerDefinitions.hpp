@@ -76,6 +76,10 @@ const static std::string kColorAverageModeLabel = "Average mode";
 const static std::string kColorAverageMode1 = "Automatic";
 const static std::string kColorAverageMode2 = "Manual";
 
+//Color average selection (computing)
+const static std::string kColorAverageComputing = "colorAverageComputing";
+const static std::string kColorAverageComputingLabel = "Compute";
+
 //Rotation constants
 const static int KMaxDegres = 360;		//360° max for a rotation
 const static int kRotationSpeed = 5;	//mouse rotation scale

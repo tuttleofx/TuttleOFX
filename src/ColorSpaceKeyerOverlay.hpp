@@ -30,6 +30,8 @@ public:
 	bool _isCtrlKeyDown;		//keyboard management (s Ctrl key pressed)
 	double _rotateX;			//rotation on X axis (mouse)
 	double _rotateY;			//rotation on Y axis (mouse)
+	double _rotateXForm;		//rotation on X (center is geodesic form)
+	double _rotateYForm;		//rotation on Y (center is geodesic form)
 	Ofx3DPointD _coordAverageRotation; //Average coord with rotation
 
 	bool _isFirst;		//REMOVE (TEST)
@@ -61,8 +63,6 @@ public:
 	
 	/*Get overlay data*/
 	CloudPointData& getData();
-private:
-	void updateCoorAverageWithRotation(); //update the average coord using rotationX and rotationY values
 };
 
 class ColorSpaceKeyerOverlayDescriptor : public OFX::EffectOverlayDescriptor

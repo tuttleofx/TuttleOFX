@@ -25,6 +25,7 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 		_paramBoolDisplayGeodesicForm = fetchBooleanParam(kBoolOnlySelection);			//display geodesic form - check box
 		_paramChoiceAverageMode = fetchChoiceParam(kColorAverageMode);					//average color mode - Choice param
 		_paramRGBAColorSelection = fetchRGBAParam(kColorAverageSelection);				//average color selection - RGBA param
+		_paramPushButtonAverageCompute = fetchPushButtonParam(kColorAverageComputing);	//average color computing - Push button
 		
 		//verify display Discrete enable value
 		if(_paramBoolPointCloudDisplay->getValue())	//called default value
@@ -36,13 +37,15 @@ ColorSpaceKeyerPlugin::ColorSpaceKeyerPlugin( OfxImageEffectHandle handle )
 		if(_paramChoiceAverageMode->getValue() == 1)
 		{
 			_paramRGBAColorSelection->setEnabled(true);			//Enable color average selection (RGBA param)
+			_paramPushButtonAverageCompute->setEnabled(true);	//Enable color average computing (Push button)
 		}
 		
-		 _updateAverage = false;		//does display need to update average
-		 _updateGeodesicForm = false;	//does display need to update geodesic form
-		 _updateVBO = false;			//does display need to update VBO
-		 _updateGeodesicFormAverage = false;	//does Geodesic form need to be updated
-		 _resetViewParameters = false;	//do view parameters need to be reseted
+		_updateAverage = false;						//does display need to update average
+		_updateGeodesicForm = false;				//does display need to update geodesic form
+		_updateVBO = false;							//does display need to update VBO
+		_updateGeodesicFormAverage = false;			//does Geodesic form need to be updated
+		_resetViewParameters = false;				//do view parameters need to be reseted
+		_presetAverageSelection = false;			//does average selection need to be set 
 }
 
 ColorSpaceKeyerProcessParams<ColorSpaceKeyerPlugin::Scalar> ColorSpaceKeyerPlugin::getProcessParams( const OfxPointD& renderScale ) const
@@ -129,16 +132,24 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 		if(_paramChoiceAverageMode->getValue() == 1)
 		{
 			_paramRGBAColorSelection->setEnabled(true); //activate color average selection
+			_paramPushButtonAverageCompute->setEnabled(true); //activate color average computing
 			_updateGeodesicFormAverage = true; //update geodesic form with average
 		}
 		else
+		{
 			_paramRGBAColorSelection->setEnabled(false); //disable color average selection
+			_paramPushButtonAverageCompute->setEnabled(false); //disable color average computing
+		}
 		_updateGeodesicForm = true; //update geodesic form
 	}
 	if( paramName == kColorAverageSelection)
 	{
 		_updateGeodesicForm = true;	//update Geodesic Form
 		_updateGeodesicFormAverage = true; //update Geodesic Form average
+	}
+	if( paramName == kColorAverageComputing)
+	{
+		_presetAverageSelection = true; //set standard value to average
 	}
 }
 
@@ -223,6 +234,8 @@ void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 			_updateVBO = true; //VBO need to be updated in overlay
 		}
 	}
+	_renderScale = args.renderScale; //change render scale (before rendering)
+	_time = args.time;				// change time
 	doGilRender<ColorSpaceKeyerProcess>( *this, args );
 }
 

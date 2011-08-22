@@ -86,6 +86,7 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	OFX::BooleanParamDescriptor* pointCloudDisplay = desc.defineBooleanParam( kPointCloudDisplay );
 	pointCloudDisplay->setLabel( kPointCloudDisplayLabel );		//label
 	pointCloudDisplay->setDefault(false);						//display overlay by default
+	pointCloudDisplay->setEvaluateOnChange(false);				//Don't render on change
 	pointCloudDisplay->setParent(groupDisplay);					//add component to group display
 	
 	//Check-box discretization cloud point display
@@ -95,6 +96,7 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	pointCloudDiscretization->setLayoutHint( OFX::eLayoutHintNoNewLine );		//line is not finished
 	pointCloudDiscretization->setEnabled(false);								//Disabled by default (display cloud point is not selected)
 	pointCloudDiscretization->setHint("Activate discretization point cloud.");
+	pointCloudDiscretization->setEvaluateOnChange(false);						//Don't render on change
 	pointCloudDiscretization->setParent(groupDisplay);							//add component to group Display
 	
 	//Discretization int range
@@ -105,6 +107,7 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	discretizationDisplay->setDefault(10);										//default value
 	discretizationDisplay->setEnabled(false);									//Disabled by default (display cloud point is not selected)
 	discretizationDisplay->setHint("Change discretization point cloud step.");	
+	discretizationDisplay->setEvaluateOnChange(false);						//Don't render on change
 	discretizationDisplay->setParent(groupDisplay);								//add component to group display
 	
 	//Push button to reset transformation parameters
@@ -137,7 +140,14 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	colorAverage->setLabel(kColorAverageSelectionLabel);	//label
 	colorAverage->setHint("Select the average of the selection"); //help
 	colorAverage->setEnabled(false);			//Disabled by default
+	colorAverage->setLayoutHint( OFX::eLayoutHintNoNewLine );	//line is not finished
 	colorAverage->setParent(groupSettings);		//add to settings group
+	
+	//Selection average compute
+	OFX::PushButtonParamDescriptor* colorAverageCompute = desc.definePushButtonParam(kColorAverageComputing);
+	colorAverageCompute->setLabel(kColorAverageComputingLabel); //label
+	colorAverageCompute->setEnabled(false);						//Disabled by default
+	colorAverageCompute->setParent(groupSettings);				//add to settings group
 	
 	//Check-box only selection color
 	OFX::BooleanParamDescriptor* onlySelectionColor = desc.defineBooleanParam(kBoolOnlySelection);
@@ -145,6 +155,7 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	onlySelectionColor->setDefault(true);							//check box is not checked by default
 	onlySelectionColor->setEvaluateOnChange(false);					// don't need to recompute on change
 	onlySelectionColor->setHint("Do not see process form");	//help
+	onlySelectionColor->setEvaluateOnChange(false);						//Don't render on change
 	onlySelectionColor->setParent(groupProcess);
 }
 

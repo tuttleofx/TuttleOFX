@@ -23,6 +23,7 @@ ColorSpaceKeyerOverlay::ColorSpaceKeyerOverlay(OfxInteractHandle handle,OFX::Ima
 	_isPenDown = false;			//mouse is not under control by default
 	_isCtrlKeyDown = false;		//Ctrl key is not pressed by default
 	_rotateX = _rotateY = 0.0;	//initialize rotation to 0
+	_rotateXForm = _rotateYForm = 0.0; //initialize rotation centered to geodesic form to 0
 	_origin.x = _origin.y = _end.x = _end.y = 0;	//initialize mouse positions to 0
 	_isFirst = true;			//draws haven't been done yet (first time)
 }
@@ -183,37 +184,37 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 			else
 				_geodesicForm.subdiviseFaces(_averageColor._averageValue,_plugin->_paramIntNbOfDivisionsGF->getValue()); //compute geodesic form
 			
-			//std::cout << "debut extends" << std::endl;
+			std::cout << "debut extends" << std::endl;
 			_averageColor.extendGeodesicForm(_plugin->_clipColor,args.renderScale,_geodesicForm); //extends geodesic form
-			//std::cout << "fini extends"<< std::endl;
+			std::cout << "fini extends"<< std::endl;
 			_plugin->_updateGeodesicForm = false; //geodesic form has been updated
+		}
+		if(_plugin->_presetAverageSelection) //set standard average to average selection GUI
+		{
+			_plugin->_paramRGBAColorSelection->setValue(_averageColor._averageValue.x,_averageColor._averageValue.y, _averageColor._averageValue.z,1.0); //set average 
+			_plugin->_presetAverageSelection = false; //average selection has been updated
 		}
 		if(_plugin->_resetViewParameters) //View parameters need to be reseted
 		{
 			_rotateX = _rotateY = 0; //reset parameters
+			_rotateXForm = _rotateYForm = 0; //reset geodesic form center rotation parameters
 			_plugin->_resetViewParameters = false; //view parameters has been changed
 		}
 		
 		glEnable(GL_DEPTH_TEST);	//active depth (better for understand results)
 		glPushMatrix();				//new transformation
 
-		//rotate management
-		if(_isCtrlKeyDown)
-			glTranslated(_averageColor._averageValue.x, _averageColor._averageValue.y, _averageColor._averageValue.z); //center rotation to the average
-		else
-			glTranslatef(.5f,.5f,.5f);		//center rotation to the middle of cube
-
-		//Rotate
+		//rotate management (geodesic form center)
+		glTranslated(_averageColor._averageValue.x, _averageColor._averageValue.y, _averageColor._averageValue.z); //center rotation to the average
+		glRotated(_rotateYForm,1.0f,0.0f,0.0);	//rotation on Y axis (piloted with mouse)
+		glRotated(_rotateXForm,0.0f,1.0f,0.0);	//rotation on X axis (piloted with mouse)
+		glTranslated(-_averageColor._averageValue.x, -_averageColor._averageValue.y, -_averageColor._averageValue.z); //un-active center rotation
+		
+		//rotate management (cube center)
+		glTranslatef(.5f,.5f,.5f);		//center rotation to the middle of cube
 		glRotated(_rotateY,1.0f,0.0f,0.0);	//rotation on Y axis (piloted with mouse)
 		glRotated(_rotateX,0.0f,1.0f,0.0);	//rotation on X axis (piloted with mouse)
-		
-		//un-rotation management
-		if(_isCtrlKeyDown)
-		{
-			glTranslated(-_averageColor._averageValue.x, -_averageColor._averageValue.y, -_averageColor._averageValue.z); //un-active center rotation
-		}
-		else
-			glTranslatef(-.5f,-.5f,-.5f);	//un-active center translation
+		glTranslatef(-.5f,-.5f,-.5f);	//un-active center translation
 		
 		//drawing Axes
 		drawAxes();						//draw the X,Y and Z axes
@@ -286,11 +287,16 @@ bool ColorSpaceKeyerOverlay::penMotion( const OFX::PenArgs& args )
 		int deltaX = _end.x - _origin.x; //compute delta for rotation on Y axis (horizontal)
 		int deltaY = _end.y - _origin.y; //compute delta for rotation on X axis (vertical)
 
-		_rotateX += (deltaX/args.pixelScale.x)/kRotationSpeed; //add delta to current rotation (X axis)
-		_rotateY += (deltaY/args.pixelScale.y)/kRotationSpeed; //add delta to current rotation (Y axis)
-
-		updateCoorAverageWithRotation(); //update average position
-		
+		if(_isCtrlKeyDown)
+		{
+			_rotateXForm += (deltaX/args.pixelScale.x)/kRotationSpeed; //add delta to geodesic center rotation (X axis)
+			_rotateYForm += (deltaY/args.pixelScale.y)/kRotationSpeed; //add delta to geodesic center rotation (Y axis)
+		}
+		else
+		{
+			_rotateX += (deltaX/args.pixelScale.x)/kRotationSpeed; //add delta to cube rotation (X axis)
+			_rotateY += (deltaY/args.pixelScale.y)/kRotationSpeed; //add delta to cube rotation (Y axis)
+		}
 		_origin.x = args.penPosition.x;
 		_origin.y = args.penPosition.y;
 		
@@ -344,7 +350,7 @@ CloudPointData& ColorSpaceKeyerOverlay::getData()
 /**
  * Matrix product with a 3D vector and a 4*4 matrix 
  */
-double* productVectorMatrix(double* v, double* m, double* result)
+void productVectorMatrix(double* v, double* m, double* result)
 {
 	result[0] = m[0]*v[0]+m[4]*v[1]+m[8]*v[2]+m[12]*1; //compute X value
 	result[1] = m[1]*v[0]+m[5]*v[1]+m[9]*v[2]+m[13]*1; //compute Y value
@@ -354,27 +360,6 @@ double* productVectorMatrix(double* v, double* m, double* result)
 	//normalize result vector
 	for(unsigned int i=0; i<4; ++i)
 		result[i] /= result[3];
-}
-
-/*
- *update the average coord using rotationX and rotationY values
- */
-void ColorSpaceKeyerOverlay::updateCoorAverageWithRotation()
-{
-	//std::cout << "passe"<<std::endl;
-	//Get modelView
-	double matrixModelView[16]; //declare
-	glGetDoublev(GL_MODELVIEW_MATRIX, matrixModelView); //get matrix
-	
-	double vector[3]; //initialize vector
-	vector[0] = _averageColor._averageValue.x; //place X value
-	vector[1] = _averageColor._averageValue.y; //place Y value
-	vector[2] = _averageColor._averageValue.z; //place Z value
-	double result[4]; //initialize result vector
-	productVectorMatrix(vector,matrixModelView,result); //compute new coord
-	_coordAverageRotation.x = result[0]; //set new X
-	_coordAverageRotation.y = result[1]; //set new Y
-	_coordAverageRotation.z = result[2]; //set new Z
 }
 
 }

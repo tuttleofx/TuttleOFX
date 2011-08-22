@@ -15,6 +15,8 @@ namespace colorSpaceKeyer {
 template<typename Scalar>
 struct ColorSpaceKeyerProcessParams
 {
+	OFX::Clip* _clipColor;		//clip color
+	
 };
 
 /**
@@ -35,7 +37,8 @@ public:
 	OFX::IntParam* _paramIntNbOfDivisionsGF;			//number of divisions geodesic form - Int param
 	OFX::BooleanParam* _paramBoolDisplayGeodesicForm;	//see geodesic form on screen - check box
 	OFX::ChoiceParam* _paramChoiceAverageMode;			//choice average mode - Choice param
-	OFX::RGBAParam* _paramRGBAColorSelection;				//color average selection - RGBA param
+	OFX::RGBAParam* _paramRGBAColorSelection;			//color average selection - RGBA param
+	OFX::PushButtonParam* _paramPushButtonAverageCompute;	//color average computing - Push button
 	
 	//Overlay data parameters
 	bool _updateVBO;									//VBO data has been changed so update VBO
@@ -43,6 +46,10 @@ public:
 	bool _updateGeodesicForm;							//Average of Geodesic parameters has changed so update
 	bool _updateGeodesicFormAverage;					//Change Geodesic average parameters
 	bool _resetViewParameters;							//Push button - reset transform parameters has changed
+	bool _presetAverageSelection;						//Compute average selection in overlay
+	
+	OfxPointD _renderScale;								//current render scale
+	OfxTime _time;										//current time
 	
 	boost::scoped_ptr<CloudPointData> _cloudPointData;	//scoped pointer points the overlay data (or NULL)
 	std::size_t _cloudPointDataCount;					//count (class calling scoped pointer)
