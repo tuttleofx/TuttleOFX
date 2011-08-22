@@ -11,7 +11,7 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/Jpeg2000/obj
+    : build-dir $(BUILD)/Jpeg2000
     ;
 
 ###############################################################################
@@ -29,7 +29,7 @@ else if [ os.name ] = MACOSX
 ###############################################################################
 plugin Jpeg2000 :
     [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
+    /tuttleplugin/<link>static
     opengl
     ;
 
