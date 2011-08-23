@@ -151,6 +151,7 @@ alias sam-install : sam-install-libs sam-install-bins ;
 
 install sam-install-bins
 	:   
+		sam
 		sam-cp
 		sam-mv
 		sam-rm
