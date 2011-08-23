@@ -121,20 +121,20 @@ void copy_sequence( const ttl::Sequence& s,
 
 int sammvcp( int argc, char** argv )
 {
-	ttl::EMaskOptions descriptionMask = ttl::eMaskOptionsNone; // by default show nothing
-	std::string availableExtensions;
+	ttl::EMaskOptions descriptionMask      = ttl::eMaskOptionsNone; // by default show nothing
+	std::string              availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
-	std::string outputPattern;
-	bool verbose = false;
-	bool dstIsSeq = false;
-	std::ssize_t offset = 0;
-	bool hasInputFirst = false;
-	std::ssize_t inputFirst = 0;
-	bool hasInputLast = false;
-	std::ssize_t inputLast = 0;
-	std::ssize_t outputFirst = 0;
-	std::ssize_t outputLast = 0;
+	std::string              outputPattern;
+	bool                     verbose       = false;
+	bool                     dstIsSeq      = false;
+	std::ssize_t             offset        = 0;
+	bool                     hasInputFirst = false;
+	std::ssize_t             inputFirst    = 0;
+	bool                     hasInputLast  = false;
+	std::ssize_t             inputLast     = 0;
+	std::ssize_t             outputFirst   = 0;
+	std::ssize_t             outputLast    = 0;
 	typedef enum {
 		eOffsetModeNotSet,
 		eOffsetModeValue,
@@ -146,14 +146,14 @@ int sammvcp( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options( )
-		( "help,h", "show this help" )
-		( "offset,o", bpo::value<std::ssize_t>( ), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"" )
-//		( "force,f", bpo::value<bool>( ), "if a destination file exists, replace it" )
-		( "input-first", bpo::value<std::ssize_t>( ), "specify the first input image, in order to select a sub-range of the input sequence" )
-		( "input-last", bpo::value<std::ssize_t>( ), "specify the last input image, in order to select a sub-range of the input sequence" )
+		( "help,h"      , "show this help" )
+		( "offset,o"    , bpo::value<std::ssize_t>( ), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"" )
+//		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" )
+		( "input-first" , bpo::value<std::ssize_t>( ), "specify the first input image, in order to select a sub-range of the input sequence" )
+		( "input-last"  , bpo::value<std::ssize_t>( ), "specify the last input image, in order to select a sub-range of the input sequence" )
 		( "output-first", bpo::value<std::ssize_t>( ), "specify the first output image, in order to retime the sequence. It's another way to create an offset of your sequence." )
-		( "output-last", bpo::value<std::ssize_t>( ), "specify the last output image, in order to retime the sequence" )
-		( "verbose,v", "explain what is being done" )
+		( "output-last" , bpo::value<std::ssize_t>( ), "specify the last output image, in order to retime the sequence" )
+		( "verbose,v"   , "explain what is being done" )
 		;
 
 	// describe hidden options

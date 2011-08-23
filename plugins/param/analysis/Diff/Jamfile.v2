@@ -9,7 +9,7 @@ import os ;
 project
 	: requirements
 		<include>src
-	#: build-dir $(BUILD)/diff
+	: build-dir $(BUILD)/diff
 	;
 
 ###############################################################################

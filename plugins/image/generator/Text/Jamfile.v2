@@ -8,7 +8,6 @@ import os ;
 ###############################################################################
 project
     : requirements
-		<include>$(3RD_PARTY)/freetype/include
 		<include>src
 		
     : build-dir $(BUILD)/Text
@@ -25,6 +24,7 @@ plugin Text :
     	/boost//system
     	/boost//filesystem
     	/boost//python
+    	/python
     	/freetype
     ;
 
