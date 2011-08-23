@@ -3,7 +3,7 @@
 ###############################################################################
 path-constant BUILD : $(BUILD)/process ;
 
-for local l in [ glob * ]
+for local l in [ glob * : channel ]
 {
    build-project $(l) ;
 }

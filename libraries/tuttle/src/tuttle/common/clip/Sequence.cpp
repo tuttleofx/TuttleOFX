@@ -683,7 +683,7 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	else
 	{
 		idChangeBegin = allIds.front();
-		idChangeEnd = allIds.back();
+		idChangeEnd   = allIds.back();
 	}
 	//	TUTTLE_TCOUT_VAR( idNum );
 
@@ -708,12 +708,11 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	if( allIds.size() <= 1 )
 	{
 		// standard case, one sequence detected
-		seqCommon._firstTime = nums.front().getTime( idChangeEnd );
-		seqCommon._lastTime  = nums.back().getTime( idChangeEnd );
-		seqCommon._nbFiles   = nums.size();
-
-		seqCommon._step = extractStep( nums, idChangeEnd );
-		seqCommon._padding = extractPadding( nums, idChangeEnd );
+		seqCommon._firstTime     = nums.front().getTime  ( idChangeEnd );
+		seqCommon._lastTime      = nums.back().getTime   ( idChangeEnd );
+		seqCommon._nbFiles       = nums.size             ();
+		seqCommon._step          = extractStep           ( nums, idChangeEnd );
+		seqCommon._padding       = extractPadding        ( nums, idChangeEnd );
 		seqCommon._strictPadding = extractIsStrictPadding( nums, idChangeEnd, seqCommon._padding );
 		result.push_back(seqCommon);
 		return result;
@@ -722,8 +721,8 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	// it's a multi-sequence...
 
 	const FileNumbers* previous = &nums.front();
-	Sequence s = seqCommon;
-	s._prefix += previous->getString( idChangeBegin );
+	Sequence s  = seqCommon;
+	s._prefix  += previous->getString( idChangeBegin );
 	for( std::size_t i = idChangeBegin+1; i < idChangeEnd; ++i )
 	{
 		s._prefix += id[i];
@@ -732,25 +731,26 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 	s._prefix += id[ idChangeEnd ];
 	result.push_back( s );
 
-	std::list<Time> times;
+	std::list<Time>        times;
 	std::list<std::string> timesStr;
-	std::size_t iCurrent = 0;
-	std::size_t iBegin = 0;
+	std::size_t            iCurrent = 0;
+	//std::size_t            iBegin = 0; // unused ...
+
 	BOOST_FOREACH( const FileNumbers& sn, nums )
 	{
 		if( ! sn.rangeEquals( *previous, idChangeBegin, idChangeEnd ) )
 		{
 			// update the last added sequence
-			result.back()._nbFiles = times.size();
-			result.back()._firstTime = times.front();
-			result.back()._lastTime = times.back();
-			result.back()._step = extractStep(times);
-			result.back()._padding = extractPadding(timesStr);
-			result.back()._strictPadding = extractIsStrictPadding(timesStr, result.back()._padding);
+			result.back()._nbFiles       = times.size             ();
+			result.back()._firstTime     = times.front            ();
+			result.back()._lastTime      = times.back             ();
+			result.back()._step          = extractStep            ( times );
+			result.back()._padding       = extractPadding         ( timesStr );
+			result.back()._strictPadding = extractIsStrictPadding ( timesStr, result.back()._padding );
 			times.clear();
 
 			// create a new sequence initilized with "sn" values
-			iBegin = iCurrent;
+			//iBegin = iCurrent;
 			s = seqCommon;
 			s._prefix += sn.getString( idChangeBegin );
 			for( std::size_t i = idChangeBegin+1; i < idChangeEnd; ++i )
@@ -758,22 +758,22 @@ std::list<Sequence> buildSequence( const boost::filesystem::path& directory, con
 				s._prefix += id[i];
 				s._prefix += sn.getString( i );
 			}
-			s._prefix += id[ idChangeEnd ];
+			s._prefix   += id[ idChangeEnd ];
 			s._padding   = sn.getPadding( idChangeEnd );
 			result.push_back( s );
 			previous = &sn;
 		}
-		times.push_back( sn.getTime(idChangeEnd) );
+		times.push_back   ( sn.getTime  (idChangeEnd) );
 		timesStr.push_back( sn.getString(idChangeEnd) );
 		++iCurrent;
 	}
 	// update the last added sequence
-	result.back()._nbFiles = times.size();
-	result.back()._firstTime = times.front();
-	result.back()._lastTime = times.back();
-	result.back()._step = extractStep(times);
-	result.back()._padding = extractPadding(timesStr);
-	result.back()._strictPadding = extractIsStrictPadding(timesStr, result.back()._padding);
+	result.back()._nbFiles       = times.size             ();
+	result.back()._firstTime     = times.front            ();
+	result.back()._lastTime      = times.back             ();
+	result.back()._step          = extractStep            ( times );
+	result.back()._padding       = extractPadding         ( timesStr );
+	result.back()._strictPadding = extractIsStrictPadding ( timesStr, result.back()._padding );
 	
 	return result;
 }
@@ -808,9 +808,9 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 {
 	std::list<boost::shared_ptr<FileObject> > output;
 	
-	std::list<boost::shared_ptr<FileObject> >	outputDirectories;
-	std::list<boost::shared_ptr<FileObject> >	outputFiles;
-	std::list<boost::shared_ptr<FileObject> >	outputSequences;
+	std::list<boost::shared_ptr<FileObject> > outputDirectories;
+	std::list<boost::shared_ptr<FileObject> > outputFiles;
+	std::list<boost::shared_ptr<FileObject> > outputSequences;
 	
 	if( !exists( directory ) )
 		return output;
@@ -936,7 +936,7 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	os << std::left;
 	if( showProperties() )
 	{
-		os <<std::setw(PROPERTIES_WIDTH) << "d ";
+		os << std::setw( PROPERTIES_WIDTH ) << "d ";
 	}
 	if( showPath() )
 	{
@@ -948,18 +948,11 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 		{
 			dir = _directory;
 		}
-		
+		TUTTLE_COUT ("dir = " << dir.string());
 		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
-		
-		std::string path = (dir / _folderName).string();
-		if(_options & eMaskOptionsColor)
-		{
-			os << std::setw(NAME_WIDTH_WITH_DIR) << kColorFolder+ path + kColorStd;
-		}
-		else
-		{
-			os << std::setw(NAME_WIDTH_WITH_DIR) << path;
-		}
+		TUTTLE_COUT ("dir = " << dir.string());
+		os << std::setw( NAME_WIDTH_WITH_DIR ) << sColorFolder + (dir / _folderName).string() + sColorStd;
+
 	}
 	else
 	{
@@ -968,14 +961,8 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 			dir = bfs::system_complete(_directory);
 		}
 
-		if(_options & eMaskOptionsColor)
-		{
-			os << std::setw(NAME_WIDTH) << kColorFolder + dir.string() + _folderName + kColorStd ;
-		}
-		else
-		{
-			os << std::setw(NAME_WIDTH) << dir.string() + _folderName ;
-		}
+		os << std::setw( NAME_WIDTH ) << sColorFolder + dir.string() + _folderName + sColorStd ;
+
 	}
 	return os;
 }
@@ -994,7 +981,7 @@ std::ostream& File::getCout( std::ostream& os ) const
 
 	if( showProperties() )
 	{
-		os <<std::setw(PROPERTIES_WIDTH) << "f ";// + boost::filesystem::file_size( _directory/_filename );
+		os << std::setw( PROPERTIES_WIDTH ) << "f ";
 	}
 	if( showPath() )
 	{
@@ -1007,15 +994,8 @@ std::ostream& File::getCout( std::ostream& os ) const
 			dir = _directory;
 		}
 		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
-		std::string path = ( dir / _filename).string();
-		if(_options & eMaskOptionsColor)
-		{
-			os << std::setw(NAME_WIDTH_WITH_DIR) << kColorFile + path  + kColorStd;
-		}
-		else
-		{
-			os << std::setw(NAME_WIDTH_WITH_DIR) << path ;
-		}
+
+		os << std::setw( NAME_WIDTH_WITH_DIR ) << sColorFile + ( dir / _filename).string() + sColorStd;
 	}
 	else
 	{
@@ -1023,14 +1003,7 @@ std::ostream& File::getCout( std::ostream& os ) const
 		{
 			dir = bfs::system_complete(_directory);
 		}
-		if(_options & eMaskOptionsColor)
-		{
-			os << std::setw(NAME_WIDTH) << kColorFile + dir.string() + _filename + kColorStd ;
-		}
-		else
-		{
-			os << std::setw(NAME_WIDTH) << dir.string() + _filename ;
-		}
+		os << std::setw( NAME_WIDTH ) << sColorFile + dir.string() + _filename + sColorStd ;
 	}
 	return os;
 }
@@ -1048,7 +1021,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	os << std::left;
 	if( showProperties() )
 	{
-		os <<std::setw(PROPERTIES_WIDTH) << "s";
+		os << std::setw( PROPERTIES_WIDTH ) << "s ";
 	}
 	if( showPath() )
 	{
@@ -1061,41 +1034,24 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 			dir = _directory;
 		}
 		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
-		std::string path = ( dir / getStandardPattern()).string();
-		if(_options & eMaskOptionsColor)
-		{
-			os << std::setw(NAME_WIDTH_WITH_DIR) << kColorSequence + path + kColorStd ;
-		}
-		else
-		{
-			os << std::setw(NAME_WIDTH_WITH_DIR) << path ;
-		}
+
+		os << std::setw( NAME_WIDTH_WITH_DIR ) << sColorSequence + ( dir / getStandardPattern()).string() + sColorStd ;
 	}
 	else
 	{
-		if(_options & eMaskOptionsColor)
-		{
-			os << std::setw(NAME_WIDTH) << kColorSequence + dir.string() + getStandardPattern() + kColorStd ;
-		}
-		else
-		{
-			os << std::setw(NAME_WIDTH) << dir.string() + getStandardPattern() ;
-		}
+		os << std::setw( NAME_WIDTH ) << sColorSequence + dir.string() + getStandardPattern() + sColorStd ;
 	}
+
 	os << " [" << getFirstTime() << ":" << getLastTime();
+
 	if( getStep() != 1 )
 		os << "x" << getStep();
+
 	os << "] " << getNbFiles() << " file" << ( ( getNbFiles() > 1 ) ? "s" : "" );
+
 	if( hasMissingFile() )
 	{
-		if(_options & eMaskOptionsColor)
-		{
-			os << ", "  << kColorError << getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << kColorStd;
-		}
-		else
-		{
-			os << ", "  << getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" );
-		}
+		os << ", " << sColorError << getNbMissingFiles() << " missing file" << ( ( getNbMissingFiles() > 1 ) ? "s" : "" ) << sColorStd;
 	}
 	return os;
 }

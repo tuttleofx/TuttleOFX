@@ -28,28 +28,28 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	EMaskType				researchMask		= eMaskTypeSequence;	// by default show sequences
-	EMaskOptions				descriptionMask		= eMaskOptionsNone;	// by default show nothing
-	bool					recursiveListing	= false;
-	std::string				availableExtensions;
-	std::vector<std::string>		paths;
-	std::vector<std::string>		filters;
+	EMaskType                  researchMask        = eMaskTypeSequence;	// by default show sequences
+	EMaskOptions               descriptionMask     = eMaskOptionsNone;	// by default show nothing
+	bool                       recursiveListing    = false;
+	std::string                availableExtensions;
+	std::vector<std::string>   paths;
+	std::vector<std::string>   filters;
 	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("all,a"		, "do not ignore entries starting with .")
-		("directories,d"	, "show directories in path(s)")
-		("expression,e"		, bpo::value<std::string>(), "list with a specific pattern, ex: *.jpg,*.png")
-		("files,f"		, "show files in path(s)")
-		("help,h"		, "show this help")
-		("long-listing,l"	, "use a long listing format")
-		("mask,m"		, "mask sequences in path(s)")
-		("relative-path,p"		, "show the root path for each objects")
-		("recursive,R"		, "list subdirectories recursively")
-		("absolute-path"        , "show the absolute path, not relative like path-root")
-		("color"		, "color the output")
-		("full-display"		, "show directories, files and sequences")
+		("all,a"            , "do not ignore entries starting with .")
+		("directories,d"    , "show directories in path(s)")
+		("expression,e"     , bpo::value<std::string>(), "list with a specific pattern, ex: *.jpg,*.png")
+		("files,f"          , "show files in path(s)")
+		("help,h"           , "show this help")
+		("long-listing,l"   , "use a long listing format")
+		("mask,m"           , "mask sequences in path(s)")
+		("relative-path,p"  , "show the root path for each objects")
+		("recursive,R"      , "list subdirectories recursively")
+		("absolute-path"    , "show the absolute path, not relative like path-root")
+		("color"            , "color the output")
+		("full-display"     , "show directories, files and sequences")
 	;
 	
 	// describe hidden options
@@ -171,7 +171,10 @@ int main( int argc, char** argv )
 	{
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-//			TUTTLE_COUT( "path: "<< path );
+			if( path == bfs::path(".") )
+			{
+				path = bfs::path("./");
+			}
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )

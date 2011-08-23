@@ -19,17 +19,17 @@
 #define NAME_WIDTH_WITH_DIR 80
 
 #ifdef __LINUX__
-static const std::string kColorStd	( "\E[0;0m"  );
-static const std::string kColorFolder	( "\E[1;34m" );
-static const std::string kColorFile	( "\E[0;32m" );
-static const std::string kColorSequence	( "\E[0;32m" );
-static const std::string kColorError	( "\E[0;31m" );
+static const std::string kColorStd      ( "\E[0;0m"  );
+static const std::string kColorFolder   ( "\E[1;34m" );
+static const std::string kColorFile	    ( "\E[0;32m" );
+static const std::string kColorSequence ( "\E[0;32m" );
+static const std::string kColorError    ( "\E[0;31m" );
 #else
-static const std::string kColorStd	( "" );
-static const std::string kColorFolder	( "" );
-static const std::string kColorFile	( "" );
-static const std::string kColorSequence	( "" );
-static const std::string kColorError	( "" );
+static const std::string kColorStd      ( "" );
+static const std::string kColorFolder   ( "" );
+static const std::string kColorFile     ( "" );
+static const std::string kColorSequence ( "" );
+static const std::string kColorError    ( "" );
 #endif
 
 namespace tuttle {
@@ -45,24 +45,24 @@ class FileNumbers;
   */
 enum EMaskType
 {
-	eMaskTypeUndefined	= 0,			// 0
-	eMaskTypeDirectory	= 1,			// 1<<0
-	eMaskTypeFile		= eMaskTypeDirectory*2,		// 1<<1
-	eMaskTypeSequence	= eMaskTypeFile*2,		// 1<<2
+	eMaskTypeUndefined  = 0,			           // 0
+	eMaskTypeDirectory  = 1,			           // 1<<0
+	eMaskTypeFile       = eMaskTypeDirectory * 2,  // 1<<1
+	eMaskTypeSequence   = eMaskTypeFile      * 2,  // 1<<2
 	
-	eMaskTypeDefault = eMaskTypeSequence
+	eMaskTypeDefault    = eMaskTypeSequence
 };
 
 enum EMaskOptions
 {
-	eMaskOptionsNone		= 0,			// 0
-	eMaskOptionsProperties	= 1,			// show type of FileObject
-	eMaskOptionsPath		= eMaskOptionsProperties*2,	// show path of FileObject
-	eMaskOptionsAbsolutePath	= eMaskOptionsPath*2,	// show absolute path of FileObject
-	eMaskOptionsDotFile	= eMaskOptionsAbsolutePath*2,	// show files which start with a dot (hidden files)
-	eMaskOptionsColor		= eMaskOptionsDotFile*2,		// output with color
+	eMaskOptionsNone         = 0,			                  // 0
+	eMaskOptionsProperties   = 1,			                  // show type of FileObject
+	eMaskOptionsPath         = eMaskOptionsProperties   * 2,  // show path of FileObject
+	eMaskOptionsAbsolutePath = eMaskOptionsPath         * 2,  // show absolute path of FileObject
+	eMaskOptionsDotFile      = eMaskOptionsAbsolutePath * 2,  // show files which start with a dot (hidden files)
+	eMaskOptionsColor        = eMaskOptionsDotFile      * 2,  // output with color
 	
-	eMaskOptionsDefault = ( eMaskOptionsPath | eMaskOptionsColor )
+	eMaskOptionsDefault      = ( eMaskOptionsPath | eMaskOptionsColor )
 };
 
 inline EMaskType operator~(const EMaskType& a)
@@ -105,14 +105,16 @@ public:
 	FileObject( )
 	{
 	  	_directory.clear();
-		_type		= eMaskTypeUndefined;
-		_options	= eMaskOptionsNone;
+		_type       = eMaskTypeUndefined;
+		_options    = eMaskOptionsNone;
+		initOutputColor ( _options & eMaskOptionsColor );
 	}
 	FileObject( const EMaskOptions options )
 	{
 		_directory.clear();
-		_type		= eMaskTypeUndefined;
-		_options	= options;
+		_type       = eMaskTypeUndefined;
+		_options    = options;
+		initOutputColor ( _options & eMaskOptionsColor );
 	}
 	/**
 	 * @brief Construct a FileObject with given informations.
@@ -138,38 +140,67 @@ public:
 //		return getDirectory() / getName();
 //	}
 	
-	inline boost::filesystem::path getDirectory() const				{ return _directory; }
-	inline boost::filesystem::path getAbsoluteDirectory() const				{ return boost::filesystem::absolute(_directory); }
-	inline void					setDirectory( const boost::filesystem::path& p )	{ _directory = p; }
-	void					setDirectoryFromPath( const boost::filesystem::path& p );
+	inline boost::filesystem::path getDirectory         () const				                { return _directory; }
+	inline boost::filesystem::path getAbsoluteDirectory () const				                { return boost::filesystem::absolute(_directory); }
+	inline void                    setDirectory         ( const boost::filesystem::path& p )	{ _directory = p; }
+	void                           setDirectoryFromPath ( const boost::filesystem::path& p );
 	
-	EMaskOptions					getMaskOptions	() const				{ return _options; }
-	EMaskType					getMaskType	() const				{ return _type; }
+	EMaskOptions                   getMaskOptions	    () const				                { return _options; }
+	EMaskType                      getMaskType	        () const				                { return _type; }
 
 	virtual inline void clear()
 	{
 		_directory.clear();
-		_type = eMaskTypeDefault;
+		_type    = eMaskTypeDefault;
 		_options = eMaskOptionsDefault;
+		initOutputColor ( _options & eMaskOptionsColor );
 	}
+
 private:
 	void init( const boost::filesystem::path& directory, const EMaskType& type, const EMaskOptions& options )
 	{
-		_directory	= directory;
-		_type		= type;
-		_options	= options;
+		_directory  = directory;
+		_type       = type;
+		_options    = options;
+		initOutputColor ( _options & eMaskOptionsColor );
 	}
 	
+	void initOutputColor ( bool activateColor = false )
+	{
+		if( activateColor )
+		{
+			sColorStd      = kColorStd;
+			sColorFolder   = kColorFolder;
+			sColorFile     = kColorFile;
+			sColorSequence = kColorSequence;
+			sColorError    = kColorError;
+		}
+		else
+		{
+			sColorStd      = "";
+			sColorFolder   = "";
+			sColorFile     = "";
+			sColorSequence = "";
+			sColorError    = "";
+		}
+	}
+
 protected:
 	
 	inline bool showProperties()	const	{ return _options & eMaskOptionsProperties; }
 	inline bool showPath()		const	{ return _options & eMaskOptionsPath; }
 	
 	
-	boost::filesystem::path	_directory;		///< directory
+	boost::filesystem::path _directory;		///< directory
 
-	EMaskType		_type;			///< specify type of object
-	EMaskOptions		_options;		///< specify output options of object, common for each objects
+	EMaskType               _type;			///< specify type of object
+	EMaskOptions            _options;		///< specify output options of object, common for each objects
+
+	std::string sColorStd;
+	std::string sColorFolder;
+	std::string sColorFile;
+	std::string sColorSequence;
+	std::string sColorError;
 };
 
 std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, const EMaskType mask = eMaskTypeDefault, const EMaskOptions desc = eMaskOptionsDefault );
