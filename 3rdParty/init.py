@@ -90,7 +90,7 @@ def getKnownExtensions( filename ):
 	global knownExtensions
 	return [f for f in knownExtensions.keys() if filename.endswith(f)]
 	
-def uncompress(filename, ext, inNewDirectory, libname):
+def uncompress(filename, ext, inNewDirectory, libname, folderExtracted):
 
 	if ext == 'tar.gz' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
@@ -98,6 +98,11 @@ def uncompress(filename, ext, inNewDirectory, libname):
 		tar.extractall( folder )
 
 	if ext == 'tar.bz2' :
+		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
+		folder = './'
+		tar.extractall( folder )
+
+	if ext == 'tgz' :
 		tar = tarfile.open( download_dir + "/" + filename, 'r:*')
 		folder = './'
 		tar.extractall( folder )
@@ -115,13 +120,18 @@ def uncompress(filename, ext, inNewDirectory, libname):
 	if not os.path.exists( os.path.join( os.getcwd(), libname)):
 		os.mkdir(os.path.join( os.getcwd() ,libname))
 	
-	print 'uncompress and  move', filename[:-len(ext)-1], libname, '\n'
-	movetree(filename[:-len(ext)-1], libname)
-	rmtree(filename[:-len(ext)-1])
+	print '\nuncompress : ', folderExtracted, ' -> ', libname, '\n'
+	
+	if os.path.exists( libname + '/Jamfile.v2' ) :
+		move( libname + '/Jamfile.v2', folderExtracted )
+	if os.path.exists(libname) :
+		rmtree( libname )
+	os.rename( folderExtracted, libname )
+
 	print 'end of uncompress\n'
 
 def getAndUncompress( libraries ):
-	for libname, url, inNewDirectory in libraries:
+	for libname, url, folderExtracted, inNewDirectory in libraries:
 		print '_'*80
 		print '--', libname
 		parts = url.split('/')
@@ -147,28 +157,29 @@ def getAndUncompress( libraries ):
 			if os.path.isdir(filename[:-len(ext)-1]) :
 				print 'Already uncompressed : ', dirname
 			else:
-				uncompress( filename, ext, inNewDirectory, libname )
+				uncompress( filename, ext, inNewDirectory, libname, folderExtracted )
 		except Exception, e:
 			print 'uncompress error (', str(e), ')'
 
 allLibs = [
-		('zlib','http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz', False) if not windows else ('zlib','http://downloads.sourceforge.net/project/libpng/zlib/1.2.3/zlib123.zip', True),
-		('libpng', 'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz', False) if not windows else ('libpng','http://downloads.sourceforge.net/project/libpng/libpng12/older-releases/1.2.41/lpng1241.zip', False),
-		('ilmbase', 'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz', False),
-		('openexr', 'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz', False),
-		('ctl', 'http://sourceforge.net/projects/ampasctl/files/ctl/ctl-1.4.1/ctl-1.4.1.tar.gz/download', False),
-		('boost', 'http://prdownloads.sourceforge.net/boost/boost_1_47_0.tar.bz2', False) if not windows else ('boost', 'http://sourceforge.net/projects/boost/files/boost/1.47.0/boost_1_47_0.zip', False),
-		('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz', False) if not windows else ('freetype','http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz', False),
-		('libraw','http://www.libraw.org/data/LibRaw-0.13.1.tar.gz', False) if not windows else ('libraw', 'http://www.libraw.org/data/LibRaw-0.13.5.zip', False),
-		('libcaca','http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz', False),
-		('lcms','http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.tar.gz', False) if not windows else ('lcms', 'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.zip',False),
-		('bzlib','http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz',False),
-		('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz', False) if not windows else ('libtiff','ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.zip', False),
-		('libtool','ftp://ftp.gnu.org/gnu/libtool/libtool-2.4.tar.gz',False),
-		('libxml','ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz',False) if not windows else ('libxml','ftp://xmlsoft.org/libxml2/win32/libxml2-2.7.7.win32.zip',False),
-		('jasper','http://www.ece.uvic.ca/~mdadams/jasper/software/jasper-1.900.1.zip',False),
-		('xz','http://tukaani.org/xz/xz-5.0.2.tar.gz', False),
-		('gvc','http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.26.3.tar.gz',False)
+		('zlib',     'http://prdownloads.sourceforge.net/libpng/zlib-1.2.3.tar.gz'                           , 'zlib-1.2.3'                 , False) if not windows else ('zlib'    , 'http://downloads.sourceforge.net/project/libpng/zlib/1.2.3/zlib123.zip'                      , '', True),
+		('libpng',   'http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz'                        , 'libpng-1.2.41'              , False) if not windows else ('libpng'  , 'http://downloads.sourceforge.net/project/libpng/libpng12/older-releases/1.2.41/lpng1241.zip' , '', False),
+		('ilmbase',  'http://download.savannah.nongnu.org/releases/openexr/ilmbase-1.0.1.tar.gz'             , 'ilmbase-1.0.1'              , False),
+		('openexr',  'http://download.savannah.nongnu.org/releases/openexr/openexr-1.6.1.tar.gz'             , 'openexr-1.6.1'              , False),
+		('ctl',      'http://sourceforge.net/projects/ampasctl/files/ctl/ctl-1.4.1/ctl-1.4.1.tar.gz/download', 'ctl-1.4.1'                  , False),
+		('boost',    'http://prdownloads.sourceforge.net/boost/boost_1_47_0.tar.bz2'                         , 'boost_1_47_0'               , False) if not windows else ('boost'   , 'http://sourceforge.net/projects/boost/files/boost/1.47.0/boost_1_47_0.zip'                   , '', False),
+		('freetype', 'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz'                     , 'freetype-2.4.3'             , False) if not windows else ('freetype', 'http://prdownloads.sourceforge.net/freetype/freetype-2.4.3.tar.gz'                           , '', False),
+		('libraw',   'http://www.libraw.org/data/LibRaw-0.13.1.tar.gz'                                       , 'LibRaw-0.13.1'              , False) if not windows else ('libraw'  , 'http://www.libraw.org/data/LibRaw-0.13.5.zip'                                                , '', False),
+		('libcaca',  'http://caca.zoy.org/files/libcaca/libcaca-0.99.beta17.tar.gz'                          , 'libcaca-0.99.beta17'        , False),
+		('lcms',     'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.tar.gz'               , 'lcms2-2.1'                  , False) if not windows else ('lcms'    , 'http://downloads.sourceforge.net/project/lcms/lcms/2.1/lcms2-2.1.zip'                        , '', False),
+		('bzlib',    'http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz'                                          , 'bzip2-1.0.6'                , False),
+		('libtiff',  'ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.tar.gz'                             , 'tiff-3.9.5'                 , False) if not windows else ('libtiff' , 'ftp://ftp.remotesensing.org/pub/libtiff/tiff-3.9.5.zip'                                      , '', False),
+		('libtool',  'ftp://ftp.gnu.org/gnu/libtool/libtool-2.4.tar.gz'                                      , 'libtool-2.4'                , False),
+		('libxml',   'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz'                                        , 'libxml2-2.7.8'              , False) if not windows else ('libxml'  , 'ftp://xmlsoft.org/libxml2/win32/libxml2-2.7.7.win32.zip'                                     , '', False),
+		('jasper',   'http://www.ece.uvic.ca/~mdadams/jasper/software/jasper-1.900.1.zip'                    , 'jasper-1.900.1'             , False),
+		('xz',       'http://tukaani.org/xz/xz-5.0.2.tar.gz'                                                 , 'xz-5.0.2'                   , False),
+		('gvc',      'http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.26.3.tar.gz'            , 'graphviz-2.26.3'            , False),
+		('openjpeg', 'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'                   , 'openjpeg_v1_4_sources_r697' , False)
 	]
 
 

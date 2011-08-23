@@ -9,8 +9,8 @@ import os ;
 project
 	: requirements
 		<include>src
-		<target-os>linux:<include>/usr/include/ffmpeg
-		<linkflags>-L/usr/lib64
+		<os>LINUX:<include>/usr/include/ffmpeg
+		<os>LINUX:<linkflags>-L/usr/lib64
 		<linkflags>-lavcodec
 		<linkflags>-lavutil
 		<linkflags>-lavformat
@@ -23,9 +23,9 @@ project
 ###############################################################################
 plugin FFMpeg : 
 	[ glob-tree *.cpp ]
-	/boost/system
-	/boost/filesystem
-	/boost/regex
+	/boost//system
+	/boost//filesystem
+	/boost//regex
 	/tuttleplugin/<link>static
 	;
 

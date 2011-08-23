@@ -28,12 +28,12 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	EMaskType                  researchMask        = eMaskTypeSequence;	// by default show sequences
-	EMaskOptions               descriptionMask     = eMaskOptionsNone;	// by default show nothing
-	bool                       recursiveListing    = false;
-	std::string                availableExtensions;
-	std::vector<std::string>   paths;
-	std::vector<std::string>   filters;
+	EMaskType                 researchMask        = eMaskTypeSequence;  // by default show sequences
+	EMaskOptions              descriptionMask     = eMaskOptionsNone;   // by default show nothing
+	bool                      recursiveListing    = false;
+	std::string               availableExtensions;
+	std::vector<std::string>  paths;
+	std::vector<std::string>  filters;
 	
 	// Declare the supported options.
 	bpo::options_description mainOptions;
@@ -50,6 +50,7 @@ int main( int argc, char** argv )
 		("absolute-path"    , "show the absolute path, not relative like path-root")
 		("color"            , "color the output")
 		("full-display"     , "show directories, files and sequences")
+		("script"           , "output is formated to using in script files")
 	;
 	
 	// describe hidden options
@@ -69,18 +70,31 @@ int main( int argc, char** argv )
 	pd.add("", -1);
 	
 	bpo::variables_map vm;
-	//parse the command line, and put the result in vm
-	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-	// get environment options and parse them
-	if( const char* env_ls_options = std::getenv("SAM_LS_OPTIONS") )
+	try
 	{
-		const std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
-		bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		//parse the command line, and put the result in vm
+		bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+
+		// get environment options and parse them
+		if( const char* env_ls_options = std::getenv("SAM_LS_OPTIONS") )
+		{
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_ls_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
+		bpo::notify(vm);
+	}
+	catch( bpo::error& e)
+	{
+		TUTTLE_COUT("error in command line: " << e.what() );
+	}
+	catch(...)
+	{
+		TUTTLE_COUT("unknown error in command line.");
 	}
 
 
-	bpo::notify(vm);    
+
 
 	if (vm.count("help"))
 	{
@@ -141,7 +155,7 @@ int main( int argc, char** argv )
 		descriptionMask |= eMaskOptionsAbsolutePath;
 	}
 
-	if (vm.count("color"))
+	if (vm.count("color") && !vm.count("script") )
 	{
 		descriptionMask |= eMaskOptionsColor;
 	}

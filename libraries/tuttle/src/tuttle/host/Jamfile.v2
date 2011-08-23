@@ -6,12 +6,12 @@ lib tuttlehost :
 		[ glob-tree *.cpp ]
 
 		/python
-		/boost/system
-		/boost/python
-		/boost/filesystem
-		/boost/thread
-		/boost/date_time
-		/boost/serialization
+		/boost//system
+		/boost//python
+		/boost//filesystem
+		/boost//thread
+		/boost//date_time
+		/boost//serialization
 		
 		/ofxPluginSupport/<link>static
 	:

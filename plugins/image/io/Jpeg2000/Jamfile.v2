@@ -11,8 +11,10 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/Jpeg2000/obj
+    : build-dir $(BUILD)/Jpeg2000
     ;
+
+use-project /libopenjpeg : $(3RD_PARTY)/openjpeg ;
 
 ###############################################################################
 # Dependencies
@@ -28,9 +30,10 @@ else if [ os.name ] = MACOSX
 # Product 
 ###############################################################################
 plugin Jpeg2000 :
-    [ glob src/*.cpp ]
-    /tuttlelib//tuttleplugin/<link>static
+    [ glob-tree *.cpp ]
+    /tuttleplugin/<link>static
     opengl
+    /libopenjpeg
     ;
 
 ###############################################################################
