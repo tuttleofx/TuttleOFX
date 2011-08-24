@@ -107,6 +107,7 @@ int main( int argc, char** argv )
 	{
 		// disable color, disable directory printing and set relative path by default
 		script = true;
+		descriptionMask |= eMaskOptionsAbsolutePath;
 	}
 
 	if ( vm.count("color") && !script )
@@ -226,6 +227,7 @@ int main( int argc, char** argv )
 
 	try
 	{
+		std::size_t index = 0;
 		BOOST_FOREACH( bfs::path path, paths )
 		{
 //			TUTTLE_COUT( "path: "<< path );
@@ -235,7 +237,13 @@ int main( int argc, char** argv )
 				{
 
 					if( ( paths.size() > 1 || recursiveListing ) && !script )
-						TUTTLE_COUT( "\n" << path.string() << " :");
+					{
+						if( index > 0 )
+						{
+							TUTTLE_COUT( "" );
+						}
+						TUTTLE_COUT( path.string() << " :");
+					}
 
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
@@ -291,6 +299,7 @@ int main( int argc, char** argv )
 					TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
 				}
 			}
+			++index;
 		}
 	}
 	catch ( const bfs::filesystem_error& ex)
