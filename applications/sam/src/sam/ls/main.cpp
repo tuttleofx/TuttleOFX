@@ -240,7 +240,7 @@ int main( int argc, char** argv )
 						TUTTLE_COUT( path.string() << " :");
 					}
 
-					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
+					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( path, filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 					{
 					    TUTTLE_COUT( *s );
