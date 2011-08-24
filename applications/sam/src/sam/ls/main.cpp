@@ -104,13 +104,14 @@ int main( int argc, char** argv )
 	if( vm.count("script") )
 	{
 		script = true;
+		descriptionMask |= eMaskOptionsAbsolutePath;
 	}
 
-	if ( vm.count("color") && !vm.count("script") )
+	if ( vm.count("color") && !script )
 	{
 		enableColor = true;
 	}
-	if ( vm.count("enable-color") && !vm.count("script") )
+	if ( vm.count("enable-color") && !script )
 	{
 		std::string str = vm["enable-color"].as<std::string>();
 
@@ -220,6 +221,7 @@ int main( int argc, char** argv )
 
 	try
 	{
+		std::size_t index = 0;
 		BOOST_FOREACH( bfs::path path, paths )
 		{
 //			TUTTLE_COUT( "path: "<< path );
@@ -228,8 +230,15 @@ int main( int argc, char** argv )
 				if( bfs::is_directory( path ) )
 				{
 
-					if( paths.size() > 1 || recursiveListing )
-						TUTTLE_COUT( "\n" << path.string() << " :");
+					if( !script &&
+					    ( paths.size() > 1 || recursiveListing ) )
+					{
+						if( index > 0 )
+						{
+							TUTTLE_COUT( "" );
+						}
+						TUTTLE_COUT( path.string() << " :");
+					}
 
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path, filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
@@ -283,6 +292,7 @@ int main( int argc, char** argv )
 					TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
 				}
 			}
+			++index;
 		}
 	}
 	catch (bfs::filesystem_error &ex)
