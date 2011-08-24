@@ -23,7 +23,7 @@ static const std::string kColorStd      ( "\E[0;0m"  );
 static const std::string kColorFolder   ( "\E[1;34m" );
 static const std::string kColorFile     ( "\E[0;32m" );
 static const std::string kColorSequence ( "\E[0;32m" );
-static const std::string kColorError    ( "\E[0;31m" );
+static const std::string kColorError    ( "\E[1;31m" );
 #else
 static const std::string kColorStd      ( "" );
 static const std::string kColorFolder   ( "" );
@@ -321,11 +321,12 @@ public:
 		_options = v._options;
 	}
 
-	Sequence( const Sequence& v, const EMaskOptions& options )
+	Sequence( const boost::filesystem::path& directory, const Sequence& v, const EMaskOptions& options )
 		: FileObject( options )
 	{
 		operator=( v );
 		_options = options;
+		setDirectory( directory );
 	}
 	
 	~Sequence()

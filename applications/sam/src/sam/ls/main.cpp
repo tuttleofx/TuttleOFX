@@ -31,10 +31,17 @@ int main( int argc, char** argv )
 	EMaskType                 researchMask        = eMaskTypeSequence;  // by default show sequences
 	EMaskOptions              descriptionMask     = eMaskOptionsNone;   // by default show nothing
 	bool                      recursiveListing    = false;
+	bool                      script              = false;
+	bool                      enableColor         = false;
 	std::string               availableExtensions;
 	std::vector<std::string>  paths;
 	std::vector<std::string>  filters;
 	
+	std::string               sColorStd;
+	std::string               sColorBlue;
+	std::string               sColorGreen;
+	std::string               sColorRed;
+
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
@@ -57,6 +64,7 @@ int main( int argc, char** argv )
 	bpo::options_description hidden;
 	hidden.add_options()
 		("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
+		("enable-color", bpo::value<std::string>(), "enable (or disable) color")
 	;
 	
 	// define default options 
@@ -93,22 +101,56 @@ int main( int argc, char** argv )
 		TUTTLE_COUT("unknown error in command line.");
 	}
 
+	if( vm.count("script") )
+	{
+		script = true;
+	}
 
+	if ( vm.count("color") && !vm.count("script") )
+	{
+		enableColor = true;
+	}
+	if ( vm.count("enable-color") && !vm.count("script") )
+	{
+		std::string str = vm["enable-color"].as<std::string>();
 
+		if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+		{
+			enableColor = true;
+		}
+		else
+		{
+			enableColor = false;
+		}
+	}
+
+	if( enableColor )
+	{
+		descriptionMask |= eMaskOptionsColor;
+		sColorStd    = kColorStd;
+		sColorBlue   = kColorFolder;
+		sColorGreen  = kColorFile;
+		sColorRed    = kColorError;
+	}
 
 	if (vm.count("help"))
 	{
-		TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
-		TUTTLE_COUT( "NAME");
-		TUTTLE_COUT( "\tsam-ls - list directory contents\n" );
-		TUTTLE_COUT( "SYNOPSIS\n\tsam-ls [options] [directories]\n" );
-		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
+		TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << "\n" );
+		TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
+		TUTTLE_COUT( sColorGreen << "\tsam-ls - list directory contents" << sColorStd << std::endl);
+		TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
+		TUTTLE_COUT( sColorGreen << "\tsam-ls [options] [directories]" << sColorStd << std::endl );
+		TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd << std::endl );
+
+		TUTTLE_COUT( "List information about the FILEs (the current directory by default)." << std::endl );
+		TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd << std::endl );
+		TUTTLE_COUT( mainOptions );
 		return 0;
 	}
 
 	if (vm.count("expression"))
 	{
-		TUTTLE_COUT( "Expression: " << vm["expression"].as<std::string>() );
+		TUTTLE_COUT( sColorRed << "Expression: " << vm["expression"].as<std::string>() << sColorStd );
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
@@ -153,11 +195,6 @@ int main( int argc, char** argv )
 	if(vm.count("absolute-path"))
 	{
 		descriptionMask |= eMaskOptionsAbsolutePath;
-	}
-
-	if (vm.count("color") && !vm.count("script") )
-	{
-		descriptionMask |= eMaskOptionsColor;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path
