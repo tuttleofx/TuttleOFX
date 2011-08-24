@@ -55,8 +55,8 @@ const static std::string kPushButtonResetTransformationParameters = "ResetTransf
 const static std::string kPushButtonResetTransformationParametersLabel = "Reset transformation";
 
 //See only selection
-const static std::string kBoolOnlySelection = "seeGeodesicForm";
-const static std::string kBoolOnlySelectionLabel = "see geodesic form";
+const static std::string kBoolOnlySelection = "displayGeodesicForm";
+const static std::string kBoolOnlySelectionLabel = "Display geodesic form";
 
 //Group names
 const static std::string kGroupDisplay = "groupDisplay";
@@ -79,6 +79,10 @@ const static std::string kColorAverageMode2 = "Manual";
 //Color average selection (computing)
 const static std::string kColorAverageComputing = "colorAverageComputing";
 const static std::string kColorAverageComputingLabel = "Compute";
+
+//Color Selection display
+const static std::string kBoolColorSelectionDisplay = "displayColorSelectionDisplay";
+const static std::string kBoolColorSelectionDisplayLabel = "Display color selection";
 
 //Rotation constants
 const static int KMaxDegres = 360;		//360° max for a rotation

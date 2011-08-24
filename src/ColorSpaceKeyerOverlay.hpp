@@ -33,12 +33,6 @@ public:
 	double _rotateXForm;		//rotation on X (center is geodesic form)
 	double _rotateYForm;		//rotation on Y (center is geodesic form)
 	Ofx3DPointD _coordAverageRotation; //Average coord with rotation
-
-	bool _isFirst;		//REMOVE (TEST)
-	
-	//Process arguments
-	SelectionAverage _averageColor;	//color clip selection average
-	GeodesicForm	_geodesicForm;  //geodesic form (overlay)
 	
 public:
 	/*Constructor/Destructor*/

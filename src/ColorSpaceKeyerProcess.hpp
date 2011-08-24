@@ -12,8 +12,8 @@ namespace colorSpaceKeyer {
 	
 struct Compute_alpha_pixel
 { 
-	bool _isOutputBW; // is output black & white (or alpha channel)
-	GeodesicForm& _data; //Geodesic form
+	bool _isOutputBW;		//is output black & white (or alpha channel)
+	GeodesicForm& _data;	//geodesic form
 	
 	Compute_alpha_pixel(bool isOutputBW, GeodesicForm& data):
 	_isOutputBW(isOutputBW),
@@ -26,11 +26,11 @@ struct Compute_alpha_pixel
     {
         using namespace boost::gil;
 		
-        double alpha = 0.0; //define current pixel alpha (1 by default)
-		Ofx3DPointD testPoint; //initialize test point 
-		testPoint.x = p[0]; //x == red
-		testPoint.y = p[1]; //y == green
-		testPoint.z = p[2]; //z == blue
+        double alpha = 0.0;			//define current pixel alpha (1 by default)
+		Ofx3DPointD testPoint;		//initialize test point 
+		testPoint.x = p[0];			//x == red
+		testPoint.y = p[1];			//y == green
+		testPoint.z = p[2];			//z == blue
 		
 		if(_data.isPointIntoGeodesicForm(testPoint)) //if current pixel is into the geodesic form
 		{
@@ -39,8 +39,8 @@ struct Compute_alpha_pixel
 		//else
 			//std::cout << "passe aussi"<<std::endl;
 		
-		Pixel ret; //declare returned pixel
-		if(_isOutputBW) // output is gray scale image
+		Pixel ret;						//declare returned pixel
+		if(_isOutputBW)					// output is gray scale image
 		{
 			gray32f_pixel_t inter;		// need a gray_pixel
 			inter[0] = alpha;			// recopy value (black or white)
@@ -48,9 +48,9 @@ struct Compute_alpha_pixel
 		}
 		else // output is alpha channel
 		{
-			for(unsigned int i=0; i<boost::gil::num_channels<Pixel>::type::value -1; ++i) // All RGB channels (not alpha)
-				ret[i] = p[i]; //recopy r,g and b channels
-			ret[3] = alpha; //fill alpha channel up
+			for(unsigned int i=0; i<boost::gil::num_channels<Pixel>::type::value -1; ++i)	//all RGB channels (not alpha)
+				ret[i] = p[i];																//recopy r,g and b channels
+			ret[3] = alpha;																	//fill alpha channel up
 		}
 		return ret;
     }
@@ -70,12 +70,12 @@ public:
 protected:
     ColorSpaceKeyerPlugin&    _plugin;            ///< Rendering plugin
 	ColorSpaceKeyerProcessParams<Scalar> _params; ///< parameters
-
+	//Create geodesic form
+	GeodesicForm _geodesicForm;
+	
 public:
     ColorSpaceKeyerProcess( ColorSpaceKeyerPlugin& effect );
-
 	void setup( const OFX::RenderArguments& args );
-
     void multiThreadProcessImages( const OfxRectI& procWindowRoW );
 };
 

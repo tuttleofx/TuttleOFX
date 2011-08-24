@@ -509,7 +509,7 @@ double DOT(double* v1, double* v2)
  * based on Möller-Trumbore ray/triangle intersection detection algorithm
  * return if there is an intersection (or not) and the intersection point
  */
-bool GeodesicForm::getIntersection(const Ofx3DPointD point, const Triangle triangle)
+bool GeodesicForm::getIntersection(const Ofx3DPointD point, const Triangle& triangle)
 {
 	bool isThereIntersection = false; // returned value
 	static const double epsilon = 0.0000001; //epsilon value (used to test)

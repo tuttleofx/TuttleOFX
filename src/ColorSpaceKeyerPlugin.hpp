@@ -39,6 +39,7 @@ public:
 	OFX::ChoiceParam* _paramChoiceAverageMode;			//choice average mode - Choice param
 	OFX::RGBAParam* _paramRGBAColorSelection;			//color average selection - RGBA param
 	OFX::PushButtonParam* _paramPushButtonAverageCompute;	//color average computing - Push button
+	OFX::BooleanParam* _paramBoolSeeSelection;			//see selection on overlay
 	
 	//Overlay data parameters
 	bool _updateVBO;									//VBO data has been changed so update VBO

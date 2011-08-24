@@ -65,7 +65,7 @@ private:
 	void createPointsOneFace(const PyramidTriangle f, int divisor);
 	
 	//compute intersection between a point and a triangle
-	bool getIntersection(const Ofx3DPointD point, const Triangle triangle);
+	bool getIntersection(const Ofx3DPointD point, const Triangle& triangle);
 	
 	//transform one point to sphere 
 	void currentPointToSphere(Ofx3DPointD& point, const double radius);

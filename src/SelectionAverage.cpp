@@ -155,13 +155,10 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 		return;
 	}
 
-	std::cout << "ici" <<std::endl;
 	// Compute if source is OK
 	SView colorView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );		// get current view from color clip
 	Pixel_extend_GeodesicForm funct(geodesicForm);	//functor declaration			//initialize functor
-	std::cout << "ici2" <<std::endl;
-	boost::gil::transform_pixels(colorView, funct);									//with functor reference
-	std::cout << "iciFin"<<std::endl;
+	boost::gil::transform_pixels(colorView, funct);									//with functor reference;
 }
 
 

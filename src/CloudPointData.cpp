@@ -10,13 +10,23 @@ namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
 	
-CloudPointData::CloudPointData(const OfxPointI& size, OfxTime time)
+CloudPointData::CloudPointData(const OfxPointI& size, OfxTime time):
+_averageColor(time)	//Selection average constructor (current time is needed)
 {
 	_size = size;	//define first size (current clip number of pixels)
 	_time = time;	//get current time
 	
+	// cloud point VBO
 	int imgSize = size.x*size.y; // number of pixel in the image
 	_imgCopy.reserve( imgSize * 0.5 );	//reserve memory for buffer
+	
+	//selection buffer 
+	_selectionCopy.reserve( imgSize * 0.5); //reserve memory for seletion buffer
+	_selectionColor.reserve( imgSize * 0.5); //reserve memory for selection color buffer
+	
+	//VBO are not built at this time
+	_isVBOBuilt = false;			//cloud point VBO is not built
+	_isSelectionVBOBuilt = false;	//selection VBO is not built
 }
 
 /**
@@ -35,16 +45,12 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 	
 	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_time, clipSrc->getCanonicalRod(_time)) );	//scoped pointer of current source clip
 	
-	//TUTTLE_TCOUT_VAR( clipSrc->getPixelRod(_time,renderScale)); 
-	//TUTTLE_TCOUT_VAR(clipSrc->getCanonicalRod(_time, renderScale));
-	
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
 	{
 		std::cout << "src is not accessible (cloud point)" << std::endl;
 		return false;
 	}
-	//TUTTLE_TCOUT_VAR( src->getRowBytes());
 	if( src->getRowBytes() == 0 )//if source is wrong
 	{
 		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
@@ -58,9 +64,6 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
         return false;
 	}
 	
-	//TUTTLE_TCOUT_VAR( src->getBounds());
-	//TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
-	
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
 		// remove overlay... but do not crash.
@@ -70,28 +73,18 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 	
 	// Compute if source is OK
 	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
-	//TUTTLE_TCOUT_VAR(srcView.width());
-	//TUTTLE_TCOUT_VAR(srcView.height());
-	//TUTTLE_COUT_INFOS;
 	
-//	TUTTLE_TCOUT_VAR( boost::gil::get_color( average, boost::gil::red_t() ) );
-//	TUTTLE_TCOUT_VAR( boost::gil::get_color( average, boost::gil::green_t() ) );
-//	TUTTLE_TCOUT_VAR( boost::gil::get_color( average, boost::gil::blue_t() ) );
-	
-	_imgCopy.clear();		//clear buffer
-	//TUTTLE_COUT_INFOS;
+	_imgCopy.clear();			//clear buffer
 	if( vboWithDiscretization )	//does user want to discretize the VBO
 	{
-		//TUTTLE_COUT_INFOS;
-		generateDiscretizedVBOData( srcView, discretizationStep); //create data and return buffer size
+		generateDiscretizedVBOData( srcView, discretizationStep);	//create data and return buffer size
 	}
 	else
 	{
-		//TUTTLE_COUT_INFOS;
-		generateAllPointsVBOData( srcView ); // create data and return buffer size
+		generateAllPointsVBOData( srcView );						// create data and return buffer size
 	}	
 	_isVBOBuilt = true; //VBO has been built
-	//TUTTLE_COUT_INFOS;
+	
 	return true;
 }
 
@@ -100,45 +93,120 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
  */
 void CloudPointData::updateVBO()
 {
-	//TUTTLE_TCOUT_INFOS;
-	_imgVBO.createVBO( &(_imgCopy.front()), _imgCopy.size() / 3 ); //generate VBO to draw
-	//TUTTLE_COUT_INFOS;
-	_imgVBO._color = true;	//activate color for VBO
+	//point cloud VBO
+	_imgVBO.createVBO( &(_imgCopy.front()), _imgCopy.size() / 3 );	//generate VBO to draw
+	_imgVBO._color = true;											//activate color for VBO
+	//selection VBO
+	_selectionVBO._colorDifferent = true;																					//color buffer is not the same than vertex buffer
+	_selectionVBO._color = true;																							//activate color for VBO
+	_selectionVBO.createVBO(&(_selectionCopy.front()), _selectionCopy.size()/3,GL_STATIC_DRAW ,&(_selectionColor.front())); //generate selection VBO to draw
 }
 
-/**
- * Copy rgb channels of the clip source into a buffer
+/*
+ * Copy RGB channels of the clip source into a buffer
  */
 int CloudPointData::generateAllPointsVBOData(SView srcView)
 {
 	//compute buffer size
-	int size = (int)(srcView.height()*srcView.width());	//return size : full img here
-	
-	//TUTTLE_TCOUT_INFOS;
-	//copy full image into buffer
-	Pixel_copy funct( _imgCopy );	//functor declaration	
-	
-	//TUTTLE_TCOUT_INFOS;
-	boost::gil::transform_pixels( srcView, funct );		//with functor reference
-	//TUTTLE_TCOUT_INFOS;
+	int size = (int)(srcView.height()*srcView.width());	//return size : full image here
 
+	//copy full image into buffer
+	Pixel_copy funct( _imgCopy );						//functor declaration	
+	//treatment
+	boost::gil::transform_pixels( srcView, funct );		//transform pixel did with functor reference
 	return size;
 }
 
-/**
- * Copy discretized rgb channels of the clip source into a buffer
+/*
+ * Copy discretization RGB channels of the clip source into a buffer
  */
 int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretizationStep )
 {
 	//compute buffer size
-	int size = (int)(srcView.height()*srcView.width());	//return size : full img here
+	int size = (int)(srcView.height()*srcView.width());						//return size : full image here
 
 	//Create and use functor to get discretize data  (functor with template)
 	Pixel_copy_discretization<SPixel> funct(_imgCopy,discretizationStep);	//functor declaration	
 	boost::gil::transform_pixels( srcView, funct);							//with functor reference
-	funct.convertSetDataToVectorData();								//deplace functor data to _imgCopy data
+	funct.convertSetDataToVectorData();										//copy functor data to _imgCopy data
+	size = _imgCopy.size();													//change size
 	return size;
 }
+
+/*
+ * 
+ */
+bool CloudPointData::generateColorSelectionVBO(OFX::Clip* clipColor, const OfxPointD& renderScale, bool vboWithDiscretization, int discretizationStep)
+{
+	_isSelectionVBOBuilt = false; // selection VBO is not built 
+	// connection test
+	if( ! clipColor->isConnected() )
+	{	
+		return false;
+	}
+	
+	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current color clip
+	
+	// Compatibility tests
+	if( !src.get() ) // color clip source isn't accessible
+	{
+		std::cout << "src is not accessible (color clip)" << std::endl;
+		return false;
+	}
+	if( src->getRowBytes() == 0 )//if source is wrong
+	{
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+		return false;
+	}
+	const OfxRectI srcPixelRod = clipColor->getPixelRod( _time, renderScale ); //get current RoD
+	if( (clipColor->getPixelDepth() != OFX::eBitDepthFloat) ||
+		(clipColor->getPixelComponents() == OFX::ePixelComponentNone) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
+        return false;
+	}
+	if( srcPixelRod != src->getBounds() )// the host does bad things !
+	{
+		// remove overlay... but do not crash.
+		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		return false;
+	}
+	// Compute if source is OK
+	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+
+	if(vboWithDiscretization) //there is discretization on VBO
+	{
+		//treatment VBO discretization (maybe)
+	}
+	//VBO without discretization
+	generateAllPointsSelectionVBOData(srcView); //generate a selection VBO without discretization
+	
+	_isSelectionVBOBuilt = true;	// selection VBO is not built 
+	return true;					// treatment has been done correctly
+}
+
+/*
+ * Copy RGB channels of the selected pixels in clip source into a buffer
+ */
+int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
+{
+	//compute buffer size
+	int size;				 //returned size
+	bool isSelection = true; //current operations are on selected pixels
+	
+	//copy full image into buffer
+	Pixel_copy funct(_selectionCopy, isSelection);		//functor declaration creation	
+	//treatment
+	boost::gil::transform_pixels( srcView, funct );		//transform pixel did with functor reference
+	size = _selectionCopy.size();						//get current size of VBO
+	
+	//compute color buffer for VBO
+	for(unsigned int i=0; i<0; ++i)	//each channels of each pixels
+		_selectionColor[i] = 1;		//all of the pixels will appear in white
+	return size;					//return size of VBO buffers (same color and vertex)
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //                           CloudPoint::VBO                                   //
@@ -150,14 +218,13 @@ int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretization
  * @param size	size of VBO	
  * @param usage	usage of VBO
  */
-void CloudPointData::VBO::createVBO( const void* data, int size, GLenum usage )
+void CloudPointData::VBO::createVBO( const void* data, int size, GLenum usage, const void* dataColor )
 {
-	//TUTTLE_TCOUT( "id creation : " << _id <<"  size : "<< size <<"  usage : "<< usage );
 	_size = size;
 	//TUTTLE_TCOUT_INFOS;
 	genBuffer( _id, data, size, GL_ARRAY_BUFFER, usage );
-	//
-	//TUTTLE_TCOUT_INFOS;
+	if(_colorDifferent) //color buffer is not the same than vertex buffer
+		genBufferColor(_idColor, dataColor, size, GL_ARRAY_BUFFER, usage); //color buffer generation
 }
 
 /**
@@ -166,11 +233,15 @@ void CloudPointData::VBO::createVBO( const void* data, int size, GLenum usage )
  */
 void CloudPointData::VBO::deleteVBO( )
 {
-	//std::cout << "id destruction : " << _id << std::endl;
 	if( _id != 0 )	//if VBO exists
 	{
 		glDeleteBuffers( 1, &_id );
 		_id = 0; // 0 is reserved, glGenBuffersARB() will return non-zero id if success
+	}
+	if( _idColor != 0)
+	{
+		glDeleteBuffers(1, &_idColor); //delete color buffer 
+		_idColor = 0; //reset color id
 	}
 }
 
@@ -188,33 +259,51 @@ void CloudPointData::VBO::deleteVBO( )
  */
 void CloudPointData::VBO::genBuffer( unsigned int& id, const void* data, int size, GLenum target, GLenum usage )
 {
-	//TUTTLE_TCOUT_INFOS;
-	if( id != 0 )
-		deleteVBO( );
+	//Test if buffer is not already existing
+	if( id != 0 )		//if id is not null
+		deleteVBO( );	//delete current VBO
+	
+	const int dataSize = size * 3 * sizeof(float); //current size of data
+	
+	//Buffer creation
+	glGenBuffers( 1, &(_id) );						// create a VBO
+	glBindBuffer( target, _id );					// activate VBO id to use
+	glBufferData( target, dataSize, data, usage );	// upload data to video card
 
-	const int dataSize = size * 3 * sizeof(float);
-
-	//TUTTLE_TCOUT_INFOS;
-	glGenBuffers( 1, &(_id) );		// create a vbo
-	//TUTTLE_TCOUT_INFOS;
-	glBindBuffer( target, _id );	// activate vbo id to use
-	//TUTTLE_TCOUT_INFOS;
-	glBufferData( target, dataSize, data, usage ); // upload data to video card
-	//TUTTLE_TCOUT_INFOS;
 	
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	int bufferSize = 0;
 	glGetBufferParameteriv( target, GL_BUFFER_SIZE, &bufferSize );
-	//TUTTLE_TCOUT_INFOS;
-	if( dataSize != bufferSize )
+	if( dataSize != bufferSize ) //mismatch between data size and input array (control)
 	{
 		deleteVBO( );
 		std::cout << "[createVBO()] Mismatch between Data size and input array" << std::endl;
 	}
-	//TUTTLE_TCOUT_INFOS;
 }
 
-/**
+void CloudPointData::VBO::genBufferColor( unsigned int& idColor, const void* data, int size, GLenum target, GLenum usage )
+{
+	//test if current VBO is already existing
+	if( idColor != 0 )	//if idColor is not null
+		deleteVBO( );	//delete current VBO
+
+	const int dataSize = size * 3 * sizeof(float);
+
+	glGenBuffers( 1, &(_idColor) );					// create a VBO
+	glBindBuffer( target, _idColor );				// activate VBO id to use
+	glBufferData( target, dataSize, data, usage );	// upload data to video card
+
+	// check data size in VBO is same as input array, if not return 0 and delete VBO
+	int bufferSize = 0;
+	glGetBufferParameteriv( target, GL_BUFFER_SIZE, &bufferSize );
+	if( dataSize != bufferSize ) //mismatch between data size and input array (control)
+	{
+		deleteVBO( );
+		std::cout << "[createVBO()] Mismatch between Data size and input array" << std::endl;
+	}
+}
+
+/*
  * Draw the current VBO on screen
  */
 void CloudPointData::VBO::draw( )
@@ -228,9 +317,13 @@ void CloudPointData::VBO::draw( )
 		glVertexPointer( 3, GL_FLOAT, 0, 0 );
 		glEnableClientState( GL_VERTEX_ARRAY ); // enable vertex arrays
 
-		if( _color )
+		if( _color ) //draw vector using color
 		{
-			glColorPointer( 3, GL_FLOAT, 0, 0 ); //same buffer is used for colors
+			if(_colorDifferent) //color and vertex buffers are not the same
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, _idColor); //bind new color buffer
+			}
+			glColorPointer( 3, GL_FLOAT, 0, 0 ); //point buffer which is used for colors (same than vertex or not)
 			glEnableClientState( GL_COLOR_ARRAY );
 		}
 
