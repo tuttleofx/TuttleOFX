@@ -887,7 +887,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 			{
 				if( s.getNbFiles() == 1 ) // if it's a sequence of 1 file, it isn't a sequence but only a file
 				{
-				    boost::shared_ptr<File> file( new File( s.getDirectory(), s.getFirstFilename(), s.getMaskOptions() ) );
+				    boost::shared_ptr<File> file( new File( directory, s.getFirstFilename(), desc ) );
 				    outputFiles.push_back( file );
 				}
 				else
