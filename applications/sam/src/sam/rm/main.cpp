@@ -18,10 +18,17 @@ namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 
-bool	colorOutput	= false;
-bool	verbose		= false;
-std::ssize_t firstImage	= 0;
-std::ssize_t lastImage	= 0;
+bool         colorOutput   = false;
+bool         verbose      = false;
+std::ssize_t firstImage     = 0;
+std::ssize_t lastImage      = 0;
+
+std::string  sColorStd;
+std::string  sColorBlue;
+std::string  sColorGreen;
+std::string  sColorRed;
+std::string  sColorError;
+std::string  sColorFolder;
 
 // A helper function to simplify the main part.
 template<class T>
@@ -41,21 +48,13 @@ void removeSequence( const ttl::Sequence& s )
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( !bfs::exists( sFile ) )
 		{
-			colorOutput ?
-				TUTTLE_CERR("Could not remove: " << kColorError << sFile.string() << kColorStd )
-			:
-				TUTTLE_CERR("Could not remove: " << sFile.string() )
-			;
+			TUTTLE_CERR("Could not remove: " << sColorError << sFile.string() << sColorStd );
 		}
 		else
 		{
 			if(verbose)
 			{
-				colorOutput ?
-					TUTTLE_COUT("remove: " << kColorFolder << sFile.string() << kColorStd )
-				:
-					TUTTLE_COUT("remove: " << sFile.string() )
-				;
+				TUTTLE_COUT("remove: " << sColorFolder << sFile.string() << sColorStd );
 			}
 			bfs::remove( sFile );
 		}
@@ -109,27 +108,13 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 		{
 			if(verbose)
 			{
-				if(colorOutput)
-				{
-					TUTTLE_COUT( "remove " << kColorFolder << paths << kColorStd );
-				}
-				else
-				{
-					TUTTLE_COUT( "remove " << paths );
-				}
+				TUTTLE_COUT( "remove " << sColorFolder << paths << sColorStd );
 			}
 			bfs::remove(paths);
 		}
 		else
 		{
-			if(colorOutput)
-			{
-				TUTTLE_CERR( "could not remove " << kColorError << paths << kColorStd );
-			}
-			else
-			{
-				TUTTLE_CERR( "could not remove " << paths );
-			}
+			TUTTLE_CERR( "could not remove " << sColorError << paths << kColorStd );
 		}
 	}
 }
@@ -139,34 +124,35 @@ int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
 
-	EMaskType					researchMask		= eMaskTypeSequence;	// by default show sequences
-	EMaskOptions				descriptionMask		= eMaskOptionsColor;	// by default show nothing
-	bool					recursiveListing	= false;
-	std::vector<std::string>		paths;
-	std::vector<std::string>		filters;
+	EMaskType                    researchMask      = eMaskTypeSequence;	// by default show sequences
+	EMaskOptions                 descriptionMask   = eMaskOptionsColor;	// by default show nothing
+	bool                        recursiveListing  = false;
+	std::vector<std::string>     paths;
+	std::vector<std::string>     filters;
 
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-			("all,a"		, "do not ignore entries starting with .")
-			("directories,d"	, "remove directories in path(s)")
-			("expression,e"		, bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
-			("files,f"		, "remove files in path(s)")
-			("help,h"		, "show this help")
-			("mask,m"		, "not remove sequences in path(s)")
-			("path-root,p"		, "show the root path for each objects")
-			("recursive,R"		, "remove subdirectories recursively")
-			("verbose,v"		, "explain what is being done")
-			("color"		, "display with colors")
-			("first-image"		, bpo::value<std::ssize_t>(), "specify the first image")
-			("last-image"		, bpo::value<std::ssize_t>(), "specify the last image")
-			("full-rm"		, "remove directories, files and sequences")
+			("all,a"           , "do not ignore entries starting with .")
+			("directories,d"   , "remove directories in path(s)")
+			("expression,e"    , bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
+			("files,f"         , "remove files in path(s)")
+			("help,h"          , "show this help")
+			("mask,m"          , "not remove sequences in path(s)")
+			("path-root,p"     , "show the root path for each objects")
+			("recursive,R"     , "remove subdirectories recursively")
+			("verbose,v"       , "explain what is being done")
+			("color"           , "display with colors")
+			("first-image"     , bpo::value<std::ssize_t>(), "specify the first image")
+			("last-image"      , bpo::value<std::ssize_t>(), "specify the last image")
+			("full-rm"         , "remove directories, files and sequences")
 			;
 	
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
 			("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
+			("enable-color", bpo::value<std::string>(), "enable (or disable) color")
 			;
 	
 	// define default options 
@@ -181,27 +167,71 @@ int main( int argc, char** argv )
 	
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
-	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-	// get environment options and parse them
-	if( const char* env_rm_options = std::getenv("SAM_RM_OPTIONS") )
+	bpo::notify(vm);
+
+	try
 	{
-		const std::string env( env_rm_options );
-		std::vector<std::string> envOptions;
-		envOptions.push_back( env );
-		bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+
+		// get environment options and parse them
+		if( const char* env_rm_options = std::getenv("SAM_RM_OPTIONS") )
+		{
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_rm_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
+	}
+	catch( const bpo::error& e)
+	{
+		TUTTLE_COUT("error in command line: " << e.what() );
+		exit( -2 );
+	}
+	catch(...)
+	{
+		TUTTLE_COUT("unknown error in command line.");
+		exit( -2 );
 	}
 
-	bpo::notify(vm);    
-
-	if (vm.count("help"))
+	if ( vm.count("color") )
 	{
-		TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
-		TUTTLE_COUT( "NAME");
-		TUTTLE_COUT( "\tsam-rm - remove directory contents\n" );
-		TUTTLE_COUT( "SYNOPSIS" );
-		TUTTLE_COUT( "\tsam-rm [options] [directories]\n" );
-		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
+		colorOutput = true;
+	}
+	if ( vm.count("enable-color") )
+	{
+		std::string str = vm["enable-color"].as<std::string>();
+
+		if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+		{
+			colorOutput = true;
+		}
+		else
+		{
+			colorOutput = false;
+		}
+	}
+
+	if( colorOutput )
+	{
+		descriptionMask |= eMaskOptionsColor;
+		sColorStd    = kColorStd;
+		sColorBlue   = kColorFolder;
+		sColorFolder = kColorFolder;
+		sColorGreen  = kColorFile;
+		sColorRed    = kColorError;
+		sColorError  = kColorError;
+	}
+
+	if ( vm.count( "help" ) )
+	{
+		TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
+		TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd);
+		TUTTLE_COUT( sColorGreen << "\tsam-rm - remove directory contents" << sColorStd << std::endl );
+		TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
+		TUTTLE_COUT( sColorGreen << "\tsam-rm [options] [directories]" << sColorStd << std::endl );
+		TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd << std::endl );
+		TUTTLE_COUT( "Remove sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
+		TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd << std::endl );
+		TUTTLE_COUT( mainOptions );
 		return 0;
 	}
 
@@ -256,12 +286,6 @@ int main( int argc, char** argv )
 	if (vm.count("path-root"))
 	{
 		descriptionMask |= eMaskOptionsPath;
-	}
-
-	if (vm.count("color") )
-	{
-		colorOutput = true;
-		descriptionMask |=  eMaskOptionsColor;
 	}
 	
 	// defines paths, but if no directory specify in command line, we add the current path

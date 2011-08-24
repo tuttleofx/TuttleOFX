@@ -92,17 +92,20 @@ int main( int argc, char** argv )
 		}
 		bpo::notify(vm);
 	}
-	catch( bpo::error& e)
+	catch( const bpo::error& e)
 	{
 		TUTTLE_COUT("error in command line: " << e.what() );
+		exit( -2 );
 	}
 	catch(...)
 	{
 		TUTTLE_COUT("unknown error in command line.");
+		exit( -2 );
 	}
 
-	if( vm.count("script") )
+	if ( vm.count("script") )
 	{
+		// disable color, disable directory printing and set relative path by default
 		script = true;
 		descriptionMask |= eMaskOptionsAbsolutePath;
 	}
@@ -143,7 +146,10 @@ int main( int argc, char** argv )
 		TUTTLE_COUT( sColorGreen << "\tsam-ls [options] [directories]" << sColorStd << std::endl );
 		TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd << std::endl );
 
-		TUTTLE_COUT( "List information about the FILEs (the current directory by default)." << std::endl );
+		TUTTLE_COUT( "List information about the sequences, files and folders." );
+		TUTTLE_COUT( "List the current directory by default, and only sequences." );
+		TUTTLE_COUT( "The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default." << std::endl );
+
 		TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd << std::endl );
 		TUTTLE_COUT( mainOptions );
 		return 0;
@@ -188,7 +194,7 @@ int main( int argc, char** argv )
 		descriptionMask |= eMaskOptionsProperties;
 	}
 	
-	if (vm.count("relative-path"))
+	if (vm.count("relative-path") || ( script && !vm.count("absolute-path") ) )
 	{
 		descriptionMask |= eMaskOptionsPath;
 	}
@@ -230,8 +236,7 @@ int main( int argc, char** argv )
 				if( bfs::is_directory( path ) )
 				{
 
-					if( !script &&
-					    ( paths.size() > 1 || recursiveListing ) )
+					if( ( paths.size() > 1 || recursiveListing ) && !script )
 					{
 						if( index > 0 )
 						{
@@ -253,7 +258,9 @@ int main( int argc, char** argv )
 							if( bfs::is_directory( *dir ) )
 							{
 								bfs::path currentPath = (bfs::path)*dir;
-								TUTTLE_COUT( "\n" << currentPath.string() << " :" );
+								if( !script )
+									TUTTLE_COUT( "\n" << currentPath.string() << " :" );
+
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( currentPath, filters, researchMask, descriptionMask );
 								BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
 								{
@@ -295,11 +302,11 @@ int main( int argc, char** argv )
 			++index;
 		}
 	}
-	catch (bfs::filesystem_error &ex)
+	catch ( const bfs::filesystem_error& ex)
 	{
 		TUTTLE_COUT( ex.what() );
 	}
-	catch(... )
+	catch( ... )
 	{
 		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
 	}

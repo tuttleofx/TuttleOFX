@@ -70,14 +70,16 @@ void Core::preload()
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	const std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
+	std::string home = std::getenv("HOME");
+
+	const std::string cacheFile( home + "/.tuttle/tuttlePluginCacheSerialize.xml" );
 
 	try
 	{
-		std::ifstream ifsb( cacheFile.c_str() );
+		std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
 		if( ifsb.is_open() )
 		{
-			TUTTLE_COUT_DEBUG( "Read plugins cache." );
+			TUTTLE_TCOUT( "Read plugins cache." );
 			IArchive iArchive( ifsb );
 			iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
 			ifsb.close();
@@ -85,7 +87,7 @@ void Core::preload()
 	}
 	catch( std::exception& e )
 	{
-		TUTTLE_COUT_ERROR( "Exception when reading cache file (" << e.what() << ")." );
+		TUTTLE_CERR( "Exception when reading cache file (" << e.what() << ")." );
 	}
 #endif
 	_pluginCache.scanPluginFiles();
@@ -99,16 +101,17 @@ void Core::preload()
 		
 		TUTTLE_TCOUT( "Write plugins cache " << tmpCacheFile );
 		// serialize into a temporary file
-		std::ofstream ofsb( tmpCacheFile.c_str() );
-		OArchive oArchive( ofsb );
-		oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
-		ofsb.close();
-		//TUTTLE_TCOUT( "End write." );
-		//TUTTLE_TCOUT( "Rename file." );
-		
-		// replace the cache file
-		boost::filesystem::rename( tmpCacheFile, cacheFile );
-		//TUTTLE_TCOUT( "End rename." );
+		std::ofstream ofsb( tmpCacheFile.c_str(), std::ios::out );
+		if( ofsb.is_open() )
+		{
+			OArchive oArchive( ofsb );
+			oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
+			ofsb.close();
+			// replace the cache file
+			TUTTLE_TCOUT( "Rename file." );
+			boost::filesystem::rename( tmpCacheFile, cacheFile );
+		}
+		TUTTLE_TCOUT( "End write." );
 	}
 #endif
 }
