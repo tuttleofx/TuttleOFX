@@ -21,12 +21,16 @@ namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 
-bool	colorOutput	= false;
+bool	enableColor	= false;
 bool	verbose		= false;
 
 int	firstImage	= 0;
 int	lastImage	= 0;
 
+std::string   sColorStd;
+std::string   sColorBlue;
+std::string   sColorGreen;
+std::string   sColorRed;
 
 void printImageProperties( std::string path )
 {
@@ -198,6 +202,7 @@ int main( int argc, char** argv )
 	bpo::options_description hidden;
 	hidden.add_options()
 		("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
+		("enable-color", bpo::value<std::string>(), "enable (or disable) color")
 	;
 
 	// define default options
@@ -212,27 +217,69 @@ int main( int argc, char** argv )
 
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
-	bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
 
-	// get environnement options and parse them
-	if( const char* env_info_options = std::getenv("SAM_INFO_OPTIONS") )
+	try
 	{
-	    std::vector<std::string> envOptions;
-	    const std::string env( env_info_options );
-	    envOptions.push_back( env );
-	    bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		//parse the command line, and put the result in vm
+		bpo::store(bpo::command_line_parser(argc, argv).options(cmdline_options).positional(pod).run(), vm);
+
+		// get environment options and parse them
+		if( const char* env_info_options = std::getenv("SAM_INFO_OPTIONS") )
+		{
+			const std::vector<std::string> envOptions = bpo::split_unix( env_info_options, " " );
+			bpo::store(bpo::command_line_parser(envOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
+		bpo::notify(vm);
+	}
+	catch( const bpo::error& e)
+	{
+		TUTTLE_COUT("error in command line: " << e.what() );
+		exit( -2 );
+	}
+	catch(...)
+	{
+		TUTTLE_COUT("unknown error in command line.");
+		exit( -2 );
 	}
 
-	bpo::notify(vm);
+	if ( vm.count("color") )
+	{
+		enableColor = true;
+	}
+	if ( vm.count("enable-color") )
+	{
+		std::string str = vm["enable-color"].as<std::string>();
+
+		if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+		{
+			enableColor = true;
+		}
+		else
+		{
+			enableColor = false;
+		}
+	}
+
+	if( enableColor )
+	{
+		descriptionMask |= eMaskOptionsColor;
+		sColorStd    = kColorStd;
+		sColorBlue   = kColorFolder;
+		sColorGreen  = kColorFile;
+		sColorRed    = kColorError;
+	}
 
 	if (vm.count("help"))
 	{
-	    TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
-	    TUTTLE_COUT( "NAME");
-	    TUTTLE_COUT( "\tsam-info - get informations about a sequence\n" );
-	    TUTTLE_COUT( "SYNOPSIS" );
-	    TUTTLE_COUT( "\tsam-info [options] [sequences]\n" );
-	    TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
+	    TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
+	    TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
+	    TUTTLE_COUT( sColorGreen << "\tsam-info - get informations about a sequence" << sColorStd << std::endl );
+	    TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
+	    TUTTLE_COUT( sColorGreen << "\tsam-info [options] [sequences]" << sColorStd << std::endl );
+	    TUTTLE_COUT( sColorBlue  << "DESCRIPTION\n" << sColorStd );
+	    TUTTLE_COUT( "Print informations from Sequence (or file) like resolution, colorspace, etc." << std::endl );
+	    TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd);
+	    TUTTLE_COUT( mainOptions );
 	    return 0;
 	}
 
@@ -287,12 +334,6 @@ int main( int argc, char** argv )
 	if (vm.count("path-root"))
 	{
 		 descriptionMask |= eMaskOptionsPath;
-	}
-
-	if (vm.count("color") )
-	{
-		colorOutput = true;
-		descriptionMask |=  eMaskOptionsColor;
 	}
 
 	// defines paths, but if no directory specify in command line, we add the current path
@@ -366,7 +407,7 @@ int main( int argc, char** argv )
 				}
 				catch(... )
 				{
-					TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
+					TUTTLE_CERR ( sColorRed << "Unrecognized pattern \"" << path << "\"" << sColorStd );
 				}
 			}
 		}

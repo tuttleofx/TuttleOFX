@@ -984,7 +984,7 @@ std::ostream& File::getCout( std::ostream& os ) const
 	if( showRelativePath() )
 	{
 		dir = _directory;
-		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 		std::string path = ( dir / _filename).string();
 
 		os << std::setw(NAME_WIDTH_WITH_DIR) << _kColorFile + path  + _kColorStd;
@@ -1021,7 +1021,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	if( showRelativePath() )
 	{
 		dir = _directory;
-		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 
 		os << std::setw(NAME_WIDTH_WITH_DIR) << _kColorSequence + ( dir / getStandardPattern()).string() + _kColorStd ;
 	}

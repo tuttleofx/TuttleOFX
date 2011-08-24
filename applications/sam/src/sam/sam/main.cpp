@@ -11,6 +11,11 @@
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
 
+std::string               sColorStd;
+std::string               sColorBlue;
+std::string               sColorGreen;
+std::string               sColorRed;
+
 bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<bfs::path>& searchPaths )
 {
 	const std::string toolFilename( std::string("sam-") + toolName );
@@ -25,10 +30,7 @@ bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<b
 	}
 
 	/// @todo exception ?
-	TUTTLE_CERR(
-		"Sam command \"" << toolName << "\" not found."
-		"\n"
-		);
+	TUTTLE_CERR( sColorRed << "Sam command \"" << toolName << "\" not found." << sColorStd << std::endl );
 	// displayAvailableCommands();
 	exit( -1 );
 }
@@ -100,10 +102,7 @@ int main( int argc, char** argv )
 		exit( -1 );
 	}
 
-	std::string               sColorStd;
-	std::string               sColorBlue;
-	std::string               sColorGreen;
-	std::string               sColorRed;
+	bool                     colorOutput = false;
 
 	try
 	{
@@ -133,6 +132,7 @@ int main( int argc, char** argv )
 		hidden.add_options()
 			("commands-list" , "show list of all available sam commands")
 			("binaries-list" , "show list of all available sam binaries")
+			("enable-color", bpo::value<std::string>(), "enable (or disable) color")
 		;
 
 		bpo::options_description all_options;
@@ -152,14 +152,32 @@ int main( int argc, char** argv )
 		}
 		bpo::notify( sam_vm );
 
+		if ( sam_vm.count("color") )
+		{
+			colorOutput = true;
+		}
+		if ( sam_vm.count("enable-color") )
+		{
+			std::string str = sam_vm["enable-color"].as<std::string>();
 
-		if( sam_vm.count("color"))
+			if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+			{
+				colorOutput = true;
+			}
+			else
+			{
+				colorOutput = false;
+			}
+		}
+
+		if( colorOutput )
 		{
 			sColorStd    = kColorStd;
 			sColorBlue   = kColorFolder;
 			sColorGreen  = kColorFile;
 			sColorRed    = kColorError;
 		}
+
 
 		if( sam_vm.count("help") )
 		{
@@ -239,20 +257,14 @@ int main( int argc, char** argv )
 //		TUTTLE_TCOUT_VAR( fullcmd );
 		return system( fullcmd.c_str() );
 	}
-	catch( bpo::error& e )
-	{
-		TUTTLE_CERR( "Error in command line: " << e.what() );
-		exit( -2 );
-	}
 	catch( const bpo::error& e )
 	{
-		TUTTLE_CERR( "Error in command line: " << e.what() );
+		TUTTLE_CERR( sColorRed << "Error in command line: " << e.what() << sColorStd );
 		exit( -2 );
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( "sam");
-		TUTTLE_CERR( boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR( sColorRed << "Error in command line: " << boost::current_exception_diagnostic_information() << sColorStd );
 		exit( -2 );
 	}
 	return 0;
