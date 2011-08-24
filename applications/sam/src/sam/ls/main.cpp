@@ -194,7 +194,7 @@ int main( int argc, char** argv )
 		descriptionMask |= eMaskOptionsProperties;
 	}
 	
-	if (vm.count("relative-path") || ( script && !vm.count("absolute-path") ) )
+	if (vm.count("relative-path") )
 	{
 		descriptionMask |= eMaskOptionsPath;
 	}
