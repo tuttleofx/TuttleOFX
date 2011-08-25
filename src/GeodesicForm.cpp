@@ -687,8 +687,10 @@ void GeodesicForm::extendOnePoint(Ofx3DPointD testPoint, Triangle intersectionTr
 	//test intersection point 
 	testIntersection(testPoint); //test intersection
 	if(!_hasIntersection) //there is not intersection between ray and geodesic form
+	{
+		std::cout<<"[Problem] A ray has not intersection"<<std::endl;
 		return; //end of function
-	
+	}
 	//compute angle between (testPoint-center) and (triangle points -center)
 	double testPointCenterVector[3]; //initialize
 	testPointCenterVector[0] = testPoint.x - _center.x; //X value

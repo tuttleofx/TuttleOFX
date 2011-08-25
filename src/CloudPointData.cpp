@@ -202,7 +202,7 @@ int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
 	
 	//compute color buffer for VBO
 	for(unsigned int i=0; i<0; ++i)	//each channels of each pixels
-		_selectionColor[i] = 1;		//all of the pixels will appear in white
+		_selectionColor[i] = 255;		//all of the pixels will appear in white
 	return size;					//return size of VBO buffers (same color and vertex)
 }
 
@@ -221,10 +221,10 @@ int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
 void CloudPointData::VBO::createVBO( const void* data, int size, GLenum usage, const void* dataColor )
 {
 	_size = size;
-	//TUTTLE_TCOUT_INFOS;
 	genBuffer( _id, data, size, GL_ARRAY_BUFFER, usage );
-	if(_colorDifferent) //color buffer is not the same than vertex buffer
-		genBufferColor(_idColor, dataColor, size, GL_ARRAY_BUFFER, usage); //color buffer generation
+	if(_colorDifferent)														//color buffer is not the same than vertex buffer
+		genBufferColor(_idColor, dataColor, size, GL_ARRAY_BUFFER, usage);	//color buffer generation
+
 }
 
 /**

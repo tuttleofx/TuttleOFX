@@ -19,10 +19,10 @@ ColorSpaceKeyerOverlay::ColorSpaceKeyerOverlay(OfxInteractHandle handle,OFX::Ima
 	_plugin = static_cast<ColorSpaceKeyerPlugin*>(_effect); //get plugin
 	_plugin->addRefCloudPointData(); //create pointer to overlay data
 	
-	_isPenDown = false;			//mouse is not under control by default
-	_isCtrlKeyDown = false;		//Ctrl key is not pressed by default
-	_rotateX = _rotateY = 0.0;	//initialize rotation to 0
-	_rotateXForm = _rotateYForm = 0.0; //initialize rotation centered to geodesic form to 0
+	_isPenDown = false;								//mouse is not under control by default
+	_isCtrlKeyDown = false;							//Ctrl key is not pressed by default
+	_rotateX = _rotateY = 0.0;						//initialize rotation to 0
+	_rotateXForm = _rotateYForm = 0.0;				//initialize rotation centered to geodesic form to 0
 	_origin.x = _origin.y = _end.x = _end.y = 0;	//initialize mouse positions to 0
 }
 
@@ -125,10 +125,6 @@ void ColorSpaceKeyerOverlay::drawAxes()
 	glColor3f(0.0f,1.0f,1.0f); glVertex3i(0,1,1);	//cyan
 	glColor3f(1.0f,1.0f,0.0f); glVertex2i(1,1);		//yellow
 	
-	//test average coord
-	glColor3f(1.0f,0,0); glVertex3d(_coordAverageRotation.x,_coordAverageRotation.y, _coordAverageRotation.z); //draw coord average
-	//std::cout<<"coordAverage : "<<_coordAverageRotation.x <<","<<_coordAverageRotation.y<<","<<_coordAverageRotation.z<<std::endl;
-	
 	glPointSize(1.0f);
 	glEnd();
 }
@@ -162,10 +158,10 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		glPushMatrix();				//new transformation
 
 		//rotate management (geodesic form center)
-		glTranslated(getData()._averageColor._averageValue.x, getData()._averageColor._averageValue.y, getData()._averageColor._averageValue.z);	//center rotation to the average
+		glTranslated(_coordAverageDisplay.x,_coordAverageDisplay.y,_coordAverageDisplay.z);	//center rotation to the average
 		glRotated(_rotateYForm,1.0f,0.0f,0.0);	//rotation on Y axis (piloted with mouse)
 		glRotated(_rotateXForm,0.0f,1.0f,0.0);	//rotation on X axis (piloted with mouse)
-		glTranslated(-getData()._averageColor._averageValue.x, -getData()._averageColor._averageValue.y, -getData()._averageColor._averageValue.z);	//un-active center rotation
+		glTranslated(-_coordAverageDisplay.x,_coordAverageDisplay.y, -_coordAverageDisplay.z);	//un-active center rotation
 		
 		//rotate management (cube center)
 		glTranslatef(.5f,.5f,.5f);				//center rotation to the middle of cube
@@ -178,20 +174,16 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		//drawing VBO
 		if(getData()._isVBOBuilt)				//if VBO has been built
 			getData()._imgVBO.draw();			//draw VBO
-
-		
 		
 		//drawing selection VBO
-
-		//if(getData()._isSelectionVBOBuilt)	//if selection VBO has been built
-		//	getData()._selectionVBO.draw();		//draw selection VBO
 		if(getData()._isSelectionVBOBuilt && _plugin->_paramBoolSeeSelection->getValue()) //selection VBO data is built
 		{
-			glBegin(GL_POINTS); 
+			/*glBegin(GL_POINTS); 
 			glColor3f(1.0f,1.0f,1.0f);
 			for(unsigned int i=0; i<getData()._selectionCopy.size(); i+= 3)
 				glVertex3d(getData()._selectionCopy[i],getData()._selectionCopy[i+1],getData()._selectionCopy[i+2]);
-			glEnd();
+			glEnd();*/
+			getData()._selectionVBO.draw();		//draw selection VBO
 		}		
 		
 		//drawing average
@@ -200,12 +192,22 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		if(_plugin->_paramBoolDisplayGeodesicForm->getValue())	//if geodesic form has been built
 			getData()._geodesicForm.draw();						//draw geodesic form on screen
 		
+		//test
+		glBegin(GL_POINTS);
+		glPointSize(6.0f);
+		//test average coordinates
+			glColor3f(1.0f,1.0f,1.0f); glVertex3d(_coordAverageDisplay.x,_coordAverageDisplay.y, _coordAverageDisplay.z); //draw coord average
+			std::cout<<"coordAverage : "<<_coordAverageDisplay.x <<","<<_coordAverageDisplay.y<<","<<_coordAverageDisplay.z<<std::endl;
+		glPointSize(1.0f);
+		glEnd();
+		
 		//OpenGL end of parameters
 		glPopMatrix();				//pop matrix
 		glDisable(GL_DEPTH_TEST);	//disable deep
 		displaySomethings = true;	//something has been drown on screen
 	}
-	return displaySomethings; //return if overlay has displayed something (y or n)
+	updateCoordAverageRotation();	//test update coordinates
+	return displaySomethings;		//return if overlay has displayed something (y or n)
 }
 
 /*
@@ -321,7 +323,7 @@ CloudPointData& ColorSpaceKeyerOverlay::getData()
 	return _plugin->getCloudPointData();	//return CloudPointData initialized at constructor (by scoped pointer)
 }
 
-/**
+/*
  * Matrix product with a 3D vector and a 4*4 matrix 
  */
 void productVectorMatrix(double* v, double* m, double* result)
@@ -332,8 +334,187 @@ void productVectorMatrix(double* v, double* m, double* result)
 	result[3] = m[3]*v[0]+m[7]*v[1]+m[11]*v[2]+m[15]*1; //compute w
 	
 	//normalize result vector
-	for(unsigned int i=0; i<4; ++i)
-		result[i] /= result[3];
+	/*if(result[3] != 1.0)
+	{
+		std::cout <<"normalize result vector"<< std::endl;
+		for(unsigned int i=0; i<4; ++i)
+			result[i] /= result[3];
+	}*/
+}
+
+
+/*
+ * Does the multiplication A=A*B : all the matrices are described column-major
+ */
+void multMatrixBtoMatrixA(GLfloat * A, GLfloat * B)
+{
+    int i=0; // row index
+    int j=0; // column index
+    GLfloat temp[16];
+
+    for (int iValue=0 ; iValue<16 ; iValue++)
+    {
+        temp[iValue]=0;
+        //j=iValue%4; // if raw-major
+        //i=iValue/4; // if raw-major
+        i=iValue%4; // if column-major
+        j=iValue/4; // if column-major
+        for (int k=0 ; k<4 ; k++)
+        {
+            int indexik=k*4+i;
+            int indexkj=j*4+k;
+            temp[iValue]+=A[indexik]*B[indexkj];
+        }
+    }
+
+    for (int iValue=0 ; iValue<16 ; iValue++)
+        A[iValue]=temp[iValue];
+}
+
+
+/*
+ *	Sets the provided matrix to identity
+ */
+void setToIdentity(GLfloat * matrix)
+{
+    GLfloat I[]={1.0, 0.0, 0.0, 0.0,
+                 0.0, 1.0, 0.0, 0.0,
+                 0.0, 0.0, 1.0, 0.0,
+                 0.0, 0.0, 0.0, 1.0};
+    for (int iMatrixCoord=0 ; iMatrixCoord<16 ; iMatrixCoord++)
+        matrix[iMatrixCoord]=I[iMatrixCoord];
+}
+
+
+/*
+ * Sets the provided matrix to a rotate matrix of angle "angle", around axis "axis"
+ */
+void setToRotate(GLfloat * matrix, GLfloat angle, GLfloat * axis)
+{
+    GLfloat c=cos(angle);
+    GLfloat s=sin(angle);
+    GLfloat x=axis[0];
+    GLfloat y=axis[1];
+    GLfloat z=axis[2];
+
+    if ((x==1.0) && (y==0.0) && (z==0.0))
+    {
+        GLfloat R[]={1.0, 0.0, 0.0, 0.0,
+                     0.0, c,   s,   0.0,
+                     0.0, -s,  c,   0.0,
+                     0.0, 0.0, 0.0, 1.0};
+        for (int iMatrixCoord=0 ; iMatrixCoord<16 ; iMatrixCoord++)
+            matrix[iMatrixCoord]=R[iMatrixCoord];
+    }
+    else
+    {
+        if ((x==0.0) && (y==1.0) && (z==0.0))
+        {
+            GLfloat R[]={c,   0.0, -s,  0.0,
+                         0.0, 1.0, 0.0, 0.0,
+                         s,   0.0, c,   0.0,
+                         0.0, 0.0, 0.0, 1.0};
+            for (int iMatrixCoord=0 ; iMatrixCoord<16 ; iMatrixCoord++)
+                matrix[iMatrixCoord]=R[iMatrixCoord];
+        }
+        else
+        {
+
+            if ((x==0.0) && (y==0.0) && (z==1.0))
+            {
+                GLfloat R[]={c,   s,   0.0, 0.0,
+                             -s,  c,   0.0, 0.0,
+                             0.0, 0.0, 1.0, 0.0,
+                             0.0, 0.0, 0.0, 1.0};
+                for (int iMatrixCoord=0 ; iMatrixCoord<16 ; iMatrixCoord++)
+                    matrix[iMatrixCoord]=R[iMatrixCoord];
+            }
+            else
+            {
+                GLfloat R[]={ (1.0-c)*(x*x-1.0) + 1.0, (1.0-c)*x*y + (z*s),     (1.0-c)*x*z - (y*s),      0.0,
+                              (1.0-c)*x*y - (z*s),     (1.0-c)*(y*y-1.0) + 1.0, (1.0-c)*y*z + (x*s),      0.0,
+                              (1.0-c)*x*z + (y*s),     (1.0-c)*y*z - (x*s),     (1.0-c)*(z*z-1.0) + 1.0,  0.0,
+                              0.0,                     0.0,                     0.0,                      1.0};
+                for (int iMatrixCoord=0 ; iMatrixCoord<16 ; iMatrixCoord++)
+                    matrix[iMatrixCoord]=R[iMatrixCoord];
+                std::cout<<"Rotation on non standard axis."<<std::endl;
+            }
+        }
+    }
+}
+
+/*
+ *Sets the provided matrix to a translate matrix on vector t
+ */
+void setToTranslate(GLfloat * matrix, GLfloat * t)
+{
+    GLfloat T[]={1.0,   0.0,   0.0,   0.0,
+                 0.0,   1.0,   0.0,   0.0,
+                 0.0,   0.0,   1.0,   0.0,
+                 t[0],  t[1],  t[2],  1.0};
+    for (int iMatrixCoord=0 ; iMatrixCoord<16 ; iMatrixCoord++)
+        matrix[iMatrixCoord]=T[iMatrixCoord];
+}
+
+/*
+ * Update the average coordinates with center rotation
+ */
+void ColorSpaceKeyerOverlay::updateCoordAverageRotation()
+{
+	//initialize center values
+	_coordCenterReferenceDisplay.x = _coordCenterReferenceDisplay.y = _coordCenterReferenceDisplay.z = 0.5;	//initialize center reference coordinates
+	_coordAverageDisplay = getData()._averageColor._averageValue;											//initialize average center	
+	
+	//define axes
+	float axisX[3] = {1,0,0};		//define axe X
+	float axisY[3] = {0,1,0};		//define axe Y
+	
+	//Create rotation + translation matrix
+	float rotationTranslationMatrixCenter[16];			//initialize
+	setToIdentity(rotationTranslationMatrixCenter);		//set matrix center to identity
+	//Define rotation matrices
+	float rotationReferenceCenterX[16];						//initialize rotation matrix X
+	setToRotate(rotationReferenceCenterX,_rotateX, axisX);	//construct rotation matrix X
+	float rotationReferenceCenterY[16];						//initialize rotation matrix Y
+	setToRotate(rotationReferenceCenterY,_rotateY, axisY);	//construct rotation matrix Y
+	//Define translate matrices
+	float translateCenter[16];								//initialize translation matrix
+	float translationVector[3] = {							//translation vector
+		_coordCenterReferenceDisplay.x,						//x 
+		_coordCenterReferenceDisplay.y,						//y
+		_coordCenterReferenceDisplay.z};					//z
+	setToTranslate(translateCenter,translationVector);		//construct translation matrix
+	float translateInverseCenter[16];						//initialize inverse translation matrix
+	float inverseTranslationVector[3] = {					//invert translation vector
+		-_coordCenterReferenceDisplay.x,					//x
+		-_coordCenterReferenceDisplay.y,					//y
+		-_coordCenterReferenceDisplay.z};					//z
+	setToTranslate(translateInverseCenter,inverseTranslationVector);	//construct inverse translation matrix
+	
+	//Construct final reference center matrix (inverse order of application)
+	multMatrixBtoMatrixA(rotationTranslationMatrixCenter, translateInverseCenter);		//inverse translation matrix
+	multMatrixBtoMatrixA(rotationTranslationMatrixCenter, rotationReferenceCenterY);	//rotation matrix Y
+	multMatrixBtoMatrixA(rotationTranslationMatrixCenter, rotationReferenceCenterX);	//rotation matrix X
+	multMatrixBtoMatrixA(rotationTranslationMatrixCenter, translateCenter);				//translation matrix
+	
+	std::cout << "display transform matrix" << std::endl;
+	for(unsigned int i=0; i<16; ++i)
+	{
+		std::cout <<rotationTranslationMatrixCenter[i]<<"-"<<std::ends;
+		if(i%4 ==0)
+			std::cout <<""<<std::endl;
+	}
+	//compute average coordinates updated
+	double result[3];								//initialize result vector
+	double vectorCoordinatesAverageRotation[4] = {	//construct vector with average coordinates
+		_coordAverageDisplay.x,						//x value
+		_coordAverageDisplay.y,						//y value
+		_coordAverageDisplay.z};					//z value
+	productVectorMatrix(vectorCoordinatesAverageRotation,(double*)rotationTranslationMatrixCenter,result);//compute new average coordinates
+	//get average coordinates updated
+	_coordAverageDisplay.x = result[0];				//get x value
+	_coordAverageDisplay.y = result[1];				//get y value
+	_coordAverageDisplay.z = result[2];				//get z value
 }
 
 }

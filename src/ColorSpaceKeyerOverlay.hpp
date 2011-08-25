@@ -32,7 +32,8 @@ public:
 	double _rotateY;			//rotation on Y axis (mouse)
 	double _rotateXForm;		//rotation on X (center is geodesic form)
 	double _rotateYForm;		//rotation on Y (center is geodesic form)
-	Ofx3DPointD _coordAverageRotation; //Average coord with rotation
+	Ofx3DPointD _coordAverageDisplay;			//Average coord with rotation
+	Ofx3DPointD _coordCenterReferenceDisplay;	//Reference center coord with rotation
 	
 public:
 	/*Constructor/Destructor*/
@@ -50,10 +51,12 @@ public:
 	/*Keyboard management*/
 	bool keyDown( const OFX::KeyArgs& args );	//Ctrl key is pressing down
 	bool keyUp( const OFX::KeyArgs& args );		//Ctrl key is releasing 
-	
+
+private:	
 	/*OpenGL scene*/
 	void prepareOpenGLScene(const OFX::DrawArgs& args);			//prepare the frustrum and projection settings and initialize first VBO
 	void drawAxes();											//draw X,Y and Z xes on screen
+	void updateCoordAverageRotation();							//update the average coordinates (with center rotation)
 	
 	/*Get overlay data*/
 	CloudPointData& getData();
