@@ -143,12 +143,10 @@ int main( int argc, char** argv )
 		//parse the command line, and put the result in vm
 		bpo::store( bpo::command_line_parser(cl_options).options(all_options).run(), sam_vm );
 		// get environment options and parse them
-		if( const char* env_ptr = std::getenv("SAM_OPTIONS") )
+		if( const char* env_sam_options = std::getenv("SAM_OPTIONS") )
 		{
-			std::vector<std::string> envOptions;
-			std::string env( env_ptr );
-			envOptions.push_back( env );
-			bpo::store( bpo::command_line_parser(envOptions).options(all_options).run(), sam_vm );
+			const std::vector<std::string> envOptions = bpo::split_unix( env_sam_options, " " );
+			bpo::store(bpo::command_line_parser(envOptions).options(all_options).run(), sam_vm);
 		}
 		bpo::notify( sam_vm );
 

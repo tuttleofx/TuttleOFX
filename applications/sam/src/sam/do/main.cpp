@@ -327,14 +327,12 @@ int main( int argc, char** argv )
 			}
 			catch( const boost::program_options::error& e )
 			{
-				TUTTLE_CERR( "sam-do options" );
-				TUTTLE_CERR( sColorError << "Error in command line: " << e.what() << sColorStd );
+				TUTTLE_CERR( sColorError << "sam-do: command line error: " << e.what() << sColorStd );
 				exit( -2 );
 			}
 			catch( ... )
 			{
-				TUTTLE_CERR( "sam-do options" );
-				TUTTLE_CERR( sColorError << "Error: " << boost::current_exception_diagnostic_information() << sColorStd );
+				TUTTLE_CERR( sColorError << "sam-do: error: " << boost::current_exception_diagnostic_information() << sColorStd );
 				exit( -2 );
 			}
 

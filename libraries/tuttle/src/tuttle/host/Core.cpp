@@ -70,16 +70,30 @@ void Core::preload()
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	std::string home = std::getenv("HOME");
+	boost::filesystem::path home;
+	if( const char* env_tuttle_cache = std::getenv("TUTTLE_HOME") )
+	{
+		home = env_tuttle_cache;
+	}
+	else if( const char* env_tuttle_cache = std::getenv("HOME") ) // LINUX HOME
+	{
+		home = env_tuttle_cache;
+		home /= ".tuttle";
+	}
+	else if( const char* env_tuttle_cache = std::getenv("WINDIR") ) // WINDOWS HOME
+	{
+		home = env_tuttle_cache;
+		home /= ".tuttle";
+	}
 
-	const std::string cacheFile( home + "/.tuttle/tuttlePluginCacheSerialize.xml" );
+	const std::string cacheFile( home.string() + "/tuttlePluginCacheSerialize.xml" );
 
 	try
 	{
 		std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
 		if( ifsb.is_open() )
 		{
-			TUTTLE_TCOUT( "Read plugins cache." );
+			TUTTLE_COUT_DEBUG( "Read plugins cache." );
 			IArchive iArchive( ifsb );
 			iArchive >> BOOST_SERIALIZATION_NVP( _pluginCache );
 			ifsb.close();
@@ -99,7 +113,7 @@ void Core::preload()
 		boost::uuids::uuid u = gen();
 		const std::string tmpCacheFile( cacheFile + ".writing." + boost::uuids::to_string(u) + ".xml" );
 		
-		TUTTLE_TCOUT( "Write plugins cache " << tmpCacheFile );
+		TUTTLE_COUT_DEBUG( "Write plugins cache " << tmpCacheFile );
 		// serialize into a temporary file
 		std::ofstream ofsb( tmpCacheFile.c_str(), std::ios::out );
 		if( ofsb.is_open() )
@@ -108,10 +122,8 @@ void Core::preload()
 			oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
 			ofsb.close();
 			// replace the cache file
-			TUTTLE_TCOUT( "Rename file." );
 			boost::filesystem::rename( tmpCacheFile, cacheFile );
 		}
-		TUTTLE_TCOUT( "End write." );
 	}
 #endif
 }
