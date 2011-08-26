@@ -14,8 +14,10 @@
 
 #ifndef SAM_MOVEFILES
 #define SAM_MV_OR_CP_OPTIONS	"SAM_CP_OPTIONS"
+#define SAM_TOOL               "sam-cp"
 #else
 #define SAM_MV_OR_CP_OPTIONS	"SAM_MV_OPTIONS"
+#define SAM_TOOL               "sam-mv"
 #endif
 
 
@@ -214,12 +216,12 @@ int sammvcp( int argc, char** argv )
 	}
 	catch( const bpo::error& e)
 	{
-		TUTTLE_COUT("error in command line: " << e.what() );
+		TUTTLE_COUT( SAM_TOOL ": command line error:  " << e.what() );
 		exit( -2 );
 	}
 	catch(...)
 	{
-		TUTTLE_COUT("unknown error in command line.");
+		TUTTLE_COUT( SAM_TOOL ": unknown error in command line.");
 		exit( -2 );
 	}
 

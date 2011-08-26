@@ -332,12 +332,12 @@ int main( int argc, char** argv )
 	}
 	catch( const bpo::error& e)
 	{
-		TUTTLE_COUT( "error in command line: " << e.what() );
+		TUTTLE_COUT( "sam-plugins: command line error: " << e.what() );
 		exit( -2 );
 	}
 	catch(...)
 	{
-		TUTTLE_COUT("unknown error in command line.");
+		TUTTLE_COUT( "sam-plugins: unknown error in command line.");
 		exit( -2 );
 	}
 
