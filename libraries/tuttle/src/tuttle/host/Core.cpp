@@ -86,7 +86,7 @@ void Core::preload()
 		home /= ".tuttle";
 	}
 
-	const std::string cacheFile( home.string() + "/tuttlePluginCacheSerialize.xml" );
+	const std::string cacheFile( (home / "tuttlePluginCacheSerialize.xml").string() );
 
 	try
 	{
