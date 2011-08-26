@@ -179,7 +179,8 @@ allLibs = [
 		('jasper',   'http://www.ece.uvic.ca/~mdadams/jasper/software/jasper-1.900.1.zip'                    , 'jasper-1.900.1'             , False),
 		('xz',       'http://tukaani.org/xz/xz-5.0.2.tar.gz'                                                 , 'xz-5.0.2'                   , False),
 		('gvc',      'http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.26.3.tar.gz'            , 'graphviz-2.26.3'            , False),
-		('openjpeg', 'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'                   , 'openjpeg_v1_4_sources_r697' , False)
+		('openjpeg', 'http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz'                   , 'openjpeg_v1_4_sources_r697' , False),
+		('ffmpeg',   'http://ffmpeg.org/releases/ffmpeg-0.8.2.tar.bz2'                                       , 'ffmpeg-0.8.2'               , False),
 	]
 
 
