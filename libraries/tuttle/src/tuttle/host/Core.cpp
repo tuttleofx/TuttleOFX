@@ -70,11 +70,27 @@ void Core::preload()
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	const std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
+	boost::filesystem::path home;
+	if( const char* env_tuttle_cache = std::getenv("TUTTLE_HOME") )
+	{
+		home = env_tuttle_cache;
+	}
+	else if( const char* env_tuttle_cache = std::getenv("HOME") ) // LINUX HOME
+	{
+		home = env_tuttle_cache;
+		home /= ".tuttle";
+	}
+	else if( const char* env_tuttle_cache = std::getenv("WINDIR") ) // WINDOWS HOME
+	{
+		home = env_tuttle_cache;
+		home /= ".tuttle";
+	}
+
+	const std::string cacheFile( home.string() + "/tuttlePluginCacheSerialize.xml" );
 
 	try
 	{
-		std::ifstream ifsb( cacheFile.c_str() );
+		std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
 		if( ifsb.is_open() )
 		{
 			TUTTLE_COUT_DEBUG( "Read plugins cache." );
@@ -85,7 +101,7 @@ void Core::preload()
 	}
 	catch( std::exception& e )
 	{
-		TUTTLE_COUT_ERROR( "Exception when reading cache file (" << e.what() << ")." );
+		TUTTLE_CERR( "Exception when reading cache file (" << e.what() << ")." );
 	}
 #endif
 	_pluginCache.scanPluginFiles();
@@ -97,18 +113,17 @@ void Core::preload()
 		boost::uuids::uuid u = gen();
 		const std::string tmpCacheFile( cacheFile + ".writing." + boost::uuids::to_string(u) + ".xml" );
 		
-		TUTTLE_TCOUT( "Write plugins cache " << tmpCacheFile );
+		TUTTLE_COUT_DEBUG( "Write plugins cache " << tmpCacheFile );
 		// serialize into a temporary file
-		std::ofstream ofsb( tmpCacheFile.c_str() );
-		OArchive oArchive( ofsb );
-		oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
-		ofsb.close();
-		//TUTTLE_TCOUT( "End write." );
-		//TUTTLE_TCOUT( "Rename file." );
-		
-		// replace the cache file
-		boost::filesystem::rename( tmpCacheFile, cacheFile );
-		//TUTTLE_TCOUT( "End rename." );
+		std::ofstream ofsb( tmpCacheFile.c_str(), std::ios::out );
+		if( ofsb.is_open() )
+		{
+			OArchive oArchive( ofsb );
+			oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
+			ofsb.close();
+			// replace the cache file
+			boost::filesystem::rename( tmpCacheFile, cacheFile );
+		}
 	}
 #endif
 }

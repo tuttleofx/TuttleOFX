@@ -120,7 +120,7 @@ namespace std {
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
-// TUTTLE_TCOUT* defines are used by developpers for temporary displays during development stages.
+// TUTTLE_TCOUT* defines are used by developers for temporary displays during development stages.
 // They are removed in production mode.
 #ifndef TUTTLE_PRODUCTION
 	#define TUTTLE_TCOUT TUTTLE_COUT

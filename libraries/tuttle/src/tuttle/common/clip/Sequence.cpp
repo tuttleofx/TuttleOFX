@@ -875,7 +875,7 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 		}
 	}
 	
-	
+
 	// add sequences in the output list
 	BOOST_FOREACH( SeqIdMap::value_type & p, sequences )
 	{
@@ -887,12 +887,12 @@ std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const bfs::path& dir
 			{
 				if( s.getNbFiles() == 1 ) // if it's a sequence of 1 file, it isn't a sequence but only a file
 				{
-				    boost::shared_ptr<File> file( new File( s.getDirectory(), s.getFirstFilename(), s.getMaskOptions() ) );
+				    boost::shared_ptr<File> file( new File( directory, s.getFirstFilename(), desc ) );
 				    outputFiles.push_back( file );
 				}
 				else
 				{
-				    boost::shared_ptr<Sequence> seq( new Sequence( s, desc ) );
+				    boost::shared_ptr<Sequence> seq( new Sequence( directory, s, desc ) );
 				    outputSequences.push_back( seq );
 				}
 			}
@@ -935,7 +935,8 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	bfs::path dir;
 	if( showAbsolutePath() )
 	{
-		dir = bfs::system_complete( _directory );
+		dir = bfs::absolute( _directory );
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 	}
 
 	os << std::left;
@@ -946,7 +947,7 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 	if( showRelativePath() )
 	{
 		dir = _directory;
-		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 		
 		std::string path = (dir / _folderName).string();
 
@@ -971,7 +972,8 @@ std::ostream& File::getCout( std::ostream& os ) const
 	bfs::path dir;
 	if( showAbsolutePath() )
 	{
-		dir = bfs::system_complete(_directory);
+		dir = bfs::absolute(_directory);
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 	}
 	os << std::left;
 
@@ -982,7 +984,7 @@ std::ostream& File::getCout( std::ostream& os ) const
 	if( showRelativePath() )
 	{
 		dir = _directory;
-		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 		std::string path = ( dir / _filename).string();
 
 		os << std::setw(NAME_WIDTH_WITH_DIR) << _kColorFile + path  + _kColorStd;
@@ -1007,7 +1009,8 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 
 	if( showAbsolutePath() )
 	{
-		dir = bfs::system_complete(_directory);
+		dir = bfs::absolute( _directory );
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 	}
 
 	os << std::left;
@@ -1018,7 +1021,7 @@ std::ostream& Sequence::getCout( std::ostream& os ) const
 	if( showRelativePath() )
 	{
 		dir = _directory;
-		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./$" ), "/"  );
+		dir = boost::regex_replace( dir.string(), boost::regex( "/\\./" ), "/"  );
 
 		os << std::setw(NAME_WIDTH_WITH_DIR) << _kColorSequence + ( dir / getStandardPattern()).string() + _kColorStd ;
 	}

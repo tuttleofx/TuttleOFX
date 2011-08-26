@@ -1,3 +1,4 @@
+#include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 #include <tuttle/host/Core.hpp>
@@ -8,6 +9,12 @@
 #include <boost/throw_exception.hpp>
 
 namespace bfs = boost::filesystem;
+namespace bpo = boost::program_options;
+
+std::string               sColorStd;
+std::string               sColorBlue;
+std::string               sColorGreen;
+std::string               sColorRed;
 
 bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<bfs::path>& searchPaths )
 {
@@ -23,10 +30,7 @@ bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<b
 	}
 
 	/// @todo exception ?
-	TUTTLE_CERR(
-		"Sam command \"" << toolName << "\" not found."
-		"\n"
-		);
+	TUTTLE_CERR( sColorRed << "Sam command \"" << toolName << "\" not found." << sColorStd << std::endl );
 	// displayAvailableCommands();
 	exit( -1 );
 }
@@ -37,7 +41,7 @@ std::vector<bfs::path> retrieveSearchPaths( const bfs::path& samDirectory )
 	if( const char* env_ptr = std::getenv("SAM_PATH") )
 	{
 		const std::string env( env_ptr );
-		const std::vector<std::string> paths = boost::program_options::split_unix( env, ":;" );
+		const std::vector<std::string> paths = bpo::split_unix( env, ":;" );
 		searchPaths.insert( searchPaths.end(), paths.begin(), paths.end() );
 	}
 	
@@ -93,16 +97,15 @@ int main( int argc, char** argv )
 {
 	if( argc <= 1 ) // no argument
 	{
-		TUTTLE_COUT(
-			"sam: missing operands.\n"
-			"'sam --help' for more informations.\n"
-			);
+		TUTTLE_COUT( "sam: missing operands." );
+		TUTTLE_COUT( "run 'sam --help' for more informations." << std::endl);
 		exit( -1 );
 	}
 
+	bool                     colorOutput = false;
+
 	try
 	{
-		namespace bpo = boost::program_options;
 	
 		std::vector<std::string> cl_options;
 		for( int i = 1; i < argc; ++i )
@@ -116,40 +119,74 @@ int main( int argc, char** argv )
 		}
 		
 		// Declare the supported options.
-		bpo::options_description infoOptions( "\tOptions" );
+		bpo::options_description infoOptions;
 		infoOptions.add_options()
 			("help,h"       , "show node help")
 			("version,v"    , "display version") // which version?
 			("commands,c"   , "show list of all available sam commands")
-			("commands-list" , "show list of all available sam commands") /// @todo: secret
-			("binaries-list" , "show list of all available sam binaries") /// @todo: secret
+			("color"        , "color the output")
 		;
+
+		// describe hidden options
+		bpo::options_description hidden;
+		hidden.add_options()
+			("commands-list" , "show list of all available sam commands")
+			("binaries-list" , "show list of all available sam binaries")
+			("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+		;
+
 		bpo::options_description all_options;
-		all_options.add(infoOptions);
+		all_options.add(infoOptions).add(hidden);
 
 		bpo::variables_map sam_vm;
+
+		//parse the command line, and put the result in vm
 		bpo::store( bpo::command_line_parser(cl_options).options(all_options).run(), sam_vm );
-		if( const char* env_ptr = std::getenv("SAM_OPTIONS") )
+		// get environment options and parse them
+		if( const char* env_sam_options = std::getenv("SAM_OPTIONS") )
 		{
-			std::vector<std::string> envOptions;
-			std::string env( env_ptr );
-			envOptions.push_back( env );
-			bpo::store( bpo::command_line_parser(envOptions).options(all_options).run(), sam_vm );
+			const std::vector<std::string> envOptions = bpo::split_unix( env_sam_options, " " );
+			bpo::store(bpo::command_line_parser(envOptions).options(all_options).run(), sam_vm);
+		}
+		bpo::notify( sam_vm );
+
+		if ( sam_vm.count("color") )
+		{
+			colorOutput = true;
+		}
+		if ( sam_vm.count("enable-color") )
+		{
+			std::string str = sam_vm["enable-color"].as<std::string>();
+
+			if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+			{
+				colorOutput = true;
+			}
+			else
+			{
+				colorOutput = false;
+			}
 		}
 
-		bpo::notify( sam_vm );
+		if( colorOutput )
+		{
+			sColorStd    = kColorStd;
+			sColorBlue   = kColorFolder;
+			sColorGreen  = kColorFile;
+			sColorRed    = kColorError;
+		}
+
 
 		if( sam_vm.count("help") )
 		{
-			TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]" );
-			TUTTLE_COUT( "" );
-			TUTTLE_COUT( "NAME" );
-			TUTTLE_COUT( "\tsam - A set of command line tools." );
-			TUTTLE_COUT( "" );
-			TUTTLE_COUT( "SYNOPSIS" );
-			TUTTLE_COUT( "\tsam COMMAND [options]..." );
-			TUTTLE_COUT( "" );
-			TUTTLE_COUT( "DESCRIPTION" );
+			TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
+			TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
+			TUTTLE_COUT( sColorGreen <<"\tsam - A set of command line tools." << sColorStd << std::endl );
+			TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
+			TUTTLE_COUT( sColorGreen << "\tsam COMMAND [options]..." << sColorStd << std::endl );
+			TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd );
+			TUTTLE_COUT( "Sam is the TuttleOFX command line tool to manage image processing" << std::endl );
+			TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd );
 			TUTTLE_COUT( infoOptions );
 			exit( 0 );
 		}
@@ -171,14 +208,14 @@ int main( int argc, char** argv )
 		if( sam_vm.count("commands") )
 		{
 			TUTTLE_COUT( "" );
-			TUTTLE_COUT( "COMMANDS" );
+			TUTTLE_COUT( sColorBlue << "COMMANDS" << sColorStd );
 			
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
 				TUTTLE_COUT( "\t" << c.filename().string().substr(4) );
 //				const int res = system( (c.string()+" --brief").c_str() );
-				TUTTLE_COUT( "" );
+				//TUTTLE_COUT( "" );
 			}
 			TUTTLE_COUT( "" );
 
@@ -218,16 +255,14 @@ int main( int argc, char** argv )
 //		TUTTLE_TCOUT_VAR( fullcmd );
 		return system( fullcmd.c_str() );
 	}
-	catch( const boost::program_options::error& e )
+	catch( const bpo::error& e )
 	{
-		TUTTLE_CERR( "sam");
-		TUTTLE_CERR( "Error: " << e.what() );
+		TUTTLE_CERR( sColorRed << "Error in command line: " << e.what() << sColorStd );
 		exit( -2 );
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( "sam");
-		TUTTLE_CERR( boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR( sColorRed << "Error in command line: " << boost::current_exception_diagnostic_information() << sColorStd );
 		exit( -2 );
 	}
 	return 0;
