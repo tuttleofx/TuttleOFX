@@ -1,3 +1,6 @@
+#include "commandLine.hpp"
+#include "node_io.hpp"
+
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 
@@ -9,135 +12,14 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 
-
-#ifndef SAM_DO_PIPE_STR
-#define SAM_DO_PIPE_STR "//"
-#endif
-
-static const std::string kpipe = SAM_DO_PIPE_STR;
-
-namespace ttl = tuttle::host;
+namespace sam {
+namespace samdo {
 
 std::string  sColorStd;
 std::string  sColorBlue;
 std::string  sColorGreen;
 std::string  sColorRed;
 std::string  sColorError;
-
-/**
- * @brief Decomposes command line arguments into a list of options and a list of node command lines. Groups the arguments without insterpretation at this step.
- * 
- * @param[in] argc number of arguments ont the command line
- * @param[in] argv list of string arguments
- * @param[out] cl_options list of options for sam-do
- * @param[out] cl_commands list of node command lines (list of strings groups without insterpretation at this step)
- */
-void decomposeCommandLine( const int argc, char** const argv, std::vector<std::string>& cl_options, std::vector< std::vector<std::string> >& cl_commands )
-{
-	cl_commands.reserve(10);
-	cl_commands.resize(1); // first node for options
-
-	// split the command line to identify the multiple parts
-	for( int i = 1; i < argc; ++i )
-	{
-		const std::string s( argv[i] );
-		if( s == kpipe )
-		{
-			cl_commands.resize( cl_commands.size()+1 );
-			cl_commands.back().reserve(10);
-		}
-		else
-		{
-			cl_commands.back().push_back( s );
-		}
-	}
-
-	// reoganize nodes
-	// first and last nodes may only be flags to sam-do itself
-	{
-		// First node
-		std::vector<std::string>& firstNode = cl_commands.front();
-		std::vector<std::string>::iterator fNodeIt = firstNode.begin();
-		std::vector<std::string>::iterator fNodeItEnd = firstNode.end();
-		while( fNodeIt != fNodeItEnd &&
-			   (*fNodeIt)[0] == '-' )
-		{
-			++fNodeIt;
-		}
-		// options in front of the first node are options for sam-do
-		if( firstNode.begin() != fNodeIt )
-		{
-			std::copy( firstNode.begin(), fNodeIt, std::back_inserter(cl_options) );
-			firstNode.erase( firstNode.begin(), fNodeIt );
-		}
-		if( firstNode.size() == 0 )
-		{
-			cl_commands.erase( cl_commands.begin() );
-		}
-	}
-	if( cl_commands.size() )
-	{
-		// Last node
-		// Is it a node or only flags?
-		const std::vector<std::string>& notNode = cl_commands.back();
-		if( notNode[0][0] == '-' )
-		{
-			std::copy( notNode.begin(), notNode.end(), std::back_inserter(cl_options) );
-			cl_commands.erase( cl_commands.end()-1 );
-		}
-	}
-}
-
-/**
- * @todo
- */
-void coutProperties( const ttl::Graph::Node& node )
-{
-	const ttl::ofx::property::OfxhSet& props = node.getProperties();
-	BOOST_FOREACH( ttl::ofx::property::PropertyMap::const_reference clip, props.getMap() )
-	{
-		TUTTLE_COUT(
-			"\t" <<
-			clip.first << " " <<
-			(clip.second->getDimension() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(clip.second->getDimension())) : "")
-			);
-	}
-}
-
-/**
- * @todo
- */
-void coutClips( const ttl::Graph::Node& node )
-{
-//	ttl::ofx::attribute::OfxhClipSet& clips = node.getClipSet();
-//	BOOST_FOREACH( ttl::ofx::attribute::OfxhClip& clip, clips.getClipVector() )
-//	{
-//		/// @todo
-//		TUTTLE_COUT("");
-//	}
-}
-
-void coutParameters( const ttl::Graph::Node& node )
-{
-	const ttl::ofx::attribute::OfxhParamSet& params = node.getParamSet();
-	BOOST_FOREACH( const ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
-	{
-		if( param.getSecret() )
-			continue; // ignore secret parameters
-		TUTTLE_COUT(
-			"\t" <<
-			param.getScriptName() << ":\t" <<
-			param.getParamType() <<
-			(param.getSize() > 1 ? (std::string(" x") + boost::lexical_cast<std::string>(param.getSize())) : "")
-			);
-		const std::string& hint = param.getHint();
-		if( hint.size() )
-		{
-			TUTTLE_COUT( hint );
-		}
-		TUTTLE_COUT("");
-	}
-}
 
 struct NodeCommand
 {
@@ -152,8 +34,15 @@ struct NodeCommand
 	std::vector< std::pair<std::string, std::string> > _flags;
 };
 
+}
+}
+
+
 int main( int argc, char** argv )
 {
+	namespace ttl = tuttle::host;
+	using namespace sam::samdo;
+	
 	try
 	{
 		if( argc <= 1 ) // no argument
