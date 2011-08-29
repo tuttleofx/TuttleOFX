@@ -1,3 +1,5 @@
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <boost/filesystem/operations.hpp>

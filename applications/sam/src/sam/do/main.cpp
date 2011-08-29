@@ -1,6 +1,8 @@
 #include "commandLine.hpp"
 #include "node_io.hpp"
 
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 
@@ -15,11 +17,7 @@
 namespace sam {
 namespace samdo {
 
-std::string  sColorStd;
-std::string  sColorBlue;
-std::string  sColorGreen;
-std::string  sColorRed;
-std::string  sColorError;
+Color _color;
 
 struct NodeCommand
 {
@@ -138,33 +136,29 @@ int main( int argc, char** argv )
 
 				if( enableColor )
 				{
-					sColorStd    = kColorStd;
-					sColorBlue   = kColorFolder;
-					sColorGreen  = kColorFile;
-					sColorRed    = kColorError;
-					sColorError  = kColorError;
+					_color.enable();
 				}
 
 				if( samdo_vm.count("help") )
 				{
-					TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
+					TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 
-					TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
-					TUTTLE_COUT( sColorGreen << "\tsam-do - A command line to execute a list of OpenFX nodes." << sColorStd );
-					TUTTLE_COUT( sColorGreen << "\t         Use the sperarator // to pipe images between nodes." << sColorStd << std::endl );
+					TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+					TUTTLE_COUT( _color._green << "\tsam-do - A command line to execute a list of OpenFX nodes." << _color._std );
+					TUTTLE_COUT( _color._green << "\t         Use the sperarator // to pipe images between nodes." << _color._std << std::endl );
 
-					TUTTLE_COUT( sColorBlue  << "SYNOPSIS" );
+					TUTTLE_COUT( _color._blue  << "SYNOPSIS" );
 					TUTTLE_COUT( "\tsam-do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" << std::endl);
 
-					TUTTLE_COUT( sColorBlue  << "EXAMPLES" );
+					TUTTLE_COUT( _color._blue  << "EXAMPLES" );
 					//TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
-					TUTTLE_COUT( sColorGreen << "\tsam-do --nodes" );
-					TUTTLE_COUT( sColorGreen << "\tsam-do blur -h" );
+					TUTTLE_COUT( _color._green << "\tsam-do --nodes" );
+					TUTTLE_COUT( _color._green << "\tsam-do blur -h" );
 					/// @todo version with read / write (without format specification)
-					TUTTLE_COUT( sColorGreen << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" );
-					TUTTLE_COUT( sColorGreen << "\tsam-do dpxreader foo.dpx // sobel // print // -Q" << sColorStd << std::endl );
+					TUTTLE_COUT( _color._green << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" );
+					TUTTLE_COUT( _color._green << "\tsam-do dpxreader foo.dpx // sobel // print // -Q" << _color._std << std::endl );
 
-					TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd );
+					TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std );
 					TUTTLE_COUT( infoOptions );
 					TUTTLE_COUT( confOptions );
 					exit( 0 );
@@ -216,12 +210,12 @@ int main( int argc, char** argv )
 			}
 			catch( const boost::program_options::error& e )
 			{
-				TUTTLE_CERR( sColorError << "sam-do: command line error: " << e.what() << sColorStd );
+				TUTTLE_CERR( _color._error << "sam-do: command line error: " << e.what() << _color._std );
 				exit( -2 );
 			}
 			catch( ... )
 			{
-				TUTTLE_CERR( sColorError << "sam-do: error: " << boost::current_exception_diagnostic_information() << sColorStd );
+				TUTTLE_CERR( _color._error << "sam-do: error: " << boost::current_exception_diagnostic_information() << _color._std );
 				exit( -2 );
 			}
 

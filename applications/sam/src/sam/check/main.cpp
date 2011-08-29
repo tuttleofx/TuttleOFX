@@ -1,3 +1,4 @@
+#include <sam/common/color.hpp>
 
 #include <tuttle/host/Graph.hpp>
 #include <tuttle/common/clip/Sequence.hpp>

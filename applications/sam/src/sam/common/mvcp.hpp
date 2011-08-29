@@ -1,3 +1,5 @@
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 
@@ -245,6 +247,7 @@ int sammvcp( int argc, char** argv )
 
 	if( colorOutput )
 	{
+		using namespace tuttle::common;
 		sColorStd    = kColorStd;
 		sColorBlue   = kColorFolder;
 		sColorFolder = kColorFolder;

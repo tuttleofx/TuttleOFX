@@ -1,3 +1,5 @@
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -17,6 +19,7 @@ namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
+using namespace tuttle::common;
 
 bool         colorOutput   = false;
 bool         verbose      = false;
