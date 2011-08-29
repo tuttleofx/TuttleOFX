@@ -36,7 +36,6 @@ struct Color
 
 		_std    = kColorStd;
 		_error  = kColorError;
-		std::cout << _blue << "text sample "<< _std<< std::endl;
 	}
 	
 };
