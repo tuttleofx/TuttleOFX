@@ -9,7 +9,7 @@ import os ;
 project
     : requirements
 	<include>src
-    : build-dir $(DIST)/%CLASSNAME%/obj
+    : build-dir $(BUILD)/%CLASSNAME%
     ;
 
  

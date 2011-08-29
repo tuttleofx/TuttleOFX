@@ -31,7 +31,7 @@ bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<b
 	}
 
 	/// @todo exception ?
-	TUTTLE_CERR( _color._red << "Sam command \"" << toolName << "\" not found." << _color._std << std::endl );
+	TUTTLE_CERR( _color._red << "Sam command \"" << toolName << "\" not found." << _color._std );
 	// displayAvailableCommands();
 	exit( -1 );
 }
@@ -214,9 +214,9 @@ int main( int argc, char** argv )
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
 			{
-				TUTTLE_COUT( "\t" << c.filename().string().substr(4) );
-//				const int res = system( (c.string()+" --brief").c_str() );
-				//TUTTLE_COUT( "" );
+				std::cout << std::left <<  "\t" << std::setw(10) << c.filename().string().substr(4) << std::flush ;
+				system( (c.string()+" --brief").c_str() );
+				std::cout << std::flush;
 			}
 			TUTTLE_COUT( "" );
 

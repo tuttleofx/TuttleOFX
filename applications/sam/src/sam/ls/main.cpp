@@ -18,6 +18,10 @@
 namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
+
+
+sam::Color _color;
+
 // A helper function to simplify the main part.
 template<class T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
@@ -29,6 +33,7 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
+	using namespace sam;
 
 	EMaskType                 researchMask        = eMaskTypeSequence;  // by default show sequences
 	EMaskOptions              descriptionMask     = eMaskOptionsNone;   // by default show nothing
@@ -38,11 +43,6 @@ int main( int argc, char** argv )
 	std::string               availableExtensions;
 	std::vector<std::string>  paths;
 	std::vector<std::string>  filters;
-	
-	std::string               sColorStd;
-	std::string               sColorBlue;
-	std::string               sColorGreen;
-	std::string               sColorRed;
 
 	// Declare the supported options.
 	bpo::options_description mainOptions;
@@ -60,6 +60,7 @@ int main( int argc, char** argv )
 		("color"            , "color the output")
 		("full-display"     , "show directories, files and sequences")
 		("script"           , "output is formated to using in script files")
+		("brief"            , "brief summary of the tool")
 	;
 	
 	// describe hidden options
@@ -133,33 +134,36 @@ int main( int argc, char** argv )
 	if( enableColor )
 	{
 		descriptionMask |= eMaskOptionsColor;
-		sColorStd    = kColorStd;
-		sColorBlue   = kColorFolder;
-		sColorGreen  = kColorFile;
-		sColorRed    = kColorError;
+		_color.enable();
 	}
 
 	if (vm.count("help"))
 	{
-		TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << "\n" );
-		TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
-		TUTTLE_COUT( sColorGreen << "\tsam-ls - list directory contents" << sColorStd << std::endl);
-		TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
-		TUTTLE_COUT( sColorGreen << "\tsam-ls [options] [directories]" << sColorStd << std::endl );
-		TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-ls - list directory contents" << _color._std << std::endl);
+		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-ls [options] [directories]" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
 
 		TUTTLE_COUT( "List information about the sequences, files and folders." );
 		TUTTLE_COUT( "List the current directory by default, and only sequences." );
 		TUTTLE_COUT( "The script option disable color, disable directory printing (in multi-directory case or recursive) and set relative path by default." << std::endl );
 
-		TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
 		TUTTLE_COUT( mainOptions );
+		return 0;
+	}
+
+	if ( vm.count("brief") )
+	{
+		TUTTLE_COUT( _color._green << "list directory contents" << _color._std);
 		return 0;
 	}
 
 	if (vm.count("expression"))
 	{
-		TUTTLE_COUT( sColorRed << "Expression: " << vm["expression"].as<std::string>() << sColorStd );
+		TUTTLE_COUT( _color._red << "Expression: " << vm["expression"].as<std::string>() << _color._std );
 		bal::split( filters, vm["expression"].as<std::string>(), bal::is_any_of(","));
 	}
 
@@ -333,4 +337,3 @@ int main( int argc, char** argv )
 
 	return 0;
 }
-

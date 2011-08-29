@@ -951,7 +951,7 @@ std::ostream& Folder::getCout( std::ostream& os ) const
 		
 		std::string path = (dir / _folderName).string();
 
-		os << std::setw(NAME_WIDTH_WITH_DIR) << _kColorFolder+ path + _kColorStd;
+		os << std::setw(NAME_WIDTH_WITH_DIR) << _kColorFolder + path + _kColorStd;
 	}
 	else
 	{

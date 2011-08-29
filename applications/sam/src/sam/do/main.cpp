@@ -75,15 +75,16 @@ int main( int argc, char** argv )
 			try
 			{
 				// Declare the supported options.
-				bpo::options_description infoOptions( "\tDisplay options (replace the process)" );
+				bpo::options_description infoOptions;
 				infoOptions.add_options()
 					("help,h"       , "show node help")
 					("version,v"    , "display node version")
 					("nodes,n"      , "show list of all available nodes")
 					("color"        , "color the output")
 					("script"       , "output is formated to using in script files")
+					("brief"        , "brief summary of the tool")
 				;
-				bpo::options_description confOptions( "\tConfigure process" );
+				bpo::options_description confOptions;
 				confOptions.add_options()
 					("range,r"      , bpo::value<std::string>(), "frame range to render" )
 					("verbose,V"    , "explain what is being done")
@@ -144,30 +145,43 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 
 					TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
-					TUTTLE_COUT( _color._green << "\tsam-do - A command line to execute a list of OpenFX nodes." << _color._std );
-					TUTTLE_COUT( _color._green << "\t         Use the sperarator // to pipe images between nodes." << _color._std << std::endl );
+					TUTTLE_COUT( _color._green << "\tsam-do - A command line to execute a list of OpenFX nodes." << _color._std << std::endl );
 
-					TUTTLE_COUT( _color._blue  << "SYNOPSIS" );
+					TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
 					TUTTLE_COUT( "\tsam-do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" << std::endl);
 
-					TUTTLE_COUT( _color._blue  << "EXAMPLES" );
+					TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std );
+					TUTTLE_COUT( _color._green << "\tA command line to execute a list of OpenFX nodes." << _color._std );
+					TUTTLE_COUT( _color._green << "\tUse the sperarator // to pipe images between nodes." << _color._std << std::endl );
+
+
+					TUTTLE_COUT( _color._blue  << "EXAMPLES" << _color._std );
 					//TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
-					TUTTLE_COUT( _color._green << "\tsam-do --nodes" );
-					TUTTLE_COUT( _color._green << "\tsam-do blur -h" );
+					TUTTLE_COUT( _color._green << "\tsam-do --nodes" << _color._std );
+					TUTTLE_COUT( _color._green << "\tsam-do blur -h" << _color._std );
 					/// @todo version with read / write (without format specification)
-					TUTTLE_COUT( _color._green << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" );
+					TUTTLE_COUT( _color._green << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" << _color._std );
 					TUTTLE_COUT( _color._green << "\tsam-do dpxreader foo.dpx // sobel // print // -Q" << _color._std << std::endl );
 
-					TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std );
+					TUTTLE_COUT( _color._blue  << "DISPLAY OPTIONS (replace the process)" << _color._std );
 					TUTTLE_COUT( infoOptions );
+					TUTTLE_COUT( _color._blue  << "CONFIGURE PROCESS" << _color._std );
 					TUTTLE_COUT( confOptions );
 					exit( 0 );
 				}
+
+				if ( samdo_vm.count("brief") )
+				{
+					TUTTLE_COUT( _color._green << "A command line to execute a list of OpenFX nodes" << _color._std);
+					return 0;
+				}
+
 				if( samdo_vm.count("version") )
 				{
 					TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR );
 					exit( 0 );
 				}
+
 				if( samdo_vm.count("nodes") )
 				{
 					TUTTLE_COUT( "NODES" );
@@ -182,6 +196,7 @@ int main( int argc, char** argv )
 					}
 					exit( 0 );
 				}
+
 				{
 					if( samdo_vm.count("range") )
 					{

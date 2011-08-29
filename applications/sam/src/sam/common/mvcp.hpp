@@ -28,12 +28,7 @@ namespace bpo = boost::program_options;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 
-std::string  sColorStd;
-std::string  sColorBlue;
-std::string  sColorGreen;
-std::string  sColorRed;
-std::string  sColorError;
-std::string  sColorFolder;
+sam::Color _color;
 
 bool        colorOutput   = false;
 
@@ -80,7 +75,7 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 #ifndef SAM_SAM_MOVEFILESS // copy file(s)
 			if( bfs::exists( dFile ) )
 			{
-				TUTTLE_CERR( sColorError << "Could not copy: " << dFile.string( ) << sColorStd );
+				TUTTLE_CERR( _color._error << "Could not copy: " << dFile.string( ) << _color._std );
 			}
 			else
 			{
@@ -91,17 +86,17 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 				}
 				catch( const bpo::error& e )
 				{
-					TUTTLE_CERR( sColorError << "error : " << e.what() << sColorStd );
+					TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std );
 				}
 				catch( ... )
 				{
-					TUTTLE_CERR( sColorError << boost::current_exception_diagnostic_information( ) << sColorStd );
+					TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
 				}
 			}
 #else // move file(s)
 			if( bfs::exists( dFile ) )
 			{
-				TUTTLE_CERR( sColorError << "Could not move: " << dFile.string( ) << sColorStd );
+				TUTTLE_CERR( _color._error << "Could not move: " << dFile.string( ) << _color._std );
 			}
 			else
 			{
@@ -112,11 +107,11 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 				}
 				catch( const bpo::error& e )
 				{
-					TUTTLE_CERR( sColorError << "error : " << e.what() << sColorStd );
+					TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std );
 				}
 				catch( ... )
 				{
-					TUTTLE_CERR( sColorError << boost::current_exception_diagnostic_information( ) << sColorStd );
+					TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
 				}
 			}
 #endif
@@ -183,6 +178,7 @@ int sammvcp( int argc, char** argv )
 		( "output-first", bpo::value<std::ssize_t>( ), "specify the first output image, in order to retime the sequence. It's another way to create an offset of your sequence." )
 		( "output-last" , bpo::value<std::ssize_t>( ), "specify the last output image, in order to retime the sequence" )
 		("color"        , "display with colors")
+		("brief"        , "brief summary of the tool")
 		;
 
 	// describe hidden options
@@ -248,37 +244,42 @@ int sammvcp( int argc, char** argv )
 	if( colorOutput )
 	{
 		using namespace tuttle::common;
-		sColorStd    = kColorStd;
-		sColorBlue   = kColorFolder;
-		sColorFolder = kColorFolder;
-		sColorGreen  = kColorFile;
-		sColorRed    = kColorError;
-		sColorError  = kColorError;
+		_color.enable();
 	}
 
 	if( vm.count( "help" ) )
 	{
-		TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
 #ifndef SAM_MOVEFILES
-		TUTTLE_COUT( sColorBlue  <<"NAME" << sColorStd );
-		TUTTLE_COUT( sColorGreen << "\tsam-cp - copy sequence(s) in a directory" << sColorStd << std::endl );
-		TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
-		TUTTLE_COUT( sColorGreen << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  <<"NAME" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-cp - copy sequence(s) in a directory" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl );
 #else
-		TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
-		TUTTLE_COUT( sColorGreen << "\tsam-mv - move sequence(s) in a directory" << sColorStd << std::endl );
-		TUTTLE_COUT( sColorBlue  << "SYNOPSIS" );
-		TUTTLE_COUT( sColorGreen << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-mv - move sequence(s) in a directory" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl );
 #endif
-		TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
 #ifndef SAM_MOVEFILES
 		TUTTLE_COUT( "Copy sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
 #else
 		TUTTLE_COUT( "Move sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
 #endif
-		TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd );
+		TUTTLE_COUT( _color._blue  << "OPTIONS" <<_color._std );
 		TUTTLE_COUT( mainOptions );
 		return 1;
+	}
+
+	if ( vm.count("brief") )
+	{
+#ifndef SAM_MOVEFILES
+		TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std );
+#else
+		TUTTLE_COUT( _color._green << "move sequence(s) in a directory" << _color._std );
+#endif
+		return 0;
 	}
 
 	if( vm.count( "expression" ) )
@@ -300,7 +301,7 @@ int sammvcp( int argc, char** argv )
 
 	if( paths.size( ) < 2 )
 	{
-		TUTTLE_COUT( sColorError << "No sequence and/or directory are specified." << sColorStd );
+		TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std );
 		return 1;
 	}
 
@@ -327,7 +328,7 @@ int sammvcp( int argc, char** argv )
 		outputFirst = vm["output-first"].as<std::ssize_t>( );
 		if( offsetMode != eOffsetModeNotSet )
 		{
-			TUTTLE_CERR( sColorError << "You can't cumulate multiple options to modify the time." << sColorStd );
+			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
 			return -1;
 		}
 		offsetMode = eOffsetModeFirstTime;
@@ -338,7 +339,7 @@ int sammvcp( int argc, char** argv )
 		outputLast = vm["output-last"].as<std::ssize_t>( );
 		if( offsetMode != eOffsetModeNotSet )
 		{
-			TUTTLE_CERR( sColorError << "You can't cumulate multiple options to modify the time." << sColorStd );
+			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
 			return -1;
 		}
 		offsetMode = eOffsetModeLastTime;
@@ -360,7 +361,7 @@ int sammvcp( int argc, char** argv )
 
 		if( ! dstPath.empty() && ! bfs::is_directory( dstPath ) )
 		{
-			TUTTLE_CERR( sColorError << "Your destination is not in a valid directory: " << tuttle::quotes(dstPath.string()) << "." << sColorStd );
+			TUTTLE_CERR( _color._error << "Your destination is not in a valid directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std );
 			return -1;
 		}
 	}
@@ -368,7 +369,7 @@ int sammvcp( int argc, char** argv )
 	{
 		if( paths.size( ) > 1 )
 		{
-			TUTTLE_CERR( sColorError << "To copy multiple sequences, your destination must be a directory: " << tuttle::quotes(dstPath.string()) << "." << sColorStd );
+			TUTTLE_CERR( _color._error << "To copy multiple sequences, your destination must be a directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std );
 			return -1;
 		}
 		sequencePattern = "";
@@ -381,7 +382,7 @@ int sammvcp( int argc, char** argv )
 		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, ttl::Sequence::ePatternAll );
 		if( ! dstIsSeq ) // there is a pattern, but it's not valid.
 		{
-			TUTTLE_CERR( sColorError << "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." << sColorStd );
+			TUTTLE_CERR( _color._error << "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." << _color._std );
 			return -1;
 		}
 	}
@@ -394,12 +395,12 @@ int sammvcp( int argc, char** argv )
 			const bool srcIsSeq = srcSeq.initFromDetection( srcPath.string( ), ttl::Sequence::ePatternDefault );
 			if( ! srcIsSeq )
 			{
-				TUTTLE_CERR( sColorError << "Input is not a sequence: " << tuttle::quotes(srcPath.string()) << "."  << sColorStd );
+				TUTTLE_CERR( _color._error << "Input is not a sequence: " << tuttle::quotes(srcPath.string()) << "."  << _color._std );
 				return -1;
 			}
 			if( srcSeq.getNbFiles( ) == 0 )
 			{
-				TUTTLE_CERR( sColorError << "No existing file for the input sequence: " << tuttle::quotes(srcPath.string()) << "." << sColorStd );
+				TUTTLE_CERR( _color._error << "No existing file for the input sequence: " << tuttle::quotes(srcPath.string()) << "." << _color._std );
 				return -1;
 			}
 
@@ -450,12 +451,12 @@ int sammvcp( int argc, char** argv )
 	}
 	catch( bfs::filesystem_error &ex )
 	{
-		TUTTLE_COUT( ex.what( ) );
+		TUTTLE_COUT( _color._error << ex.what( ) << _color._std );
 		return -2;
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( boost::current_exception_diagnostic_information( ) );
+		TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
 		return -3;
 	}
 
