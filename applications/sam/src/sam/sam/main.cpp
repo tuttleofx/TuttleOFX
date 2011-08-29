@@ -10,10 +10,11 @@
 #include <boost/foreach.hpp>
 #include <boost/throw_exception.hpp>
 
-namespace sam {
 
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
+
+namespace sam {
 
 Color _color;
 

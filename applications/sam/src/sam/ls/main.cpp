@@ -19,8 +19,10 @@ namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 
-
-sam::Color _color;
+namespace sam
+{
+	Color _color;
+}
 
 // A helper function to simplify the main part.
 template<class T>
@@ -236,7 +238,7 @@ int main( int argc, char** argv )
 		std::size_t index = 0;
 		BOOST_FOREACH( bfs::path path, paths )
 		{
-//			TUTTLE_COUT( "path: "<< path );
+			//TUTTLE_COUT( "path: "<< path );
 			if( bfs::exists( path ) )
 			{
 				if( bfs::is_directory( path ) )
@@ -316,6 +318,11 @@ int main( int argc, char** argv )
 					if( s.getNbFiles() )
 					{
 						TUTTLE_COUT( s );
+					}
+					else
+					{
+						File f = File( basepath, path.leaf().string(), descriptionMask);
+						TUTTLE_COUT( f );
 					}
 				}
 				catch(... )

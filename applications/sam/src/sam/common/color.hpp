@@ -5,7 +5,6 @@
 
 #include <string>
 #include <iostream>
-
 namespace sam {
 
 struct Color

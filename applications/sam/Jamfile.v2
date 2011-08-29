@@ -25,7 +25,6 @@ exe sam :
         /tuttlecommon/<link>static
     :
         <os>LINUX:<find-shared-library>dl
-        <os>LINUX:<define>__LINUX__
     ;
 
 ###############################################################################

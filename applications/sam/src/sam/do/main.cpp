@@ -59,8 +59,7 @@ int main( int argc, char** argv )
 		
 		decomposeCommandLine( argc, argv, cl_options, cl_commands );
 
-		ttl::Core::instance().preload();
-		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+		std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes;
 
 		// create the graph
 		ttl::Graph graph;
@@ -181,6 +180,10 @@ int main( int argc, char** argv )
 					TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR );
 					exit( 0 );
 				}
+
+				// plugins loading
+				ttl::Core::instance().preload();
+				allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
 
 				if( samdo_vm.count("nodes") )
 				{

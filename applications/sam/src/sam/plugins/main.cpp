@@ -49,31 +49,30 @@ std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)
 
 void printProperties( const tth::ofx::property::OfxhSet properties, std::string context="" )
 {
-	TUTTLE_COUT(_color._red );
-	if(context.size() == 0)
+	if( context.size() == 0 )
 	{
-		TUTTLE_COUT( "Number of properties : " << properties.getSize() );
+		TUTTLE_COUT( _color._red << "Number of properties : " << properties.getSize() << _color._std );
 	}
 	else
 	{
-		TUTTLE_COUT( "Number of properties for \"" << context << "\": " << properties.getSize() );
+		TUTTLE_COUT( _color._red << "Number of properties for \"" << context << "\": " << properties.getSize() << _color._std );
 	}
 
-	TUTTLE_COUT( "RW ModifiedBy\tType\tSize\t"<<std::setw (50)  << std::left << "Property Name" << "\tDefault Values");
+	TUTTLE_COUT( _color._red << "RW" << _color._std << " " << _color._red << "ModifiedBy" << _color._std << "\t" << _color._red << "Type" << _color._std << "\t" << _color._red << "Size" << _color._std << "\t" << _color._red <<std::setw (50)  << std::left << "Property Name" << _color._std << "\t" << _color._red << "Default Values" << _color._std );
 	tth::ofx::property::PropertyMap propMap = properties.getMap();
 	for( tth::ofx::property::PropertyMap::const_iterator itProperty = propMap.begin(); itProperty != propMap.end(); ++itProperty )
 	{
 		const tth::ofx::property::OfxhProperty& prop = *( itProperty->second );
 		TUTTLE_COUT(
 			_color._green <<
-			( prop.getPluginReadOnly() ? "r- " : "rw " ) <<
-			( prop.getModifiedBy() == tth::ofx::property::eModifiedByHost ? "host  \t" : "plugin\t" ) <<
-			( tth::ofx::property::mapTypeEnumToString( prop.getType() ) ) << "\t[" <<
-			prop.getDimension() << "]\t" <<
+			( prop.getPluginReadOnly() ? (_color._green + "r-" + _color._std + " ") : (_color._green + "rw" + _color._std + " " ) ) <<
+			( prop.getModifiedBy() == tth::ofx::property::eModifiedByHost ? ( _color._green + "host" + _color._std + "  \t" ) : ( _color._green + "plugin" + _color._std + "\t" ) ) <<
+			_color._green << ( tth::ofx::property::mapTypeEnumToString( prop.getType() ) ) << _color._std << "\t" << _color._green << "[" <<
+			prop.getDimension() << "]" << _color._std << "\t" <<
 			_color._blue <<
 			std::setw (50)  << std::left <<
-			itProperty->first << _color._green << "\t{ " <<
-			getDefaultValues(prop) << " }"
+			itProperty->first << _color._std << "\t" << _color._green << "{ " <<
+			getDefaultValues(prop) << " }" << _color._std
 		);
 	}
 }
@@ -143,13 +142,13 @@ void getPluginProperties( const std::string& plugName )
 		}
 		else
 		{
-			TUTTLE_COUT( "Plugin contexts not supported by the host. (" + plugName + ")" );
+			TUTTLE_CERR( _color._error << "Plugin contexts not supported by the host. (" + plugName + ")" << _color._std );
 			return;
 		}
 	}
 	if( clips )
 	{
-		TUTTLE_COUT( std::endl << _color._red << "Clips");
+		TUTTLE_COUT( std::endl << _color._red << "Clips" << _color._std );
 
 		typedef std::map<std::string, tth::ofx::attribute::OfxhClipImageDescriptor*> ContextMap;
 
