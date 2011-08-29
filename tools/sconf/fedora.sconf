@@ -1,0 +1,28 @@
+## use system libraries
+incdir_openexr = '/usr/include/OpenEXR'
+incdir_freetype = '/usr/include/freetype2'
+incdir_imagemagick = '/usr/include/ImageMagick'
+lib_python = 'python2.7'
+incdir_python = '/usr/include/python2.7'
+
+
+## use manually compiled libraries
+
+# there is a missing function in standard packages
+extern = '#3rdParty'
+incdir_boost = join(extern,'boost')
+libdir_boost = join(extern,'boost/stage/lib')
+
+# there is no standard package for ffmeg
+ffmpeg = join(extern,'ffmpeg')
+incdir_ffmpeg = ffmpeg
+libdir_ffmpeg = [
+	join(ffmpeg,'libavformat'),
+	join(ffmpeg,'libavcodec'),
+	join(ffmpeg,'libavdevice'),
+	join(ffmpeg,'libavutil'),
+	join(ffmpeg,'libavfilter'),
+	join(ffmpeg,'libswscale'),
+	]
+
+

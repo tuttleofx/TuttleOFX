@@ -3,7 +3,7 @@
 
 #include <tuttle/host/exceptions.hpp>
 
-#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+#ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 #include <boost/python.hpp>
 #else
 #include <boost/lexical_cast.hpp>
@@ -13,7 +13,7 @@ namespace tuttle {
 namespace host {
 namespace attribute {
 
-#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+#ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 namespace expression_details {
 
 inline boost::python::object pythonObjectFromExpression( const std::string& expression )

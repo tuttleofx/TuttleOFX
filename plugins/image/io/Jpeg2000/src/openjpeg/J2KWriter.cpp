@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <cstring>
+#include <string>
+#include <vector>
 
 namespace tuttle {
 namespace io {
@@ -28,12 +30,12 @@ J2KWriter::~J2KWriter()
 	close();
 }
 
-void J2KWriter::open(const std::string & filename, const size_t w, const size_t h, const size_t nc, const size_t dprecision)
+void J2KWriter::open(const std::string & filename, const std::size_t w, const std::size_t h, const std::size_t nc, const std::size_t dprecision)
 {
-	close();
-    opj_image_cmptparm_t cmptparm[nc];
+    close();
+    std::vector<opj_image_cmptparm_t> cmptparm(nc);
     OPJ_COLOR_SPACE color_space;
-    size_t j;
+    std::size_t j;
     int subsampling_dx, subsampling_dy;
 
     /** Routines d'ouverture du fichier **/
@@ -78,7 +80,7 @@ void J2KWriter::open(const std::string & filename, const size_t w, const size_t 
     if ( _openjpeg.parameters.cp_comment == NULL )
     {
         const char comment[] = "TuttleOFX";
-        const size_t clen = strlen(comment);
+        const std::size_t clen = strlen(comment);
         const char *version = "";//opj_version();
 		_openjpeg.parameters.cp_comment = (char*)malloc( clen + strlen( version ) + 1 );
 		sprintf( _openjpeg.parameters.cp_comment,"%s%s", comment, version );
@@ -137,7 +139,7 @@ void J2KWriter::open(const std::string & filename, const size_t w, const size_t 
 	_height = h;
 }
 
-void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
+void J2KWriter::encode(const uint8_t *data, const std::size_t sprecision)
 {
 	using namespace boost::gil;
 	OPJ_CODEC_FORMAT fmt;
@@ -167,13 +169,13 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 
 	int j = _width * _height;
 	// Check cinema mode off/on
-	int *ch32[_components];
+	std::vector<int*> ch32(_components);
 	switch( sprecision )
 	{
 		case 8:
 		{
 			const uint8_t *sdata = (uint8_t*)data;
-			for( size_t c = 0; c < _components; ++c )
+			for( std::size_t c = 0; c < _components; ++c )
 			{
 				ch32[c] = &_openjpeg.image->comps[c].data[0];
 			}
@@ -182,7 +184,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 				// DCI is always 12 bits encoded
 				while ( j-- )
 				{
-					for(size_t c = 0; c < _components; ++c)
+					for( std::size_t c = 0; c < _components; ++c)
 					{
 						gray8_pixel_t sp(*sdata++);
 						gray12_pixel_t dp;
@@ -195,7 +197,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 			{
 				while ( j-- )
 				{
-					for(size_t c = 0; c < _components; ++c)
+					for( std::size_t c = 0; c < _components; ++c)
 					{
 						*ch32[c]++ = *sdata++;
 					}
@@ -206,13 +208,13 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 		case 12:
 		{
 			const uint16_t *sdata = (uint16_t*)data;
-			for(size_t c = 0; c < _components; ++c)
+			for( std::size_t c = 0; c < _components; ++c)
 			{
 				ch32[c] = &_openjpeg.image->comps[c].data[0];
 			}
 			while ( j-- )
 			{
-				for(size_t c = 0; c < _components; ++c)
+				for( std::size_t c = 0; c < _components; ++c)
 				{
 					*(ch32[c]++) = *sdata++;
 				}
@@ -222,7 +224,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 		case 16:
 		{
 			const uint16_t *sdata = (uint16_t*)data;
-			for(size_t c = 0; c < _components; ++c)
+			for( std::size_t c = 0; c < _components; ++c)
 			{
 				ch32[c] = &_openjpeg.image->comps[c].data[0];
 			}
@@ -231,7 +233,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 				// DCI is always 12 bits encoded
 				while ( j-- )
 				{
-					for(size_t c = 0; c < _components; ++c)
+					for( std::size_t c = 0; c < _components; ++c)
 					{
 						gray16_pixel_t sp(*sdata++ & 0xFFFF);
 						gray12_pixel_t dp;
@@ -245,7 +247,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 				// Encode 12 bits
 				while ( j-- )
 				{
-					for(size_t c = 0; c < _components; ++c)
+					for( std::size_t c = 0; c < _components; ++c)
 					{
 						*(ch32[c]++) = *sdata++;
 					}
@@ -256,7 +258,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 		case 32:
 		{
 			const uint32_t *sdata = (uint32_t*)data;
-			for(size_t c = 0; c < _components; ++c)
+			for( std::size_t c = 0; c < _components; ++c)
 			{
 				ch32[c] = &_openjpeg.image->comps[c].data[0];
 			}
@@ -265,7 +267,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 				// DCI is always 12 bits
 				while( j-- )
 				{
-					for( size_t c = 0; c < _components; ++c )
+					for( std::size_t c = 0; c < _components; ++c )
 					{
 						gray32_pixel_t sp(*sdata++);
 						gray12_pixel_t dp;
@@ -278,7 +280,7 @@ void J2KWriter::encode(const uint8_t *data, const size_t sprecision)
 			{
 				while( j-- )
 				{
-					for( size_t c = 0; c < _components; ++c )
+					for( std::size_t c = 0; c < _components; ++c )
 					{
 						*(ch32[c]++) = *sdata++;
 					}
@@ -438,7 +440,7 @@ void J2KWriter::close()
 	if( _cio )
 	{
 		// Output the buffer
-		_outFile.write( (const char*)_cio->buffer, (size_t)cio_tell(_cio) );
+		_outFile.write( (const char*)_cio->buffer, (std::size_t)cio_tell(_cio) );
 		// Close and free the byte stream
 		opj_cio_close( _cio );
 		_cio = NULL;

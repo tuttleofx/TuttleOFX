@@ -1,3 +1,5 @@
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 
@@ -8,13 +10,12 @@
 #include <boost/foreach.hpp>
 #include <boost/throw_exception.hpp>
 
+namespace sam {
+
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
 
-std::string               sColorStd;
-std::string               sColorBlue;
-std::string               sColorGreen;
-std::string               sColorRed;
+Color _color;
 
 bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<bfs::path>& searchPaths )
 {
@@ -30,7 +31,7 @@ bfs::path retrieveToolFullPath( const std::string& toolName, const std::vector<b
 	}
 
 	/// @todo exception ?
-	TUTTLE_CERR( sColorRed << "Sam command \"" << toolName << "\" not found." << sColorStd << std::endl );
+	TUTTLE_CERR( _color._red << "Sam command \"" << toolName << "\" not found." << _color._std << std::endl );
 	// displayAvailableCommands();
 	exit( -1 );
 }
@@ -93,8 +94,11 @@ std::vector<bfs::path> retrieveAllSamCommands( const std::vector<bfs::path>& dir
 	return res;
 }
 
+}
+
 int main( int argc, char** argv )
 {
+	using namespace sam;
 	if( argc <= 1 ) // no argument
 	{
 		TUTTLE_COUT( "sam: missing operands." );
@@ -170,23 +174,20 @@ int main( int argc, char** argv )
 
 		if( colorOutput )
 		{
-			sColorStd    = kColorStd;
-			sColorBlue   = kColorFolder;
-			sColorGreen  = kColorFile;
-			sColorRed    = kColorError;
+			_color.enable();
 		}
 
 
 		if( sam_vm.count("help") )
 		{
-			TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
-			TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
-			TUTTLE_COUT( sColorGreen <<"\tsam - A set of command line tools." << sColorStd << std::endl );
-			TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
-			TUTTLE_COUT( sColorGreen << "\tsam COMMAND [options]..." << sColorStd << std::endl );
-			TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd );
+			TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+			TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+			TUTTLE_COUT( _color._green <<"\tsam - A set of command line tools." << _color._std << std::endl );
+			TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+			TUTTLE_COUT( _color._green << "\tsam COMMAND [options]..." << _color._std << std::endl );
+			TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std );
 			TUTTLE_COUT( "Sam is the TuttleOFX command line tool to manage image processing" << std::endl );
-			TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd );
+			TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std );
 			TUTTLE_COUT( infoOptions );
 			exit( 0 );
 		}
@@ -208,7 +209,7 @@ int main( int argc, char** argv )
 		if( sam_vm.count("commands") )
 		{
 			TUTTLE_COUT( "" );
-			TUTTLE_COUT( sColorBlue << "COMMANDS" << sColorStd );
+			TUTTLE_COUT( _color._blue << "COMMANDS" << _color._std );
 			
 			const std::vector<bfs::path> cmds = retrieveAllSamCommands( searchPaths );
 			BOOST_FOREACH( const bfs::path& c, cmds )
@@ -257,12 +258,12 @@ int main( int argc, char** argv )
 	}
 	catch( const bpo::error& e )
 	{
-		TUTTLE_CERR( sColorRed << "Error in command line: " << e.what() << sColorStd );
+		TUTTLE_CERR( _color._red << "Error in command line: " << e.what() << _color._std );
 		exit( -2 );
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( sColorRed << "Error in command line: " << boost::current_exception_diagnostic_information() << sColorStd );
+		TUTTLE_CERR( _color._red << "Error in command line: " << boost::current_exception_diagnostic_information() << _color._std );
 		exit( -2 );
 	}
 	return 0;

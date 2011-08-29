@@ -70,7 +70,7 @@ void J2KReader::open(const std::string & filename)
 	}
 
 	inputDataStream.seekg(0, std::ios::end);
-	ssize_t dataLength = inputDataStream.tellg();
+	std::ssize_t dataLength = inputDataStream.tellg();
 	inputDataStream.seekg(0, std::ios::beg);
 	if( dataLength != _dataLength || !_fileData )
 	{

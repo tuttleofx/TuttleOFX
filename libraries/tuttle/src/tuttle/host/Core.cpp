@@ -22,7 +22,7 @@
 
 #include <boost/filesystem/operations.hpp>
 
-#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+#ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	#include <boost/python.hpp>
 #endif
 
@@ -45,7 +45,7 @@ Core::Core()
 	, _memoryPool( pool )
 	, _memoryCache( cache )
 {
-#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+#ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	Py_Initialize( );
 #endif
 	_pluginCache.setCacheVersion( "tuttleV1" );
@@ -86,7 +86,7 @@ void Core::preload()
 		home /= ".tuttle";
 	}
 
-	const std::string cacheFile( home.string() + "/tuttlePluginCacheSerialize.xml" );
+	const std::string cacheFile( (home / "tuttlePluginCacheSerialize.xml").string() );
 
 	try
 	{
