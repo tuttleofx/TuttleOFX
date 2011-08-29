@@ -273,7 +273,7 @@ int main( int argc, char** argv )
 				}
 				else
 				{
-//					TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
+					//TUTTLE_COUT( "is NOT a directory "<< path.branch_path() << " | "<< path.leaf() );
 					filters.push_back( path.leaf().string() );
 					std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)path.branch_path(), filters, researchMask, descriptionMask );
 					BOOST_FOREACH( const std::list<boost::shared_ptr<FileObject> >::value_type & s, listing )
@@ -287,8 +287,26 @@ int main( int argc, char** argv )
 				//TUTTLE_COUT( "not exist ...." );
 				try
 				{
-					Sequence s(path.branch_path(), descriptionMask );
+					bfs::path basepath = path.branch_path();
+					if( basepath == "" )
+						basepath = "./";
+
+					if( ( paths.size() > 1 || recursiveListing ) && !script )
+					{
+						if( index > 0 )
+						{
+							TUTTLE_COUT( "" );
+						}
+						TUTTLE_COUT( basepath.string() << " :");
+					}
+
+					Sequence s( basepath, descriptionMask );
+					//TUTTLE_COUT ( basepath << "    @@@    " << path.string() );
 					s.initFromDetection( path.string(), Sequence::ePatternDefault );
+					s.setMaskOptions( descriptionMask );
+					s.setMaskType   ( researchMask );
+					s.setDirectory  ( basepath );
+
 					if( s.getNbFiles() )
 					{
 						TUTTLE_COUT( s );

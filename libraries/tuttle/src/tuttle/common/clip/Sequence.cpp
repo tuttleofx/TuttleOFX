@@ -591,7 +591,7 @@ bool Sequence::initFromDetection( const std::string& pattern, const EPattern acc
 		return true; // an empty sequence
 
 	std::list<std::string> allTimesStr;
-	std::list<Time> allTimes;
+	std::list<Time>        allTimes;
 
 	bfs::directory_iterator itEnd;
 	for( bfs::directory_iterator iter( _directory ); iter != itEnd; ++iter )
@@ -622,13 +622,13 @@ bool Sequence::initFromDetection( const std::string& pattern, const EPattern acc
 
 	allTimes.sort();
 
-	_step = extractStep( allTimes );
-	_padding = extractPadding( allTimesStr );
+	_step          = extractStep           ( allTimes );
+	_padding       = extractPadding        ( allTimesStr );
 	_strictPadding = extractIsStrictPadding( allTimesStr, _padding );
 
-	_firstTime = allTimes.front();
-	_lastTime  = allTimes.back();
-	_nbFiles   = allTimes.size();
+	_firstTime     = allTimes.front();
+	_lastTime      = allTimes.back ();
+	_nbFiles       = allTimes.size ();
 
 	return true; // a real file sequence
 }
