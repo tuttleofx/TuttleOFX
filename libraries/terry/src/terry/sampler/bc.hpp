@@ -38,7 +38,7 @@ struct bc_sampler
 template < typename F >
 bool getWeight ( const F distance, F& weight, bc_sampler sampler )
 {
-        if(distance<1)
+        if( distance < 1 )
         {
                 double P =   2.0 - 1.5 * sampler.valB - sampler.valC;
                 double Q = - 3.0 + 2.0 * sampler.valB + sampler.valC;
@@ -94,12 +94,16 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 
 		std::vector<double> xWeights, yWeights;
 
+		xWeights.assign( windowSize , 0);
+		yWeights.assign( windowSize , 0);
 
 		// get horizontal weight for each pixels
 		for( ssize_t i = 0; i < windowSize; i++ )
 		{
-				getWeight( frac.x+2-i, xWeights.at(i), sampler );
-				getWeight( frac.y+2-i, yWeights.at(i), sampler );
+			// frac.x+2-i
+			//frac.y+2-i
+			getWeight( std::abs(i-1-frac.x), xWeights.at(i), sampler );
+			getWeight( std::abs(i-1-frac.y), yWeights.at(i), sampler );
 		}
 		//process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
 		bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );

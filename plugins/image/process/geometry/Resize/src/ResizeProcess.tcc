@@ -46,7 +46,7 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	switch( _filter )
 	{
 		case eParamFilterNearest	: resample_pixels_progress< terry::sampler::nearest_neighbor_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-                //case eParamFilterBilinear	: resample_pixels_progress< terry::sampler::bilinear_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+        case eParamFilterBilinear	: resample_pixels_progress< terry::sampler::bilinear_sampler		    >( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 
 		case eParamFilterBC		:
 							terry::sampler::bc_sampler BCsampler;

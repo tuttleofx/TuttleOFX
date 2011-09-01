@@ -63,19 +63,24 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		for( ssize_t i = 0; i < -minPosition + 1; i++)
 			src.at(i) = loc.x( )[1];
 
-		unsigned int position = 2;
+		unsigned int pos = 2;
 
 		for( ssize_t i = 1; i < maxPosition + 1; i++)
 		{
-			src.at( i ) = ( p0.x + position < windowWidth ) ? loc.x( )[ position ] : src.at( i - 1 );
-			position++;
+			src.at( i ) = ( p0.x + pos < windowWidth ) ? loc.x( )[ pos ] : src.at( i - 1 );
+			pos++;
 		}
+
 		return;
 	}
 
 	src.at( -minPosition ) = *loc;
+/*
+	src.at( 0 ) = ( p0.x  < 0 ) ?  src.at( 1 ) : loc.x( )[ -1 ];
+	src.at( 2 ) = ( p0.x + 1 < windowWidth ) ? loc.x( )[ 1 ] : src.at( 1 );
+	src.at( 3 ) = ( p0.x + 1 < windowWidth ) ? loc.x( )[ 2 ] : src.at( 2 );*/
 
-	for( ssize_t i = -minPosition; i > 0; i++)
+	for( ssize_t i = 0; i > minPosition; i--)
 	{
 		src.at( i ) = ( p0.x + position < 0 ) ?  src.at( i + 1 ) : loc.x( )[ position ];
 		position++;
@@ -86,6 +91,7 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 		src.at( i ) = ( p0.x + position < windowWidth ) ? loc.x( )[ position ] : src.at( i - 1 );
 		position++;
 	}
+
 }
 
 /**
@@ -166,30 +172,29 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
 
 
-	pixel<F, devicen_layout_t<num_channels<SrcView>::value> > mp( 0 );
+	SrcC mp( 0 );
 
 
 	std::vector < SrcP > ptr;
 	std::vector < SrcC > xProcessed;
 
+	ptr.assign       ( windowSize, SrcP(0) );
 	xProcessed.assign( windowSize, SrcC(0) );
-	ptr.assign( windowSize, SrcP(0) );
-
 
 	if( pTL.y < 0 )
 	{
 		++loc.y( );
 		getPixelsPointers( loc, pTL, windowSize, ptr );
-		//process1Dresampling<SrcP, F, DstP> () (ptr, xWeights, xProcessed.at(0));
+		process1Dresampling<SrcP, F, SrcC> () (ptr, xWeights, xProcessed.at(1));
 
-		xProcessed.at(1) = xProcessed.at(0);
-		xProcessed.at(2) = xProcessed.at(0);
+		xProcessed.at(0) = xProcessed.at(1);
+		xProcessed.at(0) = xProcessed.at(1);
 
 		++loc.y( );
 		if( pTL.y + 2 < src.height( ) )
 		{
-			//setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
-			//bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a3 );
+			getPixelsPointers( loc, pTL, windowSize, ptr );
+			process1Dresampling<SrcP, F, SrcC> () (ptr, xWeights, xProcessed.at(3));
 		}
 		else
 		{
@@ -198,58 +203,52 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	}
 	else
 	{
-/*
 		if( pTL.y < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
-			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a1 );
+			getPixelsPointers( loc, pTL, windowSize, ptr );
+			process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at(1) );
 		}
+/*
 		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
 			--loc.y( );
-			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
-			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a0 );
+			getPixelsPointers( loc, pTL, windowSize, ptr );
+			process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at(0) );
 			++loc.y( );
 		}
 		else
 		{
-			a0 = a1;
+			xProcessed.at(0) = xProcessed.at(1);
 		}
 
 		++loc.y( );
 		if( pTL.y + 1 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
-			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a2 );
+			getPixelsPointers( loc, pTL, windowSize, ptr );
+			process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at(2) );
 		}
 		else
 		{
-			a2 = a1;
+			xProcessed.at(2) = xProcessed.at(1);
 		}
 		++loc.y( );
 		if( pTL.y + 2 < src.height( ) )
 		{
-			setXPixels<xy_locator, SrcP >( loc, pTL, src.width( ), ptA, ptB, ptC, ptD );
-			bicubic1D< SrcP, F, SrcC > ( )( ptA, ptB, ptC, ptD, weight, a3 );
+			getPixelsPointers( loc, pTL, windowSize, ptr );
+			process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at(3) );
 		}
 		else
 		{
-			a3 = a2;
-		}
-		*/
+			xProcessed.at(3) = xProcessed.at(2);
+		}*/
 	}
 
 	// vertical process
-	/*
-		getBCWeight( sampler.valB, sampler.valC, frac.y+1, weight[0] );
-		getBCWeight( sampler.valB, sampler.valC, frac.y  , weight[1] );
-		getBCWeight( sampler.valB, sampler.valC, 1-frac.y, weight[2] );
-		getBCWeight( sampler.valB, sampler.valC, 2-frac.y, weight[3] );
-		bicubic1D< SrcC, F, SrcC > ( )( a0, a1, a2, a3, weight, mp );*/
+	process1Dresampling<SrcC, F, SrcC> () ( xProcessed, yWeights, mp );
 
 	// Convert from floating point average value to the source type
-	SrcP src_result;
-	cast_pixel( mp, src_result );
+	DstP src_result;
+	cast_pixel( xProcessed.at(1), src_result );
 
 	color_convert( src_result, result );
 	return true;
