@@ -4,6 +4,7 @@
 #include "ColorSpaceKeyerPlugin.hpp"
 #include "SelectionAverage.hpp"
 #include "GeodesicForm.hpp"
+#include "MatrixManipulation.hpp"
 
 #include <tuttle/plugin/global.hpp>
 #include <tuttle/plugin/interact/interact.hpp>
@@ -11,33 +12,30 @@
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
-#include <boost/array.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
-
-//declare boost::array as Matrix
-typedef boost::array<double,16> Matrix;
 	
 class ColorSpaceKeyerOverlay:public OFX::OverlayInteract
 {
 public:
 	/*Class arguments*/
-	ColorSpaceKeyerPlugin* _plugin;			//plugin reference
+	ColorSpaceKeyerPlugin* _plugin;				//plugin reference
 	interact::InteractInfos _infos;				
 	
-	OfxPointI _origin;				//origin (point of pen down)
-	OfxPointI _end;					//end (point of pen up)
+	OfxPointI _origin;							//origin (point of pen down)
+	OfxPointI _end;								//end (point of pen up)
 	
-	bool _isPenDown;			//mouse management (is mouse clicked)
-	bool _isCtrlKeyDown;		//keyboard management (s Ctrl key pressed)
-	double _rotateX;			//rotation on X axis (mouse)
-	double _rotateY;			//rotation on Y axis (mouse)
-	double _rotateXForm;		//rotation on X (center is geodesic form)
-	double _rotateYForm;		//rotation on Y (center is geodesic form)
-	Ofx3DPointD _coordAverageDisplay;			//Average coord with rotation
-	Ofx3DPointD _coordCenterReferenceDisplay;	//Reference center coord with rotation
+	bool _isPenDown;							//mouse management (is mouse clicked)
+	bool _isCtrlKeyDown;						//keyboard management (s Ctrl key pressed)
+	
+	double _rotateX;							//rotation on X axis (mouse)
+	double _rotateY;							//rotation on Y axis (mouse)
+	double _rotateXForm;						//rotation on X (center is geodesic form)
+	double _rotateYForm;						//rotation on Y (center is geodesic form)
+	
+	Matrix4 _modelViewMatrix;					//Model matrix used to do transformations
 	
 public:
 	/*Constructor/Destructor*/
@@ -59,8 +57,8 @@ public:
 private:	
 	/*OpenGL scene*/
 	void prepareOpenGLScene(const OFX::DrawArgs& args);							//prepare the frustrum and projection settings and initialize first VBO
-	void drawAxes();															//draw X,Y and Z xes on screen
-	void updateCoordAverageRotation();											//update the average coordinates (with center rotation)
+	void drawAxes();															//draw X, Y and Z axes on screen
+	void updateModelView(const Ofx3DPointD& rotationCenter);					//update modelView with (by adding a new transformation)
 	void drawWarning(const Ofx3DPointD& centerPoint, const double ratio);		//draw a warning sign on the openGL scene
 	
 	/*Get overlay data*/
