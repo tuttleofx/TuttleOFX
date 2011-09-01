@@ -10,9 +10,6 @@ namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
 
-static const bool kSupportTiles = false;
-
-
 /**
  * @brief Function called to describe the plugin main features.
  * @param[in, out] desc Effect descriptor
@@ -37,7 +34,7 @@ void ColorSpaceKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	desc.addSupportedBitDepth( OFX::eBitDepthFloat );
 
 	// plugin flags
-	desc.setSupportsTiles( kSupportTiles );
+	desc.setSupportsTiles( true );
 //	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
 	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
 	
@@ -56,16 +53,16 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	OFX::ClipDescriptor* srcClip = desc.defineClip( kOfxImageEffectSimpleSourceClipName );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	srcClip->addSupportedComponent( OFX::ePixelComponentRGB );
-	srcClip->setSupportsTiles( kSupportTiles );
+	srcClip->setSupportsTiles( true );
 
 	OFX::ClipDescriptor* strongSelectionClip = desc.defineClip( kClipColorSelection );
 	strongSelectionClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	strongSelectionClip->setOptional( true );
-	strongSelectionClip->setSupportsTiles( kSupportTiles );
+	strongSelectionClip->setSupportsTiles( false );
 	
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
-	dstClip->setSupportsTiles( kSupportTiles );
+	dstClip->setSupportsTiles( true );
 
 	//Group display
 	OFX::GroupParamDescriptor* groupDisplay = desc.defineGroupParam(kGroupDisplay);

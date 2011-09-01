@@ -42,10 +42,10 @@ void SelectionAverage::draw()
 	
 	//drawing average mark
 	glBegin(GL_LINES);
-	glColor3f(complementaryColor[0],complementaryColor[1],complementaryColor[2]); //color : complementary to average
-	glVertex3f(xBefore,_averageValue.y,_averageValue.z); glVertex3f(xAfter,_averageValue.y,_averageValue.z); //X axis
-	glVertex3f(_averageValue.x,yBefore,_averageValue.z); glVertex3f(_averageValue.x,yAfter,_averageValue.z); //Y axis
-	glVertex3f(_averageValue.x,_averageValue.y,zBefore); glVertex3f(_averageValue.x,_averageValue.y,zAfter); //Z axis
+	glColor3f(complementaryColor[0],complementaryColor[1],complementaryColor[2]);								//color : complementary to average
+	glVertex3f(xBefore,_averageValue.y,_averageValue.z); glVertex3f(xAfter,_averageValue.y,_averageValue.z);	//X axis
+	glVertex3f(_averageValue.x,yBefore,_averageValue.z); glVertex3f(_averageValue.x,yAfter,_averageValue.z);	//Y axis
+	glVertex3f(_averageValue.x,_averageValue.y,zBefore); glVertex3f(_averageValue.x,_averageValue.y,zAfter);	//Z axis
 	glEnd();
 }
 
@@ -59,11 +59,7 @@ bool SelectionAverage::computeAverageSelection(OFX::Clip* clipColor, const OfxPo
 	{	
 		return false;
 	}
-
 	boost::scoped_ptr<OFX::Image> src( clipColor->fetchImage(_time, clipColor->getCanonicalRod(_time)) );	//scoped pointer of current source clip
-	
-	//TUTTLE_TCOUT_VAR( clipColor->getPixelRod(_time,renderScale)); 
-	//TUTTLE_TCOUT_VAR( clipColor->getCanonicalRod(_time, renderScale));
 
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
@@ -145,9 +141,6 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
         return;
 	}
 
-	//TUTTLE_TCOUT_VAR( src->getBounds());
-	//TUTTLE_TCOUT_VAR( src->getRegionOfDefinition() );
-
 	if( srcPixelRod != src->getBounds() )// the host does bad things !
 	{
 		// remove overlay... but do not crash.
@@ -159,6 +152,9 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 	SView colorView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );		// get current view from color clip
 	Pixel_extend_GeodesicForm funct(geodesicForm);	//functor declaration			//initialize functor
 	boost::gil::transform_pixels(colorView, funct);									//with functor reference;
+	
+	//update geodesic form bounding box
+	geodesicForm.updateBoundingBox();
 }
 
 

@@ -32,12 +32,13 @@ struct Compute_alpha_pixel
 		testPoint.y = p[1];			//y == green
 		testPoint.z = p[2];			//z == blue
 		
-		if(_data.isPointIntoGeodesicForm(testPoint)) //if current pixel is into the geodesic form
+		if(_data.isIntoBoundingBox(testPoint))					//bounding box test (process optimization)
 		{
-			alpha = 1.0; //change alpha to 0
+			if(_data.isPointIntoGeodesicForm(testPoint))		//if current pixel is into the geodesic form
+			{
+				alpha = 1.0; //change alpha to 0
+			}
 		}
-		//else
-			//std::cout << "passe aussi"<<std::endl;
 		
 		Pixel ret;						//declare returned pixel
 		if(_isOutputBW)					// output is gray scale image

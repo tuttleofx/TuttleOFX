@@ -11,11 +11,15 @@
 
 #include <ofxsImageEffect.h>
 #include <ofxsInteract.h>
+#include <boost/array.hpp>
 
 namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
 
+//declare boost::array as Matrix
+typedef boost::array<double,16> Matrix;
+	
 class ColorSpaceKeyerOverlay:public OFX::OverlayInteract
 {
 public:
@@ -54,9 +58,10 @@ public:
 
 private:	
 	/*OpenGL scene*/
-	void prepareOpenGLScene(const OFX::DrawArgs& args);			//prepare the frustrum and projection settings and initialize first VBO
-	void drawAxes();											//draw X,Y and Z xes on screen
-	void updateCoordAverageRotation();							//update the average coordinates (with center rotation)
+	void prepareOpenGLScene(const OFX::DrawArgs& args);							//prepare the frustrum and projection settings and initialize first VBO
+	void drawAxes();															//draw X,Y and Z xes on screen
+	void updateCoordAverageRotation();											//update the average coordinates (with center rotation)
+	void drawWarning(const Ofx3DPointD& centerPoint, const double ratio);		//draw a warning sign on the openGL scene
 	
 	/*Get overlay data*/
 	CloudPointData& getData();

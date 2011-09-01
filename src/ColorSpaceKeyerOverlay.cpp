@@ -2,7 +2,6 @@
 #include "ColorSpaceKeyerOverlay.hpp"
 #include <tuttle/plugin/opengl/gl.h>
 
-
 namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
@@ -15,7 +14,7 @@ namespace colorSpaceKeyer {
 ColorSpaceKeyerOverlay::ColorSpaceKeyerOverlay(OfxInteractHandle handle,OFX::ImageEffect* effect)
 : OFX::OverlayInteract(handle)
 , _infos(effect)
-{
+{	
 	_plugin = static_cast<ColorSpaceKeyerPlugin*>(_effect); //get plugin
 	_plugin->addRefCloudPointData(); //create pointer to overlay data
 	
@@ -24,6 +23,10 @@ ColorSpaceKeyerOverlay::ColorSpaceKeyerOverlay(OfxInteractHandle handle,OFX::Ima
 	_rotateX = _rotateY = 0.0;						//initialize rotation to 0
 	_rotateXForm = _rotateYForm = 0.0;				//initialize rotation centered to geodesic form to 0
 	_origin.x = _origin.y = _end.x = _end.y = 0;	//initialize mouse positions to 0
+	
+	///HACK : to initialize correctly overlay display data
+	OFX::InstanceChangedArgs args;						//create instance changed arguments
+	_plugin->changedParam(args,kPointCloudDisplay);		//call changed parameters function to initialize overlay data
 }
 
 /*
@@ -39,32 +42,49 @@ ColorSpaceKeyerOverlay::~ColorSpaceKeyerOverlay()
  */
 void ColorSpaceKeyerOverlay::prepareOpenGLScene(const OFX::DrawArgs& args)
 {	
-	//reset OpenGL scene (remove previous img)
+	//reset OpenGL scene (remove previous image)
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	//change background color to gray
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	
-	//define openGL scene frustrum
+	//get projection matrix
+	GLdouble proj_matrix[16];
+	glGetDoublev(GL_PROJECTION_MATRIX, proj_matrix);
+	//initialize model-view and projection matrixes to identity
+	glMatrixMode( GL_PROJECTION );	//load standard mode
+	glLoadIdentity();				//projection to identity
 	glMatrixMode( GL_MODELVIEW );	//load standard mode
+	glLoadIdentity();				//model-view to identity 
 	
-	if(args.time != getData()._time || args.time != getData()._averageColor._time)
-	{		
-		std::cout << "Warning !!" << std::endl;
+	//get current viewport size	
+	GLint viewport[4] = { 0, 0, 0, 0 };															//define result array
+	glGetIntegerv(GL_VIEWPORT,viewport);														//get current viewport size
+	const double ratio = (viewport[2]-viewport[0]) / (double)(viewport[3]-viewport[1]);			//compute ratio
+	//define new coordinates
+	glOrtho( 0.0, 1.0, 0.0, 1.0, -1.0, 1.0 );													//set coordinates to 0-1
+	
+	if(args.time != getData()._time || args.time != getData()._averageColor._time)		//if current overlay has not been updated
+	{
+		//display warning sign on screen
+		Ofx3DPointD warningPoint;														//initialize warning drawing point
+		warningPoint.x = 0.15;															//x == viewport width/7;
+		warningPoint.y = 0.2;															//y == viewport height/5;
+		drawWarning(warningPoint, ratio);												//draw warning sign
 	}
 	
+	//define openGL scene frustrum
+	glMatrixMode( GL_PROJECTION );	//load standard mode
+	glLoadMatrixd( proj_matrix );   //reload previous projection matrix
+	glMatrixMode( GL_MODELVIEW );	//load standard mode
+	glLoadIdentity();				//projection to identity
 	
-	glLoadIdentity();				//projection to idendity
-	///@todo: put overlay warning here
-	
-	const GLdouble left = -0.5;
-	const GLdouble right = 1.5;
-	const GLdouble bottom = -0.5;
-	const GLdouble top = 1.5;
-	const GLdouble near = 10.;
-	const GLdouble far = -10.;
-	glOrtho( left, right, bottom, top, near, far );
-	//glFrustum( left, right, bottom, top, near, far );
-
+	const GLdouble left = -0.5;								//frustrum left
+	const GLdouble right = 1.5;								//frustrum right
+	const GLdouble bottom = -0.5;							//frustrum bottom
+	const GLdouble top = 1.5;								//frustrum top
+	const GLdouble near = 10.;								//frustrum near
+	const GLdouble far = -10.;								//frustrum far
+	glOrtho( left, right, bottom, top, near, far );			//define new frustrum for overlay data
 }
 
 /*
@@ -139,6 +159,7 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 	bool displaySomethings = false;
 	if( _plugin->_paramBoolPointCloudDisplay->getValue() ) //Is CloudPointData displayed ? (GUI)
 	{
+		glPushMatrix();								//new transformation
 		prepareOpenGLScene(args);					//prepare frustum and projection settings
 		if(_plugin->_updateVBO )					//VBO need to be updated
 		{
@@ -155,19 +176,18 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		
 		//OpenGL parameters
 		glEnable(GL_DEPTH_TEST);	//active depth (better for understand results)
-		glPushMatrix();				//new transformation
-
-		//rotate management (geodesic form center)
-		glTranslated(_coordAverageDisplay.x,_coordAverageDisplay.y,_coordAverageDisplay.z);	//center rotation to the average
-		glRotated(_rotateYForm,1.0f,0.0f,0.0);	//rotation on Y axis (piloted with mouse)
-		glRotated(_rotateXForm,0.0f,1.0f,0.0);	//rotation on X axis (piloted with mouse)
-		glTranslated(-_coordAverageDisplay.x,_coordAverageDisplay.y, -_coordAverageDisplay.z);	//un-active center rotation
 		
 		//rotate management (cube center)
 		glTranslatef(.5f,.5f,.5f);				//center rotation to the middle of cube
 		glRotated(_rotateY,1.0f,0.0f,0.0);		//rotation on Y axis (piloted with mouse)
 		glRotated(_rotateX,0.0f,1.0f,0.0);		//rotation on X axis (piloted with mouse)
 		glTranslatef(-.5f,-.5f,-.5f);			//un-active center translation
+				
+		//rotate management (geodesic form center)
+		glTranslated(_coordAverageDisplay.x,_coordAverageDisplay.y,_coordAverageDisplay.z);	//center rotation to the average
+		glRotated(_rotateYForm,1.0f,0.0f,0.0);	//rotation on Y axis (piloted with mouse)
+		glRotated(_rotateXForm,0.0f,1.0f,0.0);	//rotation on X axis (piloted with mouse)
+		glTranslated(-_coordAverageDisplay.x,_coordAverageDisplay.y, -_coordAverageDisplay.z);	//un-active center rotation
 		
 		//drawing Axes
 		drawAxes();								//draw the X,Y and Z axes
@@ -178,32 +198,18 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		//drawing selection VBO
 		if(getData()._isSelectionVBOBuilt && _plugin->_paramBoolSeeSelection->getValue()) //selection VBO data is built
 		{
-			/*glBegin(GL_POINTS); 
-			glColor3f(1.0f,1.0f,1.0f);
-			for(unsigned int i=0; i<getData()._selectionCopy.size(); i+= 3)
-				glVertex3d(getData()._selectionCopy[i],getData()._selectionCopy[i+1],getData()._selectionCopy[i+2]);
-			glEnd();*/
 			getData()._selectionVBO.draw();		//draw selection VBO
 		}		
 		
 		//drawing average
 		getData()._averageColor.draw();							//draw average (cross)
 		//drawing geodesic form
-		if(_plugin->_paramBoolDisplayGeodesicForm->getValue())	//if geodesic form has been built
-			getData()._geodesicForm.draw();						//draw geodesic form on screen
-		
-		//test
-		glBegin(GL_POINTS);
-		glPointSize(6.0f);
-		//test average coordinates
-			glColor3f(1.0f,1.0f,1.0f); glVertex3d(_coordAverageDisplay.x,_coordAverageDisplay.y, _coordAverageDisplay.z); //draw coord average
-			std::cout<<"coordAverage : "<<_coordAverageDisplay.x <<","<<_coordAverageDisplay.y<<","<<_coordAverageDisplay.z<<std::endl;
-		glPointSize(1.0f);
-		glEnd();
+		if(_plugin->_paramBoolDisplayGeodesicForm->getValue())		//if geodesic form has been built
+			getData()._geodesicForm.draw();							//draw geodesic form on screen
 		
 		//OpenGL end of parameters
-		glPopMatrix();				//pop matrix
 		glDisable(GL_DEPTH_TEST);	//disable deep
+		glPopMatrix();				//pop matrix
 		displaySomethings = true;	//something has been drown on screen
 	}
 	updateCoordAverageRotation();	//test update coordinates
@@ -346,29 +352,26 @@ void productVectorMatrix(double* v, double* m, double* result)
 /*
  * Does the multiplication A=A*B : all the matrices are described column-major
  */
-void multMatrixBtoMatrixA(GLfloat * A, GLfloat * B)
+void multMatrixBtoMatrixA( Matrix A, Matrix B)
 {
-    int i=0; // row index
-    int j=0; // column index
-    GLfloat temp[16];
+    unsigned int i=0; // row index
+    unsigned int j=0; // column index
+    Matrix temp;
 
-    for (int iValue=0 ; iValue<16 ; iValue++)
+    for (unsigned int iValue=0 ; iValue<16 ; ++iValue)
     {
         temp[iValue]=0;
-        //j=iValue%4; // if raw-major
-        //i=iValue/4; // if raw-major
-        i=iValue%4; // if column-major
-        j=iValue/4; // if column-major
-        for (int k=0 ; k<4 ; k++)
+        i=iValue%4;		// if column-major
+        j=iValue/4;		// if column-major
+        for (unsigned int k=0 ; k<4 ; ++k)
         {
             int indexik=k*4+i;
             int indexkj=j*4+k;
             temp[iValue]+=A[indexik]*B[indexkj];
         }
     }
-
-    for (int iValue=0 ; iValue<16 ; iValue++)
-        A[iValue]=temp[iValue];
+	//recopy temporary matrix into result
+    A = temp;
 }
 
 
@@ -388,14 +391,18 @@ void setToIdentity(GLfloat * matrix)
 
 /*
  * Sets the provided matrix to a rotate matrix of angle "angle", around axis "axis"
+ * 
+ * @param[out] matrix
+ * @param[in] angle
+ * @param[in] axis
  */
-void setToRotate(GLfloat * matrix, GLfloat angle, GLfloat * axis)
+void setToRotate( GLfloat * matrix, const GLfloat angle, const GLfloat * const axis )
 {
-    GLfloat c=cos(angle);
-    GLfloat s=sin(angle);
-    GLfloat x=axis[0];
-    GLfloat y=axis[1];
-    GLfloat z=axis[2];
+    const GLfloat c=cos(angle);
+    const GLfloat s=sin(angle);
+    const GLfloat x=axis[0];
+    const GLfloat y=axis[1];
+    const GLfloat z=axis[2];
 
     if ((x==1.0) && (y==0.0) && (z==0.0))
     {
@@ -497,6 +504,7 @@ void ColorSpaceKeyerOverlay::updateCoordAverageRotation()
 	multMatrixBtoMatrixA(rotationTranslationMatrixCenter, rotationReferenceCenterX);	//rotation matrix X
 	multMatrixBtoMatrixA(rotationTranslationMatrixCenter, translateCenter);				//translation matrix
 	
+	/*
 	std::cout << "display transform matrix" << std::endl;
 	for(unsigned int i=0; i<16; ++i)
 	{
@@ -504,6 +512,7 @@ void ColorSpaceKeyerOverlay::updateCoordAverageRotation()
 		if(i%4 ==0)
 			std::cout <<""<<std::endl;
 	}
+	*/
 	//compute average coordinates updated
 	double result[3];								//initialize result vector
 	double vectorCoordinatesAverageRotation[4] = {	//construct vector with average coordinates
@@ -516,6 +525,36 @@ void ColorSpaceKeyerOverlay::updateCoordAverageRotation()
 	_coordAverageDisplay.y = result[1];				//get y value
 	_coordAverageDisplay.z = result[2];				//get z value
 }
+
+/*
+ * Draw a warning sign on the openGL scene
+ */
+void ColorSpaceKeyerOverlay::drawWarning(const Ofx3DPointD& centerPoint, const double ratio)
+{
+	float size = 5.0f;												//define size
+	glColor3f(1.0f,.7f,0);											//color orange
+	glLineWidth(size);												//change line width (bigger)
+	//draw triangle
+	glBegin(GL_LINE_STRIP);											//draw exterior triangle
+	glVertex2d((centerPoint.x - 0.025*ratio),centerPoint.y);			//first point of triangle
+	glVertex2d((centerPoint.x + 0.025*ratio),centerPoint.y);			//second point of triangle
+	glVertex2d(centerPoint.x,(centerPoint.y+0.085*ratio));			//third point of triangle
+	glVertex2d((centerPoint.x - 0.025*ratio),centerPoint.y);			//first point of triangle (boucle)
+	glEnd();														//end of drawing
+	//draw !
+	glBegin(GL_LINES);												//draw ! sign
+	glVertex2d(centerPoint.x, (centerPoint.y+0.07*ratio));			//first point
+	glVertex2d(centerPoint.x, (centerPoint.y+0.03*ratio));			//second point
+	glEnd();														//end of drawing
+	glBegin(GL_POINTS);												//draw ! point
+	glPointSize(size);												//change point size (bigger)
+	glVertex2d(centerPoint.x, (centerPoint.y + 0.02*ratio));
+	glEnd();														//end of drawing
+	//reset basic parameters
+	glLineWidth(1.0f);												//reset line width (normal)
+	glPointSize(1.0f);												//reset point size (normal)
+}
+
 
 }
 }

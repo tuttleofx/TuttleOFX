@@ -20,7 +20,6 @@ void ColorSpaceKeyerProcess<View>::setup( const OFX::RenderArguments& args )
 	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.renderScale );
 	
-	std::cout << "debut render" << std::endl;
 	//Create geodesic form
 	SelectionAverage selectionAverage(_plugin._time);	//create selection
 
@@ -65,7 +64,7 @@ void ColorSpaceKeyerProcess<View>::multiThreadProcessImages( const OfxRectI& pro
 							                  procWindowSize.x, procWindowSize.y );
 	View dst = subimage_view( this->_dstView, procWindowOutput.x1, procWindowOutput.y1,
 							                  procWindowSize.x, procWindowSize.y );
-	
+		
 	std::cout << "[Process-multi] create functor" << std::endl;
     //Create and initialize functor 
 	Compute_alpha_pixel funct(false,_geodesicForm); //Output is alpha

@@ -221,12 +221,10 @@ public:
 	
 private:
 	//VBO data management
-	int generateAllPointsVBOData(SView srcView);										//generate a VBO with all of the pixels
-	int generateDiscretizedVBOData(SView srcView, int discretizationStep);				//generate a  VBO with discretization
+	int generateAllPointsVBOData(SView srcView);												//generate a VBO with all of the pixels
+	int generateDiscretizedVBOData(SView srcView, const int& discretizationStep);				//generate a  VBO with discretization
 	//selection VBO data management
-	int generateAllPointsSelectionVBOData(SView srcView);								//generate a VBO (and color) with all of the selected pixels
-	int generateDiscretizedSelectionVBOData(SView srcView, int discretizationStep);		//generate a VBO (and color) with discretization using selected pixels
-
+	int generateAllPointsSelectionVBOData(SView srcView);										//generate a VBO (and color) with all of the selected pixels
 };
 
 }

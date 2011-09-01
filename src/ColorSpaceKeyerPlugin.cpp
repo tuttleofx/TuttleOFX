@@ -64,8 +64,8 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 {
 	if( paramName == kPointCloudDisplay) //display point cloud check box value has changed
 	{
-		if(_paramBoolPointCloudDisplay->getValue())	//display point cloud is selected
-		{	
+		if( _paramBoolPointCloudDisplay->getValue() && hasCloudPointData() )	//display point cloud is selected
+		{
 			//enable discretization GUI components
 			_paramBoolDiscretizationActive->setEnabled(true);	//Enable discretization check box
 			_paramIntDiscretization->setEnabled(true);			//Enable discretization int parameter
@@ -82,10 +82,31 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 				args.renderScale,								//current render scale
 				_paramBoolDiscretizationActive->getValue(),		//is discretization mode active
 				_paramIntDiscretization->getValue());			//get discretization step
-			//update VBOs (create objects in overlay)
+			//compute geodesic form
+			if(_paramChoiceAverageMode->getValue() == 1)								//average mode is manual
+			{
+				//get current value of average selection component
+				OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue();	//get current selection
+				//transform selection color in 3D point (average point)
+				Ofx3DPointD selectionAverage;											//initialize
+				selectionAverage.x = selectionColor.r;									// x == red
+				selectionAverage.y = selectionColor.g;									// y == green
+				selectionAverage.z = selectionColor.b;									// z == blue
+				//construct geodesic form
+				getCloudPointData()._geodesicForm.subdiviseFaces(selectionAverage,_paramIntNbOfDivisionsGF->getValue()); //construct geodesic form
+			}
+			else															//average mode is automatic
+			{
+				getCloudPointData()._geodesicForm.subdiviseFaces(			//construct geodesic form
+						getCloudPointData()._averageColor._averageValue,	//center of form (average computed)
+						_paramIntNbOfDivisionsGF->getValue());				//number of triangle on each faces of geodesic form
+			}
+			//extends geodesic form
+			getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicForm); //extends geodesic form
+			//update VBOs (create objects in overlay)			
 			_updateVBO = true;									//update VBO on overlay
 		}
-		else	//display point cloud is not selected
+		else													//display point cloud is not selected
 		{
 			//disable discretization GUI components
 			_paramBoolDiscretizationActive->setEnabled(false);	//discretization treatment
@@ -94,7 +115,7 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 	}
 	if( paramName == kBoolDiscretizationDisplay) // discretization active check box changed
 	{
-		if(hasCloudPointData()) //if there is overlay data
+		if(hasCloudPointData() && _paramBoolDiscretizationActive->getValue()) //if there is overlay data
 		{
 			//generate VBO data
 			getCloudPointData()._time = args.time;				//update time
@@ -115,7 +136,7 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 	}
 	if( paramName == kIntDiscretizationDisplay) //discretization value has changed (int range)
 	{
-		if(hasCloudPointData()) //it is not batch mode
+		if(hasCloudPointData() && _paramBoolDiscretizationActive->getValue()) //it is not batch mode
 		{
 			if(_paramBoolDiscretizationActive->getValue()) //discretization is active
 			{
@@ -156,31 +177,31 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 			getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicForm); //extends geodesic form
 		}
 	}
-	if( paramName == kPushButtonResetTransformationParameters) //Push button reset transformation has changed
+	if( paramName == kPushButtonResetTransformationParameters && hasCloudPointData()) //Push button reset transformation has changed
 	{
-		 _resetViewParameters = true; //reset rotation view parameters on overlay
+		 _resetViewParameters = true;												  //reset rotation view parameters on overlay
 	}
-	if( paramName == kColorAverageMode)
+	if( paramName == kColorAverageMode && hasCloudPointData())						  //Average mode : choice list
 	{
 		if(_paramChoiceAverageMode->getValue() == 1)
 		{
 			//set GUI average selection components enabled
-			_paramRGBAColorSelection->setEnabled(true); //activate color average selection
-			_paramPushButtonAverageCompute->setEnabled(true); //activate color average computing
+			_paramRGBAColorSelection->setEnabled(true);								//activate color average selection
+			_paramPushButtonAverageCompute->setEnabled(true);						//activate color average computing
 			//compute average and geodesic form
-			OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue(); //get current value of GUI selection component
+			OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue();	//get current value of GUI selection component
 			//transform color to 3D point (average)
-			Ofx3DPointD selectionAverage;			//initialize
-			selectionAverage.x = selectionColor.r;	// x == red
-			selectionAverage.y = selectionColor.g;	// y == green
-			selectionAverage.z = selectionColor.b;	// z == blue
+			Ofx3DPointD selectionAverage;											//initialize
+			selectionAverage.x = selectionColor.r;									// x == red
+			selectionAverage.y = selectionColor.g;									// y == green
+			selectionAverage.z = selectionColor.b;									// z == blue
 			getCloudPointData()._geodesicForm.subdiviseFaces(selectionAverage,_paramIntNbOfDivisionsGF->getValue()); //update geodesic form
 		}
 		else
 		{
 			//set GUI average selection components disabled
-			_paramRGBAColorSelection->setEnabled(false);		//disable color average selection
-			_paramPushButtonAverageCompute->setEnabled(false);	//disable color average computing	
+			_paramRGBAColorSelection->setEnabled(false);											//disable color average selection
+			_paramPushButtonAverageCompute->setEnabled(false);										//disable color average computing	
 			//update automatic average and refresh geodesic form
 			getCloudPointData()._averageColor._time = args.time;									//refresh time
 			getCloudPointData()._averageColor.computeAverageSelection(_clipColor,args.renderScale);	//update automatic average
@@ -189,21 +210,21 @@ void ColorSpaceKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, 
 		//extends geodesic form
 		getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicForm); //extends geodesic form
 	}
-	if( paramName == kColorAverageSelection)
+	if( paramName == kColorAverageSelection && hasCloudPointData())				//selection average RGBA component
 	{
 		//get new average and refresh geodesic form
-		OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue(); //get current value of GUI component
+		OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue();	//get current value of GUI component
 		//transform selection color in 3D point average
-		Ofx3DPointD selectionAverage;			//initialize
-		selectionAverage.x = selectionColor.r;	// x == red
-		selectionAverage.y = selectionColor.g;	// y == green
-		selectionAverage.z = selectionColor.b;	// z == blue
+		Ofx3DPointD selectionAverage;											//initialize
+		selectionAverage.x = selectionColor.r;									// x == red
+		selectionAverage.y = selectionColor.g;									// y == green
+		selectionAverage.z = selectionColor.b;									// z == blue
 		//refresh geodesic form
-		getCloudPointData()._geodesicForm.subdiviseFaces(selectionAverage,_paramIntNbOfDivisionsGF->getValue()); //refresh geodesic form
+		getCloudPointData()._geodesicForm.subdiviseFaces(selectionAverage,_paramIntNbOfDivisionsGF->getValue());				//refresh geodesic form
 		//extends geodesic form
-		getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicForm); //extends geodesic form
+		getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicForm);	//extends geodesic form
 	}
-	if( paramName == kColorAverageComputing)
+	if( paramName == kColorAverageComputing && hasCloudPointData())								//push button : average computing (selection => manual)
 	{
 		//update automatic average
 		getCloudPointData()._averageColor._time = args.time;									//change current time
@@ -269,12 +290,12 @@ void ColorSpaceKeyerPlugin::changedClip( const OFX::InstanceChangedArgs& args, c
 				if(_paramChoiceAverageMode->getValue() == 1) //average mode is manual
 				{
 					//get current average selection
-					OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue(); //get current average selection
+					OfxRGBAColourD selectionColor = _paramRGBAColorSelection->getValue();	//get current average selection
 					//transform average color in 3D point average
-					Ofx3DPointD selectionAverage;			//initialize
-					selectionAverage.x = selectionColor.r;	// x == red
-					selectionAverage.y = selectionColor.g;  // y == green
-					selectionAverage.z = selectionColor.b;	// z == blue
+					Ofx3DPointD selectionAverage;											//initialize
+					selectionAverage.x = selectionColor.r;									// x == red
+					selectionAverage.y = selectionColor.g;									// y == green
+					selectionAverage.z = selectionColor.b;									// z == blue
 					getCloudPointData()._geodesicForm.subdiviseFaces(selectionAverage,_paramIntNbOfDivisionsGF->getValue()); //update geodesic form
 				}
 				else //average mode is automatic
@@ -311,7 +332,9 @@ bool ColorSpaceKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::C
  */
 void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 {
-	if(hasCloudPointData()) // if there is overlay data
+	if( OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke" && /// HACK: Nuke doesn't call changeClip function when time is changed
+	    hasCloudPointData()
+	   ) // if there is overlay data
 	{
 		if(args.time != getCloudPointData()._time)			// different time between overlay and VBO data
 		{
@@ -347,7 +370,7 @@ void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 	_renderScale = args.renderScale; //change render scale (before rendering)
 	_time = args.time;				// change time
 	//call process functions
-	doGilRender<ColorSpaceKeyerProcess>( *this, args );
+	doGilRender<ColorSpaceKeyerProcess>( *this, args ); //launch process
 }
 
 

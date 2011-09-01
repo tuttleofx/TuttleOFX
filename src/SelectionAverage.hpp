@@ -16,7 +16,7 @@ namespace colorSpaceKeyer {
 typedef boost::gil::rgba32f_view_t SView;
 typedef boost::gil::rgba32f_pixel_t SPixel;
 typedef std::vector<float, OfxAllocator<float> > DataVector;
-	
+
 //Functor used to compute average on color clip selection
 template<class View, typename CType = boost::gil::bits64f>
 struct ComputeAverage
@@ -84,17 +84,8 @@ struct Pixel_extend_GeodesicForm
 			point.y = p[1]; //(y == green)
 			point.z = p[2];	//(z == blue)
 			
-			
-			if(_data.isPointIntoGeodesicForm(point)) //current point is into geodesicForm)
-			{
-				return p; //end of treatment
-			}
-			
-			//Find intersection between point and geodesicForm
-			_data.testIntersection(point); //test intersection
-			
 			//extend geodesicForm
-			_data.extendOnePoint(point,_data._intersection); //extends geodesic form
+			_data.extendOnePoint(point); //extends geodesic form (point is already into geodesic form checked)
 		}
         return p;
     }

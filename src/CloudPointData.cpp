@@ -42,9 +42,7 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 	{	
 		return false;
 	}
-	
 	boost::scoped_ptr<OFX::Image> src( clipSrc->fetchImage(_time, clipSrc->getCanonicalRod(_time)) );	//scoped pointer of current source clip
-	
 	// Compatibility tests
 	if( !src.get() ) // source isn't accessible
 	{
@@ -70,7 +68,6 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
 		return false;
 	}
-	
 	// Compute if source is OK
 	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
 	
@@ -84,7 +81,6 @@ bool CloudPointData::generateVBOData( OFX::Clip* clipSrc, const OfxPointD& rende
 		generateAllPointsVBOData( srcView );						// create data and return buffer size
 	}	
 	_isVBOBuilt = true; //VBO has been built
-	
 	return true;
 }
 
@@ -98,7 +94,7 @@ void CloudPointData::updateVBO()
 	_imgVBO._color = true;											//activate color for VBO
 	//selection VBO
 	_selectionVBO._colorDifferent = true;																					//color buffer is not the same than vertex buffer
-	_selectionVBO._color = true;																							//activate color for VBO
+	_selectionVBO._color = false;																							//activate color for VBO
 	_selectionVBO.createVBO(&(_selectionCopy.front()), _selectionCopy.size()/3,GL_STATIC_DRAW ,&(_selectionColor.front())); //generate selection VBO to draw
 }
 
@@ -120,7 +116,7 @@ int CloudPointData::generateAllPointsVBOData(SView srcView)
 /*
  * Copy discretization RGB channels of the clip source into a buffer
  */
-int CloudPointData::generateDiscretizedVBOData(SView srcView, int discretizationStep )
+int CloudPointData::generateDiscretizedVBOData(SView srcView, const int& discretizationStep )
 {
 	//compute buffer size
 	int size = (int)(srcView.height()*srcView.width());						//return size : full image here
@@ -194,6 +190,9 @@ int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
 	int size;				 //returned size
 	bool isSelection = true; //current operations are on selected pixels
 	
+	//clear selection copy
+	_selectionCopy.clear();								//clear selection VBO data
+	
 	//copy full image into buffer
 	Pixel_copy funct(_selectionCopy, isSelection);		//functor declaration creation	
 	//treatment
@@ -222,9 +221,6 @@ void CloudPointData::VBO::createVBO( const void* data, int size, GLenum usage, c
 {
 	_size = size;
 	genBuffer( _id, data, size, GL_ARRAY_BUFFER, usage );
-	if(_colorDifferent)														//color buffer is not the same than vertex buffer
-		genBufferColor(_idColor, dataColor, size, GL_ARRAY_BUFFER, usage);	//color buffer generation
-
 }
 
 /**
@@ -308,6 +304,7 @@ void CloudPointData::VBO::genBufferColor( unsigned int& idColor, const void* dat
  */
 void CloudPointData::VBO::draw( )
 {
+	glColor3f(1.0f,1.0f,1.0f);	//color is white by default
 	if( _id && _size )
 	{
 		// bind VBOs with IDs and set the buffer offsets of the bound VBOs
