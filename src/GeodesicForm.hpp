@@ -83,6 +83,10 @@ private:
 	bool getIntersection2(const Ofx3DPointD& point, const PyramidTriangle& pyramidTriangle, Ofx3DPointD& intersectionPoint, const bool& inverse = false);		//intersection Dan Sunday
 	//transform one point to sphere 
 	void currentPointToSphere(Ofx3DPointD& point, const double& radius);					//transform double pyramid to sphere	
+	//Extends one point
+	bool extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const double* testPointCenterVector, const double normTestPointCenterVector);						//Extends one point of the intersected triangle (call 3 times - triangle)
+	//update Bounding box
+	void updateBoundingBox(const Ofx3DPointD& testPoint);									//update bounding box (compare with one point)
 	//test
 	void testOnePointFunction();															//test overlay
 
@@ -93,4 +97,3 @@ private:
 }
 
 #endif	/* GEODESICFORM_HPP */
-

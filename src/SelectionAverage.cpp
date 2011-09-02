@@ -152,9 +152,6 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 	SView colorView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );		// get current view from color clip
 	Pixel_extend_GeodesicForm funct(geodesicForm);	//functor declaration			//initialize functor
 	boost::gil::transform_pixels(colorView, funct);									//with functor reference;
-	
-	//update geodesic form bounding box
-	geodesicForm.updateBoundingBox();
 }
 
 

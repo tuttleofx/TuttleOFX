@@ -518,7 +518,7 @@ void GeodesicForm::createPointsOneFace(const PyramidTriangle& f, const int divis
 /*
  * scalar product between 2 vectors
  */
-double DOT(double* v1, double* v2)
+double DOT(const double* v1, const double* v2)
 {
 	 return (v1[0]*v2[0]+v1[1]*v2[1]+v1[2]*v2[2]);
 }
@@ -752,119 +752,63 @@ void GeodesicForm::extendOnePoint(Ofx3DPointD& testPoint)
 	testPointCenterVector[1] /= normTestPointCenterVector; //normalize Y value
 	testPointCenterVector[2] /= normTestPointCenterVector; //normalize Z value
 	
-	//compute vector (center-triangle.point1)
-	double vectorCenterPoint1[3]; //initialize
-	vectorCenterPoint1[0] = _intersection.point1->x - _center.x; //X value
-	vectorCenterPoint1[1] = _intersection.point1->y - _center.y; //Y value
-	vectorCenterPoint1[2] = _intersection.point1->z - _center.z; //Z value
-	//compute norm of vector (center-triangle.point1)
-	double normVectorCenterPoint1 = 0; //initialize
-	normVectorCenterPoint1 += vectorCenterPoint1[0]*vectorCenterPoint1[0]; //add x*x
-	normVectorCenterPoint1 += vectorCenterPoint1[1]*vectorCenterPoint1[1]; //add y*y
-	normVectorCenterPoint1 += vectorCenterPoint1[2]*vectorCenterPoint1[2]; //add z*z
-	normVectorCenterPoint1 = sqrt(normVectorCenterPoint1); //compute norm
-	//normalize center-triangle.point1 vector
-	vectorCenterPoint1[0] /= normVectorCenterPoint1; //normalize X value
-	vectorCenterPoint1[1] /= normVectorCenterPoint1; //normalize Y value
-	vectorCenterPoint1[2] /= normVectorCenterPoint1; //normalize Z value
+	//Extends triangle.point1
+	if(extendsOneTrianglePoint(*(_intersection.point1),testPointCenterVector,normTestPointCenterVector))	//try to extends
+		updateBoundingBox(*(_intersection.point1));		//_intersection.point1 has been changed => update bounding box
+	//Extends triangle.point2
+	if(extendsOneTrianglePoint(*(_intersection.point2),testPointCenterVector,normTestPointCenterVector))	//try to extends
+		updateBoundingBox(*(_intersection.point2));		//_intersection.point2 has been changed => update bounding box
+	//Extends triangle.point3
+	if(extendsOneTrianglePoint(*(_intersection.point3),testPointCenterVector,normTestPointCenterVector))	//try to extends
+		updateBoundingBox(*(_intersection.point3));		//_intersection.point3 has been changed => update bounding box
+}
+
+/*
+ * Extends one point of the intersected triangle (call 3 times - triangle)
+ */
+bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const double* testPointCenterVector, const double normTestPointCenterVector)
+{
 	
-	//compute vector (center-triangle.point2)
-	double vectorCenterPoint2[3]; //initialize
-	vectorCenterPoint2[0] = _intersection.point2->x - _center.x; //X value
-	vectorCenterPoint2[1] = _intersection.point2->y - _center.y; //Y value
-	vectorCenterPoint2[2] = _intersection.point2->z - _center.z; //Z value
-	//compute norm of vector (center-triangle.point2)
-	double normVectorCenterPoint2 = 0; //initialize
-	normVectorCenterPoint2 += vectorCenterPoint2[0]*vectorCenterPoint2[0]; //add x*x
-	normVectorCenterPoint2 += vectorCenterPoint2[1]*vectorCenterPoint2[1]; //add y*y
-	normVectorCenterPoint2 += vectorCenterPoint2[2]*vectorCenterPoint2[2]; //add z*z
-	normVectorCenterPoint2 = sqrt(normVectorCenterPoint2); //compute norm
-	//normalize center-triangle.point2 vector
-	vectorCenterPoint2[0] /= normVectorCenterPoint2; //normalize X value
-	vectorCenterPoint2[1] /= normVectorCenterPoint2; //normalize Y value
-	vectorCenterPoint2[2] /= normVectorCenterPoint2; //normalize Z value
-	
-	//compute vector (center-triangle.point3)
-	double vectorCenterPoint3[3]; //initialize
-	vectorCenterPoint3[0] = _intersection.point3->x - _center.x; //X value
-	vectorCenterPoint3[1] = _intersection.point3->y - _center.y; //Y value
-	vectorCenterPoint3[2] = _intersection.point3->z - _center.z; //Z value
-	//compute norm of vector (center-triangle.point3)
-	double normVectorCenterPoint3 = 0; //initialize
-	normVectorCenterPoint3 += vectorCenterPoint3[0]*vectorCenterPoint3[0]; //add x*x
-	normVectorCenterPoint3 += vectorCenterPoint3[1]*vectorCenterPoint3[1]; //add y*y
-	normVectorCenterPoint3 += vectorCenterPoint3[2]*vectorCenterPoint3[2]; //add z*z
-	normVectorCenterPoint3 = sqrt(normVectorCenterPoint3); //compute norm
-	//normalize center-triangle.point3 vector
-	vectorCenterPoint3[0] /= normVectorCenterPoint3; //normalize X value
-	vectorCenterPoint3[1] /= normVectorCenterPoint3; //normalize Y value
-	vectorCenterPoint3[2] /= normVectorCenterPoint3; //normalize Z value
-	
-	//compute translation triangle.point1
-	double cosAngleIntersectionPoint1 = DOT(vectorCenterPoint1,testPointCenterVector);		//get just cos  (see dot product definition : a.b = |a|*|b|*cos(a,b))
-	//compute new norm triangle.point1
-	double hypothenusCenterPoint1 = normTestPointCenterVector/cosAngleIntersectionPoint1;	//compute new norm
-	if(normVectorCenterPoint1 > hypothenusCenterPoint1) //compare current norm with existing norm
-	{
-		//nothing to do point1 is enough far of center
-	}
-	else
-	{
-		hypothenusCenterPoint1 -= normVectorCenterPoint1;//compute value to add
-		//compute translation
-		vectorCenterPoint1[0] *= hypothenusCenterPoint1; //get coordinate X
-		vectorCenterPoint1[1] *= hypothenusCenterPoint1; //get coordinate Y
-		vectorCenterPoint1[2] *= hypothenusCenterPoint1; //get coordinate Z
-		//translate triangle.point1
-		_intersection.point1->x += vectorCenterPoint1[0]; //translate point1 X
-		_intersection.point1->y += vectorCenterPoint1[1]; //translate point1 Y
-		_intersection.point1->z += vectorCenterPoint1[2]; //translate point1 Z
-	}
-	
-	//compute translation triangle.point2
-	double cosAngleIntersectionPoint2 = DOT(vectorCenterPoint2,testPointCenterVector);
-	//compute new norm triangle.point2
-	double hypothenusCenterPoint2 = normTestPointCenterVector/cosAngleIntersectionPoint2; //compute new norm
-	if(normVectorCenterPoint2 > hypothenusCenterPoint2) //compare current norm with existing norm
-	{
-		//nothing to do point2 is enough far of center
-	}
-	else
-	{
-		hypothenusCenterPoint2 -= normVectorCenterPoint2;//compute value to add
-		//compute translation
-		vectorCenterPoint2[0] *= hypothenusCenterPoint2; //get coordinate X
-		vectorCenterPoint2[1] *= hypothenusCenterPoint2; //get coordinate Y
-		vectorCenterPoint2[2] *= hypothenusCenterPoint2; //get coordinate Z
-		//translate triangle.point2
-		_intersection.point2->x += vectorCenterPoint2[0]; //translate point2 X
-		_intersection.point2->y += vectorCenterPoint2[1]; //translate point2 Y
-		_intersection.point2->z += vectorCenterPoint2[2]; //translate point2 Z
-	}
+	//compute vector (center-point to Move)
+	double vectorCenterPointToMove[3];							//initialize
+	vectorCenterPointToMove[0] = pointToMove.x - _center.x;	//X value
+	vectorCenterPointToMove[1] = pointToMove.y - _center.y;	//Y value
+	vectorCenterPointToMove[2] = pointToMove.z - _center.z;	//Z value
+	//compute norm of vector (center-point to Move)
+	double normVectorCenterPointToMove = 0;						//initialize
+	normVectorCenterPointToMove += vectorCenterPointToMove[0]*vectorCenterPointToMove[0];	//add x*x
+	normVectorCenterPointToMove += vectorCenterPointToMove[1]*vectorCenterPointToMove[1];	//add y*y
+	normVectorCenterPointToMove += vectorCenterPointToMove[2]*vectorCenterPointToMove[2];	//add z*z
+	normVectorCenterPointToMove = sqrt(normVectorCenterPointToMove);						//compute norm
+	//normalize center-point to move vector
+	vectorCenterPointToMove[0] /= normVectorCenterPointToMove;	//normalize X value
+	vectorCenterPointToMove[1] /= normVectorCenterPointToMove;	//normalize Y value
+	vectorCenterPointToMove[2] /= normVectorCenterPointToMove;	//normalize Z value
 	
 	//compute translation triangle.point3
-	double cosAngleIntersectionPoint3 = DOT(vectorCenterPoint3,testPointCenterVector);
+	double cosAngleIntersectionPointToMove = DOT(vectorCenterPointToMove,testPointCenterVector);
 	//compute new norm triangle.point3
-	double hypothenusCenterPoint3 = normTestPointCenterVector/cosAngleIntersectionPoint3; //compute new norm
-	if(normVectorCenterPoint3 > hypothenusCenterPoint3) //compare current norm with existing norm
+	double hypothenusCenterPointToMove = normTestPointCenterVector/cosAngleIntersectionPointToMove; //compute new norm
+	if(normVectorCenterPointToMove > hypothenusCenterPointToMove) //compare current norm with existing norm
 	{
-		//nothing to do point3 is enough far of center
+		//nothing to do point to move is enough far of center
+		return false;			//point has not been changed
 	}
 	else
 	{
-		hypothenusCenterPoint3 -= normVectorCenterPoint3;//compute value to add
+		hypothenusCenterPointToMove -= normVectorCenterPointToMove;//compute value to add
 		//compute translation
-		vectorCenterPoint3[0] *= hypothenusCenterPoint3; //get coordinate X
-		vectorCenterPoint3[1] *= hypothenusCenterPoint3; //get coordinate Y
-		vectorCenterPoint3[2] *= hypothenusCenterPoint3; //get coordinate Z
+		vectorCenterPointToMove[0] *= hypothenusCenterPointToMove; //get coordinate X
+		vectorCenterPointToMove[1] *= hypothenusCenterPointToMove; //get coordinate Y
+		vectorCenterPointToMove[2] *= hypothenusCenterPointToMove; //get coordinate Z
 		//translate triangle.point3
-		_intersection.point3->x += vectorCenterPoint3[0]; //translate point3 X
-		_intersection.point3->y += vectorCenterPoint3[1]; //translate point3 Y
-		_intersection.point3->z += vectorCenterPoint3[2]; //translate point3 Z
+		pointToMove.x += vectorCenterPointToMove[0]; //translate point to move on X
+		pointToMove.y += vectorCenterPointToMove[1]; //translate point to move on Y
+		pointToMove.z += vectorCenterPointToMove[2]; //translate point to move on Z
+		return true;
 	}
-	//update bounding box
-	updateBoundingBox();
 }
+	
 
 /**
  * Transform one point of current pyramid to sphere
@@ -1110,6 +1054,37 @@ bool GeodesicForm::isIntoBoundingBox(const Ofx3DPointD& testPoint)
 		}
 	}
 	return false;																		//current point is not into bounding box
+}
+
+/*
+ * Update geodesic form (compare to one point)
+ */
+void GeodesicForm::updateBoundingBox(const Ofx3DPointD& testPoint)
+{
+	//test X axis
+	if(testPoint.x > _boundingBox.max.x || testPoint.x < _boundingBox.min.x)
+	{
+		if(testPoint.x > _boundingBox.max.x)
+			_boundingBox.max.x = testPoint.x;	//change value max X
+		else
+			_boundingBox.min.x = testPoint.x;	//change value min X
+	}
+	//test Y axis
+	if(testPoint.y > _boundingBox.max.y || testPoint.y < _boundingBox.min.y)
+	{
+		if(testPoint.y > _boundingBox.max.y)
+			_boundingBox.max.y = testPoint.y;	//change value max Y
+		else
+			_boundingBox.min.y = testPoint.y;	//change value min Y
+	}
+	//test Z axis
+	if(testPoint.z > _boundingBox.max.z || testPoint.z < _boundingBox.min.z)
+	{
+		if(testPoint.z > _boundingBox.max.z)
+			_boundingBox.max.z = testPoint.z;	//change value max Z
+		else
+			_boundingBox.min.z = testPoint.z;	//change value min Z
+	}
 }
 
 }
