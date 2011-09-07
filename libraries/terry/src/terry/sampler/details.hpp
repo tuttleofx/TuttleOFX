@@ -61,7 +61,9 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 	if( p0.x < 0 )
 	{
 		for( ssize_t i = 0; i < -minPosition + 1; i++)
-			src.at(i) = loc.x( )[1];
+			src.at(i) = SrcP(0);//loc.x( )[1];
+
+		src.at( - minPosition + 1) = loc.x( )[1];
 
 		unsigned int pos = 2;
 
@@ -75,10 +77,6 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 	}
 
 	src.at( -minPosition ) = *loc;
-/*
-	src.at( 0 ) = ( p0.x  < 0 ) ?  src.at( 1 ) : loc.x( )[ -1 ];
-	src.at( 2 ) = ( p0.x + 1 < windowWidth ) ? loc.x( )[ 1 ] : src.at( 1 );
-	src.at( 3 ) = ( p0.x + 1 < windowWidth ) ? loc.x( )[ 2 ] : src.at( 2 );*/
 
 	for( ssize_t i = 0; i > minPosition; i--)
 	{
@@ -183,12 +181,13 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 
 	if( pTL.y < 0 )
 	{
+
 		++loc.y( );
 		getPixelsPointers( loc, pTL, windowSize, ptr );
 		process1Dresampling<SrcP, F, SrcC> () (ptr, xWeights, xProcessed.at(1));
 
 		xProcessed.at(0) = xProcessed.at(1);
-		xProcessed.at(0) = xProcessed.at(1);
+		xProcessed.at(2) = xProcessed.at(1);
 
 		++loc.y( );
 		if( pTL.y + 2 < src.height( ) )
@@ -203,12 +202,13 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	}
 	else
 	{
+
 		if( pTL.y < src.height( ) )
 		{
 			getPixelsPointers( loc, pTL, windowSize, ptr );
 			process1Dresampling<SrcP, F, SrcC> () ( ptr, xWeights, xProcessed.at(1) );
 		}
-/*
+
 		if( pTL.y != 0 && pTL.y - 1 < src.height( ) )
 		{
 			--loc.y( );
@@ -240,7 +240,7 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 		else
 		{
 			xProcessed.at(3) = xProcessed.at(2);
-		}*/
+		}
 	}
 
 	// vertical process
@@ -248,7 +248,9 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 
 	// Convert from floating point average value to the source type
 	DstP src_result;
-	cast_pixel( xProcessed.at(1), src_result );
+
+	cast_pixel( mp, src_result );
+	//cast_pixel( xProcessed.at(1), src_result );
 
 	color_convert( src_result, result );
 	return true;

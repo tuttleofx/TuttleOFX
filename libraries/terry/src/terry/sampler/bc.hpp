@@ -38,28 +38,28 @@ struct bc_sampler
 template < typename F >
 bool getWeight ( const F distance, F& weight, bc_sampler sampler )
 {
-        if( distance < 1 )
-        {
-                double P =   2.0 - 1.5 * sampler.valB - sampler.valC;
-                double Q = - 3.0 + 2.0 * sampler.valB + sampler.valC;
-                double S =   1.0 -       sampler.valB / 3.0;
-                // note: R is null
-                weight = ( P * distance + Q ) *  distance * distance + S;
-                return true;
-        }
-        else
-        {
-                if( distance < 2 )
-                {
-                        double T = - 1.0 / 6.0 * sampler.valB -       sampler.valC;
-                        double U =               sampler.valB + 5.0 * sampler.valC;
-                        double V = - 2.0       * sampler.valB - 8.0 * sampler.valC;
-                        double W =   4.0 / 3.0 * sampler.valB + 4.0 * sampler.valC;
-                        weight = ( ( T * distance + U ) *  distance + V ) * distance + W;
-                        return true;
-                }
-                return false;
-        }
+	if( distance < 1 )
+	{
+		double P =   2.0 - 1.5 * sampler.valB - sampler.valC;
+		double Q = - 3.0 + 2.0 * sampler.valB + sampler.valC;
+		double S =   1.0 -       sampler.valB / 3.0;
+		// note: R is null
+		weight = ( P * distance + Q ) *  distance * distance + S;
+		return true;
+	}
+	else
+	{
+		if( distance < 2 )
+		{
+			double T = - 1.0 / 6.0 * sampler.valB -       sampler.valC;
+			double U =               sampler.valB + 5.0 * sampler.valC;
+			double V = - 2.0       * sampler.valB - 8.0 * sampler.valC;
+			double W =   4.0 / 3.0 * sampler.valB + 4.0 * sampler.valC;
+			weight = ( ( T * distance + U ) *  distance + V ) * distance + W;
+			return true;
+		}
+		return false;
+	}
 }
 
 template <typename DstP, typename SrcView, typename F>
@@ -100,11 +100,18 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 		// get horizontal weight for each pixels
 		for( ssize_t i = 0; i < windowSize; i++ )
 		{
-			// frac.x+2-i
-			//frac.y+2-i
-			getWeight( std::abs(i-1-frac.x), xWeights.at(i), sampler );
-			getWeight( std::abs(i-1-frac.y), yWeights.at(i), sampler );
+			int coef = (i>1)? -1 : 1;
+			getWeight( std::abs(i-1) + coef * frac.x, xWeights.at(i), sampler );
+			getWeight( std::abs(i-1) + coef * frac.y, yWeights.at(i), sampler );
 		}
+		/*
+		for(int i=0; i<windowSize; i++)
+		{
+			int coef = (i>1)? -1 : 1;
+			getWeight( pTL.x, std::abs(i-1) + coef * frac.x, i, xWeights.at(i), sampler );
+			getWeight( pTL.y, std::abs(i-1) + coef * frac.y, i, yWeights.at(i), sampler );
+		}*/
+
 		//process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
 		bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );
 

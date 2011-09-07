@@ -17,43 +17,36 @@ struct bilinear_sampler{};
  * @param[out] weight return value to weight the pixel in filtering
 **/
 template < typename F >
-bool getWeight ( const F distance, F& weight, bilinear_sampler sampler )
+bool getWeight ( const long int&  pTLXOrY, const F distance, const size_t index, F& weight, bilinear_sampler sampler )
 {
-	if( distance < 0 )
+	if( pTLXOrY < 0 ) // in case of pTL < 0  (equal to -1)
 	{
-		TUTTLE_COUT("negative bilinear");
-		if( distance > -1 )
+		if( index == 0 )
 		{
-			weight = 1.0 + distance; // distance < 0 !
+			weight = 1.0;
 			return true;
 		}
 		else
 		{
-			if( distance > -2 )
-			{
-				weight = 0;
-				return true;
-			}
-			return false;
+			weight = 0.0;
+			return true;
 		}
 	}
-	else
-	{
-		if( distance < 1 )
-        {
-                weight = distance;
-                return true;
-        }
-        else
-        {
-                if( distance < 2 )
-                {
-                        weight = 0;
-                        return true;
-                }
-                return false;
-        }
-	}
+
+	if( distance < 1 )
+    {
+		weight = 1.0 - distance;
+        return true;
+    }
+    else
+    {
+    	if( distance < 2 )
+    	{
+    		weight = 0;
+    		return true;
+    	}
+    	return false;
+    }
 }
 
 template <typename DstP, typename SrcView, typename F>
@@ -91,24 +84,25 @@ bool sample( bilinear_sampler sampler, const SrcView& src, const point2<F>& p, D
 		xWeights.assign( windowSize , 0);
 		yWeights.assign( windowSize , 0);
 
-		// get horizontal weight for each pixels
-		/*for( ssize_t i = 0; i < windowSize; i++ )
+		// get weight for each pixels
+/*
+		getWeight( pTL.x, 1+frac.x, 0, xWeights.at(0), sampler );
+		getWeight( pTL.x,   frac.x, 1, xWeights.at(1), sampler );
+		getWeight( pTL.x, 1-frac.x, 2, xWeights.at(2), sampler );
+		getWeight( pTL.x, 2-frac.x, 3, xWeights.at(3), sampler );
+		getWeight( pTL.y, 1+frac.y, 0, yWeights.at(0), sampler );
+		getWeight( pTL.y,   frac.y, 1, yWeights.at(1), sampler );
+		getWeight( pTL.y, 1-frac.y, 2, yWeights.at(2), sampler );
+		getWeight( pTL.y, 2-frac.y, 3, yWeights.at(3), sampler );
+*/
+		for(int i=0; i<windowSize; i++)
 		{
-			// frac.x+2-i
-			//frac.y+2-i
-			getWeight( i-1-frac.x, xWeights.at(i), sampler );
-			getWeight( i-1-frac.y, yWeights.at(i), sampler );
-		}*/
-		getWeight( 1+frac.x, xWeights.at(0), sampler );
-		getWeight(   frac.x, xWeights.at(1), sampler );
-		getWeight( 1-frac.x, xWeights.at(2), sampler );
-		getWeight( 2-frac.x, xWeights.at(3), sampler );
-		getWeight( 1+frac.y, yWeights.at(0), sampler );
-		getWeight(   frac.y, yWeights.at(1), sampler );
-		getWeight( 1-frac.y, yWeights.at(2), sampler );
-		getWeight( 2-frac.y, yWeights.at(3), sampler );
+			int coef = (i>1)? -1 : 1;
+			getWeight( pTL.x, std::abs(i-1) + coef * frac.x, i, xWeights.at(i), sampler );
+			getWeight( pTL.y, std::abs(i-1) + coef * frac.y, i, yWeights.at(i), sampler );
+		}
 
-		//process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
+		// process current sample
 		bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );
 
 		return res;
