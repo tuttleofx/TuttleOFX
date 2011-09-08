@@ -43,17 +43,55 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 		matrix3x2<double>::get_scale( (src_width+1) / dst_width, (src_height +1)/ dst_height) *
 		matrix3x2<double>::get_translate( src_width/2.0 ,  src_height/2.0 );
 
+
+
 	switch( _filter )
 	{
 		case eParamFilterNearest	: resample_pixels_progress< terry::sampler::nearest_neighbor_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
         case eParamFilterBilinear	: resample_pixels_progress< terry::sampler::bilinear_sampler		    >( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 
-		case eParamFilterBC		:
-							terry::sampler::bc_sampler BCsampler;
-							BCsampler.valB = _valB;
-							BCsampler.valC = _valC;
-							resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, BCsampler );
-							break;
+		case eParamFilterBC	:
+		{
+			terry::sampler::bc_sampler BCsampler;
+			BCsampler.valB = _valB;
+			BCsampler.valC = _valC;
+			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, BCsampler );
+			break;
+		}
+
+		case eParamFilterBicubic :
+		{
+			terry::sampler::bicubic_sampler bicubicSampler;
+			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, bicubicSampler );
+			break;
+		}
+		case eParamFilterCatrom :
+		{
+			terry::sampler::catrom_sampler catromSampler;
+			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, catromSampler );
+			break;
+		}
+		case eParamFilterKeys :
+		{
+			terry::sampler::keys_sampler keysSampler;
+			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, keysSampler );
+			break;
+		}
+		case eParamFilterMitchell :
+		{
+			terry::sampler::mitchell_sampler mitchellSampler;
+			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, mitchellSampler );
+			break;
+		}
+		case eParamFilterParzen :
+		{
+			terry::sampler::parzen_sampler parzenSampler;
+			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, parzenSampler );
+			break;
+		}
+		//case eParamFilterSimon		: resample_pixels_progress< terry::sampler::simon_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		//case eParamFilterRifman		: resample_pixels_progress< terry::sampler::rifman_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+
 /*
 		case eParamFilterBicubic	: resample_pixels_progress< terry::sampler::bicubic_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterCatmul		: resample_pixels_progress< terry::sampler::catmul_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;

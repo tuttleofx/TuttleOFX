@@ -13,6 +13,53 @@ struct bc_sampler
     double valC;
 };
 
+struct bicubic_sampler : bc_sampler
+{
+    bicubic_sampler()
+    {
+    	valB = 0.0;
+    	valC = 0.0;
+    }
+};
+
+// catmul-rom resampling function
+struct catrom_sampler : bc_sampler
+{
+    catrom_sampler()
+    {
+    	valB = 0.0;
+    	valC = 0.5;
+    }
+};
+
+// similar to catrom resampling function
+struct keys_sampler : bc_sampler
+{
+    keys_sampler()
+    {
+    	valB = 0.0;
+    	valC = 0.5;
+    }
+};
+
+struct mitchell_sampler : bc_sampler
+{
+    mitchell_sampler()
+    {
+    	valB = 1.0/3.0;
+    	valC = 1.0/3.0;
+    }
+};
+
+struct parzen_sampler : bc_sampler
+{
+    parzen_sampler()
+    {
+    	valB = 1.0;
+    	valC = 0.0;
+    }
+};
+
 /**
  * @brief Get weight for a specific distance, for all BC-cubic resampling (bicubic, catmul-rom, ...).
  *
@@ -36,8 +83,22 @@ struct bc_sampler
  * @param[out] weight return value to weight the pixel in filtering
 **/
 template < typename F >
-bool getWeight ( const F distance, F& weight, bc_sampler sampler )
+bool getWeight ( const long int&  pTLXOrY, const size_t index, const F distance, F& weight, bc_sampler sampler )
 {
+	if( pTLXOrY < 0 ) // in case of pTL < 0  (equal to -1)
+	{
+		if( index == 0 )
+		{
+			weight = 1.0;
+			return true;
+		}
+		else
+		{
+			weight = 0.0;
+			return true;
+		}
+	}
+
 	if( distance < 1 )
 	{
 		double P =   2.0 - 1.5 * sampler.valB - sampler.valC;
@@ -101,16 +162,9 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 		for( ssize_t i = 0; i < windowSize; i++ )
 		{
 			int coef = (i>1)? -1 : 1;
-			getWeight( std::abs(i-1) + coef * frac.x, xWeights.at(i), sampler );
-			getWeight( std::abs(i-1) + coef * frac.y, yWeights.at(i), sampler );
+			getWeight( pTL.x, i, std::abs(i-1) + coef * frac.x, xWeights.at(i), sampler );
+			getWeight( pTL.y, i, std::abs(i-1) + coef * frac.y, yWeights.at(i), sampler );
 		}
-		/*
-		for(int i=0; i<windowSize; i++)
-		{
-			int coef = (i>1)? -1 : 1;
-			getWeight( pTL.x, std::abs(i-1) + coef * frac.x, i, xWeights.at(i), sampler );
-			getWeight( pTL.y, std::abs(i-1) + coef * frac.y, i, yWeights.at(i), sampler );
-		}*/
 
 		//process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
 		bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );

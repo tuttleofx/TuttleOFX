@@ -61,9 +61,7 @@ void getPixelsPointers( const xy_locator& loc, const point2<std::ptrdiff_t>& p0,
 	if( p0.x < 0 )
 	{
 		for( ssize_t i = 0; i < -minPosition + 1; i++)
-			src.at(i) = SrcP(0);//loc.x( )[1];
-
-		src.at( - minPosition + 1) = loc.x( )[1];
+			src.at(i) = loc.x( )[1];
 
 		unsigned int pos = 2;
 

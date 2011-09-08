@@ -142,14 +142,14 @@ void ResizePluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	filter->setLabel( "Filter" );
 	filter->appendOption( kParamFilterNearest );
 	filter->appendOption( kParamFilterBilinear );
-        filter->appendOption( kParamFilterBC );
+    filter->appendOption( kParamFilterBC );
 	filter->appendOption( kParamFilterBicubic );
-        filter->appendOption( kParamFilterCatmul ); // idem as the Keys resampling
+    filter->appendOption( kParamFilterCatrom ); // idem as the Keys resampling
 	filter->appendOption( kParamFilterKeys );
 	filter->appendOption( kParamFilterSimon );
 	filter->appendOption( kParamFilterRifman );
-        filter->appendOption( kParamFilterMitchell );
-        filter->appendOption( kParamFilterParzen );
+    filter->appendOption( kParamFilterMitchell );
+    filter->appendOption( kParamFilterParzen );
 	filter->appendOption( kParamFilterLanczos3 );
 	filter->appendOption( kParamFilterLanczos4 );
 	filter->appendOption( kParamFilterLanczos6 );
