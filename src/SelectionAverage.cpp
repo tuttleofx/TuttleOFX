@@ -154,8 +154,6 @@ void SelectionAverage::extendGeodesicForm(OFX::Clip* clipColor, const OfxPointD&
 	boost::gil::transform_pixels(colorView, funct);									//with functor reference;
 }
 
-
-
 }
 }
 }

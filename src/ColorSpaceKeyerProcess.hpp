@@ -13,11 +13,13 @@ namespace colorSpaceKeyer {
 struct Compute_alpha_pixel
 { 
 	bool _isOutputBW;		//is output black & white (or alpha channel)
-	GeodesicForm& _data;	//geodesic form
+	GeodesicForm& _dataColor;	//color geodesic form
+	GeodesicForm& _dataSpill;	//spill geodesic form
 	
-	Compute_alpha_pixel(bool isOutputBW, GeodesicForm& data):
+	Compute_alpha_pixel(bool isOutputBW, GeodesicForm& dataC, GeodesicForm& dataS):
 	_isOutputBW(isOutputBW),
-	_data(data)
+	_dataColor(dataC),
+	_dataSpill(dataS)
 	{		
 	}
 	
@@ -32,11 +34,46 @@ struct Compute_alpha_pixel
 		testPoint.y = p[1];			//y == green
 		testPoint.z = p[2];			//z == blue
 		
-		if(_data.isIntoBoundingBox(testPoint))					//bounding box test (process optimization)
+		if(_dataSpill.isIntoBoundingBox(testPoint))						//if current pixel is into spill bounding box
 		{
-			if(_data.isPointIntoGeodesicForm(testPoint))		//if current pixel is into the geodesic form
+			if(_dataColor.isIntoBoundingBox(testPoint))					//bounding box test (process optimization)
 			{
-				alpha = 1.0; //change alpha to 0
+				if(_dataColor.isPointIntoGeodesicForm(testPoint))		//if current pixel is into the color geodesic form
+				{
+					alpha = 1.0;										//change alpha to 1
+				}
+			}
+			if(alpha != 1.0 && _dataSpill.isPointIntoGeodesicForm(testPoint))
+			{
+				//intersections test
+				if(_dataColor.testIntersection2(testPoint,false,true)) //normal intersection
+				{
+					//computes vectors
+					Ofx3DPointD vectMax;
+					Ofx3DPointD vectMin;
+					//compute min vector
+					vectMin.x = testPoint.x - _dataColor._intersectionPoint.x; //x value
+					vectMin.y = testPoint.y - _dataColor._intersectionPoint.y; //y value
+					vectMin.z = testPoint.z - _dataColor._intersectionPoint.z;	//z value
+					//compute max vector
+					vectMax.x = _dataSpill._intersectionPoint.x - _dataColor._intersectionPoint.x; //x value
+					vectMax.y = _dataSpill._intersectionPoint.y - _dataColor._intersectionPoint.y; //x value
+					vectMax.z = _dataSpill._intersectionPoint.z - _dataColor._intersectionPoint.z; //x value
+					//compute norms
+					double normMin,normMax;			//initialize
+					normMin  = vectMin.x*vectMin.x;	//add x*x
+					normMin += vectMin.y*vectMin.y;	//add y*y
+					normMin += vectMin.z*vectMin.z;	//add z*z
+					normMin = sqrt(normMin);		//compute norm minimal
+
+					normMax  = vectMax.x*vectMax.x;	//add x*x
+					normMax += vectMax.y*vectMax.y;	//add y*y
+					normMax += vectMax.z*vectMax.z;	//add z*z
+					normMax = sqrt(normMax);		//compute norm maximal
+
+					//compute alpha value
+					alpha = normMin/normMax;
+				}
 			}
 		}
 		
@@ -72,7 +109,8 @@ protected:
     ColorSpaceKeyerPlugin&    _plugin;            ///< Rendering plugin
 	ColorSpaceKeyerProcessParams<Scalar> _params; ///< parameters
 	//Create geodesic form
-	GeodesicForm _geodesicForm;
+	GeodesicForm _geodesicFormColor;
+	GeodesicForm _geodesicFormSpill;
 	
 public:
     ColorSpaceKeyerProcess( ColorSpaceKeyerPlugin& effect );

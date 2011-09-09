@@ -48,10 +48,15 @@ public:
 	bool _hasIntersection;						//is there an intersection
 	//Bounding box parameters
 	BoundingBox _boundingBox;					//bounding box of the geodesic form
+	//Scale value
+	double _scale;								//scale geodesic form
+	double _tolerance;							//tolerance of geodesic form (for extends)
 	
 public:
 	//Constructor of geodesic form
 	GeodesicForm();
+	//Copy constructor of geodesic form
+	GeodesicForm(const GeodesicForm& copy);		
 	
 	//Create a geodesic form centered in a point
 	void createGeodesicForm(const Ofx3DPointD& center);
@@ -59,11 +64,11 @@ public:
 	void subdiviseFaces(const Ofx3DPointD& center, const int divisor);
 	
 	//Draw the geodesic form on screen
-	void draw();
+	void draw(bool alpha = true);
 	
 	//Intersection test
 	void testIntersection(const Ofx3DPointD& testPoint);									//intersection (Moller) test between a ray and the geodesic form
-	bool testIntersection2(const Ofx3DPointD& testPoint, const bool& inverse = false);		//intersection (Dan Sunday) test between a ray and the geodesic form
+	bool testIntersection2(const Ofx3DPointD& testPoint, const bool& inverse = false, const bool justIntersectionPoint = false);		//intersection (Dan Sunday) test between a ray and the geodesic form
 	bool isPointIntoGeodesicForm(const Ofx3DPointD& testPoint);								//return if testPoint is contained into GeodesicForm
 	
 	//Extend geodesicForm

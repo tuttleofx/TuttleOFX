@@ -21,12 +21,13 @@ _averageColor(time)	//Selection average constructor (current time is needed)
 	_imgCopy.reserve( imgSize * 0.5 );	//reserve memory for buffer
 	
 	//selection buffer 
-	_selectionCopy.reserve( imgSize * 0.5); //reserve memory for seletion buffer
-	_selectionColor.reserve( imgSize * 0.5); //reserve memory for selection color buffer
+	_selectionCopy.reserve( imgSize * 0.5); //reserve memory for color selection buffer
+	_spillCopy.reserve( imgSize * 0.5);		//reserve memory for spill selection buffer
 	
 	//VBO are not built at this time
-	_isVBOBuilt = false;			//cloud point VBO is not built
-	_isSelectionVBOBuilt = false;	//selection VBO is not built
+	_isVBOBuilt = false;				//cloud point VBO is not built
+	_isSelectionVBOBuilt = false;		//color selection VBO is not built
+	_isSpillSelectionVBOBuilt = false;	//spill selection VBO is not built
 }
 
 /**
@@ -92,10 +93,14 @@ void CloudPointData::updateVBO()
 	//point cloud VBO
 	_imgVBO.createVBO( &(_imgCopy.front()), _imgCopy.size() / 3 );	//generate VBO to draw
 	_imgVBO._color = true;											//activate color for VBO
-	//selection VBO
-	_selectionVBO._colorDifferent = true;																					//color buffer is not the same than vertex buffer
-	_selectionVBO._color = false;																							//activate color for VBO
-	_selectionVBO.createVBO(&(_selectionCopy.front()), _selectionCopy.size()/3,GL_STATIC_DRAW ,&(_selectionColor.front())); //generate selection VBO to draw
+	//color selection VBO
+	_selectionColorVBO._colorDifferent = true;																					//color buffer is not the same than vertex buffer
+	_selectionColorVBO._color = false;																							//disable color for VBO
+	_selectionColorVBO.createVBO(&(_selectionCopy.front()), _selectionCopy.size()/3,GL_STATIC_DRAW ,&(_selectionCopy.front())); //generate color selection VBO to draw
+	//spill selection VBO
+	_selectionSpillVBO._colorDifferent = true;																					//color buffer is not the same than vertex buffer
+	_selectionSpillVBO._color = false;																							//disable color for VBO
+	_selectionSpillVBO.createVBO(&(_spillCopy.front()), _spillCopy.size()/3,GL_STATIC_DRAW ,&(_spillCopy.front()));				//generate spill selection VBO to draw
 }
 
 /*
@@ -198,13 +203,81 @@ int CloudPointData::generateAllPointsSelectionVBOData(SView srcView)
 	//treatment
 	boost::gil::transform_pixels( srcView, funct );		//transform pixel did with functor reference
 	size = _selectionCopy.size();						//get current size of VBO
-	
-	//compute color buffer for VBO
-	for(unsigned int i=0; i<0; ++i)	//each channels of each pixels
-		_selectionColor[i] = 255;		//all of the pixels will appear in white
+
 	return size;					//return size of VBO buffers (same color and vertex)
 }
 
+/*
+ * 
+ */
+bool CloudPointData::generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPointD& renderScale, bool vboWithDiscretization, int discretizationStep)
+{
+	_isSpillSelectionVBOBuilt = false; // selection VBO is not built 
+	// connection test
+	if( ! clipSpill->isConnected() )
+	{	
+		return false;
+	}
+	
+	boost::scoped_ptr<OFX::Image> src( clipSpill->fetchImage(_time, clipSpill->getCanonicalRod(_time)) );	//scoped pointer of current color clip
+	
+	// Compatibility tests
+	if( !src.get() ) // color clip source isn't accessible
+	{
+		std::cout << "src is not accessible (spill clip)" << std::endl;
+		return false;
+	}
+	if( src->getRowBytes() == 0 )//if source is wrong
+	{
+		BOOST_THROW_EXCEPTION( exception::WrongRowBytes() );
+		return false;
+	}
+	const OfxRectI srcPixelRod = clipSpill->getPixelRod( _time, renderScale ); //get current RoD
+	if( (clipSpill->getPixelDepth() != OFX::eBitDepthFloat) ||
+		(clipSpill->getPixelComponents() == OFX::ePixelComponentNone) )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unsupported()	<< exception::user() + "Can't compute histogram data with the actual input clip format." );
+        return false;
+	}
+	if( srcPixelRod != src->getBounds() )// the host does bad things !
+	{
+		// remove overlay... but do not crash.
+		TUTTLE_COUT_WARNING( "Image RoD and image bounds are not the same (rod=" << srcPixelRod << " , bounds:" << src->getBounds() << ")." );
+		return false;
+	}
+	// Compute if source is OK
+	SView srcView = tuttle::plugin::getView<SView>( src.get(), srcPixelRod );	// get current view from source clip
+
+	if(vboWithDiscretization) //there is discretization on VBO
+	{
+		//treatment VBO discretization (maybe)
+	}
+	//VBO without discretization
+	generateAllPointsSpillVBOData(srcView); //generate a selection VBO without discretization
+	_isSpillSelectionVBOBuilt = true;	// selection VBO is not built 
+	return true;					// treatment has been done correctly
+}
+
+/*
+ * Copy RGB channels of the selected pixels in clip source into a buffer
+ */
+int CloudPointData::generateAllPointsSpillVBOData(SView srcView)
+{
+	//compute buffer size
+	int size;				 //returned size
+	bool isSelection = true; //current operations are on selected pixels
+	
+	//clear selection copy
+	_spillCopy.clear();								//clear selection VBO data
+	
+	//copy full image into buffer
+	Pixel_copy funct(_spillCopy, isSelection);		//functor declaration creation	
+	//treatment
+	boost::gil::transform_pixels( srcView, funct );	//transform pixel did with functor reference
+	
+	size = _spillCopy.size();						//get current size of VBO
+	return size;									//return size of VBO buffers (same color and vertex)
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -302,9 +375,8 @@ void CloudPointData::VBO::genBufferColor( unsigned int& idColor, const void* dat
 /*
  * Draw the current VBO on screen
  */
-void CloudPointData::VBO::draw( )
+void CloudPointData::VBO::draw()
 {
-	glColor3f(1.0f,1.0f,1.0f);	//color is white by default
 	if( _id && _size )
 	{
 		// bind VBOs with IDs and set the buffer offsets of the bound VBOs

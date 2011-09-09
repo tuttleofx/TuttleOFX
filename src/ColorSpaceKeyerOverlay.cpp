@@ -193,15 +193,26 @@ bool ColorSpaceKeyerOverlay::draw( const OFX::DrawArgs& args )
 		if(getData()._isVBOBuilt)					//if VBO has already been built
 			getData()._imgVBO.draw();				//draw VBO
 		
-		//drawing selection VBO
-		if(getData()._isSelectionVBOBuilt && _plugin->_paramBoolSeeSelection->getValue()) //selection VBO data is built
-			getData()._selectionVBO.draw();			//draw selection VBO
+		//drawing color selection VBO
+		if(getData()._isSelectionVBOBuilt && _plugin->_paramBoolSeeSelection->getValue())	//color selection VBO data is built
+		{
+			glColor3f(1.0f,1.0f,1.0f);														//color is white
+			getData()._selectionColorVBO.draw();											//draw selection VBO
+		}
+		//drawing spill selection VBO
+		if(getData()._isSpillSelectionVBOBuilt && _plugin->_paramBoolSeeSpillSelection->getValue()) //spill selection VBO data is built
+		{
+			glColor3f(.3f,.3f,.3f);														//color is white
+			getData()._selectionSpillVBO.draw();										//draw selection VBO
+		}
 		
 		//drawing average
 		getData()._averageColor.draw();								//draw average (cross)
 		//drawing geodesic form
-		if(_plugin->_paramBoolDisplayGeodesicForm->getValue())		//if geodesic form has been built
-			getData()._geodesicForm.draw();							//draw geodesic form on screen
+		if(_plugin->_paramBoolDisplayGeodesicForm->getValue())		//does user want to display color geodesic form
+			getData()._geodesicFormColor.draw(false);				//draw geodesic form on screen without alpha
+		if(_plugin->_paramBoolDisplaySpillGF->getValue())			//does user want to display spill geodesic form
+			getData()._geodesicFormSpill.draw(true);				//draw spill geodesic form on screen with alpha
 		
 		//OpenGL end of parameters
 		glDisable(GL_DEPTH_TEST);	//disable deep
@@ -268,7 +279,7 @@ bool ColorSpaceKeyerOverlay::penMotion( const OFX::PenArgs& args )
 			_rotateYForm = (deltaY/args.pixelScale.y)/kRotationSpeed;	//add delta to geodesic center rotation (Y axis)
 			
 			//update model-View matrix
-			Ofx3DPointD rotationCenter = getData()._geodesicForm._center;	//get current rotation center
+			Ofx3DPointD rotationCenter = getData()._geodesicFormColor._center;	//get current rotation center
 			updateModelView(rotationCenter);								//update model-view
 		}
 		else															//rotation center is reference center (0.5,0.5,0.5 in cube reference)

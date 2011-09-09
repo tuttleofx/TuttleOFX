@@ -29,17 +29,22 @@ public:
 
 	// clips
 	OFX::Clip* _clipColor;		//clip color
+	OFX::Clip* _clipSpill;		//clip spill
 
 	//parameters
 	OFX::BooleanParam* _paramBoolPointCloudDisplay;		//display cloud point - check box
 	OFX::BooleanParam* _paramBoolDiscretizationActive;	//is discretization active on point cloud - check box
-	OFX::IntParam* _paramIntDiscretization;				//discretization step - Int param
-	OFX::IntParam* _paramIntNbOfDivisionsGF;			//number of divisions geodesic form - Int param
-	OFX::BooleanParam* _paramBoolDisplayGeodesicForm;	//see geodesic form on screen - check box
-	OFX::ChoiceParam* _paramChoiceAverageMode;			//choice average mode - Choice param
-	OFX::RGBAParam* _paramRGBAColorSelection;			//color average selection - RGBA param
+	OFX::IntParam* _paramIntDiscretization;				//discretization step - Int parameter
+	OFX::IntParam* _paramIntNbOfDivisionsGF;			//number of divisions geodesic form - Int parameter
+	OFX::BooleanParam* _paramBoolDisplayGeodesicForm;	//see color geodesic form on screen - check box
+	OFX::ChoiceParam* _paramChoiceAverageMode;			//choice average mode - Choice parameter
+	OFX::RGBAParam* _paramRGBAColorSelection;			//color average selection - RGBA parameter
 	OFX::PushButtonParam* _paramPushButtonAverageCompute;	//color average computing - Push button
-	OFX::BooleanParam* _paramBoolSeeSelection;			//see selection on overlay
+	OFX::BooleanParam* _paramBoolSeeSelection;			//see color selection on overlay - check box
+	OFX::DoubleParam* _paramDoubleScaleGF;				//scale geodesic form - Double parameters
+	OFX::DoubleParam* _paramDoubleToleranceGF;			//tolerance geodesic form - Double parameters
+	OFX::BooleanParam* _paramBoolSeeSpillSelection;		//see spill selection on overlay - check box
+	OFX::BooleanParam* _paramBoolDisplaySpillGF;		//see spill geodesic form on screen - check box
 	
 	//Overlay data parameters
 	bool _updateVBO;									//VBO data has been changed so update VBO
@@ -72,11 +77,13 @@ public:
     void render( const OFX::RenderArguments &args );	//treatment
 	
 	//Overlay data functions
-	void addRefCloudPointData();					//add reference to cloud point data
-	void releaseCloudPointData();					//release reference to cloud point data
-	bool hasCloudPointData() const;					//is there cloud point data ?
+	void addRefCloudPointData();						//add reference to cloud point data
+	void releaseCloudPointData();						//release reference to cloud point data
+	bool hasCloudPointData() const;						//is there cloud point data ?
 	CloudPointData& getCloudPointData();				//getter/setter
 	const CloudPointData& getCloudPointData() const;	//const getter
+private:
+	void updateGeodesicForms(const OFX::InstanceChangedArgs& args);							//update color & spill geodesic forms
 };
 
 }

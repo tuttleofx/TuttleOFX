@@ -28,13 +28,12 @@ namespace colorSpaceKeyer {
 const static std::string kClipColorSelection = "color";
 const static std::string kClipSpillSelection = "spill";
 
-
 //Drawing constant
 const static float kOpenGLSceneMaxSize = 200.0;
 
 //Global display (check box)
 const static std::string kPointCloudDisplay = "pointCloudDisplay";
-const static std::string kPointCloudDisplayLabel = "Display point cloud";
+const static std::string kPointCloudDisplayLabel = "Display data";
 
 //Discretization display (check box)
 const static std::string kBoolDiscretizationDisplay = "discretizationDisplayBool";
@@ -54,9 +53,13 @@ static std::size_t numberOfDivisionInt = 4;
 const static std::string kPushButtonResetTransformationParameters = "ResetTransformation";
 const static std::string kPushButtonResetTransformationParametersLabel = "Reset transformation";
 
-//See only selection
-const static std::string kBoolOnlySelection = "displayGeodesicForm";
-const static std::string kBoolOnlySelectionLabel = "Display geodesic form";
+//Display geodesic form (color)
+const static std::string kBoolOnlySelection = "displayColorGeodesicForm";
+const static std::string kBoolOnlySelectionLabel = "Display color form";
+
+//Display geodesic form (spill)
+const static std::string kBoolDisplaySpillGF = "displaySpillGeodesicForm";
+const static std::string kBoolDisplaySpillGFLabel = "Display spill form";
 
 //Group names
 const static std::string kGroupDisplay = "groupDisplay";
@@ -80,9 +83,22 @@ const static std::string kColorAverageMode2 = "Manual";
 const static std::string kColorAverageComputing = "colorAverageComputing";
 const static std::string kColorAverageComputingLabel = "Compute";
 
-//Color Selection display
+//Color selection display
 const static std::string kBoolColorSelectionDisplay = "displayColorSelectionDisplay";
 const static std::string kBoolColorSelectionDisplayLabel = "Display color selection";
+
+//Spill selection display
+const static std::string kBoolSpillSelectionDisplay = "displaySpillSelectionDisplay";
+const static std::string kBoolSpillSelectionDisplayLabel = "Display spill selection";
+
+//Scale geodesic form
+const static std::string kDoubleScaleGeodesicForm = "scaleGF";
+const static std::string kDoubleScaleGeodesicFormLabel = "Scale geodesic form";
+
+//Tolerance geodesic form
+const static std::string kDoubleToleranceGeodesicForm = "toleranceGF";
+const static std::string kDoubleToleranceGeodesicFormLabel = "Tolerance geodesic form";
+
 
 //Rotation constants
 const static int KMaxDegres = 360;		//360° max for a rotation

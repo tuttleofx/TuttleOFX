@@ -35,8 +35,10 @@ void ColorSpaceKeyerPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 
 	// plugin flags
 	desc.setSupportsTiles( true );
+	// Don't declare the plugin as fully safe: It's not a safety problem, but we need to compute common data.
+	// So it's not interesting to compute the same thing on multiple threads.
 //	desc.setRenderThreadSafety( OFX::eRenderFullySafe );
-	desc.setRenderThreadSafety( OFX::eRenderUnsafe );
+	desc.setRenderThreadSafety( OFX::eRenderInstanceSafe );
 	
 	//Overlay class
 	desc.setOverlayInteractDescriptor( new OFX::DefaultEffectOverlayWrap<ColorSpaceKeyerOverlayDescriptor>() );
@@ -59,6 +61,12 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	strongSelectionClip->addSupportedComponent( OFX::ePixelComponentRGBA );
 	strongSelectionClip->setOptional( true );
 	strongSelectionClip->setSupportsTiles( false );
+	
+	OFX::ClipDescriptor* spillSelectionClip = desc.defineClip( kClipSpillSelection );
+	spillSelectionClip->addSupportedComponent( OFX::ePixelComponentRGBA );
+	spillSelectionClip->setOptional( true );
+	spillSelectionClip->setSupportsTiles( false );
+	
 	
 	OFX::ClipDescriptor* dstClip = desc.defineClip( kOfxImageEffectOutputClipName );
 	dstClip->addSupportedComponent( OFX::ePixelComponentRGBA );
@@ -147,18 +155,57 @@ void ColorSpaceKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor
 	//Check-box only selection color
 	OFX::BooleanParamDescriptor* onlySelectionColor = desc.defineBooleanParam(kBoolOnlySelection);
 	onlySelectionColor->setLabel(kBoolOnlySelectionLabel);			//add label
-	onlySelectionColor->setDefault(true);							//check box is not checked by default
+	onlySelectionColor->setDefault(false);							//check box is not checked by default
 	onlySelectionColor->setEvaluateOnChange(false);					//don't need to recompute on change
-	onlySelectionColor->setHint("Do not see process form");			//help
-	onlySelectionColor->setParent(groupProcess);					//add to process group
+	onlySelectionColor->setHint("see color process form");			//help
+	onlySelectionColor->setLayoutHint( OFX::eLayoutHintNoNewLine );	//line is not finished
+	onlySelectionColor->setParent(groupDisplay);					//add to display group
+	
+	//Check-box only selection color
+	OFX::BooleanParamDescriptor* displaySpillGF = desc.defineBooleanParam(kBoolDisplaySpillGF);
+	displaySpillGF->setLabel(kBoolDisplaySpillGFLabel);				//add label
+	displaySpillGF->setDefault(false);								//check box is not checked by default
+	displaySpillGF->setEvaluateOnChange(false);						//don't need to recompute on change
+	displaySpillGF->setHint("see spill process form");				//help
+	displaySpillGF->setParent(groupDisplay);						//add to display group
 	
 	//Check box see color selection
 	OFX::BooleanParamDescriptor* seeSelection = desc.defineBooleanParam(kBoolColorSelectionDisplay);
 	seeSelection->setLabel(kBoolColorSelectionDisplayLabel);		//add label
-	seeSelection->setDefault(true);									//check box is checked by default
+	seeSelection->setDefault(false);								//check box is checked by default
 	seeSelection->setEvaluateOnChange(false);						//don't need to recompute on change
-	seeSelection->setHint("Do not see selection");					//help
-	seeSelection->setParent(groupProcess);							//add to process group
+	seeSelection->setHint("Do not see color selection");			//help
+	seeSelection->setLayoutHint( OFX::eLayoutHintNoNewLine );		//line is not finished
+	seeSelection->setParent(groupDisplay);							//add to display group
+	
+	//Check box see spill selection
+	OFX::BooleanParamDescriptor* seeSpillSelection = desc.defineBooleanParam(kBoolSpillSelectionDisplay);
+	seeSpillSelection->setLabel(kBoolSpillSelectionDisplayLabel);	//add label
+	seeSpillSelection->setDefault(false);							//check box is checked by default
+	seeSpillSelection->setEvaluateOnChange(false);					//don't need to recompute on change
+	seeSpillSelection->setHint("Do not see spill selection");		//help
+	seeSpillSelection->setParent(groupDisplay);						//add to display group
+	
+	
+	//Double parameters scale (scale geodesic form)
+	OFX::DoubleParamDescriptor* scaleGF = desc.defineDoubleParam(kDoubleScaleGeodesicForm);
+	scaleGF->setLabel(kDoubleScaleGeodesicFormLabel);				//add label
+	scaleGF->setDefault(1.0);										//default value
+	scaleGF->setRange(0,5.0);										//scale range
+	scaleGF->setDisplayRange(0,2);									//set display range
+	scaleGF->setHint("Scale geodesic form");						//help
+	scaleGF->setParent(groupProcess);								//add to process group
+	
+	//Double parameters tolerance (tolerance add to geodesic form)
+	OFX::DoubleParamDescriptor* toleranceGF = desc.defineDoubleParam(kDoubleToleranceGeodesicForm);
+	toleranceGF->setLabel(kDoubleToleranceGeodesicFormLabel);		//add label
+	toleranceGF->setDefault(0.0);									//default value
+	toleranceGF->setRange(0,1.0);									//tolerance range
+	toleranceGF->setDisplayRange(0,0.5);							//set display range
+	toleranceGF->setHint("Tolerance geodesic form");				//help
+	toleranceGF->setParent(groupProcess);							//add to process group
+	
+	
 }
 
 /**

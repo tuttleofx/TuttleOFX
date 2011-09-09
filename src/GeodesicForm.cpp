@@ -6,7 +6,7 @@ namespace tuttle {
 namespace plugin {
 namespace colorSpaceKeyer {
 	
-/**
+/*
  * GeodesicForm constructor
  */
 GeodesicForm::GeodesicForm() {
@@ -16,6 +16,7 @@ GeodesicForm::GeodesicForm() {
 	//initialize intersection attribute
 	_hasIntersection = false;	//there is not intersection
 	_idFaceIntersection = 9;	//there is not intersection face
+	_tolerance = 0;				//tolerance is null by default		
 }
 
 /*
@@ -145,7 +146,7 @@ void GeodesicForm::createGeodesicForm(const Ofx3DPointD& center)
 /*
  *Draw the geodesic form on screen 
  */
-void GeodesicForm::draw()
+void GeodesicForm::draw(bool alpha)
 {
 	if(_points.empty() || _faces.empty()) //GeodesicForm has not been created
 		return;
@@ -159,7 +160,10 @@ void GeodesicForm::draw()
 			glBegin(GL_TRIANGLES);
 			for(unsigned int j=0; j<_faces[i].triangles.size(); ++j) //for each triangle of the current face
 			{
-				glColor3f(0.9,0.9,0.1);	//color yellow
+				if(alpha)
+					glColor4f(0.9,0.9,0.1,0.3);	//color yellow with alpha
+				else
+					glColor3f(0.9,0.5,0.1);		//color yellow without alpha
 				Ofx3DPointD tr1 = *(_faces[i].triangles[j].point1); //get point1 of current triangle
 				glVertex3d(tr1.x,tr1.y,tr1.z); //draw point
 				Ofx3DPointD tr2 = *(_faces[i].triangles[j].point2); //get point2 of current triangle
@@ -168,7 +172,10 @@ void GeodesicForm::draw()
 				glVertex3d(tr3.x,tr3.y,tr3.z); //draw point
 			}
 			glEnd();
-			glColor3f(0.9,0.1,0.1);//color red
+			if(alpha)
+				glColor4f(0.1,0.1,0.1,0.3);	//color red with alpha
+			else
+				glColor3f(0.1,0.1,0.1);		//color red without alpha
 			glBegin(GL_LINES);
 			for(unsigned int j=0; j<_faces[i].triangles.size(); ++j) //for each triangle of the current face
 			{
@@ -190,7 +197,10 @@ void GeodesicForm::draw()
 	}
 	//draw all of the points of the point vector
 	glBegin(GL_POINTS);
-	glColor3f(0.1,0.1,0.9); //color blue
+	if(alpha)
+		glColor3f(0.9,0.9,0.1); //color yellow
+	else
+		glColor3f(0.9,0.3,0.1); //color orange-red
 	//draw points
 	for(unsigned int i=0; i<_points.size(); ++i)				// for each points in point vector
 		glVertex3d(_points[i].x, _points[i].y, _points[i].z);	//draw current point
@@ -230,9 +240,6 @@ void GeodesicForm::testOnePointFunction()
 	testPoint.y = 0.149031; //y value
 	testPoint.z = 0.0420739; //z value
 
-//	if(isPointIntoGeodesicForm(testPoint)) //test point inverse
-	
-	std::cout << "ici" << std::endl;
 	extendOnePoint(testPoint);	//extends test point
 	
 	//compute vector
@@ -789,6 +796,7 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 	double cosAngleIntersectionPointToMove = DOT(vectorCenterPointToMove,testPointCenterVector);
 	//compute new norm triangle.point3
 	double hypothenusCenterPointToMove = normTestPointCenterVector/cosAngleIntersectionPointToMove; //compute new norm
+	hypothenusCenterPointToMove *= _scale + _tolerance;						//multiply by scale value
 	if(normVectorCenterPointToMove > hypothenusCenterPointToMove) //compare current norm with existing norm
 	{
 		//nothing to do point to move is enough far of center
@@ -796,7 +804,7 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 	}
 	else
 	{
-		hypothenusCenterPointToMove -= normVectorCenterPointToMove;//compute value to add
+		hypothenusCenterPointToMove -= normVectorCenterPointToMove;	//compute value to add
 		//compute translation
 		vectorCenterPointToMove[0] *= hypothenusCenterPointToMove; //get coordinate X
 		vectorCenterPointToMove[1] *= hypothenusCenterPointToMove; //get coordinate Y
@@ -953,7 +961,7 @@ bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTrian
 /*
  * Test intersection between a ray and a pyramid face
  */
-bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& inverse)
+bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& inverse, const bool justIntersectionPoint)
 {
 	bool intersectionFound = false;			//intersection has not been found
 	int i=0;								//initialize indice faces
@@ -972,7 +980,9 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
 	while(i<8 && !intersectionFound)
 	{									
 		if(getIntersection2(testPoint,_faces[i],_intersectionPoint, inverse))
-		{
+		{	
+			if(justIntersectionPoint)
+				return true;
 			unsigned int j=0;								//declare indice
 			while( j<_faces[i].triangles.size() && !intersectionFound)
 			{
@@ -1086,6 +1096,77 @@ void GeodesicForm::updateBoundingBox(const Ofx3DPointD& testPoint)
 			_boundingBox.min.z = testPoint.z;	//change value min Z
 	}
 }
+
+/*
+ * Return ID in points vector of a point
+ */
+unsigned int getPointID(const Ofx3DPointD& point, const std::vector<Ofx3DPointD>& points)
+{
+	unsigned int i=0;   //indice
+	double epsilon = 0.0001;
+	bool found = false; //point has not been found yet
+	while(i<points.size() && !found)
+	{
+		if(fabs(point.x - points[i].x) < epsilon && fabs(point.y - points[i].y) < epsilon && fabs(point.z - points[i].z) < epsilon)
+		{
+			found = true;	//point has been found
+			return i;
+		}
+		else
+			++i;			//increments indice
+	}
+	std::cout << "pblem"<<std::endl;
+	return 0;
+}
+
+/*
+ * Recopy constructor of geodesic form 
+ */
+GeodesicForm::GeodesicForm(const GeodesicForm& copy)
+{
+	//Clear data
+	_points.clear();
+	_faces.clear();
+	//Reserve memory
+	_points.reserve(copy._points.size());				//reserve memory for points vector
+	_faces.reserve(copy._faces.size());					//reserve memory for faces vector
+	//Geodesic form parameters
+	for(unsigned int i=0; i<copy._points.size(); ++i)
+		_points.push_back(copy._points[i]);
+	
+	for(unsigned int j=0; j<copy._faces.size(); ++j)
+	{
+		PyramidTriangle pyTr;	//initialize face to add
+		//recopy points values
+		pyTr.point1 = &(_points[getPointID(*(copy._faces[j].point1),copy._points)]);	//copy point1
+		pyTr.point2 = &(_points[getPointID(*(copy._faces[j].point2),copy._points)]);	//copy point2
+		pyTr.point3 = &(_points[getPointID(*(copy._faces[j].point3),copy._points)]);	//copy point3
+		//recopy triangles vector
+		for(unsigned int k=0; k<copy._faces[j].triangles.size(); ++k)
+		{
+			Triangle tr;		//initialize triangle to add
+			//recopy points values
+			tr.point1 = &(_points[getPointID(*(copy._faces[j].triangles[k].point1),copy._points)]); //copy point1
+			tr.point2 = &(_points[getPointID(*(copy._faces[j].triangles[k].point2),copy._points)]); //copy point2
+			tr.point3 = &(_points[getPointID(*(copy._faces[j].triangles[k].point3),copy._points)]); //copy point3
+			//add triangle
+			pyTr.triangles.push_back(tr);
+		}
+		//add face
+		_faces.push_back(pyTr);
+	}
+	
+	//Copy attribute values
+	_nbDivisions = copy._nbDivisions;					//number of divisions of each faces
+	_radius = copy._radius;								//radius of geodesic form
+	_center = copy._center;								//center of the geodesic form
+	_idFaceIntersection = copy._idFaceIntersection;		//face of the current intersection
+	_intersectionPoint = copy._intersectionPoint;		//point of intersection between ray and geodesic form
+	_hasIntersection = copy._hasIntersection;			//is there an intersection
+	_boundingBox = copy._boundingBox;					//bounding box of the geodesic form
+	_scale = copy._scale;								//scale geodesic form
+}
+
 
 }
 }

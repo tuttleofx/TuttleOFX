@@ -192,23 +192,26 @@ protected:
 	
 public:
 	//Class arguments
-	OfxPointI _size;			//size of source clip
-	OfxTime _time;				//current time in sequence
-	bool _isVBOBuilt;			//if VBO is not built don't draw it on overlay
-	bool _isSelectionVBOBuilt;  //if selection VBO is not built don't draw it on overlay
+	OfxPointI _size;				//size of source clip
+	OfxTime _time;					//current time in sequence
+	bool _isVBOBuilt;				//if VBO is not built don't draw it on overlay
+	bool _isSelectionVBOBuilt;		//if color selection VBO is not built don't draw it on overlay
+	bool _isSpillSelectionVBOBuilt;	//if spill selection VBO is not built don't draw it on overlay
 		
 	//VBO to draw
 	VBO _imgVBO;				//VBO to display on overlay (cloud point VBO)
-	VBO _selectionVBO;			//VBO to display on overlay (selection in white)
+	VBO _selectionColorVBO;		//VBO to display on overlay (color selection in white)
+	VBO _selectionSpillVBO;		//VBO to display on overlay (spill selection in silver)
 	
 	//Data recopy
 	DataVector _imgCopy;			//copy of the image needed to draw VB0
 	DataVector _selectionCopy;		//copy of the selection image to draw VBO
-	DataVector _selectionColor;		//copy of the selection colors to draw VBO
+	DataVector _spillCopy;			//copy of the selection colors to draw VBO
 	
 	//Overlay data
-	SelectionAverage _averageColor;	//color clip selection average
-	GeodesicForm	_geodesicForm;  //geodesic form (overlay)
+	SelectionAverage _averageColor;			//color clip selection average
+	GeodesicForm	_geodesicFormColor;		//geodesic form color (overlay)
+	GeodesicForm	_geodesicFormSpill;		//geodesic form spill (overlay)
 	
 public:
 	//Constructor
@@ -217,6 +220,7 @@ public:
 	//VBO management
 	bool generateVBOData(OFX::Clip* clipSrc, const OfxPointD& renderScale, bool vboWithDiscretization, int discretizationStep);				//create new VBO data (fill up buffer)
 	bool generateColorSelectionVBO(OFX::Clip* clipColor, const OfxPointD& renderScale, bool vboWithDiscretization, int discretizationStep);	//Change color of selected pixel (color clip)
+	bool generateSpillSelectionVBO(OFX::Clip* clipSpill, const OfxPointD& renderScale, bool vboWithDiscretization, int discretizationStep);	//Change color of selected pixel (spill clip)
 	void updateVBO();																														//create the VBO from VBO data (draw function)
 	
 private:
@@ -225,6 +229,7 @@ private:
 	int generateDiscretizedVBOData(SView srcView, const int& discretizationStep);				//generate a  VBO with discretization
 	//selection VBO data management
 	int generateAllPointsSelectionVBOData(SView srcView);										//generate a VBO (and color) with all of the selected pixels
+	int generateAllPointsSpillVBOData(SView srcView);											//generate a VBO (and color) with all of the selected pixels
 };
 
 }
