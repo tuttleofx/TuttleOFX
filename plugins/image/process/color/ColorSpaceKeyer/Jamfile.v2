@@ -1,5 +1,5 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX %CLASSNAME% Plugin
+## Main BJam makefile for TuttleOFX ColorSpaceKeyer Plugin
 ###############################################################################
 import os ;
  
@@ -9,14 +9,14 @@ import os ;
 project
     : requirements
 	<include>src
-    : build-dir $(BUILD)/%CLASSNAME%
+    : build-dir $(DIST)/ColorSpaceKeyer/obj
     ;
 
  
 ###############################################################################
 # Product 
 ###############################################################################
-plugin %CLASSNAME% : 
+plugin ColorSpaceKeyer : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
     ;
@@ -24,5 +24,5 @@ plugin %CLASSNAME% :
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install %CLASSNAME% : $(DIST) ;
+auto_install ColorSpaceKeyer : $(DIST) ;
  

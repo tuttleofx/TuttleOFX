@@ -1,3 +1,5 @@
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -27,10 +29,10 @@ bool	verbose		= false;
 int	firstImage	= 0;
 int	lastImage	= 0;
 
-std::string   sColorStd;
-std::string   sColorBlue;
-std::string   sColorGreen;
-std::string   sColorRed;
+namespace sam
+{
+	Color _color;
+}
 
 void printImageProperties( std::string path )
 {
@@ -175,10 +177,11 @@ void getImageProperties( std::list<boost::shared_ptr<tuttle::common::FileObject>
 int main( int argc, char** argv )
 {
 	using namespace tuttle::common;
+	using namespace sam;
 
-	EMaskType researchMask = eMaskTypeSequence;	// by default show sequences
+	EMaskType researchMask       = eMaskTypeSequence;	// by default show sequences
 	EMaskOptions descriptionMask = eMaskOptionsColor;	// by default show nothing
-	bool recursiveListing	= false;
+	bool recursiveListing	     = false;
 	std::string availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
@@ -186,23 +189,24 @@ int main( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options()
-		("all,a"		, "do not ignore entries starting with .")
-		("expression,e"		, bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
-		("files,f"		, "informations about files in path(s)")
-		("help,h"		, "show this help")
-		("mask,m"		, "not remove sequences in path(s)")
-		("path-root,p"		, "show the root path for each objects")
-		("recursive,R"		, "remove subdirectories recursively")
-		("color"		, "color the outup")
-		("first-image"		, bpo::value<unsigned int>(), "specify the first image")
-		("last-image"		, bpo::value<unsigned int>(), "specify the last image")
+		("all,a"            , "do not ignore entries starting with .")
+		("expression,e"     , bpo::value<std::string>(), "remove with a specific pattern, ex: *.jpg,*.png")
+		("files,f"          , "informations about files in path(s)")
+		("help,h"           , "show this help")
+		("mask,m"           , "not remove sequences in path(s)")
+		("path-root,p"      , "show the root path for each objects")
+		("recursive,R"      , "remove subdirectories recursively")
+		("color"            , "color the outup")
+		("first-image"      , bpo::value<unsigned int>(), "specify the first image")
+		("last-image"       , bpo::value<unsigned int>(), "specify the last image")
+		("brief"            , "brief summary of the tool")
 	;
 
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options()
-		("input-dir", bpo::value< std::vector<std::string> >(), "input directories")
-		("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+		("input-dir"        , bpo::value< std::vector<std::string> >(), "input directories")
+		("enable-color"     , bpo::value<std::string>(), "enable (or disable) color")
 	;
 
 	// define default options
@@ -263,24 +267,27 @@ int main( int argc, char** argv )
 	if( enableColor )
 	{
 		descriptionMask |= eMaskOptionsColor;
-		sColorStd    = kColorStd;
-		sColorBlue   = kColorFolder;
-		sColorGreen  = kColorFile;
-		sColorRed    = kColorError;
+		_color.enable();
 	}
 
 	if (vm.count("help"))
 	{
-	    TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
-	    TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd );
-	    TUTTLE_COUT( sColorGreen << "\tsam-info - get informations about a sequence" << sColorStd << std::endl );
-	    TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
-	    TUTTLE_COUT( sColorGreen << "\tsam-info [options] [sequences]" << sColorStd << std::endl );
-	    TUTTLE_COUT( sColorBlue  << "DESCRIPTION\n" << sColorStd );
+	    TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+	    TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+	    TUTTLE_COUT( _color._green << "\tsam-info - get informations about a sequence" << _color._std << std::endl );
+	    TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+	    TUTTLE_COUT( _color._green << "\tsam-info [options] [sequences]" << _color._std << std::endl );
+	    TUTTLE_COUT( _color._blue  << "DESCRIPTION\n" << _color._std );
 	    TUTTLE_COUT( "Print informations from Sequence (or file) like resolution, colorspace, etc." << std::endl );
-	    TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd);
+	    TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std);
 	    TUTTLE_COUT( mainOptions );
 	    return 0;
+	}
+
+	if ( vm.count("brief") )
+	{
+		TUTTLE_COUT( _color._green << "get informations about a sequence" << _color._std);
+		return 0;
 	}
 
 	if (vm.count("expression"))
@@ -407,18 +414,18 @@ int main( int argc, char** argv )
 				}
 				catch(... )
 				{
-					TUTTLE_CERR ( sColorRed << "Unrecognized pattern \"" << path << "\"" << sColorStd );
+					TUTTLE_CERR ( _color._red << "Unrecognized pattern \"" << path << "\"" << _color._std );
 				}
 			}
 		}
 	}
 	catch (bfs::filesystem_error &ex)
 	{
-		TUTTLE_COUT( ex.what() );
+		TUTTLE_CERR( _color._error << ex.what() << _color._std );
 	}
 	catch(... )
 	{
-		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR ( _color._error << boost::current_exception_diagnostic_information() << _color._std );
 	}
 	return 0;
 }

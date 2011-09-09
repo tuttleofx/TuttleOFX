@@ -1,3 +1,5 @@
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 
 #include <boost/filesystem/operations.hpp>
@@ -17,18 +19,14 @@ namespace bpo = boost::program_options;
 namespace bfs = boost::filesystem;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
+using namespace tuttle::common;
 
 bool         colorOutput   = false;
 bool         verbose      = false;
 std::ssize_t firstImage     = 0;
 std::ssize_t lastImage      = 0;
 
-std::string  sColorStd;
-std::string  sColorBlue;
-std::string  sColorGreen;
-std::string  sColorRed;
-std::string  sColorError;
-std::string  sColorFolder;
+sam::Color _color;
 
 // A helper function to simplify the main part.
 template<class T>
@@ -48,13 +46,13 @@ void removeSequence( const ttl::Sequence& s )
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
 		if( !bfs::exists( sFile ) )
 		{
-			TUTTLE_CERR("Could not remove: " << sColorError << sFile.string() << sColorStd );
+			TUTTLE_CERR("Could not remove: " << _color._red << sFile.string() << _color._std );
 		}
 		else
 		{
 			if(verbose)
 			{
-				TUTTLE_COUT("remove: " << sColorFolder << sFile.string() << sColorStd );
+				TUTTLE_COUT("remove: " << _color._folder << sFile.string() << _color._std );
 			}
 			bfs::remove( sFile );
 		}
@@ -108,13 +106,13 @@ void removeFiles( std::vector<boost::filesystem::path> &listing )
 		{
 			if(verbose)
 			{
-				TUTTLE_COUT( "remove " << sColorFolder << paths << sColorStd );
+				TUTTLE_COUT( "remove " << _color._folder << paths << _color._std );
 			}
 			bfs::remove(paths);
 		}
 		else
 		{
-			TUTTLE_CERR( "could not remove " << sColorError << paths << kColorStd );
+			TUTTLE_CERR( "could not remove " << _color._error << paths << _color._std );
 		}
 	}
 }
@@ -146,6 +144,7 @@ int main( int argc, char** argv )
 			("first-image"     , bpo::value<std::ssize_t>(), "specify the first image")
 			("last-image"      , bpo::value<std::ssize_t>(), "specify the last image")
 			("full-rm"         , "remove directories, files and sequences")
+			("brief"           , "brief summary of the tool")
 			;
 	
 	// describe hidden options
@@ -183,7 +182,7 @@ int main( int argc, char** argv )
 	}
 	catch( const bpo::error& e)
 	{
-		TUTTLE_COUT("sam-rm: command line error: " << e.what() );
+		TUTTLE_COUT( "sam-rm: command line error: " << e.what() );
 		exit( -2 );
 	}
 	catch(...)
@@ -213,25 +212,26 @@ int main( int argc, char** argv )
 	if( colorOutput )
 	{
 		descriptionMask |= eMaskOptionsColor;
-		sColorStd    = kColorStd;
-		sColorBlue   = kColorFolder;
-		sColorFolder = kColorFolder;
-		sColorGreen  = kColorFile;
-		sColorRed    = kColorError;
-		sColorError  = kColorError;
+		_color.enable();
 	}
 
 	if ( vm.count( "help" ) )
 	{
-		TUTTLE_COUT( sColorBlue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << sColorStd << std::endl );
-		TUTTLE_COUT( sColorBlue  << "NAME" << sColorStd);
-		TUTTLE_COUT( sColorGreen << "\tsam-rm - remove directory contents" << sColorStd << std::endl );
-		TUTTLE_COUT( sColorBlue  << "SYNOPSIS" << sColorStd );
-		TUTTLE_COUT( sColorGreen << "\tsam-rm [options] [directories]" << sColorStd << std::endl );
-		TUTTLE_COUT( sColorBlue  << "DESCRIPTION" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-rm - remove directory contents" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-rm [options] [directories]" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
 		TUTTLE_COUT( "Remove sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
-		TUTTLE_COUT( sColorBlue  << "OPTIONS" << sColorStd << std::endl );
+		TUTTLE_COUT( _color._blue  << "OPTIONS" << _color._std << std::endl );
 		TUTTLE_COUT( mainOptions );
+		return 0;
+	}
+
+	if ( vm.count("brief") )
+	{
+		TUTTLE_COUT( _color._green << "remove directory contents" << _color._std);
 		return 0;
 	}
 
@@ -350,13 +350,13 @@ int main( int argc, char** argv )
 					s.initFromDetection( path.string(), Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{
-						TUTTLE_COUT(s);
+						TUTTLE_COUT( s );
 						removeSequence( s );
 					}
 				}
 				catch(... )
 				{
-					TUTTLE_CERR ( "Unrecognized pattern \"" << path << "\"" );
+					TUTTLE_CERR ( _color._error << "Unrecognized pattern \"" << path << "\"" << _color._std );
 				}
 			}
 		}
@@ -365,11 +365,11 @@ int main( int argc, char** argv )
 	}
 	catch (bfs::filesystem_error &ex)
 	{
-		TUTTLE_COUT( ex.what() );
+		TUTTLE_COUT( _color._error << ex.what() << _color._std );
 	}
 	catch(... )
 	{
-		TUTTLE_CERR ( boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR ( _color._error << boost::current_exception_diagnostic_information() << _color._std );
 	}
 	return 0;
 }

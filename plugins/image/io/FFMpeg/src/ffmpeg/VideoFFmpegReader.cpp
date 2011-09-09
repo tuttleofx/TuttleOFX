@@ -64,8 +64,8 @@ bool VideoFFmpegReader::open( const std::string& filename )
 		std::cerr << "ffmpegReader: the file doesn't exist (\"" << filename << "\")" << std::endl;
 		return false;
 	}
-//	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, _params );
-	int error = avformat_open_input( &_context, filename.c_str(), NULL, NULL );
+	int error = av_open_input_file( &_context, filename.c_str(), _format, 0, _params );
+//	int error = avformat_open_input( &_context, filename.c_str(), NULL, NULL );
 	if( error < 0 )
 	{
 		std::cerr << "ffmpegReader: " << ffmpegError_toString( error ) << std::endl;

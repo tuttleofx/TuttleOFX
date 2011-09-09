@@ -1,3 +1,4 @@
+#include <sam/common/color.hpp>
 
 #include <tuttle/host/Graph.hpp>
 #include <tuttle/common/clip/Sequence.hpp>
@@ -141,8 +142,9 @@ int main( int argc, char** argv )
 		desc.add_options()
 		("help,h", "Display help")
 		("reader,n", po::value(&readerId)/*->required()*/, "Reader node identifier \"tuttle.XXXreader\".")
-		("input,i", po::value(&inputs)/*->required()*/, "Input pathname (directory, file or sequence pattern).")
-		("range,r", po::value(&range)->multitoken(), "Range (used only if input is a sequence pattern).")
+		("input,i",  po::value(&inputs)/*->required()*/, "Input pathname (directory, file or sequence pattern).")
+		("range,r",  po::value(&range)->multitoken(), "Range (used only if input is a sequence pattern).")
+		("brief",    "brief summary of the tool")
 		;
 
 		po::positional_options_description pArgs;
@@ -154,6 +156,14 @@ int main( int argc, char** argv )
 					.positional(pArgs).run(), vm );
 		po::notify(vm);
 
+		if ( vm.count("brief") )
+		{
+			std::cout.rdbuf(_stdCout);
+			std::cout << "Check image files" << std::endl;
+			std::cout.rdbuf(0);
+			return 0;
+		}
+
 		if( vm.count("help") || vm.count("input") == 0 )
 		{
 			std::cout.rdbuf(_stdCout); // restore cout's original streambuf
@@ -161,6 +171,7 @@ int main( int argc, char** argv )
 			std::cout.rdbuf(0); // remove cout's streambuf
 			return 0;
 		}
+
 		readerId = vm["reader"].as<std::string>();
 		inputs = vm["input"].as< std::vector<std::string> >();
 		if( vm.count("range") )

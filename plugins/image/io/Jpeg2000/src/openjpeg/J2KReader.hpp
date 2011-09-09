@@ -3,9 +3,13 @@
 
 #include "J2KCommon.hpp"
 
+#include <tuttle/plugin/global.hpp>
+
 #include <openjpeg.h>
+
 #include <boost/scoped_array.hpp>
 #include <boost/filesystem/fstream.hpp>
+
 #include <string>
 
 namespace tuttle {
@@ -31,7 +35,7 @@ public:
 private:
 	OpenJpegStuffs _openjpeg;   ///< OpenJpeg 2000 structs
 	uint8_t *_fileData;			///< Image data
-	ssize_t   _dataLength;      ///< Data length
+	std::ssize_t   _dataLength;      ///< Data length
 };
 
 inline bool J2KReader::imageReady() const

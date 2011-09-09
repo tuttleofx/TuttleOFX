@@ -1,27 +1,41 @@
+#check_libs= False
 
-check_libs= False
-
-dir_boost = '$PROGRAMFILES/boost/boost_1_44'
+#dir_boost = '$PROGRAMFILES/boost/boost_1_47'
+dir_boost = '#3rdParty/boost_1_47_0'
 incdir_boost = dir_boost
-libdir_boost = join(dir_boost,'lib')
+libdir_boost = join(dir_boost,'stage/lib')
 
-
-lib_boost_system = 'boost_system-vc90-mt-1_44'
-lib_boost_filesystem = 'boost_filesystem-vc90-mt-1_44'
-lib_boost_regex = 'boost_regex-vc90-mt-1_44'
-lib_boost_program_options = 'boost_program_options-vc90-mt-1_44'
-lib_boost_thread = 'boost_thread-vc90-mt-1_44'
-lib_boost_serialization = 'boost_serialization-vc90-mt-1_44'
+boost_postfix = '-vc100-mt-1_47'
+boost_prefix = 'libboost_'
+lib_boost_system = boost_prefix+'system'+boost_postfix
+lib_boost_filesystem = boost_prefix+'filesystem'+boost_postfix
+lib_boost_regex = boost_prefix+'regex'+boost_postfix
+lib_boost_program_options = boost_prefix+'program_options'+boost_postfix
+lib_boost_thread = boost_prefix+'thread'+boost_postfix
+lib_boost_serialization = boost_prefix+'serialization'+boost_postfix
 
 gnuwin = '$PROGRAMFILES/GnuWin32'
-incdir_freetype = [ join(gnuwin, 'include'),
-                    join(gnuwin, 'include/freetype2') ]
-libdir_freetype = join(gnuwin,'lib')
+
+dir_freetype = gnuwin
+incdir_freetype = [
+	join(gnuwin, 'include'),
+	join(gnuwin, 'include/freetype2'),
+	]
 
 lib_png = 'libpng'
 
 dir_png  = gnuwin
 dir_jpeg = gnuwin
 dir_tiff = gnuwin
+
+dir_glew = '$PROGRAMFILES/glew-1.7.0'
+
+lib_pthread = ['pthreadVC2']
+dir_pthread = '$PROGRAMFILES/pthread/Pre-built.2'
+
+incdir_openjpeg = libdir_openjpeg = '$PROGRAMFILES/openjpeg_v1_4_win32'
+
+dir_python = 'C:/Python27'
+libdir_python = os.path.join( dir_python, 'libs')
 
 

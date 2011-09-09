@@ -2,6 +2,7 @@
 #define _FILENAMEMANAGER_HPP_
 
 #include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/utils/color.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
@@ -17,20 +18,6 @@
 #define PROPERTIES_WIDTH 3
 #define NAME_WIDTH 50
 #define NAME_WIDTH_WITH_DIR 80
-
-#ifdef __LINUX__
-static const std::string kColorStd      ( "\E[0;0m"  );
-static const std::string kColorFolder   ( "\E[1;34m" );
-static const std::string kColorFile     ( "\E[0;32m" );
-static const std::string kColorSequence ( "\E[0;32m" );
-static const std::string kColorError    ( "\E[1;31m" );
-#else
-static const std::string kColorStd      ( "" );
-static const std::string kColorFolder   ( "" );
-static const std::string kColorFile     ( "" );
-static const std::string kColorSequence ( "" );
-static const std::string kColorError    ( "" );
-#endif
 
 namespace tuttle {
 namespace common {
@@ -145,8 +132,16 @@ public:
 	inline void                    setDirectory         ( const boost::filesystem::path& p )	{ _directory = p; }
 	void                           setDirectoryFromPath ( const boost::filesystem::path& p );
 	
+<<<<<<< HEAD
 	EMaskOptions                   getMaskOptions	    () const				                { return _options; }
 	EMaskType                      getMaskType	        () const				                { return _type; }
+=======
+	void                           setMaskOptions	( const EMaskOptions& options )    { _options = options; }
+	void                           setMaskType	( const EMaskType& type )          { _type = type; }
+
+	EMaskOptions                    getMaskOptions	() const                           { return _options; }
+	EMaskType                       getMaskType	() const                           { return _type; }
+>>>>>>> 6fa0f1abe0806f9834d74583cb6985782243fc01
 
 	virtual inline void clear()
 	{
@@ -272,13 +267,13 @@ public:
 	 */
 	enum EPattern
 	{
-		ePatternNone		= 0,
-		ePatternStandard	= 1,
-		ePatternCStyle		= ePatternStandard * 2,
-		ePatternFrame		= ePatternCStyle   * 2,
+		ePatternNone        = 0,
+		ePatternStandard    = 1,
+		ePatternCStyle      = ePatternStandard * 2,
+		ePatternFrame       = ePatternCStyle   * 2,
 
-		ePatternDefault		= ePatternCStyle + ePatternStandard,
-		ePatternAll		= ePatternFrame  + ePatternCStyle + ePatternStandard
+		ePatternDefault	    = ePatternCStyle + ePatternStandard,
+		ePatternAll	        = ePatternFrame  + ePatternCStyle + ePatternStandard
 	};
 	
 	Sequence() : FileObject( )
@@ -286,11 +281,11 @@ public:
 		TUTTLE_COUT("create ");
 		_prefix.clear();
 		_suffix.clear();
-		_padding	= 0;
-		_step		= 1;
-		_firstTime	= 0;
-		_lastTime	= 0;
-		_nbFiles	= 0;
+		_padding    = 0;
+		_step       = 1;
+		_firstTime  = 0;
+		_lastTime   = 0;
+		_nbFiles    = 0;
 	}
 
 	Sequence( const boost::filesystem::path& directory, const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const EMaskOptions options = eMaskOptionsDefault, const bool strictPadding = false )
