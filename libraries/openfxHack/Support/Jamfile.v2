@@ -8,10 +8,10 @@
 project
 	: requirements	
 		<include>include
-		<link>static
+		<include>../../tuttle/src
 	: usage-requirements
 		<include>include
-	: build-dir $(DIST)/openFX/Support/obj
+	: build-dir $(BUILD)/openFX/Support
 	;
 
 
@@ -20,14 +20,6 @@ project
 ###############################################################################
 lib Support :
 	[ glob-tree *.cpp ]
-	/boost/system
+	/boost//system
 	;
 
-###############################################################################
-# Automatic install
-###############################################################################
-install dist_src	
-	:	Support
-	:	<variant>debug:<location>$(DIST)/openFX/Support/bin/debug
-		<variant>release:<location>$(DIST)/openFX/Support/bin/release
-	;

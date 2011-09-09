@@ -11,8 +11,8 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::png::reader::PngReaderPluginFactory, "fr.tuttle.pngreader" );
-	mAppendPluginFactory( ids, tuttle::plugin::png::writer::PngWriterPluginFactory, "fr.tuttle.pngwriter" );
+	mAppendPluginFactory( ids, tuttle::plugin::png::reader::PngReaderPluginFactory, "tuttle.pngreader" );
+	mAppendPluginFactory( ids, tuttle::plugin::png::writer::PngWriterPluginFactory, "tuttle.pngwriter" );
 }
 
 }

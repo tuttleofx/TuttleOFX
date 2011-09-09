@@ -22,8 +22,7 @@ void %CLASSNAME%PluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 		            "%PLUGIN_LONG_LABEL%" );
 	desc.setPluginGrouping( "%PLUGIN_GROUP%" );
 
-	desc.setDescription( "%PLUGIN_LONG_LABEL%\n"
-	                     "Plugin is used to ???." );
+	desc.setDescription( "Plugin under early development." );
 
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );

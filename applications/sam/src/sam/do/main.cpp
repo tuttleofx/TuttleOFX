@@ -1,3 +1,9 @@
+#include "commandLine.hpp"
+#include "node_io.hpp"
+
+#include <sam/common/color.hpp>
+
+#include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 
 #include <tuttle/host/attribute/expression.hpp>
@@ -8,12 +14,10 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/foreach.hpp>
 
+namespace sam {
+namespace samdo {
 
-#ifndef SAMDO_PIPE_STR
-#define SAMDO_PIPE_STR "//"
-#endif
-
-static const std::string kpipe = SAMDO_PIPE_STR;
+Color _color;
 
 struct NodeCommand
 {
@@ -28,8 +32,15 @@ struct NodeCommand
 	std::vector< std::pair<std::string, std::string> > _flags;
 };
 
+}
+}
+
+
 int main( int argc, char** argv )
 {
+	namespace ttl = tuttle::host;
+	using namespace sam::samdo;
+	
 	try
 	{
 		if( argc <= 1 ) // no argument
@@ -41,63 +52,14 @@ int main( int argc, char** argv )
 			exit( -1 );
 		}
 		
-		std::vector<std::string> cl_options;
+		bool                      enableColor         = false;
+		bool                      script              = false;
+		std::vector< std::string> cl_options;
 		std::vector< std::vector<std::string> > cl_commands;
-		cl_commands.reserve(10);
-		cl_commands.resize(1); // first node for options
+		
+		decomposeCommandLine( argc, argv, cl_options, cl_commands );
 
-		// split the command line to identify the multiple parts
-		for( int i = 1; i < argc; ++i )
-		{
-			std::string s( argv[i] );
-			if( s == kpipe )
-			{
-				cl_commands.resize( cl_commands.size()+1 );
-				cl_commands.back().reserve(10);
-				continue;
-			}
-			cl_commands.back().push_back( s );
-		}
-
-		// reoganize nodes
-		// first and last nodes may only be flags to sam-do itself
-		{
-			// First node
-			std::vector<std::string>& firstNode = cl_commands.front();
-			std::vector<std::string>::iterator fNodeIt = firstNode.begin();
-			std::vector<std::string>::iterator fNodeItEnd = firstNode.end();
-			while( fNodeIt != fNodeItEnd &&
-				   (*fNodeIt)[0] == '-' )
-			{
-				++fNodeIt;
-			}
-			// options in front of the first node are options for sam-do
-			if( firstNode.begin() != fNodeIt )
-			{
-				std::copy( firstNode.begin(), fNodeIt, std::back_inserter(cl_options) );
-				firstNode.erase( firstNode.begin(), fNodeIt );
-			}
-			if( firstNode.size() == 0 )
-			{
-				cl_commands.erase( cl_commands.begin() );
-			}
-		}
-		if( cl_commands.size() )
-		{
-			// Last node
-			// Is it a node or only flags?
-			const std::vector<std::string>& notNode = cl_commands.back();
-			if( notNode[0][0] == '-' )
-			{
-				std::copy( notNode.begin(), notNode.end(), std::back_inserter(cl_options) );
-				cl_commands.erase( cl_commands.end()-1 );
-			}
-		}
-
-		namespace ttl = tuttle::host;
-
-		ttl::Core::instance().preload();
-		const std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+		std::vector<ttl::ofx::imageEffect::OfxhImageEffectPlugin*> allNodes;
 
 		// create the graph
 		ttl::Graph graph;
@@ -112,13 +74,16 @@ int main( int argc, char** argv )
 			try
 			{
 				// Declare the supported options.
-				bpo::options_description infoOptions( "\tDisplay options (replace the process)" );
+				bpo::options_description infoOptions;
 				infoOptions.add_options()
 					("help,h"       , "show node help")
 					("version,v"    , "display node version")
 					("nodes,n"      , "show list of all available nodes")
+					("color"        , "color the output")
+					("script"       , "output is formated to using in script files")
+					("brief"        , "brief summary of the tool")
 				;
-				bpo::options_description confOptions( "\tConfigure process" );
+				bpo::options_description confOptions;
 				confOptions.add_options()
 					("range,r"      , bpo::value<std::string>(), "frame range to render" )
 					("verbose,V"    , "explain what is being done")
@@ -126,50 +91,100 @@ int main( int argc, char** argv )
 					("nb-cores"     , bpo::value<std::size_t>(), "set a fix number of CPUs")
 				;
 
+				// describe hidden options
+				bpo::options_description hidden;
+				hidden.add_options()
+					("enable-color", bpo::value<std::string>(), "enable (or disable) color")
+				;
+
 				bpo::options_description all_options;
-				all_options.add(infoOptions).add(confOptions);
+				all_options.add(infoOptions).add(confOptions).add(hidden);
 
 				bpo::variables_map samdo_vm;
 				bpo::store( bpo::command_line_parser(cl_options).options(all_options).run(), samdo_vm );
-				if( const char* env_ptr = std::getenv("SAM_DO_OPTIONS") )
+				if( const char* env_do_options = std::getenv("SAM_DO_OPTIONS") )
 				{
-					std::vector<std::string> envOptions;
-					std::string env( env_ptr );
-					envOptions.push_back( env );
-					bpo::store( bpo::command_line_parser(envOptions).options(all_options).run(), samdo_vm );
+					const std::vector<std::string> vecOptions = bpo::split_unix( env_do_options, " " );
+					bpo::store(bpo::command_line_parser(vecOptions).options(all_options).run(), samdo_vm);
 				}
 
 				bpo::notify( samdo_vm );
 
+				if ( samdo_vm.count("script") )
+				{
+					// disable color, disable directory printing and set relative path by default
+					script = true;
+				}
+
+				if ( samdo_vm.count("color") && !script )
+				{
+					enableColor = true;
+				}
+				if ( samdo_vm.count("enable-color") && !script )
+				{
+					std::string str = samdo_vm["enable-color"].as<std::string>();
+
+					if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+					{
+						enableColor = true;
+					}
+					else
+					{
+						enableColor = false;
+					}
+				}
+
+				if( enableColor )
+				{
+					_color.enable();
+				}
+
 				if( samdo_vm.count("help") )
 				{
-					TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]" );
-					TUTTLE_COUT( "" );
-					TUTTLE_COUT( "NAME" );
-					TUTTLE_COUT( "\tsam-do - A command line to execute a list of OpenFX nodes." );
-					TUTTLE_COUT( "\t         Use the sperarator // to pipe images between nodes." );
-					TUTTLE_COUT( "" );
-					TUTTLE_COUT( "SYNOPSIS" );
-					TUTTLE_COUT( "\tsam-do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" );
-					TUTTLE_COUT( "" );
-					TUTTLE_COUT( "EXAMPLES" );
+					TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+
+					TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+					TUTTLE_COUT( _color._green << "\tsam-do - A command line to execute a list of OpenFX nodes." << _color._std << std::endl );
+
+					TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+					TUTTLE_COUT( "\tsam-do [options]... [// node [node-options]... [[param=]value]...]... [// [options]...]" << std::endl);
+
+					TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std );
+					TUTTLE_COUT( _color._green << "\tA command line to execute a list of OpenFX nodes." << _color._std );
+					TUTTLE_COUT( _color._green << "\tUse the sperarator // to pipe images between nodes." << _color._std << std::endl );
+
+
+					TUTTLE_COUT( _color._blue  << "EXAMPLES" << _color._std );
 					//TUTTLE_COUT( "\tsam-do r foo.####.dpx // w foo.####.jpg" );
-					TUTTLE_COUT( "\tsam-do --nodes" );
-					TUTTLE_COUT( "\tsam-do blur -h" );
+					TUTTLE_COUT( _color._green << "\tsam-do --nodes" << _color._std );
+					TUTTLE_COUT( _color._green << "\tsam-do blur -h" << _color._std );
 					/// @todo version with read / write (without format specification)
-					TUTTLE_COUT( "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" );
-					TUTTLE_COUT( "\tsam-do dpxreader foo.dpx // sobel // print // -Q" );
-					TUTTLE_COUT( "" );
-					TUTTLE_COUT( "DESCRIPTION" );
+					TUTTLE_COUT( _color._green << "\tsam-do --verbose dpxreader foo.####.dpx // blur 3 // resize scale=0.5 // jpegwriter foo.####.jpg // --range=10,20" << _color._std );
+					TUTTLE_COUT( _color._green << "\tsam-do dpxreader foo.dpx // sobel // print // -Q" << _color._std << std::endl );
+
+					TUTTLE_COUT( _color._blue  << "DISPLAY OPTIONS (replace the process)" << _color._std );
 					TUTTLE_COUT( infoOptions );
+					TUTTLE_COUT( _color._blue  << "CONFIGURE PROCESS" << _color._std );
 					TUTTLE_COUT( confOptions );
 					exit( 0 );
 				}
+
+				if ( samdo_vm.count("brief") )
+				{
+					TUTTLE_COUT( _color._green << "A command line to execute a list of OpenFX nodes" << _color._std);
+					return 0;
+				}
+
 				if( samdo_vm.count("version") )
 				{
 					TUTTLE_COUT( "TuttleOFX Host - version " << TUTTLE_HOST_VERSION_STR );
 					exit( 0 );
 				}
+
+				// plugins loading
+				ttl::Core::instance().preload();
+				allNodes = ttl::Core::instance().getImageEffectPluginCache().getPlugins();
+
 				if( samdo_vm.count("nodes") )
 				{
 					TUTTLE_COUT( "NODES" );
@@ -184,6 +199,7 @@ int main( int argc, char** argv )
 					}
 					exit( 0 );
 				}
+
 				{
 					if( samdo_vm.count("range") )
 					{
@@ -212,14 +228,12 @@ int main( int argc, char** argv )
 			}
 			catch( const boost::program_options::error& e )
 			{
-				TUTTLE_CERR( "sam-do options" );
-				TUTTLE_CERR( "Error: " << e.what() );
+				TUTTLE_CERR( _color._error << "sam-do: command line error: " << e.what() << _color._std );
 				exit( -2 );
 			}
 			catch( ... )
 			{
-				TUTTLE_CERR( "sam-do options" );
-				TUTTLE_CERR( "Error: " << boost::current_exception_diagnostic_information() );
+				TUTTLE_CERR( _color._error << "sam-do: error: " << boost::current_exception_diagnostic_information() << _color._std );
 				exit( -2 );
 			}
 
@@ -267,12 +281,6 @@ int main( int argc, char** argv )
 					
 					try
 					{
-						// parse the command line, and put the result in node_vm
-						bpo::variables_map node_vm;
-						bpo::store( bpo::command_line_parser(nodeArgs).options(all_options).positional(param_values).run(), node_vm );
-
-						bpo::notify( node_vm );
-
 						std::vector< std::string > detectedPlugins;
 						for( std::size_t i = 0; i < allNodes.size(); ++i )
 						{
@@ -310,7 +318,32 @@ int main( int argc, char** argv )
 						}
 						nodeFullName = detectedPlugins.front();
 
-						TUTTLE_COUT( "[" << nodeFullName << "]" );
+						// parse the command line, and put the result in node_vm
+						bpo::variables_map node_vm;
+						bpo::store( bpo::command_line_parser(nodeArgs).options(all_options).positional(param_values).run(), node_vm );
+						if( const char* env_ptr = std::getenv("SAM_DO_NODE_OPTIONS") )
+						{
+							std::vector<std::string> envOptions;
+							std::string env( env_ptr );
+							envOptions.push_back( env );
+							bpo::store( bpo::command_line_parser(envOptions).options(all_options).run(), node_vm );
+						}
+						{
+							std::string envVarName;
+							envVarName += "SAM_DO_";
+							envVarName += boost::algorithm::replace_all_copy( nodeFullName, ".", "_" );
+							envVarName += "_OPTIONS";
+							if( const char* env_ptr = std::getenv(envVarName.c_str()) )
+							{
+								std::vector<std::string> envOptions;
+								std::string env( env_ptr );
+								envOptions.push_back( env );
+								bpo::store( bpo::command_line_parser(envOptions).options(all_options).run(), node_vm );
+							}
+						}
+
+						bpo::notify( node_vm );
+						//TUTTLE_COUT( "[" << nodeFullName << "]" );
 
 						ttl::Graph::Node& currentNode = graph.createNode( nodeFullName );
 						nodes.push_back( &currentNode );
@@ -329,76 +362,128 @@ int main( int argc, char** argv )
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( "DESCRIPTION" );
 							TUTTLE_COUT( "\tnode type: " << ttl::mapNodeTypeEnumToString( currentNode.getNodeType() ) );
-							TUTTLE_COUT( "" );
 							// internal node help
-							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription ) )
+							if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect )
+							{
+								if( currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxImageEffectPluginPropGrouping, true ) )
+								{
+									TUTTLE_COUT( "\t" << currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxImageEffectPluginPropGrouping ).getValue() );
+								}
+							}
+							TUTTLE_COUT( "" );
+							if( currentNode.getProperties().hasProperty( kOfxPropPluginDescription, true ) )
 							{
 								TUTTLE_COUT( currentNode.getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
-							}
-							else if( currentNode.getNodeType() == ttl::INode::eNodeTypeImageEffect &&
-							         currentNode.asImageEffectNode().getDescriptor().getProperties().hasProperty( kOfxPropPluginDescription ) )
-							{
-								TUTTLE_COUT( "\tDescriptor:" );
-								TUTTLE_COUT( currentNode.asImageEffectNode().getDescriptor().getProperties().fetchStringProperty( kOfxPropPluginDescription ).getValue(0) );
 							}
 							else
 							{
 								TUTTLE_COUT( "\tNo description." );
 							}
+							TUTTLE_COUT("");
+							TUTTLE_COUT( "PARAMETERS" );
+							TUTTLE_COUT("");
+							ttl::ofx::attribute::OfxhParamSet& params = currentNode.getParamSet();
+							BOOST_FOREACH( ttl::ofx::attribute::OfxhParam& param, params.getParamVector() )
+							{
+								if( param.getSecret() )
+									continue; // ignore secret parameters
+								TUTTLE_COUT(
+									"\t" <<
+									param.getScriptName() << ":\t" << param.getParamType() << " x" << param.getSize()
+									);
+							}
+							TUTTLE_COUT( "" );
+							TUTTLE_COUT( "OPTIONS" );
 							TUTTLE_COUT( "" );
 							TUTTLE_COUT( infoOptions );
 							TUTTLE_COUT( confOptions );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("version") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
 							TUTTLE_COUT( "Version " << currentNode.getVersionStr() );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("attributes") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "ATTRIBUTES" );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tCLIPS" );
-							/// @todo
+							coutClips( currentNode );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "\tPARAMETERS" );
-							/// @todo
+							coutParameters( currentNode );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("properties") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "PROPERTIES" );
-							/// @todo
+							coutProperties( currentNode );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("clips") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "CLIPS" );
-							/// @todo
+							coutClips( currentNode );
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("clip") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
-							TUTTLE_COUT( "CLIP: " << node_vm["clip"].as<std::string>() );
-							/// @todo
+							TUTTLE_COUT("");
+							const std::string clipName = node_vm["clip"].as<std::string>();
+							TUTTLE_COUT( "CLIP: " << clipName );
+							ttl::attribute::ClipImage& clip = currentNode.getClip( clipName );
+							TUTTLE_COUT(
+								clip.getBitDepthString()
+								<< ", " <<
+								clip.getPixelAspectRatio()
+								<< ", " <<
+								clip.getNbComponents()
+								);
+							TUTTLE_COUT("");
 							exit(0);
 						}
 						if( node_vm.count("parameters") )
 						{
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
+							TUTTLE_COUT("");
 							TUTTLE_COUT( "PARAMETERS" );
-							/// @todo
+							TUTTLE_COUT("");
+							coutParameters( currentNode );
 							exit(0);
 						}
 						if( node_vm.count("param") )
 						{
+							const std::string paramName = node_vm["param"].as<std::string>();
 							TUTTLE_COUT( "\tsam-do " << nodeFullName );
-							TUTTLE_COUT( "PARAM: " << node_vm["clip"].as<std::string>() );
-							/// @todo
+							TUTTLE_COUT( "PARAM: " << paramName );
+							ttl::ofx::attribute::OfxhParam& param = currentNode.getParam( paramName );
+							TUTTLE_COUT("");
+							TUTTLE_COUT(
+								"\t" <<
+								(param.getSecret() ? "SECRET -- " : "") <<
+								param.getScriptName() << ": " << param.getParamType() << " x" << param.getSize()
+								);
+							TUTTLE_COUT("");
+							const std::string& hint = param.getHint();
+							if( hint.size() )
+							{
+								TUTTLE_COUT( "\t" << hint );
+							}
+							TUTTLE_COUT("");
 							exit(0);
 						}
 
@@ -437,7 +522,7 @@ int main( int argc, char** argv )
 //								TUTTLE_COUT( "* " << p );
 //								TUTTLE_COUT( "3: " << paramName << " => " << paramValue );
 
-								/// @todo setup the node with parameter value in tuttle.
+								// setup the node with parameter value in tuttle.
 								if( paramName.size() )
 								{
 									currentNode.getParam( paramName ).setValueFromExpression( paramValue );
@@ -450,16 +535,6 @@ int main( int argc, char** argv )
 							}
 						}
 					}
-					catch( const tuttle::exception::Common& e )
-					{
-						TUTTLE_CERR( "sam-do - " << nodeFullName );
-#ifdef TUTTLE_PRODUCTION
-						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
-#else
-						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
-#endif
-						exit( -2 );
-					}
 					catch( const boost::program_options::error& e )
 					{
 						TUTTLE_CERR( "sam-do - " << nodeFullName );
@@ -467,6 +542,17 @@ int main( int argc, char** argv )
 						TUTTLE_CERR( "Error: " << e.what() );
 #else
 						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+#endif
+						exit( -2 );
+					}
+					catch( const tuttle::exception::Common& e )
+					{
+						TUTTLE_CERR( "sam-do - " << nodeFullName );
+#ifdef TUTTLE_PRODUCTION
+						TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+#else
+						TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+						TUTTLE_CERR( "Backtrace: " << boost::trace(e) );
 #endif
 						exit( -2 );
 					}
@@ -513,7 +599,12 @@ int main( int argc, char** argv )
 	catch( const tuttle::exception::Common& e )
 	{
 		TUTTLE_CERR( "sam-do" );
+#ifdef TUTTLE_PRODUCTION
 		TUTTLE_CERR( "Error: " << *boost::get_error_info<tuttle::exception::user>(e) );
+#else
+		TUTTLE_CERR( "Debug: " << boost::current_exception_diagnostic_information() );
+		TUTTLE_CERR( "Backtrace: " << boost::trace(e) );
+#endif
 		exit( -2 );
 	}
 	catch( const boost::program_options::error& e )

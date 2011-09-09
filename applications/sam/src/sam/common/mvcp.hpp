@@ -1,3 +1,5 @@
+#include <sam/common/color.hpp>
+
 #include <tuttle/common/clip/Sequence.hpp>
 #include <tuttle/common/exceptions.hpp>
 
@@ -12,10 +14,23 @@
 #include <algorithm>
 #include <iostream>
 
+#ifndef SAM_MOVEFILES
+#define SAM_MV_OR_CP_OPTIONS	"SAM_CP_OPTIONS"
+#define SAM_TOOL               "sam-cp"
+#else
+#define SAM_MV_OR_CP_OPTIONS	"SAM_MV_OPTIONS"
+#define SAM_TOOL               "sam-mv"
+#endif
+
+
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
 namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
+
+sam::Color _color;
+
+bool        colorOutput   = false;
 
 void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage, const ttl::Sequence::Time lastImage,
 					const ttl::Sequence& d, int offset = 0 )
@@ -60,7 +75,7 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 #ifndef SAM_SAM_MOVEFILESS // copy file(s)
 			if( bfs::exists( dFile ) )
 			{
-				TUTTLE_CERR( "Could not copy: " << dFile.string( ) );
+				TUTTLE_CERR( _color._error << "Could not copy: " << dFile.string( ) << _color._std );
 			}
 			else
 			{
@@ -69,15 +84,19 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 					//TUTTLE_COUT( "copy " << sFile << " -> " << dFile );
 					bfs::copy_file( sFile, dFile );
 				}
+				catch( const bpo::error& e )
+				{
+					TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std );
+				}
 				catch( ... )
 				{
-					TUTTLE_CERR( boost::current_exception_diagnostic_information( ) );
+					TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
 				}
 			}
 #else // move file(s)
 			if( bfs::exists( dFile ) )
 			{
-				TUTTLE_CERR( "Could not move: " << dFile.string( ) );
+				TUTTLE_CERR( _color._error << "Could not move: " << dFile.string( ) << _color._std );
 			}
 			else
 			{
@@ -86,9 +105,13 @@ void copy_sequence( const ttl::Sequence& s, const ttl::Sequence::Time firstImage
 					//TUTTLE_COUT( "move " << sFile << " -> " << dFile );
 					bfs::rename( sFile, dFile );
 				}
+				catch( const bpo::error& e )
+				{
+					TUTTLE_CERR( _color._error << "error : " << e.what() << _color._std );
+				}
 				catch( ... )
 				{
-					TUTTLE_CERR( boost::current_exception_diagnostic_information( ) );
+					TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
 				}
 			}
 #endif
@@ -121,20 +144,20 @@ void copy_sequence( const ttl::Sequence& s,
 
 int sammvcp( int argc, char** argv )
 {
-	ttl::EMaskOptions descriptionMask = ttl::eMaskOptionsNone; // by default show nothing
-	std::string availableExtensions;
+	ttl::EMaskOptions descriptionMask      = ttl::eMaskOptionsNone; // by default show nothing
+	std::string              availableExtensions;
 	std::vector<std::string> paths;
 	std::vector<std::string> filters;
-	std::string outputPattern;
-	bool verbose = false;
-	bool dstIsSeq = false;
-	std::ssize_t offset = 0;
-	bool hasInputFirst = false;
-	std::ssize_t inputFirst = 0;
-	bool hasInputLast = false;
-	std::ssize_t inputLast = 0;
-	std::ssize_t outputFirst = 0;
-	std::ssize_t outputLast = 0;
+	std::string              outputPattern;
+	bool                     verbose       = false;
+	bool                     dstIsSeq      = false;
+	std::ssize_t             offset        = 0;
+	bool                     hasInputFirst = false;
+	std::ssize_t             inputFirst    = 0;
+	bool                     hasInputLast  = false;
+	std::ssize_t             inputLast     = 0;
+	std::ssize_t             outputFirst   = 0;
+	std::ssize_t             outputLast    = 0;
 	typedef enum {
 		eOffsetModeNotSet,
 		eOffsetModeValue,
@@ -146,20 +169,23 @@ int sammvcp( int argc, char** argv )
 	// Declare the supported options.
 	bpo::options_description mainOptions;
 	mainOptions.add_options( )
-		( "help,h", "show this help" )
-		( "offset,o", bpo::value<std::ssize_t>( ), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"" )
-//		( "force,f", bpo::value<bool>( ), "if a destination file exists, replace it" )
-		( "input-first", bpo::value<std::ssize_t>( ), "specify the first input image, in order to select a sub-range of the input sequence" )
-		( "input-last", bpo::value<std::ssize_t>( ), "specify the last input image, in order to select a sub-range of the input sequence" )
+		( "help,h"      , "show this help" )
+		( "offset,o"    , bpo::value<std::ssize_t>( ), "retime the sequence with the given offset. ex: -o 1, -o \"-10\"" )
+//		( "force,f"     , bpo::value<bool>( )        , "if a destination file exists, replace it" )
+		( "verbose,v"   , "explain what is being done" )
+		( "input-first" , bpo::value<std::ssize_t>( ), "specify the first input image, in order to select a sub-range of the input sequence" )
+		( "input-last"  , bpo::value<std::ssize_t>( ), "specify the last input image, in order to select a sub-range of the input sequence" )
 		( "output-first", bpo::value<std::ssize_t>( ), "specify the first output image, in order to retime the sequence. It's another way to create an offset of your sequence." )
-		( "output-last", bpo::value<std::ssize_t>( ), "specify the last output image, in order to retime the sequence" )
-		( "verbose,v", "explain what is being done" )
+		( "output-last" , bpo::value<std::ssize_t>( ), "specify the last output image, in order to retime the sequence" )
+		("color"        , "display with colors")
+		("brief"        , "brief summary of the tool")
 		;
 
 	// describe hidden options
 	bpo::options_description hidden;
 	hidden.add_options( )
 		( "input-dir", bpo::value< std::vector<std::string> >( ), "input directories" )
+		("enable-color", bpo::value<std::string>(), "enable (or disable) color")
 		;
 
 	// define default options 
@@ -174,38 +200,86 @@ int sammvcp( int argc, char** argv )
 
 	//parse the command line, and put the result in vm
 	bpo::variables_map vm;
-	bpo::store( bpo::command_line_parser( argc, argv ).options( cmdline_options ).positional( pod ).run( ), vm );
-
-	// get environnement options and parse them
-#ifndef SAM_MOVEFILES // copy file(s)
-	if( std::getenv( "SAM_CP_OPTIONS" ) != NULL )
-#else
-	if( std::getenv( "SAM_MV_OPTIONS" ) != NULL )
-#endif
+	try
 	{
-		std::vector<std::string> envOptions;
-#ifndef SAM_MOVEFILES // copy file(s)
-		std::string env = std::getenv( "SAM_CP_OPTIONS" );
-#else
-		std::string env = std::getenv( "SAM_MV_OPTIONS" );
-#endif
-		envOptions.push_back( env );
-		bpo::store( bpo::command_line_parser( envOptions ).options( cmdline_options ).positional( pod ).run( ), vm );
+		bpo::store( bpo::command_line_parser( argc, argv ).options( cmdline_options ).positional( pod ).run( ), vm );
+
+		// get environnement options and parse them
+		if( const char* env_options = std::getenv( SAM_MV_OR_CP_OPTIONS ) )
+		{
+			const std::vector<std::string> vecOptions = bpo::split_unix( env_options, " " );
+			bpo::store(bpo::command_line_parser(vecOptions).options(cmdline_options).positional(pod).run(), vm);
+		}
+		bpo::notify( vm );
 	}
-	bpo::notify( vm );
+	catch( const bpo::error& e)
+	{
+		TUTTLE_COUT( SAM_TOOL ": command line error:  " << e.what() );
+		exit( -2 );
+	}
+	catch(...)
+	{
+		TUTTLE_COUT( SAM_TOOL ": unknown error in command line.");
+		exit( -2 );
+	}
+
+	if ( vm.count("color") )
+	{
+		colorOutput = true;
+	}
+	if ( vm.count("enable-color") )
+	{
+		std::string str = vm["enable-color"].as<std::string>();
+
+		if( str == "1" || boost::iequals(str, "y") || boost::iequals(str, "Y") || boost::iequals(str, "yes") || boost::iequals(str, "Yes") || boost::iequals(str, "true") || boost::iequals(str, "True") )
+		{
+			colorOutput = true;
+		}
+		else
+		{
+			colorOutput = false;
+		}
+	}
+
+	if( colorOutput )
+	{
+		using namespace tuttle::common;
+		_color.enable();
+	}
 
 	if( vm.count( "help" ) )
 	{
-		TUTTLE_COUT( "TuttleOFX project [http://sites.google.com/site/tuttleofx]\n" );
-#ifndef SAM_SAM_MOVEFILESS
-		TUTTLE_COUT( "NAME\n\tsam-cp - copy sequence(s) in a directory\n" );
-		TUTTLE_COUT( "SYNOPSIS\n\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]\n" );
+		TUTTLE_COUT( _color._blue  << "TuttleOFX project [http://sites.google.com/site/tuttleofx]" << _color._std << std::endl );
+#ifndef SAM_MOVEFILES
+		TUTTLE_COUT( _color._blue  <<"NAME" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-cp - copy sequence(s) in a directory" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-cp [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl );
 #else
-		TUTTLE_COUT( "NAME\n\tsam-mv - move sequence(s) in a directory\n" );
-		TUTTLE_COUT( "SYNOPSIS\n\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]\n" );
+		TUTTLE_COUT( _color._blue  << "NAME" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-mv - move sequence(s) in a directory" << _color._std << std::endl );
+		TUTTLE_COUT( _color._blue  << "SYNOPSIS" << _color._std );
+		TUTTLE_COUT( _color._green << "\tsam-mv [options] sequence[s] [outputDirectory][outputSequence]" << _color._std << std::endl );
 #endif
-		TUTTLE_COUT( "DESCRIPTION\n" << mainOptions );
+		TUTTLE_COUT( _color._blue  << "DESCRIPTION" << _color._std << std::endl );
+#ifndef SAM_MOVEFILES
+		TUTTLE_COUT( "Copy sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
+#else
+		TUTTLE_COUT( "Move sequence of image files, and could remove trees (folder, files and sequences)." << std::endl );
+#endif
+		TUTTLE_COUT( _color._blue  << "OPTIONS" <<_color._std );
+		TUTTLE_COUT( mainOptions );
 		return 1;
+	}
+
+	if ( vm.count("brief") )
+	{
+#ifndef SAM_MOVEFILES
+		TUTTLE_COUT( _color._green << "copy sequence(s) in a directory" << _color._std );
+#else
+		TUTTLE_COUT( _color._green << "move sequence(s) in a directory" << _color._std );
+#endif
+		return 0;
 	}
 
 	if( vm.count( "expression" ) )
@@ -227,7 +301,7 @@ int sammvcp( int argc, char** argv )
 
 	if( paths.size( ) < 2 )
 	{
-		TUTTLE_COUT( "No sequence and/or directory are specified." );
+		TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std );
 		return 1;
 	}
 
@@ -254,7 +328,7 @@ int sammvcp( int argc, char** argv )
 		outputFirst = vm["output-first"].as<std::ssize_t>( );
 		if( offsetMode != eOffsetModeNotSet )
 		{
-			TUTTLE_CERR( "You can't cumulate multiple options to modify the time." );
+			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
 			return -1;
 		}
 		offsetMode = eOffsetModeFirstTime;
@@ -265,7 +339,7 @@ int sammvcp( int argc, char** argv )
 		outputLast = vm["output-last"].as<std::ssize_t>( );
 		if( offsetMode != eOffsetModeNotSet )
 		{
-			TUTTLE_CERR( "You can't cumulate multiple options to modify the time." );
+			TUTTLE_CERR( _color._error << "You can't cumulate multiple options to modify the time." << _color._std );
 			return -1;
 		}
 		offsetMode = eOffsetModeLastTime;
@@ -287,7 +361,7 @@ int sammvcp( int argc, char** argv )
 
 		if( ! dstPath.empty() && ! bfs::is_directory( dstPath ) )
 		{
-			TUTTLE_CERR( "Your destination is not in a valid directory: " << tuttle::quotes(dstPath.string()) << "." );
+			TUTTLE_CERR( _color._error << "Your destination is not in a valid directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std );
 			return -1;
 		}
 	}
@@ -295,20 +369,20 @@ int sammvcp( int argc, char** argv )
 	{
 		if( paths.size( ) > 1 )
 		{
-			TUTTLE_CERR( "To copy multiple sequences, your destination must be a directory: " << tuttle::quotes(dstPath.string()) << "."  );
+			TUTTLE_CERR( _color._error << "To copy multiple sequences, your destination must be a directory: " << tuttle::quotes(dstPath.string()) << "." << _color._std );
 			return -1;
 		}
 		sequencePattern = "";
 	}
-
+	
 	ttl::Sequence dstSeq( dstPath, descriptionMask );
 
 	if( sequencePattern.size( ) > 0 )
 	{
-		dstIsSeq = dstSeq.init( (dstPath / sequencePattern).string(), 0, 0, 1, ttl::Sequence::ePatternAll );
+		dstIsSeq = dstSeq.initFromPattern( dstPath, sequencePattern, 0, 0, 1, descriptionMask, ttl::Sequence::ePatternAll );
 		if( ! dstIsSeq ) // there is a pattern, but it's not valid.
 		{
-			TUTTLE_CERR( "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." );
+			TUTTLE_CERR( _color._error << "Your destination " << tuttle::quotes(sequencePattern) << " is not a valid pattern. Your destination can be a directory or a pattern." << _color._std );
 			return -1;
 		}
 	}
@@ -321,12 +395,12 @@ int sammvcp( int argc, char** argv )
 			const bool srcIsSeq = srcSeq.initFromDetection( srcPath.string( ), ttl::Sequence::ePatternDefault );
 			if( ! srcIsSeq )
 			{
-				TUTTLE_CERR( "Input is not a sequence: " << tuttle::quotes(srcPath.string()) << "." );
+				TUTTLE_CERR( _color._error << "Input is not a sequence: " << tuttle::quotes(srcPath.string()) << "."  << _color._std );
 				return -1;
 			}
 			if( srcSeq.getNbFiles( ) == 0 )
 			{
-				TUTTLE_CERR( "No existing file for the input sequence: " << tuttle::quotes(srcPath.string()) << "." );
+				TUTTLE_CERR( _color._error << "No existing file for the input sequence: " << tuttle::quotes(srcPath.string()) << "." << _color._std );
 				return -1;
 			}
 
@@ -377,12 +451,12 @@ int sammvcp( int argc, char** argv )
 	}
 	catch( bfs::filesystem_error &ex )
 	{
-		TUTTLE_COUT( ex.what( ) );
+		TUTTLE_COUT( _color._error << ex.what( ) << _color._std );
 		return -2;
 	}
 	catch( ... )
 	{
-		TUTTLE_CERR( boost::current_exception_diagnostic_information( ) );
+		TUTTLE_CERR( _color._error << boost::current_exception_diagnostic_information( ) << _color._std );
 		return -3;
 	}
 

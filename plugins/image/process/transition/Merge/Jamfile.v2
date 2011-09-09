@@ -7,22 +7,19 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-        : requirements
-                <include>src
-                <threading>multi
-    : build-dir $(DIST)/Merge/obj
-    ;
+	: requirements
+		<include>$(BOOST_HACK)
+		<include>src
+	: build-dir $(BUILD)/Merge
+	;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Merge :
-    [ glob src/*.cpp ]
-    /tuttleplugin/<link>static
-        :
-        <os>NT:<find-shared-library>opengl32
-        <os>MACOSX:<linkflags>"-framework OpenGL"
-    ;
+		[ glob src/*.cpp ]
+		/tuttleplugin/<link>static
+	;
 
 ###############################################################################
 # Automatic install

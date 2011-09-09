@@ -59,6 +59,8 @@ OfxhBinary::OfxhBinary( const std::string& binaryPath )
 void OfxhBinary::init( const std::string& binaryPath )
 {
 	struct stat sb;
+	
+	_binaryPath = binaryPath;
 
 	if( stat( binaryPath.c_str(), &sb ) != 0 )
 	{

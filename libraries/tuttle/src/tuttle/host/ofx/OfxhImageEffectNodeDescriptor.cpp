@@ -20,6 +20,7 @@ static property::OfxhPropSpec effectDescriptorStuff[] = {
 	{ kOfxPropLabel, property::eString, 1, false, "" },
 	{ kOfxPropShortLabel, property::eString, 1, false, "" },
 	{ kOfxPropLongLabel, property::eString, 1, false, "" },
+	{ kOfxPropPluginDescription, property::eString, 1, false, "No plugin description." },
 	{ kOfxImageEffectPropSupportedContexts, property::eString, 0, false, "" },
 	{ kOfxImageEffectPluginPropGrouping, property::eString, 1, false, "" },
 	{ kOfxImageEffectPluginPropSingleInstance, property::eInt, 1, false, "0" },

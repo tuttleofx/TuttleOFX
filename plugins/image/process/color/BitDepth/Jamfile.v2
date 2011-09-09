@@ -10,7 +10,7 @@ project
     : requirements	
         <include>src
         <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/BitDepth/obj
+    : build-dir $(BUILD)/BitDepth
     ;
 
 ###############################################################################
@@ -19,9 +19,6 @@ project
 plugin BitDepth : 
     [ glob src/*.cpp ]
     /tuttleplugin/<link>static
-	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
     ;
 
 ###############################################################################

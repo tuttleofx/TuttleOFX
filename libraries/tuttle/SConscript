@@ -9,6 +9,7 @@ project.StaticLibrary(
 		libraries = [
 				libs.openfxHack,
 				libs.boost,
+				libs.dl,
 			],
 		shared = True
 	)
@@ -33,9 +34,13 @@ tuttleHostLibs = [
 		libs.boost_serialization,
 		libs.boost_thread,
 		libs.boost_gil,
-		libs.boost_python,
 		libs.boost_program_options,
 	]
+tuttleHostFlags = {}
+
+if project.TUTTLE_HOST_WITH_PYTHON_EXPRESSION:
+	tuttleHostLibs.append( libs.boost_python )
+	tuttleHostFlags['CPPDEFINES'] = ['TUTTLE_HOST_WITH_PYTHON_EXPRESSION']
 
 if project.env['mode'] != 'production':
 	tuttleHostLibs += [libs.png]
@@ -45,6 +50,7 @@ project.StaticLibrary(
 		sources   = project.scanFiles( ['src/tuttle/host'] ),
 		includes  = ['src'],
 		libraries = tuttleHostLibs,
+		globalEnvFlags = tuttleHostFlags,
 		shared = True
 	)
 

@@ -99,8 +99,8 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	static tuttle::ParamMathPluginFactory<DoubleParam> d( "fr.tuttle.parammath.double", 0, 0 );
-	static tuttle::ParamMathPluginFactory<IntParam> i( "fr.tuttle.parammath.int", 0, 0 );
+	static tuttle::ParamMathPluginFactory<DoubleParam> d( "tuttle.parammath.double", 0, 0 );
+	static tuttle::ParamMathPluginFactory<IntParam> i( "tuttle.parammath.int", 0, 0 );
 	ids.push_back( &d );
 	ids.push_back( &i );
 }

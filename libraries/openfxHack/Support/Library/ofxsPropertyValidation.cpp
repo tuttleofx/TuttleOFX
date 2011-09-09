@@ -215,17 +215,17 @@ void PropertyDescription::validate( bool         checkDefaults,
 			}
 		}
 	}
-	catch( OFX::Exception::Suite& e )
+	catch( OFX::Exception::Suite& )
 	{
 		// just catch it, the error will be reported
 		_exists = false;
 	}
-	catch( OFX::Exception::PropertyUnknownToHost& e )
+	catch( OFX::Exception::PropertyUnknownToHost& )
 	{
 		// just catch it, the error will be reported
 		_exists = false;
 	}
-	catch( OFX::Exception::PropertyValueIllegalToHost& e )
+	catch( OFX::Exception::PropertyValueIllegalToHost& )
 	{
 		// just catch it, the error will be reported
 		_exists = false;

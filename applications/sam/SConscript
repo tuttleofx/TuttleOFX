@@ -1,11 +1,18 @@
 Import( 'project', 'libs' )
 
-libraries = [ libs.openfxHack,
-			  libs.tuttleCommon,
-              libs.boost_filesystem,
-              libs.boost_program_options,
-              libs.boost_regex,
-			 ]
+libraries = [
+		libs.tuttleCommon,
+		libs.boost_filesystem,
+		libs.boost_program_options,
+		libs.boost_regex,
+	]
+
+sam = project.Program(
+		target='sam',
+		dirs=['src/sam/sam'],
+		includes=['src'],
+		libraries=libraries,
+	)
 
 ls = project.Program(
 		target='sam-ls',
@@ -46,7 +53,7 @@ info = project.Program(
 		target='sam-info',
 		dirs=['src/sam/info'],
 		includes=['src'],
-		libraries=libraries+[libs.tuttleHost, libs.imagemagickpp],
+		libraries=libraries+[libs.tuttleHost, libs.imagemagick],
 	)
 
 plugins = project.Program(

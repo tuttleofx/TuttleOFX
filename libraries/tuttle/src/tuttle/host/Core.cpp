@@ -5,16 +5,24 @@
 #include <tuttle/host/memory/MemoryPool.hpp>
 #include <tuttle/host/memory/MemoryCache.hpp>
 
+
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
-#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+
+#include <boost/filesystem/operations.hpp>
+
+#ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	#include <boost/python.hpp>
 #endif
 
@@ -37,7 +45,7 @@ Core::Core()
 	, _memoryPool( pool )
 	, _memoryCache( cache )
 {
-#ifndef TUTTLE_HOST_WITHOUT_PYTHON
+#ifdef TUTTLE_HOST_WITH_PYTHON_EXPRESSION
 	Py_Initialize( );
 #endif
 	_pluginCache.setCacheVersion( "tuttleV1" );
@@ -62,11 +70,27 @@ void Core::preload()
 	typedef boost::archive::xml_oarchive OArchive;
 	typedef boost::archive::xml_iarchive IArchive;
 
-	std::string cacheFile( "tuttlePluginCacheSerialize.xml" );
+	boost::filesystem::path home;
+	if( const char* env_tuttle_cache = std::getenv("TUTTLE_HOME") )
+	{
+		home = env_tuttle_cache;
+	}
+	else if( const char* env_tuttle_cache = std::getenv("HOME") ) // LINUX HOME
+	{
+		home = env_tuttle_cache;
+		home /= ".tuttle";
+	}
+	else if( const char* env_tuttle_cache = std::getenv("WINDIR") ) // WINDOWS HOME
+	{
+		home = env_tuttle_cache;
+		home /= ".tuttle";
+	}
+
+	const std::string cacheFile( (home / "tuttlePluginCacheSerialize.xml").string() );
 
 	try
 	{
-		std::ifstream ifsb( cacheFile.c_str() );
+		std::ifstream ifsb( cacheFile.c_str(), std::ios::in );
 		if( ifsb.is_open() )
 		{
 			TUTTLE_COUT_DEBUG( "Read plugins cache." );
@@ -77,19 +101,29 @@ void Core::preload()
 	}
 	catch( std::exception& e )
 	{
-		TUTTLE_COUT_ERROR( "Exception when reading cache file (" << e.what() << ")." );
+		TUTTLE_CERR( "Exception when reading cache file (" << e.what() << ")." );
 	}
 #endif
 	_pluginCache.scanPluginFiles();
 #ifndef WINDOWS
 	if( _pluginCache.isDirty() )
 	{
-		/// flush out the current cache
-		TUTTLE_COUT_DEBUG( "Write plugins cache." );
-		std::ofstream ofsb( cacheFile.c_str() );
-		OArchive oArchive( ofsb );
-		oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
-		ofsb.close();
+		// generate unique name for writing
+		boost::uuids::random_generator gen;
+		boost::uuids::uuid u = gen();
+		const std::string tmpCacheFile( cacheFile + ".writing." + boost::uuids::to_string(u) + ".xml" );
+		
+		TUTTLE_COUT_DEBUG( "Write plugins cache " << tmpCacheFile );
+		// serialize into a temporary file
+		std::ofstream ofsb( tmpCacheFile.c_str(), std::ios::out );
+		if( ofsb.is_open() )
+		{
+			OArchive oArchive( ofsb );
+			oArchive << BOOST_SERIALIZATION_NVP( _pluginCache );
+			ofsb.close();
+			// replace the cache file
+			boost::filesystem::rename( tmpCacheFile, cacheFile );
+		}
 	}
 #endif
 }

@@ -29,15 +29,45 @@ CacaImage load_cacaimage_from_view( const SView sView )
 	im.pixels = (char*)boost::gil::interleaved_view_get_raw_data( sView );
 	im.w = sView.width();
 	im.h = sView.height();
-	rmask = 0xff000000;
-	gmask = 0x00ff0000;
-	bmask = 0x0000ff00;
-	amask = 0x000000ff;
+	rmask = 0x000000ff;
+	gmask = 0x0000ff00;
+	bmask = 0x00ff0000;
+	amask = 0x00000000;
 	bpp = boost::gil::num_channels<SView>::value * sizeof( ChannelBaseType ) * 8;
 
 	// Create the libcaca dither
 	im.dither = caca_create_dither( bpp, im.w, im.h, sView.pixels().row_size(),
 									 rmask, gmask, bmask, amask);
+
+	if( ! im.dither )
+	{
+		BOOST_THROW_EXCEPTION( exception::Unknown() << exception::dev( "Unable to load buffer." ) );
+	}
+	return im;
+}
+
+template<>
+CacaImage load_cacaimage_from_view<boost::gil::gray8_view_t>( const boost::gil::gray8_view_t sView )
+{
+	typedef boost::gil::channel_mapping_type<boost::gil::gray8_view_t>::type Channel;
+	typedef boost::gil::channel_base_type<Channel>::type ChannelBaseType;
+
+	CacaImage im;
+	unsigned int bpp, rmask, gmask, bmask, amask;
+
+	im.pixels = (char*)boost::gil::interleaved_view_get_raw_data( sView );
+	im.w = sView.width();
+	im.h = sView.height();
+	rmask = 0xff000000;
+	gmask = 0x00ff0000;
+	bmask = 0x0000ff00;
+	amask = 0x00000000;
+	bpp = boost::gil::num_channels<boost::gil::gray8_view_t>::value * sizeof( ChannelBaseType ) * 8;
+
+	// Create the libcaca dither
+	im.dither = caca_create_dither( bpp, im.w, im.h, sView.pixels().row_size(),
+									 rmask, gmask, bmask, amask);
+
 	if( ! im.dither )
 	{
 		BOOST_THROW_EXCEPTION( exception::Unknown() << exception::dev( "Unable to load buffer." ) );
@@ -73,15 +103,11 @@ PrintProcess<View>::PrintProcess( PrintPlugin &effect )
 , _plugin( effect )
 {
 	this->setNoMultiThreading();
-
-	/*viewerOpenGL.cv = caca_create_canvas(0, 0);
-	viewerOpenGL.dp = caca_create_display (viewerOpenGL.cv);*/
 }
 
 template<class View>
 PrintProcess<View>::~PrintProcess()
 {
-	// caca_free_canvas( viewerOpenGL.cv );
 }
 
 template<class View>
@@ -100,7 +126,7 @@ template<class View>
 void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW )
 {
 	using namespace boost::gil;
-	OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
+	//OfxRectI procWindowOutput = this->translateRoWToOutputClipCoordinates( procWindowRoW );
 
 	const OfxRectI procWindowSrc = translateRegion( procWindowRoW, this->_srcPixelRod );
 
@@ -116,7 +142,7 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 		case eParamModePixel:
 		{
 			call_pixel_by_channel_t<channel_cout_t>()( src( _params._pixel ) );
-			//std::cout << std::endl;
+			std::cout << std::endl;
 			break;
 		}
 		case eParamModeRegion:
@@ -156,14 +182,21 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 				case eParamOutputAscii:
 				{
 					// temporary gray buffer to compute the char values.
-					gray8_image_t gImg( src.dimensions() );
-					gray8_view_t gView( view(gImg) );
-					if( _params._flip )
+					gray8_image_t gImgGray( src.dimensions() );
+					gray8_view_t gViewGray( view(gImgGray) );
+					rgb8_image_t gImg( src.dimensions() );
+                    			rgb8_view_t gView( view(gImg) );
+					if( ! _params._flip )
 					{
 						src = flipped_up_down_view( src );
 					}
-					copy_and_convert_pixels( src, gView );
-
+					
+					switch(_params._colorMode)
+					{
+						case eParamColorMono :		copy_and_convert_pixels( src, gViewGray );	break;
+						case eParamColorGray :		copy_and_convert_pixels( src, gViewGray );	break;
+						default :			copy_and_convert_pixels( src, gView );		break;
+					}
 					// libcaca context
 					caca_canvas_t *cv = NULL;
 
@@ -179,9 +212,14 @@ void PrintProcess<View>::multiThreadProcessImages( const OfxRectI& procWindowRoW
 						{
 							TUTTLE_CERR( "Unable to initialise libcaca." );
 							return;
-							}
-
-						cacaImg = load_cacaimage_from_view( gView );
+						}
+						switch(_params._colorMode)
+						{
+							case eParamColorMono :		cacaImg = load_cacaimage_from_view( gViewGray );	break;
+							case eParamColorGray :		cacaImg = load_cacaimage_from_view( gViewGray );	break;
+							default :			cacaImg = load_cacaimage_from_view( gView );		break;
+						}
+						
 						/*
 						 *  - \c "mono": use light gray on a black background.
 						 *  - \c "gray": use white and two shades of gray on a black background.

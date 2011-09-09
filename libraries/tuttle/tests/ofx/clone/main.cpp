@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE( ofx_imageEffect_clones )
 	tuttle::host::Core::instance().preload();
 
 	// get some plugins examples
-	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::Core::instance().getImageEffectPluginById( "fr.tuttle.pngreader" );
+	tuttle::host::ofx::imageEffect::OfxhImageEffectPlugin* plugin = tuttle::host::Core::instance().getImageEffectPluginById( "tuttle.pngreader" );
 	BOOST_CHECK( plugin != NULL );
 
 	//	BOOST_CHECK_THROW( plugin->getProperties().fetchPointerProperty( kOfxPropInstanceData ), exception::LogicError );

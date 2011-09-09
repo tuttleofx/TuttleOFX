@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::floodFill::FloodFillPluginFactory, "fr.tuttle.duranduboi.floodfill" );
+	mAppendPluginFactory( ids, tuttle::plugin::floodFill::FloodFillPluginFactory, "tuttle.floodfill" );
 }
 
 }

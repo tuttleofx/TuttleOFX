@@ -23,9 +23,9 @@ TextProcess<View>::TextProcess( TextPlugin& instance )
 {
 //	TUTTLE_TCOUT_INFOS;
 //	Py_Initialize();
-	TUTTLE_TCOUT_INFOS;
+//	TUTTLE_TCOUT_INFOS;
 	this->setNoMultiThreading();
-	TUTTLE_TCOUT_INFOS;
+//	TUTTLE_TCOUT_INFOS;
 }
 
 template<class View>

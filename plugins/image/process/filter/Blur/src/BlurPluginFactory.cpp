@@ -22,6 +22,29 @@ void BlurPluginFactory::describe( OFX::ImageEffectDescriptor& desc )
 	                "Blur" );
 	desc.setPluginGrouping( "tuttle/image/process/filter" );
 
+	desc.setDescription(
+"A Gaussian blur is the result of blurring an image by a Gaussian function."
+"\n"
+"\n"
+"It is a widely used effect in graphics software, typically to reduce image "
+"noise and reduce detail. The visual effect of this blurring technique is a "
+"smooth blur resembling that of viewing the image through a translucent "
+"screen, distinctly different from the bokeh effect produced by an "
+"out-of-focus lens or the shadow of an object under usual illumination. "
+"Gaussian smoothing is also used as a pre-processing stage in computer vision "
+"algorithms in order to enhance image structures at different scales—see "
+"scale-space representation and scale-space implementation."
+"\n"
+"Mathematically, applying a Gaussian blur to an image is the same as "
+"convolving the image with a Gaussian function; this is also known as a "
+"two-dimensional Weierstrass transform. Applying a Gaussian blur has the "
+"effect of reducing the image's high-frequency components; "
+"a Gaussian blur is thus a low pass filter."
+"\n"
+"\n"
+"http://en.wikipedia.org/wiki/Gaussian_blur"
+);
+
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );
@@ -75,6 +98,7 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 
 	OFX::GroupParamDescriptor* advanced = desc.defineGroupParam( kParamGroupAdvanced );
 	advanced->setLabel( "Advanced" );
+	advanced->setOpen( false );
 
 	OFX::BooleanParamDescriptor* normalizedKernel = desc.defineBooleanParam( kParamNormalizedKernel );
 	normalizedKernel->setLabel( "Normalized kernel" );
@@ -86,6 +110,7 @@ void BlurPluginFactory::describeInContext( OFX::ImageEffectDescriptor& desc,
 	kernelEpsilon->setLabel( "Kernel espilon value" );
 	kernelEpsilon->setHint( "Threshold at which we no longer consider the values of the function." );
 	kernelEpsilon->setDefault( 0.01 );
+	kernelEpsilon->setRange( std::numeric_limits<double>::epsilon(), 1.0 );
 	kernelEpsilon->setDisplayRange( 0, 0.01 );
 	kernelEpsilon->setParent( advanced );
 }

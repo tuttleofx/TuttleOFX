@@ -4,10 +4,16 @@
 
 path-constant HERE : . ;
 
-use-project /base : ../ilmbase ;
-
 # declaring halfExpLogTable one programs compiled from halfExpLogTable.cpp
-exe halfExpLogTable : IlmCtlSimd/halfExpLogTable.cpp ../openexr//IlmImf ../ilmbase/Half ;
+exe halfExpLogTable
+	:
+		IlmCtlSimd/halfExpLogTable.cpp
+		../ilmbase//Iex/<link>static
+        	../ilmbase//Half/<link>static
+        	../ilmbase//IlmThread/<link>static
+        	../ilmbase//Imath/<link>static
+        	../zlib//zlib/<link>static
+	;
 
 # as we want to execute them easily, we want them to be copied into this directory
 install installExe : halfExpLogTable : <location>IlmCtlSimd/ ;
@@ -39,7 +45,7 @@ project
 		<include>IlmCtl
 		<include>IlmCtlMath
 		<include>IlmCtlSimd
-	: build-dir $(DIST)/3rdParty/ctl/obj
+	: build-dir $(BUILD)/3rdParty/ctl
     ;
 
 ###############################################################################
@@ -53,9 +59,13 @@ lib	ctl		:
 			:
 				<implicit-dependency>halfExpLogTable.h
 				<implicit-dependency>halfExpLog.h
+        		<os>NT:<link>static
 			;
-
-install	dist_src	:	ctl
-			:	<variant>debug:<location>$(DIST)/3rdParty/ctl/bin/debug
-				<variant>release:<location>$(DIST)/3rdParty/ctl/bin/release
-			;
+			
+install dist
+	:
+		ctl
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
+	;

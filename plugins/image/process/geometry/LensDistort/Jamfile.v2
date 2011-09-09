@@ -10,7 +10,7 @@ project
     : requirements	
         <include>src
         <threading>multi
-    : build-dir $(DIST)/LensDistort/obj
+    : build-dir $(BUILD)/LensDistort
     ;
 
 ###############################################################################

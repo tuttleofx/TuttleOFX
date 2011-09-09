@@ -10,18 +10,18 @@ project
     : requirements
         <include>src
         <threading>multi
-    : build-dir $(DIST)/Crop/obj
+    : build-dir $(BUILD)/Crop
     ;
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Crop : 
-    [ glob src/*.cpp ]
-    /tuttleplugin/<link>static
+    	[ glob src/*.cpp ]
+    	/tuttleplugin/<link>static
 	:
-	<os>NT:<find-shared-library>opengl32
-	<os>MACOSX:<linkflags>"-framework OpenGL"
+		<os>NT:<find-shared-library>opengl32
+		<os>MACOSX:<linkflags>"-framework OpenGL"
     ;
 
 ###############################################################################

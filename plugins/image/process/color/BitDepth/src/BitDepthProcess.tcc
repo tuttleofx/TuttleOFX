@@ -7,10 +7,6 @@
 
 #include <boost/gil/gil_all.hpp>
 
-#include <cmath>
-#include <vector>
-#include <iostream>
-
 namespace tuttle {
 namespace plugin {
 namespace bitDepth {

@@ -9,7 +9,7 @@ import os ;
 project
     : requirements	
 				<include>src
-    : build-dir $(DIST)/HistogramKeyer/obj
+    : build-dir $(BUILD)/HistogramKeyer
     ;
  
 ###############################################################################

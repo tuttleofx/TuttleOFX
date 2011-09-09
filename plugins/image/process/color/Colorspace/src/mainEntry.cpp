@@ -10,7 +10,7 @@ namespace Plugin
 {
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::colorspace::ColorSpacePluginFactory, "fr.tuttle.colorspace" );
+	mAppendPluginFactory( ids, tuttle::plugin::colorspace::ColorSpacePluginFactory, "tuttle.colorspace" );
 }
 
 }

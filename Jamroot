@@ -1,34 +1,113 @@
-###############################################################################
-## TuttleOFX Project
-##
-## Main BJam makefile for TuttleOFX
-## 
-## Build:
-## 
-## call bjam with:
-## 		/tuttle parameter to build tuttle library
-## 		/sam parameter to build sam command line tool
-## 
-###############################################################################
+##############################################################################
+##                          TuttleOFX Project                                #
+##                                                                           #
+##                                                                           #
+##                                                                           #
+## Build:                                                                    #
+##                                                                           #
+## call bjam with:                                                           #
+##      /tuttle         build tuttle library                                 #
+##      /sam-tools      build sam commands line tool                         #
+##                          - sam-ls                                         #
+##                          - sam-cp                                         #
+##                          - sam-mv                                         #
+##                          - sam-rm                                         #
+##                          - sam-do                                         #
+##                          - sam-check                                      #
+##                          - sam-plugins                                    #
+##                          - sam-install ( to install in dist directory )   #
+##                                                                           #
+##      or your can build a specific tools with:                             #
+##      /sam-tools//sam-toolname (example: /sam-tools//sam-do )              #
+##      ( warning: it not run the sam-install command. )                     #
+##                                                                           #
+##      /plugins                                                             #
+##                                                                           #
+##      /tuttletests                                                         #
+##      /samtests                                                            #
+##                                                                           #
+##      /pyTuttle                                                            #
+##      /tests                                                               #
+##                                                                           #
+##                                                                           #
+##      default build is in release, to build in debug type:                 #
+##      ./bjam variant=debug [target]                                        #
+##                                                                           #
+##############################################################################
 
-###############################################################################
+import os ;
+import feature ;
+
+##############################################################################
+# Python
+##############################################################################
+
+# see the user-config.jam file
+
+##############################################################################
+# Image Magick
+##############################################################################
+
+constant	MAGICK_INCLUDE  : /usr/include/ImageMagick ;
+
+# can be found with command: MagickCore-config --libs
+constant	MAGICK_LIBS     : " -L/usr/lib64 -lICE -lMagickCore -llcms -ltiff -lfreetype -ljpeg -lfontconfig -lXext -lSM -lX11 -lXt -lbz2 -lz -lm -lgomp -lpthread -lltdl" ;
+
+
+##############################################################################
+# OpenGL
+##############################################################################
+
+if [ os.name ] = NT	
+	{	lib opengl32 ; 	alias opengl : opengl32 ; }
+else if [ os.name ] = LINUX 
+	{	alias opengl : ; }
+else if [ os.name ] = MACOSX
+	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
+
+
+
+##############################################################################
 # Environment variables
-###############################################################################
+##############################################################################
+
+local HOSTNAME ;
+
+if [ os.name ] = NT	
+	{	HOSTNAME = "Windows" ; }
+else if [ os.name ] = LINUX 
+	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
+else if [ os.name ] = MACOSX
+	{	HOSTNAME = [ modules.peek : HOSTNAME ] ; }
+
+
+
+
 path-constant	3RD_PARTY	: 3rdParty ;
 path-constant	BOOST_LIBS	: 3rdParty/boost ;
-path-constant	DIST		: ./dist ;
+path-constant	BOOST_HACK	: 3rdParty/boostHack ;
+path-constant	DIST		: ./dist/$(HOSTNAME) ;
+path-constant	BUILD		: ./.build ;
 
-###############################################################################
+
+##############################################################################
 # Global project requirements
-###############################################################################
+##############################################################################
 project
 	:
 	requirements
 		# multithreading on
 		<threading>multi
-
-		<variant>release:<warnings-as-errors>on
+		
+		#<variant>release:<warnings-as-errors>on
 		<variant>release:<define>TUTTLE_PRODUCTION
+		<variant>release:<toolset>gcc,<optimization>speed:<define>USE_INLINE_ASSEMBLER
+		# or
+		#<variant>release:<toolset>gcc,<optimization>full
+		
+		<define>BOOST_REGEX_NO_EXTERNAL_TEMPLATES
+		<os>LINUX:<variant>debug:<linkflags>-Wl,--no-undefined
+		<os>LINUX:<variant>release:<linkflags>-fvisibility=hidden
 
 		<os>NT:<define>_WINDOWS
 		<os>LINUX:<cxxflags>-fPIC
@@ -41,73 +120,58 @@ project
 		#
 		# removes deprecated header used by boost
 		<toolset>gcc:<cxxflags>-Wno-deprecated
+		<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+	
+		# default build
+		#<variant>release
+		
+		#
+		# MSVC specific flags
+		#
+		<toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+		<toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+		
+		<os>LINUX:<define>__LINUX__
 	;
 
-# TODO detect one time the opengl for the project,
-#      and use it after if necessary
-
-#if [ os.name ] = NT	
-#	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-#else if [ os.name ] = LINUX 
-#	{	alias opengl : ; }
-#else if [ os.name ] = MACOSX 
-#	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
-
-###############################################################################
+##############################################################################
 # 3rd party libraries
-###############################################################################
-use-project	/boost		: $(BOOST_LIBS) ;
+##############################################################################
+use-project		/boost		: $(BOOST_LIBS) ;
 
-###############################################################################
+##############################################################################
 # Main targets
-###############################################################################
+##############################################################################
 #
 # TUTTLE LIBRARY & TESTS
 #
-use-project	/tuttle		: libraries/tuttle ;
-use-project	/tuttletests	: libraries/tuttle/tests ;
+use-project		/tuttle			: libraries/tuttle ;
+use-project		/tuttletests	: libraries/tuttle/tests ;
 
 #
 # SAM COMMAND LINE TOOL & TESTS
 #
-use-project	/sam-tools	: applications/sam/ ;
+use-project		/sam-tools		: applications/sam/ ;
 
-use-project	/sam-ls		: applications/sam/ ;
-use-project	/sam-cp		: applications/sam/ ;
-use-project	/sam-mv		: applications/sam/ ;
-use-project	/sam-rm		: applications/sam/ ;
-use-project	/sam-do		: applications/sam/ ;
-
-use-project	/sam-info	: applications/sam/src/sam/info ;
-use-project	/sam-plugins	: applications/sam/ ;
-use-project	/sam-check	: applications/sam/ ;
-
-#use-project	/pyTuttle	: applications/pyTuttle ;
-#use-project	/samtests	: applications/sam-ls/tests ;
+#use-project	/pyTuttle		: applications/pyTuttle ;
+#use-project	/samtests		: applications/sam-ls/tests ;
 
 
 #
 # TUTTLEOFX PLUGINS
 #
-use-project	/plugins	: plugins ;
+use-project		/plugins		: plugins ;
 
-alias		/tests		: /plugins
-				  /tuttletests
-				  /samtests
-				;
+alias			/tests			: /plugins
+				          		  /tuttletests
+				          		  /samtests
+				        		;
 
 # all targets have to be marked as explicit
-explicit			/tuttle
+explicit		/tuttle
 				/tuttletests
 
-				/sam-ls
-				/sam-cp
-				/sam-mv
-				/sam-rm
-				/sam-do
-				/sam-info
-				/sam-plugins
-				/sam-check
 				/sam-tools
 
 #				/samtests

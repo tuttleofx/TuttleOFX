@@ -1,6 +1,8 @@
 #ifndef _LUTENGINE_LUTREADER_HPP_
 #define _LUTENGINE_LUTREADER_HPP_
 
+#include <tuttle/plugin/memory/OfxAllocator.hpp>
+
 #include <boost/filesystem/path.hpp>
 #include <boost/spirit/include/classic.hpp>
 #include <boost/spirit/include/classic_core.hpp>
@@ -8,6 +10,7 @@
 #include <boost/spirit/include/classic_assign_actor.hpp>
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/function.hpp>
+
 #include <vector>
 
 namespace tuttle {
@@ -17,9 +20,11 @@ namespace fs = boost::filesystem;
 
 class LutReader
 {
+public:
+	typedef std::vector<double, tuttle::plugin::OfxAllocator<double> > VectorDouble;
 protected:
-	std::vector<double> _data;
-	std::vector<double> _steps;
+	VectorDouble _data;
+	VectorDouble _steps;
 	bool _bReadOk;
 
 public:
@@ -30,8 +35,8 @@ public:
 	bool read( const fs::path& filename );
 	/// Is a file read success
 	const bool           readOk() const { return _bReadOk; }
-	std::vector<double>& data()         { return _data; }
-	std::vector<double>& steps()        { return _steps; }
+	VectorDouble& data()         { return _data; }
+	VectorDouble& steps()        { return _steps; }
 };
 
 // 3DL File parser

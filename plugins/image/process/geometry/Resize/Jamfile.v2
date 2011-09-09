@@ -10,7 +10,7 @@ project
 	: requirements
 		<include>src
 		<os>NT:<define>_WINDOWS
-	: build-dir $(DIST)/Resize/obj
+	: build-dir $(BUILD)/Resize
 	;
 
 

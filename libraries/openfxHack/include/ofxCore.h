@@ -187,6 +187,7 @@ to check for specific versions.
     - Property Set - plugin descriptor (read/write) and instance (read only)
     - Default - ""
     - Valid Values - UTF8 string
+    - API >= 1.2
 
 This is a string giving a potentially verbose description of the effect.
 */

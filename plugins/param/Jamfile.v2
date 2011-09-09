@@ -1,7 +1,7 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/param ;
+path-constant BUILD : $(BUILD)/param ;
 
 for local l in [ glob * : Math ]
 {

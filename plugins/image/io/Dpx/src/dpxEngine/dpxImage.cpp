@@ -10,13 +10,6 @@
 #include <boost/scoped_array.hpp>
 #include <boost/cstdint.hpp>
 
-#include <vector>
-#include <string>
-#include <cstring>
-#include <sstream>
-#include <iostream>
-#include <cassert>
-
 using namespace boost::filesystem;
 using namespace tuttle::utils;
 using namespace boost;

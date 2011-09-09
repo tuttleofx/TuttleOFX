@@ -10,9 +10,10 @@ project
 		<include>.
 		# disabling warning as error as we are not responsible for this code
 		<warnings-as-errors>off
+		<warnings>off
 	: usage-requirements
 		<include>.
-	: build-dir $(DIST)/3rdParty/zlib/obj
+	: build-dir $(BUILD)/3rdParty/zlib
 	;
 
 ###############################################################################
@@ -22,8 +23,10 @@ lib zlib :
 	[ glob *.c :  example.c minigzip.c ]
 	;
 
-install dist_src	
-	:	zlib
-	:	<variant>debug:<location>$(DIST)/3rdParty/zlib/bin/debug
-		<variant>release:<location>$(DIST)/3rdParty/zlib/bin/release
+install dist
+	:
+		zlib
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
 	;

@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::colorDistribution::ColorDistributionPluginFactory, "fr.tuttle.colordistribution" );
+	mAppendPluginFactory( ids, tuttle::plugin::colorDistribution::ColorDistributionPluginFactory, "tuttle.colordistribution" );
 }
 
 }

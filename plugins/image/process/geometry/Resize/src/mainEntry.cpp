@@ -9,7 +9,7 @@ namespace Plugin {
 
 void getPluginIDs( OFX::PluginFactoryArray& ids )
 {
-	mAppendPluginFactory( ids, tuttle::plugin::resize::ResizePluginFactory, "fr.tuttle.resize" );
+	mAppendPluginFactory( ids, tuttle::plugin::resize::ResizePluginFactory, "tuttle.resize" );
 }
 
 }

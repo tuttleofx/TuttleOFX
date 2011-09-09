@@ -3,7 +3,7 @@
 ###############################################################################
 
 use-project /base : ../ilmbase ;
-use-project /z : ../zlib ;
+use-project /z    : ../zlib ;
 
 ###############################################################################
 # Global project requirements
@@ -24,7 +24,7 @@ project
 		<os>NT:<include>./config.windows
 		<os>LINUX:<include>./config 
 		<os>MACOSX:<include>./config
-	: build-dir $(DIST)/3rdParty/openexr/obj
+	: build-dir $(BUILD)/3rdParty/openexr
 	;
 
 
@@ -33,16 +33,17 @@ project
 ###############################################################################
 lib IlmImf : 
         [ glob IlmImf/*.cpp ]
-	/z//zlib
+        /z
         /base//Iex
         /base//Half
         /base//IlmThread
         /base//Imath
-	 #: <use>/z//zlib
         ;
 
-install dist_src 
-	:	IlmImf
-	:	<variant>debug:<location>$(DIST)/3rdParty/openexr/bin/debug
-		<variant>release:<location>$(DIST)/3rdParty/openexr/bin/release
+install dist
+	:
+		IlmImf
+	:
+		<location>$(DIST)/lib
+		<install-type>LIB
 	;

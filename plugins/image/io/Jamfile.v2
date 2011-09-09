@@ -1,9 +1,9 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/io ;
+path-constant BUILD : $(BUILD)/io ;
 
-for local l in [ glob * ]
+for local l in [ glob * : OpenImageIO ]
 {
    build-project $(l) ;
 }

@@ -1,5 +1,4 @@
 #include "EXRWriterDefinitions.hpp"
-#include "EXRWriterProcess.hpp"
 #include "EXRWriterPlugin.hpp"
 #include "../half/gilHalf.hpp"
 
@@ -8,17 +7,9 @@
 #include <tuttle/plugin/ImageGilProcessor.hpp>
 #include <tuttle/plugin/exceptions.hpp>
 
-#include <ofxsImageEffect.h>
-#include <ofxsMultiThread.h>
-
 #include <boost/gil/gil_all.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/assert.hpp>
-
-#include <cstdlib>
-#include <cmath>
-#include <vector>
-#include <iostream>
 
 namespace tuttle {
 namespace plugin {
@@ -39,7 +30,7 @@ template<class View>
 void EXRWriterProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	using namespace boost::gil;
-	ImageGilProcessor<View>::setup( args );
+	ImageGilFilterProcessor<View>::setup( args );
 	_params = _plugin.getProcessParams( args.time );
 }
 

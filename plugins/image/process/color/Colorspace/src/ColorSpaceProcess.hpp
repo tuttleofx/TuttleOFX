@@ -10,13 +10,6 @@
 
 #include <boost/scoped_ptr.hpp>
 
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
-#include <vector>
-#include <iostream>
-
-
 namespace tuttle {
 namespace plugin {
 namespace colorspace {

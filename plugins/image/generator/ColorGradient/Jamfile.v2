@@ -8,8 +8,8 @@ import os ;
 ###############################################################################
 project
     : requirements
-	  <include>src
-    : build-dir $(DIST)/ColorGradient/obj
+	  	<include>src
+    : build-dir $(BUILD)/ColorGradient
     ;
 
 ###############################################################################

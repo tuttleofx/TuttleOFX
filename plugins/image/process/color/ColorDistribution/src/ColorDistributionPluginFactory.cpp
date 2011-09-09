@@ -19,7 +19,14 @@ void ColorDistributionPluginFactory::describe( OFX::ImageEffectDescriptor& desc 
 	desc.setLabels( "TuttleColorDistribution", "ColorDistribution",
 	                "ColorDistribution" );
 	desc.setPluginGrouping( "tuttle/image/process/color" );
-
+	desc.setDescription(
+"Color distribution / Color gradation"
+"\n"
+"\n"
+"http://en.wikipedia.org/wiki/Gamma_correction"
+"\n"
+	/// @todo documentation: definition of color gradation
+	);
 	// add the supported contexts, only filter at the moment
 	desc.addSupportedContext( OFX::eContextFilter );
 	desc.addSupportedContext( OFX::eContextGeneral );

@@ -1,32 +1,28 @@
 ###############################################################################
-## Main BJam makefile for TuttleOFX Exr Plugin
+## Main BJam makefile for TuttleOFX Operators Plugin
 ###############################################################################
 import os ;
-
+ 
 ###############################################################################
 # Global project requirements
 ###############################################################################
 project
     : requirements
-        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(DIST)/Exr/obj
+		<include>src
+    : build-dir $(BUILD)/Operators
     ;
 
-use-project /libexr : $(3RD_PARTY)/openexr ;
-
+ 
 ###############################################################################
 # Product 
 ###############################################################################
-plugin Exr : 
-	[ glob-tree *.cpp ]
-	/tuttleplugin/<link>static
-	/boost/filesystem
-	/boost/system
-	/boost/regex
-	/libexr
-	;
-
+plugin Operators : 
+    [ glob-tree *.cpp ]
+    /tuttleplugin/<link>static
+    ;
+ 
 ###############################################################################
 # Automatic install
 ###############################################################################
-auto_install Exr : $(DIST) ;
+auto_install Operators : $(DIST) ;
+ 

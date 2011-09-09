@@ -21,7 +21,7 @@ struct channel_gradientDirection_t
 	GIL_FORCEINLINE
 	void operator()( const Channel& x, const Channel& y, Channel& res ) const
 	{
-		res = std::atan2( y, x );
+		res = std::atan2( (double)y, (double)x );
 	}
 };
 

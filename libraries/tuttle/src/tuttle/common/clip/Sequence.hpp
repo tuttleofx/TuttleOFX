@@ -2,6 +2,7 @@
 #define _FILENAMEMANAGER_HPP_
 
 #include <tuttle/common/utils/global.hpp>
+#include <tuttle/common/utils/color.hpp>
 
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
@@ -18,20 +19,6 @@
 #define NAME_WIDTH 50
 #define NAME_WIDTH_WITH_DIR 80
 
-#ifdef __LINUX__
-static const std::string kColorStd	( "\E[0;0m"  );
-static const std::string kColorFolder	( "\E[1;34m" );
-static const std::string kColorFile	( "\E[0;32m" );
-static const std::string kColorSequence	( "\E[0;32m" );
-static const std::string kColorError	( "\E[0;31m" );
-#else
-static const std::string kColorStd	( "" );
-static const std::string kColorFolder	( "" );
-static const std::string kColorFile	( "" );
-static const std::string kColorSequence	( "" );
-static const std::string kColorError	( "" );
-#endif
-
 namespace tuttle {
 namespace common {
 
@@ -45,24 +32,24 @@ class FileNumbers;
   */
 enum EMaskType
 {
-	eMaskTypeUndefined	= 0,			// 0
-	eMaskTypeDirectory	= 1,			// 1<<0
-	eMaskTypeFile		= eMaskTypeDirectory*2,		// 1<<1
-	eMaskTypeSequence	= eMaskTypeFile*2,		// 1<<2
+	eMaskTypeUndefined	= 0,                    // 0
+	eMaskTypeDirectory	= 1,                    // 1<<0
+	eMaskTypeFile		= eMaskTypeDirectory*2, // 1<<1
+	eMaskTypeSequence	= eMaskTypeFile*2,      // 1<<2
 	
-	eMaskTypeDefault = eMaskTypeSequence
+	eMaskTypeDefault    = eMaskTypeSequence
 };
 
 enum EMaskOptions
 {
-	eMaskOptionsNone		= 0,			// 0
-	eMaskOptionsProperties	= 1,			// show type of FileObject
-	eMaskOptionsPath		= eMaskOptionsProperties*2,	// show path of FileObject
-	eMaskOptionsAbsolutePath	= eMaskOptionsPath*2,	// show absolute path of FileObject
-	eMaskOptionsDotFile	= eMaskOptionsAbsolutePath*2,	// show files which start with a dot (hidden files)
-	eMaskOptionsColor		= eMaskOptionsDotFile*2,		// output with color
+	eMaskOptionsNone            = 0,                           // 0
+	eMaskOptionsProperties      = 1,                           // show type of FileObject
+	eMaskOptionsPath            = eMaskOptionsProperties*2,    // show path of FileObject
+	eMaskOptionsAbsolutePath    = eMaskOptionsPath*2,          // show absolute path of FileObject
+	eMaskOptionsDotFile         = eMaskOptionsAbsolutePath*2,  // show files which start with a dot (hidden files)
+	eMaskOptionsColor           = eMaskOptionsDotFile*2,       // output with color
 	
-	eMaskOptionsDefault = ( eMaskOptionsPath | eMaskOptionsColor )
+	eMaskOptionsDefault         = ( eMaskOptionsPath | eMaskOptionsColor )
 };
 
 inline EMaskType operator~(const EMaskType& a)
@@ -107,12 +94,14 @@ public:
 	  	_directory.clear();
 		_type		= eMaskTypeUndefined;
 		_options	= eMaskOptionsNone;
+		setColorActive( _options & eMaskOptionsColor );
 	}
 	FileObject( const EMaskOptions options )
 	{
 		_directory.clear();
 		_type		= eMaskTypeUndefined;
 		_options	= options;
+		setColorActive( _options & eMaskOptionsColor );
 	}
 	/**
 	 * @brief Construct a FileObject with given informations.
@@ -138,37 +127,70 @@ public:
 //		return getDirectory() / getName();
 //	}
 	
-	inline boost::filesystem::path getDirectory() const				{ return _directory; }
-	inline boost::filesystem::path getAbsoluteDirectory() const				{ return boost::filesystem::absolute(_directory); }
-	inline void					setDirectory( const boost::filesystem::path& p )	{ _directory = p; }
+	inline boost::filesystem::path getDirectory() const                              { return _directory; }
+	inline boost::filesystem::path getAbsoluteDirectory() const                     { return boost::filesystem::absolute(_directory); }
+	inline void                   setDirectory( const boost::filesystem::path& p )   { _directory = p; }
+	void                           setDirectoryFromPath( const boost::filesystem::path& p );
 	
-	EMaskOptions					getMaskOptions	() const				{ return _options; }
-	EMaskType					getMaskType	() const				{ return _type; }
+	void                           setMaskOptions	( const EMaskOptions& options )    { _options = options; }
+	void                           setMaskType	( const EMaskType& type )          { _type = type; }
+
+	EMaskOptions                    getMaskOptions	() const                           { return _options; }
+	EMaskType                       getMaskType	() const                           { return _type; }
 
 	virtual inline void clear()
 	{
 		_directory.clear();
-		_type = eMaskTypeDefault;
+		_type    = eMaskTypeDefault;
 		_options = eMaskOptionsDefault;
 	}
 private:
 	void init( const boost::filesystem::path& directory, const EMaskType& type, const EMaskOptions& options )
 	{
-		_directory	= directory;
-		_type		= type;
-		_options	= options;
+		_directory  = directory;
+		_type       = type;
+		_options    = options;
+
+		setColorActive( _options & eMaskOptionsColor );
 	}
 	
+	void setColorActive( bool activate = false )
+	{
+		if(activate)
+		{
+			_kColorStd      = kColorStd;
+			_kColorFolder   = kColorFolder;
+			_kColorFile     = kColorFile;
+			_kColorSequence = kColorSequence;
+			_kColorError    = kColorError;
+		}
+		else
+		{
+			_kColorStd      = "";
+			_kColorFolder   = "";
+			_kColorFile     = "";
+			_kColorSequence = "";
+			_kColorError    = "";
+		}
+	}
+
 protected:
 	
-	inline bool showProperties()	const	{ return _options & eMaskOptionsProperties; }
-	inline bool showPath()		const	{ return _options & eMaskOptionsPath; }
+	inline bool showProperties  () const  { return _options & eMaskOptionsProperties; }
+	inline bool showRelativePath() const  { return _options & eMaskOptionsPath; }
+	inline bool showAbsolutePath() const  { return _options & eMaskOptionsAbsolutePath; }
 	
 	
-	boost::filesystem::path	_directory;		///< directory
+	boost::filesystem::path _directory;     ///< directory
 
-	EMaskType		_type;			///< specify type of object
-	EMaskOptions		_options;		///< specify output options of object, common for each objects
+	EMaskType               _type;          ///< specify type of object
+	EMaskOptions            _options;       ///< specify output options of object, common for each objects
+
+	std::string             _kColorStd;
+	std::string             _kColorFolder;
+	std::string             _kColorFile;
+	std::string             _kColorSequence;
+	std::string             _kColorError;
 };
 
 std::list<boost::shared_ptr<FileObject> > fileObjectsInDir( const boost::filesystem::path& directory, const EMaskType mask = eMaskTypeDefault, const EMaskOptions desc = eMaskOptionsDefault );
@@ -238,24 +260,25 @@ public:
 	 */
 	enum EPattern
 	{
-		ePatternNone		= 0,
-		ePatternStandard	= 1,
-		ePatternCStyle		= ePatternStandard * 2,
-		ePatternFrame		= ePatternCStyle   * 2,
+		ePatternNone        = 0,
+		ePatternStandard    = 1,
+		ePatternCStyle      = ePatternStandard * 2,
+		ePatternFrame       = ePatternCStyle   * 2,
 
-		ePatternDefault		= ePatternCStyle + ePatternStandard,
-		ePatternAll		= ePatternFrame  + ePatternCStyle + ePatternStandard
+		ePatternDefault	    = ePatternCStyle + ePatternStandard,
+		ePatternAll	        = ePatternFrame  + ePatternCStyle + ePatternStandard
 	};
 	
-	Sequence() : FileObject()
+	Sequence() : FileObject( )
 	{
+		TUTTLE_COUT("create ");
 		_prefix.clear();
 		_suffix.clear();
-		_padding	= 0;
-		_step		= 1;
-		_firstTime	= 0;
-		_lastTime	= 0;
-		_nbFiles	= 0;
+		_padding    = 0;
+		_step       = 1;
+		_firstTime  = 0;
+		_lastTime   = 0;
+		_nbFiles    = 0;
 	}
 
 	Sequence( const boost::filesystem::path& directory, const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const EMaskOptions options = eMaskOptionsDefault, const bool strictPadding = false )
@@ -285,28 +308,50 @@ public:
 		: FileObject( v._options )
 	{
 		operator=( v );
+		_options = v._options;
+	}
+
+	Sequence( const boost::filesystem::path& directory, const Sequence& v, const EMaskOptions& options )
+		: FileObject( options )
+	{
+		operator=( v );
+		_options = options;
+		setDirectory( directory );
 	}
 	
 	~Sequence()
 	{}
 	
+private:
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	void init( const std::string& prefix, const std::size_t padding, const std::string& suffix, const Time firstTime, const Time lastTime, const Time step = 1, const bool strictPadding = false );
 
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	bool init( const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
+
 	/**
 	 * @brief Construct a sequence from a pattern and given informations.
 	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
 	 */
 	bool init( const Time firstTime, const Time lastTime, const Time step, const EPattern accept = ePatternDefault );
 	
+public:
+	/**
+	 * @brief Construct a sequence from a pattern and given informations.
+	 * @warning No check on your filesystem.
+	 * @warning the directory must be set
+	 */
+	bool initFromPattern( const boost::filesystem::path& dir, const std::string& pattern, const Time firstTime, const Time lastTime, const Time step, const EMaskOptions options = eMaskOptionsDefault, const EPattern accept = ePatternDefault );
+
 	/**
 	 * @brief Init from directory and pattern.
 	 * @warning search on your filesystem, to detect the range.
@@ -319,19 +364,19 @@ public:
 	 */
 	inline bool initFromDetection( const EPattern& accept = ePatternDefault );
 	
-	inline std::string		getAbsoluteFilenameAt		( const Time time )	const;
-	inline std::string		getFilenameAt			( const Time time )	const;
-	inline std::string		getFirstFilename		()			const { return getFilenameAt( getFirstTime() ); }
-	inline std::string		getAbsoluteFirstFilename	()			const { return ( getAbsoluteDirectory() / getFilenameAt( getFirstTime() ) ).string(); }
-	inline std::string		getAbsoluteLastFilename		()			const { return ( getAbsoluteDirectory() / getFilenameAt( getLastTime()  ) ).string(); }
+	inline std::string            getAbsoluteFilenameAt       ( const Time time )  const;
+	inline std::string            getFilenameAt                ( const Time time )  const;
+	inline std::string            getFirstFilename             ()        const { return getFilenameAt( getFirstTime() ); }
+	inline std::string            getAbsoluteFirstFilename    ()        const { return ( getAbsoluteDirectory() / getFilenameAt( getFirstTime() ) ).string(); }
+	inline std::string            getAbsoluteLastFilename     ()        const { return ( getAbsoluteDirectory() / getFilenameAt( getLastTime()  ) ).string(); }
 
 	/// @return pattern character in standard style
-	inline char			getPatternCharacter		()			const { return getPadding() ? '#' : '@'; }
+	inline char                  getPatternCharacter          ()        const { return getPadding() ? '#' : '@'; }
 	/// @return a string pattern using standard style
-	inline std::string		getStandardPattern		()			const { return getPrefix() + std::string( getPadding() ? getPadding() : 1, getPatternCharacter() ) + getSuffix(); }
-	inline std::string		getAbsoluteStandardPattern	()			const { return (getAbsoluteDirectory() / getStandardPattern()).string(); }
+	inline std::string            getStandardPattern           ()        const { return getPrefix() + std::string( getPadding() ? getPadding() : 1, getPatternCharacter() ) + getSuffix(); }
+	inline std::string            getAbsoluteStandardPattern ()        const { return (getAbsoluteDirectory() / getStandardPattern()).string(); }
 	/// @return a string pattern using C Style
-	inline std::string		getCStylePattern		()			const
+	inline std::string            getCStylePattern             ()        const
 	{
 		if( getPadding() )
 			return getPrefix() + "%0" + boost::lexical_cast<std::string>( getPadding() ) + "d" + getSuffix();
@@ -339,27 +384,27 @@ public:
 			return getPrefix() + "%d" + getSuffix();
 	}
 
-	inline std::string		getAbsoluteCStylePattern	()			const { return (getDirectory() / getCStylePattern()).string(); }
+	inline std::string            getAbsoluteCStylePattern ()           const { return (getDirectory() / getCStylePattern()).string(); }
 
-	inline std::pair<Time, Time>	getRange			()			const { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }
-	inline std::size_t		getStep				()			const { return _step; }
-	inline Time			getFirstTime			()			const { return _firstTime; }
-	inline Time			getLastTime			()			const { return _lastTime; }
-	inline std::size_t		getDuration			()			const { return getLastTime() - getFirstTime() + 1; }
-	inline Time			getNbFiles			()			const { return _nbFiles; }
-	inline std::size_t		getPadding			()			const { return _padding; }
-	inline bool			isStrictPadding			()			const { return _strictPadding; }
-	inline bool			hasMissingFile			()			const { return getNbMissingFiles() != 0; }
-	inline std::size_t		getNbMissingFiles		()			const
+	inline std::pair<Time, Time>  getRange	                      ()        const { return std::pair<Time, Time>( getFirstTime(), getLastTime() ); }
+	inline std::size_t            getStep                       ()        const { return _step; }
+	inline Time	                   getFirstTime                 ()        const { return _firstTime; }
+	inline Time	                   getLastTime                  ()        const { return _lastTime; }
+	inline std::size_t            getDuration                   ()        const { return getLastTime() - getFirstTime() + 1; }
+	inline Time	                   getNbFiles                    ()        const { return _nbFiles; }
+	inline std::size_t            getPadding                    ()        const { return _padding; }
+	inline bool                  isStrictPadding               ()        const { return _strictPadding; }
+	inline bool                  hasMissingFile                ()        const { return getNbMissingFiles() != 0; }
+	inline std::size_t            getNbMissingFiles            ()        const
 	{
 		if( !getStep() )
 			return 0;
 		return ( ( ( getLastTime() - getFirstTime() ) / getStep() ) + 1 ) - getNbFiles();
 	}
 	/// @brief filename without frame number
-	inline std::string		getIdentification		()			const { return _prefix + _suffix; }
-	inline std::string		getPrefix			()			const { return _prefix; }
-	inline std::string		getSuffix			()			const { return _suffix; }
+	inline std::string            getIdentification            ()        const { return _prefix + _suffix; }
+	inline std::string            getPrefix                     ()        const { return _prefix; }
+	inline std::string            getSuffix                     ()        const { return _suffix; }
 
 	/**
 	 * @brief Check if the filename is inside the sequence and return it's time value.
@@ -381,7 +426,7 @@ protected:
 	 * @brief Partial initialization, using only pattern informations.
 	 * @warning You don't have all informations like range, directory, etc.
 	 */
-	bool initFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const;
+	bool retrieveInfosFromPattern( const std::string& pattern, const EPattern& accept, std::string& prefix, std::string& suffix, std::size_t& padding, bool& strictPadding ) const;
 
 private:
 	friend std::list<Sequence> buildSequence(  const boost::filesystem::path& directory, const FileStrings& id, std::list<FileNumbers>& nums, const EMaskOptions& desc );

@@ -11,26 +11,15 @@ project
 				<include>src
   				<threading>multi 
   				<os>NT:<define>_WINDOWS
-    : build-dir $(DIST)/Move2D/obj
+    : build-dir $(BUILD)/Move2D
     ;
- 
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
- 
+
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Move2D : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
-    opengl
     ;
  
 ###############################################################################

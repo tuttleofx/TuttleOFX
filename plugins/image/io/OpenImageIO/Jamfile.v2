@@ -1,4 +1,34 @@
 ###############################################################################
-# Call subdirectory
+## Main BJam makefile for TuttleOFX OpenImageIO Plugin
 ###############################################################################
-build-project src ;
+
+###############################################################################
+# Global project requirements
+###############################################################################
+project
+    : requirements
+        <include>.
+    : build-dir $(BUILD)/OpenImageIO
+    ;
+
+#use-project /openImageIO   : $(3RD_PARTY)/libopenImageIO ;
+
+###############################################################################
+# Product 
+###############################################################################
+#plugin OpenImageIO : 
+#   [ glob-tree *.cpp : tests ]
+#   /boost//system
+#   /boost//filesystem
+#   /boost//regex
+#   /tuttleplugin/<link>static
+#   /openImageIO/<link>static
+#   ;
+#explicit OpenImageIO ;
+
+alias OpenImageIO ;
+
+###############################################################################
+# Automatic install
+###############################################################################
+auto_install OpenImageIO : $(DIST) ;

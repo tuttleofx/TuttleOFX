@@ -3,7 +3,7 @@
 ###############################################################################
 import type ;
 
-path-constant	DIST		: $(DIST)/plugins ;
+path-constant	BUILD		: $(BUILD)/plugins ;
 
 ###############################################################################
 # Registering plugin files as shared library
@@ -30,15 +30,16 @@ project
 rule auto_install ( target : path )
 {
 	install install_plugin_$(target) : $(target) :
-		<target-os>windows:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Win32
-		<target-os>linux,<address-model>32:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Linux-x86
-		<target-os>linux,<address-model>64:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Linux-x86-64
-		<target-os>darwin:<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/MacOS
+		<target-os>windows:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Win32
+		<target-os>windows,<address-model>64:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Win64
+		<target-os>linux,<address-model>32:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Linux-x86
+		<target-os>linux,<address-model>64:<location>$(path)/plugin/$(target).ofx.bundle/Contents/Linux-x86-64
+		<target-os>darwin:<location>$(path)/plugin/$(target).ofx.bundle/Contents/MacOS
 		<install-dependencies>on
 		<install-type>PLUGIN
 	;
-	install install_plugin_resources_$(target) : [ glob Resources/* ../Resources/* ] : #Resources/fr.tuttle.$(target).png  Resources/fr.tuttle.$(target).svg :
-		<location>$(path)/$(target)/bundle/$(target).ofx.bundle/Contents/Resources
+	install install_plugin_resources_$(target) : [ glob Resources/* ../Resources/* ] : #Resources/tuttle.$(target).png  Resources/tuttle.$(target).svg :
+		<location>$(path)/plugin/$(target).ofx.bundle/Contents/Resources
 	;
 }
 

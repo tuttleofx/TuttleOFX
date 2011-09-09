@@ -1,9 +1,9 @@
 ###############################################################################
 # Build all plugins
 ###############################################################################
-path-constant DIST : $(DIST)/color ;
+path-constant BUILD : $(BUILD)/color ;
 
-for local l in [ glob * : Print ]
+for local l in [ glob * ]
 {
    build-project $(l) ;
 }

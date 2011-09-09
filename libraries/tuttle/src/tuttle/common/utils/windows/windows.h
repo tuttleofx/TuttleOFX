@@ -1,8 +1,7 @@
 #ifndef _TUTTLE_WINDOWS_H_
 #define _TUTTLE_WINDOWS_H_
 
-#ifdef __WINDOWS__
- #ifndef __GNUC__
+#ifdef _MSC_VER
 
   #define _USE_MATH_DEFINES 1
 
@@ -26,7 +25,7 @@
  * __FUNCTION__
  * Valid only within a function and returns the undecorated name of the enclosing function (as a string). __FUNCTION__ is not expanded if you use the /EP or /P compiler option.
  */
- #endif
+
 #endif
 
 #endif

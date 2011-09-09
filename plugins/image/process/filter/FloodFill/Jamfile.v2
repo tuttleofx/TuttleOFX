@@ -9,18 +9,8 @@ import os ;
 project
     : requirements	
 				<include>src
-    : build-dir $(DIST)/FloodFill/obj
+    : build-dir $(BUILD)/FloodFill
     ;
- 
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
  
 ###############################################################################
 # Product 
@@ -28,7 +18,6 @@ else if [ os.name ] = MACOSX
 plugin FloodFill : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
-    opengl
     ;
  
 ###############################################################################

@@ -9,26 +9,15 @@ import os ;
 project
     : requirements	
 				<include>src
-    : build-dir $(DIST)/Sobel/obj
+    : build-dir $(BUILD)/Sobel
     ;
- 
-###############################################################################
-# Dependencies
-###############################################################################
-if [ os.name ] = NT	
-	{	lib opengl32 ; 	alias opengl : opengl32 ; }
-else if [ os.name ] = LINUX 
-	{	alias opengl : ; }
-else if [ os.name ] = MACOSX 
-	{	alias opengl : : : : <linkflags>"-framework OpenGL" ; }
- 
+
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Sobel : 
     [ glob-tree *.cpp ]
     /tuttleplugin/<link>static
-    opengl
     ;
  
 ###############################################################################
