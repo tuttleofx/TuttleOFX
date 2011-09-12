@@ -282,8 +282,8 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		OFX::ChoiceParamDescriptor* selectionMode = desc.defineChoiceParam(kSelectionModeListParamLabel);
 		selectionMode->setLabel(kSelectionModeListParamLabel);
 		selectionMode->setHint( "Selection mode \n - unique : reset past selection before selection \n - additive : add pixels to current selection \n -subtractive : remote pixel from current selection");
-		selectionMode->appendOption(kSelectionModeListParamOpt1);
 		selectionMode->appendOption(kSelectionModeListParamOpt2);
+		selectionMode->appendOption(kSelectionModeListParamOpt1);
 		selectionMode->appendOption(kSelectionModeListParamOpt3);
 		selectionMode->setParent(groupSelection);
 		//Precision of selection to curve

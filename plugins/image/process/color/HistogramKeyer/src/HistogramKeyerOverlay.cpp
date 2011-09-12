@@ -160,7 +160,7 @@ bool HistogramKeyerOverlay::penDown( const OFX::PenArgs& args )
 		if(!_penDown)
 			_penDown = true;
 	}
-	if(_plugin->_paramSelectionMode->getValue() == 0)	//Selection mode is unique
+	if(_plugin->_paramSelectionMode->getValue() == 1)	//Selection mode is unique
 	{
 		getData().clearSelection();//reset past selection
 	}
@@ -248,7 +248,7 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 			}
 		}
 		// recompute histogram of selection
-		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale, /*selectionOnly=*/true );
+		_plugin->_doesComputeFullData = true;			//signal to plugin to recompute data
 	}
 	_penDown = false; //treatment is finished
 	return true;

@@ -61,6 +61,7 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 	_isCleaned = false;
 	_isNbStepChanged = false;
 	_isHistogramRefresh = false;
+	_doesComputeFullData = false;
 
 	//Initialize scoped pointer
 	_overlayDataCount = 0;
@@ -460,10 +461,11 @@ void HistogramKeyerPlugin::render( const OFX::RenderArguments &args )
 {
 	if(OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke")	/// @todo: HACK Nuke doesn't call changeClip function when time is changed
 	{
-		if(getOverlayData().isCurrentTimeModified(args.time)) //if time is changed
+		if(getOverlayData().isCurrentTimeModified(args.time) || _doesComputeFullData) //if time is changed
 		{
 			getOverlayData()._currentTime = args.time;
 			getOverlayData().computeFullData(this->_clipSrc,args.time,args.renderScale);
+			this->_doesComputeFullData = false;
 		}
 	}
 	doGilRender<HistogramKeyerProcess > ( *this, args );
