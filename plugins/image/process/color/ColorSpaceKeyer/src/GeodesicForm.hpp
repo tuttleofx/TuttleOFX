@@ -54,9 +54,7 @@ public:
 	
 public:
 	//Constructor of geodesic form
-	GeodesicForm();
-	//Copy constructor of geodesic form
-	GeodesicForm(const GeodesicForm& copy);		
+	GeodesicForm();		
 	
 	//Create a geodesic form centered in a point
 	void createGeodesicForm(const Ofx3DPointD& center);
@@ -77,6 +75,9 @@ public:
 	//Bounding box
 	void updateBoundingBox();																//if points vector has changed : update bounding box
 	bool isIntoBoundingBox(const Ofx3DPointD& testPoint);									//is testPoint into bounding box
+	
+	//Recopy geodesic form (evitate to extends spill form)
+	void copyGeodesicForm(const GeodesicForm& copy);
 	
 private:
 	//subdivise one face of the geodesic form

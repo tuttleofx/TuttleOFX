@@ -1098,73 +1098,13 @@ void GeodesicForm::updateBoundingBox(const Ofx3DPointD& testPoint)
 }
 
 /*
- * Return ID in points vector of a point
- */
-unsigned int getPointID(const Ofx3DPointD& point, const std::vector<Ofx3DPointD>& points)
-{
-	unsigned int i=0;   //indice
-	double epsilon = 0.0001;
-	bool found = false; //point has not been found yet
-	while(i<points.size() && !found)
-	{
-		if(fabs(point.x - points[i].x) < epsilon && fabs(point.y - points[i].y) < epsilon && fabs(point.z - points[i].z) < epsilon)
-		{
-			found = true;	//point has been found
-			return i;
-		}
-		else
-			++i;			//increments indice
-	}
-	std::cout << "pblem"<<std::endl;
-	return 0;
-}
-
-/*
  * Recopy constructor of geodesic form 
  */
-GeodesicForm::GeodesicForm(const GeodesicForm& copy)
+void GeodesicForm::copyGeodesicForm(const GeodesicForm& copy)
 {
-	//Clear data
-	_points.clear();
-	_faces.clear();
-	//Reserve memory
-	_points.reserve(copy._points.size());				//reserve memory for points vector
-	_faces.reserve(copy._faces.size());					//reserve memory for faces vector
-	//Geodesic form parameters
+	//Geodesic form parameters (recopy points)
 	for(unsigned int i=0; i<copy._points.size(); ++i)
-		_points.push_back(copy._points[i]);
-	
-	for(unsigned int j=0; j<copy._faces.size(); ++j)
-	{
-		PyramidTriangle pyTr;	//initialize face to add
-		//recopy points values
-		pyTr.point1 = &(_points[getPointID(*(copy._faces[j].point1),copy._points)]);	//copy point1
-		pyTr.point2 = &(_points[getPointID(*(copy._faces[j].point2),copy._points)]);	//copy point2
-		pyTr.point3 = &(_points[getPointID(*(copy._faces[j].point3),copy._points)]);	//copy point3
-		//recopy triangles vector
-		for(unsigned int k=0; k<copy._faces[j].triangles.size(); ++k)
-		{
-			Triangle tr;		//initialize triangle to add
-			//recopy points values
-			tr.point1 = &(_points[getPointID(*(copy._faces[j].triangles[k].point1),copy._points)]); //copy point1
-			tr.point2 = &(_points[getPointID(*(copy._faces[j].triangles[k].point2),copy._points)]); //copy point2
-			tr.point3 = &(_points[getPointID(*(copy._faces[j].triangles[k].point3),copy._points)]); //copy point3
-			//add triangle
-			pyTr.triangles.push_back(tr);
-		}
-		//add face
-		_faces.push_back(pyTr);
-	}
-	
-	//Copy attribute values
-	_nbDivisions = copy._nbDivisions;					//number of divisions of each faces
-	_radius = copy._radius;								//radius of geodesic form
-	_center = copy._center;								//center of the geodesic form
-	_idFaceIntersection = copy._idFaceIntersection;		//face of the current intersection
-	_intersectionPoint = copy._intersectionPoint;		//point of intersection between ray and geodesic form
-	_hasIntersection = copy._hasIntersection;			//is there an intersection
-	_boundingBox = copy._boundingBox;					//bounding box of the geodesic form
-	_scale = copy._scale;								//scale geodesic form
+		_points[i] = copy._points[i];
 }
 
 
