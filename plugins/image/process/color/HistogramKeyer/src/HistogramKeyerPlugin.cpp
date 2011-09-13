@@ -56,6 +56,9 @@ HistogramKeyerPlugin::HistogramKeyerPlugin( OfxImageEffectHandle handle )
 
 	_paramOutputSettingSelection = fetchChoiceParam( kOutputListParamLabel ); //output type (BW/alpha)
 	_paramReverseMaskSelection = fetchBooleanParam( kBoolReverseMask ); //reverse mask
+	
+	_paramButtonAppendToSelectionHSL = fetchPushButtonParam(kButtonAppendSelectionToCurveHSL);	//Append to selection HSL (HSL group)
+	_paramButtonAppendToSelectionRGB = fetchPushButtonParam(kButtonAppendSelectionToCurveRGB);	//Append to selection RGB (RGB group)
 
 	//Reset param booleans
 	_isCleaned = false;
@@ -213,8 +216,8 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 	else if(paramName == kButtonSelectionToCurveHSL || paramName == kButtonSelectionToCurveRGB)
 	{
 		//prepare buffer 
-		getOverlayData()._vNbStepCurveFromSelection = _paramSelectionFromCurve->getValue();	//change precision step
-		getOverlayData().computeCurveFromSelectionData( this->_clipSrc,args.time, args.renderScale);
+		getOverlayData()._vNbStepCurveFromSelection = _paramSelectionFromCurve->getValue();				//change precision step (precision)
+		getOverlayData().computeCurveFromSelectionData( this->_clipSrc,args.time, args.renderScale);	//compute curves
 
 		//getOverlayData().resetCurvesFromSelectionData();	//reset curve from selection buffer data
 		//RGB
@@ -420,6 +423,289 @@ void HistogramKeyerPlugin::changedParam( const OFX::InstanceChangedArgs &args, c
 						xPosition += step; //add step to Xposition
 					}
 					
+				}
+			}
+		}
+	}
+	//Append to curve
+	if(paramName == kButtonAppendSelectionToCurveHSL || paramName == kButtonAppendSelectionToCurveRGB)
+	{
+		//prepare buffer (compute with curve precision)
+		getOverlayData()._vNbStepCurveFromSelection = _paramSelectionFromCurve->getValue();				//change precision step (precision)
+		getOverlayData().computeCurveFromSelectionData( this->_clipSrc,args.time, args.renderScale);	//compute curves
+		if(paramName == kButtonAppendSelectionToCurveHSL)												//Append to curve (HSL)
+		{
+			for(unsigned int i=0; i<nbCurvesHSL; ++i)
+			{
+				if(	(i == 0 && _paramOverlayHSelection->getValue()) ||		// if button is append and Hue is selected
+					(i == 1 && _paramOverlaySSelection->getValue()) ||		// else if button append and Saturation is selected
+					(i == 2 && _paramOverlayLSelection->getValue()) )		// else if button append and Lightness is selected
+				{
+					//getMax of current selection buffer
+					double maxChannel; //will contain max of the current channel (HSL)
+					if(i == 0)	//working on Hue channel
+						maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferHue.begin(),getOverlayData()._curveFromSelection._bufferHue.end()));
+					else if(i == 1)//working on Saturation channel
+						maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferSaturation.begin(),getOverlayData()._curveFromSelection._bufferSaturation.end()));
+					else //working on Lightness channel
+						maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferLightness.begin(),getOverlayData()._curveFromSelection._bufferLightness.end()));
+
+					//Add points to current channel
+					double xPosition = 0.0;
+					double yPosition = 0.0;
+					double step =  (double)(1/(double)(getOverlayData()._vNbStepCurveFromSelection-1));	//compute step for curve display
+
+					//for each point
+					for(unsigned int x=0; x<getOverlayData()._vNbStepCurveFromSelection; ++x)
+					{
+						if(i == 0)	//working on Hue channel
+							yPosition = (double)((double)(getOverlayData()._curveFromSelection._bufferHue[x]));		//get current Y if Hue selection buffer
+						else if(i == 1)	//working on Saturation channel
+							yPosition = (double)((double)(getOverlayData()._curveFromSelection._bufferSaturation[x]));	//get current Y if Saturation selection buffer
+						else	//working on Lightness channel
+							yPosition = (double)((double)(getOverlayData()._curveFromSelection._bufferLightness[x]));		//get current Y if Lightness selection buffer
+
+						yPosition/=maxChannel; //yPosition between 0 and 1
+
+						if(x==0 || x == getOverlayData()._vNbStepCurveFromSelection-1)	//current point is last of first
+						{
+							//search for existing control point on x value
+							std::pair<double,double> currentPoint;			//define current point
+							unsigned int nbPointsInCurve = 0;				//define indice 
+							bool pointFound = false;						//point has not been found
+							while(nbPointsInCurve< _paramColorHSLSelection->getNControlPoints(i,args.time) && !pointFound)
+							{
+								currentPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,nbPointsInCurve); //get current point
+								if(currentPoint.first == x) //current point has the same X value than this we want to add
+									pointFound = true;		//point has been found
+								else
+									++nbPointsInCurve;		//increments indice
+							}
+							if(pointFound)	//control point is already existing so replace it
+							{
+								currentPoint.second += yPosition;			//add value to current control point
+								if(currentPoint.second > 1.0)				//clamp value to 1.0
+										currentPoint.second = 1.0;
+								_paramColorHSLSelection->setNthControlPoints(i,args.time,nbPointsInCurve,currentPoint,false);	//replace current control point
+							}
+							else			//control point is not existing so add a new one
+								_paramColorHSLSelection->addControlPoint( i, args.time,xPosition, yPosition, false );	//place the current point
+						}
+						else //filter 
+						{
+							double value;
+							double nextValue;
+							double previousValue;
+							if(i == 0)//Hue channel
+							{
+								value= (double)getOverlayData()._curveFromSelection._bufferHue[x];				//get actual value
+								nextValue = (double)getOverlayData()._curveFromSelection._bufferHue[x+1];		//get next value
+								previousValue = (double)getOverlayData()._curveFromSelection._bufferHue[x-1];	//get previous value
+							}
+							else if(i == 1)//Saturation channel
+							{
+								value= (double)getOverlayData()._curveFromSelection._bufferSaturation[x];				//get actual value
+								nextValue = (double)getOverlayData()._curveFromSelection._bufferSaturation[x+1];		//get next value
+								previousValue = (double)getOverlayData()._curveFromSelection._bufferSaturation[x-1];	//get previous value
+							}
+							else //Lightness channel
+							{
+								value= (double)getOverlayData()._curveFromSelection._bufferLightness[x];			//get actual value
+								nextValue = (double)getOverlayData()._curveFromSelection._bufferLightness[x+1];		//get next value
+								previousValue = (double)getOverlayData()._curveFromSelection._bufferLightness[x-1];	//get previous value
+							}
+
+							value/=maxChannel;				//set value between 0 and 1
+							nextValue/=maxChannel;			//set next value between 0 and 1
+							previousValue/=maxChannel;		//set previous value between 0 and 1
+
+							double betweenNextAndValue = (double)(nextValue-value);			//get interval between value and next  (0<= interval <=1)
+							double betweenPreviousAndValue = (double)(value-previousValue);	//get interval between value and previous (0<= interval <=1)
+							//get absolute values
+							if(betweenNextAndValue<0)		//change betweenNextAndValue negative to positive
+								betweenNextAndValue*=-1;
+							if(betweenPreviousAndValue<0)	//change betweenPreviousAndValue negative to positive
+								betweenPreviousAndValue*=-1;
+
+							if(betweenNextAndValue> 0.01 || betweenPreviousAndValue > 0.01)
+							{
+								//search for existing control point on x value
+								std::pair<double,double> currentPoint;			//define current point
+								unsigned int nbPointsInCurve = 0;				//define indice 
+								bool pointFound = false;						//point has not been found
+								while(nbPointsInCurve< _paramColorHSLSelection->getNControlPoints(i,args.time) && !pointFound)
+								{
+									currentPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,nbPointsInCurve); //get current point
+									if(currentPoint.first == x) //current point has the same X value than this we want to add
+										pointFound = true;		//point has been found
+									else
+										++nbPointsInCurve;		//increments indice
+								}
+								if(pointFound)	//control point is already existing so replace it
+								{
+									currentPoint.second += yPosition;	//add value to current control point
+									if(currentPoint.second > 1.0)		//clamp value to 1.0
+										currentPoint.second = 1.0;
+									_paramColorHSLSelection->setNthControlPoints(i,args.time,nbPointsInCurve,currentPoint,false);	//replace current control point
+								}
+								else			//control point is not existing so add a new one
+								{
+									_paramColorHSLSelection->addControlPoint( i, args.time,xPosition, yPosition, false );	//place the current point
+								}
+							}
+						}
+						xPosition += step; //add step to Xposition
+					}
+					//Correction pass
+					for(unsigned int currentP=1; currentP< _paramColorHSLSelection->getNControlPoints(i,args.time)-1; ++currentP)
+					{
+						//get current point value
+						std::pair<double,double> controlPointValue = _paramColorHSLSelection->getNthControlPoints(i,args.time,currentP);
+						//get next and previous values
+						std::pair<double,double> prevControlPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,currentP-1);
+						std::pair<double,double> nextControlPoint = _paramColorHSLSelection->getNthControlPoints(i,args.time,currentP+1);
+						//if current control point is not necessary
+						if(controlPointValue.second < prevControlPoint.second && controlPointValue.second < nextControlPoint.second)//current control point is not necessary
+							_paramColorHSLSelection->deleteControlPoint(i,currentP);												//delete current control point
+					}
+				}
+			}
+		}
+		if(paramName == kButtonAppendSelectionToCurveRGB)		//Append to curve (RGB) 
+		{
+			for(unsigned int i=0; i<nbCurvesRGB; ++i)
+			{
+				if(		(i == 0 && _paramOverlayRSelection->getValue()) ||		// if button is append and Red is selected
+						(i == 1 && _paramOverlayGSelection->getValue()) ||		// else if button is append and Green is selected
+						(i == 2 && _paramOverlayBSelection->getValue()) )		// else if button is append and Blue is selected
+				{
+					//getMax of current selection buffer
+					double maxChannel; //will contain max of the current channel (RGB)
+					if(i == 0)	//working on Red channel
+						maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferRed.begin(),getOverlayData()._curveFromSelection._bufferRed.end()));
+					else if(i == 1)//working on Green channel
+						maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferGreen.begin(),getOverlayData()._curveFromSelection._bufferGreen.end()));
+					else //working on Blue channel
+						maxChannel = *(std::max_element(getOverlayData()._curveFromSelection._bufferBlue.begin(),getOverlayData()._curveFromSelection._bufferBlue.end()));
+
+					//Add points to current channel
+					double xPosition = 0.0;
+					double yPosition = 0.0;
+					double step =  (double)(1/(double)(getOverlayData()._vNbStepCurveFromSelection-1));	//compute step for curve display
+
+					//for each point
+					for(unsigned int x=0; x<getOverlayData()._vNbStepCurveFromSelection; ++x)
+					{
+						if(i == 0)	//working on Red channel
+							yPosition = (double)((double)(getOverlayData()._curveFromSelection._bufferRed[x]));		//get current Y if Red selection buffer
+						else if(i == 1)	//working on Green channel
+							yPosition = (double)((double)(getOverlayData()._curveFromSelection._bufferGreen[x]));	//get current Y if Green selection buffer
+						else	//working on Blue channel
+							yPosition = (double)((double)(getOverlayData()._curveFromSelection._bufferBlue[x]));	//get current Y if Blue selection buffer
+
+						yPosition/=maxChannel; //yPosition between 0 and 1
+
+						if(x==0 || x == getOverlayData()._vNbStepCurveFromSelection-1)	//current point is last of first
+						{
+							//search for existing control point on x value
+							std::pair<double,double> currentPoint;			//define current point
+							unsigned int nbPointsInCurve = 0;				//define indice 
+							bool pointFound = false;						//point has not been found
+							while(nbPointsInCurve< _paramColorRGBSelection->getNControlPoints(i,args.time) && !pointFound)
+							{
+								currentPoint = _paramColorRGBSelection->getNthControlPoints(i,args.time,nbPointsInCurve); //get current point
+								if(currentPoint.first == x) //current point has the same X value than this we want to add
+									pointFound = true;		//point has been found
+								else
+									++nbPointsInCurve;		//increments indice
+							}
+							if(pointFound)	//control point is already existing so replace it
+							{
+								currentPoint.second += yPosition;			//add value to current control point
+								if(currentPoint.second > 1.0)				//clamp value to 1.0
+										currentPoint.second = 1.0;
+								_paramColorRGBSelection->setNthControlPoints(i,args.time,nbPointsInCurve,currentPoint,false);	//replace current control point
+							}
+							else			//control point is not existing so add a new one
+								_paramColorRGBSelection->addControlPoint( i, args.time,xPosition, yPosition, false );	//place the current point
+						}
+						else //filter 
+						{
+							double value;
+							double nextValue;
+							double previousValue;
+							if(i == 0)//Red channel
+							{
+								value= (double)getOverlayData()._curveFromSelection._bufferRed[x];				//get actual value
+								nextValue = (double)getOverlayData()._curveFromSelection._bufferRed[x+1];		//get next value
+								previousValue = (double)getOverlayData()._curveFromSelection._bufferRed[x-1];	//get previous value
+							}
+							else if(i == 1)//Green channel
+							{
+								value= (double)getOverlayData()._curveFromSelection._bufferGreen[x];					//get actual value
+								nextValue = (double)getOverlayData()._curveFromSelection._bufferGreen[x+1];				//get next value
+								previousValue = (double)getOverlayData()._curveFromSelection._bufferGreen[x-1];			//get previous value
+							}
+							else //Blue channel
+							{
+								value= (double)getOverlayData()._curveFromSelection._bufferBlue[x];						//get actual value
+								nextValue = (double)getOverlayData()._curveFromSelection._bufferBlue[x+1];				//get next value
+								previousValue = (double)getOverlayData()._curveFromSelection._bufferBlue[x-1];			//get previous value
+							}
+
+							value/=maxChannel;				//set value between 0 and 1
+							nextValue/=maxChannel;			//set next value between 0 and 1
+							previousValue/=maxChannel;		//set previous value between 0 and 1
+
+							double betweenNextAndValue = (double)(nextValue-value);			//get interval between value and next  (0<= interval <=1)
+							double betweenPreviousAndValue = (double)(value-previousValue);	//get interval between value and previous (0<= interval <=1)
+							//get absolute values
+							if(betweenNextAndValue<0)		//change betweenNextAndValue negative to positive
+								betweenNextAndValue*=-1;
+							if(betweenPreviousAndValue<0)	//change betweenPreviousAndValue negative to positive
+								betweenPreviousAndValue*=-1;
+
+							if(betweenNextAndValue> 0.01 || betweenPreviousAndValue > 0.01)
+							{
+								//search for existing control point on x value
+								std::pair<double,double> currentPoint;			//define current point
+								unsigned int nbPointsInCurve = 0;				//define indice 
+								bool pointFound = false;						//point has not been found
+								while(nbPointsInCurve< _paramColorRGBSelection->getNControlPoints(i,args.time) && !pointFound)
+								{
+									currentPoint = _paramColorRGBSelection->getNthControlPoints(i,args.time,nbPointsInCurve); //get current point
+									if(currentPoint.first == x) //current point has the same X value than this we want to add
+										pointFound = true;		//point has been found
+									else
+										++nbPointsInCurve;		//increments indice
+								}
+								if(pointFound)	//control point is already existing so replace it
+								{
+									currentPoint.second += yPosition;	//add value to current control point
+									if(currentPoint.second > 1.0)		//clamp value to 1.0
+										currentPoint.second = 1.0;
+									_paramColorRGBSelection->setNthControlPoints(i,args.time,nbPointsInCurve,currentPoint,false);	//replace current control point
+								}
+								else			//control point is not existing so add a new one
+								{
+									_paramColorRGBSelection->addControlPoint( i, args.time,xPosition, yPosition, false );	//place the current point
+								}
+							}
+						}
+						xPosition += step; //add step to Xposition
+					}
+					//Correction pass
+					for(unsigned int currentP=1; currentP< _paramColorRGBSelection->getNControlPoints(i,args.time)-1; ++currentP)
+					{
+						//get current point value
+						std::pair<double,double> controlPointValue = _paramColorRGBSelection->getNthControlPoints(i,args.time,currentP);
+						//get next and previous values
+						std::pair<double,double> prevControlPoint = _paramColorRGBSelection->getNthControlPoints(i,args.time,currentP-1);
+						std::pair<double,double> nextControlPoint = _paramColorRGBSelection->getNthControlPoints(i,args.time,currentP+1);
+						//if current control point is not necessary
+						if(controlPointValue.second < prevControlPoint.second && controlPointValue.second < nextControlPoint.second)//current control point is not necessary
+							_paramColorRGBSelection->deleteControlPoint(i,currentP);												//delete current control point
+					}
 				}
 			}
 		}

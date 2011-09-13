@@ -243,6 +243,12 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		selectionToCurveButtonRGB->setHint("Load selected RGB curves with selection data. \n Warning : the curves may not be refreshed click on overlay to refresh.");
 		selectionToCurveButtonRGB->setParent(groupRGB);
 		
+		//Append selection to curves button (RGB)
+		OFX::PushButtonParamDescriptor* appendSelectionToCurveRGB = desc.definePushButtonParam(kButtonAppendSelectionToCurveRGB);
+		appendSelectionToCurveRGB->setLabel(kButtonAppendSelectionToCurveRGBLabel);				//add label
+		appendSelectionToCurveRGB->setHint("Append current selection to selected RGB channels");//help
+		appendSelectionToCurveRGB->setParent(groupRGB);											//add to RGB group
+		
 		//Clean Button (HSL)
 		OFX::PushButtonParamDescriptor* resetButtonHSL = desc.definePushButtonParam(kButtonResetHSL);
 		resetButtonHSL->setLabel(kButtonResetHSLLabel);
@@ -253,8 +259,15 @@ void HistogramKeyerPluginFactory::describeInContext( OFX::ImageEffectDescriptor&
 		//Selection To Curves Button (HSL)
 		OFX::PushButtonParamDescriptor* selectionToCurveButtonHSL = desc.definePushButtonParam(kButtonSelectionToCurveHSL);
 		selectionToCurveButtonHSL->setLabel(kButtonSelectionToCurveHSLLabel);
-		selectionToCurveButtonHSL->setHint("Load selected RGB curves with selection data. \n Warning : the curves may not be refreshed click on overlay to refresh.");
+		selectionToCurveButtonHSL->setHint("Load selected HSL curves with selection data. \n Warning : the curves may not be refreshed click on overlay to refresh.");
 		selectionToCurveButtonHSL->setParent(groupHSL);
+		
+		//Append selection to curves button (HSL)
+		OFX::PushButtonParamDescriptor* appendSelectionToCurveHSL = desc.definePushButtonParam(kButtonAppendSelectionToCurveHSL);
+		appendSelectionToCurveHSL->setLabel(kButtonAppendSelectionToCurveHSLLabel);				//add label
+		appendSelectionToCurveHSL->setHint("Append current selection to selected HSL channels");//help
+		appendSelectionToCurveHSL->setParent(groupHSL);											//add to HSL group
+		
 		
 		//Close RGB group (group states by default on screen)
 		groupRGB->setOpen(false);

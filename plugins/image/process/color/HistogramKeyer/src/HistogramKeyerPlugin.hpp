@@ -79,6 +79,9 @@ public:
 	OFX::ChoiceParam* _paramOutputSettingSelection;	//output display list (BW/Alpha)
 	OFX::BooleanParam* _paramReverseMaskSelection;	//revert mask check box
 	
+	OFX::PushButtonParam* _paramButtonAppendToSelectionHSL;	//append to selection HSL - Push button
+	OFX::PushButtonParam* _paramButtonAppendToSelectionRGB;	//append to selection RGB - Push button
+	
 	bool _doesComputeFullData;					//does full data should be compute ?				
 	
 	/*Overlay data parameters*/
