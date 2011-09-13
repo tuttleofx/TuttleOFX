@@ -13,6 +13,11 @@ template<typename Scalar>
 struct ResizeProcessParams
 {
 	boost::gil::point2<Scalar> _size;
+
+	EParamFilter _filter;
+	double       _filterSize;
+	double       _paramB;
+	double       _paramC;
 };
 
 /**
@@ -32,18 +37,14 @@ public:
 
 	void updateVisibleTools();
 
-	void changedParam( const OFX::InstanceChangedArgs &args, const std::string &paramName );
+	void changedParam          ( const OFX::InstanceChangedArgs &args, const std::string &paramName );
 
-	bool getRegionOfDefinition( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
-	void getRegionsOfInterest( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
-	bool isIdentity( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
+	bool getRegionOfDefinition ( const OFX::RegionOfDefinitionArguments& args, OfxRectD& rod );
+	void getRegionsOfInterest  ( const OFX::RegionsOfInterestArguments& args, OFX::RegionOfInterestSetter& rois );
+	bool isIdentity            ( const OFX::RenderArguments& args, OFX::Clip*& identityClip, double& identityTime );
 
-	void render( const OFX::RenderArguments &args );
-	
-	const EParamFilter getFilter() const { return static_cast<EParamFilter>( _paramFilter->getValue() ); }
+	void render                ( const OFX::RenderArguments &args );
 
-	const double getParamB() const { return _paramB->getValue(); }
-	const double getParamC() const { return _paramC->getValue(); }
 public:
 	OFX::ChoiceParam*	_paramOptions;
 
@@ -61,11 +62,13 @@ public:
 
 	OFX::ChoiceParam*	_paramFilter;
 
+	OFX::DoubleParam*	_paramFilterSize;
+
 	OFX::BooleanParam*	_paramCenter;
 	OFX::Double2DParam*	_paramCenterPoint;
 
-        OFX::DoubleParam*	_paramB;
-        OFX::DoubleParam*	_paramC;
+	OFX::DoubleParam*	_paramB;
+	OFX::DoubleParam*	_paramC;
 };
 
 }

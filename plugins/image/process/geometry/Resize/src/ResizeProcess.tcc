@@ -16,12 +16,7 @@ template<class View>
 void ResizeProcess<View>::setup( const OFX::RenderArguments& args )
 {
 	ImageGilFilterProcessor<View>::setup( args );
-	_params	= _plugin.getProcessParams( args.renderScale );
-
-	_filter	= _plugin.getFilter();
-
-	_valB	= _plugin.getParamB();
-	_valC	= _plugin.getParamC();
+	_params = _plugin.getProcessParams( args.renderScale );
 }
 
 /**
@@ -44,69 +39,45 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 		matrix3x2<double>::get_translate( src_width/2.0 ,  src_height/2.0 );
 
 
-
-	switch( _filter )
+	switch( _params._filter )
 	{
 		case eParamFilterNearest	: resample_pixels_progress< terry::sampler::nearest_neighbor_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-        case eParamFilterBilinear	: resample_pixels_progress< terry::sampler::bilinear_sampler		    >( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		case eParamFilterBilinear	: resample_pixels_progress< terry::sampler::bilinear_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 
-		case eParamFilterBC	:
+		case eParamFilterBC :
 		{
 			terry::sampler::bc_sampler BCsampler;
-			BCsampler.valB = _valB;
-			BCsampler.valC = _valC;
+			BCsampler.valB = _params._paramB;
+			BCsampler.valC = _params._paramC;
 			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, BCsampler );
 			break;
 		}
 
-		case eParamFilterBicubic :
-		{
-			terry::sampler::bicubic_sampler bicubicSampler;
-			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, bicubicSampler );
-			break;
-		}
-		case eParamFilterCatrom :
-		{
-			terry::sampler::catrom_sampler catromSampler;
-			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, catromSampler );
-			break;
-		}
-		case eParamFilterKeys :
-		{
-			terry::sampler::keys_sampler keysSampler;
-			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, keysSampler );
-			break;
-		}
-		case eParamFilterMitchell :
-		{
-			terry::sampler::mitchell_sampler mitchellSampler;
-			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, mitchellSampler );
-			break;
-		}
-		case eParamFilterParzen :
-		{
-			terry::sampler::parzen_sampler parzenSampler;
-			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, parzenSampler );
-			break;
-		}
-		//case eParamFilterSimon		: resample_pixels_progress< terry::sampler::simon_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		//case eParamFilterRifman		: resample_pixels_progress< terry::sampler::rifman_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		case eParamFilterBicubic  : resample_pixels_progress< terry::sampler::bicubic_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
+		case eParamFilterCatrom   : resample_pixels_progress< terry::sampler::catrom_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
+		case eParamFilterKeys     : resample_pixels_progress< terry::sampler::keys_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
+		case eParamFilterSimon    : resample_pixels_progress< terry::sampler::simon_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
+		case eParamFilterRifman   : resample_pixels_progress< terry::sampler::rifman_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
 
-/*
-		case eParamFilterBicubic	: resample_pixels_progress< terry::sampler::bicubic_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterCatmul		: resample_pixels_progress< terry::sampler::catmul_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterKeys		: resample_pixels_progress< terry::sampler::keys_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterSimon		: resample_pixels_progress< terry::sampler::simon_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterRifman		: resample_pixels_progress< terry::sampler::rifman_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterMitchell	: resample_pixels_progress< terry::sampler::mitchell_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterParzen 	: resample_pixels_progress< terry::sampler::parzen_sampler			>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
+		case eParamFilterMitchell : resample_pixels_progress< terry::sampler::mitchell_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
+		case eParamFilterParzen   : resample_pixels_progress< terry::sampler::parzen_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
+
+		case eParamFilterGaussian : resample_pixels_progress< terry::sampler::gaussian_sampler	>( this->_srcView, this->_dstView, mat, procWindow, this ); break;
+
+		case eParamFilterLanczos  :
+		{
+			terry::sampler::lanczos_sampler lanczosSampler;
+			lanczosSampler.size = _params._filterSize;
+			resample_pixels_progress( this->_srcView, this->_dstView, mat, procWindow, this, lanczosSampler );
+			break;
+		}
+
 		case eParamFilterLanczos3	: resample_pixels_progress< terry::sampler::lanczos3_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterLanczos4	: resample_pixels_progress< terry::sampler::lanczos4_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterLanczos6	: resample_pixels_progress< terry::sampler::lanczos6_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
 		case eParamFilterLanczos12	: resample_pixels_progress< terry::sampler::lanczos12_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-		case eParamFilterGaussian	: resample_pixels_progress< terry::sampler::gaussian_sampler		>( this->_srcView, this->_dstView, mat, procWindow, this	); break;
-                */
-                default: break;
+
+		default: break;
 	}
 }
 

@@ -9,55 +9,82 @@ namespace sampler {
 
 struct bc_sampler
 {
-    double valB;
-    double valC;
+	double valB;
+	double valC;
 };
 
-struct bicubic_sampler : bc_sampler
+//
+// valC is equal to -a in the equation
+//
+struct cubic_sampler : bc_sampler
 {
-    bicubic_sampler()
-    {
-    	valB = 0.0;
-    	valC = 0.0;
-    }
+	cubic_sampler()
+	{
+		valB = 0.0;
+	}
+	void setAValueTo( double a ){valC = -a;}
+};
+
+struct bicubic_sampler : cubic_sampler
+{
+	bicubic_sampler()
+	{
+		cubic_sampler::setAValueTo( 0.0 );
+	}
 };
 
 // catmul-rom resampling function
-struct catrom_sampler : bc_sampler
+struct catrom_sampler : cubic_sampler
 {
-    catrom_sampler()
-    {
-    	valB = 0.0;
-    	valC = 0.5;
-    }
+	catrom_sampler()
+	{
+		cubic_sampler::setAValueTo( -0.5 );
+	}
 };
 
 // similar to catrom resampling function
-struct keys_sampler : bc_sampler
+struct keys_sampler : cubic_sampler
 {
-    keys_sampler()
-    {
-    	valB = 0.0;
-    	valC = 0.5;
-    }
+	keys_sampler()
+	{
+		cubic_sampler::setAValueTo( -0.5 );
+	}
+};
+
+// similar to catrom resampling function
+struct simon_sampler : cubic_sampler
+{
+	simon_sampler()
+	{
+		cubic_sampler::setAValueTo( -0.75 );
+	}
+};
+
+// similar to catrom resampling function
+struct rifman_sampler : cubic_sampler
+{
+	rifman_sampler()
+	{
+		cubic_sampler::setAValueTo( -1.0 );
+	}
 };
 
 struct mitchell_sampler : bc_sampler
 {
-    mitchell_sampler()
-    {
-    	valB = 1.0/3.0;
-    	valC = 1.0/3.0;
-    }
+	mitchell_sampler()
+	{
+		valB = 1.0/3.0;
+		valC = 1.0/3.0;
+	}
 };
 
 struct parzen_sampler : bc_sampler
 {
-    parzen_sampler()
-    {
-    	valB = 1.0;
-    	valC = 0.0;
-    }
+	parzen_sampler()
+	{
+		valB = 1.0;
+		valC = 0.0;
+	}
 };
 
 /**
@@ -83,23 +110,9 @@ struct parzen_sampler : bc_sampler
  * @param[out] weight return value to weight the pixel in filtering
 **/
 template < typename F >
-bool getWeight ( const long int&  pTLXOrY, const size_t index, const F distance, F& weight, bc_sampler sampler )
+bool getWeight ( const size_t& index, const F& distance, F& weight, bc_sampler& sampler )
 {
-	if( pTLXOrY < 0 ) // in case of pTL < 0  (equal to -1)
-	{
-		if( index == 0 )
-		{
-			weight = 1.0;
-			return true;
-		}
-		else
-		{
-			weight = 0.0;
-			return true;
-		}
-	}
-
-	if( distance < 1 )
+	if( distance <= 1 )
 	{
 		double P =   2.0 - 1.5 * sampler.valB - sampler.valC;
 		double Q = - 3.0 + 2.0 * sampler.valB + sampler.valC;
@@ -126,50 +139,46 @@ bool getWeight ( const long int&  pTLXOrY, const size_t index, const F distance,
 template <typename DstP, typename SrcView, typename F>
 bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& result )
 {
+	/*
+	 * pTL is the closest integer coordinate top left from p
+	 *
+	 *   pTL ---> x      x
+	 *              o <------ p
+	 *
+	 *            x      x
+	 */
+	point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
 
-		/*
-		 * pTL is the closest integer coordinate top left from p
-		 *
-		 *   pTL ---> x      x
-		 *              o <------ p
-		 *
-		 *            x      x
-		 */
-		point2<std::ptrdiff_t> pTL( ifloor( p ) ); //
+	// if we are outside the image, we return false to process miror/black operations
+	if( 	pTL.x < -1 ||
+		pTL.y < -1 ||
+		pTL.x > src.width() ||
+		pTL.y > src.height() )
+	{
+		return false;
+	}
 
-		// if we are outside the image, we return false to process miror/black operations
-		if( 	pTL.x < -1 ||
-				pTL.y < -1 ||
-				pTL.x > src.width() - 1 ||
-				pTL.y > src.height() - 1 )
-		{
-				return false;
-		}
+	// loc is the point in the source view
+	typedef typename SrcView::xy_locator xy_locator;
+	xy_locator loc = src.xy_at( pTL.x, pTL.y );
+	point2<F> frac( p.x - pTL.x, p.y - pTL.y );
 
-		// loc is the point in the source view
-		typedef typename SrcView::xy_locator xy_locator;
-		xy_locator loc = src.xy_at( pTL.x, pTL.y );
-		point2<F> frac( p.x - pTL.x, p.y - pTL.y );
+	ssize_t windowSize  = 4;             // 4 pixels:    A B C D
 
-		ssize_t windowSize  = 4;             // 4 pixels:    A B C D
+	std::vector<double> xWeights, yWeights;
 
-		std::vector<double> xWeights, yWeights;
+	xWeights.assign( windowSize , 0);
+	yWeights.assign( windowSize , 0);
 
-		xWeights.assign( windowSize , 0);
-		yWeights.assign( windowSize , 0);
+	// get horizontal weight for each pixels
+	for( ssize_t i = 0; i < windowSize; i++ )
+	{
+		getWeight( i, std::abs( (i-1) - frac.x ), xWeights.at(i), sampler );
+		getWeight( i, std::abs( (i-1) - frac.y ), yWeights.at(i), sampler );
+	}
 
-		// get horizontal weight for each pixels
-		for( ssize_t i = 0; i < windowSize; i++ )
-		{
-			int coef = (i>1)? -1 : 1;
-			getWeight( pTL.x, i, std::abs(i-1) + coef * frac.x, xWeights.at(i), sampler );
-			getWeight( pTL.y, i, std::abs(i-1) + coef * frac.y, yWeights.at(i), sampler );
-		}
-
-		//process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
-		bool res = details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );
-
-		return res;
+	//process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
+	return details::process2Dresampling( sampler, src, p, xWeights, yWeights, windowSize, loc, result );
 }
 
 }
