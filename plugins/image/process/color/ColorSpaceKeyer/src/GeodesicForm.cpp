@@ -715,7 +715,8 @@ bool GeodesicForm::isPointIntoGeodesicForm(const Ofx3DPointD& testPoint)
 			tr.point1 = _faces[i].triangles[j].point1;						//set point1
 			tr.point2 = _faces[i].triangles[j].point2;						//set point2
 			tr.point3 = _faces[i].triangles[j].point3;						//set point3
-			if(getIntersection2(testPoint,tr,_intersectionPoint,true))		//test inverse intersection
+			double s,t;
+			if(getIntersection2(testPoint,tr,_intersectionPoint,s,t,true))		//test inverse intersection
 			{
 				intersectionFound = true;									//there is an intersection
 				isPointInto = true;											//current point is into extended geodesic form				
@@ -851,7 +852,7 @@ void GeodesicForm::currentPointToSphere(Ofx3DPointD& point, const double& radius
  * @param pyramidTriangle triangle face 
  * @return if there is an intersection
  */
-bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTriangle& pyramidTriangle, Ofx3DPointD& intersectionPoint, const bool& inverse)
+bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTriangle& pyramidTriangle, Ofx3DPointD& intersectionPoint, double& s, double& t,const bool& inverse)
 {
 	double epsilon = 0.00000001;		//define epsilon
 	//Construct ray (intersection between ray and triangle)
@@ -944,7 +945,6 @@ bool GeodesicForm::getIntersection2(const Ofx3DPointD& point, const PyramidTrian
     D = uv * uv - uu * vv;
 	
 	// get and test parametric coordinates
-    double s, t;
     s = (uv * wv - vv * wu) / D;
     if (s < 0.0 || s > 1.0)			//intersection point is outside pyramidTriangle
 	{
@@ -978,8 +978,10 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
 	else if(pointChangeReference.x<0 && pointChangeReference.z<0)  {i=3;} //current point (X<0 && Z<0) => faces 3 and 7
 	
 	while(i<8 && !intersectionFound)
-	{									
-		if(getIntersection2(testPoint,_faces[i],_intersectionPoint, inverse))
+	{				
+		//parametric coordinates
+		double s,t;
+		if(getIntersection2(testPoint,_faces[i],_intersectionPoint,s,t, inverse))
 		{	
 			if(justIntersectionPoint)
 				return true;
@@ -991,7 +993,9 @@ bool GeodesicForm::testIntersection2(const Ofx3DPointD& testPoint, const bool& i
 				test.point2	= _faces[i].triangles[j].point2;				//set point2
 				test.point3 = _faces[i].triangles[j].point3;				//set point3
 				
-				if(getIntersection2(testPoint,test,_intersectionPoint))
+				//parametric coordinates test
+				double sT, tT;
+				if(getIntersection2(testPoint,test,_intersectionPoint,sT,tT))
 				{
 					//there is an intersection point
 					intersectionFound = true;						//An intersection has been found
@@ -1105,6 +1109,9 @@ void GeodesicForm::copyGeodesicForm(const GeodesicForm& copy)
 	//Geodesic form parameters (recopy points)
 	for(unsigned int i=0; i<copy._points.size(); ++i)
 		_points[i] = copy._points[i];
+	//Copy bounding box parameters
+	_boundingBox.max = copy._boundingBox.max;	//copy max value
+	_boundingBox.min = copy._boundingBox.min;	//copy min value
 }
 
 

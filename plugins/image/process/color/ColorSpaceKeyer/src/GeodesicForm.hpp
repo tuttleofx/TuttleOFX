@@ -86,7 +86,7 @@ private:
 	void createPointsOneFace(const PyramidTriangle& f, const int divisor);					//create all of needed point on one face
 	//compute intersection between a point and a triangle
 	bool getIntersection(const Ofx3DPointD& point, const Triangle& triangle);																					//intersection Moller
-	bool getIntersection2(const Ofx3DPointD& point, const PyramidTriangle& pyramidTriangle, Ofx3DPointD& intersectionPoint, const bool& inverse = false);		//intersection Dan Sunday
+	bool getIntersection2(const Ofx3DPointD& point, const PyramidTriangle& pyramidTriangle, Ofx3DPointD& intersectionPoint, double& s, double& t ,const bool& inverse = false);		//intersection Dan Sunday
 	//transform one point to sphere 
 	void currentPointToSphere(Ofx3DPointD& point, const double& radius);					//transform double pyramid to sphere	
 	//Extends one point
