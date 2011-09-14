@@ -25,7 +25,7 @@ struct Compute_alpha_pixel
     Pixel operator()( const Pixel& p )
     {
         using namespace boost::gil;
-        
+
         rgb32f_pixel_t convert_to_rgb;
         color_convert( p, convert_to_rgb ); // first step : p to rgb_pixel
 		pixel_clamp<rgb32f_pixel_t>(0, 1)( convert_to_rgb, convert_to_rgb );

@@ -332,8 +332,7 @@ void ColorSpaceKeyerPlugin::render( const OFX::RenderArguments &args )
 			}
 			//extends geodesic forms
 			getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicFormColor); //extends geodesic form (color)
-			getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicFormSpill); //extends geodesic form (spill)
-			//getCloudPointData()._geodesicFormSpill = GeodesicForm(getCloudPointData()._geodesicFormColor);
+			getCloudPointData()._geodesicFormSpill.copyGeodesicForm(getCloudPointData()._geodesicFormColor);						  //extends geodesic form (spill)
 			getCloudPointData()._averageColor.extendGeodesicForm(_clipSpill,args.renderScale,getCloudPointData()._geodesicFormSpill); //extends geodesic form (spill)
 		}
 	}
@@ -373,16 +372,12 @@ void ColorSpaceKeyerPlugin::updateGeodesicForms(const OFX::InstanceChangedArgs& 
 		getCloudPointData()._geodesicFormSpill.subdiviseFaces(getCloudPointData()._averageColor._averageValue,_paramIntNbOfDivisionsGF->getValue());	//update spill geodesic form
 	}
 	//extends geodesic forms
-	getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicFormColor); //extends color geodesic form
-	getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicFormSpill); //extends spill geodesic form (color clip)
-	//getCloudPointData()._geodesicFormSpill = GeodesicForm(getCloudPointData()._geodesicFormColor);
-	getCloudPointData()._averageColor.extendGeodesicForm(_clipSpill,args.renderScale,getCloudPointData()._geodesicFormSpill); //extends spill geodesic form (spill clip)
+	getCloudPointData()._averageColor.extendGeodesicForm(_clipColor,args.renderScale,getCloudPointData()._geodesicFormColor);	//extends color geodesic form
+	getCloudPointData()._geodesicFormSpill.copyGeodesicForm(getCloudPointData()._geodesicFormColor);							//extends spill geodesic form (color clip)
+	getCloudPointData()._averageColor.extendGeodesicForm(_clipSpill,args.renderScale,getCloudPointData()._geodesicFormSpill);	//extends spill geodesic form (spill clip)
 	_updateVBO = true;			//update VBO in overlay
 	this->redrawOverlays();		//redraw scene
 }
-
-
-
 
 
 
