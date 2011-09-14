@@ -7,10 +7,10 @@ import os ;
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
-    : build-dir $(BUILD)/Exr
-    ;
+	: requirements
+		<toolset>msvc:<define>_SCL_SECURE_NO_WARNINGS
+	: build-dir $(BUILD)/Exr
+	;
 
 use-project /libexr : $(3RD_PARTY)/openexr ;
 
@@ -18,13 +18,10 @@ use-project /libexr : $(3RD_PARTY)/openexr ;
 # Product 
 ###############################################################################
 plugin Exr : 
-    [ glob-tree *.cpp : tests ]
-    /boost//system
-    /boost//filesystem
-    /boost//regex
-    /tuttleplugin/<link>static
-    /libexr
-    ;
+	[ glob-tree *.cpp : tests ]
+	/tuttleplugin/<link>static
+	/libexr
+	;
 
 ###############################################################################
 # Automatic install

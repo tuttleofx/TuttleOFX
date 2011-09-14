@@ -6,24 +6,21 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src
-        <os>LINUX:<include>/usr/include
-        <os>LINUX:<linkflags>-ljpeg
-    : build-dir $(BUILD)/Jpeg
-    ;
+	: requirements
+		<include>src
+		<os>LINUX:<include>/usr/include
+		<os>LINUX:<linkflags>-ljpeg
+	: build-dir $(BUILD)/Jpeg
+	;
 
 
 ###############################################################################
 # Product 
 ###############################################################################
 plugin Jpeg :
-        [ glob-tree *.cpp : tests ]
-        /boost//system
-        /boost//filesystem
-        /boost//regex
-        /tuttleplugin/<link>static
-        ;
+		[ glob-tree *.cpp : tests ]
+		/tuttleplugin/<link>static
+	;
 ###############################################################################
 # Automatic install
 ###############################################################################

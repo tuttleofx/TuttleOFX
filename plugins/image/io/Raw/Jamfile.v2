@@ -6,10 +6,11 @@
 # Global project requirements
 ###############################################################################
 project
-    : requirements
-        <include>src/reader
-    : build-dir $(BUILD)/Raw
-    ;
+	: requirements
+		<include>src/reader
+	:
+		build-dir $(BUILD)/Raw
+	;
 
 use-project /raw    : $(3RD_PARTY)/libraw ;
 
@@ -17,13 +18,10 @@ use-project /raw    : $(3RD_PARTY)/libraw ;
 # Product 
 ###############################################################################
 plugin  Raw : 
-        [ glob-tree *.cpp : tests ]
-        /boost//system
-        /boost//filesystem
-        /boost//regex
-        /tuttleplugin/<link>static
-        /raw
-        ;
+		[ glob-tree *.cpp : tests ]
+		/tuttleplugin/<link>static
+		/raw
+	;
 
 ###############################################################################
 # Automatic install
