@@ -66,7 +66,11 @@ bool sample( lanczos_sampler sampler, const SrcView& src, const point2<F>& p, Ds
 
 	size_t middlePosition = floor((windowSize - 1) * 0.5);
 
+	//xWeights.at(middlePosition) = 1.0;
+	//yWeights.at(middlePosition) = 1.0;
+
 	// get horizontal weight for each pixels
+
 	for( ssize_t i = 0; i < windowSize; i++ )
 	{
 		getLanczosWeight( std::abs( (i-middlePosition) - frac.x ), xWeights.at(i), sampler );

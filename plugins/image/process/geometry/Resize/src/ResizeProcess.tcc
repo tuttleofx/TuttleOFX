@@ -33,10 +33,27 @@ void ResizeProcess<View>::multiThreadProcessImages( const OfxRectI& procWindow )
 	double dst_width  = std::max<double>(this->_dstView.width () -1,1);
 	double dst_height = std::max<double>(this->_dstView.height() -1,1);
 
-	matrix3x2<double> mat =
-		matrix3x2<double>::get_translate(-dst_width/2.0, -dst_height/2.0) *
-		matrix3x2<double>::get_scale( (src_width+1) / dst_width, (src_height +1)/ dst_height) *
-		matrix3x2<double>::get_translate( src_width/2.0 ,  src_height/2.0 );
+	//TUTTLE_COUT("\E[1;31mResize Position = " << -( _params._centerPoint.x - dst_width * 0.5) << "x" << -( _params._centerPoint.y - dst_height * 0.5) << "\E[0;0m");
+
+
+
+	matrix3x2<double> mat;
+
+	if( _params._changeCenter )
+	{
+		mat =	matrix3x2<double>::get_translate( -( _params._centerPoint.x - dst_width * 0.5) , -( _params._centerPoint.y - dst_height * 0.5) ) *
+			matrix3x2<double>::get_translate( - dst_width * 0.5, - dst_height * 0.5 ) *
+			matrix3x2<double>::get_scale    ( (src_width + 1) / (dst_width + 1 ), (src_height + 1) / (dst_height + 1) ) *
+			matrix3x2<double>::get_translate( src_width * 0.5 , src_height * 0.5 )
+			;
+	}
+	else
+	{
+		mat =	matrix3x2<double>::get_translate( - dst_width * 0.5, - dst_height * 0.5 ) *
+			matrix3x2<double>::get_scale    ( (src_width + 1) / (dst_width + 1 ), (src_height + 1) / (dst_height + 1) ) *
+			matrix3x2<double>::get_translate( src_width * 0.5 , src_height * 0.5 )
+			;
+	}
 
 
 	switch( _params._filter )

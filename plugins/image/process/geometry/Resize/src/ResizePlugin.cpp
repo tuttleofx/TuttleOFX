@@ -121,15 +121,21 @@ ResizeProcessParams<ResizePlugin::Scalar> ResizePlugin::getProcessParams( const 
 {
 	ResizeProcessParams<Scalar> params;
 
-	OfxPointD size     = _paramOutputFormat -> getValue();
-	params._size.x     = size.x;
-	params._size.y     = size.y;
+	OfxPointD size        = _paramOutputFormat -> getValue();
+	OfxPointD centerPoint = _paramCenterPoint -> getValue();
 
-	params._paramB     = _paramB->getValue();
-	params._paramC     = _paramC->getValue();
-	params._filterSize = _paramFilterSize->getValue();
+	params._size.x        = size.x;
+	params._size.y        = size.y;
 
-	params._filter     = static_cast<EParamFilter>( _paramFilter->getValue() );
+	params._centerPoint.x = centerPoint.x;
+	params._centerPoint.y = centerPoint.y;
+
+	params._changeCenter  = _paramCenter->getValue();
+	params._paramB        = _paramB->getValue();
+	params._paramC        = _paramC->getValue();
+	params._filterSize    = _paramFilterSize->getValue();
+
+	params._filter        = static_cast<EParamFilter>( _paramFilter->getValue() );
 
 	return params;
 }
@@ -180,21 +186,12 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 				case eParamSquare1k:		sizex = 1024; sizey = 1024; break;
 				case eParamSquare2k:		sizex = 2048; sizey = 2048; break;
 			}
-			if(_paramCenter->getValue() == false)
-			{ // not center resizing
-				rod.x1 = 0;
-				rod.y1 = 0;
-				rod.x2 = sizex;
-				rod.y2 = sizey;
-			}
-			else
-			{ // center resizing
-				rod.x1 = centerPoint.x - ( sizex * 0.5 );
-				rod.y1 = centerPoint.y - ( sizey * 0.5 );
-				rod.x2 = centerPoint.x + ( sizex * 0.5 );
-				rod.y2 = centerPoint.y + ( sizey * 0.5 );
-			}
-			//TUTTLE_COUT( rod.x1 << ", " << rod.y1 << " || " << rod.x2 << ", " << rod.y2 );
+
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = sizex;
+			rod.y2 = sizey;
+
 			modified = true;
 			return true;
 		}
@@ -219,20 +216,12 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 					sizey   = 1.0*srcRodSize.x*_paramSize->getValue()/srcRodSize.y;
 				}
 			}
-			if(_paramCenter->getValue() == false)
-			{ // not center resizing
-				rod.x1 = 0;
-				rod.y1 = 0;
-				rod.x2 = sizex;
-				rod.y2 = sizey;
-			}
-			else
-			{ // center resizing
-				rod.x1 = centerPoint.x-sizex*0.5;
-				rod.y1 = centerPoint.y-sizey*0.5;
-				rod.x2 = centerPoint.x+sizex*0.5;
-				rod.y2 = centerPoint.y+sizey*0.5;
-			}
+
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = sizex;
+			rod.y2 = sizey;
+
 			modified = true;
 			return true;
 		}
@@ -263,20 +252,12 @@ bool ResizePlugin::getRegionOfDefinition( const OFX::RegionOfDefinitionArguments
 				scalex = scale;
 				scaley = scale;
 			}
-			if(_paramCenter->getValue() == false)
-			{ // not center resizing
-				rod.x1 = 0;
-				rod.y1 = 0;
-				rod.x2 = pMax.x * scalex;
-				rod.y2 = pMax.y * scaley;
-			}
-			else
-			{ // center resizing
-				rod.x1 = centerPoint.x- ( srcRodSize.x * scalex * 0.5 );
-				rod.y1 = centerPoint.y- ( srcRodSize.y * scaley * 0.5 );
-				rod.x2 = centerPoint.x+ ( srcRodSize.x * scalex * 0.5 );
-				rod.y2 = centerPoint.y+ ( srcRodSize.y * scaley * 0.5 );
-			}
+
+			rod.x1 = 0;
+			rod.y1 = 0;
+			rod.x2 = pMax.x * scalex;
+			rod.y2 = pMax.y * scaley;
+
 			modified = true;
 			return true;
 		}

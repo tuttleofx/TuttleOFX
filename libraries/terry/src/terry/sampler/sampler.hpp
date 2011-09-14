@@ -3,7 +3,6 @@
 
 #include "nearestNeighbor.hpp"
 #include "bilinear.hpp"
-#include "bicubic.hpp"
 #include "bc.hpp"
 #include "gaussian.hpp"
 #include "lanczos.hpp"

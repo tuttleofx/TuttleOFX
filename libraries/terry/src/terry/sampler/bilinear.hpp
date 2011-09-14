@@ -21,7 +21,7 @@ bool getWeight ( const long int&  pTLXOrY, const F& distance, const size_t index
 {
 	if( distance < 1 )
 	{
-		weight = (pTLXOrY > -1 ) ? (1.0 - distance) : 1.0;
+		weight = (1.0 - distance);
 		return true;
 	}
 	else

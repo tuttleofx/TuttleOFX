@@ -13,6 +13,8 @@ template<typename Scalar>
 struct ResizeProcessParams
 {
 	boost::gil::point2<Scalar> _size;
+	bool                       _changeCenter;
+	boost::gil::point2<Scalar> _centerPoint;
 
 	EParamFilter _filter;
 	double       _filterSize;

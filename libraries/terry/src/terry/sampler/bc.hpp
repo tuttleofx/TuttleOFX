@@ -152,8 +152,8 @@ bool sample( bc_sampler sampler, const SrcView& src, const point2<F>& p, DstP& r
 	// if we are outside the image, we return false to process miror/black operations
 	if( 	pTL.x < -1 ||
 		pTL.y < -1 ||
-		pTL.x > src.width() ||
-		pTL.y > src.height() )
+		pTL.x > src.width() - 1 ||
+		pTL.y > src.height() - 1 )
 	{
 		return false;
 	}
