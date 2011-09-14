@@ -82,7 +82,8 @@ public:
 	OFX::PushButtonParam* _paramButtonAppendToSelectionHSL;	//append to selection HSL - Push button
 	OFX::PushButtonParam* _paramButtonAppendToSelectionRGB;	//append to selection RGB - Push button
 	
-	bool _doesComputeFullData;					//does full data should be compute ?				
+	bool _doesComputeFullData;					//does full data should be compute ?
+	bool _isRendering;							//is plugin rendering ? (if rendering don't modify data)
 	
 	/*Overlay data parameters*/
 	boost::scoped_ptr<OverlayData> _overlayData;	//scoped pointer points the overlay data (or NULL)

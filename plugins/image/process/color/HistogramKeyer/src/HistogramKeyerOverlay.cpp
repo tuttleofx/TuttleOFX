@@ -247,8 +247,14 @@ bool HistogramKeyerOverlay::penUp( const OFX::PenArgs& args )
 					getData()._imgBool[_y][_x] = 255;	//mark all of the selected pixel
 			}
 		}
-		// recompute histogram of selection
-		_plugin->_doesComputeFullData = true;			//signal to plugin to recompute data
+		//if plugin is not rendering recompute full data else ask to rendering function to do it
+		if(!_plugin->_isRendering)
+		{
+			getData()._currentTime = args.time;
+			getData().computeFullData(_plugin->_clipSrc,args.time,args.renderScale);
+		}
+		else // HACK : recompute histogram of selection with render function
+		_plugin->_doesComputeFullData = true;	//signal to plugin to recompute data
 	}
 	_penDown = false; //treatment is finished
 	return true;

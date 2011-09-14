@@ -745,16 +745,19 @@ bool HistogramKeyerPlugin::isIdentity( const OFX::RenderArguments& args, OFX::Cl
  */
 void HistogramKeyerPlugin::render( const OFX::RenderArguments &args )
 {
+	_isRendering = true;		//plugin is rendering
 	if(OFX::getImageEffectHostDescription()->hostName == "uk.co.thefoundry.nuke")	/// @todo: HACK Nuke doesn't call changeClip function when time is changed
 	{
 		if(getOverlayData().isCurrentTimeModified(args.time) || _doesComputeFullData) //if time is changed
 		{
 			getOverlayData()._currentTime = args.time;
 			getOverlayData().computeFullData(this->_clipSrc,args.time,args.renderScale);
-			this->_doesComputeFullData = false;
+			_doesComputeFullData = false;
 		}
 	}
 	doGilRender<HistogramKeyerProcess > ( *this, args );
+	this->redrawOverlays();		//redraw scene
+	_isRendering = false;		//plugin is not rendering anymore
 }
 
 /// @brief Overlay data
