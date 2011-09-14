@@ -314,15 +314,15 @@ void HistogramKeyerOverlay::displaySelectedAreas( const OfxPointI fullImgSize, c
 		GL_UNSIGNED_BYTE, 	//color kind
 		getData()._imgBool.data()		// data buffer
 	); 	
-	glColor4f(1.0f,1.0f,1.0f,0.2f);
+	glColor4f(1.0f,1.0f,1.0f,0.5f);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	//Draw Texture on screen	
 	glBegin(GL_QUADS);
-    glTexCoord2d(0,1);  glVertex2i(pixelRoD.x1,pixelRoD.y2); //glVertex2d(0,fullImgSize.y);			//Top Left
+    glTexCoord2d(0,1);  glVertex2i(pixelRoD.x1,pixelRoD.y2); //glVertex2d(0,fullImgSize.y);				//Top Left
 	glTexCoord2d(1,1);  glVertex2i(pixelRoD.x2,pixelRoD.y2); //glVertex2d(fullImgSize.x,fullImgSize.y);	//Top Right
-	glTexCoord2d(1,0);  glVertex2i(pixelRoD.x2,pixelRoD.y1); //glVertex2d(fullImgSize.x,0);			//Bottom Right
-	glTexCoord2d(0,0);  glVertex2i(pixelRoD.x1,pixelRoD.y1); //glVertex2d(0,0);				//Bottom Left
+	glTexCoord2d(1,0);  glVertex2i(pixelRoD.x2,pixelRoD.y1); //glVertex2d(fullImgSize.x,0);				//Bottom Right
+	glTexCoord2d(0,0);  glVertex2i(pixelRoD.x1,pixelRoD.y1); //glVertex2d(0,0);							//Bottom Left
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glColor3f(1.0f,0.0f,0.0f);
@@ -338,7 +338,7 @@ void HistogramKeyerOverlay::displaySelectionZone()
 	glEnable(GL_LINE_STIPPLE);
 	glLineStipple(1, (short) 0x0101);	//to draw -------
 	glBegin( GL_LINE_LOOP );
-	glColor3f(.5f,0.5f,0.5f);			//white
+	glColor3f(.6f,0.6f,0.6f);			//white
 	glVertex2f(_squareBegin.x,_squareBegin.y);	//draw selection square
 	glVertex2f(_squareBegin.x,_squareEnd.y);
 	glVertex2f(_squareEnd.x,_squareEnd.y);
