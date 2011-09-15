@@ -286,6 +286,7 @@ bool HistogramKeyerOverlay::keyUp( const OFX::KeyArgs& args )
 		_keyDown ) //if the release key is Ctrl (and it has been pressed before)
 	{
 		_keyDown = false;	//treatment ends
+		_penDown = false;	//pen down 
 		getData().computeFullData( _plugin->_clipSrc, args.time, args.renderScale );
 		return true; //event captured
 	}
