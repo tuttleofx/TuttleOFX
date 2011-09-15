@@ -2,7 +2,8 @@
 #define _TERRY_SAMPLER_DETAILS_HPP_
 
 #include <boost/gil/extension/numeric/pixel_numeric_operations.hpp>
-//#include <boost/math/constants/constants.hpp>
+
+#include <terry/clamp.hpp>
 
 #include <cmath>
 #include <vector>
@@ -12,6 +13,85 @@ namespace terry {
 using namespace boost::gil;
 namespace sampler {
 namespace details {
+
+template< typename F>
+void proc( F& pixel)
+{
+}
+
+template< >
+void proc( rgb8_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgb8");
+}
+
+template< >
+void proc( rgb16_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgb16");
+}
+
+template< >
+void proc( rgb32_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgb32");
+}
+
+template< >
+void proc( rgb8s_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgb8s");
+}
+
+template< >
+void proc( rgb16s_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgb16s");
+}
+
+template< >
+void proc( rgb32s_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgb32s");
+}
+
+// alpha
+
+template< >
+void proc( rgba8_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgba8");
+}
+
+template< >
+void proc( rgba16_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgba16");
+}
+
+template< >
+void proc( rgba32_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgba32");
+}
+
+template< >
+void proc( rgba8s_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgba8s");
+}
+
+template< >
+void proc( rgba16s_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgba16s");
+}
+
+template< >
+void proc( rgba32s_pixel_t& pixel)
+{
+	TUTTLE_COUT("rgba32s");
+}
 
 template <typename Weight>
 struct add_dst_mul_src_channel
@@ -105,7 +185,7 @@ template <typename DstP, typename SrcView, typename Sampler, typename F>
 bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>& p, const std::vector<double>& xWeights, const std::vector<double>& yWeights, const size_t& windowSize,typename SrcView::xy_locator& loc, DstP& result )
 {
 	typedef typename SrcView::value_type SrcP;
-	typedef pixel<F, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
+	typedef pixel<float, devicen_layout_t<num_channels<SrcView>::value> > SrcC;
 
 	point2<std::ptrdiff_t> pTL( ifloor( p ) ); // the closest integer coordinate top left from p
 
@@ -172,10 +252,14 @@ bool process2Dresampling( Sampler& sampler, const SrcView& src, const point2<F>&
 	// vertical process
 	process1Dresampling<SrcC, F, SrcC> () ( xProcessed, yWeights, mp );
 
+	// result is rgba8
+	proc( mp );
 	// Convert from floating point average value to the source type
 	DstP src_result;
-	cast_pixel   ( mp, src_result );
+	cast_pixel  ( mp, src_result );
 	color_convert( src_result, result );
+
+
 	return true;
 }
 
