@@ -42,7 +42,6 @@ public:
 	OFX::PushButtonParam* _paramPushButtonAverageCompute;	//color average computing - Push button
 	OFX::BooleanParam* _paramBoolSeeSelection;			//see color selection on overlay - check box
 	OFX::DoubleParam* _paramDoubleScaleGF;				//scale geodesic form - Double parameters
-	OFX::DoubleParam* _paramDoubleToleranceGF;			//tolerance geodesic form - Double parameters
 	OFX::BooleanParam* _paramBoolSeeSpillSelection;		//see spill selection on overlay - check box
 	OFX::BooleanParam* _paramBoolDisplaySpillGF;		//see spill geodesic form on screen - check box
 	

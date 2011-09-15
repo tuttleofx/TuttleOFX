@@ -50,7 +50,6 @@ public:
 	BoundingBox _boundingBox;					//bounding box of the geodesic form
 	//Scale value
 	double _scale;								//scale geodesic form
-	double _tolerance;							//tolerance of geodesic form (for extends)
 	
 public:
 	//Constructor of geodesic form
@@ -79,6 +78,9 @@ public:
 	//Recopy geodesic form (evitate to extends spill form)
 	void copyGeodesicForm(const GeodesicForm& copy);
 	
+	//Scale geodesic form (multiplier result after extends)
+	void scaleGeodesicForm(const double scale);
+	
 private:
 	//subdivise one face of the geodesic form
 	void subdiviseOneFace(PyramidTriangle& f, const int divisor);							//sub-divise one face
@@ -95,7 +97,6 @@ private:
 	void updateBoundingBox(const Ofx3DPointD& testPoint);									//update bounding box (compare with one point)
 	//test
 	void testOnePointFunction();															//test overlay
-
 };
 
 }

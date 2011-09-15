@@ -15,8 +15,7 @@ GeodesicForm::GeodesicForm() {
 	_faces.reserve(8);			//there are 8 big face in the Geodesic form (two pyramids)	
 	//initialize intersection attribute
 	_hasIntersection = false;	//there is not intersection
-	_idFaceIntersection = 9;	//there is not intersection face
-	_tolerance = 0;				//tolerance is null by default		
+	_idFaceIntersection = 9;	//there is not intersection face	
 }
 
 /*
@@ -778,7 +777,7 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 {
 	
 	//compute vector (center-point to Move)
-	double vectorCenterPointToMove[3];							//initialize
+	double vectorCenterPointToMove[3];						//initialize
 	vectorCenterPointToMove[0] = pointToMove.x - _center.x;	//X value
 	vectorCenterPointToMove[1] = pointToMove.y - _center.y;	//Y value
 	vectorCenterPointToMove[2] = pointToMove.z - _center.z;	//Z value
@@ -797,7 +796,6 @@ bool GeodesicForm::extendsOneTrianglePoint(Ofx3DPointD& pointToMove, const doubl
 	double cosAngleIntersectionPointToMove = DOT(vectorCenterPointToMove,testPointCenterVector);
 	//compute new norm triangle.point3
 	double hypothenusCenterPointToMove = normTestPointCenterVector/cosAngleIntersectionPointToMove; //compute new norm
-	hypothenusCenterPointToMove *= _scale + _tolerance;						//multiply by scale value
 	if(normVectorCenterPointToMove > hypothenusCenterPointToMove) //compare current norm with existing norm
 	{
 		//nothing to do point to move is enough far of center
@@ -1112,6 +1110,31 @@ void GeodesicForm::copyGeodesicForm(const GeodesicForm& copy)
 	//Copy bounding box parameters
 	_boundingBox.max = copy._boundingBox.max;	//copy max value
 	_boundingBox.min = copy._boundingBox.min;	//copy min value
+}
+
+/*
+ * Scale geodesic form (multiplier result after extends)
+ */
+void GeodesicForm::scaleGeodesicForm(const double scale)
+{
+	for(unsigned int i=0; i< _points.size(); ++i)
+	{
+		//compute vector
+		double vect[3];	//initialize vector
+		vect[0] = _points[i].x - _center.x;		//compute x value
+		vect[1] = _points[i].y - _center.y;		//compute y value
+		vect[2] = _points[i].z - _center.z;		//compute z value
+		
+		//scale vector
+		vect[0]*= scale;
+		vect[1]*= scale;
+		vect[2]*= scale;
+		
+		//set new values
+		_points[i].x = vect[0] + _center.x;		//set new X value
+		_points[i].y = vect[1] + _center.y;		//set new Y value
+		_points[i].z = vect[2] + _center.z;		//set new Z value
+	}
 }
 
 
