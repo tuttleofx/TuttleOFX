@@ -1,0 +1,6 @@
+Import( 'project', 'libs' )
+
+codedoc = project.env.Doxygen( '#doc/code/Doxyfile' )
+Alias( ['doc', 'codedoc', 'doxygen'], codedoc )
+Clean( ['doc', 'codedoc', 'doxygen'], ['#dist/doc/code'] )
+

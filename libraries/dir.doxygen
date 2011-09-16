@@ -1,0 +1,13 @@
+
+/**
+ * @dir libraries
+ * @brief All internal libraries
+ *
+ * @dir libraries/tuttle
+ * @brief The tuttle libraries. It's a group of 3 libraries: the "host" part, the "plugin" part and a "common" part with utilities.
+ *
+ * @dir libraries/openfxHack
+ * @brief A copy of the official openfx API and openfx plugin wrapping with some enhancements and fixes.
+ *
+ *
+ */

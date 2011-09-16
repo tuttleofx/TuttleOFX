@@ -1,0 +1,43 @@
+
+/**
+ * @dir plugins
+ * @brief Contains all plugins.
+ *
+ * @dir plugin/image
+ * @brief The output of these plugins are images.
+ *
+ * @dir plugin/image/process
+ * @brief All image processing plugins.
+ *
+ * @dir plugin/image/process/color
+ * @brief All process using a per pixel transformation. So it only color transformation.
+ *
+ * @dir plugin/image/process/filter
+ * @brief All filters: each pixel depends on it's pixels environment.
+ *
+ * @dir plugin/image/process/geometry
+ * @brief All nodes modifying the image geometry. They distort the image.
+ *
+ * @dir plugin/image/process/math
+ * @brief Per pixel mathematical expression.
+ * @todo need to be moved in "color" directory
+ *
+ * @dir plugin/image/process/time
+ * @brief Plugins modifying the time.
+ *
+ * @dir plugin/image/process/transition
+ * @brief Transition between 2 clips.
+ *
+ * @dir plugin/image/io
+ * @brief Image IO plugins.
+ *
+ * @dir plugin/image/generator
+ * @brief Image generator nodes.
+ *
+ * @dir plugin/params
+ * @brief The output of the plugins are parameters.
+ *
+ *
+ *
+ *
+ */
