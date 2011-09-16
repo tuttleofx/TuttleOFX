@@ -17,15 +17,15 @@
 
 #include <iostream>
 
-namespace			bpo		= boost::program_options;
-namespace			bal		= boost::algorithm;
-namespace			tth		= tuttle::host;
+namespace           bpo         = boost::program_options;
+namespace           bal         = boost::algorithm;
+namespace           tth         = tuttle::host;
 
 sam::Color          _color;
-bool				color		= false;
-bool				properties	= false;
-bool				clips		= false;
-bool				parameters	= false;
+bool                color       = false;
+bool                properties  = false;
+bool                clips       = false;
+bool                parameters  = false;
 
 /// get defaults values of plugin properties
 std::string getDefaultValues(const tth::ofx::property::OfxhProperty& prop)

@@ -15,11 +15,11 @@
 #include <iostream>
 
 #ifndef SAM_MOVEFILES
-#define SAM_MV_OR_CP_OPTIONS	"SAM_CP_OPTIONS"
-#define SAM_TOOL               "sam-cp"
+#define SAM_MV_OR_CP_OPTIONS    "SAM_CP_OPTIONS"
+#define SAM_TOOL                "sam-cp"
 #else
-#define SAM_MV_OR_CP_OPTIONS	"SAM_MV_OPTIONS"
-#define SAM_TOOL               "sam-mv"
+#define SAM_MV_OR_CP_OPTIONS    "SAM_MV_OPTIONS"
+#define SAM_TOOL                "sam-mv"
 #endif
 
 

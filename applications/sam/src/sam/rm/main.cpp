@@ -21,8 +21,8 @@ namespace bal = boost::algorithm;
 namespace ttl = tuttle::common;
 using namespace tuttle::common;
 
-bool         colorOutput   = false;
-bool         verbose      = false;
+bool         colorOutput    = false;
+bool         verbose        = false;
 std::ssize_t firstImage     = 0;
 std::ssize_t lastImage      = 0;
 
@@ -39,8 +39,10 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& v)
 void removeSequence( const ttl::Sequence& s )
 {
 	const std::ssize_t first = std::max( s.getFirstTime(), firstImage );
-	const std::ssize_t last	= std::min( s.getLastTime(), lastImage );
+	const std::ssize_t last	 = std::min( s.getLastTime(), lastImage );
 	
+	//TUTTLE_COUT("remove from " << first << " to " << last);
+
 	for( ttl::Sequence::Time t = first; t <= last; t += s.getStep() )
 	{
 		bfs::path sFile = s.getAbsoluteFilenameAt(t);
@@ -295,9 +297,10 @@ int main( int argc, char** argv )
 	}
 	else
 	{
-		paths.push_back( "./" );
+		TUTTLE_COUT( _color._error << "No sequence and/or directory are specified." << _color._std );
+		return 1;
 	}
-	
+
 	if (vm.count("recursive"))
 	{
 		recursiveListing = true;
@@ -324,7 +327,7 @@ int main( int argc, char** argv )
 						{
 							if( bfs::is_directory( *dir ) )
 							{
-								//								TUTTLE_COUT( *dir );
+								//TUTTLE_COUT( *dir );
 								std::list<boost::shared_ptr<FileObject> > listing = fileObjectsInDir( (bfs::path)*dir, filters, researchMask, descriptionMask );
 								removeFileObject( listing, pathsNoRemoved );
 							}
@@ -350,7 +353,7 @@ int main( int argc, char** argv )
 					s.initFromDetection( path.string(), Sequence::ePatternDefault );
 					if( s.getNbFiles() )
 					{
-						TUTTLE_COUT( s );
+						//TUTTLE_COUT( s );
 						removeSequence( s );
 					}
 				}
