@@ -40,6 +40,22 @@ def adaptTemplate(filepath):
 
 if __name__ == '__main__':
 	try:
+		# we can set the output directory on the command line
+		defaultDir = None
+		if len(sys.argv) > 1:
+			defaultDir = sys.argv[1]
+
+		# Adapting directories.
+		currentDir = os.getcwd()
+		pluginBaseDir = raw_input( 'Plugin output directory (default is '+( ('"'+defaultDir+'"') if defaultDir else 'current directory')+') ?: ' )
+		if not pluginBaseDir:
+			if defaultDir:
+				pluginBaseDir = defaultDir
+			else:
+				pluginBaseDir = currentDir
+		if not os.path.isabs(pluginBaseDir):
+			pluginBaseDir = os.path.join( currentDir, pluginBaseDir )
+
 		api = 'ImageEffectApi'
 		while True:
 			api_input = raw_input( 'api (default: "'+api+'") ?: ' )
@@ -54,9 +70,7 @@ if __name__ == '__main__':
 		while not className or className.find( ' ' ) != -1  or className[0].isupper( ) == False:
 			className = raw_input( 'Plugin name (Capitalized, without spaces) ?: ' )
 
-		# Adapting directories.
-		currentDir = os.getcwd( )
-		pluginDir = os.path.join( currentDir, className )
+		pluginDir = os.path.join( pluginBaseDir, className )
 
 		#Remove old plugin dir
 		if os.path.exists( pluginDir ):
@@ -100,7 +114,9 @@ if __name__ == '__main__':
 		pluginUniqueId = '.'.join(id)
 
 		print 'Processing files...'
-		
+		if not os.path.exists(pluginBaseDir):
+			os.makedirs( pluginBaseDir )
+
 		#Copy to plugin directory
 		thisScriptDir = os.path.abspath(os.path.dirname(__file__))
 		shutil.copytree( os.path.join(thisScriptDir, api), pluginDir )
